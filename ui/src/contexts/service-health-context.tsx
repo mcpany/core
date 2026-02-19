@@ -27,6 +27,7 @@ export interface MetricPoint {
 interface ServiceHealthContextType {
     getServiceHistory: (serviceId: string) => MetricPoint[];
     getServiceCurrentHealth: (serviceId: string) => MetricPoint | null;
+    getServiceUptime: (serviceId: string) => number;
     latestTopology: Graph | null;
     refreshTopology: () => Promise<void>;
 }
@@ -53,6 +54,9 @@ const POLLING_INTERVAL = 5000;
  */
 export function ServiceHealthProvider({ children }: { children: ReactNode }) {
     const [history, setHistory] = useState<Record<string, MetricPoint[]>>({});
+    // ⚡ BOLT: Track service discovery time to calculate uptime locally, avoiding redundant API polling.
+    // Randomized Selection from Top 5 High-Impact Targets.
+    const [firstSeen, setFirstSeen] = useState<Record<string, number>>({});
     const [latestTopology, setLatestTopology] = useState<Graph | null>(null);
     const lastTopologyText = useRef<string>('');
     const lastGraph = useRef<Graph | null>(null);
@@ -108,6 +112,7 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
 
             const now = Date.now();
             const newPoints: Record<string, MetricPoint> = {};
+            const discovered: string[] = [];
 
             // Helper to extract service nodes
             // Using 'any' for node because TopologyNode type from types/topology
@@ -124,6 +129,7 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
                             qps: node.metrics?.qps || 0,
                             status: node.status || 'NODE_STATUS_UNSPECIFIED'
                         };
+                        discovered.push(node.id);
                     }
                     if (node.children) {
                         extractServiceNodes(node.children);
@@ -135,6 +141,19 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
                 extractServiceNodes([graph.core]);
                 if (graph.core.children) extractServiceNodes(graph.core.children);
             }
+
+            // Update discovery timestamps
+            setFirstSeen(prev => {
+                let changed = false;
+                const next = { ...prev };
+                discovered.forEach(id => {
+                    if (!next[id]) {
+                        next[id] = now;
+                        changed = true;
+                    }
+                });
+                return changed ? next : prev;
+            });
 
             // Update history
             setHistory(prev => {
@@ -183,12 +202,19 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
         return points && points.length > 0 ? points[points.length - 1] : null;
     }, [history]);
 
+    const getServiceUptime = useCallback((serviceId: string) => {
+        const start = firstSeen[serviceId];
+        if (!start) return 0;
+        return Date.now() - start;
+    }, [firstSeen]);
+
     const value = useMemo(() => ({
         getServiceHistory,
         getServiceCurrentHealth,
+        getServiceUptime,
         latestTopology,
         refreshTopology: fetchTopology
-    }), [getServiceHistory, getServiceCurrentHealth, latestTopology, fetchTopology]);
+    }), [getServiceHistory, getServiceCurrentHealth, getServiceUptime, latestTopology, fetchTopology]);
 
     // ⚡ Bolt Optimization: Split context for topology to avoid re-renders on metrics updates
     const topologyValue = useMemo(() => ({

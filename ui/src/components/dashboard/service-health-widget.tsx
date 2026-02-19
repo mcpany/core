@@ -12,17 +12,33 @@ import { CheckCircle2, AlertTriangle, XCircle, Activity, PauseCircle, Clock } fr
 import { cn } from "@/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { analyzeConnectionError } from "@/lib/diagnostics-utils";
-import { useServiceHealthHistory, ServiceHealth, HealthHistoryPoint } from "@/hooks/use-service-health-history";
+// ⚡ BOLT: Replaced legacy hook with optimized context
+import { useServiceHealth, MetricPoint } from "@/contexts/service-health-context";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { NodeStatus } from "@/types/topology";
+
+// Helper type for the view
+interface ServiceHealthView {
+    id: string;
+    name: string;
+    status: string;
+    latency: string;
+    uptime: string;
+    message?: string;
+}
 
 const getStatusIcon = (status: string) => {
   switch (status) {
+    case "NODE_STATUS_ACTIVE":
     case "healthy":
       return <CheckCircle2 className="h-4 w-4 text-green-500" />;
+    case "NODE_STATUS_DEGRADED":
     case "degraded":
       return <AlertTriangle className="h-4 w-4 text-amber-500" />;
+    case "NODE_STATUS_ERROR":
     case "unhealthy":
       return <XCircle className="h-4 w-4 text-red-500" />;
+    case "NODE_STATUS_INACTIVE":
     case "inactive":
       return <PauseCircle className="h-4 w-4 text-muted-foreground" />;
     default:
@@ -30,8 +46,18 @@ const getStatusIcon = (status: string) => {
   }
 };
 
+const mapStatus = (status: NodeStatus | string): string => {
+    if (status === 'NODE_STATUS_ACTIVE') return 'healthy';
+    if (status === 'NODE_STATUS_DEGRADED') return 'degraded';
+    if (status === 'NODE_STATUS_ERROR') return 'unhealthy';
+    if (status === 'NODE_STATUS_INACTIVE') return 'inactive';
+    return 'unknown';
+}
+
 const getStatusColor = (status: string) => {
-    switch (status) {
+    // Map protobuf status to simple status if needed, but UI seems to mix them
+    const s = mapStatus(status as NodeStatus) === 'unknown' ? status : mapStatus(status as NodeStatus);
+    switch (s) {
       case "healthy": return "border-green-200 bg-green-50 text-green-700 dark:border-green-900/30 dark:bg-green-900/20 dark:text-green-400";
       case "degraded": return "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900/30 dark:bg-amber-900/20 dark:text-amber-400";
       case "unhealthy": return "border-red-200 bg-red-50 text-red-700 dark:border-red-900/30 dark:bg-red-900/20 dark:text-red-400";
@@ -40,14 +66,20 @@ const getStatusColor = (status: string) => {
     }
 };
 
+const formatUptime = (ms: number) => {
+    if (ms < 1000) return "0s";
+    const sec = Math.floor(ms / 1000);
+    const min = Math.floor(sec / 60);
+    const hr = Math.floor(min / 60);
+    const day = Math.floor(hr / 24);
+
+    if (day > 0) return `${day}d ${hr % 24}h`;
+    if (hr > 0) return `${hr}h ${min % 60}m`;
+    if (min > 0) return `${min}m ${sec % 60}s`;
+    return `${sec}s`;
+};
+
 // ⚡ Bolt Optimization: Extracted diagnosis logic to a memoized component.
-/**
- * Displays a popover with diagnostic information about a service error.
- *
- * @param props - The component props.
- * @param props.message - The raw error message to analyze.
- * @returns The rendered popover component.
- */
 const ServiceDiagnosisPopover = memo(function ServiceDiagnosisPopover({ message }: { message: string }) {
     const diagnosis = useMemo(() => analyzeConnectionError(message), [message]);
 
@@ -76,21 +108,15 @@ const ServiceDiagnosisPopover = memo(function ServiceDiagnosisPopover({ message 
     );
 });
 
-/**
- * Renders a visual timeline of service health status history.
- *
- * @param props - The component props.
- * @param props.history - The list of historical health data points.
- * @returns The rendered timeline component.
- */
-const HealthTimeline = memo(function HealthTimeline({ history }: { history: HealthHistoryPoint[] }) {
+const HealthTimeline = memo(function HealthTimeline({ history }: { history: MetricPoint[] }) {
   if (!history || history.length === 0) return null;
 
   return (
     <div className="flex items-center gap-[2px] h-3 ml-4">
-      {history.map((point, i) => {
+      {history.map((point) => {
         let colorClass = "bg-muted";
-        switch (point.status) {
+        const simpleStatus = mapStatus(point.status);
+        switch (simpleStatus) {
           case "healthy": colorClass = "bg-green-500/80 hover:bg-green-500"; break;
           case "degraded": colorClass = "bg-amber-500/80 hover:bg-amber-500"; break;
           case "unhealthy": colorClass = "bg-red-500/80 hover:bg-red-500"; break;
@@ -106,11 +132,14 @@ const HealthTimeline = memo(function HealthTimeline({ history }: { history: Heal
             </TooltipTrigger>
             <TooltipContent className="text-[10px] p-1 px-2">
               <div className="font-semibold capitalize flex items-center gap-1">
-                  {point.status === 'healthy' && <CheckCircle2 className="h-3 w-3 text-green-500" />}
-                  {point.status === 'unhealthy' && <XCircle className="h-3 w-3 text-red-500" />}
-                  {point.status}
+                  {simpleStatus === 'healthy' && <CheckCircle2 className="h-3 w-3 text-green-500" />}
+                  {simpleStatus === 'unhealthy' && <XCircle className="h-3 w-3 text-red-500" />}
+                  {simpleStatus}
               </div>
               <div className="text-muted-foreground">{new Date(point.timestamp).toLocaleTimeString()}</div>
+              <div className="text-[9px] text-muted-foreground/80 mt-1">
+                  Latency: {point.latencyMs.toFixed(0)}ms
+              </div>
             </TooltipContent>
           </Tooltip>
         );
@@ -120,22 +149,14 @@ const HealthTimeline = memo(function HealthTimeline({ history }: { history: Heal
 });
 
 
-// ⚡ Bolt Optimization: Memoized individual service items.
-/**
- * Renders a single row in the service health list, including status, metrics, and history timeline.
- *
- * @param props - The component props.
- * @param props.service - The current health status of the service.
- * @param props.history - The historical health data for the service.
- * @returns The rendered health item component.
- */
-const ServiceHealthItem = memo(function ServiceHealthItem({ service, history }: { service: ServiceHealth, history: HealthHistoryPoint[] }) {
+const ServiceHealthItem = memo(function ServiceHealthItem({ service, history }: { service: ServiceHealthView, history: MetricPoint[] }) {
+    const status = mapStatus(service.status as NodeStatus); // normalizing
     return (
         <div
             className="group flex items-center justify-between p-3 hover:bg-muted/50 rounded-lg transition-colors"
         >
             <div className="flex items-center space-x-4 flex-1 min-w-0">
-                <div className={cn("p-2 rounded-full bg-background shadow-sm border shrink-0", getStatusColor(service.status).split(" ")[0])}>
+                <div className={cn("p-2 rounded-full bg-background shadow-sm border shrink-0", getStatusColor(status).split(" ")[0])}>
                     {getStatusIcon(service.status)}
                 </div>
                 <div className="min-w-0 flex-1">
@@ -145,7 +166,7 @@ const ServiceHealthItem = memo(function ServiceHealthItem({ service, history }: 
                             <ServiceDiagnosisPopover message={service.message} />
                         )}
                     </div>
-                    {service.status !== 'inactive' && service.latency !== '--' && (
+                    {status !== 'inactive' && service.latency !== '--' && (
                         <p className="text-xs text-muted-foreground flex items-center">
                         <Activity className="h-3 w-3 mr-1" />
                         Latency: <span className="font-mono ml-1">{service.latency}</span>
@@ -160,14 +181,14 @@ const ServiceHealthItem = memo(function ServiceHealthItem({ service, history }: 
             </div>
 
             <div className="flex items-center space-x-4 shrink-0">
-                {(service.status !== 'inactive' && service.uptime !== '--') && (
+                {(status !== 'inactive' && service.uptime !== '--') && (
                     <div className="text-right hidden sm:block">
                         <p className="text-xs text-muted-foreground">Uptime</p>
                         <p className="text-sm font-medium">{service.uptime}</p>
                     </div>
                 )}
-                <Badge variant="outline" className={cn("capitalize shadow-none", getStatusColor(service.status))}>
-                {service.status}
+                <Badge variant="outline" className={cn("capitalize shadow-none", getStatusColor(status))}>
+                {status}
                 </Badge>
             </div>
         </div>
@@ -179,14 +200,42 @@ const ServiceHealthItem = memo(function ServiceHealthItem({ service, history }: 
  * @returns The rendered component.
  */
 export function ServiceHealthWidget() {
-  const { services, history, isLoading } = useServiceHealthHistory();
+  const { latestTopology, getServiceHistory, getServiceUptime } = useServiceHealth();
 
-  const sortedServices = useMemo(() => {
-    return Array.isArray(services) ? [...services].sort((a, b) => {
-         const score = (s: string) => s === 'unhealthy' ? 0 : s === 'degraded' ? 1 : s === 'healthy' ? 2 : 3;
-         return score(a.status) - score(b.status);
-    }) : [];
-  }, [services]);
+  const services: ServiceHealthView[] = useMemo(() => {
+      if (!latestTopology || !latestTopology.core) return [];
+      const list: ServiceHealthView[] = [];
+
+      const traverse = (nodes: any[]) => {
+          nodes.forEach(node => {
+              if (node.type === 'NODE_TYPE_SERVICE') {
+                  const uptimeMs = getServiceUptime(node.id);
+                  list.push({
+                      id: node.id,
+                      name: node.label,
+                      status: node.status || 'NODE_STATUS_UNSPECIFIED',
+                      latency: node.metrics?.latencyMs ? `${node.metrics.latencyMs.toFixed(0)}ms` : '--',
+                      uptime: uptimeMs > 0 ? formatUptime(uptimeMs) : '--',
+                      message: node.metrics?.errorRate > 0 ? `Error Rate: ${(node.metrics.errorRate * 100).toFixed(1)}%` : undefined
+                  });
+              }
+              if (node.children) traverse(node.children);
+          });
+      }
+      traverse(latestTopology.core ? [latestTopology.core] : []);
+      if (latestTopology.core && latestTopology.core.children) traverse(latestTopology.core.children);
+
+      // Sort by status priority
+      return list.sort((a, b) => {
+           const score = (s: string) => {
+               const simple = mapStatus(s as NodeStatus);
+               return simple === 'unhealthy' ? 0 : simple === 'degraded' ? 1 : simple === 'healthy' ? 2 : 3;
+           }
+           return score(a.status) - score(b.status);
+      });
+  }, [latestTopology, getServiceUptime]);
+
+  const isLoading = !latestTopology;
 
   if (isLoading) {
     return (
@@ -203,7 +252,7 @@ export function ServiceHealthWidget() {
     )
   }
 
-  if (sortedServices.length === 0) {
+  if (services.length === 0) {
       return (
           <Card className="col-span-4 backdrop-blur-xl bg-background/60 border border-white/20 shadow-sm">
              <CardHeader>
@@ -228,22 +277,22 @@ export function ServiceHealthWidget() {
             <div>
                 <CardTitle>System Health</CardTitle>
                 <CardDescription>
-                Live health checks for {sortedServices.length} connected services.
+                Live health checks for {services.length} connected services.
                 </CardDescription>
             </div>
              <div className="flex items-center gap-1 text-[10px] text-muted-foreground bg-muted/50 px-2 py-1 rounded">
                 <Clock className="h-3 w-3" />
-                <span>History (10m)</span>
+                <span>History (2.5m)</span>
             </div>
         </div>
       </CardHeader>
       <CardContent>
         <div className="space-y-1">
-          {sortedServices.map((service) => (
+          {services.map((service) => (
             <ServiceHealthItem
                 key={service.id}
                 service={service}
-                history={history[service.id]}
+                history={getServiceHistory(service.id)}
             />
           ))}
         </div>
