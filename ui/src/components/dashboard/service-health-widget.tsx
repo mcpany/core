@@ -204,20 +204,23 @@ export function ServiceHealthWidget() {
 
   const services: ServiceHealthView[] = useMemo(() => {
       if (!latestTopology || !latestTopology.core) return [];
-      const list: ServiceHealthView[] = [];
+      const map = new Map<string, ServiceHealthView>();
 
       const traverse = (nodes: any[]) => {
           nodes.forEach(node => {
               if (node.type === 'NODE_TYPE_SERVICE') {
                   const uptimeMs = getServiceUptime(node.id);
-                  list.push({
-                      id: node.id,
-                      name: node.label,
-                      status: node.status || 'NODE_STATUS_UNSPECIFIED',
-                      latency: node.metrics?.latencyMs ? `${node.metrics.latencyMs.toFixed(0)}ms` : '--',
-                      uptime: uptimeMs > 0 ? formatUptime(uptimeMs) : '--',
-                      message: node.metrics?.errorRate > 0 ? `Error Rate: ${(node.metrics.errorRate * 100).toFixed(1)}%` : undefined
-                  });
+                  // Deduplicate by ID
+                  if (!map.has(node.id)) {
+                      map.set(node.id, {
+                          id: node.id,
+                          name: node.label,
+                          status: node.status || 'NODE_STATUS_UNSPECIFIED',
+                          latency: node.metrics?.latencyMs ? `${node.metrics.latencyMs.toFixed(0)}ms` : '--',
+                          uptime: uptimeMs > 0 ? formatUptime(uptimeMs) : '--',
+                          message: node.metrics?.errorRate > 0 ? `Error Rate: ${(node.metrics.errorRate * 100).toFixed(1)}%` : undefined
+                      });
+                  }
               }
               if (node.children) traverse(node.children);
           });
@@ -226,7 +229,7 @@ export function ServiceHealthWidget() {
       if (latestTopology.core && latestTopology.core.children) traverse(latestTopology.core.children);
 
       // Sort by status priority
-      return list.sort((a, b) => {
+      return Array.from(map.values()).sort((a, b) => {
            const score = (s: string) => {
                const simple = mapStatus(s as NodeStatus);
                return simple === 'unhealthy' ? 0 : simple === 'degraded' ? 1 : simple === 'healthy' ? 2 : 3;

@@ -112,15 +112,17 @@ test.describe('MCP Any UI E2E Tests', () => {
   test('Service Health Widget shows diagnostics', async ({ page }) => {
     await page.goto('/');
 
-    // Ensure Service Health widget is visible
-    const userService = page.locator('.group', { hasText: 'User Service' });
-    if (!(await userService.isVisible())) {
+    // Ensure Service Health widget is visible by checking for its title first
+    // This prevents adding a duplicate widget if it's already there but data hasn't loaded
+    const widgetTitle = page.getByText('System Health').first();
+    if (!(await widgetTitle.isVisible())) {
       await page.getByTestId('add-widget-trigger').first().click();
       await page.getByText('Service Health').first().click();
-      await expect(userService).toBeVisible({ timeout: 30000 });
     }
 
-    await expect(userService).toBeVisible();
+    // Now wait for the specific service row to appear
+    const userService = page.locator('.group', { hasText: 'User Service' }).first();
+    await expect(userService).toBeVisible({ timeout: 30000 });
 
     // We skip checking error details as it depends on runtime health check timing
   });
