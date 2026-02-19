@@ -1255,7 +1255,6 @@ func (t *HTTPTool) processResponse(ctx context.Context, resp *http.Response) (an
 	return result, nil
 }
 
-
 // MCPTool implements the Tool interface for a tool that is exposed via another
 // MCP-compliant service.
 //
@@ -2100,17 +2099,8 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 			if err := validateSafePathAndInjection(valStr, isDocker, commandName); err != nil {
 				return nil, fmt.Errorf("parameter %q: %w", name, err)
 			}
-			// Sentinel Security: For shell commands, we only add environment variables if they are safe
-			// for unquoted use. If they contain dangerous characters, we omit them from the environment
-			// to prevent RCE, while still allowing them to be used in args substitution (where quoting is handled).
-			safeForEnv := true
-			if isShellCommand(t.service.GetCommand()) {
-				if err := checkEnvInjection(valStr); err != nil {
-					logging.GetLogger().Warn("Skipping environment variable due to potential shell injection risk", "parameter", name, "error", err)
-					safeForEnv = false
-				}
-			}
 			// Sentinel Security Update: Block known dangerous environment variables
+			safeForEnv := true
 			if isDangerousEnvVar(name) {
 				logging.GetLogger().Warn("Skipping dangerous environment variable", "parameter", name)
 				safeForEnv = false
@@ -2156,7 +2146,6 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 			}
 		}
 	}
-
 
 	if req.DryRun {
 		logging.GetLogger().Info("Dry run execution", "tool", req.ToolName)
@@ -2481,17 +2470,8 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 					return nil, fmt.Errorf("parameter %q: %w", name, err)
 				}
 			}
-			// Sentinel Security: For shell commands, we only add environment variables if they are safe
-			// for unquoted use. If they contain dangerous characters, we omit them from the environment
-			// to prevent RCE, while still allowing them to be used in args substitution (where quoting is handled).
-			safeForEnv := true
-			if isShellCommand(t.service.GetCommand()) {
-				if err := checkEnvInjection(valStr); err != nil {
-					logging.GetLogger().Warn("Skipping environment variable due to potential shell injection risk", "parameter", name, "error", err)
-					safeForEnv = false
-				}
-			}
 			// Sentinel Security Update: Block known dangerous environment variables
+			safeForEnv := true
 			if isDangerousEnvVar(name) {
 				logging.GetLogger().Warn("Skipping dangerous environment variable", "parameter", name)
 				safeForEnv = false
@@ -3829,17 +3809,6 @@ func analyzeQuoteContext(template, placeholder string) int {
 
 	// logging.GetLogger().Info("analyzeQuoteContext", "template", template, "placeholder", placeholder, "level", minLevel)
 	return minLevel
-}
-
-func checkEnvInjection(val string) error {
-	// Relaxed check for environment variables.
-	// Allows spaces, but blocks shell metacharacters.
-	// We rely on validateSafePathAndInjection to prevent argument injection (flags starting with -).
-	const dangerousChars = ";|&$`(){}!<>\"\n\r\t\v\f*?[]~#%^'\\" // Space removed
-	if idx := strings.IndexAny(val, dangerousChars); idx != -1 {
-		return fmt.Errorf("shell injection detected: value contains dangerous character %q", val[idx])
-	}
-	return nil
 }
 
 func validateSafePathAndInjection(val string, isDocker bool, commandName string) error {
