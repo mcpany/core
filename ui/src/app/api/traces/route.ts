@@ -67,6 +67,16 @@ export async function GET(request: Request) {
     const traces: Trace[] = [];
 
     for (const [traceId, group] of traceGroups) {
+        // Filter out traces for fetching traces
+        const isSelfMonitoring = group.some(e =>
+            e.path === '/debug/entries' ||
+            e.path === '/api/traces' ||
+            e.path.includes('/api/v1/doctor') ||
+            e.path.includes('/api/v1/topology')
+        );
+
+        if (isSelfMonitoring) continue;
+
         // Sort group by timestamp
         group.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
 
@@ -106,10 +116,24 @@ export async function GET(request: Request) {
                 }
             }
 
+            let name = `${entry.method} ${entry.path}`;
+            let type: Span['type'] = 'core';
+
+            if (entry.path === '/api/v1/execute' && entry.method === 'POST') {
+                type = 'tool';
+                if (input && typeof input.name === 'string') {
+                    name = input.name;
+                }
+            } else if (entry.path.startsWith('/api/v1/tools/')) {
+                 type = 'tool';
+            } else if (entry.path.startsWith('/api/v1/resources')) {
+                type = 'resource';
+            }
+
             const span: Span = {
                 id: entry.span_id || entry.id,
-                name: `${entry.method} ${entry.path}`,
-                type: 'tool', // Default type
+                name: name,
+                type: type,
                 startTime: startTime,
                 endTime: startTime + durationMs,
                 status: entry.status >= 400 ? 'error' : 'success',

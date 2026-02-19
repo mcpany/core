@@ -5,24 +5,28 @@
 
 "use client";
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import {
   ReactFlow,
   useNodesState,
   useEdgesState,
-  addEdge,
   Controls,
   Background,
   MiniMap,
-  Connection,
   MarkerType,
+  Node,
+  Edge,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { UserNode, AgentNode, ToolNode, ResourceNode, ServiceNode } from './custom-nodes';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { DebuggerControls } from './debugger-controls';
 import { VariableInspector } from './variable-inspector';
+import { getLayoutedElements } from '@/lib/graph-layout';
+import { Trace, Span } from '@/types/trace';
+import { RefreshCcw } from 'lucide-react';
 
 const nodeTypes = {
   user: UserNode,
@@ -32,35 +36,153 @@ const nodeTypes = {
   service: ServiceNode,
 };
 
-const initialNodes = [
-  { id: '1', type: 'user', position: { x: 250, y: 0 }, data: { label: 'Alice' } },
-  { id: '2', type: 'agent', position: { x: 250, y: 150 }, data: { label: 'Orchestrator', role: 'Main Agent', status: 'Thinking...' } },
-  { id: '3', type: 'service', position: { x: 100, y: 300 }, data: { label: 'Postgres DB' } },
-  { id: '4', type: 'tool', position: { x: 400, y: 300 }, data: { label: 'Web Search' } },
-];
-
-const initialEdges = [
-  { id: 'e1-2', source: '1', target: '2', animated: true, label: 'Task: Analyze Data', markerEnd: { type: MarkerType.ArrowClosed } },
-  { id: 'e2-3', source: '2', target: '3', animated: true, label: 'Query' },
-  { id: 'e2-4', source: '2', target: '4', animated: false, label: 'Search' },
-];
-
 /**
- * AgentFlow component renders the interactive flow visualization.
+ * AgentFlow component renders the interactive flow visualization using real trace data.
  * @returns The AgentFlow component.
  */
 export function AgentFlow() {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const [isPlaying, setIsPlaying] = useState(false);
   const [selectedNode, setSelectedNode] = useState<any>(null);
+  const [traces, setTraces] = useState<Trace[]>([]);
+  const [selectedTraceId, setSelectedTraceId] = useState<string>("");
 
-  const onConnect = useCallback(
-    (params: Connection) => setEdges((eds) => addEdge({ ...params, animated: true }, eds)),
-    [setEdges],
-  );
+  // Fetch traces (poll if playing)
+  const fetchTraces = useCallback(async () => {
+      try {
+          const res = await fetch('/api/traces');
+          if (res.ok) {
+              const data = await res.json();
+              setTraces(data);
+              // Select the first one if none selected or if we want to "follow" the live stream (implied by isPlaying)
+              // If playing, we always switch to latest.
+              if ((data.length > 0 && !selectedTraceId) || (isPlaying && data.length > 0 && data[0].id !== selectedTraceId)) {
+                  setSelectedTraceId(data[0].id);
+              }
+          }
+      } catch (e) {
+          console.error("Failed to fetch traces", e);
+      }
+  }, [selectedTraceId, isPlaying]);
 
-  const togglePlay = () => setIsPlaying(!isPlaying);
+  useEffect(() => {
+      fetchTraces();
+  }, []);
+
+  useEffect(() => {
+      let interval: NodeJS.Timeout;
+      if (isPlaying) {
+          interval = setInterval(fetchTraces, 2000);
+      }
+      return () => clearInterval(interval);
+  }, [isPlaying, fetchTraces]);
+
+
+  // Convert Trace to Graph
+  useEffect(() => {
+      const trace = traces.find(t => t.id === selectedTraceId) || traces[0];
+      if (!trace) {
+          setNodes([]);
+          setEdges([]);
+          return;
+      }
+
+      const newNodes: Node[] = [];
+      const newEdges: Edge[] = [];
+      const nodeMap = new Map<string, Node>();
+
+      // Helper to get or create node
+      const getOrCreateNode = (span: Span, role: string, parentNodeId?: string): string => {
+
+          let type = 'agent';
+          let label = span.name;
+
+          if (span.type === 'tool') type = 'tool';
+          else if (span.type === 'service') type = 'service';
+          else if (span.type === 'resource') type = 'resource';
+          else if (span.name === 'User') type = 'user';
+
+          // Special case for Core
+          if (role === 'core') {
+              type = 'agent';
+              label = 'MCP Core';
+          }
+
+          const id = span.id;
+
+          if (!nodeMap.has(id)) {
+               const node: Node = {
+                  id,
+                  type,
+                  position: { x: 0, y: 0 }, // Layout will fix this
+                  data: {
+                      label,
+                      role: type === 'agent' ? 'Orchestrator' : undefined,
+                      status: span.status === 'pending' ? 'Running' : span.status,
+                      input: span.input,
+                      output: span.output,
+                      errorMessage: span.errorMessage
+                  },
+              };
+              newNodes.push(node);
+              nodeMap.set(id, node);
+          }
+          return id;
+      };
+
+      // Traverse Trace
+      const traverse = (span: Span, parentId?: string) => {
+          const nodeId = getOrCreateNode(span, parentId ? 'child' : 'core');
+
+          if (parentId) {
+               newEdges.push({
+                  id: `e-${parentId}-${nodeId}`,
+                  source: parentId,
+                  target: nodeId,
+                  animated: true,
+                  label: span.name, // Edge label is the action
+                  markerEnd: { type: MarkerType.ArrowClosed },
+                  style: span.status === 'error' ? { stroke: '#ef4444' } : { stroke: '#64748b' }
+               });
+          }
+
+          if (span.children) {
+              span.children.forEach(child => traverse(child, nodeId));
+          }
+      };
+
+      // Add a virtual "User" node as root trigger
+      const userNode: Node = {
+          id: 'user-trigger',
+          type: 'user',
+          position: { x: 0, y: 0 },
+          data: { label: 'User' }
+      };
+      newNodes.push(userNode);
+      nodeMap.set('user-trigger', userNode);
+
+      // Start traversal from trace root, connecting to User
+      const rootId = getOrCreateNode(trace.rootSpan, 'core');
+      newEdges.push({
+          id: `e-user-${rootId}`,
+          source: 'user-trigger',
+          target: rootId,
+          animated: true,
+          label: 'Request',
+          markerEnd: { type: MarkerType.ArrowClosed }
+      });
+
+      if (trace.rootSpan.children) {
+           trace.rootSpan.children.forEach(child => traverse(child, rootId));
+      }
+
+      // Apply Layout
+      const layouted = getLayoutedElements(newNodes, newEdges);
+      setNodes(layouted.nodes);
+      setEdges(layouted.edges);
+
+  }, [selectedTraceId, traces, setNodes, setEdges]);
 
   const onNodeClick = useCallback((_: any, node: any) => {
     setSelectedNode(node);
@@ -70,39 +192,32 @@ export function AgentFlow() {
     setSelectedNode(null);
   }, []);
 
-  // Simulation effect (placeholder for real "Live" data)
-  React.useEffect(() => {
-    if (!isPlaying) return;
-    const interval = setInterval(() => {
-      setEdges((eds) => eds.map(e => ({
-        ...e,
-        animated: !e.animated || Math.random() > 0.5,
-        style: { stroke: Math.random() > 0.5 ? '#22c55e' : '#64748b' } // Green or slate
-      })));
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [isPlaying, setEdges]);
-
   return (
     <div className="h-[calc(100vh-8rem)] w-full relative bg-background border rounded-lg overflow-hidden shadow-sm">
       <div className="absolute top-4 right-4 z-10 flex gap-2">
         <Card className="p-2 flex gap-2 items-center bg-background/80 backdrop-blur-sm">
           <DebuggerControls
             isPlaying={isPlaying}
-            onPlayPause={togglePlay}
-            onStep={() => { }} // Placeholder for step
-            onStop={() => { setIsPlaying(false); setNodes(initialNodes); setEdges(initialEdges); }}
+            onPlayPause={() => setIsPlaying(!isPlaying)}
+            onStep={() => { }}
+            onStop={() => setIsPlaying(false)}
           />
           <div className="w-px h-6 bg-border mx-1" />
-          <Select defaultValue="demo1">
-            <SelectTrigger className="w-[140px] h-8">
-              <SelectValue placeholder="Scenario" />
+          <Select value={selectedTraceId} onValueChange={setSelectedTraceId}>
+            <SelectTrigger className="w-[200px] h-8 text-xs font-mono">
+              <SelectValue placeholder="Select Trace" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="demo1">Basic Flow</SelectItem>
-              <SelectItem value="demo2">Multi-Agent</SelectItem>
+              {traces.map(t => (
+                  <SelectItem key={t.id} value={t.id} className="text-xs font-mono">
+                      {new Date(t.timestamp).toLocaleTimeString()} - {t.rootSpan.name}
+                  </SelectItem>
+              ))}
             </SelectContent>
           </Select>
+          <Button variant="ghost" size="icon" onClick={() => fetchTraces()} className="h-8 w-8">
+             <RefreshCcw className="h-4 w-4" />
+          </Button>
         </Card>
       </div>
 
@@ -113,7 +228,6 @@ export function AgentFlow() {
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
         onNodeClick={onNodeClick}
         onPaneClick={onPaneClick}
         nodeTypes={nodeTypes}
