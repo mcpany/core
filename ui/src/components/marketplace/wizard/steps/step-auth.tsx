@@ -10,6 +10,7 @@ import { apiClient } from '@/lib/client';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { RotateCw } from 'lucide-react';
+import { Credential } from '@proto/config/v1/auth';
 
 /**
  * StepAuth component.
@@ -18,7 +19,7 @@ import { RotateCw } from 'lucide-react';
 export function StepAuth() {
     const { state, updateConfig } = useWizard();
     const { config } = state;
-    const [credentials, setCredentials] = useState<any[]>([]);
+    const [credentials, setCredentials] = useState<Credential[]>([]);
     const [loading, setLoading] = useState(false);
     const [selectedCredId, setSelectedCredId] = useState<string>('none');
 
@@ -64,7 +65,7 @@ export function StepAuth() {
                         <SelectContent>
                             <SelectItem value="none">None</SelectItem>
                             {credentials.map(c => (
-                                <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                                <SelectItem key={c.id || c.name} value={c.id || c.name}>{c.name}</SelectItem>
                             ))}
                         </SelectContent>
                     </Select>

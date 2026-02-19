@@ -16,16 +16,17 @@ import { Input } from '@/components/ui/input';
  */
 export function StepParameters() {
     const { state, updateConfig, updateState } = useWizard();
-    const { config, selectedTemplateId, params } = state;
+    const { config, params } = state;
 
     // Determine if we have a schema to render
     // The schema string is stored in config.configurationSchema (if from template)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let schema: any = null;
     try {
         if (config.configurationSchema) {
             schema = JSON.parse(config.configurationSchema);
         }
-    } catch (e) {
+    } catch (_e) {
         // ignore
     }
 
@@ -34,25 +35,24 @@ export function StepParameters() {
 
         // Also map back to config env vars if commandLineService exists
         // This mapping depends on the template logic. Usually schema fields map to env vars.
+        // The SERVICE_REGISTRY uses uppercase keys for env vars directly as properties.
+        // So we can assume keys match.
         if (config.commandLineService) {
             const newEnv = { ...(config.commandLineService.env || {}) };
             Object.entries(newParams).forEach(([k, v]) => {
-                // Determine env var name. Schema properties keys are usually env var names?
-                // The SERVICE_REGISTRY uses uppercase keys for env vars directly as properties.
-                // So we can assume keys match.
                 newEnv[k] = v; // Simple string assignment
             });
             updateConfig({
                 commandLineService: {
                     ...config.commandLineService,
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     env: newEnv as any
                 }
             });
-        } else if (config.httpService) {
-             // Maybe map to something else? For now assume env vars or manual config.
         }
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleEnvChange = (env: Record<string, any>) => {
         if (config.commandLineService) {
             updateConfig({
@@ -90,6 +90,7 @@ export function StepParameters() {
                         />
                      </div>
                      <EnvVarEditor
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         initialEnv={config.commandLineService.env as any}
                         onChange={handleEnvChange}
                      />

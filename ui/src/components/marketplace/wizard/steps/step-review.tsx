@@ -6,17 +6,22 @@
 import React from 'react';
 import { useWizard } from '../wizard-context';
 import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { CheckCircle2 } from 'lucide-react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
+interface StepReviewProps {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onComplete: (config: any) => void;
+}
+
 /**
- * StepReview.
+ * StepReview component.
  *
- * @param { onComplete - The { onComplete.
+ * @param props - The component props.
+ * @returns The rendered component.
  */
-export function StepReview({ onComplete }: { onComplete: (config: any) => void }) {
+export function StepReview({ onComplete }: StepReviewProps) {
     const { state } = useWizard();
     const { config } = state;
 

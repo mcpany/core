@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { useWizard } from '../wizard-context';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
@@ -77,13 +77,14 @@ export function StepServiceType() {
     const handleTemplateChange = (val: string) => {
         const template = TEMPLATES.find(t => t.id === val);
         if (template) {
-            let params = { ...(template.params as Record<string, string>) };
+            const params = { ...(template.params as Record<string, string>) };
 
             // Extract defaults from schema if present
             if (template.config.configurationSchema) {
                 try {
                     const schema = JSON.parse(template.config.configurationSchema);
                     if (schema.properties) {
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         Object.entries(schema.properties).forEach(([k, v]: [string, any]) => {
                             if (v.default !== undefined) {
                                 params[k] = String(v.default);
@@ -103,6 +104,7 @@ export function StepServiceType() {
             // We cast to any because template.config might have extra fields or slight type mismatches
             // with Partial<UpstreamServiceConfig> but we trust our mapping.
             updateConfig({
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 ...template.config as any,
                 name: config.name || template.name,
             });
