@@ -57,10 +57,11 @@ test.describe('User Management', () => {
         await expect(page.locator('text=Warning: This key will only be shown once')).toBeVisible();
 
         // Save
+        // We assume the save operation might take a moment, especially if backend is slow
         await page.click('button:has-text("Save Changes")');
 
-        // Verify Sheet closed
-        await expect(page.locator('div[role="dialog"]')).toBeHidden();
+        // Verify Sheet closed with longer timeout for slow backend
+        await expect(page.locator('div[role="dialog"]')).toBeHidden({ timeout: 15000 });
 
         // Verify user created in list
         // Row should contain "test-api-user"

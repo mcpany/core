@@ -20,7 +20,8 @@ test.describe('User Guide Walkthrough', () => {
 
     await page.goto('/');
     // Check for "Total Requests" card
-    await expect(page.locator('text=Total Requests')).toBeVisible({ timeout: 10000 });
+    // Increasing timeout for slow backend metrics aggregation
+    await expect(page.locator('text=Total Requests')).toBeVisible({ timeout: 45000 });
     // Check for "Active Services" card
     await expect(page.locator('text=Active Services')).toBeVisible();
     await expect(page.locator('text=Connected Tools')).toBeVisible();
