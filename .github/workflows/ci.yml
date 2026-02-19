@@ -114,16 +114,8 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
-      # - name: Free Disk Space (Ubuntu)
-      #   uses: jlumbroso/free-disk-space@main
-      #   with:
-      #     tool-cache: false
-      #     android: true
-      #     dotnet: true
-      #     haskell: true
-      #     large-packages: true
-      #     docker-images: true
-      #     swap-storage: true
+      - name: Prune Docker (OCI)
+        run: docker system prune -af || true
 
       - uses: actions/checkout@v5
 
@@ -249,16 +241,8 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
-      # - name: Free Disk Space (Ubuntu)
-      #   uses: jlumbroso/free-disk-space@main
-      #   with:
-      #     tool-cache: false
-      #     android: true
-      #     dotnet: true
-      #     haskell: true
-      #     large-packages: true
-      #     docker-images: true
-      #     swap-storage: true
+      - name: Prune Docker (OCI)
+        run: docker system prune -af || true
 
       - uses: actions/checkout@v5
 
@@ -551,6 +535,9 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
+      - name: Prune Docker (OCI)
+        run: docker system prune -af || true
+
       - uses: actions/checkout@v5
 
       - name: Install dependencies
@@ -845,17 +832,17 @@ jobs:
       matrix:
         shard: [1/2, 2/2]
     steps:
-      #      - name: Free Disk Space (Ubuntu)
-      #        uses: jlumbroso/free-disk-space@main
-      #        with:
-      #          tool-cache: false
-      #          android: true
-      #          dotnet: true
-      #          haskell: true
-      #          large-packages: true
-      #          docker-images: false
-      #          swap-storage: true
-      #
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: false
+          swap-storage: true
+
       - uses: actions/checkout@v5
 
       - name: Detect Architecture
@@ -899,6 +886,17 @@ jobs:
     timeout-minutes: 20
     needs: [build-images]
     steps:
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: false
+          swap-storage: true
+
       - uses: actions/checkout@v5
 
       - name: Set up Go
