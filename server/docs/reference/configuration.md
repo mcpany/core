@@ -111,6 +111,7 @@ Contains server-wide operational parameters.
 | `read_only`          | `bool`       | If true, the configuration is read-only.                                      |
 | `auto_discover_local`| `bool`       | Whether to auto-discover local services (e.g. Ollama).                        |
 | `alerts`             | `AlertConfig`| Alert configuration.                                                          |
+| `smart_recovery`     | `SmartRecoveryConfig` | Smart Recovery configuration using LLMs.                             |
 
 ### `AuditConfig`
 

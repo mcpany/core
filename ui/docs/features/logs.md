@@ -24,5 +24,5 @@ Use the search bar at the top to filter logs by keyword (e.g., "error", "payment
 ![Filtered Logs](screenshots/logs_filtered.png)
 
 ### 3. Pause and Resume
-- **Scroll Up**: Scrolling up automatically pauses the live tail, allowing you to read history.
-- **Resume**: Click the "Resume" button (or scroll to bottom) to re-enable auto-scrolling.
+- **Pause**: Click the "Pause" button to stop auto-scrolling and inspect the logs.
+- **Resume**: Click the "Resume" button to catch up with the latest logs and re-enable auto-scrolling.

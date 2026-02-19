@@ -26,20 +26,23 @@ Navigate to `/playground`. The interface presents a clean slate with access to a
 Browse the sidebar to find the tool you wish to test.
 
 1. Click on a tool name (e.g., `filesystem.list_dir`).
-2. The main pane updates to show the **Tool Description** and a dynamically generated **Input Form**.
+2. A **Tool Configuration Modal** will open, displaying the tool description and a dynamically generated input form.
 
 ![Tool Selected](screenshots/playground_tool_selected.png)
 
-### 3. Execute Tool
+### 3. Configure Tool
 
 Fill in the required arguments. The form validates your input based on the JSON Schema provided by the tool.
 
 1. Enter values (e.g., `/var/log` for path).
-2. Click **"Run Tool"**.
+2. Click **"Build Command"**. This will construct the command and place it in the console input bar.
 
 ![Form Filled](screenshots/playground_form_filled.png)
 
-### 4. View Results
+### 4. Execute and View Results
+
+1. Review the command in the input bar.
+2. Press **Enter** or click the **Send** button to execute.
 
 The execution result is displayed in the chat stream.
 
@@ -48,7 +51,7 @@ The execution result is displayed in the chat stream.
 
 ## Advanced Features
 
-- **JSON Mode**: Toggle to "JSON" tab to input raw parameters if the form is too constraining.
+- **JSON Mode**: Toggle to "JSON" tab in the configuration modal to input raw parameters if the form is too constraining.
 - **History**: Previous tool calls in the session remain visible above.
 
 ### 5. Session History (Import/Export)

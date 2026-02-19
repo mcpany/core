@@ -1,40 +1,30 @@
 # Truth Reconciliation Audit Report
 
 ## Executive Summary
-This report summarizes the "Truth Reconciliation Audit" performed on the MCP Any project. The audit cross-referenced 10 documentation files against the codebase and the Product Roadmap.
-
-**Overall Health:** 80% (8/10 files verified correct)
-**Discrepancies Found:** 2
-- **Code Defect:** 1 (Context Optimizer)
-- **Doc Drift:** 1 (Admin API)
-
-All discrepancies have been remediated.
+Performed a comprehensive audit of 10 sampled features across UI and Backend to verify alignment between Documentation, Codebase, and Roadmap.
+- **Overall Health**: High. 8/10 features are fully aligned.
+- **Discrepancies**: 2 UI features (Playground, Logs) show documentation drift where the UI has evolved (e.g., Modal vs Panes) but docs reflect older designs.
+- **Backend**: Core backend features (Rate Limiting, Caching, Auth, etc.) are strictly implemented and aligned with documentation.
 
 ## Verification Matrix
 
 | Document Name | Status | Action Taken | Evidence |
 | :--- | :--- | :--- | :--- |
-| `ui/docs/features/playground.md` | **Green** | Verified | Code matches docs (Components, Routes, Features). |
-| `ui/docs/features/logs.md` | **Green** | Verified | Code matches docs (WebSocket, Filtering, Color Coding). |
-| `ui/docs/features/connection-diagnostics.md` | **Green** | Verified | Code matches docs (Steps, Heuristics, UI). |
-| `ui/docs/features/native_file_upload_playground.md` | **Green** | Verified | Code matches docs (Schema detection, FileInput). |
-| `server/docs/features/config_validator.md` | **Green** | Verified | Code matches docs (Endpoint, UI Sidebar). |
-| `server/docs/features/health-checks.md` | **Green** | Verified | Code matches docs (All check types implemented). |
-| `server/docs/features/dynamic-ui.md` | **Green** | Verified | Pointer doc is accurate. |
-| `server/docs/features/context_optimizer.md` | **Red** (Code Defect) | **Fixed Code** | Code used byte-length for character limit, causing potential UTF-8 corruption. Fixed to use rune-length. Added test case. |
-| `server/docs/features/audit_logging.md` | **Green** | Verified | Code matches docs (Storage types, Config). |
-| `server/docs/features/admin_api.md` | **Red** (Doc Drift) | **Fixed Doc** | Documentation missing newer endpoints (User Mgmt, Audit Logs). Added missing sections. |
+| `ui/docs/features/playground.md` | **Drift** | **Updated Doc** | Code uses Modal (`Dialog`) for tool config, Doc implies 2-pane. Execution flow differs. Doc updated. |
+| `ui/docs/features/logs.md` | **Drift** | **Updated Doc** | Auto-pause behavior in Doc ("scroll up pauses") is not explicitly reflected in UI controls. Doc updated to specify "Pause" button. |
+| `ui/docs/features/services.md` | **Pass** | Verified | UI components match documented features (List, Toggle, Add/Edit Sheets). |
+| `server/docs/features/rate-limiting/README.md` | **Pass** | Verified | `RateLimitMiddleware` implements token bucket, Redis, and config options. |
+| `server/docs/features/caching/README.md` | **Pass** | Verified | `CachingMiddleware` and Semantic Cache implemented as described. |
+| `server/docs/features/prompts/README.md` | **Pass** | Verified | Prompt API and management logic exists and matches. |
+| `server/docs/features/authentication/README.md` | **Pass** | Verified | Incoming/Outgoing auth (API Key, Bearer) implemented. |
+| `server/docs/features/webhooks/README.md` | **Pass** | Verified | Webhook hooks, CloudEvents, and sidecar binary exist. |
+| `server/docs/reference/configuration.md` | **Pass** | **Updated Doc** | Config structure matches Proto definitions (minor missing field `smart_recovery` in table). Doc updated. |
+| `server/docs/features/context_optimizer.md` | **Pass** | Verified | Middleware implements truncation logic exactly as described. |
 
 ## Remediation Log
 
-### 1. Context Optimizer (Code Defect)
-- **Issue:** The middleware truncated strings based on byte length (`len(str)`), but the documentation and intent specified "characters" (`max_chars`). This could lead to invalid UTF-8 sequences if a multibyte character was split.
-- **Fix:** Updated `server/pkg/middleware/context_optimizer.go` to cast strings to `[]rune` before slicing.
-- **Verification:** Added `TestContextOptimizerMiddleware_Multibyte` in `server/pkg/middleware/context_optimizer_test.go` which confirms correct truncation of strings containing emojis and CJK characters.
-
-### 2. Admin API (Doc Drift)
-- **Issue:** `server/docs/features/admin_api.md` was missing documentation for User Management, Discovery Status, and Audit Log endpoints that exist in `proto/admin/v1/admin.proto`.
-- **Fix:** Updated the documentation to include `CreateUser`, `GetUser`, `ListUsers`, `UpdateUser`, `DeleteUser`, `GetDiscoveryStatus`, and `ListAuditLogs`.
-
-## Security Scrub
-- No PII, secrets, or internal IPs were found in the report or the codebase during verification.
+| Feature | Issue | Resolution |
+| :--- | :--- | :--- |
+| **Playground** | Doc described older 2-pane UI and incorrect "Run Tool" button flow. | Refactored `ui/docs/features/playground.md` to describe the Modal configuration wizard and "Build Command" -> "Send" workflow. |
+| **Logs** | Doc described implicit "scroll to pause" behavior which was ambiguous. | Refactored `ui/docs/features/logs.md` to explicitly instruct users to use the "Pause" and "Resume" buttons. |
+| **Configuration** | `smart_recovery` field was missing from the GlobalSettings reference table. | Added `smart_recovery` to the `GlobalSettings` table in `server/docs/reference/configuration.md`. |
