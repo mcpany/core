@@ -1,5 +1,5 @@
 # Stage 1: Build the Go application
-FROM golang:1.24-alpine AS builder
+FROM mirror.gcr.io/library/golang:1.24-alpine AS builder
 
 WORKDIR /app
 
@@ -19,7 +19,7 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
     CGO_ENABLED=0 go build -o /http-echo-server ./tests/integration/cmd/mocks/http_echo_server
 
 # Stage 2: Create the final, minimal production image
-FROM alpine:latest
+FROM mirror.gcr.io/library/alpine:latest
 
 # Install wget and ca-certificates.
 # wget is needed for the healthcheck in docker-compose.yml.

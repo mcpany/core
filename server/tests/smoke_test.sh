@@ -73,7 +73,7 @@ while [ $RETRIES -gt 0 ]; do
     break
   fi
 
-  if docker run --network host --rm fullstorydev/grpcurl:v1.9.3 -plaintext localhost:"$GRPC_PORT" list > /dev/null 2>&1; then
+  if docker run --network host --rm mirror.gcr.io/fullstorydev/grpcurl:v1.9.3 -plaintext localhost:"$GRPC_PORT" list > /dev/null 2>&1; then
     echo "gRPC Health Check Passed"
     break
   fi

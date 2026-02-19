@@ -105,7 +105,7 @@ export enum ParameterType {
 }
 
 /**
- * HttpCallDefinition_HttpMethod enum.
+ * HttpMethod enum.
  */
 export enum HttpCallDefinition_HttpMethod {
     HTTP_METHOD_UNSPECIFIED = 0,
@@ -117,7 +117,7 @@ export enum HttpCallDefinition_HttpMethod {
 }
 
 /**
- * OutputTransformer_OutputFormat enum.
+ * OutputFormat enum.
  */
 export enum OutputTransformer_OutputFormat {
     JSON = 0,

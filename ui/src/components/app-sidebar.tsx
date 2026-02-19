@@ -26,7 +26,8 @@ import {
   ShieldCheck,
   Zap,
   ClipboardCheck,
-  Bug
+  Bug,
+  Workflow
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -119,6 +120,11 @@ const devItems = [
     title: "Inspector",
     url: "/inspector",
     icon: Bug,
+  },
+  {
+    title: "Visualizer",
+    url: "/visualizer",
+    icon: Workflow,
   },
   {
     title: "Schema Validation",

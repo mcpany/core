@@ -58,7 +58,7 @@ test-proto:
 	@go test ./proto/...
 
 k8s-e2e:
-	$(MAKE) -C k8s test
+	@export PATH=$(TOOL_INSTALL_DIR):$$PATH; $(MAKE) -C k8s test
 
 k8s-test: k8s-e2e
 

@@ -1,7 +1,7 @@
 # Copyright 2025 Author(s) of MCP Any
 # SPDX-License-Identifier: Apache-2.0
 
-FROM node:20-bookworm-slim AS base
+FROM mirror.gcr.io/library/node:20-bookworm-slim AS base
 # libc6-compat is not needed on Debian/Ubuntu base
 # RUN apk add --no-cache libc6-compat
 

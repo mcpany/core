@@ -37,6 +37,10 @@ export interface UpstreamServiceConfig extends Omit<BaseUpstreamServiceConfig, '
      * Optional description for the service (used in UI templates).
      */
     description?: string;
+    /**
+     * Optional template ID if this config was loaded from a template.
+     */
+    templateId?: string;
 }
 
 // Re-export generated types
@@ -990,6 +994,261 @@ export const apiClient = {
         return res.json(); // { authorization_url: "...", state: "..." }
     },
 
+    /**
+     * Lists all authentication credentials.
+     * @returns A promise that resolves to the list of credentials.
+     */
+    listCredentials: async (): Promise<Credential[]> => {
+        const res = await fetchWithAuth('/api/v1/credentials');
+        if (!res.ok) throw new Error('Failed to fetch credentials');
+        const data = await res.json();
+        return Array.isArray(data) ? data : (data.credentials || []);
+    },
+
+    /**
+     * Creates a new authentication credential.
+     * @param credential The credential to create.
+     * @returns A promise that resolves to the created credential.
+     */
+    createCredential: async (credential: any): Promise<Credential> => {
+        const res = await fetchWithAuth('/api/v1/credentials', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(credential)
+        });
+        if (!res.ok) {
+            const txt = await res.text();
+            throw new Error(`Failed to create credential: ${txt}`);
+        }
+        return res.json();
+    },
+
+    /**
+     * Updates an existing authentication credential.
+     * @param credential The updated credential.
+     * @returns A promise that resolves to the updated credential.
+     */
+    updateCredential: async (credential: any): Promise<Credential> => {
+        const res = await fetchWithAuth(`/api/v1/credentials/${credential.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(credential)
+        });
+        if (!res.ok) {
+            const txt = await res.text();
+            throw new Error(`Failed to update credential: ${txt}`);
+        }
+        return res.json();
+    },
+
+    /**
+     * Deletes an authentication credential.
+     * @param id The ID of the credential to delete.
+     * @returns A promise that resolves when the credential is deleted.
+     */
+    deleteCredential: async (id: string): Promise<void> => {
+        const res = await fetchWithAuth(`/api/v1/credentials/${id}`, {
+            method: 'DELETE'
+        });
+        if (!res.ok) throw new Error('Failed to delete credential');
+    },
+
+    /**
+     * Tests an authentication configuration.
+     * @param request The test request (auth config, target URL, etc.).
+     * @returns A promise that resolves to the test result.
+     */
+    testAuth: async (request: any): Promise<any> => {
+        const res = await fetchWithAuth('/api/v1/debug/auth-test', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(request)
+        });
+        if (!res.ok) {
+            const txt = await res.text();
+            throw new Error(`Failed to test auth: ${txt}`);
+        }
+        return res.json();
+    },
+
+    /**
+     * Exchanges an OAuth code for a token.
+     * @param code The OAuth code.
+     * @param state The OAuth state.
+     * @param redirectUri The redirect URI.
+     * @returns A promise that resolves to the token data.
+     */
+    exchangeOAuthCode: async (code: string, state: string, redirectUri: string): Promise<any> => {
+        const res = await fetchWithAuth('/api/v1/oauth/exchange', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ code, state, redirect_uri: redirectUri })
+        });
+        if (!res.ok) {
+            const txt = await res.text();
+            throw new Error(`Failed to exchange OAuth code: ${txt}`);
+        }
+        return res.json();
+    },
+
+    /**
+     * Handles the OAuth callback by exchanging the code for a token and associating it.
+     * @param serviceId The service ID being authenticated.
+     * @param code The authorization code from the provider.
+     * @param redirectUrl The redirect URL used in the flow.
+     * @param credentialId Optional specific credential ID to update.
+     * @returns A promise that resolves to the result of the callback handler.
+     */
+    handleOAuthCallback: async (serviceId: string | null, code: string, redirectUrl: string, credentialId?: string) => {
+        const res = await fetchWithAuth('/api/v1/auth/oauth/callback', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                service_id: serviceId,
+                code: code,
+                redirect_url: redirectUrl,
+                credential_id: credentialId
+            })
+        });
+        if (!res.ok) {
+            const txt = await res.text();
+            throw new Error(`Failed to handle OAuth callback: ${txt}`);
+        }
+        return res.json();
+    },
+
+    /**
+     * Lists all users.
+     * @returns A promise that resolves to the list of users.
+     */
+    listUsers: async (): Promise<any> => {
+        const res = await fetchWithAuth('/api/v1/users');
+        if (!res.ok) throw new Error('Failed to fetch users');
+        return res.json();
+    },
+
+    /**
+     * Creates a new user.
+     * @param user The user data to create.
+     * @returns A promise that resolves to the created user.
+     */
+    createUser: async (user: any): Promise<any> => {
+        const res = await fetchWithAuth('/api/v1/users', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(user)
+        });
+        if (!res.ok) {
+            const txt = await res.text();
+            throw new Error(`Failed to create user: ${txt}`);
+        }
+        return res.json();
+    },
+
+    /**
+     * Updates an existing user.
+     * @param user The updated user data.
+     * @returns A promise that resolves to the updated user.
+     */
+    updateUser: async (user: any): Promise<any> => {
+        const res = await fetchWithAuth(`/api/v1/users/${user.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(user)
+        });
+        if (!res.ok) {
+            const txt = await res.text();
+            throw new Error(`Failed to update user: ${txt}`);
+        }
+        return res.json();
+    },
+
+    /**
+     * Deletes a user.
+     * @param id The ID of the user to delete.
+     * @returns A promise that resolves when the user is deleted.
+     */
+    deleteUser: async (id: string): Promise<void> => {
+        const res = await fetchWithAuth(`/api/v1/users/${id}`, {
+            method: 'DELETE'
+        });
+        if (!res.ok) throw new Error('Failed to delete user');
+    },
+
+    /**
+     * Lists all skills.
+     * @returns A promise that resolves to the list of skills.
+     */
+    listSkills: async (): Promise<any[]> => {
+        const res = await fetchWithAuth('/api/v1/skills');
+        if (!res.ok) throw new Error('Failed to fetch skills');
+        const data = await res.json();
+        return data.skills || [];
+    },
+
+    /**
+     * Gets a skill by name.
+     * @param name The name of the skill.
+     * @returns A promise that resolves to the skill.
+     */
+    getSkill: async (name: string): Promise<any> => {
+        const res = await fetchWithAuth(`/api/v1/skills/${name}`);
+        if (!res.ok) throw new Error('Failed to fetch skill');
+        const data = await res.json();
+        return data.skill;
+    },
+
+    /**
+     * Creates a new skill.
+     * @param skill The skill data to create.
+     * @returns A promise that resolves to the created skill.
+     */
+    createSkill: async (skill: any): Promise<any> => {
+        const res = await fetchWithAuth('/api/v1/skills', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(skill)
+        });
+        if (!res.ok) {
+            const txt = await res.text();
+            throw new Error(`Failed to create skill: ${txt}`);
+        }
+        const data = await res.json();
+        return data.skill;
+    },
+
+    /**
+     * Updates an existing skill.
+     * @param originalName The original name of the skill.
+     * @param skill The updated skill data.
+     * @returns A promise that resolves to the updated skill.
+     */
+    updateSkill: async (originalName: string, skill: any): Promise<any> => {
+        const res = await fetchWithAuth(`/api/v1/skills/${originalName}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(skill)
+        });
+        if (!res.ok) {
+            const txt = await res.text();
+            throw new Error(`Failed to update skill: ${txt}`);
+        }
+        const data = await res.json();
+        return data.skill;
+    },
+
+    /**
+     * Deletes a skill.
+     * @param name The name of the skill to delete.
+     * @returns A promise that resolves when the skill is deleted.
+     */
+    deleteSkill: async (name: string): Promise<void> => {
+        const res = await fetchWithAuth(`/api/v1/skills/${name}`, {
+            method: 'DELETE'
+        });
+        if (!res.ok) throw new Error('Failed to delete skill');
+    },
+
     // Profiles
 
     /**
@@ -1161,7 +1420,8 @@ export const apiClient = {
         const res = await fetchWithAuth(url);
         // If 404/500, return empty to avoid crashing UI
         if (!res.ok) return [];
-        return res.json();
+        const data = await res.json();
+        return data || [];
     },
 
     // Alerts
@@ -1250,7 +1510,8 @@ export const apiClient = {
         if (serviceId) url += `?serviceId=${encodeURIComponent(serviceId)}`;
         const res = await fetchWithAuth(url);
         if (!res.ok) return [];
-        return res.json();
+        const data = await res.json();
+        return data || [];
     },
 
     /**
@@ -1263,7 +1524,8 @@ export const apiClient = {
         if (serviceId) url += `?serviceId=${encodeURIComponent(serviceId)}`;
         const res = await fetchWithAuth(url);
         if (!res.ok) return [];
-        return res.json();
+        const data = await res.json();
+        return data || [];
     },
 
 
@@ -1274,6 +1536,16 @@ export const apiClient = {
     getSystemStatus: async (): Promise<SystemStatus> => {
         const res = await fetchWithAuth('/api/v1/system/status');
         if (!res.ok) throw new Error('Failed to fetch system status');
+        return res.json();
+    },
+
+    /**
+     * Gets the doctor health report.
+     * @returns A promise that resolves to the doctor report.
+     */
+    getDoctorStatus: async (): Promise<DoctorReport> => {
+        const res = await fetchWithAuth('/api/v1/doctor');
+        if (!res.ok) throw new Error('Failed to fetch doctor status');
         return res.json();
     },
 
@@ -1465,6 +1737,44 @@ export const apiClient = {
         const res = await fetchWithAuth(`/api/v1/stacks/${stackId}/config`);
         if (!res.ok) throw new Error('Failed to get stack config');
         return res.text();
+    },
+
+    /**
+     * Lists all service templates from the marketplace.
+     * @returns A promise that resolves to a list of service templates.
+     */
+    listTemplates: async (): Promise<ServiceTemplate[]> => {
+        const res = await fetchWithAuth('/api/v1/templates');
+        if (!res.ok) throw new Error('Failed to fetch templates');
+        return res.json();
+    },
+
+    /**
+     * Saves a service template to the marketplace.
+     * @param template The template to save.
+     * @returns A promise that resolves when the template is saved.
+     */
+    saveTemplate: async (template: ServiceTemplate) => {
+        const res = await fetchWithAuth('/api/v1/templates', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(template)
+        });
+        if (!res.ok) throw new Error('Failed to save template');
+        return res.json();
+    },
+
+    /**
+     * Deletes a service template from the marketplace.
+     * @param id The ID of the template to delete.
+     * @returns A promise that resolves when the template is deleted.
+     */
+    deleteTemplate: async (id: string) => {
+        const res = await fetchWithAuth(`/api/v1/templates/${id}`, {
+            method: 'DELETE'
+        });
+        if (!res.ok) throw new Error('Failed to delete template');
+        return {};
     },
 
     /**

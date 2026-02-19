@@ -5,8 +5,23 @@
 
 import { test, expect } from '@playwright/test';
 import path from 'path';
+import { seedUser } from './e2e/test-data';
+
+const USER_ID = 'audit-admin-e2e';
 
 test.describe('Visual Audit', () => {
+  test.beforeEach(async ({ page, request }) => {
+    // 1. Seed user
+    await seedUser(request, USER_ID);
+
+    // 2. Login
+    await page.goto('/login');
+    await page.getByLabel('Username').fill(USER_ID);
+    await page.getByLabel('Password').fill('password'); // From test-data hash
+    await page.getByRole('button', { name: 'Sign in' }).click({ force: true });
+    await page.waitForURL('/', { timeout: 30000 });
+  });
+
   const pages = [
     { name: 'dashboard', path: '/' },
     { name: 'stacks_list', path: '/stacks' },

@@ -362,6 +362,8 @@ func (mp *ManagedProcess) Start() error {
 				mp.t.Logf("[%s] Process %s exited with status 1, which is being ignored as requested.", mp.label, mp.cmd.Path)
 			case !strings.Contains(errStr, "killed") && !strings.Contains(errStr, "signal: interrupt") && !strings.Contains(errStr, "exit status -1"):
 				mp.t.Logf("[%s] Process %s exited with unexpected error: %v", mp.label, mp.cmd.Path, err)
+				mp.t.Logf("[%s] Stdout:\n%s", mp.label, mp.stdout.String())
+				mp.t.Logf("[%s] Stderr:\n%s", mp.label, mp.stderr.String())
 			default:
 				mp.t.Logf("[%s] Process %s exited as expected (killed/interrupted).", mp.label, mp.cmd.Path)
 			}

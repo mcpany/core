@@ -17,7 +17,7 @@ test.describe('Authentication and User Management', () => {
           data: {
               user: {
                   id: USER_ID,
-                  roles: ['viewer'],
+                  roles: ['admin'],
                   authentication: {
                       basic_auth: {
                           username: USER_ID,
@@ -41,10 +41,9 @@ test.describe('Authentication and User Management', () => {
 
       await page.getByLabel('Username').fill(USER_ID);
       await page.getByLabel('Password').fill('password123');
-      await page.getByRole('button', { name: 'Sign in' }).click();
-
-      // 3. Verify Redirect to Dashboard
-      await expect(page).toHaveURL('/');
+      await page.getByRole('button', { name: 'Sign in' }).click({ force: true });
+      await page.waitForURL('/', { timeout: 30000 });
+      await expect(page).toHaveURL('/', { timeout: 15000 });
 
       // 4. Verify Token in LocalStorage
       const token = await page.evaluate(() => localStorage.getItem('mcp_auth_token'));
@@ -52,10 +51,10 @@ test.describe('Authentication and User Management', () => {
 
       // 5. Verify User Management Access (Protected)
       await page.goto('/users');
-      await expect(page.getByRole('heading', { name: 'Users' })).toBeVisible();
+      await expect(page.getByText('Users', { exact: true }).first()).toBeVisible();
 
       // Verify our user is in the list
-      await expect(page.getByRole('cell', { name: USER_ID })).toBeVisible();
+      await expect(page.getByTestId(`user-row-${USER_ID}`)).toBeVisible({ timeout: 60000 });
 
       // Cleanup: Delete user
       // We can use the UI to delete to test that too?

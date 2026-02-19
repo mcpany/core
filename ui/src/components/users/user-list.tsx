@@ -126,7 +126,7 @@ export function UserList({ users, isLoading, onEdit, onDelete }: UserListProps) 
                             </TableRow>
                         ) : (
                             filteredUsers.map((user) => (
-                                <TableRow key={user.id}>
+                                <TableRow key={user.id} data-testid={`user-row-${user.id}`}>
                                     <TableCell>
                                         <div className="flex items-center gap-3">
                                             <Avatar className="h-9 w-9 border">
@@ -141,7 +141,7 @@ export function UserList({ users, isLoading, onEdit, onDelete }: UserListProps) 
                                     </TableCell>
                                     <TableCell>
                                         <div className="flex flex-wrap gap-1">
-                                            {user.roles.map((role) => (
+                                            {user.roles?.map((role) => (
                                                 <Badge
                                                     key={role}
                                                     variant={role === "admin" ? "default" : "secondary"}
@@ -153,19 +153,19 @@ export function UserList({ users, isLoading, onEdit, onDelete }: UserListProps) 
                                                     {role}
                                                 </Badge>
                                             ))}
-                                            {user.roles.length === 0 && (
+                                            {(!user.roles || user.roles.length === 0) && (
                                                 <span className="text-muted-foreground text-xs italic">No roles</span>
                                             )}
                                         </div>
                                     </TableCell>
                                     <TableCell>
                                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                            {user.authentication?.apiKey ? (
+                                            {user.authentication?.apiKey || (user.authentication as any)?.api_key ? (
                                                 <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-muted/50 border">
                                                     <Key className="h-3.5 w-3.5 text-orange-500" />
                                                     <span>API Key</span>
                                                 </div>
-                                            ) : user.authentication?.basicAuth ? (
+                                            ) : user.authentication?.basicAuth || (user.authentication as any)?.basic_auth ? (
                                                 <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-muted/50 border">
                                                     <Lock className="h-3.5 w-3.5 text-blue-500" />
                                                     <span>Password</span>

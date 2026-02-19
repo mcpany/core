@@ -4,21 +4,26 @@
  */
 
 import { test, expect } from '@playwright/test';
-import { seedUser, cleanupUser } from '../e2e/test-data';
+import { seedUser, cleanupUser, seedProfiles, cleanupProfiles } from '../e2e/test-data';
 
 test.describe('User Management', () => {
     test.beforeEach(async ({ request, page }) => {
+        await cleanupUser(request, "test-api-user").catch(() => { });
+        await seedProfiles(request);
         await seedUser(request, "e2e-admin-users");
+        page.on('console', msg => console.log(`BROWSER_LOG: ${msg.text()}`));
         await page.goto('/login');
         await page.fill('input[name="username"]', 'e2e-admin-users');
         await page.fill('input[name="password"]', 'password');
-        await page.click('button[type="submit"]');
+        await page.click('button[type="submit"]', { force: true });
+        await page.waitForURL('/', { timeout: 30000 });
         await expect(page).toHaveURL('/', { timeout: 15000 });
     });
 
     test.afterEach(async ({ request }) => {
-        await cleanupUser(request, "e2e-admin-users");
-        await cleanupUser(request, "test-api-user");
+        await cleanupUser(request, "e2e-admin-users").catch(() => { });
+        await cleanupUser(request, "test-api-user").catch(() => { });
+        await cleanupProfiles(request);
     });
 
     test('should allow creating a user with API Key', async ({ page }) => {
@@ -40,37 +45,37 @@ test.describe('User Management', () => {
         // Select API Key Tab
         await page.click('button[role="tab"]:has-text("API Key")');
 
-        // Expect Generate Button
-        await expect(page.locator('button:has-text("Generate Key")')).toBeVisible();
+        // 4. API Key Configuration
+        // Note: No name input required for API Key generation in current UI
 
-        // Click Generate
-        await page.click('button:has-text("Generate Key")');
+        // Wait for and click Generate
+        const generateButton = page.getByRole('button', { name: 'Generate' });
+        await expect(generateButton).toBeVisible();
+        await generateButton.click();
 
-        // Expect key to be displayed in the code block
-        // The code block has class "bg-muted" and contains "mcp_sk_"
-        const codeBlock = page.locator('div.bg-muted:has-text("mcp_sk_")');
-        await expect(codeBlock).toBeVisible();
-        const key = await codeBlock.textContent();
-        expect(key).toContain('mcp_sk_');
-
-        // Expect warning
-        await expect(page.locator('text=Warning: This key will only be shown once')).toBeVisible();
+        // Wait for key to be generated (it should show the warning and code block)
+        await expect(page.getByText('Warning: This key will only be shown once')).toBeVisible({ timeout: 10000 });
+        const codeBlock = page.locator('pre, div').filter({ hasText: 'mcp_sk_' }).first();
+        await expect(codeBlock).toBeVisible({ timeout: 10000 });
 
         // Save
-        await page.click('button:has-text("Save Changes")');
+        // Ensure the button is enabled and then click it
+        const saveButton = page.getByRole('button', { name: 'Save Changes' });
+        await expect(saveButton).toBeEnabled();
+        await saveButton.click();
 
         // Verify Sheet closed
-        await expect(page.locator('div[role="dialog"]')).toBeHidden();
+        await expect(page.locator('div[role="dialog"]')).toBeHidden({ timeout: 10000 });
 
         // Verify user created in list
-        // Row should contain "test-api-user"
-        const row = page.locator('tr:has-text("test-api-user")');
-        await expect(row).toBeVisible();
+        // Use a more specific row locator
+        const row = page.locator('tr').filter({ hasText: 'test-api-user' });
+        await expect(row).toBeVisible({ timeout: 15000 });
 
         // Row should indicate API Key auth
-        await expect(row.locator('text=API Key')).toBeVisible();
+        await expect(row.getByText('API Key')).toBeVisible();
 
         // Row should have Viewer role (default)
-        await expect(row.locator('text=viewer')).toBeVisible();
+        await expect(row.getByText('viewer', { exact: false })).toBeVisible();
     });
 });

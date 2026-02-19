@@ -94,7 +94,7 @@ export function UserSheet({ open, onOpenChange, user, onSave }: UserSheetProps) 
                 form.reset({
                     id: user.id,
                     role: user.roles[0] || "viewer",
-                    authType: user.authentication?.apiKey ? "api_key" : "password",
+                    authType: user.authentication?.apiKey || (user.authentication as any)?.api_key ? "api_key" : "password",
                     password: "",
                 });
             } else {

@@ -10,18 +10,19 @@ test.describe('Dashboard Real Data', () => {
     test.describe.configure({ mode: 'serial' });
 
     test.beforeEach(async ({ request, page }) => {
-        await seedUser(request, "e2e-admin");
+        await seedUser(request, "e2e-admin-dashboard");
         // Login
         await page.goto('/login');
         await page.waitForLoadState('networkidle');
-        await page.fill('input[name="username"]', 'e2e-admin');
+        await page.fill('input[name="username"]', "e2e-admin-dashboard");
         await page.fill('input[name="password"]', 'password');
-        await page.click('button[type="submit"]');
+        await page.click('button[type="submit"]', { force: true });
+        await page.waitForURL('/', { timeout: 30000 });
         await expect(page).toHaveURL('/', { timeout: 15000 });
     });
 
     test.afterEach(async ({ request }) => {
-        await cleanupUser(request, "e2e-admin");
+        // await cleanupUser(request, "e2e-admin-dashboard");
     });
 
     test('should display seeded traffic data', async ({ page, request }) => {
@@ -72,27 +73,38 @@ test.describe('Dashboard Real Data', () => {
         // 60 points * 100 requests = 6000 total requests.
         // Check if "Total Requests" card shows 6,000 (formatted).
 
-        await expect(page.locator('text=Total Requests')).toBeVisible();
+        // Ensure Metrics Overview widget is visible (contains Total Requests)
+        console.log('Ensuring Metrics Overview widget is present...');
+        const metricsOverviewCard = page.getByText('Metrics Overview').first();
+        if (!(await metricsOverviewCard.isVisible())) {
+            await page.getByTestId('add-widget-trigger').first().click();
+            await page.getByText('Metrics Overview', { exact: true }).first().click();
+            await expect(metricsOverviewCard).toBeVisible({ timeout: 30000 });
+        }
 
-        // The endpoint returns points. The UI sums them up.
-        // Total Requests: 6,000 (roughly, might be 5900 if minute rolled over)
-        // Check if we have a non-zero value formatted (contains comma or digits)
-        const totalRequests = page.locator('div').filter({ hasText: /^Total Requests$/ }).locator('..').getByRole('paragraph');
-        // Or simpler: find the value card.
-        // The card structure: Header "Total Requests", Content: "6,000"
-        // Let's just look for the text "Total Requests" and verify the number nearby is not "0"
+        // Ensure Request Volume widget is visible
+        console.log('Ensuring Request Volume widget is present...');
+        const requestVolumeCard = page.getByText('Request Volume').first();
+        if (!(await requestVolumeCard.isVisible())) {
+            await page.getByTestId('add-widget-trigger').first().click();
+            await page.getByText('Request Volume', { exact: true }).first().click();
+            await expect(requestVolumeCard).toBeVisible({ timeout: 30000 });
+        }
 
-        await expect(page.locator('text=Total Requests')).toBeVisible();
-        // Wait for data to load (it starts at 0 or empty)
-        await expect(page.getByText('Use traffic history to infer historical health').first()).toBeHidden(); // Ensure no error text is shown if that was a thing?
-        // Just wait for non-zero requests
-        // We expect around 6,000.
-        // Use a more specific locator to debug and allow for potential data propagation delay
-        const totalRequestsLocator = page.locator('div').filter({ hasText: /^Total Requests$/ }).locator('..').getByRole('paragraph');
-        await expect(totalRequestsLocator).toHaveText(/[0-9,]+/, { timeout: 30000 });
+        console.log('Waiting for Total Requests card...');
+        const totalRequestsHeader = page.getByText(/^Total Requests$/).first();
+        await expect(totalRequestsHeader).toBeVisible({ timeout: 60000 });
+        console.log('Total Requests card is visible.');
+
+        // Find the value within the same card.
+        // We find the parent Card using data-testid and then look for the value inside it.
+        const totalRequestsCard = page.getByTestId('metric-card-Total Requests').first();
+        const totalRequestsValue = totalRequestsCard.getByTestId('metric-value');
+        await expect(totalRequestsValue).toBeVisible({ timeout: 60000 });
+        await expect(totalRequestsValue).toHaveText(/[0-9,]+/, { timeout: 60000 });
 
         // Avg Latency: 50ms
-        await expect(page.getByText('50ms')).toBeVisible();
+        await expect(page.getByTestId('metric-card-Avg Latency').getByText('50ms')).toBeVisible();
 
         // 60 errors / 6000 ~ 1%
         await expect(page.getByText(/1\.00%|0\.9\d%/)).toBeVisible();
@@ -107,35 +119,35 @@ test.describe('Dashboard Real Data', () => {
     });
 
     test('should display health history based on traffic', async ({ page, request }) => {
-         // 1. Seed data with specific error patterns to affect health
-         const now = new Date();
-         const trafficPoints = [];
+        // 1. Seed data with specific error patterns to affect health
+        const now = new Date();
+        const trafficPoints = [];
 
-         // 5 mins of high errors (100% errors) to cause "error" status
-         for (let i = 0; i < 5; i++) {
-             const t = new Date(now.getTime() - i * 60000);
-             const timeStr = t.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
-             trafficPoints.push({
-                 time: timeStr,
-                 requests: 100,
-                 errors: 80, // 80% error rate -> should be error status
-                 latency: 50
-             });
-         }
+        // 5 mins of high errors (100% errors) to cause "error" status
+        for (let i = 0; i < 5; i++) {
+            const t = new Date(now.getTime() - i * 60000);
+            const timeStr = t.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+            trafficPoints.push({
+                time: timeStr,
+                requests: 100,
+                errors: 80, // 80% error rate -> should be error status
+                latency: 50
+            });
+        }
 
-         const seedRes = await request.post('/api/v1/debug/seed_traffic', {
-             data: trafficPoints
-         });
-         expect(seedRes.ok()).toBeTruthy();
+        const seedRes = await request.post('/api/v1/debug/seed_traffic', {
+            data: trafficPoints
+        });
+        expect(seedRes.ok()).toBeTruthy();
 
-         await page.goto('/');
-         // Check for "System Uptime" card
-         await expect(page.locator('text=System Uptime')).toBeVisible();
+        await page.goto('/');
+        // Check for "System Uptime" card
+        await expect(page.locator('text=System Uptime')).toBeVisible();
 
-         // In HealthHistoryChart, we infer status from traffic.
-         // We might verify that we see some red bars (error status).
-         // This is hard to verify visually with text locators, but we can check if the chart renders.
-         // And maybe check if "Operational" text is there.
-         await expect(page.locator('text=Operational')).toBeVisible();
+        // In HealthHistoryChart, we infer status from traffic.
+        // We might verify that we see some red bars (error status).
+        // This is hard to verify visually with text locators, but we can check if the chart renders.
+        // And maybe check if "Operational" text is there.
+        await expect(page.locator('text=Operational')).toBeVisible();
     });
 });

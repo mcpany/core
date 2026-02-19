@@ -9,6 +9,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/mcpany/core/server/pkg/util"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -27,6 +28,15 @@ func TestStore_SSRF_Protection(t *testing.T) {
 
 	// Append a path with extension so NewEngine detects it as YAML
 	configURL := ts.URL + "/config.yaml"
+
+	// Ensure dangerous mode is OFF and loopback is explicitly BLOCKED
+	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "")
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "false")
+
+	// Create a new client that respects the env vars (since global httpClient is initialized at startup)
+	oldClient := httpClient
+	httpClient = util.NewSafeHTTPClient()
+	defer func() { httpClient = oldClient }()
 
 	fs := afero.NewMemMapFs()
 	store := NewFileStore(fs, []string{configURL})

@@ -89,48 +89,32 @@ export default function UsersPage() {
             if (apiKey) {
                 // Configure for API Key
                 authConfig = {
-                    apiKey: {
-                        paramName: "X-API-Key",
+                    api_key: {
+                        param_name: "X-API-Key",
                         in: 0, // HEADER
-                        verificationValue: apiKey // Note: In a real system, send hash? Or send plain text and let server hash? Assuming plain text for MVP.
+                        verification_value: apiKey
                     }
                 };
             } else if (password) {
                 // Configure for Password
-                // Note: apiClient sends { user: ... } which contains password_hash field?
-                // BasicAuth proto has `password_hash`.
-                // If we send plain text in `password_hash`, the server must hash it if it detects plain text?
-                // Or maybe we should hash it client side?
-                // Or maybe the API expects a separate field for setting password?
-                // Looking at `apiClient.createUser`, it sends the user object as is.
-                // Looking at `proto/config/v1/auth.proto`, BasicAuth has `password_hash`.
-                // Usually admins set a password and the server hashes it.
-                // Let's assume the server handles hashing if we send it in `password_hash` or a specific field?
-                // Wait, `BasicAuth` also has `password` (SecretValue) but that's for outgoing client auth.
-                // For incoming (User), it uses `password_hash`.
-                // If I put plain text in `password_hash`, the server might store it as plain text if it's naive.
-                // However, `bcrypt` strings start with `$2a$`.
-                // If I send plain text, the server hopefully hashes it.
-                // For now, I'll send it in `password_hash` and hope the backend handles it.
                 authConfig = {
-                    basicAuth: {
+                    basic_auth: {
                         username: userUpdate.id, // Username usually matches ID
-                        passwordHash: password
+                        password_hash: password
                     }
                 };
             }
 
             // Construct the payload
-            // We need to match the structure expected by `apiClient`.
-            // User from proto has `authentication`.
+            // Server expects snake_case for fields.
             const payload: any = {
                 id: userUpdate.id,
                 roles: userUpdate.roles,
-                authentication: authConfig
+                authentication: authConfig,
+                profile_ids: editingUser?.profileIds || []
             };
 
-            // Profile IDs are required by proto but optional in UI for now
-            payload.profileIds = editingUser?.profileIds || [];
+
 
             if (editingUser) {
                 await apiClient.updateUser(payload);
@@ -148,7 +132,11 @@ export default function UsersPage() {
             loadUsers();
             setIsSheetOpen(false);
         } catch (e) {
-            console.error("Failed to save user", e);
+            console.error("Failed to save user (handleSave):", e);
+            if (e instanceof Error) {
+                console.error("Error message:", e.message);
+                console.error("Error stack:", e.stack);
+            }
             throw e; // Re-throw to be caught by the Sheet's error handling if needed, or handle here.
             // Actually Sheet handles it via `onSave` promise rejection?
             // Yes, Sheet calls `await onSave(...)`.

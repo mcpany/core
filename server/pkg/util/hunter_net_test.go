@@ -8,6 +8,7 @@ import (
 	"net"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -57,10 +58,15 @@ func TestSafeDialer_Coverage(t *testing.T) {
 	}))
 	defer ts.Close()
 
+	// Ensure we test the DEFAULT behavior (blocking), ignoring any global env vars
+	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "")
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "")
+	t.Setenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES", "")
+
 	// By default, SafeDialer blocks loopback
 	client := NewSafeHTTPClient()
 	_, err := client.Get(ts.URL)
-	assert.Error(t, err)
+	require.Error(t, err)
 	assert.Contains(t, err.Error(), "loopback")
 
 	// Allow loopback via env
@@ -74,8 +80,11 @@ func TestSafeDialer_Coverage(t *testing.T) {
 	// Should fail for loopback if default
 	dialer := NewSafeDialer()
 	// Split ts.URL (http://127.0.0.1:port)
-	u, _ :=  ts.Listener.Addr().(*net.TCPAddr)
-	addr := u.String()
+	// u, _ :=  ts.Listener.Addr().(*net.TCPAddr)
+	// addr := u.String()
+	// Fix: Parse ts.URL to get host:port reliably
+	tsURL, _ := url.Parse(ts.URL)
+	addr := tsURL.Host
 
 	_, err = dialer.DialContext(context.Background(), "tcp", addr)
 	assert.Error(t, err)

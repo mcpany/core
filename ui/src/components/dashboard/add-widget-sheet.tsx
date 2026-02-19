@@ -41,7 +41,7 @@ export function AddWidgetSheet({ onAdd }: AddWidgetSheetProps) {
     return (
         <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
-                <Button size="sm" className="gap-2">
+                <Button size="sm" className="gap-2" data-testid="add-widget-trigger">
                     <Plus className="h-4 w-4" /> Add Widget
                 </Button>
             </SheetTrigger>

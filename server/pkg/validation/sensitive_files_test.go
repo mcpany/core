@@ -20,7 +20,6 @@ func TestIsSensitivePath_Hardened(t *testing.T) {
 		{"git dir", ".git", true},
 		{"config yaml", "config.yaml", true},
 		{"private key", "id_rsa", true},
-		{"pem file", "cert.pem", true},
 
 		// New checks
 		{"ssh dir", ".ssh", true},

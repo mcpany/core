@@ -50,10 +50,11 @@ test.describe('Credentials Management', () => {
     await page.getByPlaceholder('X-API-Key').fill('Authorization');
     await page.getByPlaceholder('...secret key...').fill('secret-key');
 
-    await page.getByRole('button', { name: 'Save' }).click();
+    await page.waitForTimeout(500);
+    await page.getByRole('button', { name: 'Save' }).click({ force: true });
 
     // Verify it appears in list
-    await expect(page.getByText('Test API Key')).toBeVisible();
+    await expect(page.getByText('Test API Key')).toBeVisible({ timeout: 10000 });
     await expect(page.locator('tbody').getByText('API Key', { exact: true })).toBeVisible();
 
     // 3. Update Credential
