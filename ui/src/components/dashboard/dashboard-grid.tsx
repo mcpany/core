@@ -50,13 +50,22 @@ export interface WidgetInstance {
 }
 
 // Default widgets for a fresh dashboard
-const DEFAULT_LAYOUT: WidgetInstance[] = WIDGET_DEFINITIONS.map(def => ({
-    instanceId: crypto.randomUUID(),
-    type: def.type,
-    title: def.title,
-    size: def.defaultSize,
-    hidden: false
-}));
+const DEFAULT_LAYOUT: WidgetInstance[] = [
+    {
+        instanceId: crypto.randomUUID(),
+        type: "getting-started",
+        title: "Getting Started",
+        size: "two-thirds",
+        hidden: false
+    },
+    ...WIDGET_DEFINITIONS.filter(d => d.type !== "getting-started").map(def => ({
+        instanceId: crypto.randomUUID(),
+        type: def.type,
+        title: def.title,
+        size: def.defaultSize,
+        hidden: false
+    }))
+];
 
 /**
  * DashboardGrid component.

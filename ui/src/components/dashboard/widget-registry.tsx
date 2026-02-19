@@ -10,7 +10,8 @@ import { LazyRequestVolumeChart, LazyTopToolsWidget, LazyHealthHistoryChart, Laz
 import { ToolFailureRateWidget } from "@/components/dashboard/tool-failure-rate-widget";
 import { QuickActionsWidget } from "@/components/dashboard/quick-actions-widget";
 import { NetworkGraphWidget } from "@/components/dashboard/network-graph-widget";
-import { Activity, BarChart, Server, AlertTriangle, TrendingUp, Hash, HeartPulse, Zap, Share2 } from "lucide-react";
+import { GettingStartedWidget } from "@/components/dashboard/getting-started-widget";
+import { Activity, BarChart, Server, AlertTriangle, TrendingUp, Hash, HeartPulse, Zap, Share2, Rocket } from "lucide-react";
 
 /**
  * Defines the possible sizes for a dashboard widget.
@@ -44,6 +45,14 @@ export interface WidgetDefinition {
  * This list determines what widgets are available to add to the dashboard.
  */
 export const WIDGET_DEFINITIONS: WidgetDefinition[] = [
+    {
+        type: "getting-started",
+        title: "Getting Started",
+        description: "Guided onboarding for new users.",
+        defaultSize: "two-thirds",
+        component: GettingStartedWidget,
+        icon: Rocket
+    },
     {
         type: "metrics",
         title: "Metrics Overview",
