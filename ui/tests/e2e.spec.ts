@@ -99,7 +99,9 @@ test.describe('MCP Any UI E2E Tests', () => {
 
   test('Service Health Widget shows diagnostics', async ({ page }) => {
     await page.goto('/');
-    const userService = page.locator('.group', { hasText: 'User Service' });
+    // Scope to the health widget to avoid strict mode violations with other elements
+    const healthWidget = page.locator('.group\\/widget').filter({ hasText: 'System Health' });
+    const userService = healthWidget.getByText('User Service');
     await expect(userService).toBeVisible();
 
     // We skip checking error details as it depends on runtime health check timing
