@@ -5,24 +5,27 @@
 
 "use client";
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import {
   ReactFlow,
   useNodesState,
   useEdgesState,
-  addEdge,
   Controls,
   Background,
   MiniMap,
   Connection,
-  MarkerType,
+  addEdge,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { UserNode, AgentNode, ToolNode, ResourceNode, ServiceNode } from './custom-nodes';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card } from '@/components/ui/card';
-import { DebuggerControls } from './debugger-controls';
+import { Button } from '@/components/ui/button';
+import { Play, Pause, RefreshCw } from "lucide-react";
 import { VariableInspector } from './variable-inspector';
+import { Trace } from '@/types/trace';
+import { traceToGraph } from '@/lib/visualizer-utils';
+import { Loader2 } from "lucide-react";
 
 const nodeTypes = {
   user: UserNode,
@@ -32,37 +35,81 @@ const nodeTypes = {
   service: ServiceNode,
 };
 
-const initialNodes = [
-  { id: '1', type: 'user', position: { x: 250, y: 0 }, data: { label: 'Alice' } },
-  { id: '2', type: 'agent', position: { x: 250, y: 150 }, data: { label: 'Orchestrator', role: 'Main Agent', status: 'Thinking...' } },
-  { id: '3', type: 'service', position: { x: 100, y: 300 }, data: { label: 'Postgres DB' } },
-  { id: '4', type: 'tool', position: { x: 400, y: 300 }, data: { label: 'Web Search' } },
-];
-
-const initialEdges = [
-  { id: 'e1-2', source: '1', target: '2', animated: true, label: 'Task: Analyze Data', markerEnd: { type: MarkerType.ArrowClosed } },
-  { id: 'e2-3', source: '2', target: '3', animated: true, label: 'Query' },
-  { id: 'e2-4', source: '2', target: '4', animated: false, label: 'Search' },
-];
-
 /**
  * AgentFlow component renders the interactive flow visualization.
  * @returns The AgentFlow component.
  */
 export function AgentFlow() {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [isLive, setIsLive] = useState(true);
+  const [traces, setTraces] = useState<Trace[]>([]);
+  const [selectedTraceId, setSelectedTraceId] = useState<string | null>(null);
   const [selectedNode, setSelectedNode] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const onConnect = useCallback(
-    (params: Connection) => setEdges((eds) => addEdge({ ...params, animated: true }, eds)),
-    [setEdges],
-  );
+  // Fetch traces
+  const fetchTraces = async () => {
+      try {
+          const res = await fetch('/api/traces');
+          if (res.ok) {
+              const data: Trace[] = await res.json();
+              setTraces(data);
 
-  const togglePlay = () => setIsPlaying(!isPlaying);
+              // If live, or no trace selected, select the first one
+              if ((isLive || !selectedTraceId) && data.length > 0) {
+                  // Prefer trace with 'execute' in rootSpan.name
+                  const interestingTrace = data.find(t => t.rootSpan.name.includes('execute')) || data[0];
+
+                  // If we are live, we always jump to latest (or interesting one).
+                  // If not live, we only set if nothing selected.
+                  if (isLive) {
+                      setSelectedTraceId(interestingTrace.id);
+                  } else if (!selectedTraceId) {
+                       setSelectedTraceId(interestingTrace.id);
+                  }
+              }
+          }
+      } catch (err) {
+          console.error("Failed to fetch traces", err);
+      } finally {
+          setIsLoading(false);
+      }
+  };
+
+  useEffect(() => {
+      fetchTraces();
+  }, []);
+
+  useEffect(() => {
+      let interval: NodeJS.Timeout;
+      if (isLive) {
+          interval = setInterval(fetchTraces, 2000);
+      }
+      return () => clearInterval(interval);
+  }, [isLive, selectedTraceId]); // dependency on selectedTraceId to ensure closure has latest? actually fetchTraces doesn't depend on it except for logic.
+
+  // Update graph when selected trace changes
+  useEffect(() => {
+      if (selectedTraceId) {
+          const trace = traces.find(t => t.id === selectedTraceId);
+          if (trace) {
+              const { nodes: newNodes, edges: newEdges } = traceToGraph(trace);
+              setNodes(newNodes);
+              setEdges(newEdges);
+          }
+      } else {
+          setNodes([]);
+          setEdges([]);
+      }
+  }, [selectedTraceId, traces, setNodes, setEdges]);
 
   const onNodeClick = useCallback((_: any, node: any) => {
+    // Find the span info related to this node
+    // The node data has label, role.
+    // Ideally we pass the full span or object to data.
+    // For now, VariableInspector expects simple data.
+    // We can enhance this later.
     setSelectedNode(node);
   }, []);
 
@@ -70,37 +117,53 @@ export function AgentFlow() {
     setSelectedNode(null);
   }, []);
 
-  // Simulation effect (placeholder for real "Live" data)
-  React.useEffect(() => {
-    if (!isPlaying) return;
-    const interval = setInterval(() => {
-      setEdges((eds) => eds.map(e => ({
-        ...e,
-        animated: !e.animated || Math.random() > 0.5,
-        style: { stroke: Math.random() > 0.5 ? '#22c55e' : '#64748b' } // Green or slate
-      })));
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [isPlaying, setEdges]);
+  const handleTraceChange = (value: string) => {
+      setSelectedTraceId(value);
+      if (value !== traces[0]?.id) {
+          setIsLive(false); // Disable live if user selects old trace
+      }
+  };
 
   return (
     <div className="h-[calc(100vh-8rem)] w-full relative bg-background border rounded-lg overflow-hidden shadow-sm">
       <div className="absolute top-4 right-4 z-10 flex gap-2">
         <Card className="p-2 flex gap-2 items-center bg-background/80 backdrop-blur-sm">
-          <DebuggerControls
-            isPlaying={isPlaying}
-            onPlayPause={togglePlay}
-            onStep={() => { }} // Placeholder for step
-            onStop={() => { setIsPlaying(false); setNodes(initialNodes); setEdges(initialEdges); }}
-          />
+           <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            onClick={() => setIsLive(!isLive)}
+            title={isLive ? "Pause Live Updates" : "Resume Live Updates"}
+          >
+            {isLive ? <Pause className="h-4 w-4 text-primary" /> : <Play className="h-4 w-4" />}
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            onClick={fetchTraces}
+            title="Refresh"
+          >
+             <RefreshCw className="h-4 w-4" />
+          </Button>
+
           <div className="w-px h-6 bg-border mx-1" />
-          <Select defaultValue="demo1">
-            <SelectTrigger className="w-[140px] h-8">
-              <SelectValue placeholder="Scenario" />
+
+          <Select value={selectedTraceId || ""} onValueChange={handleTraceChange}>
+            <SelectTrigger className="w-[200px] h-8 text-xs font-mono">
+              <SelectValue placeholder={isLoading ? "Loading..." : "Select Trace"} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="demo1">Basic Flow</SelectItem>
-              <SelectItem value="demo2">Multi-Agent</SelectItem>
+              {traces.length === 0 ? (
+                  <SelectItem value="none" disabled>No traces found</SelectItem>
+              ) : (
+                  traces.map(t => (
+                      <SelectItem key={t.id} value={t.id} className="text-xs font-mono">
+                          {new Date(t.timestamp).toLocaleTimeString()} - {t.rootSpan.name}
+                      </SelectItem>
+                  ))
+              )}
             </SelectContent>
           </Select>
         </Card>
@@ -108,12 +171,24 @@ export function AgentFlow() {
 
       <VariableInspector selectedNode={selectedNode} onClose={() => setSelectedNode(null)} />
 
+      {isLoading && nodes.length === 0 ? (
+          <div className="absolute inset-0 flex items-center justify-center bg-background/50 z-20">
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          </div>
+      ) : nodes.length === 0 ? (
+           <div className="absolute inset-0 flex items-center justify-center bg-background/50 z-0 pointer-events-none">
+              <div className="text-center">
+                  <p className="text-muted-foreground font-medium">No activity recorded</p>
+                  <p className="text-sm text-muted-foreground/60">Run a tool in the Playground to see the flow.</p>
+              </div>
+          </div>
+      ) : null}
+
       <ReactFlow
         nodes={nodes}
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
         onNodeClick={onNodeClick}
         onPaneClick={onPaneClick}
         nodeTypes={nodeTypes}

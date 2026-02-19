@@ -83,7 +83,6 @@ export async function GET(request: Request) {
             } catch {
                 input = { raw: entry.request_body };
             }
-
             let output: Record<string, any> | undefined;
             try {
                 output = JSON.parse(entry.response_body);
