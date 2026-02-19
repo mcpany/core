@@ -17,7 +17,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             name: "Payment Gateway",
             version: "v1.2.0",
             http_service: {
-                address: "https://stripe.com",
+                address: "http://ui-http-echo-server:5678",
                 tools: [
                     { name: "process_payment", description: "Process a payment", call_id: "process_payment_call" }
                 ],
@@ -34,7 +34,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             name: "User Service",
             version: "v1.0",
             http_service: {
-                address: "http://localhost:50051", // Dummy address
+                address: "http://ui-http-echo-server:5678", // Points to valid echo server in CI/Docker
                 tools: [
                     { name: "get_user", description: "Get user details", call_id: "get_user_call" }
                 ],
@@ -52,7 +52,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             name: "Math",
             version: "v1.0",
             http_service: {
-                address: "http://localhost:8080", // Dummy
+                address: "http://ui-http-echo-server:5678", // Points to valid echo server in CI/Docker
                 tools: [
                     { name: "calculator", description: "calc", call_id: "calc_call" }
                 ],
