@@ -10,6 +10,8 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
+// maxRecursionDepth limits the depth of recursion when processing schemas
+// to prevent stack overflows from circular references or excessively deep structures.
 const maxRecursionDepth = 100
 
 // SanitizeJSONSchema attempts to fix common schema issues that cause strict MCP clients to fail.
