@@ -67,7 +67,9 @@ test.describe('HTTP Tool Live Test', () => {
 
     // Verify Preview
     // Should show GET http://ui-http-echo-server:5678/echo?foo=bar
-    await expect(page.getByText('GET')).toBeVisible();
+    // Scope to the Preview card to avoid matching the tool list badge or dropdown
+    const previewCard = page.locator('.border-l-primary\\/20');
+    await expect(previewCard.getByText('GET')).toBeVisible();
     // The preview might show the configured address.
     // In http-tool-editor, we pass `localCall` and `localTool` to RequestPreview.
     // RequestPreview uses `baseUrl` prop.
