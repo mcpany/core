@@ -133,6 +133,29 @@ func (w *gzipResponseWriter) Write(b []byte) (int, error) {
 		return w.ResponseWriter.Write(b)
 	}
 
+	// ⚡ BOLT: Optimize for large writes by bypassing buffer
+	// Randomized Selection from Top 5 High-Impact Targets
+	// If the buffer is empty and the new chunk is large enough to trigger compression immediately,
+	// we bypass the buffer copy and write directly to the gzip writer.
+	if len(w.buf.data) == 0 && len(b) >= minSize {
+		// Ensure Content-Type is set if missing, using the incoming chunk for detection
+		if w.Header().Get("Content-Type") == "" {
+			detectBuf := b
+			if len(detectBuf) > 512 {
+				detectBuf = detectBuf[:512]
+			}
+			w.Header().Set("Content-Type", http.DetectContentType(detectBuf))
+		}
+
+		// Flush buffer (writes headers) and start gzipping.
+		// Since buffer is empty, this just sets up w.writer and writes headers.
+		if err := w.flushBuffer(true); err != nil {
+			return 0, err
+		}
+		// Write directly to the gzip writer
+		return w.writer.Write(b)
+	}
+
 	// Otherwise, buffer the data
 	w.buf.data = append(w.buf.data, b...)
 
