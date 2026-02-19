@@ -3373,7 +3373,7 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 	if err := checkNodePerlPhpInjection(val, base, quoteLevel); err != nil {
 		return err
 	}
-	if err := checkAwkInjection(val, base); err != nil {
+	if err := checkAwkInjection(val, base, quoteLevel); err != nil {
 		return err
 	}
 	if err := checkSQLInjection(val, base, quoteLevel); err != nil {
@@ -3552,7 +3552,7 @@ func checkNodePerlPhpInjection(val, base string, quoteLevel int) error {
 	return nil
 }
 
-func checkAwkInjection(val, base string) error {
+func checkAwkInjection(val, base string, quoteLevel int) error {
 	// Awk: Block pipe | to prevent external command execution
 	// Also block redirection > and < to prevent arbitrary file read/write
 	// And block getline to prevent file reading
@@ -3569,6 +3569,15 @@ func checkAwkInjection(val, base string) error {
 		}
 		if strings.Contains(val, "getline") {
 			return fmt.Errorf("awk injection detected: value contains 'getline'")
+		}
+		// Sentinel Security Update: Block '@' to prevent gawk indirect function calls
+		// and extensions (e.g. @include, @load) unless inside a double-quoted string.
+		// In awk, double quotes (Level 1) denote strings, where '@' is safe.
+		// Single quotes (Level 2) or unquoted (Level 0) denote code/regex/identifiers, where '@' is dangerous.
+		if quoteLevel != 1 {
+			if strings.Contains(val, "@") {
+				return fmt.Errorf("awk injection detected: value contains '@' (indirect function call or extension)")
+			}
 		}
 	}
 	return nil
