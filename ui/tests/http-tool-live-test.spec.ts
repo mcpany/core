@@ -32,7 +32,7 @@ test.describe('HTTP Tool Live Test', () => {
     await request.delete(`/api/v1/services/${serviceName}`);
   });
 
-  test('should preview and execute HTTP tool', async ({ page, request }) => {
+  test('should preview and execute HTTP tool', async ({ page }) => {
     // Navigate to upstream services
     await page.goto('/upstream-services');
 
@@ -68,18 +68,14 @@ test.describe('HTTP Tool Live Test', () => {
     // Verify Preview
     // Should show GET http://ui-http-echo-server:5678/echo?foo=bar
     // Scope to the Preview card to avoid matching the tool list badge or dropdown
-    const previewCard = page.locator('.border-l-primary\\/20');
-    await expect(previewCard.getByText('GET')).toBeVisible();
-    // The preview might show the configured address.
+    // Use the card title to robustly locate the preview section
+    const requestPreviewCard = page.locator('div').filter({ has: page.getByText('Request Preview') }).last();
+    await expect(requestPreviewCard.getByText('GET', { exact: true })).toBeVisible();
+
     // In http-tool-editor, we pass `localCall` and `localTool` to RequestPreview.
     // RequestPreview uses `baseUrl` prop.
-    // In http-tool-editor, we pass `localCall`, `localTool`, `parsedTestArgs`.
-    // But we DON'T pass `baseUrl` to `RequestPreview`?
-    // Let's check `http-tool-editor.tsx`.
-    // <RequestPreview call={localCall} tool={localTool} args={parsedTestArgs} />
     // Default baseUrl in RequestPreview is "https://api.example.com".
     // So the preview will show "https://api.example.com/echo?foo=bar".
-    // This is fine for the test as long as we expect that.
     await expect(page.getByText('https://api.example.com/echo?foo=bar')).toBeVisible();
 
     // ---------------------

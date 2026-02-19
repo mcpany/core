@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { HttpCallDefinition, HttpCallDefinition_HttpMethod, ParameterType } from "@proto/config/v1/call";
+import { HttpCallDefinition, HttpCallDefinition_HttpMethod } from "@proto/config/v1/call";
 import { ToolDefinition } from "@proto/config/v1/tool";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -13,12 +13,12 @@ import { useToast } from "@/hooks/use-toast";
 
 interface RequestPreviewProps {
     call: HttpCallDefinition;
-    tool: ToolDefinition;
-    args: Record<string, any>;
+    _tool: ToolDefinition;
+    args: Record<string, unknown>;
     baseUrl?: string;
 }
 
-export function RequestPreview({ call, tool, args, baseUrl = "https://api.example.com" }: RequestPreviewProps) {
+export function RequestPreview({ call, _tool, args, baseUrl = "https://api.example.com" }: RequestPreviewProps) {
     const { toast } = useToast();
 
     // Helper to get method string
@@ -38,7 +38,7 @@ export function RequestPreview({ call, tool, args, baseUrl = "https://api.exampl
         let path = call.endpointPath || "/";
         const queryParams = new URLSearchParams();
         const headers: Record<string, string> = {};
-        let body: any = null;
+        let body: unknown = null;
 
         // Apply parameters
         call.parameters?.forEach(param => {
@@ -74,7 +74,7 @@ export function RequestPreview({ call, tool, args, baseUrl = "https://api.exampl
 
                 if (isBodyMethod) {
                     if (body === null) body = {};
-                    body[schema.name] = value;
+                    (body as Record<string, unknown>)[schema.name] = value;
                 } else {
                     queryParams.append(schema.name, strValue);
                 }

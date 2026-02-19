@@ -321,7 +321,7 @@ export function HttpToolEditor({ serviceName, tool, call, onChange }: HttpToolEd
                 <div className="flex-1 min-h-[200px]">
                     <RequestPreview
                         call={localCall}
-                        tool={localTool}
+                        _tool={localTool}
                         args={parsedTestArgs}
                     />
                 </div>
