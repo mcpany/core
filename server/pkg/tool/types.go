@@ -1889,6 +1889,26 @@ func NewLocalCommandTool(
 		}
 	}
 
+	// Sentinel Security Update: Enable sandbox for awk/gawk
+	// Gawk's indirect function calls (@f) allow bypassing keyword filters.
+	// Sandbox mode disables system(), getline, and pipes, preventing RCE.
+	if strings.HasPrefix(base, "awk") || strings.HasPrefix(base, "gawk") {
+		// Check if awk supports --sandbox by running `awk --sandbox --version`
+		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+		defer cancel()
+		checkCmd := exec.CommandContext(ctx, cmd, "--sandbox", "--version")
+		if err := checkCmd.Run(); err == nil {
+			t.sandboxArgs = []string{"--sandbox"}
+			logging.GetLogger().Info("Enabled sandbox mode for awk tool", "tool", tool.GetName())
+		} else {
+			// If sandbox is not supported (e.g. mawk, nawk, or old gawk), we log a warning.
+			// Note: Non-gawk implementations typically don't support indirect calls (@),
+			// so they are not vulnerable to the specific bypass fixed here.
+			// Existing keyword filters handle direct system() calls.
+			logging.GetLogger().Warn("Failed to enable sandbox for awk tool (might be non-GNU awk or old version)", "tool", tool.GetName(), "error", err)
+		}
+	}
+
 	return t
 }
 
@@ -1983,19 +2003,27 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 	commandName := t.service.GetCommand()
 
 	// Substitute placeholders in args with input values
+	sandboxEnabled := false
+	for _, arg := range t.sandboxArgs {
+		if arg == "--sandbox" {
+			sandboxEnabled = true
+			break
+		}
+	}
+
 	if inputs != nil {
 		for i, arg := range args {
 			for k, v := range inputs {
 				placeholder := "{{" + k + "}}"
 				if strings.Contains(arg, placeholder) {
 					val := util.ToString(v)
-					if err := validateSafePathAndInjection(val, isDocker, commandName); err != nil {
+					if err := validateSafePathAndInjection(val, isDocker, commandName, sandboxEnabled); err != nil {
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
 					}
 					// If running a shell or interpreter, validate that inputs are safe
 					cmd := t.service.GetCommand()
 					if isShellCommand(cmd) {
-						if err := checkForShellInjection(val, arg, placeholder, cmd, isShell(cmd)); err != nil {
+						if err := checkForShellInjection(val, arg, placeholder, cmd, isShell(cmd), sandboxEnabled); err != nil {
 							return nil, fmt.Errorf("parameter %q: %w", k, err)
 						}
 					}
@@ -2024,13 +2052,13 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 			if argsList, ok := argsVal.([]any); ok {
 				for _, arg := range argsList {
 					if argStr, ok := arg.(string); ok {
-						if err := validateSafePathAndInjection(argStr, isDocker, commandName); err != nil {
+						if err := validateSafePathAndInjection(argStr, isDocker, commandName, sandboxEnabled); err != nil {
 							return nil, fmt.Errorf("args parameter: %w", err)
 						}
 						// If running a shell, validate that inputs are safe for shell execution
 						cmd := t.service.GetCommand()
 						if isShellCommand(cmd) {
-							if err := checkForShellInjection(argStr, "", "", cmd, isShell(cmd)); err != nil {
+							if err := checkForShellInjection(argStr, "", "", cmd, isShell(cmd), sandboxEnabled); err != nil {
 								return nil, fmt.Errorf("args parameter: %w", err)
 							}
 						}
@@ -2105,7 +2133,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 			env = append(env, fmt.Sprintf("%s=%s", name, secretValue))
 		} else if val, ok := inputs[name]; ok {
 			valStr := util.ToString(val)
-			if err := validateSafePathAndInjection(valStr, isDocker, commandName); err != nil {
+			if err := validateSafePathAndInjection(valStr, isDocker, commandName, sandboxEnabled); err != nil {
 				return nil, fmt.Errorf("parameter %q: %w", name, err)
 			}
 			// Sentinel Security: For shell commands, we only add environment variables if they are safe
@@ -2331,13 +2359,14 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 				if strings.Contains(arg, placeholder) {
 					val := util.ToString(v)
 					// Use validateSafePathAndInjection which now centralizes all checks
-					if err := validateSafePathAndInjection(val, isDocker, commandName); err != nil {
+					// CommandTool (Docker/Executor) doesn't explicitly support our gawk sandbox detection yet, so we assume false.
+					if err := validateSafePathAndInjection(val, isDocker, commandName, false); err != nil {
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
 					}
 					// If running a shell or interpreter, validate that inputs are safe
 					cmd := t.service.GetCommand()
 					if isShellCommand(cmd) {
-						if err := checkForShellInjection(val, arg, placeholder, cmd, isShell(cmd)); err != nil {
+						if err := checkForShellInjection(val, arg, placeholder, cmd, isShell(cmd), false); err != nil {
 							return nil, fmt.Errorf("parameter %q: %w", k, err)
 						}
 					}
@@ -2367,7 +2396,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 				for _, arg := range argsList {
 					if argStr, ok := arg.(string); ok {
 						// Use validateSafePathAndInjection which now centralizes all checks
-						if err := validateSafePathAndInjection(argStr, isDocker, commandName); err != nil {
+						if err := validateSafePathAndInjection(argStr, isDocker, commandName, false); err != nil {
 							return nil, fmt.Errorf("args parameter: %w", err)
 						}
 						args = append(args, argStr)
@@ -2968,7 +2997,7 @@ func isShell(cmd string) bool {
 	return false
 }
 
-func checkForShellInjection(val string, template string, placeholder string, command string, isShell bool) error {
+func checkForShellInjection(val string, template string, placeholder string, command string, isShell bool, sandboxEnabled bool) error {
 	// Determine the quoting context of the placeholder in the template
 	quoteLevel := analyzeQuoteContext(template, placeholder)
 
@@ -2981,7 +3010,7 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	// Sentinel Security Update: Interpreter Injection Protection
 	// Check if the main command is an interpreter
 	if isInterpreter(command) {
-		if err := checkInterpreterInjection(val, template, base, quoteLevel); err != nil {
+		if err := checkInterpreterInjection(val, template, base, quoteLevel, sandboxEnabled); err != nil {
 			return err
 		}
 		// Sentinel Security Update: Interpreter Strict Mode
@@ -3002,7 +3031,11 @@ func checkForShellInjection(val string, template string, placeholder string, com
 		argBase := strings.ToLower(filepath.Base(args[0]))
 		// Avoid double checking if it's the same command (already checked above)
 		if argBase != base && isInterpreter(argBase) {
-			if err := checkInterpreterInjection(val, template, argBase, quoteLevel); err != nil {
+			// Note: We assume nested interpreters (via shell) are NOT sandboxed because
+			// the sandboxEnabled flag refers to the main command's sandbox status.
+			// e.g. sh -c "awk ..." -> sh is not sandboxed (in awk sense), so nested awk is NOT sandboxed.
+			// So we pass false for nested checks.
+			if err := checkInterpreterInjection(val, template, argBase, quoteLevel, false); err != nil {
 				return fmt.Errorf("argument interpreter injection detected (%s): %w", argBase, err)
 			}
 			// Also check function calls for the detected interpreter context
@@ -3360,7 +3393,7 @@ func checkKeyword(word string, keywords []string, lastChar rune, lastWord string
 	return nil
 }
 
-func checkInterpreterInjection(val, template, base string, quoteLevel int) error {
+func checkInterpreterInjection(val, template, base string, quoteLevel int, sandboxEnabled bool) error {
 	if err := checkTarInjection(val, base); err != nil {
 		return err
 	}
@@ -3373,7 +3406,7 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 	if err := checkNodePerlPhpInjection(val, base, quoteLevel); err != nil {
 		return err
 	}
-	if err := checkAwkInjection(val, base); err != nil {
+	if err := checkAwkInjection(val, base, sandboxEnabled); err != nil {
 		return err
 	}
 	if err := checkSQLInjection(val, base, quoteLevel); err != nil {
@@ -3552,7 +3585,7 @@ func checkNodePerlPhpInjection(val, base string, quoteLevel int) error {
 	return nil
 }
 
-func checkAwkInjection(val, base string) error {
+func checkAwkInjection(val, base string, sandboxEnabled bool) error {
 	// Awk: Block pipe | to prevent external command execution
 	// Also block redirection > and < to prevent arbitrary file read/write
 	// And block getline to prevent file reading
@@ -3569,6 +3602,15 @@ func checkAwkInjection(val, base string) error {
 		}
 		if strings.Contains(val, "getline") {
 			return fmt.Errorf("awk injection detected: value contains 'getline'")
+		}
+		// Sentinel Security Update: Block '@' to prevent gawk indirect function calls.
+		// ONLY enforced if sandbox is NOT enabled.
+		// If sandbox is enabled, system() is disabled, so @f("id") cannot call system().
+		// This allows valid email addresses when using sandboxed gawk.
+		if !sandboxEnabled {
+			if strings.Contains(val, "@") {
+				return fmt.Errorf("awk injection detected: value contains '@' (indirect function call) and sandbox is disabled")
+			}
 		}
 	}
 	return nil
@@ -3786,7 +3828,7 @@ func checkEnvInjection(val string) error {
 	return nil
 }
 
-func validateSafePathAndInjection(val string, isDocker bool, commandName string) error {
+func validateSafePathAndInjection(val string, isDocker bool, commandName string, sandboxEnabled bool) error {
 	// Sentinel Security Update: Trim whitespace to prevent bypasses using leading spaces
 	val = strings.TrimSpace(val)
 

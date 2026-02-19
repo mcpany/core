@@ -24,7 +24,7 @@ func TestSqlite3Injection(t *testing.T) {
 	command := "sqlite3"
 	isShell := false
 
-	err := checkForShellInjection(val, template, placeholder, command, isShell)
+	err := checkForShellInjection(val, template, placeholder, command, isShell, false)
 	if err == nil {
 		t.Fatalf("Expected error (blocked), got nil")
 	}
@@ -33,21 +33,21 @@ func TestSqlite3Injection(t *testing.T) {
 	// Value: "1; DROP TABLE users; --"
 	// This one IS blocked by checkUnquotedInjection because of ';'
 	val = "1; DROP TABLE users; --"
-	err = checkForShellInjection(val, template, placeholder, command, isShell)
+	err = checkForShellInjection(val, template, placeholder, command, isShell, false)
 	if err == nil {
 		t.Errorf("Expected error for ';', got nil")
 	}
 
 	// Case 3: UNION SELECT
 	val = "1 UNION SELECT username, password FROM users"
-	err = checkForShellInjection(val, template, placeholder, command, isShell)
+	err = checkForShellInjection(val, template, placeholder, command, isShell, false)
 	if err == nil {
 		t.Fatalf("Expected error (blocked), got nil")
 	}
 
 	// Case 4: Valid input
 	val = "1"
-	err = checkForShellInjection(val, template, placeholder, command, isShell)
+	err = checkForShellInjection(val, template, placeholder, command, isShell, false)
 	if err != nil {
 		t.Fatalf("Expected nil for valid input, got: %v", err)
 	}
@@ -58,7 +58,7 @@ func TestSqlite3Injection(t *testing.T) {
 	templateQuoted := "SELECT * FROM users WHERE name='{{name}}'"
 	placeholderQuoted := "{{name}}"
 	val = "foo"
-	err = checkForShellInjection(val, templateQuoted, placeholderQuoted, command, isShell)
+	err = checkForShellInjection(val, templateQuoted, placeholderQuoted, command, isShell, false)
 	if err != nil {
 		t.Fatalf("Expected nil for valid quoted input, got: %v", err)
 	}
@@ -67,7 +67,7 @@ func TestSqlite3Injection(t *testing.T) {
 	// Value: "foo' OR '1'='1"
 	// This should be blocked by checkShellInjection level 2 (single quote check)
 	val = "foo' OR '1'='1"
-	err = checkForShellInjection(val, templateQuoted, placeholderQuoted, command, isShell)
+	err = checkForShellInjection(val, templateQuoted, placeholderQuoted, command, isShell, false)
 	if err == nil {
 		t.Fatalf("Expected error for single quote injection in quoted context, got nil")
 	}
