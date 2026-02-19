@@ -51,6 +51,7 @@ const (
 	HealthStatusUnhealthy = "unhealthy"
 
 	gitCommand = "git"
+	trueStr    = "true"
 )
 
 var (
@@ -795,7 +796,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 			// Security: Hide the body if it is not JSON (potential stack trace) unless debug is enabled.
 			// util.RedactJSON returns the original input if it's not JSON.
 			// If it was JSON, it is already redacted.
-			isDebug := os.Getenv("MCPANY_DEBUG") == "true"
+			isDebug := os.Getenv("MCPANY_DEBUG") == trueStr
 			if !isDebug && !stdjson.Valid(bodyBytes) {
 				displayBody = "[Body hidden for security. Enable debug mode to view.]"
 			}
@@ -2064,6 +2065,17 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 		}
 	}
 
+	// Sentinel Security: For e2e tests running in CI (often using `go run`), we might need GOCACHE/GOMODCACHE
+	// if the tool executes go commands.
+	if !isDocker && os.Getenv("CI") == trueStr {
+		allowedCIEnvVars := []string{"GOCACHE", "GOMODCACHE", "GOPATH"}
+		for _, key := range allowedCIEnvVars {
+			if val, ok := os.LookupEnv(key); ok {
+				env = append(env, fmt.Sprintf("%s=%s", key, val))
+			}
+		}
+	}
+
 	resolvedServiceEnv, err := util.ResolveSecretMap(ctx, t.service.GetEnv(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to resolve service env: %w", err)
@@ -2108,6 +2120,17 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 
 			if safeForEnv {
 				env = append(env, fmt.Sprintf("%s=%s", name, valStr))
+			}
+		}
+	}
+
+	// Sentinel Security: For e2e tests running in CI (often using `go run`), we might need GOCACHE/GOMODCACHE
+	// if the tool executes go commands.
+	if !isDocker && os.Getenv("CI") == "true" {
+		allowedCIEnvVars := []string{"GOCACHE", "GOMODCACHE", "GOPATH"}
+		for _, key := range allowedCIEnvVars {
+			if val, ok := os.LookupEnv(key); ok {
+				env = append(env, fmt.Sprintf("%s=%s", key, val))
 			}
 		}
 	}
