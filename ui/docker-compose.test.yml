@@ -77,3 +77,8 @@ services:
       interval: 2s
       timeout: 2s
       retries: 20
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:5678/health || exit 1"]
+      interval: 2s
+      timeout: 2s
+      retries: 20

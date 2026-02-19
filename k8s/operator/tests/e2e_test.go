@@ -179,7 +179,7 @@ nodes:
 	args := append([]string{"playwright"}, playwrightArgs...)
 	playwrightCmd := exec.CommandContext(ctx, "npx", args...)
 	playwrightCmd.Dir = uiDir
-	playwrightCmd.Env = append(os.Environ(), fmt.Sprintf("PLAYWRIGHT_BASE_URL=http://127.0.0.1:%d", hostPort), "SKIP_WEBSERVER=true", "MOCK_SERVICE_URL=https://jsonplaceholder.typicode.com/todos/1")
+	playwrightCmd.Env = append(os.Environ(), fmt.Sprintf("PLAYWRIGHT_BASE_URL=http://127.0.0.1:%d", hostPort), "SKIP_WEBSERVER=true", "MOCK_SERVICE_URL=https://httpbin.org/get")
 	playwrightCmd.Stdout = os.Stdout
 	playwrightCmd.Stderr = os.Stderr
 
