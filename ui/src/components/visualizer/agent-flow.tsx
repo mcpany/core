@@ -5,19 +5,17 @@
 
 "use client";
 
-import React, { useCallback, useEffect, useState, useMemo } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   ReactFlow,
   useNodesState,
   useEdgesState,
   Controls,
-  Background,
   MiniMap,
+  Background,
   Node,
   Edge,
   MarkerType,
-  Connection,
-  addEdge,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import dagre from 'dagre';
@@ -27,7 +25,7 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { RefreshCw, Play, Pause } from 'lucide-react';
-import { useTopology, TopologyGraph, TopologyNode } from '@/hooks/use-topology';
+import { useTopology, TopologyNode } from '@/hooks/use-topology';
 import { VariableInspector } from './variable-inspector';
 
 const nodeTypes = {
@@ -77,19 +75,19 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[]) => {
 };
 
 const mapNodeType = (type: string): string => {
-    switch (type) {
-        case 'NODE_TYPE_CLIENT': return 'user';
-        case 'NODE_TYPE_CORE': return 'agent'; // Gateway acts as Agent
-        case 'NODE_TYPE_SERVICE': return 'service';
-        case 'NODE_TYPE_TOOL': return 'tool';
-        case 'NODE_TYPE_API_CALL': return 'api_call';
-        default: return 'service';
-    }
+  switch (type) {
+    case 'NODE_TYPE_CLIENT': return 'user';
+    case 'NODE_TYPE_CORE': return 'agent'; // Gateway acts as Agent
+    case 'NODE_TYPE_SERVICE': return 'service';
+    case 'NODE_TYPE_TOOL': return 'tool';
+    case 'NODE_TYPE_API_CALL': return 'api_call';
+    default: return 'service';
+  }
 };
 
 const mapNodeLabel = (node: TopologyNode): string => {
-    if (node.type === 'NODE_TYPE_CORE') return 'MCP Gateway';
-    return node.label;
+  if (node.type === 'NODE_TYPE_CORE') return 'MCP Gateway';
+  return node.label;
 };
 
 /**
@@ -107,72 +105,72 @@ export function AgentFlow() {
 
   // Transform graph to React Flow elements
   useEffect(() => {
-      if (!graph) return;
+    if (!graph) return;
 
-      const newNodes: Node[] = [];
-      const newEdges: Edge[] = [];
+    const newNodes: Node[] = [];
+    const newEdges: Edge[] = [];
 
-      // Helper to process node and its children recursively
-      const processNode = (node: TopologyNode, parentId?: string) => {
-          const flowType = mapNodeType(node.type);
-          const flowLabel = mapNodeLabel(node);
+    // Helper to process node and its children recursively
+    const processNode = (node: TopologyNode, parentId?: string) => {
+      const flowType = mapNodeType(node.type);
+      const flowLabel = mapNodeLabel(node);
 
-          // Create Node
-          newNodes.push({
-              id: node.id,
-              type: flowType,
-              data: {
-                  label: flowLabel,
-                  status: node.status,
-                  metrics: node.metrics,
-                  metadata: node.metadata
-              },
-              position: { x: 0, y: 0 }, // Will be set by layout
-          });
+      // Create Node
+      newNodes.push({
+        id: node.id,
+        type: flowType,
+        data: {
+          label: flowLabel,
+          status: node.status,
+          metrics: node.metrics,
+          metadata: node.metadata
+        },
+        position: { x: 0, y: 0 }, // Will be set by layout
+      });
 
-          // Create Edge from Parent
-          if (parentId) {
-              newEdges.push({
-                  id: `e-${parentId}-${node.id}`,
-                  source: parentId,
-                  target: node.id,
-                  animated: true,
-                  style: { stroke: node.status === 'NODE_TYPE_ERROR' ? '#ef4444' : '#64748b' },
-              });
-          }
-
-          // Process Children
-          if (node.children) {
-              node.children.forEach(child => processNode(child, node.id));
-          }
-      };
-
-      // 1. Process Core and its subtree (Services -> Tools)
-      if (graph.core) {
-          processNode(graph.core);
+      // Create Edge from Parent
+      if (parentId) {
+        newEdges.push({
+          id: `e-${parentId}-${node.id}`,
+          source: parentId,
+          target: node.id,
+          animated: true,
+          style: { stroke: node.status === 'NODE_TYPE_ERROR' ? '#ef4444' : '#64748b' },
+        });
       }
 
-      // 2. Process Clients -> Core
-      if (graph.clients) {
-          graph.clients.forEach(client => {
-              processNode(client);
-              // Link Client to Core explicitly
-              if (graph.core) {
-                  newEdges.push({
-                      id: `e-${client.id}-${graph.core.id}`,
-                      source: client.id,
-                      target: graph.core.id,
-                      animated: true,
-                      markerEnd: { type: MarkerType.ArrowClosed },
-                  });
-              }
-          });
+      // Process Children
+      if (node.children) {
+        node.children.forEach(child => processNode(child, node.id));
       }
+    };
 
-      // Apply Layout
-      const layouted = getLayoutedElements(newNodes, newEdges);
-      setNodes(layouted.nodes as any);
-      setEdges(layouted.edges);
+    // 1. Process Core and its subtree (Services -> Tools)
+    if (graph.core) {
+      processNode(graph.core);
+    }
+
+    // 2. Process Clients -> Core
+    if (graph.clients) {
+      graph.clients.forEach(client => {
+        processNode(client);
+        // Link Client to Core explicitly
+        if (graph.core) {
+          newEdges.push({
+            id: `e-${client.id}-${graph.core.id}`,
+            source: client.id,
+            target: graph.core.id,
+            animated: true,
+            markerEnd: { type: MarkerType.ArrowClosed },
+          });
+        }
+      });
+    }
+
+    // Apply Layout
+    const layouted = getLayoutedElements(newNodes, newEdges);
+    setNodes(layouted.nodes as any);
+    setEdges(layouted.edges);
 
   }, [graph, setNodes, setEdges]);
 
@@ -189,15 +187,15 @@ export function AgentFlow() {
       <div className="absolute top-4 right-4 z-10 flex gap-2">
         <Card className="p-2 flex gap-2 items-center bg-background/80 backdrop-blur-sm">
           <div className="flex items-center gap-2 mr-2">
-              <Switch id="live-mode" checked={isLive} onCheckedChange={setIsLive} />
-              <Label htmlFor="live-mode" className="text-xs font-medium flex items-center gap-1 cursor-pointer">
-                  {isLive ? <Pause className="h-3 w-3 text-green-500" /> : <Play className="h-3 w-3" />}
-                  Live Mode
-              </Label>
+            <Switch id="live-mode" checked={isLive} onCheckedChange={setIsLive} />
+            <Label htmlFor="live-mode" className="text-xs font-medium flex items-center gap-1 cursor-pointer">
+              {isLive ? <Pause className="h-3 w-3 text-green-500" /> : <Play className="h-3 w-3" />}
+              Live Mode
+            </Label>
           </div>
           <div className="w-px h-6 bg-border mx-1" />
           <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => refresh()} disabled={loading}>
-              <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
           </Button>
         </Card>
       </div>

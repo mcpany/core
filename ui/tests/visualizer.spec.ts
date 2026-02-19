@@ -3,11 +3,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-
 import { test, expect } from '@playwright/test';
 
 test.describe('Agent Flow Visualizer', () => {
-  const backendUrl = 'http://localhost:50050';
+  // Use backend URL from environment or default to localhost
+  const backendUrl = process.env.BACKEND_URL || 'http://localhost:50050';
 
   test.beforeAll(async () => {
     // Seed traffic data to ensure the graph is populated
@@ -33,7 +33,7 @@ test.describe('Agent Flow Visualizer', () => {
 
     // If 401/403, we might need to handle auth, but for now assume dev/test env config
     if (response.status === 401 || response.status === 403) {
-        console.warn("Seeding failed with auth error, proceeding but graph might be empty if not handled");
+      console.warn("Seeding failed with auth error, proceeding but graph might be empty if not handled");
     }
   });
 
