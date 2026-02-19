@@ -793,7 +793,10 @@ export const apiClient = {
                 } catch (e) {
                     // ignore
                 }
-                if (errorMsg) throw new Error(errorMsg);
+                if (errorMsg) {
+                    const msg = typeof errorMsg === 'object' ? JSON.stringify(errorMsg) : String(errorMsg);
+                    throw new Error(msg);
+                }
                 throw new Error(`Failed to execute tool: ${text || res.statusText}`);
             }
             return res.json();

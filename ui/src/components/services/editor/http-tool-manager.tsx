@@ -61,7 +61,9 @@ export function HttpToolManager({ service, onChange }: HttpToolManagerProps) {
             idempotentHint: false,
             openWorldHint: false,
             integrity: undefined,
-            serviceId: "", // Will be set by backend or context
+            // Set serviceId to enable execution in the editor.
+            // We prioritize ID if available, otherwise Name (which acts as ID in some contexts).
+            serviceId: service.id || service.name,
         };
 
         const newCall: HttpCallDefinition = {
@@ -171,6 +173,16 @@ export function HttpToolManager({ service, onChange }: HttpToolManagerProps) {
         }
     };
 
+    // Ensure we pass the serviceId to the editor even if it's not on the tool object yet (e.g. existing tools)
+    const getToolForEditor = (index: number) => {
+        const tool = tools[index];
+        if (!tool) return tool;
+        if (!tool.serviceId) {
+            return { ...tool, serviceId: service.id || service.name };
+        }
+        return tool;
+    };
+
     return (
         <div className="space-y-4">
             <div className="flex items-center justify-between">
@@ -226,7 +238,7 @@ export function HttpToolManager({ service, onChange }: HttpToolManagerProps) {
             </div>
 
             <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-                <SheetContent className="sm:max-w-xl w-full overflow-y-auto">
+                <SheetContent className="sm:max-w-4xl w-full overflow-y-auto">
                     <SheetHeader>
                         <SheetTitle>
                             {editingToolIndex !== null && tools[editingToolIndex] ? `Edit ${tools[editingToolIndex].name}` : "Edit Tool"}
@@ -238,7 +250,7 @@ export function HttpToolManager({ service, onChange }: HttpToolManagerProps) {
                     <div className="mt-6">
                         {editingToolIndex !== null && tools[editingToolIndex] && (
                             <HttpToolEditor
-                                tool={tools[editingToolIndex]}
+                                tool={getToolForEditor(editingToolIndex)}
                                 call={getCallForTool(tools[editingToolIndex])}
                                 onChange={handleToolChange}
                             />
