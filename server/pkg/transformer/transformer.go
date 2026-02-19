@@ -98,6 +98,10 @@ func joinFunc(sep string, input any) (string, error) {
 		return "", fmt.Errorf("join: %w", err)
 	}
 
+	return joinAnySlice(sep, a), nil
+}
+
+func joinAnySlice(sep string, a []any) string {
 	var sb strings.Builder
 	sepLen := len(sep)
 	var totalLen int
@@ -168,7 +172,7 @@ func joinFunc(sep string, input any) (string, error) {
 			fmt.Fprint(&sb, v)
 		}
 	}
-	return sb.String(), nil
+	return sb.String()
 }
 
 func toAnySlice(input any) ([]any, error) {
