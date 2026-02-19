@@ -1782,6 +1782,7 @@ type CommandTool struct {
 	executorFactory func(*configv1.ContainerEnvironment) command.Executor
 	policies        []*CompiledCallPolicy
 	callID          string
+	sandboxArgs     []string
 	initError       error
 }
 
@@ -1816,6 +1817,32 @@ func NewCommandTool(
 	if err != nil {
 		t.initError = fmt.Errorf("failed to compile call policies: %w", err)
 	}
+
+	// Check if the command is sed and supports sandbox
+	// We only enable this for local execution (no container environment or local executor)
+	// For Docker, we assume isolation is handled by container, but adding --sandbox
+	// inside the container is also good practice if supported by the sed version in the image.
+	// However, we can only check the host's sed version here.
+	// If running in Docker, we can't easily check the sed version inside the image without pulling/running it.
+	// So we only apply this check if we are using the local executor (ContainerEnvironment is nil or Image is empty).
+	isDocker := service.GetContainerEnvironment() != nil && service.GetContainerEnvironment().GetImage() != ""
+	if !isDocker {
+		cmd := service.GetCommand()
+		base := filepath.Base(cmd)
+		if base == "sed" || base == "gsed" {
+			ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+			defer cancel()
+			checkCmd := exec.CommandContext(ctx, cmd, "--sandbox", "--version")
+			if err := checkCmd.Run(); err == nil {
+				t.sandboxArgs = []string{"--sandbox"}
+				logging.GetLogger().Info("Enabled sandbox mode for sed tool (CommandTool)", "tool", tool.GetName())
+			} else {
+				t.initError = fmt.Errorf("sed tool %q detected but --sandbox is not supported (error: %v); execution blocked for security", tool.GetName(), err)
+				logging.GetLogger().Error("Failed to enable sandbox for sed (CommandTool)", "tool", tool.GetName(), "error", err)
+			}
+		}
+	}
+
 	return t
 }
 
@@ -2314,6 +2341,10 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	}
 
 	args := []string{}
+	if len(t.sandboxArgs) > 0 {
+		args = append(args, t.sandboxArgs...)
+	}
+
 	if t.callDefinition.GetArgs() != nil {
 		args = append(args, t.callDefinition.GetArgs()...)
 	}
@@ -2452,13 +2483,8 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 			env = append(env, fmt.Sprintf("%s=%s", name, secretValue))
 		} else if val, ok := inputs[name]; ok {
 			valStr := util.ToString(val)
-			if err := checkForPathTraversal(valStr); err != nil {
+			if err := validateSafePathAndInjection(valStr, isDocker, commandName); err != nil {
 				return nil, fmt.Errorf("parameter %q: %w", name, err)
-			}
-			if !isDocker {
-				if err := checkForLocalFileAccess(valStr); err != nil {
-					return nil, fmt.Errorf("parameter %q: %w", name, err)
-				}
 			}
 			// Sentinel Security: For shell commands, we only add environment variables if they are safe
 			// for unquoted use. If they contain dangerous characters, we omit them from the environment
