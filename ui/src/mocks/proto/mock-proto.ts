@@ -154,11 +154,11 @@ export interface OutputTransformer {
  */
 export interface HttpParameterMapping {
   schema?: {
-    name: string;
-    description?: string;
-    type: ParameterType;
-    isRequired?: boolean;
-    defaultValue?: any;
+  name: string;
+  description?: string;
+  type: ParameterType;
+  isRequired?: boolean;
+  defaultValue?: any;
   };
   secret?: any;
   disableEscape?: boolean;

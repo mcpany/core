@@ -11,30 +11,28 @@ import (
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/stretchr/testify/assert"
-	"google.golang.org/protobuf/proto"
 )
 
 func TestPHPInjectionRepro(t *testing.T) {
 	// Define a PHP command tool that executes code via -r
-	service := (&configv1.CommandLineUpstreamService_builder{
-		Command: proto.String("php"),
-	}).Build()
+	// Using setters to ensure compatibility with opaque structs
+	service := &configv1.CommandLineUpstreamService{}
+	service.SetCommand("php")
 
 	// Simulate: php -r '{{code}}'
-	callDef := (&configv1.CommandLineCallDefinition_builder{
-		Args: []string{"-r", "'{{code}}'"},
-		Parameters: []*configv1.CommandLineParameterMapping{
-			(&configv1.CommandLineParameterMapping_builder{
-				Schema: (&configv1.ParameterSchema_builder{
-					Name: proto.String("code"),
-				}).Build(),
-			}).Build(),
-		},
-	}).Build()
+	callDef := &configv1.CommandLineCallDefinition{}
+	callDef.SetArgs([]string{"-r", "'{{code}}'"})
 
-	toolDef := (&v1.Tool_builder{
-		Name: proto.String("php_eval"),
-	}).Build()
+	paramSchema := &configv1.ParameterSchema{}
+	paramSchema.SetName("code")
+
+	paramMapping := &configv1.CommandLineParameterMapping{}
+	paramMapping.SetSchema(paramSchema)
+
+	callDef.SetParameters([]*configv1.CommandLineParameterMapping{paramMapping})
+
+	toolDef := &v1.Tool{}
+	toolDef.SetName("php_eval")
 
 	cmdTool := tool.NewLocalCommandTool(toolDef, service, callDef, nil, "test-call")
 
