@@ -103,8 +103,9 @@ func TestValidate_MoreServices(t *testing.T) {
 						}.Build(),
 						UpstreamAuth: configv1.Authentication_builder{
 							Mtls: configv1.MTLSAuth_builder{
-								ClientCertPath: proto.String("non-existent-cert.pem"),
-								ClientKeyPath:  proto.String("non-existent-key.pem"),
+								// Using .txt to pass IsSensitivePath check, allowing it to reach FileExists check
+								ClientCertPath: proto.String("non-existent-cert.txt"),
+								ClientKeyPath:  proto.String("non-existent-key.txt"),
 							}.Build(),
 						}.Build(),
 					}.Build(),
@@ -512,7 +513,8 @@ func TestValidate_MoreServices(t *testing.T) {
 							Mtls: configv1.MTLSAuth_builder{
 								ClientCertPath: proto.String(insecurePath),
 								ClientKeyPath:  proto.String(insecurePath),
-								CaCertPath:     proto.String("non-existent-ca.pem"),
+								// Using .txt to pass IsSensitivePath check
+								CaCertPath:     proto.String("non-existent-ca.txt"),
 							}.Build(),
 						}.Build(),
 					}.Build(),
