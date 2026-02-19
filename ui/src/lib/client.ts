@@ -1601,6 +1601,16 @@ export const apiClient = {
     },
 
     /**
+     * Gets the system topology graph.
+     * @returns A promise that resolves to the topology graph.
+     */
+    getTopology: async (): Promise<any> => {
+        const res = await fetchWithAuth('/api/v1/topology');
+        if (!res.ok) throw new Error('Failed to fetch topology');
+        return res.json();
+    },
+
+    /**
      * Updates an alert status.
      * @param id The ID of the alert.
      * @param status The new status.
