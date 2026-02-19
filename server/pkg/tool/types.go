@@ -3081,7 +3081,7 @@ func stripInterpreterComments(val, language string) string {
 	supportsBlock := false
 
 	switch language {
-	case "python", "ruby", "perl", "sh", "bash", "zsh", "dash", "ash", "ksh", "csh", "tcsh", "fish":
+	case "python", "ruby", "perl", "sh", "bash", "zsh", "dash", "ash", "ksh", "csh", "tcsh", "fish", "awk", "gawk", "nawk", "mawk", "sed", "tclsh", "wish", "expect":
 		supportsHash = true
 	case "node", "nodejs", "bun", "deno", "java", "c", "cpp", "go", "rust", "swift", "kotlin", "scala", "groovy":
 		supportsSlash = true
@@ -3090,6 +3090,13 @@ func stripInterpreterComments(val, language string) string {
 		supportsHash = true
 		supportsSlash = true
 		supportsBlock = true
+	case "lua", "luajit":
+		// Lua uses -- for comments, and // for division.
+		// Since we don't support -- stripping yet, we should NOT strip anything (safest fallback).
+		// If we fall to default, we strip // which breaks division and allows bypass.
+		supportsHash = false
+		supportsSlash = false
+		supportsBlock = false
 	default:
 		// Default to strict: strip all known comment types if unsure
 		supportsHash = true
