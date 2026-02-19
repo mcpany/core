@@ -7,6 +7,7 @@
 import { test } from '@playwright/test';
 import * as path from 'path';
 import * as fs from 'fs';
+import { seedServices, cleanupServices, seedTraffic } from './e2e/test-data';
 
 test.describe('Feature Screenshot', () => {
     // Skip if CAPTURE_SCREENSHOTS is not set
@@ -17,7 +18,7 @@ test.describe('Feature Screenshot', () => {
     // Use test-results directory which is writable in CI
     const auditDir = path.join(process.cwd(), 'test-results/artifacts/audit/ui', date);
 
-    test.beforeAll(async () => {
+    test.beforeAll(async ({ request }) => {
         try {
             if (!fs.existsSync(auditDir)) {
                 fs.mkdirSync(auditDir, { recursive: true });
@@ -25,6 +26,12 @@ test.describe('Feature Screenshot', () => {
         } catch (e) {
             console.warn('Failed to create audit directory:', e);
         }
+        await seedServices(request);
+        await seedTraffic(request);
+    });
+
+    test.afterAll(async ({ request }) => {
+        await cleanupServices(request);
     });
 
   test('Capture Logs', async ({ page }) => {
