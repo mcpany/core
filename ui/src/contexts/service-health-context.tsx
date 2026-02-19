@@ -84,9 +84,11 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
                 }
             }
 
-            // ⚡ Bolt Optimization: Use Promise.all to fetch topology and health concurrently.
-            // This reduces the total time to wait for both responses.
-            const topologyPromise = fetch(url, { headers }).then(async (res) => {
+            // ⚡ Bolt: Sequential fetching to improve CI stability.
+            // Reverted from Promise.all to reduce burst load on constrained runners.
+
+            // 1. Fetch Topology
+            await fetch(url, { headers }).then(async (res) => {
                 if (res.status === 304 && lastGraph.current) {
                     // Not modified, use cached graph
                     return;
@@ -155,7 +157,8 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
                 console.error("Failed to fetch topology", e);
             });
 
-            const healthPromise = apiClient.getDashboardHealth().then(healthData => {
+            // 2. Fetch Dashboard Health
+            await apiClient.getDashboardHealth().then(healthData => {
                 setServices(healthData.services || []);
 
                 // Map status strings if needed (backend might return "up"/"down", UI wants "healthy")
@@ -174,8 +177,6 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
             }).catch(e => {
                 console.warn("Failed to fetch dashboard health", e);
             });
-
-            await Promise.all([topologyPromise, healthPromise]);
 
         } catch (e) {
             console.error("Failed to execute polling cycle", e);
