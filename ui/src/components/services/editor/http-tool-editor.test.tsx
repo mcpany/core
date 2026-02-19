@@ -89,7 +89,12 @@ describe('HttpToolEditor', () => {
         endpointPath: '/test',
         parameters: [],
         inputTransformer: { template: '' },
-        outputTransformer: { format: OutputTransformer_OutputFormat.JSON, template: '' }
+        outputTransformer: {
+            format: OutputTransformer_OutputFormat.JSON,
+            template: '',
+            extractionRules: {},
+            jqQuery: ''
+        }
     };
 
     it('renders basic fields', () => {
