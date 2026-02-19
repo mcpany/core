@@ -5,7 +5,7 @@
 
 "use client";
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect, useRef } from 'react';
 import {
   ReactFlow,
   useNodesState,
@@ -16,44 +16,227 @@ import {
   MiniMap,
   Connection,
   MarkerType,
+  Node,
+  Edge,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { UserNode, AgentNode, ToolNode, ResourceNode, ServiceNode } from './custom-nodes';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card } from '@/components/ui/card';
 import { DebuggerControls } from './debugger-controls';
 import { VariableInspector } from './variable-inspector';
+import { apiClient } from '@/lib/client';
+import { TopologyGraph, TopologyNode, NodeType, NodeStatus } from '@/types/topology';
+import dagre from 'dagre';
+import { Loader2, RefreshCcw } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
 
 const nodeTypes = {
   user: UserNode,
-  agent: AgentNode,
+  agent: AgentNode, // Maps to CORE
   tool: ToolNode,
   resource: ResourceNode,
   service: ServiceNode,
 };
 
-const initialNodes = [
-  { id: '1', type: 'user', position: { x: 250, y: 0 }, data: { label: 'Alice' } },
-  { id: '2', type: 'agent', position: { x: 250, y: 150 }, data: { label: 'Orchestrator', role: 'Main Agent', status: 'Thinking...' } },
-  { id: '3', type: 'service', position: { x: 100, y: 300 }, data: { label: 'Postgres DB' } },
-  { id: '4', type: 'tool', position: { x: 400, y: 300 }, data: { label: 'Web Search' } },
-];
+// Map Proto NodeType to React Flow Node Type (from nodeTypes above)
+const mapNodeType = (type: NodeType): string => {
+    switch (type) {
+        case NodeType.NODE_TYPE_CLIENT: return 'user';
+        case NodeType.NODE_TYPE_CORE: return 'agent';
+        case NodeType.NODE_TYPE_SERVICE: return 'service';
+        case NodeType.NODE_TYPE_TOOL: return 'tool';
+        case NodeType.NODE_TYPE_RESOURCE: return 'resource';
+        default: return 'service'; // Default fallback
+    }
+};
 
-const initialEdges = [
-  { id: 'e1-2', source: '1', target: '2', animated: true, label: 'Task: Analyze Data', markerEnd: { type: MarkerType.ArrowClosed } },
-  { id: 'e2-3', source: '2', target: '3', animated: true, label: 'Query' },
-  { id: 'e2-4', source: '2', target: '4', animated: false, label: 'Search' },
-];
+const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'LR') => {
+  const dagreGraph = new dagre.graphlib.Graph();
+  dagreGraph.setDefaultEdgeLabel(() => ({}));
+
+  // Set node dimensions roughly based on custom node size
+  const nodeWidth = 220;
+  const nodeHeight = 100;
+
+  dagreGraph.setGraph({ rankdir: direction, align: 'DL', nodesep: 60, ranksep: 120 });
+
+  nodes.forEach((node) => {
+    dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
+  });
+
+  edges.forEach((edge) => {
+    dagreGraph.setEdge(edge.source, edge.target);
+  });
+
+  dagre.layout(dagreGraph);
+
+  const layoutedNodes = nodes.map((node) => {
+    const nodeWithPosition = dagreGraph.node(node.id);
+    return {
+      ...node,
+      targetPosition: 'left',
+      sourcePosition: 'right',
+      position: {
+        x: nodeWithPosition.x - nodeWidth / 2,
+        y: nodeWithPosition.y - nodeHeight / 2,
+      },
+    };
+  });
+
+  return { nodes: layoutedNodes, edges };
+};
 
 /**
  * AgentFlow component renders the interactive flow visualization.
  * @returns The AgentFlow component.
  */
 export function AgentFlow() {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [isPlaying, setIsPlaying] = useState(false);
   const [selectedNode, setSelectedNode] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
+  const initialized = useRef(false);
+
+  // Transform TopologyGraph to React Flow Nodes/Edges
+  const transformTopology = (graph: TopologyGraph) => {
+      const newNodes: Node[] = [];
+      const newEdges: Edge[] = [];
+
+      // Helper to process nodes recursively
+      const processNode = (node: TopologyNode, parentId?: string) => {
+          const type = mapNodeType(node.type);
+
+          // Build label with metrics if available
+          let label = node.label;
+          let statusStr = "";
+
+          if (node.status === NodeStatus.NODE_STATUS_ERROR) statusStr = "Error";
+          if (node.status === NodeStatus.NODE_STATUS_INACTIVE) statusStr = "Inactive";
+
+          const flowNode: Node = {
+              id: node.id,
+              type: type,
+              data: {
+                  label: label,
+                  status: statusStr,
+                  metrics: node.metrics,
+                  role: node.metadata?.role || (node.type === NodeType.NODE_TYPE_CORE ? 'Gateway' : undefined)
+              },
+              position: { x: 0, y: 0 } // Layout will set this
+          };
+          newNodes.push(flowNode);
+
+          // Add Edge from parent
+          if (parentId) {
+              const edgeId = `e-${parentId}-${node.id}`;
+              const isAnimated = node.status === NodeStatus.NODE_STATUS_ACTIVE && isPlaying;
+
+              newEdges.push({
+                  id: edgeId,
+                  source: parentId,
+                  target: node.id,
+                  animated: isAnimated, // Only animate if "Live" is on? Or generally active?
+                  style: {
+                      stroke: node.status === NodeStatus.NODE_STATUS_ERROR ? '#ef4444' :
+                              node.status === NodeStatus.NODE_STATUS_INACTIVE ? '#9ca3af' : '#22c55e',
+                      strokeWidth: 2
+                  },
+                  type: 'default',
+                  markerEnd: { type: MarkerType.ArrowClosed }
+              });
+          }
+
+          // Process Children
+          if (node.children) {
+              node.children.forEach(child => processNode(child, node.id));
+          }
+      };
+
+      // 1. Process Core
+      if (graph.core) {
+          processNode(graph.core);
+      } else {
+          // Fallback if no core (should not happen usually)
+          newNodes.push({ id: 'core-missing', type: 'agent', data: { label: 'MCP Core (Missing)' }, position: { x: 0, y: 0 } });
+      }
+
+      // 2. Process Clients (connect to Core)
+      const coreId = graph.core?.id || 'core-missing';
+      if (graph.clients) {
+          graph.clients.forEach(client => {
+              // Clients are sources, connecting TO Core.
+              // So edge is Client -> Core
+              const clientType = mapNodeType(client.type);
+              newNodes.push({
+                  id: client.id,
+                  type: clientType,
+                  data: { label: client.label || client.id },
+                  position: { x: 0, y: 0 }
+              });
+
+              newEdges.push({
+                  id: `e-${client.id}-${coreId}`,
+                  source: client.id,
+                  target: coreId,
+                  animated: isPlaying,
+                  style: { stroke: '#3b82f6', strokeWidth: 2, strokeDasharray: '5,5' },
+                  markerEnd: { type: MarkerType.ArrowClosed }
+              });
+          });
+      }
+
+      return { newNodes, newEdges };
+  };
+
+  const fetchTopology = async () => {
+      try {
+          const graph = await apiClient.getTopology();
+          const { newNodes, newEdges } = transformTopology(graph);
+
+          // Apply Layout
+          const layouted = getLayoutedElements(newNodes, newEdges);
+
+          // Use setNodes to update state.
+          // We preserve positions of existing nodes if we want to avoid jumping?
+          // dagre layout resets positions every time.
+          // For a "Live" view, maybe we should only update data and keep positions if ID exists?
+          // But topology changes (new nodes) require relayout.
+          // Let's stick to full layout update for now, maybe throttle it.
+
+          setNodes(layouted.nodes as any);
+          setEdges(layouted.edges);
+      } catch (e) {
+          console.error("Failed to fetch topology", e);
+          if (!initialized.current) {
+             toast({
+                 title: "Topology Error",
+                 description: "Failed to load network topology.",
+                 variant: "destructive"
+             });
+          }
+      } finally {
+          setLoading(false);
+          initialized.current = true;
+      }
+  };
+
+  useEffect(() => {
+      fetchTopology();
+  }, []);
+
+  // Polling for live mode
+  useEffect(() => {
+      let interval: NodeJS.Timeout;
+      if (isPlaying) {
+          interval = setInterval(() => {
+              fetchTopology();
+          }, 5000);
+      }
+      return () => clearInterval(interval);
+  }, [isPlaying]);
 
   const onConnect = useCallback(
     (params: Connection) => setEdges((eds) => addEdge({ ...params, animated: true }, eds)),
@@ -70,19 +253,6 @@ export function AgentFlow() {
     setSelectedNode(null);
   }, []);
 
-  // Simulation effect (placeholder for real "Live" data)
-  React.useEffect(() => {
-    if (!isPlaying) return;
-    const interval = setInterval(() => {
-      setEdges((eds) => eds.map(e => ({
-        ...e,
-        animated: !e.animated || Math.random() > 0.5,
-        style: { stroke: Math.random() > 0.5 ? '#22c55e' : '#64748b' } // Green or slate
-      })));
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [isPlaying, setEdges]);
-
   return (
     <div className="h-[calc(100vh-8rem)] w-full relative bg-background border rounded-lg overflow-hidden shadow-sm">
       <div className="absolute top-4 right-4 z-10 flex gap-2">
@@ -90,41 +260,41 @@ export function AgentFlow() {
           <DebuggerControls
             isPlaying={isPlaying}
             onPlayPause={togglePlay}
-            onStep={() => { }} // Placeholder for step
-            onStop={() => { setIsPlaying(false); setNodes(initialNodes); setEdges(initialEdges); }}
+            onStep={fetchTopology}
+            onStop={() => { setIsPlaying(false); }}
           />
           <div className="w-px h-6 bg-border mx-1" />
-          <Select defaultValue="demo1">
-            <SelectTrigger className="w-[140px] h-8">
-              <SelectValue placeholder="Scenario" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="demo1">Basic Flow</SelectItem>
-              <SelectItem value="demo2">Multi-Agent</SelectItem>
-            </SelectContent>
-          </Select>
+          <Button variant="ghost" size="icon" onClick={fetchTopology} disabled={loading || isPlaying}>
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCcw className="h-4 w-4" />}
+          </Button>
         </Card>
       </div>
 
       <VariableInspector selectedNode={selectedNode} onClose={() => setSelectedNode(null)} />
 
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-        onNodeClick={onNodeClick}
-        onPaneClick={onPaneClick}
-        nodeTypes={nodeTypes}
-        fitView
-        attributionPosition="bottom-left"
-        className="bg-muted/10"
-      >
-        <Controls />
-        <MiniMap />
-        <Background gap={12} size={1} />
-      </ReactFlow>
+      {loading && !initialized.current ? (
+          <div className="absolute inset-0 flex items-center justify-center bg-background/50 z-20">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+      ) : (
+        <ReactFlow
+            nodes={nodes}
+            edges={edges}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onConnect={onConnect}
+            onNodeClick={onNodeClick}
+            onPaneClick={onPaneClick}
+            nodeTypes={nodeTypes}
+            fitView
+            attributionPosition="bottom-left"
+            className="bg-muted/10"
+        >
+            <Controls />
+            <MiniMap />
+            <Background gap={12} size={1} />
+        </ReactFlow>
+      )}
     </div>
   );
 }

@@ -18,6 +18,7 @@ import { ToolDefinition } from '@proto/config/v1/tool';
 import { ResourceDefinition } from '@proto/config/v1/resource';
 import { PromptDefinition } from '@proto/config/v1/prompt';
 import { Credential, Authentication } from '@proto/config/v1/auth';
+import { TopologyGraph } from '@/types/topology';
 
 import { BrowserHeaders } from 'browser-headers';
 
@@ -1584,6 +1585,16 @@ export const apiClient = {
         }
         const res = await fetchWithAuth(url);
         if (!res.ok) throw new Error('Failed to fetch traces');
+        return res.json();
+    },
+
+    /**
+     * Gets the network topology graph.
+     * @returns A promise that resolves to the topology graph.
+     */
+    getTopology: async (): Promise<TopologyGraph> => {
+        const res = await fetchWithAuth('/api/v1/topology');
+        if (!res.ok) throw new Error('Failed to fetch topology');
         return res.json();
     },
 
