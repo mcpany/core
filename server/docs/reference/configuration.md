@@ -854,7 +854,7 @@ upstream_auth:
 | Field        | Type          | Description                                                     |
 | ------------ | ------------- | --------------------------------------------------------------- |
 | `param_name` | `string`      | The name of the parameter carrying the key (e.g., "X-API-Key"). |
-| `in`         | `enum`        | Where the API key is located (`HEADER` or `QUERY`).             |
+| `in`         | `enum`        | Where the API key is located (`HEADER`, `QUERY`, or `COOKIE`).  |
 | `value`      | `SecretValue` | The API key value, managed as a secret.                         |
 
 ##### `BearerTokenAuth`
