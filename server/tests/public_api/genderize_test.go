@@ -8,9 +8,9 @@ package public_api
 import (
 	"context"
 	"encoding/json"
-	"strings"
+	"net/http"
+	"net/http/httptest"
 	"testing"
-	"time"
 
 	"github.com/mcpany/core/server/pkg/util"
 	apiv1 "github.com/mcpany/core/proto/api/v1"
@@ -22,12 +22,28 @@ import (
 )
 
 func TestUpstreamService_Genderize(t *testing.T) {
-	// t.SkipNow()
+	// t.SkipNow() // Resurrected!
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 
 	t.Log("INFO: Starting E2E Test Scenario for Genderize Server...")
 	t.Parallel()
+
+	// --- Mock External API ---
+	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/" && r.Method == "GET" && r.URL.Query().Get("name") == "michael" {
+			w.Header().Set("Content-Type", "application/json")
+			_, _ = w.Write([]byte(`{
+				"name": "michael",
+				"gender": "male",
+				"probability": 0.99,
+				"count": 12345
+			}`))
+			return
+		}
+		w.WriteHeader(http.StatusNotFound)
+	}))
+	defer mockServer.Close()
 
 	// --- 1. Start MCPANY Server ---
 	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2EGenderizeServerTest")
@@ -35,7 +51,7 @@ func TestUpstreamService_Genderize(t *testing.T) {
 
 	// --- 2. Register Genderize Server with MCPANY ---
 	const genderizeServiceID = "e2e_genderize"
-	genderizeServiceEndpoint := "https://api.genderize.io"
+	genderizeServiceEndpoint := mockServer.URL
 	t.Logf("INFO: Registering '%s' with MCPANY at endpoint %s...", genderizeServiceID, genderizeServiceEndpoint)
 	registrationGRPCClient := mcpAnyTestServerInfo.RegistrationClient
 
@@ -86,27 +102,8 @@ func TestUpstreamService_Genderize(t *testing.T) {
 	toolName := serviceID + "." + sanitizedToolName
 	name := `{"name": "michael"}`
 
-	const maxRetries = 3
-	var res *mcp.CallToolResult
-
-	for i := 0; i < maxRetries; i++ {
-		res, err = cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(name)})
-		if err == nil {
-			break // Success
-		}
-
-		if strings.Contains(err.Error(), "503 Service Temporarily Unavailable") || strings.Contains(err.Error(), "context deadline exceeded") || strings.Contains(err.Error(), "connection reset by peer") {
-			t.Logf("Attempt %d/%d: Call to api.genderize.io failed with a transient error: %v. Retrying...", i+1, maxRetries, err)
-			time.Sleep(2 * time.Second) // Wait before retrying
-			continue
-		}
-
-		require.NoError(t, err, "unrecoverable error calling getGender tool")
-	}
-
-	if err != nil {
-		// t.Skipf("Skipping test: all %d retries to api.genderize.io failed with transient errors. Last error: %v", maxRetries, err)
-	}
+	res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(name)})
+	require.NoError(t, err, "Error calling getGender tool")
 
 	require.NoError(t, err, "Error calling getGender tool")
 	require.NotNil(t, res, "Nil response from getGender tool")

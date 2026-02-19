@@ -8,9 +8,9 @@ package public_api
 import (
 	"context"
 	"encoding/json"
-	"strings"
+	"net/http"
+	"net/http/httptest"
 	"testing"
-	"time"
 
 	apiv1 "github.com/mcpany/core/proto/api/v1"
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -22,12 +22,46 @@ import (
 )
 
 func TestUpstreamService_FunTranslations(t *testing.T) {
-	t.SkipNow()
+	// t.SkipNow() // Resurrected!
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 
 	t.Log("INFO: Starting E2E Test Scenario for Fun Translations Server...")
 	t.Parallel()
+
+	// --- Mock External API ---
+	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		t.Logf("Mock received request: %s %s", r.Method, r.URL.Path)
+		if r.URL.Path == "/translate/yoda.json" && r.Method == "POST" {
+			var body map[string]interface{}
+			if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+				t.Errorf("Failed to decode request body: %v", err)
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
+			if body["text"] != "Hello, how are you?" {
+				t.Errorf("Expected text 'Hello, how are you?', got '%v'", body["text"])
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
+
+			w.Header().Set("Content-Type", "application/json")
+			_, _ = w.Write([]byte(`{
+				"success": {
+					"total": 1
+				},
+				"contents": {
+					"translated": "Lost a planet, Master Obi-Wan has.",
+					"text": "Hello, how are you?",
+					"translation": "yoda"
+				}
+			}`))
+			return
+		}
+		t.Logf("Mock matched nothing")
+		w.WriteHeader(http.StatusNotFound)
+	}))
+	defer mockServer.Close()
 
 	// --- 1. Start MCPANY Server ---
 	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2EFunTranslationsServerTest")
@@ -35,7 +69,7 @@ func TestUpstreamService_FunTranslations(t *testing.T) {
 
 	// --- 2. Register Fun Translations Server with MCPANY ---
 	const funTranslationsServiceID = "e2e_funtranslations"
-	funTranslationsServiceEndpoint := "https://api.funtranslations.com"
+	funTranslationsServiceEndpoint := mockServer.URL
 	t.Logf("INFO: Registering '%s' with MCPANY at endpoint %s...", funTranslationsServiceID, funTranslationsServiceEndpoint)
 	registrationGRPCClient := mcpAnyTestServerInfo.RegistrationClient
 
@@ -52,9 +86,6 @@ func TestUpstreamService_FunTranslations(t *testing.T) {
 				}.Build(),
 			}.Build(),
 		},
-		InputTransformer: configv1.InputTransformer_builder{
-			Template: proto.String("{\"text\": \"{{.input.text}}\"}"),
-		}.Build(),
 	}.Build()
 
 	toolDef := configv1.ToolDefinition_builder{
@@ -97,30 +128,8 @@ func TestUpstreamService_FunTranslations(t *testing.T) {
 	toolName := serviceID + "." + sanitizedToolName
 	text := `{"text": "Hello, how are you?"}`
 
-	const maxRetries = 3
-	var res *mcp.CallToolResult
-
-	for i := 0; i < maxRetries; i++ {
-		res, err = cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(text)})
-		if err == nil {
-			break // Success
-		}
-
-		if strings.Contains(err.Error(), "503 Service Temporarily Unavailable") || strings.Contains(err.Error(), "context deadline exceeded") || strings.Contains(err.Error(), "connection reset by peer") {
-			t.Logf("Attempt %d/%d: Call to api.funtranslations.com failed with a transient error: %v. Retrying...", i+1, maxRetries, err)
-			time.Sleep(2 * time.Second) // Wait before retrying
-			continue
-		}
-		if strings.Contains(err.Error(), "upstream HTTP request failed with status 429") {
-			t.Skipf("Skipping test due to rate limiting from api.funtranslations.com: %v", err)
-		}
-
-		require.NoError(t, err, "unrecoverable error calling translateToYoda tool")
-	}
-
-	if err != nil {
-		t.Skipf("Skipping test: all %d retries to api.funtranslations.com failed with transient errors. Last error: %v", maxRetries, err)
-	}
+	res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(text)})
+	require.NoError(t, err, "Error calling translateToYoda tool")
 
 	require.NoError(t, err, "Error calling translateToYoda tool")
 	require.NotNil(t, res, "Nil response from translateToYoda tool")
@@ -131,6 +140,7 @@ func TestUpstreamService_FunTranslations(t *testing.T) {
 	require.True(t, ok, "Expected text content")
 
 	var funTranslationsResponse map[string]interface{}
+	t.Logf("Received response text: %s", textContent.Text)
 	err = json.Unmarshal([]byte(textContent.Text), &funTranslationsResponse)
 	require.NoError(t, err, "Failed to unmarshal JSON response")
 

@@ -12,6 +12,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/alicebob/miniredis/v2"
 	"github.com/go-redis/redismock/v9"
 	bus_pb "github.com/mcpany/core/proto/bus"
 	"github.com/mcpany/core/server/pkg/logging"
@@ -35,9 +36,21 @@ func setupRedisIntegrationTest(t *testing.T) *redis.Client {
 	})
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
 	defer cancel()
-	if _, err := client.Ping(ctx).Result(); err != nil {
-		t.Skip("Redis is not available")
+	if _, err := client.Ping(ctx).Result(); err == nil {
+		t.Cleanup(func() {
+			_ = client.Close()
+		})
+		return client
 	}
+
+	t.Log("Real Redis not available, using miniredis")
+	mr, err := miniredis.Run()
+	require.NoError(t, err)
+	t.Cleanup(mr.Close)
+
+	client = redis.NewClient(&redis.Options{
+		Addr: mr.Addr(),
+	})
 	t.Cleanup(func() {
 		_ = client.Close()
 	})

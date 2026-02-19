@@ -23,6 +23,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/alicebob/miniredis/v2"
 	"github.com/gorilla/websocket"
 	apiv1 "github.com/mcpany/core/proto/api/v1"
 	bus "github.com/mcpany/core/proto/bus"
@@ -1013,7 +1014,10 @@ func StartNatsServer(t *testing.T) (string, func()) {
 func StartRedisContainer(t *testing.T) (redisAddr string, cleanupFunc func()) {
 	t.Helper()
 	if !IsDockerSocketAccessible() {
-		t.Skip("Docker is not running or accessible or functional. Skipping test.")
+		t.Log("Docker not available, falling back to miniredis")
+		mr, err := miniredis.Run()
+		require.NoError(t, err)
+		return mr.Addr(), mr.Close
 	}
 
 	containerName := fmt.Sprintf("mcpany-redis-test-%d", time.Now().UnixNano())

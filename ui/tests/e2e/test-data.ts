@@ -101,6 +101,36 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
     }
 };
 
+export const seedSettings = async (requestContext?: APIRequestContext) => {
+    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    const settings = {
+        mcp_listen_address: ":8080",
+        log_level: 1, // INFO
+        log_format: 1, // TEXT
+        audit: { enabled: true },
+        dlp: { enabled: false },
+        gc_settings: { interval: "1h" },
+        read_only: false
+    };
+
+    try {
+        await context.post('/api/v1/settings', { data: settings, headers: HEADERS });
+    } catch (e) {
+        console.log(`Failed to seed settings: ${e}`);
+    }
+};
+
+export const seedSecrets = async (requestContext?: APIRequestContext) => {
+    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    // Assuming backend has an endpoint to create secrets or we just rely on creating them in the test
+    // If there is no bulk seed endpoint, we might not need this if the test creates them via UI
+    // But to match the "mock state" from before, let's try to clear them or seed initial ones if needed.
+    // The previous test mocked an empty list initially for GET, then POST added one.
+    // So we probably want to ensure clean state.
+
+    // There is no obvious list secrets endpoint to delete all, so maybe just leave it be or rely on cleanup.
+};
+
 export const seedCollection = async (name: string, requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     const collection = {
