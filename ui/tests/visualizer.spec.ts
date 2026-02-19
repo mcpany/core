@@ -4,34 +4,27 @@
  */
 
 import { test, expect } from '@playwright/test';
-import { seedServices, seedTraffic, seedTemplates, seedWebhooks, seedUser, cleanupServices, cleanupTemplates, cleanupWebhooks } from './e2e/test-data';
 
 test.describe('Agent Flow Visualizer E2E', () => {
+  // Use serial mode to avoid backend contention if we were seeding,
+  // but now we rely on static config so parallel might be fine.
+  // Keeping serial for safety in CI.
   test.describe.configure({ mode: 'serial' });
 
-  test.beforeEach(async ({ request, page }) => {
-      // Seed data similar to e2e.spec.ts
-      await seedServices(request);
-      await seedTraffic(request); // Maybe not needed but safe
-      await seedTemplates(request);
-      await seedWebhooks(request);
-      await seedUser(request, "e2e-admin-viz");
-
-      // Login
+  test.beforeEach(async ({ page }) => {
+      // Login as the default admin user configured in docker-compose.test.yml
+      // MCPANY_ADMIN_INIT_USERNAME=e2e-admin
+      // MCPANY_ADMIN_INIT_PASSWORD=password
       await page.goto('/login');
       await page.waitForLoadState('networkidle');
 
-      await page.fill('input[name="username"]', 'e2e-admin-viz');
+      await page.fill('input[name="username"]', 'e2e-admin');
       await page.fill('input[name="password"]', 'password');
       await page.click('button[type="submit"]', { force: true });
       await page.waitForURL('/', { timeout: 30000 });
   });
 
-  test.afterEach(async ({ request }) => {
-      await cleanupServices(request);
-      await cleanupTemplates(request);
-      await cleanupWebhooks(request);
-  });
+  // No cleanup needed as we are not seeding dynamic resources
 
   test('should visualize live trace of tool execution', async ({ page }) => {
     // 1. Go to Playground
@@ -85,6 +78,5 @@ test.describe('Agent Flow Visualizer E2E', () => {
          const hasNode = nodes.some(n => /weather-service/i.test(n));
          expect(hasNode).toBeTruthy();
     }).toPass({ timeout: 10000 });
-
   });
 });
