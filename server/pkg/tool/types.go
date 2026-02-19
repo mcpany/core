@@ -2017,7 +2017,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 				placeholder := "{{" + k + "}}"
 				if strings.Contains(arg, placeholder) {
 					val := util.ToString(v)
-					if err := validateSafePathAndInjection(val, isDocker, commandName, sandboxEnabled); err != nil {
+					if err := validateSafePathAndInjection(val, isDocker, commandName); err != nil {
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
 					}
 					// If running a shell or interpreter, validate that inputs are safe
@@ -2052,7 +2052,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 			if argsList, ok := argsVal.([]any); ok {
 				for _, arg := range argsList {
 					if argStr, ok := arg.(string); ok {
-						if err := validateSafePathAndInjection(argStr, isDocker, commandName, sandboxEnabled); err != nil {
+						if err := validateSafePathAndInjection(argStr, isDocker, commandName); err != nil {
 							return nil, fmt.Errorf("args parameter: %w", err)
 						}
 						// If running a shell, validate that inputs are safe for shell execution
@@ -2133,7 +2133,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 			env = append(env, fmt.Sprintf("%s=%s", name, secretValue))
 		} else if val, ok := inputs[name]; ok {
 			valStr := util.ToString(val)
-			if err := validateSafePathAndInjection(valStr, isDocker, commandName, sandboxEnabled); err != nil {
+			if err := validateSafePathAndInjection(valStr, isDocker, commandName); err != nil {
 				return nil, fmt.Errorf("parameter %q: %w", name, err)
 			}
 			// Sentinel Security: For shell commands, we only add environment variables if they are safe
@@ -2360,7 +2360,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 					val := util.ToString(v)
 					// Use validateSafePathAndInjection which now centralizes all checks
 					// CommandTool (Docker/Executor) doesn't explicitly support our gawk sandbox detection yet, so we assume false.
-					if err := validateSafePathAndInjection(val, isDocker, commandName, false); err != nil {
+					if err := validateSafePathAndInjection(val, isDocker, commandName); err != nil {
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
 					}
 					// If running a shell or interpreter, validate that inputs are safe
@@ -2396,7 +2396,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 				for _, arg := range argsList {
 					if argStr, ok := arg.(string); ok {
 						// Use validateSafePathAndInjection which now centralizes all checks
-						if err := validateSafePathAndInjection(argStr, isDocker, commandName, false); err != nil {
+						if err := validateSafePathAndInjection(argStr, isDocker, commandName); err != nil {
 							return nil, fmt.Errorf("args parameter: %w", err)
 						}
 						args = append(args, argStr)
@@ -3828,7 +3828,7 @@ func checkEnvInjection(val string) error {
 	return nil
 }
 
-func validateSafePathAndInjection(val string, isDocker bool, commandName string, sandboxEnabled bool) error {
+func validateSafePathAndInjection(val string, isDocker bool, commandName string) error {
 	// Sentinel Security Update: Trim whitespace to prevent bypasses using leading spaces
 	val = strings.TrimSpace(val)
 

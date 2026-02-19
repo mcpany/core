@@ -1,1 +1,0 @@
-BEGIN { f="sys" "tem"; @f("id") }
