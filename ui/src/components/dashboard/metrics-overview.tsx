@@ -21,8 +21,7 @@ import {
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SystemHealthCard } from "./system-health-card";
-
-// Metric interface now imported from @/lib/client
+import { apiClient, Metric } from "@/lib/client";
 
 const iconMap: Record<string, any> = {
   Users,
@@ -89,9 +88,6 @@ const MetricItem = memo(function MetricItem({ metric }: { metric: Metric }) {
 // Memoized to prevent unnecessary re-renders when parent components update.
 // This component manages its own state and data fetching, so it only needs to re-render
 // when its own state changes, not when the parent re-renders.
-import { apiClient, Metric } from "@/lib/client";
-
-// ... (Icon map and MetricItem remain same)
 
 /**
  * MetricsOverview displays a grid of key system metrics (e.g., QPS, Latency, Users)
