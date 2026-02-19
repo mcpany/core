@@ -1887,6 +1887,20 @@ func NewLocalCommandTool(
 			t.initError = fmt.Errorf("sed tool %q detected but --sandbox is not supported (error: %v); execution blocked for security", tool.GetName(), err)
 			logging.GetLogger().Error("Failed to enable sandbox for sed", "tool", tool.GetName(), "error", err)
 		}
+	} else if isAwkCommand(base) {
+		// Check if awk supports --sandbox
+		// gawk supports --sandbox which disables system(), pipes, and redirections.
+		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+		defer cancel()
+		checkCmd := exec.CommandContext(ctx, cmd, "--sandbox", "--version")
+		if err := checkCmd.Run(); err == nil {
+			t.sandboxArgs = []string{"--sandbox"}
+			logging.GetLogger().Info("Enabled sandbox mode for awk tool", "tool", tool.GetName())
+		} else {
+			// Do NOT block execution if sandbox missing, as standard awk is common.
+			// Rely on manual checks (Defense in Depth).
+			logging.GetLogger().Warn("Awk tool detected but --sandbox not supported; relying on input validation", "tool", tool.GetName(), "error", err)
+		}
 	}
 
 	return t
@@ -3556,22 +3570,93 @@ func checkAwkInjection(val, base string) error {
 	// Awk: Block pipe | to prevent external command execution
 	// Also block redirection > and < to prevent arbitrary file read/write
 	// And block getline to prevent file reading
-	isAwk := strings.HasPrefix(base, "awk") || strings.HasPrefix(base, "gawk") || strings.HasPrefix(base, "nawk") || strings.HasPrefix(base, "mawk")
-	if isAwk {
-		if strings.Contains(val, "|") {
-			return fmt.Errorf("awk injection detected: value contains '|'")
+	if isAwkCommand(base) {
+		// Sentinel Security Update: Make checks quote-aware to avoid false positives in string literals.
+		// e.g. print "email@example.com" is safe, but @f is unsafe.
+		// e.g. print "a|b" is safe, but "cmd"|getline is unsafe.
+
+		inSingle := false
+		inDouble := false
+		escaped := false
+
+		// For system keyword check
+		var wordBuilder strings.Builder
+
+		for i := 0; i < len(val); i++ {
+			char := val[i]
+
+			if escaped {
+				escaped = false
+				continue
+			}
+			if char == '\\' {
+				escaped = true
+				continue
+			}
+
+			if char == '\'' && !inDouble {
+				inSingle = !inSingle
+				continue
+			}
+			if char == '"' && !inSingle {
+				inDouble = !inDouble
+				continue
+			}
+
+			// Checks only in unquoted context
+			if !inSingle && !inDouble {
+				if char == '|' {
+					return fmt.Errorf("awk injection detected: value contains '|'")
+				}
+				if char == '>' {
+					return fmt.Errorf("awk injection detected: value contains '>'")
+				}
+				if char == '<' {
+					return fmt.Errorf("awk injection detected: value contains '<'")
+				}
+				// Sentinel Security Update: Block indirect function calls (@) which can bypass function call checks
+				if char == '@' {
+					return fmt.Errorf("awk injection detected: value contains '@'")
+				}
+
+				// Accumulate word for keyword checking
+				if isWordChar(char) {
+					wordBuilder.WriteByte(char)
+				} else {
+					if wordBuilder.Len() > 0 {
+						word := wordBuilder.String()
+						if word == "getline" {
+							return fmt.Errorf("awk injection detected: value contains 'getline'")
+						}
+						// Sentinel Security Update: Block system() keyword explicitly as a fallback
+						if word == "system" {
+							return fmt.Errorf("awk injection detected: value contains 'system'")
+						}
+						wordBuilder.Reset()
+					}
+				}
+			} else {
+				// Reset word builder if we enter quotes or special char
+				wordBuilder.Reset()
+			}
 		}
-		if strings.Contains(val, ">") {
-			return fmt.Errorf("awk injection detected: value contains '>'")
-		}
-		if strings.Contains(val, "<") {
-			return fmt.Errorf("awk injection detected: value contains '<'")
-		}
-		if strings.Contains(val, "getline") {
-			return fmt.Errorf("awk injection detected: value contains 'getline'")
+
+		// Check last word
+		if wordBuilder.Len() > 0 {
+			word := wordBuilder.String()
+			if word == "getline" {
+				return fmt.Errorf("awk injection detected: value contains 'getline'")
+			}
+			if word == "system" {
+				return fmt.Errorf("awk injection detected: value contains 'system'")
+			}
 		}
 	}
 	return nil
+}
+
+func isAwkCommand(base string) bool {
+	return strings.HasPrefix(base, "awk") || strings.HasPrefix(base, "gawk") || strings.HasPrefix(base, "nawk") || strings.HasPrefix(base, "mawk")
 }
 
 func checkBacktickInjection(val, command string) error {
