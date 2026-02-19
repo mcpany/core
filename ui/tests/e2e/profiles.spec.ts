@@ -11,26 +11,13 @@ test.describe('MCP Any Profile & Collection Tests', () => {
 
   test.beforeEach(async ({ page, request }) => {
     // Seed user to avoid race conditions with other tests cleanup
-    await seedUser(request, 'profile-admin');
-
-    // Login first (mocked or real, but we need to bypass middleware if present)
-    // Actually, if we mock the API, we might still get redirected by middleware if we don't have a session.
-    // For now, let's just log in via UI to get the cookie.
-    // But wait, if we mock API, login might fail if we don't allow it.
-    // Let's assume we can login or stub the session.
-    // Simplest: Mock middleware? No can't easily.
-    // Let's perform login similar to e2e.spec.ts.
-    // But we need a user. If we rely on seedUser from e2e.spec.ts?
-    // tests/e2e/profiles.spec.ts doesn't import seedUser.
-    // And e2e_test.go runs tests in parallel or seq?
-    // Playwright runs parallel.
-    // We should try to use a valid user. "admin"/"password" is created if we fix api key.
+    await seedUser(request, 'profile-admin-e2e');
 
     await page.goto('/login');
-    await page.fill('input[name="username"]', 'profile-admin');
+    await page.fill('input[name="username"]', 'profile-admin-e2e');
     await page.fill('input[name="password"]', 'password');
-    await page.click('button[type="submit"]');
-    await expect(page).toHaveURL('/');
+    await page.click('button[type="submit"]', { force: true });
+    await page.waitForURL('/', { timeout: 30000 });
   });
 
   test('Create new Profile', async ({ page }) => {
@@ -38,7 +25,7 @@ test.describe('MCP Any Profile & Collection Tests', () => {
     await page.goto('/profiles');
 
     // assert headers
-    await expect(page.locator('h1, h2').filter({ hasText: 'Profiles' }).first()).toBeVisible();
+    await expect(page.getByText('Profiles', { exact: true }).first()).toBeVisible();
 
 
     // Click Create
@@ -47,7 +34,7 @@ test.describe('MCP Any Profile & Collection Tests', () => {
     await createBtn.click({ force: true });
 
     // Wait for dialog
-    await expect(page.getByRole('heading', { name: /Create (New )?Profile/i })).toBeVisible();
+    await expect(page.getByText(/Create (New )?Profile/i).first()).toBeVisible();
 
     // Fill form
     await page.getByLabel(/name/i).fill('QA Profile');

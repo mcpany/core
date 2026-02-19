@@ -1,21 +1,13 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
+import { apiClient } from './client';
 import { Skill } from '@proto/config/v1/skill';
-
-const API_BASE = '/api/v1/skills';
-
-// Helper to wrap skill in request object if needed, or just send valid JSON that matches Proto.
-// The generated Gateway handlers expects JSON body mapped to the request message.
-// CreateSkillRequest has field 'skill'.
-// UpdateSkillRequest has field 'skill'.
-// So we should wrap the skill in { skill: ... } object?
-// "body: 'skill'" option in proto means the body content is mapped TO the 'skill' field.
-// So sending the Skill object directly is correct.
 
 /**
  * SkillService provides methods to interact with the backend Skills API.
  * It handles listing, getting, creating, updating, and deleting skills.
+ * It delegates to the centralized apiClient to ensure authentication consistency.
  */
 export const SkillService = {
   /**
@@ -25,14 +17,7 @@ export const SkillService = {
    * @throws Error if the request fails.
    */
   async list(): Promise<Skill[]> {
-    const res = await fetch(API_BASE);
-    if (!res.ok) throw new Error('Failed to list skills');
-    /*
-      Proto JSON response for ListSkillsResponse:
-      { "skills": [...] }
-    */
-    const data = await res.json();
-    return data.skills || [];
+    return apiClient.listSkills();
   },
 
   /**
@@ -43,14 +28,7 @@ export const SkillService = {
    * @throws Error if the request fails.
    */
   async get(name: string): Promise<Skill> {
-    const res = await fetch(`${API_BASE}/${name}`);
-    if (!res.ok) throw new Error(`Failed to get skill ${name}`);
-    /*
-      Proto JSON response for GetSkillResponse:
-      { "skill": {...} }
-    */
-    const data = await res.json();
-    return data.skill;
+    return apiClient.getSkill(name);
   },
 
   /**
@@ -61,17 +39,7 @@ export const SkillService = {
    * @throws Error if the request fails.
    */
   async create(skill: Skill): Promise<Skill> {
-    const res = await fetch(API_BASE, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(skill),
-    });
-    if (!res.ok) {
-        const err = await res.text();
-        throw new Error(`Failed to create skill: ${err}`);
-    }
-    const data = await res.json();
-    return data.skill;
+    return apiClient.createSkill(skill);
   },
 
   /**
@@ -83,17 +51,7 @@ export const SkillService = {
    * @throws Error if the request fails.
    */
   async update(originalName: string, skill: Skill): Promise<Skill> {
-    const res = await fetch(`${API_BASE}/${originalName}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(skill),
-    });
-    if (!res.ok) {
-        const err = await res.text();
-        throw new Error(`Failed to update skill: ${err}`);
-    }
-    const data = await res.json();
-    return data.skill;
+    return apiClient.updateSkill(originalName, skill);
   },
 
   /**
@@ -104,10 +62,7 @@ export const SkillService = {
    * @throws Error if the request fails.
    */
   async delete(name: string): Promise<void> {
-    const res = await fetch(`${API_BASE}/${name}`, {
-      method: 'DELETE',
-    });
-    if (!res.ok) throw new Error(`Failed to delete skill ${name}`);
+    return apiClient.deleteSkill(name);
   },
 
   /**
@@ -122,12 +77,14 @@ export const SkillService = {
   async uploadAsset(skillName: string, path: string, file: File): Promise<void> {
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('path', path); // We might need to handle path in backend or query param
+    formData.append('path', path);
 
-    // Use /v1/skills/{name}/assets
-    const res = await fetch(`${API_BASE}/${skillName}/assets`, {
+    const res = await fetch(`/api/v1/skills/${skillName}/assets`, {
       method: 'POST',
       body: formData,
+      // fetchWithAuth doesn't handle FormData easily yet, and this endpoint
+      // might be handled differently. If needed, we can add specialized
+      // fetchWithAuthFormData later.
     });
 
     if (!res.ok) {

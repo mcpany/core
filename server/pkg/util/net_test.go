@@ -27,6 +27,7 @@ func TestNewSafeHTTPClient(t *testing.T) {
 	// Since NewSafeHTTPClient reads env vars directly, we need to set them.
 
 	t.Run("Default restricted", func(t *testing.T) {
+		t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "")
 		t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "")
 		t.Setenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES", "")
 		client := util.NewSafeHTTPClient()

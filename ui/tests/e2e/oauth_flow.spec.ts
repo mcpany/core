@@ -103,10 +103,18 @@ test.describe('OAuth Flow Integration', () => {
     // Step 4: Authentication
     await expect(page.getByText('Select Credential for Testing')).toBeVisible({ timeout: 15 * 1000 });
 
+    await page.waitForTimeout(1000); // Wait for animations/mounting
+    await expect(page.getByRole('combobox')).toBeVisible({ timeout: 15 * 1000 });
     await page.getByRole('combobox').click({ force: true });
-    await page.getByRole('option', { name: 'GitHub OAuth' }).click({ force: true });
 
-    await page.getByRole('button', { name: 'Connect with OAuth' }).click({ force: true });
+    // Ensure the option is actually in the list (or search for it if filtered)
+    const githubOption = page.getByRole('option', { name: 'GitHub OAuth' });
+    await expect(githubOption).toBeVisible({ timeout: 10000 });
+    await githubOption.click({ force: true });
+
+    const connectButton = page.getByRole('button', { name: 'Connect with OAuth' });
+    await expect(connectButton).toBeVisible({ timeout: 10000 });
+    await connectButton.click({ force: true });
 
     // Success check in callback page
     await expect(page.getByText('Authentication Successful')).toBeVisible({ timeout: 30 * 1000 });

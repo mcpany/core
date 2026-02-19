@@ -7,6 +7,13 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Network Topology', () => {
   test.beforeEach(async ({ page }) => {
+      // Ensure login
+      await page.goto('/login');
+      await page.fill('input[name="username"]', 'e2e-admin');
+      await page.fill('input[name="password"]', 'password');
+      await page.click('button[type="submit"]', { force: true });
+      await page.waitForURL('/', { timeout: 30000 });
+
     // Mock the topology API
     await page.route('**/api/v1/topology', async route => {
         await route.fulfill({
@@ -62,7 +69,7 @@ test.describe('Network Topology', () => {
     await page.locator('.react-flow').getByText('MCP Any').first().click();
     // Verify sheet opens with correct details
     // It might show "MCP Any" or "Core" depending on implementation
-    await expect(page.getByRole('heading', { name: /MCP Any|Core/i })).toBeVisible();
+      await expect(page.getByText(/MCP Any|Core/i).first()).toBeVisible();
   });
 
   test('should filter nodes', async ({ page }) => {

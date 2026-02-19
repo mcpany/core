@@ -15,6 +15,15 @@ import { Textarea } from "@/components/ui/textarea";
 import { JsonView } from "@/components/ui/json-view";
 import Ajv, { ErrorObject } from "ajv";
 import addFormats from "ajv-formats";
+import { generateCurlCommand, generatePythonCode } from "@/lib/code-generator";
+import { useToast } from "@/hooks/use-toast";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Code, Terminal } from "lucide-react";
 
 interface ToolFormProps {
   tool: ToolDefinition;
@@ -196,6 +205,19 @@ export function ToolForm({ tool, onSubmit, onCancel }: ToolFormProps) {
   // removed errors from deps to avoid infinite loop if setErrors is called.
   // actually including formData/jsonInput is enough.
 
+    const { toast } = useToast();
+
+    const handleCopyCode = (type: 'curl' | 'python') => {
+        const data = getCurrentData();
+        const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:8080';
+        const code = type === 'curl'
+            ? generateCurlCommand({ toolName: tool.name, args: data, baseUrl })
+            : generatePythonCode({ toolName: tool.name, args: data, baseUrl });
+
+        navigator.clipboard.writeText(code);
+        toast({ title: "Copied to clipboard", description: `${type === 'curl' ? 'Curl command' : 'Python code'} copied.` });
+    };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4 py-2 flex flex-col h-[60vh]">
       <Tabs value={mode} onValueChange={handleTabChange} className="flex-1 flex flex-col overflow-hidden">
@@ -271,13 +293,34 @@ export function ToolForm({ tool, onSubmit, onCancel }: ToolFormProps) {
         </TabsContent>
       </Tabs>
 
-      <div className="flex justify-end gap-2 pt-4 border-t mt-auto">
-        <Button type="button" variant="outline" onClick={onCancel}>
-          Cancel
-        </Button>
-        <Button type="submit">
-          Build Command
-        </Button>
+          <div className="flex justify-between items-center pt-4 border-t mt-auto">
+              <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                      <Button variant="outline" size="sm" type="button" className="gap-2">
+                          <Code className="size-4" />
+                          Copy Code
+                      </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start">
+                      <DropdownMenuItem onClick={() => handleCopyCode('curl')}>
+                          <Terminal className="mr-2 size-4" />
+                          Copy as Curl
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleCopyCode('python')}>
+                          <Code className="mr-2 size-4" />
+                          Copy as Python
+                      </DropdownMenuItem>
+                  </DropdownMenuContent>
+              </DropdownMenu>
+
+              <div className="flex gap-2">
+                  <Button type="button" variant="outline" onClick={onCancel}>
+                      Cancel
+                  </Button>
+                  <Button type="submit">
+                      Build Command
+                  </Button>
+              </div>
       </div>
     </form>
   );

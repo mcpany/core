@@ -2558,6 +2558,9 @@ func TestRunServerMode_Auth(t *testing.T) {
 	waitForServerReady(t, bindAddress)
 	baseURL := fmt.Sprintf("http://%s", bindAddress)
 
+	// Ensure dangerous mode is OFF
+	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "")
+
 	t.Run("Invalid Path", func(t *testing.T) {
 		resp, err := http.Get(baseURL + "/mcp/u/foo")
 		require.NoError(t, err)
@@ -2566,7 +2569,9 @@ func TestRunServerMode_Auth(t *testing.T) {
 	})
 
 	t.Run("User Not Found", func(t *testing.T) {
-		resp, err := http.Get(baseURL + "/mcp/u/unknown_user/profile/any")
+		req, _ := http.NewRequest("GET", baseURL+"/mcp/u/unknown_user/profile/any", nil)
+		req.Header.Set("X-API-Key", "global-secret")
+		resp, err := http.DefaultClient.Do(req)
 		require.NoError(t, err)
 		defer resp.Body.Close()
 		assert.Equal(t, http.StatusNotFound, resp.StatusCode)
@@ -3283,6 +3288,7 @@ func TestTemplateManager_LoadCorrupt(t *testing.T) {
 func TestMCPUserHandler_NoAuth_PublicIP_Blocked(t *testing.T) {
 	// Set TRUST PROXY to simulate forwarded IP
 	t.Setenv("MCPANY_TRUST_PROXY", "true")
+	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "")
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -3336,7 +3342,7 @@ func TestMCPUserHandler_NoAuth_PublicIP_Blocked(t *testing.T) {
 	require.NoError(t, err)
 	defer resp.Body.Close()
 
-	assert.Equal(t, http.StatusForbidden, resp.StatusCode, "Public access should be blocked when no API Key is configured")
+	assert.Equal(t, http.StatusUnauthorized, resp.StatusCode, "Public access should be blocked when no API Key is configured")
 
 	cancel()
 	<-errChan

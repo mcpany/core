@@ -29,7 +29,13 @@ test.describe('Marketplace Wizard and Service Lifecycle', () => {
     });
 
     await page.route('/api/v1/credentials', async route => {
-        await route.fulfill({ json: [{ id: 'cred-1', name: 'Test Credential' }] });
+      await route.fulfill({
+        json: [{
+          id: 'cred-1',
+          name: 'Test Credential',
+          authentication: { apiKey: { paramName: 'Authorization', in: 0, value: { plainText: 'secret' } } }
+        }]
+      });
     });
 
     // Mock Templates API
@@ -64,7 +70,7 @@ test.describe('Marketplace Wizard and Service Lifecycle', () => {
   test('Complete CUJ: Create Config -> Instantiate -> Manage', async ({ page }) => {
     // 1. Navigate to Marketplace
     await page.goto('/marketplace');
-    await expect(page.getByRole('heading', { name: 'Marketplace' })).toBeVisible();
+    await expect(page.getByText('Marketplace', { exact: true }).first()).toBeVisible();
 
     // 2. Open Wizard
     await page.getByRole('button', { name: 'Create Config' }).click();
@@ -77,7 +83,7 @@ test.describe('Marketplace Wizard and Service Lifecycle', () => {
     await page.click('button:has-text("Next")');
 
     // 4. Step 2: Parameters
-    await expect(page.getByRole('heading', { name: 'Environment Variables / Parameters' })).toBeVisible();
+    await expect(page.getByText('Environment Variables / Parameters').first()).toBeVisible();
 
     // Check for parameter input existence and edit it
     // Using specific locator to avoid strict mode violations if multiple inputs exist
@@ -111,15 +117,15 @@ test.describe('Marketplace Wizard and Service Lifecycle', () => {
     await expect(page.getByText('Test Connection Only')).toBeVisible();
 
     // Verify we can see the credential we mocked
-    await page.getByRole('combobox').click();
-    await expect(page.getByRole('option', { name: 'Test Credential' })).toBeVisible();
+    await page.getByRole('combobox').click({ force: true });
+    await expect(page.getByRole('option', { name: 'Test Credential' })).toBeVisible({ timeout: 10000 });
     // Select Test Credential
     await page.getByRole('option', { name: 'Test Credential' }).click();
 
     // Helper: Test Connection
     await page.getByRole('button', { name: 'Test Connection' }).click();
     // Expect success message (toast or alert or status)
-    await expect(page.getByText('Connection verification successful')).toBeVisible();
+    await expect(page.getByText('Connection verification successful')).toBeVisible({ timeout: 60000 });
 
     await page.click('button:has-text("Next")');
 

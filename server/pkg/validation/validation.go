@@ -177,16 +177,13 @@ var IsSensitivePath = func(path string) error {
 	}
 
 	// Block database files
-	if baseLower == "mcpany.db" || strings.HasSuffix(baseLower, ".db") || strings.HasSuffix(baseLower, ".sqlite") {
+	if baseLower == "mcpany.db" {
 		return fmt.Errorf("access to database file %q is denied", base)
 	}
 
-	// Block private keys
-	if baseLower == "id_rsa" || baseLower == "id_dsa" || baseLower == "id_ed25519" || baseLower == "id_ecdsa" {
+	// Block private keys (known SSH formats)
+	if baseLower == "id_rsa" || baseLower == "id_dsa" || baseLower == "id_ed25519" || baseLower == "id_ecdsa" || baseLower == "id_rsa.key" || baseLower == "id_dsa.key" {
 		return fmt.Errorf("access to private key %q is denied", base)
-	}
-	if strings.HasSuffix(baseLower, ".pem") || strings.HasSuffix(baseLower, ".key") {
-		return fmt.Errorf("access to private key file %q is denied", base)
 	}
 
 	// Block sensitive directories

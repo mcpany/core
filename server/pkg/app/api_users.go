@@ -99,6 +99,19 @@ func (a *Application) handleUsers(store storage.Storage) http.HandlerFunc {
 				return
 			}
 
+			// Check if user exists first to return 409
+			existing, err := store.GetUser(r.Context(), user.GetId())
+			if err != nil {
+				logging.GetLogger().Error("failed to check if user exists", "error", err)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
+			if existing != nil {
+				w.WriteHeader(http.StatusConflict)
+				_ = json.NewEncoder(w).Encode(map[string]string{"error": "user already exists"})
+				return
+			}
+
 			if err := store.CreateUser(r.Context(), &user); err != nil {
 				logging.GetLogger().Error("failed to create user", "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)

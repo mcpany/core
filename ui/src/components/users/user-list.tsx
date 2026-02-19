@@ -126,7 +126,7 @@ export function UserList({ users, isLoading, onEdit, onDelete }: UserListProps) 
                             </TableRow>
                         ) : (
                             filteredUsers.map((user) => (
-                                <TableRow key={user.id}>
+                                <TableRow key={user.id} data-testid={`user-row-${user.id}`}>
                                     <TableCell>
                                         <div className="flex items-center gap-3">
                                             <Avatar className="h-9 w-9 border">
@@ -141,7 +141,7 @@ export function UserList({ users, isLoading, onEdit, onDelete }: UserListProps) 
                                     </TableCell>
                                     <TableCell>
                                         <div className="flex flex-wrap gap-1">
-                                            {user.roles.map((role) => (
+                                            {user.roles?.map((role) => (
                                                 <Badge
                                                     key={role}
                                                     variant={role === "admin" ? "default" : "secondary"}
@@ -153,7 +153,7 @@ export function UserList({ users, isLoading, onEdit, onDelete }: UserListProps) 
                                                     {role}
                                                 </Badge>
                                             ))}
-                                            {user.roles.length === 0 && (
+                                            {(!user.roles || user.roles.length === 0) && (
                                                 <span className="text-muted-foreground text-xs italic">No roles</span>
                                             )}
                                         </div>

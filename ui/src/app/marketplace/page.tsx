@@ -23,7 +23,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, Trash2 } from "lucide-react";
 import { InstantiateDialog } from "@/components/marketplace/instantiate-dialog";
 import { CollectionDetailsDialog } from "@/components/marketplace/collection-details-dialog";
-import { apiClient, UpstreamServiceConfig } from "@/lib/client";
+import { apiClient, UpstreamServiceConfig, ServiceTemplate } from "@/lib/client";
 import { Badge } from "@/components/ui/badge";
 import { SERVICE_REGISTRY } from "@/lib/service-registry";
 
@@ -80,12 +80,17 @@ export default function MarketplacePage() {
         setPopularServices(catalogServices);
 
         // Map backend templates to ServiceCollection format for consistent display
-        const mappedTemplates = templates.map((t: UpstreamServiceConfig) => ({
+        const mappedTemplates = templates.map((t: ServiceTemplate) => ({
             name: t.name,
-            description: "Backend Template",
+            description: t.description || "Backend Template",
             author: "User",
-            version: t.version || "0.0.1",
-            services: [t]
+            version: t.serviceConfig?.version || "0.0.1",
+            services: [
+                {
+                    ...t.serviceConfig,
+                    templateId: t.id // Inject template ID for deletion
+                }
+            ]
         }));
         setBackendTemplates(mappedTemplates);
     } catch (e) {
@@ -123,7 +128,17 @@ export default function MarketplacePage() {
 
   const handleWizardComplete = async (config: UpstreamServiceConfig) => {
       try {
-          await apiClient.saveTemplate(config);
+          // Context: Wizard returns UpstreamServiceConfig
+          // We need to wrap it in ServiceTemplate to save
+          const template: ServiceTemplate = {
+              id: "", // Server generates ID
+              name: config.name,
+              description: config.description || "Created via Wizard",
+              icon: "package",
+              tags: config.tags || [],
+              serviceConfig: config
+          };
+          await apiClient.saveTemplate(template);
           toast({ title: "Config Saved", description: `${config.name} saved to Backend Templates.` });
           setIsWizardOpen(false);
           loadData();
@@ -136,7 +151,11 @@ export default function MarketplacePage() {
   const deleteTemplate = async (templateSvc: UpstreamServiceConfig) => {
       if (!templateSvc.id && !templateSvc.name) return;
       try {
-        await apiClient.deleteTemplate(templateSvc.id || templateSvc.name);
+          // Use templateId if available (injected during mapping), otherwise fallback to name?
+          // Actually for locally created ones via wizard, we might not have templateId if we didn't reload?
+          // But loadData is called after save.
+          const idToDelete = templateSvc.templateId || templateSvc.id || templateSvc.name;
+          await apiClient.deleteTemplate(idToDelete);
         loadData();
         toast({ title: "Deleted", description: "Backend template deleted." });
       } catch (e) {

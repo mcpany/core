@@ -55,7 +55,7 @@ const MetricItem = memo(function MetricItem({ metric }: { metric: Metric }) {
   }
 
   return (
-    <Card className="backdrop-blur-xl bg-background/60 border border-white/20 shadow-sm hover:shadow-lg transition-all duration-300">
+    <Card data-testid={`metric-card-${metric.label}`} className="backdrop-blur-xl bg-background/60 border border-white/20 shadow-sm hover:shadow-lg transition-all duration-300">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium text-muted-foreground">
           {metric.label}
@@ -63,7 +63,7 @@ const MetricItem = memo(function MetricItem({ metric }: { metric: Metric }) {
         <Icon className="h-4 w-4 text-muted-foreground opacity-70" />
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold tracking-tight">{metric.value}</div>
+        <div data-testid="metric-value" className="text-2xl font-bold tracking-tight">{metric.value}</div>
         <div className="flex items-center justify-between mt-1">
             {metric.change && (
           <p className={`text-xs flex items-center ${trendColor}`}>
@@ -134,17 +134,17 @@ export const MetricsOverview = memo(function MetricsOverview() {
     };
   }, [serviceId]);
 
-  if (metrics.length === 0) {
-    return <div className="text-muted-foreground animate-pulse">Loading dashboard metrics...</div>;
-  }
-
   return (
     <div className="space-y-4">
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {metrics.map((metric) => (
-          <MetricItem key={metric.label} metric={metric} />
-        ))}
-      </div>
+      {metrics.length === 0 ? (
+        <div className="text-muted-foreground animate-pulse">Loading dashboard metrics...</div>
+      ) : (
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            {metrics.map((metric) => (
+              <MetricItem key={metric.label} metric={metric} />
+            ))}
+          </div>
+      )}
       <SystemHealthCard />
     </div>
   );

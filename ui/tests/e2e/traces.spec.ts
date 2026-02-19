@@ -26,6 +26,13 @@ test.describe('Trace Viewer', () => {
 
   test('should navigate to traces page and view details', async ({ page }) => {
 
+    // Ensure login
+    await page.goto('/login');
+    await page.fill('input[name="username"]', 'e2e-admin');
+    await page.fill('input[name="password"]', 'password');
+    await page.click('button[type="submit"]', { force: true });
+    await page.waitForURL('/', { timeout: 30000 });
+
     // Navigate to dashboard
     await page.goto('/');
 
@@ -58,7 +65,7 @@ test.describe('Trace Viewer', () => {
     await firstTrace.click();
 
     // Check if details pane is populated
-    await expect(page.locator('h2')).toBeVisible(); // Trace name in header
+    await expect(page.getByText('Execution Waterfall').first()).toBeVisible();
     await expect(page.locator('text=Execution Waterfall')).toBeVisible();
     await expect(page.locator('text=Root Input')).toBeVisible();
   });
