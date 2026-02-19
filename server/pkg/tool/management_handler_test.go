@@ -128,7 +128,8 @@ func TestHandler_Success(t *testing.T) {
 		require.NotNil(t, publishedReq)
 		require.Equal(t, "svc.tool", publishedReq.ToolName)
 
-		resBytes, _ := json.Marshal(map[string]any{"status": "ok"})
+		resBytes, err := json.Marshal(map[string]any{"status": "ok"})
+		require.NoError(t, err)
 		res := &bus.ToolExecutionResult{
 			Result: resBytes,
 		}
@@ -136,7 +137,8 @@ func TestHandler_Success(t *testing.T) {
 	}()
 
 	// Call Tool
-	sanitizedName, _ := util.SanitizeToolName("tool")
+	sanitizedName, err := util.SanitizeToolName("tool")
+	require.NoError(t, err)
 	result, err := clientSession.CallTool(context.Background(), &mcp_sdk.CallToolParams{
 		Name: "svc." + sanitizedName,
 	})
