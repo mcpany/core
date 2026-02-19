@@ -5,7 +5,7 @@
 
 "use client";
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect, useMemo } from 'react';
 import {
   ReactFlow,
   useNodesState,
@@ -16,51 +16,168 @@ import {
   MiniMap,
   Connection,
   MarkerType,
+  Node,
+  Edge,
+  useReactFlow,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
+import dagre from 'dagre';
 import { UserNode, AgentNode, ToolNode, ResourceNode, ServiceNode } from './custom-nodes';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card } from '@/components/ui/card';
 import { DebuggerControls } from './debugger-controls';
 import { VariableInspector } from './variable-inspector';
+import { useTopology, NodeType, Node as TopologyNode } from "@/hooks/use-topology";
+import { Loader2 } from "lucide-react";
 
 const nodeTypes = {
   user: UserNode,
-  agent: AgentNode,
+  agent: AgentNode, // Map Client to AgentNode for now
   tool: ToolNode,
   resource: ResourceNode,
   service: ServiceNode,
+  core: ServiceNode, // Use ServiceNode for Core for now, or create custom
 };
 
-const initialNodes = [
-  { id: '1', type: 'user', position: { x: 250, y: 0 }, data: { label: 'Alice' } },
-  { id: '2', type: 'agent', position: { x: 250, y: 150 }, data: { label: 'Orchestrator', role: 'Main Agent', status: 'Thinking...' } },
-  { id: '3', type: 'service', position: { x: 100, y: 300 }, data: { label: 'Postgres DB' } },
-  { id: '4', type: 'tool', position: { x: 400, y: 300 }, data: { label: 'Web Search' } },
-];
+const getLayoutedElements = (nodes: Node[], edges: Edge[]) => {
+  const dagreGraph = new dagre.graphlib.Graph();
+  dagreGraph.setDefaultEdgeLabel(() => ({}));
 
-const initialEdges = [
-  { id: 'e1-2', source: '1', target: '2', animated: true, label: 'Task: Analyze Data', markerEnd: { type: MarkerType.ArrowClosed } },
-  { id: 'e2-3', source: '2', target: '3', animated: true, label: 'Query' },
-  { id: 'e2-4', source: '2', target: '4', animated: false, label: 'Search' },
-];
+  const nodeWidth = 180;
+  const nodeHeight = 80;
+
+  dagreGraph.setGraph({ rankdir: 'LR' });
+
+  nodes.forEach((node) => {
+    dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
+  });
+
+  edges.forEach((edge) => {
+    dagreGraph.setEdge(edge.source, edge.target);
+  });
+
+  dagre.layout(dagreGraph);
+
+  const layoutedNodes = nodes.map((node) => {
+    const nodeWithPosition = dagreGraph.node(node.id);
+    return {
+      ...node,
+      position: {
+        x: nodeWithPosition.x - nodeWidth / 2,
+        y: nodeWithPosition.y - nodeHeight / 2,
+      },
+    };
+  });
+
+  return { nodes: layoutedNodes, edges };
+};
 
 /**
  * AgentFlow component renders the interactive flow visualization.
  * @returns The AgentFlow component.
  */
 export function AgentFlow() {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [isLive, setIsLive] = useState(false);
   const [selectedNode, setSelectedNode] = useState<any>(null);
+
+  // Use topology hook with polling if live
+  const { graph, loading, refresh } = useTopology(isLive ? 3000 : null);
+
+  const transformGraph = useCallback((graphData: any) => {
+      if (!graphData) return { nodes: [], edges: [] };
+
+      const flowNodes: Node[] = [];
+      const flowEdges: Edge[] = [];
+
+      // Add Core
+      if (graphData.core) {
+          flowNodes.push({
+              id: graphData.core.id,
+              type: 'service', // Reuse service style for core
+              data: { label: 'MCP Gateway', role: 'Core', status: 'Active' },
+              position: { x: 0, y: 0 }
+          });
+
+          // Core Children (Services)
+          if (graphData.core.children) {
+              graphData.core.children.forEach((svc: TopologyNode) => {
+                  flowNodes.push({
+                      id: svc.id,
+                      type: 'service',
+                      data: { label: svc.label, role: 'Service', status: 'Active' },
+                      position: { x: 0, y: 0 }
+                  });
+                  flowEdges.push({
+                      id: `e-${graphData.core.id}-${svc.id}`,
+                      source: graphData.core.id,
+                      target: svc.id,
+                      animated: true,
+                      type: 'smoothstep',
+                  });
+
+                  // Service Children (Tools)
+                  if (svc.children) {
+                      svc.children.forEach((tool: TopologyNode) => {
+                          flowNodes.push({
+                              id: tool.id,
+                              type: 'tool',
+                              data: { label: tool.label },
+                              position: { x: 0, y: 0 }
+                          });
+                          flowEdges.push({
+                              id: `e-${svc.id}-${tool.id}`,
+                              source: svc.id,
+                              target: tool.id,
+                              type: 'smoothstep',
+                          });
+                      });
+                  }
+              });
+          }
+      }
+
+      // Add Clients
+      if (graphData.clients) {
+          graphData.clients.forEach((client: TopologyNode) => {
+              flowNodes.push({
+                  id: client.id,
+                  type: 'user', // Or agent
+                  data: { label: client.label || 'Client' },
+                  position: { x: 0, y: 0 }
+              });
+              // Connect to Core
+              if (graphData.core) {
+                  flowEdges.push({
+                      id: `e-${client.id}-${graphData.core.id}`,
+                      source: client.id,
+                      target: graphData.core.id,
+                      animated: true,
+                      markerEnd: { type: MarkerType.ArrowClosed },
+                      type: 'smoothstep',
+                  });
+              }
+          });
+      }
+
+      return getLayoutedElements(flowNodes, flowEdges);
+  }, []);
+
+  useEffect(() => {
+      if (graph) {
+          const { nodes: layoutedNodes, edges: layoutedEdges } = transformGraph(graph);
+          setNodes(layoutedNodes);
+          setEdges(layoutedEdges);
+      }
+  }, [graph, transformGraph, setNodes, setEdges]);
 
   const onConnect = useCallback(
     (params: Connection) => setEdges((eds) => addEdge({ ...params, animated: true }, eds)),
     [setEdges],
   );
 
-  const togglePlay = () => setIsPlaying(!isPlaying);
+  const togglePlay = () => setIsLive(!isLive);
 
   const onNodeClick = useCallback((_: any, node: any) => {
     setSelectedNode(node);
@@ -70,39 +187,21 @@ export function AgentFlow() {
     setSelectedNode(null);
   }, []);
 
-  // Simulation effect (placeholder for real "Live" data)
-  React.useEffect(() => {
-    if (!isPlaying) return;
-    const interval = setInterval(() => {
-      setEdges((eds) => eds.map(e => ({
-        ...e,
-        animated: !e.animated || Math.random() > 0.5,
-        style: { stroke: Math.random() > 0.5 ? '#22c55e' : '#64748b' } // Green or slate
-      })));
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [isPlaying, setEdges]);
-
   return (
     <div className="h-[calc(100vh-8rem)] w-full relative bg-background border rounded-lg overflow-hidden shadow-sm">
       <div className="absolute top-4 right-4 z-10 flex gap-2">
         <Card className="p-2 flex gap-2 items-center bg-background/80 backdrop-blur-sm">
           <DebuggerControls
-            isPlaying={isPlaying}
+            isPlaying={isLive}
             onPlayPause={togglePlay}
-            onStep={() => { }} // Placeholder for step
-            onStop={() => { setIsPlaying(false); setNodes(initialNodes); setEdges(initialEdges); }}
+            onStep={() => refresh()}
+            onStop={() => setIsLive(false)}
           />
           <div className="w-px h-6 bg-border mx-1" />
-          <Select defaultValue="demo1">
-            <SelectTrigger className="w-[140px] h-8">
-              <SelectValue placeholder="Scenario" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="demo1">Basic Flow</SelectItem>
-              <SelectItem value="demo2">Multi-Agent</SelectItem>
-            </SelectContent>
-          </Select>
+          <div className="flex items-center gap-2 px-2 text-xs text-muted-foreground">
+              {loading && <Loader2 className="h-3 w-3 animate-spin" />}
+              {graph?.clients?.length || 0} Clients
+          </div>
         </Card>
       </div>
 
