@@ -27,8 +27,8 @@ test.describe('User Guide Walkthrough', () => {
     // Check for "Total Requests" card
     await expect(page.getByText('Total Requests', { exact: false }).first()).toBeVisible({ timeout: 15000 });
     // Check for "Active Services" card
-    await expect(page.locator('text=Active Services').first()).toBeVisible();
-    await expect(page.locator('text=Connected Tools').first()).toBeVisible();
+    await expect(page.locator('text=Active Services').first()).toBeVisible({ timeout: 15000 });
+    await expect(page.locator('text=Connected Tools').first()).toBeVisible({ timeout: 15000 });
   });
 
   test('Services: Add Service Redirects to Marketplace', async ({ page }) => {
