@@ -1889,6 +1889,22 @@ func NewLocalCommandTool(
 		}
 	}
 
+	// Check if the command is awk and supports sandbox
+	if base == "awk" || base == "gawk" {
+		ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+		defer cancel()
+		// Check for --sandbox support (gawk)
+		checkCmd := exec.CommandContext(ctx, cmd, "--sandbox", "--version")
+		if err := checkCmd.Run(); err == nil {
+			t.sandboxArgs = []string{"--sandbox"}
+			logging.GetLogger().Info("Enabled sandbox mode for awk tool", "tool", tool.GetName())
+		} else {
+			// Do not block execution if sandbox is not supported (e.g. mawk),
+			// as mawk does not have the specific vulnerabilities (indirect calls) that require it.
+			logging.GetLogger().Warn("Failed to enable sandbox for awk (might be mawk or old gawk)", "tool", tool.GetName(), "error", err)
+		}
+	}
+
 	return t
 }
 
