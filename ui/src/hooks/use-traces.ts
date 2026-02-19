@@ -81,7 +81,7 @@ export function useTraces(options: UseTracesOptions = {}) {
                 // So we reverse inserts.
                 const merged = [...inserts.reverse(), ...nextTraces];
 
-                // ⚡ BOLT: Cap the size of the traces array to prevent memory leaks
+                // ⚡ BOLT: Cap the size of the traces array to prevent memory leaks.
                 // Randomized Selection from Top 5 High-Impact Targets
                 const MAX_TRACES = 1000;
                 if (merged.length > MAX_TRACES) {
