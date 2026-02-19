@@ -86,7 +86,10 @@ func (x *RegisterServiceRequest) ClearConfig() {
 type RegisterServiceRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// The configuration of the upstream service to register.
+	// config is the configuration of the upstream service to register.
+	//
+	// Constraints:
+	//   - must be a valid UpstreamServiceConfig
 	Config *v1.UpstreamServiceConfig
 }
 
@@ -185,13 +188,13 @@ func (x *RegisterServiceResponse) SetDiscoveredResources(v []*v1.ResourceDefinit
 type RegisterServiceResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// A status message indicating success or failure details (e.g., "Service registered successfully").
+	// message is a status message indicating success or failure details.
 	Message string
-	// A list of tools discovered during the registration process.
+	// discovered_tools is a list of tools discovered during the registration process.
 	DiscoveredTools []*v1.ToolDefinition
-	// The generated unique key for the registered service.
+	// service_key is the generated unique key for the registered service.
 	ServiceKey string
-	// A list of resources discovered during the registration process.
+	// discovered_resources is a list of resources discovered during the registration process.
 	DiscoveredResources []*v1.ResourceDefinition
 }
 
@@ -264,7 +267,10 @@ func (x *ValidateServiceRequest) ClearConfig() {
 type ValidateServiceRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// The configuration of the upstream service to validate.
+	// config is the configuration of the upstream service to validate.
+	//
+	// Constraints:
+	//   - must be a valid UpstreamServiceConfig
 	Config *v1.UpstreamServiceConfig
 }
 
@@ -363,13 +369,13 @@ func (x *ValidateServiceResponse) SetDiscoveredResources(v []*v1.ResourceDefinit
 type ValidateServiceResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// Indicates whether the service configuration is valid.
+	// valid indicates whether the service configuration is valid.
 	Valid bool
-	// A message describing the validation result or error details.
+	// message describes the validation result or error details.
 	Message string
-	// A list of tools that would be discovered if registered.
+	// discovered_tools is a list of tools that would be discovered if registered.
 	DiscoveredTools []*v1.ToolDefinition
-	// A list of resources that would be discovered if registered.
+	// discovered_resources is a list of resources that would be discovered if registered.
 	DiscoveredResources []*v1.ResourceDefinition
 }
 
@@ -477,7 +483,7 @@ func (x *ListServicesResponse) SetServices(v []*v1.UpstreamServiceConfig) {
 type ListServicesResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// The list of registered upstream service configurations.
+	// services is the list of registered upstream service configurations.
 	Services []*v1.UpstreamServiceConfig
 }
 
@@ -572,13 +578,13 @@ func (x *InitiateOAuth2FlowRequest) SetRedirectUrl(v string) {
 type InitiateOAuth2FlowRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// The ID of the service to authenticate with.
+	// service_id is the ID of the service to authenticate with.
 	ServiceId string
-	// The namespace of the service.
+	// namespace is the namespace of the service.
 	Namespace string
-	// The ID of the credential to use or create.
+	// credential_id is the ID of the credential to use or create.
 	CredentialId string
-	// The URL to redirect to after successful authentication.
+	// redirect_url is the URL to redirect to after successful authentication.
 	RedirectUrl string
 }
 
@@ -652,9 +658,9 @@ func (x *InitiateOAuth2FlowResponse) SetState(v string) {
 type InitiateOAuth2FlowResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// The URL the user should visit to authorize access.
+	// authorization_url is the URL the user should visit to authorize access.
 	AuthorizationUrl string
-	// The state parameter used for CSRF protection.
+	// state is the parameter used for CSRF protection.
 	State string
 }
 
@@ -726,9 +732,9 @@ func (x *UnregisterServiceRequest) SetNamespace(v string) {
 type UnregisterServiceRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// The user-defined unique ID (name) of the service to deregister.
+	// service_name is the user-defined unique ID (name) of the service to deregister.
 	ServiceName string
-	// The namespace of the service (optional).
+	// namespace is the namespace of the service (optional).
 	Namespace string
 }
 
@@ -788,7 +794,7 @@ func (x *UnregisterServiceResponse) SetMessage(v string) {
 type UnregisterServiceResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// A message indicating success or details about the operation.
+	// message indicates success or details about the operation.
 	Message string
 }
 
@@ -873,11 +879,11 @@ func (x *RegisterToolsRequest) SetTools(v []*v1.ToolDefinition) {
 type RegisterToolsRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// The name of the service to register tools for.
+	// service_name is the name of the service to register tools for.
 	ServiceName string
-	// The namespace of the service.
+	// namespace is the namespace of the service.
 	Namespace string
-	// The list of tool definitions to register.
+	// tools is the list of tool definitions to register.
 	Tools []*v1.ToolDefinition
 }
 
@@ -950,9 +956,9 @@ func (x *RegisterToolsResponse) SetToolsRegistered(v int32) {
 type RegisterToolsResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// A message indicating success.
+	// message indicates success.
 	Message string
-	// The number of tools that were successfully registered.
+	// tools_registered is the number of tools that were successfully registered.
 	ToolsRegistered int32
 }
 
@@ -1012,7 +1018,7 @@ func (x *GetServiceRequest) SetServiceName(v string) {
 type GetServiceRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// The name of the service to retrieve.
+	// service_name is the name of the service to retrieve.
 	ServiceName string
 }
 
@@ -1082,7 +1088,7 @@ func (x *GetServiceResponse) ClearService() {
 type GetServiceResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// The configuration of the requested service.
+	// service is the configuration of the requested service.
 	Service *v1.UpstreamServiceConfig
 }
 
@@ -1153,9 +1159,9 @@ func (x *GetServiceStatusRequest) SetNamespace(v string) {
 type GetServiceStatusRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// The name of the service.
+	// service_name is the name of the service.
 	ServiceName string
-	// The namespace of the service.
+	// namespace is the namespace of the service.
 	Namespace string
 }
 
@@ -1229,9 +1235,9 @@ func (x *GetServiceStatusResponse) SetMetrics(v map[string]int64) {
 type GetServiceStatusResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// The list of tools currently available for this service.
+	// tools is the list of tools currently available for this service.
 	Tools []*v1.ToolDefinition
-	// Key-value pairs of metrics for the service (e.g., "uptime", "requests").
+	// metrics are key-value pairs of metrics for the service (e.g., "uptime", "requests").
 	Metrics map[string]int64
 }
 

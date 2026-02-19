@@ -36,14 +36,44 @@ const (
 // SkillService provides methods for managing skills (reusable capabilities).
 type SkillServiceClient interface {
 	// ListSkills returns a list of all registered skills.
+	//
+	// Parameters:
+	//   - request (ListSkillsRequest): The listing parameters.
+	//
+	// Returns:
+	//   - ListSkillsResponse: The list of skills.
 	ListSkills(ctx context.Context, in *ListSkillsRequest, opts ...grpc.CallOption) (*ListSkillsResponse, error)
 	// GetSkill retrieves a specific skill by its name.
+	//
+	// Parameters:
+	//   - request (GetSkillRequest): The request with skill name.
+	//
+	// Returns:
+	//   - GetSkillResponse: The requested skill.
 	GetSkill(ctx context.Context, in *GetSkillRequest, opts ...grpc.CallOption) (*GetSkillResponse, error)
 	// CreateSkill registers a new skill.
+	//
+	// Parameters:
+	//   - request (CreateSkillRequest): The skill definition to register.
+	//
+	// Returns:
+	//   - CreateSkillResponse: The created skill.
 	CreateSkill(ctx context.Context, in *CreateSkillRequest, opts ...grpc.CallOption) (*CreateSkillResponse, error)
 	// UpdateSkill updates an existing skill definition.
+	//
+	// Parameters:
+	//   - request (UpdateSkillRequest): The updated skill definition.
+	//
+	// Returns:
+	//   - UpdateSkillResponse: The updated skill.
 	UpdateSkill(ctx context.Context, in *UpdateSkillRequest, opts ...grpc.CallOption) (*UpdateSkillResponse, error)
 	// DeleteSkill removes a skill by its name.
+	//
+	// Parameters:
+	//   - request (DeleteSkillRequest): The name of the skill to delete.
+	//
+	// Returns:
+	//   - DeleteSkillResponse: The result of deletion.
 	DeleteSkill(ctx context.Context, in *DeleteSkillRequest, opts ...grpc.CallOption) (*DeleteSkillResponse, error)
 }
 
@@ -112,14 +142,44 @@ func (c *skillServiceClient) DeleteSkill(ctx context.Context, in *DeleteSkillReq
 // SkillService provides methods for managing skills (reusable capabilities).
 type SkillServiceServer interface {
 	// ListSkills returns a list of all registered skills.
+	//
+	// Parameters:
+	//   - request (ListSkillsRequest): The listing parameters.
+	//
+	// Returns:
+	//   - ListSkillsResponse: The list of skills.
 	ListSkills(context.Context, *ListSkillsRequest) (*ListSkillsResponse, error)
 	// GetSkill retrieves a specific skill by its name.
+	//
+	// Parameters:
+	//   - request (GetSkillRequest): The request with skill name.
+	//
+	// Returns:
+	//   - GetSkillResponse: The requested skill.
 	GetSkill(context.Context, *GetSkillRequest) (*GetSkillResponse, error)
 	// CreateSkill registers a new skill.
+	//
+	// Parameters:
+	//   - request (CreateSkillRequest): The skill definition to register.
+	//
+	// Returns:
+	//   - CreateSkillResponse: The created skill.
 	CreateSkill(context.Context, *CreateSkillRequest) (*CreateSkillResponse, error)
 	// UpdateSkill updates an existing skill definition.
+	//
+	// Parameters:
+	//   - request (UpdateSkillRequest): The updated skill definition.
+	//
+	// Returns:
+	//   - UpdateSkillResponse: The updated skill.
 	UpdateSkill(context.Context, *UpdateSkillRequest) (*UpdateSkillResponse, error)
 	// DeleteSkill removes a skill by its name.
+	//
+	// Parameters:
+	//   - request (DeleteSkillRequest): The name of the skill to delete.
+	//
+	// Returns:
+	//   - DeleteSkillResponse: The result of deletion.
 	DeleteSkill(context.Context, *DeleteSkillRequest) (*DeleteSkillResponse, error)
 	mustEmbedUnimplementedSkillServiceServer()
 }

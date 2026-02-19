@@ -44,21 +44,25 @@ type Option func(*RateLimitMiddleware)
 
 // WithTokenizer sets a custom tokenizer for the middleware.
 //
-// t is the t.
+// Parameters:
+//  - t (tokenizer.Tokenizer): The tokenizer to use.
 //
-// Returns the result.
+// Returns:
+//  - Option: The configured option.
 func WithTokenizer(t tokenizer.Tokenizer) Option {
 	return func(m *RateLimitMiddleware) {
 		m.tokenizer = t
 	}
 }
 
-// NewRateLimitMiddleware creates a new RateLimitMiddleware.
+// NewRateLimitMiddleware creates a new RateLimitMiddleware instance.
 //
-// toolManager is the toolManager.
-// opts contains the options.
+// Parameters:
+//  - toolManager (tool.ManagerInterface): The tool manager to retrieve service configurations.
+//  - opts (...Option): Optional configuration options.
 //
-// Returns the result.
+// Returns:
+//  - *RateLimitMiddleware: A new instance of RateLimitMiddleware.
 func NewRateLimitMiddleware(toolManager tool.ManagerInterface, opts ...Option) *RateLimitMiddleware {
 	m := &RateLimitMiddleware{
 		toolManager: toolManager,
@@ -81,14 +85,18 @@ func NewRateLimitMiddleware(toolManager tool.ManagerInterface, opts ...Option) *
 	return m
 }
 
-// Execute executes the rate limiting middleware.
+// Execute enforces rate limits on a tool execution request.
 //
-// ctx is the context for the request.
-// req is the request object.
-// next is the next.
+// It checks both tool-specific and service-level rate limits.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//  - ctx (context.Context): The context of the request.
+//  - req (*tool.ExecutionRequest): The execution request containing tool name and arguments.
+//  - next (tool.ExecutionFunc): The next middleware or handler in the chain.
+//
+// Returns:
+//  - any: The result of the execution.
+//  - error: An error if the rate limit is exceeded or if execution fails.
 func (m *RateLimitMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := m.toolManager.GetTool(req.ToolName)
 	if !ok {

@@ -19,7 +19,13 @@ type CSRFMiddleware struct {
 	mu             sync.RWMutex
 }
 
-// NewCSRFMiddleware creates a new CSRFMiddleware.
+// NewCSRFMiddleware creates a new CSRFMiddleware instance.
+//
+// Parameters:
+//  - allowedOrigins ([]string): A list of allowed origins (e.g., "https://example.com").
+//
+// Returns:
+//  - *CSRFMiddleware: A new instance of CSRFMiddleware.
 func NewCSRFMiddleware(allowedOrigins []string) *CSRFMiddleware {
 	m := &CSRFMiddleware{
 		allowedOrigins: make(map[string]bool),
@@ -29,6 +35,9 @@ func NewCSRFMiddleware(allowedOrigins []string) *CSRFMiddleware {
 }
 
 // Update updates the allowed origins.
+//
+// Parameters:
+//  - origins ([]string): The new list of allowed origins.
 func (m *CSRFMiddleware) Update(origins []string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -38,7 +47,13 @@ func (m *CSRFMiddleware) Update(origins []string) {
 	}
 }
 
-// Handler returns the HTTP handler.
+// Handler returns the HTTP handler that enforces CSRF protection.
+//
+// Parameters:
+//  - next (http.Handler): The next handler in the chain.
+//
+// Returns:
+//  - http.Handler: The wrapped handler with CSRF checks.
 func (m *CSRFMiddleware) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// 1. Safe Methods are always allowed

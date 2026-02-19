@@ -121,7 +121,7 @@ func (x *ListSkillsResponse) SetSkills(v []*v1.Skill) {
 type ListSkillsResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// The list of skill definitions.
+	// skills is the list of skill definitions.
 	Skills []*v1.Skill
 }
 
@@ -180,7 +180,7 @@ func (x *GetSkillRequest) SetName(v string) {
 type GetSkillRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// The unique name of the skill to retrieve.
+	// name is the unique name of the skill to retrieve.
 	Name string
 }
 
@@ -250,7 +250,7 @@ func (x *GetSkillResponse) ClearSkill() {
 type GetSkillResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// The skill definition.
+	// skill is the skill definition.
 	Skill *v1.Skill
 }
 
@@ -320,7 +320,7 @@ func (x *CreateSkillRequest) ClearSkill() {
 type CreateSkillRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// The definition of the skill to create.
+	// skill is the definition of the skill to create.
 	Skill *v1.Skill
 }
 
@@ -390,7 +390,7 @@ func (x *CreateSkillResponse) ClearSkill() {
 type CreateSkillResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// The created skill definition.
+	// skill is the created skill definition.
 	Skill *v1.Skill
 }
 
@@ -472,9 +472,9 @@ func (x *UpdateSkillRequest) ClearSkill() {
 type UpdateSkillRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// The name of the skill to update.
+	// name is the name of the skill to update.
 	Name string
-	// The new definition of the skill.
+	// skill is the new definition of the skill.
 	Skill *v1.Skill
 }
 
@@ -545,7 +545,7 @@ func (x *UpdateSkillResponse) ClearSkill() {
 type UpdateSkillResponse_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// The updated skill definition.
+	// skill is the updated skill definition.
 	Skill *v1.Skill
 }
 
@@ -604,7 +604,7 @@ func (x *DeleteSkillRequest) SetName(v string) {
 type DeleteSkillRequest_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
-	// The name of the skill to delete.
+	// name is the name of the skill to delete.
 	Name string
 }
 

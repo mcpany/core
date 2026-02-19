@@ -18,6 +18,12 @@ option features.field_presence = IMPLICIT;
 // SkillService provides methods for managing skills (reusable capabilities).
 service SkillService {
   // ListSkills returns a list of all registered skills.
+  //
+  // Parameters:
+  //  - request (ListSkillsRequest): The listing parameters.
+  //
+  // Returns:
+  //  - ListSkillsResponse: The list of skills.
   rpc ListSkills(ListSkillsRequest) returns (ListSkillsResponse) {
     option (google.api.http) = {
       get: "/v1/skills"
@@ -25,6 +31,12 @@ service SkillService {
   }
 
   // GetSkill retrieves a specific skill by its name.
+  //
+  // Parameters:
+  //  - request (GetSkillRequest): The request with skill name.
+  //
+  // Returns:
+  //  - GetSkillResponse: The requested skill.
   rpc GetSkill(GetSkillRequest) returns (GetSkillResponse) {
     option (google.api.http) = {
       get: "/v1/skills/{name}"
@@ -32,6 +44,12 @@ service SkillService {
   }
 
   // CreateSkill registers a new skill.
+  //
+  // Parameters:
+  //  - request (CreateSkillRequest): The skill definition to register.
+  //
+  // Returns:
+  //  - CreateSkillResponse: The created skill.
   rpc CreateSkill(CreateSkillRequest) returns (CreateSkillResponse) {
     option (google.api.http) = {
       post: "/v1/skills"
@@ -40,6 +58,12 @@ service SkillService {
   }
 
   // UpdateSkill updates an existing skill definition.
+  //
+  // Parameters:
+  //  - request (UpdateSkillRequest): The updated skill definition.
+  //
+  // Returns:
+  //  - UpdateSkillResponse: The updated skill.
   rpc UpdateSkill(UpdateSkillRequest) returns (UpdateSkillResponse) {
     option (google.api.http) = {
       put: "/v1/skills/{name}"
@@ -48,6 +72,12 @@ service SkillService {
   }
 
   // DeleteSkill removes a skill by its name.
+  //
+  // Parameters:
+  //  - request (DeleteSkillRequest): The name of the skill to delete.
+  //
+  // Returns:
+  //  - DeleteSkillResponse: The result of deletion.
   rpc DeleteSkill(DeleteSkillRequest) returns (DeleteSkillResponse) {
     option (google.api.http) = {
       delete: "/v1/skills/{name}"
@@ -60,51 +90,51 @@ message ListSkillsRequest {}
 
 // ListSkillsResponse contains the list of skills.
 message ListSkillsResponse {
-  // The list of skill definitions.
+  // skills is the list of skill definitions.
   repeated mcpany.config.v1.Skill skills = 1;
 }
 
 // GetSkillRequest represents a request to retrieve a skill.
 message GetSkillRequest {
-  // The unique name of the skill to retrieve.
+  // name is the unique name of the skill to retrieve.
   string name = 1;
 }
 
 // GetSkillResponse contains the requested skill definition.
 message GetSkillResponse {
-  // The skill definition.
+  // skill is the skill definition.
   mcpany.config.v1.Skill skill = 1;
 }
 
 // CreateSkillRequest represents a request to create a new skill.
 message CreateSkillRequest {
-  // The definition of the skill to create.
+  // skill is the definition of the skill to create.
   mcpany.config.v1.Skill skill = 1;
 }
 
 // CreateSkillResponse contains the created skill definition.
 message CreateSkillResponse {
-  // The created skill definition.
+  // skill is the created skill definition.
   mcpany.config.v1.Skill skill = 1;
 }
 
 // UpdateSkillRequest represents a request to update an existing skill.
 message UpdateSkillRequest {
-  // The name of the skill to update.
+  // name is the name of the skill to update.
   string name = 1;
-  // The new definition of the skill.
+  // skill is the new definition of the skill.
   mcpany.config.v1.Skill skill = 2;
 }
 
 // UpdateSkillResponse contains the updated skill definition.
 message UpdateSkillResponse {
-  // The updated skill definition.
+  // skill is the updated skill definition.
   mcpany.config.v1.Skill skill = 1;
 }
 
 // DeleteSkillRequest represents a request to delete a skill.
 message DeleteSkillRequest {
-  // The name of the skill to delete.
+  // name is the name of the skill to delete.
   string name = 1;
 }
 

@@ -40,31 +40,67 @@ const (
 type RegistrationServiceClient interface {
 	// RegisterService registers a new upstream service with the MCP Any server.
 	//
-	// It accepts a service configuration, validates it, and if successful, adds the service
-	// to the registry. It returns the discovered tools and resources.
+	// Parameters:
+	//   - request (RegisterServiceRequest): The service configuration to register.
+	//
+	// Returns:
+	//   - RegisterServiceResponse: The discovered tools and resources.
 	RegisterService(ctx context.Context, in *RegisterServiceRequest, opts ...grpc.CallOption) (*RegisterServiceResponse, error)
 	// ValidateService validates a service configuration without registering it.
 	//
-	// This is useful for "dry-run" scenarios where a client wants to check if a configuration
-	// is valid and what tools/resources it would expose.
+	// Parameters:
+	//   - request (ValidateServiceRequest): The service configuration to validate.
+	//
+	// Returns:
+	//   - ValidateServiceResponse: The validation result.
 	ValidateService(ctx context.Context, in *ValidateServiceRequest, opts ...grpc.CallOption) (*ValidateServiceResponse, error)
 	// UnregisterService removes an existing upstream service from the registry.
 	//
-	// It stops any active connections or workers associated with the service.
+	// Parameters:
+	//   - request (UnregisterServiceRequest): The service to remove.
+	//
+	// Returns:
+	//   - UnregisterServiceResponse: The result of the operation.
 	UnregisterService(ctx context.Context, in *UnregisterServiceRequest, opts ...grpc.CallOption) (*UnregisterServiceResponse, error)
 	// InitiateOAuth2Flow starts an OAuth2 authentication flow for a specific service.
 	//
-	// It generates the authorization URL that the client should visit to authenticate.
+	// Parameters:
+	//   - request (InitiateOAuth2FlowRequest): The OAuth2 initialization parameters.
+	//
+	// Returns:
+	//   - InitiateOAuth2FlowResponse: The authorization URL.
 	InitiateOAuth2Flow(ctx context.Context, in *InitiateOAuth2FlowRequest, opts ...grpc.CallOption) (*InitiateOAuth2FlowResponse, error)
 	// RegisterTools manually registers a list of tools for a service.
 	//
-	// This can be used to add tools that were not automatically discovered.
+	// Parameters:
+	//   - request (RegisterToolsRequest): The tools to register.
+	//
+	// Returns:
+	//   - RegisterToolsResponse: The result of the registration.
 	RegisterTools(ctx context.Context, in *RegisterToolsRequest, opts ...grpc.CallOption) (*RegisterToolsResponse, error)
 	// GetServiceStatus retrieves the status and metrics of a registered service.
+	//
+	// Parameters:
+	//   - request (GetServiceStatusRequest): The service to check.
+	//
+	// Returns:
+	//   - GetServiceStatusResponse: The status and metrics.
 	GetServiceStatus(ctx context.Context, in *GetServiceStatusRequest, opts ...grpc.CallOption) (*GetServiceStatusResponse, error)
-	// ListServices returns a list of all registered upstream services.
+	// ListServices lists all registered upstream services.
+	//
+	// Parameters:
+	//   - request (ListServicesRequest): The listing options.
+	//
+	// Returns:
+	//   - ListServicesResponse: The list of services.
 	ListServices(ctx context.Context, in *ListServicesRequest, opts ...grpc.CallOption) (*ListServicesResponse, error)
 	// GetService retrieves the configuration of a specific registered service.
+	//
+	// Parameters:
+	//   - request (GetServiceRequest): The service to retrieve.
+	//
+	// Returns:
+	//   - GetServiceResponse: The service configuration.
 	GetService(ctx context.Context, in *GetServiceRequest, opts ...grpc.CallOption) (*GetServiceResponse, error)
 }
 
@@ -164,31 +200,67 @@ func (c *registrationServiceClient) GetService(ctx context.Context, in *GetServi
 type RegistrationServiceServer interface {
 	// RegisterService registers a new upstream service with the MCP Any server.
 	//
-	// It accepts a service configuration, validates it, and if successful, adds the service
-	// to the registry. It returns the discovered tools and resources.
+	// Parameters:
+	//   - request (RegisterServiceRequest): The service configuration to register.
+	//
+	// Returns:
+	//   - RegisterServiceResponse: The discovered tools and resources.
 	RegisterService(context.Context, *RegisterServiceRequest) (*RegisterServiceResponse, error)
 	// ValidateService validates a service configuration without registering it.
 	//
-	// This is useful for "dry-run" scenarios where a client wants to check if a configuration
-	// is valid and what tools/resources it would expose.
+	// Parameters:
+	//   - request (ValidateServiceRequest): The service configuration to validate.
+	//
+	// Returns:
+	//   - ValidateServiceResponse: The validation result.
 	ValidateService(context.Context, *ValidateServiceRequest) (*ValidateServiceResponse, error)
 	// UnregisterService removes an existing upstream service from the registry.
 	//
-	// It stops any active connections or workers associated with the service.
+	// Parameters:
+	//   - request (UnregisterServiceRequest): The service to remove.
+	//
+	// Returns:
+	//   - UnregisterServiceResponse: The result of the operation.
 	UnregisterService(context.Context, *UnregisterServiceRequest) (*UnregisterServiceResponse, error)
 	// InitiateOAuth2Flow starts an OAuth2 authentication flow for a specific service.
 	//
-	// It generates the authorization URL that the client should visit to authenticate.
+	// Parameters:
+	//   - request (InitiateOAuth2FlowRequest): The OAuth2 initialization parameters.
+	//
+	// Returns:
+	//   - InitiateOAuth2FlowResponse: The authorization URL.
 	InitiateOAuth2Flow(context.Context, *InitiateOAuth2FlowRequest) (*InitiateOAuth2FlowResponse, error)
 	// RegisterTools manually registers a list of tools for a service.
 	//
-	// This can be used to add tools that were not automatically discovered.
+	// Parameters:
+	//   - request (RegisterToolsRequest): The tools to register.
+	//
+	// Returns:
+	//   - RegisterToolsResponse: The result of the registration.
 	RegisterTools(context.Context, *RegisterToolsRequest) (*RegisterToolsResponse, error)
 	// GetServiceStatus retrieves the status and metrics of a registered service.
+	//
+	// Parameters:
+	//   - request (GetServiceStatusRequest): The service to check.
+	//
+	// Returns:
+	//   - GetServiceStatusResponse: The status and metrics.
 	GetServiceStatus(context.Context, *GetServiceStatusRequest) (*GetServiceStatusResponse, error)
-	// ListServices returns a list of all registered upstream services.
+	// ListServices lists all registered upstream services.
+	//
+	// Parameters:
+	//   - request (ListServicesRequest): The listing options.
+	//
+	// Returns:
+	//   - ListServicesResponse: The list of services.
 	ListServices(context.Context, *ListServicesRequest) (*ListServicesResponse, error)
 	// GetService retrieves the configuration of a specific registered service.
+	//
+	// Parameters:
+	//   - request (GetServiceRequest): The service to retrieve.
+	//
+	// Returns:
+	//   - GetServiceResponse: The service configuration.
 	GetService(context.Context, *GetServiceRequest) (*GetServiceResponse, error)
 	mustEmbedUnimplementedRegistrationServiceServer()
 }
