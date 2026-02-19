@@ -137,7 +137,18 @@ export function HttpToolEditor({ tool, call, serviceName, onChange }: HttpToolEd
             });
             setExecutionResult(result);
         } catch (e: any) {
-            setExecutionResult({ error: e.message || String(e) });
+            // Robust error handling to display useful information in UI (and tests)
+            let errorMsg = String(e);
+            if (e instanceof Error) {
+                errorMsg = e.message;
+            } else if (typeof e === 'object' && e !== null) {
+                try {
+                    errorMsg = JSON.stringify(e, null, 2);
+                } catch {
+                    errorMsg = "[Circular or Invalid Object]";
+                }
+            }
+            setExecutionResult({ error: errorMsg });
         } finally {
             setIsExecuting(false);
         }
