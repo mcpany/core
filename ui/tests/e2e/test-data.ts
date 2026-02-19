@@ -19,7 +19,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             command_line_service: {
                 command: "echo",
                 tools: [
-                    { name: "process_payment", description: "Process a payment", input_schema: {}, call_id: "process_payment_call" }
+                    { name: "process_payment", description: "Process a payment", input_schema: { type: "object", properties: {} }, call_id: "process_payment_call" }
                 ],
                 calls: {
                     process_payment_call: {
@@ -35,7 +35,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             command_line_service: {
                 command: "echo",
                 tools: [
-                    { name: "get_user", description: "Get user details", input_schema: {}, call_id: "get_user_call" }
+                    { name: "get_user", description: "Get user details", input_schema: { type: "object", properties: {} }, call_id: "get_user_call" }
                 ],
                 calls: {
                     get_user_call: {
@@ -52,7 +52,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             command_line_service: {
                 command: "echo",
                 tools: [
-                    { name: "calculator", description: "calc", input_schema: {}, call_id: "calc_call" }
+                    { name: "calculator", description: "calc", input_schema: { type: "object", properties: {} }, call_id: "calc_call" }
                 ],
                 calls: {
                     calc_call: {
