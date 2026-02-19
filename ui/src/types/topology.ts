@@ -4,33 +4,44 @@
  */
 
 // Manual TypeScript definitions matching proto/topology/v1/topology.proto
+// Note: JSON serialization of Protobuf enums uses strings by default.
 
-export enum NodeType {
-  NODE_TYPE_UNSPECIFIED = 0,
-  NODE_TYPE_CLIENT = 1,
-  NODE_TYPE_CORE = 2,
-  NODE_TYPE_SERVICE = 3,
-  NODE_TYPE_TOOL = 4,
-  NODE_TYPE_RESOURCE = 5,
-  NODE_TYPE_PROMPT = 6,
-  NODE_TYPE_API_CALL = 7,
-  NODE_TYPE_MIDDLEWARE = 8,
-  NODE_TYPE_WEBHOOK = 9,
-}
+/**
+ * NodeType enum represents the type of a node in the topology.
+ */
+export type NodeType =
+  | "NODE_TYPE_UNSPECIFIED"
+  | "NODE_TYPE_CLIENT"
+  | "NODE_TYPE_CORE"
+  | "NODE_TYPE_SERVICE"
+  | "NODE_TYPE_TOOL"
+  | "NODE_TYPE_RESOURCE"
+  | "NODE_TYPE_PROMPT"
+  | "NODE_TYPE_API_CALL"
+  | "NODE_TYPE_MIDDLEWARE"
+  | "NODE_TYPE_WEBHOOK";
 
-export enum NodeStatus {
-  NODE_STATUS_UNSPECIFIED = 0,
-  NODE_STATUS_ACTIVE = 1,
-  NODE_STATUS_INACTIVE = 2,
-  NODE_STATUS_ERROR = 3,
-}
+/**
+ * NodeStatus enum represents the operational status of a node.
+ */
+export type NodeStatus =
+  | "NODE_STATUS_UNSPECIFIED"
+  | "NODE_STATUS_ACTIVE"
+  | "NODE_STATUS_INACTIVE"
+  | "NODE_STATUS_ERROR";
 
+/**
+ * NodeMetrics contains performance metrics for a node.
+ */
 export interface NodeMetrics {
   qps: number;
   latencyMs: number;
   errorRate: number;
 }
 
+/**
+ * TopologyNode represents a single node in the graph.
+ */
 export interface TopologyNode {
   id: string;
   label: string;
@@ -41,6 +52,9 @@ export interface TopologyNode {
   metrics?: NodeMetrics;
 }
 
+/**
+ * TopologyGraph represents the full network topology.
+ */
 export interface TopologyGraph {
   clients: TopologyNode[];
   core?: TopologyNode;

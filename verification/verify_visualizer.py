@@ -87,4 +87,5 @@ def verify_visualizer():
         browser.close()
 
 if __name__ == "__main__":
+    seed_traffic()
     verify_visualizer()

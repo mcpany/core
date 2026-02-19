@@ -42,11 +42,11 @@ const nodeTypes = {
 // Map Proto NodeType to React Flow Node Type (from nodeTypes above)
 const mapNodeType = (type: NodeType): string => {
     switch (type) {
-        case NodeType.NODE_TYPE_CLIENT: return 'user';
-        case NodeType.NODE_TYPE_CORE: return 'agent';
-        case NodeType.NODE_TYPE_SERVICE: return 'service';
-        case NodeType.NODE_TYPE_TOOL: return 'tool';
-        case NodeType.NODE_TYPE_RESOURCE: return 'resource';
+        case "NODE_TYPE_CLIENT": return 'user';
+        case "NODE_TYPE_CORE": return 'agent';
+        case "NODE_TYPE_SERVICE": return 'service';
+        case "NODE_TYPE_TOOL": return 'tool';
+        case "NODE_TYPE_RESOURCE": return 'resource';
         default: return 'service'; // Default fallback
     }
 };
@@ -113,8 +113,8 @@ export function AgentFlow() {
           let label = node.label;
           let statusStr = "";
 
-          if (node.status === NodeStatus.NODE_STATUS_ERROR) statusStr = "Error";
-          if (node.status === NodeStatus.NODE_STATUS_INACTIVE) statusStr = "Inactive";
+          if (node.status === "NODE_STATUS_ERROR") statusStr = "Error";
+          if (node.status === "NODE_STATUS_INACTIVE") statusStr = "Inactive";
 
           const flowNode: Node = {
               id: node.id,
@@ -123,7 +123,7 @@ export function AgentFlow() {
                   label: label,
                   status: statusStr,
                   metrics: node.metrics,
-                  role: node.metadata?.role || (node.type === NodeType.NODE_TYPE_CORE ? 'Gateway' : undefined)
+                  role: node.metadata?.role || (node.type === "NODE_TYPE_CORE" ? 'Gateway' : undefined)
               },
               position: { x: 0, y: 0 } // Layout will set this
           };
@@ -132,7 +132,7 @@ export function AgentFlow() {
           // Add Edge from parent
           if (parentId) {
               const edgeId = `e-${parentId}-${node.id}`;
-              const isAnimated = node.status === NodeStatus.NODE_STATUS_ACTIVE && isPlaying;
+              const isAnimated = node.status === "NODE_STATUS_ACTIVE" && isPlaying;
 
               newEdges.push({
                   id: edgeId,
@@ -140,8 +140,8 @@ export function AgentFlow() {
                   target: node.id,
                   animated: isAnimated, // Only animate if "Live" is on? Or generally active?
                   style: {
-                      stroke: node.status === NodeStatus.NODE_STATUS_ERROR ? '#ef4444' :
-                              node.status === NodeStatus.NODE_STATUS_INACTIVE ? '#9ca3af' : '#22c55e',
+                      stroke: node.status === "NODE_STATUS_ERROR" ? '#ef4444' :
+                              node.status === "NODE_STATUS_INACTIVE" ? '#9ca3af' : '#22c55e',
                       strokeWidth: 2
                   },
                   type: 'default',
@@ -198,13 +198,6 @@ export function AgentFlow() {
 
           // Apply Layout
           const layouted = getLayoutedElements(newNodes, newEdges);
-
-          // Use setNodes to update state.
-          // We preserve positions of existing nodes if we want to avoid jumping?
-          // dagre layout resets positions every time.
-          // For a "Live" view, maybe we should only update data and keep positions if ID exists?
-          // But topology changes (new nodes) require relayout.
-          // Let's stick to full layout update for now, maybe throttle it.
 
           setNodes(layouted.nodes as any);
           setEdges(layouted.edges);
