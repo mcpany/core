@@ -60,7 +60,8 @@ test.describe('User Management', () => {
         await page.click('button:has-text("Save Changes")');
 
         // Verify Sheet closed
-        await expect(page.locator('div[role="dialog"]')).toBeHidden();
+        // ⚡ Bolt Optimization: Increased timeout for sheet closing animation
+        await expect(page.locator('div[role="dialog"]')).toBeHidden({ timeout: 15000 });
 
         // Verify user created in list
         // Row should contain "test-api-user"

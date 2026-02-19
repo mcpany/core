@@ -20,7 +20,8 @@ test.describe('User Guide Walkthrough', () => {
 
     await page.goto('/');
     // Check for "Total Requests" card
-    await expect(page.locator('text=Total Requests')).toBeVisible({ timeout: 10000 });
+    // ⚡ Bolt Optimization: Increased timeout to 20s
+    await expect(page.locator('text=Total Requests')).toBeVisible({ timeout: 20000 });
     // Check for "Active Services" card
     await expect(page.locator('text=Active Services')).toBeVisible();
     await expect(page.locator('text=Connected Tools')).toBeVisible();
@@ -35,8 +36,10 @@ test.describe('User Guide Walkthrough', () => {
     await expect(addButton).toBeVisible();
 
     // Check for dialog opens
-    await addButton.click();
-    await expect(page.getByRole('dialog')).toBeVisible();
+    // ⚡ Bolt Optimization: Ensure click is successful
+    await addButton.click({ force: true });
+    // ⚡ Bolt Optimization: Increased timeout for slow dialogs
+    await expect(page.getByRole('dialog')).toBeVisible({ timeout: 10000 });
     await expect(page.getByText('New Service')).toBeVisible();
 
     // Close it

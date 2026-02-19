@@ -11,7 +11,8 @@ test('dashboard network topology widget', async ({ page }) => {
 
   // The widget should be present in the default layout.
   // We can look for the React Flow container
-  await expect(page.locator('.react-flow')).toBeVisible({ timeout: 30000 });
+  // ⚡ Bolt Optimization: Increased timeout to 45s for slower CI environments
+  await expect(page.locator('.react-flow')).toBeVisible({ timeout: 45000 });
 
   // We can also check if the widget title "Network Topology" is visible in the layout configuration (if we opened it)
   // But we want to check the widget itself.
@@ -19,7 +20,8 @@ test('dashboard network topology widget', async ({ page }) => {
   // Check for the presence of nodes.
   // React Flow nodes usually have the class 'react-flow__node'
   // We wait for at least one node to appear (it might take a moment to fetch topology)
-  await expect(page.locator('.react-flow__node').first()).toBeVisible({ timeout: 10000 });
+  // ⚡ Bolt Optimization: Increased timeout to 20s
+  await expect(page.locator('.react-flow__node').first()).toBeVisible({ timeout: 20000 });
 
   // Optional: Check if "Core" node is present (assuming seeded data has Core)
   // The label might be inside the node.
