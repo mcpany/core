@@ -19,8 +19,11 @@ func SanitizeJSONSchema(schema any) (*structpb.Struct, error) {
 	// Deep copy schema to avoid mutation of the input
 	schemaCopy := deepCopyJSON(schema)
 
+	// Since we prune cycles in deepCopyJSON, sanitizeJSONSchemaInPlace is safe
 	return sanitizeJSONSchemaInPlace(schemaCopy)
 }
+
+const maxSchemaDepth = 500
 
 func sanitizeJSONSchemaInPlace(schema any) (*structpb.Struct, error) {
 	schemaMap, ok := schema.(map[string]interface{})
@@ -58,34 +61,79 @@ func sanitizeJSONSchemaInPlace(schema any) (*structpb.Struct, error) {
 		if err == nil && sanitizedItems != nil {
 			schemaMap["items"] = sanitizedItems.AsMap()
 		}
+	} else if itemsArr, ok := schemaMap["items"].([]interface{}); ok {
+		// Handle tuple validation (items: [schema1, schema2])
+		for i, item := range itemsArr {
+			if itemMap, ok := item.(map[string]interface{}); ok {
+				sanitizedItem, err := sanitizeJSONSchemaInPlace(itemMap)
+				if err == nil && sanitizedItem != nil {
+					itemsArr[i] = sanitizedItem.AsMap()
+				}
+			}
+		}
 	}
 
-	// 4. Handle top-level oneOf/anyOf/allOf if they are not supported by some clients?
-	// The issue #10606 says: "input_schema does not support oneOf, allOf, or anyOf at the top level"
-	// If we detect this at the top level, what can we do?
-	// We could try to merge them if possible, or just pick the first one?
-	// Merging is hard. Picking the first one is lossy.
-	// For now, let's just log a warning if we see it at the top level.
-	// Note: We need to know if this is the "top level" of the Tool's InputSchema.
-	// Since this function is recursive, we might need a context or just assume the caller handles the top-level check.
-	// But `SanitizeJSONSchema` is likely called on the root schema.
+	// 4. Sanitize additionalProperties
+	if addProps, ok := schemaMap["additionalProperties"].(map[string]interface{}); ok {
+		sanitized, err := sanitizeJSONSchemaInPlace(addProps)
+		if err == nil && sanitized != nil {
+			schemaMap["additionalProperties"] = sanitized.AsMap()
+		}
+	}
+
+	// 5. Sanitize oneOf, anyOf, allOf
+	for _, key := range []string{"oneOf", "anyOf", "allOf"} {
+		if arr, ok := schemaMap[key].([]interface{}); ok {
+			for i, item := range arr {
+				if itemMap, ok := item.(map[string]interface{}); ok {
+					sanitized, err := sanitizeJSONSchemaInPlace(itemMap)
+					if err == nil && sanitized != nil {
+						arr[i] = sanitized.AsMap()
+					}
+				}
+			}
+		}
+	}
+
+	// 6. Sanitize $defs and definitions
+	for _, key := range []string{"$defs", "definitions"} {
+		if defs, ok := schemaMap[key].(map[string]interface{}); ok {
+			for k, v := range defs {
+				if vMap, ok := v.(map[string]interface{}); ok {
+					sanitized, err := sanitizeJSONSchemaInPlace(vMap)
+					if err == nil && sanitized != nil {
+						defs[k] = sanitized.AsMap()
+					}
+				}
+			}
+		}
+	}
 
 	// Let's convert back to structpb
 	return structpb.NewStruct(schemaMap)
 }
 
 func deepCopyJSON(src any) any {
+	return deepCopyJSONWithLimit(src, 0)
+}
+
+func deepCopyJSONWithLimit(src any, depth int) any {
+	if depth > maxSchemaDepth {
+		// Prune deep branches/cycles to avoid stack overflow
+		return nil
+	}
+
 	switch v := src.(type) {
 	case map[string]interface{}:
 		dst := make(map[string]interface{}, len(v))
 		for k, val := range v {
-			dst[k] = deepCopyJSON(val)
+			dst[k] = deepCopyJSONWithLimit(val, depth+1)
 		}
 		return dst
 	case []interface{}:
 		dst := make([]interface{}, len(v))
 		for i, val := range v {
-			dst[i] = deepCopyJSON(val)
+			dst[i] = deepCopyJSONWithLimit(val, depth+1)
 		}
 		return dst
 	default:

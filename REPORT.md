@@ -1,40 +1,23 @@
-# Truth Reconciliation Audit Report
+# Coverage Intervention Report
 
-## Executive Summary
-This report summarizes the "Truth Reconciliation Audit" performed on the MCP Any project. The audit cross-referenced 10 documentation files against the codebase and the Product Roadmap.
+## Target: `server/pkg/tool/schema_sanitizer.go`
 
-**Overall Health:** 80% (8/10 files verified correct)
-**Discrepancies Found:** 2
-- **Code Defect:** 1 (Context Optimizer)
-- **Doc Drift:** 1 (Admin API)
+### Risk Profile
+This component was selected because it is a **High Risk** area responsible for sanitizing untrusted JSON schemas from tools. A failure here could lead to security vulnerabilities or service instability.
+- **Vulnerability:** The original implementation was vulnerable to **Stack Overflow** due to infinite recursion on circular references.
+- **Incompleteness:** It failed to sanitize critical JSON schema keywords like `items` (array form), `additionalProperties`, `oneOf`, `anyOf`, `allOf`, and `$defs`.
+- **Low Coverage:** Existing tests only covered basic `properties` recursion and `items` (map form).
 
-All discrepancies have been remediated.
+### New Coverage
+The following logic paths are now guarded by the new test suite `server/pkg/tool/schema_sanitizer_coverage_test.go`:
+1.  **Circular References:** Verified that the sanitizer now prunes deep recursion (depth > 500) instead of crashing.
+2.  **Items Array:** Verified recursive sanitization of `items` when it is an array of schemas (tuple validation).
+3.  **AdditionalProperties:** Verified recursive sanitization of `additionalProperties` schema.
+4.  **OneOf/AnyOf/AllOf:** Verified recursive sanitization of these combination keywords.
+5.  **Definitions:** Verified recursive sanitization of `$defs` and `definitions`.
+6.  **Invalid Types:** Verified graceful handling of non-standard types in the schema map.
 
-## Verification Matrix
-
-| Document Name | Status | Action Taken | Evidence |
-| :--- | :--- | :--- | :--- |
-| `ui/docs/features/playground.md` | **Green** | Verified | Code matches docs (Components, Routes, Features). |
-| `ui/docs/features/logs.md` | **Green** | Verified | Code matches docs (WebSocket, Filtering, Color Coding). |
-| `ui/docs/features/connection-diagnostics.md` | **Green** | Verified | Code matches docs (Steps, Heuristics, UI). |
-| `ui/docs/features/native_file_upload_playground.md` | **Green** | Verified | Code matches docs (Schema detection, FileInput). |
-| `server/docs/features/config_validator.md` | **Green** | Verified | Code matches docs (Endpoint, UI Sidebar). |
-| `server/docs/features/health-checks.md` | **Green** | Verified | Code matches docs (All check types implemented). |
-| `server/docs/features/dynamic-ui.md` | **Green** | Verified | Pointer doc is accurate. |
-| `server/docs/features/context_optimizer.md` | **Red** (Code Defect) | **Fixed Code** | Code used byte-length for character limit, causing potential UTF-8 corruption. Fixed to use rune-length. Added test case. |
-| `server/docs/features/audit_logging.md` | **Green** | Verified | Code matches docs (Storage types, Config). |
-| `server/docs/features/admin_api.md` | **Red** (Doc Drift) | **Fixed Doc** | Documentation missing newer endpoints (User Mgmt, Audit Logs). Added missing sections. |
-
-## Remediation Log
-
-### 1. Context Optimizer (Code Defect)
-- **Issue:** The middleware truncated strings based on byte length (`len(str)`), but the documentation and intent specified "characters" (`max_chars`). This could lead to invalid UTF-8 sequences if a multibyte character was split.
-- **Fix:** Updated `server/pkg/middleware/context_optimizer.go` to cast strings to `[]rune` before slicing.
-- **Verification:** Added `TestContextOptimizerMiddleware_Multibyte` in `server/pkg/middleware/context_optimizer_test.go` which confirms correct truncation of strings containing emojis and CJK characters.
-
-### 2. Admin API (Doc Drift)
-- **Issue:** `server/docs/features/admin_api.md` was missing documentation for User Management, Discovery Status, and Audit Log endpoints that exist in `proto/admin/v1/admin.proto`.
-- **Fix:** Updated the documentation to include `CreateUser`, `GetUser`, `ListUsers`, `UpdateUser`, `DeleteUser`, `GetDiscoveryStatus`, and `ListAuditLogs`.
-
-## Security Scrub
-- No PII, secrets, or internal IPs were found in the report or the codebase during verification.
+### Verification
+- **Unit Tests:** `go test ./server/pkg/tool/ -run TestSanitizeJSONSchema_Coverage` passed.
+- **Regression Tests:** `go test ./server/pkg/tool/...` passed, ensuring no regressions in the tool package.
+- **Lint/Build:** The code is clean and compiles successfully.
