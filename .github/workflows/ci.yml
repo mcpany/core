@@ -413,6 +413,10 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: ${{ matrix.runner }}
+    permissions:
+      contents: read
+      packages: write
+      actions: write
     strategy:
       fail-fast: false
       matrix:
