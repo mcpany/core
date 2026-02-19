@@ -25,9 +25,18 @@ upstream_services:
         - name: "get_weather"
           description: "Get current weather"
           call_id: "get_weather"
+        - name: "get_complex_data"
+          description: "Returns complex data for UI testing"
+          call_id: "get_complex_data"
+          input_schema:
+            fields:
+              dummy:
+                string_value: "val"
       calls:
         get_weather:
           args: ['{"weather": "sunny"}']
+        get_complex_data:
+          args: ['[{"id": 1, "name": "Alice", "role": "Admin", "details": {"active": true}}, {"id": 2, "name": "Bob", "role": "User", "details": {"active": false}}]']
       resources:
         - uri: "system://logs"
           name: "System Logs"
