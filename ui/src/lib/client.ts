@@ -1588,6 +1588,16 @@ export const apiClient = {
     },
 
     /**
+     * Gets the topology graph.
+     * @returns A promise that resolves to the graph.
+     */
+    getTopology: async (): Promise<any> => {
+        const res = await fetchWithAuth('/api/v1/topology');
+        if (!res.ok) throw new Error('Failed to fetch topology');
+        return res.json();
+    },
+
+    /**
      * Seeds the dashboard traffic history (Debug/Test only).
      * @param points The traffic points to seed.
      */
