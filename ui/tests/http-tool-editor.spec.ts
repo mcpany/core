@@ -49,9 +49,10 @@ test.describe('HTTP Tool Editor - Live Preview', () => {
 
     // Verify Preview Content
     // Should show GET and /uuid
-    await expect(page.locator('.text-blue-500').getByText('GET')).toBeVisible();
+    const previewCard = page.getByTestId('request-preview-content');
+    await expect(previewCard.getByText('GET')).toBeVisible();
     // Note: The badge classes might vary, but text content is reliable
-    await expect(page.getByText('/uuid')).toBeVisible();
+    await expect(previewCard.getByText('/uuid')).toBeVisible();
 
     // Add a parameter to verify substitution
     await page.getByRole('tab', { name: 'Request Parameters' }).click();

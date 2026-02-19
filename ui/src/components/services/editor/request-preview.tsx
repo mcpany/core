@@ -141,7 +141,7 @@ export function RequestPreview({ call, tool, serviceName, onExecute, executionRe
                         <CardHeader className="py-3 px-4 bg-muted/20 border-b">
                             <CardTitle className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Request Preview</CardTitle>
                         </CardHeader>
-                        <CardContent className="p-4 space-y-3">
+                        <CardContent className="p-4 space-y-3" data-testid="request-preview-content">
                             {preview ? (
                                 <>
                                     <div className="flex items-center gap-2 font-mono text-sm break-all">
