@@ -163,9 +163,9 @@ describe('useTraces Hook', () => {
         mockWebSocket.onopen({} as any);
     });
 
-    // Add 1005 items
+    // Add 105 items
     act(() => {
-        for (let i = 0; i < 1005; i++) {
+        for (let i = 0; i < 105; i++) {
              mockWebSocket.onmessage({ data: JSON.stringify(createTrace(`${i}`, i)) } as any);
         }
     });
@@ -174,12 +174,12 @@ describe('useTraces Hook', () => {
         vi.advanceTimersByTime(200);
     });
 
-    // Should be capped at 1000
-    expect(result.current.traces).toHaveLength(1000);
+    // Should be capped at 100
+    expect(result.current.traces).toHaveLength(100);
     // Newest items should be present (LIFO)
-    // IDs were 0..1004. So 1004 is newest.
-    // 1000 items means IDs 1004 down to 5.
-    expect(result.current.traces[0].id).toBe('1004');
-    expect(result.current.traces[999].id).toBe('5');
+    // IDs were 0..104. So 104 is newest.
+    // 100 items means IDs 104 down to 5.
+    expect(result.current.traces[0].id).toBe('104');
+    expect(result.current.traces[99].id).toBe('5');
   });
 });

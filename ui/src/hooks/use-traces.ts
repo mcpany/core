@@ -6,7 +6,7 @@
 import { useEffect, useState, useRef } from "react";
 import { Trace } from "@/types/trace";
 
-const MAX_TRACES = 1000;
+const MAX_TRACES = 100;
 
 interface UseTracesOptions {
     initialPaused?: boolean;
