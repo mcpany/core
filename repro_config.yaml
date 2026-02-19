@@ -1,0 +1,28 @@
+global_settings:
+  mcp_listen_address: "127.0.0.1:50056"
+  profile_definitions:
+    - name: "default"
+      selector:
+        tags: ["default"]
+      service_config:
+        "fs-service":
+          enabled: true
+        "second-service":
+          enabled: true
+upstream_services:
+  - id: "fs-service"
+    name: "Filesystem Service"
+    disable: false
+    auto_discover_tool: true
+    filesystem_service:
+      root_paths:
+        "/data": "/tmp"
+      os: {}
+
+  - id: "second-service"
+    name: "Second Service"
+    auto_discover_tool: true
+    filesystem_service:
+      root_paths:
+        "/data": "/tmp"
+      os: {}
