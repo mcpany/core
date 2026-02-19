@@ -19,6 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SchemaViewer } from "./schema-viewer";
 import { SchemaForm, Schema } from "./schema-form";
+import { JsonView } from "@/components/ui/json-view";
 
 import { Switch } from "@/components/ui/switch";
 import { ToolAnalytics } from "@/lib/client";
@@ -217,9 +218,9 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
                 {output && (
                      <div className="grid gap-2">
                         <Label>Result</Label>
-                        <ScrollArea className="h-[150px] w-full rounded-md border p-4 bg-muted/50">
-                            <pre className="text-xs text-green-600 dark:text-green-400 font-mono">{output}</pre>
-                        </ScrollArea>
+                        <div className="rounded-md border p-1 bg-muted/50">
+                             <JsonView data={output} smartTable={true} maxHeight={300} className="text-xs font-mono" />
+                        </div>
                     </div>
                 )}
             </TabsContent>
