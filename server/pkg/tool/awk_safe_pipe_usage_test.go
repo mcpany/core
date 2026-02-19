@@ -35,7 +35,7 @@ func TestLocalCommandTool_AwkSafePipe_Usage(t *testing.T) {
 
 	// Payload: print "|"
 	// This uses pipe character inside a string literal. It should be SAFE.
-	// Old implementation blocked this. New implementation should allow it.
+	// The hardened implementation should allow this while blocking unquoted pipes.
 	payload := `BEGIN { print "|" }`
 
 	req := &ExecutionRequest{
