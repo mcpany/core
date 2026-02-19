@@ -13,14 +13,14 @@ services:
         "--grpc-port=:50051"
       ]
     environment:
+      - MCPANY_LOG_LEVEL=debug
       - MCPANY_API_KEY=test-token
       - MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true
       - MCPANY_ALLOW_LOOPBACK_RESOURCES=true
       - MCPANY_ADMIN_PASSWORD=password
       # Global Settings Config via Env (since config.test.yaml omits them to allow persistence testing)
       - MCPANY__GLOBAL_SETTINGS__DB_PATH=/tmp/mcpany.db
-      # Use JSON format for list environment variable to ensure correct parsing. Quoted to prevent YAML parsing issues.
-      - 'MCPANY__GLOBAL_SETTINGS__ALLOWED_ORIGINS=["*"]'
+      # ALLOWED_ORIGINS defaults to "*" when LOG_LEVEL is debug, simplifying configuration.
       # Need to ensure default profile exists if file doesn't provide it
       - 'MCPANY__GLOBAL_SETTINGS__PROFILE_DEFINITIONS=[{"name":"default","selector":{"tags":["dev"]}}]'
     healthcheck:
