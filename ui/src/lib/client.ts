@@ -18,6 +18,7 @@ import { ToolDefinition } from '@proto/config/v1/tool';
 import { ResourceDefinition } from '@proto/config/v1/resource';
 import { PromptDefinition } from '@proto/config/v1/prompt';
 import { Credential, Authentication } from '@proto/config/v1/auth';
+import { Graph } from '@proto/topology/v1/topology';
 
 import { BrowserHeaders } from 'browser-headers';
 
@@ -1388,6 +1389,16 @@ export const apiClient = {
             body: JSON.stringify(settings)
         });
         if (!res.ok) throw new Error('Failed to save global settings');
+    },
+
+    /**
+     * Gets the network topology graph.
+     * @returns A promise that resolves to the topology graph.
+     */
+    getTopology: async (): Promise<Graph> => {
+        const res = await fetchWithAuth('/api/v1/topology');
+        if (!res.ok) throw new Error('Failed to fetch topology');
+        return res.json();
     },
 
     /**
