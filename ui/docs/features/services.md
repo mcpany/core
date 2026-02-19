@@ -15,7 +15,7 @@ Manage upstream services connected to the MCP Any platform. The Services Dashboa
 
 ### 1. View Service List
 
-Navigate to the **Services** page via the sidebar. This view provides a high-level overview of all registered upstream services.
+Navigate to the **Upstream Services** page via the sidebar. This view provides a high-level overview of all registered upstream services.
 
 ![Services List](screenshots/services_list.png)
 

@@ -17,6 +17,7 @@ Rate limiting is configured within the `rate_limit` block of an upstream service
 | `redis`               | `object` | Redis connection details (required if storage is `STORAGE_REDIS`). |
 | `tool_limits`         | `map`    | Tool-specific rate limits. Key is the tool name, value is a RateLimitConfig object. |
 | `key_by`              | `enum`   | Strategy for partitioning limits. Options: `KEY_BY_IP` (default), `KEY_BY_USER_ID`, `KEY_BY_API_KEY`. |
+| `cost_metric`         | `enum`   | The metric to use for calculating cost. Options: `COST_METRIC_REQUESTS` (default), `COST_METRIC_TOKENS`. |
 
 ### Configuration Snippet
 

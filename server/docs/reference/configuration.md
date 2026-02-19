@@ -570,6 +570,11 @@ connection_pool:
 | `is_enabled`          | `bool`   | Whether rate limiting is enabled.                            |
 | `requests_per_second` | `double` | The maximum number of requests allowed per second.           |
 | `burst`               | `int64`  | The number of requests that can be allowed in a short burst. |
+| `storage`             | `enum`   | The storage backend to use: `STORAGE_MEMORY` (default) or `STORAGE_REDIS`. |
+| `redis`               | `object` | Redis connection details (required if storage is `STORAGE_REDIS`). |
+| `tool_limits`         | `map`    | Tool-specific rate limits. Key is the tool name, value is a RateLimitConfig object. |
+| `key_by`              | `enum`   | Strategy for partitioning limits. Options: `KEY_BY_IP` (default), `KEY_BY_USER_ID`, `KEY_BY_API_KEY`. |
+| `cost_metric`         | `enum`   | The metric to use for calculating cost. Options: `COST_METRIC_REQUESTS` (default), `COST_METRIC_TOKENS`. |
 
 ##### Use Case and Example
 
