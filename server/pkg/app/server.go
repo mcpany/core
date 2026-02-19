@@ -1979,6 +1979,11 @@ func (a *Application) runServerMode(
 	})))
 	mux.Handle("/debug/auth-test", authMiddleware(http.HandlerFunc(a.testAuthHandler)))
 	mux.Handle("/api/v1/debug/seed_traffic", authMiddleware(a.handleDebugSeedTraffic()))
+	if globalSettings.GetDebugger().GetEnabled() {
+		mux.Handle("/api/v1/debug/seed", authMiddleware(a.handleDebugSeed()))
+		mux.Handle("/api/v1/debug/oauth/authorize", a.handleDebugOAuthAuthorize())
+		mux.Handle("/api/v1/debug/oauth/token", a.handleDebugOAuthToken())
+	}
 
 	// User Preferences
 	mux.Handle("/api/v1/user/preferences", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

@@ -104,23 +104,23 @@ export function CredentialForm({ initialData, onSuccess }: CredentialFormProps) 
             auth.api_key = {
                 param_name: values.apiKeyParamName || "X-API-Key",
                 in: parseInt(values.apiKeyLocation || "0"),
-                value: { plain_text: values.apiKeyValue || "", validation_regex: "" },
+                value: { plainText: values.apiKeyValue || "", validation_regex: "" },
                 verification_value: ""
             }
         } else if (values.authType === "bearer_token") {
             auth.bearer_token = {
-                token: { plain_text: values.bearerToken || "", validation_regex: "" }
+                token: { plainText: values.bearerToken || "", validation_regex: "" }
             }
         } else if (values.authType === "basic_auth") {
             auth.basic_auth = {
                 username: values.basicUsername || "",
-                password: { plain_text: values.basicPassword || "", validation_regex: "" },
+                password: { plainText: values.basicPassword || "", validation_regex: "" },
                 password_hash: ""
             }
         } else if (values.authType === "oauth2") {
             auth.oauth2 = {
-                client_id: { plain_text: values.oauthClientId || "", validation_regex: "" },
-                client_secret: { plain_text: values.oauthClientSecret || "", validation_regex: "" },
+                client_id: { plainText: values.oauthClientId || "", validation_regex: "" },
+                client_secret: { plainText: values.oauthClientSecret || "", validation_regex: "" },
                 authorization_url: values.oauthAuthUrl || "",
                 token_url: values.oauthTokenUrl || "",
                 scopes: values.oauthScopes || "",

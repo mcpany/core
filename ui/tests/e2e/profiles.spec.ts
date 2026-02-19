@@ -4,14 +4,27 @@
  */
 
 import { test, expect } from '@playwright/test';
-import { seedUser, cleanupUser } from './test-data';
+import { seedDebugData } from './test-data';
 
 // CUJ 18-19: Profile & Collection Management
 test.describe('MCP Any Profile & Collection Tests', () => {
 
   test.beforeEach(async ({ page, request }) => {
-    // Seed user to avoid race conditions with other tests cleanup
-    await seedUser(request, 'profile-admin-e2e');
+    // Clean start using debug seeder
+    await seedDebugData({
+        users: [{
+            id: "profile-admin-e2e",
+            authentication: {
+                basic_auth: {
+                    username: "profile-admin-e2e",
+                    password_hash: "$2a$12$KPRtQETm7XKJP/L6FjYYxuCFpTK/oRs7v9U6hWx9XFnWy6UuDqK/a" // password
+                }
+            },
+            roles: ["admin"],
+            profile_ids: ["dev"] // Make sure 'dev' exists or is created
+        }],
+        profiles: [{ name: "dev" }] // Seed required profile
+    }, request);
 
     await page.goto('/login');
     await page.fill('input[name="username"]', 'profile-admin-e2e');
@@ -45,17 +58,8 @@ test.describe('MCP Any Profile & Collection Tests', () => {
     // Save
     await page.getByRole('button', { name: /save|create/i }).click();
 
-    // Verify
-    // Since we mocked POST but GET might not update unless we optimize mock state,
-    // we just check if the success toast or UI transition happens.
-    // Ideally we update the GET mock on the fly or just verify the call.
-    // For now, let's assume the UI adds it to the list optimistically or re-fetches.
-    // If re-fetch returns old list, we might fail.
-    // Let's assume the mock is static for now, so we verify the "Network" request or success message?
-    // Or we should update the mock.
-
-    // Simple check: Success toast
-    // await expect(page.getByText(/profile created/i)).toBeVisible();
+    // Verify it appears in the list (Real Data!)
+    await expect(page.getByText('QA Profile')).toBeVisible();
   });
 
   test('Create Collection', async ({ page }) => {

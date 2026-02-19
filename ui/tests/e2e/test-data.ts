@@ -101,6 +101,18 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
     }
 };
 
+export const seedDebugData = async (data: any, requestContext?: APIRequestContext) => {
+    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    const res = await context.post('/api/v1/debug/seed', {
+        data: data,
+        headers: HEADERS
+    });
+    if (!res.ok()) {
+        const text = await res.text();
+        throw new Error(`Failed to seed debug data: ${res.status()} ${text}`);
+    }
+};
+
 export const seedCollection = async (name: string, requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     const collection = {

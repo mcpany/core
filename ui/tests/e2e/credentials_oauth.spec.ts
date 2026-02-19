@@ -4,82 +4,22 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { seedDebugData } from './test-data';
 
 test.describe('Credential OAuth Flow E2E', () => {
-  const credentialID = 'cred-123';
-  const credentials: any[] = [];
+  // Use unique ID to prevent collisions
+  const credentialID = 'cred-oauth-test';
 
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page, request }) => {
     // Increase viewport height for long forms
     await page.setViewportSize({ width: 1280, height: 1000 });
-
-    credentials.length = 0;
     page.on('console', msg => console.log('BROWSER LOG:', msg.text()));
 
-    await page.route('**/api/v1/credentials', async route => {
-        if (route.request().method() === 'GET') {
-            await route.fulfill({ json: { credentials } });
-        } else if (route.request().method() === 'POST') {
-             const req = route.request().postDataJSON();
-             const newCred = {
-                     id: credentialID,
-                     name: req.name,
-                     authentication: req.authentication,
-                     token: null
-             };
-             credentials.push(newCred);
-             await route.fulfill({ json: newCred });
-        } else {
-            await route.continue();
-        }
-    });
-
-    await page.route(`**/api/v1/credentials/${credentialID}`, async route => {
-        const method = route.request().method();
-        if (method === 'PUT') {
-            const req = route.request().postDataJSON();
-            const cred = credentials.find(c => c.id === credentialID);
-            if (cred) {
-                cred.name = req.name;
-                cred.authentication = req.authentication;
-            }
-             await route.fulfill({
-                 json: {
-                     id: credentialID,
-                     name: req.name,
-                     authentication: req.authentication,
-                     token: req.token
-                 }
-             });
-        } else if (method === 'DELETE') {
-            const idx = credentials.findIndex(c => c.id === credentialID);
-            if (idx !== -1) credentials.splice(idx, 1);
-            await route.fulfill({ json: {} });
-        } else {
-            await route.continue();
-        }
-    });
-
-    await page.route((url) => url.pathname.includes('/auth/oauth/'), async route => {
-        const urlStr = route.request().url();
-        console.log(`OAuth mock hit for ${urlStr}`);
-        if (urlStr.includes('/initiate')) {
-            const origin = new URL(page.url()).origin;
-            await route.fulfill({
-                json: {
-                    authorization_url: `${origin}/auth/callback?code=mock-code&state=xyz`,
-                    state: 'xyz'
-                }
-            });
-        } else if (urlStr.includes('/callback')) {
-            // Find credential and update token
-            const cred = credentials.find(c => c.id === credentialID);
-            if (cred) cred.token = { accessToken: 'mock-token' };
-            await route.fulfill({ json: { status: 'success' } });
-        } else {
-            await route.continue();
-        }
-    });
+    // Seed data: Clear credentials and ensure a clean state
+    await seedDebugData({
+        credentials: [],
+        services: [] // Clear services too if needed, or keep them.
+    }, request);
   });
 
   test('should create oauth credential and connect', async ({ page }) => {
@@ -102,8 +42,20 @@ test.describe('Credential OAuth Flow E2E', () => {
 
     await page.getByLabel('Client ID').fill('test-client-id');
     await page.getByLabel('Client Secret').fill('test-client-secret');
-    await authUrlLabel.fill('http://example.com/auth');
-    await page.getByLabel('Token URL').fill('http://example.com/token');
+
+    // Point to Debug OAuth endpoints on the REAL backend
+    // Since Next.js proxies /api/v1 to backend, we can use the same host or explicit backend port.
+    // The browser needs to reach this URL. If we use localhost:50050, it works locally.
+    // In CI, we assume backend is at localhost:50050 or reachable.
+    // To be safe, we use the backend port directly as it might not be proxied if it's an external redirect.
+    // Actually, the backend will redirect the browser to this URL.
+    // If we use /api/v1/... it will go through Next.js proxy -> Backend -> Debug Endpoint.
+    // But authorization_url is visited by the browser directly.
+    // So http://localhost:50050/api/v1/debug/oauth/authorize is correct if backend is exposed there.
+
+    const backendUrl = process.env.BACKEND_URL || 'http://localhost:50050';
+    await authUrlLabel.fill(`${backendUrl}/api/v1/debug/oauth/authorize`);
+    await page.getByLabel('Token URL').fill(`${backendUrl}/api/v1/debug/oauth/token`);
 
     const saveButton = page.getByRole('button', { name: 'Save', exact: true });
     await saveButton.scrollIntoViewIfNeeded();
@@ -120,11 +72,15 @@ test.describe('Credential OAuth Flow E2E', () => {
     await expect(page.getByRole('button', { name: 'Connect Account' })).toBeVisible({ timeout: 15000 });
     await page.getByRole('button', { name: 'Connect Account' }).click({ force: true });
 
+    // The flow should redirect to debug endpoint, then back to callback page, then show success
     await expect(page.getByText('Authentication Successful')).toBeVisible({ timeout: 20000 });
     await page.getByRole('button', { name: 'Continue' }).click({ force: true });
 
     // Use auto-retrying toHaveURL
     await expect(page).toHaveURL(/\/credentials/);
     await expect(page.getByText('Test OAuth Cred')).toBeVisible();
+
+    // Verify "Reconnect" button appears, indicating token is present
+    await expect(row.getByRole('button', { name: 'Reconnect' })).toBeVisible();
   });
 });

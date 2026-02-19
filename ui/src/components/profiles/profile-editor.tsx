@@ -158,7 +158,7 @@ export interface Profile {
 interface ProfileData {
     name: string;
     selector: { tags: string[] };
-    serviceConfig: Record<string, unknown>;
+    service_config: Record<string, unknown>;
     secrets: Record<string, string>;
 }
 
@@ -301,13 +301,20 @@ export function ProfileEditor({ profile, open, onOpenChange, onSave }: ProfileEd
                 };
             });
 
+            const secretsMap: Record<string, any> = {};
+            if (profile?.secrets) {
+                Object.entries(profile.secrets).forEach(([k, v]) => {
+                    secretsMap[k] = { plainText: v };
+                });
+            }
+
             const profileData = {
                 name: name,
                 selector: {
                     tags: [type, ...additionalTags] // Combine type and additional tags
                 },
-                serviceConfig: serviceConfig,
-                secrets: profile?.secrets || {} // Preserve secrets if any
+                service_config: serviceConfig,
+                secrets: secretsMap // Wrap secrets in SecretValue
             };
 
             await onSave(profileData);
