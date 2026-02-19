@@ -92,7 +92,7 @@ test.describe('Dashboard Real Data', () => {
         await expect(totalRequestsLocator).toHaveText(/[0-9,]+/, { timeout: 30000 });
 
         // Avg Latency: 50ms
-        await expect(page.getByText('50ms')).toBeVisible();
+        await expect(page.getByText('50ms').first()).toBeVisible();
 
         // 60 errors / 6000 ~ 1%
         await expect(page.getByText(/1\.00%|0\.9\d%/)).toBeVisible();
