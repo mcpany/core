@@ -84,11 +84,11 @@ test.describe('HTTP Tool Editor', () => {
 
     // Verify parent sheet (Service Editor) is still open and shows new tool
     await expect(page.getByRole('dialog', { name: 'Edit Service' })).toBeVisible();
-    await expect(page.locator('.flex.items-center.justify-between.p-4', { hasText: 'get_args' })).toBeVisible();
+    await expect(page.locator('.flex.items-center.justify-between.p-4', { hasText: 'get_args' }).first()).toBeVisible();
 
     // Save Service to register tool in backend
     await page.getByRole('button', { name: 'Save Changes' }).click();
-    await expect(page.getByText('Service Updated')).toBeVisible();
+    await expect(page.getByText('Service Updated', { exact: true })).toBeVisible();
 
     // Re-open Tool Editor to Execute
     // Note: We need to re-open the Edit Service sheet first?
