@@ -1,6 +1,6 @@
 # Data Loss Prevention (DLP) Middleware
 
-The Data Loss Prevention (DLP) middleware scans and redacts sensitive information (PII) from both request arguments (inputs) and result content (outputs).
+The Data Loss Prevention (DLP) middleware scans and redacts sensitive information (PII) from request arguments (inputs) and result content (outputs).
 
 ## Overview
 
@@ -8,8 +8,10 @@ DLP is critical for preventing sensitive data leaks when interacting with LLMs. 
 
 ## Features
 
-- **Input Redaction**: Scans arguments in `CallToolRequest` for PII.
-- **Output Redaction**: Scans text content in `CallToolResult` for PII.
+- **Tool Input Redaction**: Scans arguments in `CallToolRequest` for PII.
+- **Tool Output Redaction**: Scans text content in `CallToolResult` for PII.
+- **Prompt Redaction**: Scans arguments in `GetPromptRequest` and text content in `GetPromptResult`.
+- **Resource Redaction**: Scans text content in `ReadResourceResult`.
 - **Configurable Rules**: Define what patterns to look for (e.g., Credit Card numbers, SSN, Email addresses).
 
 ## Configuration
@@ -27,4 +29,9 @@ dlp:
 
 ## Implementation
 
-The middleware is implemented in `server/pkg/middleware/dlp.go`. It uses regex-based replacement to sanitize data before it reaches the tool (for inputs) or before it returns to the client (for outputs).
+The middleware is implemented in `server/pkg/middleware/dlp.go`. It uses regex-based replacement to sanitize data before it reaches the tool (for inputs) or before it returns to the client (for outputs). It handles:
+- `CallToolRequest` (arguments)
+- `GetPromptRequest` (arguments)
+- `CallToolResult` (content)
+- `GetPromptResult` (content)
+- `ReadResourceResult` (content)
