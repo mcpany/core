@@ -25,6 +25,22 @@ upstream_services:
         - name: "get_weather"
           description: "Get current weather"
           call_id: "get_weather"
+      calls:
+        get_weather:
+          args: ['{"weather": "sunny"}']
+      resources:
+        - uri: "system://logs"
+          name: "System Logs"
+          mime_type: "text/plain"
+      prompts:
+        - name: "summarize_text"
+          description: "Summarize text"
+
+  - id: "rich-result-test-service"
+    name: "rich-result-test-service"
+    command_line_service:
+      command: "echo"
+      tools:
         - name: "get_complex_data"
           description: "Returns complex data for UI testing"
           call_id: "get_complex_data"
@@ -33,14 +49,5 @@ upstream_services:
               dummy:
                 string_value: "val"
       calls:
-        get_weather:
-          args: ['{"weather": "sunny"}']
         get_complex_data:
           args: ['[{"id": 1, "name": "Alice", "role": "Admin", "details": {"active": true}}, {"id": 2, "name": "Bob", "role": "User", "details": {"active": false}}]']
-      resources:
-        - uri: "system://logs"
-          name: "System Logs"
-          mime_type: "text/plain"
-      prompts:
-        - name: "summarize_text"
-          description: "Summarize text"

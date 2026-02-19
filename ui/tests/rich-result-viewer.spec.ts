@@ -10,20 +10,21 @@ test('Tool Inspector renders rich table result for complex data', async ({ page 
 
   // Search for the test tool
   await page.getByPlaceholder('Search tools...').fill('get_complex_data');
-  await expect(page.getByText('weather-service.get_complex_data').first()).toBeVisible();
+  await expect(page.getByText('rich-result-test-service.get_complex_data').first()).toBeVisible();
 
   // Open inspector
-  await page.getByRole('row', { name: 'weather-service.get_complex_data' }).getByRole('button', { name: 'Inspect' }).click();
+  await page.getByRole('row', { name: 'rich-result-test-service.get_complex_data' }).getByRole('button', { name: 'Inspect' }).click();
 
   // Wait for inspector to open
   await expect(page.getByRole('dialog')).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'weather-service.get_complex_data' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'rich-result-test-service.get_complex_data' })).toBeVisible();
 
   // Execute tool (default args should work as they are empty object in seeded tool)
   await page.getByRole('button', { name: 'Execute' }).click();
 
   // Wait for result
-  await expect(page.getByText('Result')).toBeVisible();
+  // Use precise selector to avoid matching service name "rich-result-test-service"
+  await expect(page.locator('label').filter({ hasText: 'Result' })).toBeVisible();
 
   // Check if Table tab is active or available
   const tableTab = page.getByRole('tab', { name: 'Table' });
