@@ -16,7 +16,11 @@ import (
 func TestCopilotCLIE2E_Everything(t *testing.T) {
 	apiKey := os.Getenv("GITHUB_COPILOT_TOKEN")
 	if apiKey == "" {
-		t.Skip("GITHUB_COPILOT_TOKEN not set, skipping test")
+		// Fallback to mock mode if token is not available
+		t.Log("GITHUB_COPILOT_TOKEN not set, using mock mode")
+		os.Setenv("MOCK_COPILOT_CLI", "true")
+		defer os.Unsetenv("MOCK_COPILOT_CLI")
+		apiKey = "mock-token"
 	}
 
 	copilot := framework.NewCopilotCLI(t)

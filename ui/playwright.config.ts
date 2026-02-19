@@ -10,6 +10,17 @@ import os from 'os';
 const PORT = process.env.TEST_PORT || 9111;
 const BASE_URL = process.env.PLAYWRIGHT_BASE_URL || `http://localhost:${PORT}`;
 
+// Command to seed DB, start Backend, and start Frontend
+// Note: We move up to root to run go commands.
+const SEED_CMD = 'cd .. && go run server/cmd/mcpctl/main.go seed';
+const START_BACKEND_CMD = 'cd .. && go run server/cmd/server/main.go run';
+const START_FRONTEND_CMD = `npx next dev -p ${PORT}`;
+
+// Composite command: Seed -> Start Backend (bg) -> Wait -> Start Frontend
+// We use a trap to kill the backend when this script exits?
+// Playwright kills the process tree, so background jobs started by shell should die if they are in the same group.
+const WEB_SERVER_COMMAND = `${SEED_CMD} && (${START_BACKEND_CMD} &) && sleep 5 && ${START_FRONTEND_CMD}`;
+
 export default defineConfig({
   testDir: './tests',
   testMatch: ['**/*.spec.ts'], // Changed to match all specs
@@ -46,7 +57,7 @@ export default defineConfig({
   webServer: process.env.SKIP_WEBSERVER
     ? undefined
     : {
-        command: `BACKEND_URL=${process.env.BACKEND_URL || 'http://localhost:50050'} npx next dev -p ${PORT}`,
+        command: WEB_SERVER_COMMAND,
         url: BASE_URL,
         reuseExistingServer: false,
         env: {

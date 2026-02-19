@@ -8,6 +8,8 @@ package public_api
 import (
 	"context"
 	"encoding/json"
+	"net/http"
+	"net/http/httptest"
 	"strings"
 	"testing"
 	"time"
@@ -22,7 +24,17 @@ import (
 )
 
 func TestUpstreamService_CatFacts(t *testing.T) {
-	// t.Skip("Skipping flaky cat facts test due to rate limiting issues")
+	// Mock the external API to ensure test stability
+	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/fact" {
+			w.Header().Set("Content-Type", "application/json")
+			w.Write([]byte(`{"fact":"Cats are cool","length":13}`))
+			return
+		}
+		w.WriteHeader(http.StatusNotFound)
+	}))
+	defer mockServer.Close()
+
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 
@@ -35,7 +47,7 @@ func TestUpstreamService_CatFacts(t *testing.T) {
 
 	// --- 2. Register Cat Facts Server with MCPANY ---
 	const catFactsServiceID = "e2e_catfacts"
-	catFactsServiceEndpoint := "https://catfact.ninja"
+	catFactsServiceEndpoint := mockServer.URL
 	t.Logf("INFO: Registering '%s' with MCPANY at endpoint %s...", catFactsServiceID, catFactsServiceEndpoint)
 	registrationGRPCClient := mcpAnyTestServerInfo.RegistrationClient
 

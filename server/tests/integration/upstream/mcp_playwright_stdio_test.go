@@ -17,7 +17,7 @@ import (
 )
 
 func TestUpstreamService_MCP_Playwright_Stdio(t *testing.T) {
-	t.Skip("Skipping failing Playwright test: tool returns 0 tools in test env (investigated: stdout pollution fixed in docker_transport.go)")
+	// t.Skip("Skipping failing Playwright test: tool returns 0 tools in test env (investigated: stdout pollution fixed in docker_transport.go)")
 
 	testCase := &framework.E2ETestCase{
 		Name:                "playwright server (Stdio)",
@@ -32,7 +32,7 @@ func TestUpstreamService_MCP_Playwright_Stdio(t *testing.T) {
 				"NPM_CONFIG_YES":                   "true",
 			}
 			cmd := "node"
-			args := []string{"./node_modules/.bin/mcp-server-playwright", "--", "--console-level", "debug"}
+			args := []string{"./node_modules/.bin/mcp-server-playwright", "--", "--console-level", "error"}
 			setupCommands := []string{
 				"npm install --no-optional @playwright/mcp",
 			}
