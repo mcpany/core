@@ -2980,6 +2980,9 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	// So we assume quoteLevel == 1 implies String Literal context (or at least hybrid) for non-shell commands.
 	if !isShell && quoteLevel == 1 {
 		isInnerQuoted = true
+		if innerQuote == 0 {
+			innerQuote = '"'
+		}
 	}
 
 	base := strings.ToLower(filepath.Base(command))
@@ -2995,23 +2998,23 @@ func checkForShellInjection(val string, template string, placeholder string, com
 			return err
 		}
 		// Sentinel Security Update: Interpreter Strict Mode
-		// Block dangerous function calls and keywords commonly used for RCE
-		// in both single and double-quoted strings (which might be evaluated).
-		if quoteLevel == 1 || quoteLevel == 2 {
-			// Always check as Unquoted first to detect code injection (e.g. eval("{{msg}}") where msg="__import__...")
-			// This assumes the content IS code, which is the safest default.
-			if err := checkInterpreterFunctionCalls(val, base, false); err != nil {
-				return err
-			}
+		// Block dangerous function calls and keywords commonly used for RCE.
+		// We run this check regardless of quote level (0, 1, 2) because checkDangerousKeywords
+		// is context-aware and can distinguish between string literals and code execution.
 
-			// If context implies quotes, ALSO check as Quoted to detect breakout attacks (e.g. node -e 'console.log("{{msg}}")')
-			// where msg="); require..."
-			// The Unquoted check above might pass "); require..." because it thinks " opens a quote.
-			// The Quoted check will see " as closing the quote and catch the breakout.
-			if isInnerQuoted {
-				if err := checkInterpreterFunctionCalls(val, base, true); err != nil {
-					return err
-				}
+		// Always check as Unquoted first to detect code injection (e.g. eval("{{msg}}") where msg="__import__...")
+		// This assumes the content IS code, which is the safest default.
+		if err := checkInterpreterFunctionCalls(val, base, 0); err != nil {
+			return err
+		}
+
+		// If context implies quotes, ALSO check as Quoted to detect breakout attacks (e.g. node -e 'console.log("{{msg}}")')
+		// where msg="); require..."
+		// The Unquoted check above might pass "); require..." because it thinks " opens a quote.
+		// The Quoted check will see " as closing the quote and catch the breakout.
+		if isInnerQuoted {
+			if err := checkInterpreterFunctionCalls(val, base, innerQuote); err != nil {
+				return err
 			}
 		}
 	}
@@ -3029,7 +3032,16 @@ func checkForShellInjection(val string, template string, placeholder string, com
 			}
 			// Also check function calls for the detected interpreter context
 			if quoteLevel == 1 || quoteLevel == 2 {
-				if err := checkInterpreterFunctionCalls(val, argBase, isInnerQuoted); err != nil {
+				// Infer inner quote from quoteLevel
+				var iQuote rune
+				if isInnerQuoted {
+					iQuote = innerQuote
+				} else if quoteLevel == 1 {
+					iQuote = '"'
+				} else if quoteLevel == 2 {
+					iQuote = '\''
+				}
+				if err := checkInterpreterFunctionCalls(val, argBase, iQuote); err != nil {
 					return fmt.Errorf("argument interpreter injection detected (%s): %w", argBase, err)
 				}
 			}
@@ -3202,7 +3214,7 @@ func stripInterpreterComments(val, language string) string {
 	return b.String()
 }
 
-func checkInterpreterFunctionCalls(val, language string, isInnerQuoted bool) error {
+func checkInterpreterFunctionCalls(val, language string, innerQuote rune) error {
 	// Strip comments and line continuations first
 	val = stripInterpreterComments(val, language)
 
@@ -3217,7 +3229,7 @@ func checkInterpreterFunctionCalls(val, language string, isInnerQuoted bool) err
 		"__import__",
 	}
 
-	if err := checkDangerousKeywords(val, dangerousKeywords, language, isInnerQuoted); err != nil {
+	if err := checkDangerousKeywords(val, dangerousKeywords, language, innerQuote); err != nil {
 		return err
 	}
 
@@ -3227,16 +3239,12 @@ func checkInterpreterFunctionCalls(val, language string, isInnerQuoted bool) err
 // checkDangerousKeywords scans the value for dangerous keywords, respecting quotes and backticks based on the language.
 // It replaces checkUnquotedKeywords and fixes false positives with string literals.
 //nolint:gocyclo
-func checkDangerousKeywords(val string, keywords []string, language string, isInnerQuoted bool) error {
+func checkDangerousKeywords(val string, keywords []string, language string, innerQuote rune) error {
 	// If we are already inside an inner quote (detected from template analysis),
-	// we initialize the state accordingly. We assume standard quotes (' or ") behave similarly
-	// regarding blocking keyword execution in most languages.
-	// Since we don't know exactly WHICH quote it was (single or double) passed here easily without more params,
-	// and since checkDangerousKeywords logic for Single/Double is identical (ignore keywords),
-	// we can just set inDouble = true.
-	inSingle := false
-	inDouble := isInnerQuoted
-	inBacktick := false
+	// we initialize the state accordingly.
+	inSingle := innerQuote == '\''
+	inDouble := innerQuote == '"'
+	inBacktick := innerQuote == '`'
 	escaped := false
 
 	var wordBuilder strings.Builder
