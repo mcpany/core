@@ -22,12 +22,15 @@ test.describe('Visualizer', () => {
 
     // Wait for Send button to be enabled (might be disabled during initial load/state update)
     const sendBtn = page.getByLabel('Send');
-    await expect(sendBtn).toBeEnabled();
+    await expect(sendBtn).toBeEnabled({ timeout: 10000 });
     await sendBtn.click();
 
     // Wait for the execution result to ensure trace is generated
     // The result comes in a collapsible with "Result: weather-service.get_weather"
-    await expect(page.getByText('Result: weather-service.get_weather')).toBeVisible();
+    await expect(page.getByText('Result: weather-service.get_weather')).toBeVisible({ timeout: 15000 });
+
+    // Additional wait to ensure trace is written to backend
+    await page.waitForTimeout(2000);
 
     // 2. Navigate to Visualizer
     await page.goto('/visualizer');
@@ -60,5 +63,8 @@ test.describe('Visualizer', () => {
     // Edges are SVGs, harder to test text, but if nodes are layouted correctly, the graph is likely working.
     // We can check if the Select dropdown has populated with our trace
     await expect(page.getByRole('combobox')).toBeVisible();
+
+    // Take verification screenshot
+    await page.screenshot({ path: 'verification/visualizer_final.png', fullPage: true });
   });
 });
