@@ -3786,14 +3786,24 @@ func checkEnvInjection(val string) error {
 	return nil
 }
 
+func isGit(command string) bool {
+	base := strings.ToLower(filepath.Base(command))
+	return base == gitCommand
+}
+
 func validateSafePathAndInjection(val string, isDocker bool, commandName string) error {
 	// Sentinel Security Update: Trim whitespace to prevent bypasses using leading spaces
 	val = strings.TrimSpace(val)
 
 	// Sentinel Security Update: Enforce SSRF protection on arguments that look like URLs.
-	// We check for "://" to capture any scheme (http, https, ftp, gopher, etc.).
-	// IsSafeURL will block any scheme other than http/https, and verify IPs for those.
-	if strings.Contains(val, "://") {
+	if isGit(commandName) {
+		// For git, we use IsSafeGitURL which supports ssh/git schemes and SCP syntax,
+		// but validates the host to prevent SSRF to private networks.
+		if err := validation.IsSafeGitURL(val); err != nil {
+			return fmt.Errorf("unsafe git argument: %w", err)
+		}
+	} else if strings.Contains(val, "://") {
+		// For other tools, we strictly enforce http/https and safe IPs.
 		if err := validation.IsSafeURL(val); err != nil {
 			return fmt.Errorf("unsafe url argument: %w", err)
 		}

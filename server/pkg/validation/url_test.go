@@ -15,17 +15,17 @@ func TestIsSafeURL(t *testing.T) {
 	originalEnv := os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS")
 	os.Unsetenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS")
 
-	// Restore original lookupIPFunc
-	originalLookupIP := lookupIPFunc
+	// Restore original LookupIPFunc
+	originalLookupIP := LookupIPFunc
 	defer func() {
-		lookupIPFunc = originalLookupIP
+		LookupIPFunc = originalLookupIP
 		if originalEnv != "" {
 			os.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", originalEnv)
 		}
 	}()
 
 	// Mock DNS resolution
-	lookupIPFunc = func(ctx context.Context, network, host string) ([]net.IP, error) {
+	LookupIPFunc = func(ctx context.Context, network, host string) ([]net.IP, error) {
 		if host == "google.com" {
 			return []net.IP{net.ParseIP("8.8.8.8")}, nil
 		}
