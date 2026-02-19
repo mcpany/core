@@ -19,7 +19,7 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { VariableInspector } from './variable-inspector';
-import { useTopology } from '@/hooks/use-topology';
+import { useRealTimeTopology } from '@/hooks/use-real-time-topology';
 import { Play, Pause, RefreshCw, Database } from 'lucide-react';
 import { apiClient } from '@/lib/client';
 import { useToast } from '@/hooks/use-toast';
@@ -38,7 +38,7 @@ const nodeTypes = {
  * @returns The AgentFlow component.
  */
 export function AgentFlow() {
-  const { nodes, edges, onNodesChange, onEdgesChange, isLive, setIsLive, refresh, lastUpdated } = useTopology();
+  const { nodes, edges, onNodesChange, onEdgesChange, isLive, setIsLive, refresh, lastUpdated } = useRealTimeTopology();
   const [selectedNode, setSelectedNode] = useState<any>(null);
   const { toast } = useToast();
   const [seeding, setSeeding] = useState(false);

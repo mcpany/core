@@ -65,7 +65,7 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[]) => {
  * Hook to fetch and manage the network topology graph.
  * @returns The topology state and controls.
  */
-export function useTopology() {
+export function useRealTimeTopology() {
     const [nodes, setNodes, onNodesChange] = useNodesState([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
     const [loading, setLoading] = useState(false);
