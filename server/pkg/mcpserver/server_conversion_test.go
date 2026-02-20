@@ -60,6 +60,12 @@ func (m *mockConversionTool) MCPTool() *mcp.Tool {
 	return t
 }
 
+// TestServer_CallTool_ResultConversion validates the translation of tool execution results
+// (often map[string]any) into standard MCP results.
+// It covers:
+// 1. Valid resource conversion (Text, Blob/String, Blob/Bytes).
+// 2. Mixed content handling.
+// 3. Fallback logic for invalid inputs (e.g. missing URIs), ensuring safe degradation to raw text.
 func TestServer_CallTool_ResultConversion(t *testing.T) {
 	poolManager := pool.NewManager()
 	factory := factory.NewUpstreamServiceFactory(poolManager, nil)
