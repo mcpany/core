@@ -4,6 +4,7 @@
 package app
 
 import (
+	"encoding/json"
 	"net/http/httptest"
 	"strings"
 	"testing"
@@ -21,11 +22,11 @@ func TestHandleLogsWS_History(t *testing.T) {
 	logging.GlobalBroadcaster = logging.NewBroadcaster()
 	defer func() { logging.GlobalBroadcaster = originalBroadcaster }()
 
-	// Populate history
-	historyMsg1 := []byte("history message 1")
-	historyMsg2 := []byte("history message 2")
-	logging.GlobalBroadcaster.Broadcast(historyMsg1)
-	logging.GlobalBroadcaster.Broadcast(historyMsg2)
+	// Populate history with structs
+	entry1 := logging.LogEntry{Message: "history message 1"}
+	entry2 := logging.LogEntry{Message: "history message 2"}
+	logging.GlobalBroadcaster.Broadcast(entry1)
+	logging.GlobalBroadcaster.Broadcast(entry2)
 
 	app := &Application{}
 	handler := app.handleLogsWS()
@@ -38,16 +39,23 @@ func TestHandleLogsWS_History(t *testing.T) {
 	defer ws.Close()
 
 	// Read history messages
-	// Note: We might receive them in quick succession
 	ws.SetReadDeadline(time.Now().Add(5 * time.Second))
 	_, msg, err := ws.ReadMessage()
 	require.NoError(t, err)
-	assert.Equal(t, historyMsg1, msg)
+
+	var received1 logging.LogEntry
+	err = json.Unmarshal(msg, &received1)
+	require.NoError(t, err)
+	assert.Equal(t, entry1.Message, received1.Message)
 
 	ws.SetReadDeadline(time.Now().Add(5 * time.Second))
 	_, msg, err = ws.ReadMessage()
 	require.NoError(t, err)
-	assert.Equal(t, historyMsg2, msg)
+
+	var received2 logging.LogEntry
+	err = json.Unmarshal(msg, &received2)
+	require.NoError(t, err)
+	assert.Equal(t, entry2.Message, received2.Message)
 }
 
 func TestHandleLogsWS_Streaming(t *testing.T) {
@@ -66,65 +74,56 @@ func TestHandleLogsWS_Streaming(t *testing.T) {
 	require.NoError(t, err)
 	defer ws.Close()
 
-	// Wait for connection to be established by reading potential history (which should be empty)
-	// OR sending a sync message.
-	// Since we know the server implementation, it sends history immediately upon connection.
-	// If history is empty, it just subscribes.
-	// To reliably test streaming, we can use a "sync" message mechanism if we could inject it,
-	// but here we are testing the endpoint.
-	// Instead of sleep, we can retry broadcast until received or timeout.
-	// OR we can assume that if we dial successfully, we are close to ready.
-	// But `handleLogsWS` subscribes AFTER upgrade.
-	// We can't easily hook into "subscribed" event.
-	// Best approach: Broadcast a "PING" message repeatedly until client sees it, then broadcast real message.
+	syncMsg := logging.LogEntry{Message: "SYNC"}
+	newMsg := logging.LogEntry{Message: "new message"}
 
-	syncMsg := []byte("SYNC")
-	newMsg := []byte("new message")
-
-	// Helper to wait for sync
-	ready := make(chan bool)
+	// Wait for sync
+	done := make(chan struct{})
 	go func() {
+		defer close(done)
 		for {
 			ws.SetReadDeadline(time.Now().Add(100 * time.Millisecond))
 			_, msg, err := ws.ReadMessage()
-			if err == nil && string(msg) == string(syncMsg) {
-				ready <- true
-				return
-			}
-			if err != nil {
-				// if timeout, continue. if closed, return
-				if !strings.Contains(err.Error(), "timeout") {
+			if err == nil {
+				var received logging.LogEntry
+				if json.Unmarshal(msg, &received) == nil && received.Message == "SYNC" {
 					return
 				}
+			}
+			if err != nil && !strings.Contains(err.Error(), "timeout") && !strings.Contains(err.Error(), "temporarily unavailable") {
+				return
 			}
 		}
 	}()
 
-	// Broadcast sync until received
-	timeout := time.After(10 * time.Second)
 	ticker := time.NewTicker(50 * time.Millisecond)
 	defer ticker.Stop()
+	timeout := time.After(5 * time.Second)
 
 Loop:
 	for {
 		select {
-		case <-ready:
+		case <-done:
 			break Loop
 		case <-timeout:
-			t.Fatal("Timeout waiting for sync message")
+			t.Fatal("Timeout waiting for sync")
 		case <-ticker.C:
 			logging.GlobalBroadcaster.Broadcast(syncMsg)
 		}
 	}
 
-	// Now we are synced
+	// Now broadcast real message
 	logging.GlobalBroadcaster.Broadcast(newMsg)
 
-	// Read message
+	// Read it
 	ws.SetReadDeadline(time.Now().Add(5 * time.Second))
 	_, msg, err := ws.ReadMessage()
 	require.NoError(t, err)
-	assert.Equal(t, newMsg, msg)
+
+	var received logging.LogEntry
+	err = json.Unmarshal(msg, &received)
+	require.NoError(t, err)
+	assert.Equal(t, newMsg.Message, received.Message)
 }
 
 func TestHandleLogsWS_Concurrency(t *testing.T) {
@@ -151,8 +150,8 @@ func TestHandleLogsWS_Concurrency(t *testing.T) {
 	}
 
 	// Use Sync pattern for all clients
-	syncMsg := []byte("SYNC")
-	msgContent := []byte("broadcast to all")
+	syncMsg := logging.LogEntry{Message: "SYNC"}
+	msgContent := logging.LogEntry{Message: "broadcast to all"}
 
 	// Wait for all to be ready
 	readyCh := make(chan int, clientCount)
@@ -161,11 +160,14 @@ func TestHandleLogsWS_Concurrency(t *testing.T) {
 			for {
 				c.SetReadDeadline(time.Now().Add(100 * time.Millisecond))
 				_, msg, err := c.ReadMessage()
-				if err == nil && string(msg) == string(syncMsg) {
-					readyCh <- idx
-					return
+				if err == nil {
+					var received logging.LogEntry
+					if json.Unmarshal(msg, &received) == nil && received.Message == "SYNC" {
+						readyCh <- idx
+						return
+					}
 				}
-				if err != nil && !strings.Contains(err.Error(), "timeout") {
+				if err != nil && !strings.Contains(err.Error(), "timeout") && !strings.Contains(err.Error(), "temporarily unavailable") {
 					return
 				}
 			}
@@ -178,6 +180,9 @@ func TestHandleLogsWS_Concurrency(t *testing.T) {
 	defer ticker.Stop()
 
 	syncedCount := 0
+	// We need to track which clients synced to avoid double counting if they receive multiple SYNCs?
+	// Actually, the goroutine returns after one SYNC receipt.
+	// But `readyCh` receives one int per client.
 
 SyncLoop:
 	for {
@@ -201,7 +206,11 @@ SyncLoop:
 		ws.SetReadDeadline(time.Now().Add(5 * time.Second))
 		_, msg, err := ws.ReadMessage()
 		require.NoError(t, err, "Client %d failed to read message", i)
-		assert.Equal(t, msgContent, msg, "Client %d received wrong message", i)
+
+		var received logging.LogEntry
+		err = json.Unmarshal(msg, &received)
+		require.NoError(t, err)
+		assert.Equal(t, msgContent.Message, received.Message, "Client %d received wrong message", i)
 	}
 }
 
@@ -227,7 +236,7 @@ func TestHandleLogsWS_Close(t *testing.T) {
 	// We just want to ensure no panic happens on next broadcast
 	// Retry broadcast a few times to ensure logic paths are hit
 	for i := 0; i < 5; i++ {
-		logging.GlobalBroadcaster.Broadcast([]byte("test"))
+		logging.GlobalBroadcaster.Broadcast(logging.LogEntry{Message: "test"})
 		time.Sleep(10 * time.Millisecond)
 	}
 }

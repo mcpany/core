@@ -22,14 +22,12 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/gorilla/websocket"
 	pb "github.com/mcpany/core/proto/api/v1"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	mcp_router_v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/audit"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/bus"
-	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/middleware"
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
@@ -1220,25 +1218,6 @@ func TestHandleInitiateOAuth(t *testing.T) {
 	})
 }
 
-func TestHandleLogsWS(t *testing.T) {
-	app := &Application{}
-	handler := app.handleLogsWS()
-	ts := httptest.NewServer(handler)
-	defer ts.Close()
-
-	u := "ws" + strings.TrimPrefix(ts.URL, "http")
-	ws, _, err := websocket.DefaultDialer.Dial(u, nil)
-	require.NoError(t, err)
-	defer ws.Close()
-
-	time.Sleep(100 * time.Millisecond)
-	testMsg := []byte("test log message")
-	logging.GlobalBroadcaster.Broadcast(testMsg)
-
-	_, msg, err := ws.ReadMessage()
-	require.NoError(t, err)
-	assert.Equal(t, testMsg, msg)
-}
 
 func TestHandleSystemStatus(t *testing.T) {
 	app := NewApplication()

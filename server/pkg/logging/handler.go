@@ -5,7 +5,6 @@ package logging
 
 import (
 	"context"
-	"encoding/json"
 	"log/slog"
 	"runtime"
 	"sync"
@@ -128,12 +127,10 @@ func (h *BroadcastHandler) Handle(_ context.Context, r slog.Record) error {
 		entry.Source = f.Function
 	}
 
-	data, err := json.Marshal(entry)
-	if err != nil {
-		return err
-	}
-
-	h.broadcaster.Broadcast(data)
+	// ⚡ BOLT: Avoid unnecessary JSON marshaling.
+	// Randomized Selection from Top 5 High-Impact Targets
+	// We pass the struct directly. Marshaling happens only when writing to WebSocket.
+	h.broadcaster.Broadcast(entry)
 	return nil
 }
 

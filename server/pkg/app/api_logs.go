@@ -50,7 +50,8 @@ func (a *Application) handleLogsWS() http.HandlerFunc {
 				logging.GetLogger().Error("failed to set write deadline", "error", err)
 				return
 			}
-			if err := conn.WriteMessage(websocket.TextMessage, msg); err != nil {
+			// ⚡ BOLT: Marshal on write.
+			if err := conn.WriteJSON(msg); err != nil {
 				logging.GetLogger().Error("failed to write history log message to websocket", "error", err)
 				return
 			}
@@ -68,7 +69,8 @@ func (a *Application) handleLogsWS() http.HandlerFunc {
 		}()
 
 		for msg := range logCh {
-			if err := conn.WriteMessage(websocket.TextMessage, msg); err != nil {
+			// ⚡ BOLT: Marshal on write.
+			if err := conn.WriteJSON(msg); err != nil {
 				logging.GetLogger().Error("failed to write log message to websocket", "error", err)
 				return
 			}
