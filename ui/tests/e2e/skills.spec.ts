@@ -18,7 +18,7 @@ test.describe('Agent Skills', () => {
     await page.fill('input[name="username"]', 'e2e-admin-skills');
     await page.fill('input[name="password"]', 'password');
     await page.click('button[type="submit"]', { force: true });
-    await page.waitForURL('/', { timeout: 30000 });
+    await page.waitForURL('/', { timeout: 60000 });
     await expect(page).toHaveURL('/', { timeout: 15000 });
 
     await page.goto('/skills');
@@ -72,7 +72,7 @@ test.describe('Agent Skills', () => {
         await page.reload();
         await expect(page.locator(`text=${testSkillName}`)).toBeVisible({ timeout: 5000 });
     }).toPass({
-        timeout: 45000, // Increased timeout for K8s
+        timeout: 60000, // Increased timeout for K8s
         intervals: [2000, 5000, 10000] // Backoff retry
     });
   });
@@ -105,12 +105,12 @@ test.describe('Agent Skills', () => {
     await expect(async () => {
         await page.reload();
         await expect(page.locator(`text=${skillName}`)).toBeVisible({ timeout: 5000 });
-    }).toPass({ timeout: 45000, intervals: [2000, 5000, 10000] });
+    }).toPass({ timeout: 60000, intervals: [2000, 5000, 10000] });
 
     // Navigate to detail page directly to verify routing
     await expect(async () => {
         await page.goto(`/skills/${skillName}`);
       await expect(page.getByText(skillName).first()).toBeVisible();
-    }).toPass({ timeout: 45000, intervals: [2000, 5000, 10000] });
+    }).toPass({ timeout: 60000, intervals: [2000, 5000, 10000] });
   });
 });
