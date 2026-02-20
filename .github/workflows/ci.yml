@@ -93,7 +93,7 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            for i in 1 2 3; do sudo apt-get update && sudo apt-get install -y make xz-utils && break || sleep 15; done
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz
           fi
@@ -130,7 +130,7 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            for i in 1 2 3; do sudo apt-get update && sudo apt-get install -y make xz-utils && break || sleep 15; done
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz
           fi
@@ -269,7 +269,7 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            for i in 1 2 3; do sudo apt-get update && sudo apt-get install -y make xz-utils && break || sleep 15; done
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz
           fi
@@ -572,7 +572,7 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            for i in 1 2 3; do sudo apt-get update && sudo apt-get install -y make xz-utils && break || sleep 15; done
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz
           fi
@@ -701,7 +701,7 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            for i in 1 2 3; do sudo apt-get update && sudo apt-get install -y make xz-utils && break || sleep 15; done
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz
           fi
@@ -1022,7 +1022,7 @@ jobs:
             if ! command -v curl &> /dev/null; then
               echo "curl not found. Installing..."
               if command -v apt-get &> /dev/null; then
-                sudo apt-get update && sudo apt-get install -y curl ca-certificates
+                for i in 1 2 3; do sudo apt-get update && sudo apt-get install -y curl ca-certificates && break || sleep 15; done
               elif command -v apk &> /dev/null; then
                 sudo apk add --no-cache curl ca-certificates
               elif command -v yum &> /dev/null; then
