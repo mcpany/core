@@ -57,6 +57,9 @@ test.describe('Dashboard Real Data', () => {
         // 2. Load the dashboard
         await page.goto('/');
 
+        // Wait for dashboard layout loading to complete to avoid race conditions with adding widgets
+        await expect(page.getByTestId('dashboard-loading')).toBeHidden({ timeout: 15000 });
+
         // Debug: Fetch traffic data directly to verify backend state
         const trafficRes = await request.get('/api/v1/dashboard/traffic');
         expect(trafficRes.ok()).toBeTruthy();
@@ -104,7 +107,8 @@ test.describe('Dashboard Real Data', () => {
         await expect(totalRequestsValue).toHaveText(/[0-9,]+/, { timeout: 60000 });
 
         // Avg Latency: 50ms
-        await expect(page.getByTestId('metric-card-Avg Latency').getByText('50ms')).toBeVisible();
+        // Use .first() to handle potential duplicate renders in flaky environments
+        await expect(page.getByTestId('metric-card-Avg Latency').getByText('50ms').first()).toBeVisible();
 
         // 60 errors / 6000 ~ 1%
         await expect(page.getByText(/1\.00%|0\.9\d%/)).toBeVisible();

@@ -247,7 +247,7 @@ export function DashboardGrid() {
 
     if (loading) {
         return (
-            <div className="flex h-64 items-center justify-center">
+            <div className="flex h-64 items-center justify-center" data-testid="dashboard-loading">
                 <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
             </div>
         );
