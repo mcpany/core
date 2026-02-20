@@ -14,6 +14,7 @@ import (
 	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
 	"github.com/mcpany/core/server/pkg/tool"
@@ -392,4 +393,121 @@ func TestStatsCacheEviction(t *testing.T) {
 	val, ok := app.getStatsCache("key-101")
 	assert.True(t, ok)
 	assert.Equal(t, 101, val)
+}
+
+func TestCalculateUptime(t *testing.T) {
+	now := time.Now().UnixMilli()
+	window := 24 * time.Hour
+
+	tests := []struct {
+		name     string
+		history  []health.HistoryPoint
+		expected string
+	}{
+		{
+			name:     "No history",
+			history:  []health.HistoryPoint{},
+			expected: "N/A",
+		},
+		{
+			name: "Always UP (starts before window)",
+			history: []health.HistoryPoint{
+				{Timestamp: now - window.Milliseconds() - 1000, Status: "up"},
+			},
+			expected: "100%",
+		},
+		{
+			name: "Always UP (starts within window)",
+			history: []health.HistoryPoint{
+				{Timestamp: now - (12 * time.Hour).Milliseconds(), Status: "up"},
+			},
+			// From start to 12h ago: unknown. From 12h ago to now: up.
+			// 12h up / 24h = 50%
+			expected: "50.0%",
+		},
+		{
+			name: "Half UP (starts before window, goes down halfway)",
+			history: []health.HistoryPoint{
+				{Timestamp: now - window.Milliseconds() - 1000, Status: "up"},
+				{Timestamp: now - (12 * time.Hour).Milliseconds(), Status: "down"},
+			},
+			// From start to 12h ago: up (12h). From 12h ago to now: down (12h).
+			expected: "50.0%",
+		},
+		{
+			name: "Mixed states",
+			history: []health.HistoryPoint{
+				{Timestamp: now - (20 * time.Hour).Milliseconds(), Status: "up"},   // Up for 10h
+				{Timestamp: now - (10 * time.Hour).Milliseconds(), Status: "down"}, // Down for 5h
+				{Timestamp: now - (5 * time.Hour).Milliseconds(), Status: "up"},    // Up for 5h
+			},
+			// Window: 24h.
+			// 0h-4h: Unknown (starts at 20h ago)
+			// 4h-14h (10h): UP
+			// 14h-19h (5h): DOWN
+			// 19h-24h (5h): UP
+			// Total UP: 15h. Total: 24h.
+			// 15/24 = 62.5%
+			expected: "62.5%",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := calculateUptime(tt.history, window)
+			assert.Equal(t, tt.expected, result)
+		})
+	}
+}
+
+func TestHandleDashboardHealth_RealStats(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockRegistry := new(MockServiceRegistry)
+	mockTM := tool.NewMockManagerInterface(ctrl)
+
+	// Real Topology Manager
+	tm := topology.NewManager(mockRegistry, mockTM)
+
+	// Seed stats for service "s1"
+	tm.RecordActivity("sess1", nil, 123*time.Millisecond, false, "s1")
+	// Wait for async processing
+	assert.Eventually(t, func() bool {
+		lat, _ := tm.GetRecentServiceStats("s1", 1*time.Minute)
+		return lat > 0
+	}, 1*time.Second, 10*time.Millisecond)
+
+	mockRegistry.On("GetAllServices").Return(func() []*configv1.UpstreamServiceConfig {
+		s := &configv1.UpstreamServiceConfig{}
+		s.SetName("s1")
+		s.SetId("s1")
+		return []*configv1.UpstreamServiceConfig{s}
+	}(), nil)
+	mockRegistry.On("GetServiceError", "s1").Return("", false)
+
+	// Inject Health History
+	health.AddHealthStatus("s1", "up")
+
+	app := &Application{
+		TopologyManager: tm,
+		ServiceRegistry: mockRegistry,
+	}
+
+	handler := app.handleDashboardHealth()
+	req, _ := http.NewRequest("GET", "/dashboard/health", nil)
+	rr := httptest.NewRecorder()
+	handler.ServeHTTP(rr, req)
+
+	assert.Equal(t, http.StatusOK, rr.Code)
+
+	var resp ServiceHealthResponse
+	err := json.Unmarshal(rr.Body.Bytes(), &resp)
+	require.NoError(t, err)
+
+	require.Len(t, resp.Services, 1)
+	svc := resp.Services[0]
+	assert.Equal(t, "s1", svc.Name)
+	assert.Equal(t, "123ms", svc.Latency)
+	assert.Contains(t, []string{"0.0%", "100%"}, svc.Uptime)
 }

@@ -5,6 +5,7 @@ package app
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"sort"
 	"time"
@@ -59,6 +60,7 @@ const (
 	labelTool            = "tool"
 	labelServiceID       = "service_id"
 	labelStatus          = "status"
+	valNotAvailable      = "N/A"
 )
 
 // ToolUsageStats represents usage statistics for a tool.
@@ -457,6 +459,90 @@ type ServiceHealth struct {
 	Message string `json:"message,omitempty"`
 }
 
+// calculateUptime calculates the percentage of time the service was UP in the given window.
+// It assumes the last known state persists until a new state is recorded.
+func calculateUptime(history []health.HistoryPoint, window time.Duration) string {
+	if len(history) == 0 {
+		return valNotAvailable
+	}
+
+	now := time.Now().UnixMilli()
+	start := now - window.Milliseconds()
+
+	// Total UP duration
+	var upDuration int64
+	// Last point processed
+	lastTime := start
+	currentState := "unknown"
+
+	// Find initial state at `start`
+	// Scan points to find the state active at `start`.
+	// Since history is appended chronologically, we iterate forward.
+	idx := 0
+	// If the first point is AFTER start, then from `start` to `history[0].Timestamp` the state is unknown (or we could assume healthy if we want).
+	// But let's assume unknown.
+	// If history starts BEFORE `start`, we need to find the last point <= start.
+
+	if history[0].Timestamp > start {
+		// All history is within window.
+		// From start to history[0].Timestamp is unknown.
+		lastTime = history[0].Timestamp
+		currentState = history[0].Status
+		idx = 1
+	} else {
+		// History starts before window. Find the state at `start`.
+		for i := 0; i < len(history); i++ {
+			if history[i].Timestamp <= start {
+				currentState = history[i].Status
+			} else {
+				// history[i].Timestamp > start.
+				// The state from `start` to `history[i].Timestamp` is `currentState`.
+				idx = i
+				break
+			}
+			idx = i + 1
+		}
+	}
+
+	// Iterate from `idx`
+	for i := idx; i < len(history); i++ {
+		point := history[i]
+		// Add duration from lastTime to point.Timestamp
+		duration := point.Timestamp - lastTime
+		if duration > 0 {
+			if currentState == "up" || currentState == "UP" {
+				upDuration += duration
+			}
+		}
+
+		lastTime = point.Timestamp
+		currentState = point.Status
+	}
+
+	// Add duration from last point to now
+	duration := now - lastTime
+	if duration > 0 {
+		if currentState == "up" || currentState == "UP" {
+			upDuration += duration
+		}
+	}
+
+	totalDuration := window.Milliseconds()
+	if totalDuration <= 0 {
+		return valNotAvailable
+	}
+
+	percentage := (float64(upDuration) / float64(totalDuration)) * 100.0
+	if percentage > 100.0 {
+		percentage = 100.0
+	}
+
+	if percentage == 100.0 {
+		return "100%"
+	}
+	return fmt.Sprintf("%.1f%%", percentage)
+}
+
 // handleDashboardHealth returns the health status and history for all services.
 func (a *Application) handleDashboardHealth() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -509,9 +595,6 @@ func (a *Application) handleDashboardHealth() http.HandlerFunc {
 			}
 
 			// Map health package status to UI status
-			// health package uses "up", "down"?
-			// health.go uses health.AvailabilityStatus which is "up", "down".
-			// UI expects "healthy", "unhealthy", "degraded", "inactive".
 			var uiStatus string
 			switch status {
 			case "up", "UP":
@@ -533,12 +616,25 @@ func (a *Application) handleDashboardHealth() http.HandlerFunc {
 				}
 			}
 
+			// ⚡ Bolt: Get real latency from TopologyManager
+			latencyStr := valNotAvailable
+			if a.TopologyManager != nil {
+				// Use 15 minute moving average for dashboard "current" view
+				avgLat, _ := a.TopologyManager.GetRecentServiceStats(svc.GetName(), 15*time.Minute)
+				if avgLat > 0 {
+					latencyStr = avgLat.String()
+				}
+			}
+
+			// ⚡ Bolt: Calculate real uptime
+			uptimeStr := calculateUptime(hPoints, 24*time.Hour)
+
 			serviceHealths = append(serviceHealths, ServiceHealth{
 				ID:      svc.GetId(),
 				Name:    name,
 				Status:  uiStatus,
-				Latency: "10ms", // TODO: Get real latency from metrics
-				Uptime:  "99.9%", // TODO: Calculate real uptime
+				Latency: latencyStr,
+				Uptime:  uptimeStr,
 				Message: msg,
 			})
 		}
