@@ -5,6 +5,7 @@ package app
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"sort"
 	"time"
@@ -14,6 +15,97 @@ import (
 	"github.com/mcpany/core/server/pkg/topology"
 	"github.com/prometheus/client_golang/prometheus"
 )
+
+const (
+	strZeroPercent    = "0.0%"
+	strHundredPercent = "100.0%"
+	statusHealthyStr  = "healthy"
+)
+
+// calculateUptime calculates the uptime percentage for a given duration.
+func calculateUptime(history []health.HistoryPoint, window time.Duration, now time.Time) string {
+	if len(history) == 0 {
+		return strZeroPercent
+	}
+
+	startTime := now.Add(-window)
+	windowMillis := window.Milliseconds()
+
+	var upMillis int64
+
+	// Find index of first point within window (or just before)
+	firstIdx := -1
+	for i, p := range history {
+		if p.Timestamp >= startTime.UnixMilli() {
+			firstIdx = i
+			break
+		}
+	}
+
+	if firstIdx == -1 {
+		// All points are older than window?
+		// Then the last point state applies to the whole window.
+		lastState := history[len(history)-1].Status
+		if lastState == "up" || lastState == "UP" || lastState == statusHealthyStr {
+			return strHundredPercent
+		}
+		return strZeroPercent
+	}
+
+	// Calculate initial state at startTime
+	currentState := "unknown"
+	if firstIdx > 0 {
+		currentState = history[firstIdx-1].Status
+	}
+
+	// Iterate from startTime to now
+	currentTime := startTime.UnixMilli()
+
+	// Helper to process interval
+	processInterval := func(end int64, state string) {
+		if end <= currentTime {
+			return
+		}
+		duration := end - currentTime
+		if state == "up" || state == "UP" || state == statusHealthyStr {
+			upMillis += duration
+		}
+		currentTime = end
+	}
+
+	// 1. Gap from startTime to first point inside window
+	processInterval(history[firstIdx].Timestamp, currentState)
+
+	// 2. Intervals between points
+	for i := firstIdx; i < len(history)-1; i++ {
+		processInterval(history[i+1].Timestamp, history[i].Status)
+	}
+
+	// 3. Gap from last point to now
+	processInterval(now.UnixMilli(), history[len(history)-1].Status)
+
+	percentage := (float64(upMillis) / float64(windowMillis)) * 100.0
+
+	// If we started with no history (firstIdx == 0), calculate relative to monitored time
+	if firstIdx == 0 {
+		monitoredDuration := now.UnixMilli() - history[0].Timestamp
+		if monitoredDuration > 0 {
+			percentage = (float64(upMillis) / float64(monitoredDuration)) * 100.0
+		} else {
+			// If we just started and have 1 point that is UP, uptime is 100%
+			if history[0].Status == "up" || history[0].Status == "UP" || history[0].Status == statusHealthyStr {
+				return strHundredPercent
+			}
+			return strZeroPercent
+		}
+	}
+
+	if percentage > 100.0 {
+		percentage = 100.0
+	}
+
+	return fmt.Sprintf("%.1f%%", percentage)
+}
 
 // getStatsCache returns cached data if valid.
 func (a *Application) getStatsCache(key string) (any, bool) {
@@ -201,6 +293,33 @@ func (a *Application) handleDebugSeedTraffic() http.HandlerFunc {
 		}
 
 		a.TopologyManager.SeedTrafficHistory(points)
+
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte("OK"))
+	}
+}
+
+// handleDebugSeedHealth seeds the health history.
+func (a *Application) handleDebugSeedHealth() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		type SeedPoint struct {
+			Service string `json:"service"`
+			Status  string `json:"status"`
+		}
+		var points []SeedPoint
+		if err := json.NewDecoder(r.Body).Decode(&points); err != nil {
+			http.Error(w, "Invalid JSON", http.StatusBadRequest)
+			return
+		}
+
+		for _, p := range points {
+			health.AddHealthStatus(p.Service, p.Status)
+		}
 
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte("OK"))
@@ -533,12 +652,28 @@ func (a *Application) handleDashboardHealth() http.HandlerFunc {
 				}
 			}
 
+			// Inject Real Metrics
+			latency := "0ms"
+			uptime := "0.0%"
+
+			if a.TopologyManager != nil {
+				avgLat, _ := a.TopologyManager.GetRecentServiceStats(svc.GetId(), 15*time.Minute)
+				latency = fmt.Sprintf("%dms", avgLat.Milliseconds())
+			}
+
+			if hPoints, ok := history[name]; ok {
+				uptime = calculateUptime(hPoints, 24*time.Hour, time.Now())
+			} else if uiStatus == statusHealthy {
+				// No history? If status is UP, maybe 100%?
+				uptime = strHundredPercent
+			}
+
 			serviceHealths = append(serviceHealths, ServiceHealth{
 				ID:      svc.GetId(),
 				Name:    name,
 				Status:  uiStatus,
-				Latency: "10ms", // TODO: Get real latency from metrics
-				Uptime:  "99.9%", // TODO: Calculate real uptime
+				Latency: latency,
+				Uptime:  uptime,
 				Message: msg,
 			})
 		}

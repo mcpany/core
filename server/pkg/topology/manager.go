@@ -543,3 +543,64 @@ func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
 		Core:    coreNode,
 	}.Build()
 }
+
+// GetRecentServiceStats calculates average latency and error rate for a service over a specified time window.
+//
+// serviceID: The ID of the service to query.
+// duration: The lookback window duration (e.g., 15 * time.Minute).
+//
+// Returns:
+//   - avgLatency: Average latency in milliseconds.
+//   - errorRate: Error rate as a percentage (0.0 to 100.0).
+func (m *Manager) GetRecentServiceStats(serviceID string, duration time.Duration) (time.Duration, float64) {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+
+	now := time.Now()
+	// Round up duration to minutes
+	minutes := int(duration.Minutes())
+	if minutes <= 0 {
+		minutes = 1
+	}
+
+	var totalLatency int64
+	var totalRequests int64
+	var totalErrors int64
+
+	for i := 0; i < minutes; i++ {
+		t := now.Add(time.Duration(-i) * time.Minute).Truncate(time.Minute)
+		key := t.Unix()
+
+		stats, ok := m.trafficHistory[key]
+		if !ok || stats == nil {
+			continue
+		}
+
+		if serviceID != "" && stats.ServiceStats != nil {
+			if sStats, ok := stats.ServiceStats[serviceID]; ok {
+				totalRequests += sStats.Requests
+				totalErrors += sStats.Errors
+				totalLatency += sStats.Latency
+			}
+		} else if serviceID == "" {
+			// Aggregate all if no serviceID specified? (Though the prompt says "for a service")
+			// The logic in GetTrafficHistory handles empty serviceID by taking global stats.
+			// Let's support empty serviceID = global stats.
+			totalRequests += stats.Requests
+			totalErrors += stats.Errors
+			totalLatency += stats.Latency
+		}
+	}
+
+	avgLatency := time.Duration(0)
+	if totalRequests > 0 {
+		avgLatency = time.Duration(totalLatency/totalRequests) * time.Millisecond
+	}
+
+	errorRate := 0.0
+	if totalRequests > 0 {
+		errorRate = (float64(totalErrors) / float64(totalRequests)) * 100.0
+	}
+
+	return avgLatency, errorRate
+}
