@@ -35,3 +35,16 @@ upstream_services:
       prompts:
         - name: "summarize_text"
           description: "Summarize text"
+
+  # Added Math service for UI tests
+  - id: "Math"
+    name: "Math"
+    http_service:
+      address: "http://ui-http-echo-server:5678"
+      tools:
+        - name: "calculator"
+          description: "calc"
+      calls:
+        calculator:
+          method: "POST"
+          endpoint_path: "/calculate"

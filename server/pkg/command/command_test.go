@@ -53,11 +53,49 @@ func canConnectToDocker(t *testing.T) bool {
 		t.Logf("could not create docker client: %v", err)
 		return false
 	}
-	_, err = cli.Ping(context.Background())
+	defer cli.Close()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	_, err = cli.Ping(ctx)
 	if err != nil {
 		t.Logf("could not ping docker daemon: %v", err)
 		return false
 	}
+
+	// Try to create a dummy container to verify we can actually use Docker
+	// (some environments like dind with overlayfs issues might ping ok but fail to run)
+	resp, err := cli.ContainerCreate(ctx, &container.Config{
+		Image: "hello-world",
+	}, nil, nil, nil, "")
+
+	if err != nil {
+		// If image missing, try pulling alpine (small) to see if that works, or just assume failed.
+		// If it's a mount error (overlay), it usually fails here or at Start.
+		if client.IsErrNotFound(err) {
+			// Try to pull alpine
+			_, err = cli.ImagePull(ctx, "alpine:latest", image.PullOptions{})
+			if err != nil {
+				t.Logf("could not pull alpine: %v", err)
+				return false
+			}
+			// Retry create with alpine
+			resp, err = cli.ContainerCreate(ctx, &container.Config{
+				Image: "alpine:latest",
+				Cmd:   []string{"true"},
+			}, nil, nil, nil, "")
+		}
+	}
+
+	if err != nil {
+		t.Logf("could not create test container: %v", err)
+		return false
+	}
+
+	// Clean up
+	_ = cli.ContainerRemove(context.Background(), resp.ID, container.RemoveOptions{Force: true})
+
 	return true
 }
 
