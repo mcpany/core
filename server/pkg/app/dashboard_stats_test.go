@@ -14,6 +14,7 @@ import (
 	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
 	"github.com/mcpany/core/server/pkg/tool"
@@ -392,4 +393,96 @@ func TestStatsCacheEviction(t *testing.T) {
 	val, ok := app.getStatsCache("key-101")
 	assert.True(t, ok)
 	assert.Equal(t, 101, val)
+}
+
+func TestCalculateUptime(t *testing.T) {
+	window := 24 * time.Hour
+	now := time.Now().UnixMilli()
+
+	tests := []struct {
+		name     string
+		history  []health.HistoryPoint
+		expected string
+	}{
+		{
+			name:     "Empty history",
+			history:  []health.HistoryPoint{},
+			expected: "100.0%",
+		},
+		{
+			name: "Full uptime (1 point long ago)",
+			history: []health.HistoryPoint{
+				{Timestamp: now - window.Milliseconds() - 1000, Status: "UP"},
+			},
+			expected: "100.0%",
+		},
+		{
+			name: "Full downtime (1 point long ago)",
+			history: []health.HistoryPoint{
+				{Timestamp: now - window.Milliseconds() - 1000, Status: "DOWN"},
+			},
+			expected: "0.0%",
+		},
+		{
+			name: "50% uptime (UP -> DOWN halfway)",
+			history: []health.HistoryPoint{
+				{Timestamp: now - window.Milliseconds(), Status: "UP"},
+				{Timestamp: now - (window.Milliseconds() / 2), Status: "DOWN"},
+			},
+			expected: "50.0%",
+		},
+		{
+			name: "Mixed states",
+			history: []health.HistoryPoint{
+				// Start DOWN
+				{Timestamp: now - window.Milliseconds(), Status: "DOWN"},
+				// UP after 25% of window
+				{Timestamp: now - (window.Milliseconds() * 3 / 4), Status: "UP"},
+				// DOWN after 75% of window (so UP for 50%)
+				{Timestamp: now - (window.Milliseconds() / 4), Status: "DOWN"},
+			},
+			// UP duration: from 3/4 to 1/4 = 50%
+			expected: "50.0%",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Mocking time.Now() is hard without dependency injection or clock interface.
+			// However, our helper uses time.Now() inside.
+			// We can bypass this by ensuring our test timestamps are relative to ACTUAL time.Now()
+			// But calculateUptime calls time.Now() internally.
+			// Ideally we refactor calculateUptime to accept `now` or use a clock.
+			// For this test, since we use `time.Now()` to generate test data, it should align roughly.
+			// But there is a small race condition if seconds tick over.
+			// Given it uses Milliseconds, it might be flaky if execution takes significant time.
+			// But logical time is derived from `now` variable which is computed at test start.
+			// `calculateUptime` will compute a NEW `now`.
+			// The gap between test setup and execution might introduce error.
+			// To be robust, I should pass `now` to `calculateUptime` or inject it.
+			// But for now, let's assume the delta is negligible for the math (0 vs small ms).
+			// ACTUALLY, strict equality "50.0%" might fail if 1ms off.
+			// Let's refactor calculateUptime to accept `now`? No, that changes signature for production code.
+			// Let's just make the window large enough that few ms doesn't change percentage?
+			// Window is 24h. 100ms is negligible.
+
+			// However, in `calculateUptime`: `now := time.Now().UnixMilli()`
+			// If I construct points relative to `now` in test, but `calculateUptime` runs 10ms later,
+			// the window shifts by 10ms.
+			// If my points are exactly on the boundary, it matters.
+			// My test points are "now - window".
+			// If `calculateUptime`'s now is `now + 10ms`, then `startTime` is `now + 10ms - window`.
+			// My point `now - window` is definitely < `startTime`.
+			// So it picks up the initial status. Correct.
+
+			// But the *end* point is `now + 10ms`.
+			// My last point might be `now - window/4`.
+			// The duration calculation uses `calculateUptime`'s now.
+			// So total window is 24h.
+			// The error should be very small.
+
+			result := calculateUptime(tt.history, window)
+			assert.Equal(t, tt.expected, result)
+		})
+	}
 }

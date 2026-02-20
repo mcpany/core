@@ -5,8 +5,10 @@ package app
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"sort"
+	"strings"
 	"time"
 
 	"github.com/mcpany/core/server/pkg/health"
@@ -533,12 +535,29 @@ func (a *Application) handleDashboardHealth() http.HandlerFunc {
 				}
 			}
 
+			// Get Real Latency
+			var latencyStr string
+			if a.TopologyManager != nil {
+				// Use last 15 minutes window for latency
+				avgLat, _ := a.TopologyManager.GetRecentServiceStats(svc.GetId(), 15*time.Minute)
+				if avgLat > 0 {
+					latencyStr = avgLat.String()
+				} else {
+					latencyStr = "0ms"
+				}
+			} else {
+				latencyStr = "N/A"
+			}
+
+			// Get Real Uptime
+			uptimeStr := calculateUptime(hPoints, 24*time.Hour)
+
 			serviceHealths = append(serviceHealths, ServiceHealth{
 				ID:      svc.GetId(),
 				Name:    name,
 				Status:  uiStatus,
-				Latency: "10ms", // TODO: Get real latency from metrics
-				Uptime:  "99.9%", // TODO: Calculate real uptime
+				Latency: latencyStr,
+				Uptime:  uptimeStr,
 				Message: msg,
 			})
 		}
@@ -559,4 +578,70 @@ func (a *Application) handleDashboardHealth() http.HandlerFunc {
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(resp)
 	}
+}
+
+// calculateUptime calculates the uptime percentage for a given history over a window.
+func calculateUptime(history []health.HistoryPoint, window time.Duration) string {
+	if len(history) == 0 {
+		return "100.0%"
+	}
+
+	now := time.Now().UnixMilli()
+	windowMillis := window.Milliseconds()
+	startTime := now - windowMillis
+
+	var totalUpTime int64
+	currentStatus := "unknown"
+
+	// Find initial status (last point <= startTime)
+	for _, p := range history {
+		if p.Timestamp <= startTime {
+			currentStatus = p.Status
+		} else {
+			break
+		}
+	}
+
+	// Integrate
+	currentTime := startTime
+
+	// Filter relevant points
+	var relevantPoints []health.HistoryPoint
+	for _, p := range history {
+		if p.Timestamp > startTime {
+			relevantPoints = append(relevantPoints, p)
+		}
+	}
+
+	// Virtual end point
+	relevantPoints = append(relevantPoints, health.HistoryPoint{Timestamp: now, Status: "end"})
+
+	for _, p := range relevantPoints {
+		duration := p.Timestamp - currentTime
+		if duration < 0 {
+			duration = 0
+		}
+
+		if isHealthy(currentStatus) {
+			totalUpTime += duration
+		}
+
+		currentTime = p.Timestamp
+		currentStatus = p.Status
+	}
+
+	if windowMillis == 0 {
+		return "0.0%"
+	}
+
+	uptime := float64(totalUpTime) / float64(windowMillis) * 100.0
+	if uptime > 100.0 {
+		uptime = 100.0
+	}
+	return fmt.Sprintf("%.1f%%", uptime)
+}
+
+func isHealthy(status string) bool {
+	s := strings.ToLower(status)
+	return s == "up" || s == "healthy"
 }
