@@ -640,7 +640,8 @@ func (s *Server) ServiceRegistry() *serviceregistry.ServiceRegistry {
 //   - info: *tool.ServiceInfo. The service information to add.
 //
 // Returns:
-//   None.
+//
+//	None.
 func (s *Server) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
 	s.toolManager.AddServiceInfo(serviceID, info)
 }
@@ -763,40 +764,27 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 				finalResult = res
 				isStructured = true
 			} else {
-				// Conversion failed, fall back to JSON unmarshal
-				// We marshal it to JSON bytes (reused for logging and return)
-				jsonBytes, marshalErr = fastJSON.Marshal(resultMap)
-				if marshalErr == nil {
-					var callToolRes mcp.CallToolResult
-					if err := fastJSON.Unmarshal(jsonBytes, &callToolRes); err == nil {
-						finalResult = &callToolRes
-						isStructured = true
-					} else {
-						// Unmarshal failed
-						logging.GetLogger().Warn("Failed to unmarshal potential CallToolResult map, treating as raw data", "toolName", req.ToolName)
-						// Fall through to raw data handling
-					}
-				} else {
-					// Marshal failed? Extremely rare for map[string]any unless it has cycles/funcs
-					// Fall through to error handling or raw data
-					logging.GetLogger().Warn("Failed to marshal map[string]any", "error", marshalErr)
-				}
+				// Conversion failed. We used to fall back to JSON unmarshal here, but that
+				// caused issues where partial/invalid structs (e.g. missing Resource URI)
+				// were created and caused crashes downstream.
+				// Now we fall through to raw data handling (Step 3), which wraps the
+				// JSON representation in a TextContent.
 
 				// Special case: If content is a string, wrap it in TextContent
-				if finalResult == nil && marshalErr == nil {
-					if content, ok := resultMap["content"].(string); ok {
-						isError := false
-						if val, ok := resultMap["isError"].(bool); ok {
-							isError = val
-						}
-						finalResult = &mcp.CallToolResult{
-							Content: []mcp.Content{
-								&mcp.TextContent{Text: content},
-							},
-							IsError: isError,
-						}
-						isStructured = true
+				// This handles cases where a tool returns { "content": "some text" }
+				// which is not strictly CallToolResult but common.
+				if content, ok := resultMap["content"].(string); ok {
+					isError := false
+					if val, ok := resultMap["isError"].(bool); ok {
+						isError = val
 					}
+					finalResult = &mcp.CallToolResult{
+						Content: []mcp.Content{
+							&mcp.TextContent{Text: content},
+						},
+						IsError: isError,
+					}
+					isStructured = true
 				}
 			}
 		}
@@ -850,7 +838,8 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 //   - mcpServer: tool.MCPServerProvider. The MCP server provider to set.
 //
 // Returns:
-//   None.
+//
+//	None.
 func (s *Server) SetMCPServer(mcpServer tool.MCPServerProvider) {
 	s.toolManager.SetMCPServer(mcpServer)
 }
@@ -894,7 +883,8 @@ func (s *Server) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
 //   - serviceKey: string. The identifier of the service whose tools should be cleared.
 //
 // Returns:
-//   None.
+//
+//	None.
 func (s *Server) ClearToolsForService(serviceKey string) {
 	s.toolManager.ClearToolsForService(serviceKey)
 }
@@ -907,7 +897,8 @@ func (s *Server) ClearToolsForService(serviceKey string) {
 //   - f: func(context.Context) error. The function to execute on reload.
 //
 // Returns:
-//   None.
+//
+//	None.
 func (s *Server) SetReloadFunc(f func(context.Context) error) {
 	s.reloadFunc = f
 }
