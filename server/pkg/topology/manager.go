@@ -233,6 +233,47 @@ func (m *Manager) Close() {
 	close(m.shutdownCh)
 }
 
+// GetRecentServiceStats calculates average latency and error rate for a service over a specified time window.
+// serviceID is optional.
+func (m *Manager) GetRecentServiceStats(serviceID string, window time.Duration) (avgLatency time.Duration, errorRate float64) {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+
+	var totalRequests int64
+	var totalLatency int64
+	var totalErrors int64
+
+	now := time.Now()
+	cutoff := now.Add(-window).Unix()
+
+	for timestamp, stats := range m.trafficHistory {
+		if timestamp >= cutoff {
+			if serviceID == "" {
+				// Aggregate all services
+				totalRequests += stats.Requests
+				totalLatency += stats.Latency
+				totalErrors += stats.Errors
+			} else {
+				// Specific service
+				if stats.ServiceStats != nil {
+					if sStats, ok := stats.ServiceStats[serviceID]; ok {
+						totalRequests += sStats.Requests
+						totalLatency += sStats.Latency
+						totalErrors += sStats.Errors
+					}
+				}
+			}
+		}
+	}
+
+	if totalRequests > 0 {
+		avgLatency = time.Duration(totalLatency/totalRequests) * time.Millisecond
+		errorRate = float64(totalErrors) / float64(totalRequests)
+	}
+
+	return avgLatency, errorRate
+}
+
 // GetStats returns the aggregated stats.
 // serviceID is optional.
 func (m *Manager) GetStats(serviceID string) Stats {

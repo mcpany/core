@@ -5,8 +5,10 @@ package app
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"sort"
+	"strings"
 	"time"
 
 	"github.com/mcpany/core/server/pkg/health"
@@ -14,6 +16,97 @@ import (
 	"github.com/mcpany/core/server/pkg/topology"
 	"github.com/prometheus/client_golang/prometheus"
 )
+
+// calculateUptime calculates the percentage of time a service was healthy in the given window.
+func calculateUptime(points []health.HistoryPoint, window time.Duration) string {
+	if len(points) == 0 {
+		return "100%" // Optimistic default if no history
+	}
+
+	now := time.Now().UnixMilli()
+	windowMs := window.Milliseconds()
+	startTime := now - windowMs
+	if startTime < 0 {
+		startTime = 0
+	}
+
+	// Find the state at startTime
+	// We assume the state extends backwards from the first point found after startTime,
+	// or forwards from the last point before startTime.
+	// Since points are sorted by time (appended):
+	// Find the last point with timestamp <= startTime.
+
+	currentState := "unknown"
+	lastTime := startTime
+
+	// Check if we have any points before start time to set initial state
+	for _, p := range points {
+		if p.Timestamp <= startTime {
+			currentState = p.Status
+		} else {
+			break
+		}
+	}
+
+	// If no points before start time, and first point is after start time,
+	// we assume the state before first point is unknown or we could assume it's same as first point.
+	// Let's assume unknown (not counted as UP).
+
+	var upDuration int64
+
+	for _, p := range points {
+		if p.Timestamp <= startTime {
+			continue
+		}
+
+		// Duration from lastTime to p.Timestamp
+		duration := p.Timestamp - lastTime
+		if duration > 0 {
+			// Check if previous state was UP
+			status := strings.ToLower(currentState)
+			if status == "up" || status == "healthy" {
+				upDuration += duration
+			}
+		}
+
+		lastTime = p.Timestamp
+		currentState = p.Status
+	}
+
+	// Add duration from last point to now
+	if now > lastTime {
+		duration := now - lastTime
+		status := strings.ToLower(currentState)
+		if status == "up" || status == "healthy" {
+			upDuration += duration
+		}
+	}
+
+	if windowMs == 0 {
+		return "0.0%"
+	}
+
+	// Calculate denominator based on effective monitored time if history is shorter than window
+	denominator := float64(windowMs)
+	// If the first point in history is LATER than start time, it means we only started monitoring recently (or lost history).
+	// In this case, we should calculate uptime relative to the known history duration to avoid showing "0%" for a new healthy service.
+	if len(points) > 0 {
+		firstPointTime := points[0].Timestamp
+		if firstPointTime > startTime {
+			effectiveDuration := float64(now - firstPointTime)
+			if effectiveDuration > 0 {
+				denominator = effectiveDuration
+			}
+		}
+	}
+
+	percentage := (float64(upDuration) / denominator) * 100.0
+	if percentage > 100.0 {
+		percentage = 100.0
+	}
+
+	return fmt.Sprintf("%.1f%%", percentage)
+}
 
 // getStatsCache returns cached data if valid.
 func (a *Application) getStatsCache(key string) (any, bool) {
@@ -533,12 +626,24 @@ func (a *Application) handleDashboardHealth() http.HandlerFunc {
 				}
 			}
 
+			// Get real latency from Topology Manager (last 15 minutes average)
+			latencyStr := "0ms"
+			if a.TopologyManager != nil {
+				avgLat, _ := a.TopologyManager.GetRecentServiceStats(svc.GetId(), 15*time.Minute)
+				if avgLat > 0 {
+					latencyStr = avgLat.String()
+				}
+			}
+
+			// Calculate real uptime from Health History (last 24 hours)
+			uptimeStr := calculateUptime(hPoints, 24*time.Hour)
+
 			serviceHealths = append(serviceHealths, ServiceHealth{
 				ID:      svc.GetId(),
 				Name:    name,
 				Status:  uiStatus,
-				Latency: "10ms", // TODO: Get real latency from metrics
-				Uptime:  "99.9%", // TODO: Calculate real uptime
+				Latency: latencyStr,
+				Uptime:  uptimeStr,
 				Message: msg,
 			})
 		}

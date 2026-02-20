@@ -14,6 +14,7 @@ import (
 	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
 	"github.com/mcpany/core/server/pkg/tool"
@@ -392,4 +393,67 @@ func TestStatsCacheEviction(t *testing.T) {
 	val, ok := app.getStatsCache("key-101")
 	assert.True(t, ok)
 	assert.Equal(t, 101, val)
+}
+
+func TestCalculateUptime(t *testing.T) {
+	// Helper to create points
+	createPoints := func(start int64, statuses []string) []health.HistoryPoint {
+		var points []health.HistoryPoint
+		for i, s := range statuses {
+			points = append(points, health.HistoryPoint{
+				Timestamp: start + int64(i*1000), // 1 second intervals
+				Status:    s,
+			})
+		}
+		return points
+	}
+
+	tests := []struct {
+		name     string
+		points   []health.HistoryPoint
+		window   time.Duration
+		expected string
+	}{
+		{
+			name:     "Empty history",
+			points:   []health.HistoryPoint{},
+			window:   1 * time.Hour,
+			expected: "100%",
+		},
+		{
+			name: "New service (history shorter than window), all UP",
+			// Points at T-10s, T-9s ... T-0s. Window 1h.
+			// Logic should use effective window of ~10s.
+			// Uptime should be 100%.
+			points: createPoints(time.Now().Add(-10*time.Second).UnixMilli(), []string{
+				"up", "up", "up", "up", "up", "up", "up", "up", "up", "up",
+			}),
+			window:   1 * time.Hour,
+			expected: "100.0%",
+		},
+		{
+			name: "New service (history shorter than window), mixed",
+			// 5s UP, 5s DOWN.
+			points: createPoints(time.Now().Add(-10*time.Second).UnixMilli(), []string{
+				"up", "up", "up", "up", "up", "down", "down", "down", "down", "down",
+			}),
+			window:   1 * time.Hour,
+			expected: "50.0%",
+		},
+		{
+			name: "Full window history, all UP",
+			points: createPoints(time.Now().Add(-2*time.Hour).UnixMilli(), []string{
+				"up",
+			}),
+			window:   1 * time.Hour,
+			expected: "100.0%",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := calculateUptime(tt.points, tt.window)
+			assert.Equal(t, tt.expected, got)
+		})
+	}
 }
