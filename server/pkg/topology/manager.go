@@ -543,3 +543,47 @@ func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
 		Core:    coreNode,
 	}.Build()
 }
+
+// GetRecentServiceStats calculates stats for a service over the last window.
+//
+// serviceID is the serviceID.
+// window is the window.
+//
+// Returns the result.
+func (m *Manager) GetRecentServiceStats(serviceID string, window time.Duration) (time.Duration, float64) {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+
+	now := time.Now()
+	startTime := now.Add(-window).Unix()
+
+	var totalRequests int64
+	var totalLatency int64
+	var totalErrors int64
+
+	for t, stats := range m.trafficHistory {
+		if t >= startTime {
+			if serviceID != "" && stats.ServiceStats != nil {
+				if sStats, ok := stats.ServiceStats[serviceID]; ok {
+					totalRequests += sStats.Requests
+					totalLatency += sStats.Latency
+					totalErrors += sStats.Errors
+				}
+			} else if serviceID == "" {
+				// Global stats
+				totalRequests += stats.Requests
+				totalLatency += stats.Latency
+				totalErrors += stats.Errors
+			}
+		}
+	}
+
+	if totalRequests == 0 {
+		return 0, 0
+	}
+
+	avgLatency := time.Duration(totalLatency/totalRequests) * time.Millisecond
+	errorRate := float64(totalErrors) / float64(totalRequests)
+
+	return avgLatency, errorRate
+}

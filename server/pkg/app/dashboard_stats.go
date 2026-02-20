@@ -5,6 +5,7 @@ package app
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"sort"
 	"time"
@@ -441,6 +442,57 @@ func (a *Application) handleDashboardToolUsage() http.HandlerFunc {
 	}
 }
 
+// calculateUptime calculates uptime percentage from history points.
+func calculateUptime(history []health.HistoryPoint, window time.Duration) string {
+	if len(history) == 0 {
+		return "Unknown"
+	}
+
+	now := time.Now()
+	startTime := now.Add(-window).UnixMilli()
+
+	currentStatus := "unknown"
+	// Find status at startTime
+	for _, p := range history {
+		if p.Timestamp <= startTime {
+			currentStatus = p.Status
+		} else {
+			break
+		}
+	}
+
+	totalDuration := float64(now.UnixMilli() - startTime)
+	if totalDuration <= 0 {
+		return "100%"
+	}
+
+	upDuration := 0.0
+	lastTime := startTime
+
+	for _, p := range history {
+		if p.Timestamp < startTime {
+			continue
+		}
+		// Segment from lastTime to p.Timestamp had status `currentStatus`
+		duration := float64(p.Timestamp - lastTime)
+		if currentStatus == "up" || currentStatus == "UP" || currentStatus == "healthy" || currentStatus == "HEALTHY" {
+			upDuration += duration
+		}
+
+		lastTime = p.Timestamp
+		currentStatus = p.Status
+	}
+
+	// Add last segment from lastTime to now
+	duration := float64(now.UnixMilli() - lastTime)
+	if currentStatus == "up" || currentStatus == "UP" || currentStatus == "healthy" || currentStatus == "HEALTHY" {
+		upDuration += duration
+	}
+
+	percentage := (upDuration / totalDuration) * 100.0
+	return fmt.Sprintf("%.1f%%", percentage)
+}
+
 // ServiceHealthResponse represents the response for the health dashboard.
 type ServiceHealthResponse struct {
 	Services []ServiceHealth                 `json:"services"`
@@ -533,12 +585,22 @@ func (a *Application) handleDashboardHealth() http.HandlerFunc {
 				}
 			}
 
+			// Latency Calculation
+			avgLatency, _ := a.TopologyManager.GetRecentServiceStats(svc.GetId(), 15*time.Minute)
+			latencyStr := "0ms"
+			if avgLatency > 0 {
+				latencyStr = avgLatency.String()
+			}
+
+			// Uptime Calculation
+			uptimeStr := calculateUptime(hPoints, 24*time.Hour)
+
 			serviceHealths = append(serviceHealths, ServiceHealth{
 				ID:      svc.GetId(),
 				Name:    name,
 				Status:  uiStatus,
-				Latency: "10ms", // TODO: Get real latency from metrics
-				Uptime:  "99.9%", // TODO: Calculate real uptime
+				Latency: latencyStr,
+				Uptime:  uptimeStr,
 				Message: msg,
 			})
 		}
