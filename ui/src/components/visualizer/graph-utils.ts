@@ -7,22 +7,41 @@ import { Node, Edge, Position } from '@xyflow/react';
 import dagre from 'dagre';
 
 // Types matching the Proto JSON response
+
+/**
+ * Represents a node in the topology graph.
+ */
 export interface GraphNode {
+    /** Unique identifier for the node. */
     id: string;
+    /** Display label for the node. */
     label: string;
-    type: string; // NODE_TYPE_*
-    status: string; // NODE_STATUS_*
+    /** The type of the node (NODE_TYPE_*). */
+    type: string;
+    /** The status of the node (NODE_STATUS_*). */
+    status: string;
+    /** Optional metadata key-value pairs. */
     metadata?: Record<string, string>;
+    /** Child nodes contained within this node. */
     children?: GraphNode[];
+    /** Performance metrics for the node. */
     metrics?: {
+        /** Queries per second. */
         qps: number;
+        /** Latency in milliseconds. */
         latency_ms: number;
+        /** Error rate (0-1). */
         error_rate: number;
     };
 }
 
+/**
+ * Represents the full topology graph response from the API.
+ */
 export interface GraphResponse {
+    /** List of client nodes. */
     clients: GraphNode[];
+    /** The central core node. */
     core: GraphNode;
 }
 
