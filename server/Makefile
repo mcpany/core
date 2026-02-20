@@ -267,6 +267,14 @@ prepare:
 			(cd tests/integration/upstream && npm install) || true; \
 			if [ -n "$(CI)" ] && [ -z "$(INSIDE_DOCKER_CONTAINER)" ]; then \
 				echo "CI detected, installing Playwright with system dependencies..."; \
+				if ! command -v gcc >/dev/null 2>&1 && command -v apt-get >/dev/null 2>&1; then \
+					echo "gcc not found. Attempting to install build-essential..."; \
+					if command -v sudo >/dev/null 2>&1; then \
+						sudo apt-get update && sudo apt-get install -y build-essential; \
+					else \
+						apt-get update && apt-get install -y build-essential; \
+					fi; \
+				fi; \
 				(cd tests/integration/upstream && npx playwright install --with-deps) || true; \
 			else \
 				echo "Installing Playwright browsers (skipping system deps)..."; \
