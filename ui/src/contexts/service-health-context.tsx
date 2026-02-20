@@ -47,9 +47,16 @@ const POLLING_INTERVAL = 5000;
 
 /**
  * ServiceHealthProvider component.
- * @param props - The component props.
- * @param props.children - The child components.
- * @returns The rendered component.
+ *
+ * Summary: Provides service health metrics and topology data to child components.
+ *
+ * @param props - Object. The component props.
+ * @param props.children - ReactNode. The child components.
+ * @returns ReactNode. The rendered component.
+ *
+ * Side Effects:
+ *   - Polls /api/v1/topology every 5 seconds (if visible).
+ *   - Updates local state with health metrics history.
  */
 export function ServiceHealthProvider({ children }: { children: ReactNode }) {
     const [history, setHistory] = useState<Record<string, MetricPoint[]>>({});
@@ -207,8 +214,13 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
 
 /**
  * useServiceHealth is a hook to access service health history and current status.
- * @returns The service health context.
- * @throws Error if used outside of a ServiceHealthProvider.
+ *
+ * Summary: Retrieves the service health context.
+ *
+ * @returns ServiceHealthContextType. The service health context.
+ *
+ * Throws:
+ *   - Error: If used outside of a ServiceHealthProvider.
  */
 export function useServiceHealth() {
     const context = useContext(ServiceHealthContext);
@@ -220,9 +232,15 @@ export function useServiceHealth() {
 
 /**
  * useTopology is a hook to access network topology.
+ *
+ * Summary: Retrieves the topology context.
+ *
  * It is optimized to not re-render when health metrics update.
- * @returns The topology context.
- * @throws Error if used outside of a ServiceHealthProvider.
+ *
+ * @returns TopologyContextType. The topology context.
+ *
+ * Throws:
+ *   - Error: If used outside of a ServiceHealthProvider.
  */
 export function useTopology() {
     const context = useContext(TopologyContext);

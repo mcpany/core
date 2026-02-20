@@ -3,6 +3,14 @@
 [![Documentation: Gold Standard](https://img.shields.io/badge/Documentation-Gold%20Standard-gold.svg)](https://github.com/mcpany/core)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
+## Table of Contents
+
+1.  [Elevator Pitch](#1-elevator-pitch)
+2.  [Architecture](#2-architecture)
+3.  [Getting Started](#3-getting-started)
+4.  [Development](#4-development)
+5.  [Configuration](#5-configuration)
+
 ## 1. Elevator Pitch
 
 **What is this project?**

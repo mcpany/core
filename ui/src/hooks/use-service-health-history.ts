@@ -18,9 +18,13 @@ export interface ServiceHistory {
 
 /**
  * useServiceHealthHistory is a hook that fetches and maintains the health history of services.
- * It polls the backend API for health data (which now includes server-side history).
  *
- * @returns An object containing the current services list, their health history, and a loading state.
+ * Summary: Polls backend for service health and history.
+ *
+ * @returns Object. An object containing services list, health history map, and loading state.
+ *
+ * Side Effects:
+ *   - Polls /api/v1/dashboard/health every 10 seconds.
  */
 export function useServiceHealthHistory() {
   const [history, setHistory] = useState<ServiceHistory>({});

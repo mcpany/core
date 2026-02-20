@@ -73,9 +73,14 @@ const addToRemoveQueue = (toastId: string) => {
 /**
  * The reducer function for managing toast state.
  *
- * @param state - The current state of the toasts.
- * @param action - The action to perform (ADD, UPDATE, DISMISS, REMOVE).
- * @returns The new state after applying the action.
+ * Summary: Handles state transitions for the toast notification system.
+ *
+ * @param state - State. The current state of the toasts.
+ * @param action - Action. The action to perform (ADD, UPDATE, DISMISS, REMOVE).
+ * @returns State. The new state after applying the action.
+ *
+ * Side Effects:
+ *   - Schedules timeouts for toast removal (via addToRemoveQueue).
  */
 export const reducer = (state: State, action: Action): State => {
   switch (action.type) {
@@ -148,8 +153,14 @@ type Toast = Omit<ToasterToast, "id">
 /**
  * Dispatches a new toast notification.
  *
- * @param props - The properties for the toast notification (title, description, etc.).
- * @returns An object containing the toast ID, and functions to dismiss or update it.
+ * Summary: Creates and displays a toast notification.
+ *
+ * @param props - Toast. The properties for the toast notification (title, description, etc.).
+ * @returns Object. An object containing the toast ID, and functions to dismiss or update it.
+ *
+ * Side Effects:
+ *   - Dispatches ADD_TOAST action to the global store.
+ *   - Triggers listeners to update UI.
  */
 function toast({ ...props }: Toast) {
   const id = genId()
@@ -183,12 +194,15 @@ function toast({ ...props }: Toast) {
 /**
  * Hook to manage toast notifications.
  *
- * Provides access to the current list of toasts and functions to add or dismiss them.
+ * Summary: Provides access to the current list of toasts and functions to add or dismiss them.
  *
- * @returns An object containing:
+ * @returns Object. An object containing:
  *          - toasts: The list of active toasts.
  *          - toast: Function to add a new toast.
  *          - dismiss: Function to dismiss a toast by ID.
+ *
+ * Side Effects:
+ *   - Subscribes to the global toast state store.
  */
 function useToast() {
   const [state, setState] = React.useState<State>(memoryState)

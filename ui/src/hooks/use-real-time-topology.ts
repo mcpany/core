@@ -62,8 +62,15 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[]) => {
 };
 
 /**
- * Hook to fetch and manage the network topology graph.
+ * Hook to fetch and manage the network topology graph via REST API.
+ *
+ * Summary: Fetches real-time topology data and formats it for visualization.
+ *
  * @returns The topology state and controls.
+ *
+ * Side Effects:
+ *   - Polls /api/v1/topology when isLive is true.
+ *   - Updates local state with fetched graph data.
  */
 export function useRealTimeTopology() {
     const [nodes, setNodes, onNodesChange] = useNodesState([]);

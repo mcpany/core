@@ -9,7 +9,13 @@ const MOBILE_BREAKPOINT = 768
 
 /**
  * Hook to detect if the current viewport is mobile-sized.
- * @returns True if the viewport is mobile, false otherwise.
+ *
+ * Summary: Detects if the screen width is below the mobile breakpoint.
+ *
+ * @returns boolean. True if the viewport is mobile, false otherwise.
+ *
+ * Side Effects:
+ *   - Adds/Removes window "resize" event listener (via matchMedia).
  */
 export function useIsMobile() {
   const [isMobile, setIsMobile] = React.useState<boolean | undefined>(undefined)

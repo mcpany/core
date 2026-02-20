@@ -69,10 +69,16 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => 
 /**
  * Hook to fetch and manage network topology data.
  *
- * It periodically polls the backend for topology updates and handles layouting
- * using Dagre for automatic positioning of nodes and edges.
+ * Summary: Fetches topology data and manages the network graph state including layouting.
+ *
+ * It periodically polls the backend for topology updates (via useTopology context) and handles
+ * layouting using Dagre for automatic positioning of nodes and edges.
  *
  * @returns {NetworkGraphState} The network graph state and actions including nodes, edges, and event handlers.
+ *
+ * Side Effects:
+ *   - Updates local state (nodes, edges) based on topology data.
+ *   - Computes graph layout.
  */
 export function useNetworkTopology() {
     const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);

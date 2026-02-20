@@ -44,17 +44,23 @@ type KeyboardShortcutsContextType = {
 const KeyboardShortcutsContext = React.createContext<KeyboardShortcutsContextType | null>(null)
 
 /**
- * STORAGE_KEY component.
- * @param props - The component props.
- * @param props.children - The child components.
- * @returns The rendered component.
+ * Key used for storing overrides in localStorage.
+ *
+ * Summary: Local storage key constant.
  */
 const STORAGE_KEY = "mcp_any_shortcut_overrides"
 
 /**
  * Provider component for keyboard shortcuts.
  *
- * @param { children - The { children.
+ * Summary: Manages registration and handling of global keyboard shortcuts.
+ *
+ * @param props - Object. The component props.
+ * @param props.children - ReactNode. The child components.
+ * @returns ReactNode. The rendered component.
+ *
+ * Side Effects:
+ *   - Reads/Writes shortcut overrides to localStorage.
  */
 export function KeyboardShortcutsProvider({ children }: { children: React.ReactNode }) {
   const [shortcuts, setShortcuts] = React.useState<Record<string, ShortcutDefinition>>({})
@@ -136,7 +142,13 @@ export function KeyboardShortcutsProvider({ children }: { children: React.ReactN
 
 /**
  * Hook to access the keyboard shortcuts context.
- * @returns The context.
+ *
+ * Summary: Retrieves the keyboard shortcuts context.
+ *
+ * @returns KeyboardShortcutsContextType. The context.
+ *
+ * Throws:
+ *   - Error: If used outside of a KeyboardShortcutsProvider.
  */
 export function useKeyboardShortcuts() {
   const context = React.useContext(KeyboardShortcutsContext)
@@ -172,10 +184,17 @@ function matchesKey(event: KeyboardEvent, keyDef: string): boolean {
 
 /**
  * Hook to register and listen for a keyboard shortcut.
- * @param id Unique identifier.
- * @param defaultKeys Default key combinations.
- * @param action Callback function when shortcut is triggered.
- * @param options Additional options (label, category, enabled).
+ *
+ * Summary: Registers a keyboard shortcut and executes an action when triggered.
+ *
+ * @param id - string. Unique identifier for the shortcut.
+ * @param defaultKeys - string[]. Default key combinations (e.g. ["ctrl+s"]).
+ * @param action - (e: KeyboardEvent) => void. Callback function when shortcut is triggered.
+ * @param options - Object. Additional options (label, category, enabled).
+ *
+ * Side Effects:
+ *   - Registers the shortcut with the provider.
+ *   - Adds/Removes global "keydown" event listeners.
  */
 export function useShortcut(
   id: string,
