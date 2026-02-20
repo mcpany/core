@@ -10,6 +10,9 @@
 ## 2. Updated Roadmap
 
 ### Status: Active Development
+*   **[P0] Policy Firewall Engine**: Initial implementation of Rego-based tool filtering.
+*   **[P0] HITL Middleware**: Suspension protocol for human-in-the-loop approvals.
+*   **[P1] JIT Tool Loader**: Researching lazy-loading mechanisms to reduce context bloat.
 
 ## 2. Top 10 Recommended Features
 
