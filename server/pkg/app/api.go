@@ -172,6 +172,9 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux.HandleFunc("/auth/oauth/initiate", a.handleInitiateOAuth)
 	mux.HandleFunc("/auth/oauth/callback", a.handleOAuthCallback)
 
+	mux.HandleFunc("/webhooks", a.handleWebhooks())
+	mux.HandleFunc("/webhooks/", a.handleWebhookDetail())
+
 	mux.HandleFunc("/alerts", a.handleAlerts())
 	mux.HandleFunc("/alerts/webhook", a.handleAlertWebhook())
 	mux.HandleFunc("/alerts/rules", a.handleAlertRules())

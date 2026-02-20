@@ -56,6 +56,7 @@ import (
 	"github.com/mcpany/core/server/pkg/upstream/factory"
 	"github.com/mcpany/core/server/pkg/util"
 	"github.com/mcpany/core/server/pkg/validation"
+	"github.com/mcpany/core/server/pkg/webhooks"
 	"github.com/mcpany/core/server/pkg/worker"
 	"github.com/pmezard/go-difflib/difflib"
 	otelgrpc "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
@@ -231,6 +232,9 @@ type Application struct {
 	// AlertsManager manages system alerts
 	AlertsManager *alerts.Manager
 
+	// WebhooksManager manages outbound webhooks
+	WebhooksManager *webhooks.Manager
+
 	// DiscoveryManager manages auto-discovery providers
 	DiscoveryManager *discovery.Manager
 
@@ -316,6 +320,7 @@ func NewApplication() *Application {
 		PromptManager:    prompt.NewManager(),
 		ToolManager:      tool.NewManager(busProvider),
 		AlertsManager:    alerts.NewManager(),
+		WebhooksManager:  webhooks.NewManager(),
 		CatalogManager:   catalog.NewManager(afero.NewOsFs(), "marketplace/catalog"), // Default path, can be overridden
 
 		ResourceManager: resource.NewManager(),
