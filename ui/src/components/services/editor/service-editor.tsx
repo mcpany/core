@@ -29,6 +29,7 @@ import { PolicyEditor } from "@/components/services/editor/policy-editor";
 import { ServiceInspector } from "@/components/services/editor/service-inspector";
 import { SourceEditor } from "@/components/services/editor/source-editor";
 import { HttpToolManager } from "@/components/services/editor/http-tool-manager";
+import { FilesystemConfig } from "@/components/services/editor/filesystem-config";
 import yaml from "js-yaml";
 
 interface ServiceEditorProps {
@@ -143,6 +144,7 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
         delete newService.commandLineService;
         delete newService.mcpService;
         delete newService.openapiService;
+        delete newService.filesystemService;
 
         // Initialize new config with defaults
         if (type === 'http') newService.httpService = { address: "", tools: [], calls: {}, resources: [], prompts: [] };
@@ -150,6 +152,7 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
         if (type === 'cmd') newService.commandLineService = { command: "", workingDirectory: "", local: false, env: {}, tools: [], resources: [], prompts: [], communicationProtocol: 0, calls: {} };
         if (type === 'mcp') newService.mcpService = { toolAutoDiscovery: true, tools: [], resources: [], calls: {}, prompts: [] };
         if (type === 'openapi') newService.openapiService = { address: "", specUrl: "", tools: [], resources: [], calls: {}, prompts: [] };
+        if (type === 'filesystem') newService.filesystemService = { rootPaths: {}, readOnly: true, allowedPaths: [], deniedPaths: [], symlinkMode: 0, os: {}, tools: [], resources: [], prompts: [] };
 
         onChange(newService);
     };
@@ -160,6 +163,7 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
         if (service.commandLineService) return 'cmd';
         if (service.mcpService) return 'mcp';
         if (service.openapiService) return 'openapi';
+        if (service.filesystemService) return 'filesystem';
         return 'http'; // Default
     };
 
@@ -290,6 +294,7 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                                         <SelectItem value="cmd">Command Line (Stdio)</SelectItem>
                                         <SelectItem value="mcp">MCP Proxy</SelectItem>
                                         <SelectItem value="openapi">OpenAPI / Swagger</SelectItem>
+                                        <SelectItem value="filesystem">Filesystem / Object Store</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -403,6 +408,10 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                                         />
                                     </div>
                                 </div>
+                            )}
+
+                            {service.filesystemService && (
+                                <FilesystemConfig service={service} onChange={onChange} />
                             )}
                         </TabsContent>
 

@@ -272,10 +272,22 @@ const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onT
         if (service.grpcService) return "gRPC";
         if (service.commandLineService) return "CLI";
         if (service.mcpService) return "MCP";
+        if (service.filesystemService) {
+            if (service.filesystemService.s3) return "S3";
+            if (service.filesystemService.gcs) return "GCS";
+            return "FS";
+        }
         return "Other";
     }, [service]);
 
     const address = useMemo(() => {
+         if (service.filesystemService) {
+             const roots = Object.keys(service.filesystemService.rootPaths || {});
+             if (roots.length > 0) return `${roots.length} mounts`;
+             if (service.filesystemService.s3) return service.filesystemService.s3.bucket;
+             if (service.filesystemService.gcs) return service.filesystemService.gcs.bucket;
+             return "No mounts";
+         }
          return service.grpcService?.address ||
             service.httpService?.address ||
             service.commandLineService?.command ||
