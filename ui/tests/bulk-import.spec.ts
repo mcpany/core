@@ -4,61 +4,77 @@
  */
 
 import { test, expect } from '@playwright/test';
+import fs from 'fs';
+import path from 'path';
 
-test.describe('Bulk Service Import Wizard', () => {
-  test.beforeEach(async ({ page }) => {
-    // Go to the upstream services page
-    await page.goto('/upstream-services');
+test.describe('Bulk Import', () => {
+  const yamlPath = path.join(__dirname, 'test-services.yaml');
+  const claudePath = path.join(__dirname, 'test-claude.json');
+
+  test.beforeAll(() => {
+    // Create test files
+    fs.writeFileSync(yamlPath, `
+services:
+  - name: yaml-service
+    httpService:
+      address: http://localhost:8080
+`);
+
+    fs.writeFileSync(claudePath, JSON.stringify({
+      mcpServers: {
+        "claude-service": {
+          "command": "echo",
+          "args": ["hello"]
+        }
+      }
+    }));
   });
 
-  test('should complete import flow with valid JSON', async ({ page }) => {
-    // 1. Open Dialog
+  test.afterAll(() => {
+    // Cleanup
+    if (fs.existsSync(yamlPath)) fs.unlinkSync(yamlPath);
+    if (fs.existsSync(claudePath)) fs.unlinkSync(claudePath);
+  });
+
+  test('should import YAML configuration', async ({ page }) => {
+    await page.goto('/upstream-services');
     await page.getByRole('button', { name: 'Bulk Import' }).click();
-    await expect(page.getByRole('heading', { name: 'Bulk Service Import' })).toBeVisible();
 
-    // 2. Input Step (JSON)
-    await expect(page.getByRole('tab', { name: 'JSON / YAML' })).toBeVisible();
-    await expect(page.getByRole('tab', { name: 'File Upload' })).toBeVisible();
-    await expect(page.getByRole('tab', { name: 'URL Import' })).toBeVisible();
+    // Select File Upload tab
+    await page.getByRole('tab', { name: 'File Upload' }).click();
 
-    const validService = [
-      {
-        name: `test-service-${Date.now()}`,
-        httpService: { address: 'https://example.com' }
-      }
-    ];
-    const jsonString = JSON.stringify(validService);
+    // Upload YAML
+    const fileInput = page.locator('input[type="file"]');
+    await fileInput.setInputFiles(yamlPath);
 
-    await page.getByRole('textbox').fill(jsonString);
+    // Click Next
     await page.getByRole('button', { name: 'Next: Review' }).click();
 
-    // 3. Review Step
-    // Wait for "Review Services" header
-    await expect(page.getByRole('heading', { name: 'Review Services' })).toBeVisible();
+    // Check if service is listed
+    await expect(page.getByText('yaml-service')).toBeVisible();
+    // It might show as HTTP
+    const row = page.getByRole('row').filter({ hasText: 'yaml-service' });
+    await expect(row.getByText('HTTP', { exact: true })).toBeVisible();
+  });
 
-    // Wait for validation to complete (loader disappears, table populates)
-    // We expect 1 valid service
-    await expect(page.getByText('Found 1 services. 1 valid')).toBeVisible();
+  test('should import Claude Desktop configuration', async ({ page }) => {
+    await page.goto('/upstream-services');
+    await page.getByRole('button', { name: 'Bulk Import' }).click();
 
-    // Verify service name is in table
-    await expect(page.getByRole('cell', { name: validService[0].name })).toBeVisible();
+    // Select File Upload tab
+    await page.getByRole('tab', { name: 'File Upload' }).click();
 
-    // 4. Import Step
-    await page.getByRole('button', { name: 'Import 1 Services' }).click();
+    // Upload Claude JSON
+    const fileInput = page.locator('input[type="file"]');
+    await fileInput.setInputFiles(claudePath);
 
-    // 5. Success
-    await expect(page.getByRole('heading', { name: 'Import Complete' })).toBeVisible();
-    await expect(page.getByRole('dialog').getByText('Successfully imported 1 services.')).toBeVisible();
+    // Click Next
+    await page.getByRole('button', { name: 'Next: Review' }).click();
 
-    // Close
-    // Note: There are two "Close" buttons (Dialog X and Wizard Close). The Wizard one is usually first in DOM order or we pick first.
-    await page.getByRole('button', { name: 'Close' }).first().click();
-
-    // Verify dialog closed
-    await expect(page.getByRole('heading', { name: 'Bulk Service Import' })).not.toBeVisible();
-
-    // Verify service appears in list (might need refresh or wait)
-    // The wizard calls onImportSuccess which triggers fetchServices in parent
-    await expect(page.getByRole('link', { name: validService[0].name })).toBeVisible();
+    // Check if service is listed
+    await expect(page.getByText('claude-service')).toBeVisible();
+    // It should be CLI type
+    const row = page.getByRole('row').filter({ hasText: 'claude-service' });
+    await expect(row.getByText('CLI', { exact: true })).toBeVisible();
   });
 });

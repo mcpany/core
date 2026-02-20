@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -25,10 +25,9 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
+import * as yaml from "js-yaml";
 
 interface BulkServiceImportProps {
     onImportSuccess: () => void;
@@ -58,6 +57,7 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
     const [jsonContent, setJsonContent] = useState("");
     const [importUrl, setImportUrl] = useState("");
     const [parsingError, setParsingError] = useState<string | null>(null);
+    const [detectedFormat, setDetectedFormat] = useState<string | null>(null);
 
     // Review Step State
     const [items, setItems] = useState<ServiceImportItem[]>([]);
@@ -81,41 +81,105 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
             setJsonContent(event.target?.result as string);
             setInputType("json"); // Switch to JSON view to verify
         };
+        // Always read as text to support both JSON and YAML
         reader.readAsText(file);
+    };
+
+    const mapClaudeConfig = (mcpServers: any): UpstreamServiceConfig[] => {
+        return Object.entries(mcpServers).map(([name, config]: [string, any]) => {
+            return {
+                id: "", // Let backend assign or use name if needed
+                name: name,
+                version: "1.0.0",
+                disable: false,
+                priority: 0,
+                commandLineService: {
+                    command: [config.command, ...(config.args || [])].join(" "),
+                    workingDirectory: "",
+                    env: config.env || {},
+                    tools: [], resources: [], prompts: [], calls: {}, communicationProtocol: 0, local: false
+                },
+                autoDiscoverTool: true
+            } as UpstreamServiceConfig;
+        });
+    };
+
+    const detectAndParse = (content: string): { services: any[], format: string } => {
+         let data: any;
+         let format = "JSON";
+
+         // Try JSON
+         try {
+             data = JSON.parse(content);
+         } catch (e) {
+             // Try YAML
+             try {
+                 data = yaml.load(content);
+                 format = "YAML";
+             } catch (e2) {
+                 throw new Error("Failed to parse input as JSON or YAML.");
+             }
+         }
+
+         if (!data) throw new Error("Empty configuration.");
+
+         // Detect Format
+         if (data.mcpServers) {
+             return { services: mapClaudeConfig(data.mcpServers), format: `Claude Desktop (${format})` };
+         }
+
+         if (data.services && Array.isArray(data.services)) {
+             return { services: data.services, format: `Standard (${format})` };
+         }
+
+         if (Array.isArray(data)) {
+             return { services: data, format: `List (${format})` };
+         }
+
+         // OpenAPI?
+         if (data.openapi || data.swagger) {
+             return {
+                 services: [{
+                    name: data.info?.title?.toLowerCase().replace(/\s+/g, '-') || "openapi-service",
+                    openapiService: {
+                        address: "http://placeholder",
+                        specContent: content,
+                        tools: [], resources: [], calls: [], prompts: []
+                    }
+                }],
+                format: `OpenAPI (${format})`
+             };
+         }
+
+         throw new Error("Unknown configuration format. Expected 'services' array or 'mcpServers' object.");
     };
 
     const parseAndValidate = async () => {
         setParsingError(null);
         setIsValidating(true);
+        setDetectedFormat(null);
         let parsedServices: any[] = [];
+        let format = "";
 
         try {
             if (inputType === "url") {
                 if (!importUrl.trim()) throw new Error("URL is required.");
                 const res = await fetch(importUrl);
                 if (!res.ok) throw new Error(`Failed to fetch from URL: ${res.statusText}`);
-                const data = await res.json();
-
-                // OpenAPI Handling
-                if (data.openapi || data.swagger) {
-                     parsedServices = [{
-                        name: data.info?.title?.toLowerCase().replace(/\s+/g, '-') || "openapi-service",
-                        openapiService: {
-                            address: importUrl,
-                            specUrl: importUrl,
-                            tools: [], resources: [], calls: [], prompts: []
-                        }
-                    }];
-                } else {
-                    parsedServices = Array.isArray(data) ? data : (data.services || [data]);
-                }
+                const text = await res.text();
+                const result = detectAndParse(text);
+                parsedServices = result.services;
+                format = result.format;
             } else {
-                if (!jsonContent.trim()) throw new Error("JSON content is required.");
-                const data = JSON.parse(jsonContent);
-                parsedServices = Array.isArray(data) ? data : (data.services || [data]);
+                if (!jsonContent.trim()) throw new Error("Content is required.");
+                const result = detectAndParse(jsonContent);
+                parsedServices = result.services;
+                format = result.format;
             }
 
             if (!parsedServices.length) throw new Error("No services found in input.");
+
+            setDetectedFormat(format);
 
             // Initial items setup
             const initialItems: ServiceImportItem[] = parsedServices.map(s => ({
@@ -276,7 +340,7 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
                                     onChange={(e) => setJsonContent(e.target.value)}
                                 />
                                 <p className="text-xs text-muted-foreground mt-2">
-                                    Paste a JSON array of service configurations or a single service object.
+                                    Paste a JSON array of service configurations, a single service object, or a Claude Desktop config (JSON/YAML).
                                 </p>
                             </div>
                         )}
@@ -293,7 +357,7 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
                                         />
                                     </div>
                                     <p className="text-xs text-muted-foreground">
-                                        Enter a URL to a JSON configuration file or OpenAPI specification.
+                                        Enter a URL to a JSON/YAML configuration file or OpenAPI specification.
                                     </p>
                                 </div>
                             </div>
@@ -334,6 +398,11 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
                             Found {items.length} services. {validCount} valid, {warningCount} warnings.
                         </p>
                     </div>
+                    {detectedFormat && (
+                        <Badge variant="secondary" className="font-mono">
+                            Detected: {detectedFormat}
+                        </Badge>
+                    )}
                 </div>
 
                 <div className="border rounded-md max-h-[400px] overflow-y-auto">
