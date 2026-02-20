@@ -272,6 +272,47 @@ func (m *Manager) GetStats(serviceID string) Stats {
 	}
 }
 
+// GetRecentServiceStats returns the average latency and error rate for a service over the specified window.
+func (m *Manager) GetRecentServiceStats(serviceID string, window time.Duration) (time.Duration, float64) {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+
+	now := time.Now()
+	startTime := now.Add(-window).Unix()
+
+	var totalLatency int64
+	var totalRequests int64
+	var totalErrors int64
+
+	for timestamp, stats := range m.trafficHistory {
+		if timestamp >= startTime {
+			if serviceID != "" {
+				if stats.ServiceStats != nil {
+					if sStats, ok := stats.ServiceStats[serviceID]; ok {
+						totalLatency += sStats.Latency
+						totalRequests += sStats.Requests
+						totalErrors += sStats.Errors
+					}
+				}
+			} else {
+				totalLatency += stats.Latency
+				totalRequests += stats.Requests
+				totalErrors += stats.Errors
+			}
+		}
+	}
+
+	avgLatency := time.Duration(0)
+	errorRate := 0.0
+
+	if totalRequests > 0 {
+		avgLatency = time.Duration(totalLatency/totalRequests) * time.Millisecond
+		errorRate = float64(totalErrors) / float64(totalRequests)
+	}
+
+	return avgLatency, errorRate
+}
+
 // GetTrafficHistory returns the traffic history for the last 24 hours.
 // serviceID is optional.
 func (m *Manager) GetTrafficHistory(serviceID string) []TrafficPoint {
@@ -326,7 +367,7 @@ func (m *Manager) GetTrafficHistory(serviceID string) []TrafficPoint {
 
 // SeedTrafficHistory allows seeding the traffic history with external data.
 // This is primarily for testing and debugging purposes.
-func (m *Manager) SeedTrafficHistory(points []TrafficPoint) {
+func (m *Manager) SeedTrafficHistory(points []TrafficPoint, serviceID string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
@@ -367,11 +408,23 @@ func (m *Manager) SeedTrafficHistory(points []TrafficPoint) {
 		}
 
 		// We assume seeded data is "Average Latency", so we multiply by requests to get total latency for storage
-		m.trafficHistory[targetTime.Unix()] = &MinuteStats{
+		stats := &MinuteStats{
 			Requests: p.Total,
 			Errors:   p.Errors,
 			Latency:  p.Latency * p.Total, // Reverse average
 		}
+
+		if serviceID != "" {
+			stats.ServiceStats = map[string]*ServiceTrafficStats{
+				serviceID: {
+					Requests: p.Total,
+					Errors:   p.Errors,
+					Latency:  p.Latency * p.Total,
+				},
+			}
+		}
+
+		m.trafficHistory[targetTime.Unix()] = stats
 		log.Info("Seeded point", "time", p.Time, "target_unix", targetTime.Unix(), "requests", p.Total)
 
 		// Accumulate stats for the session

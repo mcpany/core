@@ -5,6 +5,7 @@ package app
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"sort"
 	"time"
@@ -200,7 +201,8 @@ func (a *Application) handleDebugSeedTraffic() http.HandlerFunc {
 			return
 		}
 
-		a.TopologyManager.SeedTrafficHistory(points)
+		serviceID := r.URL.Query().Get("serviceId")
+		a.TopologyManager.SeedTrafficHistory(points, serviceID)
 
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte("OK"))
@@ -443,7 +445,7 @@ func (a *Application) handleDashboardToolUsage() http.HandlerFunc {
 
 // ServiceHealthResponse represents the response for the health dashboard.
 type ServiceHealthResponse struct {
-	Services []ServiceHealth                 `json:"services"`
+	Services []ServiceHealth                  `json:"services"`
 	History  map[string][]health.HistoryPoint `json:"history"`
 }
 
@@ -455,6 +457,65 @@ type ServiceHealth struct {
 	Latency string `json:"latency"`
 	Uptime  string `json:"uptime"`
 	Message string `json:"message,omitempty"`
+}
+
+// calculateUptime calculates the uptime percentage for a given history over a window.
+func calculateUptime(history []health.HistoryPoint, window time.Duration) string {
+	if len(history) == 0 {
+		return "Unknown"
+	}
+
+	now := time.Now().UnixMilli()
+	start := now - window.Milliseconds()
+	if start < 0 {
+		start = 0
+	}
+
+	var totalUpTime int64
+	var lastTime int64 = start
+	var lastStatus string = "unknown"
+
+	// Find the state at `start`
+	// Since history is sorted by timestamp (appended), we can find the last point <= start.
+	for _, p := range history {
+		if p.Timestamp <= start {
+			lastStatus = p.Status
+		} else {
+			break
+		}
+	}
+
+	// Iterate through points within the window
+	for _, p := range history {
+		if p.Timestamp < start {
+			continue
+		}
+		// Time segment from lastTime to p.Timestamp
+		duration := p.Timestamp - lastTime
+		if lastStatus == "up" || lastStatus == "UP" || lastStatus == "healthy" {
+			totalUpTime += duration
+		}
+
+		lastTime = p.Timestamp
+		lastStatus = p.Status
+	}
+
+	// Add time from last point to now
+	if lastTime < now {
+		duration := now - lastTime
+		if lastStatus == "up" || lastStatus == "UP" || lastStatus == "healthy" {
+			totalUpTime += duration
+		}
+	}
+
+	// Calculate percentage
+	totalDuration := now - start
+	if totalDuration <= 0 {
+		return "0.0%"
+	}
+
+	uptime := float64(totalUpTime) / float64(totalDuration) * 100.0
+	return fmt.Sprintf("%.1f%%", uptime)
 }
 
 // handleDashboardHealth returns the health status and history for all services.
@@ -533,12 +594,24 @@ func (a *Application) handleDashboardHealth() http.HandlerFunc {
 				}
 			}
 
+			// Calculate real latency
+			var latencyStr = "0ms"
+			if a.TopologyManager != nil {
+				latency, _ := a.TopologyManager.GetRecentServiceStats(svc.GetId(), 15*time.Minute)
+				if latency > 0 {
+					latencyStr = latency.String()
+				}
+			}
+
+			// Calculate real uptime
+			uptimeStr := calculateUptime(hPoints, 24*time.Hour)
+
 			serviceHealths = append(serviceHealths, ServiceHealth{
 				ID:      svc.GetId(),
 				Name:    name,
 				Status:  uiStatus,
-				Latency: "10ms", // TODO: Get real latency from metrics
-				Uptime:  "99.9%", // TODO: Calculate real uptime
+				Latency: latencyStr,
+				Uptime:  uptimeStr,
 				Message: msg,
 			})
 		}

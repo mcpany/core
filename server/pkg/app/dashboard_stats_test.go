@@ -14,6 +14,7 @@ import (
 	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
 	"github.com/mcpany/core/server/pkg/tool"
@@ -23,6 +24,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestHandleDashboardToolFailures(t *testing.T) {
@@ -165,7 +167,7 @@ func TestHandleDashboardTraffic(t *testing.T) {
 	nowStr := time.Now().Add(-5 * time.Minute).Format("15:04")
 	tm.SeedTrafficHistory([]topology.TrafficPoint{
 		{Time: nowStr, Total: 100, Latency: 50},
-	})
+	}, "")
 
 	req, _ := http.NewRequest("GET", "/dashboard/traffic", nil)
 	rr := httptest.NewRecorder()
@@ -262,7 +264,7 @@ func TestHandleDashboardMetrics(t *testing.T) {
 	tm := topology.NewManager(mockRegistry, mockTM)
 	tm.SeedTrafficHistory([]topology.TrafficPoint{
 		{Time: "12:00", Total: 60, Latency: 100},
-	})
+	}, "")
 
 	mockPM := prompt.NewMockManagerInterface(ctrl)
 	mockRM := resource.NewMockManagerInterface(ctrl)
@@ -392,4 +394,51 @@ func TestStatsCacheEviction(t *testing.T) {
 	val, ok := app.getStatsCache("key-101")
 	assert.True(t, ok)
 	assert.Equal(t, 101, val)
+}
+
+func TestHandleDashboardHealth(t *testing.T) {
+	mockRegistry := new(MockServiceRegistry)
+	mockTM := new(MockToolManager)
+	tm := topology.NewManager(mockRegistry, mockTM)
+	defer tm.Close()
+
+	// Mock Service Registry to return a service
+	s := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("test-service"),
+		Id:   proto.String("test-service-id"),
+	}.Build()
+	mockRegistry.On("GetAllServices").Return([]*configv1.UpstreamServiceConfig{s}, nil)
+	mockRegistry.On("GetServiceError", "test-service-id").Return("", false)
+
+	// Seed health history
+	health.AddHealthStatus("test-service", "up")
+	// Seed traffic history for latency
+	tm.SeedTrafficHistory([]topology.TrafficPoint{
+		{Time: time.Now().Format("15:04"), Total: 10, Latency: 123},
+	}, "test-service-id")
+
+	app := &Application{
+		ServiceRegistry: mockRegistry,
+		TopologyManager: tm,
+		statsCache:      make(map[string]statsCacheEntry),
+	}
+
+	req, _ := http.NewRequest("GET", "/dashboard/health", nil)
+	rr := httptest.NewRecorder()
+
+	handler := app.handleDashboardHealth()
+	handler.ServeHTTP(rr, req)
+
+	assert.Equal(t, http.StatusOK, rr.Code)
+
+	var resp ServiceHealthResponse
+	err := json.Unmarshal(rr.Body.Bytes(), &resp)
+	require.NoError(t, err)
+
+	require.Len(t, resp.Services, 1)
+	svc := resp.Services[0]
+	assert.Equal(t, "test-service", svc.Name)
+	assert.Equal(t, "healthy", svc.Status)
+	assert.Equal(t, "123ms", svc.Latency) // Seeded 123ms average
+	assert.Contains(t, svc.Uptime, "%")   // Should be 100.0% or close
 }

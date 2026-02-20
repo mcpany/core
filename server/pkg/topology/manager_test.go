@@ -501,7 +501,7 @@ func TestManager_SeedTrafficHistory(t *testing.T) {
 		{Time: "12:01", Total: 20, Errors: 2, Latency: 60},
 	}
 
-	m.SeedTrafficHistory(points)
+	m.SeedTrafficHistory(points, "")
 
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -565,4 +565,31 @@ func TestManager_GetGraph_Metrics(t *testing.T) {
 
 	// Verify Status Upgrade to ERROR (since error rate > 5%)
 	assert.Equal(t, topologyv1.NodeStatus_NODE_STATUS_ERROR, svcNode.GetStatus())
+}
+
+func TestManager_GetRecentServiceStats(t *testing.T) {
+	mockRegistry := new(MockServiceRegistry)
+	mockTM := new(MockToolManager)
+	m := NewManager(mockRegistry, mockTM)
+	defer m.Close()
+
+	now := time.Now()
+	minuteKey := now.Truncate(time.Minute).Unix()
+
+	m.mu.Lock()
+	m.trafficHistory[minuteKey] = &MinuteStats{
+		ServiceStats: map[string]*ServiceTrafficStats{
+			"test-service": {
+				Requests: 10,
+				Errors:   2,
+				Latency:  500, // 50ms average
+			},
+		},
+	}
+	m.mu.Unlock()
+
+	latency, errorRate := m.GetRecentServiceStats("test-service", 5*time.Minute)
+
+	assert.Equal(t, 50*time.Millisecond, latency)
+	assert.Equal(t, 0.2, errorRate)
 }
