@@ -272,10 +272,15 @@ const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onT
         if (service.grpcService) return "gRPC";
         if (service.commandLineService) return "CLI";
         if (service.mcpService) return "MCP";
+        if (service.filesystemService) return "FS";
         return "Other";
     }, [service]);
 
     const address = useMemo(() => {
+         if (service.filesystemService) {
+             const count = Object.keys(service.filesystemService.rootPaths || {}).length;
+             return `${count} mount${count === 1 ? '' : 's'}`;
+         }
          return service.grpcService?.address ||
             service.httpService?.address ||
             service.commandLineService?.command ||
