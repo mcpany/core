@@ -36,6 +36,7 @@ import {
     DialogDescription
 } from "@/components/ui/dialog";
 import { ToolForm } from "@/components/playground/tool-form";
+import { JsonView } from "@/components/ui/json-view";
 
 type MessageType = "user" | "assistant" | "tool-call" | "tool-result" | "error";
 
@@ -528,9 +529,14 @@ const MessageItem = memo(function MessageItem({ message }: { message: Message })
                         </div>
                     </div>
                     <CollapsibleContent className="">
-                        <pre className="text-xs bg-black text-green-400 p-3 rounded-b-md border border-t-0 border-green-900/30 font-mono overflow-x-auto shadow-inner">
-                            {JSON.stringify(message.toolResult, null, 2)}
-                        </pre>
+                        <div className="rounded-b-md border border-t-0 bg-muted/10 overflow-hidden shadow-inner">
+                            <JsonView
+                                data={message.toolResult}
+                                smartTable={true}
+                                maxHeight={400}
+                                className="border-0 bg-transparent"
+                            />
+                        </div>
                     </CollapsibleContent>
                 </Collapsible>
 

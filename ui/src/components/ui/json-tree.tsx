@@ -140,6 +140,14 @@ export function JsonTree({ data, level = 0, defaultExpandedLevel = 1, className 
 
 function PrimitiveValue({ value }: { value: unknown }) {
   if (typeof value === 'string') {
+    if (value.startsWith('data:image/') && value.length > 50) {
+        return (
+            <div className="mt-1 mb-2">
+                <span className="text-green-400 break-all whitespace-pre-wrap opacity-50 text-[10px] block truncate max-w-[300px]" title="Click copy to get full string">"{value}"</span>
+                <img src={value} alt="Base64 Image" className="max-w-[200px] h-auto rounded-md border bg-black/50 mt-1" />
+            </div>
+        );
+    }
     return <span className="text-green-400 break-all whitespace-pre-wrap">"{value}"</span>;
   }
   if (typeof value === 'number') {

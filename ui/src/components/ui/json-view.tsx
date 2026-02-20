@@ -8,7 +8,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Code, Table as TableIcon, Copy, Check, ChevronDown, ChevronUp, ListTree } from "lucide-react";
+import { Code, Table as TableIcon, Copy, Check, ChevronDown, ChevronUp, ListTree, Image as ImageIcon } from "lucide-react";
 import dynamic from "next/dynamic";
 import { vs2015 } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import { cn } from "@/lib/utils";
@@ -76,11 +76,15 @@ const getTableData = (data: unknown, smartTable: boolean) => {
  */
 export function JsonView({ data, className, smartTable = false, maxHeight = 400 }: JsonViewProps) {
   // Calculate initial state lazily
-  const [viewMode, setViewMode] = useState<"smart" | "tree" | "raw">(() => {
+  const [viewMode, setViewMode] = useState<"smart" | "tree" | "raw" | "image">(() => {
+      const parsed = tryParse(data);
+
+      // Check for image
+      if (typeof parsed === 'string' && parsed.startsWith('data:image/')) return "image";
+
       const tableData = getTableData(data, smartTable);
       if (tableData) return "smart";
 
-      const parsed = tryParse(data);
       const isObj = typeof parsed === 'object' && parsed !== null;
       if (isObj) return "tree";
 
@@ -96,17 +100,20 @@ export function JsonView({ data, className, smartTable = false, maxHeight = 400 
 
   const hasSmartView = tableData !== null;
   const isObject = typeof parsedData === 'object' && parsedData !== null;
+  const isImage = typeof parsedData === 'string' && parsedData.startsWith('data:image/');
 
   // Set default view mode based on data type updates
   useEffect(() => {
-      if (hasSmartView) {
+      if (isImage) {
+          setViewMode("image");
+      } else if (hasSmartView) {
           setViewMode("smart");
       } else if (isObject) {
           setViewMode("tree");
       } else {
           setViewMode("raw");
       }
-  }, [hasSmartView, isObject]);
+  }, [hasSmartView, isObject, isImage]);
 
   const handleCopy = () => {
     const text = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
@@ -223,6 +230,19 @@ export function JsonView({ data, className, smartTable = false, maxHeight = 400 
       );
   }
 
+  const renderImage = () => {
+      return (
+          <div className={cn("rounded-md border bg-black/50 p-4 flex justify-center", className)}>
+              <img
+                  src={parsedData as string}
+                  alt="Preview"
+                  className="max-w-full h-auto rounded-md shadow-lg"
+                  style={{ maxHeight: maxHeight > 0 ? `${maxHeight}px` : undefined }}
+              />
+          </div>
+      );
+  }
+
   const renderSmart = () => {
     if (!tableData) return renderRaw();
 
@@ -299,13 +319,23 @@ export function JsonView({ data, className, smartTable = false, maxHeight = 400 
   }
 
   // Show toolbar if we have options
-  const showToolbar = hasSmartView || isObject;
+  const showToolbar = hasSmartView || isObject || isImage;
 
   return (
     <div className="flex flex-col gap-0 w-full relative">
         {showToolbar && (
             <div className="flex justify-end mb-1 px-1">
                  <div className="flex items-center bg-muted/50 rounded-lg p-0.5 border backdrop-blur-sm">
+                     {isImage && (
+                        <Button
+                            variant={viewMode === "image" ? "secondary" : "ghost"}
+                            size="sm"
+                            className="h-6 px-2 text-[10px] gap-1"
+                            onClick={() => setViewMode("image")}
+                         >
+                             <ImageIcon className="size-3" /> Image
+                         </Button>
+                     )}
                      {hasSmartView && (
                          <Button
                             variant={viewMode === "smart" ? "secondary" : "ghost"}
@@ -341,6 +371,7 @@ export function JsonView({ data, className, smartTable = false, maxHeight = 400 
         <div className="mt-0">
             {viewMode === "smart" && hasSmartView ? renderSmart() :
              viewMode === "tree" ? renderTree() :
+             viewMode === "image" ? renderImage() :
              renderRaw()}
         </div>
     </div>
