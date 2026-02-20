@@ -1,40 +1,18 @@
-# Truth Reconciliation Audit Report
+# Coverage Intervention Report
 
-## Executive Summary
-This report summarizes the "Truth Reconciliation Audit" performed on the MCP Any project. The audit cross-referenced 10 documentation files against the codebase and the Product Roadmap.
+**Target:** `server/pkg/tool/management.go` (and related `management_fuzzy_test.go`)
 
-**Overall Health:** 80% (8/10 files verified correct)
-**Discrepancies Found:** 2
-- **Code Defect:** 1 (Context Optimizer)
-- **Doc Drift:** 1 (Admin API)
+**Risk Profile:**
+Selected `server/pkg/tool/management.go` because it contains the core tool execution logic (`ExecuteTool`), including fuzzy matching, hook execution, and service health checks. This area is critical for user experience (fuzzy matching) and system stability/security (hooks and health checks). The file has high complexity (1138 lines) and user-facing error handling logic that was previously under-tested.
 
-All discrepancies have been remediated.
+**New Coverage:**
+Implemented a new test suite `server/pkg/tool/management_fuzzy_test.go` guarding the following logic paths:
+1.  **Fuzzy Matching:** Verified that `ExecuteTool` correctly suggests tools when a typo occurs in the full namespaced tool name (e.g., `weather-service.get_weathr` -> `weather-service.get_weather`).
+2.  **Ambiguous Matching:** Verified that `ExecuteTool` correctly suggests multiple tools when the request is ambiguous (e.g., `tool` matching `s1.tool` and `s2.tool`).
+3.  **Service Health Checks:** Verified that `ExecuteTool` blocks execution if the underlying service is marked as `HealthStatusUnhealthy`.
+4.  **Pre-Execution Hooks:** Verified that `ExecuteTool` correctly handles errors and denial actions from Pre-Call hooks.
+5.  **Post-Execution Hooks:** Verified that `ExecuteTool` correctly propagates errors from Post-Call hooks.
 
-## Verification Matrix
-
-| Document Name | Status | Action Taken | Evidence |
-| :--- | :--- | :--- | :--- |
-| `ui/docs/features/playground.md` | **Green** | Verified | Code matches docs (Components, Routes, Features). |
-| `ui/docs/features/logs.md` | **Green** | Verified | Code matches docs (WebSocket, Filtering, Color Coding). |
-| `ui/docs/features/connection-diagnostics.md` | **Green** | Verified | Code matches docs (Steps, Heuristics, UI). |
-| `ui/docs/features/native_file_upload_playground.md` | **Green** | Verified | Code matches docs (Schema detection, FileInput). |
-| `server/docs/features/config_validator.md` | **Green** | Verified | Code matches docs (Endpoint, UI Sidebar). |
-| `server/docs/features/health-checks.md` | **Green** | Verified | Code matches docs (All check types implemented). |
-| `server/docs/features/dynamic-ui.md` | **Green** | Verified | Pointer doc is accurate. |
-| `server/docs/features/context_optimizer.md` | **Red** (Code Defect) | **Fixed Code** | Code used byte-length for character limit, causing potential UTF-8 corruption. Fixed to use rune-length. Added test case. |
-| `server/docs/features/audit_logging.md` | **Green** | Verified | Code matches docs (Storage types, Config). |
-| `server/docs/features/admin_api.md` | **Red** (Doc Drift) | **Fixed Doc** | Documentation missing newer endpoints (User Mgmt, Audit Logs). Added missing sections. |
-
-## Remediation Log
-
-### 1. Context Optimizer (Code Defect)
-- **Issue:** The middleware truncated strings based on byte length (`len(str)`), but the documentation and intent specified "characters" (`max_chars`). This could lead to invalid UTF-8 sequences if a multibyte character was split.
-- **Fix:** Updated `server/pkg/middleware/context_optimizer.go` to cast strings to `[]rune` before slicing.
-- **Verification:** Added `TestContextOptimizerMiddleware_Multibyte` in `server/pkg/middleware/context_optimizer_test.go` which confirms correct truncation of strings containing emojis and CJK characters.
-
-### 2. Admin API (Doc Drift)
-- **Issue:** `server/docs/features/admin_api.md` was missing documentation for User Management, Discovery Status, and Audit Log endpoints that exist in `proto/admin/v1/admin.proto`.
-- **Fix:** Updated the documentation to include `CreateUser`, `GetUser`, `ListUsers`, `UpdateUser`, `DeleteUser`, `GetDiscoveryStatus`, and `ListAuditLogs`.
-
-## Security Scrub
-- No PII, secrets, or internal IPs were found in the report or the codebase during verification.
+**Verification:**
+*   `go test -v server/pkg/tool/management_fuzzy_test.go` passed.
+*   `go test ./server/pkg/tool/...` passed (with pre-existing failures in `GRPCTool` unrelated to these changes).
