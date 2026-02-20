@@ -16,6 +16,7 @@ import (
 
 func TestCommandTool_ShellInjection_Prevention(t *testing.T) {
 	// Setup a CommandTool configured to use "awk"
+	// This test verifies that shell injection protections are active for CommandTool.
 
 	// Define the tool service
 	service := (&configv1.CommandLineUpstreamService_builder{
