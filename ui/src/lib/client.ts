@@ -45,7 +45,7 @@ export interface UpstreamServiceConfig extends Omit<BaseUpstreamServiceConfig, '
 
 // Re-export generated types
 export type { ToolDefinition, ResourceDefinition, PromptDefinition, Credential, Authentication, ProfileDefinition };
-export type { ListServicesResponse, GetServiceResponse, GetServiceStatusResponse, ValidateServiceResponse } from '@proto/api/v1/registration';
+export type { ListServicesResponse, GetServiceResponse, GetServiceStatusResponse, ValidateServiceResponse } from '../../../proto/api/v1/registration';
 
 /**
  * ServiceTemplate defines a template for an upstream service.

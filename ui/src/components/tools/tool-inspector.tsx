@@ -19,6 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SchemaViewer } from "./schema-viewer";
 import { SchemaForm, Schema } from "./schema-form";
+import { RichResultViewer } from "./rich-result-viewer";
 
 import { Switch } from "@/components/ui/switch";
 import { ToolAnalytics } from "@/lib/client";
@@ -49,7 +50,7 @@ interface AuditLogEntry {
  */
 export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) {
   const [input, setInput] = useState("{}");
-  const [output, setOutput] = useState<string | null>(null);
+  const [output, setOutput] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [isDryRun, setIsDryRun] = useState(false);
 
@@ -120,11 +121,11 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
       const args = JSON.parse(input);
       // const start = Date.now();
       const res = await apiClient.executeTool({
-          toolName: tool.name,
+          name: tool.name,
           arguments: args
       }, isDryRun);
       // const duration = Date.now() - start;
-      setOutput(JSON.stringify(res, null, 2));
+      setOutput(res);
       // Refresh metrics after execution to show it in the graph
       // Give it a small delay for backend to write audit log
       setTimeout(fetchMetrics, 500);
@@ -217,9 +218,7 @@ export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) 
                 {output && (
                      <div className="grid gap-2">
                         <Label>Result</Label>
-                        <ScrollArea className="h-[150px] w-full rounded-md border p-4 bg-muted/50">
-                            <pre className="text-xs text-green-600 dark:text-green-400 font-mono">{output}</pre>
-                        </ScrollArea>
+                        <RichResultViewer result={output} />
                     </div>
                 )}
             </TabsContent>

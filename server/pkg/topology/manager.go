@@ -100,12 +100,32 @@ func NewManager(registry serviceregistry.ServiceRegistryInterface, tm tool.Manag
 
 // processLoop handles asynchronous activity recording to avoid locking the request path.
 func (m *Manager) processLoop() {
+	// ⚡ BOLT: Cleanup timer for inactive sessions (1 hour interval)
+	// Randomized Selection from Top 5 High-Impact Targets
+	cleanupTicker := time.NewTicker(1 * time.Hour)
+	defer cleanupTicker.Stop()
+
 	for {
 		select {
 		case <-m.shutdownCh:
 			return
 		case event := <-m.activityCh:
 			m.handleActivity(event)
+		case <-cleanupTicker.C:
+			m.cleanupSessions()
+		}
+	}
+}
+
+// cleanupSessions removes sessions that have been inactive for more than 24 hours.
+func (m *Manager) cleanupSessions() {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	sessionCutoff := time.Now().Add(-24 * time.Hour)
+	for id, s := range m.sessions {
+		if s.LastActive.Before(sessionCutoff) {
+			delete(m.sessions, id)
 		}
 	}
 }
@@ -270,6 +290,54 @@ func (m *Manager) GetStats(serviceID string) Stats {
 		AvgLatency:    avgLatency,
 		ErrorRate:     errorRate,
 	}
+}
+
+// GetRecentServiceStats returns the aggregated statistics for a service over a given time window.
+// It uses trafficHistory which stores minute-level stats.
+//
+// serviceID is the serviceID.
+// window is the window.
+//
+// Returns the avgLatency and errorRate.
+func (m *Manager) GetRecentServiceStats(serviceID string, window time.Duration) (avgLatency time.Duration, errorRate float64) {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+
+	now := time.Now()
+	startTime := now.Add(-window).Unix()
+
+	var totalReqs int64
+	var totalErrors int64
+	var totalLatency int64
+
+	for t, stats := range m.trafficHistory {
+		if t < startTime {
+			continue
+		}
+
+		if serviceID == "" {
+			// Aggregate all services
+			totalReqs += stats.Requests
+			totalErrors += stats.Errors
+			totalLatency += stats.Latency
+		} else if stats.ServiceStats != nil {
+			if sStats, ok := stats.ServiceStats[serviceID]; ok {
+				totalReqs += sStats.Requests
+				totalErrors += sStats.Errors
+				totalLatency += sStats.Latency
+			}
+		}
+	}
+
+	if totalReqs > 0 {
+		// Latency in trafficHistory is stored as total latency in ms
+		// So avg latency in ms = totalLatency / totalReqs
+		avgMs := totalLatency / totalReqs
+		avgLatency = time.Duration(avgMs) * time.Millisecond
+		errorRate = float64(totalErrors) / float64(totalReqs)
+	}
+
+	return avgLatency, errorRate
 }
 
 // GetTrafficHistory returns the traffic history for the last 24 hours.

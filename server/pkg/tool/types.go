@@ -77,13 +77,17 @@ type Tool interface {
 	// Returns:
 	//   - *v1.Tool: The protobuf tool definition.
 	Tool() *v1.Tool
+
 	// MCPTool returns the MCP tool definition.
 	//
 	// Returns:
 	//   - *mcp.Tool: The MCP tool definition.
 	MCPTool() *mcp.Tool
+
 	// Execute runs the tool with the provided context and request, returning
 	// the result or an error.
+	//
+	// Summary: Executes the tool.
 	//
 	// Parameters:
 	//   - ctx: context.Context. The execution context.
@@ -92,8 +96,14 @@ type Tool interface {
 	// Returns:
 	//   - any: The execution result.
 	//   - error: An error if execution fails.
+	//
+	// Side Effects:
+	//   - Executes the underlying service logic (network calls, command execution, etc.).
 	Execute(ctx context.Context, req *ExecutionRequest) (any, error)
+
 	// GetCacheConfig returns the cache configuration for the tool.
+	//
+	// Summary: Retrieves cache configuration.
 	//
 	// Returns:
 	//   - *configv1.CacheConfig: The cache configuration, or nil if none.
@@ -406,6 +416,11 @@ func (t *GRPCTool) GetCacheConfig() *configv1.CacheConfig {
 // Returns:
 //   - any: The execution result (usually a map or JSON string).
 //   - error: An error if execution fails.
+//
+// Side Effects:
+//   - Makes a gRPC call to the upstream service.
+//   - Updates metrics (latency, success/error counts).
+//   - Logs execution details.
 func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
@@ -674,6 +689,11 @@ func (t *HTTPTool) GetCacheConfig() *configv1.CacheConfig {
 // Returns:
 //   - any: The execution result.
 //   - error: An error if execution fails.
+//
+// Side Effects:
+//   - Makes an HTTP request to the upstream service.
+//   - Updates metrics.
+//   - Logs execution details.
 func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
@@ -1370,6 +1390,10 @@ func (t *MCPTool) GetCacheConfig() *configv1.CacheConfig {
 // Returns:
 //   - any: The execution result.
 //   - error: An error if execution fails.
+//
+// Side Effects:
+//   - Makes an MCP call to the upstream service.
+//   - Logs execution details.
 func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if t.initError != nil {
 		return nil, t.initError
@@ -1609,6 +1633,10 @@ func (t *OpenAPITool) GetCacheConfig() *configv1.CacheConfig {
 // Returns:
 //   - any: The execution result.
 //   - error: An error if execution fails.
+//
+// Side Effects:
+//   - Makes an HTTP request to the upstream service.
+//   - Logs execution details.
 func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError
@@ -1943,6 +1971,11 @@ func (t *LocalCommandTool) GetCacheConfig() *configv1.CacheConfig {
 // Returns:
 //   - any: The execution result.
 //   - error: An error if execution fails.
+//
+// Side Effects:
+//   - Executes a subprocess on the local system.
+//   - Consumes system resources (CPU, memory).
+//   - Logs execution details.
 func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError
@@ -2288,6 +2321,11 @@ func (t *CommandTool) GetCacheConfig() *configv1.CacheConfig {
 // Returns:
 //   - any: The execution result.
 //   - error: An error if execution fails.
+//
+// Side Effects:
+//   - Executes a subprocess (potentially inside a container).
+//   - Consumes system resources.
+//   - Logs execution details.
 func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError
@@ -3193,6 +3231,7 @@ func checkInterpreterFunctionCalls(val, language string) error {
 		"import", "require",
 		"subprocess", "child_process", "os", "sys",
 		"open", "read", "write",
+		"phpinfo",
 	}
 
 	if err := checkUnquotedKeywords(val, dangerousKeywords); err != nil {
@@ -3377,9 +3416,50 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 	if err := checkAwkInjection(val, base); err != nil {
 		return err
 	}
+	if err := checkJqInjection(val, base, quoteLevel); err != nil {
+		return err
+	}
 	if err := checkSQLInjection(val, base, quoteLevel); err != nil {
 		return err
 	}
+	return nil
+}
+
+func checkJqInjection(val, base string, quoteLevel int) error {
+	// jq: Block dangerous functions/modules that can leak secrets or perform system calls
+	// We only check if the input is being interpreted as code (unquoted in jq context).
+	// Since jq uses double quotes for strings, if quoteLevel is 1 (Double), we are inside a string.
+	// If quoteLevel is 0 (Unquoted), we are code.
+	if base != "jq" {
+		return nil
+	}
+
+	// If we are inside double quotes (Level 1), generic checks already block " and \ and $,
+	// so we cannot break out. The content is treated as a string literal.
+	if quoteLevel == 1 {
+		return nil
+	}
+
+	// Level 0 (Unquoted) or Level 2 (Single Quoted - invalid in jq but checked anyway)
+	// We must block dangerous keywords.
+
+	// Remove all whitespace to detect obfuscated calls if any (though jq keywords need separation usually, but punctuation can separate)
+	// e.g. "env" vs "env."
+	// We should tokenize or check for word boundaries.
+	// But checkUnquotedKeywords handles boundaries properly.
+
+	dangerousKeywords := []string{
+		"env",
+		"input", "inputs",
+		"module", "import", "include",
+		"halt", "halt_error",
+		"stderr",
+	}
+
+	if err := checkUnquotedKeywords(val, dangerousKeywords); err != nil {
+		return fmt.Errorf("jq injection detected: %w", err)
+	}
+
 	return nil
 }
 
@@ -3557,19 +3637,95 @@ func checkAwkInjection(val, base string) error {
 	// Awk: Block pipe | to prevent external command execution
 	// Also block redirection > and < to prevent arbitrary file read/write
 	// And block getline to prevent file reading
+	// Sentinel Security Update: Block indirect function calls (@fun) and extensions (@include, @load)
 	isAwk := strings.HasPrefix(base, "awk") || strings.HasPrefix(base, "gawk") || strings.HasPrefix(base, "nawk") || strings.HasPrefix(base, "mawk")
-	if isAwk {
-		if strings.Contains(val, "|") {
-			return fmt.Errorf("awk injection detected: value contains '|'")
+	if !isAwk {
+		return nil
+	}
+
+	inDouble := false
+	inComment := false
+	escaped := false
+
+	for i := 0; i < len(val); i++ {
+		char := val[i]
+
+		if inComment {
+			if char == '\n' {
+				inComment = false
+			}
+			continue
 		}
-		if strings.Contains(val, ">") {
-			return fmt.Errorf("awk injection detected: value contains '>'")
+
+		if escaped {
+			escaped = false
+			continue
 		}
-		if strings.Contains(val, "<") {
-			return fmt.Errorf("awk injection detected: value contains '<'")
+
+		if char == '\\' {
+			escaped = true
+			continue
 		}
-		if strings.Contains(val, "getline") {
-			return fmt.Errorf("awk injection detected: value contains 'getline'")
+
+		if char == '"' {
+			inDouble = !inDouble
+			continue
+		}
+
+		if inDouble {
+			continue
+		}
+
+		// Not in quote, not in comment
+		if char == '#' {
+			inComment = true
+			continue
+		}
+
+		if char == '|' {
+			return fmt.Errorf("awk injection detected: value contains '|' (pipe)")
+		}
+		if char == '>' {
+			return fmt.Errorf("awk injection detected: value contains '>' (redirection)")
+		}
+		if char == '<' {
+			return fmt.Errorf("awk injection detected: value contains '<' (redirection)")
+		}
+		if char == '@' {
+			return fmt.Errorf("awk injection detected: value contains '@' (indirect call/extension)")
+		}
+
+		// Check for words like "getline"
+		if char == 'g' {
+			if strings.HasPrefix(val[i:], "getline") {
+				// check boundaries
+				end := i + 7
+				if end >= len(val) || !isWordChar(val[end]) {
+					// check start boundary
+					if i == 0 || !isWordChar(val[i-1]) {
+						return fmt.Errorf("awk injection detected: value contains 'getline'")
+					}
+				}
+			}
+		}
+
+		// Check for words like "system"
+		if char == 's' {
+			if strings.HasPrefix(val[i:], "system") {
+				// check boundaries
+				end := i + 6
+				if end >= len(val) || !isWordChar(val[end]) {
+					// check start boundary
+					if i == 0 || !isWordChar(val[i-1]) {
+						return fmt.Errorf("awk injection detected: value contains 'system'")
+					}
+				}
+			}
+		}
+		// Block '@' to prevent indirect function calls (e.g., @var(args)) which can bypass keyword checks,
+		// as well as gawk extensions like @load and @include.
+		if strings.Contains(val, "@") {
+			return fmt.Errorf("awk injection detected: value contains '@'")
 		}
 	}
 	return nil
@@ -3797,6 +3953,22 @@ func validateSafePathAndInjection(val string, isDocker bool, commandName string)
 	if strings.Contains(val, "://") {
 		if err := validation.IsSafeURL(val); err != nil {
 			return fmt.Errorf("unsafe url argument: %w", err)
+		}
+	} else {
+		// Sentinel Security Update: Also block schema-less IPs and localhost to prevent SSRF
+		// via tools like curl/wget that accept them.
+		// Check for "localhost" (case-insensitive)
+		if strings.EqualFold(val, "localhost") {
+			allowLoopback := os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == "true"
+			if !allowLoopback {
+				return fmt.Errorf("unsafe argument: localhost is not allowed")
+			}
+		} else if validation.IsSafeIP != nil {
+			// Check if it's an IP address and validate it against policy
+			// We ignore "invalid IP address" error as it just means it's not an IP
+			if err := validation.IsSafeIP(val); err != nil && err.Error() != "invalid IP address" {
+				return fmt.Errorf("unsafe IP argument: %w", err)
+			}
 		}
 	}
 
