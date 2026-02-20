@@ -4,82 +4,66 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { apiClient } from '@/lib/client';
 
 test.describe('Credential OAuth Flow E2E', () => {
-  const credentialID = 'cred-123';
-  const credentials: any[] = [];
+  // Use a unique name to avoid conflicts
+  const credentialName = `Test OAuth Cred ${Date.now()}`;
 
   test.beforeEach(async ({ page }) => {
     // Increase viewport height for long forms
     await page.setViewportSize({ width: 1280, height: 1000 });
-
-    credentials.length = 0;
     page.on('console', msg => console.log('BROWSER LOG:', msg.text()));
 
-    await page.route('**/api/v1/credentials', async route => {
-        if (route.request().method() === 'GET') {
-            await route.fulfill({ json: { credentials } });
-        } else if (route.request().method() === 'POST') {
-             const req = route.request().postDataJSON();
-             const newCred = {
-                     id: credentialID,
-                     name: req.name,
-                     authentication: req.authentication,
-                     token: null
-             };
-             credentials.push(newCred);
-             await route.fulfill({ json: newCred });
-        } else {
-            await route.continue();
-        }
-    });
-
-    await page.route(`**/api/v1/credentials/${credentialID}`, async route => {
-        const method = route.request().method();
-        if (method === 'PUT') {
-            const req = route.request().postDataJSON();
-            const cred = credentials.find(c => c.id === credentialID);
-            if (cred) {
-                cred.name = req.name;
-                cred.authentication = req.authentication;
-            }
+    // External Mock for Auth Provider
+    // This mocks the 3rd party provider (e.g., Google), NOT our backend.
+    await page.route('http://example.com/auth*', async route => {
+        const url = route.request().url();
+        console.log(`Intercepted external auth: ${url}`);
+        if (url.includes('response_type=code')) {
+             // Redirect back to callback
+             const redirectUrl = new URL(url).searchParams.get('redirect_uri') || '';
+             const state = new URL(url).searchParams.get('state') || '';
+             // Simulate user approving access
+             // We need to perform the redirect that the provider would do.
+             // The provider redirects the browser to `redirectUrl` with code and state.
+             const callback = `${redirectUrl}?code=mock-code&state=${state}`;
+             console.log(`Redirecting to: ${callback}`);
              await route.fulfill({
-                 json: {
-                     id: credentialID,
-                     name: req.name,
-                     authentication: req.authentication,
-                     token: req.token
+                 status: 302,
+                 headers: {
+                     'Location': callback
                  }
              });
-        } else if (method === 'DELETE') {
-            const idx = credentials.findIndex(c => c.id === credentialID);
-            if (idx !== -1) credentials.splice(idx, 1);
-            await route.fulfill({ json: {} });
         } else {
-            await route.continue();
+            await route.fulfill({ status: 404, body: 'Not Found' });
         }
     });
 
-    await page.route((url) => url.pathname.includes('/auth/oauth/'), async route => {
-        const urlStr = route.request().url();
-        console.log(`OAuth mock hit for ${urlStr}`);
-        if (urlStr.includes('/initiate')) {
-            const origin = new URL(page.url()).origin;
-            await route.fulfill({
-                json: {
-                    authorization_url: `${origin}/auth/callback?code=mock-code&state=xyz`,
-                    state: 'xyz'
-                }
-            });
-        } else if (urlStr.includes('/callback')) {
-            // Find credential and update token
-            const cred = credentials.find(c => c.id === credentialID);
-            if (cred) cred.token = { accessToken: 'mock-token' };
-            await route.fulfill({ json: { status: 'success' } });
-        } else {
-            await route.continue();
-        }
+    await page.route('http://example.com/token', async route => {
+        console.log('Intercepted token exchange');
+        await route.fulfill({
+            json: {
+                access_token: 'mock-token',
+                token_type: 'Bearer',
+                expires_in: 3600
+            }
+        });
     });
+  });
+
+  test.afterEach(async () => {
+      // Cleanup
+      try {
+          const credentials = await apiClient.listCredentials();
+          const cred = credentials.find(c => c.name === credentialName);
+          if (cred && cred.id) {
+              await apiClient.deleteCredential(cred.id);
+              console.log(`Cleaned up credential: ${credentialName}`);
+          }
+      } catch (e) {
+          console.error('Failed to cleanup credential', e);
+      }
   });
 
   test('should create oauth credential and connect', async ({ page }) => {
@@ -88,7 +72,7 @@ test.describe('Credential OAuth Flow E2E', () => {
     await page.getByRole('button', { name: 'New Credential' }).click({ force: true });
 
     // Use placeholder to avoid name conflicts
-    await page.getByPlaceholder('My Credential').fill('Test OAuth Cred');
+    await page.getByPlaceholder('My Credential').fill(credentialName);
 
     // Select Type
     await page.getByRole('combobox', { name: 'Type' }).click({ force: true });
@@ -111,20 +95,25 @@ test.describe('Credential OAuth Flow E2E', () => {
 
     await expect(page.getByRole('dialog')).toBeHidden({ timeout: 10000 });
 
-    await expect(page.getByText('Test OAuth Cred')).toBeVisible();
+    await expect(page.getByText(credentialName)).toBeVisible();
 
-    const row = page.locator('tr').filter({ hasText: 'Test OAuth Cred' });
+    const row = page.locator('tr').filter({ hasText: credentialName });
     // Click direct Edit button
     await row.getByRole('button', { name: 'Edit' }).click({ force: true });
 
     await expect(page.getByRole('button', { name: 'Connect Account' })).toBeVisible({ timeout: 15000 });
+    // Wait for button to be enabled?
     await page.getByRole('button', { name: 'Connect Account' }).click({ force: true });
 
-    await expect(page.getByText('Authentication Successful')).toBeVisible({ timeout: 20000 });
+    // The backend should redirect to http://example.com/auth...
+    // Our page.route intercepts it and redirects back to /auth/callback
+    // The callback page exchanges the code (hitting http://example.com/token via backend) and closes/redirects.
+
+    await expect(page.getByText('Authentication Successful')).toBeVisible({ timeout: 30000 });
     await page.getByRole('button', { name: 'Continue' }).click({ force: true });
 
     // Use auto-retrying toHaveURL
     await expect(page).toHaveURL(/\/credentials/);
-    await expect(page.getByText('Test OAuth Cred')).toBeVisible();
+    await expect(page.getByText(credentialName)).toBeVisible();
   });
 });

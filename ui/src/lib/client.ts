@@ -100,7 +100,8 @@ const getBaseUrl = () => {
     if (typeof window !== 'undefined') {
         return window.location.origin;
     }
-    return process.env.BACKEND_URL || 'http://mcpany:50050'; // Default for SSR in K8s
+    // Default to localhost for local testing if env is not set
+    return process.env.BACKEND_URL || 'http://localhost:50050';
 };
 
 const rpc = new GrpcWebImpl(getBaseUrl(), {
@@ -123,6 +124,13 @@ const fetchWithAuth = async (input: RequestInfo | URL, init?: RequestInit) => {
             headers.set('X-API-Key', apiKey);
         }
     }
+
+    // Handle relative URLs in Node.js environment
+    if (typeof input === 'string' && input.startsWith('/')) {
+        const baseUrl = getBaseUrl();
+        input = `${baseUrl}${input}`;
+    }
+
     return fetch(input, { ...init, headers });
 };
 
@@ -1598,6 +1606,26 @@ export const apiClient = {
             body: JSON.stringify(points)
         });
         if (!res.ok) throw new Error('Failed to seed traffic data');
+    },
+
+    /**
+     * Seeds data for testing/debugging (Credentials, Services, etc.).
+     * @param data The data to seed.
+     */
+    seedData: async (data: {
+        credentials?: any[];
+        services?: any[];
+        secrets?: any[];
+        profiles?: any[];
+        collections?: any[];
+    }) => {
+        const res = await fetchWithAuth('/api/v1/debug/seed', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        if (!res.ok) throw new Error('Failed to seed data');
+        return res.json();
     },
 
     /**
