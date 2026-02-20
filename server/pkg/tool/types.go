@@ -64,6 +64,17 @@ var (
 
 var fastJSON = jsoniter.ConfigCompatibleWithStandardLibrary
 
+// ⚡ Bolt: Global JSON decoder configuration with UseNumber enabled.
+// Randomized Selection from Top 5 High-Impact Targets
+// This prevents creating a new decoder on every tool execution (allocation reduction)
+// while preserving the UseNumber behavior required for accurate number handling.
+var fastJSONNumber = jsoniter.Config{
+	EscapeHTML:             true,
+	SortMapKeys:            true,
+	ValidateJsonRawMessage: true,
+	UseNumber:              true,
+}.Froze()
+
 // Tool is the fundamental interface for any executable tool in the system.
 //
 // Summary: Interface for defining and executing tools.
@@ -915,9 +926,8 @@ func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionReques
 
 	// ⚡ Bolt: Use json-iterator
 	if len(req.ToolInputs) > 0 {
-		decoder := fastJSON.NewDecoder(bytes.NewReader(req.ToolInputs))
-		decoder.UseNumber()
-		if err := decoder.Decode(&inputs); err != nil {
+		// ⚡ Bolt Optimization: Use pre-configured fastJSONNumber to avoid per-request decoder allocation.
+		if err := fastJSONNumber.Unmarshal(req.ToolInputs, &inputs); err != nil {
 			return nil, "", "", false, fmt.Errorf("failed to unmarshal tool inputs: %w (inputs: %q)", err, string(req.ToolInputs))
 		}
 	}
@@ -1409,9 +1419,8 @@ func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, erro
 	}
 
 	// ⚡ Bolt: Use json-iterator
-	decoder := fastJSON.NewDecoder(bytes.NewReader(req.ToolInputs))
-	decoder.UseNumber()
-	if err := decoder.Decode(&inputs); err != nil {
+	// ⚡ Bolt Optimization: Use pre-configured fastJSONNumber to avoid per-request decoder allocation.
+	if err := fastJSONNumber.Unmarshal(req.ToolInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
 	}
 
@@ -1649,9 +1658,8 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	}
 
 	// ⚡ Bolt: Use json-iterator
-	decoder := fastJSON.NewDecoder(bytes.NewReader(req.ToolInputs))
-	decoder.UseNumber()
-	if err := decoder.Decode(&inputs); err != nil {
+	// ⚡ Bolt Optimization: Use pre-configured fastJSONNumber to avoid per-request decoder allocation.
+	if err := fastJSONNumber.Unmarshal(req.ToolInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
 	}
 
@@ -1995,9 +2003,8 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 	}
 
 	// ⚡ Bolt: Use json-iterator
-	decoder := fastJSON.NewDecoder(bytes.NewReader(req.ToolInputs))
-	decoder.UseNumber()
-	if err := decoder.Decode(&inputs); err != nil {
+	// ⚡ Bolt Optimization: Use pre-configured fastJSONNumber to avoid per-request decoder allocation.
+	if err := fastJSONNumber.Unmarshal(req.ToolInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
 	}
 
@@ -2345,9 +2352,8 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	}
 
 	// ⚡ Bolt: Use json-iterator
-	decoder := fastJSON.NewDecoder(bytes.NewReader(req.ToolInputs))
-	decoder.UseNumber()
-	if err := decoder.Decode(&inputs); err != nil {
+	// ⚡ Bolt Optimization: Use pre-configured fastJSONNumber to avoid per-request decoder allocation.
+	if err := fastJSONNumber.Unmarshal(req.ToolInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
 	}
 
