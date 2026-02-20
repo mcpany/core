@@ -8,6 +8,9 @@ import type { NextRequest } from 'next/server';
 
 /**
  * Middleware for handling request interception, proxying, and security headers.
+ *
+ * Summary: Intercepts and proxies requests, and adds security headers.
+ *
  * @param request - The incoming NextRequest object.
  * @returns A NextResponse object.
  */

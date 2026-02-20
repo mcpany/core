@@ -32,9 +32,9 @@ type Factory interface {
 }
 
 // UpstreamServiceFactory is a concrete implementation of the Factory interface.
-// It creates different types of upstream services based on the service
-// configuration.
-// UpstreamServiceFactory is a concrete implementation of the Factory interface.
+//
+// Summary: Factory for creating upstream services.
+//
 // It creates different types of upstream services based on the service
 // configuration.
 type UpstreamServiceFactory struct {

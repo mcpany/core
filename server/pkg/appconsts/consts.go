@@ -4,12 +4,16 @@
 package appconsts
 
 const (
-	// Name is the name of the MCP Any server. This is used in help messages and
-	// other user-facing output.
+	// Name is the name of the MCP Any server.
+	//
+	// Summary: Identifies the application name used in user-facing output.
 	Name = "mcpany"
 )
 
-// Version is the version of the MCP Any server. This is a variable so it can be
-// set at build time using ldflags. The default value is "dev", which is used
-// for local development builds.
+// Version is the version of the MCP Any server.
+//
+// Summary: Holds the current version of the application.
+//
+// Side Effects:
+//   - Can be modified at build time via ldflags.
 var Version = "dev"

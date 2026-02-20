@@ -12,6 +12,8 @@ import (
 )
 
 // MockTool is a mock implementation of the Tool interface for testing purposes.
+//
+// Summary: Mock tool for testing.
 type MockTool struct {
 	ToolFunc           func() *v1.Tool
 	MCPToolFunc        func() *mcp.Tool
@@ -21,7 +23,10 @@ type MockTool struct {
 
 // Tool returns the protobuf definition of the mock tool.
 //
-// Returns the result.
+// Summary: Retrieves the mock protobuf tool definition.
+//
+// Returns:
+//   - *v1.Tool: The protobuf tool definition.
 func (m *MockTool) Tool() *v1.Tool {
 	if m.ToolFunc != nil {
 		return m.ToolFunc()
@@ -31,7 +36,10 @@ func (m *MockTool) Tool() *v1.Tool {
 
 // MCPTool returns the MCP tool definition.
 //
-// Returns the result.
+// Summary: Retrieves the mock MCP tool definition.
+//
+// Returns:
+//   - *mcp.Tool: The MCP tool definition.
 func (m *MockTool) MCPTool() *mcp.Tool {
 	if m.MCPToolFunc != nil {
 		return m.MCPToolFunc()
@@ -41,11 +49,15 @@ func (m *MockTool) MCPTool() *mcp.Tool {
 
 // Execute calls the mock ExecuteFunc if set, otherwise returns nil.
 //
-// ctx is the context for the request.
-// req is the request object.
+// Summary: Executes the mock tool logic.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//   - req: *ExecutionRequest. The request object.
+//
+// Returns:
+//   - any: The execution result.
+//   - error: An error if the operation fails.
 func (m *MockTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if m.ExecuteFunc != nil {
 		return m.ExecuteFunc(ctx, req)
@@ -55,7 +67,10 @@ func (m *MockTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 
 // GetCacheConfig calls the mock GetCacheConfigFunc if set, otherwise returns nil.
 //
-// Returns the result.
+// Summary: Retrieves the mock cache configuration.
+//
+// Returns:
+//   - *configv1.CacheConfig: The cache configuration.
 func (m *MockTool) GetCacheConfig() *configv1.CacheConfig {
 	if m.GetCacheConfigFunc != nil {
 		return m.GetCacheConfigFunc()
