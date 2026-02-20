@@ -4,11 +4,55 @@
 package transformer
 
 import (
+	"fmt"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
+
+type CustomInt int
+
+func (c CustomInt) String() string {
+	return fmt.Sprintf("Custom(%d)", int(c))
+}
+
+func TestTransformer_JoinEdgeCases(t *testing.T) {
+	tr := NewTransformer()
+
+	t.Run("nil_in_slice", func(t *testing.T) {
+		items := []any{1, nil, 3}
+		data := map[string]any{"items": items}
+		res, err := tr.Transform(`{{join "," .items}}`, data)
+		assert.NoError(t, err)
+		assert.Equal(t, "1,<nil>,3", string(res))
+	})
+
+	t.Run("custom_stringer", func(t *testing.T) {
+		items := []any{CustomInt(1), CustomInt(2)}
+		data := map[string]any{"items": items}
+		res, err := tr.Transform(`{{join "," .items}}`, data)
+		assert.NoError(t, err)
+		assert.Equal(t, "Custom(1),Custom(2)", string(res))
+	})
+
+	t.Run("time_duration", func(t *testing.T) {
+		items := []any{1 * time.Second, 500 * time.Millisecond}
+		data := map[string]any{"items": items}
+		res, err := tr.Transform(`{{join "," .items}}`, data)
+		assert.NoError(t, err)
+		assert.Equal(t, "1s,500ms", string(res))
+	})
+
+	t.Run("mixed_types_with_nil", func(t *testing.T) {
+		items := []any{"text", nil, 42, 10 * time.Minute}
+		data := map[string]any{"items": items}
+		res, err := tr.Transform(`{{join "|" .items}}`, data)
+		assert.NoError(t, err)
+		assert.Equal(t, "text|<nil>|42|10m0s", string(res))
+	})
+}
 
 func TestTransformer(t *testing.T) {
 	t.Parallel()
