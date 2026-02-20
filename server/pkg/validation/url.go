@@ -14,6 +14,27 @@ import (
 
 const trueVal = "true"
 
+// IsSafeIP checks if the IP address string is safe to connect to,
+// respecting the allowed network resources policy.
+//
+// IsSafeIP is a variable to allow mocking in tests.
+var IsSafeIP = func(ipStr string) error {
+	// Bypass if explicitly allowed (for testing/development)
+	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == trueVal {
+		return nil
+	}
+
+	ip := net.ParseIP(ipStr)
+	if ip == nil {
+		return fmt.Errorf("invalid IP address")
+	}
+
+	allowLoopback := os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == trueVal
+	allowPrivate := os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == trueVal
+
+	return ValidateIP(ip, allowLoopback, allowPrivate)
+}
+
 // IsSafeURL checks if the URL is safe to connect to.
 // It validates the scheme and resolves the host to ensure it doesn't point to
 // loopback, link-local, private, or multicast addresses.
@@ -63,7 +84,7 @@ var IsSafeURL = func(urlStr string) error {
 
 	// Check if host is an IP literal
 	if ip := net.ParseIP(host); ip != nil {
-		return validateIP(ip, allowLoopback, allowPrivate)
+		return ValidateIP(ip, allowLoopback, allowPrivate)
 	}
 
 	// Resolve Domain
@@ -82,7 +103,7 @@ var IsSafeURL = func(urlStr string) error {
 
 	// Check all resolved IPs
 	for _, ip := range ips {
-		if err := validateIP(ip, allowLoopback, allowPrivate); err != nil {
+		if err := ValidateIP(ip, allowLoopback, allowPrivate); err != nil {
 			return fmt.Errorf("host %q resolves to unsafe IP %s: %w", host, ip.String(), err)
 		}
 	}
@@ -90,7 +111,8 @@ var IsSafeURL = func(urlStr string) error {
 	return nil
 }
 
-func validateIP(ip net.IP, allowLoopback, allowPrivate bool) error {
+// ValidateIP checks if the IP address is allowed based on the policy.
+func ValidateIP(ip net.IP, allowLoopback, allowPrivate bool) error {
 	if !allowLoopback && (ip.IsLoopback() || IsNAT64Loopback(ip) || (IsIPv4Compatible(ip) && ip[12] == 127)) {
 		return fmt.Errorf("loopback address is not allowed")
 	}

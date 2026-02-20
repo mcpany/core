@@ -3797,6 +3797,22 @@ func validateSafePathAndInjection(val string, isDocker bool, commandName string)
 		if err := validation.IsSafeURL(val); err != nil {
 			return fmt.Errorf("unsafe url argument: %w", err)
 		}
+	} else {
+		// Sentinel Security Update: Also block schema-less IPs and localhost to prevent SSRF
+		// via tools like curl/wget that accept them.
+		// Check for "localhost" (case-insensitive)
+		if strings.EqualFold(val, "localhost") {
+			allowLoopback := os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == "true"
+			if !allowLoopback {
+				return fmt.Errorf("unsafe argument: localhost is not allowed")
+			}
+		} else if validation.IsSafeIP != nil {
+			// Check if it's an IP address and validate it against policy
+			// We ignore "invalid IP address" error as it just means it's not an IP
+			if err := validation.IsSafeIP(val); err != nil && err.Error() != "invalid IP address" {
+				return fmt.Errorf("unsafe IP argument: %w", err)
+			}
+		}
 	}
 
 	if err := checkForPathTraversal(val); err != nil {
