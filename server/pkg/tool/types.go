@@ -3570,6 +3570,47 @@ func checkAwkInjection(val, base string) error {
 		if strings.Contains(val, "getline") {
 			return fmt.Errorf("awk injection detected: value contains 'getline'")
 		}
+		// Sentinel Security Update: Block indirect function calls (@var) and extensions (@include, @load)
+		if err := checkUnquotedChar(val, '@'); err != nil {
+			return fmt.Errorf("awk injection detected: %w (potential indirect call/extension)", err)
+		}
+	}
+	return nil
+}
+
+func checkUnquotedChar(val string, forbidden byte) error {
+	inSingle := false
+	inDouble := false
+	escaped := false
+
+	for i := 0; i < len(val); i++ {
+		char := val[i]
+
+		if escaped {
+			escaped = false
+			continue
+		}
+		if char == '\\' {
+			escaped = true
+			continue
+		}
+
+		if char == '\'' && !inDouble {
+			inSingle = !inSingle
+			continue
+		}
+		if char == '"' && !inSingle {
+			inDouble = !inDouble
+			continue
+		}
+
+		if inSingle || inDouble {
+			continue
+		}
+
+		if char == forbidden {
+			return fmt.Errorf("forbidden character %q found in unquoted context", forbidden)
+		}
 	}
 	return nil
 }
