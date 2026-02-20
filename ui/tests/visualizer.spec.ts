@@ -3,14 +3,15 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { test, expect } from '@playwright/test';
+import { test, expect, request } from '@playwright/test';
 
 test.describe('Agent Flow Visualizer', () => {
-  // Use backend URL from environment or default to localhost
-  const backendUrl = process.env.BACKEND_URL || 'http://localhost:50050';
+  test.beforeAll(async ({ playwright }) => {
+    // Seed traffic data to ensure the graph is populated.
+    // We use the Playwright request context to leverage the baseURL from config (Frontend URL).
+    // This hits the Next.js API proxy which forwards to the backend, avoiding direct backend connection issues.
+    const apiContext = await playwright.request.newContext();
 
-  test.beforeAll(async () => {
-    // Seed traffic data to ensure the graph is populated
     const seedData = [
       {
         time: "10:00",
@@ -22,19 +23,19 @@ test.describe('Agent Flow Visualizer', () => {
       // for "seed-data" session ID.
     ];
 
-    const response = await fetch(`${backendUrl}/api/v1/debug/seed_traffic`, {
-      method: 'POST',
+    const response = await apiContext.post('/api/v1/debug/seed_traffic', {
       headers: {
         'Content-Type': 'application/json',
-        'X-API-Key': 'test-key' // Assuming test key or no auth in test env
+        // X-API-Key is already injected by playwright.config.ts extraHTTPHeaders
       },
-      body: JSON.stringify(seedData)
+      data: seedData
     });
 
-    // If 401/403, we might need to handle auth, but for now assume dev/test env config
-    if (response.status === 401 || response.status === 403) {
-      console.warn("Seeding failed with auth error, proceeding but graph might be empty if not handled");
+    if (!response.ok()) {
+      console.warn(`Seeding failed with status ${response.status()}: ${await response.text()}`);
     }
+
+    await apiContext.dispose();
   });
 
   test('should render the topology graph with seeded data', async ({ page }) => {
@@ -52,12 +53,6 @@ test.describe('Agent Flow Visualizer', () => {
 
     // Check for the Core node
     await expect(page.locator('[data-id="mcp-core"]')).toBeVisible();
-
-    // Check for edge between client and core
-    // Edge ID: "e-client-seed-data-mcp-core"
-    // React Flow edges are SVG paths, harder to select by data-id sometimes depending on version,
-    // but newer versions support it or we can check for existence of connection line.
-    // For now, checking nodes is sufficient proof of graph rendering.
   });
 
   test('should toggle live mode', async ({ page }) => {
