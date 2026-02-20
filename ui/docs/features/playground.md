@@ -15,7 +15,7 @@ The Playground is the central specialized interface for Developers to interactiv
 
 ### 1. Overview
 
-Navigate to `/playground`. The interface presents a clean slate with access to all available tools on the left sidebar.
+Navigate to `/playground`. The interface presents a clean slate.
 
 ![Playground Overview](screenshots/playground_blank.png)
 
@@ -23,16 +23,16 @@ Navigate to `/playground`. The interface presents a clean slate with access to a
 
 ### 2. Select a Tool
 
-Browse the sidebar to find the tool you wish to test.
+Browse the **Library** sidebar on the left to find the tool you wish to test.
 
 1. Click on a tool name (e.g., `filesystem.list_dir`).
-2. The main pane updates to show the **Tool Description** and a dynamically generated **Input Form**.
+2. A configuration dialog opens showing the **Tool Description** and a dynamically generated **Input Form**.
 
 ![Tool Selected](screenshots/playground_tool_selected.png)
 
 ### 3. Execute Tool
 
-Fill in the required arguments. The form validates your input based on the JSON Schema provided by the tool.
+Fill in the required arguments in the dialog. The form validates your input based on the JSON Schema provided by the tool.
 
 1. Enter values (e.g., `/var/log` for path).
 2. Click **"Run Tool"**.

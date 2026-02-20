@@ -82,9 +82,8 @@ test.describe('Playground Complex Schema Support', () => {
     await page.getByRole('button', { name: 'Add Item' }).click();
     await page.getByPlaceholder('Item 1').fill('developer');
 
-    // Run Tool (Build Command)
-    await page.getByRole('button', { name: 'Build Command' }).click();
-    await page.getByLabel('Send').click();
+    // Run Tool
+    await page.getByRole('button', { name: 'Run Tool' }).click();
 
     // Verify execution
     // The playground adds a user message with the command

@@ -64,8 +64,8 @@ test.describe('Playground Tool Configuration', () => {
     await page.getByLabel('days').fill('5');
 
     // Run Tool
-    await page.getByRole('button', { name: /build command/i }).click();
-    await page.getByLabel('Send').click();
+    await page.getByRole('button', { name: /run tool/i }).click();
+    // The "Run Tool" button triggers immediate execution, so clicking "Send" is no longer required.
 
     // Verify chat message
     // The message should appear in the chat.
@@ -109,10 +109,9 @@ test.describe('Playground Tool Configuration', () => {
     await page.getByRole('button', { name: 'Use', exact: true }).click();
 
     // Build command (empty args)
-    await page.getByRole('button', { name: /build command/i }).click();
+    await page.getByRole('button', { name: /run tool/i }).click();
 
-    // Send
-    await page.getByLabel('Send').click();
+    // Note: Auto-execution means we don't click Send.
 
     // Verify error message appears
     await expect(page.getByText('upstream request timed out after 30s', { exact: true })).toBeVisible();
