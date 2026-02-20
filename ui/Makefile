@@ -89,10 +89,14 @@ test-local:
 # Build the UI test Docker image
 build-test-docker:
 	@echo "Building UI test Docker image (mcpany-ui-e2e)..."
+	@# Ensure protos are generated before building image
+	$(MAKE) -C .. gen
 	@$(DOCKER_BUILD_CMD) -t mcpany-ui-e2e -f Dockerfile.e2e $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) ..
 
 docker-build-ui:
 	@echo "Building UI Docker image (mcpany/ui:latest)..."
+	@# Ensure protos are generated before building image
+	$(MAKE) -C .. gen
 	@$(DOCKER_BUILD_CMD) -t mcpany/ui:latest -f Dockerfile $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) ..
 
 # Build the UI production build

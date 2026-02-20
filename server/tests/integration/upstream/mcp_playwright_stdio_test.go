@@ -39,13 +39,14 @@ func TestUpstreamService_MCP_Playwright_Stdio(t *testing.T) {
 
 			cmd := "node"
 			// Path relative to workDir
-			args := []string{"./node_modules/.bin/mcp-server-playwright"}
-			setupCommands := []string{
-				"npm install --no-optional @playwright/mcp",
-			}
+			// Add --console-level error to avoid stdout pollution
+			args := []string{"./node_modules/.bin/mcp-server-playwright", "--console-level", "error"}
+			// setupCommands := []string{
+			// 	"npm install --no-optional @playwright/mcp",
+			// }
 			// Empty container image to run locally (Docker pull fails in this env)
 			// Use workDir as working directory (allowed by MCPANY_ALLOWED_FILE_PATHS=/)
-			integration.RegisterStdioServiceWithSetup(t, registrationClient, serviceID, cmd, true, workDir, "", setupCommands, env, args...)
+			integration.RegisterStdioServiceWithSetup(t, registrationClient, serviceID, cmd, true, workDir, "", nil, env, args...)
 
 
 
