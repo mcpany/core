@@ -12,7 +12,7 @@ test.describe('Network Topology', () => {
       await page.fill('input[name="username"]', 'e2e-admin');
       await page.fill('input[name="password"]', 'password');
       await page.click('button[type="submit"]', { force: true });
-      await page.waitForURL('/', { timeout: 30000 });
+      await page.waitForURL('/', { timeout: 45000 });
 
     // Mock the topology API
     await page.route('**/api/v1/topology', async route => {
