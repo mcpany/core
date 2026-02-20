@@ -14,6 +14,7 @@ import (
 	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
 	"github.com/mcpany/core/server/pkg/tool"
@@ -392,4 +393,61 @@ func TestStatsCacheEviction(t *testing.T) {
 	val, ok := app.getStatsCache("key-101")
 	assert.True(t, ok)
 	assert.Equal(t, 101, val)
+}
+
+func TestCalculateUptime(t *testing.T) {
+	// 24h window
+	window := 24 * time.Hour
+	now := time.Now().UnixMilli()
+
+	tests := []struct {
+		name     string
+		history  []health.HistoryPoint
+		expected string
+	}{
+		{
+			name:     "Empty History",
+			history:  []health.HistoryPoint{},
+			expected: "Unknown",
+		},
+		{
+			name: "Always Up",
+			history: []health.HistoryPoint{
+				{Timestamp: now - 25*3600*1000, Status: "up"}, // Before window
+			},
+			expected: "100.0%",
+		},
+		{
+			name: "Always Down",
+			history: []health.HistoryPoint{
+				{Timestamp: now - 25*3600*1000, Status: "down"}, // Before window
+			},
+			expected: "0.0%",
+		},
+		{
+			name: "Mixed Status",
+			history: []health.HistoryPoint{
+				{Timestamp: now - 25*3600*1000, Status: "up"},   // Start UP
+				{Timestamp: now - 12*3600*1000, Status: "down"}, // Halfway DOWN
+			},
+			// UP for 12h, DOWN for 12h => 50%
+			expected: "50.0%",
+		},
+		{
+			name: "Recent Up",
+			history: []health.HistoryPoint{
+				{Timestamp: now - 1*3600*1000, Status: "up"}, // UP for last 1h
+			},
+			// Before that was Unknown (0%). UP for 1h out of 24h.
+			// 1/24 = 4.16%
+			expected: "4.2%",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := calculateUptime(tt.history, window)
+			assert.Equal(t, tt.expected, result)
+		})
+	}
 }

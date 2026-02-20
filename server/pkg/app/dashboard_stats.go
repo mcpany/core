@@ -5,8 +5,10 @@ package app
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"sort"
+	"strings"
 	"time"
 
 	"github.com/mcpany/core/server/pkg/health"
@@ -533,12 +535,26 @@ func (a *Application) handleDashboardHealth() http.HandlerFunc {
 				}
 			}
 
+			// Get real latency from metrics
+			// Default to 0ms if topology manager is not ready
+			latencyStr := "0ms"
+			if a.TopologyManager != nil {
+				// Use 15m window for recent latency
+				avgLatency, _ := a.TopologyManager.GetRecentServiceStats(svc.GetId(), 15*time.Minute)
+				if avgLatency > 0 {
+					latencyStr = avgLatency.String()
+				}
+			}
+
+			// Calculate real uptime from history
+			uptimeStr := calculateUptime(hPoints, 24*time.Hour)
+
 			serviceHealths = append(serviceHealths, ServiceHealth{
 				ID:      svc.GetId(),
 				Name:    name,
 				Status:  uiStatus,
-				Latency: "10ms", // TODO: Get real latency from metrics
-				Uptime:  "99.9%", // TODO: Calculate real uptime
+				Latency: latencyStr,
+				Uptime:  uptimeStr,
 				Message: msg,
 			})
 		}
@@ -559,4 +575,87 @@ func (a *Application) handleDashboardHealth() http.HandlerFunc {
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(resp)
 	}
+}
+
+// calculateUptime calculates the percentage of time the service was "up" in the last window.
+// It assumes history points are sorted by timestamp.
+func calculateUptime(history []health.HistoryPoint, window time.Duration) string {
+	if len(history) == 0 {
+		return "Unknown"
+	}
+
+	now := time.Now().UnixMilli()
+	startWindow := now - int64(window.Milliseconds())
+	totalDuration := int64(window.Milliseconds())
+
+	var upDuration int64
+
+	// Find initial state at startWindow
+	// Find the last point BEFORE startWindow.
+	// If all points are AFTER startWindow, we assume unknown (0 uptime for that period).
+	initialStatus := "unknown"
+	var relevantPoints []health.HistoryPoint
+
+	// Find split point
+	splitIdx := -1
+	for i, p := range history {
+		if p.Timestamp >= startWindow {
+			splitIdx = i
+			break
+		}
+	}
+
+	if splitIdx == -1 {
+		// All points are before startWindow
+		// The state for the whole window is the state of the last point
+		if len(history) > 0 {
+			initialStatus = history[len(history)-1].Status
+		}
+	} else {
+		// There are points within window
+		if splitIdx > 0 {
+			initialStatus = history[splitIdx-1].Status
+		}
+		relevantPoints = history[splitIdx:]
+	}
+
+	currentStatus := initialStatus
+	lastTime := startWindow
+
+	for _, p := range relevantPoints {
+		// Duration from lastTime to p.Timestamp
+		// Ensure p.Timestamp is within window (it should be due to check above)
+		duration := p.Timestamp - lastTime
+		if isHealthy(currentStatus) {
+			upDuration += duration
+		}
+		lastTime = p.Timestamp
+		currentStatus = p.Status
+	}
+
+	// Add duration from last point to now
+	duration := now - lastTime
+	// Sanity check
+	if duration > 0 {
+		if isHealthy(currentStatus) {
+			upDuration += duration
+		}
+	}
+
+	if totalDuration == 0 {
+		return "0.0%"
+	}
+
+	// Cap upDuration at totalDuration (clock skew protection)
+	if upDuration > totalDuration {
+		upDuration = totalDuration
+	}
+
+	percentage := (float64(upDuration) / float64(totalDuration)) * 100.0
+	return fmt.Sprintf("%.1f%%", percentage)
+}
+
+func isHealthy(status string) bool {
+	s := strings.ToLower(status)
+	return s == "healthy" || s == "up" || s == "serving"
 }

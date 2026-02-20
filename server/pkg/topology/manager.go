@@ -272,6 +272,56 @@ func (m *Manager) GetStats(serviceID string) Stats {
 	}
 }
 
+// GetRecentServiceStats returns the aggregated statistics for a service over a given time window.
+// It uses trafficHistory which stores minute-level stats.
+//
+// serviceID is the serviceID.
+// window is the window.
+//
+// Returns the avgLatency and errorRate.
+func (m *Manager) GetRecentServiceStats(serviceID string, window time.Duration) (avgLatency time.Duration, errorRate float64) {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+
+	now := time.Now()
+	startTime := now.Add(-window).Unix()
+
+	var totalReqs int64
+	var totalErrors int64
+	var totalLatency int64
+
+	for t, stats := range m.trafficHistory {
+		if t < startTime {
+			continue
+		}
+
+		if serviceID == "" {
+			// Aggregate all services
+			totalReqs += stats.Requests
+			totalErrors += stats.Errors
+			totalLatency += stats.Latency
+		} else {
+			if stats.ServiceStats != nil {
+				if sStats, ok := stats.ServiceStats[serviceID]; ok {
+					totalReqs += sStats.Requests
+					totalErrors += sStats.Errors
+					totalLatency += sStats.Latency
+				}
+			}
+		}
+	}
+
+	if totalReqs > 0 {
+		// Latency in trafficHistory is stored as total latency in ms
+		// So avg latency in ms = totalLatency / totalReqs
+		avgMs := totalLatency / totalReqs
+		avgLatency = time.Duration(avgMs) * time.Millisecond
+		errorRate = float64(totalErrors) / float64(totalReqs)
+	}
+
+	return avgLatency, errorRate
+}
+
 // GetTrafficHistory returns the traffic history for the last 24 hours.
 // serviceID is optional.
 func (m *Manager) GetTrafficHistory(serviceID string) []TrafficPoint {
