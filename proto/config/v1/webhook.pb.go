@@ -672,6 +672,185 @@ func (b0 WebhookStatus_builder) Build() *WebhookStatus {
 	return m0
 }
 
+// SystemWebhook represents a webhook configuration for system events.
+type SystemWebhook struct {
+	state                      protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Id              string                 `protobuf:"bytes,1,opt,name=id"`
+	xxx_hidden_Url             string                 `protobuf:"bytes,2,opt,name=url"`
+	xxx_hidden_Events          []string               `protobuf:"bytes,3,rep,name=events"`
+	xxx_hidden_Secret          string                 `protobuf:"bytes,4,opt,name=secret"`
+	xxx_hidden_Active          bool                   `protobuf:"varint,5,opt,name=active"`
+	xxx_hidden_CreatedAt       string                 `protobuf:"bytes,6,opt,name=created_at,json=createdAt"`
+	xxx_hidden_LastTriggeredAt string                 `protobuf:"bytes,7,opt,name=last_triggered_at,json=lastTriggeredAt"`
+	xxx_hidden_LastStatus      string                 `protobuf:"bytes,8,opt,name=last_status,json=lastStatus"`
+	xxx_hidden_LastError       string                 `protobuf:"bytes,9,opt,name=last_error,json=lastError"`
+	unknownFields              protoimpl.UnknownFields
+	sizeCache                  protoimpl.SizeCache
+}
+
+func (x *SystemWebhook) Reset() {
+	*x = SystemWebhook{}
+	mi := &file_proto_config_v1_webhook_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SystemWebhook) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SystemWebhook) ProtoMessage() {}
+
+func (x *SystemWebhook) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_config_v1_webhook_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *SystemWebhook) GetId() string {
+	if x != nil {
+		return x.xxx_hidden_Id
+	}
+	return ""
+}
+
+func (x *SystemWebhook) GetUrl() string {
+	if x != nil {
+		return x.xxx_hidden_Url
+	}
+	return ""
+}
+
+func (x *SystemWebhook) GetEvents() []string {
+	if x != nil {
+		return x.xxx_hidden_Events
+	}
+	return nil
+}
+
+func (x *SystemWebhook) GetSecret() string {
+	if x != nil {
+		return x.xxx_hidden_Secret
+	}
+	return ""
+}
+
+func (x *SystemWebhook) GetActive() bool {
+	if x != nil {
+		return x.xxx_hidden_Active
+	}
+	return false
+}
+
+func (x *SystemWebhook) GetCreatedAt() string {
+	if x != nil {
+		return x.xxx_hidden_CreatedAt
+	}
+	return ""
+}
+
+func (x *SystemWebhook) GetLastTriggeredAt() string {
+	if x != nil {
+		return x.xxx_hidden_LastTriggeredAt
+	}
+	return ""
+}
+
+func (x *SystemWebhook) GetLastStatus() string {
+	if x != nil {
+		return x.xxx_hidden_LastStatus
+	}
+	return ""
+}
+
+func (x *SystemWebhook) GetLastError() string {
+	if x != nil {
+		return x.xxx_hidden_LastError
+	}
+	return ""
+}
+
+func (x *SystemWebhook) SetId(v string) {
+	x.xxx_hidden_Id = v
+}
+
+func (x *SystemWebhook) SetUrl(v string) {
+	x.xxx_hidden_Url = v
+}
+
+func (x *SystemWebhook) SetEvents(v []string) {
+	x.xxx_hidden_Events = v
+}
+
+func (x *SystemWebhook) SetSecret(v string) {
+	x.xxx_hidden_Secret = v
+}
+
+func (x *SystemWebhook) SetActive(v bool) {
+	x.xxx_hidden_Active = v
+}
+
+func (x *SystemWebhook) SetCreatedAt(v string) {
+	x.xxx_hidden_CreatedAt = v
+}
+
+func (x *SystemWebhook) SetLastTriggeredAt(v string) {
+	x.xxx_hidden_LastTriggeredAt = v
+}
+
+func (x *SystemWebhook) SetLastStatus(v string) {
+	x.xxx_hidden_LastStatus = v
+}
+
+func (x *SystemWebhook) SetLastError(v string) {
+	x.xxx_hidden_LastError = v
+}
+
+type SystemWebhook_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// The unique identifier of the webhook.
+	Id string
+	// The URL to send the webhook to.
+	Url string
+	// The list of events to subscribe to (e.g., "service.registered", "tool.invoked", "all").
+	Events []string
+	// The secret key used to sign the webhook payload (HMAC).
+	Secret string
+	// Whether the webhook is active.
+	Active bool
+	// The timestamp when the webhook was created (ISO 8601).
+	CreatedAt string
+	// The timestamp when the webhook was last triggered (ISO 8601).
+	LastTriggeredAt string
+	// The status of the last delivery ("success", "failure", "pending").
+	LastStatus string
+	// The error message of the last delivery, if any.
+	LastError string
+}
+
+func (b0 SystemWebhook_builder) Build() *SystemWebhook {
+	m0 := &SystemWebhook{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Id = b.Id
+	x.xxx_hidden_Url = b.Url
+	x.xxx_hidden_Events = b.Events
+	x.xxx_hidden_Secret = b.Secret
+	x.xxx_hidden_Active = b.Active
+	x.xxx_hidden_CreatedAt = b.CreatedAt
+	x.xxx_hidden_LastTriggeredAt = b.LastTriggeredAt
+	x.xxx_hidden_LastStatus = b.LastStatus
+	x.xxx_hidden_LastError = b.LastError
+	return m0
+}
+
 var File_proto_config_v1_webhook_proto protoreflect.FileDescriptor
 
 const file_proto_config_v1_webhook_proto_rawDesc = "" +
@@ -701,7 +880,20 @@ const file_proto_config_v1_webhook_proto_rawDesc = "" +
 	"\x12replacement_object\x18\x04 \x01(\v2\x17.google.protobuf.StructR\x11replacementObject\"=\n" +
 	"\rWebhookStatus\x12\x12\n" +
 	"\x04code\x18\x01 \x01(\x05R\x04code\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage*\x84\x01\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\"\x84\x02\n" +
+	"\rSystemWebhook\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x10\n" +
+	"\x03url\x18\x02 \x01(\tR\x03url\x12\x16\n" +
+	"\x06events\x18\x03 \x03(\tR\x06events\x12\x16\n" +
+	"\x06secret\x18\x04 \x01(\tR\x06secret\x12\x16\n" +
+	"\x06active\x18\x05 \x01(\bR\x06active\x12\x1d\n" +
+	"\n" +
+	"created_at\x18\x06 \x01(\tR\tcreatedAt\x12*\n" +
+	"\x11last_triggered_at\x18\a \x01(\tR\x0flastTriggeredAt\x12\x1f\n" +
+	"\vlast_status\x18\b \x01(\tR\n" +
+	"lastStatus\x12\x1d\n" +
+	"\n" +
+	"last_error\x18\t \x01(\tR\tlastError*\x84\x01\n" +
 	"\vWebhookKind\x12\x1c\n" +
 	"\x18WEBHOOK_KIND_UNSPECIFIED\x10\x00\x12\x19\n" +
 	"\x15WEBHOOK_KIND_PRE_CALL\x10\x01\x12\x1a\n" +
@@ -709,7 +901,7 @@ const file_proto_config_v1_webhook_proto_rawDesc = "" +
 	"\x1cWEBHOOK_KIND_TRANSFORM_INPUT\x10\x03B2Z&github.com/mcpany/core/proto/config/v1\x92\x03\a\xd2>\x02\x10\x03\b\x02b\beditionsp\xe8\a"
 
 var file_proto_config_v1_webhook_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_proto_config_v1_webhook_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_proto_config_v1_webhook_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_proto_config_v1_webhook_proto_goTypes = []any{
 	(WebhookKind)(0),            // 0: mcpany.config.v1.WebhookKind
 	(*WebhookReview)(nil),       // 1: mcpany.config.v1.WebhookReview
@@ -718,17 +910,18 @@ var file_proto_config_v1_webhook_proto_goTypes = []any{
 	(*SystemWebhookConfig)(nil), // 4: mcpany.config.v1.SystemWebhookConfig
 	(*WebhookResponse)(nil),     // 5: mcpany.config.v1.WebhookResponse
 	(*WebhookStatus)(nil),       // 6: mcpany.config.v1.WebhookStatus
-	(*structpb.Struct)(nil),     // 7: google.protobuf.Struct
-	(*durationpb.Duration)(nil), // 8: google.protobuf.Duration
+	(*SystemWebhook)(nil),       // 7: mcpany.config.v1.SystemWebhook
+	(*structpb.Struct)(nil),     // 8: google.protobuf.Struct
+	(*durationpb.Duration)(nil), // 9: google.protobuf.Duration
 }
 var file_proto_config_v1_webhook_proto_depIdxs = []int32{
 	2, // 0: mcpany.config.v1.WebhookReview.request:type_name -> mcpany.config.v1.WebhookRequest
 	5, // 1: mcpany.config.v1.WebhookReview.response:type_name -> mcpany.config.v1.WebhookResponse
 	0, // 2: mcpany.config.v1.WebhookRequest.kind:type_name -> mcpany.config.v1.WebhookKind
-	7, // 3: mcpany.config.v1.WebhookRequest.object:type_name -> google.protobuf.Struct
-	8, // 4: mcpany.config.v1.WebhookConfig.timeout:type_name -> google.protobuf.Duration
+	8, // 3: mcpany.config.v1.WebhookRequest.object:type_name -> google.protobuf.Struct
+	9, // 4: mcpany.config.v1.WebhookConfig.timeout:type_name -> google.protobuf.Duration
 	6, // 5: mcpany.config.v1.WebhookResponse.status:type_name -> mcpany.config.v1.WebhookStatus
-	7, // 6: mcpany.config.v1.WebhookResponse.replacement_object:type_name -> google.protobuf.Struct
+	8, // 6: mcpany.config.v1.WebhookResponse.replacement_object:type_name -> google.protobuf.Struct
 	7, // [7:7] is the sub-list for method output_type
 	7, // [7:7] is the sub-list for method input_type
 	7, // [7:7] is the sub-list for extension type_name
@@ -747,7 +940,7 @@ func file_proto_config_v1_webhook_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_config_v1_webhook_proto_rawDesc), len(file_proto_config_v1_webhook_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   6,
+			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

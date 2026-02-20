@@ -32,6 +32,7 @@ type Store struct {
 	tokens             map[tokenKey]*configv1.UserToken
 	credentials        map[string]*configv1.Credential
 	serviceTemplates   map[string]*configv1.ServiceTemplate
+	systemWebhooks     map[string]*configv1.SystemWebhook
 }
 
 // NewStore creates a new memory store.
@@ -47,6 +48,7 @@ func NewStore() *Store {
 		tokens:             make(map[tokenKey]*configv1.UserToken),
 		credentials:        make(map[string]*configv1.Credential),
 		serviceTemplates:   make(map[string]*configv1.ServiceTemplate),
+		systemWebhooks:     make(map[string]*configv1.SystemWebhook),
 	}
 }
 

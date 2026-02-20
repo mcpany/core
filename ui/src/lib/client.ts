@@ -12,12 +12,14 @@
 // In a real deployment, these might be /api/v1/... proxied to backend
 
 import { GrpcWebImpl, RegistrationServiceClientImpl } from '@proto/api/v1/registration';
+import { AdminServiceClientImpl } from '@proto/admin/v1/admin';
 import { UpstreamServiceConfig as BaseUpstreamServiceConfig, HttpUpstreamService } from '@proto/config/v1/upstream_service';
 import { ProfileDefinition } from '@proto/config/v1/config';
 import { ToolDefinition } from '@proto/config/v1/tool';
 import { ResourceDefinition } from '@proto/config/v1/resource';
 import { PromptDefinition } from '@proto/config/v1/prompt';
 import { Credential, Authentication } from '@proto/config/v1/auth';
+import { SystemWebhook } from '@proto/config/v1/webhook';
 
 import { BrowserHeaders } from 'browser-headers';
 
@@ -107,6 +109,7 @@ const rpc = new GrpcWebImpl(getBaseUrl(), {
   debug: false,
 });
 const registrationClient = new RegistrationServiceClientImpl(rpc);
+const adminClient = new AdminServiceClientImpl(rpc);
 
 const fetchWithAuth = async (input: RequestInfo | URL, init?: RequestInit) => {
     const headers = new Headers(init?.headers);
@@ -1834,5 +1837,46 @@ export const apiClient = {
         const res = await fetchWithAuth(`/api/v1/audit/logs?${query.toString()}`);
         if (!res.ok) throw new Error('Failed to fetch audit logs');
         return res.json();
+    },
+
+    // System Webhooks
+
+    /**
+     * Lists all system webhooks.
+     */
+    listSystemWebhooks: async (): Promise<SystemWebhook[]> => {
+        const resp = await adminClient.ListSystemWebhooks({}, getMetadata());
+        return resp.webhooks;
+    },
+
+    /**
+     * Creates a new system webhook.
+     */
+    createSystemWebhook: async (webhook: SystemWebhook): Promise<SystemWebhook> => {
+        const resp = await adminClient.CreateSystemWebhook({ webhook }, getMetadata());
+        return resp.webhook!;
+    },
+
+    /**
+     * Deletes a system webhook.
+     */
+    deleteSystemWebhook: async (id: string): Promise<void> => {
+        await adminClient.DeleteSystemWebhook({ id }, getMetadata());
+    },
+
+    /**
+     * Updates a system webhook.
+     */
+    updateSystemWebhook: async (webhook: SystemWebhook): Promise<SystemWebhook> => {
+        const resp = await adminClient.UpdateSystemWebhook({ webhook }, getMetadata());
+        return resp.webhook!;
+    },
+
+    /**
+     * Tests a system webhook delivery.
+     */
+    testSystemWebhook: async (id: string): Promise<any> => {
+        const resp = await adminClient.TestSystemWebhook({ id }, getMetadata());
+        return resp;
     }
 };

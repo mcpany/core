@@ -8,6 +8,7 @@ package mcpany.admin.v1;
 import "google/api/annotations.proto";
 import "proto/config/v1/upstream_service.proto";
 import "proto/config/v1/user.proto";
+import "proto/config/v1/webhook.proto";
 import "proto/mcp_router/v1/mcp_router.proto";
 import "google/protobuf/go_features.proto";
 
@@ -65,6 +66,25 @@ service AdminService {
       get: "/api/v1/audit/logs"
     };
   }
+
+  // ===================================================================
+  // Webhook Management
+  // ===================================================================
+
+  // CreateSystemWebhook creates a new system webhook.
+  rpc CreateSystemWebhook(CreateSystemWebhookRequest) returns (CreateSystemWebhookResponse);
+
+  // ListSystemWebhooks returns all registered system webhooks.
+  rpc ListSystemWebhooks(ListSystemWebhooksRequest) returns (ListSystemWebhooksResponse);
+
+  // DeleteSystemWebhook deletes a system webhook by ID.
+  rpc DeleteSystemWebhook(DeleteSystemWebhookRequest) returns (DeleteSystemWebhookResponse);
+
+  // UpdateSystemWebhook updates an existing system webhook.
+  rpc UpdateSystemWebhook(UpdateSystemWebhookRequest) returns (UpdateSystemWebhookResponse);
+
+  // TestSystemWebhook tests a system webhook delivery.
+  rpc TestSystemWebhook(TestSystemWebhookRequest) returns (TestSystemWebhookResponse);
 }
 
 // ClearCacheRequest represents a request to clear the server cache.
@@ -255,4 +275,44 @@ message AuditLogEntry {
   string duration = 8;
   // The duration of the execution in milliseconds.
   int64 duration_ms = 9;
+}
+
+// Webhook Messages
+
+message CreateSystemWebhookRequest {
+  mcpany.config.v1.SystemWebhook webhook = 1;
+}
+
+message CreateSystemWebhookResponse {
+  mcpany.config.v1.SystemWebhook webhook = 1;
+}
+
+message ListSystemWebhooksRequest {}
+
+message ListSystemWebhooksResponse {
+  repeated mcpany.config.v1.SystemWebhook webhooks = 1;
+}
+
+message DeleteSystemWebhookRequest {
+  string id = 1;
+}
+
+message DeleteSystemWebhookResponse {}
+
+message UpdateSystemWebhookRequest {
+  mcpany.config.v1.SystemWebhook webhook = 1;
+}
+
+message UpdateSystemWebhookResponse {
+  mcpany.config.v1.SystemWebhook webhook = 1;
+}
+
+message TestSystemWebhookRequest {
+  string id = 1;
+}
+
+message TestSystemWebhookResponse {
+  bool success = 1;
+  string message = 2;
+  int32 status_code = 3;
 }

@@ -22,18 +22,23 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	AdminService_ClearCache_FullMethodName         = "/mcpany.admin.v1.AdminService/ClearCache"
-	AdminService_ListServices_FullMethodName       = "/mcpany.admin.v1.AdminService/ListServices"
-	AdminService_GetService_FullMethodName         = "/mcpany.admin.v1.AdminService/GetService"
-	AdminService_ListTools_FullMethodName          = "/mcpany.admin.v1.AdminService/ListTools"
-	AdminService_GetTool_FullMethodName            = "/mcpany.admin.v1.AdminService/GetTool"
-	AdminService_CreateUser_FullMethodName         = "/mcpany.admin.v1.AdminService/CreateUser"
-	AdminService_GetUser_FullMethodName            = "/mcpany.admin.v1.AdminService/GetUser"
-	AdminService_ListUsers_FullMethodName          = "/mcpany.admin.v1.AdminService/ListUsers"
-	AdminService_UpdateUser_FullMethodName         = "/mcpany.admin.v1.AdminService/UpdateUser"
-	AdminService_DeleteUser_FullMethodName         = "/mcpany.admin.v1.AdminService/DeleteUser"
-	AdminService_GetDiscoveryStatus_FullMethodName = "/mcpany.admin.v1.AdminService/GetDiscoveryStatus"
-	AdminService_ListAuditLogs_FullMethodName      = "/mcpany.admin.v1.AdminService/ListAuditLogs"
+	AdminService_ClearCache_FullMethodName          = "/mcpany.admin.v1.AdminService/ClearCache"
+	AdminService_ListServices_FullMethodName        = "/mcpany.admin.v1.AdminService/ListServices"
+	AdminService_GetService_FullMethodName          = "/mcpany.admin.v1.AdminService/GetService"
+	AdminService_ListTools_FullMethodName           = "/mcpany.admin.v1.AdminService/ListTools"
+	AdminService_GetTool_FullMethodName             = "/mcpany.admin.v1.AdminService/GetTool"
+	AdminService_CreateUser_FullMethodName          = "/mcpany.admin.v1.AdminService/CreateUser"
+	AdminService_GetUser_FullMethodName             = "/mcpany.admin.v1.AdminService/GetUser"
+	AdminService_ListUsers_FullMethodName           = "/mcpany.admin.v1.AdminService/ListUsers"
+	AdminService_UpdateUser_FullMethodName          = "/mcpany.admin.v1.AdminService/UpdateUser"
+	AdminService_DeleteUser_FullMethodName          = "/mcpany.admin.v1.AdminService/DeleteUser"
+	AdminService_GetDiscoveryStatus_FullMethodName  = "/mcpany.admin.v1.AdminService/GetDiscoveryStatus"
+	AdminService_ListAuditLogs_FullMethodName       = "/mcpany.admin.v1.AdminService/ListAuditLogs"
+	AdminService_CreateSystemWebhook_FullMethodName = "/mcpany.admin.v1.AdminService/CreateSystemWebhook"
+	AdminService_ListSystemWebhooks_FullMethodName  = "/mcpany.admin.v1.AdminService/ListSystemWebhooks"
+	AdminService_DeleteSystemWebhook_FullMethodName = "/mcpany.admin.v1.AdminService/DeleteSystemWebhook"
+	AdminService_UpdateSystemWebhook_FullMethodName = "/mcpany.admin.v1.AdminService/UpdateSystemWebhook"
+	AdminService_TestSystemWebhook_FullMethodName   = "/mcpany.admin.v1.AdminService/TestSystemWebhook"
 )
 
 // AdminServiceClient is the client API for AdminService service.
@@ -66,6 +71,16 @@ type AdminServiceClient interface {
 	GetDiscoveryStatus(ctx context.Context, in *GetDiscoveryStatusRequest, opts ...grpc.CallOption) (*GetDiscoveryStatusResponse, error)
 	// ListAuditLogs returns audit logs matching the filter.
 	ListAuditLogs(ctx context.Context, in *ListAuditLogsRequest, opts ...grpc.CallOption) (*ListAuditLogsResponse, error)
+	// CreateSystemWebhook creates a new system webhook.
+	CreateSystemWebhook(ctx context.Context, in *CreateSystemWebhookRequest, opts ...grpc.CallOption) (*CreateSystemWebhookResponse, error)
+	// ListSystemWebhooks returns all registered system webhooks.
+	ListSystemWebhooks(ctx context.Context, in *ListSystemWebhooksRequest, opts ...grpc.CallOption) (*ListSystemWebhooksResponse, error)
+	// DeleteSystemWebhook deletes a system webhook by ID.
+	DeleteSystemWebhook(ctx context.Context, in *DeleteSystemWebhookRequest, opts ...grpc.CallOption) (*DeleteSystemWebhookResponse, error)
+	// UpdateSystemWebhook updates an existing system webhook.
+	UpdateSystemWebhook(ctx context.Context, in *UpdateSystemWebhookRequest, opts ...grpc.CallOption) (*UpdateSystemWebhookResponse, error)
+	// TestSystemWebhook tests a system webhook delivery.
+	TestSystemWebhook(ctx context.Context, in *TestSystemWebhookRequest, opts ...grpc.CallOption) (*TestSystemWebhookResponse, error)
 }
 
 type adminServiceClient struct {
@@ -196,6 +211,56 @@ func (c *adminServiceClient) ListAuditLogs(ctx context.Context, in *ListAuditLog
 	return out, nil
 }
 
+func (c *adminServiceClient) CreateSystemWebhook(ctx context.Context, in *CreateSystemWebhookRequest, opts ...grpc.CallOption) (*CreateSystemWebhookResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateSystemWebhookResponse)
+	err := c.cc.Invoke(ctx, AdminService_CreateSystemWebhook_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminServiceClient) ListSystemWebhooks(ctx context.Context, in *ListSystemWebhooksRequest, opts ...grpc.CallOption) (*ListSystemWebhooksResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListSystemWebhooksResponse)
+	err := c.cc.Invoke(ctx, AdminService_ListSystemWebhooks_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminServiceClient) DeleteSystemWebhook(ctx context.Context, in *DeleteSystemWebhookRequest, opts ...grpc.CallOption) (*DeleteSystemWebhookResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeleteSystemWebhookResponse)
+	err := c.cc.Invoke(ctx, AdminService_DeleteSystemWebhook_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminServiceClient) UpdateSystemWebhook(ctx context.Context, in *UpdateSystemWebhookRequest, opts ...grpc.CallOption) (*UpdateSystemWebhookResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdateSystemWebhookResponse)
+	err := c.cc.Invoke(ctx, AdminService_UpdateSystemWebhook_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminServiceClient) TestSystemWebhook(ctx context.Context, in *TestSystemWebhookRequest, opts ...grpc.CallOption) (*TestSystemWebhookResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(TestSystemWebhookResponse)
+	err := c.cc.Invoke(ctx, AdminService_TestSystemWebhook_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AdminServiceServer is the server API for AdminService service.
 // All implementations must embed UnimplementedAdminServiceServer
 // for forward compatibility.
@@ -226,6 +291,16 @@ type AdminServiceServer interface {
 	GetDiscoveryStatus(context.Context, *GetDiscoveryStatusRequest) (*GetDiscoveryStatusResponse, error)
 	// ListAuditLogs returns audit logs matching the filter.
 	ListAuditLogs(context.Context, *ListAuditLogsRequest) (*ListAuditLogsResponse, error)
+	// CreateSystemWebhook creates a new system webhook.
+	CreateSystemWebhook(context.Context, *CreateSystemWebhookRequest) (*CreateSystemWebhookResponse, error)
+	// ListSystemWebhooks returns all registered system webhooks.
+	ListSystemWebhooks(context.Context, *ListSystemWebhooksRequest) (*ListSystemWebhooksResponse, error)
+	// DeleteSystemWebhook deletes a system webhook by ID.
+	DeleteSystemWebhook(context.Context, *DeleteSystemWebhookRequest) (*DeleteSystemWebhookResponse, error)
+	// UpdateSystemWebhook updates an existing system webhook.
+	UpdateSystemWebhook(context.Context, *UpdateSystemWebhookRequest) (*UpdateSystemWebhookResponse, error)
+	// TestSystemWebhook tests a system webhook delivery.
+	TestSystemWebhook(context.Context, *TestSystemWebhookRequest) (*TestSystemWebhookResponse, error)
 	mustEmbedUnimplementedAdminServiceServer()
 }
 
@@ -271,6 +346,21 @@ func (UnimplementedAdminServiceServer) GetDiscoveryStatus(context.Context, *GetD
 }
 func (UnimplementedAdminServiceServer) ListAuditLogs(context.Context, *ListAuditLogsRequest) (*ListAuditLogsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListAuditLogs not implemented")
+}
+func (UnimplementedAdminServiceServer) CreateSystemWebhook(context.Context, *CreateSystemWebhookRequest) (*CreateSystemWebhookResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateSystemWebhook not implemented")
+}
+func (UnimplementedAdminServiceServer) ListSystemWebhooks(context.Context, *ListSystemWebhooksRequest) (*ListSystemWebhooksResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListSystemWebhooks not implemented")
+}
+func (UnimplementedAdminServiceServer) DeleteSystemWebhook(context.Context, *DeleteSystemWebhookRequest) (*DeleteSystemWebhookResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteSystemWebhook not implemented")
+}
+func (UnimplementedAdminServiceServer) UpdateSystemWebhook(context.Context, *UpdateSystemWebhookRequest) (*UpdateSystemWebhookResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateSystemWebhook not implemented")
+}
+func (UnimplementedAdminServiceServer) TestSystemWebhook(context.Context, *TestSystemWebhookRequest) (*TestSystemWebhookResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method TestSystemWebhook not implemented")
 }
 func (UnimplementedAdminServiceServer) mustEmbedUnimplementedAdminServiceServer() {}
 func (UnimplementedAdminServiceServer) testEmbeddedByValue()                      {}
@@ -509,6 +599,96 @@ func _AdminService_ListAuditLogs_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AdminService_CreateSystemWebhook_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateSystemWebhookRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServiceServer).CreateSystemWebhook(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AdminService_CreateSystemWebhook_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServiceServer).CreateSystemWebhook(ctx, req.(*CreateSystemWebhookRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AdminService_ListSystemWebhooks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListSystemWebhooksRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServiceServer).ListSystemWebhooks(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AdminService_ListSystemWebhooks_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServiceServer).ListSystemWebhooks(ctx, req.(*ListSystemWebhooksRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AdminService_DeleteSystemWebhook_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteSystemWebhookRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServiceServer).DeleteSystemWebhook(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AdminService_DeleteSystemWebhook_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServiceServer).DeleteSystemWebhook(ctx, req.(*DeleteSystemWebhookRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AdminService_UpdateSystemWebhook_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateSystemWebhookRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServiceServer).UpdateSystemWebhook(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AdminService_UpdateSystemWebhook_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServiceServer).UpdateSystemWebhook(ctx, req.(*UpdateSystemWebhookRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AdminService_TestSystemWebhook_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TestSystemWebhookRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServiceServer).TestSystemWebhook(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AdminService_TestSystemWebhook_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServiceServer).TestSystemWebhook(ctx, req.(*TestSystemWebhookRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AdminService_ServiceDesc is the grpc.ServiceDesc for AdminService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -563,6 +743,26 @@ var AdminService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListAuditLogs",
 			Handler:    _AdminService_ListAuditLogs_Handler,
+		},
+		{
+			MethodName: "CreateSystemWebhook",
+			Handler:    _AdminService_CreateSystemWebhook_Handler,
+		},
+		{
+			MethodName: "ListSystemWebhooks",
+			Handler:    _AdminService_ListSystemWebhooks_Handler,
+		},
+		{
+			MethodName: "DeleteSystemWebhook",
+			Handler:    _AdminService_DeleteSystemWebhook_Handler,
+		},
+		{
+			MethodName: "UpdateSystemWebhook",
+			Handler:    _AdminService_UpdateSystemWebhook_Handler,
+		},
+		{
+			MethodName: "TestSystemWebhook",
+			Handler:    _AdminService_TestSystemWebhook_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

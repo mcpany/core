@@ -2483,11 +2483,722 @@ func (b0 AuditLogEntry_builder) Build() *AuditLogEntry {
 	return m0
 }
 
+type CreateSystemWebhookRequest struct {
+	state              protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Webhook *v1.SystemWebhook      `protobuf:"bytes,1,opt,name=webhook"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+}
+
+func (x *CreateSystemWebhookRequest) Reset() {
+	*x = CreateSystemWebhookRequest{}
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[27]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateSystemWebhookRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateSystemWebhookRequest) ProtoMessage() {}
+
+func (x *CreateSystemWebhookRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[27]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *CreateSystemWebhookRequest) GetWebhook() *v1.SystemWebhook {
+	if x != nil {
+		return x.xxx_hidden_Webhook
+	}
+	return nil
+}
+
+func (x *CreateSystemWebhookRequest) SetWebhook(v *v1.SystemWebhook) {
+	x.xxx_hidden_Webhook = v
+}
+
+func (x *CreateSystemWebhookRequest) HasWebhook() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Webhook != nil
+}
+
+func (x *CreateSystemWebhookRequest) ClearWebhook() {
+	x.xxx_hidden_Webhook = nil
+}
+
+type CreateSystemWebhookRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Webhook *v1.SystemWebhook
+}
+
+func (b0 CreateSystemWebhookRequest_builder) Build() *CreateSystemWebhookRequest {
+	m0 := &CreateSystemWebhookRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Webhook = b.Webhook
+	return m0
+}
+
+type CreateSystemWebhookResponse struct {
+	state              protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Webhook *v1.SystemWebhook      `protobuf:"bytes,1,opt,name=webhook"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+}
+
+func (x *CreateSystemWebhookResponse) Reset() {
+	*x = CreateSystemWebhookResponse{}
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[28]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateSystemWebhookResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateSystemWebhookResponse) ProtoMessage() {}
+
+func (x *CreateSystemWebhookResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[28]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *CreateSystemWebhookResponse) GetWebhook() *v1.SystemWebhook {
+	if x != nil {
+		return x.xxx_hidden_Webhook
+	}
+	return nil
+}
+
+func (x *CreateSystemWebhookResponse) SetWebhook(v *v1.SystemWebhook) {
+	x.xxx_hidden_Webhook = v
+}
+
+func (x *CreateSystemWebhookResponse) HasWebhook() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Webhook != nil
+}
+
+func (x *CreateSystemWebhookResponse) ClearWebhook() {
+	x.xxx_hidden_Webhook = nil
+}
+
+type CreateSystemWebhookResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Webhook *v1.SystemWebhook
+}
+
+func (b0 CreateSystemWebhookResponse_builder) Build() *CreateSystemWebhookResponse {
+	m0 := &CreateSystemWebhookResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Webhook = b.Webhook
+	return m0
+}
+
+type ListSystemWebhooksRequest struct {
+	state         protoimpl.MessageState `protogen:"opaque.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListSystemWebhooksRequest) Reset() {
+	*x = ListSystemWebhooksRequest{}
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[29]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListSystemWebhooksRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListSystemWebhooksRequest) ProtoMessage() {}
+
+func (x *ListSystemWebhooksRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[29]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+type ListSystemWebhooksRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+}
+
+func (b0 ListSystemWebhooksRequest_builder) Build() *ListSystemWebhooksRequest {
+	m0 := &ListSystemWebhooksRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	return m0
+}
+
+type ListSystemWebhooksResponse struct {
+	state               protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Webhooks *[]*v1.SystemWebhook   `protobuf:"bytes,1,rep,name=webhooks"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
+}
+
+func (x *ListSystemWebhooksResponse) Reset() {
+	*x = ListSystemWebhooksResponse{}
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[30]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListSystemWebhooksResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListSystemWebhooksResponse) ProtoMessage() {}
+
+func (x *ListSystemWebhooksResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[30]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *ListSystemWebhooksResponse) GetWebhooks() []*v1.SystemWebhook {
+	if x != nil {
+		if x.xxx_hidden_Webhooks != nil {
+			return *x.xxx_hidden_Webhooks
+		}
+	}
+	return nil
+}
+
+func (x *ListSystemWebhooksResponse) SetWebhooks(v []*v1.SystemWebhook) {
+	x.xxx_hidden_Webhooks = &v
+}
+
+type ListSystemWebhooksResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Webhooks []*v1.SystemWebhook
+}
+
+func (b0 ListSystemWebhooksResponse_builder) Build() *ListSystemWebhooksResponse {
+	m0 := &ListSystemWebhooksResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Webhooks = &b.Webhooks
+	return m0
+}
+
+type DeleteSystemWebhookRequest struct {
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Id          *string                `protobuf:"bytes,1,opt,name=id"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *DeleteSystemWebhookRequest) Reset() {
+	*x = DeleteSystemWebhookRequest{}
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[31]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteSystemWebhookRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteSystemWebhookRequest) ProtoMessage() {}
+
+func (x *DeleteSystemWebhookRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[31]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *DeleteSystemWebhookRequest) GetId() string {
+	if x != nil {
+		if x.xxx_hidden_Id != nil {
+			return *x.xxx_hidden_Id
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *DeleteSystemWebhookRequest) SetId(v string) {
+	x.xxx_hidden_Id = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 1)
+}
+
+func (x *DeleteSystemWebhookRequest) HasId() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *DeleteSystemWebhookRequest) ClearId() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Id = nil
+}
+
+type DeleteSystemWebhookRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Id *string
+}
+
+func (b0 DeleteSystemWebhookRequest_builder) Build() *DeleteSystemWebhookRequest {
+	m0 := &DeleteSystemWebhookRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Id != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 1)
+		x.xxx_hidden_Id = b.Id
+	}
+	return m0
+}
+
+type DeleteSystemWebhookResponse struct {
+	state         protoimpl.MessageState `protogen:"opaque.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteSystemWebhookResponse) Reset() {
+	*x = DeleteSystemWebhookResponse{}
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[32]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteSystemWebhookResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteSystemWebhookResponse) ProtoMessage() {}
+
+func (x *DeleteSystemWebhookResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[32]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+type DeleteSystemWebhookResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+}
+
+func (b0 DeleteSystemWebhookResponse_builder) Build() *DeleteSystemWebhookResponse {
+	m0 := &DeleteSystemWebhookResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	return m0
+}
+
+type UpdateSystemWebhookRequest struct {
+	state              protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Webhook *v1.SystemWebhook      `protobuf:"bytes,1,opt,name=webhook"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+}
+
+func (x *UpdateSystemWebhookRequest) Reset() {
+	*x = UpdateSystemWebhookRequest{}
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[33]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateSystemWebhookRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateSystemWebhookRequest) ProtoMessage() {}
+
+func (x *UpdateSystemWebhookRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[33]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *UpdateSystemWebhookRequest) GetWebhook() *v1.SystemWebhook {
+	if x != nil {
+		return x.xxx_hidden_Webhook
+	}
+	return nil
+}
+
+func (x *UpdateSystemWebhookRequest) SetWebhook(v *v1.SystemWebhook) {
+	x.xxx_hidden_Webhook = v
+}
+
+func (x *UpdateSystemWebhookRequest) HasWebhook() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Webhook != nil
+}
+
+func (x *UpdateSystemWebhookRequest) ClearWebhook() {
+	x.xxx_hidden_Webhook = nil
+}
+
+type UpdateSystemWebhookRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Webhook *v1.SystemWebhook
+}
+
+func (b0 UpdateSystemWebhookRequest_builder) Build() *UpdateSystemWebhookRequest {
+	m0 := &UpdateSystemWebhookRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Webhook = b.Webhook
+	return m0
+}
+
+type UpdateSystemWebhookResponse struct {
+	state              protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Webhook *v1.SystemWebhook      `protobuf:"bytes,1,opt,name=webhook"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+}
+
+func (x *UpdateSystemWebhookResponse) Reset() {
+	*x = UpdateSystemWebhookResponse{}
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[34]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateSystemWebhookResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateSystemWebhookResponse) ProtoMessage() {}
+
+func (x *UpdateSystemWebhookResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[34]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *UpdateSystemWebhookResponse) GetWebhook() *v1.SystemWebhook {
+	if x != nil {
+		return x.xxx_hidden_Webhook
+	}
+	return nil
+}
+
+func (x *UpdateSystemWebhookResponse) SetWebhook(v *v1.SystemWebhook) {
+	x.xxx_hidden_Webhook = v
+}
+
+func (x *UpdateSystemWebhookResponse) HasWebhook() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Webhook != nil
+}
+
+func (x *UpdateSystemWebhookResponse) ClearWebhook() {
+	x.xxx_hidden_Webhook = nil
+}
+
+type UpdateSystemWebhookResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Webhook *v1.SystemWebhook
+}
+
+func (b0 UpdateSystemWebhookResponse_builder) Build() *UpdateSystemWebhookResponse {
+	m0 := &UpdateSystemWebhookResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Webhook = b.Webhook
+	return m0
+}
+
+type TestSystemWebhookRequest struct {
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Id          *string                `protobuf:"bytes,1,opt,name=id"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *TestSystemWebhookRequest) Reset() {
+	*x = TestSystemWebhookRequest{}
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[35]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TestSystemWebhookRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TestSystemWebhookRequest) ProtoMessage() {}
+
+func (x *TestSystemWebhookRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[35]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *TestSystemWebhookRequest) GetId() string {
+	if x != nil {
+		if x.xxx_hidden_Id != nil {
+			return *x.xxx_hidden_Id
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *TestSystemWebhookRequest) SetId(v string) {
+	x.xxx_hidden_Id = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 1)
+}
+
+func (x *TestSystemWebhookRequest) HasId() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *TestSystemWebhookRequest) ClearId() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Id = nil
+}
+
+type TestSystemWebhookRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Id *string
+}
+
+func (b0 TestSystemWebhookRequest_builder) Build() *TestSystemWebhookRequest {
+	m0 := &TestSystemWebhookRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Id != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 1)
+		x.xxx_hidden_Id = b.Id
+	}
+	return m0
+}
+
+type TestSystemWebhookResponse struct {
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Success     bool                   `protobuf:"varint,1,opt,name=success"`
+	xxx_hidden_Message     *string                `protobuf:"bytes,2,opt,name=message"`
+	xxx_hidden_StatusCode  int32                  `protobuf:"varint,3,opt,name=status_code,json=statusCode"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
+}
+
+func (x *TestSystemWebhookResponse) Reset() {
+	*x = TestSystemWebhookResponse{}
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[36]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TestSystemWebhookResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TestSystemWebhookResponse) ProtoMessage() {}
+
+func (x *TestSystemWebhookResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_admin_v1_admin_proto_msgTypes[36]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *TestSystemWebhookResponse) GetSuccess() bool {
+	if x != nil {
+		return x.xxx_hidden_Success
+	}
+	return false
+}
+
+func (x *TestSystemWebhookResponse) GetMessage() string {
+	if x != nil {
+		if x.xxx_hidden_Message != nil {
+			return *x.xxx_hidden_Message
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *TestSystemWebhookResponse) GetStatusCode() int32 {
+	if x != nil {
+		return x.xxx_hidden_StatusCode
+	}
+	return 0
+}
+
+func (x *TestSystemWebhookResponse) SetSuccess(v bool) {
+	x.xxx_hidden_Success = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 3)
+}
+
+func (x *TestSystemWebhookResponse) SetMessage(v string) {
+	x.xxx_hidden_Message = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 3)
+}
+
+func (x *TestSystemWebhookResponse) SetStatusCode(v int32) {
+	x.xxx_hidden_StatusCode = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 3)
+}
+
+func (x *TestSystemWebhookResponse) HasSuccess() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *TestSystemWebhookResponse) HasMessage() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *TestSystemWebhookResponse) HasStatusCode() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+}
+
+func (x *TestSystemWebhookResponse) ClearSuccess() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Success = false
+}
+
+func (x *TestSystemWebhookResponse) ClearMessage() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Message = nil
+}
+
+func (x *TestSystemWebhookResponse) ClearStatusCode() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_StatusCode = 0
+}
+
+type TestSystemWebhookResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Success    *bool
+	Message    *string
+	StatusCode *int32
+}
+
+func (b0 TestSystemWebhookResponse_builder) Build() *TestSystemWebhookResponse {
+	m0 := &TestSystemWebhookResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Success != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 3)
+		x.xxx_hidden_Success = *b.Success
+	}
+	if b.Message != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 3)
+		x.xxx_hidden_Message = b.Message
+	}
+	if b.StatusCode != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 3)
+		x.xxx_hidden_StatusCode = *b.StatusCode
+	}
+	return m0
+}
+
 var File_proto_admin_v1_admin_proto protoreflect.FileDescriptor
 
 const file_proto_admin_v1_admin_proto_rawDesc = "" +
 	"\n" +
-	"\x1aproto/admin/v1/admin.proto\x12\x0fmcpany.admin.v1\x1a\x1cgoogle/api/annotations.proto\x1a&proto/config/v1/upstream_service.proto\x1a\x1aproto/config/v1/user.proto\x1a$proto/mcp_router/v1/mcp_router.proto\x1a!google/protobuf/go_features.proto\"\x13\n" +
+	"\x1aproto/admin/v1/admin.proto\x12\x0fmcpany.admin.v1\x1a\x1cgoogle/api/annotations.proto\x1a&proto/config/v1/upstream_service.proto\x1a\x1aproto/config/v1/user.proto\x1a\x1dproto/config/v1/webhook.proto\x1a$proto/mcp_router/v1/mcp_router.proto\x1a!google/protobuf/go_features.proto\"\x13\n" +
 	"\x11ClearCacheRequest\"\x14\n" +
 	"\x12ClearCacheResponse\"\x15\n" +
 	"\x13ListServicesRequest\"\xa5\x01\n" +
@@ -2562,7 +3273,28 @@ const file_proto_admin_v1_admin_proto_rawDesc = "" +
 	"\x05error\x18\a \x01(\tR\x05error\x12\x1a\n" +
 	"\bduration\x18\b \x01(\tR\bduration\x12\x1f\n" +
 	"\vduration_ms\x18\t \x01(\x03R\n" +
-	"durationMs2\xcd\b\n" +
+	"durationMs\"W\n" +
+	"\x1aCreateSystemWebhookRequest\x129\n" +
+	"\awebhook\x18\x01 \x01(\v2\x1f.mcpany.config.v1.SystemWebhookR\awebhook\"X\n" +
+	"\x1bCreateSystemWebhookResponse\x129\n" +
+	"\awebhook\x18\x01 \x01(\v2\x1f.mcpany.config.v1.SystemWebhookR\awebhook\"\x1b\n" +
+	"\x19ListSystemWebhooksRequest\"Y\n" +
+	"\x1aListSystemWebhooksResponse\x12;\n" +
+	"\bwebhooks\x18\x01 \x03(\v2\x1f.mcpany.config.v1.SystemWebhookR\bwebhooks\",\n" +
+	"\x1aDeleteSystemWebhookRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"\x1d\n" +
+	"\x1bDeleteSystemWebhookResponse\"W\n" +
+	"\x1aUpdateSystemWebhookRequest\x129\n" +
+	"\awebhook\x18\x01 \x01(\v2\x1f.mcpany.config.v1.SystemWebhookR\awebhook\"X\n" +
+	"\x1bUpdateSystemWebhookResponse\x129\n" +
+	"\awebhook\x18\x01 \x01(\v2\x1f.mcpany.config.v1.SystemWebhookR\awebhook\"*\n" +
+	"\x18TestSystemWebhookRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"p\n" +
+	"\x19TestSystemWebhookResponse\x12\x18\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x12\x1f\n" +
+	"\vstatus_code\x18\x03 \x01(\x05R\n" +
+	"statusCode2\xfe\f\n" +
 	"\fAdminService\x12U\n" +
 	"\n" +
 	"ClearCache\x12\".mcpany.admin.v1.ClearCacheRequest\x1a#.mcpany.admin.v1.ClearCacheResponse\x12[\n" +
@@ -2580,87 +3312,118 @@ const file_proto_admin_v1_admin_proto_rawDesc = "" +
 	"\n" +
 	"DeleteUser\x12\".mcpany.admin.v1.DeleteUserRequest\x1a#.mcpany.admin.v1.DeleteUserResponse\x12m\n" +
 	"\x12GetDiscoveryStatus\x12*.mcpany.admin.v1.GetDiscoveryStatusRequest\x1a+.mcpany.admin.v1.GetDiscoveryStatusResponse\x12z\n" +
-	"\rListAuditLogs\x12%.mcpany.admin.v1.ListAuditLogsRequest\x1a&.mcpany.admin.v1.ListAuditLogsResponse\"\x1a\x82\xd3\xe4\x93\x02\x14\x12\x12/api/v1/audit/logsB;B\n" +
+	"\rListAuditLogs\x12%.mcpany.admin.v1.ListAuditLogsRequest\x1a&.mcpany.admin.v1.ListAuditLogsResponse\"\x1a\x82\xd3\xe4\x93\x02\x14\x12\x12/api/v1/audit/logs\x12p\n" +
+	"\x13CreateSystemWebhook\x12+.mcpany.admin.v1.CreateSystemWebhookRequest\x1a,.mcpany.admin.v1.CreateSystemWebhookResponse\x12m\n" +
+	"\x12ListSystemWebhooks\x12*.mcpany.admin.v1.ListSystemWebhooksRequest\x1a+.mcpany.admin.v1.ListSystemWebhooksResponse\x12p\n" +
+	"\x13DeleteSystemWebhook\x12+.mcpany.admin.v1.DeleteSystemWebhookRequest\x1a,.mcpany.admin.v1.DeleteSystemWebhookResponse\x12p\n" +
+	"\x13UpdateSystemWebhook\x12+.mcpany.admin.v1.UpdateSystemWebhookRequest\x1a,.mcpany.admin.v1.UpdateSystemWebhookResponse\x12j\n" +
+	"\x11TestSystemWebhook\x12).mcpany.admin.v1.TestSystemWebhookRequest\x1a*.mcpany.admin.v1.TestSystemWebhookResponseB;B\n" +
 	"AdminProtoZ%github.com/mcpany/core/proto/admin/v1\x92\x03\x05\xd2>\x02\x10\x03b\beditionsp\xe8\a"
 
-var file_proto_admin_v1_admin_proto_msgTypes = make([]protoimpl.MessageInfo, 27)
+var file_proto_admin_v1_admin_proto_msgTypes = make([]protoimpl.MessageInfo, 37)
 var file_proto_admin_v1_admin_proto_goTypes = []any{
-	(*ClearCacheRequest)(nil),          // 0: mcpany.admin.v1.ClearCacheRequest
-	(*ClearCacheResponse)(nil),         // 1: mcpany.admin.v1.ClearCacheResponse
-	(*ListServicesRequest)(nil),        // 2: mcpany.admin.v1.ListServicesRequest
-	(*ListServicesResponse)(nil),       // 3: mcpany.admin.v1.ListServicesResponse
-	(*ServiceState)(nil),               // 4: mcpany.admin.v1.ServiceState
-	(*GetServiceRequest)(nil),          // 5: mcpany.admin.v1.GetServiceRequest
-	(*GetServiceResponse)(nil),         // 6: mcpany.admin.v1.GetServiceResponse
-	(*ListToolsRequest)(nil),           // 7: mcpany.admin.v1.ListToolsRequest
-	(*ListToolsResponse)(nil),          // 8: mcpany.admin.v1.ListToolsResponse
-	(*GetToolRequest)(nil),             // 9: mcpany.admin.v1.GetToolRequest
-	(*GetToolResponse)(nil),            // 10: mcpany.admin.v1.GetToolResponse
-	(*CreateUserRequest)(nil),          // 11: mcpany.admin.v1.CreateUserRequest
-	(*CreateUserResponse)(nil),         // 12: mcpany.admin.v1.CreateUserResponse
-	(*GetUserRequest)(nil),             // 13: mcpany.admin.v1.GetUserRequest
-	(*GetUserResponse)(nil),            // 14: mcpany.admin.v1.GetUserResponse
-	(*ListUsersRequest)(nil),           // 15: mcpany.admin.v1.ListUsersRequest
-	(*ListUsersResponse)(nil),          // 16: mcpany.admin.v1.ListUsersResponse
-	(*UpdateUserRequest)(nil),          // 17: mcpany.admin.v1.UpdateUserRequest
-	(*UpdateUserResponse)(nil),         // 18: mcpany.admin.v1.UpdateUserResponse
-	(*DeleteUserRequest)(nil),          // 19: mcpany.admin.v1.DeleteUserRequest
-	(*DeleteUserResponse)(nil),         // 20: mcpany.admin.v1.DeleteUserResponse
-	(*GetDiscoveryStatusRequest)(nil),  // 21: mcpany.admin.v1.GetDiscoveryStatusRequest
-	(*GetDiscoveryStatusResponse)(nil), // 22: mcpany.admin.v1.GetDiscoveryStatusResponse
-	(*DiscoveryProviderStatus)(nil),    // 23: mcpany.admin.v1.DiscoveryProviderStatus
-	(*ListAuditLogsRequest)(nil),       // 24: mcpany.admin.v1.ListAuditLogsRequest
-	(*ListAuditLogsResponse)(nil),      // 25: mcpany.admin.v1.ListAuditLogsResponse
-	(*AuditLogEntry)(nil),              // 26: mcpany.admin.v1.AuditLogEntry
-	(*v1.UpstreamServiceConfig)(nil),   // 27: mcpany.config.v1.UpstreamServiceConfig
-	(*v11.Tool)(nil),                   // 28: mcpany.mcp_router.v1.Tool
-	(*v1.User)(nil),                    // 29: mcpany.config.v1.User
+	(*ClearCacheRequest)(nil),           // 0: mcpany.admin.v1.ClearCacheRequest
+	(*ClearCacheResponse)(nil),          // 1: mcpany.admin.v1.ClearCacheResponse
+	(*ListServicesRequest)(nil),         // 2: mcpany.admin.v1.ListServicesRequest
+	(*ListServicesResponse)(nil),        // 3: mcpany.admin.v1.ListServicesResponse
+	(*ServiceState)(nil),                // 4: mcpany.admin.v1.ServiceState
+	(*GetServiceRequest)(nil),           // 5: mcpany.admin.v1.GetServiceRequest
+	(*GetServiceResponse)(nil),          // 6: mcpany.admin.v1.GetServiceResponse
+	(*ListToolsRequest)(nil),            // 7: mcpany.admin.v1.ListToolsRequest
+	(*ListToolsResponse)(nil),           // 8: mcpany.admin.v1.ListToolsResponse
+	(*GetToolRequest)(nil),              // 9: mcpany.admin.v1.GetToolRequest
+	(*GetToolResponse)(nil),             // 10: mcpany.admin.v1.GetToolResponse
+	(*CreateUserRequest)(nil),           // 11: mcpany.admin.v1.CreateUserRequest
+	(*CreateUserResponse)(nil),          // 12: mcpany.admin.v1.CreateUserResponse
+	(*GetUserRequest)(nil),              // 13: mcpany.admin.v1.GetUserRequest
+	(*GetUserResponse)(nil),             // 14: mcpany.admin.v1.GetUserResponse
+	(*ListUsersRequest)(nil),            // 15: mcpany.admin.v1.ListUsersRequest
+	(*ListUsersResponse)(nil),           // 16: mcpany.admin.v1.ListUsersResponse
+	(*UpdateUserRequest)(nil),           // 17: mcpany.admin.v1.UpdateUserRequest
+	(*UpdateUserResponse)(nil),          // 18: mcpany.admin.v1.UpdateUserResponse
+	(*DeleteUserRequest)(nil),           // 19: mcpany.admin.v1.DeleteUserRequest
+	(*DeleteUserResponse)(nil),          // 20: mcpany.admin.v1.DeleteUserResponse
+	(*GetDiscoveryStatusRequest)(nil),   // 21: mcpany.admin.v1.GetDiscoveryStatusRequest
+	(*GetDiscoveryStatusResponse)(nil),  // 22: mcpany.admin.v1.GetDiscoveryStatusResponse
+	(*DiscoveryProviderStatus)(nil),     // 23: mcpany.admin.v1.DiscoveryProviderStatus
+	(*ListAuditLogsRequest)(nil),        // 24: mcpany.admin.v1.ListAuditLogsRequest
+	(*ListAuditLogsResponse)(nil),       // 25: mcpany.admin.v1.ListAuditLogsResponse
+	(*AuditLogEntry)(nil),               // 26: mcpany.admin.v1.AuditLogEntry
+	(*CreateSystemWebhookRequest)(nil),  // 27: mcpany.admin.v1.CreateSystemWebhookRequest
+	(*CreateSystemWebhookResponse)(nil), // 28: mcpany.admin.v1.CreateSystemWebhookResponse
+	(*ListSystemWebhooksRequest)(nil),   // 29: mcpany.admin.v1.ListSystemWebhooksRequest
+	(*ListSystemWebhooksResponse)(nil),  // 30: mcpany.admin.v1.ListSystemWebhooksResponse
+	(*DeleteSystemWebhookRequest)(nil),  // 31: mcpany.admin.v1.DeleteSystemWebhookRequest
+	(*DeleteSystemWebhookResponse)(nil), // 32: mcpany.admin.v1.DeleteSystemWebhookResponse
+	(*UpdateSystemWebhookRequest)(nil),  // 33: mcpany.admin.v1.UpdateSystemWebhookRequest
+	(*UpdateSystemWebhookResponse)(nil), // 34: mcpany.admin.v1.UpdateSystemWebhookResponse
+	(*TestSystemWebhookRequest)(nil),    // 35: mcpany.admin.v1.TestSystemWebhookRequest
+	(*TestSystemWebhookResponse)(nil),   // 36: mcpany.admin.v1.TestSystemWebhookResponse
+	(*v1.UpstreamServiceConfig)(nil),    // 37: mcpany.config.v1.UpstreamServiceConfig
+	(*v11.Tool)(nil),                    // 38: mcpany.mcp_router.v1.Tool
+	(*v1.User)(nil),                     // 39: mcpany.config.v1.User
+	(*v1.SystemWebhook)(nil),            // 40: mcpany.config.v1.SystemWebhook
 }
 var file_proto_admin_v1_admin_proto_depIdxs = []int32{
-	27, // 0: mcpany.admin.v1.ListServicesResponse.services:type_name -> mcpany.config.v1.UpstreamServiceConfig
+	37, // 0: mcpany.admin.v1.ListServicesResponse.services:type_name -> mcpany.config.v1.UpstreamServiceConfig
 	4,  // 1: mcpany.admin.v1.ListServicesResponse.service_states:type_name -> mcpany.admin.v1.ServiceState
-	27, // 2: mcpany.admin.v1.ServiceState.config:type_name -> mcpany.config.v1.UpstreamServiceConfig
-	27, // 3: mcpany.admin.v1.GetServiceResponse.service:type_name -> mcpany.config.v1.UpstreamServiceConfig
+	37, // 2: mcpany.admin.v1.ServiceState.config:type_name -> mcpany.config.v1.UpstreamServiceConfig
+	37, // 3: mcpany.admin.v1.GetServiceResponse.service:type_name -> mcpany.config.v1.UpstreamServiceConfig
 	4,  // 4: mcpany.admin.v1.GetServiceResponse.service_state:type_name -> mcpany.admin.v1.ServiceState
-	28, // 5: mcpany.admin.v1.ListToolsResponse.tools:type_name -> mcpany.mcp_router.v1.Tool
-	28, // 6: mcpany.admin.v1.GetToolResponse.tool:type_name -> mcpany.mcp_router.v1.Tool
-	29, // 7: mcpany.admin.v1.CreateUserRequest.user:type_name -> mcpany.config.v1.User
-	29, // 8: mcpany.admin.v1.CreateUserResponse.user:type_name -> mcpany.config.v1.User
-	29, // 9: mcpany.admin.v1.GetUserResponse.user:type_name -> mcpany.config.v1.User
-	29, // 10: mcpany.admin.v1.ListUsersResponse.users:type_name -> mcpany.config.v1.User
-	29, // 11: mcpany.admin.v1.UpdateUserRequest.user:type_name -> mcpany.config.v1.User
-	29, // 12: mcpany.admin.v1.UpdateUserResponse.user:type_name -> mcpany.config.v1.User
+	38, // 5: mcpany.admin.v1.ListToolsResponse.tools:type_name -> mcpany.mcp_router.v1.Tool
+	38, // 6: mcpany.admin.v1.GetToolResponse.tool:type_name -> mcpany.mcp_router.v1.Tool
+	39, // 7: mcpany.admin.v1.CreateUserRequest.user:type_name -> mcpany.config.v1.User
+	39, // 8: mcpany.admin.v1.CreateUserResponse.user:type_name -> mcpany.config.v1.User
+	39, // 9: mcpany.admin.v1.GetUserResponse.user:type_name -> mcpany.config.v1.User
+	39, // 10: mcpany.admin.v1.ListUsersResponse.users:type_name -> mcpany.config.v1.User
+	39, // 11: mcpany.admin.v1.UpdateUserRequest.user:type_name -> mcpany.config.v1.User
+	39, // 12: mcpany.admin.v1.UpdateUserResponse.user:type_name -> mcpany.config.v1.User
 	23, // 13: mcpany.admin.v1.GetDiscoveryStatusResponse.providers:type_name -> mcpany.admin.v1.DiscoveryProviderStatus
 	26, // 14: mcpany.admin.v1.ListAuditLogsResponse.entries:type_name -> mcpany.admin.v1.AuditLogEntry
-	0,  // 15: mcpany.admin.v1.AdminService.ClearCache:input_type -> mcpany.admin.v1.ClearCacheRequest
-	2,  // 16: mcpany.admin.v1.AdminService.ListServices:input_type -> mcpany.admin.v1.ListServicesRequest
-	5,  // 17: mcpany.admin.v1.AdminService.GetService:input_type -> mcpany.admin.v1.GetServiceRequest
-	7,  // 18: mcpany.admin.v1.AdminService.ListTools:input_type -> mcpany.admin.v1.ListToolsRequest
-	9,  // 19: mcpany.admin.v1.AdminService.GetTool:input_type -> mcpany.admin.v1.GetToolRequest
-	11, // 20: mcpany.admin.v1.AdminService.CreateUser:input_type -> mcpany.admin.v1.CreateUserRequest
-	13, // 21: mcpany.admin.v1.AdminService.GetUser:input_type -> mcpany.admin.v1.GetUserRequest
-	15, // 22: mcpany.admin.v1.AdminService.ListUsers:input_type -> mcpany.admin.v1.ListUsersRequest
-	17, // 23: mcpany.admin.v1.AdminService.UpdateUser:input_type -> mcpany.admin.v1.UpdateUserRequest
-	19, // 24: mcpany.admin.v1.AdminService.DeleteUser:input_type -> mcpany.admin.v1.DeleteUserRequest
-	21, // 25: mcpany.admin.v1.AdminService.GetDiscoveryStatus:input_type -> mcpany.admin.v1.GetDiscoveryStatusRequest
-	24, // 26: mcpany.admin.v1.AdminService.ListAuditLogs:input_type -> mcpany.admin.v1.ListAuditLogsRequest
-	1,  // 27: mcpany.admin.v1.AdminService.ClearCache:output_type -> mcpany.admin.v1.ClearCacheResponse
-	3,  // 28: mcpany.admin.v1.AdminService.ListServices:output_type -> mcpany.admin.v1.ListServicesResponse
-	6,  // 29: mcpany.admin.v1.AdminService.GetService:output_type -> mcpany.admin.v1.GetServiceResponse
-	8,  // 30: mcpany.admin.v1.AdminService.ListTools:output_type -> mcpany.admin.v1.ListToolsResponse
-	10, // 31: mcpany.admin.v1.AdminService.GetTool:output_type -> mcpany.admin.v1.GetToolResponse
-	12, // 32: mcpany.admin.v1.AdminService.CreateUser:output_type -> mcpany.admin.v1.CreateUserResponse
-	14, // 33: mcpany.admin.v1.AdminService.GetUser:output_type -> mcpany.admin.v1.GetUserResponse
-	16, // 34: mcpany.admin.v1.AdminService.ListUsers:output_type -> mcpany.admin.v1.ListUsersResponse
-	18, // 35: mcpany.admin.v1.AdminService.UpdateUser:output_type -> mcpany.admin.v1.UpdateUserResponse
-	20, // 36: mcpany.admin.v1.AdminService.DeleteUser:output_type -> mcpany.admin.v1.DeleteUserResponse
-	22, // 37: mcpany.admin.v1.AdminService.GetDiscoveryStatus:output_type -> mcpany.admin.v1.GetDiscoveryStatusResponse
-	25, // 38: mcpany.admin.v1.AdminService.ListAuditLogs:output_type -> mcpany.admin.v1.ListAuditLogsResponse
-	27, // [27:39] is the sub-list for method output_type
-	15, // [15:27] is the sub-list for method input_type
-	15, // [15:15] is the sub-list for extension type_name
-	15, // [15:15] is the sub-list for extension extendee
-	0,  // [0:15] is the sub-list for field type_name
+	40, // 15: mcpany.admin.v1.CreateSystemWebhookRequest.webhook:type_name -> mcpany.config.v1.SystemWebhook
+	40, // 16: mcpany.admin.v1.CreateSystemWebhookResponse.webhook:type_name -> mcpany.config.v1.SystemWebhook
+	40, // 17: mcpany.admin.v1.ListSystemWebhooksResponse.webhooks:type_name -> mcpany.config.v1.SystemWebhook
+	40, // 18: mcpany.admin.v1.UpdateSystemWebhookRequest.webhook:type_name -> mcpany.config.v1.SystemWebhook
+	40, // 19: mcpany.admin.v1.UpdateSystemWebhookResponse.webhook:type_name -> mcpany.config.v1.SystemWebhook
+	0,  // 20: mcpany.admin.v1.AdminService.ClearCache:input_type -> mcpany.admin.v1.ClearCacheRequest
+	2,  // 21: mcpany.admin.v1.AdminService.ListServices:input_type -> mcpany.admin.v1.ListServicesRequest
+	5,  // 22: mcpany.admin.v1.AdminService.GetService:input_type -> mcpany.admin.v1.GetServiceRequest
+	7,  // 23: mcpany.admin.v1.AdminService.ListTools:input_type -> mcpany.admin.v1.ListToolsRequest
+	9,  // 24: mcpany.admin.v1.AdminService.GetTool:input_type -> mcpany.admin.v1.GetToolRequest
+	11, // 25: mcpany.admin.v1.AdminService.CreateUser:input_type -> mcpany.admin.v1.CreateUserRequest
+	13, // 26: mcpany.admin.v1.AdminService.GetUser:input_type -> mcpany.admin.v1.GetUserRequest
+	15, // 27: mcpany.admin.v1.AdminService.ListUsers:input_type -> mcpany.admin.v1.ListUsersRequest
+	17, // 28: mcpany.admin.v1.AdminService.UpdateUser:input_type -> mcpany.admin.v1.UpdateUserRequest
+	19, // 29: mcpany.admin.v1.AdminService.DeleteUser:input_type -> mcpany.admin.v1.DeleteUserRequest
+	21, // 30: mcpany.admin.v1.AdminService.GetDiscoveryStatus:input_type -> mcpany.admin.v1.GetDiscoveryStatusRequest
+	24, // 31: mcpany.admin.v1.AdminService.ListAuditLogs:input_type -> mcpany.admin.v1.ListAuditLogsRequest
+	27, // 32: mcpany.admin.v1.AdminService.CreateSystemWebhook:input_type -> mcpany.admin.v1.CreateSystemWebhookRequest
+	29, // 33: mcpany.admin.v1.AdminService.ListSystemWebhooks:input_type -> mcpany.admin.v1.ListSystemWebhooksRequest
+	31, // 34: mcpany.admin.v1.AdminService.DeleteSystemWebhook:input_type -> mcpany.admin.v1.DeleteSystemWebhookRequest
+	33, // 35: mcpany.admin.v1.AdminService.UpdateSystemWebhook:input_type -> mcpany.admin.v1.UpdateSystemWebhookRequest
+	35, // 36: mcpany.admin.v1.AdminService.TestSystemWebhook:input_type -> mcpany.admin.v1.TestSystemWebhookRequest
+	1,  // 37: mcpany.admin.v1.AdminService.ClearCache:output_type -> mcpany.admin.v1.ClearCacheResponse
+	3,  // 38: mcpany.admin.v1.AdminService.ListServices:output_type -> mcpany.admin.v1.ListServicesResponse
+	6,  // 39: mcpany.admin.v1.AdminService.GetService:output_type -> mcpany.admin.v1.GetServiceResponse
+	8,  // 40: mcpany.admin.v1.AdminService.ListTools:output_type -> mcpany.admin.v1.ListToolsResponse
+	10, // 41: mcpany.admin.v1.AdminService.GetTool:output_type -> mcpany.admin.v1.GetToolResponse
+	12, // 42: mcpany.admin.v1.AdminService.CreateUser:output_type -> mcpany.admin.v1.CreateUserResponse
+	14, // 43: mcpany.admin.v1.AdminService.GetUser:output_type -> mcpany.admin.v1.GetUserResponse
+	16, // 44: mcpany.admin.v1.AdminService.ListUsers:output_type -> mcpany.admin.v1.ListUsersResponse
+	18, // 45: mcpany.admin.v1.AdminService.UpdateUser:output_type -> mcpany.admin.v1.UpdateUserResponse
+	20, // 46: mcpany.admin.v1.AdminService.DeleteUser:output_type -> mcpany.admin.v1.DeleteUserResponse
+	22, // 47: mcpany.admin.v1.AdminService.GetDiscoveryStatus:output_type -> mcpany.admin.v1.GetDiscoveryStatusResponse
+	25, // 48: mcpany.admin.v1.AdminService.ListAuditLogs:output_type -> mcpany.admin.v1.ListAuditLogsResponse
+	28, // 49: mcpany.admin.v1.AdminService.CreateSystemWebhook:output_type -> mcpany.admin.v1.CreateSystemWebhookResponse
+	30, // 50: mcpany.admin.v1.AdminService.ListSystemWebhooks:output_type -> mcpany.admin.v1.ListSystemWebhooksResponse
+	32, // 51: mcpany.admin.v1.AdminService.DeleteSystemWebhook:output_type -> mcpany.admin.v1.DeleteSystemWebhookResponse
+	34, // 52: mcpany.admin.v1.AdminService.UpdateSystemWebhook:output_type -> mcpany.admin.v1.UpdateSystemWebhookResponse
+	36, // 53: mcpany.admin.v1.AdminService.TestSystemWebhook:output_type -> mcpany.admin.v1.TestSystemWebhookResponse
+	37, // [37:54] is the sub-list for method output_type
+	20, // [20:37] is the sub-list for method input_type
+	20, // [20:20] is the sub-list for extension type_name
+	20, // [20:20] is the sub-list for extension extendee
+	0,  // [0:20] is the sub-list for field type_name
 }
 
 func init() { file_proto_admin_v1_admin_proto_init() }
@@ -2674,7 +3437,7 @@ func file_proto_admin_v1_admin_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_admin_v1_admin_proto_rawDesc), len(file_proto_admin_v1_admin_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   27,
+			NumMessages:   37,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

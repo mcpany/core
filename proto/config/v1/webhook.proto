@@ -67,3 +67,25 @@ message WebhookStatus {
   int32 code = 1;
   string message = 2;
 }
+
+// SystemWebhook represents a webhook configuration for system events.
+message SystemWebhook {
+  // The unique identifier of the webhook.
+  string id = 1;
+  // The URL to send the webhook to.
+  string url = 2;
+  // The list of events to subscribe to (e.g., "service.registered", "tool.invoked", "all").
+  repeated string events = 3;
+  // The secret key used to sign the webhook payload (HMAC).
+  string secret = 4;
+  // Whether the webhook is active.
+  bool active = 5;
+  // The timestamp when the webhook was created (ISO 8601).
+  string created_at = 6;
+  // The timestamp when the webhook was last triggered (ISO 8601).
+  string last_triggered_at = 7;
+  // The status of the last delivery ("success", "failure", "pending").
+  string last_status = 8;
+  // The error message of the last delivery, if any.
+  string last_error = 9;
+}

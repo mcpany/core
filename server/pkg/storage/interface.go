@@ -452,6 +452,67 @@ type Storage interface {
 	//   - error: An error if deletion fails.
 	DeleteCredential(ctx context.Context, id string) error
 
+	// CreateSystemWebhook creates a new system webhook.
+	//
+	// Summary: Creates a system webhook.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The context for the request.
+	//   - webhook: *configv1.SystemWebhook. The webhook to create.
+	//
+	// Returns:
+	//   - error: An error if creation fails.
+	CreateSystemWebhook(ctx context.Context, webhook *configv1.SystemWebhook) error
+
+	// ListSystemWebhooks retrieves all system webhooks.
+	//
+	// Summary: Lists all system webhooks.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The context for the request.
+	//
+	// Returns:
+	//   - []*configv1.SystemWebhook: A list of webhooks.
+	//   - error: An error if listing fails.
+	ListSystemWebhooks(ctx context.Context) ([]*configv1.SystemWebhook, error)
+
+	// GetSystemWebhook retrieves a system webhook by ID.
+	//
+	// Summary: Retrieves a system webhook.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The context for the request.
+	//   - id: string. The webhook ID.
+	//
+	// Returns:
+	//   - *configv1.SystemWebhook: The webhook.
+	//   - error: An error if retrieval fails.
+	GetSystemWebhook(ctx context.Context, id string) (*configv1.SystemWebhook, error)
+
+	// UpdateSystemWebhook updates an existing system webhook.
+	//
+	// Summary: Updates a system webhook.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The context for the request.
+	//   - webhook: *configv1.SystemWebhook. The webhook to update.
+	//
+	// Returns:
+	//   - error: An error if update fails.
+	UpdateSystemWebhook(ctx context.Context, webhook *configv1.SystemWebhook) error
+
+	// DeleteSystemWebhook deletes a system webhook by ID.
+	//
+	// Summary: Deletes a system webhook.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The context for the request.
+	//   - id: string. The webhook ID to delete.
+	//
+	// Returns:
+	//   - error: An error if deletion fails.
+	DeleteSystemWebhook(ctx context.Context, id string) error
+
 	// Close closes the underlying storage connection.
 	//
 	// Summary: Closes the storage connection.

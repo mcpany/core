@@ -56,6 +56,7 @@ import (
 	"github.com/mcpany/core/server/pkg/upstream/factory"
 	"github.com/mcpany/core/server/pkg/util"
 	"github.com/mcpany/core/server/pkg/validation"
+	"github.com/mcpany/core/server/pkg/webhook"
 	"github.com/mcpany/core/server/pkg/worker"
 	"github.com/pmezard/go-difflib/difflib"
 	otelgrpc "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
@@ -845,6 +846,12 @@ func (a *Application) Run(opts RunOptions) error {
 		a.startupOnce.Do(func() {
 			close(a.startupCh)
 		})
+	}
+
+	// Initialize Webhook Dispatcher
+	webhookDispatcher := webhook.NewDispatcher(a.Storage, a.busProvider)
+	if err := webhookDispatcher.Start(opts.Ctx); err != nil {
+		log.Error("Failed to start webhook dispatcher", "error", err)
 	}
 
 	// Start servers
