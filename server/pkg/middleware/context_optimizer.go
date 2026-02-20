@@ -19,11 +19,15 @@ type ContextOptimizer struct {
 	MaxChars int
 }
 
-// NewContextOptimizer creates a new ContextOptimizer.
+// NewContextOptimizer initializes context optimization.
 //
-// maxChars is the maxChars.
+// Summary: Creates a middleware for optimizing LLM context usage.
 //
-// Returns the result.
+// Parameters:
+//   - config: *configv1.ContextConfig. The context configuration.
+//
+// Returns:
+//   - *ContextOptimizer: The initialized optimizer.
 func NewContextOptimizer(maxChars int) *ContextOptimizer {
 	return &ContextOptimizer{
 		MaxChars: maxChars,
@@ -38,11 +42,15 @@ var bufferPool = sync.Pool{
 	},
 }
 
-// Handler returns the middleware handler.
+// Handler returns the HTTP handler for CSRF protection.
 //
-// next is the next.
+// Summary: Wraps an HTTP handler with CSRF checks.
 //
-// Returns the result.
+// Parameters:
+//   - next: http.Handler. The next handler in the chain.
+//
+// Returns:
+//   - http.Handler: A handler with CSRF protection.
 func (co *ContextOptimizer) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		wb := bufferPool.Get().(*responseBuffer)

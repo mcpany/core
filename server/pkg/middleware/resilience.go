@@ -17,25 +17,33 @@ type ResilienceMiddleware struct {
 	managers    sync.Map // map[string]*resilience.Manager (serviceID -> Manager)
 }
 
-// NewResilienceMiddleware creates a new ResilienceMiddleware.
+// NewResilienceMiddleware initializes resilience patterns.
 //
-// toolManager is the toolManager.
+// Summary: Creates a middleware for retries, timeouts, and circuit breaking.
 //
-// Returns the result.
+// Parameters:
+//   - config: *configv1.ResilienceConfig. The resilience configuration.
+//
+// Returns:
+//   - *ResilienceMiddleware: The initialized middleware.
 func NewResilienceMiddleware(toolManager tool.ManagerInterface) *ResilienceMiddleware {
 	return &ResilienceMiddleware{
 		toolManager: toolManager,
 	}
 }
 
-// Execute executes the resilience middleware.
+// Execute applies resilience logic.
 //
-// ctx is the context for the request.
-// req is the request object.
-// next is the next.
+// Summary: Wraps tool execution with retry, timeout, and circuit breaker logic.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The execution context.
+//   - req: *tool.ExecutionRequest. The tool execution request.
+//   - next: tool.ExecutionFunc. The next handler in the chain.
+//
+// Returns:
+//   - any: The execution result.
+//   - error: An error if execution fails or times out.
 func (m *ResilienceMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := m.toolManager.GetTool(req.ToolName)
 	if !ok {

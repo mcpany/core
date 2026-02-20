@@ -16,11 +16,15 @@ type SSOConfig struct {
 	IDPURL  string
 }
 
-// SSOMiddleware creates a new SSO middleware.
+// SSOMiddleware enforces Single Sign-On authentication.
 //
-// config holds the configuration settings.
+// Summary: Validates SSO tokens for incoming requests.
 //
-// Returns the result.
+// Parameters:
+//   - config: SSOConfig. The SSO configuration.
+//
+// Returns:
+//   - gin.HandlerFunc: A Gin handler with SSO enforcement.
 func SSOMiddleware(config SSOConfig) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if !config.Enabled {

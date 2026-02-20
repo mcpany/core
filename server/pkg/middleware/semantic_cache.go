@@ -51,13 +51,17 @@ type SemanticCache struct {
 	threshold float32
 }
 
-// NewSemanticCache creates a new SemanticCache.
+// NewSemanticCache initializes semantic caching.
 //
-// provider is the provider.
-// store is the store.
-// threshold is the threshold.
+// Summary: Creates a new semantic cache based on vector embeddings.
 //
-// Returns the result.
+// Parameters:
+//   - config: *configv1.SemanticCacheConfig. The configuration.
+//   - logger: *slog.Logger. The logger to use.
+//
+// Returns:
+//   - *SemanticCache: The initialized semantic cache.
+//   - error: An error if initialization fails.
 func NewSemanticCache(provider EmbeddingProvider, store VectorStore, threshold float32) *SemanticCache {
 	if threshold <= 0 {
 		threshold = 0.9 // Default high threshold
@@ -72,8 +76,18 @@ func NewSemanticCache(provider EmbeddingProvider, store VectorStore, threshold f
 	}
 }
 
-// Get attempts to find a semantically similar cached result.
-// It returns the result, the computed embedding, a boolean indicating a hit, and an error.
+// Get retrieves a cached response semantically similar to the query.
+//
+// Summary: Searches for a semantically similar cached entry.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - query: string. The user query or prompt.
+//
+// Returns:
+//   - string: The cached response, if found.
+//   - bool: True if a match was found, false otherwise.
+//   - error: An error if the search fails.
 func (c *SemanticCache) Get(ctx context.Context, key string, input string) (any, []float32, bool, error) {
 	embedding, err := c.provider.Embed(ctx, input)
 	if err != nil {
@@ -87,15 +101,17 @@ func (c *SemanticCache) Get(ctx context.Context, key string, input string) (any,
 	return nil, embedding, false, nil
 }
 
-// Set adds a result to the cache using the provided embedding.
+// Set stores a response in the semantic cache.
 //
-// ctx is the context for the request.
-// key is the key.
-// embedding is the embedding.
-// result is the result.
-// ttl is the ttl.
+// Summary: Indexes a query and response for future semantic retrieval.
 //
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - query: string. The user query.
+//   - response: string. The response to cache.
+//
+// Returns:
+//   - error: An error if the storage fails.
 func (c *SemanticCache) Set(ctx context.Context, key string, embedding []float32, result any, ttl time.Duration) error {
 	return c.store.Add(ctx, key, embedding, result, ttl)
 }

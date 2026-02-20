@@ -29,14 +29,18 @@ func NewCallPolicyMiddleware(toolManager tool.ManagerInterface) *CallPolicyMiddl
 	}
 }
 
-// Execute enforces call policies before proceeding to the next handler.
+// Execute enforces call policies.
 //
-// ctx is the context for the request.
-// req is the request object.
-// next is the next.
+// Summary: Validates the request against configured call policies.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The execution context.
+//   - req: *tool.ExecutionRequest. The tool execution request.
+//   - next: tool.ExecutionFunc. The next handler in the chain.
+//
+// Returns:
+//   - any: The execution result.
+//   - error: An error if the policy denies execution.
 func (m *CallPolicyMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := m.toolManager.GetTool(req.ToolName)
 	if !ok {

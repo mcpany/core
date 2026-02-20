@@ -16,10 +16,14 @@ import (
 
 // ListServiceTemplates retrieves all service templates.
 //
-// ctx is the context for the request.
+// Summary: Lists all service templates.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//
+// Returns:
+//   - []*configv1.ServiceTemplate: A list of service templates.
+//   - error: An error if the operation fails.
 func (s *Store) ListServiceTemplates(ctx context.Context) ([]*configv1.ServiceTemplate, error) {
 	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM service_templates")
 	if err != nil {
@@ -46,13 +50,17 @@ func (s *Store) ListServiceTemplates(ctx context.Context) ([]*configv1.ServiceTe
 	return templates, nil
 }
 
-// GetServiceTemplate retrieves a service template by ID.
+// GetServiceTemplate retrieves a service template by name.
 //
-// ctx is the context for the request.
-// id is the unique identifier.
+// Summary: Fetches a service template by name.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - name: string. The name of the template.
+//
+// Returns:
+//   - *configv1.ServiceTemplate: The service template, or nil if not found.
+//   - error: An error if the operation fails.
 func (s *Store) GetServiceTemplate(ctx context.Context, id string) (*configv1.ServiceTemplate, error) {
 	query := "SELECT config_json FROM service_templates WHERE id = $1"
 	row := s.db.QueryRowContext(ctx, query, id)
@@ -72,12 +80,16 @@ func (s *Store) GetServiceTemplate(ctx context.Context, id string) (*configv1.Se
 	return &template, nil
 }
 
-// SaveServiceTemplate saves a service template.
+// SaveServiceTemplate persists a service template.
 //
-// ctx is the context for the request.
-// template is the template.
+// Summary: Saves or updates a service template.
 //
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - template: *configv1.ServiceTemplate. The template to save.
+//
+// Returns:
+//   - error: An error if the operation fails.
 func (s *Store) SaveServiceTemplate(ctx context.Context, template *configv1.ServiceTemplate) error {
 	if template.GetId() == "" {
 		return fmt.Errorf("template ID is required")
@@ -104,12 +116,16 @@ func (s *Store) SaveServiceTemplate(ctx context.Context, template *configv1.Serv
 	return nil
 }
 
-// DeleteServiceTemplate deletes a service template by ID.
+// DeleteServiceTemplate removes a service template.
 //
-// ctx is the context for the request.
-// id is the template ID to delete.
+// Summary: Deletes a service template by name.
 //
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - name: string. The name of the template.
+//
+// Returns:
+//   - error: An error if the operation fails.
 func (s *Store) DeleteServiceTemplate(ctx context.Context, id string) error {
 	query := "DELETE FROM service_templates WHERE id = $1"
 	_, err := s.db.ExecContext(ctx, query, id)
