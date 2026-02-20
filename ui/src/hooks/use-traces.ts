@@ -6,6 +6,8 @@
 import { useEffect, useState, useRef } from "react";
 import { Trace } from "@/types/trace";
 
+const MAX_TRACES = 1000;
+
 interface UseTracesOptions {
     initialPaused?: boolean;
 }
@@ -17,8 +19,6 @@ interface UseTracesOptions {
  * @param options.initialPaused - Whether to start in a paused state.
  * @returns An object containing the current traces, loading state, connection status, and controls.
  */
-const MAX_TRACES = 1000;
-
 export function useTraces(options: UseTracesOptions = {}) {
     const [traces, setTraces] = useState<Trace[]>([]);
     const [loading, setLoading] = useState(true);
