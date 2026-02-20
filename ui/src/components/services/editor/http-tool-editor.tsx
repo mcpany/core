@@ -18,10 +18,14 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { InputTransformerEditor } from "./input-transformer-editor";
 import { OutputTransformerEditor } from "./output-transformer-editor";
+import { RequestPreview } from "./request-preview";
+import { apiClient } from "@/lib/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface HttpToolEditorProps {
     tool: ToolDefinition;
     call: HttpCallDefinition;
+    serviceName?: string;
     onChange: (tool: ToolDefinition, call: HttpCallDefinition) => void;
 }
 
@@ -31,15 +35,40 @@ interface HttpToolEditorProps {
  * @param props - The component props.
  * @returns The rendered tool editor.
  */
-export function HttpToolEditor({ tool, call, onChange }: HttpToolEditorProps) {
+export function HttpToolEditor({ tool, call, serviceName, onChange }: HttpToolEditorProps) {
     const [localTool, setLocalTool] = useState<ToolDefinition>(tool);
     const [localCall, setLocalCall] = useState<HttpCallDefinition>(call);
     const [activeTab, setActiveTab] = useState("request");
+    const { toast } = useToast();
+    const [executionResult, setExecutionResult] = useState<any>(null);
+    const [isExecuting, setIsExecuting] = useState(false);
 
     useEffect(() => {
         setLocalTool(tool);
         setLocalCall(call);
     }, [tool, call]);
+
+    const handleExecute = async (args: any) => {
+        if (!serviceName) {
+            toast({ title: "Error", description: "Service name missing context. Cannot execute.", variant: "destructive" });
+            return;
+        }
+        setIsExecuting(true);
+        setExecutionResult(null);
+        try {
+            // Construct the fully qualified tool name as registered in the backend
+            const toolName = `${serviceName}.${localTool.name}`;
+            const result = await apiClient.executeTool({
+                name: toolName,
+                arguments: args
+            });
+            setExecutionResult(result);
+        } catch (e: any) {
+            setExecutionResult({ isError: true, error: e.message || String(e) });
+        } finally {
+            setIsExecuting(false);
+        }
+    };
 
     const updateTool = (updates: Partial<ToolDefinition>) => {
         const newTool = { ...localTool, ...updates };
@@ -153,6 +182,7 @@ export function HttpToolEditor({ tool, call, onChange }: HttpToolEditorProps) {
                     <TabsTrigger value="request">Request Parameters</TabsTrigger>
                     <TabsTrigger value="input-transform">Input Transform</TabsTrigger>
                     <TabsTrigger value="output-transform">Output Transform</TabsTrigger>
+                    <TabsTrigger value="preview">Test & Preview</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="request" className="space-y-4 mt-4">
@@ -237,6 +267,17 @@ export function HttpToolEditor({ tool, call, onChange }: HttpToolEditorProps) {
                     <OutputTransformerEditor
                         transformer={localCall.outputTransformer}
                         onChange={handleOutputTransformerChange}
+                    />
+                </TabsContent>
+
+                <TabsContent value="preview" className="mt-4 min-h-[400px]">
+                    <RequestPreview
+                        call={localCall}
+                        tool={localTool}
+                        serviceName={serviceName}
+                        onExecute={handleExecute}
+                        executionResult={executionResult}
+                        isExecuting={isExecuting}
                     />
                 </TabsContent>
             </Tabs>

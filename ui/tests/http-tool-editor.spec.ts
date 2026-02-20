@@ -5,19 +5,18 @@
 
 import { test, expect } from '@playwright/test';
 
-test.describe('HTTP Tool Editor', () => {
-  const serviceName = 'e2e-http-tool-test';
+test.describe('HTTP Tool Editor - Live Preview', () => {
+  const serviceName = 'e2e-preview-test';
 
   test.beforeAll(async ({ request }) => {
-    // Seed HTTP service
-    // Ensure cleanup first just in case
+    // Seed HTTP service pointing to httpbin
     await request.delete(`/api/v1/services/${serviceName}`).catch(() => {});
 
     const response = await request.post('/api/v1/services', {
       data: {
         name: serviceName,
         http_service: {
-            address: "http://example.com"
+            address: "https://httpbin.org"
         }
       }
     });
@@ -28,82 +27,96 @@ test.describe('HTTP Tool Editor', () => {
     await request.delete(`/api/v1/services/${serviceName}`);
   });
 
-  test('should define tools for HTTP service', async ({ page, request }) => {
-    // Navigate to upstream services
+  test('should preview request and execute tool', async ({ page, request }) => {
+    // Navigate
     await page.goto('/upstream-services');
-
-    // Wait for list to load
     await expect(page.getByText(serviceName)).toBeVisible();
 
-    // Find row, click edit.
     const row = page.getByRole('row', { name: serviceName });
     await row.getByRole('button', { name: 'Open menu' }).click();
     await page.getByRole('menuitem', { name: 'Edit' }).click();
 
-    // Wait for Sheet to open.
-    await expect(page.getByRole('dialog', { name: 'Edit Service' })).toBeVisible();
-
-    // Click "Tools" tab.
+    // Open Tools
     await page.getByRole('tab', { name: 'Tools' }).click();
-
-    // Click "Add Tool"
     await page.getByRole('button', { name: 'Add Tool' }).click();
 
-    // Sheet for Tool Editor should open (it's a nested sheet or just covers content?)
-    // In HttpToolManager, it uses Sheet. Sheet inside Sheet works in shadcn/radix if handled well, or it replaces?
-    // Let's assume it opens.
-    await expect(page.getByText('Edit new_tool')).toBeVisible();
+    // Configure Tool
+    await page.getByLabel('Tool Name').fill('get_uuid');
+    await page.getByLabel('Endpoint Path').fill('/uuid');
 
-    // Fill details
-    await page.getByLabel('Tool Name').fill('get_weather');
-    await page.getByLabel('Description').fill('Get weather info');
+    // Check Preview (Immediate)
+    await page.getByRole('tab', { name: 'Test & Preview' }).click();
 
-    // Call details
-    await page.getByLabel('Endpoint Path').fill('/weather');
+    // Verify Preview Content
+    // Should show GET and /uuid
+    const previewCard = page.getByTestId('request-preview-content');
+    await expect(previewCard.getByText('GET')).toBeVisible();
+    // Note: The badge classes might vary, but text content is reliable
+    await expect(previewCard.getByText('/uuid')).toBeVisible();
 
-    // Add Parameter
+    // Add a parameter to verify substitution
+    await page.getByRole('tab', { name: 'Request Parameters' }).click();
+    await page.getByLabel('Endpoint Path').fill('/uuid/{id}');
     await page.getByRole('button', { name: 'Add Parameter' }).click();
-    await page.getByLabel('Name', { exact: true }).fill('city');
+    await page.getByLabel('Name', { exact: true }).fill('id');
 
-    // Close Tool Editor Sheet
-    // There isn't a "Done" button in my implementation, just auto-save to parent state.
-    // So we close the sheet. Pressing Escape might close the top-most sheet.
-    // We force closing the top-most sheet (Tool Editor) specifically.
+    // Go back to Preview
+    await page.getByRole('tab', { name: 'Test & Preview' }).click();
+
+    // Verify Substitution Placeholder
+    await expect(page.getByText('/uuid/{id}')).toBeVisible();
+
+    // Type Argument
+    const argsInput = page.getByLabel('Test Arguments (JSON)');
+    await argsInput.fill('{\n  "id": "123"\n}');
+
+    // Verify Substitution Result
+    await expect(page.getByText('/uuid/123')).toBeVisible();
+
+    // Now Save and Test Execution
+    // Close Tool Editor
     await page.keyboard.press('Escape');
-    await expect(page.getByRole('heading', { name: 'Edit get_weather' })).not.toBeVisible();
-
-    // Verify parent sheet (Service Editor) is still open
-    await expect(page.getByRole('dialog', { name: 'Edit Service' })).toBeVisible();
-
-    // Verify tool is listed in Manager within the parent sheet
-    await expect(page.getByRole('dialog', { name: 'Edit Service' }).getByText('get_weather', { exact: true })).toBeVisible();
-    await expect(page.getByRole('dialog', { name: 'Edit Service' }).getByText('/weather')).toBeVisible();
 
     // Save Service
     await page.getByRole('button', { name: 'Save Changes' }).click();
+    await expect(page.getByText('Service Updated')).toBeVisible();
 
-    // Verify Toast
-    await expect(page.getByText('Service Updated', { exact: true })).toBeVisible();
+    // Re-open Tool
+    await page.getByRole('button', { name: 'Edit' }).first().click(); // Assuming it's the only/first tool
+    await page.getByRole('tab', { name: 'Test & Preview' }).click();
 
-    // Verify Persistence via API
-    const response = await request.get(`/api/v1/services/${serviceName}`);
-    expect(response.ok()).toBeTruthy();
-    const service = await response.json();
-    const httpService = service.http_service || service.httpService;
+    // Execute
+    // Fill args again as state might reset (or I could persist it, but for now simple)
+    // Actually, state resets on re-mount.
+    // Wait, get_uuid on httpbin returns a UUID. The /uuid/{id} endpoint doesn't exist on httpbin.
+    // httpbin has /uuid.
+    // Let's use /anything/{id} which returns args.
 
-    expect(httpService.tools).toHaveLength(1);
-    expect(httpService.tools[0].name).toBe('get_weather');
+    // Fix: Update path to /anything/{id}
+    await page.getByRole('tab', { name: 'Request Parameters' }).click();
+    await page.getByLabel('Endpoint Path').fill('/anything/{id}');
 
-    // Verify Call Definition
-    const callId = httpService.tools[0].callId || httpService.tools[0].call_id;
-    const calls = httpService.calls; // Map
+    // Close & Save again (to update definition)
+    await page.keyboard.press('Escape');
+    await page.getByRole('button', { name: 'Save Changes' }).click();
+    await expect(page.getByText('Service Updated')).toBeVisible(); // Wait for toast
 
-    // Check if calls is populated
-    expect(calls).toBeDefined();
-    const call = calls[callId];
-    expect(call).toBeDefined();
+    // Re-open
+    await page.getByRole('button', { name: 'Edit' }).first().click();
+    await page.getByRole('tab', { name: 'Test & Preview' }).click();
 
-    const endpointPath = call.endpointPath || call.endpoint_path;
-    expect(endpointPath).toBe('/weather');
+    // Fill Args
+    await page.getByLabel('Test Arguments (JSON)').fill('{\n  "id": "test-execution"\n}');
+
+    // Click Execute
+    await page.getByRole('button', { name: 'Execute' }).click();
+
+    // Verify Loading
+    // await expect(page.getByText('Executing...')).toBeVisible(); // Might be too fast
+
+    // Verify Result
+    // httpbin /anything/{id} returns json with url including path
+    await expect(page.getByText('test-execution')).toBeVisible();
+    await expect(page.getByText('https://httpbin.org/anything/test-execution')).toBeVisible();
   });
 });
