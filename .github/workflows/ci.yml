@@ -32,6 +32,7 @@ jobs:
     outputs:
       src: ${{ steps.filter.outputs.src }}
     steps:
+      # Trigger rebuild: Retry download of paths-filter
       - uses: dorny/paths-filter@v3
         id: filter
         with:
