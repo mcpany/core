@@ -79,6 +79,11 @@ type TrafficPoint struct {
 	Latency int64  `json:"latency"`
 }
 
+const (
+	sessionCleanupInterval = 1 * time.Hour
+	sessionRetentionPeriod = 24 * time.Hour
+)
+
 // NewManager creates a new Topology Manager.
 //
 // registry is the registry.
@@ -102,7 +107,7 @@ func NewManager(registry serviceregistry.ServiceRegistryInterface, tm tool.Manag
 func (m *Manager) processLoop() {
 	// ⚡ BOLT: Run cleanup periodically
 	// Randomized Selection from Top 5 High-Impact Targets
-	cleanupTicker := time.NewTicker(1 * time.Hour)
+	cleanupTicker := time.NewTicker(sessionCleanupInterval)
 	defer cleanupTicker.Stop()
 
 	for {

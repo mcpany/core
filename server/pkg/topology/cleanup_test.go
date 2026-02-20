@@ -38,12 +38,12 @@ func TestManager_CleanupSessions(t *testing.T) {
 		return exists
 	}, 1*time.Second, 10*time.Millisecond, "Recent session should be processed")
 
-	// 2. Add old session (active > 24h ago)
+	// 2. Add old session (active > sessionRetentionPeriod)
 	// We need to manually inject this because RecordActivity sets LastActive to time.Now()
 	m.mu.Lock()
 	m.sessions["old-session"] = &SessionStats{
 		ID:           "old-session",
-		LastActive:   time.Now().Add(-25 * time.Hour),
+		LastActive:   time.Now().Add(-(sessionRetentionPeriod + 1*time.Hour)),
 		RequestCount: 1,
 	}
 	m.mu.Unlock()
