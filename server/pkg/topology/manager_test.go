@@ -566,3 +566,36 @@ func TestManager_GetGraph_Metrics(t *testing.T) {
 	// Verify Status Upgrade to ERROR (since error rate > 5%)
 	assert.Equal(t, topologyv1.NodeStatus_NODE_STATUS_ERROR, svcNode.GetStatus())
 }
+
+func TestManager_CleanupSessions_Leak(t *testing.T) {
+	mockRegistry := new(MockServiceRegistry)
+	mockTM := new(MockToolManager)
+	m := NewManager(mockRegistry, mockTM)
+	defer m.Close()
+
+	// Add a session
+	sessionID := "leak-session"
+	m.RecordActivity(sessionID, nil, 0, false, "")
+
+	// Verify session exists
+	assert.Eventually(t, func() bool {
+		m.mu.RLock()
+		_, exists := m.sessions[sessionID]
+		m.mu.RUnlock()
+		return exists
+	}, 1*time.Second, 10*time.Millisecond)
+
+	// Make session old (older than 24h)
+	m.mu.Lock()
+	m.sessions[sessionID].LastActive = time.Now().Add(-25 * time.Hour)
+	m.mu.Unlock()
+
+	// Run cleanup manually (this is what we are testing)
+	m.cleanupSessions()
+
+	// Verify session is removed
+	m.mu.RLock()
+	_, exists := m.sessions[sessionID]
+	m.mu.RUnlock()
+	assert.False(t, exists, "Session should be removed after cleanup")
+}
