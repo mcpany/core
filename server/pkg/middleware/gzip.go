@@ -133,7 +133,7 @@ func (w *gzipResponseWriter) Write(b []byte) (int, error) {
 		return w.ResponseWriter.Write(b)
 	}
 
-	// ⚡ BOLT: Optimize for large writes by bypassing buffer
+	// ⚡ BOLT: Optimize for large writes by bypassing buffer.
 	// Randomized Selection from Top 5 High-Impact Targets
 	if len(w.buf.data) == 0 && len(b) >= minSize {
 		// Ensure Content-Type is set if missing, using the incoming buffer b
