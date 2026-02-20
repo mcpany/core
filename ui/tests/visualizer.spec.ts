@@ -66,7 +66,8 @@ test.describe('Agent Flow Visualizer', () => {
 
     // Check for Service Nodes (seeded by seedServices)
     // "Payment Gateway"
-    await expect(page.locator('text=Payment Gateway')).toBeVisible();
+    // Use exact match to avoid matching "Payment Gateway Updated"
+    await expect(page.getByText('Payment Gateway', { exact: true })).toBeVisible();
 
     // Check for Client Node (seeded by seed_traffic)
     // The backend creates a session with ID "seed-data"
