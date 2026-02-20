@@ -23,9 +23,9 @@ Navigate to `/playground`. The interface presents a clean slate.
 
 ### 2. Select a Tool
 
-Browse the **Library** sidebar on the left to find the tool you wish to test.
+Click the **Available Tools** button (or press `Cmd+K`) to open the tool selection sheet.
 
-1. Click on a tool name (e.g., `filesystem.list_dir`).
+1. Click "Use Tool" on a tool card (e.g., `filesystem.list_dir`).
 2. A configuration dialog opens showing the **Tool Description** and a dynamically generated **Input Form**.
 
 ![Tool Selected](screenshots/playground_tool_selected.png)
@@ -48,7 +48,7 @@ The execution result is displayed in the chat stream.
 
 ## Advanced Features
 
-- **JSON Mode**: Toggle to "JSON" tab to input raw parameters if the form is too constraining.
+- **JSON Mode**: Switch to the "JSON" tab in the tool configuration dialog to input raw parameters if the form is too constraining.
 - **History**: Previous tool calls in the session remain visible above.
 
 ### 5. Session History (Import/Export)

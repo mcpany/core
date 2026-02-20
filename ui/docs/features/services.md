@@ -22,18 +22,19 @@ Navigate to the **Services** page via the sidebar. This view provides a high-lev
 Key columns:
 
 - **Name**: Application identifier and link to details.
-- **Status**: Toggle switch to enable/disable traffic, plus diagnostic status.
 - **Type**: Protocol (HTTP, gRPC, CMD, MCP).
-- **Activity**: Sparkline visualization of recent latency.
-- **Address**: The endpoint or command.
-- **Actions**: Menu with options like "View Logs", "Diagnose", "Edit", and "Delete".
+- **Tools**: Count of registered tools.
+- **Version**: Version of the upstream service.
+- **Status**: Toggle switch to enable/disable traffic, plus diagnostic status (Active, Error, Disabled).
+- **Priority**: Service priority order.
+- **Actions**: Menu with options like "Configure" and "Delete".
 
 ### 2. Add New Service
 
 To register a new upstream service:
 
-1. Click the **"Register Service"** button.
-2. A **Configuration Dialog** will open.
+1. Click the **"Add Service"** button.
+2. A **Configuration Sheet** will open.
 3. Select a service template (e.g., PostgreSQL, HTTP) or configure a custom type.
 4. Follow the configuration wizard to register the service.
 
@@ -43,9 +44,9 @@ To register a new upstream service:
 
 To edit an existing service:
 
-1. Click on the service name in the list (or select "Edit" from the Actions menu).
-2. A detailed **Configuration Dialog** will open.
-3. Here you can update the endpoint, managing **Environment Variables**, and view specialized settings.
+1. Click on the service name in the list (or select "Configure" from the Actions menu).
+2. A detailed **Configuration Sheet** will open.
+3. Here you can update the endpoint, manage **Environment Variables**, and view specialized settings.
 
 ![Service Configuration](screenshots/service_config.png)
 
