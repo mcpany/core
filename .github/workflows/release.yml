@@ -18,7 +18,7 @@ env:
 
 jobs:
   setup:
-    runs-on: oci-runner # ubuntu-slim
+    runs-on: ubuntu-latest # ubuntu-slim
     timeout-minutes: 30
     outputs:
       version: ${{ steps.vars.outputs.version }}
@@ -80,7 +80,7 @@ jobs:
           ]
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       - name: Set up Go
         uses: actions/setup-go@v5
@@ -174,7 +174,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       - name: Get Date
         id: get-date
@@ -387,7 +387,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       - name: Get Date
         id: get-date

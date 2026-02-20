@@ -10,13 +10,13 @@ on:
 
 jobs:
   manage-prs:
-    runs-on: oci-runner # ubuntu-slim
+    runs-on: ubuntu-latest # ubuntu-slim
     permissions:
       pull-requests: write
       contents: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       - name: Install gh CLI
         run: |
