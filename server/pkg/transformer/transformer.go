@@ -88,7 +88,7 @@ func (t *Transformer) Transform(templateStr string, data any) ([]byte, error) {
 
 func joinFunc(sep string, input any) (string, error) {
 	// ⚡ BOLT: Optimization for common slice types to avoid []any allocation (boxing)
-	// Randomized Selection from Top 5 High-Impact Targets
+	// Randomized Selection from Top 5 High-Impact Targets.
 	switch a := input.(type) {
 	case []string:
 		return joinStrings(sep, a), nil
