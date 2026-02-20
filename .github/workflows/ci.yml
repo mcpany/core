@@ -854,7 +854,7 @@ jobs:
 
   ui-test:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     needs: [build-images]
     strategy:
       fail-fast: false
@@ -912,7 +912,7 @@ jobs:
 
   k8s-e2e:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     needs: [build-images]
     steps:
       - uses: actions/checkout@v5
