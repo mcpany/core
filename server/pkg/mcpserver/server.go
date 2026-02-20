@@ -763,27 +763,18 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 				finalResult = res
 				isStructured = true
 			} else {
-				// Conversion failed, fall back to JSON unmarshal
+				// Conversion failed.
+				// We do NOT attempt to unmarshal via JSON because convertMapToCallToolResult failed validation,
+				// and unmarshaling into loose structs might produce invalid objects (e.g. missing required fields)
+				// which then cause crashes or hangs during response marshaling.
+				// Instead, we treat it as raw data, but check for the special "string content" case first.
+
 				// We marshal it to JSON bytes (reused for logging and return)
 				jsonBytes, marshalErr = fastJSON.Marshal(resultMap)
-				if marshalErr == nil {
-					var callToolRes mcp.CallToolResult
-					if err := fastJSON.Unmarshal(jsonBytes, &callToolRes); err == nil {
-						finalResult = &callToolRes
-						isStructured = true
-					} else {
-						// Unmarshal failed
-						logging.GetLogger().Warn("Failed to unmarshal potential CallToolResult map, treating as raw data", "toolName", req.ToolName)
-						// Fall through to raw data handling
-					}
-				} else {
-					// Marshal failed? Extremely rare for map[string]any unless it has cycles/funcs
-					// Fall through to error handling or raw data
-					logging.GetLogger().Warn("Failed to marshal map[string]any", "error", marshalErr)
-				}
 
-				// Special case: If content is a string, wrap it in TextContent
-				if finalResult == nil && marshalErr == nil {
+				if marshalErr == nil {
+					// Special case: If content is a string, wrap it in TextContent.
+					// This handles tools that return {"content": "some text"} which is not standard MCP but common.
 					if content, ok := resultMap["content"].(string); ok {
 						isError := false
 						if val, ok := resultMap["isError"].(bool); ok {
@@ -796,7 +787,13 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 							IsError: isError,
 						}
 						isStructured = true
+					} else {
+						// Log warning that we are falling back to raw data
+						logging.GetLogger().Warn("Failed to convert map to CallToolResult, treating as raw data", "toolName", req.ToolName, "error", err)
 					}
+				} else {
+					// Marshal failed? Extremely rare for map[string]any unless it has cycles/funcs
+					logging.GetLogger().Warn("Failed to marshal map[string]any", "error", marshalErr)
 				}
 			}
 		}
