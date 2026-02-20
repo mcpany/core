@@ -3402,7 +3402,7 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 	if err := checkTarInjection(val, base); err != nil {
 		return err
 	}
-	if err := checkPythonInjection(val, template, base); err != nil {
+	if err := checkPythonInjection(val, template, base, quoteLevel); err != nil {
 		return err
 	}
 	if err := checkRubyInjection(val, base, quoteLevel); err != nil {
@@ -3444,6 +3444,14 @@ func checkSQLInjection(val, base string, quoteLevel int) error {
 	// If the command is a SQL client (psql, mysql, sqlite3) and the value is unquoted (Level 0),
 	// we must prevent SQL injection by blocking SQL keywords.
 	isSQL := base == "psql" || base == "mysql" || base == "sqlite3"
+
+	// Sentinel Security Update: Block backslash injection in MySQL/MariaDB single-quoted strings
+	if (base == "mysql" || base == "mariadb") && quoteLevel == 2 {
+		if strings.Contains(val, "\\") {
+			return fmt.Errorf("SQL injection detected: backslash escaping in single-quoted string")
+		}
+	}
+
 	if isSQL && quoteLevel == 0 {
 		// Block common SQL keywords and comment markers
 		// We check for keywords surrounded by word boundaries or at start/end of string.
@@ -3489,9 +3497,17 @@ func checkSQLInjection(val, base string, quoteLevel int) error {
 	return nil
 }
 
-func checkPythonInjection(val, template, base string) error {
+func checkPythonInjection(val, template, base string, quoteLevel int) error {
 	// Python: Check for f-string prefix in template
 	if strings.HasPrefix(base, "python") {
+		// Sentinel Security Update: Block backslash injection in single-quoted strings
+		// Python treats backslash as escape in single-quoted strings, allowing users to escape the closing quote.
+		if quoteLevel == 2 {
+			if strings.Contains(val, "\\") {
+				return fmt.Errorf("python injection detected: backslash escaping in single-quoted string")
+			}
+		}
+
 		// Scan template to find the prefix of the quote containing the placeholder
 		// Given complexity, we use a heuristic: if template contains f" or f', enforce checks.
 		hasFString := false
@@ -3516,6 +3532,13 @@ func checkPythonInjection(val, template, base string) error {
 func checkRubyInjection(val, base string, quoteLevel int) error {
 	if !strings.HasPrefix(base, "ruby") {
 		return nil
+	}
+
+	// Sentinel Security Update: Block backslash injection in single-quoted strings
+	if quoteLevel == 2 {
+		if strings.Contains(val, "\\") {
+			return fmt.Errorf("ruby injection detected: backslash escaping in single-quoted string")
+		}
 	}
 
 	// Ruby: #{...} works in double quotes AND backticks
@@ -3544,6 +3567,14 @@ func checkNodePerlPhpInjection(val, base string, quoteLevel int) error {
 	isNode := strings.HasPrefix(base, "node") || base == "bun" || base == "deno"
 	isPerl := strings.HasPrefix(base, "perl")
 	isPhp := strings.HasPrefix(base, "php")
+
+	// Sentinel Security Update: Block backslash injection in single-quoted strings
+	// All these languages treat backslash as escape in single-quoted strings.
+	if quoteLevel == 2 {
+		if strings.Contains(val, "\\") {
+			return fmt.Errorf("interpreter injection detected: backslash escaping in single-quoted string")
+		}
+	}
 
 	if isNode && quoteLevel == 3 { // Backtick
 		if strings.Contains(val, "${") {
