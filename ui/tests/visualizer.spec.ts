@@ -8,7 +8,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Visualizer', () => {
   test('renders topology graph with seeded data', async ({ page, request }) => {
     // 1. Seed Traffic Data
-    const seedResponse = await request.post('http://localhost:50050/api/v1/debug/seed_traffic', {
+    const seedResponse = await request.post('/api/v1/debug/seed_traffic', {
       headers: {
         'X-API-Key': 'test-token' // Assuming test env has this or no auth
       },
