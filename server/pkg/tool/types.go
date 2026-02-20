@@ -3230,6 +3230,7 @@ func checkInterpreterFunctionCalls(val, language string) error {
 		"import", "require",
 		"subprocess", "child_process", "os", "sys",
 		"open", "read", "write",
+		"phpinfo",
 	}
 
 	if err := checkUnquotedKeywords(val, dangerousKeywords); err != nil {
@@ -3414,9 +3415,50 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 	if err := checkAwkInjection(val, base); err != nil {
 		return err
 	}
+	if err := checkJqInjection(val, base, quoteLevel); err != nil {
+		return err
+	}
 	if err := checkSQLInjection(val, base, quoteLevel); err != nil {
 		return err
 	}
+	return nil
+}
+
+func checkJqInjection(val, base string, quoteLevel int) error {
+	// jq: Block dangerous functions/modules that can leak secrets or perform system calls
+	// We only check if the input is being interpreted as code (unquoted in jq context).
+	// Since jq uses double quotes for strings, if quoteLevel is 1 (Double), we are inside a string.
+	// If quoteLevel is 0 (Unquoted), we are code.
+	if base != "jq" {
+		return nil
+	}
+
+	// If we are inside double quotes (Level 1), generic checks already block " and \ and $,
+	// so we cannot break out. The content is treated as a string literal.
+	if quoteLevel == 1 {
+		return nil
+	}
+
+	// Level 0 (Unquoted) or Level 2 (Single Quoted - invalid in jq but checked anyway)
+	// We must block dangerous keywords.
+
+	// Remove all whitespace to detect obfuscated calls if any (though jq keywords need separation usually, but punctuation can separate)
+	// e.g. "env" vs "env."
+	// We should tokenize or check for word boundaries.
+	// But checkUnquotedKeywords handles boundaries properly.
+
+	dangerousKeywords := []string{
+		"env",
+		"input", "inputs",
+		"module", "import", "include",
+		"halt", "halt_error",
+		"stderr",
+	}
+
+	if err := checkUnquotedKeywords(val, dangerousKeywords); err != nil {
+		return fmt.Errorf("jq injection detected: %w", err)
+	}
+
 	return nil
 }
 
