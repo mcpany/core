@@ -29,6 +29,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import * as yaml from "js-yaml";
 
 interface BulkServiceImportProps {
     onImportSuccess: () => void;
@@ -94,28 +95,53 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
                 if (!importUrl.trim()) throw new Error("URL is required.");
                 const res = await fetch(importUrl);
                 if (!res.ok) throw new Error(`Failed to fetch from URL: ${res.statusText}`);
-                const data = await res.json();
 
-                // OpenAPI Handling
-                if (data.openapi || data.swagger) {
-                     parsedServices = [{
-                        name: data.info?.title?.toLowerCase().replace(/\s+/g, '-') || "openapi-service",
-                        openapiService: {
-                            address: importUrl,
-                            specUrl: importUrl,
-                            tools: [], resources: [], calls: [], prompts: []
+                const text = await res.text();
+                try {
+                    const data = JSON.parse(text);
+                    // OpenAPI Handling
+                    if (data.openapi || data.swagger) {
+                         parsedServices = [{
+                            name: data.info?.title?.toLowerCase().replace(/\s+/g, '-') || "openapi-service",
+                            openapiService: {
+                                address: importUrl,
+                                specUrl: importUrl,
+                                tools: [], resources: [], calls: [], prompts: []
+                            }
+                        }];
+                    } else {
+                        parsedServices = Array.isArray(data) ? data : (data.services || [data]);
+                    }
+                } catch {
+                     // Try YAML
+                     try {
+                        const data = yaml.load(text) as any;
+                        if (data) {
+                             parsedServices = Array.isArray(data) ? data : (data.services || [data]);
                         }
-                    }];
-                } else {
-                    parsedServices = Array.isArray(data) ? data : (data.services || [data]);
+                     } catch {
+                         throw new Error("Failed to parse URL content as JSON or YAML.");
+                     }
                 }
+
             } else {
-                if (!jsonContent.trim()) throw new Error("JSON content is required.");
-                const data = JSON.parse(jsonContent);
-                parsedServices = Array.isArray(data) ? data : (data.services || [data]);
+                if (!jsonContent.trim()) throw new Error("Content is required.");
+
+                try {
+                    const data = JSON.parse(jsonContent);
+                    parsedServices = Array.isArray(data) ? data : (data.services || [data]);
+                } catch {
+                    try {
+                        const data = yaml.load(jsonContent) as any;
+                        if (!data) throw new Error("Empty YAML");
+                        parsedServices = Array.isArray(data) ? data : (data.services || [data]);
+                    } catch (e: any) {
+                         throw new Error("Failed to parse input as JSON or YAML.");
+                    }
+                }
             }
 
-            if (!parsedServices.length) throw new Error("No services found in input.");
+            if (!parsedServices || !parsedServices.length) throw new Error("No services found in input.");
 
             // Initial items setup
             const initialItems: ServiceImportItem[] = parsedServices.map(s => ({
@@ -276,7 +302,7 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
                                     onChange={(e) => setJsonContent(e.target.value)}
                                 />
                                 <p className="text-xs text-muted-foreground mt-2">
-                                    Paste a JSON array of service configurations or a single service object.
+                                    Paste a JSON or YAML array of service configurations or a single service object.
                                 </p>
                             </div>
                         )}
@@ -287,13 +313,13 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
                                     <Label>Configuration URL</Label>
                                     <div className="flex gap-2">
                                         <Input
-                                            placeholder="https://example.com/mcp-config.json"
+                                            placeholder="https://example.com/mcp-config.yaml"
                                             value={importUrl}
                                             onChange={(e) => setImportUrl(e.target.value)}
                                         />
                                     </div>
                                     <p className="text-xs text-muted-foreground">
-                                        Enter a URL to a JSON configuration file or OpenAPI specification.
+                                        Enter a URL to a JSON/YAML configuration file or OpenAPI specification.
                                     </p>
                                 </div>
                             </div>

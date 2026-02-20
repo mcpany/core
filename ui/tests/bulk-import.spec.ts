@@ -23,7 +23,7 @@ test.describe('Bulk Service Import Wizard', () => {
 
     const validService = [
       {
-        name: `test-service-${Date.now()}`,
+        name: `test-service-json-${Date.now()}`,
         httpService: { address: 'https://example.com' }
       }
     ];
@@ -60,5 +60,46 @@ test.describe('Bulk Service Import Wizard', () => {
     // Verify service appears in list (might need refresh or wait)
     // The wizard calls onImportSuccess which triggers fetchServices in parent
     await expect(page.getByRole('link', { name: validService[0].name })).toBeVisible();
+  });
+
+  test('should complete import flow with valid YAML', async ({ page }) => {
+    // 1. Open Dialog
+    await page.getByRole('button', { name: 'Bulk Import' }).click();
+    await expect(page.getByRole('heading', { name: 'Bulk Service Import' })).toBeVisible();
+
+    // 2. Input Step (YAML)
+    const serviceName = `test-service-yaml-${Date.now()}`;
+    const yamlString = `
+- name: ${serviceName}
+  httpService:
+    address: https://example.com
+`;
+
+    await page.getByRole('textbox').fill(yamlString);
+    await page.getByRole('button', { name: 'Next: Review' }).click();
+
+    // 3. Review Step
+    // Wait for "Review Services" header
+    await expect(page.getByRole('heading', { name: 'Review Services' })).toBeVisible();
+
+    // Wait for validation to complete (loader disappears, table populates)
+    // We expect 1 valid service
+    await expect(page.getByText('Found 1 services. 1 valid')).toBeVisible();
+
+    // Verify service name is in table
+    await expect(page.getByRole('cell', { name: serviceName })).toBeVisible();
+
+    // 4. Import Step
+    await page.getByRole('button', { name: 'Import 1 Services' }).click();
+
+    // 5. Success
+    await expect(page.getByRole('heading', { name: 'Import Complete' })).toBeVisible();
+    await expect(page.getByRole('dialog').getByText('Successfully imported 1 services.')).toBeVisible();
+
+    // Close
+    await page.getByRole('button', { name: 'Close' }).first().click();
+
+    // Verify service appears in list
+    await expect(page.getByRole('link', { name: serviceName })).toBeVisible();
   });
 });
