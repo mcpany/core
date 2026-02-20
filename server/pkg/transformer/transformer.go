@@ -18,7 +18,7 @@ import (
 // structured string using a Go template. It supports multiple output formats
 // specified by the template, such as JSON, XML, or plain text.
 //
-// This struct is safe for concurrent use.
+// Transformer is safe for concurrent use.
 type Transformer struct {
 	cache sync.Map
 	pool  sync.Pool
