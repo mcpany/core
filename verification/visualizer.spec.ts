@@ -18,12 +18,6 @@ test.describe('Visualizer Topology', () => {
     ];
 
     // Seed traffic via API
-    // Note: We need to authenticate. If the test env has auth disabled or we have a key.
-    // Assuming default dev environment or we can bypass if needed.
-    // The previous analysis showed authMiddleware is active but allows localhost if no API key.
-    // Playwright runs in the same container usually or network.
-
-    // We can't easily fetch from Playwright context to API unless we use request context.
     const apiContext = await page.context().request;
     const seedRes = await apiContext.post(`${API_URL}/api/v1/debug/seed_traffic`, {
         data: trafficPoints,
@@ -32,24 +26,18 @@ test.describe('Visualizer Topology', () => {
         }
     });
 
-    // We expect 200 or 401/403. If 401/403 we might need to handle auth.
-    // But for "localhost" access without configured key, it should pass as admin.
     expect(seedRes.ok()).toBeTruthy();
 
     // 2. Navigate to Visualizer
     await page.goto('/visualizer');
 
     // 3. Verify Graph Renders
-    // React Flow renders nodes with class 'react-flow__node'
-    await expect(page.locator('.react-flow__node')).not.toHaveCount(0);
-
-    // Check for "MCP Any" Core Node (label text)
-    await expect(page.getByText('MCP Any')).toBeVisible();
+    // Check for "MCP Any" Core Node within the graph
+    // React Flow assigns data-testid="rf__node-{id}"
+    await expect(page.locator('[data-testid="rf__node-mcp-core"]')).toBeVisible();
+    await expect(page.locator('[data-testid="rf__node-mcp-core"]').getByText('MCP Any')).toBeVisible();
 
     // Check for "Live" toggle
-    await expect(page.getByText('Live')).toBeVisible();
-
-    // 4. Verify Edges exist (implies graph connectivity)
-    // await expect(page.locator('.react-flow__edge')).not.toHaveCount(0);
+    await expect(page.getByLabel('Live')).toBeVisible();
   });
 });
