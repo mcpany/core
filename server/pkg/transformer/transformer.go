@@ -196,65 +196,65 @@ func optimizedJoin(sep string, input any) (string, bool) {
 	case []string:
 		return strings.Join(v, sep), true
 	case []int:
-		var sb strings.Builder
-		var scratch [64]byte
-		for i, val := range v {
-			if i > 0 {
-				sb.WriteString(sep)
-			}
-			sb.Write(strconv.AppendInt(scratch[:0], int64(val), 10))
-		}
-		return sb.String(), true
+		return joinSigned(sep, v), true
 	case []int64:
-		var sb strings.Builder
-		var scratch [64]byte
-		for i, val := range v {
-			if i > 0 {
-				sb.WriteString(sep)
-			}
-			sb.Write(strconv.AppendInt(scratch[:0], val, 10))
-		}
-		return sb.String(), true
-	case []float64:
-		var sb strings.Builder
-		var scratch [64]byte
-		for i, val := range v {
-			if i > 0 {
-				sb.WriteString(sep)
-			}
-			sb.Write(strconv.AppendFloat(scratch[:0], val, 'g', -1, 64))
-		}
-		return sb.String(), true
-	case []bool:
-		var sb strings.Builder
-		var scratch [64]byte
-		for i, val := range v {
-			if i > 0 {
-				sb.WriteString(sep)
-			}
-			sb.Write(strconv.AppendBool(scratch[:0], val))
-		}
-		return sb.String(), true
+		return joinSigned(sep, v), true
 	case []int32:
-		var sb strings.Builder
-		var scratch [64]byte
-		for i, val := range v {
-			if i > 0 {
-				sb.WriteString(sep)
-			}
-			sb.Write(strconv.AppendInt(scratch[:0], int64(val), 10))
-		}
-		return sb.String(), true
+		return joinSigned(sep, v), true
+	case []float64:
+		return joinFloat(sep, v), true
+	case []bool:
+		return joinBool(sep, v), true
 	case []uint64:
-		var sb strings.Builder
-		var scratch [64]byte
-		for i, val := range v {
-			if i > 0 {
-				sb.WriteString(sep)
-			}
-			sb.Write(strconv.AppendUint(scratch[:0], val, 10))
-		}
-		return sb.String(), true
+		return joinUnsigned(sep, v), true
 	}
 	return "", false
+}
+
+func joinSigned[T ~int | ~int32 | ~int64](sep string, v []T) string {
+	var sb strings.Builder
+	var scratch [64]byte
+	for i, val := range v {
+		if i > 0 {
+			sb.WriteString(sep)
+		}
+		sb.Write(strconv.AppendInt(scratch[:0], int64(val), 10))
+	}
+	return sb.String()
+}
+
+func joinUnsigned[T ~uint | ~uint32 | ~uint64](sep string, v []T) string {
+	var sb strings.Builder
+	var scratch [64]byte
+	for i, val := range v {
+		if i > 0 {
+			sb.WriteString(sep)
+		}
+		sb.Write(strconv.AppendUint(scratch[:0], uint64(val), 10))
+	}
+	return sb.String()
+}
+
+func joinFloat[T ~float32 | ~float64](sep string, v []T) string {
+	var sb strings.Builder
+	var scratch [64]byte
+	for i, val := range v {
+		if i > 0 {
+			sb.WriteString(sep)
+		}
+		sb.Write(strconv.AppendFloat(scratch[:0], float64(val), 'g', -1, 64))
+	}
+	return sb.String()
+}
+
+func joinBool(sep string, v []bool) string {
+	var sb strings.Builder
+	var scratch [64]byte
+	for i, val := range v {
+		if i > 0 {
+			sb.WriteString(sep)
+		}
+		sb.Write(strconv.AppendBool(scratch[:0], val))
+	}
+	return sb.String()
 }
