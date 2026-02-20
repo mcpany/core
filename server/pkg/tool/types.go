@@ -3019,7 +3019,7 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	// Sentinel Security Update: Interpreter Injection Protection
 	// Check if the main command is an interpreter
 	if isInterpreter(command) {
-		if err := checkInterpreterInjection(val, template, base, quoteLevel); err != nil {
+		if err := checkInterpreterInjection(val, template, placeholder, base, quoteLevel); err != nil {
 			return err
 		}
 		// Sentinel Security Update: Interpreter Strict Mode
@@ -3040,7 +3040,7 @@ func checkForShellInjection(val string, template string, placeholder string, com
 		argBase := strings.ToLower(filepath.Base(args[0]))
 		// Avoid double checking if it's the same command (already checked above)
 		if argBase != base && isInterpreter(argBase) {
-			if err := checkInterpreterInjection(val, template, argBase, quoteLevel); err != nil {
+			if err := checkInterpreterInjection(val, template, placeholder, argBase, quoteLevel); err != nil {
 				return fmt.Errorf("argument interpreter injection detected (%s): %w", argBase, err)
 			}
 			// Also check function calls for the detected interpreter context
@@ -3398,7 +3398,7 @@ func checkKeyword(word string, keywords []string, lastChar rune, lastWord string
 	return nil
 }
 
-func checkInterpreterInjection(val, template, base string, quoteLevel int) error {
+func checkInterpreterInjection(val, template, placeholder, base string, quoteLevel int) error {
 	if err := checkTarInjection(val, base); err != nil {
 		return err
 	}
@@ -3414,9 +3414,35 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 	if err := checkAwkInjection(val, base); err != nil {
 		return err
 	}
-	if err := checkSQLInjection(val, base, quoteLevel); err != nil {
+	if err := checkJqInjection(val, base); err != nil {
 		return err
 	}
+	if err := checkSQLInjection(val, template, placeholder, base, quoteLevel); err != nil {
+		return err
+	}
+	return nil
+}
+
+func checkJqInjection(val, base string) error {
+	if base != "jq" {
+		return nil
+	}
+
+	if strings.Contains(val, "\\(") {
+		return fmt.Errorf("jq injection detected: value contains interpolation '\\('")
+	}
+
+	// Block dangerous functions/keywords
+	// We use checkUnquotedKeywords to find them (ignoring quoted parts of the value)
+	dangerousKeywords := []string{
+		"env", "input", "inputs", "module", "import", "include",
+		"halt", "halt_error", "stderr", "debug",
+	}
+
+	if err := checkUnquotedKeywords(val, dangerousKeywords); err != nil {
+		return fmt.Errorf("jq injection detected: %w", err)
+	}
+
 	return nil
 }
 
@@ -3439,20 +3465,83 @@ func checkTarInjection(val, base string) error {
 	return nil
 }
 
-func checkSQLInjection(val, base string, quoteLevel int) error {
-	// SQL Injection Check
-	// If the command is a SQL client (psql, mysql, sqlite3) and the value is unquoted (Level 0),
-	// we must prevent SQL injection by blocking SQL keywords.
+func checkSQLInjection(val, template, placeholder, base string, quoteLevel int) error {
 	isSQL := base == "psql" || base == "mysql" || base == "sqlite3"
-	if isSQL && quoteLevel == 0 {
-		// Block common SQL keywords and comment markers
-		// We check for keywords surrounded by word boundaries or at start/end of string.
-		// val is user input, e.g. "1 OR 1=1"
+	if !isSQL {
+		return nil
+	}
+
+	// Determine if the placeholder is inside a SQL string literal (surrounded by single quotes)
+	// We check the template around the placeholder.
+	// Note: quoteLevel tells us about SHELL quoting.
+	// If shell quote is Double (1), we might be in SQL string or not.
+	// Example 1: psql -c "SELECT * FROM t WHERE id={{id}}" -> Not SQL quoted
+	// Example 2: psql -c "SELECT * FROM t WHERE name='{{name}}'" -> SQL quoted
+
+	isSQLQuoted := false
+	if template != "" && placeholder != "" {
+		// We must check ALL occurrences of the placeholder.
+		// If ANY occurrence is unquoted, we must treat the value as unquoted (strict).
+		// Only if ALL occurrences are quoted can we relax to quoted string checks.
+		allQuoted := true
+		found := false
+		start := 0
+		for {
+			idx := strings.Index(template[start:], placeholder)
+			if idx == -1 {
+				break
+			}
+			found = true
+			actualIdx := start + idx
+			quoted := false
+			if actualIdx > 0 && actualIdx+len(placeholder) < len(template) {
+				if template[actualIdx-1] == '\'' && template[actualIdx+len(placeholder)] == '\'' {
+					quoted = true
+				}
+			}
+
+			if !quoted {
+				allQuoted = false
+				break
+			}
+			start = actualIdx + len(placeholder)
+		}
+		if found && allQuoted {
+			isSQLQuoted = true
+		}
+	}
+
+	if isSQLQuoted {
+		// If inside SQL string, we must prevent breaking out of the string.
+		// Standard SQL escape for single quote is usually doubling it ('').
+		// Backslash escaping depends on configuration (e.g. standard_conforming_strings in Postgres).
+		// Safest is to block single quotes if we can't ensure they are escaped.
+		// Note: checkUnquotedInjection blocks ' for unquoted shell args.
+		// checkForShellInjection blocks ' for single-quoted shell args.
+		// But for double-quoted shell args, ' is allowed.
+		if strings.Contains(val, "'") {
+			return fmt.Errorf("SQL injection detected: value contains single quote inside SQL string literal")
+		}
+		// Also block backslash because it can escape the closing quote in MySQL and some Postgres configurations.
+		if strings.Contains(val, "\\") {
+			return fmt.Errorf("SQL injection detected: value contains backslash inside SQL string literal")
+		}
+	} else {
+		// If NOT inside SQL string (or we can't tell), we must treat it as potentially dangerous identifier/keyword context.
+
+		// Always block statement chaining and comments for unquoted SQL context
+		if strings.Contains(val, ";") {
+			return fmt.Errorf("SQL injection detected: value contains ';'")
+		}
+		if strings.Contains(val, "--") {
+			return fmt.Errorf("SQL injection detected: value contains '--'")
+		}
+
+		// We block SQL keywords.
 		upperVal := strings.ToUpper(val)
 		keywords := []string{
 			"OR", "AND", "UNION", "SELECT", "FROM", "WHERE", "JOIN",
 			"DROP", "ALTER", "CREATE", "INSERT", "UPDATE", "DELETE",
-			"--",
 		}
 
 		// Helper to check word boundary
@@ -3461,13 +3550,6 @@ func checkSQLInjection(val, base string, quoteLevel int) error {
 		}
 
 		for _, kw := range keywords {
-			if kw == "--" {
-				if strings.Contains(upperVal, "--") {
-					return fmt.Errorf("SQL injection detected: value contains '--'")
-				}
-				continue
-			}
-
 			idx := strings.Index(upperVal, kw)
 			for idx != -1 {
 				// Check boundaries
@@ -3475,7 +3557,7 @@ func checkSQLInjection(val, base string, quoteLevel int) error {
 				endOk := idx+len(kw) == len(upperVal) || isBoundary(upperVal[idx+len(kw)])
 
 				if startOk && endOk {
-					return fmt.Errorf("SQL injection detected: value contains SQL keyword %q in unquoted context", kw)
+					return fmt.Errorf("SQL injection detected: value contains SQL keyword %q in unquoted SQL context", kw)
 				}
 				// Find next occurrence
 				nextIdx := strings.Index(upperVal[idx+1:], kw)
@@ -3486,6 +3568,7 @@ func checkSQLInjection(val, base string, quoteLevel int) error {
 			}
 		}
 	}
+
 	return nil
 }
 
