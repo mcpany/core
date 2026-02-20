@@ -566,3 +566,62 @@ func TestManager_GetGraph_Metrics(t *testing.T) {
 	// Verify Status Upgrade to ERROR (since error rate > 5%)
 	assert.Equal(t, topologyv1.NodeStatus_NODE_STATUS_ERROR, svcNode.GetStatus())
 }
+
+func TestManager_GetRecentServiceStats(t *testing.T) {
+	mockRegistry := new(MockServiceRegistry)
+	mockTM := new(MockToolManager)
+	m := NewManager(mockRegistry, mockTM)
+	defer m.Close()
+
+	// Seed data
+	now := time.Now()
+	minuteKey := now.Truncate(time.Minute).Unix()
+	// 5 minutes ago
+	pastKey := now.Add(-5 * time.Minute).Truncate(time.Minute).Unix()
+	// 20 minutes ago (should be excluded)
+	oldKey := now.Add(-20 * time.Minute).Truncate(time.Minute).Unix()
+
+	m.mu.Lock()
+	m.trafficHistory[minuteKey] = &MinuteStats{
+		Requests: 10,
+		Errors:   1,
+		Latency:  1000, // 100ms avg
+		ServiceStats: map[string]*ServiceTrafficStats{
+			"svc-1": {Requests: 10, Errors: 1, Latency: 1000},
+		},
+	}
+	m.trafficHistory[pastKey] = &MinuteStats{
+		Requests: 10,
+		Errors:   0,
+		Latency:  2000, // 200ms avg
+		ServiceStats: map[string]*ServiceTrafficStats{
+			"svc-1": {Requests: 10, Errors: 0, Latency: 2000},
+		},
+	}
+	m.trafficHistory[oldKey] = &MinuteStats{
+		Requests: 100,
+		Errors:   0,
+		Latency:  1000,
+		ServiceStats: map[string]*ServiceTrafficStats{
+			"svc-1": {Requests: 100, Errors: 0, Latency: 1000},
+		},
+	}
+	m.mu.Unlock()
+
+	// Test with 15m window
+	avgLatency, errorRate := m.GetRecentServiceStats("svc-1", 15*time.Minute)
+
+	// Total Requests: 10 + 10 = 20
+	// Total Errors: 1 + 0 = 1
+	// Total Latency: 1000 + 2000 = 3000
+	// Avg Latency: 3000 / 20 = 150ms
+	// Error Rate: 1 / 20 = 0.05 (5%)
+
+	assert.Equal(t, 150*time.Millisecond, avgLatency)
+	assert.Equal(t, 5.0, errorRate)
+
+	// Test for all services
+	avgLatencyAll, errorRateAll := m.GetRecentServiceStats("", 15*time.Minute)
+	assert.Equal(t, 150*time.Millisecond, avgLatencyAll)
+	assert.Equal(t, 5.0, errorRateAll)
+}

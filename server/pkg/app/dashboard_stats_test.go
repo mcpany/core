@@ -14,6 +14,7 @@ import (
 	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
 	"github.com/mcpany/core/server/pkg/tool"
@@ -392,4 +393,95 @@ func TestStatsCacheEviction(t *testing.T) {
 	val, ok := app.getStatsCache("key-101")
 	assert.True(t, ok)
 	assert.Equal(t, 101, val)
+}
+
+func TestCalculateUptime(t *testing.T) {
+	refTime := time.Date(2026, 1, 1, 12, 0, 0, 0, time.UTC)
+	window := 1 * time.Hour
+
+	// Helper to make points relative to refTime
+	makePoint := func(offset time.Duration, status string) health.HistoryPoint {
+		return health.HistoryPoint{
+			Timestamp: refTime.Add(offset).UnixMilli(),
+			Status:    status,
+		}
+	}
+
+	tests := []struct {
+		name     string
+		history  []health.HistoryPoint
+		expected string
+	}{
+		{
+			name:     "Empty history",
+			history:  []health.HistoryPoint{},
+			expected: "N/A",
+		},
+		{
+			name: "Single point UP before window",
+			history: []health.HistoryPoint{
+				makePoint(-2*time.Hour, "up"),
+			},
+			expected: "100.0%", // Always up in window
+		},
+		{
+			name: "Single point DOWN before window",
+			history: []health.HistoryPoint{
+				makePoint(-2*time.Hour, "down"),
+			},
+			expected: "0.0%", // Always down in window
+		},
+		{
+			name: "Point inside window, unknown before",
+			history: []health.HistoryPoint{
+				makePoint(-30*time.Minute, "up"),
+			},
+			// Interval [-60m, -30m]: unknown. Interval [-30m, 0m]: up.
+			// Total known: 30m. Up: 30m.
+			expected: "100.0%",
+		},
+		{
+			name: "Transition UP -> DOWN inside window",
+			history: []health.HistoryPoint{
+				makePoint(-45*time.Minute, "up"),   // Start of known state (if no prior)
+				makePoint(-15*time.Minute, "down"), // Down for last 15m
+			},
+			// [-45m, -15m]: UP (30m). [-15m, 0m]: DOWN (15m).
+			// Total known: 45m. Up: 30m.
+			// 30/45 = 2/3 = 66.7%
+			expected: "66.7%",
+		},
+		{
+			name: "Prior UP, then DOWN inside",
+			history: []health.HistoryPoint{
+				makePoint(-2*time.Hour, "up"),
+				makePoint(-30*time.Minute, "down"),
+			},
+			// [-60m, -30m]: UP (30m). [-30m, 0m]: DOWN (30m).
+			// Total: 60m. Up: 30m.
+			// 50%
+			expected: "50.0%",
+		},
+		{
+			name: "Multiple transitions",
+			history: []health.HistoryPoint{
+				makePoint(-2*time.Hour, "up"),
+				makePoint(-40*time.Minute, "down"), // UP for 20m in window
+				makePoint(-20*time.Minute, "up"),   // DOWN for 20m
+				// UP for remaining 20m
+			},
+			// [-60, -40]: UP (20m)
+			// [-40, -20]: DOWN (20m)
+			// [-20, 0]: UP (20m)
+			// Total UP: 40m. Total: 60m. 66.7%
+			expected: "66.7%",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := calculateUptime(tt.history, window, refTime)
+			assert.Equal(t, tt.expected, result)
+		})
+	}
 }
