@@ -3575,8 +3575,28 @@ func checkAwkInjection(val, base string, quoteLevel int) error {
 		// In awk, double quotes (Level 1) denote strings, where '@' is safe.
 		// Single quotes (Level 2) or unquoted (Level 0) denote code/regex/identifiers, where '@' is dangerous.
 		if quoteLevel != 1 {
-			if strings.Contains(val, "@") {
-				return fmt.Errorf("awk injection detected: value contains '@' (indirect function call or extension)")
+			// Scan the value to check if '@' appears outside of double quotes.
+			// We only track double quotes because that's the standard string delimiter in Awk.
+			// We do not attempt to parse regexes (/) because distinguishing division from regex is complex,
+			// and blocking @ in regexes (while annoying) is safer than allowing injection.
+			inDouble := false
+			escaped := false
+			for _, r := range val {
+				if escaped {
+					escaped = false
+					continue
+				}
+				if r == '\\' {
+					escaped = true
+					continue
+				}
+				if r == '"' {
+					inDouble = !inDouble
+					continue
+				}
+				if r == '@' && !inDouble {
+					return fmt.Errorf("awk injection detected: value contains '@' (indirect function call or extension)")
+				}
 			}
 		}
 	}

@@ -6,6 +6,7 @@ package tool
 import (
 	"context"
 	"encoding/json"
+	"strings"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -59,5 +60,53 @@ func TestLocalCommandTool_AwkSystemInjection_Security(t *testing.T) {
 		t.Fail()
 	} else {
 		t.Logf("Blocked: %v", err)
+	}
+}
+
+// TestLocalCommandTool_AwkStringWithAtSymbol tests that legitimate use of '@' in strings is allowed.
+func TestLocalCommandTool_AwkStringWithAtSymbol(t *testing.T) {
+	// Define a tool that uses 'awk'.
+	tool := v1.Tool_builder{
+		Name: proto.String("awk-tool-safe"),
+	}.Build()
+	service := configv1.CommandLineUpstreamService_builder{
+		Command: proto.String("awk"),
+		Local:   proto.Bool(true),
+	}.Build()
+
+	// Configured to run `awk '{{script}}'`
+	callDef := configv1.CommandLineCallDefinition_builder{
+		Args: []string{"'{{script}}'"},
+		Parameters: []*configv1.CommandLineParameterMapping{
+			configv1.CommandLineParameterMapping_builder{Schema: configv1.ParameterSchema_builder{Name: proto.String("script")}.Build()}.Build(),
+		},
+	}.Build()
+
+	localTool := NewLocalCommandTool(tool, service, callDef, nil, "call-id")
+
+	// Payload uses '@' inside double quotes, which should be safe.
+	// We use 'print' so it's a valid awk script.
+	payload := `BEGIN { print "email@example.com" }`
+
+	req := &ExecutionRequest{
+		ToolName: "awk-tool-safe",
+		Arguments: map[string]interface{}{
+			"script": payload,
+		},
+	}
+	req.ToolInputs, _ = json.Marshal(req.Arguments)
+
+	// We expect this Execute call to NOT return a security error.
+	_, err := localTool.Execute(context.Background(), req)
+
+	if err != nil {
+		if strings.Contains(err.Error(), "awk injection detected") {
+			t.Errorf("False Positive: Safe payload %q was blocked: %v", payload, err)
+		} else {
+			// Other errors are acceptable (e.g. awk not found)
+			t.Logf("Execution failed (expected/acceptable): %v", err)
+		}
+	} else {
+		t.Logf("Success: Safe payload allowed")
 	}
 }
