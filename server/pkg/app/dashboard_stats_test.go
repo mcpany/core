@@ -14,6 +14,7 @@ import (
 	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
 	"github.com/mcpany/core/server/pkg/tool"
@@ -392,4 +393,135 @@ func TestStatsCacheEviction(t *testing.T) {
 	val, ok := app.getStatsCache("key-101")
 	assert.True(t, ok)
 	assert.Equal(t, 101, val)
+}
+
+func TestCalculateUptime(t *testing.T) {
+	now := time.Now().UnixMilli()
+	hour := int64(3600 * 1000)
+
+	tests := []struct {
+		name     string
+		points   []health.HistoryPoint
+		window   time.Duration
+		expected string
+	}{
+		{
+			name:     "Empty history",
+			points:   []health.HistoryPoint{},
+			window:   24 * time.Hour,
+			expected: "100%",
+		},
+		{
+			name: "Single UP point inside window",
+			points: []health.HistoryPoint{
+				{Timestamp: now - 1000, Status: "UP"},
+			},
+			window:   24 * time.Hour,
+			expected: "100%", // Heuristic extends UP backwards
+		},
+		{
+			name: "Single DOWN point inside window",
+			points: []health.HistoryPoint{
+				{Timestamp: now - 1000, Status: "DOWN"},
+			},
+			window:   24 * time.Hour,
+			expected: "0%", // Heuristic extends DOWN backwards
+		},
+		{
+			name: "Mixed history",
+			points: []health.HistoryPoint{
+				// Window starts at now - 10h
+				{Timestamp: now - 5*hour, Status: "DOWN"}, // UP from start -> 5h ago. DOWN at 5h ago.
+				{Timestamp: now - 4*hour, Status: "UP"},   // DOWN from 5h ago -> 4h ago (1h down). UP at 4h ago.
+				// UP from 4h ago -> now.
+			},
+			window: 10 * time.Hour,
+			// Total 10h.
+			// Start (-10h) -> -5h: UP (inherited from heuristic? No, first inside is at -5h (DOWN)).
+			// Wait, if first inside is DOWN, heuristic says it was DOWN before.
+			// So (-10h -> -5h) is DOWN. (5h)
+			// (-5h -> -4h) is DOWN. (1h)
+			// (-4h -> 0) is UP. (4h)
+			// Total UP: 4h. Total DOWN: 6h.
+			// Uptime: 40%.
+			expected: "40.0%",
+		},
+		{
+			name: "Mixed history with point before window",
+			points: []health.HistoryPoint{
+				{Timestamp: now - 12*hour, Status: "UP"},
+				{Timestamp: now - 5*hour, Status: "DOWN"},
+				{Timestamp: now - 4*hour, Status: "UP"},
+			},
+			window: 10 * time.Hour,
+			// Window start: -10h.
+			// Point before: -12h (UP).
+			// -10h -> -5h: UP (inherited from -12h). Duration 5h.
+			// -5h -> -4h: DOWN. Duration 1h.
+			// -4h -> 0: UP. Duration 4h.
+			// Total UP: 9h. Total DOWN: 1h.
+			// Uptime: 90%.
+			expected: "90.0%",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.expected, calculateUptime(tt.points, tt.window))
+		})
+	}
+}
+
+func TestHandleDashboardHealth(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockRegistry := new(MockServiceRegistry)
+	mockTM := tool.NewMockManagerInterface(ctrl)
+	tm := topology.NewManager(mockRegistry, mockTM)
+
+	// Seed traffic for "svc1"
+	// Current time.
+	nowStr := time.Now().Format("15:04")
+	tm.SeedTrafficHistory([]topology.TrafficPoint{
+		{Time: nowStr, Total: 10, Latency: 123},
+	})
+
+	mockRegistry.On("GetAllServices").Return(func() []*configv1.UpstreamServiceConfig {
+		s := &configv1.UpstreamServiceConfig{}
+		s.SetName("svc1")
+		// Service ID is missing, will default to sanitized name if not careful
+		// But in this test environment, we might need to be careful.
+		// svc.GetId() returns empty if not set.
+		return []*configv1.UpstreamServiceConfig{s}
+	}(), nil)
+
+	// Mock GetServiceError calls
+	// It is called twice: once for status determination, once for message
+	mockRegistry.On("GetServiceError", "").Return("", false)
+
+	app := &Application{
+		TopologyManager: tm,
+		ServiceRegistry: mockRegistry,
+		statsCache:      make(map[string]statsCacheEntry),
+	}
+
+	req, _ := http.NewRequest("GET", "/dashboard/health", nil)
+	rr := httptest.NewRecorder()
+
+	handler := app.handleDashboardHealth()
+	handler.ServeHTTP(rr, req)
+
+	assert.Equal(t, http.StatusOK, rr.Code)
+
+	var resp ServiceHealthResponse
+	err := json.Unmarshal(rr.Body.Bytes(), &resp)
+	require.NoError(t, err)
+
+	require.Len(t, resp.Services, 1)
+	assert.Equal(t, "svc1", resp.Services[0].Name)
+	// Latency will be "123ms" (global stats used because service ID is empty in mock config)
+	assert.Equal(t, "123ms", resp.Services[0].Latency)
+	// Uptime will be "100%" because no health history.
+	assert.Equal(t, "100%", resp.Services[0].Uptime)
 }

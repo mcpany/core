@@ -5,6 +5,7 @@ package app
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"sort"
 	"time"
@@ -533,12 +534,23 @@ func (a *Application) handleDashboardHealth() http.HandlerFunc {
 				}
 			}
 
+			// Calculate real stats
+			latencyStr := "0ms"
+			if a.TopologyManager != nil {
+				avgLat, _ := a.TopologyManager.GetRecentServiceStats(svc.GetId(), 15*time.Minute)
+				if avgLat > 0 {
+					latencyStr = avgLat.String()
+				}
+			}
+
+			uptimeStr := calculateUptime(hPoints, 24*time.Hour)
+
 			serviceHealths = append(serviceHealths, ServiceHealth{
 				ID:      svc.GetId(),
 				Name:    name,
 				Status:  uiStatus,
-				Latency: "10ms", // TODO: Get real latency from metrics
-				Uptime:  "99.9%", // TODO: Calculate real uptime
+				Latency: latencyStr,
+				Uptime:  uptimeStr,
 				Message: msg,
 			})
 		}
@@ -559,4 +571,91 @@ func (a *Application) handleDashboardHealth() http.HandlerFunc {
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(resp)
 	}
+}
+
+func calculateUptime(points []health.HistoryPoint, window time.Duration) string {
+	if len(points) == 0 {
+		return "100%" // Default to 100% if no history (optimistic)
+	}
+
+	now := time.Now().UnixMilli()
+	startWindow := now - window.Milliseconds()
+
+	// Filter points within window, plus the one immediately before (to know start state)
+	var relevantPoints []health.HistoryPoint
+
+	// Find the index of the first point inside the window
+	firstInside := -1
+	for i, p := range points {
+		if p.Timestamp >= startWindow {
+			firstInside = i
+			break
+		}
+	}
+
+	if firstInside == -1 {
+		// All points are older than window. Status is whatever the last point was.
+		lastStatus := points[len(points)-1].Status
+		if isHealthy(lastStatus) {
+			return "100%"
+		}
+		return "0%"
+	}
+
+	// Add the point immediately before window start if it exists, to establish initial state
+	if firstInside > 0 {
+		relevantPoints = append(relevantPoints, points[firstInside-1])
+	} else {
+		// If first point is inside window, we assume previous state was same as first.
+		relevantPoints = append(relevantPoints, health.HistoryPoint{Timestamp: startWindow, Status: points[firstInside].Status})
+	}
+
+	relevantPoints = append(relevantPoints, points[firstInside:]...)
+
+	var upTimeMillis int64
+
+	for i := 0; i < len(relevantPoints); i++ {
+		current := relevantPoints[i]
+
+		// Determine end of this segment
+		var endMillis int64
+		if i == len(relevantPoints)-1 {
+			endMillis = now
+		} else {
+			endMillis = relevantPoints[i+1].Timestamp
+		}
+
+		// Clip start to window start
+		startMillis := current.Timestamp
+		if startMillis < startWindow {
+			startMillis = startWindow
+		}
+
+		if endMillis > now {
+			endMillis = now
+		}
+
+		if endMillis > startMillis {
+			if isHealthy(current.Status) {
+				upTimeMillis += (endMillis - startMillis)
+			}
+		}
+	}
+
+	uptimePercent := (float64(upTimeMillis) / float64(window.Milliseconds())) * 100.0
+	if uptimePercent > 100 {
+		uptimePercent = 100
+	}
+
+	if uptimePercent == 100 {
+		return "100%"
+	}
+	if uptimePercent == 0 {
+		return "0%"
+	}
+	return fmt.Sprintf("%.1f%%", uptimePercent)
+}
+
+func isHealthy(status string) bool {
+	return status == "up" || status == "UP" || status == "healthy" || status == "HEALTHY"
 }
