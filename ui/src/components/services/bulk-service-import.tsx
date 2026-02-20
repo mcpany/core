@@ -29,6 +29,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import * as yaml from "js-yaml";
 
 interface BulkServiceImportProps {
     onImportSuccess: () => void;
@@ -110,8 +111,20 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
                     parsedServices = Array.isArray(data) ? data : (data.services || [data]);
                 }
             } else {
-                if (!jsonContent.trim()) throw new Error("JSON content is required.");
-                const data = JSON.parse(jsonContent);
+                if (!jsonContent.trim()) throw new Error("Content is required.");
+
+                let data;
+                try {
+                    data = JSON.parse(jsonContent);
+                } catch (e) {
+                    try {
+                        data = yaml.load(jsonContent);
+                    } catch (ye) {
+                        throw new Error("Invalid content. Must be valid JSON or YAML.");
+                    }
+                }
+
+                if (!data) throw new Error("Empty or invalid content.");
                 parsedServices = Array.isArray(data) ? data : (data.services || [data]);
             }
 
@@ -276,7 +289,7 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
                                     onChange={(e) => setJsonContent(e.target.value)}
                                 />
                                 <p className="text-xs text-muted-foreground mt-2">
-                                    Paste a JSON array of service configurations or a single service object.
+                                    Paste a JSON or YAML configuration.
                                 </p>
                             </div>
                         )}

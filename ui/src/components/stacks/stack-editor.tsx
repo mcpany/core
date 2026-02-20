@@ -46,9 +46,17 @@ export function StackEditor({ initialValue, onSave, onCancel }: StackEditorProps
 
   const handleTemplateSelect = (snippet: string) => {
       try {
-          const doc = yaml.load(value) as any || {};
-          const template = yaml.load(snippet) as any;
+          // Try to parse the current document
+          let doc: any;
+          try {
+             doc = yaml.load(value) as any || {};
+          } catch (e) {
+             // If document is invalid, fall back to append directly
+             throw new Error("Current YAML is invalid, falling back to append");
+          }
 
+          // Parse the snippet
+          const template = yaml.load(snippet) as any;
           // Template is usually an array of one item: [{name: ...}]
           const newService = Array.isArray(template) ? template[0] : template;
 
@@ -63,15 +71,27 @@ export function StackEditor({ initialValue, onSave, onCancel }: StackEditorProps
               // It's a map, we need to convert newService to map entry
               // newService is {name: "foo", ...}
               const name = newService.name || `service-${Object.keys(doc.services).length + 1}`;
+              // eslint-disable-next-line @typescript-eslint/no-unused-vars
               const { name: _, ...rest } = newService;
               doc.services[name] = rest;
           }
 
-          const newYaml = yaml.dump(doc, { indent: 2, lineWidth: -1 });
+          const newYaml = yaml.dump(doc, { indent: 2, lineWidth: -1, noRefs: true });
           setValue(newYaml);
       } catch (e) {
-          console.error("Failed to smartly insert template, falling back to append", e);
-          const newValue = value + "\n" + snippet;
+          console.warn("Smart insertion failed, appending snippet.", e);
+
+          // Fallback: Append to end of file
+          // Ensure we have a services block if not present in text
+          let newValue = value.trimEnd();
+
+          // Check if "services:" exists in the text (simple check)
+          if (!newValue.includes("services:")) {
+              newValue += "\nservices:";
+          }
+
+          // Ensure newline before appending snippet
+          newValue += "\n" + snippet;
           setValue(newValue);
       }
   };
