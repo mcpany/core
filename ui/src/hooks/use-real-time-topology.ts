@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Node, Edge, useNodesState, useEdgesState } from '@xyflow/react';
 import { apiClient } from '@/lib/client';
 import dagre from 'dagre';
@@ -61,6 +61,13 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[]) => {
     return { nodes: layoutedNodes, edges };
 };
 
+// Helper to compute a hash of the graph structure (ignoring metrics/positions)
+const getStructureHash = (nodes: Node[], edges: Edge[]) => {
+    const nodeIds = nodes.map(n => n.id).sort().join(',');
+    const edgeIds = edges.map(e => `${e.source}->${e.target}`).sort().join(',');
+    return `${nodeIds}|${edgeIds}`;
+};
+
 /**
  * Hook to fetch and manage the network topology graph.
  * @returns The topology state and controls.
@@ -71,6 +78,10 @@ export function useRealTimeTopology() {
     const [loading, setLoading] = useState(false);
     const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
     const [isLive, setIsLive] = useState(false);
+
+    // ⚡ BOLT: Track previous structure to avoid redundant layouts.
+    // Randomized Selection from Top 5 High-Impact Targets.
+    const prevStructureHash = useRef<string>('');
 
     const fetchData = useCallback(async () => {
         try {
@@ -177,16 +188,39 @@ export function useRealTimeTopology() {
                 });
             }
 
-            // Apply Layout
-            const layout = getLayoutedElements(rawNodes, rawEdges);
-            setNodes(layout.nodes);
-            setEdges(layout.edges);
+            const currentStructureHash = getStructureHash(rawNodes, rawEdges);
+
+            if (currentStructureHash === prevStructureHash.current && prevStructureHash.current !== '') {
+                // ⚡ BOLT: Skip expensive layout calculation if only metrics changed.
+                // Randomized Selection from Top 5 High-Impact Targets.
+                // Structure is identical, only update node data (metrics).
+                const rawNodeMap = new Map(rawNodes.map(n => [n.id, n]));
+                setNodes((nds) => nds.map((n) => {
+                    const freshNode = rawNodeMap.get(n.id);
+                    if (freshNode) {
+                        // Preserve position, update data and type
+                        return {
+                            ...n,
+                            data: freshNode.data,
+                            type: freshNode.type,
+                        };
+                    }
+                    return n;
+                }));
+            } else {
+                // ⚡ BOLT: Recalculate layout only on structural change.
+                const layout = getLayoutedElements(rawNodes, rawEdges);
+                setNodes(layout.nodes);
+                setEdges(layout.edges);
+                prevStructureHash.current = currentStructureHash;
+            }
+
             setLastUpdated(new Date());
 
         } catch (e) {
             console.error("Failed to fetch topology", e);
         }
-    }, [setNodes, setEdges]);
+    }, [setNodes, setEdges]); // prevStructureHash is a ref, so stable.
 
     useEffect(() => {
         fetchData();
