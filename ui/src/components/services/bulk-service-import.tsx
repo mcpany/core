@@ -6,6 +6,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import * as yaml from "js-yaml";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -110,8 +111,21 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
                     parsedServices = Array.isArray(data) ? data : (data.services || [data]);
                 }
             } else {
-                if (!jsonContent.trim()) throw new Error("JSON content is required.");
-                const data = JSON.parse(jsonContent);
+                if (!jsonContent.trim()) throw new Error("Content is required.");
+
+                let data: any;
+                try {
+                    data = JSON.parse(jsonContent);
+                } catch (e) {
+                    // Try YAML
+                    try {
+                        data = yaml.load(jsonContent);
+                    } catch (yamlErr) {
+                        throw new Error("Failed to parse input as JSON or YAML.");
+                    }
+                }
+
+                if (!data) throw new Error("Parsed content is empty.");
                 parsedServices = Array.isArray(data) ? data : (data.services || [data]);
             }
 
