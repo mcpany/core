@@ -128,8 +128,9 @@ export function RequestPreview({ call, tool, serviceName, onExecute, executionRe
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-full">
                 <div className="flex flex-col gap-4">
                     <div className="space-y-2">
-                        <Label>Test Arguments (JSON)</Label>
+                        <Label htmlFor="request-preview-args">Test Arguments (JSON)</Label>
                         <Textarea
+                            id="request-preview-args"
                             className="font-mono text-xs h-[200px]"
                             value={argsJson}
                             onChange={(e) => setArgsJson(e.target.value)}
