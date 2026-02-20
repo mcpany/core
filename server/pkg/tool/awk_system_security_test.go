@@ -47,6 +47,8 @@ func TestLocalCommandTool_AwkSystem_Security(t *testing.T) {
 	// 2. checkInterpreterFunctionCalls checks "system(" but fails on "sy" "stem".
 	// 3. checkUnquotedKeywords checks quotes as delimiters, so it sees "sy", "stem".
 	// 4. checkAwkInjection only blocks |, >, <, getline. It allows @ if not fixed.
+	//
+	// This test ensures that the fix implemented in checkAwkInjection correctly blocks this vector.
 
 	payload := `BEGIN { f="sy" "stem"; @f("id") }`
 
