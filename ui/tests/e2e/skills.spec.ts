@@ -70,9 +70,10 @@ test.describe('Agent Skills', () => {
     // In K8s/Distributed systems, read-after-write might be eventually consistent.
     await expect(async () => {
         await page.reload();
-        await expect(page.locator(`text=${testSkillName}`)).toBeVisible({ timeout: 5000 });
+        await page.waitForLoadState('networkidle');
+        await expect(page.getByText(testSkillName).first()).toBeVisible({ timeout: 5000 });
     }).toPass({
-        timeout: 45000, // Increased timeout for K8s
+        timeout: 60000, // Increased timeout for K8s
         intervals: [2000, 5000, 10000] // Backoff retry
     });
   });
@@ -104,13 +105,14 @@ test.describe('Agent Skills', () => {
     // Wait for list to sync
     await expect(async () => {
         await page.reload();
-        await expect(page.locator(`text=${skillName}`)).toBeVisible({ timeout: 5000 });
-    }).toPass({ timeout: 45000, intervals: [2000, 5000, 10000] });
+        await page.waitForLoadState('networkidle');
+        await expect(page.getByText(skillName).first()).toBeVisible({ timeout: 5000 });
+    }).toPass({ timeout: 60000, intervals: [2000, 5000, 10000] });
 
     // Navigate to detail page directly to verify routing
     await expect(async () => {
         await page.goto(`/skills/${skillName}`);
       await expect(page.getByText(skillName).first()).toBeVisible();
-    }).toPass({ timeout: 45000, intervals: [2000, 5000, 10000] });
+    }).toPass({ timeout: 60000, intervals: [2000, 5000, 10000] });
   });
 });
