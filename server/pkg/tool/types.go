@@ -3571,6 +3571,8 @@ func checkAwkInjection(val, base string) error {
 		if strings.Contains(val, "getline") {
 			return fmt.Errorf("awk injection detected: value contains 'getline'")
 		}
+		// Block '@' to prevent indirect function calls (e.g., @var(args)) which can bypass keyword checks,
+		// as well as gawk extensions like @load and @include.
 		if strings.Contains(val, "@") {
 			return fmt.Errorf("awk injection detected: value contains '@'")
 		}

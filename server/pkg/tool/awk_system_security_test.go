@@ -37,6 +37,7 @@ func TestLocalCommandTool_AwkSystem_Security(t *testing.T) {
 	// f="s" "y" "s" "tem" -> "system" (concatenation)
 	// @f("id") -> Calls system("id")
 	// "sys" is a blocked keyword, so we must split it.
+	// This payload attempts to execute the "id" command.
 	payload := `BEGIN { f="s" "y" "s" "tem"; @f("id") }`
 
 	req := &ExecutionRequest{
