@@ -60,6 +60,29 @@ func AddHealthStatus(serviceName string, status string) {
 	}
 }
 
+// AddHealthStatusWithTime adds a status point to the history with a specific time.
+// This is primarily for testing.
+func AddHealthStatusWithTime(serviceName string, status string, t time.Time) {
+	historyMu.Lock()
+	defer historyMu.Unlock()
+
+	hist, ok := historyStore[serviceName]
+	if !ok {
+		hist = &ServiceHealthHistory{Points: make([]HistoryPoint, 0, 100)}
+		historyStore[serviceName] = hist
+	}
+
+	hist.Points = append(hist.Points, HistoryPoint{
+		Timestamp: t.UnixMilli(),
+		Status:    status,
+	})
+
+	// Prune
+	if len(hist.Points) > 1000 {
+		hist.Points = hist.Points[len(hist.Points)-1000:]
+	}
+}
+
 // GetHealthHistory returns the history for all services.
 func GetHealthHistory() map[string][]HistoryPoint {
 	historyMu.RLock()

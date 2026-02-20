@@ -272,6 +272,45 @@ func (m *Manager) GetStats(serviceID string) Stats {
 	}
 }
 
+// GetRecentServiceStats returns aggregated stats for a service over a duration.
+func (m *Manager) GetRecentServiceStats(serviceID string, duration time.Duration) Stats {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+
+	var totalRequests int64
+	var totalLatency int64
+	var totalErrors int64
+
+	now := time.Now()
+	cutoff := now.Add(-duration).Unix()
+
+	for t, stats := range m.trafficHistory {
+		if t >= cutoff {
+			if stats.ServiceStats != nil {
+				if sStats, ok := stats.ServiceStats[serviceID]; ok {
+					totalRequests += sStats.Requests
+					totalLatency += sStats.Latency
+					totalErrors += sStats.Errors
+				}
+			}
+		}
+	}
+
+	var avgLatency time.Duration
+	var errorRate float64
+
+	if totalRequests > 0 {
+		avgLatency = time.Duration(totalLatency / totalRequests) * time.Millisecond
+		errorRate = float64(totalErrors) / float64(totalRequests)
+	}
+
+	return Stats{
+		TotalRequests: totalRequests,
+		AvgLatency:    avgLatency,
+		ErrorRate:     errorRate,
+	}
+}
+
 // GetTrafficHistory returns the traffic history for the last 24 hours.
 // serviceID is optional.
 func (m *Manager) GetTrafficHistory(serviceID string) []TrafficPoint {
@@ -378,6 +417,59 @@ func (m *Manager) SeedTrafficHistory(points []TrafficPoint) {
 		m.sessions["seed-data"].RequestCount += p.Total
 		m.sessions["seed-data"].ErrorCount += p.Errors
 		m.sessions["seed-data"].TotalLatency += time.Duration(p.Latency*p.Total) * time.Millisecond
+	}
+}
+
+// SeedServiceTrafficHistory seeds traffic history for a specific service.
+func (m *Manager) SeedServiceTrafficHistory(serviceID string, points []TrafficPoint) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	now := time.Now()
+	// Do NOT clear existing history, merge into it.
+	if m.trafficHistory == nil {
+		m.trafficHistory = make(map[int64]*MinuteStats)
+	}
+
+	log := logging.GetLogger()
+	log.Info("Seeding service traffic history", "service", serviceID, "points", len(points))
+
+	for _, p := range points {
+		t, err := time.Parse("15:04", p.Time)
+		if err != nil {
+			log.Error("Failed to parse seed time", "time", p.Time, "error", err)
+			continue
+		}
+		targetTime := time.Date(now.Year(), now.Month(), now.Day(), t.Hour(), t.Minute(), 0, 0, now.Location())
+		if targetTime.After(now) {
+			targetTime = targetTime.Add(-24 * time.Hour)
+		}
+
+		key := targetTime.Unix()
+		if _, ok := m.trafficHistory[key]; !ok {
+			m.trafficHistory[key] = &MinuteStats{
+				ServiceStats: make(map[string]*ServiceTrafficStats),
+			}
+		}
+		stats := m.trafficHistory[key]
+
+		// Update MinuteStats (Global) - aggregate
+		stats.Requests += p.Total
+		stats.Errors += p.Errors
+		stats.Latency += p.Latency * p.Total
+
+		// Update ServiceStats
+		if stats.ServiceStats == nil {
+			stats.ServiceStats = make(map[string]*ServiceTrafficStats)
+		}
+
+		if _, ok := stats.ServiceStats[serviceID]; !ok {
+			stats.ServiceStats[serviceID] = &ServiceTrafficStats{}
+		}
+		sStats := stats.ServiceStats[serviceID]
+		sStats.Requests += p.Total
+		sStats.Errors += p.Errors
+		sStats.Latency += p.Latency * p.Total
 	}
 }
 

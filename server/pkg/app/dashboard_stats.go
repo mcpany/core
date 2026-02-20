@@ -5,6 +5,7 @@ package app
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"sort"
 	"time"
@@ -533,12 +534,24 @@ func (a *Application) handleDashboardHealth() http.HandlerFunc {
 				}
 			}
 
+			// Get Real Latency
+			var latencyStr = "0ms"
+			if a.TopologyManager != nil {
+				stats := a.TopologyManager.GetRecentServiceStats(svc.GetId(), 15*time.Minute)
+				if stats.AvgLatency > 0 {
+					latencyStr = stats.AvgLatency.String()
+				}
+			}
+
+			// Calculate Real Uptime
+			uptimeStr := calculateUptime(hPoints, 24*time.Hour)
+
 			serviceHealths = append(serviceHealths, ServiceHealth{
 				ID:      svc.GetId(),
 				Name:    name,
 				Status:  uiStatus,
-				Latency: "10ms", // TODO: Get real latency from metrics
-				Uptime:  "99.9%", // TODO: Calculate real uptime
+				Latency: latencyStr,
+				Uptime:  uptimeStr,
 				Message: msg,
 			})
 		}
@@ -559,4 +572,57 @@ func (a *Application) handleDashboardHealth() http.HandlerFunc {
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(resp)
 	}
+}
+
+// calculateUptime calculates the uptime percentage for a given history over a window.
+func calculateUptime(history []health.HistoryPoint, window time.Duration) string {
+	if len(history) == 0 {
+		return "100.0%" // Optimistic default
+	}
+
+	now := time.Now().UnixMilli()
+	start := now - window.Milliseconds()
+
+	var upTime int64
+	var lastTime int64 = start
+	var lastStatus = "unknown"
+
+	// Find initial status at `start`
+	for _, p := range history {
+		if p.Timestamp > start {
+			break
+		}
+		lastStatus = p.Status
+		lastTime = p.Timestamp
+	}
+	if lastTime < start {
+		lastTime = start
+	}
+
+	for _, p := range history {
+		if p.Timestamp < start {
+			continue
+		}
+		duration := p.Timestamp - lastTime
+		if lastStatus == "up" || lastStatus == "healthy" || lastStatus == "UP" {
+			upTime += duration
+		}
+		lastStatus = p.Status
+		lastTime = p.Timestamp
+	}
+
+	duration := now - lastTime
+	if duration > 0 {
+		if lastStatus == "up" || lastStatus == "healthy" || lastStatus == "UP" {
+			upTime += duration
+		}
+	}
+
+	totalTime := now - start
+	if totalTime <= 0 {
+		return "100.0%"
+	}
+
+	uptimePercent := (float64(upTime) / float64(totalTime)) * 100.0
+	return fmt.Sprintf("%.1f%%", uptimePercent)
 }

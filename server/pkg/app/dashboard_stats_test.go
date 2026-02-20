@@ -14,6 +14,7 @@ import (
 	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
 	"github.com/mcpany/core/server/pkg/tool"
@@ -23,6 +24,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestHandleDashboardToolFailures(t *testing.T) {
@@ -392,4 +394,66 @@ func TestStatsCacheEviction(t *testing.T) {
 	val, ok := app.getStatsCache("key-101")
 	assert.True(t, ok)
 	assert.Equal(t, 101, val)
+}
+
+func TestHandleDashboardHealth_RealMetrics(t *testing.T) {
+	// Setup Registry
+	s1 := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("svc-real-metrics"),
+		Id:   proto.String("svc-real-metrics"),
+	}.Build()
+
+	mockRegistry := &TestMockServiceRegistry{
+		services: []*configv1.UpstreamServiceConfig{s1},
+	}
+
+	// Setup Topology Manager
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	mockTM := tool.NewMockManagerInterface(ctrl)
+
+	tm := topology.NewManager(mockRegistry, mockTM)
+
+	// Seed Topology Data (Latency)
+	now := time.Now()
+	// Seed specific service traffic
+	tm.SeedServiceTrafficHistory("svc-real-metrics", []topology.TrafficPoint{
+		{Time: now.Format("15:04"), Total: 100, Latency: 123}, // 123ms avg latency
+	})
+
+	// Seed Health History (Uptime)
+	// Add an initial point 24 hours ago (start of window)
+	start := now.Add(-24 * time.Hour)
+	health.AddHealthStatusWithTime("svc-real-metrics", "up", start)
+
+	// Create App
+	app := &Application{
+		TopologyManager: tm,
+		ServiceRegistry: mockRegistry,
+		statsCache:      make(map[string]statsCacheEntry),
+	}
+
+	// Request
+	req, _ := http.NewRequest("GET", "/dashboard/health", nil)
+	rr := httptest.NewRecorder()
+
+	handler := app.handleDashboardHealth()
+	handler.ServeHTTP(rr, req)
+
+	assert.Equal(t, http.StatusOK, rr.Code)
+
+	var resp ServiceHealthResponse
+	err := json.Unmarshal(rr.Body.Bytes(), &resp)
+	require.NoError(t, err)
+
+	require.Len(t, resp.Services, 1)
+	svc := resp.Services[0]
+
+	// Verify Latency
+	// Seeded 123ms.
+	assert.Equal(t, "123ms", svc.Latency)
+
+	// Verify Uptime
+	// With point 24h ago "up", it should be 100%.
+	assert.Equal(t, "100.0%", svc.Uptime)
 }
