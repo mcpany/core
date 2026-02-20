@@ -14,16 +14,18 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-// ContextOptimizer optimises the context size of responses.
+// ContextOptimizer optimises the context size of responses by truncating long strings.
 type ContextOptimizer struct {
 	MaxChars int
 }
 
 // NewContextOptimizer creates a new ContextOptimizer.
 //
-// maxChars is the maxChars.
+// Parameters:
+//  maxChars (int): The maximum number of characters allowed for text fields.
 //
-// Returns the result.
+// Returns:
+//  *ContextOptimizer: The initialized context optimizer.
 func NewContextOptimizer(maxChars int) *ContextOptimizer {
 	return &ContextOptimizer{
 		MaxChars: maxChars,
@@ -40,9 +42,11 @@ var bufferPool = sync.Pool{
 
 // Handler returns the middleware handler.
 //
-// next is the next.
+// Parameters:
+//  next (http.Handler): The next handler in the chain.
 //
-// Returns the result.
+// Returns:
+//  http.Handler: The optimized handler.
 func (co *ContextOptimizer) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		wb := bufferPool.Get().(*responseBuffer)
@@ -176,10 +180,12 @@ func (w *responseBuffer) checkBuffer() {
 
 // Write writes the data to the buffer or the underlying ResponseWriter.
 //
-// b is the b.
+// Parameters:
+//  b ([]byte): The data to write.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//  int: The number of bytes written.
+//  error: An error if the write fails.
 func (w *responseBuffer) Write(b []byte) (int, error) {
 	w.checkBuffer()
 
@@ -195,7 +201,8 @@ func (w *responseBuffer) Write(b []byte) (int, error) {
 
 // WriteHeader captures the status code and decides whether to buffer based on headers.
 //
-// statusCode is the HTTP status code to write.
+// Parameters:
+//  statusCode (int): The HTTP status code.
 func (w *responseBuffer) WriteHeader(statusCode int) {
 	if w.wroteHeader {
 		return

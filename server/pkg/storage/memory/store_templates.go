@@ -10,10 +10,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// _ is an unused parameter.
+// Service Templates
+
+// ListServiceTemplates retrieves all service templates from the in-memory store.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//  _ (context.Context): Unused context (required by interface).
+//
+// Returns:
+//  []*configv1.ServiceTemplate: A slice of service templates.
+//  error: Always nil.
 func (s *Store) ListServiceTemplates(_ context.Context) ([]*configv1.ServiceTemplate, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -26,11 +32,13 @@ func (s *Store) ListServiceTemplates(_ context.Context) ([]*configv1.ServiceTemp
 
 // GetServiceTemplate retrieves a service template by ID.
 //
-// _ is an unused parameter.
-// id is the unique identifier.
+// Parameters:
+//  _ (context.Context): Unused context (required by interface).
+//  id (string): The unique identifier of the service template.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//  *configv1.ServiceTemplate: The service template if found.
+//  error: Always nil (returns nil result if not found).
 func (s *Store) GetServiceTemplate(_ context.Context, id string) (*configv1.ServiceTemplate, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -40,12 +48,17 @@ func (s *Store) GetServiceTemplate(_ context.Context, id string) (*configv1.Serv
 	return nil, nil
 }
 
-// SaveServiceTemplate saves a service template.
+// SaveServiceTemplate saves or updates a service template.
 //
-// _ is an unused parameter.
-// template is the template.
+// Parameters:
+//  _ (context.Context): Unused context (required by interface).
+//  template (*configv1.ServiceTemplate): The service template to save.
 //
-// Returns an error if the operation fails.
+// Returns:
+//  error: Always nil.
+//
+// Side Effects:
+//  Updates the internal map of service templates.
 func (s *Store) SaveServiceTemplate(_ context.Context, template *configv1.ServiceTemplate) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -54,6 +67,16 @@ func (s *Store) SaveServiceTemplate(_ context.Context, template *configv1.Servic
 }
 
 // DeleteServiceTemplate deletes a service template by ID.
+//
+// Parameters:
+//  _ (context.Context): Unused context (required by interface).
+//  id (string): The unique identifier of the service template to delete.
+//
+// Returns:
+//  error: Always nil.
+//
+// Side Effects:
+//  Removes the service template from the internal map.
 func (s *Store) DeleteServiceTemplate(_ context.Context, id string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

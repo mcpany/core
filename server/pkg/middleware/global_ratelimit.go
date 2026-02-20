@@ -25,8 +25,7 @@ import (
 )
 
 // GlobalRateLimitMiddleware provides rate limiting functionality for all MCP requests.
-//
-// Summary: Middleware that enforces global rate limits on MCP requests.
+// It enforces limits at a global level, regardless of the specific tool being called.
 type GlobalRateLimitMiddleware struct {
 	mu     sync.RWMutex
 	config *configv1.RateLimitConfig
@@ -36,15 +35,13 @@ type GlobalRateLimitMiddleware struct {
 	redisClients sync.Map
 }
 
-// NewGlobalRateLimitMiddleware creates a new GlobalRateLimitMiddleware.
-//
-// Summary: Initializes the global rate limit middleware.
+// NewGlobalRateLimitMiddleware initializes a new GlobalRateLimitMiddleware.
 //
 // Parameters:
-//   - config: *configv1.RateLimitConfig. The rate limit configuration.
+//  config (*configv1.RateLimitConfig): The rate limit configuration.
 //
 // Returns:
-//   - *GlobalRateLimitMiddleware: The initialized middleware.
+//  *GlobalRateLimitMiddleware: The initialized middleware.
 func NewGlobalRateLimitMiddleware(config *configv1.RateLimitConfig) *GlobalRateLimitMiddleware {
 	return &GlobalRateLimitMiddleware{
 		config:   config,
@@ -52,12 +49,13 @@ func NewGlobalRateLimitMiddleware(config *configv1.RateLimitConfig) *GlobalRateL
 	}
 }
 
-// UpdateConfig updates the rate limit configuration safely.
-//
-// Summary: Updates the rate limit configuration.
+// UpdateConfig safely updates the rate limit configuration.
 //
 // Parameters:
-//   - config: *configv1.RateLimitConfig. The new configuration.
+//  config (*configv1.RateLimitConfig): The new configuration.
+//
+// Side Effects:
+//  Updates the internal configuration pointer.
 func (m *GlobalRateLimitMiddleware) UpdateConfig(config *configv1.RateLimitConfig) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -67,15 +65,17 @@ func (m *GlobalRateLimitMiddleware) UpdateConfig(config *configv1.RateLimitConfi
 	// So we generally don't need to clear cache unless KeyBy changes.
 }
 
-// Execute executes the rate limiting middleware.
+// Execute runs the global rate limit check.
 //
-// ctx is the context for the request.
-// method is the method.
-// req is the request object.
-// next is the next.
+// Parameters:
+//  ctx (context.Context): The request context.
+//  method (string): The MCP method name.
+//  req (mcp.Request): The request object.
+//  next (mcp.MethodHandler): The next handler in the chain.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//  mcp.Result: The result of the request.
+//  error: An error if the rate limit is exceeded or the next handler fails.
 func (m *GlobalRateLimitMiddleware) Execute(ctx context.Context, method string, req mcp.Request, next mcp.MethodHandler) (mcp.Result, error) {
 	m.mu.RLock()
 	config := m.config

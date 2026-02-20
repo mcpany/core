@@ -109,12 +109,14 @@ func NewToolMetricsMiddleware(t tokenizer.Tokenizer) *ToolMetricsMiddleware {
 
 // Execute executes the tool metrics middleware.
 //
-// ctx is the context for the request.
-// req is the request object.
-// next is the next.
+// Parameters:
+//  ctx (context.Context): The context for the request.
+//  req (*tool.ExecutionRequest): The tool execution request.
+//  next (tool.ExecutionFunc): The next handler in the chain.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//  any: The result of the tool execution.
+//  error: An error if the operation fails.
 func (m *ToolMetricsMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	// Get Service ID if possible (from context or tool)
 	var serviceID string

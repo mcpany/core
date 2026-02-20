@@ -13,28 +13,37 @@ import (
 	_ "github.com/lib/pq" // Register postgres driver
 )
 
-// DB wraps the sql.DB connection.
+// DB wraps the sql.DB connection to provide a unified interface and configuration.
 type DB struct {
 	*sql.DB
 }
 
-// NewDB opens a PostgreSQL database connection.
+// NewDB initializes a new PostgreSQL database connection using the default postgres driver.
 //
-// dsn is the dsn.
+// Parameters:
+//  dsn (string): The Data Source Name (DSN) for connecting to the PostgreSQL database.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//  *DB: A pointer to the initialized DB instance.
+//  error: An error if the connection fails or the schema cannot be initialized.
 func NewDB(dsn string) (*DB, error) {
 	return NewDBWithDriver("postgres", dsn)
 }
 
-// NewDBWithDriver opens a database connection with the specified driver.
+// NewDBWithDriver initializes a new database connection using a specified driver.
 //
-// driver is the driver.
-// dsn is the dsn.
+// Parameters:
+//  driver (string): The name of the database driver (e.g., "postgres").
+//  dsn (string): The Data Source Name (DSN) for connecting to the database.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//  *DB: A pointer to the initialized DB instance.
+//  error: An error if the connection fails, ping fails, or schema initialization fails.
+//
+// Side Effects:
+//  Opens a connection to the database.
+//  Sets connection pool settings (MaxOpenConns=25, MaxIdleConns=25, ConnMaxLifetime=5m).
+//  Initializes the database schema if it does not exist.
 func NewDBWithDriver(driver, dsn string) (*DB, error) {
 	db, err := sql.Open(driver, dsn)
 	if err != nil {
@@ -63,10 +72,16 @@ func NewDBWithDriver(driver, dsn string) (*DB, error) {
 
 // NewDBFromSQLDB creates a new DB wrapper from an existing sql.DB connection.
 //
-// db is the db.
+// Parameters:
+//  db (*sql.DB): The existing SQL database connection.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//  *DB: A pointer to the initialized DB instance.
+//  error: An error if the database is unreachable or schema initialization fails.
+//
+// Side Effects:
+//  Verifies the connection with a Ping.
+//  Initializes the database schema if it does not exist.
 func NewDBFromSQLDB(db *sql.DB) (*DB, error) {
 	if err := db.PingContext(context.Background()); err != nil {
 		return nil, fmt.Errorf("failed to ping db: %w", err)

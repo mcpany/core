@@ -9,9 +9,9 @@ import (
 	"sort"
 	"sync"
 
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/tool"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
@@ -37,8 +37,12 @@ var (
 
 // Register registers a HTTP middleware factory.
 //
-// name is the name of the resource.
-// factory is the factory.
+// Parameters:
+//  name (string): The unique name of the middleware.
+//  factory (Factory): The factory function to create the middleware.
+//
+// Side Effects:
+//  Adds the factory to the global registry.
 func Register(name string, factory Factory) {
 	globalRegistry.mu.Lock()
 	defer globalRegistry.mu.Unlock()
@@ -47,19 +51,25 @@ func Register(name string, factory Factory) {
 
 // RegisterMCP registers an MCP middleware factory.
 //
-// name is the name of the resource.
-// factory is the factory.
+// Parameters:
+//  name (string): The unique name of the middleware.
+//  factory (MCPFactory): The factory function to create the middleware.
+//
+// Side Effects:
+//  Adds the factory to the global registry.
 func RegisterMCP(name string, factory MCPFactory) {
 	globalRegistry.mu.Lock()
 	defer globalRegistry.mu.Unlock()
 	globalRegistry.mcpFactories[name] = factory
 }
 
-// GetHTTPMiddlewares returns a sorted list of HTTP middlewares based on configuration.
+// GetHTTPMiddlewares returns a sorted list of HTTP middlewares based on the provided configuration.
 //
-// configs is the configs.
+// Parameters:
+//  configs ([]*configv1.Middleware): A list of middleware configurations.
 //
-// Returns the result.
+// Returns:
+//  []func(http.Handler) http.Handler: A slice of middleware functions, sorted by priority.
 func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) http.Handler {
 	globalRegistry.mu.RLock()
 	defer globalRegistry.mu.RUnlock()
@@ -83,11 +93,13 @@ func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) htt
 	return middlewares
 }
 
-// GetMCPMiddlewares returns a sorted list of MCP middlewares based on configuration.
+// GetMCPMiddlewares returns a sorted list of MCP middlewares based on the provided configuration.
 //
-// configs is the configs.
+// Parameters:
+//  configs ([]*configv1.Middleware): A list of middleware configurations.
 //
-// Returns the result.
+// Returns:
+//  []func(mcp.MethodHandler) mcp.MethodHandler: A slice of middleware functions, sorted by priority.
 func GetMCPMiddlewares(configs []*configv1.Middleware) []func(mcp.MethodHandler) mcp.MethodHandler {
 	globalRegistry.mu.RLock()
 	defer globalRegistry.mu.RUnlock()
@@ -111,7 +123,7 @@ func GetMCPMiddlewares(configs []*configv1.Middleware) []func(mcp.MethodHandler)
 	return middlewares
 }
 
-// StandardMiddlewares holds the standard middlewares that might need to be updated.
+// StandardMiddlewares holds references to the standard set of middlewares initialized by the server.
 type StandardMiddlewares struct {
 	Audit            *AuditMiddleware
 	GlobalRateLimit  *GlobalRateLimitMiddleware
@@ -121,20 +133,25 @@ type StandardMiddlewares struct {
 	Cleanup          func() error
 }
 
-// InitStandardMiddlewares registers standard middlewares.
+// InitStandardMiddlewares initializes and registers the standard middlewares used by the server.
 //
-// authManager is the authManager.
-// toolManager is the toolManager.
-// auditConfig is the auditConfig.
-// cachingMiddleware is the cachingMiddleware.
-// globalRateLimitConfig is the globalRateLimitConfig.
-// dlpConfig is the dlpConfig.
-// contextOptimizerConfig is the contextOptimizerConfig.
-// debuggerConfig is the debuggerConfig.
-// smartRecoveryConfig is the smartRecoveryConfig.
+// Parameters:
+//  authManager (*auth.Manager): The auth manager.
+//  toolManager (tool.ManagerInterface): The tool manager.
+//  auditConfig (*configv1.AuditConfig): Audit configuration.
+//  cachingMiddleware (*CachingMiddleware): The caching middleware instance.
+//  globalRateLimitConfig (*configv1.RateLimitConfig): Global rate limit configuration.
+//  dlpConfig (*configv1.DLPConfig): DLP configuration.
+//  contextOptimizerConfig (*configv1.ContextOptimizerConfig): Context optimizer configuration.
+//  debuggerConfig (*configv1.DebuggerConfig): Debugger configuration.
+//  smartRecoveryConfig (*configv1.SmartRecoveryConfig): Smart recovery configuration.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//  *StandardMiddlewares: Struct containing initialized middlewares.
+//  error: An error if initialization fails (e.g. audit store creation).
+//
+// Side Effects:
+//  Registers middlewares with the global registry.
 func InitStandardMiddlewares(
 	authManager *auth.Manager,
 	toolManager tool.ManagerInterface,

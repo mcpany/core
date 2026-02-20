@@ -17,16 +17,15 @@ import (
 // incoming request. It records the start and completion of each request,
 // including the duration of the handling.
 //
-// This is useful for debugging and monitoring the flow of requests through the
-// server.
-//
-// Summary: MCP Middleware for request logging.
-//
 // Parameters:
-//   - log: *slog.Logger. The logger to be used. If `nil`, the default global logger will be used.
+//  log (*slog.Logger): The logger to be used. If nil, the default global logger will be used.
 //
 // Returns:
-//   - mcp.Middleware: The logging middleware function.
+//  mcp.Middleware: The logging middleware function.
+//
+// Side Effects:
+//  Logs request details to the provided logger.
+//  Emits metrics for request count and latency.
 func LoggingMiddleware(log *slog.Logger) mcp.Middleware {
 	if log == nil {
 		log = logging.GetLogger()

@@ -19,13 +19,11 @@ import (
 // intended to inspect incoming requests and use the provided `AuthManager` to
 // verify credentials before passing the request to the next handler.
 //
-// Summary: MCP Middleware for request authentication.
-//
 // Parameters:
-//   - authManager: *auth.Manager. The authentication manager.
+//  authManager (*auth.Manager): The authentication manager to use for verification.
 //
 // Returns:
-//   - mcp.Middleware: The authentication middleware function.
+//  mcp.Middleware: The authentication middleware function.
 func AuthMiddleware(authManager *auth.Manager) mcp.Middleware {
 	return func(next mcp.MethodHandler) mcp.MethodHandler {
 		return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {

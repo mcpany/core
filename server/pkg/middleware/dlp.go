@@ -13,10 +13,12 @@ import (
 
 // DLPMiddleware creates a middleware that redacts PII from request arguments and result content.
 //
-// config holds the configuration settings.
-// log is the log.
+// Parameters:
+//  config (*configv1.DLPConfig): The DLP configuration settings.
+//  log (*slog.Logger): The logger instance.
 //
-// Returns the result.
+// Returns:
+//  mcp.Middleware: The DLP middleware function.
 func DLPMiddleware(config *configv1.DLPConfig, log *slog.Logger) mcp.Middleware {
 	redactor := NewRedactor(config, log)
 	if redactor == nil {

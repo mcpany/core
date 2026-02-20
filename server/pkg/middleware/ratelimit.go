@@ -44,21 +44,25 @@ type Option func(*RateLimitMiddleware)
 
 // WithTokenizer sets a custom tokenizer for the middleware.
 //
-// t is the t.
+// Parameters:
+//  t (tokenizer.Tokenizer): The tokenizer to use for cost estimation.
 //
-// Returns the result.
+// Returns:
+//  Option: A functional option to configure the middleware.
 func WithTokenizer(t tokenizer.Tokenizer) Option {
 	return func(m *RateLimitMiddleware) {
 		m.tokenizer = t
 	}
 }
 
-// NewRateLimitMiddleware creates a new RateLimitMiddleware.
+// NewRateLimitMiddleware initializes a new RateLimitMiddleware.
 //
-// toolManager is the toolManager.
-// opts contains the options.
+// Parameters:
+//  toolManager (tool.ManagerInterface): The interface for managing tools and services.
+//  opts (...Option): Optional configuration settings.
 //
-// Returns the result.
+// Returns:
+//  *RateLimitMiddleware: A pointer to the initialized middleware.
 func NewRateLimitMiddleware(toolManager tool.ManagerInterface, opts ...Option) *RateLimitMiddleware {
 	m := &RateLimitMiddleware{
 		toolManager: toolManager,
@@ -81,14 +85,20 @@ func NewRateLimitMiddleware(toolManager tool.ManagerInterface, opts ...Option) *
 	return m
 }
 
-// Execute executes the rate limiting middleware.
+// Execute runs the rate limiting logic for a tool execution request.
 //
-// ctx is the context for the request.
-// req is the request object.
-// next is the next.
+// Parameters:
+//  ctx (context.Context): The context for the request.
+//  req (*tool.ExecutionRequest): The tool execution request.
+//  next (tool.ExecutionFunc): The next handler in the middleware chain.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//  any: The result of the tool execution.
+//  error: An error if the rate limit is exceeded or if the next handler fails.
+//
+// Side Effects:
+//  Updates the rate limiter state (consumes tokens).
+//  Records metrics for rate limiting.
 func (m *RateLimitMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := m.toolManager.GetTool(req.ToolName)
 	if !ok {
@@ -207,9 +217,17 @@ func (m *RateLimitMiddleware) estimateTokenCost(req *tool.ExecutionRequest) int 
 	return tokens
 }
 
-// getLimiter retrieves or creates a limiter.
-// limitScopeKey is a string that identifies the scope (e.g. "service", "tool:myTool").
-// It is combined with serviceID to form the unique cache key prefix.
+// getLimiter retrieves or creates a limiter instance based on the configuration.
+//
+// Parameters:
+//  ctx (context.Context): The context for the request.
+//  serviceID (string): The ID of the service.
+//  limitScopeKey (string): The scope of the limit (e.g. "service", "tool:myTool").
+//  config (*configv1.RateLimitConfig): The rate limit configuration.
+//
+// Returns:
+//  Limiter: The rate limiter instance.
+//  error: An error if the limiter cannot be created.
 func (m *RateLimitMiddleware) getLimiter(ctx context.Context, serviceID string, limitScopeKey string, config *configv1.RateLimitConfig) (Limiter, error) {
 	rps := config.GetRequestsPerSecond()
 	burst := int(config.GetBurst())
