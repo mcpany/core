@@ -9,57 +9,27 @@ test.describe('Credential OAuth Flow E2E', () => {
   const credentialID = 'cred-123';
   const credentials: any[] = [];
 
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page, request }) => {
     // Increase viewport height for long forms
     await page.setViewportSize({ width: 1280, height: 1000 });
 
-    credentials.length = 0;
+    // Seed empty state to ensure clean slate
+    const seedRes = await request.post('/api/v1/debug/seed', {
+        data: {
+            upstream_services: [],
+            credentials: [],
+            secrets: [],
+            profiles: [],
+            users: []
+        },
+        headers: { 'X-API-Key': process.env.MCPANY_API_KEY || 'test-token' }
+    });
+    expect(seedRes.ok()).toBeTruthy();
+
     page.on('console', msg => console.log('BROWSER LOG:', msg.text()));
 
-    await page.route('**/api/v1/credentials', async route => {
-        if (route.request().method() === 'GET') {
-            await route.fulfill({ json: { credentials } });
-        } else if (route.request().method() === 'POST') {
-             const req = route.request().postDataJSON();
-             const newCred = {
-                     id: credentialID,
-                     name: req.name,
-                     authentication: req.authentication,
-                     token: null
-             };
-             credentials.push(newCred);
-             await route.fulfill({ json: newCred });
-        } else {
-            await route.continue();
-        }
-    });
-
-    await page.route(`**/api/v1/credentials/${credentialID}`, async route => {
-        const method = route.request().method();
-        if (method === 'PUT') {
-            const req = route.request().postDataJSON();
-            const cred = credentials.find(c => c.id === credentialID);
-            if (cred) {
-                cred.name = req.name;
-                cred.authentication = req.authentication;
-            }
-             await route.fulfill({
-                 json: {
-                     id: credentialID,
-                     name: req.name,
-                     authentication: req.authentication,
-                     token: req.token
-                 }
-             });
-        } else if (method === 'DELETE') {
-            const idx = credentials.findIndex(c => c.id === credentialID);
-            if (idx !== -1) credentials.splice(idx, 1);
-            await route.fulfill({ json: {} });
-        } else {
-            await route.continue();
-        }
-    });
-
+    // We keep the OAuth mocking because we cannot easily integrate with real providers in this environment
+    // But CRUD operations for credentials now go to the real backend.
     await page.route((url) => url.pathname.includes('/auth/oauth/'), async route => {
         const urlStr = route.request().url();
         console.log(`OAuth mock hit for ${urlStr}`);
