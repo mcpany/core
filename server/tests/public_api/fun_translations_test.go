@@ -19,6 +19,7 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 func TestUpstreamService_FunTranslations(t *testing.T) {
@@ -40,6 +41,7 @@ func TestUpstreamService_FunTranslations(t *testing.T) {
 	registrationGRPCClient := mcpAnyTestServerInfo.RegistrationClient
 
 	callID := "translateToYoda"
+
 	httpCall := configv1.HttpCallDefinition_builder{
 		Id:           proto.String(callID),
 		EndpointPath: proto.String("/translate/yoda.json"),
@@ -52,14 +54,24 @@ func TestUpstreamService_FunTranslations(t *testing.T) {
 				}.Build(),
 			}.Build(),
 		},
-		InputTransformer: configv1.InputTransformer_builder{
-			Template: proto.String("{\"text\": \"{{.input.text}}\"}"),
-		}.Build(),
 	}.Build()
 
+	inputSchema, err := structpb.NewStruct(map[string]interface{}{
+		"type": "object",
+		"properties": map[string]interface{}{
+			"text": map[string]interface{}{
+				"type": "string",
+			},
+		},
+		"required": []interface{}{"text"},
+	})
+	require.NoError(t, err)
+
 	toolDef := configv1.ToolDefinition_builder{
-		Name:   proto.String("translateToYoda"),
-		CallId: proto.String(callID),
+		Name:        proto.String("translateToYoda"),
+		Description: proto.String("Translate text to Yoda speak"),
+		CallId:      proto.String(callID),
+		InputSchema: inputSchema,
 	}.Build()
 
 	httpService := configv1.HttpUpstreamService_builder{
@@ -77,7 +89,8 @@ func TestUpstreamService_FunTranslations(t *testing.T) {
 		Config: config,
 	}.Build()
 
-	integration.RegisterServiceViaAPI(t, registrationGRPCClient, req)
+	_, err = registrationGRPCClient.RegisterService(ctx, req)
+	require.NoError(t, err)
 	t.Logf("INFO: '%s' registered.", funTranslationsServiceID)
 
 	// --- 3. Call Tool via MCPANY ---
@@ -101,29 +114,36 @@ func TestUpstreamService_FunTranslations(t *testing.T) {
 	var res *mcp.CallToolResult
 
 	for i := 0; i < maxRetries; i++ {
+		t.Logf("Attempt %d/%d calling tool %s...", i+1, maxRetries, toolName)
 		res, err = cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(text)})
 		if err == nil {
 			break // Success
 		}
 
-		if strings.Contains(err.Error(), "503 Service Temporarily Unavailable") || strings.Contains(err.Error(), "context deadline exceeded") || strings.Contains(err.Error(), "connection reset by peer") {
-			t.Logf("Attempt %d/%d: Call to api.funtranslations.com failed with a transient error: %v. Retrying...", i+1, maxRetries, err)
-			time.Sleep(2 * time.Second) // Wait before retrying
+		errMsg := err.Error()
+		if strings.Contains(errMsg, "503 Service Temporarily Unavailable") ||
+		   strings.Contains(errMsg, "context deadline exceeded") ||
+		   strings.Contains(errMsg, "connection reset by peer") ||
+		   strings.Contains(errMsg, "504 Gateway Timeout") {
+			t.Logf("Attempt %d failed with transient error: %v. Retrying...", i+1, err)
+			time.Sleep(2 * time.Second)
 			continue
 		}
-		if strings.Contains(err.Error(), "upstream HTTP request failed with status 429") {
-			t.Skipf("Skipping test due to rate limiting from api.funtranslations.com: %v", err)
+		if strings.Contains(errMsg, "429") || strings.Contains(errMsg, "Too Many Requests") || strings.Contains(errMsg, "403") {
+			t.Skipf("Skipping test due to rate limiting or access denied (403/429): %v", err)
+			return
 		}
 
-		require.NoError(t, err, "unrecoverable error calling translateToYoda tool")
+		// Fail fast on other errors
+		require.NoError(t, err, "unrecoverable error calling tool")
 	}
 
 	if err != nil {
-		t.Skipf("Skipping test: all %d retries to api.funtranslations.com failed with transient errors. Last error: %v", maxRetries, err)
+		t.Skipf("Skipping test: all %d retries failed. Last error: %v", maxRetries, err)
+		return
 	}
 
-	require.NoError(t, err, "Error calling translateToYoda tool")
-	require.NotNil(t, res, "Nil response from translateToYoda tool")
+	require.NotNil(t, res, "Nil response from tool")
 
 	// --- 4. Assert Response ---
 	require.Len(t, res.Content, 1, "Expected exactly one content item")
@@ -132,12 +152,45 @@ func TestUpstreamService_FunTranslations(t *testing.T) {
 
 	var funTranslationsResponse map[string]interface{}
 	err = json.Unmarshal([]byte(textContent.Text), &funTranslationsResponse)
-	require.NoError(t, err, "Failed to unmarshal JSON response")
+	if err != nil {
+		t.Logf("Failed to unmarshal JSON. Raw response body: %s", textContent.Text)
 
-	contents := funTranslationsResponse["contents"].(map[string]interface{})
-	require.NotEmpty(t, contents["translated"], "The translated text should not be empty")
+		// Check for tool execution failure message in content
+		if strings.Contains(textContent.Text, "Tool execution failed") {
+			if strings.Contains(textContent.Text, "403") || strings.Contains(textContent.Text, "429") {
+				t.Skipf("Skipping test due to upstream error in response: %s", textContent.Text)
+				return
+			}
+			t.Fatalf("Tool execution failed: %s", textContent.Text)
+		}
 
-	t.Logf("SUCCESS: Received correct translation: %s", textContent.Text)
+		// Check if raw response indicates an error page (HTML)
+		if strings.Contains(textContent.Text, "<html") || strings.Contains(textContent.Text, "<!DOCTYPE html>") {
+			t.Log("Response seems to be HTML (likely error page). Skipping test.")
+			t.Skip("Skipping test due to upstream returning HTML instead of JSON (likely rate limit or maintenance).")
+			return
+		}
+		require.NoError(t, err, "Failed to unmarshal JSON response")
+	}
+
+	if contents, ok := funTranslationsResponse["contents"].(map[string]interface{}); ok {
+		require.NotEmpty(t, contents["translated"], "The translated text should not be empty")
+		t.Logf("SUCCESS: Received translation: %s", contents["translated"])
+	} else {
+		// Sometimes API returns error JSON
+		if errorObj, ok := funTranslationsResponse["error"].(map[string]interface{}); ok {
+			t.Logf("API returned error: %v", errorObj)
+			// Decide whether to fail or skip
+			if msg, ok := errorObj["message"].(string); ok && (strings.Contains(msg, "Limit") || strings.Contains(msg, "Too Many Requests")) {
+				t.Skip("Skipping due to API limit error in JSON response")
+				return
+			}
+			t.Fail()
+		} else {
+			t.Logf("Unexpected JSON structure: %v", funTranslationsResponse)
+			t.Fail()
+		}
+	}
 
 	t.Log("INFO: E2E Test Scenario for Fun Translations Server Completed Successfully!")
 }

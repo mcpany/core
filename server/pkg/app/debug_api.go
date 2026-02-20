@@ -4,6 +4,7 @@
 package app
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -11,6 +12,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/config"
 	"github.com/mcpany/core/server/pkg/logging"
+	"github.com/mcpany/core/server/pkg/storage"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -33,7 +35,7 @@ func (a *Application) handleDebugOAuthAuthorize() http.HandlerFunc {
 // handleDebugOAuthToken handles the OAuth token exchange for testing.
 // It returns a fixed access token.
 func (a *Application) handleDebugOAuthToken() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		_, _ = w.Write([]byte(`{"access_token": "debug-token", "token_type": "Bearer", "expires_in": 3600}`))
 	}
@@ -68,128 +70,13 @@ func (a *Application) handleDebugSeed() http.HandlerFunc {
 			return
 		}
 
+		ctx := r.Context()
 		opts := protojson.UnmarshalOptions{DiscardUnknown: true}
 
-		// Credentials
-		if rawCreds, ok := rawData["credentials"]; ok {
-			var rawList []json.RawMessage
-			if err := json.Unmarshal(rawCreds, &rawList); err != nil {
-				logging.GetLogger().Error("failed to unmarshal credentials list", "error", err)
-			} else {
-				for _, raw := range rawList {
-					var cred configv1.Credential
-					if err := opts.Unmarshal(raw, &cred); err == nil {
-						if err := store.SaveCredential(r.Context(), &cred); err != nil {
-							logging.GetLogger().Error("failed to save credential", "id", cred.GetId(), "error", err)
-						}
-					} else {
-						logging.GetLogger().Error("failed to unmarshal credential proto", "error", err)
-					}
-				}
-			}
-		}
-
-		// Services
-		if rawServices, ok := rawData["services"]; ok {
-			var rawList []json.RawMessage
-			if err := json.Unmarshal(rawServices, &rawList); err != nil {
-				logging.GetLogger().Error("failed to unmarshal services list", "error", err)
-			} else {
-				for _, raw := range rawList {
-					var svc configv1.UpstreamServiceConfig
-					if err := opts.Unmarshal(raw, &svc); err == nil {
-						// Validate service config
-						if err := config.ValidateOrError(r.Context(), &svc); err != nil {
-							logging.GetLogger().Error("skipping invalid service seed", "name", svc.GetName(), "error", err)
-							continue
-						}
-						if err := store.SaveService(r.Context(), &svc); err != nil {
-							logging.GetLogger().Error("failed to save service", "name", svc.GetName(), "error", err)
-						}
-					} else {
-						logging.GetLogger().Error("failed to unmarshal service proto", "error", err)
-					}
-				}
-			}
-		}
-
-		// Secrets
-		if rawSecrets, ok := rawData["secrets"]; ok {
-			var rawList []json.RawMessage
-			if err := json.Unmarshal(rawSecrets, &rawList); err != nil {
-				logging.GetLogger().Error("failed to unmarshal secrets list", "error", err)
-			} else {
-				for _, raw := range rawList {
-					var secret configv1.Secret
-					if err := opts.Unmarshal(raw, &secret); err == nil {
-						if err := store.SaveSecret(r.Context(), &secret); err != nil {
-							logging.GetLogger().Error("failed to save secret", "id", secret.GetId(), "error", err)
-						}
-					} else {
-						logging.GetLogger().Error("failed to unmarshal secret proto", "error", err)
-					}
-				}
-			}
-		}
-
-		// Profiles
-		if rawProfiles, ok := rawData["profiles"]; ok {
-			var rawList []json.RawMessage
-			if err := json.Unmarshal(rawProfiles, &rawList); err != nil {
-				logging.GetLogger().Error("failed to unmarshal profiles list", "error", err)
-			} else {
-				for _, raw := range rawList {
-					var profile configv1.ProfileDefinition
-					if err := opts.Unmarshal(raw, &profile); err == nil {
-						if err := store.SaveProfile(r.Context(), &profile); err != nil {
-							logging.GetLogger().Error("failed to save profile", "name", profile.GetName(), "error", err)
-						}
-					} else {
-						logging.GetLogger().Error("failed to unmarshal profile proto", "error", err)
-					}
-				}
-			}
-		}
-
-		// Users
-		if rawUsers, ok := rawData["users"]; ok {
-			var rawList []json.RawMessage
-			if err := json.Unmarshal(rawUsers, &rawList); err != nil {
-				logging.GetLogger().Error("failed to unmarshal users list", "error", err)
-			} else {
-				for _, raw := range rawList {
-					var user configv1.User
-					if err := opts.Unmarshal(raw, &user); err == nil {
-						// Check if exists to update or create?
-						// Store has CreateUser and UpdateUser.
-						// We can try GetUser first or Update and if fails Create?
-						// Store.CreateUser fails if exists? Implementation says INSERT ...
-						// We should probably check if it exists.
-						// But Store.CreateUser usually fails on conflict.
-						// For seeding, upsert is better.
-						// My sqlite implementation for CreateUser: INSERT ...
-						// UpdateUser: UPDATE ...
-						// So I should try Update, if err, Create.
-						// Or check GetUser.
-						existing, _ := store.GetUser(r.Context(), user.GetId())
-						var err error
-						if existing != nil {
-							err = store.UpdateUser(r.Context(), &user)
-						} else {
-							err = store.CreateUser(r.Context(), &user)
-						}
-						if err != nil {
-							logging.GetLogger().Error("failed to save user", "id", user.GetId(), "error", err)
-						}
-					} else {
-						logging.GetLogger().Error("failed to unmarshal user proto", "error", err)
-					}
-				}
-			}
-		}
+		processSeedData(ctx, store, rawData, opts)
 
 		// Reload config to apply changes
-		if err := a.ReloadConfig(r.Context(), a.fs, a.configPaths); err != nil {
+		if err := a.ReloadConfig(ctx, a.fs, a.configPaths); err != nil {
 			logging.GetLogger().Error("failed to reload config after seed", "error", err)
 			http.Error(w, "Failed to reload config: "+err.Error(), http.StatusInternalServerError)
 			return
@@ -197,5 +84,130 @@ func (a *Application) handleDebugSeed() http.HandlerFunc {
 
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte("{}"))
+	}
+}
+
+func processSeedData(ctx context.Context, store storage.Storage, rawData map[string]json.RawMessage, opts protojson.UnmarshalOptions) {
+	if rawCreds, ok := rawData["credentials"]; ok {
+		seedCredentials(ctx, store, rawCreds, opts)
+	}
+
+	if rawServices, ok := rawData["services"]; ok {
+		seedServices(ctx, store, rawServices, opts)
+	}
+
+	if rawSecrets, ok := rawData["secrets"]; ok {
+		seedSecrets(ctx, store, rawSecrets, opts)
+	}
+
+	if rawProfiles, ok := rawData["profiles"]; ok {
+		seedProfiles(ctx, store, rawProfiles, opts)
+	}
+
+	if rawUsers, ok := rawData["users"]; ok {
+		seedUsers(ctx, store, rawUsers, opts)
+	}
+}
+
+func seedCredentials(ctx context.Context, store storage.Storage, raw json.RawMessage, opts protojson.UnmarshalOptions) {
+	var rawList []json.RawMessage
+	if err := json.Unmarshal(raw, &rawList); err != nil {
+		logging.GetLogger().Error("failed to unmarshal credentials list", "error", err)
+		return
+	}
+	for _, r := range rawList {
+		var cred configv1.Credential
+		if err := opts.Unmarshal(r, &cred); err == nil {
+			if err := store.SaveCredential(ctx, &cred); err != nil {
+				logging.GetLogger().Error("failed to save credential", "id", cred.GetId(), "error", err)
+			}
+		} else {
+			logging.GetLogger().Error("failed to unmarshal credential proto", "error", err)
+		}
+	}
+}
+
+func seedServices(ctx context.Context, store storage.Storage, raw json.RawMessage, opts protojson.UnmarshalOptions) {
+	var rawList []json.RawMessage
+	if err := json.Unmarshal(raw, &rawList); err != nil {
+		logging.GetLogger().Error("failed to unmarshal services list", "error", err)
+		return
+	}
+	for _, r := range rawList {
+		var svc configv1.UpstreamServiceConfig
+		if err := opts.Unmarshal(r, &svc); err == nil {
+			// Validate service config
+			if err := config.ValidateOrError(ctx, &svc); err != nil {
+				logging.GetLogger().Error("skipping invalid service seed", "name", svc.GetName(), "error", err)
+				continue
+			}
+			if err := store.SaveService(ctx, &svc); err != nil {
+				logging.GetLogger().Error("failed to save service", "name", svc.GetName(), "error", err)
+			}
+		} else {
+			logging.GetLogger().Error("failed to unmarshal service proto", "error", err)
+		}
+	}
+}
+
+func seedSecrets(ctx context.Context, store storage.Storage, raw json.RawMessage, opts protojson.UnmarshalOptions) {
+	var rawList []json.RawMessage
+	if err := json.Unmarshal(raw, &rawList); err != nil {
+		logging.GetLogger().Error("failed to unmarshal secrets list", "error", err)
+		return
+	}
+	for _, r := range rawList {
+		var secret configv1.Secret
+		if err := opts.Unmarshal(r, &secret); err == nil {
+			if err := store.SaveSecret(ctx, &secret); err != nil {
+				logging.GetLogger().Error("failed to save secret", "id", secret.GetId(), "error", err)
+			}
+		} else {
+			logging.GetLogger().Error("failed to unmarshal secret proto", "error", err)
+		}
+	}
+}
+
+func seedProfiles(ctx context.Context, store storage.Storage, raw json.RawMessage, opts protojson.UnmarshalOptions) {
+	var rawList []json.RawMessage
+	if err := json.Unmarshal(raw, &rawList); err != nil {
+		logging.GetLogger().Error("failed to unmarshal profiles list", "error", err)
+		return
+	}
+	for _, r := range rawList {
+		var profile configv1.ProfileDefinition
+		if err := opts.Unmarshal(r, &profile); err == nil {
+			if err := store.SaveProfile(ctx, &profile); err != nil {
+				logging.GetLogger().Error("failed to save profile", "name", profile.GetName(), "error", err)
+			}
+		} else {
+			logging.GetLogger().Error("failed to unmarshal profile proto", "error", err)
+		}
+	}
+}
+
+func seedUsers(ctx context.Context, store storage.Storage, raw json.RawMessage, opts protojson.UnmarshalOptions) {
+	var rawList []json.RawMessage
+	if err := json.Unmarshal(raw, &rawList); err != nil {
+		logging.GetLogger().Error("failed to unmarshal users list", "error", err)
+		return
+	}
+	for _, r := range rawList {
+		var user configv1.User
+		if err := opts.Unmarshal(r, &user); err == nil {
+			// Check if exists to update or create
+			existing, _ := store.GetUser(ctx, user.GetId())
+			var err error
+			if existing != nil {
+				err = store.UpdateUser(ctx, &user)
+			} else {
+				err = store.CreateUser(ctx, &user)
+			}
+			if err != nil {
+				logging.GetLogger().Error("failed to save user", "id", user.GetId(), "error", err)
+			}
+		} else {
+			logging.GetLogger().Error("failed to unmarshal user proto", "error", err)
+		}
 	}
 }
