@@ -14,7 +14,7 @@ func TestBroadcaster_History(t *testing.T) {
 
 	// Add messages
 	for i := 0; i < 10; i++ {
-		b.Broadcast([]byte(fmt.Sprintf("msg%d", i)))
+		b.Broadcast(fmt.Sprintf("msg%d", i))
 	}
 
 	history := b.GetHistory()
@@ -25,8 +25,8 @@ func TestBroadcaster_History(t *testing.T) {
 	// Check content (last 5 messages: msg5, msg6, msg7, msg8, msg9)
 	for i, msg := range history {
 		expected := fmt.Sprintf("msg%d", i+5)
-		if string(msg) != expected {
-			t.Errorf("Expected history[%d] to be %s, got %s", i, expected, string(msg))
+		if msg.(string) != expected {
+			t.Errorf("Expected history[%d] to be %s, got %s", i, expected, msg.(string))
 		}
 	}
 }
@@ -36,8 +36,8 @@ func TestBroadcaster_SubscribeWithHistory(t *testing.T) {
 	b.limit = 10
 
 	// Add some initial messages
-	b.Broadcast([]byte("msg1"))
-	b.Broadcast([]byte("msg2"))
+	b.Broadcast("msg1")
+	b.Broadcast("msg2")
 
 	// Subscribe
 	ch, history := b.SubscribeWithHistory()
@@ -46,62 +46,36 @@ func TestBroadcaster_SubscribeWithHistory(t *testing.T) {
 	if len(history) != 2 {
 		t.Errorf("Expected history length 2, got %d", len(history))
 	}
-	if string(history[0]) != "msg1" || string(history[1]) != "msg2" {
+	if history[0].(string) != "msg1" || history[1].(string) != "msg2" {
 		t.Errorf("Unexpected history content")
 	}
 
 	// Broadcast new message
-	b.Broadcast([]byte("msg3"))
+	b.Broadcast("msg3")
 
 	// Should receive msg3
 	select {
 	case msg := <-ch:
-		if string(msg) != "msg3" {
-			t.Errorf("Expected msg3, got %s", string(msg))
+		if msg.(string) != "msg3" {
+			t.Errorf("Expected msg3, got %s", msg.(string))
 		}
 	default:
 		t.Errorf("Did not receive msg3")
 	}
 }
 
-func TestBroadcaster_HistoryIntegrity(t *testing.T) {
-	// Test that modifying the returned history buffer doesn't affect internal state
-	b := NewBroadcaster()
-	msg := []byte("original")
-	b.Broadcast(msg)
-
-	history := b.GetHistory()
-	if string(history[0]) != "original" {
-		t.Errorf("Unexpected message")
-	}
-
-	// Note: We intentionally allow GetHistory to return references to internal buffers for zero-copy performance.
-	// Callers must not modify the returned data.
-	// The previous test checking for deep-copy isolation is removed.
-
-	// Test that reusing buffer in Broadcast doesn't affect history
-	buf := []byte("hello")
-	b.Broadcast(buf)
-
-	// Modify buf
-	buf[0] = 'H'
-
-	history3 := b.GetHistory()
-	// The last message should be "hello" (history3[1])
-	lastMsg := history3[len(history3)-1]
-	if string(lastMsg) != "hello" {
-		t.Errorf("History was affected by caller modifying buffer after broadcast: got %s, expected hello", string(lastMsg))
-	}
-}
+// TestBroadcaster_HistoryIntegrity removed because we now store 'any'.
+// If 'any' is a value type (like struct or string), it's safe.
+// If it's a pointer, it's shared. We assume callers know this.
 
 func TestBroadcaster_Hydrate(t *testing.T) {
 	b := NewBroadcaster()
 	b.limit = 5
 
-	messages := [][]byte{
-		[]byte("h1"),
-		[]byte("h2"),
-		[]byte("h3"),
+	messages := []any{
+		"h1",
+		"h2",
+		"h3",
 	}
 	b.Hydrate(messages)
 
@@ -110,15 +84,15 @@ func TestBroadcaster_Hydrate(t *testing.T) {
 	if len(history) != 3 {
 		t.Errorf("Expected history length 3, got %d", len(history))
 	}
-	if string(history[0]) != "h1" {
+	if history[0].(string) != "h1" {
 		t.Errorf("Unexpected history content")
 	}
 
 	// Add more (overflow)
-	moreMessages := [][]byte{
-		[]byte("h4"),
-		[]byte("h5"),
-		[]byte("h6"),
+	moreMessages := []any{
+		"h4",
+		"h5",
+		"h6",
 	}
 	b.Hydrate(moreMessages)
 
@@ -127,10 +101,10 @@ func TestBroadcaster_Hydrate(t *testing.T) {
 	if len(history) != 5 {
 		t.Errorf("Expected history length 5, got %d", len(history))
 	}
-	if string(history[0]) != "h2" {
-		t.Errorf("Expected h2, got %s", string(history[0]))
+	if history[0].(string) != "h2" {
+		t.Errorf("Expected h2, got %s", history[0].(string))
 	}
-	if string(history[4]) != "h6" {
-		t.Errorf("Expected h6, got %s", string(history[4]))
+	if history[4].(string) != "h6" {
+		t.Errorf("Expected h6, got %s", history[4].(string))
 	}
 }

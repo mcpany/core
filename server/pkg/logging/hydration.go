@@ -20,7 +20,8 @@ func HydrateFromFile(path string) error {
 		return err
 	}
 
-	var broadcastMessages [][]byte
+	// ⚡ BOLT: Store structs in history, not bytes.
+	var broadcastMessages []any
 	for _, line := range lines {
 		if len(line) == 0 {
 			continue
@@ -66,11 +67,7 @@ func HydrateFromFile(path string) error {
 			entry.Metadata[k] = v
 		}
 
-		// Marshal to LogEntry JSON
-		data, err := json.Marshal(entry)
-		if err == nil {
-			broadcastMessages = append(broadcastMessages, data)
-		}
+		broadcastMessages = append(broadcastMessages, entry)
 	}
 
 	if len(broadcastMessages) > 0 {
