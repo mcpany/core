@@ -105,6 +105,21 @@ func TestImportCmd(t *testing.T) {
 		assert.Contains(t, err.Error(), "failed to read input file")
 	})
 
+	t.Run("Permission Denied", func(t *testing.T) {
+		tmpDir := t.TempDir()
+		inputFile := filepath.Join(tmpDir, "unreadable.json")
+		err := os.WriteFile(inputFile, []byte("{}"), 0000)
+		require.NoError(t, err)
+
+		cmd := newImportCmd()
+		cmd.SetArgs([]string{inputFile})
+
+		err = cmd.Execute()
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "failed to read input file")
+		assert.Contains(t, err.Error(), "permission denied")
+	})
+
 	t.Run("Invalid JSON", func(t *testing.T) {
 		tmpDir := t.TempDir()
 		inputFile := filepath.Join(tmpDir, "invalid.json")
