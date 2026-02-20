@@ -17,6 +17,8 @@ interface UseTracesOptions {
  * @param options.initialPaused - Whether to start in a paused state.
  * @returns An object containing the current traces, loading state, connection status, and controls.
  */
+const MAX_TRACES = 1000;
+
 export function useTraces(options: UseTracesOptions = {}) {
     const [traces, setTraces] = useState<Trace[]>([]);
     const [loading, setLoading] = useState(true);
@@ -69,17 +71,28 @@ export function useTraces(options: UseTracesOptions = {}) {
                 }
 
                 // 4. Apply updates in-place to preserve order of existing items
-                const nextTraces = prev.map(t => {
-                    if (updatesForExisting.has(t.id)) {
-                        return updatesForExisting.get(t.id)!;
-                    }
-                    return t;
-                });
+                // ⚡ BOLT: Optimization - Skip mapping if no existing items need updates
+                let nextTraces = prev;
+                if (updatesForExisting.size > 0) {
+                    nextTraces = prev.map(t => {
+                        if (updatesForExisting.has(t.id)) {
+                            return updatesForExisting.get(t.id)!;
+                        }
+                        return t;
+                    });
+                }
 
                 // 5. Prepend new inserts (newest first).
                 // Buffer is oldest->newest. We want newest at top of list.
                 // So we reverse inserts.
-                return [...inserts.reverse(), ...nextTraces];
+                const merged = [...inserts.reverse(), ...nextTraces];
+
+                // ⚡ BOLT: Optimization - Enforce hard limit to prevent memory leaks
+                // Randomized Selection from Top 5 High-Impact Targets
+                if (merged.length > MAX_TRACES) {
+                    return merged.slice(0, MAX_TRACES);
+                }
+                return merged;
             });
         }, 100);
 
