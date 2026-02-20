@@ -3222,45 +3222,216 @@ func checkInterpreterFunctionCalls(val, language string) error {
 	// Strip comments and line continuations first
 	val = stripInterpreterComments(val, language)
 
-	// Sentinel Security Update: Check for standalone keywords that can execute code without parentheses
-	// This covers cases like Perl/Ruby 'open F, "|ls"' or 'system "ls"' where tokens are separated by space.
-	dangerousKeywords := []string{
-		"system", "exec", "popen", "eval",
-		"spawn", "fork",
+	// Determine if language allows unparenthesized function calls or string interpolation execution
+	// Ruby, Perl, PHP, Expect allow: system "ls", exec "ls", or interpolation tricks.
+	// We must be strict for these languages.
+	base := strings.ToLower(language)
+	isStrict := strings.HasPrefix(base, "ruby") || strings.HasPrefix(base, "perl") ||
+		strings.HasPrefix(base, "php") || strings.HasPrefix(base, "expect")
+
+	// 1. Statement Keywords: Always blocked as unquoted words.
+	// 2. Object Keywords: Blocked if followed by . (method access) or [ (index access) or ( (call).
+	// 3. Function Keywords: Blocked if followed by ( (call).
+
+	var statementKeywords []string
+	var objectKeywords []string
+	var functionKeywords []string
+
+	// Universal dangerous keywords
+	universal := []string{
+		"system", "exec", "popen", "eval", "spawn", "fork",
 		"import", "require",
 		"subprocess", "child_process", "os", "sys",
 		"open", "read", "write",
 	}
 
-	if err := checkUnquotedKeywords(val, dangerousKeywords); err != nil {
-		return err
-	}
+	if isStrict {
+		// For strict languages, ALL dangerous keywords are blocked if they appear as unquoted words.
+		statementKeywords = universal
+	} else {
+		// For standard languages (Python, Node, Java, etc.), we differentiate.
+		statementKeywords = []string{"import", "require"} // Blocked as words
 
-	// Normalize value to detect obfuscation (e.g. system ( ) )
-	var b strings.Builder
-	b.Grow(len(val))
-	for _, r := range val {
-		if !unicode.IsSpace(r) {
-			b.WriteRune(r)
+		// Objects/Modules: Block if accessed or called
+		objectKeywords = []string{
+			"subprocess", "child_process", "os", "sys",
 		}
-	}
-	cleanVal := strings.ToLower(b.String())
 
-	for _, kw := range dangerousKeywords {
-		// Sentinel Security Update: Check for keyword followed by delimiters other than '('
-		// Languages like Ruby and Perl allow calling functions without parentheses (e.g. system 'ls').
-		// We check against cleanVal (no whitespace), so 'system "ls"' becomes 'system"ls"'.
-		if strings.Contains(cleanVal, kw+"(") ||
-			strings.Contains(cleanVal, kw+"'") ||
-			strings.Contains(cleanVal, kw+"\"") ||
-			strings.Contains(cleanVal, kw+"`") {
-			return fmt.Errorf("interpreter injection detected: value contains dangerous function call %q", kw)
+		// Functions: Block if called
+		functionKeywords = []string{
+			"system", "exec", "popen", "eval", "spawn", "fork",
+			"open", "read", "write",
 		}
 	}
 
-	if strings.Contains(cleanVal, "__import__") {
+	if len(statementKeywords) > 0 {
+		if err := checkUnquotedKeywords(val, statementKeywords); err != nil {
+			return err
+		}
+	}
+
+	if len(objectKeywords) > 0 {
+		// Block objects if followed by . (method call), [ (getitem), ( (call), = (assignment), : (type hint/dict)
+		if err := checkContextualKeywords(val, objectKeywords, []rune{'.', '[', '(', '=', ':'}); err != nil {
+			return err
+		}
+	}
+
+	if len(functionKeywords) > 0 {
+		// Block functions if followed by ( (call), = (assignment), : (type hint/dict)
+		// We do NOT block . (method access) on functions usually, but some might be objects too.
+		// For safety, we block ( and = and :.
+		if err := checkContextualKeywords(val, functionKeywords, []rune{'(', '=', ':'}); err != nil {
+			return err
+		}
+	}
+
+	// Always check for __import__ (Python) regardless of language/context as it is dangerous
+	// and rarely used in normal text.
+	if strings.Contains(strings.ToLower(val), "__import__") {
 		return fmt.Errorf("interpreter injection detected: value contains '__import__'")
 	}
+
+	return nil
+}
+
+// checkContextualKeywords checks if any keyword in the list is present in val as a whole word
+// AND is followed by one of the suffix characters (ignoring whitespace).
+func checkContextualKeywords(val string, keywords []string, suffixes []rune) error {
+	inSingle := false
+	inDouble := false
+	inBacktick := false
+	escaped := false
+
+	// Helper to check if rune is in suffixes
+	isSuffix := func(r rune) bool {
+		for _, s := range suffixes {
+			if r == s {
+				return true
+			}
+		}
+		return false
+	}
+
+	var wordBuilder strings.Builder
+	inWord := false
+
+	runes := []rune(val)
+
+	for i := 0; i < len(runes); i++ {
+		char := runes[i]
+
+		if escaped {
+			escaped = false
+			continue
+		}
+		if char == '\\' {
+			escaped = true
+			continue
+		}
+
+		// Quote handling
+		if char == '\'' && !inDouble && !inBacktick {
+			inSingle = !inSingle
+			// Treat quotes as delimiters for words
+			if inSingle { // Entered quote
+				if inWord {
+					word := wordBuilder.String()
+					if err := checkWordSuffix(word, keywords, runes, i, isSuffix); err != nil {
+						return err
+					}
+					inWord = false
+				}
+			}
+			continue
+		}
+		if char == '"' && !inSingle && !inBacktick {
+			inDouble = !inDouble
+			if inDouble { // Entered quote
+				if inWord {
+					word := wordBuilder.String()
+					if err := checkWordSuffix(word, keywords, runes, i, isSuffix); err != nil {
+						return err
+					}
+					inWord = false
+				}
+			}
+			continue
+		}
+		if char == '`' && !inSingle && !inDouble {
+			inBacktick = !inBacktick
+			if inBacktick { // Entered quote
+				if inWord {
+					word := wordBuilder.String()
+					if err := checkWordSuffix(word, keywords, runes, i, isSuffix); err != nil {
+						return err
+					}
+					inWord = false
+				}
+			}
+			continue
+		}
+
+		if inSingle || inDouble || inBacktick {
+			continue
+		}
+
+		if char < 128 && isWordChar(byte(char)) {
+			if !inWord {
+				inWord = true
+				wordBuilder.Reset()
+			}
+			wordBuilder.WriteRune(char)
+		} else {
+			// Delimiter
+			if inWord {
+				word := wordBuilder.String()
+				// Look ahead starting from current char i
+				if err := checkWordSuffix(word, keywords, runes, i, isSuffix); err != nil {
+					return err
+				}
+				inWord = false
+			}
+		}
+	}
+
+	// Check last word
+	if inWord {
+		word := wordBuilder.String()
+		if err := checkWordSuffix(word, keywords, runes, len(runes), isSuffix); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func checkWordSuffix(word string, keywords []string, runes []rune, nextIdx int, isSuffix func(rune) bool) error {
+	// 1. Check if word matches a keyword
+	found := false
+	for _, kw := range keywords {
+		if word == kw {
+			found = true
+			break
+		}
+	}
+	if !found {
+		return nil
+	}
+
+	// 2. Look ahead for suffix
+	for k := nextIdx; k < len(runes); k++ {
+		r := runes[k]
+		if unicode.IsSpace(r) {
+			continue
+		}
+		if isSuffix(r) {
+			return fmt.Errorf("interpreter injection detected: dangerous keyword %q followed by %q", word, r)
+		}
+		// If we hit a non-space, non-suffix character, the word is safe in this context
+		// e.g. "open the" -> 't' is not suffix. Safe.
+		return nil
+	}
+	// End of string without suffix -> Safe (e.g. "I need to read")
 	return nil
 }
 
