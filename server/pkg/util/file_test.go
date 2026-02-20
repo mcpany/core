@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"os"
 	"path/filepath"
+	"strconv"
 	"testing"
 )
 
@@ -92,5 +93,47 @@ func TestReadLastNLines(t *testing.T) {
 	}
 	if len(lines) != 10 {
 		t.Errorf("expected 10 lines, got %d", len(lines))
+	}
+}
+
+func TestReadLastNLines_BufferCompaction(t *testing.T) {
+	tmpDir := t.TempDir()
+	path := filepath.Join(tmpDir, "compaction.log")
+
+	// Create a file larger than 4KB (bufio default buffer) but smaller than 64KB
+	f, err := os.Create(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Write distinct lines. 1000 lines * ~7 bytes = ~7000 bytes.
+	// Enough to trigger buffer compaction (default buf size is 4KB).
+	for i := 0; i < 1000; i++ {
+		if _, err := f.WriteString("line" + strconv.Itoa(i) + "\n"); err != nil {
+			t.Fatal(err)
+		}
+	}
+	f.Close()
+
+	lines, err := ReadLastNLines(path, 1000)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if len(lines) != 1000 {
+		t.Errorf("expected 1000 lines, got %d", len(lines))
+	}
+
+	// Verify first line (which is most likely to be overwritten/corrupted)
+	if string(lines[0]) != "line0" {
+		t.Errorf("lines[0]: expected 'line0', got '%s'", string(lines[0]))
+	}
+	// Verify a line from the middle
+	if string(lines[500]) != "line500" {
+		t.Errorf("lines[500]: expected 'line500', got '%s'", string(lines[500]))
+	}
+	// Verify last line
+	if string(lines[999]) != "line999" {
+		t.Errorf("lines[999]: expected 'line999', got '%s'", string(lines[999]))
 	}
 }
