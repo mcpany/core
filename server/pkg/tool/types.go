@@ -3222,17 +3222,49 @@ func checkInterpreterFunctionCalls(val, language string) error {
 	// Strip comments and line continuations first
 	val = stripInterpreterComments(val, language)
 
-	// Sentinel Security Update: Check for standalone keywords that can execute code without parentheses
-	// This covers cases like Perl/Ruby 'open F, "|ls"' or 'system "ls"' where tokens are separated by space.
-	dangerousKeywords := []string{
-		"system", "exec", "popen", "eval",
-		"spawn", "fork",
+	// Strict keywords are checked as "words" (unquoted context).
+	// These are language constructs that are dangerous even if they don't look like function calls,
+	// or are rare enough in natural language that false positives are acceptable for security.
+	strictKeywords := []string{
 		"import", "require",
 		"subprocess", "child_process", "os", "sys",
-		"open", "read", "write",
 	}
 
-	if err := checkUnquotedKeywords(val, dangerousKeywords); err != nil {
+	// Python 2 specific strict keywords
+	if strings.HasPrefix(language, "python") {
+		strictKeywords = append(strictKeywords, "exec")
+	}
+
+	if err := checkUnquotedKeywords(val, strictKeywords); err != nil {
+		return err
+	}
+
+	// Function keywords are only dangerous when called as functions.
+	// We check for these contextually based on the language.
+	// Added "exec" as it is dangerous in almost all languages (PHP, Node, etc) if called.
+	functionKeywords := []string{
+		"system", "open", "read", "write", "eval", "spawn", "fork", "popen", "exec",
+	}
+
+	// Determine checking style based on language
+	// StyleParensOrQuotes: Ruby, Perl, PHP, Shell (allow calling functions with space + quote)
+	// StyleParensOnly: Python, Node, Java, etc. (require parentheses for function calls)
+	// For Perl/Ruby/PHP/Shell, barewords can be function calls (e.g. "open F", "eval ls"), so we must check strictly (unquoted keywords).
+	isStrictLang := false
+	checkQuotes := false
+	switch language {
+	case "ruby", "perl", "php", "sh", "bash", "zsh", "dash", "ash", "ksh", "csh", "tcsh", "fish":
+		isStrictLang = true
+		checkQuotes = true // Also check for quotes just in case, though strict check usually catches it
+	}
+
+	if isStrictLang {
+		// For strict languages, move function keywords to strict keywords to check them as words
+		strictKeywords = append(strictKeywords, functionKeywords...)
+		functionKeywords = []string{}
+	}
+
+	if err := checkUnquotedKeywords(val, strictKeywords); err != nil {
 		return err
 	}
 
@@ -3246,15 +3278,34 @@ func checkInterpreterFunctionCalls(val, language string) error {
 	}
 	cleanVal := strings.ToLower(b.String())
 
-	for _, kw := range dangerousKeywords {
-		// Sentinel Security Update: Check for keyword followed by delimiters other than '('
-		// Languages like Ruby and Perl allow calling functions without parentheses (e.g. system 'ls').
-		// We check against cleanVal (no whitespace), so 'system "ls"' becomes 'system"ls"'.
-		if strings.Contains(cleanVal, kw+"(") ||
-			strings.Contains(cleanVal, kw+"'") ||
-			strings.Contains(cleanVal, kw+"\"") ||
-			strings.Contains(cleanVal, kw+"`") {
+	// Helper to check for calls
+	checkForCall := func(kw string) error {
+		// Check for parentheses (universal)
+		if strings.Contains(cleanVal, kw+"(") {
 			return fmt.Errorf("interpreter injection detected: value contains dangerous function call %q", kw)
+		}
+		// Check for quotes if language supports space-separated calls
+		if checkQuotes {
+			if strings.Contains(cleanVal, kw+"'") ||
+				strings.Contains(cleanVal, kw+"\"") ||
+				strings.Contains(cleanVal, kw+"`") {
+				return fmt.Errorf("interpreter injection detected: value contains dangerous function call %q", kw)
+			}
+		}
+		return nil
+	}
+
+	// Check function keywords
+	for _, kw := range functionKeywords {
+		if err := checkForCall(kw); err != nil {
+			return err
+		}
+	}
+
+	// Also check strict keywords for function calls (just in case checkUnquotedKeywords missed something due to obfuscation)
+	for _, kw := range strictKeywords {
+		if err := checkForCall(kw); err != nil {
+			return err
 		}
 	}
 
