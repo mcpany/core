@@ -59,7 +59,7 @@ func TestZipSecurity(t *testing.T) {
 		if err == nil {
 			t.Fatal("Expected error but got nil (Vulnerability present: validation passed)")
 		} else {
-			if !strings.Contains(err.Error(), "shell injection detected") {
+			if !strings.Contains(err.Error(), "shell injection detected") && !strings.Contains(err.Error(), "interpreter injection detected") {
 				t.Fatalf("Expected shell injection error, got: %v (Vulnerability present: validation passed)", err)
 			}
 		}
@@ -79,7 +79,7 @@ func TestZipSecurity(t *testing.T) {
 		if err == nil {
 			t.Fatal("Expected error but got nil (Vulnerability present: validation passed)")
 		} else {
-			if !strings.Contains(err.Error(), "shell injection detected") {
+			if !strings.Contains(err.Error(), "shell injection detected") && !strings.Contains(err.Error(), "interpreter injection detected") {
 				t.Fatalf("Expected shell injection error, got: %v (Vulnerability present: validation passed)", err)
 			}
 		}
