@@ -33,6 +33,6 @@ test.describe('Network Topology Visualizer', () => {
     expect(count).toBeGreaterThan(0);
 
     // 6. Screenshot
-    await page.screenshot({ path: '../verification/visualizer.png', fullPage: true });
+    await page.screenshot({ path: 'test-results/visualizer.png', fullPage: true });
   });
 });
