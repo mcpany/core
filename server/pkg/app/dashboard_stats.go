@@ -5,6 +5,7 @@ package app
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"sort"
 	"time"
@@ -478,6 +479,7 @@ func (a *Application) handleDashboardHealth() http.HandlerFunc {
 		}
 
 		history := health.GetHealthHistory()
+		historyByID := make(map[string][]health.HistoryPoint)
 		var serviceHealths []ServiceHealth
 
 		const (
@@ -533,22 +535,35 @@ func (a *Application) handleDashboardHealth() http.HandlerFunc {
 				}
 			}
 
+			// Remap history to be keyed by Service ID for the frontend
+			if h, ok := history[svc.GetName()]; ok {
+				historyByID[svc.GetId()] = h
+			}
+
+			// Get real latency from TopologyManager
+			var latencyStr string
+			if a.TopologyManager != nil {
+				avgLatency, _ := a.TopologyManager.GetRecentServiceStats(svc.GetId(), 15*time.Minute)
+				latencyStr = fmt.Sprintf("%dms", avgLatency.Milliseconds())
+				if avgLatency == 0 {
+					latencyStr = "0ms"
+				}
+			} else {
+				latencyStr = "0ms"
+			}
+
+			// Get real uptime from Health History
+			uptimeVal := health.CalculateUptime(history[svc.GetName()], 24*time.Hour)
+			uptimeStr := fmt.Sprintf("%.1f%%", uptimeVal*100)
+
 			serviceHealths = append(serviceHealths, ServiceHealth{
 				ID:      svc.GetId(),
 				Name:    name,
 				Status:  uiStatus,
-				Latency: "10ms", // TODO: Get real latency from metrics
-				Uptime:  "99.9%", // TODO: Calculate real uptime
+				Latency: latencyStr,
+				Uptime:  uptimeStr,
 				Message: msg,
 			})
-		}
-
-		// Remap history to be keyed by Service ID for the frontend
-		historyByID := make(map[string][]health.HistoryPoint)
-		for _, svc := range services {
-			if h, ok := history[svc.GetName()]; ok {
-				historyByID[svc.GetId()] = h
-			}
 		}
 
 		resp := ServiceHealthResponse{
