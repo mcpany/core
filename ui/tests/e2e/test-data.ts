@@ -9,6 +9,20 @@ const BASE_URL = process.env.BACKEND_URL || 'http://localhost:50050';
 const API_KEY = process.env.MCPANY_API_KEY || 'test-token';
 const HEADERS = { 'X-API-Key': API_KEY };
 
+const retryRequest = async <T>(fn: () => Promise<T>, retries = 3, delay = 1000): Promise<T> => {
+    let lastError: any;
+    for (let i = 0; i < retries; i++) {
+        try {
+            return await fn();
+        } catch (e) {
+            lastError = e;
+            console.log(`Request failed, retrying (${i + 1}/${retries})... ${e}`);
+            await new Promise(res => setTimeout(res, delay * (i + 1))); // Exponential backoff
+        }
+    }
+    throw lastError;
+};
+
 export const seedServices = async (requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     const services = [
@@ -89,11 +103,13 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
 
     for (const svc of services) {
         try {
-            const res = await context.post('/api/v1/services', { data: svc, headers: HEADERS });
-            if (!res.ok()) {
-                const text = await res.text();
-                throw new Error(`${res.status()} ${text}`);
-            }
+            await retryRequest(async () => {
+                const res = await context.post('/api/v1/services', { data: svc, headers: HEADERS });
+                if (!res.ok()) {
+                    const text = await res.text();
+                    throw new Error(`${res.status()} ${text}`);
+                }
+            });
         } catch (e) {
             console.log(`Failed to seed service ${svc.name}: ${e}`);
             throw e;
@@ -128,11 +144,13 @@ export const seedCollection = async (name: string, requestContext?: APIRequestCo
         ]
     };
     try {
-        const res = await context.post('/api/v1/collections', { data: collection, headers: HEADERS });
-        if (!res.ok()) {
-            const text = await res.text();
-            throw new Error(`Failed to seed collection ${name}: ${res.status()} ${text}`);
-        }
+        await retryRequest(async () => {
+            const res = await context.post('/api/v1/collections', { data: collection, headers: HEADERS });
+            if (!res.ok()) {
+                const text = await res.text();
+                throw new Error(`Failed to seed collection ${name}: ${res.status()} ${text}`);
+            }
+        });
     } catch (e) {
         console.log(`Failed to seed collection ${name}: ${e}`);
         throw e;
@@ -320,11 +338,13 @@ export const seedUser = async (requestContext?: APIRequestContext, username: str
     await cleanupUser(context, username);
     try {
         // We use the internal API to seed the user. This request uses HEADERS (API Key) which bypasses auth on backend.
-        const res = await context.post('/api/v1/users', { data: user, headers: HEADERS });
-        if (!res.ok()) {
-            const text = await res.text();
-            throw new Error(`${res.status()} ${text}`);
-        }
+        await retryRequest(async () => {
+            const res = await context.post('/api/v1/users', { data: user, headers: HEADERS });
+            if (!res.ok()) {
+                const text = await res.text();
+                throw new Error(`${res.status()} ${text}`);
+            }
+        });
     } catch (e) {
         console.log(`Failed to seed user: ${e}`);
         throw e;
