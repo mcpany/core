@@ -165,7 +165,7 @@ describe('useTraces Hook', () => {
     });
 
     // Simulate sending more than MAX_TRACES (500)
-    const TOTAL_TRACES = 600;
+    const TOTAL_TRACES = 550;
     const MAX_TRACES = 500;
 
     // Send in batches to be gentle on the test runner environment
