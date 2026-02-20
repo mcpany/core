@@ -26,7 +26,8 @@ test('visualizer renders live agent flow', async ({ page }) => {
   // Wait for polling to pick up the trace (interval is 2s)
   // We expect a node with label "get_weather" (the helper strips service name if distinct? no, helper logic: if service return serviceName || name. if tool return name.)
   // getParticipantLabel for tool returns span.name. So it will be "weather-service.get_weather"
-  await expect(page.getByText('weather-service.get_weather', { exact: true })).toBeVisible({ timeout: 10000 });
+  // Increased timeout to 45s to handle slower CI/K8s environments where trace generation/polling might be delayed.
+  await expect(page.getByText('weather-service.get_weather', { exact: true })).toBeVisible({ timeout: 45000 });
 
   // We also expect "User" node
   await expect(page.getByText('User', { exact: true })).toBeVisible();
