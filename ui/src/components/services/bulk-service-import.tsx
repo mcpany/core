@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { AlertCircle, Upload, CheckCircle2, FileJson, Link as LinkIcon, Loader2, XCircle, AlertTriangle } from "lucide-react";
+import { AlertCircle, Upload, CheckCircle2, FileJson, Link as LinkIcon, Loader2, XCircle, AlertTriangle, FileCode } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { apiClient, UpstreamServiceConfig } from "@/lib/client";
@@ -29,6 +29,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import yaml from "js-yaml";
 
 interface BulkServiceImportProps {
     onImportSuccess: () => void;
@@ -58,6 +59,7 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
     const [jsonContent, setJsonContent] = useState("");
     const [importUrl, setImportUrl] = useState("");
     const [parsingError, setParsingError] = useState<string | null>(null);
+    const [detectedFormat, setDetectedFormat] = useState<string | null>(null);
 
     // Review Step State
     const [items, setItems] = useState<ServiceImportItem[]>([]);
@@ -84,36 +86,128 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
         reader.readAsText(file);
     };
 
+    const mapClaudeConfig = (mcpServers: any): UpstreamServiceConfig[] => {
+        return Object.entries(mcpServers).map(([name, config]: [string, any]) => {
+            // Check for SSE (url)
+            if (config.url) {
+                return {
+                    id: "",
+                    name: name,
+                    version: "1.0.0",
+                    priority: 0,
+                    disable: false,
+                    mcpService: {
+                        httpConnection: {
+                            httpAddress: config.url
+                        },
+                        toolAutoDiscovery: true,
+                        tools: [], resources: [], prompts: [], calls: {}
+                    }
+                } as UpstreamServiceConfig;
+            }
+
+            // Claude config usually has "command", "args", "env"
+            const command = config.command || "";
+            const args = Array.isArray(config.args) ? config.args : [];
+            const fullCommand = [command, ...args].join(" ");
+
+            return {
+                id: "", // Will be generated
+                name: name,
+                version: "1.0.0",
+                priority: 0,
+                disable: false,
+                commandLineService: {
+                    command: fullCommand,
+                    workingDirectory: "",
+                    env: config.env || {},
+                    tools: [],
+                    resources: [],
+                    prompts: [],
+                    calls: {},
+                    communicationProtocol: 0,
+                    local: false
+                },
+                mcpService: {
+                   toolAutoDiscovery: true,
+                   tools: [], resources: [], prompts: [], calls: {}
+                }
+            } as UpstreamServiceConfig;
+        });
+    };
+
+    const detectAndParse = (content: string): UpstreamServiceConfig[] => {
+        let parsed: any;
+        let format = "unknown";
+
+        // Try JSON first
+        try {
+            parsed = JSON.parse(content);
+            format = "JSON";
+        } catch (e) {
+            // Try YAML
+            try {
+                parsed = yaml.load(content);
+                format = "YAML";
+            } catch (e2: any) {
+                 throw new Error(`Failed to parse content as JSON or YAML. YAML Error: ${e2.message}`);
+            }
+        }
+
+        if (!parsed || typeof parsed !== 'object') {
+            throw new Error("Parsed content must be an object or array.");
+        }
+
+        setDetectedFormat(format);
+
+        // Detect Schema
+        if (parsed.mcpServers) {
+            setDetectedFormat(`${format} (Claude Desktop)`);
+            return mapClaudeConfig(parsed.mcpServers);
+        } else if (parsed.services && Array.isArray(parsed.services)) {
+             setDetectedFormat(`${format} (MCP Any Native)`);
+             return parsed.services;
+        } else if (Array.isArray(parsed)) {
+             setDetectedFormat(`${format} (Array)`);
+             return parsed;
+        } else if (parsed.openapi || parsed.swagger) {
+             setDetectedFormat(`${format} (OpenAPI)`);
+             return [{
+                name: parsed.info?.title?.toLowerCase().replace(/\s+/g, '-') || "openapi-service",
+                openapiService: {
+                    address: importUrl || "imported-spec",
+                    specUrl: "",
+                    specContent: content, // Store full spec? Or just assume structure?
+                    tools: [], resources: [], calls: [], prompts: []
+                }
+            } as any];
+        } else {
+            // Assume single object is a service if it looks like one, or try to be flexible
+             setDetectedFormat(`${format} (Single Service)`);
+             return [parsed];
+        }
+    };
+
     const parseAndValidate = async () => {
         setParsingError(null);
         setIsValidating(true);
+        setDetectedFormat(null);
         let parsedServices: any[] = [];
 
         try {
+            let contentToParse = jsonContent;
+
             if (inputType === "url") {
                 if (!importUrl.trim()) throw new Error("URL is required.");
                 const res = await fetch(importUrl);
                 if (!res.ok) throw new Error(`Failed to fetch from URL: ${res.statusText}`);
-                const data = await res.json();
-
-                // OpenAPI Handling
-                if (data.openapi || data.swagger) {
-                     parsedServices = [{
-                        name: data.info?.title?.toLowerCase().replace(/\s+/g, '-') || "openapi-service",
-                        openapiService: {
-                            address: importUrl,
-                            specUrl: importUrl,
-                            tools: [], resources: [], calls: [], prompts: []
-                        }
-                    }];
-                } else {
-                    parsedServices = Array.isArray(data) ? data : (data.services || [data]);
-                }
+                // Get text first to allow detection
+                contentToParse = await res.text();
             } else {
-                if (!jsonContent.trim()) throw new Error("JSON content is required.");
-                const data = JSON.parse(jsonContent);
-                parsedServices = Array.isArray(data) ? data : (data.services || [data]);
+                 if (!jsonContent.trim()) throw new Error("Content is required.");
             }
+
+            parsedServices = detectAndParse(contentToParse);
 
             if (!parsedServices.length) throw new Error("No services found in input.");
 
@@ -244,7 +338,7 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
             <div className="space-y-6">
                 <Tabs value={inputType} onValueChange={(v) => setInputType(v as any)} className="w-full">
                     <TabsList className="grid w-full grid-cols-3">
-                        <TabsTrigger value="json"><FileJson className="mr-2 h-4 w-4" /> JSON / YAML</TabsTrigger>
+                        <TabsTrigger value="json"><FileCode className="mr-2 h-4 w-4" /> JSON / YAML</TabsTrigger>
                         <TabsTrigger value="file"><Upload className="mr-2 h-4 w-4" /> File Upload</TabsTrigger>
                         <TabsTrigger value="url"><LinkIcon className="mr-2 h-4 w-4" /> URL Import</TabsTrigger>
                     </TabsList>
@@ -270,13 +364,13 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
                             <div className={inputType === "file" ? "hidden" : "block"}>
                                 <Label className="mb-2 block">Configuration Content</Label>
                                 <Textarea
-                                    placeholder='[{"name": "my-service", "httpService": { ... }}]'
+                                    placeholder='Paste JSON or YAML here...'
                                     className="h-[300px] font-mono text-xs"
                                     value={jsonContent}
                                     onChange={(e) => setJsonContent(e.target.value)}
                                 />
                                 <p className="text-xs text-muted-foreground mt-2">
-                                    Paste a JSON array of service configurations or a single service object.
+                                    Supports: Standard MCP JSON, Claude Desktop Config (mcpServers), and YAML.
                                 </p>
                             </div>
                         )}
@@ -287,13 +381,13 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
                                     <Label>Configuration URL</Label>
                                     <div className="flex gap-2">
                                         <Input
-                                            placeholder="https://example.com/mcp-config.json"
+                                            placeholder="https://example.com/mcp-config.yaml"
                                             value={importUrl}
                                             onChange={(e) => setImportUrl(e.target.value)}
                                         />
                                     </div>
                                     <p className="text-xs text-muted-foreground">
-                                        Enter a URL to a JSON configuration file or OpenAPI specification.
+                                        Enter a URL to a JSON/YAML configuration file or OpenAPI specification.
                                     </p>
                                 </div>
                             </div>
@@ -330,8 +424,9 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
                 <div className="flex items-center justify-between">
                     <div>
                         <h3 className="text-lg font-medium">Review Services</h3>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-sm text-muted-foreground flex items-center gap-2">
                             Found {items.length} services. {validCount} valid, {warningCount} warnings.
+                            {detectedFormat && <Badge variant="secondary" className="text-[10px] ml-2">{detectedFormat}</Badge>}
                         </p>
                     </div>
                 </div>
@@ -349,7 +444,7 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
                                 <TableHead>Status</TableHead>
                                 <TableHead>Name</TableHead>
                                 <TableHead>Type</TableHead>
-                                <TableHead>Address</TableHead>
+                                <TableHead>Address / Command</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -404,10 +499,19 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
                                              item.config.mcpService ? "MCP" : "Other"}
                                         </Badge>
                                     </TableCell>
-                                    <TableCell className="font-mono text-xs max-w-[200px] truncate">
+                                    <TableCell className="font-mono text-xs max-w-[200px] truncate" title={
+                                         item.config.httpService?.address ||
+                                         item.config.grpcService?.address ||
+                                         item.config.commandLineService?.command ||
+                                         item.config.mcpService?.httpConnection?.httpAddress ||
+                                         item.config.mcpService?.stdioConnection?.command ||
+                                         "-"
+                                    }>
                                         {item.config.httpService?.address ||
                                          item.config.grpcService?.address ||
                                          item.config.commandLineService?.command ||
+                                         item.config.mcpService?.httpConnection?.httpAddress ||
+                                         item.config.mcpService?.stdioConnection?.command ||
                                          "-"}
                                     </TableCell>
                                 </TableRow>
