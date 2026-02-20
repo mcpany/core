@@ -400,7 +400,7 @@ Defines argument mapping for a command-line tool.
 
 | Field                 | Type                             | Description                                               |
 | --------------------- | -------------------------------- | --------------------------------------------------------- |
-| `connection_type`     | `oneof`                          | The connection details for the upstream MCP service.      |
+| `connection_type`     | `oneof`                          | The connection details for the upstream MCP service (`http_connection`, `stdio_connection`, `bundle_connection`). |
 | `tool_auto_discovery` | `bool`                           | If true, auto-discover and proxy all tools from upstream. |
 | `tools`               | `repeated ToolDefinition`        | Overrides for calls discovered from the service.          |
 | `resources`           | `repeated ResourceDefinition`    | A list of resources served by this service.               |
@@ -539,6 +539,32 @@ Expose a WebRTC service for real-time communication, connecting to its signaling
 webrtc_service:
   address: "https://signaling.example.com"
 ```
+
+#### `SqlUpstreamService`
+
+| Field     | Type                             | Description                                            |
+| --------- | -------------------------------- | ------------------------------------------------------ |
+| `driver`  | `string`                         | The database driver (e.g., "postgres", "mysql").       |
+| `dsn`     | `string`                         | The connection string (Data Source Name).              |
+| `calls`   | `map<string, SqlCallDefinition>` | A map of call definitions, keyed by their unique ID.   |
+
+#### `FilesystemUpstreamService`
+
+| Field           | Type                     | Description                                            |
+| --------------- | ------------------------ | ------------------------------------------------------ |
+| `root_paths`    | `map<string, string>`    | Map of virtual paths to local paths.                   |
+| `read_only`     | `bool`                   | If true, file operations are read-only.                |
+| `allowed_paths` | `repeated string`        | Glob patterns for allowed paths.                       |
+| `denied_paths`  | `repeated string`        | Glob patterns for denied paths.                        |
+| `symlink_mode`  | `enum`                   | Symlink policy (`ALLOW`, `DENY`, `INTERNAL_ONLY`).     |
+| `filesystem_type` | `oneof`                | Type of filesystem (`os`, `s3`, `gcs`, `sftp`, etc.).  |
+
+#### `VectorUpstreamService`
+
+| Field            | Type                  | Description                                         |
+| ---------------- | --------------------- | --------------------------------------------------- |
+| `vector_db_type` | `oneof`               | The vector DB type (`pinecone`, `milvus`).          |
+| `tools`          | `repeated ToolDefinition` | Manually defined mappings.                      |
 
 ### Service Policies and Advanced Configuration
 

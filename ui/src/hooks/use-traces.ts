@@ -19,6 +19,9 @@ interface UseTracesOptions {
  */
 const MAX_TRACES = 1000;
 
+/**
+ * Hook to fetch and manage trace data with optional filtering and pagination.
+ */
 export function useTraces(options: UseTracesOptions = {}) {
     const [traces, setTraces] = useState<Trace[]>([]);
     const [loading, setLoading] = useState(true);
