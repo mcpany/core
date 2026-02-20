@@ -87,5 +87,6 @@ def verify_visualizer():
         browser.close()
 
 if __name__ == "__main__":
+    # Retry CI trigger
     seed_traffic()
     verify_visualizer()
