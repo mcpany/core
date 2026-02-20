@@ -7,7 +7,7 @@ import { test, expect, request } from '@playwright/test';
 
 test.describe('Agent Flow Visualizer', () => {
   test.beforeAll(async ({ playwright }) => {
-    // Seed traffic data to ensure the graph is populated.
+    // Retry CI trigger: Seed traffic data to ensure the graph is populated.
     // We use the Playwright request context to leverage the baseURL from config (Frontend URL).
     // This hits the Next.js API proxy which forwards to the backend, avoiding direct backend connection issues.
     const apiContext = await playwright.request.newContext();
