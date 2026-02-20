@@ -29,6 +29,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import * as yaml from "js-yaml";
 
 interface BulkServiceImportProps {
     onImportSuccess: () => void;
@@ -94,7 +95,18 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
                 if (!importUrl.trim()) throw new Error("URL is required.");
                 const res = await fetch(importUrl);
                 if (!res.ok) throw new Error(`Failed to fetch from URL: ${res.statusText}`);
-                const data = await res.json();
+                const text = await res.text();
+
+                let data: any;
+                try {
+                    data = JSON.parse(text);
+                } catch {
+                    try {
+                        data = yaml.load(text);
+                    } catch {
+                        throw new Error("Failed to parse response as JSON or YAML.");
+                    }
+                }
 
                 // OpenAPI Handling
                 if (data.openapi || data.swagger) {
@@ -110,8 +122,19 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
                     parsedServices = Array.isArray(data) ? data : (data.services || [data]);
                 }
             } else {
-                if (!jsonContent.trim()) throw new Error("JSON content is required.");
-                const data = JSON.parse(jsonContent);
+                if (!jsonContent.trim()) throw new Error("Content is required.");
+
+                let data: any;
+                try {
+                    data = JSON.parse(jsonContent);
+                } catch (jsonErr) {
+                    try {
+                        data = yaml.load(jsonContent);
+                    } catch (yamlErr) {
+                        throw new Error("Invalid format. Please provide valid JSON or YAML.");
+                    }
+                }
+
                 parsedServices = Array.isArray(data) ? data : (data.services || [data]);
             }
 
@@ -276,7 +299,7 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
                                     onChange={(e) => setJsonContent(e.target.value)}
                                 />
                                 <p className="text-xs text-muted-foreground mt-2">
-                                    Paste a JSON array of service configurations or a single service object.
+                                    Paste a JSON array or YAML of service configurations.
                                 </p>
                             </div>
                         )}
@@ -293,7 +316,7 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
                                         />
                                     </div>
                                     <p className="text-xs text-muted-foreground">
-                                        Enter a URL to a JSON configuration file or OpenAPI specification.
+                                        Enter a URL to a JSON/YAML configuration file or OpenAPI specification.
                                     </p>
                                 </div>
                             </div>
