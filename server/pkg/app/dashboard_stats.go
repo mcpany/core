@@ -5,6 +5,7 @@ package app
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"sort"
 	"time"
@@ -533,12 +534,30 @@ func (a *Application) handleDashboardHealth() http.HandlerFunc {
 				}
 			}
 
+			// Calculate Real Latency
+			// Use service name as ID because TopologyManager uses name/ID from tool which usually matches sanitized name?
+			// TopologyManager's GetRecentServiceStats expects serviceID.
+			// Let's try to use svc.GetName() as that's what seems to be used in other places for keys.
+			// If not, we might need svc.GetId().
+			// Checking manager.go again:
+			// "svcNode := topologyv1.Node_builder{ Id: "svc-" + svc.GetName(), ... }"
+			// "stats.ServiceStats[svc.GetName()]"
+			// So TopologyManager uses Name as key in ServiceStats.
+			avgLat, _ := a.TopologyManager.GetRecentServiceStats(svc.GetName(), 15*time.Minute)
+			latencyStr := "0ms"
+			if avgLat > 0 {
+				latencyStr = avgLat.String()
+			}
+
+			// Calculate Real Uptime
+			uptimeStr := calculateUptime(hPoints, 24*time.Hour)
+
 			serviceHealths = append(serviceHealths, ServiceHealth{
 				ID:      svc.GetId(),
 				Name:    name,
 				Status:  uiStatus,
-				Latency: "10ms", // TODO: Get real latency from metrics
-				Uptime:  "99.9%", // TODO: Calculate real uptime
+				Latency: latencyStr,
+				Uptime:  uptimeStr,
 				Message: msg,
 			})
 		}
@@ -559,4 +578,104 @@ func (a *Application) handleDashboardHealth() http.HandlerFunc {
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(resp)
 	}
+}
+
+// calculateUptime calculates the percentage of time the service was healthy in the given window.
+func calculateUptime(inputHistory []health.HistoryPoint, window time.Duration) string {
+	if len(inputHistory) == 0 {
+		return "Unknown"
+	}
+
+	// Clone history to avoid mutation of the input slice during sort
+	history := make([]health.HistoryPoint, len(inputHistory))
+	copy(history, inputHistory)
+
+	now := time.Now().UnixMilli()
+	start := now - window.Milliseconds()
+	windowMs := window.Milliseconds()
+	if windowMs <= 0 {
+		return "100%"
+	}
+
+	// Sort history by timestamp
+	sort.Slice(history, func(i, j int) bool {
+		return history[i].Timestamp < history[j].Timestamp
+	})
+
+	// If the entire history is newer than start, we need to know the state at start.
+	// Since we don't have infinite history, we assume:
+	// If first point is after start, and status is UP, it was UP since start?
+	// Or should we only count known time?
+	// Usually, for "Uptime (24h)", we want % of *known* time or % of *total* time assuming previous state.
+	// Assuming previous state is safer if history is sparse.
+	// But if history starts *within* the window (e.g. server restart), we only know from then.
+	// Let's assume the state before the first point in window is the state of the point just before window.
+	// If no point before window, assume Unknown (0 credit).
+
+	// Find the state at 'start'
+	currentState := "unknown"
+
+	// Find the index of the first point >= start
+	firstIdx := -1
+	for i, p := range history {
+		if p.Timestamp >= start {
+			firstIdx = i
+			break
+		}
+		currentState = p.Status
+	}
+
+	var upDuration int64
+	const (
+		statusUp      = "up"
+		statusUP      = "UP"
+		statusHealthy = "healthy"
+	)
+
+	// If all points are before start, then currentState is the last point's status
+	// effectively for the whole window.
+	if firstIdx == -1 {
+		// All history is old.
+		// Use last known state for entire window.
+		if len(history) > 0 {
+			currentState = history[len(history)-1].Status
+		}
+		if currentState == statusUp || currentState == statusUP || currentState == statusHealthy {
+			upDuration = windowMs
+		}
+	} else {
+		// Process from start to first point
+		// We have currentState from loop above (state just before start)
+		if currentState == statusUp || currentState == statusUP || currentState == statusHealthy {
+			upDuration += (history[firstIdx].Timestamp - start)
+		}
+		lastTime := history[firstIdx].Timestamp
+		currentState = history[firstIdx].Status
+
+		// Process subsequent points
+		for i := firstIdx + 1; i < len(history); i++ {
+			p := history[i]
+			duration := p.Timestamp - lastTime
+			if currentState == statusUp || currentState == statusUP || currentState == statusHealthy {
+				upDuration += duration
+			}
+			lastTime = p.Timestamp
+			currentState = p.Status
+		}
+
+		// Process last point to now
+		if currentState == statusUp || currentState == statusUP || currentState == statusHealthy {
+			upDuration += (now - lastTime)
+		}
+	}
+
+	uptime := (float64(upDuration) / float64(windowMs)) * 100.0
+	if uptime > 100 {
+		uptime = 100
+	}
+	if uptime < 0 {
+		uptime = 0
+	}
+
+	return fmt.Sprintf("%.1f%%", uptime)
 }

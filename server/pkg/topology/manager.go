@@ -543,3 +543,50 @@ func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
 		Core:    coreNode,
 	}.Build()
 }
+
+// GetRecentServiceStats calculates average latency and error rate for a service over a specified time window.
+//
+// serviceID is the unique identifier of the service.
+// window is the duration to look back.
+//
+// Returns avgLatency and errorRate.
+func (m *Manager) GetRecentServiceStats(serviceID string, window time.Duration) (time.Duration, float64) {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+
+	var totalRequests int64
+	var totalLatency int64
+	var totalErrors int64
+
+	now := time.Now()
+	// Calculate start minute
+	start := now.Add(-window).Truncate(time.Minute).Unix()
+	end := now.Truncate(time.Minute).Unix()
+
+	// Iterate through traffic history within the window
+	for t := start; t <= end; t += 60 {
+		stats, ok := m.trafficHistory[t]
+		if !ok {
+			continue
+		}
+
+		// If serviceID is provided, filter by service
+		if stats.ServiceStats != nil {
+			if sStats, ok := stats.ServiceStats[serviceID]; ok {
+				totalRequests += sStats.Requests
+				totalLatency += sStats.Latency
+				totalErrors += sStats.Errors
+			}
+		}
+	}
+
+	var avgLatency time.Duration
+	var errorRate float64
+
+	if totalRequests > 0 {
+		avgLatency = time.Duration(totalLatency/totalRequests) * time.Millisecond
+		errorRate = float64(totalErrors) / float64(totalRequests)
+	}
+
+	return avgLatency, errorRate
+}
