@@ -128,21 +128,26 @@ Run the server with the configuration file:
 
 ```bash
 # Assuming you are in the root of the repo
-go run ./cmd/server run --config-path ./server/docs/features/rate-limiting/tutorial_config.yaml --mcp-listen-address :8080 --metrics-listen-address :8081
+go run ./cmd/server run --config-path ./server/docs/features/rate-limiting/tutorial_config.yaml --mcp-listen-address :50050 --metrics-listen-address :9090
 ```
 
-The server should start and listen on port `8080`.
+The server should start and listen on port `50050`.
 
 ### 3. Verify Rate Limiting with Gemini CLI
 Open a new terminal to run the Gemini CLI.
 
-**Step 3a: Run a single request (Allowed)**
+**Step 3a: Add the Server (if needed)**
+```bash
+gemini mcp add --transport http rate-limit-server http://localhost:50050
+```
+
+**Step 3b: Run a single request (Allowed)**
 ```bash
 gemini run httpbin-rate-limited.get
 ```
 *Expected Output:* JSON response from httpbin.
 
-**Step 3b: Trigger Rate Limit (Blocked)**
+**Step 3c: Trigger Rate Limit (Blocked)**
 Run multiple requests in rapid succession.
 ```bash
 for i in {1..5}; do gemini run httpbin-rate-limited.get; echo "Request $i done"; done
@@ -154,10 +159,10 @@ for i in {1..5}; do gemini run httpbin-rate-limited.get; echo "Request $i done";
   > Error: rate limit exceeded for service httpbin-rate-limited
 
 ### 4. Observe Metrics
-Visit the metrics endpoint (default: `http://localhost:8081/metrics`) to see the counters increase.
+Visit the metrics endpoint (default: `http://localhost:9090/metrics`) to see the counters increase.
 
 ```bash
-curl http://localhost:8081/metrics | grep rate_limit
+curl http://localhost:9090/metrics | grep rate_limit
 ```
 
 *Expected Output:*

@@ -99,16 +99,16 @@ Based on a review of the MCP ecosystem (mcp.so, LobeHub, GitHub, Docker), we ide
 
 ### Critical Areas
 
-- **Rate Limiting Complexity**: `server/pkg/middleware/ratelimit.go` mixes local/Redis logic. Needs refactoring into strategies.
-- **Filesystem Provider Monolith**: `server/pkg/upstream/filesystem/upstream.go` handles too many types. Split into factory pattern.
 - **Test Coverage for Cloud Providers**: S3/GCS tests are missing/mocked. Need local emulation (MinIO).
-- **Webhooks "Test" Code**: `server/cmd/webhooks` needs formalization if intended for production (Sidecar pattern).
 - **SDK Consolidation**: `server/pkg/client` should ideally be in a separate repository to be used by other Go clients without pulling in the whole server.
 
 ### Recommendations
 
-1.  **Refactor Filesystem Upstream**: Split `upstream.go`.
-2.  **Refactor Rate Limiting**: Split into `RateLimiterStrategy` interface.
-3.  **Formalize Webhook Server**: Polish `server/cmd/webhooks` as a Sidecar.
-4.  **Standardize Configuration**: Consistent config patterns (Done: fixed documentation/error handling for `service_config`).
-5.  **Consolidate SDKs**: Move `server/pkg/client` to separate repo.
+1.  **Consolidate SDKs**: Move `server/pkg/client` to separate repo.
+
+### Completed Refactoring
+
+- **Rate Limiting Complexity**: Refactored `server/pkg/middleware/ratelimit.go` into strategies (`RateLimitStrategy`, `LocalStrategy`, `RedisStrategy`).
+- **Filesystem Provider Monolith**: Split `server/pkg/upstream/filesystem/upstream.go` into `provider` package with factory pattern.
+- **Webhooks Sidecar**: Formalized `server/cmd/webhooks` and `server/pkg/sidecar/webhooks` as a production-ready component.
+- **Standardize Configuration**: Consistent config patterns (Done: fixed documentation/error handling for `service_config`).

@@ -96,14 +96,31 @@ Returns audit logs matching the filter.
 
 You can interact with the Admin API using any gRPC client, such as `grpcurl` or by generating a client in your preferred language using the provided protobuf definition.
 
+### Enabling the Admin API
+
+The gRPC server (which hosts the Admin API) is **disabled by default**. To enable it, you must configure the `grpc_port` or use the `--grpc-port` flag.
+
+**Docker Compose:**
+The `docker-compose.yml` maps host port `50056` to container port `50051`. You must also ensure the server listens on `50051` inside the container.
+
+```yaml
+    environment:
+      - MCPANY_GRPC_PORT=:50051
+```
+
+**CLI:**
+```bash
+./mcp-any run --grpc-port :50051 ...
+```
+
 ### Example with `grpcurl`
 
-Assuming the gRPC server is running on `localhost:50051`:
+Assuming the gRPC server is running and mapped to `localhost:50056` (Docker default):
 
 ```bash
 # List all services
-grpcurl -plaintext localhost:50051 mcpany.admin.v1.AdminService/ListServices
+grpcurl -plaintext localhost:50056 mcpany.admin.v1.AdminService/ListServices
 
 # List all tools
-grpcurl -plaintext localhost:50051 mcpany.admin.v1.AdminService/ListTools
+grpcurl -plaintext localhost:50056 mcpany.admin.v1.AdminService/ListTools
 ```

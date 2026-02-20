@@ -103,8 +103,8 @@ We can use the `@google/gemini-cli` to verify that the tool works effectively.
     Add the local MCP server to Gemini CLI and ask it to use the tool.
 
     ```bash
-    # Add the local server (assuming default port 8080)
-    npx -y @google/gemini-cli mcp add --transport http mcp-server http://localhost:8080/mcp/v1
+    # Add the local server (assuming default port 50050)
+    npx -y @google/gemini-cli mcp add --transport http mcp-server http://localhost:50050
 
     # Ask a question that triggers the tool
     npx -y @google/gemini-cli -p "What is my IP address info?"
