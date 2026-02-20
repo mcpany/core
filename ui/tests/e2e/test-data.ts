@@ -33,15 +33,14 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             id: "svc_02",
             name: "User Service",
             version: "v1.0",
-            http_service: {
-                address: "http://localhost:50051", // Dummy address
+            command_line_service: {
+                command: "echo",
                 tools: [
-                    { name: "get_user", description: "Get user details", call_id: "get_user_call" }
+                    { name: "get_user", description: "Get user details", input_schema: { type: "object" }, call_id: "get_user_call" }
                 ],
                 calls: {
                     get_user_call: {
-                        method: "HTTP_METHOD_GET",
-                        endpoint_path: "/users/{id}"
+                        args: ['{"id": "1", "name": "Alice"}']
                     }
                 }
             }
@@ -51,15 +50,14 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             id: "svc_03",
             name: "Math",
             version: "v1.0",
-            http_service: {
-                address: "http://localhost:8080", // Dummy
+            command_line_service: {
+                command: "echo",
                 tools: [
-                    { name: "calculator", description: "calc", call_id: "calc_call" }
+                    { name: "calculator", description: "calc", input_schema: { type: "object" }, call_id: "calc_call" }
                 ],
                 calls: {
                     calc_call: {
-                        method: "HTTP_METHOD_POST",
-                        endpoint_path: "/calc"
+                        args: ["42"]
                     }
                 }
             }

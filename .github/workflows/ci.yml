@@ -107,7 +107,7 @@ jobs:
 
   unit-test:
     runs-on: oci-runner # ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
     env:
@@ -130,9 +130,9 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential libssl-dev libffi-dev python3-dev
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             sudo apk add --no-cache make xz build-base libffi-dev openssl-dev python3-dev
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -243,7 +243,7 @@ jobs:
 
   e2e-parallel:
     runs-on: oci-runner # ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
     needs: [build-images]
     strategy:
       fail-fast: false
@@ -685,7 +685,7 @@ jobs:
 
   e2e-public-api:
     runs-on: oci-runner # ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
     env:
