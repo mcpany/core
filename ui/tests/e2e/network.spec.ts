@@ -4,9 +4,13 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { seedUser } from './test-data';
 
 test.describe('Network Topology', () => {
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page, request }) => {
+      // Seed user
+      await seedUser(request, "e2e-admin");
+
       // Ensure login
       await page.goto('/login');
       await page.fill('input[name="username"]', 'e2e-admin');

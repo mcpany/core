@@ -8,21 +8,21 @@
 import React, { useCallback, useState } from 'react';
 import {
   ReactFlow,
-  useNodesState,
-  useEdgesState,
-  addEdge,
   Controls,
   Background,
   MiniMap,
-  Connection,
-  MarkerType,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { UserNode, AgentNode, ToolNode, ResourceNode, ServiceNode } from './custom-nodes';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card } from '@/components/ui/card';
-import { DebuggerControls } from './debugger-controls';
+import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import { VariableInspector } from './variable-inspector';
+import { useRealTimeTopology } from '@/hooks/use-real-time-topology';
+import { Play, Pause, RefreshCw, Database } from 'lucide-react';
+import { apiClient } from '@/lib/client';
+import { useToast } from '@/hooks/use-toast';
 
 const nodeTypes = {
   user: UserNode,
@@ -32,35 +32,16 @@ const nodeTypes = {
   service: ServiceNode,
 };
 
-const initialNodes = [
-  { id: '1', type: 'user', position: { x: 250, y: 0 }, data: { label: 'Alice' } },
-  { id: '2', type: 'agent', position: { x: 250, y: 150 }, data: { label: 'Orchestrator', role: 'Main Agent', status: 'Thinking...' } },
-  { id: '3', type: 'service', position: { x: 100, y: 300 }, data: { label: 'Postgres DB' } },
-  { id: '4', type: 'tool', position: { x: 400, y: 300 }, data: { label: 'Web Search' } },
-];
-
-const initialEdges = [
-  { id: 'e1-2', source: '1', target: '2', animated: true, label: 'Task: Analyze Data', markerEnd: { type: MarkerType.ArrowClosed } },
-  { id: 'e2-3', source: '2', target: '3', animated: true, label: 'Query' },
-  { id: 'e2-4', source: '2', target: '4', animated: false, label: 'Search' },
-];
-
 /**
  * AgentFlow component renders the interactive flow visualization.
+ * Renamed conceptually to NetworkTopology but keeping component name for compatibility.
  * @returns The AgentFlow component.
  */
 export function AgentFlow() {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const { nodes, edges, onNodesChange, onEdgesChange, isLive, setIsLive, refresh, lastUpdated } = useRealTimeTopology();
   const [selectedNode, setSelectedNode] = useState<any>(null);
-
-  const onConnect = useCallback(
-    (params: Connection) => setEdges((eds) => addEdge({ ...params, animated: true }, eds)),
-    [setEdges],
-  );
-
-  const togglePlay = () => setIsPlaying(!isPlaying);
+  const { toast } = useToast();
+  const [seeding, setSeeding] = useState(false);
 
   const onNodeClick = useCallback((_: any, node: any) => {
     setSelectedNode(node);
@@ -70,40 +51,61 @@ export function AgentFlow() {
     setSelectedNode(null);
   }, []);
 
-  // Simulation effect (placeholder for real "Live" data)
-  React.useEffect(() => {
-    if (!isPlaying) return;
-    const interval = setInterval(() => {
-      setEdges((eds) => eds.map(e => ({
-        ...e,
-        animated: !e.animated || Math.random() > 0.5,
-        style: { stroke: Math.random() > 0.5 ? '#22c55e' : '#64748b' } // Green or slate
-      })));
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [isPlaying, setEdges]);
+  const handleSeedData = async () => {
+      setSeeding(true);
+      try {
+          // Seed some dummy traffic
+          const points = [
+              { time: "10:00", total: 100, errors: 2, latency: 50 },
+              { time: "10:01", total: 120, errors: 0, latency: 45 },
+          ];
+          await apiClient.seedTrafficData(points);
+          toast({ title: "Traffic Seeded", description: "Injected sample traffic data." });
+          refresh();
+      } catch (e) {
+          toast({ title: "Seeding Failed", variant: "destructive", description: String(e) });
+      } finally {
+          setSeeding(false);
+      }
+  };
 
   return (
     <div className="h-[calc(100vh-8rem)] w-full relative bg-background border rounded-lg overflow-hidden shadow-sm">
       <div className="absolute top-4 right-4 z-10 flex gap-2">
-        <Card className="p-2 flex gap-2 items-center bg-background/80 backdrop-blur-sm">
-          <DebuggerControls
-            isPlaying={isPlaying}
-            onPlayPause={togglePlay}
-            onStep={() => { }} // Placeholder for step
-            onStop={() => { setIsPlaying(false); setNodes(initialNodes); setEdges(initialEdges); }}
-          />
-          <div className="w-px h-6 bg-border mx-1" />
-          <Select defaultValue="demo1">
-            <SelectTrigger className="w-[140px] h-8">
-              <SelectValue placeholder="Scenario" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="demo1">Basic Flow</SelectItem>
-              <SelectItem value="demo2">Multi-Agent</SelectItem>
-            </SelectContent>
-          </Select>
+        <Card className="p-2 flex gap-4 items-center bg-background/80 backdrop-blur-sm shadow-sm border">
+          <div className="flex items-center gap-2">
+              <Switch id="live-mode" checked={isLive} onCheckedChange={setIsLive} />
+              <Label htmlFor="live-mode" className="text-xs font-medium cursor-pointer flex items-center gap-1">
+                  {isLive ? <Play className="h-3 w-3 text-green-500" /> : <Pause className="h-3 w-3 text-muted-foreground" />}
+                  Live
+              </Label>
+          </div>
+
+          <div className="h-4 w-px bg-border" />
+
+          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={refresh} title="Refresh">
+              <RefreshCw className="h-4 w-4" />
+          </Button>
+
+          {/* Dev / Demo Only */}
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 text-xs gap-1"
+            onClick={handleSeedData}
+            disabled={seeding}
+            title="Inject fake traffic for demo"
+          >
+              <Database className="h-3 w-3" />
+              Seed Data
+          </Button>
         </Card>
+      </div>
+
+      <div className="absolute bottom-4 left-4 z-10">
+          <div className="text-[10px] text-muted-foreground bg-background/50 backdrop-blur px-2 py-1 rounded border">
+              Last Updated: {lastUpdated ? lastUpdated.toLocaleTimeString() : 'Never'}
+          </div>
       </div>
 
       <VariableInspector selectedNode={selectedNode} onClose={() => setSelectedNode(null)} />
@@ -113,13 +115,12 @@ export function AgentFlow() {
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
         onNodeClick={onNodeClick}
         onPaneClick={onPaneClick}
         nodeTypes={nodeTypes}
         fitView
-        attributionPosition="bottom-left"
-        className="bg-muted/10"
+        attributionPosition="bottom-right"
+        className="bg-muted/5"
       >
         <Controls />
         <MiniMap />
