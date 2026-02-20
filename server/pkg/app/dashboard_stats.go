@@ -5,6 +5,7 @@ package app
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"sort"
 	"time"
@@ -533,12 +534,30 @@ func (a *Application) handleDashboardHealth() http.HandlerFunc {
 				}
 			}
 
+			// Calculate Real Latency
+			var latencyStr = "0ms"
+			if a.TopologyManager != nil {
+				avgLat, _ := a.TopologyManager.GetRecentServiceStats(svc.GetId(), 15*time.Minute)
+				if avgLat > 0 {
+					latencyStr = avgLat.String()
+				}
+			}
+
+			// Calculate Real Uptime
+			var uptimeStr = "0.0%"
+			if len(hPoints) > 0 {
+				uptimeVal := health.CalculateUptime(hPoints, 24*time.Hour)
+				uptimeStr = fmt.Sprintf("%.1f%%", uptimeVal*100)
+			} else if uiStatus == statusHealthy {
+				uptimeStr = "100.0%"
+			}
+
 			serviceHealths = append(serviceHealths, ServiceHealth{
 				ID:      svc.GetId(),
 				Name:    name,
 				Status:  uiStatus,
-				Latency: "10ms", // TODO: Get real latency from metrics
-				Uptime:  "99.9%", // TODO: Calculate real uptime
+				Latency: latencyStr,
+				Uptime:  uptimeStr,
 				Message: msg,
 			})
 		}

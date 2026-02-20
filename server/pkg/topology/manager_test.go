@@ -566,3 +566,61 @@ func TestManager_GetGraph_Metrics(t *testing.T) {
 	// Verify Status Upgrade to ERROR (since error rate > 5%)
 	assert.Equal(t, topologyv1.NodeStatus_NODE_STATUS_ERROR, svcNode.GetStatus())
 }
+
+func TestManager_GetRecentServiceStats(t *testing.T) {
+	mockRegistry := new(MockServiceRegistry)
+	mockTM := new(MockToolManager)
+	m := NewManager(mockRegistry, mockTM)
+	defer m.Close()
+
+	// Seed some data
+	now := time.Now()
+	minute1 := now.Add(-5 * time.Minute).Truncate(time.Minute).Unix()
+	minute2 := now.Add(-10 * time.Minute).Truncate(time.Minute).Unix()
+	minuteOld := now.Add(-20 * time.Minute).Truncate(time.Minute).Unix()
+
+	m.mu.Lock()
+	m.trafficHistory[minute1] = &MinuteStats{
+		Requests: 10,
+		Errors:   1,
+		Latency:  1000, // 100ms avg
+		ServiceStats: map[string]*ServiceTrafficStats{
+			"service-a": {Requests: 10, Errors: 1, Latency: 1000},
+		},
+	}
+	m.trafficHistory[minute2] = &MinuteStats{
+		Requests: 20,
+		Errors:   0,
+		Latency:  1000, // 50ms avg
+		ServiceStats: map[string]*ServiceTrafficStats{
+			"service-a": {Requests: 20, Errors: 0, Latency: 1000},
+		},
+	}
+	m.trafficHistory[minuteOld] = &MinuteStats{
+		Requests: 100,
+		Errors:   50,
+		Latency:  5000,
+		ServiceStats: map[string]*ServiceTrafficStats{
+			"service-a": {Requests: 100, Errors: 50, Latency: 5000},
+		},
+	}
+	m.mu.Unlock()
+
+	// Test 15 min window (should include minute1 and minute2, exclude minuteOld)
+	avgLatency, errorRate := m.GetRecentServiceStats("service-a", 15*time.Minute)
+
+	// Total Reqs: 10 + 20 = 30
+	// Total Errors: 1 + 0 = 1
+	// Total Latency: 1000 + 1000 = 2000
+	// Avg Latency: 2000 / 30 = 66.66ms
+	// Error Rate: 1 / 30 = 0.0333
+
+	expectedLatency := time.Duration(2000/30) * time.Millisecond
+	assert.Equal(t, expectedLatency, avgLatency)
+	assert.InDelta(t, 1.0/30.0, errorRate, 0.001)
+
+	// Test Global Stats (serviceID "")
+	avgLatencyGlobal, errorRateGlobal := m.GetRecentServiceStats("", 15*time.Minute)
+	assert.Equal(t, expectedLatency, avgLatencyGlobal)
+	assert.InDelta(t, 1.0/30.0, errorRateGlobal, 0.001)
+}
