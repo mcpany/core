@@ -15,7 +15,7 @@ import (
 )
 
 func TestImportCmd(t *testing.T) {
-	// Table-driven tests for the import command
+	// Table-driven tests for the import command.
 	tests := []struct {
 		name           string
 		inputJSON      string
