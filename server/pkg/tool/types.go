@@ -3844,6 +3844,60 @@ func validateSafePathAndInjection(val string, isDocker bool, commandName string)
 				return fmt.Errorf("%w (decoded)", err)
 			}
 		}
+
+		// Sentinel Security Update: Block SCP-style option injection (e.g. git clone -oProxyCommand=...)
+		// Standard URLs are handled by IsSafeURL (above), but SCP syntax ([user@]host:path)
+		// does not contain "://" and bypasses it.
+		// However, we run this check regardless of "://" presence to catch cases where a malicious payload
+		// might contain "://" in the path to bypass checks or if IsSafeURL is permissive.
+		if err := checkForSCPSyntax(val); err != nil {
+			return err
+		}
+		if decodedVal, err := url.QueryUnescape(val); err == nil && decodedVal != val {
+			if err := checkForSCPSyntax(decodedVal); err != nil {
+				return fmt.Errorf("%w (decoded)", err)
+			}
+		}
+	}
+
+	return nil
+}
+
+func checkForSCPSyntax(val string) error {
+	// SCP syntax: [user@]host:path
+	// We check if it looks like SCP syntax and if host starts with '-'.
+
+	// Check for colon
+	colonIdx := strings.Index(val, ":")
+	if colonIdx == -1 {
+		return nil
+	}
+
+	// If colon is at start, it's :path (local file?), not SCP.
+	if colonIdx == 0 {
+		return nil
+	}
+
+	// Extract user@host part
+	userHost := val[:colonIdx]
+
+	// Check for slash before colon (if so, it's likely a path or URL with port, not SCP)
+	// e.g. /path/to/file:zone or http://host:port
+	if strings.Contains(userHost, "/") || strings.Contains(userHost, "\\") {
+		return nil
+	}
+
+	// Split by @
+	atIdx := strings.LastIndex(userHost, "@")
+	var host string
+	if atIdx != -1 {
+		host = userHost[atIdx+1:]
+	} else {
+		host = userHost
+	}
+
+	if strings.HasPrefix(host, "-") {
+		return fmt.Errorf("dangerous SCP-style host detected: %s", host)
 	}
 
 	return nil
