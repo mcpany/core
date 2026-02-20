@@ -10,6 +10,8 @@ interface UseTracesOptions {
     initialPaused?: boolean;
 }
 
+const MAX_TRACES = 1000;
+
 /**
  * Hook to manage trace subscriptions via WebSocket.
  *
@@ -17,8 +19,6 @@ interface UseTracesOptions {
  * @param options.initialPaused - Whether to start in a paused state.
  * @returns An object containing the current traces, loading state, connection status, and controls.
  */
-const MAX_TRACES = 1000;
-
 export function useTraces(options: UseTracesOptions = {}) {
     const [traces, setTraces] = useState<Trace[]>([]);
     const [loading, setLoading] = useState(true);
@@ -28,37 +28,26 @@ export function useTraces(options: UseTracesOptions = {}) {
     const isPausedRef = useRef(isPaused);
     const isMountedRef = useRef(true);
     const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-    // ⚡ BOLT: Buffer for batched updates to avoid main thread blocking
-    // Randomized Selection from Top 5 High-Impact Targets
     const bufferRef = useRef<Trace[]>([]);
 
     useEffect(() => {
         isPausedRef.current = isPaused;
     }, [isPaused]);
 
-    // ⚡ BOLT: Flush buffer periodically
     useEffect(() => {
         const interval = setInterval(() => {
             if (bufferRef.current.length === 0) return;
 
-            // Take current buffer and clear it immediately
             const buffer = bufferRef.current;
             bufferRef.current = [];
 
             setTraces((prev) => {
-                // ⚡ BOLT: Batched updates logic
-
-                // 1. Deduplicate buffer (last write wins)
                 const updatesMap = new Map<string, Trace>();
                 for (const t of buffer) {
                     updatesMap.set(t.id, t);
                 }
 
-                // 2. Identify existing IDs for O(1) lookup
                 const existingIds = new Set(prev.map(t => t.id));
-
-                // 3. Separate new inserts from updates
                 const inserts: Trace[] = [];
                 const updatesForExisting = new Map<string, Trace>();
 
@@ -70,8 +59,6 @@ export function useTraces(options: UseTracesOptions = {}) {
                     }
                 }
 
-                // 4. Apply updates in-place to preserve order of existing items
-                // ⚡ BOLT: Optimization - Skip mapping if no existing items need updates
                 let nextTraces = prev;
                 if (updatesForExisting.size > 0) {
                     nextTraces = prev.map(t => {
@@ -82,13 +69,8 @@ export function useTraces(options: UseTracesOptions = {}) {
                     });
                 }
 
-                // 5. Prepend new inserts (newest first).
-                // Buffer is oldest->newest. We want newest at top of list.
-                // So we reverse inserts.
                 const merged = [...inserts.reverse(), ...nextTraces];
 
-                // ⚡ BOLT: Optimization - Enforce hard limit to prevent memory leaks
-                // Randomized Selection from Top 5 High-Impact Targets
                 if (merged.length > MAX_TRACES) {
                     return merged.slice(0, MAX_TRACES);
                 }
@@ -103,15 +85,12 @@ export function useTraces(options: UseTracesOptions = {}) {
         if (!isMountedRef.current) return;
 
         setLoading(true);
-        // Use relative URL for client-side navigation, but handle both dev and prod
-        // If window is undefined (SSR), don't connect
         if (typeof window === 'undefined') return;
 
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
         const host = window.location.host;
         const wsUrl = `${protocol}//${host}/api/v1/ws/traces`;
 
-        // Cleanup previous
         if (wsRef.current) {
             wsRef.current.close();
         }
@@ -132,7 +111,6 @@ export function useTraces(options: UseTracesOptions = {}) {
             if (isPausedRef.current) return;
             try {
                 const trace: Trace = JSON.parse(event.data);
-                // ⚡ BOLT: Push to buffer instead of updating state directly
                 bufferRef.current.push(trace);
             } catch (e) {
                 console.error("Failed to parse trace", e);
@@ -142,7 +120,6 @@ export function useTraces(options: UseTracesOptions = {}) {
         ws.onclose = () => {
             if (!isMountedRef.current) return;
             setIsConnected(false);
-            // Reconnect after 3s
             if (reconnectTimeoutRef.current) clearTimeout(reconnectTimeoutRef.current);
             reconnectTimeoutRef.current = setTimeout(connect, 3000);
         };
@@ -161,7 +138,7 @@ export function useTraces(options: UseTracesOptions = {}) {
         return () => {
             isMountedRef.current = false;
             if (wsRef.current) {
-                wsRef.current.onclose = null; // Prevent reconnect trigger on manual close
+                wsRef.current.onclose = null;
                 wsRef.current.close();
             }
             if (reconnectTimeoutRef.current) {
