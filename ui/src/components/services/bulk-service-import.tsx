@@ -6,6 +6,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import * as yaml from "js-yaml";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -79,7 +80,7 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
         const reader = new FileReader();
         reader.onload = (event) => {
             setJsonContent(event.target?.result as string);
-            setInputType("json"); // Switch to JSON view to verify
+            setInputType("json"); // Switch to Editor view to verify
         };
         reader.readAsText(file);
     };
@@ -94,7 +95,19 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
                 if (!importUrl.trim()) throw new Error("URL is required.");
                 const res = await fetch(importUrl);
                 if (!res.ok) throw new Error(`Failed to fetch from URL: ${res.statusText}`);
-                const data = await res.json();
+
+                // Try JSON first, fallback to YAML if needed (though usually response headers hint content type)
+                const text = await res.text();
+                let data: any;
+                try {
+                    data = JSON.parse(text);
+                } catch {
+                    try {
+                        data = yaml.load(text);
+                    } catch {
+                         throw new Error("Failed to parse URL content as JSON or YAML.");
+                    }
+                }
 
                 // OpenAPI Handling
                 if (data.openapi || data.swagger) {
@@ -110,8 +123,21 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
                     parsedServices = Array.isArray(data) ? data : (data.services || [data]);
                 }
             } else {
-                if (!jsonContent.trim()) throw new Error("JSON content is required.");
-                const data = JSON.parse(jsonContent);
+                if (!jsonContent.trim()) throw new Error("Content is required.");
+
+                let data: any;
+                // Try JSON first
+                try {
+                    data = JSON.parse(jsonContent);
+                } catch (jsonErr) {
+                    // Try YAML
+                    try {
+                        data = yaml.load(jsonContent);
+                    } catch (yamlErr: any) {
+                         throw new Error(`Failed to parse content: Invalid JSON or YAML. (${yamlErr.message})`);
+                    }
+                }
+
                 parsedServices = Array.isArray(data) ? data : (data.services || [data]);
             }
 
@@ -268,15 +294,15 @@ export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImpo
 
                         {(inputType === "json" || inputType === "file") && (
                             <div className={inputType === "file" ? "hidden" : "block"}>
-                                <Label className="mb-2 block">Configuration Content</Label>
+                                <Label className="mb-2 block">Configuration Content (JSON / YAML)</Label>
                                 <Textarea
-                                    placeholder='[{"name": "my-service", "httpService": { ... }}]'
+                                    placeholder={`- name: my-service\n  httpService:\n    address: https://api.example.com\n    tools: []\n\n# OR JSON Array\n[{"name": "my-service", ...}]`}
                                     className="h-[300px] font-mono text-xs"
                                     value={jsonContent}
                                     onChange={(e) => setJsonContent(e.target.value)}
                                 />
                                 <p className="text-xs text-muted-foreground mt-2">
-                                    Paste a JSON array of service configurations or a single service object.
+                                    Paste a JSON array or YAML list of service configurations. Also supports single service object.
                                 </p>
                             </div>
                         )}
