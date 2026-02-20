@@ -83,7 +83,7 @@ export function useTraces(options: UseTracesOptions = {}) {
 
                 // ⚡ BOLT: Cap the size of the traces array to prevent memory leaks.
                 // Randomized Selection from Top 5 High-Impact Targets
-                const MAX_TRACES = 1000;
+                const MAX_TRACES = 500;
                 if (merged.length > MAX_TRACES) {
                     return merged.slice(0, MAX_TRACES);
                 }

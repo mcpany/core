@@ -164,9 +164,9 @@ describe('useTraces Hook', () => {
        mockWebSocket.onopen({} as any);
     });
 
-    // Simulate sending more than MAX_TRACES (1000)
-    const TOTAL_TRACES = 1100;
-    const MAX_TRACES = 1000;
+    // Simulate sending more than MAX_TRACES (500)
+    const TOTAL_TRACES = 600;
+    const MAX_TRACES = 500;
 
     // Send in batches to be gentle on the test runner environment
     const BATCH_SIZE = 100;
