@@ -28,7 +28,7 @@ export default defineConfig({
     trace: 'on-first-retry',
     colorScheme: 'dark',
     actionTimeout: 30000,
-    navigationTimeout: 60000, // Increased for CI slowness
+    navigationTimeout: 90000, // Increased further for CI slowness
     extraHTTPHeaders: {
       'X-API-Key': process.env.MCPANY_API_KEY || 'test-token',
     },

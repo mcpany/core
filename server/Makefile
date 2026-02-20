@@ -259,25 +259,6 @@ prepare:
 	else \
 		echo "CI environment detected, skipping local Python venv setup."; \
 	fi
-	@#
-	@echo "Installing Node.js dependencies for integration tests..."
-	@if command -v npm >/dev/null 2>&1; then \
-		if test -f "tests/integration/upstream/package.json"; then \
-			echo "Found package.json, running npm install..."; \
-			(cd tests/integration/upstream && (if [ -f package-lock.json ]; then npm ci --no-audit; else npm install --no-audit; fi)) || true; \
-			if [ -n "$(CI)" ] && [ -z "$(INSIDE_DOCKER_CONTAINER)" ]; then \
-				echo "CI detected, installing Playwright with system dependencies..."; \
-				(cd tests/integration/upstream && npx playwright install --with-deps) || true; \
-			else \
-				echo "Installing Playwright browsers (skipping system deps)..."; \
-				(cd tests/integration/upstream && npx playwright install) || true; \
-			fi; \
-		else \
-			echo "No package.json found in tests/integration/upstream, skipping npm install."; \
-		fi; \
-	else \
-		echo "npm not found, skipping Node.js dependency installation."; \
-	fi
 	@# Install Helm
 	@echo "Checking for Helm..."
 	@if test -f "$(HELM_BIN)"; then \
@@ -360,7 +341,26 @@ prepare:
 	go mod download
 	@echo "Preparation complete."
 
-
+# Prepare integration test dependencies (Node.js, Playwright)
+prepare-integration:
+	@echo "Installing Node.js dependencies for integration tests..."
+	@if command -v npm >/dev/null 2>&1; then \
+		if test -f "tests/integration/upstream/package.json"; then \
+			echo "Found package.json, running npm install..."; \
+			(cd tests/integration/upstream && (if [ -f package-lock.json ]; then npm ci --prefer-offline --no-audit; else npm install --prefer-offline --no-audit; fi)) || true; \
+			if [ -n "$(CI)" ] && [ -z "$(INSIDE_DOCKER_CONTAINER)" ]; then \
+				echo "CI detected, installing Playwright with system dependencies..."; \
+				(cd tests/integration/upstream && npx playwright install --with-deps) || true; \
+			else \
+				echo "Installing Playwright browsers (skipping system deps)..."; \
+				(cd tests/integration/upstream && npx playwright install) || true; \
+			fi; \
+		else \
+			echo "No package.json found in tests/integration/upstream, skipping npm install."; \
+		fi; \
+	else \
+		echo "npm not found, skipping Node.js dependency installation."; \
+	fi
 
 
 # Delegate gen to root Makefile
@@ -388,7 +388,7 @@ COVERAGE_FILE ?= coverage.out
 
 e2e-local: e2e-parallel e2e-sequential
 
-e2e-parallel: build-test-images build build-examples build-e2e-mocks
+e2e-parallel: prepare-integration build-test-images build build-examples build-e2e-mocks
 	@echo "Running parallel E2E Go tests locally with a 1200s timeout..."
 	@-pkill -f file-upload-server || true
 	@$(EXAMPLE_BIN_DIR)/file-upload-server &
@@ -396,7 +396,7 @@ e2e-parallel: build-test-images build build-examples build-e2e-mocks
 	@GEMINI_API_KEY=$(GEMINI_API_KEY) CI=$(CI) MCP_BUNDLE_DIR=$(MCP_BUNDLE_DIR) MCPANY_DEBUG=true MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) SHARD=$(SHARD) MCPANY_PROJECT_ROOT=$(CURDIR) ./tests/run_shard.sh -race -count=1 -timeout 1200s -tags=e2e -cover -coverprofile=$(BUILD_DIR)/coverage.e2e-parallel.out
 	@-pkill -f file-upload-server
 
-e2e-sequential: build-test-images build build-examples build-e2e-mocks
+e2e-sequential: prepare-integration build-test-images build build-examples build-e2e-mocks
 	@echo "Running sequential E2E Go tests locally with a 300s timeout..."
 	@GEMINI_API_KEY=$(GEMINI_API_KEY) CI=$(CI) MCP_BUNDLE_DIR=$(MCP_BUNDLE_DIR) MCPANY_DEBUG=true MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) E2E_DOCKER=true MCPANY_PROJECT_ROOT=$(CURDIR) $(GO_CMD) test -p 1 -parallel 1 -race -count=1 -timeout 600s -tags=e2e -cover -coverprofile=$(BUILD_DIR)/coverage.e2e-sequential.out ./tests/e2e_sequential/...
 
