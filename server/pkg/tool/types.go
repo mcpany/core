@@ -76,13 +76,17 @@ type Tool interface {
 	// Returns:
 	//   - *v1.Tool: The protobuf tool definition.
 	Tool() *v1.Tool
+
 	// MCPTool returns the MCP tool definition.
 	//
 	// Returns:
 	//   - *mcp.Tool: The MCP tool definition.
 	MCPTool() *mcp.Tool
+
 	// Execute runs the tool with the provided context and request, returning
 	// the result or an error.
+	//
+	// Summary: Executes the tool.
 	//
 	// Parameters:
 	//   - ctx: context.Context. The execution context.
@@ -91,8 +95,14 @@ type Tool interface {
 	// Returns:
 	//   - any: The execution result.
 	//   - error: An error if execution fails.
+	//
+	// Side Effects:
+	//   - Executes the underlying service logic (network calls, command execution, etc.).
 	Execute(ctx context.Context, req *ExecutionRequest) (any, error)
+
 	// GetCacheConfig returns the cache configuration for the tool.
+	//
+	// Summary: Retrieves cache configuration.
 	//
 	// Returns:
 	//   - *configv1.CacheConfig: The cache configuration, or nil if none.
@@ -405,6 +415,11 @@ func (t *GRPCTool) GetCacheConfig() *configv1.CacheConfig {
 // Returns:
 //   - any: The execution result (usually a map or JSON string).
 //   - error: An error if execution fails.
+//
+// Side Effects:
+//   - Makes a gRPC call to the upstream service.
+//   - Updates metrics (latency, success/error counts).
+//   - Logs execution details.
 func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
@@ -673,6 +688,11 @@ func (t *HTTPTool) GetCacheConfig() *configv1.CacheConfig {
 // Returns:
 //   - any: The execution result.
 //   - error: An error if execution fails.
+//
+// Side Effects:
+//   - Makes an HTTP request to the upstream service.
+//   - Updates metrics.
+//   - Logs execution details.
 func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
@@ -1369,6 +1389,10 @@ func (t *MCPTool) GetCacheConfig() *configv1.CacheConfig {
 // Returns:
 //   - any: The execution result.
 //   - error: An error if execution fails.
+//
+// Side Effects:
+//   - Makes an MCP call to the upstream service.
+//   - Logs execution details.
 func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if t.initError != nil {
 		return nil, t.initError
@@ -1608,6 +1632,10 @@ func (t *OpenAPITool) GetCacheConfig() *configv1.CacheConfig {
 // Returns:
 //   - any: The execution result.
 //   - error: An error if execution fails.
+//
+// Side Effects:
+//   - Makes an HTTP request to the upstream service.
+//   - Logs execution details.
 func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError
@@ -1942,6 +1970,11 @@ func (t *LocalCommandTool) GetCacheConfig() *configv1.CacheConfig {
 // Returns:
 //   - any: The execution result.
 //   - error: An error if execution fails.
+//
+// Side Effects:
+//   - Executes a subprocess on the local system.
+//   - Consumes system resources (CPU, memory).
+//   - Logs execution details.
 func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError
@@ -2287,6 +2320,11 @@ func (t *CommandTool) GetCacheConfig() *configv1.CacheConfig {
 // Returns:
 //   - any: The execution result.
 //   - error: An error if execution fails.
+//
+// Side Effects:
+//   - Executes a subprocess (potentially inside a container).
+//   - Consumes system resources.
+//   - Logs execution details.
 func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError
