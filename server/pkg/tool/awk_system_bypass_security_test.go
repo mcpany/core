@@ -52,6 +52,8 @@ func TestLocalCommandTool_AwkInjection_CommentBypass_System(t *testing.T) {
 	// Payload: 1; //; system(x)
     // The '//' acts as a comment for stripInterpreterComments, causing it to remove 'system(x)'.
     // But awk executes it because '//' is a valid regex.
+    // This test ensures that the comment stripping logic correctly handles awk syntax
+    // and blocks this bypass.
 	req := &ExecutionRequest{
 		ToolName: "awk-tool-quoted",
 		Arguments: map[string]interface{}{
