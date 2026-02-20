@@ -61,6 +61,7 @@ func TestImportCmd_HappyPath_Stdout(t *testing.T) {
 
 func TestImportCmd_HappyPath_File(t *testing.T) {
 	t.Parallel()
+	// Create sample Claude desktop config content
 	inputContent := `{
 		"mcpServers": {
 			"server1": {
