@@ -12,6 +12,9 @@ import (
 	"github.com/spf13/afero"
 )
 
+// maxFileSize is the maximum size of a file that can be read by the read_file tool.
+const maxFileSize = 10 * 1024 * 1024 // 10MB
+
 func readFileTool(prov provider.Provider, fs afero.Fs) filesystemToolDef {
 	return filesystemToolDef{
 		Name:        "read_file",
@@ -46,7 +49,6 @@ func readFileTool(prov provider.Provider, fs afero.Fs) filesystemToolDef {
 			}
 
 			// Check file size to prevent memory exhaustion (limit to 10MB)
-			const maxFileSize = 10 * 1024 * 1024 // 10MB
 			if info.Size() > maxFileSize {
 				return nil, fmt.Errorf("file size exceeds limit of %d bytes", maxFileSize)
 			}
