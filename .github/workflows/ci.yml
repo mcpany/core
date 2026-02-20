@@ -27,25 +27,7 @@ permissions:
   contents: read
 
 jobs:
-  changes:
-    runs-on: oci-runner # ubuntu-slim
-    outputs:
-      src: ${{ steps.filter.outputs.src }}
-    steps:
-      - uses: dorny/paths-filter@v3
-        id: filter
-        with:
-          filters: |
-            src:
-              - '**'
-              - '!**.md'
-              - '!**.txt'
-              - '!docs/**'
-              - '!LICENSE'
-
   lint:
-    needs: changes
-    if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: oci-runner # ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -108,8 +90,6 @@ jobs:
   unit-test:
     runs-on: oci-runner # ubuntu-latest
     timeout-minutes: 30
-    needs: [changes]
-    if: ${{ needs.changes.outputs.src == 'true' }}
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
@@ -410,8 +390,6 @@ jobs:
 
   build-images:
     name: Build Docker Images (${{ matrix.platform }})
-    needs: changes
-    if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: false
@@ -686,8 +664,6 @@ jobs:
   e2e-public-api:
     runs-on: oci-runner # ubuntu-latest
     timeout-minutes: 30
-    needs: [changes]
-    if: ${{ needs.changes.outputs.src == 'true' }}
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
@@ -1010,7 +986,6 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-      actions: read
     steps:
       - name: Install gh CLI
         run: |
@@ -1078,77 +1053,17 @@ jobs:
         run: |
           gh pr merge --auto --squash "${{ github.event.pull_request.html_url }}" || echo "Failed to enable auto-merge (check permissions/settings)"
 
-      - name: Check Results and Comment
-        uses: actions/github-script@v8
-        with:
-          github-token: ${{ secrets.ORG_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
-          script: |
-            // 1. Check for Failures
-            const needs = ${{ toJson(needs) }};
-            const failedJobNames = Object.keys(needs).filter(key => needs[key].result === 'failure' || needs[key].result === 'cancelled');
-            const { owner, repo } = context.repo;
-            const run_id = context.runId;
-            const run_url = `https://github.com/${owner}/${repo}/actions/runs/${run_id}`;
-            const pull_number = context.issue.number;
-
-            if (failedJobNames.length === 0) {
-              console.log('All required jobs passed successfully (or were skipped).');
-              return;
-            }
-
-            // 2. Prepare Comment Logic (only if PR)
-            if (pull_number) {
-              let failuresDetails = [];
-              try {
-                // We use github.rest instead of github.actions for v7 compat if needed, but octokit is global
-                // List jobs to find step failures
-                const jobsResponse = await github.rest.actions.listJobsForWorkflowRun({
-                  owner,
-                  repo,
-                  run_id,
-                });
-                const failedJobs = jobsResponse.data.jobs.filter(job => job.conclusion === 'failure');
-
-                for (const job of failedJobs) {
-                   const failedSteps = job.steps
-                     .filter(step => step.conclusion === 'failure')
-                     .map(step => step.name)
-                     .join(', ');
-                   const msg = failedSteps ? `${job.name}: Failed at step(s) "${failedSteps}"` : `${job.name}: Failed`;
-                   failuresDetails.push(msg);
-                }
-              } catch (e) {
-                console.log('Error fetching job details:', e);
-                failuresDetails = failedJobNames.map(name => `${name}: Failed`);
-              }
-
-              const list = failuresDetails.map(detail => `- **${detail}**`).join('\n');
-              const agentPrompt = `
-              Please investigate the failures above.
-              1. Check the [Action logs](${run_url}) for the specific error messages (e.g., failed tests, lint errors, build issues).
-              2. Analyze the root cause.
-              3. Apply fixes to the codebase.
-              `;
-
-              const body = `❌ **CI Checks Failed**
-
-              The following GitHub Actions checks failed in this run:
-              ${list}
-
-              ---
-              ${agentPrompt}
-              `;
-
-              await github.rest.issues.createComment({
-                owner,
-                repo,
-                issue_number: pull_number,
-                body
-              });
-            } else {
-              console.log('Not a PR, skipping failure comment.');
-            }
-
-            // 3. Fail the workflow
-            const msg = 'The following required jobs did not pass: ' + failedJobNames.join(', ');
-            core.setFailed(msg);
+      - name: Verify Success
+        env:
+          NEEDS_JSON: ${{ toJson(needs) }}
+        run: |
+          # Check if any needed job failed
+          if echo "$NEEDS_JSON" | grep -q '"result": "failure"'; then
+            echo "One or more dependent jobs failed."
+            exit 1
+          fi
+          if echo "$NEEDS_JSON" | grep -q '"result": "cancelled"'; then
+            echo "One or more dependent jobs were cancelled."
+            exit 1
+          fi
+          echo "All jobs passed."
