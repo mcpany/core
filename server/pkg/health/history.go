@@ -60,6 +60,14 @@ func AddHealthStatus(serviceName string, status string) {
 	}
 }
 
+// SeedHealthHistory allows seeding the health history for testing.
+func SeedHealthHistory(serviceName string, points []HistoryPoint) {
+	historyMu.Lock()
+	defer historyMu.Unlock()
+
+	historyStore[serviceName] = &ServiceHealthHistory{Points: points}
+}
+
 // GetHealthHistory returns the history for all services.
 func GetHealthHistory() map[string][]HistoryPoint {
 	historyMu.RLock()

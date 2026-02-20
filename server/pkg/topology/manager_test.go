@@ -566,3 +566,74 @@ func TestManager_GetGraph_Metrics(t *testing.T) {
 	// Verify Status Upgrade to ERROR (since error rate > 5%)
 	assert.Equal(t, topologyv1.NodeStatus_NODE_STATUS_ERROR, svcNode.GetStatus())
 }
+
+func TestManager_GetRecentServiceStats(t *testing.T) {
+	mockRegistry := new(MockServiceRegistry)
+	mockTM := new(MockToolManager)
+	m := NewManager(mockRegistry, mockTM)
+	defer m.Close()
+
+	// Seed traffic history
+	// T-20m: 100 reqs, 10000ms latency (100ms avg), 0 errors
+	// T-10m: 100 reqs, 20000ms latency (200ms avg), 10 errors
+	// T-1m:  100 reqs, 30000ms latency (300ms avg), 20 errors
+
+	now := time.Now()
+	t20 := now.Add(-20 * time.Minute).Truncate(time.Minute).Unix()
+	t10 := now.Add(-10 * time.Minute).Truncate(time.Minute).Unix()
+	t1 := now.Add(-1 * time.Minute).Truncate(time.Minute).Unix()
+
+	m.mu.Lock()
+	m.trafficHistory[t20] = &MinuteStats{
+		Requests: 100,
+		Latency:  10000,
+		Errors:   0,
+		ServiceStats: map[string]*ServiceTrafficStats{
+			"svc-a": {Requests: 100, Latency: 10000, Errors: 0},
+		},
+	}
+	m.trafficHistory[t10] = &MinuteStats{
+		Requests: 100,
+		Latency:  20000,
+		Errors:   10,
+		ServiceStats: map[string]*ServiceTrafficStats{
+			"svc-a": {Requests: 100, Latency: 20000, Errors: 10},
+		},
+	}
+	m.trafficHistory[t1] = &MinuteStats{
+		Requests: 100,
+		Latency:  30000,
+		Errors:   20,
+		ServiceStats: map[string]*ServiceTrafficStats{
+			"svc-a": {Requests: 100, Latency: 30000, Errors: 20},
+		},
+	}
+	m.mu.Unlock()
+
+	// Test 1: Window 15m (should include T-10m and T-1m)
+	// Total Reqs: 200
+	// Total Latency: 50000
+	// Total Errors: 30
+	// Avg Latency: 250ms
+	// Error Rate: 0.15
+
+	avgLat, errRate := m.GetRecentServiceStats("svc-a", 15*time.Minute)
+	assert.Equal(t, 250*time.Millisecond, avgLat)
+	assert.Equal(t, 0.15, errRate)
+
+	// Test 2: Window 30m (should include all)
+	// Total Reqs: 300
+	// Total Latency: 60000
+	// Total Errors: 30
+	// Avg Latency: 200ms
+	// Error Rate: 0.1
+
+	avgLat, errRate = m.GetRecentServiceStats("svc-a", 30*time.Minute)
+	assert.Equal(t, 200*time.Millisecond, avgLat)
+	assert.Equal(t, 0.1, errRate)
+
+	// Test 3: Unknown Service
+	avgLat, errRate = m.GetRecentServiceStats("unknown", 30*time.Minute)
+	assert.Equal(t, 0*time.Millisecond, avgLat)
+	assert.Equal(t, 0.0, errRate)
+}

@@ -14,6 +14,7 @@ import (
 	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
 	"github.com/mcpany/core/server/pkg/tool"
@@ -23,6 +24,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestHandleDashboardToolFailures(t *testing.T) {
@@ -392,4 +394,67 @@ func TestStatsCacheEviction(t *testing.T) {
 	val, ok := app.getStatsCache("key-101")
 	assert.True(t, ok)
 	assert.Equal(t, 101, val)
+}
+
+func TestHandleDashboardHealth(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockRegistry := new(MockServiceRegistry)
+	mockTM := tool.NewMockManagerInterface(ctrl)
+
+	// Create real TopologyManager
+	tm := topology.NewManager(mockRegistry, mockTM)
+
+	// Mock Service Registry response
+	svcConfig := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("test-dashboard-health-service"),
+		Id:   proto.String("test-service-id"),
+	}.Build()
+	mockRegistry.On("GetAllServices").Return([]*configv1.UpstreamServiceConfig{svcConfig}, nil)
+	mockRegistry.On("GetServiceError", "test-service-id").Return("", false)
+
+	// Seed Topology Data (Latency)
+	// Seed 100ms latency for the last minute
+	tm.SeedTrafficHistory([]topology.TrafficPoint{
+		{
+			Time:      time.Now().Format("15:04"),
+			Total:     100,
+			Latency:   100,
+			ServiceId: "test-service-id",
+		},
+	})
+
+	// Seed Health History (Uptime)
+	health.SeedHealthHistory("test-dashboard-health-service", []health.HistoryPoint{
+		{Timestamp: time.Now().Add(-25 * time.Hour).UnixMilli(), Status: "up"},
+	})
+
+	app := &Application{
+		TopologyManager: tm,
+		ServiceRegistry: mockRegistry,
+		statsCache:      make(map[string]statsCacheEntry),
+	}
+
+	req, _ := http.NewRequest("GET", "/dashboard/health", nil)
+	rr := httptest.NewRecorder()
+
+	handler := app.handleDashboardHealth()
+	handler.ServeHTTP(rr, req)
+
+	assert.Equal(t, http.StatusOK, rr.Code)
+
+	var resp ServiceHealthResponse
+	err := json.Unmarshal(rr.Body.Bytes(), &resp)
+	require.NoError(t, err)
+
+	require.Len(t, resp.Services, 1)
+	s := resp.Services[0]
+	assert.Equal(t, "test-dashboard-health-service", s.Name)
+
+	// Latency should be "100ms"
+	assert.Equal(t, "100ms", s.Latency)
+
+	// Uptime should be "100.0%" (since we added "up" status)
+	assert.Equal(t, "100.0%", s.Uptime)
 }

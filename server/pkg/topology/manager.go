@@ -73,10 +73,11 @@ type ServiceTrafficStats struct {
 
 // TrafficPoint represents a data point for the traffic chart.
 type TrafficPoint struct {
-	Time    string `json:"time"`
-	Total   int64  `json:"requests"` // mapped to "requests" for UI
-	Errors  int64  `json:"errors"`
-	Latency int64  `json:"latency"`
+	Time      string `json:"time"`
+	Total     int64  `json:"requests"` // mapped to "requests" for UI
+	Errors    int64  `json:"errors"`
+	Latency   int64  `json:"latency"`
+	ServiceId string `json:"serviceId,omitempty"`
 }
 
 // NewManager creates a new Topology Manager.
@@ -272,6 +273,52 @@ func (m *Manager) GetStats(serviceID string) Stats {
 	}
 }
 
+// GetRecentServiceStats returns the aggregated stats for a service over the last window.
+func (m *Manager) GetRecentServiceStats(serviceID string, window time.Duration) (time.Duration, float64) {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+
+	var totalRequests int64
+	var totalLatency int64
+	var totalErrors int64
+
+	now := time.Now()
+	cutoff := now.Add(-window).Truncate(time.Minute).Unix()
+
+	// Iterate over traffic history
+	for t, stats := range m.trafficHistory {
+		if t < cutoff {
+			continue
+		}
+
+		if serviceID == "" {
+			// Aggregate all services
+			totalRequests += stats.Requests
+			totalLatency += stats.Latency
+			totalErrors += stats.Errors
+		} else {
+			// Specific service
+			if stats.ServiceStats != nil {
+				if sStats, ok := stats.ServiceStats[serviceID]; ok {
+					totalRequests += sStats.Requests
+					totalLatency += sStats.Latency
+					totalErrors += sStats.Errors
+				}
+			}
+		}
+	}
+
+	var avgLatency time.Duration
+	var errorRate float64
+
+	if totalRequests > 0 {
+		avgLatency = time.Duration(totalLatency/totalRequests) * time.Millisecond
+		errorRate = float64(totalErrors) / float64(totalRequests)
+	}
+
+	return avgLatency, errorRate
+}
+
 // GetTrafficHistory returns the traffic history for the last 24 hours.
 // serviceID is optional.
 func (m *Manager) GetTrafficHistory(serviceID string) []TrafficPoint {
@@ -367,11 +414,23 @@ func (m *Manager) SeedTrafficHistory(points []TrafficPoint) {
 		}
 
 		// We assume seeded data is "Average Latency", so we multiply by requests to get total latency for storage
-		m.trafficHistory[targetTime.Unix()] = &MinuteStats{
+		stats := &MinuteStats{
 			Requests: p.Total,
 			Errors:   p.Errors,
 			Latency:  p.Latency * p.Total, // Reverse average
 		}
+
+		if p.ServiceId != "" {
+			stats.ServiceStats = map[string]*ServiceTrafficStats{
+				p.ServiceId: {
+					Requests: p.Total,
+					Errors:   p.Errors,
+					Latency:  p.Latency * p.Total,
+				},
+			}
+		}
+
+		m.trafficHistory[targetTime.Unix()] = stats
 		log.Info("Seeded point", "time", p.Time, "target_unix", targetTime.Unix(), "requests", p.Total)
 
 		// Accumulate stats for the session

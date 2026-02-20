@@ -5,6 +5,7 @@ package app
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"sort"
 	"time"
@@ -533,12 +534,25 @@ func (a *Application) handleDashboardHealth() http.HandlerFunc {
 				}
 			}
 
+			// Calculate Real Latency and Uptime
+			// Latency: Use TopologyManager's recent stats (e.g. last 15 mins)
+			latencyStr := "0ms"
+			if a.TopologyManager != nil {
+				avgLat, _ := a.TopologyManager.GetRecentServiceStats(svc.GetId(), 15*time.Minute)
+				if avgLat > 0 {
+					latencyStr = fmt.Sprintf("%dms", avgLat.Milliseconds())
+				}
+			}
+
+			// Uptime: Calculate from health history (e.g. last 24h)
+			uptimeStr := calculateUptime(hPoints, 24*time.Hour)
+
 			serviceHealths = append(serviceHealths, ServiceHealth{
 				ID:      svc.GetId(),
 				Name:    name,
 				Status:  uiStatus,
-				Latency: "10ms", // TODO: Get real latency from metrics
-				Uptime:  "99.9%", // TODO: Calculate real uptime
+				Latency: latencyStr,
+				Uptime:  uptimeStr,
 				Message: msg,
 			})
 		}
@@ -559,4 +573,72 @@ func (a *Application) handleDashboardHealth() http.HandlerFunc {
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(resp)
 	}
+}
+
+// calculateUptime calculates the percentage of time the service was healthy in the last window.
+func calculateUptime(history []health.HistoryPoint, window time.Duration) string {
+	if len(history) == 0 {
+		return "0.0%"
+	}
+
+	now := time.Now().UnixMilli()
+	start := now - window.Milliseconds()
+
+	var totalUpTime int64
+	var lastTime int64 = start
+	var lastStatus string = "unknown"
+
+	// Find initial status at 'start' by looking at the last point before start
+	// Since history is ordered, iterate.
+	for _, point := range history {
+		if point.Timestamp < start {
+			lastStatus = point.Status
+		} else {
+			break
+		}
+	}
+
+	// Iterate points within window
+	for _, point := range history {
+		if point.Timestamp < start {
+			continue
+		}
+
+		// Duration from lastTime to point.Timestamp
+		duration := point.Timestamp - lastTime
+		if duration > 0 {
+			if isHealthy(lastStatus) {
+				totalUpTime += duration
+			}
+		}
+
+		lastTime = point.Timestamp
+		lastStatus = point.Status
+	}
+
+	// Add duration from last point to now
+	duration := now - lastTime
+	if duration > 0 {
+		if isHealthy(lastStatus) {
+			totalUpTime += duration
+		}
+	}
+
+	percentage := float64(totalUpTime) / float64(window.Milliseconds()) * 100.0
+	if percentage > 100.0 {
+		percentage = 100.0
+	}
+	if percentage < 0 {
+		percentage = 0
+	}
+
+	return fmt.Sprintf("%.1f%%", percentage)
+}
+
+func isHealthy(status string) bool {
+	// "up" (health package) or "healthy" (UI)
+	// The health package uses "up", "down".
+	// The history points store what the health checker reported.
+	// health.Checker reports health.AvailabilityStatus ("up", "down").
+	return status == "up" || status == "UP" || status == "healthy"
 }
