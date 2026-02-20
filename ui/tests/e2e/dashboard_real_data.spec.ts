@@ -92,7 +92,11 @@ test.describe('Dashboard Real Data', () => {
         await expect(totalRequestsLocator).toHaveText(/[0-9,]+/, { timeout: 30000 });
 
         // Avg Latency: 50ms
-        await expect(page.getByText('50ms')).toBeVisible();
+        // Use strict locator to find the card specifically, avoiding chart axes or other elements
+        // Structure: Card -> CardHeader (Title="Avg Latency") -> CardContent (Value="50ms")
+        // We find the CardHeader by title, go up to Card, then search for "50ms"
+        const avgLatencyCard = page.locator('div').filter({ hasText: /^Avg Latency$/ }).locator('xpath=../..');
+        await expect(avgLatencyCard.getByText('50ms')).toBeVisible();
 
         // 60 errors / 6000 ~ 1%
         await expect(page.getByText(/1\.00%|0\.9\d%/)).toBeVisible();

@@ -3210,6 +3210,7 @@ func checkInterpreterKeywords(val, language string) error {
 		"system", "exec", "popen", "eval",
 		"spawn", "fork",
 		"subprocess", "child_process", "dlopen",
+		"open", "require",
 	}
 
 	if err := checkUnquotedKeywords(val, dangerousKeywords); err != nil {
@@ -3229,6 +3230,7 @@ func checkInterpreterObfuscation(val, language string) error {
 		"system", "exec", "popen", "eval",
 		"spawn", "fork",
 		"subprocess", "child_process", "dlopen",
+		"open", "require",
 	}
 
 	// Normalize value to detect obfuscation (e.g. system ( ) )
