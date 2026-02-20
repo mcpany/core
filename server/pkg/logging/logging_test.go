@@ -6,7 +6,6 @@ package logging
 import (
 	"bytes"
 	"context"
-	"encoding/json"
 	"log/slog"
 	"strings"
 	"testing"
@@ -127,19 +126,20 @@ func TestBroadcaster(t *testing.T) {
 	assert.Len(t, b.subscribers, 2)
 
 	// Test Broadcast
-	msg := []byte("test message")
+	// ⚡ BOLT: Updated to use string directly
+	msg := "test message"
 	b.Broadcast(msg)
 
 	select {
 	case received := <-ch1:
-		assert.Equal(t, msg, received)
+		assert.Equal(t, msg, received.(string))
 	case <-time.After(100 * time.Millisecond):
 		t.Fatal("timeout waiting for ch1")
 	}
 
 	select {
 	case received := <-ch2:
-		assert.Equal(t, msg, received)
+		assert.Equal(t, msg, received.(string))
 	case <-time.After(100 * time.Millisecond):
 		t.Fatal("timeout waiting for ch2")
 	}
@@ -153,12 +153,12 @@ func TestBroadcaster(t *testing.T) {
 	assert.False(t, ok)
 
 	// Broadcast again, only ch2 should receive
-	msg2 := []byte("test message 2")
+	msg2 := "test message 2"
 	b.Broadcast(msg2)
 
 	select {
 	case received := <-ch2:
-		assert.Equal(t, msg2, received)
+		assert.Equal(t, msg2, received.(string))
 	case <-time.After(100 * time.Millisecond):
 		t.Fatal("timeout waiting for ch2")
 	}
@@ -185,9 +185,9 @@ func TestBroadcastHandler(t *testing.T) {
 
 	select {
 	case data := <-ch:
-		var entry LogEntry
-		err := json.Unmarshal(data, &entry)
-		require.NoError(t, err)
+		// ⚡ BOLT: Updated to expect LogEntry struct directly
+		entry, ok := data.(LogEntry)
+		require.True(t, ok, "Expected LogEntry struct")
 		assert.Equal(t, "INFO", entry.Level)
 		assert.Equal(t, "test log", entry.Message)
 		assert.Equal(t, "test-source", entry.Source)

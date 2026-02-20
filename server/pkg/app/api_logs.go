@@ -32,6 +32,7 @@ func (a *Application) handleLogsWS() http.HandlerFunc {
 		}()
 
 		// Subscribe to logs with history
+		// logCh is chan any, history is []any
 		logCh, history := logging.GlobalBroadcaster.SubscribeWithHistory()
 		defer logging.GlobalBroadcaster.Unsubscribe(logCh)
 
@@ -50,7 +51,9 @@ func (a *Application) handleLogsWS() http.HandlerFunc {
 				logging.GetLogger().Error("failed to set write deadline", "error", err)
 				return
 			}
-			if err := conn.WriteMessage(websocket.TextMessage, msg); err != nil {
+			// ⚡ BOLT: Optimization - Use WriteJSON directly.
+			// Randomized Selection from Top 5 High-Impact Targets
+			if err := conn.WriteJSON(msg); err != nil {
 				logging.GetLogger().Error("failed to write history log message to websocket", "error", err)
 				return
 			}
@@ -68,7 +71,8 @@ func (a *Application) handleLogsWS() http.HandlerFunc {
 		}()
 
 		for msg := range logCh {
-			if err := conn.WriteMessage(websocket.TextMessage, msg); err != nil {
+			// ⚡ BOLT: Optimization - Use WriteJSON directly.
+			if err := conn.WriteJSON(msg); err != nil {
 				logging.GetLogger().Error("failed to write log message to websocket", "error", err)
 				return
 			}

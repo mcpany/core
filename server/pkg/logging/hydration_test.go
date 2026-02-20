@@ -47,6 +47,9 @@ func TestHydrateFromFile(t *testing.T) {
 		defer os.Remove(f.Name())
 
 		// Write some logs
+		// We write JSON strings because HydrateFromFile expects a file with JSON lines.
+		// BUT internally it unmarshals them and stores LogEntry structs.
+
 		logs := []map[string]interface{}{
 			{
 				"time":   "2023-10-27T10:00:00Z",
@@ -59,7 +62,7 @@ func TestHydrateFromFile(t *testing.T) {
 				"time":    "2023-10-27T10:01:00Z",
 				"level":   "ERROR",
 				"msg":     "Second message",
-				"details": 123,
+				"details": 123.0, // Use float explicitly for JSON compatibility
 			},
 		}
 
@@ -79,20 +82,19 @@ func TestHydrateFromFile(t *testing.T) {
 		history := GlobalBroadcaster.GetHistory()
 		require.Len(t, history, 2)
 
-		var entry1 LogEntry
-		err = json.Unmarshal(history[0], &entry1)
-		require.NoError(t, err)
+		// ⚡ BOLT: Updated test to check for LogEntry struct directly
+		entry1, ok := history[0].(LogEntry)
+		require.True(t, ok, "Expected LogEntry struct")
 		assert.Equal(t, "First message", entry1.Message)
 		assert.Equal(t, "INFO", entry1.Level)
 		assert.Equal(t, "component-a", entry1.Source)
 		assert.Equal(t, "value1", entry1.Metadata["extra"])
 
-		var entry2 LogEntry
-		err = json.Unmarshal(history[1], &entry2)
-		require.NoError(t, err)
+		entry2, ok := history[1].(LogEntry)
+		require.True(t, ok, "Expected LogEntry struct")
 		assert.Equal(t, "Second message", entry2.Message)
 		assert.Equal(t, "ERROR", entry2.Level)
-		assert.Equal(t, float64(123), entry2.Metadata["details"]) // JSON numbers are float64
+		assert.Equal(t, float64(123), entry2.Metadata["details"])
 	})
 
 	t.Run("Malformed JSON Ignored", func(t *testing.T) {
@@ -115,9 +117,9 @@ func TestHydrateFromFile(t *testing.T) {
 		history := GlobalBroadcaster.GetHistory()
 		require.Len(t, history, 1) // Only one valid line
 
-		var entry LogEntry
-		err = json.Unmarshal(history[0], &entry)
-		require.NoError(t, err)
+		// ⚡ BOLT: Updated test to check for LogEntry struct directly
+		entry, ok := history[0].(LogEntry)
+		require.True(t, ok, "Expected LogEntry struct")
 		assert.Equal(t, "json", entry.Metadata["valid"])
 	})
 
@@ -138,9 +140,9 @@ func TestHydrateFromFile(t *testing.T) {
 		history := GlobalBroadcaster.GetHistory()
 		require.Len(t, history, 1)
 
-		var entry LogEntry
-		err = json.Unmarshal(history[0], &entry)
-		require.NoError(t, err)
+		// ⚡ BOLT: Updated test to check for LogEntry struct directly
+		entry, ok := history[0].(LogEntry)
+		require.True(t, ok, "Expected LogEntry struct")
 		assert.NotEmpty(t, entry.ID)
 		assert.NotEmpty(t, entry.Timestamp) // Should default to now
 		assert.Equal(t, "data", entry.Metadata["custom"])

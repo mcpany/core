@@ -138,8 +138,8 @@ func (a *Application) handleTraces() http.HandlerFunc {
 
 		// Iterate backwards from end to startIdx to return newest first
 		for i := len(history) - 1; i >= startIdx; i-- {
-			var entry audit.Entry
-			if err := json.Unmarshal(history[i], &entry); err == nil {
+			// ⚡ BOLT: Optimization - No JSON unmarshal needed.
+			if entry, ok := history[i].(audit.Entry); ok {
 				traces = append(traces, toTrace(entry))
 			}
 		}
@@ -188,8 +188,9 @@ func (a *Application) handleTracesWS() http.HandlerFunc {
 
 		// Send history
 		for _, msg := range history {
-			var entry audit.Entry
-			if err := json.Unmarshal(msg, &entry); err != nil {
+			// ⚡ BOLT: Optimization - Cast interface to struct.
+			entry, ok := msg.(audit.Entry)
+			if !ok {
 				continue
 			}
 			trace := toTrace(entry)
@@ -216,8 +217,9 @@ func (a *Application) handleTracesWS() http.HandlerFunc {
 		}()
 
 		for msg := range logCh {
-			var entry audit.Entry
-			if err := json.Unmarshal(msg, &entry); err != nil {
+			// ⚡ BOLT: Optimization - Cast interface to struct.
+			entry, ok := msg.(audit.Entry)
+			if !ok {
 				continue
 			}
 			trace := toTrace(entry)

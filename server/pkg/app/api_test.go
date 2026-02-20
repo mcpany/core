@@ -1232,12 +1232,17 @@ func TestHandleLogsWS(t *testing.T) {
 	defer ws.Close()
 
 	time.Sleep(100 * time.Millisecond)
-	testMsg := []byte("test log message")
+	// ⚡ BOLT: Updated to use string directly and expect JSON response
+	testMsg := "test log message"
 	logging.GlobalBroadcaster.Broadcast(testMsg)
 
-	_, msg, err := ws.ReadMessage()
+	_, msgBytes, err := ws.ReadMessage()
 	require.NoError(t, err)
-	assert.Equal(t, testMsg, msg)
+
+	var received string
+	err = json.Unmarshal(msgBytes, &received)
+	require.NoError(t, err)
+	assert.Equal(t, testMsg, received)
 }
 
 func TestHandleSystemStatus(t *testing.T) {
