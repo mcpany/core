@@ -73,3 +73,19 @@ func GetHealthHistory() map[string][]HistoryPoint {
 	}
 	return result
 }
+
+// SeedHealthHistory seeds the history for testing.
+func SeedHealthHistory(serviceName string, points []HistoryPoint) {
+	historyMu.Lock()
+	defer historyMu.Unlock()
+
+	hist := &ServiceHealthHistory{Points: points}
+	historyStore[serviceName] = hist
+}
+
+// ResetHealthHistory clears the history for testing.
+func ResetHealthHistory() {
+	historyMu.Lock()
+	defer historyMu.Unlock()
+	historyStore = make(map[string]*ServiceHealthHistory)
+}

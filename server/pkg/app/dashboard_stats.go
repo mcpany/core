@@ -5,6 +5,7 @@ package app
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"sort"
 	"time"
@@ -533,12 +534,29 @@ func (a *Application) handleDashboardHealth() http.HandlerFunc {
 				}
 			}
 
+			// Calculate real latency and uptime
+			var latencyStr string
+			var uptimeStr string
+
+			if a.TopologyManager != nil {
+				avgLat, _ := a.TopologyManager.GetRecentServiceStats(svc.GetName(), 15*time.Minute)
+				if avgLat > 0 {
+					latencyStr = fmt.Sprintf("%.0fms", avgLat)
+				} else {
+					latencyStr = "0ms"
+				}
+			} else {
+				latencyStr = "0ms"
+			}
+
+			uptimeStr = calculateUptime(hPoints, 24*time.Hour)
+
 			serviceHealths = append(serviceHealths, ServiceHealth{
 				ID:      svc.GetId(),
 				Name:    name,
 				Status:  uiStatus,
-				Latency: "10ms", // TODO: Get real latency from metrics
-				Uptime:  "99.9%", // TODO: Calculate real uptime
+				Latency: latencyStr,
+				Uptime:  uptimeStr,
 				Message: msg,
 			})
 		}
@@ -559,4 +577,76 @@ func (a *Application) handleDashboardHealth() http.HandlerFunc {
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(resp)
 	}
+}
+
+// calculateUptime calculates the uptime percentage over a window.
+func calculateUptime(history []health.HistoryPoint, window time.Duration) string {
+	if len(history) == 0 {
+		return "100.0%" // Default if no history
+	}
+
+	now := time.Now().UnixMilli()
+	start := now - window.Milliseconds()
+	totalDuration := window.Milliseconds()
+	upDuration := int64(0)
+
+	// Helper to clamp time
+	clamp := func(t int64) int64 {
+		if t < start {
+			return start
+		}
+		if t > now {
+			return now
+		}
+		return t
+	}
+
+	// Find the state at `start`.
+	lastStatus := "unknown"
+	// Find the latest point <= start
+	for _, p := range history {
+		if p.Timestamp <= start {
+			lastStatus = p.Status
+		} else {
+			break
+		}
+	}
+
+	// If history starts after start, and we found no prior point,
+	// lastStatus remains "unknown".
+
+	currentStatus := lastStatus
+	currentTime := start
+
+	for _, p := range history {
+		if p.Timestamp < start {
+			continue
+		}
+
+		// Duration from currentTime to p.Timestamp
+		duration := clamp(p.Timestamp) - currentTime
+		if duration > 0 {
+			if currentStatus == "up" || currentStatus == "UP" || currentStatus == "healthy" {
+				upDuration += duration
+			}
+		}
+
+		currentStatus = p.Status
+		currentTime = clamp(p.Timestamp)
+	}
+
+	// Last segment to now
+	duration := now - currentTime
+	if duration > 0 {
+		if currentStatus == "up" || currentStatus == "UP" || currentStatus == "healthy" {
+			upDuration += duration
+		}
+	}
+
+	if totalDuration == 0 {
+		return "0.0%"
+	}
+
+	uptime := (float64(upDuration) / float64(totalDuration)) * 100.0
+	return fmt.Sprintf("%.1f%%", uptime)
 }
