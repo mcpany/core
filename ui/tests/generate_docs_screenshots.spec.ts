@@ -23,8 +23,8 @@ test.describe('Generate Detailed Docs Screenshots', () => {
             {
                 id: 'postgres-primary',
                 name: 'Primary DB',
-                // Point to a real address if possible, or accept it might be unhealthy
-                grpc_service: { address: 'localhost:50051' }
+                // Use HTTP service to avoid gRPC proto parsing errors in backend during tests
+                http_service: { address: 'http://localhost:5432' }
             },
             {
                 id: 'openai-gateway',
