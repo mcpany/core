@@ -95,7 +95,7 @@ export function useTraces(options: UseTracesOptions = {}) {
                 }
                 return merged;
             });
-        }, 100);
+        }, 50);
 
         return () => clearInterval(interval);
     }, []);

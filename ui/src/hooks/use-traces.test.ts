@@ -9,35 +9,33 @@ import { useTraces, MAX_TRACES } from './use-traces';
 import { Trace } from '@/types/trace';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 
-// Mock WebSocket
-const mockWebSocket = {
-  send: vi.fn(),
-  close: vi.fn(),
-  onopen: null as any,
-  onmessage: null as any,
-  onclose: null as any,
-  onerror: null as any,
-};
-
 // Setup global WebSocket mock
 const originalWebSocket = global.WebSocket;
-global.WebSocket = vi.fn().mockImplementation(function() {
-  return mockWebSocket;
-}) as any;
 
 describe('useTraces Hook', () => {
+  let mockWebSocket: any;
+
   beforeEach(() => {
-    vi.clearAllMocks();
-    mockWebSocket.onopen = null;
-    mockWebSocket.onmessage = null;
-    mockWebSocket.onclose = null;
-    mockWebSocket.onerror = null;
+    mockWebSocket = {
+      send: vi.fn(),
+      close: vi.fn(),
+      onopen: null,
+      onmessage: null,
+      onclose: null,
+      onerror: null,
+    };
+
+    global.WebSocket = vi.fn().mockImplementation(function() {
+      return mockWebSocket;
+    }) as any;
+
     vi.useFakeTimers();
   });
 
   afterEach(() => {
     vi.useRealTimers();
     global.WebSocket = originalWebSocket;
+    vi.clearAllMocks();
   });
 
   const createTrace = (id: string, duration: number): Trace => ({
@@ -60,16 +58,11 @@ describe('useTraces Hook', () => {
     const { result } = renderHook(() => useTraces());
 
     // Wait for connection effect
-    // Using a small delay or loop if necessary, but usually renderHook flushes effects
-
-    // Check if onopen is set
-    // If useEffect is async (it is), renderHook waits for it?
-    // Actually, creating WebSocket is synchronous in connect().
-    expect(mockWebSocket.onopen).toBeTruthy();
+    expect(mockWebSocket.onopen).toBeDefined();
 
     // Simulate connection open
     act(() => {
-      mockWebSocket.onopen({} as any);
+      if (mockWebSocket.onopen) mockWebSocket.onopen({} as any);
     });
 
     expect(result.current.isConnected).toBe(true);
@@ -79,8 +72,10 @@ describe('useTraces Hook', () => {
 
     // Simulate incoming messages
     act(() => {
-        mockWebSocket.onmessage({ data: JSON.stringify(trace1) } as any);
-        mockWebSocket.onmessage({ data: JSON.stringify(trace2) } as any);
+        if (mockWebSocket.onmessage) {
+            mockWebSocket.onmessage({ data: JSON.stringify(trace1) } as any);
+            mockWebSocket.onmessage({ data: JSON.stringify(trace2) } as any);
+        }
     });
 
     // Advance timers to trigger interval flush
@@ -98,10 +93,10 @@ describe('useTraces Hook', () => {
   it('should deduplicate traces by ID', async () => {
     const { result } = renderHook(() => useTraces());
 
-    expect(mockWebSocket.onopen).toBeTruthy();
+    expect(mockWebSocket.onopen).toBeDefined();
 
     act(() => {
-      mockWebSocket.onopen({} as any);
+      if (mockWebSocket.onopen) mockWebSocket.onopen({} as any);
     });
 
     const trace1 = createTrace('1', 100);
@@ -109,7 +104,7 @@ describe('useTraces Hook', () => {
 
     // First message
     act(() => {
-      mockWebSocket.onmessage({ data: JSON.stringify(trace1) } as any);
+      if (mockWebSocket.onmessage) mockWebSocket.onmessage({ data: JSON.stringify(trace1) } as any);
     });
 
     act(() => {
@@ -121,7 +116,7 @@ describe('useTraces Hook', () => {
 
     // Update message
     act(() => {
-      mockWebSocket.onmessage({ data: JSON.stringify(trace1Update) } as any);
+      if (mockWebSocket.onmessage) mockWebSocket.onmessage({ data: JSON.stringify(trace1Update) } as any);
     });
 
     act(() => {
@@ -135,16 +130,16 @@ describe('useTraces Hook', () => {
   it('should handle rapid updates efficiently (simulation)', async () => {
      const { result } = renderHook(() => useTraces());
 
-     expect(mockWebSocket.onopen).toBeTruthy();
+     expect(mockWebSocket.onopen).toBeDefined();
 
      act(() => {
-        mockWebSocket.onopen({} as any);
+        if (mockWebSocket.onopen) mockWebSocket.onopen({} as any);
      });
 
      // Simulate 100 updates rapidly
      act(() => {
          for (let i = 0; i < 100; i++) {
-             mockWebSocket.onmessage({ data: JSON.stringify(createTrace(`${i}`, i)) } as any);
+             if (mockWebSocket.onmessage) mockWebSocket.onmessage({ data: JSON.stringify(createTrace(`${i}`, i)) } as any);
          }
      });
 
@@ -159,16 +154,16 @@ describe('useTraces Hook', () => {
   it('should enforce MAX_TRACES limit', async () => {
     const { result } = renderHook(() => useTraces());
 
-    expect(mockWebSocket.onopen).toBeTruthy();
+    expect(mockWebSocket.onopen).toBeDefined();
 
     act(() => {
-      mockWebSocket.onopen({} as any);
+      if (mockWebSocket.onopen) mockWebSocket.onopen({} as any);
     });
 
     // Simulate sending MAX_TRACES + 50 items
     act(() => {
       for (let i = 0; i < MAX_TRACES + 50; i++) {
-        mockWebSocket.onmessage({ data: JSON.stringify(createTrace(`${i}`, i)) } as any);
+        if (mockWebSocket.onmessage) mockWebSocket.onmessage({ data: JSON.stringify(createTrace(`${i}`, i)) } as any);
       }
     });
 
