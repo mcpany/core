@@ -6,6 +6,10 @@
 import { useEffect, useState, useRef } from "react";
 import { Trace } from "@/types/trace";
 
+// ⚡ BOLT: Max traces to keep in memory to prevent performance degradation
+// Randomized Selection from Top 5 High-Impact Targets
+const MAX_TRACES = 1000;
+
 interface UseTracesOptions {
     initialPaused?: boolean;
 }
@@ -68,18 +72,24 @@ export function useTraces(options: UseTracesOptions = {}) {
                     }
                 }
 
-                // 4. Apply updates in-place to preserve order of existing items
-                const nextTraces = prev.map(t => {
-                    if (updatesForExisting.has(t.id)) {
-                        return updatesForExisting.get(t.id)!;
-                    }
-                    return t;
-                });
+                // ⚡ BOLT: Optimization - Skip O(N) map if no existing items need updates
+                // Randomized Selection from Top 5 High-Impact Targets
+                let nextTraces = prev;
+                if (updatesForExisting.size > 0) {
+                     nextTraces = prev.map(t => {
+                        if (updatesForExisting.has(t.id)) {
+                            return updatesForExisting.get(t.id)!;
+                        }
+                        return t;
+                    });
+                }
 
-                // 5. Prepend new inserts (newest first).
-                // Buffer is oldest->newest. We want newest at top of list.
-                // So we reverse inserts.
-                return [...inserts.reverse(), ...nextTraces];
+                // 5. Prepend new inserts and truncate
+                const newTraces = [...inserts.reverse(), ...nextTraces];
+                if (newTraces.length > MAX_TRACES) {
+                    return newTraces.slice(0, MAX_TRACES);
+                }
+                return newTraces;
             });
         }, 100);
 

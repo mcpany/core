@@ -58,15 +58,8 @@ describe('useTraces Hook', () => {
   it('should accumulate incoming traces', async () => {
     const { result } = renderHook(() => useTraces());
 
-    // Wait for connection effect
-    // Using a small delay or loop if necessary, but usually renderHook flushes effects
-
-    // Check if onopen is set
-    // If useEffect is async (it is), renderHook waits for it?
-    // Actually, creating WebSocket is synchronous in connect().
     expect(mockWebSocket.onopen).toBeTruthy();
 
-    // Simulate connection open
     act(() => {
       mockWebSocket.onopen({} as any);
     });
@@ -76,20 +69,16 @@ describe('useTraces Hook', () => {
     const trace1 = createTrace('1', 100);
     const trace2 = createTrace('2', 200);
 
-    // Simulate incoming messages
     act(() => {
         mockWebSocket.onmessage({ data: JSON.stringify(trace1) } as any);
         mockWebSocket.onmessage({ data: JSON.stringify(trace2) } as any);
     });
 
-    // Advance timers to trigger interval flush
     act(() => {
       vi.advanceTimersByTime(200);
     });
 
     expect(result.current.traces).toHaveLength(2);
-
-    // Expect newest first (LIFO/prepended)
     expect(result.current.traces[0].id).toBe('2');
     expect(result.current.traces[1].id).toBe('1');
   });
@@ -104,9 +93,8 @@ describe('useTraces Hook', () => {
     });
 
     const trace1 = createTrace('1', 100);
-    const trace1Update = createTrace('1', 150); // Updated duration
+    const trace1Update = createTrace('1', 150);
 
-    // First message
     act(() => {
       mockWebSocket.onmessage({ data: JSON.stringify(trace1) } as any);
     });
@@ -118,7 +106,6 @@ describe('useTraces Hook', () => {
     expect(result.current.traces).toHaveLength(1);
     expect(result.current.traces[0].totalDuration).toBe(100);
 
-    // Update message
     act(() => {
       mockWebSocket.onmessage({ data: JSON.stringify(trace1Update) } as any);
     });
@@ -140,7 +127,6 @@ describe('useTraces Hook', () => {
         mockWebSocket.onopen({} as any);
      });
 
-     // Simulate 100 updates rapidly
      act(() => {
          for (let i = 0; i < 100; i++) {
              mockWebSocket.onmessage({ data: JSON.stringify(createTrace(`${i}`, i)) } as any);
@@ -153,5 +139,31 @@ describe('useTraces Hook', () => {
 
      expect(result.current.traces).toHaveLength(100);
      expect(result.current.traces[0].id).toBe('99');
+  });
+
+  it('should truncate traces when exceeding limit', async () => {
+      const { result } = renderHook(() => useTraces());
+
+      expect(mockWebSocket.onopen).toBeTruthy();
+
+      act(() => {
+         mockWebSocket.onopen({} as any);
+      });
+
+      // Add 1100 traces
+      act(() => {
+          for (let i = 0; i < 1100; i++) {
+              mockWebSocket.onmessage({ data: JSON.stringify(createTrace(`${i}`, i)) } as any);
+          }
+      });
+
+      act(() => {
+          vi.advanceTimersByTime(200);
+      });
+
+      // Expect truncation to 1000
+      expect(result.current.traces).toHaveLength(1000);
+      // Ensure newest are kept (id 1099 should be first)
+      expect(result.current.traces[0].id).toBe('1099');
   });
 });
