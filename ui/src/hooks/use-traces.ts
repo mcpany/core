@@ -45,7 +45,9 @@ export function useTraces(options: UseTracesOptions = {}) {
             bufferRef.current = [];
 
             setTraces((prev) => {
-                // ⚡ BOLT: Batched updates logic
+                // ⚡ BOLT: Batched updates logic with memory constraint
+                // Randomized Selection from Top 5 High-Impact Targets
+                const MAX_TRACES = 1000;
 
                 // 1. Deduplicate buffer (last write wins)
                 const updatesMap = new Map<string, Trace>();
@@ -68,18 +70,28 @@ export function useTraces(options: UseTracesOptions = {}) {
                     }
                 }
 
-                // 4. Apply updates in-place to preserve order of existing items
-                const nextTraces = prev.map(t => {
-                    if (updatesForExisting.has(t.id)) {
-                        return updatesForExisting.get(t.id)!;
-                    }
-                    return t;
-                });
+                // Optimization: If no updates for existing items, skip the O(N) map
+                let nextTraces = prev;
+                if (updatesForExisting.size > 0) {
+                    // 4. Apply updates in-place to preserve order of existing items
+                    nextTraces = prev.map(t => {
+                        if (updatesForExisting.has(t.id)) {
+                            return updatesForExisting.get(t.id)!;
+                        }
+                        return t;
+                    });
+                }
 
-                // 5. Prepend new inserts (newest first).
+                // 5. Prepend new inserts (newest first) and apply limit.
                 // Buffer is oldest->newest. We want newest at top of list.
                 // So we reverse inserts.
-                return [...inserts.reverse(), ...nextTraces];
+                const newTraces = [...inserts.reverse(), ...nextTraces];
+
+                // Enforce hard limit to prevent memory leaks
+                if (newTraces.length > MAX_TRACES) {
+                    return newTraces.slice(0, MAX_TRACES);
+                }
+                return newTraces;
             });
         }, 100);
 

@@ -154,4 +154,36 @@ describe('useTraces Hook', () => {
      expect(result.current.traces).toHaveLength(100);
      expect(result.current.traces[0].id).toBe('99');
   });
+
+  it('should limit the number of stored traces to MAX_TRACES', async () => {
+    const { result } = renderHook(() => useTraces());
+
+    expect(mockWebSocket.onopen).toBeTruthy();
+
+    act(() => {
+       mockWebSocket.onopen({} as any);
+    });
+
+    // Simulate 1100 updates
+    // We do it in batches to avoid overwhelming the loop in one go, although loop is fine.
+    const MAX_TRACES = 1000;
+    const TOTAL_TRACES = 1100;
+
+    act(() => {
+        for (let i = 0; i < TOTAL_TRACES; i++) {
+            mockWebSocket.onmessage({ data: JSON.stringify(createTrace(`${i}`, i)) } as any);
+        }
+    });
+
+    act(() => {
+        vi.advanceTimersByTime(200);
+    });
+
+    expect(result.current.traces).toHaveLength(MAX_TRACES);
+    // The newest should be preserved.
+    // Traces are prepended. So ID '1099' should be at index 0.
+    expect(result.current.traces[0].id).toBe('1099');
+    // The oldest (0) should be gone. The last one should be '100'.
+    expect(result.current.traces[MAX_TRACES - 1].id).toBe('100');
+ });
 });
