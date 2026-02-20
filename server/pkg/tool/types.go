@@ -3570,6 +3570,11 @@ func checkAwkInjection(val, base string) error {
 		if strings.Contains(val, "getline") {
 			return fmt.Errorf("awk injection detected: value contains 'getline'")
 		}
+		// Sentinel Security Update: Block indirect function calls (@var)
+		// This prevents bypassing keyword checks by splitting function names (e.g. "sys" "tem").
+		if strings.Contains(val, "@") {
+			return fmt.Errorf("awk injection detected: value contains '@' (potential indirect function call)")
+		}
 	}
 	return nil
 }
