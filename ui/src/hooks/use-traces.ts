@@ -35,7 +35,7 @@ export function useTraces(options: UseTracesOptions = {}) {
         isPausedRef.current = isPaused;
     }, [isPaused]);
 
-    // ⚡ BOLT: Flush buffer periodically
+    // ⚡ BOLT: Flush buffer periodically (every 100ms)
     useEffect(() => {
         const interval = setInterval(() => {
             if (bufferRef.current.length === 0) return;
