@@ -25,7 +25,6 @@ type SmartRecoveryMiddleware struct {
 	mu          sync.RWMutex
 }
 
-// NewSmartRecoveryMiddleware creates a new SmartRecoveryMiddleware.
 func NewSmartRecoveryMiddleware(config *configv1.SmartRecoveryConfig, toolManager tool.ManagerInterface) *SmartRecoveryMiddleware {
 	return &SmartRecoveryMiddleware{
 		config:      config,
@@ -33,7 +32,6 @@ func NewSmartRecoveryMiddleware(config *configv1.SmartRecoveryConfig, toolManage
 	}
 }
 
-// Execute executes the middleware logic.
 func (m *SmartRecoveryMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	if m.config == nil || !m.config.GetEnabled() {
 		return next(ctx, req)

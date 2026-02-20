@@ -10,10 +10,6 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// _ is an unused parameter.
-//
-// Returns the result.
-// Returns an error if the operation fails.
 func (s *Store) ListServiceTemplates(_ context.Context) ([]*configv1.ServiceTemplate, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -24,13 +20,6 @@ func (s *Store) ListServiceTemplates(_ context.Context) ([]*configv1.ServiceTemp
 	return list, nil
 }
 
-// GetServiceTemplate retrieves a service template by ID.
-//
-// _ is an unused parameter.
-// id is the unique identifier.
-//
-// Returns the result.
-// Returns an error if the operation fails.
 func (s *Store) GetServiceTemplate(_ context.Context, id string) (*configv1.ServiceTemplate, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -40,12 +29,6 @@ func (s *Store) GetServiceTemplate(_ context.Context, id string) (*configv1.Serv
 	return nil, nil
 }
 
-// SaveServiceTemplate saves a service template.
-//
-// _ is an unused parameter.
-// template is the template.
-//
-// Returns an error if the operation fails.
 func (s *Store) SaveServiceTemplate(_ context.Context, template *configv1.ServiceTemplate) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -53,7 +36,6 @@ func (s *Store) SaveServiceTemplate(_ context.Context, template *configv1.Servic
 	return nil
 }
 
-// DeleteServiceTemplate deletes a service template by ID.
 func (s *Store) DeleteServiceTemplate(_ context.Context, id string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

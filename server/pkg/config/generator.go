@@ -19,23 +19,12 @@ type Generator struct {
 	Reader *bufio.Reader
 }
 
-// NewGenerator creates a new Generator instance that reads from standard input.
-//
-// Returns:
-//   - A pointer to a new Generator initialized with os.Stdin.
 func NewGenerator() *Generator {
 	return &Generator{
 		Reader: bufio.NewReader(os.Stdin),
 	}
 }
 
-// Generate prompts the user for service details and returns the generated
-// configuration as a byte slice. It supports multiple service types including
-// HTTP, gRPC, OpenAPI, and GraphQL.
-//
-// Returns:
-//   - A byte slice containing the generated YAML configuration.
-//   - An error if the generation fails or the user provides invalid input.
 func (g *Generator) Generate() ([]byte, error) {
 	serviceType, err := g.prompt("🤖 Enter service type (http, grpc, openapi, graphql): ")
 	if err != nil {

@@ -35,20 +35,12 @@ var (
 	}
 )
 
-// Register registers a HTTP middleware factory.
-//
-// name is the name of the resource.
-// factory is the factory.
 func Register(name string, factory Factory) {
 	globalRegistry.mu.Lock()
 	defer globalRegistry.mu.Unlock()
 	globalRegistry.factories[name] = factory
 }
 
-// RegisterMCP registers an MCP middleware factory.
-//
-// name is the name of the resource.
-// factory is the factory.
 func RegisterMCP(name string, factory MCPFactory) {
 	globalRegistry.mu.Lock()
 	defer globalRegistry.mu.Unlock()

@@ -67,15 +67,6 @@ func (m *GlobalRateLimitMiddleware) UpdateConfig(config *configv1.RateLimitConfi
 	// So we generally don't need to clear cache unless KeyBy changes.
 }
 
-// Execute executes the rate limiting middleware.
-//
-// ctx is the context for the request.
-// method is the method.
-// req is the request object.
-// next is the next.
-//
-// Returns the result.
-// Returns an error if the operation fails.
 func (m *GlobalRateLimitMiddleware) Execute(ctx context.Context, method string, req mcp.Request, next mcp.MethodHandler) (mcp.Result, error) {
 	m.mu.RLock()
 	config := m.config

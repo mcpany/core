@@ -9,9 +9,6 @@ type MockWatcher struct {
 	CloseFunc func()
 }
 
-// NewMockWatcher creates a new mock watcher.
-//
-// Returns the result.
 func NewMockWatcher() *MockWatcher {
 	return &MockWatcher{}
 }
@@ -29,7 +26,6 @@ func (m *MockWatcher) Watch(paths []string, reloadFunc func()) error {
 	return nil
 }
 
-// Close mocks the Close method.
 func (m *MockWatcher) Close() {
 	if m.CloseFunc != nil {
 		m.CloseFunc()

@@ -29,11 +29,6 @@ type VectorEntry struct {
 	Norm float32
 }
 
-// NewSimpleVectorStore creates a new SimpleVectorStore.
-// It initializes the store with a default configuration.
-//
-// Returns:
-//   - *SimpleVectorStore: A pointer to the newly created SimpleVectorStore.
 func NewSimpleVectorStore() *SimpleVectorStore {
 	return &SimpleVectorStore{
 		items:      make(map[string][]*VectorEntry),

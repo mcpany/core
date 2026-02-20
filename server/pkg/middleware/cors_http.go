@@ -18,18 +18,12 @@ type HTTPCORSMiddleware struct {
 	wildcardAllowed bool
 }
 
-// NewHTTPCORSMiddleware creates a new HTTPCORSMiddleware.
-// If allowedOrigins is empty, it defaults to allowing nothing (or behaving like standard Same-Origin).
-// To allow all, pass []string{"*"}.
 func NewHTTPCORSMiddleware(allowedOrigins []string) *HTTPCORSMiddleware {
 	m := &HTTPCORSMiddleware{}
 	m.updateInternal(allowedOrigins)
 	return m
 }
 
-// Update updates the allowed origins.
-//
-// allowedOrigins is the allowedOrigins.
 func (m *HTTPCORSMiddleware) Update(allowedOrigins []string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -51,11 +45,6 @@ func (m *HTTPCORSMiddleware) updateInternal(origins []string) {
 	}
 }
 
-// Handler wraps an http.Handler with CORS logic.
-//
-// next is the next.
-//
-// Returns the result.
 func (m *HTTPCORSMiddleware) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		origin := r.Header.Get("Origin")

@@ -22,10 +22,13 @@ import (
 // Summary: MCP Middleware for request authentication.
 //
 // Parameters:
-//   - authManager: *auth.Manager. The authentication manager.
+//   - authManager: *auth.Manager. The authentication manager used to verify credentials.
 //
 // Returns:
-//   - mcp.Middleware: The authentication middleware function.
+//   mcp.Middleware: The authentication middleware function.
+//
+// Throws/Errors:
+//   None. (The returned middleware may return an error if authentication fails).
 func AuthMiddleware(authManager *auth.Manager) mcp.Middleware {
 	return func(next mcp.MethodHandler) mcp.MethodHandler {
 		return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {

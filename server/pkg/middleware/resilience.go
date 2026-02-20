@@ -17,25 +17,12 @@ type ResilienceMiddleware struct {
 	managers    sync.Map // map[string]*resilience.Manager (serviceID -> Manager)
 }
 
-// NewResilienceMiddleware creates a new ResilienceMiddleware.
-//
-// toolManager is the toolManager.
-//
-// Returns the result.
 func NewResilienceMiddleware(toolManager tool.ManagerInterface) *ResilienceMiddleware {
 	return &ResilienceMiddleware{
 		toolManager: toolManager,
 	}
 }
 
-// Execute executes the resilience middleware.
-//
-// ctx is the context for the request.
-// req is the request object.
-// next is the next.
-//
-// Returns the result.
-// Returns an error if the operation fails.
 func (m *ResilienceMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := m.toolManager.GetTool(req.ToolName)
 	if !ok {

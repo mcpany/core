@@ -906,6 +906,9 @@ export const apiClient = {
     /**
      * Returns a list of available service templates for the wizard.
      * Fetches from the backend /api/v1/templates endpoint.
+     *
+     * @returns A promise that resolves to a list of service templates adapted for the UI.
+     * @throws {Error} If the request fails.
      */
     getServiceTemplates: async () => {
         const res = await fetchWithAuth('/api/v1/templates');
@@ -972,10 +975,12 @@ export const apiClient = {
 
     /**
      * Initiates an OAuth flow for a specific service.
-     * @param serviceId The ID of the service (e.g. "google_calendar").
-     * @param credentialId The ID of the credential to bind (usually same as service name for now).
-     * @param redirectUrl The URL to redirect back to after auth.
+     *
+     * @param serviceId - The ID of the service (e.g. "google_calendar").
+     * @param credentialId - The ID of the credential to bind (usually same as service name for now).
+     * @param redirectUrl - The URL to redirect back to after auth.
      * @returns The authorization URL to redirect the user to.
+     * @throws {Error} If the initiation request fails.
      */
     initiateOAuth: async (serviceId: string, credentialId: string, redirectUrl: string) => {
         const res = await fetchWithAuth('/api/v1/auth/oauth/initiate', {

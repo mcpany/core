@@ -14,9 +14,6 @@ import (
 
 var redisClientCreator = redis.NewClient
 
-// SetRedisClientCreatorForTests allows injecting a mock Redis client creator for testing purposes.
-//
-// creator: A function that takes Redis options and returns a client instance.
 func SetRedisClientCreatorForTests(creator func(opts *redis.Options) *redis.Client) {
 	redisClientCreator = creator
 }
@@ -229,19 +226,10 @@ func (l *RedisLimiter) Update(rps float64, burst int) {
 	l.burst = burst
 }
 
-// GetConfigHash returns a hash string representing the underlying Redis configuration.
-// This is used to detect configuration changes that might require a client reconnection.
-//
-// Returns:
-//   - The configuration hash string.
 func (l *RedisLimiter) GetConfigHash() string {
 	return l.configHash
 }
 
-// Close terminates the Redis client connection and releases resources.
-//
-// Returns:
-//   - An error if closing the client fails.
 func (l *RedisLimiter) Close() error {
 	return l.client.Close()
 }
