@@ -68,8 +68,8 @@ test.describe('HTTP Tool Live Test', () => {
     // Verify Preview
     // Should show GET http://ui-http-echo-server:5678/echo?foo=bar
     // Scope to the Preview card to avoid matching the tool list badge or dropdown
-    // Use the card title to robustly locate the preview section
-    const requestPreviewCard = page.locator('div').filter({ has: page.getByText('Request Preview') }).last();
+    // Use data-testid for robust selection
+    const requestPreviewCard = page.getByTestId('request-preview-card');
     await expect(requestPreviewCard.getByText('GET', { exact: true })).toBeVisible();
 
     // In http-tool-editor, we pass `localCall` and `localTool` to RequestPreview.

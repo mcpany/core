@@ -107,7 +107,7 @@ ${Object.entries(req.headers).map(([k, v]) => `  -H "${k}: ${v}"`).join(" \\\n")
     };
 
     return (
-        <Card className="h-full flex flex-col bg-muted/20 border-l-4 border-l-primary/20">
+        <Card className="h-full flex flex-col bg-muted/20 border-l-4 border-l-primary/20" data-testid="request-preview-card">
             <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium uppercase tracking-wider text-muted-foreground flex items-center gap-2">
                     <Terminal className="h-4 w-4" /> Request Preview
