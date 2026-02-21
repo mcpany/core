@@ -3609,6 +3609,52 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 	if err := checkSQLInjection(val, base, quoteLevel); err != nil {
 		return err
 	}
+	if err := checkGdbInjection(val, base, quoteLevel); err != nil {
+		return err
+	}
+	return nil
+}
+
+func checkGdbInjection(val, base string, quoteLevel int) error {
+	isGdb := base == "gdb"
+	if !isGdb {
+		return nil
+	}
+
+	// Only apply checks if input might be interpreted as a command (Unquoted or Double Quoted).
+	// Single quoted strings in GDB are usually literals (e.g. print 'str').
+	// If the user input IS the command (gdb -ex "{{cmd}}"), quotes in the template might be double quotes.
+	if quoteLevel > 1 {
+		return nil
+	}
+
+	val = strings.TrimSpace(val)
+	if val == "" {
+		return nil
+	}
+
+	// Get first word
+	parts := strings.Fields(val)
+	if len(parts) == 0 {
+		return nil
+	}
+	firstWord := strings.ToLower(parts[0])
+
+	// Block explicit shell commands if they appear at the start
+	dangerousKeywords := map[string]bool{
+		"shell":  true,
+		"system": true,
+		"pipe":   true,
+		"make":   true,
+	}
+
+	if dangerousKeywords[firstWord] {
+		return fmt.Errorf("gdb injection detected: dangerous command %q at start", firstWord)
+	}
+
+	// Note: We intentionally do NOT block "!" because it breaks "print !var".
+	// This leaves a gap (!ls), but usability tradeoff is required.
+
 	return nil
 }
 
@@ -3674,7 +3720,66 @@ func checkSQLInjection(val, base string, quoteLevel int) error {
 	// If the command is a SQL client (psql, mysql, sqlite3) and the value is unquoted (Level 0),
 	// we must prevent SQL injection by blocking SQL keywords.
 	isSQL := base == "psql" || base == "mysql" || base == "sqlite3"
-	if isSQL && quoteLevel == 0 {
+	if !isSQL {
+		return nil
+	}
+
+	// Only apply checks if input is unquoted (likely code/statement).
+	// Inside quotes (Level > 0), these are string literals.
+	if quoteLevel != 0 {
+		return nil
+	}
+
+	valTrimmed := strings.TrimSpace(val)
+	valLower := strings.ToLower(valTrimmed)
+
+	if base == "sqlite3" {
+		// SQLite meta-commands start with "."
+		// We only check if the input starts with "." to avoid FPs in middle of SQL.
+		if strings.HasPrefix(valLower, ".") {
+			if strings.HasPrefix(valLower, ".shell") || strings.HasPrefix(valLower, ".system") {
+				return fmt.Errorf("sqlite3 injection detected: .shell/.system command")
+			}
+			if strings.HasPrefix(valLower, ".open") || strings.HasPrefix(valLower, ".output") || strings.HasPrefix(valLower, ".once") {
+				return fmt.Errorf("sqlite3 injection detected: file manipulation command")
+			}
+			// Also block .read, .import
+			if strings.HasPrefix(valLower, ".read") || strings.HasPrefix(valLower, ".import") || strings.HasPrefix(valLower, ".load") {
+				return fmt.Errorf("sqlite3 injection detected: dangerous meta-command")
+			}
+		}
+	}
+
+	if base == "mysql" {
+		// MySQL 'system' command
+		// checkUnquotedKeywords handles word boundaries and allows @system.
+		if err := checkUnquotedKeywords(val, []string{"system", "source"}); err != nil {
+			return fmt.Errorf("mysql injection detected: %w", err)
+		}
+		// LOAD DATA INFILE, SELECT ... INTO OUTFILE
+		// We check for these keywords (case-insensitive).
+		// Since we are unquoted, any occurrence is likely a keyword.
+		valUpper := strings.ToUpper(val)
+		if strings.Contains(valUpper, "INFILE") || strings.Contains(valUpper, "OUTFILE") {
+			return fmt.Errorf("mysql injection detected: file access")
+		}
+	}
+
+	if base == "psql" {
+		// PSQL meta-commands start with backslash.
+		// Note: checkUnquotedInjection already blocks '\', but we double check here specific commands
+		// in case checkUnquotedInjection rules change or are different context.
+		if strings.HasPrefix(valTrimmed, "\\!") || strings.HasPrefix(valTrimmed, "\\o") || strings.HasPrefix(valTrimmed, "\\copy") {
+			return fmt.Errorf("psql injection detected: dangerous meta-command")
+		}
+		// COPY ... TO PROGRAM
+		valUpper := strings.ToUpper(val)
+		if strings.Contains(valUpper, "COPY") && strings.Contains(valUpper, "PROGRAM") {
+			return fmt.Errorf("psql injection detected: COPY TO PROGRAM")
+		}
+	}
+
+	if quoteLevel == 0 {
 		// Block common SQL keywords and comment markers
 		// We check for keywords surrounded by word boundaries or at start/end of string.
 		// val is user input, e.g. "1 OR 1=1"
