@@ -52,6 +52,9 @@ const (
 
 	// ContextKeyRemoteAddr is the context key for the remote address.
 	ContextKeyRemoteAddr = "remote_addr"
+
+	// TrueString is the string representation of boolean true.
+	TrueString = "true"
 )
 
 const (
