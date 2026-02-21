@@ -4,6 +4,7 @@
 package app
 
 import (
+	"container/heap"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -70,6 +71,25 @@ type ToolUsageStats struct {
 	Count     int64  `json:"count"`
 }
 
+// ToolStatsHeap is a min-heap of ToolUsageStats.
+type ToolStatsHeap []ToolUsageStats
+
+func (h ToolStatsHeap) Len() int           { return len(h) }
+func (h ToolStatsHeap) Less(i, j int) bool { return h[i].Count < h[j].Count }
+func (h ToolStatsHeap) Swap(i, j int)      { h[i], h[j] = h[j], h[i] }
+
+func (h *ToolStatsHeap) Push(x any) {
+	*h = append(*h, x.(ToolUsageStats))
+}
+
+func (h *ToolStatsHeap) Pop() any {
+	old := *h
+	n := len(old)
+	x := old[n-1]
+	*h = old[0 : n-1]
+	return x
+}
+
 // handleDashboardTopTools returns the top used tools based on Prometheus metrics.
 func (a *Application) handleDashboardTopTools() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -134,20 +154,26 @@ func (a *Application) handleDashboardTopTools() http.HandlerFunc {
 			}
 		}
 
-		// Convert map to slice
-		var stats []ToolUsageStats
+		h := &ToolStatsHeap{}
+		heap.Init(h)
+
+		// ⚡ BOLT: Optimized Top-K Selection (Min-Heap)
+		// Randomized Selection from Top 5 High-Impact Targets
+		const topK = 10
+
 		for _, s := range toolCounts {
-			stats = append(stats, *s)
+			if h.Len() < topK {
+				heap.Push(h, *s)
+			} else if s.Count > (*h)[0].Count {
+				heap.Pop(h)
+				heap.Push(h, *s)
+			}
 		}
 
-		// Sort by count descending
-		sort.Slice(stats, func(i, j int) bool {
-			return stats[i].Count > stats[j].Count
-		})
-
-		// Take top 10
-		if len(stats) > 10 {
-			stats = stats[:10]
+		// Extract from heap (results are min to max)
+		stats := make([]ToolUsageStats, h.Len())
+		for i := h.Len() - 1; i >= 0; i-- {
+			stats[i] = heap.Pop(h).(ToolUsageStats)
 		}
 
 		// ⚡ Bolt Optimization: Update cache
@@ -585,8 +611,8 @@ func calculateUptime(history []health.HistoryPoint, window time.Duration) string
 	}
 
 	now := time.Now().UnixMilli()
-	startWindow := now - int64(window.Milliseconds())
-	totalDuration := int64(window.Milliseconds())
+	startWindow := now - window.Milliseconds()
+	totalDuration := window.Milliseconds()
 
 	var upDuration int64
 
