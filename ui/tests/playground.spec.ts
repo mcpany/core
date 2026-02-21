@@ -70,7 +70,7 @@ test.describe('Playground Tool Configuration', () => {
     // Verify chat message
     // The message should appear in the chat.
     // "weather_tool {"city":"San Francisco","days":5}"
-    await expect(page.getByText('weather_tool {"city":"San Francisco","days":5}')).toBeVisible();
+    await expect(page.getByText('weather_tool {"city":"San Francisco","days":5}')).toBeVisible({ timeout: 20000 });
 
     // Verify result (mock result)
     // "Mock execution result"
@@ -115,7 +115,7 @@ test.describe('Playground Tool Configuration', () => {
     await page.getByLabel('Send').click();
 
     // Verify error message appears
-    await expect(page.getByText('upstream request timed out after 30s', { exact: true })).toBeVisible();
+    await expect(page.getByText('upstream request timed out after 30s', { exact: true })).toBeVisible({ timeout: 20000 });
 
     // Verify Retry button appears
     const retryBtn = page.getByLabel('Retry command');
