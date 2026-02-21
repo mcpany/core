@@ -1218,6 +1218,7 @@ jobs:
           with open("comment_body.md", "w") as f:
               f.write(body)
 
+          sys.exit(1)
           EOF
 
           python3 check_failures.py
