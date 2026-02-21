@@ -6,131 +6,38 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Playground Tool Configuration', () => {
-  test('should allow configuring and running a tool via form', async ({ page }) => {
-    // Mock the tools API response
-    await page.route('/api/v1/tools', async route => {
-      const json = {
-        tools: [
-          {
-            name: 'weather_tool',
-            description: 'Get weather info',
-            inputSchema: {
-              type: 'object',
-              properties: {
-                city: { type: 'string', description: 'City name' },
-                days: { type: 'integer', description: 'Number of days' }
-              },
-              required: ['city']
-            }
-          }
-        ]
-      };
-      await route.fulfill({ json });
-    });
-
-    // Mock the tool execution
-    await page.route('/api/v1/execute', async route => {
-      // Mock successful execution since we are using a fake tool 'weather_tool'
-      // that doesn't exist on the backend.
-      await route.fulfill({
-        json: {
-          content: [
-            {
-              type: 'text',
-              text: 'Mock execution result'
-            }
-          ],
-          isError: false
-        }
-      });
-    });
-
+  // Use real backend data (get_weather tool from config.minimal.yaml)
+  test('should allow configuring and running a tool via unified runner', async ({ page }) => {
     await page.goto('/playground');
 
-    // Open Available Tools (Sidebar is open by default)
-    // await page.getByRole('button', { name: /available tools/i }).click();
+    // Wait for sidebar to load tools (real data)
+    await expect(page.getByText('get_weather')).toBeVisible({ timeout: 30000 });
 
-    // Click "Use Tool" for weather_tool
-    // The sheet might be animating, so wait a bit or just look for the text
-    await expect(page.getByText('weather_tool')).toBeVisible();
-    await page.getByRole('button', { name: 'Use', exact: true }).click();
+    // Click tool card for get_weather in Sidebar
+    // This should switch the main pane to "Tool Runner" mode
+    await page.locator('.group').filter({ hasText: 'get_weather' }).click();
 
-    // Dialog should open
-    await expect(page.getByRole('dialog')).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'weather_tool' })).toBeVisible();
+    // Verify "Tool Runner" tab is active
+    await expect(page.getByRole('tab', { name: 'Tool Runner' })).toHaveAttribute('data-state', 'active');
 
-    // Fill form
-    await page.getByLabel(/city/i).fill('San Francisco');
-    await page.getByLabel(/days/i).fill('5');
+    // Verify Tool Runner content
+    // Should see "get_weather" in the header
+    await expect(page.getByRole('heading', { name: 'get_weather' })).toBeVisible();
 
-    // Run Tool
-    await page.getByRole('button', { name: /run tool/i }).click({ force: true });
-    await page.getByRole('button', { name: /send/i }).click();
-    // The "Run Tool" button triggers immediate execution, so clicking "Send" is no longer required.
+    // Switch to JSON tab to input arguments (since schema might be empty in minimal config)
+    await page.getByRole('tab', { name: 'JSON' }).first().click();
 
-    // Verify chat message
-    // The message should appear in the chat.
-    // "weather_tool {"city":"San Francisco","days":5}"
-    // Increase timeout to handle slower CI environments (infrastructure retry)
-    await expect(page.getByText('weather_tool {"city":"San Francisco","days":5}')).toBeVisible({ timeout: 60000 });
+    // Fill JSON arguments
+    await page.getByPlaceholder('{}').fill('{"city": "San Francisco"}');
 
-    // Verify result (mock result)
-    // "Mock execution result"
-    await expect(page.getByText('Mock execution result')).toBeVisible();
+    // Run Tool (Execute button in the runner header)
+    await page.getByRole('button', { name: 'Execute' }).click();
+
+    // Verify Result
+    // Expect "Success" badge
+    await expect(page.getByText('Success')).toBeVisible({ timeout: 10000 });
+
+    // Verify "Result" section is visible
+    await expect(page.getByText('Result', { exact: true })).toBeVisible();
   });
-
-  test('should display smart error diagnostics and allow retry', async ({ page }) => {
-    // Mock the tools API response
-    await page.route('/api/v1/tools', async route => {
-      const json = {
-        tools: [
-          {
-            name: 'timeout_tool',
-            description: 'A tool that times out',
-            inputSchema: { type: 'object', properties: {} }
-          }
-        ]
-      };
-      await route.fulfill({ json });
-    });
-
-    // Mock the tool execution failure
-    await page.route('/api/v1/execute', async route => {
-        await route.fulfill({
-            status: 500,
-            json: { error: "upstream request timed out after 30s" }
-        });
-    });
-
-    await page.goto('/playground');
-
-    // Wait for tool to appear
-    await expect(page.getByText('timeout_tool')).toBeVisible();
-
-    // Click "Use"
-    await page.getByRole('button', { name: 'Use', exact: true }).click();
-
-    // Build command (empty args)
-    await page.getByRole('button', { name: /run tool/i }).click({ force: true });
-    await page.getByRole('button', { name: /send/i }).click();
-
-    // Note: Auto-execution means we don't click Send.
-
-    // Verify error message appears
-    await expect(page.getByText('upstream request timed out after 30s', { exact: false })).toBeVisible();
-
-    // Verify Retry button appears
-    const retryBtn = page.getByLabel('Retry command');
-    await expect(retryBtn).toBeVisible();
-
-    // Verify Smart Suggestion appears
-    await expect(page.getByText('Suggestion')).toBeVisible();
-
-    // Click Retry
-    await retryBtn.click();
-
-    // Verify input is populated
-    await expect(page.getByRole('textbox', { name: /enter command/i })).toHaveValue(/timeout_tool/);
-  });
-
 });

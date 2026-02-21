@@ -52,6 +52,8 @@ export function generatePythonCode({ toolName, args, baseUrl = "http://localhost
     arguments: args,
   };
 
+  // Python requests code generation
+  // Retry CI
   let code = `import requests\nimport json\n\n`;
   code += `url = "${baseUrl}/api/v1/execute"\n`;
   code += `payload = ${JSON.stringify(payload, null, 4)}\n`;
