@@ -8,14 +8,13 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	pb "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/stretchr/testify/assert"
-	"google.golang.org/protobuf/proto"
 )
 
 func TestPythonInjectionBypass(t *testing.T) {
-    // Scenario: Shell wrapper invoking python with single-quoted argument
+	// Scenario: Shell wrapper invoking python with single-quoted argument
 	t.Run("Shell_Python_SingleQuote_Bypass", func(t *testing.T) {
 		toolDef := (&pb.Tool_builder{
-			Name: proto.String("shell_python_tool"),
+			Name: strPtr("shell_python_tool"),
 		}).Build()
 		cmd := "bash"
 		serviceConfig := (&configv1.CommandLineUpstreamService_builder{
@@ -28,7 +27,7 @@ func TestPythonInjectionBypass(t *testing.T) {
 			Parameters: []*configv1.CommandLineParameterMapping{
 				(&configv1.CommandLineParameterMapping_builder{
 					Schema: (&configv1.ParameterSchema_builder{
-						Name: proto.String("code"),
+						Name: strPtr("code"),
 					}).Build(),
 				}).Build(),
 			},
@@ -54,27 +53,23 @@ func TestPythonInjectionBypass(t *testing.T) {
 		assert.Error(t, err, "Should detect bypass via concatenation in shell single-quoted context")
 	})
 
-    // Scenario: Python tool directly (double quotes allowed if quoteLevel allows it, but keywords blocked)
-    // Wait, checkUnquotedInjection blocks quotes for python.
-    // So double quotes might be blocked if unquoted.
-    // But checkUnquotedInjection is not called if quoteLevel is 1.
-    // If args: ["-c", "\"{{code}}\""]. quoteLevel 1.
-    t.Run("Python_DoubleQuote_Bypass", func(t *testing.T) {
+	// Scenario: Python tool directly (double quotes allowed if quoteLevel allows it, but keywords blocked)
+	t.Run("Python_DoubleQuote_Bypass", func(t *testing.T) {
 		toolDef := (&pb.Tool_builder{
-			Name: proto.String("python_tool"),
+			Name: strPtr("python_tool"),
 		}).Build()
 		cmd := "python3"
 		serviceConfig := (&configv1.CommandLineUpstreamService_builder{
 			Command: &cmd,
 		}).Build()
 
-        // Double quoted argument
+		// Double quoted argument
 		callDef := (&configv1.CommandLineCallDefinition_builder{
 			Args: []string{"-c", "\"{{code}}\""},
 			Parameters: []*configv1.CommandLineParameterMapping{
 				(&configv1.CommandLineParameterMapping_builder{
 					Schema: (&configv1.ParameterSchema_builder{
-						Name: proto.String("code"),
+						Name: strPtr("code"),
 					}).Build(),
 				}).Build(),
 			},
