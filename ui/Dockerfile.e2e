@@ -1,8 +1,8 @@
-# Copyright 2025 Author(s) of MCP Any
+# Copyright 2026 Author(s) of MCP Any
 # SPDX-License-Identifier: Apache-2.0
 
 # Use standard Playwright image instead of missing custom image
-# mcr.microsoft.com/playwright:v1.58.0-jammy matches the version in package.json
+# Fixed: Replaced missing private runner image with public upstream.
 FROM mcr.microsoft.com/playwright:v1.58.0-jammy
 
 WORKDIR /work/ui
