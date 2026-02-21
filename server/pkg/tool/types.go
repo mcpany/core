@@ -3606,9 +3606,86 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 	if err := checkJqInjection(val, base, quoteLevel); err != nil {
 		return err
 	}
+	if err := checkGdbInjection(val, base); err != nil {
+		return err
+	}
 	if err := checkSQLInjection(val, base, quoteLevel); err != nil {
 		return err
 	}
+	return nil
+}
+
+func checkGdbInjection(val, base string) error {
+	if base != "gdb" && base != "lldb" {
+		return nil
+	}
+
+	// GDB/LLDB shell escapes
+	// gdb: shell, !, pipe, system
+	// lldb: platform shell, shell, system
+
+	dangerous := []string{"shell", "system", "pipe"}
+
+	if err := checkUnquotedKeywords(val, dangerous); err != nil {
+		return fmt.Errorf("debugger injection detected: %w", err)
+	}
+
+	// Also check for leading ! for gdb (since ! is symbol and might not be caught by keywords)
+	if base == "gdb" {
+		trimmed := strings.TrimSpace(val)
+		if strings.HasPrefix(trimmed, "!") {
+			return fmt.Errorf("gdb injection detected: value starts with '!'")
+		}
+
+		// Check for newline followed by ! (multiline injection)
+		// We need to scan for \n followed by optional whitespace and then !
+		// We must respect quotes within the value.
+		inSingle := false
+		inDouble := false
+		escaped := false
+
+		for i := 0; i < len(val); i++ {
+			char := val[i]
+
+			if escaped {
+				escaped = false
+				continue
+			}
+			if char == '\\' {
+				escaped = true
+				continue
+			}
+
+			if char == '\'' && !inDouble {
+				inSingle = !inSingle
+				continue
+			}
+			if char == '"' && !inSingle {
+				inDouble = !inDouble
+				continue
+			}
+
+			if inSingle || inDouble {
+				continue
+			}
+
+			// Not in quotes. Check for newline.
+			if char == '\n' || char == '\r' {
+				// Look ahead for !
+				for j := i + 1; j < len(val); j++ {
+					c := val[j]
+					if unicode.IsSpace(rune(c)) {
+						continue
+					}
+					if c == '!' {
+						return fmt.Errorf("gdb injection detected: value contains newline followed by '!'")
+					}
+					break // Found non-space, non-! char
+				}
+			}
+		}
+	}
+
 	return nil
 }
 
@@ -3672,49 +3749,112 @@ func checkTarInjection(val, base string) error {
 func checkSQLInjection(val, base string, quoteLevel int) error {
 	// SQL Injection Check
 	// If the command is a SQL client (psql, mysql, sqlite3) and the value is unquoted (Level 0),
-	// we must prevent SQL injection by blocking SQL keywords.
+	// we must prevent SQL injection by blocking SQL keywords and shell escapes.
 	isSQL := base == "psql" || base == "mysql" || base == "sqlite3"
 	if isSQL && quoteLevel == 0 {
-		// Block common SQL keywords and comment markers
-		// We check for keywords surrounded by word boundaries or at start/end of string.
-		// val is user input, e.g. "1 OR 1=1"
-		upperVal := strings.ToUpper(val)
+		// 1. Check for Context-Aware Dangerous Patterns (Dot commands, Shell escapes)
+		// This handles .shell, \!, system, --, etc. respecting quotes.
+		if err := checkForDangerousSQLPatterns(val, base); err != nil {
+			return err
+		}
+
+		// 2. Check for Standard SQL Keywords (Unquoted)
 		keywords := []string{
 			"OR", "AND", "UNION", "SELECT", "FROM", "WHERE", "JOIN",
 			"DROP", "ALTER", "CREATE", "INSERT", "UPDATE", "DELETE",
-			"--",
 		}
 
-		// Helper to check word boundary
-		isBoundary := func(r byte) bool {
-			return !isWordChar(r)
+		if base == "mysql" {
+			keywords = append(keywords, "OUTFILE", "DUMPFILE", "LOAD")
+		}
+		if base == "psql" {
+			keywords = append(keywords, "COPY")
 		}
 
-		for _, kw := range keywords {
-			if kw == "--" {
-				if strings.Contains(upperVal, "--") {
-					return fmt.Errorf("SQL injection detected: value contains '--'")
+		if err := checkUnquotedKeywords(val, keywords); err != nil {
+			return fmt.Errorf("SQL injection detected: %w", err)
+		}
+	}
+	return nil
+}
+
+func checkForDangerousSQLPatterns(val, base string) error {
+	inSingle := false
+	inDouble := false
+	escaped := false
+	atLineStart := true
+
+	for i := 0; i < len(val); i++ {
+		char := val[i]
+
+		if escaped {
+			escaped = false
+			atLineStart = false
+			continue
+		}
+
+		// Handle Backslash Escapes (Standard in MySQL/PG, mostly safe to assume for SQL injection prevention)
+		if char == '\\' {
+			// Check for MySQL/PG shell escape \!
+			if (base == "mysql" || base == "psql") && i+1 < len(val) && val[i+1] == '!' {
+				return fmt.Errorf("SQL injection detected: shell escape '\\!'")
+			}
+			escaped = true
+			continue
+		}
+
+		if char == '\'' && !inDouble {
+			inSingle = !inSingle
+			atLineStart = false
+			continue
+		}
+		if char == '"' && !inSingle {
+			inDouble = !inDouble
+			atLineStart = false
+			continue
+		}
+
+		if inSingle || inDouble {
+			continue
+		}
+
+		// Not in quotes
+		if unicode.IsSpace(rune(char)) {
+			if char == '\n' || char == '\r' {
+				atLineStart = true
+			}
+			continue
+		}
+
+		// Check for Comment '--'
+		if char == '-' && i+1 < len(val) && val[i+1] == '-' {
+			return fmt.Errorf("SQL injection detected: comment '--'")
+		}
+
+		if atLineStart {
+			// SQLite Dot Commands
+			if base == "sqlite3" && char == '.' {
+				rest := strings.ToLower(val[i:])
+				for _, cmd := range []string{".shell", ".system", ".open", ".output", ".once", ".import"} {
+					if strings.HasPrefix(rest, cmd) {
+						return fmt.Errorf("sqlite3 injection detected: dangerous command %q", cmd)
+					}
 				}
-				continue
 			}
 
-			idx := strings.Index(upperVal, kw)
-			for idx != -1 {
-				// Check boundaries
-				startOk := idx == 0 || isBoundary(upperVal[idx-1])
-				endOk := idx+len(kw) == len(upperVal) || isBoundary(upperVal[idx+len(kw)])
-
-				if startOk && endOk {
-					return fmt.Errorf("SQL injection detected: value contains SQL keyword %q in unquoted context", kw)
+			// MySQL 'system' command
+			if base == "mysql" {
+				rest := strings.ToLower(val[i:])
+				if strings.HasPrefix(rest, "system") {
+					// Check boundary
+					if len(rest) == 6 || (len(rest) > 6 && !isWordChar(rest[6])) {
+						return fmt.Errorf("mysql injection detected: system command")
+					}
 				}
-				// Find next occurrence
-				nextIdx := strings.Index(upperVal[idx+1:], kw)
-				if nextIdx == -1 {
-					break
-				}
-				idx += 1 + nextIdx
 			}
 		}
+
+		atLineStart = false
 	}
 	return nil
 }

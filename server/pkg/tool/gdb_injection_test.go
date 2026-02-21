@@ -6,6 +6,7 @@ package tool
 import (
 	"context"
 	"encoding/json"
+	"strings"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -62,6 +63,12 @@ func TestLocalCommandTool_GDBInjection_Blocked(t *testing.T) {
 
 	// Expect error due to shell injection detection
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "shell injection detected")
+	// Sentinel Security Update: We now detect this as debugger/interpreter injection specifically
+	if err != nil {
+		assert.True(t,
+			strings.Contains(err.Error(), "shell injection detected") ||
+			strings.Contains(err.Error(), "debugger injection detected"),
+			"Error message should contain 'shell injection detected' or 'debugger injection detected', got: %v", err)
+	}
 	assert.Nil(t, result)
 }
