@@ -23,6 +23,12 @@ The **Connection Diagnostic Tool** helps users troubleshoot connectivity issues 
 3.  Click **Start Diagnostics**.
 4.  Follow the on-screen progress and review the **Diagnostic Result** card for suggestions.
 
+## Remediation
+
+If the diagnostics reveal a temporary failure or if you have applied a fix (e.g., started the upstream service):
+
+-   **Restart Service**: Use the **Restart** action in the Service List (kebab menu) to force the backend to attempt a reconnection.
+
 ## Screenshots
 
 *(Screenshot of the connection diagnostics dialog showing a localhost warning)*

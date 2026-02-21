@@ -48,12 +48,38 @@ The execution result is displayed in the chat stream.
 
 ## Advanced Features
 
-- **JSON Mode**: Switch to the "JSON" tab in the tool configuration dialog to input raw parameters if the form is too constraining.
-- **History**: Previous tool calls in the session remain visible above.
+### JSON Mode
 
-### 5. Session History (Import/Export)
+Switch to the "JSON" tab in the tool configuration dialog to input raw parameters if the form is too constraining.
+
+### Saved Tool Arguments (Presets)
+
+You can save specific argument configurations as presets for frequently used tools.
+
+1.  Configure the tool arguments in the input form.
+2.  Click the **Presets** button (top right of the form).
+3.  Enter a name for your preset and click **Save**.
+4.  Later, select the saved preset from the list to instantly populate the form.
+    *   Presets are stored locally in your browser (`localStorage`).
+
+### Native File Upload
+
+The Playground automatically detects input fields that require file content (based on the tool schema).
+
+1.  If a field expects base64 encoded content (e.g., `content` with `encoding: base64`), a **File Upload** input will appear.
+2.  Select a file from your local machine.
+3.  The file content is automatically read, base64 encoded, and populated into the form field.
+
+### Session History
+
+Previous tool calls in the session remain visible above the input area.
+
+-   **Persistence**: The session history is automatically saved to your browser's local storage (`playground-messages`), so it persists across page reloads.
+-   **Clear**: Use the "Clear" button to reset the session.
+
+### Import/Export History
 
 You can manage your playground session history using the buttons in the top right corner.
 
-- **Export**: Save your current session to a JSON file (`playground-history-<date>.json`) for sharing or debugging.
-- **Import**: Load a previously exported session file to replay tool executions and results.
+-   **Export**: Save your current session to a JSON file (`playground-history-<date>.json`) for sharing or debugging.
+-   **Import**: Load a previously exported session file to replay tool executions and results.

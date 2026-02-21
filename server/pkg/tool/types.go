@@ -3313,7 +3313,7 @@ func checkInterpreterFunctionCalls(val, language string) error {
 
 // checkContextualKeywords checks if any keyword in the list is present in val as a whole word
 // AND is followed by one of the suffix characters (ignoring whitespace).
-func checkContextualKeywords(val string, keywords []string, suffixes []rune) error {
+func checkContextualKeywords(val string, keywords []string, suffixes []rune) error { //nolint:gocyclo
 	inSingle := false
 	inDouble := false
 	inBacktick := false
@@ -3398,16 +3398,14 @@ func checkContextualKeywords(val string, keywords []string, suffixes []rune) err
 				wordBuilder.Reset()
 			}
 			wordBuilder.WriteRune(char)
-		} else {
+		} else if inWord {
 			// Delimiter
-			if inWord {
-				word := wordBuilder.String()
-				// Look ahead starting from current char i
-				if err := checkWordSuffix(word, keywords, runes, i, isSuffix); err != nil {
-					return err
-				}
-				inWord = false
+			word := wordBuilder.String()
+			// Look ahead starting from current char i
+			if err := checkWordSuffix(word, keywords, runes, i, isSuffix); err != nil {
+				return err
 			}
+			inWord = false
 		}
 	}
 
