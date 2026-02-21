@@ -1,12 +1,15 @@
 # Copyright 2025 Author(s) of MCP Any
 # SPDX-License-Identifier: Apache-2.0
 
-# Use pre-prepared runner image
-FROM iowoi/mcpany-runner-ui:latest
+# Use the official Microsoft Playwright image as the base
+FROM mcr.microsoft.com/playwright:v1.49.1-jammy
 
 WORKDIR /work/ui
 
-# Dependencies are already installed in the base image
+# Install dependencies
+# We need to copy package.json and package-lock.json first for caching
+COPY ui/package.json ui/package-lock.json ./
+RUN npm install
 
 # Copy the rest of the UI code
 COPY ui/ .
