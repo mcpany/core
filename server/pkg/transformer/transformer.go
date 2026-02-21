@@ -22,6 +22,8 @@ type Transformer struct {
 	pool  sync.Pool
 }
 
+var stringerType = reflect.TypeOf((*fmt.Stringer)(nil)).Elem()
+
 // NewTransformer creates and returns a new instance of Transformer.
 //
 // Returns the result.
@@ -103,7 +105,6 @@ func joinFunc(sep string, input any) (string, error) {
 
 	// Check if element type implements fmt.Stringer
 	var isStringer bool
-	stringerType := reflect.TypeOf((*fmt.Stringer)(nil)).Elem()
 	// For typed slices (not []any), we can check once to avoid per-element checks
 	if kind == reflect.Slice || kind == reflect.Array {
 		elemType := val.Type().Elem()
