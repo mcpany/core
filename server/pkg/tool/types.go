@@ -3250,6 +3250,7 @@ func checkInterpreterFunctionCalls(val, language string) error {
 	// StyleParensOrQuotes: Ruby, Perl, PHP, Shell (allow calling functions with space + quote)
 	// StyleParensOnly: Python, Node, Java, etc. (require parentheses for function calls)
 	// For Perl/Ruby/PHP/Shell, barewords can be function calls (e.g. "open F", "eval ls"), so we must check strictly (unquoted keywords).
+	// This differentiation prevents false positives in languages where these keywords are common and safe (e.g., Python "open" vs "open()").
 	isStrictLang := false
 	checkQuotes := false
 	switch language {
