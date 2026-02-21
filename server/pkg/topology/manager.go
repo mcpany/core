@@ -378,8 +378,10 @@ func (m *Manager) SeedTrafficHistory(points []TrafficPoint) {
 	now := time.Now()
 	// Clear current history
 	m.trafficHistory = make(map[int64]*MinuteStats)
-	log := logging.GetLogger()
-	log.Info("Seeding traffic history", "points", len(points))
+	// Clear sessions to ensure GetStats reflects only seeded data
+	m.sessions = make(map[string]*SessionStats)
+
+	logging.GetLogger().Info("Seeding traffic history", "points", len(points))
 
 	// Update a dummy session for GetStats to reflect seeded data
 	m.sessions["seed-data"] = &SessionStats{
@@ -394,7 +396,7 @@ func (m *Manager) SeedTrafficHistory(points []TrafficPoint) {
 		// Parse time "HH:MM"
 		t, err := time.Parse("15:04", p.Time)
 		if err != nil {
-			log.Error("Failed to parse seed time", "time", p.Time, "error", err)
+			logging.GetLogger().Error("Failed to parse seed time", "time", p.Time, "error", err)
 			continue
 		}
 		// Adjust to today
@@ -411,7 +413,7 @@ func (m *Manager) SeedTrafficHistory(points []TrafficPoint) {
 			Errors:   p.Errors,
 			Latency:  p.Latency * p.Total, // Reverse average
 		}
-		log.Info("Seeded point", "time", p.Time, "target_unix", targetTime.Unix(), "requests", p.Total)
+		logging.GetLogger().Info("Seeded point", "time", p.Time, "target_unix", targetTime.Unix(), "requests", p.Total)
 
 		// Accumulate stats for the session
 		m.sessions["seed-data"].RequestCount += p.Total
