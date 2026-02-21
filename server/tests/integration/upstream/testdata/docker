@@ -1,0 +1,77 @@
+#!/bin/sh
+# Fake docker script for testing
+# Intercepts docker commands to run locally via node
+
+if [ "$1" = "info" ]; then
+  echo "Fake Docker Version 1.0"
+  exit 0
+fi
+
+if [ "$1" = "run" ]; then
+  # Parse arguments
+  shift
+  MOUNT_SOURCE=""
+  CMD=""
+
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      -v)
+        # Format host:container
+        if echo "$2" | grep -q ":/app/bundle"; then
+            MOUNT_SOURCE=$(echo "$2" | cut -d: -f1)
+        fi
+        shift 2
+        ;;
+      -i|--rm|--init)
+        shift
+        ;;
+      node:18-alpine)
+        shift
+        ;;
+      *)
+        CMD="$CMD $1"
+        shift
+        ;;
+    esac
+  done
+
+  # Clean up CMD
+  CMD=$(echo "$CMD" | xargs)
+
+  if [ -n "$MOUNT_SOURCE" ]; then
+      # If command is "node server.js", we execute it in MOUNT_SOURCE
+      # But we need to handle stdin/stdout and path mapping.
+
+      # We use sed to replace /app/bundle with MOUNT_SOURCE in input
+      # And we run node inside MOUNT_SOURCE
+
+      # Note: sed on stream might buffer. We need unbuffered.
+      # But for simple JSON-RPC test it might be fine.
+
+      # Replace /app/bundle with real path in input stream and pipe to node
+      # We assume the command is "node server.js" or similar running in the container.
+      # If we cd to MOUNT_SOURCE, "server.js" works.
+
+      cd "$MOUNT_SOURCE" || exit 1
+
+      # Handle input replacement
+      # We use perl for unbuffered replacement if available, or sed.
+      # Simplest: Just run node. The JS server code (simpleFsServerJS) uses fs methods.
+      # If the input contains "/app/bundle", the JS will try to access it.
+      # Since we are running on host, "/app/bundle" does not exist.
+      # We MUST replace it in the input JSON.
+
+      # sed buffer issue: use `stdbuf` if available or `perl`.
+      # Trying simple sed first.
+
+      sed "s|/app/bundle|$MOUNT_SOURCE|g" | $CMD
+  else
+      # Fallback just run command
+      $CMD
+  fi
+  exit 0
+fi
+
+# Fallback for other commands
+echo "Fake Docker: Unknown command $@" >&2
+exit 1

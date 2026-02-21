@@ -9,8 +9,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 
 test.describe('Feature Screenshot', () => {
-    // Skip if CAPTURE_SCREENSHOTS is not set
-    // Enabled audit screenshots
+    // Enabled audit screenshots unconditionally for full coverage
     // test.skip(process.env.CAPTURE_SCREENSHOTS !== 'true', 'Skipping audit screenshots');
 
     const date = new Date().toISOString().split('T')[0];
@@ -29,8 +28,15 @@ test.describe('Feature Screenshot', () => {
 
   test('Capture Logs', async ({ page }) => {
     await page.goto('/logs');
-    // Wait for some logs to appear
-    await page.waitForTimeout(3000);
+    // Wait for some logs to appear or at least the page to load
+    // We wait for the table or empty state
+    try {
+        await page.waitForSelector('table, div:has-text("No logs found")', { timeout: 5000 });
+    } catch (e) {
+        // Ignore timeout, we just want to ensure page is roughly ready
+    }
+
+    await page.waitForTimeout(1000);
     try {
         await page.screenshot({ path: path.join(auditDir, 'log_stream.png') });
     } catch (e) {

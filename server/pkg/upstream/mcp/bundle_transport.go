@@ -49,7 +49,7 @@ type BundleDockerTransport struct {
 
 	// dockerClientFactory allows injecting a custom docker client for testing.
 	// If nil, newDockerClient is used.
-	dockerClientFactory func(ops ...client.Opt) (dockerClient, error)
+	dockerClientFactory func(ops ...client.Opt) (DockerClient, error)
 }
 
 // Connect establishes a connection to the service within the Docker container.

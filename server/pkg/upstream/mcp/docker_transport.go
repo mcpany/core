@@ -29,9 +29,9 @@ import (
 	v1 "github.com/opencontainers/image-spec/specs-go/v1"
 )
 
-// dockerClient is an interface that abstracts the Docker client methods used by DockerTransport.
+// DockerClient is an interface that abstracts the Docker client methods used by DockerTransport.
 // It is used for testing purposes to allow mocking of the Docker client.
-type dockerClient interface {
+type DockerClient interface {
 	ImagePull(ctx context.Context, ref string, options image.PullOptions) (io.ReadCloser, error)
 	ContainerCreate(ctx context.Context, config *container.Config, hostConfig *container.HostConfig, networkingConfig *network.NetworkingConfig, platform *v1.Platform, containerName string) (container.CreateResponse, error)
 	ContainerAttach(ctx context.Context, container string, options container.AttachOptions) (types.HijackedResponse, error)
@@ -41,8 +41,13 @@ type dockerClient interface {
 	Close() error
 }
 
-var newDockerClient = func(ops ...client.Opt) (dockerClient, error) {
+var newDockerClient = func(ops ...client.Opt) (DockerClient, error) {
 	return client.NewClientWithOpts(ops...)
+}
+
+// SetNewDockerClientForTesting sets the factory function for creating docker clients.
+func SetNewDockerClientForTesting(f func(ops ...client.Opt) (DockerClient, error)) {
+	newDockerClient = f
 }
 
 // DockerTransport implements the mcp.Transport interface to connect to a service
@@ -345,7 +350,7 @@ type dockerReadWriteCloser struct {
 	io.Reader
 	io.WriteCloser
 	containerID string
-	cli         dockerClient
+	cli         DockerClient
 }
 
 // Close closes the underlying connection and removes the associated Docker container.

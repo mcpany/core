@@ -21,6 +21,7 @@ type SeedRequest struct {
 	SecretsRaw     []json.RawMessage `json:"secrets"`
 	ProfilesRaw    []json.RawMessage `json:"profiles"`
 	UsersRaw       []json.RawMessage `json:"users"`
+	SettingsRaw    json.RawMessage   `json:"global_settings"`
 }
 
 // handleDebugSeed creates a handler to seed the database with data.
@@ -103,6 +104,8 @@ func (a *Application) handleDebugSeed() http.HandlerFunc {
 			}
 		}
 
+		// Global Settings (optional clear? usually we overwrite)
+
 		// Insert new data
 		for _, raw := range req.ServicesRaw {
 			s := configv1.UpstreamServiceConfig_builder{}.Build()
@@ -166,6 +169,20 @@ func (a *Application) handleDebugSeed() http.HandlerFunc {
 			if err := a.Storage.CreateUser(ctx, u); err != nil {
 				log.Error("Failed to create seeded user", "id", u.GetId(), "error", err)
 				http.Error(w, "Failed to create user", http.StatusInternalServerError)
+				return
+			}
+		}
+
+		if req.SettingsRaw != nil {
+			gs := configv1.GlobalSettings_builder{}.Build()
+			if err := protojson.Unmarshal(req.SettingsRaw, gs); err != nil {
+				log.Error("Failed to unmarshal global settings", "error", err)
+				http.Error(w, "Failed to unmarshal global settings", http.StatusBadRequest)
+				return
+			}
+			if err := a.Storage.SaveGlobalSettings(ctx, gs); err != nil {
+				log.Error("Failed to save global settings", "error", err)
+				http.Error(w, "Failed to save global settings", http.StatusInternalServerError)
 				return
 			}
 		}
