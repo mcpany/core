@@ -3231,6 +3231,11 @@ func checkInterpreterFunctionCalls(val, language string) error {
 		"subprocess", "child_process", "os", "sys",
 		"open", "read", "write",
 		"phpinfo",
+		// Sentinel Security Update: Block reflection/introspection keywords to prevent bypasses
+		"__builtins__", "getattr", "setattr", "delattr",
+		"__class__", "__base__", "__subclasses__", "__mro__",
+		"globals", "locals",
+		"const_get", "send", "public_send", "instance_eval", "class_eval",
 	}
 
 	if err := checkUnquotedKeywords(val, dangerousKeywords); err != nil {
