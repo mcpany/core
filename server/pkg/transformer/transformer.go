@@ -19,6 +19,7 @@ import (
 // specified by the template, such as JSON, XML, or plain text.
 //
 // Transformer is safe for concurrent use.
+// It manages a pool of buffers to reduce allocations during transformation.
 type Transformer struct {
 	cache sync.Map
 	pool  sync.Pool
