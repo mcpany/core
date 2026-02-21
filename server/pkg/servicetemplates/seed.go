@@ -267,5 +267,74 @@ func (s *Seeder) getBuiltInTemplates() []*configv1.ServiceTemplate {
 				}.Build(),
 			}.Build(),
 		}.Build(),
+		configv1.ServiceTemplate_builder{
+			Id:          proto.String("postgres"),
+			Name:        proto.String("PostgreSQL"),
+			Description: proto.String("Standard SQL Database"),
+			Icon:        proto.String("database"),
+			Tags:        []string{"database"},
+			ServiceConfig: configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("postgres-db"),
+				CommandLineService: configv1.CommandLineUpstreamService_builder{
+					Command: proto.String("docker run --rm -p 5432:5432 -e POSTGRES_PASSWORD=${POSTGRES_PASSWORD} postgres:15"),
+				}.Build(),
+			}.Build(),
+		}.Build(),
+		configv1.ServiceTemplate_builder{
+			Id:          proto.String("redis"),
+			Name:        proto.String("Redis"),
+			Description: proto.String("In-memory key-value store"),
+			Icon:        proto.String("database"),
+			Tags:        []string{"database", "cache"},
+			ServiceConfig: configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("redis-cache"),
+				CommandLineService: configv1.CommandLineUpstreamService_builder{
+					Command: proto.String("docker run --rm -p 6379:6379 redis:alpine"),
+				}.Build(),
+			}.Build(),
+		}.Build(),
+		configv1.ServiceTemplate_builder{
+			Id:          proto.String("filesystem"),
+			Name:        proto.String("Filesystem MCP"),
+			Description: proto.String("Local file access"),
+			Icon:        proto.String("hard-drive"),
+			Tags:        []string{"mcp-server", "utility"},
+			ServiceConfig: configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("filesystem-mcp"),
+				McpService: configv1.McpUpstreamService_builder{
+					StdioConnection: configv1.McpStdioConnection_builder{
+						Command: proto.String("npx"),
+						Args:    []string{"-y", "@modelcontextprotocol/server-filesystem", "/path/to/allowed/dir"},
+					}.Build(),
+				}.Build(),
+			}.Build(),
+		}.Build(),
+		configv1.ServiceTemplate_builder{
+			Id:          proto.String("generic-http"),
+			Name:        proto.String("HTTP Service"),
+			Description: proto.String("Generic HTTP API"),
+			Icon:        proto.String("globe"),
+			Tags:        []string{"utility", "http"},
+			ServiceConfig: configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("my-api-service"),
+				HttpService: configv1.HttpUpstreamService_builder{
+					Address: proto.String("http://localhost:8080"),
+				}.Build(),
+			}.Build(),
+		}.Build(),
+		configv1.ServiceTemplate_builder{
+			Id:          proto.String("generic-cmd"),
+			Name:        proto.String("Command Line"),
+			Description: proto.String("Local script execution"),
+			Icon:        proto.String("terminal"),
+			Tags:        []string{"utility", "command"},
+			ServiceConfig: configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("local-script"),
+				CommandLineService: configv1.CommandLineUpstreamService_builder{
+					Command: proto.String("python3 ./scripts/worker.py"),
+					WorkingDirectory: proto.String("./"),
+				}.Build(),
+			}.Build(),
+		}.Build(),
 	}
 }

@@ -12,6 +12,7 @@ import (
 	"io"
 	"net"
 	"net/http"
+	"net/http/httptest"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -2035,4 +2036,31 @@ type MCPJSONRPCError struct {
 // Returns the result.
 func (e *MCPJSONRPCError) Error() string {
 	return fmt.Sprintf("JSON-RPC Error: Code=%d, Message=%s, Data=%v", e.Code, e.Message, e.Data)
+}
+
+// MockUpstreamServerInfo contains info about a mock upstream server.
+type MockUpstreamServerInfo struct {
+	URL         string
+	Server      *httptest.Server
+	CleanupFunc func()
+}
+
+// Close closes the mock server.
+func (m *MockUpstreamServerInfo) Close() {
+	if m.CleanupFunc != nil {
+		m.CleanupFunc()
+	}
+}
+
+// NewMockUpstreamServer starts a new mock upstream HTTP server.
+func NewMockUpstreamServer(t *testing.T, handler http.HandlerFunc) *MockUpstreamServerInfo {
+	t.Helper()
+	server := httptest.NewServer(handler)
+	return &MockUpstreamServerInfo{
+		URL:    server.URL,
+		Server: server,
+		CleanupFunc: func() {
+			server.Close()
+		},
+	}
 }

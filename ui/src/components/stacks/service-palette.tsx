@@ -5,7 +5,7 @@
 
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
     Database,
     HardDrive,
@@ -15,114 +15,45 @@ import {
     Terminal,
     Cpu,
     Search,
-    Plus
+    Plus,
+    Activity,
+    Box
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { apiClient, ServiceTemplate as BackendServiceTemplate } from "@/lib/client";
+import yaml from "js-yaml";
 
 /**
- * ServiceTemplate type definition.
+ * ServiceTemplate type definition for UI.
  */
 export interface ServiceTemplate {
     id: string;
     name: string;
     description: string;
     icon: React.ElementType;
-    category: "Database" | "MCP Server" | "Utility" | "AI";
+    category: string;
     yamlSnippet: string;
 }
 
-const TEMPLATES: ServiceTemplate[] = [
-    {
-        id: "postgres",
-        name: "PostgreSQL",
-        description: "Standard SQL Database",
-        icon: Database,
-        category: "Database",
-        yamlSnippet: `  - name: postgres-db
-    image: postgres:15
-    environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: ${"${POSTGRES_PASSWORD}"}
-      POSTGRES_DB: mydb
-    ports:
-      - "5432:5432"
-`
-    },
-    {
-        id: "redis",
-        name: "Redis",
-        description: "In-memory key-value store",
-        icon: Database,
-        category: "Database",
-        yamlSnippet: `  - name: redis-cache
-    image: redis:alpine
-    ports:
-      - "6379:6379"
-`
-    },
-    {
-        id: "filesystem",
-        name: "Filesystem MCP",
-        description: "Local file access",
-        icon: HardDrive,
-        category: "MCP Server",
-        yamlSnippet: `  - name: filesystem-mcp
-    command: npx -y @modelcontextprotocol/server-filesystem /path/to/allowed/dir
-    environment:
-      NODE_ENV: production
-`
-    },
-    {
-        id: "slack",
-        name: "Slack MCP",
-        description: "Slack integration",
-        icon: MessageSquare,
-        category: "MCP Server",
-        yamlSnippet: `  - name: slack-mcp
-    command: npx -y @modelcontextprotocol/server-slack
-    environment:
-      SLACK_BOT_TOKEN: \${SLACK_BOT_TOKEN}
-      SLACK_SIGNING_SECRET: \${SLACK_SIGNING_SECRET}
-`
-    },
-    {
-        id: "memory",
-        name: "Memory MCP",
-        description: "Graph-based memory",
-        icon: Cpu,
-        category: "MCP Server",
-        yamlSnippet: `  - name: memory-mcp
-    command: npx -y @modelcontextprotocol/server-memory
-`
-    },
-    {
-        id: "generic-http",
-        name: "HTTP Service",
-        description: "Generic HTTP API",
-        icon: Globe,
-        category: "Utility",
-        yamlSnippet: `  - name: my-api-service
-    image: my-repo/api:latest
-    environment:
-      PORT: 8080
-`
-    },
-    {
-        id: "generic-cmd",
-        name: "Command Line",
-        description: "Local script execution",
-        icon: Terminal,
-        category: "Utility",
-        yamlSnippet: `  - name: local-script
-    command: python3 ./scripts/worker.py
-    working_dir: ./
-`
-    }
-];
+const ICON_MAP: Record<string, React.ElementType> = {
+    "database": Database,
+    "hard-drive": HardDrive,
+    "message-square": MessageSquare,
+    "slack": MessageSquare,
+    "globe": Globe,
+    "server": Server,
+    "terminal": Terminal,
+    "cpu": Cpu,
+    "notion": Globe, // Placeholder
+    "linear": Activity,
+    "jira": Activity,
+    "github": Globe,
+    "gitlab": Globe,
+    "google-calendar": Globe,
+};
 
 interface ServicePaletteProps {
     onTemplateSelect: (snippet: string) => void;
@@ -134,17 +65,68 @@ interface ServicePaletteProps {
  * @param { onTemplateSelect - The { onTemplateSelect.
  */
 export function ServicePalette({ onTemplateSelect }: ServicePaletteProps) {
+    const [templates, setTemplates] = useState<ServiceTemplate[]>([]);
     const [search, setSearch] = React.useState("");
     const [filter, setFilter] = React.useState<string | null>(null);
+    const [loading, setLoading] = useState(true);
 
-    const filtered = TEMPLATES.filter(t => {
+    useEffect(() => {
+        const fetchTemplates = async () => {
+            try {
+                const backendTemplates = await apiClient.listTemplates();
+                const uiTemplates = backendTemplates.map(t => mapBackendTemplateToUI(t));
+                setTemplates(uiTemplates);
+            } catch (err) {
+                console.error("Failed to fetch templates:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchTemplates();
+    }, []);
+
+    const mapBackendTemplateToUI = (t: BackendServiceTemplate): ServiceTemplate => {
+        // Strip internal fields
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { id, sanitizedName, configError, lastError, toolCount, ...config } = t.serviceConfig as any;
+
+        // Wrap in list item
+        const serviceItem = {
+            name: config.name || t.name,
+            ...config
+        };
+
+        // Generate the snippet
+        // We use a list to match the "upstream_services" list structure expected by the editor
+        // The snippet is appended to the existing YAML, so it should look like a list item.
+        const snippetObj = [serviceItem];
+        const yamlSnippet = yaml.dump(snippetObj, { indent: 2, lineWidth: -1 });
+
+        // Map category from tags
+        let category = "Other";
+        if (t.tags && t.tags.length > 0) {
+            // Capitalize first tag
+            category = t.tags[0].charAt(0).toUpperCase() + t.tags[0].slice(1);
+        }
+
+        return {
+            id: t.id,
+            name: t.name,
+            description: t.description,
+            icon: ICON_MAP[t.icon] || Box,
+            category: category,
+            yamlSnippet: yamlSnippet
+        };
+    };
+
+    const filtered = templates.filter(t => {
         const matchesSearch = t.name.toLowerCase().includes(search.toLowerCase()) ||
                               t.description.toLowerCase().includes(search.toLowerCase());
         const matchesFilter = filter ? t.category === filter : true;
         return matchesSearch && matchesFilter;
     });
 
-    const categories = Array.from(new Set(TEMPLATES.map(t => t.category)));
+    const categories = Array.from(new Set(templates.map(t => t.category)));
 
     return (
         <div className="flex flex-col h-full bg-muted/10 border-r w-[280px]">
@@ -185,32 +167,37 @@ export function ServicePalette({ onTemplateSelect }: ServicePaletteProps) {
 
             <ScrollArea className="flex-1">
                 <div className="p-3 grid gap-2">
-                    {filtered.map(template => (
-                        <Card
-                            key={template.id}
-                            className="cursor-pointer transition-all hover:bg-accent hover:border-primary/50 group"
-                            onClick={() => onTemplateSelect(template.yamlSnippet)}
-                        >
-                            <CardContent className="p-3 flex items-start gap-3">
-                                <div className="mt-1 p-2 bg-muted rounded-md group-hover:bg-background transition-colors">
-                                    <template.icon className="h-4 w-4 text-muted-foreground group-hover:text-primary" />
-                                </div>
-                                <div className="space-y-1">
-                                    <div className="flex items-center justify-between">
-                                        <h4 className="font-medium text-xs">{template.name}</h4>
-                                        <Plus className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity text-primary" />
-                                    </div>
-                                    <p className="text-[10px] text-muted-foreground leading-tight">
-                                        {template.description}
-                                    </p>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    ))}
-                    {filtered.length === 0 && (
+                    {loading ? (
+                        <div className="text-center py-8 text-xs text-muted-foreground">
+                            Loading templates...
+                        </div>
+                    ) : filtered.length === 0 ? (
                         <div className="text-center py-8 text-xs text-muted-foreground">
                             No templates found.
                         </div>
+                    ) : (
+                        filtered.map(template => (
+                            <Card
+                                key={template.id}
+                                className="cursor-pointer transition-all hover:bg-accent hover:border-primary/50 group"
+                                onClick={() => onTemplateSelect(template.yamlSnippet)}
+                            >
+                                <CardContent className="p-3 flex items-start gap-3">
+                                    <div className="mt-1 p-2 bg-muted rounded-md group-hover:bg-background transition-colors">
+                                        <template.icon className="h-4 w-4 text-muted-foreground group-hover:text-primary" />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <div className="flex items-center justify-between">
+                                            <h4 className="font-medium text-xs">{template.name}</h4>
+                                            <Plus className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity text-primary" />
+                                        </div>
+                                        <p className="text-[10px] text-muted-foreground leading-tight">
+                                            {template.description}
+                                        </p>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        ))
                     )}
                 </div>
             </ScrollArea>
