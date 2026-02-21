@@ -6,6 +6,7 @@ package filesystem
 import (
 	"context"
 	"fmt"
+	"os"
 	"path/filepath"
 
 	"github.com/mcpany/core/server/pkg/upstream/filesystem/provider"
@@ -97,12 +98,108 @@ func writeFileTool(prov provider.Provider, fs afero.Fs, readOnly bool) filesyste
 				return nil, fmt.Errorf("failed to create parent directory: %w", err)
 			}
 
-			if err := afero.WriteFile(fs, resolvedPath, []byte(content), 0600); err != nil {
+			if err := safeWriteFile(fs, resolvedPath, []byte(content), 0600); err != nil {
 				return nil, err
 			}
 			return map[string]interface{}{"success": true}, nil
 		},
 	}
+}
+
+// safeWriteFile writes content to a file safely, preventing TOCTOU attacks.
+// It ensures that:
+// 1. The path components have not changed (e.g. replaced by symlinks) since resolution.
+// 2. If the file does not exist, it is created exclusively (O_EXCL).
+// 3. If the file exists, it checks if it is a symlink before opening.
+func safeWriteFile(fs afero.Fs, path string, content []byte, perm os.FileMode) error {
+	// 1. Re-verify that the path is still canonical (no new symlinks introduced).
+	// This mitigates the directory swap attack (TOCTOU) where a parent directory
+	// is replaced by a symlink after the initial security check.
+	// Note: EvalSymlinks interacts with the OS filesystem. We should only do this check
+	// if we are operating on the OS filesystem.
+	if _, isOsFs := fs.(*afero.OsFs); isOsFs {
+		realPath, err := filepath.EvalSymlinks(path)
+		if err != nil {
+			if os.IsNotExist(err) {
+				// File doesn't exist. Check parent directory integrity.
+				dir := filepath.Dir(path)
+				realDir, err := filepath.EvalSymlinks(dir)
+				if err != nil {
+					return fmt.Errorf("failed to verify parent directory integrity: %w", err)
+				}
+				if filepath.Clean(realDir) != filepath.Clean(dir) {
+					return fmt.Errorf("access denied: path integrity violation (parent directory changed)")
+				}
+			} else {
+				return fmt.Errorf("failed to verify path integrity: %w", err)
+			}
+		} else {
+			// File exists.
+			if filepath.Clean(realPath) != filepath.Clean(path) {
+				return fmt.Errorf("access denied: path integrity violation (symlink detected)")
+			}
+		}
+	}
+
+	// 2. Try to create the file exclusively first.
+	// This covers the case where we are creating a new file.
+	// O_CREATE|O_EXCL fails if the file exists.
+	f, err := fs.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_EXCL, perm)
+	if err == nil {
+		defer f.Close()
+		_, err = f.Write(content)
+		return err
+	}
+
+	if !os.IsExist(err) {
+		return err // Real error
+	}
+
+	// 3. File exists. We need to overwrite it safely.
+	// Race condition: user swaps file with symlink between Lstat and OpenFile.
+	// Mitigation: Open-Verify-Truncate dance.
+
+	var lstatInfo os.FileInfo
+	if lstater, ok := fs.(afero.Lstater); ok {
+		var supported bool
+		lstatInfo, supported, err = lstater.LstatIfPossible(path)
+		if err != nil {
+			return err
+		}
+		if supported {
+			if lstatInfo.Mode()&os.ModeSymlink != 0 {
+				return fmt.Errorf("access denied: cannot overwrite symlink %s", path)
+			}
+		} else {
+			lstatInfo = nil // Not supported, can't verify
+		}
+	}
+
+	// Open the file WITHOUT truncation first to get a handle to whatever is there.
+	f, err = fs.OpenFile(path, os.O_WRONLY, perm)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	// Verify that the file we opened is the same one we Lstat-ed (if we did).
+	if lstatInfo != nil {
+		fInfo, err := f.Stat()
+		if err != nil {
+			return err
+		}
+		if !os.SameFile(lstatInfo, fInfo) {
+			return fmt.Errorf("security violation: file identity changed during open (TOCTOU detected)")
+		}
+	}
+
+	// Now that we verified identity, it is safe to truncate.
+	if err := f.Truncate(0); err != nil {
+		return fmt.Errorf("failed to truncate file: %w", err)
+	}
+
+	_, err = f.Write(content)
+	return err
 }
 
 func moveFileTool(prov provider.Provider, fs afero.Fs, readOnly bool) filesystemToolDef {
