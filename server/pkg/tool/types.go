@@ -2186,6 +2186,10 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 	startTime := time.Now()
 	limit := getMaxCommandOutputSize()
 
+	// ⚡ BOLT: Reuse Redactor to avoid re-sorting secrets and rebuilding replacer multiple times.
+	// Randomized Selection from Top 5 High-Impact Targets
+	redactor := util.NewSecretRedactor(secrets)
+
 	// Differentiate between JSON and environment variable-based communication
 	if t.service.GetCommunicationProtocol() == configv1.CommandLineUpstreamService_COMMUNICATION_PROTOCOL_JSON {
 		stdin, stdout, stderr, _, err := executor.ExecuteWithStdIO(ctx, t.service.GetCommand(), args, t.service.GetWorkingDirectory(), env)
@@ -2221,7 +2225,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 		var result map[string]interface{}
 		if err := fastJSON.NewDecoder(io.LimitReader(stdout, limit)).Decode(&result); err != nil {
 			<-stderrDone
-			return nil, fmt.Errorf("failed to execute JSON CLI command: %w. Stderr: %s", err, stderrBuf.String())
+			return nil, fmt.Errorf("failed to execute JSON CLI command: %w. Stderr: %s", err, redactor.Redact(stderrBuf.String()))
 		}
 		return result, nil
 	}
@@ -2258,10 +2262,6 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 	} else if exitCode != 0 {
 		status = consts.CommandStatusError
 	}
-
-	// ⚡ BOLT: Reuse Redactor to avoid re-sorting secrets and rebuilding replacer multiple times.
-	// Randomized Selection from Top 5 High-Impact Targets
-	redactor := util.NewSecretRedactor(secrets)
 
 	result := map[string]interface{}{
 		"command":         t.service.GetCommand(),
@@ -2549,6 +2549,10 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	startTime := time.Now()
 	limit := getMaxCommandOutputSize()
 
+	// ⚡ BOLT: Reuse Redactor to avoid re-sorting secrets and rebuilding replacer multiple times.
+	// Randomized Selection from Top 5 High-Impact Targets
+	redactor := util.NewSecretRedactor(secrets)
+
 	// Differentiate between JSON and environment variable-based communication
 	if t.service.GetCommunicationProtocol() == configv1.CommandLineUpstreamService_COMMUNICATION_PROTOCOL_JSON {
 		stdin, stdout, stderr, _, err := executor.ExecuteWithStdIO(ctx, t.service.GetCommand(), args, t.service.GetWorkingDirectory(), env)
@@ -2584,7 +2588,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		var result map[string]interface{}
 		if err := fastJSON.NewDecoder(io.LimitReader(stdout, limit)).Decode(&result); err != nil {
 			<-stderrDone
-			return nil, fmt.Errorf("failed to execute JSON CLI command: %w. Stderr: %s", err, stderrBuf.String())
+			return nil, fmt.Errorf("failed to execute JSON CLI command: %w. Stderr: %s", err, redactor.Redact(stderrBuf.String()))
 		}
 		return result, nil
 	}
@@ -2621,10 +2625,6 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	} else if exitCode != 0 {
 		status = consts.CommandStatusError
 	}
-
-	// ⚡ BOLT: Reuse Redactor to avoid re-sorting secrets and rebuilding replacer multiple times.
-	// Randomized Selection from Top 5 High-Impact Targets
-	redactor := util.NewSecretRedactor(secrets)
 
 	result := map[string]interface{}{
 		"command":         t.service.GetCommand(),
