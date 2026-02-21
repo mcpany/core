@@ -34,7 +34,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             name: "User Service",
             version: "v1.0",
             http_service: {
-                address: "http://localhost:50051", // Dummy address
+                address: "http://example.com", // Dummy address
                 tools: [
                     { name: "get_user", description: "Get user details", call_id: "get_user_call" }
                 ],
@@ -52,7 +52,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             name: "Math",
             version: "v1.0",
             http_service: {
-                address: "http://localhost:8080", // Dummy
+                address: "http://example.com", // Dummy
                 tools: [
                     { name: "calculator", description: "calc", call_id: "calc_call" }
                 ],

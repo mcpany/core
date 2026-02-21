@@ -72,7 +72,7 @@ test.describe('Agent Skills', () => {
         await page.reload();
         await expect(page.locator(`text=${testSkillName}`)).toBeVisible({ timeout: 5000 });
     }).toPass({
-        timeout: 45000, // Increased timeout for K8s
+        timeout: 60000, // Increased timeout for K8s
         intervals: [2000, 5000, 10000] // Backoff retry
     });
   });

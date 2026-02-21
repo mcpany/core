@@ -136,13 +136,14 @@ export function PlaygroundClientPro() {
     }
   }, [displayMessages]);
 
-  const handleSend = async () => {
-    if (!input.trim()) return;
+  const handleSend = async (overrideInput?: string) => {
+    const textToSend = overrideInput || input;
+    if (!textToSend.trim()) return;
 
     const userMsg: Message = {
       id: Date.now().toString(),
       type: "user",
-      content: input,
+      content: textToSend,
       timestamp: new Date(),
     };
 
@@ -151,7 +152,7 @@ export function PlaygroundClientPro() {
     setIsLoading(true);
     setShowSuggestions(false);
 
-    processResponse(input);
+    processResponse(textToSend);
   };
 
   const handleToolFormSubmit = (data: Record<string, unknown>) => {
@@ -159,6 +160,8 @@ export function PlaygroundClientPro() {
     const command = `${toolToConfigure.name} ${JSON.stringify(data)}`;
     setToolToConfigure(null);
     setInput(command);
+    // Auto-execute the command
+    handleSend(command);
   };
 
   const handleInputChange = (value: string) => {
