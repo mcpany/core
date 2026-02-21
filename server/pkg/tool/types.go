@@ -73,11 +73,15 @@ var fastJSON = jsoniter.ConfigCompatibleWithStandardLibrary
 type Tool interface {
 	// Tool returns the protobuf definition of the tool.
 	//
+	// Summary: Retrieves the underlying protobuf definition.
+	//
 	// Returns:
 	//   - *v1.Tool: The protobuf tool definition.
 	Tool() *v1.Tool
 
 	// MCPTool returns the MCP tool definition.
+	//
+	// Summary: Retrieves the MCP-compliant tool definition.
 	//
 	// Returns:
 	//   - *mcp.Tool: The MCP tool definition.
@@ -370,6 +374,8 @@ func NewGRPCTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, met
 
 // Tool returns the protobuf definition of the gRPC tool.
 //
+// Summary: Retrieves the underlying protobuf definition.
+//
 // Returns:
 //   - *v1.Tool: The underlying protobuf definition.
 func (t *GRPCTool) Tool() *v1.Tool {
@@ -377,6 +383,8 @@ func (t *GRPCTool) Tool() *v1.Tool {
 }
 
 // MCPTool returns the MCP-compliant tool definition.
+//
+// Summary: Retrieves the MCP-compliant tool definition.
 //
 // It lazily converts the internal protobuf definition to the MCP format on first access.
 //
@@ -643,6 +651,8 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 
 // Tool returns the protobuf definition of the HTTP tool.
 //
+// Summary: Retrieves the underlying protobuf definition.
+//
 // Returns:
 //   - *v1.Tool: The underlying protobuf definition.
 func (t *HTTPTool) Tool() *v1.Tool {
@@ -650,6 +660,8 @@ func (t *HTTPTool) Tool() *v1.Tool {
 }
 
 // MCPTool returns the MCP-compliant tool definition.
+//
+// Summary: Retrieves the MCP-compliant tool definition.
 //
 // It lazily converts the internal protobuf definition to the MCP format on first access.
 //
@@ -1344,6 +1356,8 @@ func NewMCPTool(tool *v1.Tool, client client.MCPClient, callDefinition *configv1
 
 // Tool returns the protobuf definition of the MCP tool.
 //
+// Summary: Retrieves the underlying protobuf definition.
+//
 // Returns:
 //   - *v1.Tool: The underlying protobuf definition.
 func (t *MCPTool) Tool() *v1.Tool {
@@ -1351,6 +1365,8 @@ func (t *MCPTool) Tool() *v1.Tool {
 }
 
 // MCPTool returns the MCP-compliant tool definition.
+//
+// Summary: Retrieves the MCP-compliant tool definition.
 //
 // It lazily converts the internal protobuf definition to the MCP format on first access.
 //
@@ -1587,6 +1603,8 @@ func NewOpenAPITool(tool *v1.Tool, client client.HTTPClient, parameterDefs map[s
 
 // Tool returns the protobuf definition of the OpenAPI tool.
 //
+// Summary: Retrieves the underlying protobuf definition.
+//
 // Returns:
 //   - *v1.Tool: The underlying protobuf definition.
 func (t *OpenAPITool) Tool() *v1.Tool {
@@ -1594,6 +1612,8 @@ func (t *OpenAPITool) Tool() *v1.Tool {
 }
 
 // MCPTool returns the MCP-compliant tool definition.
+//
+// Summary: Retrieves the MCP-compliant tool definition.
 //
 // It lazily converts the internal protobuf definition to the MCP format on first access.
 //
@@ -1922,6 +1942,8 @@ func NewLocalCommandTool(
 
 // Tool returns the protobuf definition of the command-line tool.
 //
+// Summary: Retrieves the underlying protobuf definition.
+//
 // Returns:
 //   - *v1.Tool: The underlying protobuf definition.
 func (t *LocalCommandTool) Tool() *v1.Tool {
@@ -1929,6 +1951,8 @@ func (t *LocalCommandTool) Tool() *v1.Tool {
 }
 
 // MCPTool returns the MCP-compliant tool definition.
+//
+// Summary: Retrieves the MCP-compliant tool definition.
 //
 // It lazily converts the internal protobuf definition to the MCP format on first access.
 //
@@ -2272,6 +2296,8 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 
 // Tool returns the protobuf definition of the command-line tool.
 //
+// Summary: Retrieves the underlying protobuf definition.
+//
 // Returns:
 //   - *v1.Tool: The underlying protobuf definition.
 func (t *CommandTool) Tool() *v1.Tool {
@@ -2279,6 +2305,8 @@ func (t *CommandTool) Tool() *v1.Tool {
 }
 
 // MCPTool returns the MCP-compliant tool definition.
+//
+// Summary: Retrieves the MCP-compliant tool definition.
 //
 // It lazily converts the internal protobuf definition to the MCP format on first access.
 //

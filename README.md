@@ -7,7 +7,7 @@
 
 **What is this project?**
 
-**MCP Any** is a universal adapter that instantly turns your existing APIs into [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) compliant tools. It acts as a configuration-driven gateway, bridging the gap between your backend services (REST, gRPC, OpenAPI, Command-line) and AI agents.
+**MCP Any** is a universal adapter that instantly turns your existing APIs into [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) compliant tools. It acts as a configuration-driven gateway, bridging the gap between your backend services (REST, gRPC, OpenAPI, GraphQL, Command-line) and AI agents.
 
 **Why does it exist?**
 
@@ -26,8 +26,10 @@ MCP Any utilizes a modular, adapter-based architecture to decouple the MCP proto
 3.  **Upstream Adapters**: Specialized implementations of the `Upstream` interface that translate MCP requests into protocol-specific calls:
     *   **HTTP**: Proxies requests to REST/JSON APIs with powerful parameter mapping and transformation templates.
     *   **gRPC**: Uses reflection to dynamically discover and invoke methods on gRPC services without generating code.
+    *   **GraphQL**: Adapts GraphQL queries and mutations into MCP tools.
     *   **Command**: Safely executes local CLI tools or scripts in a controlled environment.
     *   **Filesystem**: Provides secure access to local or remote (S3, GCS) filesystems.
+    *   **MCP**: Proxies requests to downstream MCP servers, enabling aggregation.
 4.  **Policy Engine & Middleware**: A security layer that enforces authentication, rate limiting, DLP (Data Loss Prevention), and audit logging.
 
 ```mermaid
@@ -45,14 +47,14 @@ graph TD
         Upstream -->|Impl| HTTP[HTTP Adapter]
         Upstream -->|Impl| GRPC[gRPC Adapter]
         Upstream -->|Impl| CMD[Command Adapter]
-        Upstream -->|Impl| FS[Filesystem Adapter]
+        Upstream -->|Impl| GQL[GraphQL Adapter]
     end
 
     subgraph "Upstream Services"
         HTTP -->|REST| ServiceB[REST API]
         GRPC -->|gRPC| ServiceA[gRPC Service]
         CMD -->|Exec| ServiceD[Local Command]
-        FS -->|IO| ServiceE[Filesystem]
+        GQL -->|Query| ServiceE[GraphQL API]
     end
 ```
 

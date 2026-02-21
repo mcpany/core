@@ -11,8 +11,11 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// Service handles the business logic for the prompts feature. It provides
-// methods for listing available prompts and retrieving a specific prompt by
+// Service handles the business logic for the prompts feature.
+//
+// Summary: Business logic for prompts.
+//
+// It provides methods for listing available prompts and retrieving a specific prompt by
 // name.
 type Service struct {
 	promptManager ManagerInterface
