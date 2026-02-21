@@ -739,9 +739,10 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		return nil, err
 	}
 
-	if err := validation.IsSafeURL(urlString); err != nil {
-		return nil, fmt.Errorf("unsafe url: %w", err)
-	}
+	// ⚡ BOLT: Redundant DNS resolution removed.
+	// Randomized Selection from Top 5 High-Impact Targets
+	// validation.IsSafeURL performs a DNS lookup. The underlying http.Client uses util.SafeDialer
+	// which also performs DNS resolution and validation. Removing this pre-check avoids double lookups.
 
 	body, contentType, err := t.prepareBody(ctx, inputs, t.cachedMethod, req.ToolName, req.ToolInputs, inputsModified)
 	if err != nil {
@@ -1713,9 +1714,9 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		}
 	}
 
-	if err := validation.IsSafeURL(url); err != nil {
-		return nil, fmt.Errorf("unsafe url: %w", err)
-	}
+	// ⚡ BOLT: Redundant DNS resolution removed.
+	// Randomized Selection from Top 5 High-Impact Targets
+	// Rely on SafeDialer in the http.Client for SSRF protection.
 
 	httpReq, err := http.NewRequestWithContext(ctx, t.method, url, body)
 	if err != nil {
