@@ -3796,7 +3796,31 @@ func checkNodePerlPhpInjection(val, base string, quoteLevel int) error {
 			// sophisticated interpolation attacks or misinterpretation of quote context makes it risky.
 			// Blocking "qx" is aggressive but necessary for strict security on Perl input.
 			if quoteLevel == 0 || quoteLevel == 1 || quoteLevel == 3 {
-				return fmt.Errorf("shell injection detected: perl qx execution")
+				// We need to check if 'qx' is part of a word (e.g., 'uniqx') or a standalone operator.
+				// If 'qx' is preceded by a word character, it is likely part of an identifier and safe.
+				// We scan for all occurrences of "qx".
+				idx := strings.Index(val, "qx")
+				for idx != -1 {
+					// Check preceding character
+					isPrecededByWordChar := false
+					if idx > 0 {
+						if isWordChar(val[idx-1]) {
+							isPrecededByWordChar = true
+						}
+					}
+
+					if !isPrecededByWordChar {
+						// Found a potential "qx" operator (at start or preceded by non-word char)
+						return fmt.Errorf("shell injection detected: perl qx execution")
+					}
+
+					// Continue search
+					next := strings.Index(val[idx+2:], "qx")
+					if next == -1 {
+						break
+					}
+					idx += 2 + next
+				}
 			}
 		}
 
