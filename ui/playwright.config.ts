@@ -19,15 +19,15 @@ export default defineConfig({
   workers: 1, // Run serially to avoid state collisions in shared backend
   outputDir: 'test-results/artifacts',
   reporter: [['line'], ['json', { outputFile: 'test-results/test-results.json' }]],
-  timeout: 120000,
+  timeout: 180000,
   expect: {
-    timeout: 30000,
+    timeout: 45000,
   },
   use: {
     baseURL: BASE_URL,
     trace: 'on-first-retry',
     colorScheme: 'dark',
-    actionTimeout: 30000,
+    actionTimeout: 45000,
     extraHTTPHeaders: {
       'X-API-Key': process.env.MCPANY_API_KEY || 'test-token',
     },

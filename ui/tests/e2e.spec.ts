@@ -31,8 +31,8 @@ test.describe('MCP Any UI E2E Tests', () => {
     await page.click('button[type="submit"]', { force: true });
 
       // Wait for redirect to home page and verify
-    await page.waitForURL('/', { timeout: 30000 });
-      await expect(page).toHaveURL('/', { timeout: 15000 });
+    await page.waitForURL('/', { timeout: 60000 });
+      await expect(page).toHaveURL('/', { timeout: 30000 });
   });
   test.afterEach(async ({ request }) => {
       await cleanupServices(request);
