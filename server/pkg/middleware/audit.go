@@ -263,21 +263,47 @@ func (m *AuditMiddleware) writeLog(ctx context.Context, store audit.Store, entry
 
 // SubscribeWithHistory returns a channel that will receive broadcast messages,
 // and the current history of messages.
+//
+// Summary: Subscribes to audit events with history.
+//
+// Returns:
+//   - (chan any): A channel receiving new audit entries.
+//   - ([]any): A slice of historical audit entries.
 func (m *AuditMiddleware) SubscribeWithHistory() (chan any, []any) {
 	return m.broadcaster.SubscribeWithHistory()
 }
 
 // GetHistory returns the current broadcast history.
+//
+// Summary: Retrieves the audit history from the broadcaster.
+//
+// Returns:
+//   - ([]any): A slice of audit entries.
 func (m *AuditMiddleware) GetHistory() []any {
 	return m.broadcaster.GetHistory()
 }
 
 // Unsubscribe removes a subscriber channel.
+//
+// Summary: Unsubscribes from audit events.
+//
+// Parameters:
+//   - ch (chan any): The channel to unsubscribe.
 func (m *AuditMiddleware) Unsubscribe(ch chan any) {
 	m.broadcaster.Unsubscribe(ch)
 }
 
 // Read reads audit entries from the underlying store.
+//
+// Summary: Reads historical audit logs from storage.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - filter (audit.Filter): The filter criteria for querying logs.
+//
+// Returns:
+//   - ([]audit.Entry): A slice of audit entries matching the filter.
+//   - (error): An error if reading fails.
 func (m *AuditMiddleware) Read(ctx context.Context, filter audit.Filter) ([]audit.Entry, error) {
 	m.mu.RLock()
 	store := m.store
@@ -291,7 +317,10 @@ func (m *AuditMiddleware) Read(ctx context.Context, filter audit.Filter) ([]audi
 
 // Close closes the underlying store.
 //
-// Returns an error if the operation fails.
+// Summary: Closes the audit store.
+//
+// Returns:
+//   - (error): An error if the operation fails.
 func (m *AuditMiddleware) Close() error {
 	m.mu.Lock()
 	defer m.mu.Unlock()

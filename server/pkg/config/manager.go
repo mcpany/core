@@ -53,10 +53,10 @@ type UpstreamServiceManager struct {
 // Summary: Initializes a new UpstreamServiceManager with the specified profiles.
 //
 // Parameters:
-//   - enabledProfiles: []string. A list of profile names that are active. Services must match one of these profiles to be loaded.
+//   - enabledProfiles ([]string): A list of profile names that are active. Services must match one of these profiles to be loaded.
 //
 // Returns:
-//   - *UpstreamServiceManager: A pointer to a fully initialized UpstreamServiceManager.
+//   - (*UpstreamServiceManager): A pointer to a fully initialized UpstreamServiceManager.
 func NewUpstreamServiceManager(enabledProfiles []string) *UpstreamServiceManager {
 	if len(enabledProfiles) == 0 {
 		enabledProfiles = []string{"default"}
@@ -82,12 +82,12 @@ func NewUpstreamServiceManager(enabledProfiles []string) *UpstreamServiceManager
 // Summary: Processes local and remote service configurations, merging them based on priority and name.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the operation.
-//   - config: *configv1.McpAnyServerConfig. The main server configuration containing service definitions and collection references.
+//   - ctx (context.Context): The context for the operation.
+//   - config (*configv1.McpAnyServerConfig): The main server configuration containing service definitions and collection references.
 //
 // Returns:
-//   - []*configv1.UpstreamServiceConfig: A slice of merged service configurations.
-//   - error: An error if any critical failure occurs during loading or merging.
+//   - ([]*configv1.UpstreamServiceConfig): A slice of merged service configurations.
+//   - (error): An error if any critical failure occurs during loading or merging.
 //
 // Side Effects:
 //   - May clear existing services if a replace strategy is configured.
