@@ -53,14 +53,14 @@ func (s *RedisStrategy) Create(_ context.Context, serviceID, limitScopeKey, part
 	return NewRedisLimiterWithClient(client, serviceID, limitScopeKey, partitionKey, config), nil
 }
 
-func (s *RedisStrategy) getRedisClient(serviceID string, config *bus.RedisBus) (*redis.Client, error) { //nolint:unparam
+func (s *RedisStrategy) getRedisClient(_ string, config *bus.RedisBus) (*redis.Client, error) { //nolint:unparam
 	configHash := config.GetAddress() + "|" + config.GetPassword() + "|" + strconv.Itoa(int(config.GetDb()))
 
-	if val, ok := s.redisClients.Load(serviceID); ok {
+	// ⚡ BOLT: Key by configHash instead of serviceID to share connection pools across services.
+	// Randomized Selection from Top 5 High-Impact Targets
+	if val, ok := s.redisClients.Load(configHash); ok {
 		if cached, ok := val.(*cachedRedisClient); ok {
-			if cached.configHash == configHash {
-				return cached.client, nil
-			}
+			return cached.client, nil
 		}
 	}
 
@@ -70,7 +70,7 @@ func (s *RedisStrategy) getRedisClient(serviceID string, config *bus.RedisBus) (
 		DB:       int(config.GetDb()),
 	}
 	client := redisClientCreator(opts)
-	s.redisClients.Store(serviceID, &cachedRedisClient{
+	s.redisClients.Store(configHash, &cachedRedisClient{
 		client:     client,
 		configHash: configHash,
 	})
