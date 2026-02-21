@@ -158,6 +158,16 @@ func SetAllowedPaths(paths []string) {
 //
 // Summary: Checks for sensitive file patterns.
 var IsSensitivePath = func(path string) error {
+	// Sentinel Security Update: Block system directories
+	// We block /proc, /sys, and /dev to prevent information leakage (e.g. environment variables) and device access.
+	// We check this on the full path. IsAllowedPath calls this on the absolute resolved path, catching these cases.
+	slashPath := filepath.ToSlash(path)
+	for _, sysDir := range []string{"/proc", "/sys", "/dev"} {
+		if slashPath == sysDir || strings.HasPrefix(slashPath, sysDir+"/") {
+			return fmt.Errorf("access to system directory %q is denied", sysDir)
+		}
+	}
+
 	base := filepath.Base(path)
 	baseLower := strings.ToLower(base)
 

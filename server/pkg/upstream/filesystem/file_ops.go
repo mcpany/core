@@ -6,6 +6,7 @@ package filesystem
 import (
 	"context"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 
@@ -52,11 +53,25 @@ func readFileTool(prov provider.Provider, fs afero.Fs) filesystemToolDef {
 				return nil, fmt.Errorf("file size exceeds limit of %d bytes", maxFileSize)
 			}
 
-			content, err := afero.ReadFile(fs, resolvedPath)
+			// Use LimitReader to enforce size limit even if Stat() reported a small size (e.g. /dev/zero, /proc files)
+			f, err := fs.Open(resolvedPath)
 			if err != nil {
 				return nil, err
 			}
-			return map[string]interface{}{"content": string(content)}, nil
+			defer func() { _ = f.Close() }()
+
+			// Read up to limit + 1 to detect if file is larger
+			reader := io.LimitedReader{R: f, N: maxFileSize + 1}
+			contentBytes, err := io.ReadAll(&reader)
+			if err != nil {
+				return nil, err
+			}
+
+			if int64(len(contentBytes)) > maxFileSize {
+				return nil, fmt.Errorf("file size exceeds limit of %d bytes", maxFileSize)
+			}
+
+			return map[string]interface{}{"content": string(contentBytes)}, nil
 		},
 	}
 }
