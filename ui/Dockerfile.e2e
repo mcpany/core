@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 # Use official Playwright image directly to avoid dependency on intermediate CI images
+# This ensures the build is self-contained and does not rely on missing registry images.
 FROM mcr.microsoft.com/playwright:v1.58.0-jammy
 
 WORKDIR /work/ui
@@ -10,7 +11,9 @@ WORKDIR /work/ui
 COPY ui/package.json ui/package-lock.json* ui/.npmrc* ./
 
 # Install dependencies
-RUN npm install --package-lock=false --registry=https://registry.npmjs.org/
+# Using registry explicitly to avoid potential configuration issues
+# Use npm ci to ensure deterministic builds and supply chain security
+RUN npm ci --registry=https://registry.npmjs.org/
 
 # Copy the rest of the UI code
 COPY ui/ .
