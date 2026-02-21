@@ -93,6 +93,7 @@ func (b *Broadcaster) Unsubscribe(ch chan any) {
 
 // Broadcast sends a message to all subscribers.
 // This method is non-blocking; if a subscriber's channel is full, the message is dropped for that subscriber.
+// ⚡ BOLT: Accepts 'any' to avoid serialization overhead in consumers.
 func (b *Broadcaster) Broadcast(msg any) {
 	// We make a copy of msg to ensure history persists even if caller reuses buffer?
 	// For 'any', we assume it's a value type (struct) or immutable reference.
