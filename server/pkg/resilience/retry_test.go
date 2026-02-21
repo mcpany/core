@@ -150,4 +150,31 @@ func TestRetry(t *testing.T) {
 
 		require.Less(t, elapsed, 600*time.Millisecond, "should not wait after the last attempt")
 	})
+
+	t.Run("context_cancellation", func(t *testing.T) {
+		config := &configv1.RetryConfig{}
+		config.SetNumberOfRetries(3)
+		config.SetBaseBackoff(durationpb.New(1 * time.Second)) // Long backoff
+		retry := NewRetry(config)
+
+		ctx, cancel := context.WithCancel(context.Background())
+
+		work := func(_ context.Context) error {
+			return errors.New("error")
+		}
+
+		// Cancel the context after a short delay, much shorter than backoff
+		go func() {
+			time.Sleep(100 * time.Millisecond)
+			cancel()
+		}()
+
+		start := time.Now()
+		err := retry.Execute(ctx, work)
+		elapsed := time.Since(start)
+
+		require.Error(t, err)
+		require.Equal(t, context.Canceled, err)
+		require.Less(t, elapsed, 500*time.Millisecond, "should return immediately on context cancel")
+	})
 }
