@@ -1,0 +1,16 @@
+# Copyright 2025 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+global_settings:
+  allowed_origins:
+    - "*"
+  profile_definitions:
+    - name: "default"
+  db_path: "/tmp/mcpany-empty.db"
+  debugger:
+    enabled: true
+  middlewares:
+    - name: "auth"
+      disabled: true
+
+upstream_services: []
