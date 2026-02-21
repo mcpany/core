@@ -1,26 +1,25 @@
 # Coverage Intervention Report
 
 ## Target
-**File:** `server/pkg/mcpserver/server.go`
-**Focus:** `CallTool` result handling and conversion logic (`convertMapToCallToolResult`).
+**File:** `server/pkg/sidecar/webhooks/handlers.go`
+**Focus:** `truncateRecursive` (UTF-8 handling) and `PaginateHandler` (Pagination logic).
 
 ## Risk Profile
-- **High Risk:** Core business logic responsible for executing tools and processing their results. It handles sensitive data (resources, blobs) and transforms untyped tool outputs into typed MCP protocol messages.
-- **Metric:** Identified a critical bug in fallback logic where invalid tool outputs (missing resource URI) caused server hangs/errors due to partial unmarshalling.
-- **Complexity:** High cyclomatic complexity in `convertMapToCallToolResult` and `CallTool`.
-- **Why Selected:** While the codebase is generally well-tested, this specific area handles dynamic/untyped data from tools, making it prone to edge cases that static types don't catch.
+- **High Risk:** This code modifies user data in transit (webhooks). Incorrect handling can corrupt data (UTF-8) or break functionality (Pagination).
+- **Metric:** High complexity due to recursion and type switching on `any`.
+- **Why Selected:**
+    - **Critical Bug:** `truncateRecursive` was using byte-slicing on strings, which corrupts multi-byte characters (e.g., emojis, Asian scripts), resulting in invalid UTF-8.
+    - **Functionality Gap:** `PaginateHandler` hardcoded page 1, making it impossible to access subsequent pages of content.
 
 ## New Coverage
-- **File:** `server/pkg/mcpserver/server_resource_test.go`
+- **File:** `server/pkg/sidecar/webhooks/handlers_comprehensive_test.go`
 - **Scenarios Covered:**
-    - **Valid Resource with Text content:** Verifies correct conversion of text resources.
-    - **Valid Resource with Blob content (Base64 string):** Verifies correct decoding and conversion of base64 blobs.
-    - **Valid Resource with Blob content (Byte slice):** Verifies correct handling of raw byte blobs.
-    - **Invalid Resource handling (missing URI):** Verifies that malformed resources are rejected gracefully and fall back to raw data handling (JSON string) instead of creating invalid structs. **(Bug Fix Verified)**
-    - **Invalid Resource handling (invalid Base64):** Verifies that invalid base64 blobs are handled gracefully.
-    - **Logging verification:** Ensured sensitive blob data is redacted in logs (replaced with summary/size) to prevent data leaks.
+    - **UTF-8 Truncation:** Verifies correct truncation of strings containing emojis and multi-byte characters (using rune counting instead of byte counting).
+    - **Pagination Logic:** Verifies that `page` query parameter is respected and correct slices are returned for page 2, 3, etc.
+    - **Edge Cases:** Empty strings, strings equal to max length, strings slightly over max length, negative page numbers.
+    - **Deep Recursion:** Verifies that nested maps and lists are correctly processed recursively.
 
 ## Verification
-- **New Tests:** `TestServer_CallTool_ResourceResult` and `TestServer_CallTool_Logging` passed.
-- **Regression:** `go test ./server/pkg/...` passed (verifying unit and integration tests for the server package).
-- **Bug Fix:** Removed dangerous fallback JSON unmarshalling logic in `server.go` that allowed creation of invalid resource structs.
+- **New Tests:** `TestTruncateHandler_Comprehensive` and `TestPaginateHandler_Comprehensive` passed.
+- **Regression:** `make test` (specifically `go test ./server/...`) passed, ensuring no regressions in existing functionality.
+- **Bug Fix:** Fixed `truncateRecursive` to use `[]rune` conversion. Fixed `PaginateHandler` to parse `page` query parameter.
