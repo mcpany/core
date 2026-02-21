@@ -1,16 +1,22 @@
 # Copyright 2025 Author(s) of MCP Any
 # SPDX-License-Identifier: Apache-2.0
 
-# Use pre-prepared runner image
-FROM iowoi/mcpany-runner-ui:latest
+# Use standard Playwright image instead of custom runner which is missing/broken
+FROM mcr.microsoft.com/playwright:v1.58.0-jammy
 
 WORKDIR /work/ui
 
-# Dependencies are already installed in the base image
+# Copy package files first for caching
+COPY ui/package.json ui/package-lock.json* ui/.npmrc* ./
+
+# Install dependencies explicitly since base image is generic
+# Use --ignore-scripts to avoid potential issues during build if not needed
+RUN npm install --package-lock=false --registry=https://registry.npmjs.org/
 
 # Copy the rest of the UI code
 COPY ui/ .
 COPY proto/ /work/proto/
+
 # Symlink node_modules so proto files can find dependencies
 RUN ln -s /work/ui/node_modules /work/proto/node_modules
 # Copy proto folder into ui (instead of symlink) to avoid filesystem root issues
