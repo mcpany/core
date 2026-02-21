@@ -337,8 +337,10 @@ func (m *Manager) SeedTrafficHistory(points []TrafficPoint) {
 	// We should map them to today's timestamps.
 
 	now := time.Now()
-	// Clear current history
+	// Clear current history and sessions to ensure clean stats
 	m.trafficHistory = make(map[int64]*MinuteStats)
+	m.sessions = make(map[string]*SessionStats)
+
 	log := logging.GetLogger()
 	log.Info("Seeding traffic history", "points", len(points))
 
