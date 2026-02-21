@@ -1,6 +1,8 @@
 # Copyright 2025 Author(s) of MCP Any
 # SPDX-License-Identifier: Apache-2.0
 
+# Use the official Playwright image to ensure CI stability and availability.
+# Replaces usage of private/missing 'iowoi/mcpany-runner-ui:latest'.
 FROM mcr.microsoft.com/playwright:v1.58.0-jammy
 
 WORKDIR /work/ui
