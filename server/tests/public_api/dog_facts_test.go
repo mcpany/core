@@ -22,20 +22,27 @@ import (
 )
 
 func TestUpstreamService_DogFacts(t *testing.T) {
-	// t.SkipNow()
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 
 	t.Log("INFO: Starting E2E Test Scenario for Dog Facts Server...")
 	t.Parallel()
 
-	// --- 1. Start MCPANY Server ---
+	// --- 1. Start Mock Upstream Server ---
+	routes := map[string]string{
+		"/api/facts": `{"facts":["Dogs are great"],"success":true}`,
+	}
+	handler := integration.CreateSimpleMockHandler(t, routes)
+	mockServer := integration.StartMockUpstreamServer(t, handler)
+	defer mockServer.CleanupFunc()
+
+	// --- 2. Start MCPANY Server ---
 	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2EDogFactsServerTest")
 	defer mcpAnyTestServerInfo.CleanupFunc()
 
-	// --- 2. Register Dog Facts Server with MCPANY ---
+	// --- 3. Register Dog Facts Server with MCPANY ---
 	const dogFactsServiceID = "e2e_dogfacts"
-	dogFactsServiceEndpoint := "https://dog-api.kinduff.com"
+	dogFactsServiceEndpoint := mockServer.URL
 	t.Logf("INFO: Registering '%s' with MCPANY at endpoint %s...", dogFactsServiceID, dogFactsServiceEndpoint)
 	registrationGRPCClient := mcpAnyTestServerInfo.RegistrationClient
 

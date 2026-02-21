@@ -22,20 +22,27 @@ import (
 )
 
 func TestUpstreamService_FunTranslations(t *testing.T) {
-	t.SkipNow()
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 
 	t.Log("INFO: Starting E2E Test Scenario for Fun Translations Server...")
 	t.Parallel()
 
-	// --- 1. Start MCPANY Server ---
+	// --- 1. Start Mock Upstream Server ---
+	routes := map[string]string{
+		"/translate/yoda.json": `{"contents": {"translated": "Lost a planet, Master Obi-Wan has.", "text": "Master Obiwan has lost a planet.", "translation": "yoda"}}`,
+	}
+	handler := integration.CreateSimpleMockHandler(t, routes)
+	mockServer := integration.StartMockUpstreamServer(t, handler)
+	defer mockServer.CleanupFunc()
+
+	// --- 2. Start MCPANY Server ---
 	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2EFunTranslationsServerTest")
 	defer mcpAnyTestServerInfo.CleanupFunc()
 
-	// --- 2. Register Fun Translations Server with MCPANY ---
+	// --- 3. Register Fun Translations Server with MCPANY ---
 	const funTranslationsServiceID = "e2e_funtranslations"
-	funTranslationsServiceEndpoint := "https://api.funtranslations.com"
+	funTranslationsServiceEndpoint := mockServer.URL
 	t.Logf("INFO: Registering '%s' with MCPANY at endpoint %s...", funTranslationsServiceID, funTranslationsServiceEndpoint)
 	registrationGRPCClient := mcpAnyTestServerInfo.RegistrationClient
 
@@ -44,17 +51,6 @@ func TestUpstreamService_FunTranslations(t *testing.T) {
 		Id:           proto.String(callID),
 		EndpointPath: proto.String("/translate/yoda.json"),
 		Method:       configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value["HTTP_METHOD_POST"]).Enum(),
-		Parameters: []*configv1.HttpParameterMapping{
-			configv1.HttpParameterMapping_builder{
-				Schema: configv1.ParameterSchema_builder{
-					Name: proto.String("text"),
-					Type: configv1.ParameterType_STRING.Enum(),
-				}.Build(),
-			}.Build(),
-		},
-		InputTransformer: configv1.InputTransformer_builder{
-			Template: proto.String("{\"text\": \"{{.input.text}}\"}"),
-		}.Build(),
 	}.Build()
 
 	toolDef := configv1.ToolDefinition_builder{
@@ -129,6 +125,8 @@ func TestUpstreamService_FunTranslations(t *testing.T) {
 	require.Len(t, res.Content, 1, "Expected exactly one content item")
 	textContent, ok := res.Content[0].(*mcp.TextContent)
 	require.True(t, ok, "Expected text content")
+
+	t.Logf("Received response text: %s", textContent.Text)
 
 	var funTranslationsResponse map[string]interface{}
 	err = json.Unmarshal([]byte(textContent.Text), &funTranslationsResponse)

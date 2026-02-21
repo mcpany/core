@@ -267,5 +267,121 @@ func (s *Seeder) getBuiltInTemplates() []*configv1.ServiceTemplate {
 				}.Build(),
 			}.Build(),
 		}.Build(),
+		// Generic Database (Postgres)
+		configv1.ServiceTemplate_builder{
+			Id:          proto.String("postgres"),
+			Name:        proto.String("PostgreSQL"),
+			Description: proto.String("Standard SQL Database"),
+			Icon:        proto.String("database"),
+			Tags:        []string{"database"},
+			ServiceConfig: configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("postgres-db"),
+				SqlService: configv1.SqlUpstreamService_builder{
+					Driver: proto.String("postgres"),
+					Dsn:    proto.String("postgres://user:${POSTGRES_PASSWORD}@localhost:5432/mydb?sslmode=disable"),
+				}.Build(),
+			}.Build(),
+		}.Build(),
+		// Redis (Command Line using docker run)
+		configv1.ServiceTemplate_builder{
+			Id:          proto.String("redis"),
+			Name:        proto.String("Redis"),
+			Description: proto.String("In-memory key-value store"),
+			Icon:        proto.String("database"),
+			Tags:        []string{"database"},
+			ServiceConfig: configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("redis-cache"),
+				CommandLineService: configv1.CommandLineUpstreamService_builder{
+					Command: proto.String("docker run --rm -p 6379:6379 redis:alpine"),
+				}.Build(),
+			}.Build(),
+		}.Build(),
+		// Filesystem MCP
+		configv1.ServiceTemplate_builder{
+			Id:          proto.String("filesystem"),
+			Name:        proto.String("Filesystem MCP"),
+			Description: proto.String("Local file access"),
+			Icon:        proto.String("hard-drive"),
+			Tags:        []string{"mcp"},
+			ServiceConfig: configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("filesystem-mcp"),
+				McpService: configv1.McpUpstreamService_builder{
+					StdioConnection: configv1.McpStdioConnection_builder{
+						Command: proto.String("npx"),
+						Args:    []string{"-y", "@modelcontextprotocol/server-filesystem", "/path/to/allowed/dir"},
+						Env: map[string]*configv1.SecretValue{
+							"NODE_ENV": configv1.SecretValue_builder{PlainText: proto.String("production")}.Build(),
+						},
+					}.Build(),
+				}.Build(),
+			}.Build(),
+		}.Build(),
+		// Slack MCP
+		configv1.ServiceTemplate_builder{
+			Id:          proto.String("slack-mcp"),
+			Name:        proto.String("Slack MCP"),
+			Description: proto.String("Slack integration via MCP"),
+			Icon:        proto.String("message-square"),
+			Tags:        []string{"mcp"},
+			ServiceConfig: configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("slack-mcp"),
+				McpService: configv1.McpUpstreamService_builder{
+					StdioConnection: configv1.McpStdioConnection_builder{
+						Command: proto.String("npx"),
+						Args:    []string{"-y", "@modelcontextprotocol/server-slack"},
+						Env: map[string]*configv1.SecretValue{
+							"SLACK_BOT_TOKEN":      configv1.SecretValue_builder{PlainText: proto.String("${SLACK_BOT_TOKEN}")}.Build(),
+							"SLACK_SIGNING_SECRET": configv1.SecretValue_builder{PlainText: proto.String("${SLACK_SIGNING_SECRET}")}.Build(),
+						},
+					}.Build(),
+				}.Build(),
+			}.Build(),
+		}.Build(),
+		// Memory MCP
+		configv1.ServiceTemplate_builder{
+			Id:          proto.String("memory"),
+			Name:        proto.String("Memory MCP"),
+			Description: proto.String("Graph-based memory"),
+			Icon:        proto.String("cpu"),
+			Tags:        []string{"mcp"},
+			ServiceConfig: configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("memory-mcp"),
+				McpService: configv1.McpUpstreamService_builder{
+					StdioConnection: configv1.McpStdioConnection_builder{
+						Command: proto.String("npx"),
+						Args:    []string{"-y", "@modelcontextprotocol/server-memory"},
+					}.Build(),
+				}.Build(),
+			}.Build(),
+		}.Build(),
+		// HTTP Service
+		configv1.ServiceTemplate_builder{
+			Id:          proto.String("generic-http"),
+			Name:        proto.String("HTTP Service"),
+			Description: proto.String("Generic HTTP API"),
+			Icon:        proto.String("globe"),
+			Tags:        []string{"utility"},
+			ServiceConfig: configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("my-api-service"),
+				HttpService: configv1.HttpUpstreamService_builder{
+					Address: proto.String("http://localhost:8080"),
+				}.Build(),
+			}.Build(),
+		}.Build(),
+		// Command Line
+		configv1.ServiceTemplate_builder{
+			Id:          proto.String("generic-cmd"),
+			Name:        proto.String("Command Line"),
+			Description: proto.String("Local script execution"),
+			Icon:        proto.String("terminal"),
+			Tags:        []string{"utility"},
+			ServiceConfig: configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("local-script"),
+				CommandLineService: configv1.CommandLineUpstreamService_builder{
+					Command:          proto.String("python3 ./scripts/worker.py"),
+					WorkingDirectory: proto.String("./"),
+				}.Build(),
+			}.Build(),
+		}.Build(),
 	}
 }

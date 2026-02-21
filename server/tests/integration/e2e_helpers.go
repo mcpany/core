@@ -12,6 +12,7 @@ import (
 	"io"
 	"net"
 	"net/http"
+	"net/http/httptest"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -2035,4 +2036,39 @@ type MCPJSONRPCError struct {
 // Returns the result.
 func (e *MCPJSONRPCError) Error() string {
 	return fmt.Sprintf("JSON-RPC Error: Code=%d, Message=%s, Data=%v", e.Code, e.Message, e.Data)
+}
+
+// MockServerInfo contains info about a mock upstream server.
+type MockServerInfo struct {
+	URL         string
+	Server      *httptest.Server
+	CleanupFunc func()
+}
+
+// StartMockUpstreamServer starts a local httptest server.
+func StartMockUpstreamServer(t *testing.T, handler http.Handler) *MockServerInfo {
+	t.Helper()
+	server := httptest.NewServer(handler)
+	return &MockServerInfo{
+		URL:    server.URL,
+		Server: server,
+		CleanupFunc: func() {
+			server.Close()
+		},
+	}
+}
+
+// CreateSimpleMockHandler creates a handler that serves static responses for given paths.
+func CreateSimpleMockHandler(t *testing.T, routes map[string]string) http.Handler {
+	mux := http.NewServeMux()
+	for path, body := range routes {
+		p := path
+		b := body
+		mux.HandleFunc(p, func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte(b))
+		})
+	}
+	return mux
 }

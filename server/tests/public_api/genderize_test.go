@@ -22,20 +22,27 @@ import (
 )
 
 func TestUpstreamService_Genderize(t *testing.T) {
-	// t.SkipNow()
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 
 	t.Log("INFO: Starting E2E Test Scenario for Genderize Server...")
 	t.Parallel()
 
-	// --- 1. Start MCPANY Server ---
+	// --- 1. Start Mock Upstream Server ---
+	routes := map[string]string{
+		"/": `{"name":"michael","gender":"male","probability":0.99,"count":12345}`,
+	}
+	handler := integration.CreateSimpleMockHandler(t, routes)
+	mockServer := integration.StartMockUpstreamServer(t, handler)
+	defer mockServer.CleanupFunc()
+
+	// --- 2. Start MCPANY Server ---
 	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2EGenderizeServerTest")
 	defer mcpAnyTestServerInfo.CleanupFunc()
 
-	// --- 2. Register Genderize Server with MCPANY ---
+	// --- 3. Register Genderize Server with MCPANY ---
 	const genderizeServiceID = "e2e_genderize"
-	genderizeServiceEndpoint := "https://api.genderize.io"
+	genderizeServiceEndpoint := mockServer.URL
 	t.Logf("INFO: Registering '%s' with MCPANY at endpoint %s...", genderizeServiceID, genderizeServiceEndpoint)
 	registrationGRPCClient := mcpAnyTestServerInfo.RegistrationClient
 

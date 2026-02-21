@@ -22,20 +22,27 @@ import (
 )
 
 func TestUpstreamService_Nationalize(t *testing.T) {
-	// t.SkipNow()
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 
 	t.Log("INFO: Starting E2E Test Scenario for Nationalize Server...")
 	t.Parallel()
 
-	// --- 1. Start MCPANY Server ---
+	// --- 1. Start Mock Upstream Server ---
+	routes := map[string]string{
+		"/": `{"name":"michael","country":[{"country_id":"US","probability":0.1}]}`,
+	}
+	handler := integration.CreateSimpleMockHandler(t, routes)
+	mockServer := integration.StartMockUpstreamServer(t, handler)
+	defer mockServer.CleanupFunc()
+
+	// --- 2. Start MCPANY Server ---
 	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2ENationalizeServerTest")
 	defer mcpAnyTestServerInfo.CleanupFunc()
 
-	// --- 2. Register Nationalize Server with MCPANY ---
+	// --- 3. Register Nationalize Server with MCPANY ---
 	const nationalizeServiceID = "e2e_nationalize"
-	nationalizeServiceEndpoint := "https://api.nationalize.io"
+	nationalizeServiceEndpoint := mockServer.URL
 	t.Logf("INFO: Registering '%s' with MCPANY at endpoint %s...", nationalizeServiceID, nationalizeServiceEndpoint)
 	registrationGRPCClient := mcpAnyTestServerInfo.RegistrationClient
 
