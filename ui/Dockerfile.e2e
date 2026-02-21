@@ -21,8 +21,6 @@ COPY ui/ .
 COPY proto/ /app/proto/
 # Symlink node_modules so proto files can find dependencies
 RUN ln -s /app/node_modules /app/proto/node_modules
-# Copy proto folder into ui (instead of symlink) to avoid filesystem root issues
-RUN cp -r /app/proto /app/ui/proto
 # Update tsconfig to use local proto path (aligns with copied folder)
 RUN sed -i 's|\.\./proto|proto|g' tsconfig.json
 # Recursively chmod, but skip node_modules and symlinks to avoid errors
