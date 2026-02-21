@@ -217,11 +217,9 @@ func (m *GlobalRateLimitMiddleware) calculateConfigHash(config *bus.RedisBus) st
 func (m *GlobalRateLimitMiddleware) getRedisClient(config *bus.RedisBus) *redis.Client {
 	configHash := m.calculateConfigHash(config)
 
-	if val, ok := m.redisClients.Load("global"); ok {
-		if cached, ok := val.(*cachedRedisClient); ok {
-			if cached.configHash == configHash {
-				return cached.client
-			}
+	if val, ok := m.redisClients.Load(configHash); ok {
+		if client, ok := val.(*redis.Client); ok {
+			return client
 		}
 	}
 
@@ -231,9 +229,6 @@ func (m *GlobalRateLimitMiddleware) getRedisClient(config *bus.RedisBus) *redis.
 		DB:       int(config.GetDb()),
 	}
 	client := redisClientCreator(opts)
-	m.redisClients.Store("global", &cachedRedisClient{
-		client:     client,
-		configHash: configHash,
-	})
+	m.redisClients.Store(configHash, client)
 	return client
 }
