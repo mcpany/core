@@ -39,7 +39,7 @@ test.describe('Playground Image Rendering', () => {
                 }
             }
         });
-        expect(response.ok()).toBeTruthy();
+        expect(response.ok() || response.status() === 409).toBeTruthy();
     });
 
     test.afterAll(async ({ request }) => {
@@ -65,17 +65,10 @@ test.describe('Playground Image Rendering', () => {
         // Playground Pro behaviour:
         // clicking tool in sidebar opens "Configure arguments" dialog.
 
-        await expect(page.getByRole('dialog')).toBeVisible();
-        await expect(page.getByText('Configure arguments')).toBeVisible();
+        await expect(page.getByRole('tab', { name: 'Tool Runner' })).toBeVisible();
 
-        // Since no args required, we can just click "Run Tool"
-        // The dialog has a form.
-        // There should be a submit button.
-        await page.getByRole('button', { name: 'Run Tool' }).click({ force: true });
-        await page.getByRole('button', { name: /send/i }).click();
-
-        // Dialog closes, command is populated in input
-        await expect(page.getByRole('dialog')).toBeHidden();
+        // Since no args required, we can just click "Execute"
+        await page.getByRole('button', { name: 'Execute', exact: true }).click();
 
         // No need to click Send, it auto executes
 

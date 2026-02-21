@@ -40,13 +40,18 @@ test('Tools page loads and inspector opens', async ({ page }) => {
   // Check if inspector sheet is open (Wait for title)
   await expect(page.getByText('get_weather').first()).toBeVisible();
 
-  // Check if schema is displayed (using the new Sheet layout)
-  await expect(page.getByText('Schema', { exact: true })).toBeVisible();
+  // Switch to Schema tab
+  await page.getByRole('tab', { name: 'Schema' }).click();
 
-  // Switch to JSON tab to verify raw schema
-  // We use .first() or scope it because there are now two JSON tabs (Schema & Arguments)
-  // The first "JSON" tab is for the Schema viewer (top section)
-  await page.getByRole('tab', { name: 'JSON' }).first().click();
+  // Switch to JSON sub-tab to verify raw schema
+  // Ensure the Schema tab content is visible first
+  // Switch to JSON sub-tab to verify raw schema
+  // Ensure the Schema tab content is visible first. We identify it by the "Visual" tab inside it.
+  const schemaPanel = page.getByRole('tabpanel').filter({ hasText: 'Visual' });
+  await expect(schemaPanel).toBeVisible();
+
+  // Click the JSON trigger inside the schema content
+  await schemaPanel.getByRole('tab', { name: 'JSON' }).click();
 
   // The schema content from mock: { type: "object", properties: { location: { type: "string" } } }
   // We check for "location" property in the JSON view

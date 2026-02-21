@@ -52,8 +52,9 @@ test.describe('Rich Result Viewer', () => {
     await page.getByRole('row', { name: 'rich-result-test-service.get_complex_data' }).getByRole('button', { name: 'Inspect' }).click();
 
     // Wait for inspector to open
-    await expect(page.getByRole('dialog')).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'rich-result-test-service.get_complex_data' })).toBeVisible();
+    const dialog = page.getByRole('dialog');
+    await expect(dialog).toBeVisible();
+    await expect(dialog.getByRole('heading', { name: 'rich-result-test-service.get_complex_data', exact: true })).toBeVisible();
 
     // Execute tool (default args should work as they are empty object in seeded tool)
     await page.getByRole('button', { name: 'Execute' }).click();

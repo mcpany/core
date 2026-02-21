@@ -76,12 +76,7 @@ test.describe('Tool Exploration', () => {
         }
 
         // Check for weather-service tool (from config.minimal.yaml)
-        try {
-            await expect(page.getByText('get_weather').first()).toBeVisible({ timeout: 10000 });
-        } catch (e) {
-            console.log('Weather tool not found (check config.minimal.yaml loading)');
-            // Don't fail the test if it's missing, just log it for now to debug stack-editor failure
-        }
+        // Removed to make test more robust; rely on explicitly seeded tools like echo_tool and process_payment.
 
         await expect(page.getByText('Echoes back input').first()).toBeVisible({ timeout: 20000 });
     });
@@ -107,7 +102,7 @@ test.describe('Tool Exploration', () => {
         await toolRow.getByRole('button', { name: 'Inspect' }).click({ timeout: 30000 });
 
         await expect(page.getByText('Echoes back input').first()).toBeVisible({ timeout: 30000 });
-        await expect(page.getByText('Test & Execute').first()).toBeVisible();
+        await expect(page.getByRole('button', { name: 'Execute' }).first()).toBeVisible();
     });
 
     test('should execute a tool and show results', async ({ page }) => {
@@ -135,7 +130,7 @@ test.describe('Tool Exploration', () => {
         await page.getByRole('dialog').getByRole('tablist').filter({ hasText: 'Form' }).getByRole('tab', { name: 'JSON', exact: true }).click();
 
         // Fill arguments
-        const textArea = page.locator('textarea#args');
+        const textArea = page.locator('textarea').first();
         await textArea.fill('{"message": "Hello MCP"}');
 
         // Click Execute

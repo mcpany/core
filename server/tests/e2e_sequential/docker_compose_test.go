@@ -190,7 +190,7 @@ func TestDockerComposeE2E(t *testing.T) {
 func testFunctionalWeather(t *testing.T, rootDir string) {
 	// 1. Start mcpany-server with wttr.in config
 	// We run it on a dynamic port to avoid conflict with previous steps or other processes.
-	configPath := fmt.Sprintf("%s/server/examples/popular_services/wttr.in/config.yaml", rootDir)
+	configPath := fmt.Sprintf("%s/marketplace/catalog/wttr.in/config.yaml", rootDir)
 	t.Logf("rootDir: %s", rootDir)
 	t.Logf("configPath: %s", configPath)
 	if _, err := os.Stat(configPath); err != nil {
@@ -292,7 +292,7 @@ func simulateGeminiCLIWeather(t *testing.T, baseURL string) string {
 		var toolNames []string
 		for _, tool := range list.Tools {
 			toolNames = append(toolNames, tool.Name)
-			if strings.HasSuffix(tool.Name, "get_weather") {
+			if strings.Contains(tool.Name, "wttrin") && strings.HasSuffix(tool.Name, "get_weather") {
 				toolName = tool.Name
 			}
 		}
@@ -569,11 +569,8 @@ func createDynamicCompose(t *testing.T, rootDir, originalPath string) string {
 	s = strings.Replace(s, "environment:", "environment:\n      - MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES=true\n      - MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true", 1)
 
 	// Inject MCPANY_ENABLE_FILE_CONFIG=true into services
-	// We assume typical docker-compose indentation of services/environment.
-	// This is a simple injection that works for standard file structures.
-	// A more robust way would be to unmarshal/marshal YAML.
 	if !strings.Contains(s, "MCPANY_ENABLE_FILE_CONFIG") {
-		s = strings.Replace(s, "environment:", "environment:\n      MCPANY_ENABLE_FILE_CONFIG: \"true\"", -1)
+		s = strings.Replace(s, "environment:", "environment:\n      - MCPANY_ENABLE_FILE_CONFIG=true", -1)
 	}
 
 	// Ensure build directory exists

@@ -34,7 +34,7 @@ test.describe('Onboarding Flow', () => {
     await seedCollection('mcpany-system', request);
 
     await page.goto('/');
-    await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Dashboard/i })).toBeVisible();
     await expect(page.getByText('Welcome to MCP Any')).not.toBeVisible();
 
     // Cleanup

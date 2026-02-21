@@ -3314,13 +3314,13 @@ func checkInterpreterFunctionCalls(val, language string) error {
 
 // checkContextualKeywords checks if any keyword in the list is present in val as a whole word
 // AND is followed by one of the suffix characters (ignoring whitespace).
+
 func checkContextualKeywords(val string, keywords []string, suffixes []rune) error {
 	var state quoteState
 	var wordBuilder strings.Builder
 	inWord := false
 	runes := []rune(val)
 
-	// Helper to check if rune is in suffixes
 	isSuffix := func(r rune) bool {
 		for _, s := range suffixes {
 			if r == s {
@@ -3343,14 +3343,12 @@ func checkContextualKeywords(val string, keywords []string, suffixes []rune) err
 		}
 
 		if state.handleQuotes(char) {
-			if state.inQuote() { // Entered quote
-				if inWord {
-					word := wordBuilder.String()
-					if err := checkWordSuffix(word, keywords, runes, i, isSuffix); err != nil {
-						return err
-					}
-					inWord = false
+			if state.inQuote() && inWord { // Entered quote
+				word := wordBuilder.String()
+				if err := checkWordSuffix(word, keywords, runes, i, isSuffix); err != nil {
+					return err
 				}
+				inWord = false
 			}
 			continue
 		}
@@ -3376,43 +3374,11 @@ func checkContextualKeywords(val string, keywords []string, suffixes []rune) err
 		}
 	}
 
-	// Check last word
 	if inWord {
-		word := wordBuilder.String()
-		if err := checkWordSuffix(word, keywords, runes, len(runes), isSuffix); err != nil {
+		if err := checkWordSuffix(wordBuilder.String(), keywords, runes, len(runes), isSuffix); err != nil {
 			return err
 		}
 	}
-	return nil
-}
-
-func checkWordSuffix(word string, keywords []string, runes []rune, nextIdx int, isSuffix func(rune) bool) error {
-	// 1. Check if word matches a keyword
-	found := false
-	for _, kw := range keywords {
-		if word == kw {
-			found = true
-			break
-		}
-	}
-	if !found {
-		return nil
-	}
-
-	// 2. Look ahead for suffix
-	for k := nextIdx; k < len(runes); k++ {
-		r := runes[k]
-		if unicode.IsSpace(r) {
-			continue
-		}
-		if isSuffix(r) {
-			return fmt.Errorf("interpreter injection detected: dangerous keyword %q followed by %q", word, r)
-		}
-		// If we hit a non-space, non-suffix character, the word is safe in this context
-		// e.g. "open the" -> 't' is not suffix. Safe.
-		return nil
-	}
-	// End of string without suffix -> Safe (e.g. "I need to read")
 	return nil
 }
 
@@ -3703,109 +3669,105 @@ func checkFindInjection(val, base string) error {
 }
 
 func checkSQLInjection(val, base string, quoteLevel int) error {
-	// SQL Injection Check
-	// If the command is a SQL client (psql, mysql, sqlite3) and the value is unquoted (Level 0),
-	// we must prevent SQL injection by blocking SQL keywords.
 	isSQL := base == "psql" || base == "mysql" || base == "sqlite3"
 	if !isSQL {
 		return nil
 	}
-
-	// Only apply checks if input is unquoted (likely code/statement).
-	// Inside quotes (Level > 0), these are string literals.
 	if quoteLevel != 0 {
 		return nil
 	}
-
 	valTrimmed := strings.TrimSpace(val)
 	valLower := strings.ToLower(valTrimmed)
 
 	if base == "sqlite3" {
-		// SQLite meta-commands start with "."
-		// We only check if the input starts with "." to avoid FPs in middle of SQL.
-		if strings.HasPrefix(valLower, ".") {
-			if strings.HasPrefix(valLower, ".shell") || strings.HasPrefix(valLower, ".system") {
-				return fmt.Errorf("sqlite3 injection detected: .shell/.system command")
-			}
-			if strings.HasPrefix(valLower, ".open") || strings.HasPrefix(valLower, ".output") || strings.HasPrefix(valLower, ".once") {
-				return fmt.Errorf("sqlite3 injection detected: file manipulation command")
-			}
-			// Also block .read, .import
-			if strings.HasPrefix(valLower, ".read") || strings.HasPrefix(valLower, ".import") || strings.HasPrefix(valLower, ".load") {
-				return fmt.Errorf("sqlite3 injection detected: dangerous meta-command")
-			}
+		if err := checkSQLiteInjection(valLower); err != nil {
+			return err
 		}
 	}
-
 	if base == "mysql" {
-		// MySQL 'system' command
-		// checkUnquotedKeywords handles word boundaries and allows @system.
-		if err := checkUnquotedKeywords(val, []string{"system", "source"}); err != nil {
-			return fmt.Errorf("mysql injection detected: %w", err)
-		}
-		// LOAD DATA INFILE, SELECT ... INTO OUTFILE
-		// We check for these keywords (case-insensitive).
-		// Since we are unquoted, any occurrence is likely a keyword.
-		valUpper := strings.ToUpper(val)
-		if strings.Contains(valUpper, "INFILE") || strings.Contains(valUpper, "OUTFILE") {
-			return fmt.Errorf("mysql injection detected: file access")
+		if err := checkMySQLInjection(val); err != nil {
+			return err
 		}
 	}
-
 	if base == "psql" {
-		// PSQL meta-commands start with backslash.
-		// Note: checkUnquotedInjection already blocks '\', but we double check here specific commands
-		// in case checkUnquotedInjection rules change or are different context.
-		if strings.HasPrefix(valTrimmed, "\\!") || strings.HasPrefix(valTrimmed, "\\o") || strings.HasPrefix(valTrimmed, "\\copy") {
-			return fmt.Errorf("psql injection detected: dangerous meta-command")
-		}
-		// COPY ... TO PROGRAM
-		valUpper := strings.ToUpper(val)
-		if strings.Contains(valUpper, "COPY") && strings.Contains(valUpper, "PROGRAM") {
-			return fmt.Errorf("psql injection detected: COPY TO PROGRAM")
+		if err := checkPSQLInjection(val, valTrimmed); err != nil {
+			return err
 		}
 	}
 
-	if quoteLevel == 0 {
-		// Block common SQL keywords and comment markers
-		// We check for keywords surrounded by word boundaries or at start/end of string.
-		// val is user input, e.g. "1 OR 1=1"
-		upperVal := strings.ToUpper(val)
-		keywords := []string{
-			"OR", "AND", "UNION", "SELECT", "FROM", "WHERE", "JOIN",
-			"DROP", "ALTER", "CREATE", "INSERT", "UPDATE", "DELETE",
-			"--",
+	return checkSQLKeywords(val)
+}
+
+func checkSQLiteInjection(valLower string) error {
+	if strings.HasPrefix(valLower, ".") {
+		if strings.HasPrefix(valLower, ".shell") || strings.HasPrefix(valLower, ".system") {
+			return fmt.Errorf("sqlite3 injection detected: .shell/.system command")
+		}
+		if strings.HasPrefix(valLower, ".open") || strings.HasPrefix(valLower, ".output") || strings.HasPrefix(valLower, ".once") {
+			return fmt.Errorf("sqlite3 injection detected: file manipulation command")
+		}
+		if strings.HasPrefix(valLower, ".read") || strings.HasPrefix(valLower, ".import") || strings.HasPrefix(valLower, ".load") {
+			return fmt.Errorf("sqlite3 injection detected: dangerous meta-command")
+		}
+	}
+	return nil
+}
+
+func checkMySQLInjection(val string) error {
+	if err := checkUnquotedKeywords(val, []string{"system", "source"}); err != nil {
+		return fmt.Errorf("mysql injection detected: %w", err)
+	}
+	valUpper := strings.ToUpper(val)
+	if strings.Contains(valUpper, "INFILE") || strings.Contains(valUpper, "OUTFILE") {
+		return fmt.Errorf("mysql injection detected: file access")
+	}
+	return nil
+}
+
+func checkPSQLInjection(val, valTrimmed string) error {
+	if strings.HasPrefix(valTrimmed, "\\!") || strings.HasPrefix(valTrimmed, "\\o") || strings.HasPrefix(valTrimmed, "\\copy") {
+		return fmt.Errorf("psql injection detected: dangerous meta-command")
+	}
+	valUpper := strings.ToUpper(val)
+	if strings.Contains(valUpper, "COPY") && strings.Contains(valUpper, "PROGRAM") {
+		return fmt.Errorf("psql injection detected: COPY TO PROGRAM")
+	}
+	return nil
+}
+
+func checkSQLKeywords(val string) error {
+	upperVal := strings.ToUpper(val)
+	keywords := []string{
+		"OR", "AND", "UNION", "SELECT", "FROM", "WHERE", "JOIN",
+		"DROP", "ALTER", "CREATE", "INSERT", "UPDATE", "DELETE",
+		"--",
+	}
+
+	isBoundary := func(r byte) bool {
+		return !isWordChar(r)
+	}
+
+	for _, kw := range keywords {
+		if kw == "--" {
+			if strings.Contains(upperVal, "--") {
+				return fmt.Errorf("SQL injection detected: value contains '--'")
+			}
+			continue
 		}
 
-		// Helper to check word boundary
-		isBoundary := func(r byte) bool {
-			return !isWordChar(r)
-		}
+		idx := strings.Index(upperVal, kw)
+		for idx != -1 {
+			startOk := idx == 0 || isBoundary(upperVal[idx-1])
+			endOk := idx+len(kw) == len(upperVal) || isBoundary(upperVal[idx+len(kw)])
 
-		for _, kw := range keywords {
-			if kw == "--" {
-				if strings.Contains(upperVal, "--") {
-					return fmt.Errorf("SQL injection detected: value contains '--'")
-				}
-				continue
+			if startOk && endOk {
+				return fmt.Errorf("SQL injection detected: value contains SQL keyword %q in unquoted context", kw)
 			}
-
-			idx := strings.Index(upperVal, kw)
-			for idx != -1 {
-				// Check boundaries
-				startOk := idx == 0 || isBoundary(upperVal[idx-1])
-				endOk := idx+len(kw) == len(upperVal) || isBoundary(upperVal[idx+len(kw)])
-
-				if startOk && endOk {
-					return fmt.Errorf("SQL injection detected: value contains SQL keyword %q in unquoted context", kw)
-				}
-				// Find next occurrence
-				nextIdx := strings.Index(upperVal[idx+1:], kw)
-				if nextIdx == -1 {
-					break
-				}
-				idx += 1 + nextIdx
+			nextIdx := strings.Index(upperVal[idx+1:], kw)
+			if nextIdx == -1 {
+				break
 			}
+			idx += 1 + nextIdx
 		}
 	}
 	return nil
@@ -4431,4 +4393,28 @@ func (s *quoteState) handleQuotes(char rune) bool {
 
 func (s *quoteState) inQuote() bool {
 	return s.inSingle || s.inDouble || s.inBacktick
+}
+
+func checkWordSuffix(word string, keywords []string, runes []rune, nextIdx int, isSuffix func(rune) bool) error {
+	found := false
+	for _, kw := range keywords {
+		if word == kw {
+			found = true
+			break
+		}
+	}
+	if !found {
+		return nil
+	}
+	for k := nextIdx; k < len(runes); k++ {
+		r := runes[k]
+		if unicode.IsSpace(r) {
+			continue
+		}
+		if isSuffix(r) {
+			return fmt.Errorf("interpreter injection detected: dangerous keyword %q followed by %q", word, r)
+		}
+		return nil
+	}
+	return nil
 }

@@ -14,6 +14,7 @@ import { Loader2 } from "lucide-react";
 export default function PlaygroundPage() {
   return (
     <div className="flex flex-col h-[calc(100vh-5rem)]">
+      <h1 className="sr-only">Console</h1>
       <Suspense
         fallback={
           <div className="flex items-center justify-center h-full">

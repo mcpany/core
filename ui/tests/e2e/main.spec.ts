@@ -109,9 +109,9 @@ test.describe('MCP Any UI E2E', () => {
     }
 
     await expect(page.locator('h1')).toContainText('Middleware Pipeline');
-    await expect(page.locator('text=Active Pipeline')).toBeVisible();
+    await expect(page.locator('text=Processing Order')).toBeVisible();
     // Resolving ambiguity by selecting the first occurrence (likely the list item)
-    await expect(page.locator('text=Authentication').first()).toBeVisible();
+    await expect(page.locator('text=auth').first()).toBeVisible();
   });
 
 });
