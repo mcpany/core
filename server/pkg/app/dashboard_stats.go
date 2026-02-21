@@ -535,6 +535,7 @@ func (a *Application) handleDashboardHealth() http.HandlerFunc {
 			}
 
 			// Calculate real latency and uptime
+			// We use a 15-minute window for latency to show recent performance trends.
 			var latencyStr string
 			var uptimeStr string
 
