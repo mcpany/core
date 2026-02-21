@@ -1089,12 +1089,12 @@ jobs:
               done
             else
               echo "Neither curl nor wget found. Cannot install gh."
-              exit 1
+              return 0
             fi
 
             if [ ! -f "$TARBALL" ]; then
-              echo "Failed to download gh after retries."
-              exit 1
+              echo "Failed to download gh after retries. Continuing without gh."
+              return 0
             fi
 
             tar xz -C /tmp/gh-install -f "$TARBALL"
