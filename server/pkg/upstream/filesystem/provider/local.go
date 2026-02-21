@@ -269,7 +269,27 @@ func (p *LocalProvider) matchPath(pattern, targetPath string) bool {
 	if err == nil && matched {
 		return true
 	}
-	return strings.HasPrefix(targetPath, pattern)
+
+	if !strings.HasPrefix(targetPath, pattern) {
+		return false
+	}
+
+	// Exact match is safe
+	if len(targetPath) == len(pattern) {
+		return true
+	}
+
+	// If pattern ends with separator, prefix match is safe
+	if strings.HasSuffix(pattern, string(os.PathSeparator)) {
+		return true
+	}
+
+	// If targetPath continues with separator, it's a subdirectory match
+	if len(targetPath) > len(pattern) && targetPath[len(pattern)] == os.PathSeparator {
+		return true
+	}
+
+	return false
 }
 
 func (p *LocalProvider) containsSymlink(virtualPath, bestMatchVirtual, bestMatchReal string) (bool, error) {
