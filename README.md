@@ -3,15 +3,104 @@
 [![Documentation: Gold Standard](https://img.shields.io/badge/Documentation-Gold%20Standard-gold.svg)](https://github.com/mcpany/core)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
-## Elevator Pitch
+## Project Identity
 
-**What is this project?**
+**What is this?**
 
 **MCP Any** is a universal adapter that instantly turns your existing APIs into [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) compliant tools. It acts as a configuration-driven gateway, bridging the gap between your backend services (REST, gRPC, OpenAPI, Command-line) and AI agents.
 
 **Why does it exist?**
 
 Traditional MCP adoption often requires writing a separate server binary for every tool, leading to "binary fatigue" and significant maintenance overhead. MCP Any solves this problem by providing a single, unified server that acts as a gateway to multiple services, defined purely through lightweight configuration files. It unifies your infrastructure into a single, secure, and observable MCP endpoint, allowing you to focus on capabilities rather than plumbing.
+
+## Quick Start
+
+Follow these steps to get up and running with MCP Any immediately.
+
+### Prerequisites
+
+*   [Go 1.23+](https://go.dev/doc/install) (for building from source)
+*   `make` (for build automation)
+*   [Docker](https://docs.docker.com/get-docker/) (optional, for containerized run)
+
+### Installation
+
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/mcpany/core.git
+    cd core
+    ```
+
+2.  **Prepare dependencies:**
+    ```bash
+    make prepare
+    ```
+    This command installs necessary tools (protoc, linter, hooks) into `build/env/bin`.
+
+3.  **Build the server:**
+    ```bash
+    make build
+    ```
+    This compiles the source and places the `server` binary in `build/bin/`.
+
+4.  **Run with an example configuration:**
+    ```bash
+    ./build/bin/server run --config-path server/config.minimal.yaml
+    ```
+
+### Hello World
+
+Once the server is running, you can verify its health and connect a client.
+
+**Verify Health:**
+```bash
+curl http://localhost:50050/health
+```
+
+**Connect an AI Client:**
+To connect an AI client (like Claude Desktop or Gemini CLI):
+```bash
+# Example assuming you have a compatible client
+gemini mcp add --transport http --trust mcpany http://localhost:50050
+```
+
+**Try it out:**
+Ask your agent:
+> "What is the weather?"
+
+The agent will use the `get_weather` tool exposed by MCP Any (configured in `config.minimal.yaml`) to fetch the simulated data.
+
+## Developer Workflow
+
+We adhere to a strict development workflow to ensure code quality and maintainability.
+
+### Testing
+Run all unit and integration tests to ensure code correctness. We practice proactive testing and continuous integration.
+```bash
+make test
+```
+
+### Linting
+We enforce **100% documentation coverage** and strict style guides.
+*   **Go:** We use `golangci-lint` with `revive` and `check-go-doc` to enforce GoDoc standards. We require structured docstrings (Summary, Parameters, Returns, Errors, Side Effects) for all public APIs.
+*   **Protocol:** We check for breaking changes in `.proto` files.
+
+To run linters:
+```bash
+make lint
+```
+
+### Building
+Compile the server binary and UI assets.
+```bash
+make build
+```
+
+### Code Generation
+Regenerate Protocol Buffers and other auto-generated files if you modify `.proto` definitions.
+```bash
+make gen
+```
 
 ## Architecture
 
@@ -71,95 +160,6 @@ graph TD
 *   **Adapter Pattern**: The `Upstream` interface abstracts away the complexity of different backend protocols, providing a uniform interface for the Core Server.
 *   **Configuration as Code**: Services and capabilities are defined declaratively in YAML/JSON, enabling version control and CI/CD for your agent capabilities.
 *   **Gateway/Sidecar**: Deployable as a central gateway or a Kubernetes sidecar for maximum flexibility.
-
-## Getting Started
-
-Follow these steps to get up and running with MCP Any immediately.
-
-### Prerequisites
-
-*   [Go 1.23+](https://go.dev/doc/install) (for building from source)
-*   `make` (for build automation)
-*   [Docker](https://docs.docker.com/get-docker/) (optional, for containerized run)
-
-### Installation
-
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/mcpany/core.git
-    cd core
-    ```
-
-2.  **Prepare dependencies:**
-    ```bash
-    make prepare
-    ```
-    This command installs necessary tools (protoc, linter, hooks) into `build/env/bin`.
-
-3.  **Build the server:**
-    ```bash
-    make build
-    ```
-    This compiles the source and places the `server` binary in `build/bin/`.
-
-4.  **Run with an example configuration:**
-    ```bash
-    ./build/bin/server run --config-path server/config.minimal.yaml
-    ```
-
-### Hello World
-
-Once the server is running, you can verify its health and connect a client.
-
-**Verify Health:**
-```bash
-curl http://localhost:50050/health
-```
-
-**Connect an AI Client:**
-To connect an AI client (like Claude Desktop or Gemini CLI):
-```bash
-# Example assuming you have a compatible client
-gemini mcp add --transport http --trust mcpany http://localhost:50050
-```
-
-**Try it out:**
-Ask your agent:
-> "What is the weather?"
-
-The agent will use the `get_weather` tool exposed by MCP Any (configured in `config.minimal.yaml`) to fetch the simulated data.
-
-## Development
-
-We adhere to a strict development workflow to ensure code quality and maintainability.
-
-### Testing
-Run all unit and integration tests to ensure code correctness. We practice proactive testing and continuous integration.
-```bash
-make test
-```
-
-### Linting
-We enforce **100% documentation coverage** and strict style guides.
-*   **Go:** We use `golangci-lint` with `revive` and `check-go-doc` to enforce GoDoc standards. We require structured docstrings (Summary, Parameters, Returns, Errors, Side Effects) for all public APIs.
-*   **Protocol:** We check for breaking changes in `.proto` files.
-
-To run linters:
-```bash
-make lint
-```
-
-### Building
-Compile the server binary and UI assets.
-```bash
-make build
-```
-
-### Code Generation
-Regenerate Protocol Buffers and other auto-generated files if you modify `.proto` definitions.
-```bash
-make gen
-```
 
 ## Configuration
 
