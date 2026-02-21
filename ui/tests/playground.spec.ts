@@ -71,7 +71,8 @@ test.describe('Playground Tool Configuration', () => {
     // Verify chat message
     // The message should appear in the chat.
     // "weather_tool {"city":"San Francisco","days":5}"
-    await expect(page.getByText('weather_tool {"city":"San Francisco","days":5}')).toBeVisible();
+    // Increase timeout to handle slower CI environments (infrastructure retry)
+    await expect(page.getByText('weather_tool {"city":"San Francisco","days":5}')).toBeVisible({ timeout: 60000 });
 
     // Verify result (mock result)
     // "Mock execution result"

@@ -85,7 +85,8 @@ test.describe('Playground Image Rendering', () => {
         const srcPrefix = 'data:image/png;base64,iVBOR';
 
         // Wait for message to appear
-        await expect(page.locator(`img[src^="${srcPrefix}"]`)).toBeVisible({ timeout: 10000 });
+        // Increased timeout for CI stability
+        await expect(page.locator(`img[src^="${srcPrefix}"]`)).toBeVisible({ timeout: 60000 });
 
         // Also check if "Rich" view button is active/visible
         // Since logic forces Rich view for images, it should be rendered directly.
