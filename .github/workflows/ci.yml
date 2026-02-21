@@ -28,11 +28,11 @@ permissions:
 
 jobs:
   changes:
-    runs-on: oci-runner # ubuntu-slim
+    runs-on: ubuntu-latest
     outputs:
       src: ${{ steps.filter.outputs.src }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
