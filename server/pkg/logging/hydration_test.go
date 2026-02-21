@@ -79,17 +79,15 @@ func TestHydrateFromFile(t *testing.T) {
 		history := GlobalBroadcaster.GetHistory()
 		require.Len(t, history, 2)
 
-		var entry1 LogEntry
-		err = json.Unmarshal(history[0], &entry1)
-		require.NoError(t, err)
+		entry1, ok := history[0].(LogEntry)
+		require.True(t, ok)
 		assert.Equal(t, "First message", entry1.Message)
 		assert.Equal(t, "INFO", entry1.Level)
 		assert.Equal(t, "component-a", entry1.Source)
 		assert.Equal(t, "value1", entry1.Metadata["extra"])
 
-		var entry2 LogEntry
-		err = json.Unmarshal(history[1], &entry2)
-		require.NoError(t, err)
+		entry2, ok := history[1].(LogEntry)
+		require.True(t, ok)
 		assert.Equal(t, "Second message", entry2.Message)
 		assert.Equal(t, "ERROR", entry2.Level)
 		assert.Equal(t, float64(123), entry2.Metadata["details"]) // JSON numbers are float64
@@ -115,9 +113,8 @@ func TestHydrateFromFile(t *testing.T) {
 		history := GlobalBroadcaster.GetHistory()
 		require.Len(t, history, 1) // Only one valid line
 
-		var entry LogEntry
-		err = json.Unmarshal(history[0], &entry)
-		require.NoError(t, err)
+		entry, ok := history[0].(LogEntry)
+		require.True(t, ok)
 		assert.Equal(t, "json", entry.Metadata["valid"])
 	})
 
@@ -138,9 +135,8 @@ func TestHydrateFromFile(t *testing.T) {
 		history := GlobalBroadcaster.GetHistory()
 		require.Len(t, history, 1)
 
-		var entry LogEntry
-		err = json.Unmarshal(history[0], &entry)
-		require.NoError(t, err)
+		entry, ok := history[0].(LogEntry)
+		require.True(t, ok)
 		assert.NotEmpty(t, entry.ID)
 		assert.NotEmpty(t, entry.Timestamp) // Should default to now
 		assert.Equal(t, "data", entry.Metadata["custom"])

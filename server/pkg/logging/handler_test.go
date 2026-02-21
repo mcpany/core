@@ -5,7 +5,6 @@ package logging
 
 import (
 	"context"
-	"encoding/json"
 	"log/slog"
 	"testing"
 	"time"
@@ -31,9 +30,8 @@ func TestBroadcastHandler_WithAttrs(t *testing.T) {
 
 	select {
 	case data := <-ch:
-		var entry LogEntry
-		err := json.Unmarshal(data, &entry)
-		require.NoError(t, err)
+		entry, ok := data.(LogEntry)
+		require.True(t, ok, "Expected data to be LogEntry")
 
 		val, ok := entry.Metadata["persistent_key"]
 		assert.True(t, ok, "persistent_key should exist in metadata")
@@ -62,15 +60,14 @@ func TestBroadcastHandler_WithGroup(t *testing.T) {
 
 	select {
 	case data := <-ch:
-		var entry LogEntry
-		err := json.Unmarshal(data, &entry)
-		require.NoError(t, err)
+		entry, ok := data.(LogEntry)
+		require.True(t, ok, "Expected data to be LogEntry")
 
 		// If group is working, there should be a key "my_group" containing map/object
 		// OR at least some structure.
 		// If it is ignored, inner_key will be at root.
 
-		_, ok := entry.Metadata["my_group"]
+		_, ok = entry.Metadata["my_group"]
 		// We assert that my_group should exist because that's the expected behavior
 		assert.True(t, ok, "Metadata should contain group key 'my_group'")
 
@@ -97,8 +94,8 @@ func TestBroadcastHandler_SourcePriority(t *testing.T) {
 
 	select {
 	case data := <-ch:
-		var entry LogEntry
-		require.NoError(t, json.Unmarshal(data, &entry))
+		entry, ok := data.(LogEntry)
+		require.True(t, ok)
 		assert.Equal(t, "my-component", entry.Source)
 	case <-time.After(100 * time.Millisecond):
 		t.Fatal("timeout")
@@ -112,8 +109,8 @@ func TestBroadcastHandler_SourcePriority(t *testing.T) {
 
 	select {
 	case data := <-ch:
-		var entry LogEntry
-		require.NoError(t, json.Unmarshal(data, &entry))
+		entry, ok := data.(LogEntry)
+		require.True(t, ok)
 		assert.Equal(t, "my-source", entry.Source)
 	case <-time.After(100 * time.Millisecond):
 		t.Fatal("timeout")
@@ -126,8 +123,8 @@ func TestBroadcastHandler_SourcePriority(t *testing.T) {
 
 	select {
 	case data := <-ch:
-		var entry LogEntry
-		require.NoError(t, json.Unmarshal(data, &entry))
+		entry, ok := data.(LogEntry)
+		require.True(t, ok)
 		assert.Equal(t, "my-tool", entry.Source)
 	case <-time.After(100 * time.Millisecond):
 		t.Fatal("timeout")

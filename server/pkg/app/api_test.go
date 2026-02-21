@@ -1232,12 +1232,12 @@ func TestHandleLogsWS(t *testing.T) {
 	defer ws.Close()
 
 	time.Sleep(100 * time.Millisecond)
-	testMsg := []byte("test log message")
+	testMsg := logging.LogEntry{Message: "test log message"}
 	logging.GlobalBroadcaster.Broadcast(testMsg)
 
-	_, msg, err := ws.ReadMessage()
-	require.NoError(t, err)
-	assert.Equal(t, testMsg, msg)
+	var msg logging.LogEntry
+	require.NoError(t, ws.ReadJSON(&msg))
+	assert.Equal(t, testMsg.Message, msg.Message)
 }
 
 func TestHandleSystemStatus(t *testing.T) {

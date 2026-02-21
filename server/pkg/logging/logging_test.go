@@ -6,7 +6,6 @@ package logging
 import (
 	"bytes"
 	"context"
-	"encoding/json"
 	"log/slog"
 	"strings"
 	"testing"
@@ -185,9 +184,8 @@ func TestBroadcastHandler(t *testing.T) {
 
 	select {
 	case data := <-ch:
-		var entry LogEntry
-		err := json.Unmarshal(data, &entry)
-		require.NoError(t, err)
+		entry, ok := data.(LogEntry)
+		require.True(t, ok)
 		assert.Equal(t, "INFO", entry.Level)
 		assert.Equal(t, "test log", entry.Message)
 		assert.Equal(t, "test-source", entry.Source)

@@ -249,10 +249,8 @@ func (m *AuditMiddleware) Execute(ctx context.Context, req *tool.ExecutionReques
 func (m *AuditMiddleware) writeLog(ctx context.Context, store audit.Store, entry audit.Entry) {
 	// Broadcast first for real-time updates
 	if m.broadcaster != nil {
-		b, err := json.Marshal(entry)
-		if err == nil {
-			m.broadcaster.Broadcast(b)
-		}
+		// ⚡ BOLT: Pass struct directly to avoid JSON marshaling.
+		m.broadcaster.Broadcast(entry)
 	}
 
 	if store == nil {
@@ -265,17 +263,17 @@ func (m *AuditMiddleware) writeLog(ctx context.Context, store audit.Store, entry
 
 // SubscribeWithHistory returns a channel that will receive broadcast messages,
 // and the current history of messages.
-func (m *AuditMiddleware) SubscribeWithHistory() (chan []byte, [][]byte) {
+func (m *AuditMiddleware) SubscribeWithHistory() (chan any, []any) {
 	return m.broadcaster.SubscribeWithHistory()
 }
 
 // GetHistory returns the current broadcast history.
-func (m *AuditMiddleware) GetHistory() [][]byte {
+func (m *AuditMiddleware) GetHistory() []any {
 	return m.broadcaster.GetHistory()
 }
 
 // Unsubscribe removes a subscriber channel.
-func (m *AuditMiddleware) Unsubscribe(ch chan []byte) {
+func (m *AuditMiddleware) Unsubscribe(ch chan any) {
 	m.broadcaster.Unsubscribe(ch)
 }
 

@@ -10,8 +10,8 @@ import (
 // Broadcaster manages a set of subscribers and broadcasts messages to them.
 type Broadcaster struct {
 	mu          sync.RWMutex
-	subscribers map[chan []byte]struct{}
-	history     [][]byte
+	subscribers map[chan any]struct{}
+	history     []any
 	head        int
 	full        bool
 	limit       int
@@ -27,8 +27,8 @@ var (
 // Returns the result.
 func NewBroadcaster() *Broadcaster {
 	return &Broadcaster{
-		subscribers: make(map[chan []byte]struct{}),
-		history:     make([][]byte, 1000),
+		subscribers: make(map[chan any]struct{}),
+		history:     make([]any, 1000),
 		limit:       1000,
 	}
 }
@@ -36,27 +36,27 @@ func NewBroadcaster() *Broadcaster {
 // Subscribe returns a channel that will receive broadcast messages.
 // The channel has a small buffer to prevent slow consumers from blocking the broadcaster.
 // It is the caller's responsibility to read from the channel promptly.
-func (b *Broadcaster) Subscribe() chan []byte {
+func (b *Broadcaster) Subscribe() chan any {
 	b.mu.Lock()
 	defer b.mu.Unlock()
-	ch := make(chan []byte, 100)
+	ch := make(chan any, 100)
 	b.subscribers[ch] = struct{}{}
 	return ch
 }
 
 // SubscribeWithHistory returns a channel that will receive broadcast messages,
 // and the current history of messages. This is atomic to ensure no messages are missed or duplicated.
-func (b *Broadcaster) SubscribeWithHistory() (chan []byte, [][]byte) {
+func (b *Broadcaster) SubscribeWithHistory() (chan any, []any) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
-	ch := make(chan []byte, 100)
+	ch := make(chan any, 100)
 	b.subscribers[ch] = struct{}{}
 
 	count := b.limit
 	if !b.full {
 		count = b.head
 	}
-	result := make([][]byte, count)
+	result := make([]any, count)
 
 	idx := 0
 	if b.full {
@@ -82,7 +82,7 @@ func (b *Broadcaster) SubscribeWithHistory() (chan []byte, [][]byte) {
 // Unsubscribe removes a subscriber channel.
 //
 // ch is the ch.
-func (b *Broadcaster) Unsubscribe(ch chan []byte) {
+func (b *Broadcaster) Unsubscribe(ch chan any) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
 	if _, ok := b.subscribers[ch]; ok {
@@ -93,18 +93,18 @@ func (b *Broadcaster) Unsubscribe(ch chan []byte) {
 
 // Broadcast sends a message to all subscribers.
 // This method is non-blocking; if a subscriber's channel is full, the message is dropped for that subscriber.
-func (b *Broadcaster) Broadcast(msg []byte) {
-	// We make a copy of msg to ensure history persists even if caller reuses buffer.
-	// Doing this outside the lock reduces contention.
-	msgCopy := make([]byte, len(msg))
-	copy(msgCopy, msg)
+func (b *Broadcaster) Broadcast(msg any) {
+	// ⚡ BOLT: Optimized Broadcast to use interface{} (any) instead of []byte.
+	// Randomized Selection from Top 5 High-Impact Targets
+	// This avoids unnecessary JSON marshaling when just storing in history
+	// or broadcasting to subscribers who will handle serialization.
+	// We assume 'msg' is safe to store (e.g. value type struct or immutable).
 
 	b.mu.Lock()
 	defer b.mu.Unlock()
 
 	// ⚡ BOLT: Ring Buffer Optimization
-	// Randomized Selection from Top 5 High-Impact Targets
-	b.history[b.head] = msgCopy
+	b.history[b.head] = msg
 	b.head++
 	if b.head >= b.limit {
 		b.head = 0
@@ -121,7 +121,7 @@ func (b *Broadcaster) Broadcast(msg []byte) {
 }
 
 // GetHistory returns the current log history.
-func (b *Broadcaster) GetHistory() [][]byte {
+func (b *Broadcaster) GetHistory() []any {
 	b.mu.RLock()
 	defer b.mu.RUnlock()
 
@@ -129,7 +129,7 @@ func (b *Broadcaster) GetHistory() [][]byte {
 	if !b.full {
 		count = b.head
 	}
-	result := make([][]byte, count)
+	result := make([]any, count)
 
 	idx := 0
 	if b.full {
@@ -151,16 +151,12 @@ func (b *Broadcaster) GetHistory() [][]byte {
 // Hydrate populates the history buffer with messages.
 // It is intended to be called at startup. Messages are NOT broadcasted to subscribers,
 // as subscribers shouldn't exist yet, or shouldn't receive old history as "new" events.
-func (b *Broadcaster) Hydrate(messages [][]byte) {
+func (b *Broadcaster) Hydrate(messages []any) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
 
 	for _, msg := range messages {
-		// Copy msg to ensure ownership
-		msgCopy := make([]byte, len(msg))
-		copy(msgCopy, msg)
-
-		b.history[b.head] = msgCopy
+		b.history[b.head] = msg
 		b.head++
 		if b.head >= b.limit {
 			b.head = 0
