@@ -16,7 +16,7 @@ import (
 
 // RedisStrategy implements RateLimitStrategy for Redis-based rate limiting.
 type RedisStrategy struct {
-	// redisClients caches Redis clients per service. Key is serviceID.
+	// redisClients caches Redis clients per config. Key is configHash.
 	redisClients sync.Map
 }
 
@@ -25,11 +25,6 @@ type RedisStrategy struct {
 // Returns the result.
 func NewRedisStrategy() *RedisStrategy {
 	return &RedisStrategy{}
-}
-
-type cachedRedisClient struct {
-	client     *redis.Client
-	configHash string
 }
 
 // Create creates a new RedisLimiter.
@@ -46,33 +41,40 @@ func (s *RedisStrategy) Create(_ context.Context, serviceID, limitScopeKey, part
 	if config.GetRedis() == nil {
 		return nil, fmt.Errorf("redis config is missing")
 	}
-	client, err := s.getRedisClient(serviceID, config.GetRedis())
+	// ⚡ BOLT: Key Redis clients by config hash instead of serviceID.
+	// Randomized Selection from Top 5 High-Impact Targets.
+	// This ensures that multiple services sharing the same Redis config use the same connection pool.
+	client, err := s.getRedisClient(config.GetRedis())
 	if err != nil {
 		return nil, err
 	}
 	return NewRedisLimiterWithClient(client, serviceID, limitScopeKey, partitionKey, config), nil
 }
 
-func (s *RedisStrategy) getRedisClient(serviceID string, config *bus.RedisBus) (*redis.Client, error) { //nolint:unparam
+func (s *RedisStrategy) getRedisClient(config *bus.RedisBus) (*redis.Client, error) {
 	configHash := config.GetAddress() + "|" + config.GetPassword() + "|" + strconv.Itoa(int(config.GetDb()))
 
-	if val, ok := s.redisClients.Load(serviceID); ok {
-		if cached, ok := val.(*cachedRedisClient); ok {
-			if cached.configHash == configHash {
-				return cached.client, nil
-			}
+	// Fast path: Check if client exists
+	if val, ok := s.redisClients.Load(configHash); ok {
+		if client, ok := val.(*redis.Client); ok {
+			return client, nil
 		}
 	}
 
+	// Slow path: Create new client and use LoadOrStore to handle race conditions
 	opts := &redis.Options{
 		Addr:     config.GetAddress(),
 		Password: config.GetPassword(),
 		DB:       int(config.GetDb()),
 	}
-	client := redisClientCreator(opts)
-	s.redisClients.Store(serviceID, &cachedRedisClient{
-		client:     client,
-		configHash: configHash,
-	})
-	return client, nil
+	newClient := redisClientCreator(opts)
+
+	actual, loaded := s.redisClients.LoadOrStore(configHash, newClient)
+	if loaded {
+		// Another goroutine created the client first. Close our redundant one.
+		_ = newClient.Close()
+		return actual.(*redis.Client), nil
+	}
+
+	return newClient, nil
 }
