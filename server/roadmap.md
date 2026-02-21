@@ -11,6 +11,11 @@
 
 ### Status: Active Development
 
+### Upcoming (Next Sprint: 2026-02-28)
+*   **[Core] Inter-agent Context Bus (FEAT-005):** Implementing the shared state layer for session-based context inheritance.
+*   **[Security] MCP-native Subagent Sandbox (FEAT-006):** Proof-of-concept for Docker-bound tool execution isolation.
+*   **[DevX] Dynamic Relevance Filtering (FEAT-007):** Context-aware tool pruning to optimize agent context windows.
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
