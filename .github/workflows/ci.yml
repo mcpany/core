@@ -28,7 +28,7 @@ permissions:
 
 jobs:
   changes:
-    runs-on: oci-runner # ubuntu-slim
+    runs-on: ubuntu-latest # was oci-runner
     outputs:
       src: ${{ steps.filter.outputs.src }}
     steps:
@@ -46,7 +46,7 @@ jobs:
   lint:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
-    runs-on: oci-runner # ubuntu-latest
+    runs-on: ubuntu-latest # was oci-runner
     steps:
       - name: Free Disk Space (Fast)
         run: |
@@ -116,7 +116,7 @@ jobs:
 
 
   unit-test:
-    runs-on: oci-runner # ubuntu-latest
+    runs-on: ubuntu-latest # was oci-runner
     timeout-minutes: 30
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -251,7 +251,7 @@ jobs:
           verbose: true
 
   e2e-parallel:
-    runs-on: oci-runner # ubuntu-latest
+    runs-on: ubuntu-latest # was oci-runner
     timeout-minutes: 30
     needs: [build-images]
     strategy:
@@ -560,7 +560,7 @@ jobs:
           retention-days: 1
 
   e2e-sequential:
-    runs-on: oci-runner # ubuntu-latest
+    runs-on: ubuntu-latest # was oci-runner
     timeout-minutes: 60
     needs: [build-images]
     env:
@@ -698,7 +698,7 @@ jobs:
           verbose: true
 
   e2e-public-api:
-    runs-on: oci-runner # ubuntu-latest
+    runs-on: ubuntu-latest # was oci-runner
     timeout-minutes: 30
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -1027,7 +1027,7 @@ jobs:
           make k8s-e2e SKIP_IMAGE_BUILD=true IMAGE_TAG=latest
 
   ci-success:
-    runs-on: oci-runner # ubuntu-slim
+    runs-on: ubuntu-latest # was oci-runner
     needs:
       [
         build-images,
