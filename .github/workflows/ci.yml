@@ -1081,18 +1081,18 @@ jobs:
 
             if command -v curl &> /dev/null; then
               echo "Downloading with curl..."
-              for i in {1..5}; do
+              for i in {1..10}; do
                 curl -fsSL --retry 5 --retry-connrefused --retry-max-time 60 "$URL" -o "$TARBALL" && break || {
-                  echo "Curl attempt $i failed. Retrying in 10s..."
-                  sleep 10
+                  echo "Curl attempt $i failed. Retrying in 20s..."
+                  sleep 20
                 }
               done
             elif command -v wget &> /dev/null; then
               echo "Downloading with wget..."
-              for i in {1..5}; do
+              for i in {1..10}; do
                 wget -q "$URL" -O "$TARBALL" && break || {
-                  echo "Wget attempt $i failed. Retrying in 10s..."
-                  sleep 10
+                  echo "Wget attempt $i failed. Retrying in 20s..."
+                  sleep 20
                 }
               done
             else
