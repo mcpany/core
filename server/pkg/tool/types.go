@@ -3448,7 +3448,7 @@ func checkSQLInjection(val, base string, quoteLevel int) error {
 	// Sentinel Security Update: Block backslash injection in MySQL/MariaDB single-quoted strings
 	if (base == "mysql" || base == "mariadb") && quoteLevel == 2 {
 		if strings.Contains(val, "\\") {
-			return fmt.Errorf("SQL injection detected: backslash escaping in single-quoted string")
+			return fmt.Errorf("SQL injection detected: backslash escaping in single-quoted string (potential quote breakout)")
 		}
 	}
 
