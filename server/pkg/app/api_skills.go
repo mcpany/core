@@ -127,16 +127,26 @@ func (a *Application) handleUploadSkillAsset() http.HandlerFunc {
 		path := strings.TrimPrefix(r.URL.Path, "/api/v1")
 
 		// Path expected: /skills/{name}/assets
-		parts := strings.Split(path, "/")
-		// parts[0] = ""
-		// parts[1] = "skills"
-		// parts[2] = "{name}"
-		// parts[3] = "assets"
-		if len(parts) < 4 || parts[1] != "skills" || parts[3] != "assets" {
-			http.Error(w, "Invalid URL format\n", http.StatusBadRequest)
+		if !strings.HasPrefix(path, "/skills/") {
+			http.Error(w, "Invalid URL format", http.StatusBadRequest)
 			return
 		}
-		skillName := parts[2]
+
+		// Extract name: /skills/{name}/assets
+		pathWithoutPrefix := strings.TrimPrefix(path, "/skills/")
+
+		if !strings.HasSuffix(pathWithoutPrefix, "/assets") {
+			http.Error(w, "Invalid URL format", http.StatusBadRequest)
+			return
+		}
+
+		skillName := strings.TrimSuffix(pathWithoutPrefix, "/assets")
+
+		// Validate skill name is not empty and doesn't contain slashes (no sub-resources allowed here)
+		if skillName == "" || strings.Contains(skillName, "/") {
+			http.Error(w, "Invalid skill name", http.StatusBadRequest)
+			return
+		}
 
 		assetPath := r.URL.Query().Get("path")
 		if assetPath == "" {
@@ -149,9 +159,16 @@ func (a *Application) handleUploadSkillAsset() http.HandlerFunc {
 			return
 		}
 
+		// Limit body size to 10MB to prevent DoS via memory exhaustion
+		r.Body = http.MaxBytesReader(w, r.Body, 10<<20)
+
 		body, err := io.ReadAll(r.Body)
 		if err != nil {
-			http.Error(w, "Failed to read body", http.StatusBadRequest)
+			if strings.Contains(err.Error(), "request body too large") {
+				http.Error(w, "Request body too large", http.StatusRequestEntityTooLarge)
+			} else {
+				http.Error(w, "Failed to read body", http.StatusBadRequest)
+			}
 			return
 		}
 
