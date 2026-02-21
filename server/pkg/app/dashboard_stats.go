@@ -552,6 +552,8 @@ func (a *Application) handleDashboardHealth() http.HandlerFunc {
 			}
 		}
 
+		logging.GetLogger().Debug("Calculating dashboard health stats", "service_count", len(services))
+
 		for _, svc := range services {
 			name := svc.GetName()
 			hPoints := history[name]
