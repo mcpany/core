@@ -4,6 +4,10 @@ import (
 	"testing"
 )
 
+// Tests in this file verify protection against "Backslash Injection" in interpreters.
+// This attack vector involves using a backslash to escape a closing quote in a single-quoted string,
+// allowing the attacker to break out of the string literal and inject commands.
+
 func TestMySQLBackslashInjection(t *testing.T) {
 	// Case: MySQL SQL Injection using backslash escaping
 	// Command: mysql -e "SELECT * FROM users WHERE name = '{{NAME}}' AND role = '{{ROLE}}'"
