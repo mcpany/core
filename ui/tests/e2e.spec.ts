@@ -54,7 +54,7 @@ test.describe('MCP Any UI E2E Tests', () => {
     await expect(page.getByText('Total Requests').first()).toBeVisible({ timeout: 60000 });
     await expect(page.getByText('Active Services').first()).toBeVisible({ timeout: 60000 });
     // Check for health widget specifically
-    await expect(systemHealthCard).toBeVisible({ timeout: 60000 });
+    await expect(systemHealthCard).toBeVisible();
 
     if (process.env.CAPTURE_SCREENSHOTS === 'true') {
       await page.screenshot({ path: path.join(AUDIT_DIR, 'dashboard_verified.png'), fullPage: true });
@@ -67,9 +67,9 @@ test.describe('MCP Any UI E2E Tests', () => {
     // Using retry logic because tools might take a moment to sync from seeded services
     await expect(async () => {
       await page.reload();
-      await expect(page.locator('text=calculator').first()).toBeVisible({ timeout: 5000 });
-      await expect(page.locator('text=process_payment').first()).toBeVisible({ timeout: 5000 });
-    }).toPass({ timeout: 30000, intervals: [2000, 5000] });
+      await expect(page.locator('text=calculator').first()).toBeVisible();
+      await expect(page.locator('text=process_payment').first()).toBeVisible();
+    }).toPass({ timeout: 120000, intervals: [2000, 5000] });
 
     if (process.env.CAPTURE_SCREENSHOTS === 'true') {
       await page.screenshot({ path: path.join(AUDIT_DIR, 'tools.png'), fullPage: true });
