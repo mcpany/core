@@ -423,6 +423,9 @@ func (m *Manager) SeedTrafficHistory(points []TrafficPoint) {
 
 	for _, p := range points {
 		// Parse time "HH:MM"
+		if p.Time == "" {
+			continue
+		}
 		t, err := time.Parse("15:04", p.Time)
 		if err != nil {
 			log.Error("Failed to parse seed time", "time", p.Time, "error", err)
