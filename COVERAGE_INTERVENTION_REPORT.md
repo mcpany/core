@@ -1,25 +1,22 @@
 # Coverage Intervention Report
 
-## Target
-**File:** `server/pkg/sidecar/webhooks/handlers.go`
-**Focus:** `truncateRecursive` (UTF-8 handling) and `PaginateHandler` (Pagination logic).
+**Target:** `server/pkg/logging/writer.go`
 
-## Risk Profile
-- **High Risk:** This code modifies user data in transit (webhooks). Incorrect handling can corrupt data (UTF-8) or break functionality (Pagination).
-- **Metric:** High complexity due to recursion and type switching on `any`.
-- **Why Selected:**
-    - **Critical Bug:** `truncateRecursive` was using byte-slicing on strings, which corrupts multi-byte characters (e.g., emojis, Asian scripts), resulting in invalid UTF-8.
-    - **Functionality Gap:** `PaginateHandler` hardcoded page 1, making it impossible to access subsequent pages of content.
+**Risk Profile:**
+*   **Selected because:** This file implements the `RedactingWriter`, which is responsible for scrubbing sensitive information (PII, secrets) from JSON logs before they are written to the output stream.
+*   **Risk:** High. If this component fails or is bypassed, sensitive data (passwords, API keys) could be leaked into logs, leading to a major security incident and compliance violation. If the writer logic is buggy, it could also corrupt log output or cause the application to crash/panic during logging.
+*   **Coverage Gap:** The file had logic for checking `RedactJSON` results and error handling for the underlying writer, but had **zero direct unit tests**. It was only tested implicitly via integration tests which rely on `slog` formatting and are not exhaustive for the writer's error conditions or edge cases.
 
-## New Coverage
-- **File:** `server/pkg/sidecar/webhooks/handlers_comprehensive_test.go`
-- **Scenarios Covered:**
-    - **UTF-8 Truncation:** Verifies correct truncation of strings containing emojis and multi-byte characters (using rune counting instead of byte counting).
-    - **Pagination Logic:** Verifies that `page` query parameter is respected and correct slices are returned for page 2, 3, etc.
-    - **Edge Cases:** Empty strings, strings equal to max length, strings slightly over max length, negative page numbers.
-    - **Deep Recursion:** Verifies that nested maps and lists are correctly processed recursively.
+**New Coverage:**
+*   **Logic Paths Guarded:**
+    *   **Happy Path:** Valid JSON inputs with sensitive keys are correctly redacted.
+    *   **Pass-through:** Valid JSON inputs without sensitive keys are passed through unchanged (modulo whitespace normalization by the redactor).
+    *   **Invalid JSON:** Malformed or non-JSON inputs are safely passed through without corruption.
+    *   **Partial JSON:** Incomplete JSON objects are handled safely.
+    *   **Write Errors:** Errors from the underlying `io.Writer` are correctly propagated, and the return value `n` is handled according to the `io.Writer` contract (returning `0, err` on failure).
+    *   **Whitespace Handling:** Verified that the fast redactor implementation preserves surrounding structure while redacting values.
 
-## Verification
-- **New Tests:** `TestTruncateHandler_Comprehensive` and `TestPaginateHandler_Comprehensive` passed.
-- **Regression:** `make test` (specifically `go test ./server/...`) passed, ensuring no regressions in existing functionality.
-- **Bug Fix:** Fixed `truncateRecursive` to use `[]rune` conversion. Fixed `PaginateHandler` to parse `page` query parameter.
+**Verification:**
+*   **New Tests:** Created `server/pkg/logging/writer_test.go` with table-driven tests covering the above scenarios.
+*   **Result:** `go test -v server/pkg/logging/writer_test.go server/pkg/logging/writer.go` passed.
+*   **Regression Check:** ran `go test ./server/pkg/...` and verified that all package tests passed. (Note: Some integration tests failed due to environment/Docker issues unrelated to these changes).
