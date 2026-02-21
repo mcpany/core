@@ -39,6 +39,8 @@ func TestPerlRCE_Unquoted(t *testing.T) {
 	// system ls
 	// in perl, system ls is system('ls') because ls is a bareword.
 
+	// The test cases below verify that the security mechanism correctly identifies and blocks dangerous
+	// Perl constructs when used in unquoted contexts, preventing RCE.
 	testCases := []struct {
 		name    string
 		payload string
