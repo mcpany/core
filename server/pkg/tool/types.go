@@ -2841,6 +2841,7 @@ var dangerousEnvVars = map[string]bool{
 	"BASH_ENV": true, "ENV": true, "PS4": true, "SHELLOPTS": true, "PROMPT_COMMAND": true, "IFS": true,
 
 	// Glibc / Loader
+	// GCONV_PATH and GLIBC_TUNABLES can be used to load arbitrary shared objects or manipulate the loader
 	"GCONV_PATH": true, "GLIBC_TUNABLES": true,
 	"RESOLV_HOST_CONF": true, "RES_OPTIONS": true, "HOSTALIASES": true,
 }
