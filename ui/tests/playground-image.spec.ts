@@ -71,7 +71,8 @@ test.describe('Playground Image Rendering', () => {
         // Since no args required, we can just click "Run Tool"
         // The dialog has a form.
         // There should be a submit button.
-        await page.getByRole('button', { name: 'Run Tool' }).click();
+        await page.getByRole('button', { name: 'Run Tool' }).click({ force: true });
+        await page.getByRole('button', { name: /send/i }).click();
 
         // Dialog closes, command is populated in input
         await expect(page.getByRole('dialog')).toBeHidden();

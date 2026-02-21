@@ -7,17 +7,17 @@ on:
   push:
     branches: [main]
     paths-ignore:
-      - '**.md'
-      - '**.txt'
-      - 'docs/**'
-      - 'LICENSE'
+      - "**.md"
+      - "**.txt"
+      - "docs/**"
+      - "LICENSE"
   pull_request:
     branches: [main]
     paths-ignore:
-      - '**.md'
-      - '**.txt'
-      - 'docs/**'
-      - 'LICENSE'
+      - "**.md"
+      - "**.txt"
+      - "docs/**"
+      - "LICENSE"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -113,7 +113,6 @@ jobs:
 
       - name: Lint
         run: make lint
-
 
   unit-test:
     runs-on: oci-runner # ubuntu-latest
@@ -672,7 +671,6 @@ jobs:
             docker load -i "$f"
           done
 
-
       - name: Cache Tools
         uses: actions/cache@v4
         with:
@@ -1030,6 +1028,7 @@ jobs:
     runs-on: oci-runner # ubuntu-slim
     needs:
       [
+        changes,
         build-images,
         unit-test,
         e2e-sequential,
@@ -1136,7 +1135,7 @@ jobs:
       - name: Check Results and Comment
         uses: actions/github-script@v8
         with:
-          github-token: ${{ secrets.ORG_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
             // 1. Check for Failures
             const needs = ${{ toJson(needs) }};

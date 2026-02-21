@@ -2,14 +2,15 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
-pipeline:
+steps:
   hourly-maintenance:
     image: iowoi/mcpany-runner-bot:latest
     when:
       event: cron
       cron: hourly # Requires cron to be named 'hourly' in Woodpecker UI
     environment:
-      - GH_TOKEN=from_secret:ORG_GITHUB_TOKEN
+      GH_TOKEN:
+        from_secret: GITHUB_TOKEN
     commands:
       # tools pre-installed
       - |

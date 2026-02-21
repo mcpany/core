@@ -92,8 +92,8 @@ export function RequestPreview({ call, tool, serviceName, onExecute, executionRe
 
         // 1. Path Substitution
         let path = call.endpointPath || "/";
-        path = path.replace(/{(\w+)}/g, (_, key) => {
-            return args[key] !== undefined ? String(args[key]) : `{${key}}`;
+        path = path.replace(/{{([\w.-]+)}}/g, (_, key) => {
+            return args[key] !== undefined ? String(args[key]) : `{{${key}}}`;
         });
 
         // 2. Query Params (Simulation)
@@ -184,7 +184,7 @@ export function RequestPreview({ call, tool, serviceName, onExecute, executionRe
                     </div>
                 </div>
 
-                <div className="flex flex-col h-full overflow-hidden border rounded-md bg-muted/10">
+                <div className="flex flex-col h-full overflow-hidden border rounded-md bg-muted/10" data-testid="execution-result-container">
                     <div className="p-2 border-b bg-muted/20 text-xs font-medium flex justify-between items-center">
                         <span>Execution Result</span>
                         {executionResult && (

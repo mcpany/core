@@ -793,7 +793,7 @@ export const apiClient = {
                 let errorMsg = null;
                 try {
                     const json = JSON.parse(text);
-                    if (json.error) errorMsg = json.error;
+                    if (json.error) errorMsg = typeof json.error === 'string' ? json.error : JSON.stringify(json.error);
                 } catch (e) {
                     // ignore
                 }

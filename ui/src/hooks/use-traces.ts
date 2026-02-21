@@ -10,17 +10,14 @@ interface UseTracesOptions {
     initialPaused?: boolean;
 }
 
+const MAX_TRACES = 1000;
+
 /**
  * Hook to manage trace subscriptions via WebSocket.
  *
  * @param options - Configuration options for the trace hook.
  * @param options.initialPaused - Whether to start in a paused state.
  * @returns An object containing the current traces, loading state, connection status, and controls.
- */
-const MAX_TRACES = 1000;
-
-/**
- * Hook to fetch and manage trace data with optional filtering and pagination.
  */
 export function useTraces(options: UseTracesOptions = {}) {
     const [traces, setTraces] = useState<Trace[]>([]);

@@ -30,11 +30,11 @@ func TestUpstreamService_MCP_Playwright_Stdio(t *testing.T) {
 				"NPM_CONFIG_YES":                   "true",
 			}
 			cmd := "node"
-			args := []string{"./node_modules/.bin/playwright-mcp"}
+			args := []string{"./node_modules/.bin/mcp-server-playwright"}
 			setupCommands := []string{
 				"npm install --no-optional @playwright/mcp > /dev/null 2>&1",
 			}
-			integration.RegisterStdioServiceWithSetup(t, registrationClient, serviceID, cmd, true, "/app/server", "", setupCommands, env, args...)
+			integration.RegisterStdioServiceWithSetup(t, registrationClient, serviceID, cmd, true, "tests/integration/upstream", "", setupCommands, env, args...)
 
 
 

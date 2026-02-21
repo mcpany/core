@@ -52,7 +52,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             name: "Math",
             version: "v1.0",
             http_service: {
-                address: "http://localhost:8080", // Dummy
+                address: "http://math-service.local:8080", // Dummy
                 tools: [
                     { name: "calculator", description: "calc", call_id: "calc_call" }
                 ],
