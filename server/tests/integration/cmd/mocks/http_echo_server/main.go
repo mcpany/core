@@ -22,30 +22,30 @@ import (
 
 func echoHandler(w http.ResponseWriter, r *http.Request) {
 	slog.Info("http_echo_server: Received request", "method", r.Method, "path", r.URL.Path)
-	
+
 	bodyBytes, errRead := io.ReadAll(r.Body)
 	if errRead != nil {
 		slog.Error("http_echo_server: Error reading request body", "error", errRead)
 		http.Error(w, "Failed to read request body", http.StatusInternalServerError)
 		return
 	}
-	
+
 	w.Header().Set("Content-Type", consts.ContentTypeApplicationJSON)
 	w.WriteHeader(http.StatusOK)
-	
+
 	// Construct a simple JSON response echoing request details
-	// We do this manually to avoid importing large encoding/json structs if not needed, 
+	// We do this manually to avoid importing large encoding/json structs if not needed,
 	// but standard library is fine.
 	// We want to verify URL contains "test-execution".
-	
+
 	response := fmt.Sprintf(`{
 		"method": "%s",
 		"url": "%s",
 		"body": "%s",
-		"headers": {} 
+		"headers": {}
 	}`, r.Method, r.URL.Path, string(bodyBytes))
 	// Note: Headers handling is simplified for this mock.
-	
+
 	if _, errWrite := w.Write([]byte(response)); errWrite != nil {
 		slog.Error("http_echo_server: Error writing response body", "error", errWrite)
 	}

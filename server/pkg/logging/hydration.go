@@ -21,7 +21,7 @@ func HydrateFromFile(path string) error {
 	}
 
 	// ⚡ BOLT: Store structs in history, not bytes.
-	var broadcastMessages []any
+	broadcastMessages := make([]any, 0, len(lines))
 	for _, line := range lines {
 		if len(line) == 0 {
 			continue

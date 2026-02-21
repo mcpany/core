@@ -60,8 +60,8 @@ test.describe('Playground Tool Configuration', () => {
     await expect(page.getByRole('heading', { name: 'weather_tool' })).toBeVisible();
 
     // Fill form
-    await page.getByLabel('city', { exact: false }).fill('San Francisco');
-    await page.getByLabel('days').fill('5');
+    await page.getByLabel(/city/i).fill('San Francisco');
+    await page.getByLabel(/days/i).fill('5');
 
     // Run Tool
     await page.getByRole('button', { name: /run tool/i }).click({ force: true });

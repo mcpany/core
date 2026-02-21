@@ -75,8 +75,8 @@ test.describe('Playground Complex Schema Support', () => {
     await page.getByRole('button', { name: 'Run Tool' }).click();
 
     // Fill the form
-    await page.getByPlaceholder('name').fill('Bob');
-    await page.getByPlaceholder('0').fill('30');
+    await page.getByLabel('name', { exact: false }).fill('Bob');
+    await page.getByLabel('age', { exact: false }).fill('30');
 
     // Add tag
     await page.getByRole('button', { name: 'Add Item' }).click();

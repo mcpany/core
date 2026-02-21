@@ -101,6 +101,9 @@ nodes:
 		if err := runCommand(t, ctx, rootDir, "docker", "build", "-t", fmt.Sprintf("mcpany/ui:%s", tag), "-f", "ui/Dockerfile", "."); err != nil {
 			t.Fatalf("Failed to build ui image: %v", err)
 		}
+		if err := runCommand(t, ctx, rootDir, "make", "-C", "server", "build-http-echo-docker"); err != nil {
+			t.Fatalf("Failed to build http-echo-server image: %v", err)
+		}
 	} else {
 		t.Log("Skipping image build (SKIP_IMAGE_BUILD=true). Assuming images exist.")
 	}
@@ -115,6 +118,9 @@ nodes:
 	}
 	if err := runCommand(t, ctx, rootDir, "kind", "load", "docker-image", fmt.Sprintf("mcpany/ui:%s", tag), "--name", clusterName); err != nil {
 		t.Fatalf("Failed to load ui image: %v", err)
+	}
+	if err := runCommand(t, ctx, rootDir, "kind", "load", "docker-image", "mcpany/http-echo-server:latest", "--name", clusterName); err != nil {
+		t.Fatalf("Failed to load http-echo-server image: %v", err)
 	}
 
 	// 6. Install Helm Chart
@@ -151,6 +157,17 @@ nodes:
 	t.Log("Verifying pods...")
 	if err := runCommand(t, ctx, rootDir, "kubectl", "wait", "--for=condition=ready", "pod", "-l", "app.kubernetes.io/name=mcpany", "-n", namespace, "--timeout=60s"); err != nil {
 		t.Fatalf("Failed to wait for pods: %v", err)
+	}
+
+	t.Log("Deploying http-echo-server...")
+	if err := runCommand(t, ctx, rootDir, "kubectl", "run", "ui-http-echo-server", "--image=mcpany/http-echo-server:latest", "--image-pull-policy=Never", "--restart=Always", "-n", namespace); err != nil {
+		t.Fatalf("Failed to deploy http-echo-server: %v", err)
+	}
+	if err := runCommand(t, ctx, rootDir, "kubectl", "expose", "pod", "ui-http-echo-server", "--port=5678", "--target-port=8080", "-n", namespace); err != nil {
+		t.Fatalf("Failed to expose http-echo-server: %v", err)
+	}
+	if err := runCommand(t, ctx, rootDir, "kubectl", "wait", "--for=condition=ready", "pod", "ui-http-echo-server", "-n", namespace, "--timeout=60s"); err != nil {
+		t.Fatalf("Failed to wait for http-echo-server: %v", err)
 	}
 
 	// 8. Run UI Tests
