@@ -6,7 +6,9 @@ package app
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"runtime/debug"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/logging"
@@ -28,6 +30,16 @@ type SeedRequest struct {
 // It clears existing data before inserting new data.
 func (a *Application) handleDebugSeed() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		log := logging.GetLogger()
+
+		// Recover from panics to avoid crashing the server and return 500
+		defer func() {
+			if r := recover(); r != nil {
+				log.Error("Panic in handleDebugSeed", "panic", r, "stack", string(debug.Stack()))
+				http.Error(w, fmt.Sprintf("Internal Server Error: %v", r), http.StatusInternalServerError)
+			}
+		}()
+
 		if r.Method != http.MethodPost {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 			return
@@ -35,12 +47,11 @@ func (a *Application) handleDebugSeed() http.HandlerFunc {
 
 		var req SeedRequest
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			http.Error(w, "Invalid JSON", http.StatusBadRequest)
+			http.Error(w, "Invalid JSON: "+err.Error(), http.StatusBadRequest)
 			return
 		}
 
 		ctx := r.Context()
-		log := logging.GetLogger()
 
 		// Clear existing data
 		// Services
@@ -104,14 +115,12 @@ func (a *Application) handleDebugSeed() http.HandlerFunc {
 			}
 		}
 
-		// Global Settings (optional clear? usually we overwrite)
-
 		// Insert new data
 		for _, raw := range req.ServicesRaw {
 			s := configv1.UpstreamServiceConfig_builder{}.Build()
 			if err := protojson.Unmarshal(raw, s); err != nil {
 				log.Error("Failed to unmarshal service", "error", err)
-				http.Error(w, "Failed to unmarshal service", http.StatusBadRequest)
+				http.Error(w, "Failed to unmarshal service: "+err.Error(), http.StatusBadRequest)
 				return
 			}
 			if err := a.Storage.SaveService(ctx, s); err != nil {
@@ -124,7 +133,7 @@ func (a *Application) handleDebugSeed() http.HandlerFunc {
 			c := configv1.Credential_builder{}.Build()
 			if err := protojson.Unmarshal(raw, c); err != nil {
 				log.Error("Failed to unmarshal credential", "error", err)
-				http.Error(w, "Failed to unmarshal credential", http.StatusBadRequest)
+				http.Error(w, "Failed to unmarshal credential: "+err.Error(), http.StatusBadRequest)
 				return
 			}
 			if err := a.Storage.SaveCredential(ctx, c); err != nil {
@@ -137,7 +146,7 @@ func (a *Application) handleDebugSeed() http.HandlerFunc {
 			s := configv1.Secret_builder{}.Build()
 			if err := protojson.Unmarshal(raw, s); err != nil {
 				log.Error("Failed to unmarshal secret", "error", err)
-				http.Error(w, "Failed to unmarshal secret", http.StatusBadRequest)
+				http.Error(w, "Failed to unmarshal secret: "+err.Error(), http.StatusBadRequest)
 				return
 			}
 			if err := a.Storage.SaveSecret(ctx, s); err != nil {
@@ -150,7 +159,7 @@ func (a *Application) handleDebugSeed() http.HandlerFunc {
 			p := configv1.ProfileDefinition_builder{}.Build()
 			if err := protojson.Unmarshal(raw, p); err != nil {
 				log.Error("Failed to unmarshal profile", "error", err)
-				http.Error(w, "Failed to unmarshal profile", http.StatusBadRequest)
+				http.Error(w, "Failed to unmarshal profile: "+err.Error(), http.StatusBadRequest)
 				return
 			}
 			if err := a.Storage.SaveProfile(ctx, p); err != nil {
@@ -163,7 +172,7 @@ func (a *Application) handleDebugSeed() http.HandlerFunc {
 			u := configv1.User_builder{}.Build()
 			if err := protojson.Unmarshal(raw, u); err != nil {
 				log.Error("Failed to unmarshal user", "error", err)
-				http.Error(w, "Failed to unmarshal user", http.StatusBadRequest)
+				http.Error(w, "Failed to unmarshal user: "+err.Error(), http.StatusBadRequest)
 				return
 			}
 			if err := a.Storage.CreateUser(ctx, u); err != nil {
@@ -173,11 +182,11 @@ func (a *Application) handleDebugSeed() http.HandlerFunc {
 			}
 		}
 
-		if req.SettingsRaw != nil {
+		if len(req.SettingsRaw) > 0 && string(req.SettingsRaw) != "null" {
 			gs := configv1.GlobalSettings_builder{}.Build()
 			if err := protojson.Unmarshal(req.SettingsRaw, gs); err != nil {
 				log.Error("Failed to unmarshal global settings", "error", err)
-				http.Error(w, "Failed to unmarshal global settings", http.StatusBadRequest)
+				http.Error(w, "Failed to unmarshal global settings: "+err.Error(), http.StatusBadRequest)
 				return
 			}
 			if err := a.Storage.SaveGlobalSettings(ctx, gs); err != nil {
@@ -187,8 +196,13 @@ func (a *Application) handleDebugSeed() http.HandlerFunc {
 			}
 		}
 
-		// Trigger reload to update in-memory state (ServiceRegistry, AuthManager, etc.)
+		// Trigger reload to update in-memory state
 		go func() {
+			defer func() {
+				if r := recover(); r != nil {
+					log.Error("Panic in background ReloadConfig", "panic", r)
+				}
+			}()
 			if err := a.ReloadConfig(context.Background(), a.fs, a.configPaths); err != nil {
 				log.Error("Failed to reload config after seeding", "error", err)
 			}

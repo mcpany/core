@@ -116,7 +116,7 @@ func TestDockerConn_Read_UnmarshalError(t *testing.T) {
 
 func TestDockerTransport_Connect_ClientError(t *testing.T) {
 	originalNewDockerClient := newDockerClient
-	newDockerClient = func(_ ...client.Opt) (dockerClient, error) {
+	newDockerClient = func(_ ...client.Opt) (DockerClient, error) {
 		return nil, fmt.Errorf("client error")
 	}
 	defer func() { newDockerClient = originalNewDockerClient }()
@@ -132,7 +132,7 @@ func TestDockerTransport_Connect_ClientError(t *testing.T) {
 
 func TestDockerTransport_Connect_ContainerCreateError(t *testing.T) {
 	originalNewDockerClient := newDockerClient
-	newDockerClient = func(_ ...client.Opt) (dockerClient, error) {
+	newDockerClient = func(_ ...client.Opt) (DockerClient, error) {
 		return &mockDockerClient{
 			ImagePullFunc: func(_ context.Context, _ string, _ image.PullOptions) (io.ReadCloser, error) {
 				return io.NopCloser(bytes.NewReader([]byte{})), nil
@@ -155,7 +155,7 @@ func TestDockerTransport_Connect_ContainerCreateError(t *testing.T) {
 
 func TestDockerTransport_Connect_ContainerAttachError(t *testing.T) {
 	originalNewDockerClient := newDockerClient
-	newDockerClient = func(_ ...client.Opt) (dockerClient, error) {
+	newDockerClient = func(_ ...client.Opt) (DockerClient, error) {
 		return &mockDockerClient{
 			ImagePullFunc: func(_ context.Context, _ string, _ image.PullOptions) (io.ReadCloser, error) {
 				return io.NopCloser(bytes.NewReader([]byte{})), nil
@@ -178,7 +178,7 @@ func TestDockerTransport_Connect_ContainerAttachError(t *testing.T) {
 
 func TestDockerTransport_Connect_ContainerStartError(t *testing.T) {
 	originalNewDockerClient := newDockerClient
-	newDockerClient = func(_ ...client.Opt) (dockerClient, error) {
+	newDockerClient = func(_ ...client.Opt) (DockerClient, error) {
 		return &mockDockerClient{
 			ImagePullFunc: func(_ context.Context, _ string, _ image.PullOptions) (io.ReadCloser, error) {
 				return io.NopCloser(bytes.NewReader([]byte{})), nil

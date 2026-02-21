@@ -32,7 +32,7 @@ func TestBundleDockerTransport_Connect(t *testing.T) {
 	}
 
 	// Use DI instead of global variable swapping
-	transport.dockerClientFactory = func(_ ...client.Opt) (dockerClient, error) {
+	transport.dockerClientFactory = func(_ ...client.Opt) (DockerClient, error) {
 		return &bundleMockDockerClient{
 			ImagePullFunc: func(_ context.Context, _ string, _ image.PullOptions) (io.ReadCloser, error) {
 				return io.NopCloser(strings.NewReader("")), nil // Mock empty pull

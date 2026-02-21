@@ -41,7 +41,7 @@ func TestDockerTransport_Security_SetupCommands(t *testing.T) {
 	// Mock Docker Client
 	originalNewDockerClient := newDockerClient
 	var capturedCmd []string
-	newDockerClient = func(_ ...client.Opt) (dockerClient, error) {
+	newDockerClient = func(_ ...client.Opt) (DockerClient, error) {
 		return &mockDockerClient{
 			ImagePullFunc: func(_ context.Context, _ string, _ image.PullOptions) (io.ReadCloser, error) {
 				return io.NopCloser(bytes.NewReader([]byte{})), nil

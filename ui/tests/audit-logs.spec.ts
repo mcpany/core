@@ -4,7 +4,7 @@
  */
 
 
-import { test } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import * as path from 'path';
 import * as fs from 'fs';
 
@@ -26,8 +26,18 @@ test.describe('Feature Screenshot', () => {
         }
     });
 
-  test('Capture Logs', async ({ page }) => {
+  test('Capture Logs', async ({ page, request }) => {
+    // Generate some logs first
+    // We can call the health endpoint which is often logged, or any API
+    // Or assume the server has logs from startup.
+    // To be safe, let's call a tool or API if possible, but we don't have tool definitions handy.
+    // Calling /api/v1/system/status usually works.
+    await request.get('/api/v1/system/status');
+
     await page.goto('/logs');
+    // Wait for the page to load
+    await expect(page.locator('h1')).toContainText('Logs');
+
     // Wait for some logs to appear or at least the page to load
     // We wait for the table or empty state
     try {

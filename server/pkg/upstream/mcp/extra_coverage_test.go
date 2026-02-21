@@ -36,7 +36,7 @@ func TestDockerTransport_Connect_Success_Mock(t *testing.T) {
 	originalNewDockerClient := newDockerClient
 	defer func() { newDockerClient = originalNewDockerClient }()
 
-	newDockerClient = func(_ ...client.Opt) (dockerClient, error) {
+	newDockerClient = func(_ ...client.Opt) (DockerClient, error) {
 		return &mockDockerClient{
 			ImagePullFunc: func(_ context.Context, _ string, _ image.PullOptions) (io.ReadCloser, error) {
 				return io.NopCloser(strings.NewReader("")), nil
