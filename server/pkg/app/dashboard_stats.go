@@ -90,6 +90,7 @@ func calculateUptime(points []health.HistoryPoint, window time.Duration) string 
 	denominator := float64(windowMs)
 	// If the first point in history is LATER than start time, it means we only started monitoring recently (or lost history).
 	// In this case, we should calculate uptime relative to the known history duration to avoid showing "0%" for a new healthy service.
+	// This ensures that a service launched 5 minutes ago and healthy for 5 minutes shows 100% uptime, not 0.3%.
 	if len(points) > 0 {
 		firstPointTime := points[0].Timestamp
 		if firstPointTime > startTime {
