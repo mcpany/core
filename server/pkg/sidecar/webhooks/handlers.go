@@ -182,6 +182,16 @@ func (h *PaginateHandler) Handle(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	page := 1
+	if p := r.URL.Query().Get("page"); p != "" {
+		if val, err := strconv.Atoi(p); err == nil {
+			if val <= 0 {
+				val = 1
+			}
+			page = val
+		}
+	}
+
 	event, err := cloudevents.NewEventFromHTTPRequest(r)
 	if err != nil {
 		http.Error(w, "Failed to parse CloudEvent: "+err.Error(), http.StatusBadRequest)
@@ -205,10 +215,10 @@ func (h *PaginateHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if val, ok := data["inputs"]; ok {
-		newInputs := paginateRecursive(val, 1, pageSize)
+		newInputs := paginateRecursive(val, page, pageSize)
 		respData["replacement_object"] = newInputs
 	} else if val, ok := data["result"]; ok {
-		newResult := paginateRecursive(val, 1, pageSize)
+		newResult := paginateRecursive(val, page, pageSize)
 		respData["replacement_object"] = newResult
 	}
 
@@ -255,8 +265,10 @@ func convertToMarkdown(converter *md.Converter, data any) any {
 func truncateRecursive(data any, maxChars int) any {
 	switch v := data.(type) {
 	case string:
-		if len(v) > maxChars {
-			return v[:maxChars] + "..."
+		// Convert to runes to handle multi-byte characters correctly
+		runes := []rune(v)
+		if len(runes) > maxChars {
+			return string(runes[:maxChars]) + "..."
 		}
 		return v
 	case map[string]any:
