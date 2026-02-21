@@ -30,6 +30,7 @@ func TestRedisStrategy(t *testing.T) {
 	})
 
 	t.Run("Create and Caching", func(t *testing.T) {
+		// ⚡ BOLT: Verify connection pooling logic works correctly
 		// Reset created clients
 		createdClients = nil
 		strategy := middleware.NewRedisStrategy()
