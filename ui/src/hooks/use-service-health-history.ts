@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { apiClient, ServiceHealth, HealthHistoryPoint } from "@/lib/client";
 
 // Re-export types for consumers
@@ -27,13 +27,22 @@ export function useServiceHealthHistory() {
   const [services, setServices] = useState<ServiceHealth[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  // ⚡ BOLT: Prevent unnecessary re-renders by deep comparing fetched data.
+  // Randomized Selection from Top 5 High-Impact Targets (Network/Render)
+  const lastDataStr = useRef<string>("");
+
   useEffect(() => {
     async function fetchHealth() {
       try {
         const data = await apiClient.getDashboardHealth();
-        // Backend returns history keyed by ID
-        setServices(data.services || []);
-        setHistory(data.history || {});
+
+        // ⚡ Bolt Optimization: Only update state if data actually changed
+        const currentDataStr = JSON.stringify(data);
+        if (currentDataStr !== lastDataStr.current) {
+          lastDataStr.current = currentDataStr;
+          setServices(data.services || []);
+          setHistory(data.history || {});
+        }
       } catch (error) {
         console.warn("Failed to fetch health data", error);
       } finally {
