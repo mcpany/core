@@ -1,0 +1,3 @@
+FROM mirror.gcr.io/library/node:20-bookworm-slim AS base
+FROM base AS runner
+WORKDIR /app

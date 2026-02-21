@@ -1,9 +1,23 @@
-FROM mcr.microsoft.com/playwright:v1.58.0-jammy
+# Copyright 2025 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+# Use Node 20 Bookworm Slim (matches ui/Dockerfile base) to avoid whiteout issues with mcr images
+FROM mirror.gcr.io/library/node:20-bookworm-slim
 
 WORKDIR /work/ui
+
+# Install system dependencies
+# We need git for some npm packages or tools
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    && rm -rf /var/lib/apt/lists/*
 
 # Copy package files first for caching
 COPY ui/package.json ui/package-lock.json* ui/.npmrc* ./
 
 # Install dependencies
 RUN npm install --package-lock=false --registry=https://registry.npmjs.org/
+
+# Install Playwright browsers and dependencies
+# This ensures all system libraries required by browsers are present
+RUN npx playwright install --with-deps
