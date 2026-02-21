@@ -23,6 +23,10 @@ interface GlobalSettings {
     [key: string]: any;
 }
 
+/**
+ * PipelineVisualizer allows users to view and reorder the middleware processing pipeline.
+ * @returns The rendered component.
+ */
 export function PipelineVisualizer() {
     const [middlewares, setMiddlewares] = useState<Middleware[]>([]);
     const [settings, setSettings] = useState<GlobalSettings | null>(null);

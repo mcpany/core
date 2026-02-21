@@ -5,19 +5,20 @@ I have implemented mobile responsiveness improvements for the MCP Any dashboard.
 ## Features
 
 1. **Network Graph Mobile Mode**
-   - The control card is now collapsible to save screen space.
-   - The controls are positioned to be accessible on smaller screens.
-   - The node details sheet now takes full width on mobile.
+   - The control card is collapsible to save screen space.
+   - Controls are repositioned for accessibility on smaller screens.
+   - The node details sheet takes full width on mobile devices.
 
 2. **Log Stream Mobile Layout**
-   - Header controls are stacked to fit narrow screens.
-   - A dedicated Play/Pause button is available for easier access.
-   - Log rows are adjusted for readability.
+   - Header controls stack vertically to fit narrow screens.
+   - Log rows are adjusted for readability, hiding less critical columns on small viewports.
 
 3. **Secret Manager Mobile Layout**
-   - The table is now horizontally scrollable.
+   - The list of secrets is responsive and scrollable.
    - The "Add Secret" dialog inputs are stacked for better usability.
 
-## Screenshots
+## Implementation Verification
 
-*(Screenshots are currently unavailable in the documentation)*
+The mobile responsiveness is achieved through:
+- **Tailwind CSS breakpoints** (e.g., `md:hidden`, `flex-col`) in React components.
+- **Conditional rendering** based on viewport size (e.g., `isMobile` checks in Network Graph).

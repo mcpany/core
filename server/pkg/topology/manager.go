@@ -320,13 +320,11 @@ func (m *Manager) GetRecentServiceStats(serviceID string, window time.Duration) 
 			totalReqs += stats.Requests
 			totalErrors += stats.Errors
 			totalLatency += stats.Latency
-		} else {
-			if stats.ServiceStats != nil {
-				if sStats, ok := stats.ServiceStats[serviceID]; ok {
-					totalReqs += sStats.Requests
-					totalErrors += sStats.Errors
-					totalLatency += sStats.Latency
-				}
+		} else if stats.ServiceStats != nil {
+			if sStats, ok := stats.ServiceStats[serviceID]; ok {
+				totalReqs += sStats.Requests
+				totalErrors += sStats.Errors
+				totalLatency += sStats.Latency
 			}
 		}
 	}
@@ -365,10 +363,12 @@ func (m *Manager) GetTrafficHistory(serviceID string) []TrafficPoint {
 					errs = sStats.Errors
 					lat = sStats.Latency
 				}
-			} else if serviceID == "" {
-				reqs = stats.Requests
-				errs = stats.Errors
-				lat = stats.Latency
+			} else {
+				if serviceID == "" {
+					reqs = stats.Requests
+					errs = stats.Errors
+					lat = stats.Latency
+				}
 			}
 		}
 

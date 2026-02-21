@@ -7,6 +7,10 @@
 
 import { PipelineVisualizer } from "@/components/middleware/pipeline-visualizer";
 
+/**
+ * MiddlewarePage renders the middleware configuration page.
+ * @returns The rendered page.
+ */
 export default function MiddlewarePage() {
     return (
         <div className="flex-1 space-y-4 p-8 pt-6">

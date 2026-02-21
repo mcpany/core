@@ -107,9 +107,9 @@ Run the E2E verification test:
     ```bash
     make build
     ```
-2.  Run the test:
+2.  Run the test (from the project root):
     ```bash
-    go test -v -count=1 -tags=e2e ./docs/features/caching
+    go test -v -count=1 -tags=e2e ./server/docs/features/caching
     ```
 
 ### Metrics
