@@ -641,7 +641,15 @@ else
 endif
 
 # Target to build CI builder image (Alpine)
-docker-build-ci: docker/Dockerfile.ci
+docker-build-ci-runner: docker/Dockerfile.ci
+	@echo "Building CI builder Docker image (iowoi/mcpany-runner-ci:latest)..."
+	@if [ "$(PUSH)" = "true" ]; then \
+		$(DOCKER_BUILD_CMD) --push -t iowoi/mcpany-runner-ci:latest -f docker/Dockerfile.ci $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) ..; \
+	else \
+		$(DOCKER_BUILD_CMD) -t iowoi/mcpany-runner-ci:latest -f docker/Dockerfile.ci $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) ..; \
+	fi
+
+docker-build-ci: docker-build-ci-runner
 ifdef HAS_DOCKER
 	@echo "Building CI builder Docker image (iowoi/mcpany-runner-ci:latest)..."
 	@if [ "$(PUSH)" = "true" ]; then \

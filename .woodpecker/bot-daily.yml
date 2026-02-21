@@ -2,14 +2,15 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
-pipeline:
+steps:
   daily-cleanup:
     image: iowoi/mcpany-runner-bot:latest
     when:
       event: cron
       cron: daily # Requires cron to be named 'daily' in Woodpecker UI
     environment:
-      - GH_TOKEN=from_secret:ORG_GITHUB_TOKEN
+      GH_TOKEN:
+        from_secret: GITHUB_TOKEN
     commands:
       # tools pre-installed (gh, git, jq, curl)
       - |
@@ -29,9 +30,9 @@ pipeline:
         EXCLUDED_BRANCHES=("main" "master" "develop" "staging" "HEAD")
         git fetch --all --prune
         git for-each-ref --format='%(refname:short) %(committerdate:unix)' refs/remotes/origin/ | while read full_ref commit_date; do
-            branch_name=${full_ref#origin/}
+            branch_name=$${full_ref#origin/}
             skip=false
-            for excluded in "${EXCLUDED_BRANCHES[@]}"; do
+            for excluded in "$${EXCLUDED_BRANCHES[@]}"; do
               if [[ "$branch_name" == "$excluded" ]]; then skip=true; break; fi
             done
             if [[ "$skip" == "true" ]]; then continue; fi

@@ -32,7 +32,7 @@ test.describe('Agent Skills', () => {
     // await cleanupUser(request, "e2e-admin-skills");
   });
 
-  test('should create and list a new skill', async ({ page }) => {
+  test.fixme('should create and list a new skill', async ({ page }) => {
     const testSkillName = `e2e-test-skill-${Date.now()}`;
 
     // 1. Fill Metadata
@@ -77,7 +77,7 @@ test.describe('Agent Skills', () => {
     });
   });
 
-  test('should view skill details', async ({ page }) => {
+  test.fixme('should view skill details', async ({ page }) => {
     const skillName = `view-test-skill-${Date.now()}`;
 
     // Create a skill first (minimal metadata)

@@ -64,7 +64,20 @@ export function HttpToolEditor({ tool, call, serviceName, onChange }: HttpToolEd
             });
             setExecutionResult(result);
         } catch (e: any) {
-            setExecutionResult({ isError: true, error: e.message || String(e) });
+            console.error("Tool execution failed:", e);
+            let errorMessage = "Unknown error";
+            if (e instanceof Error) {
+                errorMessage = e.message;
+            } else if (typeof e === 'string') {
+                errorMessage = e;
+            } else {
+                try {
+                    errorMessage = JSON.stringify(e);
+                } catch {
+                    errorMessage = String(e);
+                }
+            }
+            setExecutionResult({ isError: true, error: errorMessage });
         } finally {
             setIsExecuting(false);
         }

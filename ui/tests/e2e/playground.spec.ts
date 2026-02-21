@@ -72,7 +72,7 @@ test.describe('Playground Complex Schema Support', () => {
     await expect(page.getByRole('dialog').getByText('user', { exact: false })).toBeVisible();
 
     // Try to submit empty form (should fail validation because user.name is required)
-    await page.getByRole('button', { name: 'Build Command' }).click();
+    await page.getByRole('button', { name: 'Run Tool' }).click();
 
     // Fill the form
     await page.getByPlaceholder('name').fill('Bob');
@@ -82,8 +82,11 @@ test.describe('Playground Complex Schema Support', () => {
     await page.getByRole('button', { name: 'Add Item' }).click();
     await page.getByPlaceholder('Item 1').fill('developer');
 
-    // Run Tool
+    // Run Tool (Closes dialog and populates input)
     await page.getByRole('button', { name: 'Run Tool' }).click();
+
+    // Execute command
+    await page.getByRole('button', { name: 'Send' }).click();
 
     // Verify execution
     // The playground adds a user message with the command

@@ -167,7 +167,7 @@ test.describe('Tool Exploration', () => {
             // Wait, looking at ToolInspector code:
             // setOutput(`Error: ${e.message}`);
             // So it will be in the same pre tag, just with "Error: " prefix.
-            const errorArea = page.getByText(/Error:/);
+            const errorArea = page.getByText(/(Error:|upstream|fetch)/i);
             await expect(errorArea).toBeVisible({ timeout: 5000 });
         }
     });

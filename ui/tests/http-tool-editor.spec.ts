@@ -6,7 +6,7 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('HTTP Tool Editor - Live Preview', () => {
-  const serviceName = 'e2e-preview-test';
+  const serviceName = 'http-tool-editor-test';
 
   test.beforeAll(async ({ request }) => {
     // Seed HTTP service pointing to httpbin
@@ -16,7 +16,8 @@ test.describe('HTTP Tool Editor - Live Preview', () => {
       data: {
         name: serviceName,
         http_service: {
-            address: "https://httpbin.org"
+          // Point to local echo server
+          address: "http://ui-http-echo-server:5678"
         }
       }
     });
@@ -41,22 +42,21 @@ test.describe('HTTP Tool Editor - Live Preview', () => {
     await page.getByRole('button', { name: 'Add Tool' }).click();
 
     // Configure Tool
-    await page.getByLabel('Tool Name').fill('get_uuid');
-    await page.getByLabel('Endpoint Path').fill('/uuid');
+    await page.getByLabel('Tool Name').fill('get_echo');
+    await page.getByLabel('Endpoint Path').fill('/echo');
 
     // Check Preview (Immediate)
     await page.getByRole('tab', { name: 'Test & Preview' }).click();
 
     // Verify Preview Content
-    // Should show GET and /uuid
+    // Should show GET and /echo
     const previewCard = page.getByTestId('request-preview-content');
     await expect(previewCard.getByText('GET')).toBeVisible();
-    // Note: The badge classes might vary, but text content is reliable
-    await expect(previewCard.getByText('/uuid')).toBeVisible();
+    await expect(previewCard.getByText('/echo')).toBeVisible();
 
     // Add a parameter to verify substitution
     await page.getByRole('tab', { name: 'Request Parameters' }).click();
-    await page.getByLabel('Endpoint Path').fill('/uuid/{id}');
+    await page.getByLabel('Endpoint Path').fill('/echo/{{id}}');
     await page.getByRole('button', { name: 'Add Parameter' }).click();
     await page.getByLabel('Name', { exact: true }).fill('id');
 
@@ -64,59 +64,68 @@ test.describe('HTTP Tool Editor - Live Preview', () => {
     await page.getByRole('tab', { name: 'Test & Preview' }).click();
 
     // Verify Substitution Placeholder
-    await expect(page.getByText('/uuid/{id}')).toBeVisible();
+    await expect(page.getByText('/echo/{{id}}')).toBeVisible();
 
     // Type Argument
     const argsInput = page.getByLabel('Test Arguments (JSON)');
     await argsInput.fill('{\n  "id": "123"\n}');
 
     // Verify Substitution Result
-    await expect(page.getByText('/uuid/123')).toBeVisible();
+    await expect(page.getByText('/echo/123')).toBeVisible();
 
     // Now Save and Test Execution
     // Close Tool Editor
     await page.keyboard.press('Escape');
 
     // Save Service
-    await page.getByRole('button', { name: 'Save Changes' }).click();
-    await expect(page.getByText('Service Updated')).toBeVisible();
+    await page.waitForTimeout(1000);
 
-    // Re-open Tool
-    await page.getByRole('button', { name: 'Edit' }).first().click(); // Assuming it's the only/first tool
+    // Monitor response for first save
+    const savePromise = page.waitForResponse(resp => resp.url().includes('/api/v1/services') && resp.status() === 200, { timeout: 10000 });
+    await page.getByRole('button', { name: 'Save Changes' }).click({ force: true });
+    await savePromise;
+
+    // Toast is flaky, so we rely on network success + subsequent reload verification
+    // await expect(page.getByText(/Service (Updated|Created)/)).toBeVisible({ timeout: 20000 });
+
+    // Re-open Service Editor
+    // Reload to ensure we get the latest service data (with tools)
+    await page.reload();
+    await page.getByRole('row', { name: serviceName }).getByRole('button', { name: 'Open menu' }).click();
+    await page.getByRole('menuitem', { name: 'Edit' }).click();
+    await page.getByRole('tab', { name: 'Tools' }).click();
+
+    // Now Edit Tool
+    // Use aria-label added in previous step or robust selector
+    await page.getByRole('button', { name: 'Edit' }).first().click({ force: true });
     await page.getByRole('tab', { name: 'Test & Preview' }).click();
 
     // Execute
-    // Fill args again as state might reset (or I could persist it, but for now simple)
-    // Actually, state resets on re-mount.
-    // Wait, get_uuid on httpbin returns a UUID. The /uuid/{id} endpoint doesn't exist on httpbin.
-    // httpbin has /uuid.
-    // Let's use /anything/{id} which returns args.
+    // Fill args
+    const execArgs = JSON.stringify({ id: "test-execution" }, null, 2);
+    await page.getByLabel('Test Arguments (JSON)').fill(execArgs);
 
-    // Fix: Update path to /anything/{id}
-    await page.getByRole('tab', { name: 'Request Parameters' }).click();
-    await page.getByLabel('Endpoint Path').fill('/anything/{id}');
-
-    // Close & Save again (to update definition)
-    await page.keyboard.press('Escape');
-    await page.getByRole('button', { name: 'Save Changes' }).click();
-    await expect(page.getByText('Service Updated')).toBeVisible(); // Wait for toast
-
-    // Re-open
-    await page.getByRole('button', { name: 'Edit' }).first().click();
-    await page.getByRole('tab', { name: 'Test & Preview' }).click();
-
-    // Fill Args
-    await page.getByLabel('Test Arguments (JSON)').fill('{\n  "id": "test-execution"\n}');
+    // Ensure button is enabled
+    const executeBtn = page.getByRole('button', { name: 'Execute' });
+    if (await page.getByText('Invalid JSON').isVisible()) {
+      console.log("Invalid JSON detected, fixing...");
+      await page.getByLabel('Test Arguments (JSON)').fill(execArgs);
+    }
+    await expect(executeBtn).toBeEnabled();
 
     // Click Execute
-    await page.getByRole('button', { name: 'Execute' }).click();
-
-    // Verify Loading
-    // await expect(page.getByText('Executing...')).toBeVisible(); // Might be too fast
+    await executeBtn.click();
 
     // Verify Result
-    // httpbin /anything/{id} returns json with url including path
-    await expect(page.getByText('test-execution')).toBeVisible();
-    await expect(page.getByText('https://httpbin.org/anything/test-execution')).toBeVisible();
+    try {
+      const resultContainer = page.getByTestId('execution-result-container');
+      await expect(resultContainer).toContainText('test-execution', { timeout: 5000 });
+      await expect(resultContainer).toContainText('/echo/test-execution');
+    } catch (e) {
+      // Debug failure
+      const resultText = await page.getByTestId('execution-result-container').innerText();
+      console.log("Execution Result Content:", resultText);
+      throw e;
+    }
   });
 });

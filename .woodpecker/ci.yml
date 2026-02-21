@@ -2,46 +2,70 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
-pipeline:
+steps:
   # -------------------------------------------------------------------------
-  # Job 1: Lint & Fast Tests
+  # Job 1a: Lint
   # -------------------------------------------------------------------------
-  lint-and-test:
+  lint:
+    group: ci-fast
     image: iowoi/mcpany-runner-ci:latest
-    group: verify
     when:
       - event: [push, pull_request]
-        branch: main
+        branch: [main]
         path:
           include: ["**"]
           exclude: ["**.md", "**.txt", "docs/**", "LICENSE"]
     environment:
-      - GEMINI_API_KEY=from_secret
-      - IPINFO_API_TOKEN=from_secret
+      GEMINI_API_KEY:
+        from_secret: GEMINI_API_KEY
+      IPINFO_API_TOKEN:
+        from_secret: IPINFO_API_TOKEN
+      TOOL_INSTALL_DIR: /usr/local/bin
     commands:
-      # dependencies are pre-installed in iowoi/mcpany-runner-ci
       - make prepare
-      # Lint
       - make lint
-      # Fast Tests
+
+  # -------------------------------------------------------------------------
+  # Job 1b: Fast Tests
+  # -------------------------------------------------------------------------
+  test:
+    group: ci-fast
+    image: iowoi/mcpany-runner-ci:latest
+    when:
+      - event: [push, pull_request]
+        branch: [main]
+        path:
+          include: ["**"]
+          exclude: ["**.md", "**.txt", "docs/**", "LICENSE"]
+    environment:
+      GEMINI_API_KEY:
+        from_secret: GEMINI_API_KEY
+      IPINFO_API_TOKEN:
+        from_secret: IPINFO_API_TOKEN
+      TOOL_INSTALL_DIR: /usr/local/bin
+    commands:
+      - make prepare
       - make test-fast
+
 
   # -------------------------------------------------------------------------
   # Job 2: Build Docker Images (Parallel)
   # -------------------------------------------------------------------------
   build-images:
-    group: build
     image: docker:24-dind
     privileged: true
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
-      - DOCKERHUB_USERNAME=from_secret
-      - DOCKERHUB_TOKEN=from_secret
-      - GITHUB_TOKEN=from_secret
+      DOCKERHUB_USERNAME:
+        from_secret: DOCKERHUB_USERNAME
+      DOCKERHUB_TOKEN:
+        from_secret: DOCKERHUB_TOKEN
+      GITHUB_TOKEN:
+        from_secret: GITHUB_TOKEN
     when:
       - event: [push, pull_request]
-        branch: main
+        branch: [main]
         path:
           include: ["**"]
           exclude: ["**.md", "**.txt", "docs/**", "LICENSE"]
@@ -68,17 +92,19 @@ pipeline:
   # Job 3: E2E Tests (Sequential & Parallel)
   # -------------------------------------------------------------------------
   e2e-tests:
-    group: e2e
     image: iowoi/mcpany-runner-ci:latest
     privileged: true # For docker-in-docker if needed, or binding socket
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
-      - GEMINI_API_KEY=from_secret
-      - IPINFO_API_TOKEN=from_secret
+      GEMINI_API_KEY:
+        from_secret: GEMINI_API_KEY
+      IPINFO_API_TOKEN:
+        from_secret: IPINFO_API_TOKEN
+      TOOL_INSTALL_DIR: /usr/local/bin
     when:
       - event: [push, pull_request]
-        branch: main
+        branch: [main]
         path:
           include: ["**"]
           exclude: ["**.md", "**.txt", "docs/**", "LICENSE"]
@@ -99,4 +125,3 @@ services:
   docker:
     image: docker:24-dind
     privileged: true
-    commands: ["--storage-driver=overlay2"]

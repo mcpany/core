@@ -203,13 +203,13 @@ export function AnalyticsDashboard() {
 
                 <TabsContent value="overview" className="space-y-4">
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                        <Card>
+                        <Card data-testid="metric-card-Total Requests">
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                 <CardTitle className="text-sm font-medium">Total Requests</CardTitle>
                                 <Activity className="h-4 w-4 text-muted-foreground" />
                             </CardHeader>
                             <CardContent>
-                                <div className="text-2xl font-bold">{totalRequests.toLocaleString()}</div>
+                                <div className="text-2xl font-bold" data-testid="metric-value">{totalRequests.toLocaleString()}</div>
                                 <p className="text-xs text-muted-foreground">
                                     <span className="text-emerald-500 flex items-center">
                                        <Activity className="h-3 w-3 mr-1" /> Live
@@ -217,7 +217,7 @@ export function AnalyticsDashboard() {
                                 </p>
                             </CardContent>
                         </Card>
-                        <Card>
+                        <Card data-testid="metric-card-Avg Throughput">
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                 <CardTitle className="text-sm font-medium">Avg Throughput</CardTitle>
                                 <Activity className="h-4 w-4 text-muted-foreground" />
@@ -226,7 +226,7 @@ export function AnalyticsDashboard() {
                                 <div className="text-2xl font-bold">{avgRps} rps</div>
                             </CardContent>
                         </Card>
-                        <Card>
+                        <Card data-testid="metric-card-Avg Latency">
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                 <CardTitle className="text-sm font-medium">Avg Latency</CardTitle>
                                 <Clock className="h-4 w-4 text-muted-foreground" />
@@ -235,7 +235,7 @@ export function AnalyticsDashboard() {
                                 <div className="text-2xl font-bold">{avgLatency}ms</div>
                             </CardContent>
                         </Card>
-                        <Card>
+                        <Card data-testid="metric-card-Error Rate">
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                 <CardTitle className="text-sm font-medium">Error Rate</CardTitle>
                                 <AlertTriangle className="h-4 w-4 text-muted-foreground" />

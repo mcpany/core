@@ -22,23 +22,34 @@ import (
 
 func echoHandler(w http.ResponseWriter, r *http.Request) {
 	slog.Info("http_echo_server: Received request", "method", r.Method, "path", r.URL.Path)
-	if r.Method != http.MethodPost {
-		slog.Warn("http_echo_server: Method not allowed", "method", r.Method)
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
+	
 	bodyBytes, errRead := io.ReadAll(r.Body)
 	if errRead != nil {
 		slog.Error("http_echo_server: Error reading request body", "error", errRead)
 		http.Error(w, "Failed to read request body", http.StatusInternalServerError)
 		return
 	}
-	w.Header().Set("Content-Type", consts.ContentTypeApplicationJSON) // Assume JSON echo
+	
+	w.Header().Set("Content-Type", consts.ContentTypeApplicationJSON)
 	w.WriteHeader(http.StatusOK)
-	if _, errWrite := w.Write(bodyBytes); errWrite != nil {
+	
+	// Construct a simple JSON response echoing request details
+	// We do this manually to avoid importing large encoding/json structs if not needed, 
+	// but standard library is fine.
+	// We want to verify URL contains "test-execution".
+	
+	response := fmt.Sprintf(`{
+		"method": "%s",
+		"url": "%s",
+		"body": "%s",
+		"headers": {} 
+	}`, r.Method, r.URL.Path, string(bodyBytes))
+	// Note: Headers handling is simplified for this mock.
+	
+	if _, errWrite := w.Write([]byte(response)); errWrite != nil {
 		slog.Error("http_echo_server: Error writing response body", "error", errWrite)
 	}
-	slog.Info("http_echo_server: Responded to POST /echo", "bytes", len(bodyBytes))
+	slog.Info("http_echo_server: Responded to request", "path", r.URL.Path)
 }
 
 // main starts the mock HTTP echo server.
@@ -61,7 +72,7 @@ func main() {
 		fmt.Printf("%d\n", actualPort) // Output port for test runner
 	}
 	mux := http.NewServeMux()
-	mux.HandleFunc("/echo", echoHandler)
+	mux.HandleFunc("/", echoHandler)
 	mux.HandleFunc("/health", func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		_, _ = fmt.Fprintln(w, "OK")
