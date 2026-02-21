@@ -33,6 +33,7 @@ func TestRedactingWriter_Write(t *testing.T) {
 	}{
 		{
 			name:           "Happy Path: Valid JSON with sensitive keys",
+			// Verify that known sensitive keys like "password" are redacted.
 			input:          []byte(`{"password": "secret", "user": "alice"}`),
 			expectedOutput: `{"password": "[REDACTED]", "user": "alice"}`,
 		},
