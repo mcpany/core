@@ -9,13 +9,19 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/mcpany/core/server/pkg/tool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
 // DynamicResource implements the Resource interface for resources that are
 // fetched dynamically by executing a tool.
+//
+// Summary: Represents a resource backed by a dynamic tool execution.
+//
+// Fields:
+//   - resource: *mcp.Resource. The MCP metadata for the resource.
+//   - tool: tool.Tool. The tool to execute to retrieve the resource content.
 type DynamicResource struct {
 	resource *mcp.Resource
 	tool     tool.Tool
@@ -41,12 +47,12 @@ func NewDynamicResource(def *configv1.ResourceDefinition, t tool.Tool) (*Dynamic
 	}
 	return &DynamicResource{
 		resource: &mcp.Resource{
-			URI:         def.GetUri(),
 			Name:        def.GetName(),
-			Title:       def.GetTitle(),
-			Description: def.GetDescription(),
+			URI:         def.GetUri(),
 			MIMEType:    def.GetMimeType(),
+			Description: def.GetDescription(),
 			Size:        def.GetSize(),
+			Title:       def.GetTitle(),
 		},
 		tool: t,
 	}, nil

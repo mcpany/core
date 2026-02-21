@@ -653,7 +653,7 @@ func (s *FileStore) HasConfigSources() bool {
 // Returns:
 //   - *configv1.McpAnyServerConfig: The merged configuration.
 //   - error: An error if loading or merging fails.
-func (s *FileStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
+func (s *FileStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) { //nolint:gocyclo
 	filePaths, err := s.collectFilePaths()
 	if err != nil {
 		return nil, fmt.Errorf("failed to collect config file paths: %w", err)

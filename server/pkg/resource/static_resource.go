@@ -17,6 +17,14 @@ import (
 
 // StaticResource implements the Resource interface for resources that are
 // defined statically in the configuration (e.g. pointing to a URL).
+//
+// Summary: Represents a resource with static content or a direct URL.
+//
+// Fields:
+//   - resource: *mcp.Resource. The MCP metadata for the resource.
+//   - serviceID: string. The ID of the service owning the resource.
+//   - httpClient: *http.Client. The client used to fetch remote content.
+//   - staticContent: *configv1.StaticResource. Optional inline content.
 type StaticResource struct {
 	resource      *mcp.Resource
 	serviceID     string
