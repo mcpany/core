@@ -1,12 +1,18 @@
 # Copyright 2025 Author(s) of MCP Any
 # SPDX-License-Identifier: Apache-2.0
 
-# Use pre-prepared runner image
-FROM iowoi/mcpany-runner-ui:latest
+# Use standard Playwright image instead of missing custom image
+# mcr.microsoft.com/playwright:v1.58.0-jammy matches the version in package.json
+FROM mcr.microsoft.com/playwright:v1.58.0-jammy
 
 WORKDIR /work/ui
 
-# Dependencies are already installed in the base image
+# Install dependencies needed for the build/test if not present in base
+# The base image has browsers and node, but we need to install npm packages
+# Copy package files first for caching
+COPY ui/package.json ui/package-lock.json ./
+# Install dependencies
+RUN npm ci
 
 # Copy the rest of the UI code
 COPY ui/ .
