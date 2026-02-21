@@ -44,9 +44,13 @@ type Option func(*RateLimitMiddleware)
 
 // WithTokenizer sets a custom tokenizer for the middleware.
 //
-// t is the t.
+// Summary: Configures a custom tokenizer.
 //
-// Returns the result.
+// Parameters:
+//   - t (tokenizer.Tokenizer): The tokenizer to use.
+//
+// Returns:
+//   - (Option): The configured option.
 func WithTokenizer(t tokenizer.Tokenizer) Option {
 	return func(m *RateLimitMiddleware) {
 		m.tokenizer = t
@@ -55,10 +59,14 @@ func WithTokenizer(t tokenizer.Tokenizer) Option {
 
 // NewRateLimitMiddleware creates a new RateLimitMiddleware.
 //
-// toolManager is the toolManager.
-// opts contains the options.
+// Summary: Initializes the rate limit middleware.
 //
-// Returns the result.
+// Parameters:
+//   - toolManager (tool.ManagerInterface): The tool manager.
+//   - opts (...Option): Optional configuration settings.
+//
+// Returns:
+//   - (*RateLimitMiddleware): The initialized middleware.
 func NewRateLimitMiddleware(toolManager tool.ManagerInterface, opts ...Option) *RateLimitMiddleware {
 	m := &RateLimitMiddleware{
 		toolManager: toolManager,
@@ -83,12 +91,20 @@ func NewRateLimitMiddleware(toolManager tool.ManagerInterface, opts ...Option) *
 
 // Execute executes the rate limiting middleware.
 //
-// ctx is the context for the request.
-// req is the request object.
-// next is the next.
+// Summary: Executes rate limiting logic before passing to the next handler.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - req (*tool.ExecutionRequest): The execution request.
+//   - next (tool.ExecutionFunc): The next handler.
+//
+// Returns:
+//   - (any): The result of the execution.
+//   - (error): An error if the limit is exceeded or the operation fails.
+//
+// Side Effects:
+//   - Checks against rate limits in memory or Redis.
+//   - Increments counters.
 func (m *RateLimitMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := m.toolManager.GetTool(req.ToolName)
 	if !ok {

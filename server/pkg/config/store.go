@@ -39,11 +39,11 @@ type Engine interface {
 	// Summary: Parses bytes into a protobuf message.
 	//
 	// Parameters:
-	//   - b: []byte. The raw bytes to parse.
-	//   - v: proto.Message. The destination protobuf message.
+//   - b ([]byte): The raw bytes to parse.
+//   - v (proto.Message): The destination protobuf message.
 	//
 	// Returns:
-	//   - error: An error if parsing fails.
+//   - (error): An error if parsing fails.
 	Unmarshal(b []byte, v proto.Message) error
 }
 
@@ -57,12 +57,12 @@ type StructuredEngine interface {
 	// Summary: Parses a map into a protobuf message.
 	//
 	// Parameters:
-	//   - m: map[string]interface{}. The raw map data.
-	//   - v: proto.Message. The destination protobuf message.
-	//   - originalBytes: []byte. Optional original bytes for error reporting (line numbers).
+	//   - m (map[string]interface{}): The raw map data.
+	//   - v (proto.Message): The destination protobuf message.
+	//   - originalBytes ([]byte): Optional original bytes for error reporting (line numbers).
 	//
 	// Returns:
-	//   - error: An error if parsing fails.
+	//   - (error): An error if parsing fails.
 	UnmarshalFromMap(m map[string]interface{}, v proto.Message, originalBytes []byte) error
 }
 
@@ -76,7 +76,7 @@ type ConfigurableEngine interface {
 	// Summary: Configures the engine to skip schema validation.
 	//
 	// Parameters:
-	//   - skip: bool. True to skip validation.
+	//   - skip (bool): True to skip validation.
 	SetSkipValidation(skip bool)
 
 	// SetIgnoreEnv sets whether to ignore environment variables and other external overrides.
@@ -84,7 +84,7 @@ type ConfigurableEngine interface {
 	// Summary: Configures the engine to ignore environment variables.
 	//
 	// Parameters:
-	//   - ignore: bool. True to ignore environment variables.
+	//   - ignore (bool): True to ignore environment variables.
 	SetIgnoreEnv(ignore bool)
 }
 
@@ -93,11 +93,11 @@ type ConfigurableEngine interface {
 // Summary: Factory function to create the appropriate Engine for a given file path.
 //
 // Parameters:
-//   - path: string. The file path used to determine the configuration format.
+//   - path (string): The file path used to determine the configuration format.
 //
 // Returns:
-//   - Engine: An initialized Engine implementation.
-//   - error: An error if the file extension is not supported.
+//   - (Engine): An initialized Engine implementation.
+//   - (error): An error if the file extension is not supported.
 func NewEngine(path string) (Engine, error) {
 	ext := strings.ToLower(filepath.Ext(path))
 	switch ext {
@@ -302,11 +302,11 @@ type Store interface {
 	// Summary: Loads the complete server configuration.
 	//
 	// Parameters:
-	//   - ctx: context.Context. The context for the request.
+	//   - ctx (context.Context): The context for the request.
 	//
 	// Returns:
-	//   - *configv1.McpAnyServerConfig: The loaded configuration.
-	//   - error: An error if loading fails.
+	//   - (*configv1.McpAnyServerConfig): The loaded configuration.
+	//   - (error): An error if loading fails.
 	Load(ctx context.Context) (*configv1.McpAnyServerConfig, error)
 
 	// HasConfigSources returns true if the store has configuration sources (e.g., file paths) configured.
@@ -314,7 +314,7 @@ type Store interface {
 	// Summary: Checks if the store has any configured sources.
 	//
 	// Returns:
-	//   - bool: True if sources are configured, false otherwise.
+	//   - (bool): True if sources are configured, false otherwise.
 	HasConfigSources() bool
 }
 
@@ -328,11 +328,11 @@ type ServiceStore interface {
 	// Summary: Persists a service configuration.
 	//
 	// Parameters:
-	//   - ctx: context.Context. The context for the request.
-	//   - service: *configv1.UpstreamServiceConfig. The service configuration to save.
+	//   - ctx (context.Context): The context for the request.
+	//   - service (*configv1.UpstreamServiceConfig): The service configuration to save.
 	//
 	// Returns:
-	//   - error: An error if the operation fails.
+	//   - (error): An error if the operation fails.
 	SaveService(ctx context.Context, service *configv1.UpstreamServiceConfig) error
 
 	// GetService retrieves a service configuration by name.
@@ -340,12 +340,12 @@ type ServiceStore interface {
 	// Summary: Retrieves a service configuration.
 	//
 	// Parameters:
-	//   - ctx: context.Context. The context for the request.
-	//   - name: string. The name of the service to retrieve.
+	//   - ctx (context.Context): The context for the request.
+	//   - name (string): The name of the service to retrieve.
 	//
 	// Returns:
-	//   - *configv1.UpstreamServiceConfig: The service configuration.
-	//   - error: An error if the service is not found or the operation fails.
+	//   - (*configv1.UpstreamServiceConfig): The service configuration.
+	//   - (error): An error if the service is not found or the operation fails.
 	GetService(ctx context.Context, name string) (*configv1.UpstreamServiceConfig, error)
 
 	// ListServices retrieves all stored service configurations.
@@ -353,11 +353,11 @@ type ServiceStore interface {
 	// Summary: Lists all services.
 	//
 	// Parameters:
-	//   - ctx: context.Context. The context for the request.
+	//   - ctx (context.Context): The context for the request.
 	//
 	// Returns:
-	//   - []*configv1.UpstreamServiceConfig: A slice of service configurations.
-	//   - error: An error if the operation fails.
+	//   - ([]*configv1.UpstreamServiceConfig): A slice of service configurations.
+	//   - (error): An error if the operation fails.
 	ListServices(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error)
 
 	// DeleteService removes a service configuration by name.
@@ -365,11 +365,11 @@ type ServiceStore interface {
 	// Summary: Deletes a service configuration.
 	//
 	// Parameters:
-	//   - ctx: context.Context. The context for the request.
-	//   - name: string. The name of the service to delete.
+	//   - ctx (context.Context): The context for the request.
+	//   - name (string): The name of the service to delete.
 	//
 	// Returns:
-	//   - error: An error if the operation fails.
+	//   - (error): An error if the operation fails.
 	DeleteService(ctx context.Context, name string) error
 }
 
@@ -382,11 +382,11 @@ const maxExpandRecursionDepth = 100
 // Summary: Expands environment variables in a byte slice.
 //
 // Parameters:
-//   - b: []byte. The bytes containing variable references.
+//   - b ([]byte): The bytes containing variable references.
 //
 // Returns:
-//   - []byte: The expanded bytes.
-//   - error: An error if expansion fails or recursion limit is exceeded.
+//   - ([]byte): The expanded bytes.
+//   - (error): An error if expansion fails or recursion limit is exceeded.
 func expand(b []byte) ([]byte, error) {
 	return expandRecursive(b, 0)
 }
@@ -590,7 +590,7 @@ type FileStore struct {
 // Summary: Sets the skip validation flag.
 //
 // Parameters:
-//   - skip: bool. True to skip validation.
+//   - skip (bool): True to skip validation.
 func (s *FileStore) SetSkipValidation(skip bool) {
 	s.skipValidation = skip
 }
@@ -600,7 +600,7 @@ func (s *FileStore) SetSkipValidation(skip bool) {
 // Summary: Sets the ignore missing environment variables flag.
 //
 // Parameters:
-//   - ignore: bool. True to ignore missing environment variables.
+//   - ignore (bool): True to ignore missing environment variables.
 func (s *FileStore) SetIgnoreMissingEnv(ignore bool) {
 	s.IgnoreMissingEnv = ignore
 }
@@ -610,11 +610,11 @@ func (s *FileStore) SetIgnoreMissingEnv(ignore bool) {
 // Summary: Initializes a new FileStore.
 //
 // Parameters:
-//   - fs: afero.Fs. The filesystem to use.
-//   - paths: []string. The list of paths to scan.
+//   - fs (afero.Fs): The filesystem to use.
+//   - paths ([]string): The list of paths to scan.
 //
 // Returns:
-//   - *FileStore: A new instance of FileStore.
+//   - (*FileStore): A new instance of FileStore.
 func NewFileStore(fs afero.Fs, paths []string) *FileStore {
 	return &FileStore{fs: fs, paths: paths}
 }
@@ -624,11 +624,11 @@ func NewFileStore(fs afero.Fs, paths []string) *FileStore {
 // Summary: Initializes a new FileStore that tolerates errors in config files.
 //
 // Parameters:
-//   - fs: afero.Fs. The filesystem to use.
-//   - paths: []string. The list of paths to scan.
+//   - fs (afero.Fs): The filesystem to use.
+//   - paths ([]string): The list of paths to scan.
 //
 // Returns:
-//   - *FileStore: A new instance of FileStore.
+//   - (*FileStore): A new instance of FileStore.
 func NewFileStoreWithSkipErrors(fs afero.Fs, paths []string) *FileStore {
 	return &FileStore{fs: fs, paths: paths, skipErrors: true}
 }
@@ -638,7 +638,7 @@ func NewFileStoreWithSkipErrors(fs afero.Fs, paths []string) *FileStore {
 // Summary: Checks if the store has any configured paths.
 //
 // Returns:
-//   - bool: True if paths are configured, false otherwise.
+//   - (bool): True if paths are configured, false otherwise.
 func (s *FileStore) HasConfigSources() bool {
 	return len(s.paths) > 0
 }
@@ -648,11 +648,11 @@ func (s *FileStore) HasConfigSources() bool {
 // Summary: Loads and merges configurations from all configured paths.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the request.
+//   - ctx (context.Context): The context for the request.
 //
 // Returns:
-//   - *configv1.McpAnyServerConfig: The merged configuration.
-//   - error: An error if loading or merging fails.
+//   - (*configv1.McpAnyServerConfig): The merged configuration.
+//   - (error): An error if loading or merging fails.
 func (s *FileStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
 	filePaths, err := s.collectFilePaths()
 	if err != nil {

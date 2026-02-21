@@ -22,12 +22,12 @@ import (
 // enabling flag parsing and environment variable overrides (using the "MCPANY_" prefix).
 //
 // Parameters:
-//   - cmd: *cobra.Command. The command instance to which the persistent flags will be attached.
+//   - cmd (*cobra.Command): The command instance to which the persistent flags will be attached.
 //
 // Returns:
 //   None.
 //
-// Throws/Errors:
+// Errors:
 //   Exits the application with status code 1 if a flag binding operation fails
 //   (e.g., if a flag with the same name already exists).
 func BindRootFlags(cmd *cobra.Command) {
@@ -86,12 +86,12 @@ func BindRootFlags(cmd *cobra.Command) {
 // authentication keys, and runtime modes (e.g., stdio).
 //
 // Parameters:
-//   - cmd: *cobra.Command. The command instance to which the server flags will be attached.
+//   - cmd (*cobra.Command): The command instance to which the server flags will be attached.
 //
 // Returns:
 //   None.
 //
-// Throws/Errors:
+// Errors:
 //   Exits the application with status code 1 if a flag binding operation fails.
 func BindServerFlags(cmd *cobra.Command) {
 	cmd.Flags().String("grpc-port", "", "Port for the gRPC registration server. If not specified, gRPC registration is disabled. Env: MCPANY_GRPC_PORT")
@@ -135,12 +135,12 @@ func BindServerFlags(cmd *cobra.Command) {
 // to BindRootFlags and BindServerFlags.
 //
 // Parameters:
-//   - cmd: *cobra.Command. The command instance to which the flags will be attached.
+//   - cmd (*cobra.Command): The command instance to which the flags will be attached.
 //
 // Returns:
 //   None.
 //
-// Throws/Errors:
+// Errors:
 //   Exits the application with status code 1 if a flag binding operation fails.
 func BindFlags(cmd *cobra.Command) {
 	BindRootFlags(cmd)
