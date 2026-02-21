@@ -175,6 +175,20 @@ func TestCommandInjection_Advanced(t *testing.T) {
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "shell injection detected", "cmd.exe should block injection even in single quotes")
 	})
+
+    // Case 10: Echo with JSON (Regression check for UI tests)
+    t.Run("echo_with_json_args", func(t *testing.T) {
+        cmd := "echo"
+        tool := createTestCommandToolWithTemplate(cmd, "{{input}}")
+        // Input resembling JSON used in UI tests
+        req := &ExecutionRequest{
+            ToolName: "test",
+            ToolInputs: []byte(`{"input": "{\"city\":\"San Francisco\",\"days\":5}"}`),
+        }
+
+        _, err := tool.Execute(context.Background(), req)
+        assert.NoError(t, err, "echo should allow JSON-like arguments")
+    })
 }
 
 func createTestCommandToolWithTemplate(command string, template string) Tool {
