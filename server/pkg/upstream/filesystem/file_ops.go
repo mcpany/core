@@ -156,26 +156,47 @@ func safeWriteFile(fs afero.Fs, path string, content []byte, perm os.FileMode) e
 	}
 
 	// 3. File exists. We need to overwrite it safely.
-	// Race condition: user swaps file with symlink between EvalSymlinks/Lstat and OpenFile.
-	// Mitigation: Lstat, check not symlink.
+	// Race condition: user swaps file with symlink between Lstat and OpenFile.
+	// Mitigation: Open-Verify-Truncate dance.
+
+	var lstatInfo os.FileInfo
 	if lstater, ok := fs.(afero.Lstater); ok {
-		info, supported, err := lstater.LstatIfPossible(path)
+		var supported bool
+		lstatInfo, supported, err = lstater.LstatIfPossible(path)
 		if err != nil {
 			return err
 		}
 		if supported {
-			if info.Mode()&os.ModeSymlink != 0 {
+			if lstatInfo.Mode()&os.ModeSymlink != 0 {
 				return fmt.Errorf("access denied: cannot overwrite symlink %s", path)
 			}
+		} else {
+			lstatInfo = nil // Not supported, can't verify
 		}
 	}
 
-	// Truncate and write
-	f, err = fs.OpenFile(path, os.O_WRONLY|os.O_TRUNC, perm)
+	// Open the file WITHOUT truncation first to get a handle to whatever is there.
+	f, err = fs.OpenFile(path, os.O_WRONLY, perm)
 	if err != nil {
 		return err
 	}
 	defer f.Close()
+
+	// Verify that the file we opened is the same one we Lstat-ed (if we did).
+	if lstatInfo != nil {
+		fInfo, err := f.Stat()
+		if err != nil {
+			return err
+		}
+		if !os.SameFile(lstatInfo, fInfo) {
+			return fmt.Errorf("security violation: file identity changed during open (TOCTOU detected)")
+		}
+	}
+
+	// Now that we verified identity, it is safe to truncate.
+	if err := f.Truncate(0); err != nil {
+		return fmt.Errorf("failed to truncate file: %w", err)
+	}
 
 	_, err = f.Write(content)
 	return err
