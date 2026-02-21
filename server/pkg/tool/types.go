@@ -3307,11 +3307,6 @@ func checkInterpreterFunctionCalls(val, language string) error {
 // checkContextualKeywords checks if any keyword in the list is present in val as a whole word
 // AND is followed by one of the suffix characters (ignoring whitespace).
 func checkContextualKeywords(val string, keywords []string, suffixes []rune) error {
-	inSingle := false
-	inDouble := false
-	inBacktick := false
-	escaped := false
-
 	// Helper to check if rune is in suffixes
 	isSuffix := func(r rune) bool {
 		for _, s := range suffixes {
@@ -3322,69 +3317,37 @@ func checkContextualKeywords(val string, keywords []string, suffixes []rune) err
 		return false
 	}
 
+	runes := []rune(val)
 	var wordBuilder strings.Builder
 	inWord := false
 
-	runes := []rune(val)
+	state := &quoteState{}
 
 	for i := 0; i < len(runes); i++ {
 		char := runes[i]
 
-		if escaped {
-			escaped = false
-			continue
-		}
-		if char == '\\' {
-			escaped = true
+		if state.handleEscape(char) {
 			continue
 		}
 
-		// Quote handling
-		if char == '\'' && !inDouble && !inBacktick {
-			inSingle = !inSingle
-			// Treat quotes as delimiters for words
-			if inSingle { // Entered quote
-				if inWord {
-					word := wordBuilder.String()
-					if err := checkWordSuffix(word, keywords, runes, i, isSuffix); err != nil {
-						return err
-					}
-					inWord = false
+		// Handle quotes
+		quoteChanged, inQuote := state.handleQuotes(char)
+		if inQuote {
+			// If we entered a quote, the previous word (if any) ended
+			if quoteChanged && inWord {
+				if err := checkWordSuffix(wordBuilder.String(), keywords, runes, i, isSuffix); err != nil {
+					return err
 				}
+				inWord = false
 			}
 			continue
 		}
-		if char == '"' && !inSingle && !inBacktick {
-			inDouble = !inDouble
-			if inDouble { // Entered quote
-				if inWord {
-					word := wordBuilder.String()
-					if err := checkWordSuffix(word, keywords, runes, i, isSuffix); err != nil {
-						return err
-					}
-					inWord = false
-				}
-			}
-			continue
-		}
-		if char == '`' && !inSingle && !inDouble {
-			inBacktick = !inBacktick
-			if inBacktick { // Entered quote
-				if inWord {
-					word := wordBuilder.String()
-					if err := checkWordSuffix(word, keywords, runes, i, isSuffix); err != nil {
-						return err
-					}
-					inWord = false
-				}
-			}
+		// If we just exited a quote, continue to next char (it was the quote char)
+		if quoteChanged {
 			continue
 		}
 
-		if inSingle || inDouble || inBacktick {
-			continue
-		}
-
+		// Outside quotes
 		if char < 128 && isWordChar(byte(char)) {
 			if !inWord {
 				inWord = true
@@ -3394,9 +3357,7 @@ func checkContextualKeywords(val string, keywords []string, suffixes []rune) err
 		} else {
 			// Delimiter
 			if inWord {
-				word := wordBuilder.String()
-				// Look ahead starting from current char i
-				if err := checkWordSuffix(word, keywords, runes, i, isSuffix); err != nil {
+				if err := checkWordSuffix(wordBuilder.String(), keywords, runes, i, isSuffix); err != nil {
 					return err
 				}
 				inWord = false
@@ -3406,12 +3367,48 @@ func checkContextualKeywords(val string, keywords []string, suffixes []rune) err
 
 	// Check last word
 	if inWord {
-		word := wordBuilder.String()
-		if err := checkWordSuffix(word, keywords, runes, len(runes), isSuffix); err != nil {
+		if err := checkWordSuffix(wordBuilder.String(), keywords, runes, len(runes), isSuffix); err != nil {
 			return err
 		}
 	}
 	return nil
+}
+
+type quoteState struct {
+	inSingle   bool
+	inDouble   bool
+	inBacktick bool
+	escaped    bool
+}
+
+func (s *quoteState) handleEscape(char rune) bool {
+	if s.escaped {
+		s.escaped = false
+		return true
+	}
+	if char == '\\' {
+		s.escaped = true
+		return true
+	}
+	return false
+}
+
+// handleQuotes updates state based on char and returns (changed, inAnyQuote)
+func (s *quoteState) handleQuotes(char rune) (bool, bool) {
+	changed := false
+	if char == '\'' && !s.inDouble && !s.inBacktick {
+		s.inSingle = !s.inSingle
+		changed = true
+	} else if char == '"' && !s.inSingle && !s.inBacktick {
+		s.inDouble = !s.inDouble
+		changed = true
+	} else if char == '`' && !s.inSingle && !s.inDouble {
+		s.inBacktick = !s.inBacktick
+		changed = true
+	}
+
+	inQuote := s.inSingle || s.inDouble || s.inBacktick
+	return changed, inQuote
 }
 
 func checkWordSuffix(word string, keywords []string, runes []rune, nextIdx int, isSuffix func(rune) bool) error {

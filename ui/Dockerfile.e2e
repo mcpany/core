@@ -1,23 +1,32 @@
 # Copyright 2025 Author(s) of MCP Any
 # SPDX-License-Identifier: Apache-2.0
 
-# Use pre-prepared runner image
-FROM iowoi/mcpany-runner-ui:latest
+# Use standard Playwright image instead of missing custom image
+# mcr.microsoft.com/playwright:v1.50.0-jammy is a recent stable version
+FROM mcr.microsoft.com/playwright:v1.50.0-jammy
 
 WORKDIR /work/ui
 
-# Dependencies are already installed in the base image
-
-# Copy the rest of the UI code
+# Copy UI code
 COPY ui/ .
 COPY proto/ /work/proto/
-# Symlink node_modules so proto files can find dependencies
+
+# Install dependencies (since we are not using pre-prepared image)
+RUN npm ci
+
+# Symlink node_modules so proto files can find dependencies (if needed by buf/protoc via node)
+# Note: In standard environment, we might rely on npm install in proto if it has package.json
+# But here we stick to the original structure pattern.
 RUN ln -s /work/ui/node_modules /work/proto/node_modules
+
 # Copy proto folder into ui (instead of symlink) to avoid filesystem root issues
 RUN cp -r /work/proto /work/ui/proto
+
 # Update tsconfig to use local proto path (aligns with copied folder)
 RUN sed -i 's|\.\./proto|proto|g' tsconfig.json
+
 # Recursively chmod, but skip node_modules and symlinks to avoid errors
+# Adjust permissions to ensure the runtime user can write
 RUN find . \( -name node_modules -prune \) -o \( -type l -prune \) -o -exec chmod 777 {} +
 # Ensure proto directory is also writable/accessible
 RUN chmod -R 777 /work/proto
