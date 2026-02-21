@@ -32,16 +32,55 @@ jobs:
     outputs:
       src: ${{ steps.filter.outputs.src }}
     steps:
-      - uses: dorny/paths-filter@v3
-        id: filter
+      - uses: actions/checkout@v5
         with:
-          filters: |
-            src:
-              - '**'
-              - '!**.md'
-              - '!**.txt'
-              - '!docs/**'
-              - '!LICENSE'
+          fetch-depth: 0
+
+      - name: Check for source changes
+        id: filter
+        shell: bash
+        run: |
+          # Determine comparison range
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            BASE_SHA="${{ github.event.pull_request.base.sha }}"
+            HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+          else
+            BASE_SHA="${{ github.event.before }}"
+            HEAD_SHA="${{ github.sha }}"
+          fi
+
+          # Handle new branches or empty base
+          if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" == "0000000000000000000000000000000000000000" ]; then
+             BASE_SHA="HEAD~1"
+             HEAD_SHA="HEAD"
+          fi
+
+          echo "Diffing $BASE_SHA..$HEAD_SHA"
+
+          # List changed files
+          # We use || true to prevent failure if git fails (e.g. invalid sha), defaulting to true (run builds) is safer.
+          CHANGED_FILES=$(git diff --name-only "$BASE_SHA" "$HEAD_SHA" || echo "FORCE_BUILD")
+
+          if [ "$CHANGED_FILES" == "FORCE_BUILD" ]; then
+             echo "Git diff failed, forcing build."
+             echo "src=true" >> $GITHUB_OUTPUT
+             exit 0
+          fi
+
+          HAS_SRC=false
+          while IFS= read -r file; do
+            if [ -z "$file" ]; then continue; fi
+            # Exclusions
+            if [[ "$file" == *.md ]] || [[ "$file" == *.txt ]] || [[ "$file" == docs/* ]] || [[ "$file" == LICENSE ]]; then
+              continue
+            fi
+            # If we reach here, it's a source file
+            HAS_SRC=true
+            break
+          done <<< "$CHANGED_FILES"
+
+          echo "src=$HAS_SRC" >> $GITHUB_OUTPUT
+          echo "Source changes detected: $HAS_SRC"
 
   lint:
     needs: changes
