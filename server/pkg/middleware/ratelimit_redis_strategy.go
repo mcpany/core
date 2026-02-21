@@ -42,7 +42,8 @@ func (s *RedisStrategy) Create(_ context.Context, serviceID, limitScopeKey, part
 		return nil, fmt.Errorf("redis config is missing")
 	}
 	// ⚡ BOLT: Key Redis clients by config hash instead of serviceID.
-	// Randomized Selection from Top 5 High-Impact Targets
+	// Randomized Selection from Top 5 High-Impact Targets.
+	// This ensures that multiple services sharing the same Redis config use the same connection pool.
 	client, err := s.getRedisClient(config.GetRedis())
 	if err != nil {
 		return nil, err
@@ -53,18 +54,27 @@ func (s *RedisStrategy) Create(_ context.Context, serviceID, limitScopeKey, part
 func (s *RedisStrategy) getRedisClient(config *bus.RedisBus) (*redis.Client, error) {
 	configHash := config.GetAddress() + "|" + config.GetPassword() + "|" + strconv.Itoa(int(config.GetDb()))
 
+	// Fast path: Check if client exists
 	if val, ok := s.redisClients.Load(configHash); ok {
 		if client, ok := val.(*redis.Client); ok {
 			return client, nil
 		}
 	}
 
+	// Slow path: Create new client and use LoadOrStore to handle race conditions
 	opts := &redis.Options{
 		Addr:     config.GetAddress(),
 		Password: config.GetPassword(),
 		DB:       int(config.GetDb()),
 	}
-	client := redisClientCreator(opts)
-	s.redisClients.Store(configHash, client)
-	return client, nil
+	newClient := redisClientCreator(opts)
+
+	actual, loaded := s.redisClients.LoadOrStore(configHash, newClient)
+	if loaded {
+		// Another goroutine created the client first. Close our redundant one.
+		_ = newClient.Close()
+		return actual.(*redis.Client), nil
+	}
+
+	return newClient, nil
 }

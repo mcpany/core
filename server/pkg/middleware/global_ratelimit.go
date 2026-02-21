@@ -217,18 +217,27 @@ func (m *GlobalRateLimitMiddleware) calculateConfigHash(config *bus.RedisBus) st
 func (m *GlobalRateLimitMiddleware) getRedisClient(config *bus.RedisBus) *redis.Client {
 	configHash := m.calculateConfigHash(config)
 
+	// Fast path: Check if client exists
 	if val, ok := m.redisClients.Load(configHash); ok {
 		if client, ok := val.(*redis.Client); ok {
 			return client
 		}
 	}
 
+	// Slow path: Create new client and use LoadOrStore to handle race conditions
 	opts := &redis.Options{
 		Addr:     config.GetAddress(),
 		Password: config.GetPassword(),
 		DB:       int(config.GetDb()),
 	}
-	client := redisClientCreator(opts)
-	m.redisClients.Store(configHash, client)
-	return client
+	newClient := redisClientCreator(opts)
+
+	actual, loaded := m.redisClients.LoadOrStore(configHash, newClient)
+	if loaded {
+		// Another goroutine created the client first. Close our redundant one.
+		_ = newClient.Close()
+		return actual.(*redis.Client)
+	}
+
+	return newClient
 }
