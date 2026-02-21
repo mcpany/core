@@ -16,14 +16,22 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/config"
 	"github.com/mcpany/core/server/pkg/logging"
-	"github.com/mcpany/core/server/pkg/storage"
 	"github.com/mcpany/core/server/pkg/util/passhash"
 )
 
 func (a *Application) initializeDatabase(ctx context.Context, store config.Store) error {
 	log := logging.GetLogger()
 	// Check if already initialized
-	s, ok := store.(storage.Storage)
+	s, ok := store.(interface {
+		ListServices(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error)
+		GetGlobalSettings(ctx context.Context) (*configv1.GlobalSettings, error)
+		SaveGlobalSettings(ctx context.Context, gs *configv1.GlobalSettings) error
+		SaveService(ctx context.Context, service *configv1.UpstreamServiceConfig) error
+		ListUsers(ctx context.Context) ([]*configv1.User, error)
+		CreateUser(ctx context.Context, user *configv1.User) error
+		ListServiceTemplates(ctx context.Context) ([]*configv1.ServiceTemplate, error)
+		SaveServiceTemplate(ctx context.Context, template *configv1.ServiceTemplate) error
+	})
 	if !ok {
 		// Just Load using Store interface
 		cfg, err := store.Load(ctx)
@@ -110,7 +118,7 @@ func (a *Application) initializeDatabase(ctx context.Context, store config.Store
 	}.Build()
 
 	// Save to DB
-	if s, ok := store.(storage.Storage); ok {
+	if ok {
 		if err := s.SaveGlobalSettings(ctx, defaultGS); err != nil {
 			return fmt.Errorf("failed to save default global settings: %w", err)
 		}
@@ -137,7 +145,10 @@ func (a *Application) initializeDatabase(ctx context.Context, store config.Store
 }
 
 func (a *Application) initializeAdminUser(ctx context.Context, store config.Store) error {
-	s, ok := store.(storage.Storage)
+	s, ok := store.(interface {
+		ListUsers(ctx context.Context) ([]*configv1.User, error)
+		CreateUser(ctx context.Context, user *configv1.User) error
+	})
 	if !ok {
 		return nil // Cannot list/save users
 	}
@@ -194,7 +205,10 @@ func (a *Application) initializeAdminUser(ctx context.Context, store config.Stor
 }
 
 func (a *Application) seedTemplates(ctx context.Context, store config.Store) error {
-	s, ok := store.(storage.Storage)
+	s, ok := store.(interface {
+		ListServiceTemplates(ctx context.Context) ([]*configv1.ServiceTemplate, error)
+		SaveServiceTemplate(ctx context.Context, template *configv1.ServiceTemplate) error
+	})
 	if !ok {
 		return nil
 	}

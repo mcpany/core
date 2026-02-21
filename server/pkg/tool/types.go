@@ -3307,11 +3307,6 @@ func checkInterpreterFunctionCalls(val, language string) error {
 // checkContextualKeywords checks if any keyword in the list is present in val as a whole word
 // AND is followed by one of the suffix characters (ignoring whitespace).
 func checkContextualKeywords(val string, keywords []string, suffixes []rune) error {
-	inSingle := false
-	inDouble := false
-	inBacktick := false
-	escaped := false
-
 	// Helper to check if rune is in suffixes
 	isSuffix := func(r rune) bool {
 		for _, s := range suffixes {
@@ -3322,96 +3317,109 @@ func checkContextualKeywords(val string, keywords []string, suffixes []rune) err
 		return false
 	}
 
-	var wordBuilder strings.Builder
-	inWord := false
-
+	state := &scannerState{}
 	runes := []rune(val)
 
 	for i := 0; i < len(runes); i++ {
 		char := runes[i]
 
-		if escaped {
-			escaped = false
-			continue
-		}
-		if char == '\\' {
-			escaped = true
+		if state.handleEscape(char) {
 			continue
 		}
 
-		// Quote handling
-		if char == '\'' && !inDouble && !inBacktick {
-			inSingle = !inSingle
-			// Treat quotes as delimiters for words
-			if inSingle { // Entered quote
-				if inWord {
-					word := wordBuilder.String()
-					if err := checkWordSuffix(word, keywords, runes, i, isSuffix); err != nil {
-						return err
-					}
-					inWord = false
+		if state.handleQuotes(char) {
+			// Treat quotes as delimiters for words when entering a quote
+			if state.isQuoteStart() && state.inWord {
+				word := state.wordBuilder.String()
+				if err := checkWordSuffix(word, keywords, runes, i, isSuffix); err != nil {
+					return err
 				}
-			}
-			continue
-		}
-		if char == '"' && !inSingle && !inBacktick {
-			inDouble = !inDouble
-			if inDouble { // Entered quote
-				if inWord {
-					word := wordBuilder.String()
-					if err := checkWordSuffix(word, keywords, runes, i, isSuffix); err != nil {
-						return err
-					}
-					inWord = false
-				}
-			}
-			continue
-		}
-		if char == '`' && !inSingle && !inDouble {
-			inBacktick = !inBacktick
-			if inBacktick { // Entered quote
-				if inWord {
-					word := wordBuilder.String()
-					if err := checkWordSuffix(word, keywords, runes, i, isSuffix); err != nil {
-						return err
-					}
-					inWord = false
-				}
+				state.inWord = false
 			}
 			continue
 		}
 
-		if inSingle || inDouble || inBacktick {
+		if state.inAnyQuote() {
 			continue
 		}
 
 		if char < 128 && isWordChar(byte(char)) {
-			if !inWord {
-				inWord = true
-				wordBuilder.Reset()
+			if !state.inWord {
+				state.inWord = true
+				state.wordBuilder.Reset()
 			}
-			wordBuilder.WriteRune(char)
-		} else {
+			state.wordBuilder.WriteRune(char)
+		} else if state.inWord {
 			// Delimiter
-			if inWord {
-				word := wordBuilder.String()
-				// Look ahead starting from current char i
-				if err := checkWordSuffix(word, keywords, runes, i, isSuffix); err != nil {
-					return err
-				}
-				inWord = false
+			word := state.wordBuilder.String()
+			// Look ahead starting from current char i
+			if err := checkWordSuffix(word, keywords, runes, i, isSuffix); err != nil {
+				return err
 			}
+			state.inWord = false
 		}
 	}
 
 	// Check last word
-	if inWord {
-		word := wordBuilder.String()
+	if state.inWord {
+		word := state.wordBuilder.String()
 		if err := checkWordSuffix(word, keywords, runes, len(runes), isSuffix); err != nil {
 			return err
 		}
 	}
 	return nil
+}
+
+type scannerState struct {
+	inSingle   bool
+	inDouble   bool
+	inBacktick bool
+	escaped    bool
+	inWord     bool
+	wordBuilder strings.Builder
+}
+
+func (s *scannerState) handleEscape(char rune) bool {
+	if s.escaped {
+		s.escaped = false
+		return true
+	}
+	if char == '\\' {
+		s.escaped = true
+		return true
+	}
+	return false
+}
+
+func (s *scannerState) handleQuotes(char rune) bool {
+	if char == '\'' && !s.inDouble && !s.inBacktick {
+		s.inSingle = !s.inSingle
+		return true
+	}
+	if char == '"' && !s.inSingle && !s.inBacktick {
+		s.inDouble = !s.inDouble
+		return true
+	}
+	if char == '`' && !s.inSingle && !s.inDouble {
+		s.inBacktick = !s.inBacktick
+		return true
+	}
+	return false
+}
+
+func (s *scannerState) inAnyQuote() bool {
+	return s.inSingle || s.inDouble || s.inBacktick
+}
+
+func (s *scannerState) isQuoteStart() bool {
+	// Logic assumes handleQuotes was called and returned true.
+	// If inSingle is true, we just started it (or ended it, but logic calls this after toggle).
+	// Actually simple toggle means if it's true now, we just started it.
+	// Wait, handleQuotes toggles. So if it IS true, we started it. If false, we ended it.
+	// We want to detect START of quote to use as delimiter.
+	// Actually END of quote is also delimiter but handleQuotes handles that by returning true,
+	// so the main loop skips word accumulation.
+	return s.inSingle || s.inDouble || s.inBacktick
 }
 
 func checkWordSuffix(word string, keywords []string, runes []rune, nextIdx int, isSuffix func(rune) bool) error {
