@@ -42,65 +42,10 @@ func (a *Application) handleDebugSeed() http.HandlerFunc {
 		log := logging.GetLogger()
 
 		// Clear existing data
-		// Services
-		services, err := a.Storage.ListServices(ctx)
-		if err != nil {
-			log.Error("Failed to list services for clearing", "error", err)
-			http.Error(w, "Failed to list services", http.StatusInternalServerError)
+		if err := a.clearAllData(ctx); err != nil {
+			log.Error("Failed to clear existing data", "error", err)
+			http.Error(w, "Failed to clear existing data", http.StatusInternalServerError)
 			return
-		}
-		for _, s := range services {
-			if err := a.Storage.DeleteService(ctx, s.GetName()); err != nil {
-				log.Error("Failed to delete service", "name", s.GetName(), "error", err)
-			}
-		}
-
-		// Credentials
-		creds, err := a.Storage.ListCredentials(ctx)
-		if err != nil {
-			log.Error("Failed to list credentials for clearing", "error", err)
-		} else {
-			for _, c := range creds {
-				if err := a.Storage.DeleteCredential(ctx, c.GetId()); err != nil {
-					log.Error("Failed to delete credential", "id", c.GetId(), "error", err)
-				}
-			}
-		}
-
-		// Secrets
-		secrets, err := a.Storage.ListSecrets(ctx)
-		if err != nil {
-			log.Error("Failed to list secrets for clearing", "error", err)
-		} else {
-			for _, s := range secrets {
-				if err := a.Storage.DeleteSecret(ctx, s.GetId()); err != nil {
-					log.Error("Failed to delete secret", "id", s.GetId(), "error", err)
-				}
-			}
-		}
-
-		// Profiles
-		profiles, err := a.Storage.ListProfiles(ctx)
-		if err != nil {
-			log.Error("Failed to list profiles for clearing", "error", err)
-		} else {
-			for _, p := range profiles {
-				if err := a.Storage.DeleteProfile(ctx, p.GetName()); err != nil {
-					log.Error("Failed to delete profile", "name", p.GetName(), "error", err)
-				}
-			}
-		}
-
-		// Users
-		users, err := a.Storage.ListUsers(ctx)
-		if err != nil {
-			log.Error("Failed to list users for clearing", "error", err)
-		} else {
-			for _, u := range users {
-				if err := a.Storage.DeleteUser(ctx, u.GetId()); err != nil {
-					log.Error("Failed to delete user", "id", u.GetId(), "error", err)
-				}
-			}
 		}
 
 		// Insert new data
@@ -180,4 +125,68 @@ func (a *Application) handleDebugSeed() http.HandlerFunc {
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte(`{"status": "ok"}`))
 	}
+}
+
+func (a *Application) clearAllData(ctx context.Context) error {
+	log := logging.GetLogger()
+
+	// Services
+	services, err := a.Storage.ListServices(ctx)
+	if err != nil {
+		return err
+	}
+	for _, s := range services {
+		if err := a.Storage.DeleteService(ctx, s.GetName()); err != nil {
+			log.Error("Failed to delete service", "name", s.GetName(), "error", err)
+		}
+	}
+
+	// Credentials
+	creds, err := a.Storage.ListCredentials(ctx)
+	if err != nil {
+		log.Error("Failed to list credentials for clearing", "error", err)
+	} else {
+		for _, c := range creds {
+			if err := a.Storage.DeleteCredential(ctx, c.GetId()); err != nil {
+				log.Error("Failed to delete credential", "id", c.GetId(), "error", err)
+			}
+		}
+	}
+
+	// Secrets
+	secrets, err := a.Storage.ListSecrets(ctx)
+	if err != nil {
+		log.Error("Failed to list secrets for clearing", "error", err)
+	} else {
+		for _, s := range secrets {
+			if err := a.Storage.DeleteSecret(ctx, s.GetId()); err != nil {
+				log.Error("Failed to delete secret", "id", s.GetId(), "error", err)
+			}
+		}
+	}
+
+	// Profiles
+	profiles, err := a.Storage.ListProfiles(ctx)
+	if err != nil {
+		log.Error("Failed to list profiles for clearing", "error", err)
+	} else {
+		for _, p := range profiles {
+			if err := a.Storage.DeleteProfile(ctx, p.GetName()); err != nil {
+				log.Error("Failed to delete profile", "name", p.GetName(), "error", err)
+			}
+		}
+	}
+
+	// Users
+	users, err := a.Storage.ListUsers(ctx)
+	if err != nil {
+		log.Error("Failed to list users for clearing", "error", err)
+	} else {
+		for _, u := range users {
+			if err := a.Storage.DeleteUser(ctx, u.GetId()); err != nil {
+				log.Error("Failed to delete user", "id", u.GetId(), "error", err)
+			}
+		}
+	}
+	return nil
 }

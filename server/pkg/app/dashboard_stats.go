@@ -585,8 +585,8 @@ func calculateUptime(history []health.HistoryPoint, window time.Duration) string
 	}
 
 	now := time.Now().UnixMilli()
-	startWindow := now - int64(window.Milliseconds())
-	totalDuration := int64(window.Milliseconds())
+	startWindow := now - window.Milliseconds()
+	totalDuration := window.Milliseconds()
 
 	var upDuration int64
 
