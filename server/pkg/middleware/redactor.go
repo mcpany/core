@@ -89,10 +89,9 @@ func (r *Redactor) RedactJSON(data []byte) ([]byte, error) {
 	}
 
 	// Use streaming redaction to avoid full unmarshal/marshal cycle.
-	// ⚡ Bolt Optimization: Use WalkStandardJSONStrings instead of WalkJSONStrings.
-	// Request/Response bodies in our system are standard JSON, so we can skip
-	// the expensive comment detection logic.
-	return util.WalkStandardJSONStrings(data, func(raw []byte) ([]byte, bool) {
+	// We use WalkJSONStrings to correctly handle comments (JSONC), ensuring we don't
+	// accidentally redact strings inside comments or corrupt structure.
+	return util.WalkJSONStrings(data, func(raw []byte) ([]byte, bool) {
 		// Optimization: Check for obviously safe strings before unmarshaling.
 		// If we have no custom patterns, we can skip unmarshaling if the raw bytes
 		// (including quotes) don't contain indicators of PII: '@', digits, or escapes.
