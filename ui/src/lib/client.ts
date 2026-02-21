@@ -1624,7 +1624,10 @@ export const apiClient = {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
         });
-        if (!res.ok) throw new Error('Failed to seed data');
+        if (!res.ok) {
+            const txt = await res.text();
+            throw new Error(`Failed to seed data: ${res.status} ${txt}`);
+        }
         return res.json();
     },
 

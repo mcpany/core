@@ -57,7 +57,7 @@ test-proto:
 	@echo "Running proto tests..."
 	@go test ./proto/...
 
-k8s-e2e:
+k8s-e2e: gen
 	@export PATH=$(TOOL_INSTALL_DIR):$$PATH; $(MAKE) -C k8s test
 
 k8s-test: k8s-e2e
