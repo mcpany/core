@@ -3025,7 +3025,7 @@ func checkForShellInjection(val string, template string, placeholder string, com
 		// Sentinel Security Update: Interpreter Strict Mode
 		// Block dangerous function calls and keywords commonly used for RCE
 		// in both single and double-quoted strings (which might be evaluated).
-		if quoteLevel == 1 || quoteLevel == 2 {
+		if quoteLevel == 0 || quoteLevel == 1 || quoteLevel == 2 {
 			if err := checkInterpreterFunctionCalls(val, base); err != nil {
 				return err
 			}
@@ -3044,7 +3044,7 @@ func checkForShellInjection(val string, template string, placeholder string, com
 				return fmt.Errorf("argument interpreter injection detected (%s): %w", argBase, err)
 			}
 			// Also check function calls for the detected interpreter context
-			if quoteLevel == 1 || quoteLevel == 2 {
+			if quoteLevel == 0 || quoteLevel == 1 || quoteLevel == 2 {
 				if err := checkInterpreterFunctionCalls(val, argBase); err != nil {
 					return fmt.Errorf("argument interpreter injection detected (%s): %w", argBase, err)
 				}
@@ -3231,6 +3231,7 @@ func checkInterpreterFunctionCalls(val, language string) error {
 		"subprocess", "child_process", "os", "sys",
 		"open", "read", "write",
 		"phpinfo",
+		"syscall",
 	}
 
 	if err := checkUnquotedKeywords(val, dangerousKeywords); err != nil {
