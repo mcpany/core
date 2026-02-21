@@ -3554,6 +3554,9 @@ func checkInterpreterInjection(val, template, base string, quoteLevel int) error
 	if err := checkTarInjection(val, base); err != nil {
 		return err
 	}
+	if err := checkFindInjection(val, base); err != nil {
+		return err
+	}
 	if err := checkPythonInjection(val, template, base); err != nil {
 		return err
 	}
@@ -3673,6 +3676,27 @@ func checkTarInjection(val, base string) error {
 		// Also block checkpoint-action keyword itself if it somehow appears in value
 		if strings.Contains(valLower, "checkpoint-action") {
 			return fmt.Errorf("tar injection detected: value contains 'checkpoint-action'")
+		}
+	}
+	return nil
+}
+
+func checkFindInjection(val, base string) error {
+	// Find Injection Check
+	// Block RCE via -exec, -execdir, -ok, -okdir flags.
+	// Since find is not a shell, spaces are allowed in arguments, so we must block these flags
+	// if they appear as tokens in the input.
+	isFind := base == "find"
+	if !isFind {
+		return nil
+	}
+
+	// Tokenize by whitespace
+	parts := strings.Fields(val)
+	for _, part := range parts {
+		lowerPart := strings.ToLower(part)
+		if lowerPart == "-exec" || lowerPart == "-execdir" || lowerPart == "-ok" || lowerPart == "-okdir" || lowerPart == "-delete" {
+			return fmt.Errorf("find injection detected: value contains dangerous flag %q", part)
 		}
 	}
 	return nil
