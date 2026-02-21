@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { Webhook, Plus, Play, Trash2 } from "lucide-react";
+import { Webhook, Plus, Play, Trash2, Loader2 } from "lucide-react";
 import {
     Dialog,
     DialogContent,
@@ -23,53 +23,113 @@ import {
     DialogTrigger,
     DialogFooter
 } from "@/components/ui/dialog"
+import { toast } from "sonner";
 
 interface WebhookConfig {
     id: string;
     url: string;
     events: string[];
     active: boolean;
-    lastTriggered?: string;
-    status?: "success" | "failure" | "pending";
+    last_triggered?: string;
+    status?: string;
 }
-
-const INITIAL_WEBHOOKS: WebhookConfig[] = [
-    { id: "wh-1", url: "https://api.example.com/events", events: ["service.registered", "tool.invoked"], active: true, lastTriggered: "2 mins ago", status: "success" },
-    { id: "wh-2", url: "https://hooks.slack.com/...", events: ["error.occurred"], active: true, lastTriggered: "1 day ago", status: "success" },
-];
 
 /**
  * WebhooksPage component.
  * @returns The rendered component.
  */
 export default function WebhooksPage() {
-    const [webhooks, setWebhooks] = useState<WebhookConfig[]>(INITIAL_WEBHOOKS);
+    const [webhooks, setWebhooks] = useState<WebhookConfig[]>([]);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [newUrl, setNewUrl] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
 
-    const toggleWebhook = (id: string) => {
-        setWebhooks(webhooks.map(w => w.id === id ? { ...w, active: !w.active } : w));
+    const fetchWebhooks = async () => {
+        setIsLoading(true);
+        try {
+            const res = await fetch("/api/v1/webhooks");
+            if (res.ok) {
+                const data = await res.json();
+                setWebhooks(data);
+            } else {
+                toast.error("Failed to load webhooks");
+            }
+        } catch (error) {
+            toast.error("Failed to load webhooks");
+        } finally {
+            setIsLoading(false);
+        }
     };
 
-    const deleteWebhook = (id: string) => {
-        setWebhooks(webhooks.filter(w => w.id !== id));
+    useEffect(() => {
+        fetchWebhooks();
+    }, []);
+
+    const toggleWebhook = async (id: string) => {
+        // Toggle active status not implemented in backend yet, just placeholder for UI interaction
+        // In real impl, this would be a PATCH or PUT
+        toast.info("Toggle active status not yet implemented in backend");
     };
 
-    const addWebhook = () => {
+    const deleteWebhook = async (id: string) => {
+        try {
+            const res = await fetch(`/api/v1/webhooks/${id}`, {
+                method: "DELETE"
+            });
+            if (res.ok) {
+                toast.success("Webhook deleted");
+                fetchWebhooks();
+            } else {
+                toast.error("Failed to delete webhook");
+            }
+        } catch (error) {
+            toast.error("Failed to delete webhook");
+        }
+    };
+
+    const addWebhook = async () => {
         if (!newUrl) return;
-        setWebhooks([...webhooks, {
-            id: `wh-${Date.now()}`,
-            url: newUrl,
-            events: ["all"],
-            active: true
-        }]);
-        setNewUrl("");
-        setIsDialogOpen(false);
+        try {
+            const res = await fetch("/api/v1/webhooks", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    url: newUrl,
+                    events: ["all"], // Default event
+                    active: true
+                })
+            });
+            if (res.ok) {
+                toast.success("Webhook added");
+                setNewUrl("");
+                setIsDialogOpen(false);
+                fetchWebhooks();
+            } else {
+                toast.error("Failed to add webhook");
+            }
+        } catch (error) {
+            toast.error("Failed to add webhook");
+        }
     }
 
-    const testWebhook = (id: string) => {
-        // Simulate test
-        alert(`Testing webhook ${id}...`);
+    const testWebhook = async (id: string) => {
+        const loadingToast = toast.loading("Testing webhook...");
+        try {
+            const res = await fetch(`/api/v1/webhooks/${id}/test`, {
+                method: "POST"
+            });
+            toast.dismiss(loadingToast);
+            if (res.ok) {
+                toast.success("Webhook test delivered successfully");
+                fetchWebhooks(); // Refresh status
+            } else {
+                toast.error("Webhook test failed");
+                fetchWebhooks(); // Refresh status
+            }
+        } catch (error) {
+            toast.dismiss(loadingToast);
+            toast.error("Webhook test error");
+        }
     }
 
     return (
@@ -129,46 +189,53 @@ export default function WebhooksPage() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {webhooks.map((hook) => (
-                                <TableRow key={hook.id}>
-                                    <TableCell className="font-mono text-xs">{hook.url}</TableCell>
-                                    <TableCell>
-                                        <div className="flex gap-1 flex-wrap">
-                                            {hook.events.map(e => <Badge key={e} variant="secondary" className="text-xs">{e}</Badge>)}
-                                        </div>
-                                    </TableCell>
-                                    <TableCell>
-                                        <div className="flex items-center gap-2">
-                                            <Switch
-                                                checked={hook.active}
-                                                onCheckedChange={() => toggleWebhook(hook.id)}
-                                            />
-                                            <span className={`text-xs ${hook.status === 'success' ? 'text-green-500' : hook.status === 'failure' ? 'text-red-500' : 'text-muted-foreground'}`}>
-                                                {hook.active ? "Active" : "Inactive"}
-                                            </span>
-                                        </div>
-                                    </TableCell>
-                                    <TableCell className="text-muted-foreground text-xs">
-                                        {hook.lastTriggered || "Never"}
-                                    </TableCell>
-                                    <TableCell className="text-right">
-                                        <div className="flex justify-end gap-2">
-                                            <Button variant="ghost" size="icon" onClick={() => testWebhook(hook.id)} title="Test Delivery">
-                                                <Play className="h-4 w-4" />
-                                            </Button>
-                                             <Button variant="ghost" size="icon" onClick={() => deleteWebhook(hook.id)} className="text-red-500 hover:text-red-600">
-                                                <Trash2 className="h-4 w-4" />
-                                            </Button>
-                                        </div>
+                            {isLoading && webhooks.length === 0 ? (
+                                <TableRow>
+                                    <TableCell colSpan={5} className="text-center h-24">
+                                        <Loader2 className="h-6 w-6 animate-spin mx-auto" />
                                     </TableCell>
                                 </TableRow>
-                            ))}
-                            {webhooks.length === 0 && (
+                            ) : webhooks.length === 0 ? (
                                 <TableRow>
                                     <TableCell colSpan={5} className="text-center h-24 text-muted-foreground">
                                         No webhooks configured.
                                     </TableCell>
                                 </TableRow>
+                            ) : (
+                                webhooks.map((hook) => (
+                                    <TableRow key={hook.id}>
+                                        <TableCell className="font-mono text-xs max-w-[300px] truncate" title={hook.url}>{hook.url}</TableCell>
+                                        <TableCell>
+                                            <div className="flex gap-1 flex-wrap">
+                                                {hook.events.map(e => <Badge key={e} variant="secondary" className="text-xs">{e}</Badge>)}
+                                            </div>
+                                        </TableCell>
+                                        <TableCell>
+                                            <div className="flex items-center gap-2">
+                                                <Switch
+                                                    checked={hook.active}
+                                                    onCheckedChange={() => toggleWebhook(hook.id)}
+                                                />
+                                                <span className={`text-xs ${hook.status === 'success' ? 'text-green-500' : hook.status === 'failure' ? 'text-red-500' : 'text-muted-foreground'}`}>
+                                                    {hook.status ? hook.status.toUpperCase() : (hook.active ? "ACTIVE" : "INACTIVE")}
+                                                </span>
+                                            </div>
+                                        </TableCell>
+                                        <TableCell className="text-muted-foreground text-xs">
+                                            {hook.last_triggered ? new Date(hook.last_triggered).toLocaleString() : "Never"}
+                                        </TableCell>
+                                        <TableCell className="text-right">
+                                            <div className="flex justify-end gap-2">
+                                                <Button variant="ghost" size="icon" onClick={() => testWebhook(hook.id)} title="Test Delivery">
+                                                    <Play className="h-4 w-4" />
+                                                </Button>
+                                                 <Button variant="ghost" size="icon" onClick={() => deleteWebhook(hook.id)} className="text-red-500 hover:text-red-600">
+                                                    <Trash2 className="h-4 w-4" />
+                                                </Button>
+                                            </div>
+                                        </TableCell>
+                                    </TableRow>
+                                ))
                             )}
                         </TableBody>
                     </Table>
