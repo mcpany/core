@@ -73,7 +73,8 @@ export function ServicePalette({ onTemplateSelect }: ServicePaletteProps) {
     useEffect(() => {
         const fetchTemplates = async () => {
             try {
-                const backendTemplates = await apiClient.listTemplates();
+                // Use getServiceTemplates which handles mapping from snake_case to camelCase
+                const backendTemplates = await apiClient.getServiceTemplates();
                 const uiTemplates = backendTemplates.map(t => mapBackendTemplateToUI(t));
                 setTemplates(uiTemplates);
             } catch (err) {
