@@ -52,6 +52,10 @@ const (
 
 	gitCommand = "git"
 	trueStr    = "true"
+
+	mysqlDriver   = "mysql"
+	psqlDriver    = "psql"
+	sqlite3Driver = "sqlite3"
 )
 
 var (
@@ -3348,49 +3352,12 @@ func checkContextualKeywords(val string, keywords []string, suffixes []rune) err
 			continue
 		}
 
-		// Quote handling
-		if char == '\'' && !inDouble && !inBacktick {
-			inSingle = !inSingle
-			// Treat quotes as delimiters for words
-			if inSingle { // Entered quote
-				if inWord {
-					word := wordBuilder.String()
-					if err := checkWordSuffix(word, keywords, runes, i, isSuffix); err != nil {
-						return err
-					}
-					inWord = false
-				}
-			}
-			continue
+		// Quote handling logic extracted to reduce complexity
+		shouldContinue, err := handleContextualQuotes(char, &inSingle, &inDouble, &inBacktick, &inWord, &wordBuilder, keywords, runes, i, isSuffix)
+		if err != nil {
+			return err
 		}
-		if char == '"' && !inSingle && !inBacktick {
-			inDouble = !inDouble
-			if inDouble { // Entered quote
-				if inWord {
-					word := wordBuilder.String()
-					if err := checkWordSuffix(word, keywords, runes, i, isSuffix); err != nil {
-						return err
-					}
-					inWord = false
-				}
-			}
-			continue
-		}
-		if char == '`' && !inSingle && !inDouble {
-			inBacktick = !inBacktick
-			if inBacktick { // Entered quote
-				if inWord {
-					word := wordBuilder.String()
-					if err := checkWordSuffix(word, keywords, runes, i, isSuffix); err != nil {
-						return err
-					}
-					inWord = false
-				}
-			}
-			continue
-		}
-
-		if inSingle || inDouble || inBacktick {
+		if shouldContinue {
 			continue
 		}
 
@@ -3400,16 +3367,14 @@ func checkContextualKeywords(val string, keywords []string, suffixes []rune) err
 				wordBuilder.Reset()
 			}
 			wordBuilder.WriteRune(char)
-		} else {
+		} else if inWord {
 			// Delimiter
-			if inWord {
-				word := wordBuilder.String()
-				// Look ahead starting from current char i
-				if err := checkWordSuffix(word, keywords, runes, i, isSuffix); err != nil {
-					return err
-				}
-				inWord = false
+			word := wordBuilder.String()
+			// Look ahead starting from current char i
+			if err := checkWordSuffix(word, keywords, runes, i, isSuffix); err != nil {
+				return err
 			}
+			inWord = false
 		}
 	}
 
@@ -3421,6 +3386,54 @@ func checkContextualKeywords(val string, keywords []string, suffixes []rune) err
 		}
 	}
 	return nil
+}
+
+func handleContextualQuotes(char rune, inSingle, inDouble, inBacktick, inWord *bool, wordBuilder *strings.Builder, keywords []string, runes []rune, idx int, isSuffix func(rune) bool) (bool, error) {
+	if char == '\'' && !*inDouble && !*inBacktick {
+		*inSingle = !*inSingle
+		// Treat quotes as delimiters for words
+		if *inSingle { // Entered quote
+			if *inWord {
+				word := wordBuilder.String()
+				if err := checkWordSuffix(word, keywords, runes, idx, isSuffix); err != nil {
+					return true, err
+				}
+				*inWord = false
+			}
+		}
+		return true, nil
+	}
+	if char == '"' && !*inSingle && !*inBacktick {
+		*inDouble = !*inDouble
+		if *inDouble { // Entered quote
+			if *inWord {
+				word := wordBuilder.String()
+				if err := checkWordSuffix(word, keywords, runes, idx, isSuffix); err != nil {
+					return true, err
+				}
+				*inWord = false
+			}
+		}
+		return true, nil
+	}
+	if char == '`' && !*inSingle && !*inDouble {
+		*inBacktick = !*inBacktick
+		if *inBacktick { // Entered quote
+			if *inWord {
+				word := wordBuilder.String()
+				if err := checkWordSuffix(word, keywords, runes, idx, isSuffix); err != nil {
+					return true, err
+				}
+				*inWord = false
+			}
+		}
+		return true, nil
+	}
+
+	if *inSingle || *inDouble || *inBacktick {
+		return true, nil
+	}
+	return false, nil
 }
 
 func checkWordSuffix(word string, keywords []string, runes []rune, nextIdx int, isSuffix func(rune) bool) error {
@@ -3750,7 +3763,7 @@ func checkSQLInjection(val, base string, quoteLevel int) error {
 	// SQL Injection Check
 	// If the command is a SQL client (psql, mysql, sqlite3) and the value is unquoted (Level 0),
 	// we must prevent SQL injection by blocking SQL keywords and shell escapes.
-	isSQL := base == "psql" || base == "mysql" || base == "sqlite3"
+	isSQL := base == psqlDriver || base == mysqlDriver || base == sqlite3Driver
 	if isSQL && quoteLevel == 0 {
 		// 1. Check for Context-Aware Dangerous Patterns (Dot commands, Shell escapes)
 		// This handles .shell, \!, system, --, etc. respecting quotes.
@@ -3764,10 +3777,10 @@ func checkSQLInjection(val, base string, quoteLevel int) error {
 			"DROP", "ALTER", "CREATE", "INSERT", "UPDATE", "DELETE",
 		}
 
-		if base == "mysql" {
+		if base == mysqlDriver {
 			keywords = append(keywords, "OUTFILE", "DUMPFILE", "LOAD")
 		}
-		if base == "psql" {
+		if base == psqlDriver {
 			keywords = append(keywords, "COPY")
 		}
 
@@ -3796,7 +3809,7 @@ func checkForDangerousSQLPatterns(val, base string) error {
 		// Handle Backslash Escapes (Standard in MySQL/PG, mostly safe to assume for SQL injection prevention)
 		if char == '\\' {
 			// Check for MySQL/PG shell escape \!
-			if (base == "mysql" || base == "psql") && i+1 < len(val) && val[i+1] == '!' {
+			if (base == mysqlDriver || base == psqlDriver) && i+1 < len(val) && val[i+1] == '!' {
 				return fmt.Errorf("SQL injection detected: shell escape '\\!'")
 			}
 			escaped = true
@@ -3833,7 +3846,7 @@ func checkForDangerousSQLPatterns(val, base string) error {
 
 		if atLineStart {
 			// SQLite Dot Commands
-			if base == "sqlite3" && char == '.' {
+			if base == sqlite3Driver && char == '.' {
 				rest := strings.ToLower(val[i:])
 				for _, cmd := range []string{".shell", ".system", ".open", ".output", ".once", ".import"} {
 					if strings.HasPrefix(rest, cmd) {
@@ -3843,7 +3856,7 @@ func checkForDangerousSQLPatterns(val, base string) error {
 			}
 
 			// MySQL 'system' command
-			if base == "mysql" {
+			if base == mysqlDriver {
 				rest := strings.ToLower(val[i:])
 				if strings.HasPrefix(rest, "system") {
 					// Check boundary
