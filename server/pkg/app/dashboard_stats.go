@@ -443,6 +443,7 @@ func (a *Application) handleDashboardToolUsage() http.HandlerFunc {
 }
 
 // calculateUptime calculates uptime percentage from history points.
+// It iterates through the history points to determine the duration the service was in an "UP" state.
 func calculateUptime(history []health.HistoryPoint, window time.Duration) string {
 	if len(history) == 0 {
 		return "Unknown"
