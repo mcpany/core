@@ -7,6 +7,7 @@ import { defineConfig, devices } from '@playwright/test';
 import os from 'os';
 
 // Use TEST_PORT env var if set, otherwise default to 9111
+// CI Retry Trigger: Infra outage 2026-02-21
 const PORT = process.env.TEST_PORT || 9111;
 const BASE_URL = process.env.PLAYWRIGHT_BASE_URL || `http://localhost:${PORT}`;
 
