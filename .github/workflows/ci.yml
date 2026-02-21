@@ -32,16 +32,37 @@ jobs:
     outputs:
       src: ${{ steps.filter.outputs.src }}
     steps:
-      - uses: dorny/paths-filter@v3
-        id: filter
+      - uses: actions/checkout@v4
         with:
-          filters: |
-            src:
-              - '**'
-              - '!**.md'
-              - '!**.txt'
-              - '!docs/**'
-              - '!LICENSE'
+          fetch-depth: 0
+
+      - name: Check for changes
+        id: filter
+        run: |
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            # Compare against the base branch
+            DIFF=$(git diff --name-only origin/${{ github.base_ref }} HEAD)
+          else
+            # Push event: compare against previous commit
+            DIFF=$(git diff --name-only HEAD~1 HEAD)
+          fi
+
+          echo "Changed files:"
+          echo "$DIFF"
+
+          SRC_CHANGED="false"
+          while IFS= read -r file; do
+            if [[ -z "$file" ]]; then continue; fi
+            # Ignore markdown, txt, docs, license
+            if [[ "$file" == *.md ]] || [[ "$file" == *.txt ]] || [[ "$file" == docs/* ]] || [[ "$file" == LICENSE ]]; then
+              continue
+            fi
+            # Found a source file
+            SRC_CHANGED="true"
+            break
+          done <<< "$DIFF"
+
+          echo "src=$SRC_CHANGED" >> $GITHUB_OUTPUT
 
   lint:
     needs: changes
@@ -58,7 +79,7 @@ jobs:
       - name: Prune Docker
         run: docker system prune -af
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -133,7 +154,7 @@ jobs:
       - name: Prune Docker
         run: docker system prune -af
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Install dependencies
         run: |
@@ -271,7 +292,7 @@ jobs:
       - name: Prune Docker
         run: docker system prune -af
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Install dependencies
         run: |
@@ -437,7 +458,7 @@ jobs:
           sudo rm -rf /usr/share/dotnet
           sudo rm -rf /opt/ghc
           sudo rm -rf /usr/local/share/boost
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -576,7 +597,7 @@ jobs:
       - name: Prune Docker
         run: docker system prune -af
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Install dependencies
         run: |
@@ -714,7 +735,7 @@ jobs:
       - name: Prune Docker
         run: docker system prune -af
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Install dependencies
         run: |
@@ -821,7 +842,7 @@ jobs:
     timeout-minutes: 15
     needs: [build-images]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -893,7 +914,7 @@ jobs:
       - name: Prune Docker
         run: docker system prune -af
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Detect Architecture
         id: detect-arch
@@ -946,7 +967,7 @@ jobs:
       - name: Prune Docker
         run: docker system prune -af
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -1133,76 +1154,85 @@ jobs:
           gh pr merge --auto --squash "${{ github.event.pull_request.html_url }}" || echo "Failed to enable auto-merge (check permissions/settings)"
 
       - name: Check Results and Comment
-        uses: actions/github-script@v8
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
-          script: |
-            // 1. Check for Failures
-            const needs = ${{ toJson(needs) }};
-            const failedJobNames = Object.keys(needs).filter(key => needs[key].result === 'failure' || needs[key].result === 'cancelled');
-            const { owner, repo } = context.repo;
-            const run_id = context.runId;
-            const run_url = `https://github.com/${owner}/${repo}/actions/runs/${run_id}`;
-            const pull_number = context.issue.number;
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NEEDS_JSON: ${{ toJson(needs) }}
+          RUN_ID: ${{ github.run_id }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          # 1. Check for Failures
+          # Parse needs JSON to find failures. Using simple grep/jq approach.
+          # Since we might not have jq, we use python for reliable parsing.
 
-            if (failedJobNames.length === 0) {
-              console.log('All required jobs passed successfully (or were skipped).');
-              return;
-            }
+          cat <<EOF > check_failures.py
+          import os
+          import json
+          import sys
 
-            // 2. Prepare Comment Logic (only if PR)
-            if (pull_number) {
-              let failuresDetails = [];
-              try {
-                // We use github.rest instead of github.actions for v7 compat if needed, but octokit is global
-                // List jobs to find step failures
-                const jobsResponse = await github.rest.actions.listJobsForWorkflowRun({
-                  owner,
-                  repo,
-                  run_id,
-                });
-                const failedJobs = jobsResponse.data.jobs.filter(job => job.conclusion === 'failure');
+          needs_json = os.environ.get("NEEDS_JSON", "{}")
+          try:
+              needs = json.loads(needs_json)
+          except Exception as e:
+              print(f"Error parsing JSON: {e}")
+              sys.exit(1)
 
-                for (const job of failedJobs) {
-                   const failedSteps = job.steps
-                     .filter(step => step.conclusion === 'failure')
-                     .map(step => step.name)
-                     .join(', ');
-                   const msg = failedSteps ? `${job.name}: Failed at step(s) "${failedSteps}"` : `${job.name}: Failed`;
-                   failuresDetails.push(msg);
-                }
-              } catch (e) {
-                console.log('Error fetching job details:', e);
-                failuresDetails = failedJobNames.map(name => `${name}: Failed`);
-              }
+          failed_jobs = [k for k, v in needs.items() if v.get("result") in ["failure", "cancelled"]]
 
-              const list = failuresDetails.map(detail => `- **${detail}**`).join('\n');
-              const agentPrompt = `
-              Please investigate the failures above.
-              1. Check the [Action logs](${run_url}) for the specific error messages (e.g., failed tests, lint errors, build issues).
-              2. Analyze the root cause.
-              3. Apply fixes to the codebase.
-              `;
+          if not failed_jobs:
+              print("All jobs passed.")
+              sys.exit(0)
 
-              const body = `❌ **CI Checks Failed**
+          print(f"Failed jobs: {','.join(failed_jobs)}")
 
-              The following GitHub Actions checks failed in this run:
-              ${list}
+          pr_number = os.environ.get("PR_NUMBER")
+          if not pr_number:
+              print("Not a PR, skipping comment.")
+              sys.exit(1)
 
-              ---
-              ${agentPrompt}
-              `;
+          # Construct comment body
+          repo = os.environ.get("REPO")
+          run_id = os.environ.get("RUN_ID")
+          run_url = f"https://github.com/{repo}/actions/runs/{run_id}"
 
-              await github.rest.issues.createComment({
-                owner,
-                repo,
-                issue_number: pull_number,
-                body
-              });
-            } else {
-              console.log('Not a PR, skipping failure comment.');
-            }
+          list_items = [f"- **{job}: Failed**" for job in failed_jobs]
+          list_str = "\\n".join(list_items)
 
-            // 3. Fail the workflow
-            const msg = 'The following required jobs did not pass: ' + failedJobNames.join(', ');
-            core.setFailed(msg);
+          agent_prompt = f"""
+          Please investigate the failures above.
+          1. Check the [Action logs]({run_url}) for the specific error messages.
+          2. Analyze the root cause.
+          3. Apply fixes to the codebase.
+          """
+
+          body = f"""❌ **CI Checks Failed**
+
+          The following GitHub Actions checks failed in this run:
+          {list_str}
+
+          ---
+          {agent_prompt}
+          """
+
+          # Write body to file for gh cli
+          with open("comment_body.md", "w") as f:
+              f.write(body)
+
+          EOF
+
+          python3 check_failures.py
+          EXIT_CODE=$?
+
+          if [ $EXIT_CODE -eq 0 ]; then
+            echo "Success."
+            exit 0
+          fi
+
+          # If python script exited with 1 (failures found and PR present)
+          if [ -f comment_body.md ]; then
+             echo "Posting comment to PR #$PR_NUMBER..."
+             gh issue comment "$PR_NUMBER" --body-file comment_body.md --repo "$REPO"
+          fi
+
+          echo "::error::Workflow failed due to job dependencies."
+          exit 1
