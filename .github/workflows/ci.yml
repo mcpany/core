@@ -1077,14 +1077,36 @@ jobs:
             esac
 
             mkdir -p /tmp/gh-install
+            URL="https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_${ARCH_STR}.tar.gz"
+            TARBALL="/tmp/gh-install/gh.tar.gz"
+
             if command -v curl &> /dev/null; then
-              curl --retry 5 --retry-connrefused --retry-max-time 60 -fsSL https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_${ARCH_STR}.tar.gz | tar xz -C /tmp/gh-install
+              echo "Downloading with curl..."
+              for i in {1..5}; do
+                curl -fsSL --retry 5 --retry-connrefused --retry-max-time 60 "$URL" -o "$TARBALL" && break || {
+                  echo "Curl attempt $i failed. Retrying in 10s..."
+                  sleep 10
+                }
+              done
             elif command -v wget &> /dev/null; then
-              wget -qO- https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_${ARCH_STR}.tar.gz | tar xz -C /tmp/gh-install
+              echo "Downloading with wget..."
+              for i in {1..5}; do
+                wget -q "$URL" -O "$TARBALL" && break || {
+                  echo "Wget attempt $i failed. Retrying in 10s..."
+                  sleep 10
+                }
+              done
             else
               echo "Neither curl nor wget found. Cannot install gh."
               exit 1
             fi
+
+            if [ ! -f "$TARBALL" ]; then
+              echo "Failed to download gh after retries."
+              exit 1
+            fi
+
+            tar xz -C /tmp/gh-install -f "$TARBALL"
 
             BIN_PATH="/tmp/gh-install/gh_${GH_VERSION}_linux_${ARCH_STR}/bin/gh"
 
