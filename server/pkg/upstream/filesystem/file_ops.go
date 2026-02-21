@@ -60,7 +60,7 @@ func readFileTool(prov provider.Provider, fs afero.Fs) filesystemToolDef {
 			}
 			defer func() { _ = f.Close() }()
 
-			// Read up to limit + 1 to detect if file is larger
+			// Read up to limit + 1 to detect if file is larger (fail-safe for incorrect Stat size)
 			reader := io.LimitedReader{R: f, N: maxFileSize + 1}
 			contentBytes, err := io.ReadAll(&reader)
 			if err != nil {
