@@ -1660,7 +1660,15 @@ export const apiClient = {
     listCollections: async () => {
         const res = await fetchWithAuth('/api/v1/collections');
         if (!res.ok) throw new Error('Failed to list collections');
-        return res.json();
+        const data = await res.json();
+        const list = Array.isArray(data) ? data : (data.collections || []);
+        return list.map((c: any) => ({
+            name: c.name,
+            description: c.description,
+            author: c.author,
+            version: c.version,
+            services: (c.services || []).map(mapUpstreamServiceConfig)
+        }));
     },
 
     /**

@@ -126,6 +126,11 @@ func (a *Application) initializeDatabase(ctx context.Context, store config.Store
 		log.Error("Failed to seed service templates", "error", err)
 	}
 
+	// Initialize Service Collections
+	if err := a.seedCollections(ctx, store); err != nil {
+		log.Error("Failed to seed service collections", "error", err)
+	}
+
 	// Initialize Admin User
 	if err := a.initializeAdminUser(ctx, store); err != nil {
 		log.Error("Failed to initialize admin user", "error", err)
@@ -133,6 +138,33 @@ func (a *Application) initializeDatabase(ctx context.Context, store config.Store
 	}
 
 	log.Info("Database initialized successfully.")
+	return nil
+}
+
+func (a *Application) seedCollections(ctx context.Context, store config.Store) error {
+	s, ok := store.(storage.Storage)
+	if !ok {
+		return nil
+	}
+
+	// Check if collections already exist
+	collections, err := s.ListServiceCollections(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to list collections: %w", err)
+	}
+
+	if len(collections) > 0 {
+		return nil
+	}
+
+	logging.GetLogger().Info("Seeding builtin service collections...", "count", len(BuiltinServiceCollections))
+
+	for _, c := range BuiltinServiceCollections {
+		if err := s.SaveServiceCollection(ctx, c); err != nil {
+			return fmt.Errorf("failed to save collection %s: %w", c.GetName(), err)
+		}
+	}
+
 	return nil
 }
 

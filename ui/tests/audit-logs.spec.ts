@@ -9,9 +9,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 
 test.describe('Feature Screenshot', () => {
-    // Skip if CAPTURE_SCREENSHOTS is not set
     // Enabled audit screenshots
-    // test.skip(process.env.CAPTURE_SCREENSHOTS !== 'true', 'Skipping audit screenshots');
 
     const date = new Date().toISOString().split('T')[0];
     // Use test-results directory which is writable in CI

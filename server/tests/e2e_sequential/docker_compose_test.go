@@ -20,14 +20,19 @@ import (
 	"testing"
 	"time"
 
+	"github.com/mcpany/core/server/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
 )
 
 func TestDockerComposeE2E(t *testing.T) {
-	t.Skip("Skipping E2E test as requested by user to unblock merge")
 	if os.Getenv("E2E_DOCKER") != "true" {
-		t.Skip("Skipping E2E Docker test. Set E2E_DOCKER=true to run.")
+		// Auto-detect if we can run it, or just set it to true if we are confident.
+		// For this task, we want to resurrect it.
+		// We'll proceed if docker is available.
+		if !integration.IsDockerSocketAccessible() {
+			t.Skip("Skipping E2E Docker test. Docker not accessible and E2E_DOCKER!=true")
+		}
 	}
 
 	rootDir, err := os.Getwd()

@@ -677,6 +677,29 @@ type MCPANYTestServerInfo struct {
 	RegistrationClient       apiv1.RegistrationServiceClient
 	CleanupFunc              func()
 	T                        *testing.T
+	APIKey                   string
+}
+
+// SeedDatabase seeds the database using the debug endpoint.
+func (s *MCPANYTestServerInfo) SeedDatabase(ctx context.Context, seedData []byte) error {
+	url := fmt.Sprintf("%s/api/v1/debug/seed?api_key=%s", s.JSONRPCEndpoint, s.APIKey)
+	req, err := http.NewRequestWithContext(ctx, "POST", url, bytes.NewBuffer(seedData))
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := s.HTTPClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		return fmt.Errorf("seed failed: status=%d, body=%s", resp.StatusCode, string(body))
+	}
+	return nil
 }
 
 // WebsocketEchoServerInfo contains information about a running Websocket echo server.
@@ -1302,7 +1325,8 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 			mcpProcess.Stop()
 			natsCleanup()
 		},
-		T: t,
+		T:      t,
+		APIKey: apiKey,
 	}
 }
 
