@@ -1,25 +1,22 @@
 # Coverage Intervention Report
 
-## Target
-**File:** `server/pkg/sidecar/webhooks/handlers.go`
-**Focus:** `truncateRecursive` (UTF-8 handling) and `PaginateHandler` (Pagination logic).
+**Target:** `server/pkg/storage/sqlite/store_templates.go`
 
 ## Risk Profile
-- **High Risk:** This code modifies user data in transit (webhooks). Incorrect handling can corrupt data (UTF-8) or break functionality (Pagination).
-- **Metric:** High complexity due to recursion and type switching on `any`.
-- **Why Selected:**
-    - **Critical Bug:** `truncateRecursive` was using byte-slicing on strings, which corrupts multi-byte characters (e.g., emojis, Asian scripts), resulting in invalid UTF-8.
-    - **Functionality Gap:** `PaginateHandler` hardcoded page 1, making it impossible to access subsequent pages of content.
+This file was selected for intervention because:
+1.  **Criticality:** It handles the persistence of Service Templates, which are a core feature for the "Wizard" and onboarding experience.
+2.  **Complexity:** It involves database interactions (SQL), JSON marshaling/unmarshaling of Protobuf messages, and upsert logic (`ON CONFLICT`).
+3.  **Coverage Gap:** The file had **zero** direct test coverage. The main test suite (`store_test.go`) covered Services, Users, and other entities but completely omitted Service Templates.
+4.  **Security:** Proper handling of template storage is crucial to prevent injection or data corruption.
 
 ## New Coverage
-- **File:** `server/pkg/sidecar/webhooks/handlers_comprehensive_test.go`
-- **Scenarios Covered:**
-    - **UTF-8 Truncation:** Verifies correct truncation of strings containing emojis and multi-byte characters (using rune counting instead of byte counting).
-    - **Pagination Logic:** Verifies that `page` query parameter is respected and correct slices are returned for page 2, 3, etc.
-    - **Edge Cases:** Empty strings, strings equal to max length, strings slightly over max length, negative page numbers.
-    - **Deep Recursion:** Verifies that nested maps and lists are correctly processed recursively.
+I have implemented a comprehensive test suite in `server/pkg/storage/sqlite/store_templates_test.go` that covers the following functions:
+
+*   `SaveServiceTemplate`: Verified successful saving, upsert logic (updating existing templates), and validation (required ID).
+*   `GetServiceTemplate`: Verified retrieval of existing templates and handling of non-existent IDs (returns `nil`).
+*   `ListServiceTemplates`: Verified listing of all templates.
+*   `DeleteServiceTemplate`: Verified deletion of templates and idempotency (deleting non-existent ID).
 
 ## Verification
-- **New Tests:** `TestTruncateHandler_Comprehensive` and `TestPaginateHandler_Comprehensive` passed.
-- **Regression:** `make test` (specifically `go test ./server/...`) passed, ensuring no regressions in existing functionality.
-- **Bug Fix:** Fixed `truncateRecursive` to use `[]rune` conversion. Fixed `PaginateHandler` to parse `page` query parameter.
+*   **New Tests:** `go test -v ./server/pkg/storage/sqlite/ -run TestServiceTemplates` passed successfully.
+*   **Regression:** `go test -v ./server/pkg/storage/sqlite/` passed successfully, ensuring no regressions in the SQLite storage package.
