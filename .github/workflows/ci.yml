@@ -32,7 +32,7 @@ jobs:
     outputs:
       src: ${{ steps.filter.outputs.src }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - uses: dorny/paths-filter@v3
@@ -61,7 +61,7 @@ jobs:
       - name: Prune Docker
         run: docker system prune -af
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -136,7 +136,7 @@ jobs:
       - name: Prune Docker
         run: docker system prune -af
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Install dependencies
         run: |
@@ -274,7 +274,7 @@ jobs:
       - name: Prune Docker
         run: docker system prune -af
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Install dependencies
         run: |
@@ -440,7 +440,7 @@ jobs:
           sudo rm -rf /usr/share/dotnet
           sudo rm -rf /opt/ghc
           sudo rm -rf /usr/local/share/boost
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -579,7 +579,7 @@ jobs:
       - name: Prune Docker
         run: docker system prune -af
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Install dependencies
         run: |
@@ -717,7 +717,7 @@ jobs:
       - name: Prune Docker
         run: docker system prune -af
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Install dependencies
         run: |
@@ -824,7 +824,7 @@ jobs:
     timeout-minutes: 15
     needs: [build-images]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -893,10 +893,7 @@ jobs:
           sudo rm -rf /opt/ghc
           sudo rm -rf /usr/local/share/boost
 
-      - name: Prune Docker
-        run: docker system prune -af
-
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Detect Architecture
         id: detect-arch
@@ -949,7 +946,7 @@ jobs:
       - name: Prune Docker
         run: docker system prune -af
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Set up Go
         uses: actions/setup-go@v6
