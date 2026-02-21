@@ -3315,10 +3315,7 @@ func checkInterpreterFunctionCalls(val, language string) error {
 // checkContextualKeywords checks if any keyword in the list is present in val as a whole word
 // AND is followed by one of the suffix characters (ignoring whitespace).
 func checkContextualKeywords(val string, keywords []string, suffixes []rune) error {
-	inSingle := false
-	inDouble := false
-	inBacktick := false
-	escaped := false
+	state := &quoteState{}
 
 	// Helper to check if rune is in suffixes
 	isSuffix := func(r rune) bool {
@@ -3338,58 +3335,20 @@ func checkContextualKeywords(val string, keywords []string, suffixes []rune) err
 	for i := 0; i < len(runes); i++ {
 		char := runes[i]
 
-		if escaped {
-			escaped = false
-			continue
-		}
-		if char == '\\' {
-			escaped = true
-			continue
-		}
-
-		// Quote handling
-		if char == '\'' && !inDouble && !inBacktick {
-			inSingle = !inSingle
-			// Treat quotes as delimiters for words
-			if inSingle { // Entered quote
-				if inWord {
-					word := wordBuilder.String()
-					if err := checkWordSuffix(word, keywords, runes, i, isSuffix); err != nil {
-						return err
-					}
-					inWord = false
+		if state.handleChar(char) {
+			// Quote state changed or escaped char handled
+			if state.isQuoted() && inWord {
+				// Entered quote, end current word
+				word := wordBuilder.String()
+				if err := checkWordSuffix(word, keywords, runes, i, isSuffix); err != nil {
+					return err
 				}
-			}
-			continue
-		}
-		if char == '"' && !inSingle && !inBacktick {
-			inDouble = !inDouble
-			if inDouble { // Entered quote
-				if inWord {
-					word := wordBuilder.String()
-					if err := checkWordSuffix(word, keywords, runes, i, isSuffix); err != nil {
-						return err
-					}
-					inWord = false
-				}
-			}
-			continue
-		}
-		if char == '`' && !inSingle && !inDouble {
-			inBacktick = !inBacktick
-			if inBacktick { // Entered quote
-				if inWord {
-					word := wordBuilder.String()
-					if err := checkWordSuffix(word, keywords, runes, i, isSuffix); err != nil {
-						return err
-					}
-					inWord = false
-				}
+				inWord = false
 			}
 			continue
 		}
 
-		if inSingle || inDouble || inBacktick {
+		if state.isQuoted() {
 			continue
 		}
 
@@ -3399,16 +3358,14 @@ func checkContextualKeywords(val string, keywords []string, suffixes []rune) err
 				wordBuilder.Reset()
 			}
 			wordBuilder.WriteRune(char)
-		} else {
+		} else if inWord {
 			// Delimiter
-			if inWord {
-				word := wordBuilder.String()
-				// Look ahead starting from current char i
-				if err := checkWordSuffix(word, keywords, runes, i, isSuffix); err != nil {
-					return err
-				}
-				inWord = false
+			word := wordBuilder.String()
+			// Look ahead starting from current char i
+			if err := checkWordSuffix(word, keywords, runes, i, isSuffix); err != nil {
+				return err
 			}
+			inWord = false
 		}
 	}
 
@@ -3420,6 +3377,43 @@ func checkContextualKeywords(val string, keywords []string, suffixes []rune) err
 		}
 	}
 	return nil
+}
+
+type quoteState struct {
+	inSingle   bool
+	inDouble   bool
+	inBacktick bool
+	escaped    bool
+}
+
+func (s *quoteState) isQuoted() bool {
+	return s.inSingle || s.inDouble || s.inBacktick
+}
+
+func (s *quoteState) handleChar(char rune) bool {
+	if s.escaped {
+		s.escaped = false
+		return true
+	}
+	if char == '\\' && !s.inSingle { // Single quotes in many shells don't support escape
+		s.escaped = true
+		return true
+	}
+
+	// Quote toggling
+	if char == '\'' && !s.inDouble && !s.inBacktick {
+		s.inSingle = !s.inSingle
+		return true
+	}
+	if char == '"' && !s.inSingle && !s.inBacktick {
+		s.inDouble = !s.inDouble
+		return true
+	}
+	if char == '`' && !s.inSingle && !s.inDouble {
+		s.inBacktick = !s.inBacktick
+		return true
+	}
+	return false
 }
 
 func checkWordSuffix(word string, keywords []string, runes []rune, nextIdx int, isSuffix func(rune) bool) error {
@@ -4136,27 +4130,26 @@ func validateSafePathAndInjection(val string, isDocker bool, commandName string)
 	// Sentinel Security Update: Enforce SSRF protection on arguments that look like URLs.
 	// We check for "://" to capture any scheme (http, https, ftp, gopher, etc.).
 	// IsSafeURL will block any scheme other than http/https, and verify IPs for those.
-	if strings.Contains(val, "://") {
+	switch {
+	case strings.Contains(val, "://"):
 		if err := validation.IsSafeURL(val); err != nil {
 			return fmt.Errorf("unsafe url argument: %w", err)
 		}
-	} else {
+	case strings.EqualFold(val, "localhost"):
 		// Sentinel Security Update: Also block schema-less IPs and localhost to prevent SSRF
 		// via tools like curl/wget that accept them.
 		// Check for "localhost" (case-insensitive)
-		if strings.EqualFold(val, "localhost") {
-			allowLoopback := os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == trueStr
-			if !allowLoopback {
-				return fmt.Errorf("unsafe argument: localhost is not allowed")
-			}
-		} else if validation.IsSafeIP != nil {
+		allowLoopback := os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == trueStr
+		if !allowLoopback {
+			return fmt.Errorf("unsafe argument: localhost is not allowed")
+		}
+	case validation.IsSafeIP != nil:
 			// Check if it's an IP address and validate it against policy
 			// We ignore "invalid IP address" error as it just means it's not an IP
 			if err := validation.IsSafeIP(val); err != nil && err.Error() != "invalid IP address" {
 				return fmt.Errorf("unsafe IP argument: %w", err)
 			}
 		}
-	}
 
 	if err := checkForPathTraversal(val); err != nil {
 		return err
