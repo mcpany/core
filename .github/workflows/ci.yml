@@ -1028,6 +1028,7 @@ jobs:
     runs-on: oci-runner # ubuntu-slim
     needs:
       [
+        changes,
         build-images,
         unit-test,
         e2e-sequential,
