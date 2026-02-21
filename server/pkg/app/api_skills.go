@@ -5,6 +5,7 @@ package app
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -120,23 +121,40 @@ func (a *Application) handleUploadSkillAsset() http.HandlerFunc {
 			return
 		}
 
-		// Extract skill name manually since we aren't using a router with params
-		// Path expected: /skills/{name}/assets (relative to mux mount)
-		// r.URL.Path will be /skills/{name}/assets
-		// Handle both /skills/{name}/assets and /api/v1/skills/{name}/assets
-		path := strings.TrimPrefix(r.URL.Path, "/api/v1")
+		// Enforce a strict body size limit (10MB) to prevent DoS via memory exhaustion.
+		// The underlying SkillManager.SaveAsset reads the entire body into memory,
+		// so we must cap it here.
+		r.Body = http.MaxBytesReader(w, r.Body, 10<<20)
 
-		// Path expected: /skills/{name}/assets
+		// Robust path parsing
+		// Expected: /skills/{name}/assets
+		// We handle stripping prefixes for both /api/v1 and /v1 mounts.
+		path := r.URL.Path
+		if strings.HasPrefix(path, "/api/v1") {
+			path = strings.TrimPrefix(path, "/api/v1")
+		} else if strings.HasPrefix(path, "/v1") {
+			path = strings.TrimPrefix(path, "/v1")
+		}
+
+		// Ensure path starts with / for consistent splitting
+		if !strings.HasPrefix(path, "/") {
+			path = "/" + path
+		}
+
 		parts := strings.Split(path, "/")
 		// parts[0] = ""
 		// parts[1] = "skills"
 		// parts[2] = "{name}"
 		// parts[3] = "assets"
-		if len(parts) < 4 || parts[1] != "skills" || parts[3] != "assets" {
-			http.Error(w, "Invalid URL format\n", http.StatusBadRequest)
+		if len(parts) != 4 || parts[1] != "skills" || parts[3] != "assets" {
+			http.Error(w, "Invalid URL format", http.StatusBadRequest)
 			return
 		}
 		skillName := parts[2]
+		if skillName == "" {
+			http.Error(w, "Skill name required", http.StatusBadRequest)
+			return
+		}
 
 		assetPath := r.URL.Query().Get("path")
 		if assetPath == "" {
@@ -151,7 +169,12 @@ func (a *Application) handleUploadSkillAsset() http.HandlerFunc {
 
 		body, err := io.ReadAll(r.Body)
 		if err != nil {
-			http.Error(w, "Failed to read body", http.StatusBadRequest)
+			var maxBytesErr *http.MaxBytesError
+			if errors.As(err, &maxBytesErr) {
+				http.Error(w, "Request body too large", http.StatusRequestEntityTooLarge)
+			} else {
+				http.Error(w, "Failed to read body", http.StatusBadRequest)
+			}
 			return
 		}
 
