@@ -111,6 +111,20 @@ Contains server-wide operational parameters.
 | `read_only`          | `bool`       | If true, the configuration is read-only.                                      |
 | `auto_discover_local`| `bool`       | Whether to auto-discover local services (e.g. Ollama).                        |
 | `alerts`             | `AlertConfig`| Alert configuration.                                                          |
+| `smart_recovery`     | `SmartRecoveryConfig` | Smart recovery configuration (LLM-based self-healing).               |
+
+### `SmartRecoveryConfig`
+
+Configures automatic error recovery using an LLM.
+
+| Field         | Type          | Description                                           |
+| ------------- | ------------- | ----------------------------------------------------- |
+| `enabled`     | `bool`        | Whether smart recovery is enabled.                    |
+| `provider`    | `string`      | The provider to use (e.g., "openai", "ollama").       |
+| `api_key`     | `SecretValue` | The API key or secret for the provider.               |
+| `model`       | `string`      | The model to use.                                     |
+| `max_retries` | `int32`       | Maximum number of retries.                            |
+| `base_url`    | `string`      | Base URL for the provider (optional).                 |
 
 ### `AuditConfig`
 

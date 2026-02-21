@@ -94,4 +94,29 @@ describe('PlaygroundClientPro', () => {
           expect(screen.getByText('imported response')).toBeInTheDocument();
       });
   });
+
+  it('toggles sidebar on Cmd+K', () => {
+      render(<PlaygroundClientPro />);
+
+      // Initially open, "Library" should be visible
+      const libraryHeader = screen.getByText('Library');
+      // In JSDOM without CSS, toBeVisible() mainly checks display:none / visibility:hidden / hidden attribute.
+      // Classes don't automatically trigger this unless JSDOM is configured with CSS support.
+      // But we can check for the class existence.
+
+      // Initially should NOT be hidden (no ancestor with 'hidden' class)
+      // closest returns null if not found.
+      expect(libraryHeader.closest('.hidden')).toBeNull();
+
+      // Press Cmd+K to close
+      fireEvent.keyDown(window, { key: 'k', metaKey: true });
+
+      // Now sidebar should be hidden. Verify an ancestor has 'hidden' class.
+      // We expect the ResizablePanel to have 'hidden' class.
+      expect(libraryHeader.closest('.hidden')).toBeInTheDocument();
+
+      // Press Cmd+K to open
+      fireEvent.keyDown(window, { key: 'k', metaKey: true });
+      expect(libraryHeader.closest('.hidden')).toBeNull();
+  });
 });

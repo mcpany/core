@@ -161,6 +161,48 @@ func TestRateLimitMiddleware_ServiceLimitFallback(t *testing.T) {
 	assert.Contains(t, err.Error(), "rate limit exceeded for service")
 }
 
+func TestRateLimitMiddleware_ToolLimitDisabled_Exemption(t *testing.T) {
+	tm := &MockToolManager{}
+	mw := middleware.NewRateLimitMiddleware(tm)
+
+	serviceID := "test-service-exempt"
+	toolName := "exempt-tool"
+
+	// Service Limit: 1 RPS (Very strict)
+	// Tool Limit: Disabled (Should be unlimited)
+	config := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String(serviceID),
+		RateLimit: configv1.RateLimitConfig_builder{
+			IsEnabled:         true,
+			RequestsPerSecond: 1.0,
+			Burst:             1,
+			ToolLimits: map[string]*configv1.RateLimitConfig{
+				toolName: configv1.RateLimitConfig_builder{
+					IsEnabled:         false, // Explicitly disabled
+				}.Build(),
+			},
+		}.Build(),
+	}.Build()
+
+	tm.On("GetTool", toolName).Return(&MockTool{name: toolName, serviceID: serviceID}, true)
+	tm.On("GetServiceInfo", serviceID).Return(&tool.ServiceInfo{Name: serviceID, Config: config}, true)
+
+	ctx := context.Background()
+	next := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+		return "ok", nil
+	}
+
+	req := &tool.ExecutionRequest{ToolName: toolName}
+
+	// 1st call ok
+	_, err := mw.Execute(ctx, req, next)
+	assert.NoError(t, err)
+
+	// 2nd call ok (Should be exempt from service limit)
+	_, err = mw.Execute(ctx, req, next)
+	assert.NoError(t, err)
+}
+
 func (m *MockToolManager) GetAllowedServiceIDs(profileID string) (map[string]bool, bool) {
 	args := m.Called(profileID)
 	return args.Get(0).(map[string]bool), args.Bool(1)

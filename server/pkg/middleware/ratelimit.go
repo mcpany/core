@@ -142,7 +142,13 @@ func (m *RateLimitMiddleware) Execute(ctx context.Context, req *tool.ExecutionRe
 
 	// Check tool specific limit
 	if serviceRateLimitConfig != nil && serviceRateLimitConfig.GetToolLimits() != nil {
-		if toolConfig, ok := serviceRateLimitConfig.GetToolLimits()[req.ToolName]; ok && toolConfig.GetIsEnabled() {
+		if toolConfig, ok := serviceRateLimitConfig.GetToolLimits()[req.ToolName]; ok {
+			// If tool limit exists but is disabled, we treat it as an exemption (Unlimited).
+			if !toolConfig.GetIsEnabled() {
+				m.recordMetrics(serviceID, "tool", "allowed")
+				return next(ctx, req)
+			}
+
 			toolLimiter, toolErr = m.getLimiter(ctx, serviceID, "tool:"+req.ToolName, toolConfig)
 			if toolErr != nil {
 				return nil, fmt.Errorf("failed to get rate limiter for tool %s: %w", req.ToolName, toolErr)

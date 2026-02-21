@@ -91,6 +91,17 @@ export function PlaygroundClientPro() {
   const [showSuggestions, setShowSuggestions] = useState(false);
 
   useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setSidebarOpen(prev => !prev);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  useEffect(() => {
     apiClient.listTools()
         .then(data => setAvailableTools(data.tools || []))
         .catch(err => console.error("Failed to load tools:", err));
