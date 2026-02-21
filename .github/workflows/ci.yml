@@ -46,7 +46,7 @@ jobs:
   lint:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
-    runs-on: oci-runner # ubuntu-latest
+    runs-on: ubuntu-latest # was oci-runner
     steps:
       - name: Free Disk Space (Fast)
         run: |
@@ -115,7 +115,7 @@ jobs:
         run: make lint
 
   unit-test:
-    runs-on: oci-runner # ubuntu-latest
+    runs-on: ubuntu-latest # was oci-runner
     timeout-minutes: 30
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -250,7 +250,7 @@ jobs:
           verbose: true
 
   e2e-parallel:
-    runs-on: oci-runner # ubuntu-latest
+    runs-on: ubuntu-latest # was oci-runner
     timeout-minutes: 30
     needs: [build-images]
     strategy:
@@ -559,7 +559,7 @@ jobs:
           retention-days: 1
 
   e2e-sequential:
-    runs-on: oci-runner # ubuntu-latest
+    runs-on: ubuntu-latest # was oci-runner
     timeout-minutes: 60
     needs: [build-images]
     env:
@@ -696,7 +696,7 @@ jobs:
           verbose: true
 
   e2e-public-api:
-    runs-on: oci-runner # ubuntu-latest
+    runs-on: ubuntu-latest # was oci-runner
     timeout-minutes: 30
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
