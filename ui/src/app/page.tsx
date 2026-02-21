@@ -3,11 +3,17 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+"use client";
+
+import { useEffect, useState } from "react";
 import { DashboardGrid } from "@/components/dashboard/dashboard-grid";
 import { Button } from "@/components/ui/button";
 import { DashboardProvider } from "@/components/dashboard/dashboard-context";
 import { ServiceFilter } from "@/components/dashboard/service-filter";
 import { TimeRangeFilter } from "@/components/dashboard/time-range-filter";
+import { OnboardingHero } from "@/components/dashboard/onboarding-hero";
+import { apiClient } from "@/lib/client";
+import { Loader2 } from "lucide-react";
 
 /**
  * The main dashboard page component.
@@ -15,6 +21,38 @@ import { TimeRangeFilter } from "@/components/dashboard/time-range-filter";
  * @returns The dashboard page.
  */
 export default function DashboardPage() {
+  const [hasServices, setHasServices] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    async function checkServices() {
+        try {
+            const services = await apiClient.listServices();
+            setHasServices(services && services.length > 0);
+        } catch (e) {
+            console.error("Failed to check services", e);
+            // Fallback to dashboard if check fails to avoid blocking users
+            setHasServices(true);
+        }
+    }
+    checkServices();
+  }, []);
+
+  if (hasServices === null) {
+      return (
+          <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          </div>
+      );
+  }
+
+  if (!hasServices) {
+      return (
+          <div className="flex-1 space-y-4 p-8 pt-6">
+              <OnboardingHero />
+          </div>
+      );
+  }
+
   return (
     <DashboardProvider>
       <div className="flex-1 space-y-4 p-8 pt-6">
