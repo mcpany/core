@@ -87,9 +87,13 @@ export function ServicePalette({ onTemplateSelect }: ServicePaletteProps) {
     }, []);
 
     const mapBackendTemplateToUI = (t: BackendServiceTemplate): ServiceTemplate => {
+        // Handle case where serviceConfig might be missing or raw
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const rawConfig = t.serviceConfig || (t as any).service_config || {};
+
         // Strip internal fields
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { id, sanitizedName, configError, lastError, toolCount, ...config } = t.serviceConfig as any;
+        const { id, sanitizedName, configError, lastError, toolCount, ...config } = rawConfig as any;
 
         // Wrap in list item
         const serviceItem = {
