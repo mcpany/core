@@ -480,7 +480,9 @@ export const apiClient = {
         };
 
         if (config.httpService) {
-            payload.http_service = HttpUpstreamService.toJSON(config.httpService);
+            // Ensure we convert plain object to Proto message first to handle defaults/enums correctly
+            const msg = HttpUpstreamService.fromJSON(config.httpService);
+            payload.http_service = HttpUpstreamService.toJSON(msg);
         }
         if (config.grpcService) {
             payload.grpc_service = { address: config.grpcService.address };
@@ -489,7 +491,6 @@ export const apiClient = {
             payload.command_line_service = {
                 command: config.commandLineService.command,
                 working_directory: config.commandLineService.workingDirectory,
-                environment: config.commandLineService.env,
                 env: config.commandLineService.env
             };
         }

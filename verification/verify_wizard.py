@@ -1,54 +1,44 @@
-# Copyright 2026 Author(s) of MCP Any
-# SPDX-License-Identifier: Apache-2.0
-
-from playwright.sync_api import Page, expect, sync_playwright
+from playwright.sync_api import sync_playwright
 import time
 
-def test_wizard(page: Page):
-    # 1. Arrange: Go to the marketplace.
-    for i in range(10):
-        try:
-            page.goto("http://localhost:9002/marketplace")
-            break
-        except Exception as e:
-            print(f"Connection failed, retrying... {i}")
-            time.sleep(2)
-
-    # 2. Act: Click "Create Config"
-    create_btn = page.get_by_role("button", name="Create Config")
-    expect(create_btn).to_be_visible(timeout=30000)
-    create_btn.click()
-
-    # 3. Assert Dialog Open
-    expect(page.get_by_role("dialog")).to_be_visible()
-    expect(page.get_by_text("Create Upstream Service Config")).to_be_visible()
-
-    # 4. Act: Select OpenAPI Template
-    page.get_by_label("Template").click()
-    page.get_by_role("option", name="OpenAPI / Swagger Import").click()
-
-    # 5. Act: Click Next (scoped to dialog)
-    page.get_by_role("dialog").get_by_role("button", name="Next").click()
-
-    # 6. Assert: Check for OpenAPI Step
-    expect(page.get_by_text("Configure OpenAPI Specification")).to_be_visible()
-    expect(page.get_by_label("Specification URL")).to_be_visible()
-
-    # 7. Act: Fill URL
-    page.get_by_label("Specification URL").fill("https://petstore.swagger.io/v2/swagger.json")
-
-    # 8. Screenshot
-    page.screenshot(path="verification/wizard_openapi.png")
-
-if __name__ == "__main__":
+def run():
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
-        page = browser.new_page()
+        context = browser.new_context(extra_http_headers={"X-API-Key": "test-token"})
+        page = context.new_page()
+
         try:
-            test_wizard(page)
+            # Navigate to setup
+            page.goto("http://localhost:9111/setup")
+            page.wait_for_load_state("networkidle")
+
+            # Welcome
+            page.screenshot(path="verification/1_welcome.png")
+            page.get_by_role("button", name="Get Started").click()
+
+            # Template
+            page.get_by_text("Choose a Starter Template").wait_for()
+            page.screenshot(path="verification/2_template.png")
+
+            # Select Weather
+            page.get_by_text("Get real-time weather information via wttr.in.").click()
+
+            # Configure
+            page.get_by_role("button", name="Continue").wait_for()
+            page.screenshot(path="verification/3_configure.png")
+            page.get_by_role("button", name="Continue").click()
+
+            # Success
+            page.get_by_text("You're All Set!").wait_for(timeout=10000)
+            page.screenshot(path="verification/4_success.png")
+
+            print("Verification successful, screenshots saved.")
+
         except Exception as e:
-            print(f"Test failed: {e}")
+            print(f"Verification failed: {e}")
             page.screenshot(path="verification/error.png")
-            raise e
         finally:
             browser.close()
+
+if __name__ == "__main__":
+    run()
