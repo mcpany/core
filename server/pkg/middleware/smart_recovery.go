@@ -39,27 +39,9 @@ func (m *SmartRecoveryMiddleware) Execute(ctx context.Context, req *tool.Executi
 		return next(ctx, req)
 	}
 
-	m.mu.RLock()
-	client := m.llmClient
-	m.mu.RUnlock()
-
-	// Initialize LLM client lazily or check if already initialized
-	if client == nil {
-		m.mu.Lock()
-		// Double check
-		if m.llmClient == nil {
-			apiKey, err := util.ResolveSecret(ctx, m.config.GetApiKey())
-			if err != nil {
-				m.mu.Unlock()
-				logging.GetLogger().Warn("SmartRecovery: Failed to resolve API key", "error", err)
-				return next(ctx, req)
-			}
-			// Assuming OpenAI for now as per config.proto comments
-			m.llmClient = llm.NewOpenAIClient(apiKey, m.config.GetBaseUrl())
-		}
-		// client = m.llmClient // Removed redundant assignment
-		m.mu.Unlock()
-	}
+	// ⚡ BOLT: Optimize happy path by removing eager initialization check.
+	// Only initialize LLM client when an error actually occurs.
+	// Randomized Selection from Top 5 High-Impact Targets
 
 	maxRetries := int(m.config.GetMaxRetries())
 	if maxRetries <= 0 {
@@ -83,6 +65,11 @@ func (m *SmartRecoveryMiddleware) Execute(ctx context.Context, req *tool.Executi
 
 		logging.GetLogger().Info("SmartRecovery: Tool execution failed, attempting recovery", "tool", req.ToolName, "error", err, "attempt", attempt+1)
 
+		if initErr := m.ensureClient(ctx); initErr != nil {
+			logging.GetLogger().Warn("SmartRecovery: Failed to initialize client", "error", initErr)
+			return nil, lastErr
+		}
+
 		newArgs, recoveryErr := m.recover(ctx, req, err)
 		if recoveryErr != nil {
 			logging.GetLogger().Warn("SmartRecovery: Recovery failed", "error", recoveryErr)
@@ -101,6 +88,32 @@ func (m *SmartRecoveryMiddleware) Execute(ctx context.Context, req *tool.Executi
 	}
 
 	return nil, lastErr
+}
+
+func (m *SmartRecoveryMiddleware) ensureClient(ctx context.Context) error {
+	m.mu.RLock()
+	if m.llmClient != nil {
+		m.mu.RUnlock()
+		return nil
+	}
+	m.mu.RUnlock()
+
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	// Double check
+	if m.llmClient != nil {
+		return nil
+	}
+
+	apiKey, err := util.ResolveSecret(ctx, m.config.GetApiKey())
+	if err != nil {
+		return fmt.Errorf("failed to resolve API key: %w", err)
+	}
+
+	// Assuming OpenAI for now as per config.proto comments
+	m.llmClient = llm.NewOpenAIClient(apiKey, m.config.GetBaseUrl())
+	return nil
 }
 
 func (m *SmartRecoveryMiddleware) recover(ctx context.Context, req *tool.ExecutionRequest, err error) (map[string]any, error) {
