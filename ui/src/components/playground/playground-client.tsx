@@ -57,14 +57,7 @@ interface Message {
  * @returns The rendered component.
  */
 export function PlaygroundClient() {
-  const [messages, setMessages] = useState<Message[]>([
-      {
-          id: "1",
-          type: "assistant",
-          content: "Hello! I am your MCP Assistant. I can help you interact with your registered tools. Try executing a tool like 'calculator' or 'weather'.",
-          timestamp: new Date(),
-      }
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [availableTools, setAvailableTools] = useState<ToolDefinition[]>([]);
@@ -74,6 +67,30 @@ export function PlaygroundClient() {
   const lastExecutionRef = useRef<{ toolName: string; args: string; result: unknown } | null>(null);
 
   useEffect(() => {
+    // Load history from localStorage
+    const saved = localStorage.getItem("playground_history");
+    if (saved) {
+        try {
+            const parsed = JSON.parse(saved);
+            // Restore Date objects
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const restored = parsed.map((m: any) => ({
+                ...m,
+                timestamp: new Date(m.timestamp)
+            }));
+            setMessages(restored);
+        } catch (e) {
+            console.error("Failed to load history", e);
+        }
+    } else {
+        setMessages([{
+            id: "1",
+            type: "assistant",
+            content: "Hello! I am your MCP Assistant. I can help you interact with your registered tools. Try executing a tool like 'calculator' or 'weather'.",
+            timestamp: new Date(),
+        }]);
+    }
+
     // Load tools on mount
     apiClient.listTools()
         .then(data => setAvailableTools(data.tools || []))
@@ -102,8 +119,12 @@ export function PlaygroundClient() {
     }
   }, []);
 
-  // Auto-scroll to bottom
+  // Auto-scroll to bottom and Save History
   useEffect(() => {
+    if (messages.length > 0) {
+        localStorage.setItem("playground_history", JSON.stringify(messages));
+    }
+
     if (scrollAreaRef.current) {
         const scrollContainer = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
         if (scrollContainer) {
@@ -254,12 +275,14 @@ export function PlaygroundClient() {
   };
 
   const clearChat = () => {
-      setMessages([{
+      const initialMsg: Message = {
           id: Date.now().toString(),
           type: "assistant",
           content: "Chat cleared. Ready for new commands.",
           timestamp: new Date(),
-      }]);
+      };
+      setMessages([initialMsg]);
+      localStorage.removeItem("playground_history");
   };
 
   const handleExportSession = () => {
