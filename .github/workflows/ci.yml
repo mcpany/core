@@ -27,28 +27,10 @@ permissions:
   contents: read
 
 jobs:
-  changes:
-    runs-on: oci-runner # ubuntu-slim
-    outputs:
-      src: ${{ steps.filter.outputs.src }}
-    steps:
-      - uses: dorny/paths-filter@v3
-        id: filter
-        with:
-          filters: |
-            src:
-              - '**'
-              - '!**.md'
-              - '!**.txt'
-              - '!docs/**'
-              - '!LICENSE'
-
   lint:
-    needs: changes
-    if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: oci-runner # ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -108,24 +90,11 @@ jobs:
   unit-test:
     runs-on: oci-runner # ubuntu-latest
     timeout-minutes: 30
-    needs: [changes]
-    if: ${{ needs.changes.outputs.src == 'true' }}
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
-      # - name: Free Disk Space (Ubuntu)
-      #   uses: jlumbroso/free-disk-space@main
-      #   with:
-      #     tool-cache: false
-      #     android: true
-      #     dotnet: true
-      #     haskell: true
-      #     large-packages: true
-      #     docker-images: true
-      #     swap-storage: true
-
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Install dependencies
         run: |
@@ -241,6 +210,151 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           verbose: true
 
+  build-images:
+    name: Build Docker Images (${{ matrix.platform }})
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: linux/amd64
+            slug: amd64
+            runner: ubuntu-latest
+          - platform: linux/arm64
+            slug: arm64
+            runner: ubuntu-24.04-arm
+    steps:
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: false
+          swap-storage: true
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: "1.24"
+          cache: true
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: "npm"
+          cache-dependency-path: server/tests/integration/upstream/package-lock.json
+
+      - name: Generate Protobufs
+        run: |
+          make gen
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          buildkitd-config-inline: |
+            [registry."docker.io"]
+              mirrors = ["mirror.gcr.io"]
+
+      - name: Build and Save Images
+        run: |
+          PLATFORM="${{ matrix.platform }}"
+          SLUG="${{ matrix.slug }}"
+
+          # Server
+          make -C server build-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=server-$SLUG CACHE_FROM=type=gha,scope=server-$SLUG
+          docker save -o server.tar mcpany/server:latest
+
+          # HTTP Echo
+          make -C server build-http-echo-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=http-echo-$SLUG CACHE_FROM=type=gha,scope=http-echo-$SLUG
+          docker save -o http-echo.tar mcpany/http-echo-server:latest
+
+          # Time Server
+          make -C server build-e2e-timeserver-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=time-server-$SLUG CACHE_FROM=type=gha,scope=time-server-$SLUG
+          docker save -o time-server.tar mcpany-e2e-time-server
+
+          # Cowsay
+          make -C server build-cowsay-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=cowsay-$SLUG CACHE_FROM=type=gha,scope=cowsay-$SLUG
+          docker save -o cowsay.tar mcpany/e2e-cowsay-server:latest
+
+          # Everything
+          make -C server build-everything-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=everything-$SLUG CACHE_FROM=type=gha,scope=everything-$SLUG
+          docker save -o everything.tar mcpany/everything:latest
+
+          # UI
+          make -C server docker-build-ui PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=ui-$SLUG CACHE_FROM=type=gha,scope=ui-$SLUG
+          docker save -o ui.tar mcpany/ui:latest
+
+          # Operator
+          make -C server docker-build-operator PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=operator-$SLUG CACHE_FROM=type=gha,scope=operator-$SLUG
+          docker save -o operator.tar mcpany/operator:latest
+
+          # UI Test Image
+          make -C ui build-test-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=ui-test-$SLUG CACHE_FROM=type=gha,scope=ui-test-$SLUG
+          docker save -o ui-test-image.tar mcpany-ui-e2e:latest
+
+      - name: Upload Server Image
+        uses: actions/upload-artifact@v4
+        with:
+          name: image-server-${{ matrix.slug }}
+          path: server.tar
+          retention-days: 1
+
+      - name: Upload HTTP Echo Image
+        uses: actions/upload-artifact@v4
+        with:
+          name: image-http-echo-${{ matrix.slug }}
+          path: http-echo.tar
+          retention-days: 1
+
+      - name: Upload Time Server Image
+        uses: actions/upload-artifact@v4
+        with:
+          name: image-time-server-${{ matrix.slug }}
+          path: time-server.tar
+          retention-days: 1
+
+      - name: Upload Cowsay Image
+        uses: actions/upload-artifact@v4
+        with:
+          name: image-cowsay-${{ matrix.slug }}
+          path: cowsay.tar
+          retention-days: 1
+
+      - name: Upload Everything Image
+        uses: actions/upload-artifact@v4
+        with:
+          name: image-everything-${{ matrix.slug }}
+          path: everything.tar
+          retention-days: 1
+
+      - name: Upload UI Image
+        uses: actions/upload-artifact@v4
+        with:
+          name: image-ui-${{ matrix.slug }}
+          path: ui.tar
+          retention-days: 1
+
+      - name: Upload Operator Image
+        uses: actions/upload-artifact@v4
+        with:
+          name: image-operator-${{ matrix.slug }}
+          path: operator.tar
+          retention-days: 1
+
+      - name: Upload UI Test Image
+        uses: actions/upload-artifact@v4
+        with:
+          name: image-ui-test-${{ matrix.slug }}
+          path: ui-test-image.tar
+          retention-days: 1
+
   e2e-parallel:
     runs-on: oci-runner # ubuntu-latest
     timeout-minutes: 30
@@ -253,18 +367,7 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
-      # - name: Free Disk Space (Ubuntu)
-      #   uses: jlumbroso/free-disk-space@main
-      #   with:
-      #     tool-cache: false
-      #     android: true
-      #     dotnet: true
-      #     haskell: true
-      #     large-packages: true
-      #     docker-images: true
-      #     swap-storage: true
-
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Install dependencies
         run: |
@@ -408,153 +511,6 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           verbose: true
 
-  build-images:
-    name: Build Docker Images (${{ matrix.platform }})
-    needs: changes
-    if: ${{ needs.changes.outputs.src == 'true' }}
-    runs-on: ${{ matrix.runner }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - platform: linux/amd64
-            slug: amd64
-            runner: ubuntu-latest
-          - platform: linux/arm64
-            slug: arm64
-            runner: ubuntu-24.04-arm
-    steps:
-      - name: Free Disk Space (Ubuntu)
-        uses: jlumbroso/free-disk-space@main
-        with:
-          tool-cache: false
-          android: true
-          dotnet: true
-          haskell: true
-          large-packages: true
-          docker-images: false
-          swap-storage: true
-      - uses: actions/checkout@v5
-
-      - name: Set up Go
-        uses: actions/setup-go@v6
-        with:
-          go-version: "1.24"
-          cache: true
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: "24"
-          cache: "npm"
-          cache-dependency-path: server/tests/integration/upstream/package-lock.json
-
-      - name: Generate Protobufs
-        run: |
-          make gen
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-        with:
-          buildkitd-config-inline: |
-            [registry."docker.io"]
-              mirrors = ["mirror.gcr.io"]
-
-      - name: Build and Save Images
-        run: |
-          PLATFORM="${{ matrix.platform }}"
-          SLUG="${{ matrix.slug }}"
-
-          # Server
-          make -C server build-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=server-$SLUG CACHE_FROM=type=gha,scope=server-$SLUG
-          docker save -o server.tar mcpany/server:latest
-
-          # HTTP Echo
-          make -C server build-http-echo-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=http-echo-$SLUG CACHE_FROM=type=gha,scope=http-echo-$SLUG
-          docker save -o http-echo.tar mcpany/http-echo-server:latest
-
-          # Time Server
-          make -C server build-e2e-timeserver-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=time-server-$SLUG CACHE_FROM=type=gha,scope=time-server-$SLUG
-          docker save -o time-server.tar mcpany-e2e-time-server
-
-          # Cowsay
-          make -C server build-cowsay-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=cowsay-$SLUG CACHE_FROM=type=gha,scope=cowsay-$SLUG
-          docker save -o cowsay.tar mcpany/e2e-cowsay-server:latest
-
-          # Everything
-          make -C server build-everything-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=everything-$SLUG CACHE_FROM=type=gha,scope=everything-$SLUG
-          docker save -o everything.tar mcpany/everything:latest
-
-          # UI
-          make -C server docker-build-ui PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=ui-$SLUG CACHE_FROM=type=gha,scope=ui-$SLUG
-          docker save -o ui.tar mcpany/ui:latest
-
-          # Operator
-          make -C server docker-build-operator PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=operator-$SLUG CACHE_FROM=type=gha,scope=operator-$SLUG
-          docker save -o operator.tar mcpany/operator:latest
-
-          # UI Test Image
-          make -C ui build-test-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=ui-test-$SLUG CACHE_FROM=type=gha,scope=ui-test-$SLUG
-          docker save -o ui-test-image.tar mcpany-ui-e2e:latest
-
-      - name: Upload Server Image
-        uses: actions/upload-artifact@v4
-        with:
-          name: image-server-${{ matrix.slug }}
-          path: server.tar
-          retention-days: 1
-
-      - name: Upload HTTP Echo Image
-        uses: actions/upload-artifact@v4
-        with:
-          name: image-http-echo-${{ matrix.slug }}
-          path: http-echo.tar
-          retention-days: 1
-
-      - name: Upload Time Server Image
-        uses: actions/upload-artifact@v4
-        with:
-          name: image-time-server-${{ matrix.slug }}
-          path: time-server.tar
-          retention-days: 1
-
-      - name: Upload Cowsay Image
-        uses: actions/upload-artifact@v4
-        with:
-          name: image-cowsay-${{ matrix.slug }}
-          path: cowsay.tar
-          retention-days: 1
-
-      - name: Upload Everything Image
-        uses: actions/upload-artifact@v4
-        with:
-          name: image-everything-${{ matrix.slug }}
-          path: everything.tar
-          retention-days: 1
-
-      - name: Upload UI Image
-        uses: actions/upload-artifact@v4
-        with:
-          name: image-ui-${{ matrix.slug }}
-          path: ui.tar
-          retention-days: 1
-
-      - name: Upload Operator Image
-        uses: actions/upload-artifact@v4
-        with:
-          name: image-operator-${{ matrix.slug }}
-          path: operator.tar
-          retention-days: 1
-
-      - name: Upload UI Test Image
-        uses: actions/upload-artifact@v4
-        with:
-          name: image-ui-test-${{ matrix.slug }}
-          path: ui-test-image.tar
-          retention-days: 1
-
   e2e-sequential:
     runs-on: oci-runner # ubuntu-latest
     timeout-minutes: 60
@@ -563,7 +519,7 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Install dependencies
         run: |
@@ -686,13 +642,11 @@ jobs:
   e2e-public-api:
     runs-on: oci-runner # ubuntu-latest
     timeout-minutes: 30
-    needs: [changes]
-    if: ${{ needs.changes.outputs.src == 'true' }}
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Install dependencies
         run: |
@@ -799,7 +753,7 @@ jobs:
     timeout-minutes: 15
     needs: [build-images]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -872,7 +826,7 @@ jobs:
       #          docker-images: false
       #          swap-storage: true
       #
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Detect Architecture
         id: detect-arch
@@ -915,7 +869,7 @@ jobs:
     timeout-minutes: 20
     needs: [build-images]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Set up Go
         uses: actions/setup-go@v6
