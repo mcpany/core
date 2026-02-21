@@ -68,6 +68,7 @@ var fastJSON = jsoniter.ConfigCompatibleWithStandardLibrary
 // Randomized Selection from Top 5 High-Impact Targets
 // This prevents creating a new decoder on every tool execution (allocation reduction)
 // while preserving the UseNumber behavior required for accurate number handling.
+// Note: This config is frozen and thread-safe.
 var fastJSONNumber = jsoniter.Config{
 	EscapeHTML:             true,
 	SortMapKeys:            true,
