@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Node, Edge, useNodesState, useEdgesState } from '@xyflow/react';
 import { apiClient } from '@/lib/client';
 import dagre from 'dagre';
@@ -71,6 +71,7 @@ export function useRealTimeTopology() {
     const [loading, setLoading] = useState(false);
     const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
     const [isLive, setIsLive] = useState(false);
+    const prevStructureHash = useRef<string>('');
 
     const fetchData = useCallback(async () => {
         try {
@@ -177,10 +178,29 @@ export function useRealTimeTopology() {
                 });
             }
 
-            // Apply Layout
-            const layout = getLayoutedElements(rawNodes, rawEdges);
-            setNodes(layout.nodes);
-            setEdges(layout.edges);
+            // ⚡ BOLT: Memoize layout calculation to prevent thrashing on metric updates.
+            // Randomized Selection from Top 5 High-Impact Targets
+            const structureHash = rawNodes.map(n => n.id).sort().join(',') + '|' + rawEdges.map(e => e.id).sort().join(',');
+
+            if (structureHash !== prevStructureHash.current) {
+                // Structure changed: Recalculate layout
+                const layout = getLayoutedElements(rawNodes, rawEdges);
+                setNodes(layout.nodes);
+                setEdges(layout.edges);
+                prevStructureHash.current = structureHash;
+            } else {
+                // Structure unchanged: Update metrics only, keeping positions
+                setNodes((currentNodes) => {
+                    const posMap = new Map(currentNodes.map(n => [n.id, n.position]));
+                    return rawNodes.map(node => ({
+                        ...node,
+                        position: posMap.get(node.id) || node.position
+                    }));
+                });
+                // Edges might have changed props but not connectivity
+                setEdges(rawEdges);
+            }
+
             setLastUpdated(new Date());
 
         } catch (e) {
