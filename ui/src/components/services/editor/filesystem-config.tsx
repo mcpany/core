@@ -23,6 +23,13 @@ interface FilesystemConfigProps {
     onChange: (service: UpstreamServiceConfig) => void;
 }
 
+/**
+ * Component for configuring filesystem upstream services.
+ *
+ * @param props - The component props.
+ * @param props.service - The service configuration object.
+ * @param props.onChange - Callback function to handle configuration changes.
+ */
 export function FilesystemConfig({ service, onChange }: FilesystemConfigProps) {
     const [fsConfig, setFsConfig] = useState<FilesystemUpstreamService>(
         service.filesystemService || {

@@ -51,6 +51,7 @@ const (
 	HealthStatusUnhealthy = "unhealthy"
 
 	gitCommand = "git"
+	trueStr    = "true"
 )
 
 var (
@@ -795,7 +796,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 			// Security: Hide the body if it is not JSON (potential stack trace) unless debug is enabled.
 			// util.RedactJSON returns the original input if it's not JSON.
 			// If it was JSON, it is already redacted.
-			isDebug := os.Getenv("MCPANY_DEBUG") == "true"
+			isDebug := os.Getenv("MCPANY_DEBUG") == trueStr
 			if !isDebug && !stdjson.Valid(bodyBytes) {
 				displayBody = "[Body hidden for security. Enable debug mode to view.]"
 			}

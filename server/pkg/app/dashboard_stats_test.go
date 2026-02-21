@@ -7,7 +7,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -60,7 +59,7 @@ func TestHandleDashboardToolFailures(t *testing.T) {
 
 	rr := httptest.NewRecorder()
 	app := &Application{
-		MetricsGatherer: registry, statsCache: make(map[string]statsCacheEntry),
+		MetricsGatherer: registry,
 	}
 
 	handler := app.handleDashboardToolFailures()
@@ -117,7 +116,7 @@ func TestHandleDashboardTopTools(t *testing.T) {
 	toolsCallTotal.WithLabelValues(tool2, "service1", "success", "").Add(50)
 
 	app := &Application{
-		MetricsGatherer: registry, statsCache: make(map[string]statsCacheEntry),
+		MetricsGatherer: registry,
 	}
 
 	handler := app.handleDashboardTopTools()
@@ -158,7 +157,7 @@ func TestHandleDashboardTraffic(t *testing.T) {
 	tm := topology.NewManager(mockRegistry, mockTM)
 
 	app := &Application{
-		TopologyManager: tm, statsCache: make(map[string]statsCacheEntry),
+		TopologyManager: tm,
 	}
 
 	// Seed traffic relative to now to ensure it appears in GetTrafficHistory
@@ -200,7 +199,7 @@ func TestHandleDebugSeedTraffic(t *testing.T) {
 	tm := topology.NewManager(mockRegistry, mockTM)
 
 	app := &Application{
-		TopologyManager: tm, statsCache: make(map[string]statsCacheEntry),
+		TopologyManager: tm,
 	}
 
 	points := []topology.TrafficPoint{
@@ -271,7 +270,7 @@ func TestHandleDashboardMetrics(t *testing.T) {
 	mockRM.EXPECT().ListResources().Return([]resource.Resource{&TestMockResource{uri: "r1"}})
 
 	app := &Application{
-		TopologyManager: tm, statsCache: make(map[string]statsCacheEntry),
+		TopologyManager: tm,
 		ServiceRegistry: mockRegistry,
 		ToolManager:     mockTM,
 		PromptManager:   mockPM,
@@ -333,7 +332,7 @@ func TestHandleDashboardToolUsage(t *testing.T) {
 
 	rr := httptest.NewRecorder()
 	app := &Application{
-		MetricsGatherer: registry, statsCache: make(map[string]statsCacheEntry),
+		MetricsGatherer: registry,
 	}
 
 	handler := app.handleDashboardToolUsage()
@@ -363,33 +362,4 @@ func TestHandleDashboardToolUsage(t *testing.T) {
 	assert.Equal(t, toolB, myStats[1].Name)
 	assert.Equal(t, int64(10), myStats[1].TotalCalls)
 	assert.Equal(t, 100.0, myStats[1].SuccessRate)
-}
-
-func TestStatsCacheEviction(t *testing.T) {
-	app := &Application{
-		statsCache: make(map[string]statsCacheEntry),
-	}
-
-	// Fill cache to limit (100)
-	for i := 0; i < 100; i++ {
-		app.setStatsCache(fmt.Sprintf("key-%d", i), i)
-	}
-
-	// Assert full
-	assert.Equal(t, 100, len(app.statsCache))
-
-	// Add 101st item, triggering eviction
-	app.setStatsCache("key-101", 101)
-
-	// Previously it would be 1. Now it should be ~75 + 1 = 76.
-	// We allow some flexibility because implementation details might change slightly,
-	// but it should definitely be > 50 and < 90.
-	size := len(app.statsCache)
-	assert.Greater(t, size, 50, "Cache should not be cleared completely")
-	assert.Less(t, size, 90, "Cache should have evicted some items")
-
-	// Also ensure key-101 is present
-	val, ok := app.getStatsCache("key-101")
-	assert.True(t, ok)
-	assert.Equal(t, 101, val)
 }

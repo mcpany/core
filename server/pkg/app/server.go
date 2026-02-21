@@ -292,15 +292,6 @@ type Application struct {
 	// MetricsGatherer is the interface for gathering metrics.
 	// Defaults to prometheus.DefaultGatherer.
 	MetricsGatherer prometheus.Gatherer
-
-	// statsCache for dashboard
-	statsCacheMu sync.RWMutex
-	statsCache   map[string]statsCacheEntry
-}
-
-type statsCacheEntry struct {
-	Data      any
-	ExpiresAt time.Time
 }
 
 // NewApplication creates a new Application with default dependencies.
@@ -324,7 +315,6 @@ func NewApplication() *Application {
 		startupCh:       make(chan struct{}),
 		startTime:       time.Now(),
 		MetricsGatherer: prometheus.DefaultGatherer,
-		statsCache:      make(map[string]statsCacheEntry),
 	}
 }
 
@@ -1979,6 +1969,7 @@ func (a *Application) runServerMode(
 	})))
 	mux.Handle("/debug/auth-test", authMiddleware(http.HandlerFunc(a.testAuthHandler)))
 	mux.Handle("/api/v1/debug/seed_traffic", authMiddleware(a.handleDebugSeedTraffic()))
+	mux.Handle("/api/v1/debug/seed", authMiddleware(a.handleDebugSeed()))
 
 	// User Preferences
 	mux.Handle("/api/v1/user/preferences", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
