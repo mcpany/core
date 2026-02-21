@@ -46,6 +46,7 @@ import (
 const (
 	contentTypeJSON     = "application/json"
 	redactedPlaceholder = "[REDACTED]"
+	trueStr             = "true"
 
 	// HealthStatusUnhealthy indicates that a service is in an unhealthy state.
 	HealthStatusUnhealthy = "unhealthy"
@@ -827,7 +828,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 			// Security: Hide the body if it is not JSON (potential stack trace) unless debug is enabled.
 			// util.RedactJSON returns the original input if it's not JSON.
 			// If it was JSON, it is already redacted.
-			isDebug := os.Getenv("MCPANY_DEBUG") == "true"
+			isDebug := os.Getenv("MCPANY_DEBUG") == trueStr
 			if !isDebug && !stdjson.Valid(bodyBytes) {
 				displayBody = "[Body hidden for security. Enable debug mode to view.]"
 			}
@@ -3986,7 +3987,7 @@ func validateSafePathAndInjection(val string, isDocker bool, commandName string)
 		// via tools like curl/wget that accept them.
 		// Check for "localhost" (case-insensitive)
 		if strings.EqualFold(val, "localhost") {
-			allowLoopback := os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == "true"
+			allowLoopback := os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == trueStr
 			if !allowLoopback {
 				return fmt.Errorf("unsafe argument: localhost is not allowed")
 			}
