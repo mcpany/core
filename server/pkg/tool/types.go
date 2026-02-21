@@ -2862,6 +2862,7 @@ func isDangerousEnvVar(name string) bool {
 	}
 
 	// Shellshock (Bash Function Definitions)
+	// BASH_FUNC_ prefix is used to export functions in Bash. Malicious values can lead to RCE via Shellshock-like bugs.
 	if strings.HasPrefix(name, "BASH_FUNC_") {
 		return true
 	}
