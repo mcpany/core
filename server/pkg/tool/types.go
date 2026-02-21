@@ -2839,6 +2839,10 @@ var dangerousEnvVars = map[string]bool{
 
 	// Shell
 	"BASH_ENV": true, "ENV": true, "PS4": true, "SHELLOPTS": true, "PROMPT_COMMAND": true, "IFS": true,
+
+	// Glibc / Loader
+	"GCONV_PATH": true, "GLIBC_TUNABLES": true,
+	"RESOLV_HOST_CONF": true, "RES_OPTIONS": true, "HOSTALIASES": true,
 }
 
 // isDangerousEnvVar checks if the environment variable name is potentially dangerous.
@@ -2853,6 +2857,11 @@ func isDangerousEnvVar(name string) bool {
 
 	// Dynamic Linker
 	if strings.HasPrefix(name, "LD_") || strings.HasPrefix(name, "DYLD_") {
+		return true
+	}
+
+	// Shellshock (Bash Function Definitions)
+	if strings.HasPrefix(name, "BASH_FUNC_") {
 		return true
 	}
 
