@@ -46,6 +46,14 @@ interface AuditLogEntry {
     durationMs: number;
 }
 
+/**
+ * ToolRunner component.
+ *
+ * @param props - The props.
+ * @param props.tool - The tool.
+ * @param props.onClose - The onClose callback.
+ * @returns The rendered component.
+ */
 export function ToolRunner({ tool, onClose }: ToolRunnerProps) {
   const [input, setInput] = useState("{}");
   const [output, setOutput] = useState<any>(null);

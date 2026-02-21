@@ -8,7 +8,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ToolDefinition } from "@/lib/client";
-import { SchemaForm } from "./schema-form";
+import { SchemaForm } from "@/components/tools/schema-form";
 import { ToolPresets } from "./tool-presets";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";

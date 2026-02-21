@@ -44,20 +44,17 @@ func (s *RedisStrategy) Create(_ context.Context, serviceID, limitScopeKey, part
 	// ⚡ BOLT: Key Redis clients by config hash instead of serviceID.
 	// Randomized Selection from Top 5 High-Impact Targets.
 	// This ensures that multiple services sharing the same Redis config use the same connection pool.
-	client, err := s.getRedisClient(config.GetRedis())
-	if err != nil {
-		return nil, err
-	}
+	client := s.getRedisClient(config.GetRedis())
 	return NewRedisLimiterWithClient(client, serviceID, limitScopeKey, partitionKey, config), nil
 }
 
-func (s *RedisStrategy) getRedisClient(config *bus.RedisBus) (*redis.Client, error) {
+func (s *RedisStrategy) getRedisClient(config *bus.RedisBus) *redis.Client {
 	configHash := config.GetAddress() + "|" + config.GetPassword() + "|" + strconv.Itoa(int(config.GetDb()))
 
 	// Fast path: Check if client exists
 	if val, ok := s.redisClients.Load(configHash); ok {
 		if client, ok := val.(*redis.Client); ok {
-			return client, nil
+			return client
 		}
 	}
 
@@ -73,8 +70,8 @@ func (s *RedisStrategy) getRedisClient(config *bus.RedisBus) (*redis.Client, err
 	if loaded {
 		// Another goroutine created the client first. Close our redundant one.
 		_ = newClient.Close()
-		return actual.(*redis.Client), nil
+		return actual.(*redis.Client)
 	}
 
-	return newClient, nil
+	return newClient
 }
