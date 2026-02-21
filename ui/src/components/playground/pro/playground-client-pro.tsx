@@ -16,13 +16,6 @@ import { Download, Share2, Copy, Check, Info, Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { estimateTokens, estimateMessageTokens } from "@/lib/tokens";
 import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogDescription
-} from "@/components/ui/dialog";
-import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
@@ -31,13 +24,14 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 
-import { ToolForm } from "@/components/playground/tool-form";
 import { ToolSidebar } from "./tool-sidebar";
 import { ChatMessage, Message } from "./chat-message";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 
 import { useSearchParams } from "next/navigation";
+import { ToolRunner } from "@/components/playground/tool-runner";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 /**
  * PlaygroundClientPro component.
@@ -47,21 +41,11 @@ export function PlaygroundClientPro() {
   const [messages, setMessages, isInitialized] = useLocalStorage<Message[]>("playground-messages", []);
   const [input, setInput] = useState("");
   const searchParams = useSearchParams();
+  const [mode, setMode] = useState<"console" | "runner">("console");
 
   // Initialize with welcome message if empty and only after local storage is loaded
   useEffect(() => {
     if (isInitialized) {
-        // We only add welcome message if the array is empty AND
-        // we check if the key was missing from localStorage (implies first visit).
-        // However, useLocalStorage handles default value if key is missing.
-        // If the user explicitly clears the chat, we set it to empty array.
-        // So `messages` being empty array means either:
-        // 1. First visit (default value used)
-        // 2. User cleared chat
-
-        // To strictly follow "persistence", if the user cleared it, it should stay cleared.
-        // But for UX, if I open the page and it's empty, a welcome message is nice.
-        // Let's rely on checking if localStorage has the key to distinguish first visit.
         const hasKey = typeof window !== "undefined" && window.localStorage.getItem("playground-messages") !== null;
 
         if (!hasKey && messages.length === 0) {
@@ -154,13 +138,6 @@ export function PlaygroundClientPro() {
     processResponse(input);
   };
 
-  const handleToolFormSubmit = (data: Record<string, unknown>) => {
-    if (!toolToConfigure) return;
-    const command = `${toolToConfigure.name} ${JSON.stringify(data)}`;
-    setToolToConfigure(null);
-    setInput(command);
-  };
-
   const handleInputChange = (value: string) => {
       setInput(value);
       if (value.trim()) {
@@ -174,6 +151,7 @@ export function PlaygroundClientPro() {
 
   const selectSuggestion = (tool: ToolDefinition) => {
       setToolToConfigure(tool);
+      setMode("runner");
       setShowSuggestions(false);
   };
 
@@ -355,189 +333,182 @@ export function PlaygroundClientPro() {
          >
              <ToolSidebar
                 tools={availableTools}
-                onSelectTool={setToolToConfigure}
+                onSelectTool={(tool) => {
+                    setToolToConfigure(tool);
+                    setMode("runner");
+                }}
              />
          </ResizablePanel>
 
          <ResizableHandle withHandle={!isMobile} className={!sidebarOpen ? "hidden" : ""} />
 
          <ResizablePanel defaultSize={75}>
-            <div className="flex flex-col h-full relative bg-muted/5">
-                {/* Header */}
+            <Tabs value={mode} onValueChange={(v) => setMode(v as any)} className="flex flex-col h-full">
                 <div className="h-14 border-b flex items-center justify-between px-4 bg-background/80 backdrop-blur-sm sticky top-0 z-10">
-                     <div className="flex items-center gap-2">
-                        {!sidebarOpen && (
-                             <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(true)} className="h-8 w-8">
-                                 <PanelLeftOpen className="h-4 w-4" />
-                             </Button>
-                        )}
-                        {sidebarOpen && isMobile && (
-                            <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(false)} className="h-8 w-8">
-                                <PanelLeftClose className="h-4 w-4" />
-                            </Button>
-                        )}
-                        <h2 className="font-semibold text-sm flex items-center gap-2">
-                            <Terminal className="h-4 w-4 text-primary" />
-                            Console
-                        </h2>
-                     </div>
-                     <div className="flex items-center gap-2">
-                          <Button
-                               variant="outline"
-                               size="sm"
-                               className="h-7 text-xs flex items-center gap-1"
-                               onClick={handleShareUrl}
-                          >
-                              {copied ? <Check className="h-3 w-3" /> : <Share2 className="h-3 w-3" />}
-                              Share
-                          </Button>
-                          <Button
-                               variant="outline"
-                               size="sm"
-                               className="h-7 text-xs flex items-center gap-1"
-                               onClick={handleExportHistory}
-                               disabled={displayMessages.length === 0}
-                          >
-                              <Download className="h-3 w-3" />
-                              Export
-                          </Button>
-                          <Button
-                               variant="outline"
-                               size="sm"
-                               className="h-7 text-xs flex items-center gap-1"
-                               onClick={handleImportClick}
-                          >
-                              <Upload className="h-3 w-3" />
-                              Import
-                          </Button>
-                          <input
-                                type="file"
-                                ref={fileInputRef}
-                                className="hidden"
-                                accept=".json"
-                                onChange={handleFileChange}
-                          />
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="h-7 text-xs"
-                            onClick={() => setMessages([])}
-                            disabled={displayMessages.length === 0}
-                          >
-                              Clear
-                          </Button>
-                     </div>
-                </div>
-
-                {/* Chat Area */}
-                <div className="flex-1 overflow-hidden relative">
-                    <ScrollArea className="h-full p-4" ref={scrollAreaRef}>
-                        <div className="max-w-4xl mx-auto pb-10 space-y-4">
-                            {displayMessages.map((msg) => (
-                                <ChatMessage key={msg.id} message={msg} onReplay={handleReplay} onRetry={handleReplay} />
-                            ))}
-                            {isLoading && (
-                                <div className="flex items-center gap-2 text-muted-foreground text-xs animate-pulse pl-12">
-                                    <Sparkles className="size-3 text-primary" />
-                                    <span className="italic">Processing execution...</span>
-                                </div>
+                     <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2">
+                            {!sidebarOpen && (
+                                 <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(true)} className="h-8 w-8">
+                                     <PanelLeftOpen className="h-4 w-4" />
+                                 </Button>
                             )}
-                            <div className="h-4" /> {/* Spacer */}
-                        </div>
-                    </ScrollArea>
-                </div>
-
-                {/* Input Area */}
-                <div className="p-4 bg-background border-t">
-                    <div className="max-w-4xl mx-auto flex gap-3 relative">
-                         <div className="flex-1 relative">
-                            <Input
-                                ref={inputRef}
-                                placeholder="Enter command or select a tool..."
-                                value={input}
-                                onChange={(e) => handleInputChange(e.target.value)}
-                                onKeyDown={(e) => e.key === "Enter" && handleSend()}
-                                disabled={isLoading}
-                                className="pr-12 font-mono text-sm bg-muted/20 focus-visible:bg-background transition-colors h-11"
-                                autoFocus
-                            />
-                            {showSuggestions && (
-                                <div className="absolute bottom-full left-0 w-full bg-popover border rounded-md shadow-md mb-2 overflow-hidden z-20">
-                                    <div className="p-1">
-                                        {filteredSuggestions.map(tool => (
-                                            <div
-                                                key={tool.name}
-                                                className="px-2 py-1.5 text-sm cursor-pointer hover:bg-accent hover:text-accent-foreground rounded-sm flex items-center justify-between"
-                                                onClick={() => selectSuggestion(tool)}
-                                            >
-                                                <span className="font-medium">{tool.name}</span>
-                                                <span className="text-xs text-muted-foreground">{tool.serviceId || 'core'}</span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-                             <div className="absolute right-1 top-1.5">
-                                <Button
-                                    size="sm"
-                                    className="h-8 w-8 p-0 rounded-md"
-                                    onClick={handleSend}
-                                    disabled={isLoading || !input.trim()}
-                                    aria-label="Send"
-                                >
-                                    {isLoading ? <Loader2 className="size-4 animate-spin" /> : <Send className="size-4" />}
+                            {sidebarOpen && isMobile && (
+                                <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(false)} className="h-8 w-8">
+                                    <PanelLeftClose className="h-4 w-4" />
                                 </Button>
-                            </div>
-                         </div>
-                    </div>
-                     <div className="max-w-4xl mx-auto mt-2 flex justify-between items-center text-[10px] text-muted-foreground px-1">
-                        <div className="flex items-center gap-4">
-                            <span>Format: <code className="bg-muted px-1 rounded text-primary">tool_name {"{json_args}"}</code></span>
-                            <div className="flex items-center gap-1.5 border-l pl-4">
-                                <Switch id="console-dry-run" checked={isDryRun} onCheckedChange={setIsDryRun} className="scale-75 origin-left" />
-                                <Label htmlFor="console-dry-run" className="cursor-pointer text-[10px]">Dry Run</Label>
-                            </div>
-                            <div className="flex items-center gap-1.5 border-l pl-4">
-                                <Info className="h-3 w-3 text-muted-foreground" />
-                                <span title="Approximate tokens based on character count and words">
-                                    ~{currentTokens} tokens
-                                </span>
-                                <span className="text-[9px] opacity-60 ml-1">
-                                   (Session: ~{historyTokens})
-                                </span>
-                            </div>
+                            )}
                         </div>
-                        <span className="hidden sm:inline">Press Enter to execute</span>
-                    </div>
+
+                        <TabsList className="h-9 bg-muted/50 p-1">
+                            <TabsTrigger value="console" className="text-xs px-3 h-7">
+                                <Terminal className="w-3 h-3 mr-2" />
+                                Console
+                            </TabsTrigger>
+                            <TabsTrigger value="runner" className="text-xs px-3 h-7">
+                                <Zap className="w-3 h-3 mr-2" />
+                                Tool Runner
+                            </TabsTrigger>
+                        </TabsList>
+                     </div>
+
+                     {mode === 'console' && (
+                         <div className="flex items-center gap-2">
+                              <Button
+                                   variant="outline"
+                                   size="sm"
+                                   className="h-7 text-xs flex items-center gap-1"
+                                   onClick={handleShareUrl}
+                              >
+                                  {copied ? <Check className="h-3 w-3" /> : <Share2 className="h-3 w-3" />}
+                                  Share
+                              </Button>
+                              <Button
+                                   variant="outline"
+                                   size="sm"
+                                   className="h-7 text-xs flex items-center gap-1"
+                                   onClick={handleExportHistory}
+                                   disabled={displayMessages.length === 0}
+                              >
+                                  <Download className="h-3 w-3" />
+                                  Export
+                              </Button>
+                              <Button
+                                   variant="outline"
+                                   size="sm"
+                                   className="h-7 text-xs flex items-center gap-1"
+                                   onClick={handleImportClick}
+                              >
+                                  <Upload className="h-3 w-3" />
+                                  Import
+                              </Button>
+                              <input
+                                    type="file"
+                                    ref={fileInputRef}
+                                    className="hidden"
+                                    accept=".json"
+                                    onChange={handleFileChange}
+                              />
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="h-7 text-xs"
+                                onClick={() => setMessages([])}
+                                disabled={displayMessages.length === 0}
+                              >
+                                  Clear
+                              </Button>
+                         </div>
+                     )}
                 </div>
-            </div>
+
+                <TabsContent value="console" forceMount className={mode === "console" ? "flex-1 flex flex-col overflow-hidden mt-0 relative" : "hidden"}>
+                    <div className="flex-1 overflow-hidden relative">
+                        <ScrollArea className="h-full p-4" ref={scrollAreaRef}>
+                            <div className="max-w-4xl mx-auto pb-10 space-y-4">
+                                {displayMessages.map((msg) => (
+                                    <ChatMessage key={msg.id} message={msg} onReplay={handleReplay} onRetry={handleReplay} />
+                                ))}
+                                {isLoading && (
+                                    <div className="flex items-center gap-2 text-muted-foreground text-xs animate-pulse pl-12">
+                                        <Sparkles className="size-3 text-primary" />
+                                        <span className="italic">Processing execution...</span>
+                                    </div>
+                                )}
+                                <div className="h-4" /> {/* Spacer */}
+                            </div>
+                        </ScrollArea>
+                    </div>
+
+                    <div className="p-4 bg-background border-t">
+                        <div className="max-w-4xl mx-auto flex gap-3 relative">
+                             <div className="flex-1 relative">
+                                <Input
+                                    ref={inputRef}
+                                    placeholder="Enter command or select a tool..."
+                                    value={input}
+                                    onChange={(e) => handleInputChange(e.target.value)}
+                                    onKeyDown={(e) => e.key === "Enter" && handleSend()}
+                                    disabled={isLoading}
+                                    className="pr-12 font-mono text-sm bg-muted/20 focus-visible:bg-background transition-colors h-11"
+                                    autoFocus
+                                />
+                                {showSuggestions && (
+                                    <div className="absolute bottom-full left-0 w-full bg-popover border rounded-md shadow-md mb-2 overflow-hidden z-20">
+                                        <div className="p-1">
+                                            {filteredSuggestions.map(tool => (
+                                                <div
+                                                    key={tool.name}
+                                                    className="px-2 py-1.5 text-sm cursor-pointer hover:bg-accent hover:text-accent-foreground rounded-sm flex items-center justify-between"
+                                                    onClick={() => selectSuggestion(tool)}
+                                                >
+                                                    <span className="font-medium">{tool.name}</span>
+                                                    <span className="text-xs text-muted-foreground">{tool.serviceId || 'core'}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                                 <div className="absolute right-1 top-1.5">
+                                    <Button
+                                        size="sm"
+                                        className="h-8 w-8 p-0 rounded-md"
+                                        onClick={handleSend}
+                                        disabled={isLoading || !input.trim()}
+                                        aria-label="Send"
+                                    >
+                                        {isLoading ? <Loader2 className="size-4 animate-spin" /> : <Send className="size-4" />}
+                                    </Button>
+                                </div>
+                             </div>
+                        </div>
+                         <div className="max-w-4xl mx-auto mt-2 flex justify-between items-center text-[10px] text-muted-foreground px-1">
+                            <div className="flex items-center gap-4">
+                                <span>Format: <code className="bg-muted px-1 rounded text-primary">tool_name {"{json_args}"}</code></span>
+                                <div className="flex items-center gap-1.5 border-l pl-4">
+                                    <Switch id="console-dry-run" checked={isDryRun} onCheckedChange={setIsDryRun} className="scale-75 origin-left" />
+                                    <Label htmlFor="console-dry-run" className="cursor-pointer text-[10px]">Dry Run</Label>
+                                </div>
+                                <div className="flex items-center gap-1.5 border-l pl-4">
+                                    <Info className="h-3 w-3 text-muted-foreground" />
+                                    <span title="Approximate tokens based on character count and words">
+                                        ~{currentTokens} tokens
+                                    </span>
+                                    <span className="text-[9px] opacity-60 ml-1">
+                                       (Session: ~{historyTokens})
+                                    </span>
+                                </div>
+                            </div>
+                            <span className="hidden sm:inline">Press Enter to execute</span>
+                        </div>
+                    </div>
+                </TabsContent>
+
+                <TabsContent value="runner" forceMount className={mode === "runner" ? "flex-1 overflow-hidden mt-0" : "hidden"}>
+                    <ToolRunner tool={toolToConfigure} onClose={() => setMode("console")} />
+                </TabsContent>
+            </Tabs>
          </ResizablePanel>
       </ResizablePanelGroup>
-
-      <Dialog open={!!toolToConfigure} onOpenChange={(open) => !open && setToolToConfigure(null)}>
-        <DialogContent className="sm:max-w-[600px] h-[80vh] flex flex-col p-0 gap-0 overflow-hidden">
-            <DialogHeader className="p-6 pb-2">
-                <DialogTitle className="flex items-center gap-2 text-xl">
-                    <div className="bg-primary/10 p-1.5 rounded-md">
-                        <Zap className="w-5 h-5 text-primary" />
-                    </div>
-                    {toolToConfigure?.name}
-                </DialogTitle>
-                <DialogDescription>
-                    Configure arguments for this tool execution.
-                </DialogDescription>
-            </DialogHeader>
-            <div className="flex-1 overflow-hidden p-6 pt-2">
-                {toolToConfigure && (
-                    <ToolForm
-                        tool={toolToConfigure}
-                        onSubmit={handleToolFormSubmit}
-                        onCancel={() => setToolToConfigure(null)}
-                    />
-                )}
-            </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
