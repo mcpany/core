@@ -19,11 +19,20 @@ The **Connection Diagnostic Tool** helps users troubleshoot connectivity issues 
 ## Usage
 
 1.  Navigate to the **Services** page.
-2.  Click the **Status Icon** (or the "Troubleshoot" button) next to any service.
+2.  If a service is in an error state, click the **Alert Icon** (Triangle) next to the service status.
+    - Alternatively, select **Diagnose** from the "Actions" dropdown menu (the three dots on the right).
 3.  Click **Start Diagnostics**.
 4.  Follow the on-screen progress and review the **Diagnostic Result** card for suggestions.
 
+### Remediation Actions
+
+If diagnostics fail, you can attempt the following:
+
+-   **Restart Service**: Use the "Restart" option in the Actions menu to force a reconnection attempt.
+-   **Edit Configuration**: If the URL or credentials are wrong, update the service settings.
+-   **Check Logs**: View detailed server logs for deeper inspection.
+
 ## Screenshots
 
-*(Screenshot of the connection diagnostics dialog showing a localhost warning)*
-![Connection Diagnostics](../screenshots/connection-diagnostics.png)
+*(Screenshot of a diagnostic failure with suggestions)*
+![Connection Diagnostics](../screenshots/diagnostics_failure.png)

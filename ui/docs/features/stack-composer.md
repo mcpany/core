@@ -32,9 +32,9 @@ To add a service:
 
 You can fine-tune the configuration in the Monaco Editor.
 
-- **Validation**: Detailed error markers appear if you violate the schema.
-- **Auto-Complete**: Press `Ctrl+Space` to see available fields.
+- **Auto-Complete**: Press `Ctrl+Space` to see available fields (like `services`, `version`, `image`).
+- **Validation**: Basic YAML syntax highlighting is provided. Full schema validation occurs upon saving.
 
 ### 4. Deploy
 
-Once satisfied, click **"Save Changes"**. The system will save the configuration. If the server is configured for hot-reload, the changes will be applied automatically to the running instance.
+Once satisfied, click **"Save & Deploy"**. The system will validate and save the configuration. If the server is configured for hot-reload, the changes will be applied automatically to the running instance.

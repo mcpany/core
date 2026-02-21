@@ -45,8 +45,8 @@ func TestCachingConfig(t *testing.T) {
 	service := cfg.GetUpstreamServices()[0]
 
 	require.Equal(t, "cached-weather-service", service.GetName())
-	require.NotNil(t, service.Cache)
-	require.True(t, service.Cache.GetIsEnabled())
+	require.NotNil(t, service.GetCache())
+	require.True(t, service.GetCache().GetIsEnabled())
 	// The config in README says "1h" for service, "5m" for call.
 	// We verify basic structure here.
 	err = config.ValidateOrError(context.Background(), service)
