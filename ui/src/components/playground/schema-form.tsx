@@ -77,12 +77,12 @@ export function SchemaForm({ schema, value, onChange, errors }: {
 /**
  * Helper to display field label with optional tooltip and required indicator.
  */
-function FieldLabel({ label, required, description, error, className }: { label?: string, required?: boolean, description?: string, error?: string, className?: string }) {
+function FieldLabel({ label, htmlFor, required, description, error, className }: { label?: string, htmlFor?: string, required?: boolean, description?: string, error?: string, className?: string }) {
     if (!label) return null;
     return (
         <div className={cn("flex flex-col gap-1.5 mb-2", className)}>
             <div className="flex items-center gap-2">
-                <Label className={cn("text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70", error && "text-destructive")}>
+                <Label htmlFor={htmlFor} className={cn("text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70", error && "text-destructive")}>
                     {label}
                     {required && <span className="text-destructive ml-1">*</span>}
                 </Label>
@@ -181,7 +181,7 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
     if (schema.enum) {
         return (
             <div className="w-full">
-                <FieldLabel label={label} required={isRequired} description={description} error={errors?.[path]} />
+                <FieldLabel label={label} htmlFor={path} required={isRequired} description={description} error={errors?.[path]} />
                 <Select value={value as string} onValueChange={(v) => onChange(path, v)}>
                     <SelectTrigger id={path} className={cn(hasError && "border-destructive ring-destructive/20")}>
                         <SelectValue placeholder="Select option..." />
@@ -202,7 +202,7 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
         if (schema.contentEncoding === "base64" || schema.format === "binary") {
              return (
                 <div className="w-full">
-                    <FieldLabel label={label} required={isRequired} description={description} error={errors?.[path]} />
+                    <FieldLabel label={label} htmlFor={path} required={isRequired} description={description} error={errors?.[path]} />
                     <FileInput
                         id={path}
                         value={(value as string) || undefined}
@@ -216,7 +216,7 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
 
          return (
             <div className="w-full">
-                <FieldLabel label={label} required={isRequired} description={description} error={errors?.[path]} />
+                <FieldLabel label={label} htmlFor={path} required={isRequired} description={description} error={errors?.[path]} />
                 <Input
                     id={path}
                     value={(value as string) || ""}
@@ -231,7 +231,7 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
     if (type === "integer" || type === "number") {
         return (
             <div className="w-full">
-                <FieldLabel label={label} required={isRequired} description={description} error={errors?.[path]} />
+                <FieldLabel label={label} htmlFor={path} required={isRequired} description={description} error={errors?.[path]} />
                 <Input
                     id={path}
                     type="number"
@@ -411,7 +411,7 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
     // Fallback
     return (
         <div className="w-full">
-            <FieldLabel label={label} required={isRequired} description={description} error={errors?.[path]} />
+            <FieldLabel label={label} htmlFor={path} required={isRequired} description={description} error={errors?.[path]} />
             <Input
                 id={path}
                 value={(value as string) || ""}
