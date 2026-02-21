@@ -16,3 +16,5 @@ Implemented a new test suite `server/pkg/tool/management_fuzzy_test.go` guarding
 **Verification:**
 *   `go test -v server/pkg/tool/management_fuzzy_test.go` passed.
 *   `go test ./server/pkg/tool/...` passed (with pre-existing failures in `GRPCTool` unrelated to these changes).
+
+*(Retrying CI due to transient network failure)*
