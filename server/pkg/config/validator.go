@@ -557,6 +557,11 @@ func validateBasicAuth(ctx context.Context, basicAuth *configv1.BasicAuth, authC
 	if err := validateSecretValue(ctx, basicAuth.GetPassword()); err != nil {
 		return WrapActionableError("basic auth password validation failed", err)
 	}
+
+	if skip, ok := ctx.Value(SkipSecretValidationKey).(bool); ok && skip {
+		return nil
+	}
+
 	passwordValue, err := util.ResolveSecret(ctx, basicAuth.GetPassword())
 	if err != nil {
 		return fmt.Errorf("failed to resolve basic auth password secret: %w", err)
