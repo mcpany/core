@@ -99,7 +99,7 @@ func (s *Server) Server() *mcp.Server {
 
 // NewServer creates and initializes a new MCP Any Server.
 //
-// Summary: Creates and initializes a new Server instance with all dependencies.
+// Summary: Creates and initializes a new Server instance with all required dependencies.
 //
 // It sets up the necessary managers for tools, prompts, and resources, configures the router
 // with handlers for standard MCP methods, and establishes middleware for request processing,
