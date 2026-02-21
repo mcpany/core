@@ -1557,12 +1557,7 @@ func (a *Application) runServerMode(
 	} else if _, err := a.fs.Stat("./ui/dist"); err == nil {
 		uiPath = "./ui/dist"
 	} else if _, err := a.fs.Stat("./ui"); err == nil {
-		// Check for package.json to detect source code
-		if _, err := a.fs.Stat("./ui/package.json"); err == nil {
-			logging.GetLogger().Warn("UI directory ./ui contains package.json. Refusing to serve source code for security.", "path", "./ui")
-		} else {
-			uiPath = "./ui"
-		}
+		uiPath = "./ui"
 	} else {
 		logging.GetLogger().Info("No UI directory found (./ui/out, ./ui/dist, ./ui). UI will not be served.")
 	}
