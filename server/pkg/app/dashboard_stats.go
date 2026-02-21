@@ -321,6 +321,8 @@ func (a *Application) handleDebugSeedHealth() http.HandlerFunc {
 			health.AddHealthStatus(p.Service, p.Status)
 		}
 
+		logging.GetLogger().Info("Seeded health history", "count", len(points))
+
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte("OK"))
 	}
