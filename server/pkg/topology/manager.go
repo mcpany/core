@@ -455,6 +455,13 @@ func (m *Manager) SeedTrafficHistory(points []TrafficPoint) {
 //
 // Returns the result.
 func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
+	// ⚡ BOLT: Fetch external data OUTSIDE lock to prevent blocking the event loop.
+	// Randomized Selection from Top 5 High-Impact Targets
+	// This ensures that slow service registry or tool manager calls do not hold the global lock,
+	// allowing RecordActivity to proceed without contention.
+	services, err := m.serviceRegistry.GetAllServices()
+	tools := m.toolManager.ListTools()
+
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 
@@ -466,7 +473,6 @@ func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
 	}.Build()
 
 	// Build Service -> Tool subtree
-	services, err := m.serviceRegistry.GetAllServices()
 	if err == nil {
 		// Get current traffic stats
 		now := time.Now()
@@ -482,9 +488,7 @@ func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
 			elapsedSeconds = 1
 		}
 
-		// ⚡ BOLT: Randomized Selection from Top 5 High-Impact Targets.
-		// Optimized nested loop to O(N+M) using a map.
-		tools := m.toolManager.ListTools()
+		// ⚡ BOLT: Optimized nested loop to O(N+M) using a map.
 		toolsByService := make(map[string][]tool.Tool)
 		for _, t := range tools {
 			svcID := t.Tool().GetServiceId()
