@@ -7,8 +7,6 @@ import (
 	"bytes"
 	"errors"
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 type failWriter struct {
@@ -57,6 +55,8 @@ func TestRedactingWriter_Write(t *testing.T) {
 			expectErr:      false,
 		},
 		{
+			// Note: The RedactJSON implementation aggressively redacts identified sensitive keys
+			// even if the value or object is incomplete, treating the end of the input as the value end.
 			name:           "Partial JSON: Should redact if key is identified",
 			input:          []byte(`{"password": "secre`), // Incomplete
 			expectedOutput: `{"password": "[REDACTED]"`,
@@ -87,16 +87,24 @@ func TestRedactingWriter_Write(t *testing.T) {
 			n, err := w.Write(tt.input)
 
 			if tt.expectErr {
-				assert.Error(t, err)
-				if tt.writerErr != nil {
-					assert.Equal(t, tt.writerErr, err)
+				if err == nil {
+					t.Errorf("expected error, got nil")
+				}
+				if tt.writerErr != nil && err != tt.writerErr {
+					t.Errorf("expected error %v, got %v", tt.writerErr, err)
 				}
 			} else {
-				assert.NoError(t, err)
-				assert.Equal(t, tt.expectedOutput, buf.String())
+				if err != nil {
+					t.Errorf("unexpected error: %v", err)
+				}
+				if got := buf.String(); got != tt.expectedOutput {
+					t.Errorf("expected output %q, got %q", tt.expectedOutput, got)
+				}
 			}
 
-			assert.Equal(t, tt.expectedN, n)
+			if n != tt.expectedN {
+				t.Errorf("expected n=%d, got %d", tt.expectedN, n)
+			}
 		})
 	}
 }
