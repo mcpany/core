@@ -20,7 +20,7 @@ func HydrateFromFile(path string) error {
 		return err
 	}
 
-	var broadcastMessages [][]byte
+	broadcastMessages := make([][]byte, 0, len(lines))
 	for _, line := range lines {
 		if len(line) == 0 {
 			continue

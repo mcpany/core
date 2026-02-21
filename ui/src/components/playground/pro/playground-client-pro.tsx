@@ -158,7 +158,18 @@ export function PlaygroundClientPro() {
     if (!toolToConfigure) return;
     const command = `${toolToConfigure.name} ${JSON.stringify(data)}`;
     setToolToConfigure(null);
-    setInput(command);
+
+    // Execute immediately
+    const userMsg: Message = {
+      id: Date.now().toString(),
+      type: "user",
+      content: command,
+      timestamp: new Date(),
+    };
+
+    setMessages((prev) => [...prev, userMsg]);
+    setIsLoading(true);
+    processResponse(command);
   };
 
   const handleInputChange = (value: string) => {

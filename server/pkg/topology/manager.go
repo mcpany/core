@@ -289,16 +289,16 @@ func (m *Manager) GetTrafficHistory(serviceID string) []TrafficPoint {
 		stats := m.trafficHistory[key]
 		var reqs, errs, lat int64
 		if stats != nil {
-			if serviceID != "" && stats.ServiceStats != nil {
+			if serviceID == "" {
+				reqs = stats.Requests
+				errs = stats.Errors
+				lat = stats.Latency
+			} else if stats.ServiceStats != nil {
 				if sStats, ok := stats.ServiceStats[serviceID]; ok {
 					reqs = sStats.Requests
 					errs = sStats.Errors
 					lat = sStats.Latency
 				}
-			} else if serviceID == "" {
-				reqs = stats.Requests
-				errs = stats.Errors
-				lat = stats.Latency
 			}
 		}
 

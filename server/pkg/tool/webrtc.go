@@ -120,7 +120,7 @@ func (t *WebrtcTool) newPeerConnection(_ context.Context) (*peerConnectionWrappe
 			URLs: []string{"stun:stun.l.google.com:19302"},
 		},
 	}
-	if os.Getenv("MCPANY_WEBRTC_DISABLE_STUN") == "true" {
+	if os.Getenv("MCPANY_WEBRTC_DISABLE_STUN") == trueStr {
 		iceServers = []webrtc.ICEServer{}
 	}
 
