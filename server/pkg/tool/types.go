@@ -16,6 +16,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 	"sync"
@@ -55,6 +56,10 @@ const (
 )
 
 var (
+	// perlQxRegex matches the "qx" operator when it appears as a distinct word.
+	// It uses \b to ensure it's not part of another word (like "sphinx" or "foobqxbox").
+	perlQxRegex = regexp.MustCompile(`\bqx\b`)
+
 	metricGrpcRequestError   = []string{"grpc", "request", "error"}
 	metricGrpcRequestSuccess = []string{"grpc", "request", "success"}
 	metricGrpcRequestLatency = []string{"grpc", "request", "latency"}
@@ -3783,12 +3788,9 @@ func checkNodePerlPhpInjection(val, base string, quoteLevel int) error {
 		// Block qx operator (command execution) regardless of quoting.
 		// qx can be used in unquoted contexts with safe delimiters (e.g. qx/cmd/)
 		// avoiding common shell injection filters.
-		if strings.Contains(val, "qx") {
-			// Sentinel Security Update: Block qx in all contexts (unquoted, double-quoted, backticked).
-			// While qx// inside double quotes is technically a string literal in some contexts,
-			// sophisticated interpolation attacks or misinterpretation of quote context makes it risky.
-			// Blocking "qx" is aggressive but necessary for strict security on Perl input.
-			if quoteLevel == 0 || quoteLevel == 1 || quoteLevel == 3 {
+		// We use regex to ensure qx is a distinct word (not part of "sphinx" or "foobqxbox").
+		if quoteLevel == 0 || quoteLevel == 1 || quoteLevel == 3 {
+			if perlQxRegex.MatchString(val) {
 				return fmt.Errorf("shell injection detected: perl qx execution")
 			}
 		}
