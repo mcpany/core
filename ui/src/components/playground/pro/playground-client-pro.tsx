@@ -12,16 +12,9 @@ import { Send, Loader2, Sparkles, Terminal, PanelLeftClose, PanelLeftOpen, Zap }
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Download, Share2, Copy, Check, Info, Upload } from "lucide-react";
+import { Download, Share2, Check, Info, Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { estimateTokens, estimateMessageTokens } from "@/lib/tokens";
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogDescription
-} from "@/components/ui/dialog";
 import {
   ResizableHandle,
   ResizablePanel,
@@ -157,8 +150,21 @@ export function PlaygroundClientPro() {
   const handleToolFormSubmit = (data: Record<string, unknown>) => {
     if (!toolToConfigure) return;
     const command = `${toolToConfigure.name} ${JSON.stringify(data)}`;
-    setToolToConfigure(null);
     setInput(command);
+
+    // Execute immediately
+    const userMsg: Message = {
+      id: Date.now().toString(),
+      type: "user",
+      content: command,
+      timestamp: new Date(),
+    };
+
+    setMessages((prev) => [...prev, userMsg]);
+    setIsLoading(true);
+    setShowSuggestions(false);
+
+    processResponse(command);
   };
 
   const handleInputChange = (value: string) => {
@@ -362,9 +368,37 @@ export function PlaygroundClientPro() {
          <ResizableHandle withHandle={!isMobile} className={!sidebarOpen ? "hidden" : ""} />
 
          <ResizablePanel defaultSize={75}>
-            <div className="flex flex-col h-full relative bg-muted/5">
-                {/* Header */}
-                <div className="h-14 border-b flex items-center justify-between px-4 bg-background/80 backdrop-blur-sm sticky top-0 z-10">
+            <ResizablePanelGroup direction="vertical">
+              {toolToConfigure && (
+                <>
+                  <ResizablePanel defaultSize={40} minSize={20}>
+                    <div className="flex flex-col h-full border-b bg-background">
+                       <div className="h-14 border-b flex items-center justify-between px-4 sticky top-0 z-10 bg-background">
+                          <div className="flex items-center gap-2">
+                              <div className="bg-primary/10 p-1.5 rounded-md">
+                                  <Zap className="w-4 h-4 text-primary" />
+                              </div>
+                              <h2 className="font-semibold text-sm">{toolToConfigure.name}</h2>
+                          </div>
+                          <Button variant="ghost" size="sm" onClick={() => setToolToConfigure(null)}>Close</Button>
+                       </div>
+                       <div className="flex-1 overflow-y-auto p-4">
+                           <ToolForm
+                              key={toolToConfigure.name}
+                              tool={toolToConfigure}
+                              onSubmit={handleToolFormSubmit}
+                              onCancel={() => setToolToConfigure(null)}
+                           />
+                       </div>
+                    </div>
+                  </ResizablePanel>
+                  <ResizableHandle />
+                </>
+              )}
+              <ResizablePanel defaultSize={toolToConfigure ? 60 : 100}>
+                <div className="flex flex-col h-full relative bg-muted/5">
+                    {/* Header */}
+                    <div className="h-14 border-b flex items-center justify-between px-4 bg-background/80 backdrop-blur-sm sticky top-0 z-10">
                      <div className="flex items-center gap-2">
                         {!sidebarOpen && (
                              <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(true)} className="h-8 w-8">
@@ -510,34 +544,11 @@ export function PlaygroundClientPro() {
                         <span className="hidden sm:inline">Press Enter to execute</span>
                     </div>
                 </div>
-            </div>
+                </div>
+              </ResizablePanel>
+            </ResizablePanelGroup>
          </ResizablePanel>
       </ResizablePanelGroup>
-
-      <Dialog open={!!toolToConfigure} onOpenChange={(open) => !open && setToolToConfigure(null)}>
-        <DialogContent className="sm:max-w-[600px] h-[80vh] flex flex-col p-0 gap-0 overflow-hidden">
-            <DialogHeader className="p-6 pb-2">
-                <DialogTitle className="flex items-center gap-2 text-xl">
-                    <div className="bg-primary/10 p-1.5 rounded-md">
-                        <Zap className="w-5 h-5 text-primary" />
-                    </div>
-                    {toolToConfigure?.name}
-                </DialogTitle>
-                <DialogDescription>
-                    Configure arguments for this tool execution.
-                </DialogDescription>
-            </DialogHeader>
-            <div className="flex-1 overflow-hidden p-6 pt-2">
-                {toolToConfigure && (
-                    <ToolForm
-                        tool={toolToConfigure}
-                        onSubmit={handleToolFormSubmit}
-                        onCancel={() => setToolToConfigure(null)}
-                    />
-                )}
-            </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
