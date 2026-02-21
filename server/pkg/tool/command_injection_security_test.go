@@ -206,3 +206,5 @@ func createTestCommandToolWithTemplate(command string, template string) Tool {
 	}.Build()
 	return NewLocalCommandTool(toolDef, service, callDef, nil, "test-call")
 }
+
+// Trigger CI Retry: 2026-02-21 Infrastructure Outage
