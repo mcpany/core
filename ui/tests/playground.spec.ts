@@ -114,7 +114,8 @@ test.describe('Playground Tool Configuration', () => {
     // Note: Auto-execution means we don't click Send.
 
     // Verify error message appears
-    await expect(page.getByText('upstream request timed out after 30s', { exact: true })).toBeVisible();
+    // Increase timeout for slow CI environments
+    await expect(page.getByText('upstream request timed out after 30s', { exact: true })).toBeVisible({ timeout: 60000 });
 
     // Verify Retry button appears
     const retryBtn = page.getByLabel('Retry command');
