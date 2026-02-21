@@ -80,16 +80,13 @@ func TestRedisStrategy(t *testing.T) {
 		client2 := createdClients[1]
 		assert.NotEqual(t, client1, client2)
 
-		// 4. Different Service ID -> Should create new client even if config is same as first one (Wait, really?)
-		// The code uses serviceID as the primary key.
-		// if val, ok := s.redisClients.Load(serviceID); ok ...
-		// So if serviceID is different, it will NOT find it and create a new one.
-		// Even if the Redis config is identical?
-		// Yes, the implementation keys by serviceID.
+		// 4. Different Service ID -> Should reuse client if config is same
+		// The code uses config hash as the primary key.
+		// So if serviceID is different but config is same, it will reuse the client.
 		limiter4, err := strategy.Create(ctx, "serviceB", "scope", "partition", config1)
 		require.NoError(t, err)
 		assert.NotNil(t, limiter4)
-		assert.Len(t, createdClients, 3, "Should create new client for different serviceID")
+		assert.Len(t, createdClients, 2, "Should reuse client for same config despite different serviceID")
 	})
 
 	t.Run("Missing Redis Config", func(t *testing.T) {

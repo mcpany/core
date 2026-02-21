@@ -13,11 +13,11 @@ import (
 	"sync"
 	"time"
 
+	"github.com/mcpany/core/proto/bus"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/metrics"
 	"github.com/mcpany/core/server/pkg/util"
-	"github.com/mcpany/core/proto/bus"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/patrickmn/go-cache"
 	"github.com/redis/go-redis/v9"
@@ -32,7 +32,7 @@ type GlobalRateLimitMiddleware struct {
 	config *configv1.RateLimitConfig
 	// limiters caches active limiters. Key is "partitionKey".
 	limiters *cache.Cache
-	// redisClients caches Redis clients. Key is "global".
+	// redisClients caches Redis clients. Key is configHash.
 	redisClients sync.Map
 }
 
@@ -217,11 +217,9 @@ func (m *GlobalRateLimitMiddleware) calculateConfigHash(config *bus.RedisBus) st
 func (m *GlobalRateLimitMiddleware) getRedisClient(config *bus.RedisBus) *redis.Client {
 	configHash := m.calculateConfigHash(config)
 
-	if val, ok := m.redisClients.Load("global"); ok {
-		if cached, ok := val.(*cachedRedisClient); ok {
-			if cached.configHash == configHash {
-				return cached.client
-			}
+	if val, ok := m.redisClients.Load(configHash); ok {
+		if client, ok := val.(*redis.Client); ok {
+			return client
 		}
 	}
 
@@ -231,9 +229,10 @@ func (m *GlobalRateLimitMiddleware) getRedisClient(config *bus.RedisBus) *redis.
 		DB:       int(config.GetDb()),
 	}
 	client := redisClientCreator(opts)
-	m.redisClients.Store("global", &cachedRedisClient{
-		client:     client,
-		configHash: configHash,
-	})
+
+	if actual, loaded := m.redisClients.LoadOrStore(configHash, client); loaded {
+		client.Close()
+		return actual.(*redis.Client)
+	}
 	return client
 }

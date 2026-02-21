@@ -16,7 +16,9 @@ import (
 
 // RedisStrategy implements RateLimitStrategy for Redis-based rate limiting.
 type RedisStrategy struct {
-	// redisClients caches Redis clients per service. Key is serviceID.
+	// redisClients caches Redis clients per config hash. Key is configHash.
+	// ⚡ BOLT: Key by configHash to reuse connection pools across services.
+	// Randomized Selection from Top 5 High-Impact Targets
 	redisClients sync.Map
 }
 
@@ -25,11 +27,6 @@ type RedisStrategy struct {
 // Returns the result.
 func NewRedisStrategy() *RedisStrategy {
 	return &RedisStrategy{}
-}
-
-type cachedRedisClient struct {
-	client     *redis.Client
-	configHash string
 }
 
 // Create creates a new RedisLimiter.
@@ -53,14 +50,12 @@ func (s *RedisStrategy) Create(_ context.Context, serviceID, limitScopeKey, part
 	return NewRedisLimiterWithClient(client, serviceID, limitScopeKey, partitionKey, config), nil
 }
 
-func (s *RedisStrategy) getRedisClient(serviceID string, config *bus.RedisBus) (*redis.Client, error) { //nolint:unparam
+func (s *RedisStrategy) getRedisClient(_ string, config *bus.RedisBus) (*redis.Client, error) { //nolint:unparam
 	configHash := config.GetAddress() + "|" + config.GetPassword() + "|" + strconv.Itoa(int(config.GetDb()))
 
-	if val, ok := s.redisClients.Load(serviceID); ok {
-		if cached, ok := val.(*cachedRedisClient); ok {
-			if cached.configHash == configHash {
-				return cached.client, nil
-			}
+	if val, ok := s.redisClients.Load(configHash); ok {
+		if client, ok := val.(*redis.Client); ok {
+			return client, nil
 		}
 	}
 
@@ -70,9 +65,12 @@ func (s *RedisStrategy) getRedisClient(serviceID string, config *bus.RedisBus) (
 		DB:       int(config.GetDb()),
 	}
 	client := redisClientCreator(opts)
-	s.redisClients.Store(serviceID, &cachedRedisClient{
-		client:     client,
-		configHash: configHash,
-	})
+
+	if actual, loaded := s.redisClients.LoadOrStore(configHash, client); loaded {
+		// Close the redundant client if we lost the race
+		client.Close()
+		return actual.(*redis.Client), nil
+	}
+
 	return client, nil
 }
