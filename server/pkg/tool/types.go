@@ -3240,9 +3240,11 @@ func checkInterpreterFunctionCalls(val, language string) error {
 	// Determine if language allows unparenthesized function calls or string interpolation execution
 	// Ruby, Perl, PHP, Expect allow: system "ls", exec "ls", or interpolation tricks.
 	// We must be strict for these languages.
+	// Sentinel Security Update: Added Tcl (tclsh/wish) to strict list because it allows unparenthesized 'exec ls'.
 	base := strings.ToLower(language)
 	isStrict := strings.HasPrefix(base, "ruby") || strings.HasPrefix(base, "perl") ||
-		strings.HasPrefix(base, "php") || strings.HasPrefix(base, "expect")
+		strings.HasPrefix(base, "php") || strings.HasPrefix(base, "expect") ||
+		strings.HasPrefix(base, "tcl") || strings.HasPrefix(base, "wish")
 
 	// 1. Statement Keywords: Always blocked as unquoted words.
 	// 2. Object Keywords: Blocked if followed by . (method access) or [ (index access) or ( (call).
