@@ -371,15 +371,12 @@ func (m *Manager) SeedTrafficHistory(points []TrafficPoint) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
-	// Clear existing history if needed, or just merge?
-	// For seeding, usually we want to set state.
-	// But since we store as map[int64]int64 (minute -> count), we need to parse the points.
-	// The points are "HH:MM" -> total.
-	// We should map them to today's timestamps.
+	// Clear existing history and sessions to ensure clean state for testing
+	// This prevents noise from real traffic (e.g. test runner requests) from polluting the seeded stats.
+	m.trafficHistory = make(map[int64]*MinuteStats)
+	m.sessions = make(map[string]*SessionStats)
 
 	now := time.Now()
-	// Clear current history
-	m.trafficHistory = make(map[int64]*MinuteStats)
 	log := logging.GetLogger()
 	log.Info("Seeding traffic history", "points", len(points))
 
