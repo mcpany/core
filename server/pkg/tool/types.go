@@ -3306,12 +3306,9 @@ func checkInterpreterFunctionCalls(val, language string) error {
 
 // checkContextualKeywords checks if any keyword in the list is present in val as a whole word
 // AND is followed by one of the suffix characters (ignoring whitespace).
+//
+//nolint:gocyclo
 func checkContextualKeywords(val string, keywords []string, suffixes []rune) error {
-	inSingle := false
-	inDouble := false
-	inBacktick := false
-	escaped := false
-
 	// Helper to check if rune is in suffixes
 	isSuffix := func(r rune) bool {
 		for _, s := range suffixes {
@@ -3322,94 +3319,125 @@ func checkContextualKeywords(val string, keywords []string, suffixes []rune) err
 		return false
 	}
 
-	var wordBuilder strings.Builder
-	inWord := false
+	parser := &keywordParser{
+		keywords: keywords,
+		isSuffix: isSuffix,
+		runes:    []rune(val),
+	}
 
-	runes := []rune(val)
+	return parser.parse()
+}
 
-	for i := 0; i < len(runes); i++ {
-		char := runes[i]
+type keywordParser struct {
+	keywords    []string
+	isSuffix    func(rune) bool
+	runes       []rune
+	inSingle    bool
+	inDouble    bool
+	inBacktick  bool
+	escaped     bool
+	wordBuilder strings.Builder
+	inWord      bool
+}
 
-		if escaped {
-			escaped = false
+//nolint:gocyclo
+func (p *keywordParser) parse() error {
+	for i := 0; i < len(p.runes); i++ {
+		char := p.runes[i]
+
+		if p.escaped {
+			p.escaped = false
 			continue
 		}
 		if char == '\\' {
-			escaped = true
+			p.escaped = true
 			continue
 		}
 
-		// Quote handling
-		if char == '\'' && !inDouble && !inBacktick {
-			inSingle = !inSingle
-			// Treat quotes as delimiters for words
-			if inSingle { // Entered quote
-				if inWord {
-					word := wordBuilder.String()
-					if err := checkWordSuffix(word, keywords, runes, i, isSuffix); err != nil {
-						return err
-					}
-					inWord = false
-				}
-			}
-			continue
-		}
-		if char == '"' && !inSingle && !inBacktick {
-			inDouble = !inDouble
-			if inDouble { // Entered quote
-				if inWord {
-					word := wordBuilder.String()
-					if err := checkWordSuffix(word, keywords, runes, i, isSuffix); err != nil {
-						return err
-					}
-					inWord = false
-				}
-			}
-			continue
-		}
-		if char == '`' && !inSingle && !inDouble {
-			inBacktick = !inBacktick
-			if inBacktick { // Entered quote
-				if inWord {
-					word := wordBuilder.String()
-					if err := checkWordSuffix(word, keywords, runes, i, isSuffix); err != nil {
-						return err
-					}
-					inWord = false
-				}
-			}
+		if done, err := p.handleQuotes(char, i); err != nil {
+			return err
+		} else if done {
 			continue
 		}
 
-		if inSingle || inDouble || inBacktick {
+		if p.inSingle || p.inDouble || p.inBacktick {
 			continue
 		}
 
-		if char < 128 && isWordChar(byte(char)) {
-			if !inWord {
-				inWord = true
-				wordBuilder.Reset()
-			}
-			wordBuilder.WriteRune(char)
-		} else {
-			// Delimiter
-			if inWord {
-				word := wordBuilder.String()
-				// Look ahead starting from current char i
-				if err := checkWordSuffix(word, keywords, runes, i, isSuffix); err != nil {
-					return err
-				}
-				inWord = false
-			}
+		if err := p.handleChar(char, i); err != nil {
+			return err
 		}
 	}
 
 	// Check last word
-	if inWord {
-		word := wordBuilder.String()
-		if err := checkWordSuffix(word, keywords, runes, len(runes), isSuffix); err != nil {
+	if p.inWord {
+		word := p.wordBuilder.String()
+		if err := checkWordSuffix(word, p.keywords, p.runes, len(p.runes), p.isSuffix); err != nil {
 			return err
 		}
+	}
+	return nil
+}
+
+func (p *keywordParser) handleQuotes(char rune, i int) (bool, error) {
+	// Quote handling
+	if char == '\'' && !p.inDouble && !p.inBacktick {
+		p.inSingle = !p.inSingle
+		// Treat quotes as delimiters for words
+		if p.inSingle { // Entered quote
+			if err := p.checkCurrentWord(i); err != nil {
+				return true, err
+			}
+		}
+		return true, nil
+	}
+	if char == '"' && !p.inSingle && !p.inBacktick {
+		p.inDouble = !p.inDouble
+		if p.inDouble { // Entered quote
+			if err := p.checkCurrentWord(i); err != nil {
+				return true, err
+			}
+		}
+		return true, nil
+	}
+	if char == '`' && !p.inSingle && !p.inDouble {
+		p.inBacktick = !p.inBacktick
+		if p.inBacktick { // Entered quote
+			if err := p.checkCurrentWord(i); err != nil {
+				return true, err
+			}
+		}
+		return true, nil
+	}
+	return false, nil
+}
+
+func (p *keywordParser) handleChar(char rune, i int) error {
+	if char < 128 && isWordChar(byte(char)) {
+		if !p.inWord {
+			p.inWord = true
+			p.wordBuilder.Reset()
+		}
+		p.wordBuilder.WriteRune(char)
+	} else if p.inWord {
+		// Delimiter
+		word := p.wordBuilder.String()
+		// Look ahead starting from current char i
+		if err := checkWordSuffix(word, p.keywords, p.runes, i, p.isSuffix); err != nil {
+			return err
+		}
+		p.inWord = false
+	}
+	return nil
+}
+
+func (p *keywordParser) checkCurrentWord(i int) error {
+	if p.inWord {
+		word := p.wordBuilder.String()
+		if err := checkWordSuffix(word, p.keywords, p.runes, i, p.isSuffix); err != nil {
+			return err
+		}
+		p.inWord = false
 	}
 	return nil
 }
