@@ -1002,6 +1002,11 @@ jobs:
         with:
           name: image-ui-${{ steps.detect-arch.outputs.slug }}
 
+      - name: Download HTTP Echo Image
+        uses: actions/download-artifact@v4
+        with:
+          name: image-http-echo-${{ steps.detect-arch.outputs.slug }}
+
       - name: Load Docker Images into Kind
         run: |
           # Load all tarballs into docker daemon first?
@@ -1015,6 +1020,8 @@ jobs:
           kind load docker-image mcpany/server:latest --name mcp-e2e
           kind load docker-image mcpany/operator:latest --name mcp-e2e
           kind load docker-image mcpany/ui:latest --name mcp-e2e
+          # http-echo-server is loaded by the test script itself using "kind load docker-image",
+          # but needs to be in local docker daemon first (which the loop above handles)
 
       - name: Load Docker Images already loaded above
         run: |

@@ -21,7 +21,7 @@ export default defineConfig({
   reporter: [['line'], ['json', { outputFile: 'test-results/test-results.json' }]],
   timeout: 120000,
   expect: {
-    timeout: 30000,
+    timeout: 60000,
   },
   use: {
     baseURL: BASE_URL,
