@@ -6,6 +6,9 @@
 *   **[Comms] Recursive Context Protocol:** Standardize headers for Subagent inheritance.
 *   **[State] Shared Key-Value Store:** Embedded SQLite "Blackboard" tool for agents.
 *   **[Security] HITL Middleware:** Suspension protocol for user approval flows.
+*   **[2026-02-22] Shared Context Bus:** High-priority implementation of an ephemeral key-value store for inter-agent context sharing.
+*   **[2026-02-22] MCP App UI Metadata:** Support for proxying UI hints (iframes) from upstream services to AI hosts.
+*   **[2026-02-22] Isolated Named Pipes:** Implementation of secure local inter-agent communication channels.
 
 ## 2. Updated Roadmap
 

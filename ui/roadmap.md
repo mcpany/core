@@ -16,6 +16,8 @@
 - [ ] **[P2] Interactive Setup Wizard**: Guided "First Run" experience to generate `mcp.yaml` and configure agents.
 - [ ] **[P2] Agent Black Box Player**: Timeline-based replay of recorded agent sessions (Inputs, Outputs, State).
 - [ ] **[P2] Cost & metrics Dashboard**: Real-time visualization of token usage, costs, and tool performance metrics (P95 latency).
+- [ ] **[2026-02-22] Shared Context Inspector**: Visual interface to view and edit keys in the Shared Context Bus.
+- [ ] **[2026-02-22] MCP App UI Sandbox Preview**: A safe area in the UI to preview how "MCP App" iframes will render.
 
 ### Existing Planned Features
 
