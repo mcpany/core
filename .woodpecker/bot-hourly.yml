@@ -10,7 +10,7 @@ steps:
       cron: hourly # Requires cron to be named 'hourly' in Woodpecker UI
     environment:
       GH_TOKEN:
-        from_secret: GITHUB_TOKEN
+        from_secret: ORG_GITHUB_TOKEN
     commands:
       # tools pre-installed
       - |

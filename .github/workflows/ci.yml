@@ -1150,91 +1150,16 @@ jobs:
       - name: Auto-Squash
         if: github.event_name == 'pull_request'
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.ORG_GITHUB_TOKEN }}
         run: |
           gh pr merge --auto --squash "${{ github.event.pull_request.html_url }}" || echo "Failed to enable auto-merge (check permissions/settings)"
 
       - name: Check Results and Comment
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.ORG_GITHUB_TOKEN }}
           NEEDS_JSON: ${{ toJson(needs) }}
           RUN_ID: ${{ github.run_id }}
           REPO: ${{ github.repository }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
-          # 1. Check for Failures
-          # Parse needs JSON to find failures. Using simple grep/jq approach.
-          # Since we might not have jq, we use python for reliable parsing.
-
-          cat <<EOF > check_failures.py
-          import os
-          import json
-          import sys
-
-          needs_json = os.environ.get("NEEDS_JSON", "{}")
-          try:
-              needs = json.loads(needs_json)
-          except Exception as e:
-              print(f"Error parsing JSON: {e}")
-              sys.exit(1)
-
-          failed_jobs = [k for k, v in needs.items() if v.get("result") in ["failure", "cancelled"]]
-
-          if not failed_jobs:
-              print("All jobs passed.")
-              sys.exit(0)
-
-          print(f"Failed jobs: {','.join(failed_jobs)}")
-
-          pr_number = os.environ.get("PR_NUMBER")
-          if not pr_number:
-              print("Not a PR, skipping comment.")
-              sys.exit(1)
-
-          # Construct comment body
-          repo = os.environ.get("REPO")
-          run_id = os.environ.get("RUN_ID")
-          run_url = f"https://github.com/{repo}/actions/runs/{run_id}"
-
-          list_items = [f"- **{job}: Failed**" for job in failed_jobs]
-          list_str = "\\n".join(list_items)
-
-          agent_prompt = f"""
-          Please investigate the failures above.
-          1. Check the [Action logs]({run_url}) for the specific error messages.
-          2. Analyze the root cause.
-          3. Apply fixes to the codebase.
-          """
-
-          body = f"""❌ **CI Checks Failed**
-
-          The following GitHub Actions checks failed in this run:
-          {list_str}
-
-          ---
-          {agent_prompt}
-          """
-
-          # Write body to file for gh cli
-          with open("comment_body.md", "w") as f:
-              f.write(body)
-
-          sys.exit(1)
-          EOF
-
-          python3 check_failures.py
-          EXIT_CODE=$?
-
-          if [ $EXIT_CODE -eq 0 ]; then
-            echo "Success."
-            exit 0
-          fi
-
-          # If python script exited with 1 (failures found and PR present)
-          if [ -f comment_body.md ]; then
-             echo "Posting comment to PR #$PR_NUMBER..."
-             gh issue comment "$PR_NUMBER" --body-file comment_body.md --repo "$REPO"
-          fi
-
-          echo "::error::Workflow failed due to job dependencies."
-          exit 1
+          ./.github/scripts/check-results-and-comment.sh
