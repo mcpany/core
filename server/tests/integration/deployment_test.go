@@ -34,13 +34,11 @@ func getDockerCommand(t *testing.T) []string {
 }
 
 func TestDockerCompose(t *testing.T) {
-	t.Skip("Skipping heavy integration test TestDockerCompose (flaky in CI/env due to header/port issues)")
-	// // t.SkipNow()
-	if !integration.IsDockerSocketAccessible() {
-		// t.Skip("Docker socket not accessible, skipping TestDockerCompose.")
-	}
 	if !commandExists("docker") {
-		// t.Skip("docker command not found, skipping TestDockerCompose.")
+		t.Skip("docker command not found, skipping TestDockerCompose.")
+	}
+	if !integration.IsDockerSocketAccessible() {
+		t.Skip("Docker socket not accessible, skipping TestDockerCompose.")
 	}
 
 	// t.Parallel() removed to avoid port conflicts with hardcoded 50050 in docker-compose.yml

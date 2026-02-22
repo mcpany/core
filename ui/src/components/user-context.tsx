@@ -6,6 +6,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { apiClient } from "@/lib/client";
 
 /**
  * Defines the role of a user in the system.
@@ -56,17 +57,26 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Mock initial user for now - default to Admin for development
-    // In real app, check session/cookie
-    const storedRole = localStorage.getItem('mcp_user_role') as UserRole || 'admin';
-    setUser({
-      id: '1',
-      name: 'Admin User',
-      email: 'admin@mcp-any.io',
-      role: storedRole, // Default to admin for dev
-      avatar: '/avatars/admin.png'
-    });
-    setLoading(false);
+    async function checkAuth() {
+        try {
+            const userData = await apiClient.getCurrentUser();
+            // Map backend user to UI user
+            // Backend returns configv1.User (id, name, roles)
+            setUser({
+                id: userData.id,
+                name: userData.name,
+                email: userData.email || `${userData.id}@mcp-any.io`, // Fallback email
+                role: (userData.roles && userData.roles.includes('admin')) ? 'admin' : 'viewer', // Map roles
+                avatar: userData.avatar || undefined
+            });
+        } catch (e) {
+            console.warn("Not authenticated", e);
+            setUser(null);
+        } finally {
+            setLoading(false);
+        }
+    }
+    checkAuth();
   }, []);
 
   const login = (role: UserRole) => {

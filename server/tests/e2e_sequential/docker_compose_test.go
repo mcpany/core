@@ -12,6 +12,7 @@ import (
 	"io"
 	"net"
 	"net/http"
+	"net/http/httptest"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -26,28 +27,70 @@ import (
 )
 
 func TestDockerComposeE2E(t *testing.T) {
-	if os.Getenv("E2E_DOCKER") != "true" {
-		// Auto-detect if we can run it, or just set it to true if we are confident.
-		// For this task, we want to resurrect it.
-		// We'll proceed if docker is available.
-		if !integration.IsDockerSocketAccessible() {
-			t.Skip("Skipping E2E Docker test. Docker not accessible and E2E_DOCKER!=true")
-		}
-	}
-
 	rootDir, err := os.Getwd()
 	require.NoError(t, err)
 
 	// Navigate up to repo root (core)
-	// tests/e2e_sequential -> server -> core
 	if strings.HasSuffix(rootDir, "tests/e2e") || strings.HasSuffix(rootDir, "tests/e2e_sequential") {
 		rootDir = filepath.Join(rootDir, "../../..")
 	} else if strings.HasSuffix(rootDir, "server") {
-		// If running from server root
 		rootDir = filepath.Join(rootDir, "..")
 	}
 	rootDir, err = filepath.Abs(rootDir)
 	require.NoError(t, err)
+
+	useLocal := os.Getenv("E2E_DOCKER") != "true"
+
+	if useLocal {
+		t.Setenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES", "true")
+		t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "true")
+
+		// 1. Start Mock Echo Server
+		echoServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if r.URL.Path == "/echo" && r.Method == "POST" {
+				io.Copy(w, r.Body)
+				return
+			}
+			w.WriteHeader(http.StatusNotFound)
+		}))
+		defer echoServer.Close()
+
+		// 2. Prepare Config
+		configContent, err := os.ReadFile(filepath.Join(rootDir, "server/examples/docker-compose-demo/config.yaml"))
+		require.NoError(t, err)
+
+		// Replace address
+		newConfig := strings.Replace(string(configContent), "http://http-echo-server:8080", echoServer.URL, 1)
+		// Ensure mcp listen address is dynamic
+		if strings.Contains(newConfig, "global_settings:") {
+			newConfig = strings.Replace(newConfig, "global_settings:", "global_settings:\n  mcp_listen_address: \"127.0.0.1:0\"", 1)
+		} else {
+			newConfig += "\nglobal_settings:\n  mcp_listen_address: \"127.0.0.1:0\"\n"
+		}
+
+		// 3. Start Server
+		tmpDir := t.TempDir()
+		configPath := filepath.Join(tmpDir, "config.yaml")
+		baseURL, cmd := StartServer(t, rootDir, configPath, newConfig)
+		defer func() {
+			if cmd != nil && cmd.Process != nil {
+				cmd.Process.Kill()
+			}
+		}()
+
+		// 4. Verify
+		verifyEndpoint(t, fmt.Sprintf("%s/healthz", baseURL), 200, 30*time.Second)
+		// Use test-key which is hardcoded in StartServer
+		simulateGeminiCLIWithKey(t, baseURL, "test-key")
+		verifyToolMetricDirectWithKey(t, fmt.Sprintf("%s/metrics", baseURL), "docker-http-echo.echo", "test-key")
+
+		return
+	}
+
+	// Docker Logic Below
+	if !integration.IsDockerSocketAccessible() {
+		t.Skip("Skipping E2E Docker test. Docker not accessible and E2E_DOCKER!=true")
+	}
 
 	imageName := "mcpany/server:latest"
 
@@ -390,22 +433,6 @@ func runCommand(t *testing.T, dir string, name string, args ...string) {
 	require.NoError(t, err, "Command failed: %s %s", name, strings.Join(args, " "))
 }
 
-func verifyEndpoint(t *testing.T, url string, expectedStatus int, timeout time.Duration) {
-	deadline := time.Now().Add(timeout)
-	for time.Now().Before(deadline) {
-		//nolint:gosec // G107: Url is constructed internally in test
-		resp, err := http.Get(url)
-		if err == nil {
-			_ = resp.Body.Close()
-			if resp.StatusCode == expectedStatus {
-				return
-			}
-		}
-		time.Sleep(1 * time.Second)
-	}
-	t.Fatalf("Failed to verify endpoint %s within %v", url, timeout)
-}
-
 func verifyPrometheusMetric(t *testing.T, url string, expectedTarget string) {
 	//nolint:gosec // G107: Url is constructed internally in test
 	resp, err := http.Get(url)
@@ -450,15 +477,14 @@ func verifyPrometheusMetric(t *testing.T, url string, expectedTarget string) {
 	require.Contains(t, string(body), expectedTarget)
 }
 
-// simulateGeminiCLI simulates a basic Gemini CLI interaction (MCP client)
-// It connects via SSE and sends a JSON-RPC tool call using the Go SDK.
-func simulateGeminiCLI(t *testing.T, baseURL string) {
+// simulateGeminiCLIWithKey simulates a basic Gemini CLI interaction (MCP client)
+func simulateGeminiCLIWithKey(t *testing.T, baseURL, apiKey string) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
 	client := mcp.NewClient(&mcp.Implementation{Name: "test-client", Version: "1.0"}, nil)
 	transport := &mcp.StreamableClientTransport{
-		Endpoint: baseURL + "/mcp?api_key=demo-key",
+		Endpoint: baseURL + "/mcp?api_key=" + apiKey,
 	}
 
 	session, err := client.Connect(ctx, transport, nil)
@@ -511,9 +537,11 @@ func simulateGeminiCLI(t *testing.T, baseURL string) {
 	require.Contains(t, textContent.Text, "Hello MCP")
 }
 
-// verifyToolMetricDirect verifies metrics directly from the text-based /metrics endpoint
-// used when Prometheus is not available in the stack.
-func verifyToolMetricDirect(t *testing.T, metricsURL, toolName string) {
+func simulateGeminiCLI(t *testing.T, baseURL string) {
+	simulateGeminiCLIWithKey(t, baseURL, "demo-key")
+}
+
+func verifyToolMetricDirectWithKey(t *testing.T, metricsURL, toolName, apiKey string) {
 	// Retry for up to 5 seconds
 	deadline := time.Now().Add(5 * time.Second)
 	var body string
@@ -523,7 +551,7 @@ func verifyToolMetricDirect(t *testing.T, metricsURL, toolName string) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		req.Header.Set("X-API-Key", "demo-key")
+		req.Header.Set("X-API-Key", apiKey)
 
 		resp, err := http.DefaultClient.Do(req)
 		if err != nil {
@@ -546,6 +574,10 @@ func verifyToolMetricDirect(t *testing.T, metricsURL, toolName string) {
 	t.Logf("Metrics output:\n%s", body)
 	require.Contains(t, body, "mcpany_tools_call_total", "Metric name not found")
 	require.Contains(t, body, fmt.Sprintf("tool=\"%s\"", toolName), "Tool label not found")
+}
+
+func verifyToolMetricDirect(t *testing.T, metricsURL, toolName string) {
+	verifyToolMetricDirectWithKey(t, metricsURL, toolName, "demo-key")
 }
 
 // createDynamicCompose creates a temporary docker-compose file with 0 ports in the build directory

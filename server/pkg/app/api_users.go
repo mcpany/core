@@ -254,6 +254,58 @@ func (a *Application) handleUserDetail(store storage.Storage) http.HandlerFunc {
 	}
 }
 
+// handleUserMe returns the currently authenticated user.
+//
+// Summary: Gets the current user.
+//
+// Parameters:
+//   - store: storage.Storage. The storage interface.
+//
+// Returns:
+//   - http.HandlerFunc: The HTTP handler function.
+func (a *Application) handleUserMe(store storage.Storage) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		currentUserID, ok := auth.UserFromContext(r.Context())
+		if !ok {
+			// If not authenticated, return 401
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		// Handle system admin case (API Key auth)
+		if currentUserID == "system-admin" {
+			jsonStr := `{"id": "system-admin", "name": "System Admin", "roles": ["admin"]}`
+			user := &configv1.User{}
+			if err := protojson.Unmarshal([]byte(jsonStr), user); err != nil {
+				logging.GetLogger().Error("failed to construct system admin user", "error", err)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
+			writeJSON(w, http.StatusOK, user)
+			return
+		}
+
+		user, err := store.GetUser(r.Context(), currentUserID)
+		if err != nil {
+			logging.GetLogger().Error("failed to get current user", "id", currentUserID, "error", err)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+		if user == nil {
+			// User authenticated but not found in store (e.g. removed but session active, or config user mismatch)
+			// Return 404? Or 401?
+			http.Error(w, "User not found", http.StatusNotFound)
+			return
+		}
+		writeJSON(w, http.StatusOK, util.SanitizeUser(user))
+	}
+}
+
 // hashUserPassword hashes the user's password if it is provided in plain text.
 //
 // Summary: Hashes the user's password or restores the existing hash if redacted.
