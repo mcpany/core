@@ -3260,6 +3260,9 @@ func checkInterpreterFunctionCalls(val, language string) error {
 		"subprocess", "child_process", "os", "sys",
 		"open", "read", "write",
 		"phpinfo",
+		// Sentinel Security Update: Added more dangerous functions
+		"passthru", "shell_exec", "proc_open", "pcntl_exec", "assert",
+		"execSync", "spawnSync", "Function",
 	}
 
 	if isStrict {
@@ -3272,12 +3275,14 @@ func checkInterpreterFunctionCalls(val, language string) error {
 		// Objects/Modules: Block if accessed or called
 		objectKeywords = []string{
 			"subprocess", "child_process", "os", "sys",
+			"global", // Node.js global object
 		}
 
 		// Functions: Block if called
 		functionKeywords = []string{
 			"system", "exec", "popen", "eval", "spawn", "fork",
 			"open", "read", "write",
+			"execSync", "spawnSync", "Function", // Node.js execution
 		}
 	}
 
@@ -3289,7 +3294,8 @@ func checkInterpreterFunctionCalls(val, language string) error {
 
 	if len(objectKeywords) > 0 {
 		// Block objects if followed by . (method call), [ (getitem), ( (call), = (assignment), : (type hint/dict)
-		if err := checkContextualKeywords(val, objectKeywords, []rune{'.', '[', '(', '=', ':'}); err != nil {
+		// Sentinel Security Update: Added ',' to prevent multiple argument exploits (e.g. getattr(os, ...))
+		if err := checkContextualKeywords(val, objectKeywords, []rune{'.', '[', '(', '=', ':', ','}); err != nil {
 			return err
 		}
 	}
