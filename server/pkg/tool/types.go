@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"io"
 	"log/slog"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
@@ -64,6 +65,11 @@ var (
 )
 
 var fastJSON = jsoniter.ConfigCompatibleWithStandardLibrary
+
+// lookupIP is a variable to allow mocking DNS resolution in tests.
+var lookupIP = func(ctx context.Context, network, host string) ([]net.IP, error) {
+	return net.DefaultResolver.LookupIP(ctx, network, host)
+}
 
 // ⚡ Bolt: Global JSON decoder configuration with UseNumber enabled.
 // Randomized Selection from Top 5 High-Impact Targets
@@ -4322,7 +4328,47 @@ func validateSafePathAndInjection(val string, isDocker bool, commandName string)
 		}
 	}
 
+	// Sentinel Security Update: Enforce SSRF protection for network tools
+	// This catches schema-less arguments (e.g. "localtest.me", "metadata.google.internal") that resolve to internal IPs.
+	// Network tools typically default to HTTP if no scheme is provided.
+	// We check !strings.HasPrefix(val, "-") to skip flags which are handled by checkForArgumentInjection,
+	// but double check here to ensure we don't try to resolve flags as domains.
+	if isNetworkTool(commandName) && !strings.Contains(val, "://") && !strings.HasPrefix(val, "-") {
+		// Attempt to resolve the value as a hostname to detect if it points to an internal IP.
+		// We use a short timeout to avoid hanging.
+		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		defer cancel()
+
+		ips, err := lookupIP(ctx, "ip", val)
+		// If resolution succeeds, we verify the IPs.
+		// If resolution fails (err != nil), we assume it's safe (e.g. file path, invalid domain).
+		if err == nil && len(ips) > 0 {
+			allowLoopback := os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == trueStr
+			allowPrivate := os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == trueStr
+
+			for _, ip := range ips {
+				if err := validation.ValidateIP(ip, allowLoopback, allowPrivate); err != nil {
+					return fmt.Errorf("unsafe network argument: %q resolves to unsafe IP %s: %w", val, ip.String(), err)
+				}
+			}
+		}
+	}
+
 	return nil
+}
+
+func isNetworkTool(command string) bool {
+	base := strings.ToLower(filepath.Base(command))
+	tools := []string{
+		"curl", "wget", "fetch", "httpie", "http", // httpie uses 'http' command
+		"aria2c", "aks", "links", "lynx", "w3m",
+	}
+	for _, tool := range tools {
+		if base == tool {
+			return true
+		}
+	}
+	return false
 }
 
 func isVulnerableToSchemes(command string) bool {

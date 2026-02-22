@@ -18,17 +18,11 @@ import (
 )
 
 func TestSSRFArgumentProtection(t *testing.T) {
-	// Mock IsSafeURL to fail for loopback/private IPs for this test
-	// TestMain mocks it to always pass, which breaks our "existing check" test case.
 	originalIsSafeURL := validation.IsSafeURL
-	validation.IsSafeURL = func(urlStr string) error {
-		// Simple mock logic for test purposes
-		if urlStr == "http://127.0.0.1" {
-			return assert.AnError
-		}
-		return nil
-	}
 	defer func() { validation.IsSafeURL = originalIsSafeURL }()
+
+	originalLookupIP := lookupIP
+	defer func() { lookupIP = originalLookupIP }()
 
 	// Setup helper to create tool
 	createTool := func(cmd string) Tool {
@@ -124,6 +118,19 @@ func TestSSRFArgumentProtection(t *testing.T) {
 			expectError: true,
 			errorContains: "unsafe url",
 		},
+		{
+			name:        "Block unsafe domain resolving to local IP (schema-less)",
+			command:     "curl",
+			input:       "localtest.me",
+			expectError: true,
+			errorContains: "resolves to unsafe IP",
+		},
+		{
+			name:        "Allow unresolvable domain (likely a file)",
+			command:     "curl",
+			input:       "output.txt",
+			expectError: false,
+		},
 	}
 
 	for _, tt := range tests {
@@ -140,15 +147,51 @@ func TestSSRFArgumentProtection(t *testing.T) {
 			}
 			defer func() { validation.IsSafeIP = originalIsSafeIP }()
 
+			// Mock IsSafeURL to fail for loopback/private IPs for this test, respecting allow flags
+			validation.IsSafeURL = func(urlStr string) error {
+				// Simple mock logic for test purposes
+				if urlStr == "http://127.0.0.1" {
+					if tt.allowLoopback {
+						return nil
+					}
+					return assert.AnError
+				}
+				return nil
+			}
+
+			// Mock lookupIP
+			lookupIP = func(ctx context.Context, network, host string) ([]net.IP, error) {
+				if host == "localtest.me" {
+					return []net.IP{net.ParseIP("127.0.0.1")}, nil
+				}
+				if host == "output.txt" {
+					return nil, fmt.Errorf("lookup failed")
+				}
+				if host == "localhost" {
+					return []net.IP{net.ParseIP("127.0.0.1")}, nil
+				}
+				if ip := net.ParseIP(host); ip != nil {
+					return []net.IP{ip}, nil
+				}
+				return []net.IP{net.ParseIP("8.8.8.8")}, nil
+			}
+
 			// We also need to set env vars for the "localhost" check in types.go which reads them directly
+			// And for the new logic in types.go that reads them directly inside validateSafePathAndInjection
 			if tt.allowLoopback {
 				os.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 			} else {
 				os.Unsetenv("MCPANY_ALLOW_LOOPBACK_RESOURCES")
 			}
+			if tt.allowPrivate {
+				os.Setenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES", "true")
+			} else {
+				os.Unsetenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES")
+			}
 			// We don't strictly need to unset it after if other tests don't depend on it,
 			// but good practice.
 			defer os.Unsetenv("MCPANY_ALLOW_LOOPBACK_RESOURCES")
+			defer os.Unsetenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES")
 
 			tool := createTool(tt.command)
 			req := &ExecutionRequest{
