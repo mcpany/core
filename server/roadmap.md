@@ -7,6 +7,11 @@
 *   **[State] Shared Key-Value Store:** Embedded SQLite "Blackboard" tool for agents.
 *   **[Security] HITL Middleware:** Suspension protocol for user approval flows.
 
+
+### Strategic Expansion: 2026-02-22
+*   **[Security] OpenClaw Sandbox:** Hardened Docker/gVisor based execution for local tools.
+*   **[Interop] Skill-Porter Adapter:** Cross-platform skill translation (Claude Code <-> Gemini CLI).
+*   **[Comms] Inter-Agent "Clink" Protocol:** Standardized MCP-based inter-agent request routing.
 ## 2. Updated Roadmap
 
 ### Status: Active Development

@@ -17,6 +17,11 @@
 - [ ] **[P2] Agent Black Box Player**: Timeline-based replay of recorded agent sessions (Inputs, Outputs, State).
 - [ ] **[P2] Cost & metrics Dashboard**: Real-time visualization of token usage, costs, and tool performance metrics (P95 latency).
 
+
+### Strategic Expansion: 2026-02-22
+- [ ] **OpenClaw Sandbox Config**: UI for managing isolated execution environments and command whitelists.
+- [ ] **Skill Migration Wizard**: One-click tool to port skills between different agent platforms using the Skill-Porter adapter.
+- [ ] **Agent "Clink" Visualizer**: Real-time sequence diagrams showing inter-agent communication flows.
 ### Existing Planned Features
 
 - [ ] **Advanced Service Configuration & Sharing**:
