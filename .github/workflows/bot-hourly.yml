@@ -11,6 +11,7 @@ on:
 jobs:
   manage-prs:
     runs-on: oci-runner # ubuntu-slim
+    container: iowoi/mcpany-runner-ci:latest
     permissions:
       pull-requests: write
       contents: write
