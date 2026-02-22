@@ -16,6 +16,8 @@
 - [ ] **[P2] Interactive Setup Wizard**: Guided "First Run" experience to generate `mcp.yaml` and configure agents.
 - [ ] **[P2] Agent Black Box Player**: Timeline-based replay of recorded agent sessions (Inputs, Outputs, State).
 - [ ] **[P2] Cost & metrics Dashboard**: Real-time visualization of token usage, costs, and tool performance metrics (P95 latency).
+- [ ] **[P2] Economic Solvency Dashboard**: Specialized view for "AI Coworker" status, including income/expense tracking per agent.
+- [ ] **[P2] Context Inheritance Visualizer**: Sequence diagrams showing how intent and constraints flow through subagent hierarchies.
 
 ### Existing Planned Features
 

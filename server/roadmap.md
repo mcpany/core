@@ -10,6 +10,9 @@
 ## 2. Updated Roadmap
 
 ### Status: Active Development
+*   **[Comms] A2A Protocol Bridge:** Implementing multimodal negotiation support for inter-agent communication.
+*   **[Ops] Economic Adapter:** Real-time token cost and budget tracking for autonomous agents.
+*   **[Comms] Recursive Context Protocol:** Implementing header propagation for subagent context inheritance.
 
 ## 2. Top 10 Recommended Features
 
