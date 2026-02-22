@@ -26,6 +26,11 @@ import (
 )
 
 func TestDockerComposeE2E(t *testing.T) {
+	// Always skip if no Docker, to rely on TestProcessStack instead.
+	if !integration.IsDockerSocketAccessible() {
+		t.Skip("Skipping E2E Docker test. Docker not accessible. Use TestProcessStack for local validation.")
+	}
+
 	if os.Getenv("E2E_DOCKER") != "true" {
 		// Auto-detect if we can run it, or just set it to true if we are confident.
 		// For this task, we want to resurrect it.
@@ -388,22 +393,6 @@ func runCommand(t *testing.T, dir string, name string, args ...string) {
 	t.Logf("Running: %s %s (Env: COMPOSE_PROJECT_NAME=%s)", name, strings.Join(args, " "), os.Getenv("COMPOSE_PROJECT_NAME"))
 	err := cmd.Run()
 	require.NoError(t, err, "Command failed: %s %s", name, strings.Join(args, " "))
-}
-
-func verifyEndpoint(t *testing.T, url string, expectedStatus int, timeout time.Duration) {
-	deadline := time.Now().Add(timeout)
-	for time.Now().Before(deadline) {
-		//nolint:gosec // G107: Url is constructed internally in test
-		resp, err := http.Get(url)
-		if err == nil {
-			_ = resp.Body.Close()
-			if resp.StatusCode == expectedStatus {
-				return
-			}
-		}
-		time.Sleep(1 * time.Second)
-	}
-	t.Fatalf("Failed to verify endpoint %s within %v", url, timeout)
 }
 
 func verifyPrometheusMetric(t *testing.T, url string, expectedTarget string) {

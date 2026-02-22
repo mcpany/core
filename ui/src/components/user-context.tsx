@@ -6,6 +6,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { apiClient } from '@/lib/client';
 
 /**
  * Defines the role of a user in the system.
@@ -56,34 +57,49 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Mock initial user for now - default to Admin for development
-    // In real app, check session/cookie
-    const storedRole = localStorage.getItem('mcp_user_role') as UserRole || 'admin';
-    setUser({
-      id: '1',
-      name: 'Admin User',
-      email: 'admin@mcp-any.io',
-      role: storedRole, // Default to admin for dev
-      avatar: '/avatars/admin.png'
-    });
-    setLoading(false);
+    const fetchUser = async () => {
+      try {
+        const userData = await apiClient.getCurrentUser();
+        // Map backend user to UI user
+        // Note: backend roles is string[], UI expects UserRole
+        // We take the first role or default to viewer
+        let role: UserRole = 'viewer';
+        if (userData.roles && userData.roles.length > 0) {
+            if (userData.roles.includes('admin')) role = 'admin';
+            else if (userData.roles.includes('editor')) role = 'editor';
+        }
+
+        setUser({
+          id: userData.id,
+          name: userData.name || userData.username || 'User',
+          email: userData.email,
+          role: role,
+          avatar: userData.avatar,
+        });
+      } catch (e) {
+        console.error("Failed to fetch current user", e);
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUser();
   }, []);
 
   const login = (role: UserRole) => {
-    const newUser = {
-        id: '1',
-        name: role === 'admin' ? 'Admin User' : 'Regular User',
-        email: role === 'admin' ? 'admin@mcp-any.io' : 'user@mcp-any.io',
-        role: role,
-        avatar: role === 'admin' ? '/avatars/admin.png' : undefined
-    };
-    setUser(newUser);
-    localStorage.setItem('mcp_user_role', role);
+    // For now, we redirect to login page or just reload to trigger auth check?
+    // Since we removed client-side mock login, we should rely on backend auth.
+    // If this is a dev helper, we might keep it but warn.
+    // Ideally we redirect to /auth/login
+    window.location.href = '/auth/login';
   };
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('mcp_user_role');
+    localStorage.removeItem('mcp_auth_token'); // Clear token if used
+    // Redirect to logout or reload
+    window.location.reload();
   };
 
   return (

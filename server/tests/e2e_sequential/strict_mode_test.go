@@ -38,11 +38,7 @@ func TestStrictFlag(t *testing.T) {
         rootDir = parent
     }
 
-	serverBin := filepath.Join(rootDir, "build", "bin", "server")
-    t.Logf("Looking for server binary at: %s", serverBin)
-	if _, err := os.Stat(serverBin); os.IsNotExist(err) {
-		t.Skip("Server binary not found, skipping strict mode test. Run 'make build' first.")
-	}
+	serverBin := buildServer(t, rootDir)
 
 	// Create a broken config
 	configDir := t.TempDir()

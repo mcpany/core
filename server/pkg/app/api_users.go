@@ -254,6 +254,61 @@ func (a *Application) handleUserDetail(store storage.Storage) http.HandlerFunc {
 	}
 }
 
+// handleUserMe returns an HTTP handler for retrieving the current user.
+func (a *Application) handleUserMe(store storage.Storage) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		currentUserID, ok := auth.UserFromContext(r.Context())
+		if !ok {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		// Handle "system-admin" or similar synthetic users that are not in DB
+		if currentUserID == "system-admin" {
+			// Mock a user object for system admin
+			user := &configv1.User{}
+			user.SetId("system-admin")
+			user.SetRoles([]string{"admin"})
+
+			// Augment with name/email for UI
+			resp := struct {
+				*configv1.User
+				Name  string `json:"name"`
+				Email string `json:"email"`
+			}{
+				User:  user,
+				Name:  "System Admin",
+				Email: "admin@localhost",
+			}
+			writeJSON(w, http.StatusOK, resp)
+			return
+		}
+
+		user, err := store.GetUser(r.Context(), currentUserID)
+		if err != nil {
+			logging.GetLogger().Error("failed to get current user", "id", currentUserID, "error", err)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+		if user == nil {
+			// User authenticated but not found in DB? Maybe config-based user or stale session?
+			// Fallback to searching in AuthManager in case it's a config-only user
+			if u, found := a.AuthManager.GetUser(currentUserID); found {
+				writeJSON(w, http.StatusOK, util.SanitizeUser(u))
+				return
+			}
+			http.Error(w, "User not found", http.StatusNotFound)
+			return
+		}
+		writeJSON(w, http.StatusOK, util.SanitizeUser(user))
+	}
+}
+
 // hashUserPassword hashes the user's password if it is provided in plain text.
 //
 // Summary: Hashes the user's password or restores the existing hash if redacted.

@@ -8,8 +8,6 @@ package e2e_sequential
 import (
 	"context"
 	"fmt"
-	"net"
-	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -23,6 +21,9 @@ import (
 
 // TestCUJ_Protocols covers CUJs 6-10: HTTP(SSE), External integrations, Errors, etc.
 func TestCUJ_Protocols(t *testing.T) {
+	// Prioritize local execution
+	useLocal := true
+
 	rootDir, err := os.Getwd()
 	require.NoError(t, err)
 	if strings.HasSuffix(rootDir, "tests/e2e_sequential") {
@@ -38,57 +39,56 @@ func TestCUJ_Protocols(t *testing.T) {
 	require.NoError(t, err)
 	defer os.RemoveAll(configDir)
 
-	// Create Docker Network
-	networkName := fmt.Sprintf("mcpany-net-%d", time.Now().UnixNano())
-	out, err := exec.Command("docker", "network", "create", networkName).CombinedOutput()
-	require.NoError(t, err, "Failed to create network: %s", string(out))
-	defer exec.Command("docker", "network", "rm", networkName).Run()
+	// Build Server
+	binPath := buildServer(t, rootDir)
 
 	// 1. Start Upstream Server (Backend)
-	upstreamName := fmt.Sprintf("mcpany-upstream-%d", time.Now().UnixNano())
+	portUp := findFreePort(t)
 	upstreamConfigDir := filepath.Join(configDir, "upstream")
 	err = os.MkdirAll(upstreamConfigDir, 0755)
 	require.NoError(t, err)
 
-	upstreamConfig := `
+	upstreamConfig := fmt.Sprintf(`
 global_settings:
-  mcp_listen_address: ":50050"
+  mcp_listen_address: "127.0.0.1:%d"
 upstream_services:
   - id: "backend-fs"
     name: "Backend FS"
     disable: false
     filesystem_service:
       root_paths:
-        "/data": "/data"
+        "/data": "%s"
       os: {}
-`
-	err = os.WriteFile(filepath.Join(upstreamConfigDir, "config.yaml"), []byte(upstreamConfig), 0644)
+`, portUp, upstreamConfigDir) // Use absolute path for filesystem root
+	configPathUp := filepath.Join(upstreamConfigDir, "config.yaml")
+	err = os.WriteFile(configPathUp, []byte(upstreamConfig), 0644)
 	require.NoError(t, err)
 	err = os.WriteFile(filepath.Join(upstreamConfigDir, "backend_file.txt"), []byte("I am backend"), 0644)
 	require.NoError(t, err)
 
-	upstreamCmd := exec.Command("docker", "run", "-d", "--name", upstreamName,
-		"--network", networkName,
-		"--network-alias", "upstream",
-		"-p", "25010:50050",
-		"-v", fmt.Sprintf("%s:/mcp_config", upstreamConfigDir),
-		"-v", fmt.Sprintf("%s:/data", upstreamConfigDir),
-		"mcpany/server:latest",
-		"run", "--config-path", "/mcp_config/config.yaml", "--mcp-listen-address", ":50050", "--debug", "--api-key", "test-key",
-	)
-	out, err = upstreamCmd.CombinedOutput()
-	require.NoError(t, err, "Failed to start upstream: %s", string(out))
-	defer exec.Command("docker", "rm", "-f", upstreamName).Run()
+	var upstreamCmd *exec.Cmd
+	// var upstreamBaseURL string // unused but returned by startServer
+
+	if useLocal {
+		upstreamCmd, _ = startServer(t, binPath, configPathUp, portUp)
+	} else {
+		t.Skip("Local execution required for this test refactor")
+	}
+	defer func() {
+		if upstreamCmd != nil && upstreamCmd.Process != nil {
+			upstreamCmd.Process.Kill()
+		}
+	}()
 
 	// 2. Start Gateway Server (Frontend)
-	gatewayName := fmt.Sprintf("mcpany-gateway-%d", time.Now().UnixNano())
+	portGw := findFreePort(t)
 	gatewayConfigDir := filepath.Join(configDir, "gateway")
 	err = os.MkdirAll(gatewayConfigDir, 0755)
 	require.NoError(t, err)
 
-	gatewayConfig := `
+	gatewayConfig := fmt.Sprintf(`
 global_settings:
-  mcp_listen_address: ":50050"
+  mcp_listen_address: "127.0.0.1:%d"
 upstream_services:
   - id: "proxy-service"
     name: "Proxy Service"
@@ -102,70 +102,32 @@ upstream_services:
     mcp_service:
       tool_auto_discovery: true
       http_connection:
-        http_address: "http://upstream:50050/sse"
-`
-	err = os.WriteFile(filepath.Join(gatewayConfigDir, "config.yaml"), []byte(gatewayConfig), 0644)
+        http_address: "http://127.0.0.1:%d/sse"
+`, portGw, portUp)
+	configPathGw := filepath.Join(gatewayConfigDir, "config.yaml")
+	err = os.WriteFile(configPathGw, []byte(gatewayConfig), 0644)
 	require.NoError(t, err)
 
-	gatewayCmd := exec.Command("docker", "run", "-d", "--name", gatewayName,
-		"--network", networkName,
-		"-p", "25011:50050",
-		"-v", fmt.Sprintf("%s:/mcp_config", gatewayConfigDir),
-		"mcpany/server:latest",
-		"run", "--config-path", "/mcp_config/config.yaml", "--mcp-listen-address", ":50050", "--debug", "--api-key", "test-key",
-	)
-	out, err = gatewayCmd.CombinedOutput()
-	require.NoError(t, err, "Failed to start gateway: %s", string(out))
+	var gatewayCmd *exec.Cmd
+	var gatewayBaseURL string
+
+	if useLocal {
+		gatewayCmd, gatewayBaseURL = startServer(t, binPath, configPathGw, portGw)
+	}
 	defer func() {
-		// Always print logs for debugging
-		logs, err := exec.Command("docker", "logs", gatewayName).CombinedOutput()
-		if err == nil {
-			t.Logf("Gateway Logs:\n%s", string(logs))
-		} else {
-			t.Logf("Failed to get Gateway logs: %v", err)
+		if gatewayCmd != nil && gatewayCmd.Process != nil {
+			gatewayCmd.Process.Kill()
 		}
-		logsUp, err := exec.Command("docker", "logs", upstreamName).CombinedOutput()
-		if err == nil {
-			t.Logf("Upstream Logs:\n%s", string(logsUp))
-		}
-		exec.Command("docker", "rm", "-f", gatewayName).Run()
 	}()
 
-	// Discover Gateway Port
-	var portStr string
-	require.Eventually(t, func() bool {
-		out, err := exec.Command("docker", "port", gatewayName, "50050/tcp").Output()
-		if err != nil {
-			return false
-		}
-		portBinding := strings.TrimSpace(string(out))
-		if idx := strings.Index(portBinding, "\n"); idx != -1 {
-			portBinding = portBinding[:idx]
-		}
-		_, p, err := net.SplitHostPort(portBinding)
-		if err != nil {
-			return false
-		}
-		portStr = p
-		return true
-	}, 10*time.Second, 500*time.Millisecond)
-
-	baseURL := fmt.Sprintf("http://127.0.0.1:%s", portStr)
-
-	require.Eventually(t, func() bool {
-		resp, err := http.Get(fmt.Sprintf("%s/healthz", baseURL))
-		if err != nil {
-			return false
-		}
-		defer resp.Body.Close()
-		return resp.StatusCode == 200
-	}, 60*time.Second, 1*time.Second, "Gateway did not become healthy")
+	// Verify Gateway Health
+	verifyEndpoint(t, fmt.Sprintf("%s/healthz", gatewayBaseURL), 200, 60*time.Second)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
 	client := mcp.NewClient(&mcp.Implementation{Name: "cuj-client", Version: "1.0"}, nil)
-	transport := &mcp.StreamableClientTransport{Endpoint: baseURL + "/mcp?api_key=test-key"}
+	transport := &mcp.StreamableClientTransport{Endpoint: gatewayBaseURL + "/mcp?api_key=test-key"}
 	session, err := client.Connect(ctx, transport, nil)
 	require.NoError(t, err)
 	defer session.Close()
