@@ -3259,7 +3259,9 @@ func checkInterpreterFunctionCalls(val, language string) error {
 		"import", "require",
 		"subprocess", "child_process", "os", "sys",
 		"open", "read", "write",
-		"phpinfo",
+		"phpinfo", "passthru", "shell_exec", "proc_open", "pcntl_exec", "assert", // PHP
+		"readpipe", "syscall", // Perl
+		"popen2", "popen3", "popen4", "dlopen", // Ruby/Python
 	}
 
 	if isStrict {
@@ -3278,6 +3280,9 @@ func checkInterpreterFunctionCalls(val, language string) error {
 		functionKeywords = []string{
 			"system", "exec", "popen", "eval", "spawn", "fork",
 			"open", "read", "write",
+			"getattr",                                   // Python
+			"Function", "execSync", "spawnSync",         // Node
+			"popen2", "popen3", "popen4", "dlopen",      // Python/Ruby
 		}
 	}
 
@@ -3288,8 +3293,8 @@ func checkInterpreterFunctionCalls(val, language string) error {
 	}
 
 	if len(objectKeywords) > 0 {
-		// Block objects if followed by . (method call), [ (getitem), ( (call), = (assignment), : (type hint/dict)
-		if err := checkContextualKeywords(val, objectKeywords, []rune{'.', '[', '(', '=', ':'}); err != nil {
+		// Block objects if followed by . (method call), [ (getitem), ( (call), = (assignment), : (type hint/dict), , (argument)
+		if err := checkContextualKeywords(val, objectKeywords, []rune{'.', '[', '(', '=', ':', ','}); err != nil {
 			return err
 		}
 	}
