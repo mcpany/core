@@ -10,6 +10,8 @@
 ## 2. Updated Roadmap
 
 ### Status: Active Development
+- [ ] **[P0] Recursive Context Protocol:** Standardize headers for context inheritance.
+- [ ] **[P0] Policy Firewall Engine:** Rego/CEL based hooking for tool calls.
 
 ## 2. Top 10 Recommended Features
 
