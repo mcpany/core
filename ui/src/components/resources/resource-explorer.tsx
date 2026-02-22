@@ -94,8 +94,10 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
             }
             if (Array.isArray(res)) {
                 setResources(res);
+            } else if (res && Array.isArray(res.resources)) {
+                setResources(res.resources);
             } else {
-                setResources(res.resources || []);
+                setResources([]);
             }
         } catch (e) {
             console.error("Failed to load resources", e);

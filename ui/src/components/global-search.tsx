@@ -79,10 +79,10 @@ export function GlobalSearch() {
             apiClient.listPrompts().catch(() => ({ prompts: [] }))
         ])
 
-        setServices(servicesData ? (Array.isArray(servicesData) ? servicesData : servicesData.services || []) : [])
-        setTools(toolsData ? (Array.isArray(toolsData) ? toolsData : toolsData.tools || []) : [])
-        setResources(resourcesData ? (Array.isArray(resourcesData) ? resourcesData : resourcesData.resources || []) : [])
-        setPrompts(promptsData ? (Array.isArray(promptsData) ? promptsData : promptsData.prompts || []) : [])
+        setServices(servicesData ? (Array.isArray(servicesData) ? servicesData : (Array.isArray(servicesData.services) ? servicesData.services : [])) : [])
+        setTools(toolsData ? (Array.isArray(toolsData) ? toolsData : (Array.isArray(toolsData.tools) ? toolsData.tools : [])) : [])
+        setResources(resourcesData ? (Array.isArray(resourcesData) ? resourcesData : (Array.isArray(resourcesData.resources) ? resourcesData.resources : [])) : [])
+        setPrompts(promptsData ? (Array.isArray(promptsData) ? promptsData : (Array.isArray(promptsData.prompts) ? promptsData.prompts : [])) : [])
         lastFetched.current = Date.now()
       } finally {
         setLoading(false)

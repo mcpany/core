@@ -59,11 +59,12 @@ export default function ServicesPage() {
           setServices([]);
           return;
       }
-      // Handle both array and object response formats for robustness
       if (Array.isArray(res)) {
           setServices(res);
+      } else if (res && Array.isArray(res.services)) {
+          setServices(res.services);
       } else {
-          setServices(res.services || []);
+          setServices([]);
       }
     } catch (e) {
       console.error("Failed to fetch services", e);
@@ -285,7 +286,7 @@ export default function ServicesPage() {
           // Include service_id in redirect URL so we can retrieve it in the callback
           const redirectUrl = `${window.location.origin}/oauth/callback?service_id=${encodeURIComponent(serviceId)}`;
 
-          const res = await apiClient.initiateOAuth(serviceId, redirectUrl);
+          const res = await apiClient.initiateOAuth(serviceId, "", redirectUrl);
           if (res.authorization_url && res.state) {
               // Store context for callback verification using unified JSON pattern
               sessionStorage.setItem(`oauth_pending_${res.state}`, JSON.stringify({
