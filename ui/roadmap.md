@@ -17,6 +17,14 @@
 - [ ] **[P2] Agent Black Box Player**: Timeline-based replay of recorded agent sessions (Inputs, Outputs, State).
 - [ ] **[P2] Cost & metrics Dashboard**: Real-time visualization of token usage, costs, and tool performance metrics (P95 latency).
 
+### In Review
+- [ ] **[P0] Zero Trust Policy Editor**: Visual UI for authoring and testing Rego/CEL firewall rules.
+- [ ] **[P1] Blackboard State Explorer**: Real-time view of shared KV store contents for active agent swarms.
+
+### Upcoming
+- [ ] **[P1] Recursive Context Debugger**: Visual tracer showing how context and scopes are inherited across subagent calls.
+- [ ] **[P2] Swarm Topology Map**: Live visualization of parent-child relationships in an agent swarm.
+
 ### Existing Planned Features
 
 - [ ] **Advanced Service Configuration & Sharing**:

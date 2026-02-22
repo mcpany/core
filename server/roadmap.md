@@ -10,6 +10,12 @@
 ## 2. Updated Roadmap
 
 ### Status: Active Development
+- [In Review] **[Security] Policy Firewall Engine**: Initial Rego integration for tool-call hooking.
+- [In Review] **[State] Shared KV Store**: SQLite-backed Blackboard tool prototype.
+
+### Upcoming
+- [Upcoming] **[Comms] Recursive Context Protocol**: Implementation of standardized inheritance headers.
+- [Upcoming] **[Security] Granular Scopes Phase 2**: Integration with external OIDC providers.
 
 ## 2. Top 10 Recommended Features
 
