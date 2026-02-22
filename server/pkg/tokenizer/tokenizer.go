@@ -515,6 +515,36 @@ func getExportedFields(typ reflect.Type) []int {
 	return fields
 }
 
+// ⚡ BOLT: Helper to avoid code duplication for numeric type optimization.
+func countTokensNumeric[T recursiveTokenizer](t T, val reflect.Value) (int, bool, error) {
+	switch val.Kind() {
+	case reflect.Int:
+		v := int(val.Int())
+		if _, ok := any(t).(*SimpleTokenizer); ok {
+			return simpleTokenizeInt(v), true, nil
+		}
+		c, err := t.CountTokens(strconv.Itoa(v))
+		return c, true, err
+	case reflect.Int64:
+		v := val.Int()
+		if _, ok := any(t).(*SimpleTokenizer); ok {
+			return simpleTokenizeInt64(v), true, nil
+		}
+		c, err := t.CountTokens(strconv.FormatInt(v, 10))
+		return c, true, err
+	case reflect.Float64:
+		v := val.Float()
+		if _, ok := any(t).(*SimpleTokenizer); ok {
+			if i := int64(v); float64(i) == v {
+				return simpleTokenizeInt64(i), true, nil
+			}
+		}
+		c, err := t.CountTokens(strconv.FormatFloat(v, 'g', -1, 64))
+		return c, true, err
+	}
+	return 0, false, nil
+}
+
 func countTokensReflectGeneric[T recursiveTokenizer](t T, v interface{}, visited map[uintptr]bool) (int, error) {
 	// Check for fmt.Stringer first to respect custom formatting
 	if s, ok := v.(fmt.Stringer); ok {
@@ -589,6 +619,16 @@ func countTokensReflectStruct[T recursiveTokenizer](t T, val reflect.Value, visi
 			continue
 		}
 
+		// ⚡ BOLT: Optimization for primitive types to avoid Interface() allocation.
+		// Randomized Selection from Top 5 High-Impact Targets
+		if c, handled, err := countTokensNumeric(t, field); handled {
+			if err != nil {
+				return 0, err
+			}
+			count += c
+			continue
+		}
+
 		c, err := t.countRecursive(field.Interface(), visited)
 		if err != nil {
 			return 0, err
@@ -605,6 +645,15 @@ func countTokensReflectSlice[T recursiveTokenizer](t T, val reflect.Value, visit
 		// Optimization: Avoid Interface() allocation for string elements.
 		if elem.Kind() == reflect.String {
 			c, err := t.CountTokens(elem.String())
+			if err != nil {
+				return 0, err
+			}
+			count += c
+			continue
+		}
+
+		// ⚡ BOLT: Optimization for primitive types to avoid Interface() allocation.
+		if c, handled, err := countTokensNumeric(t, elem); handled {
 			if err != nil {
 				return 0, err
 			}
@@ -667,6 +716,23 @@ func countTokensReflectMap[T recursiveTokenizer](t T, val reflect.Value, visited
 			vc, err := t.CountTokens(s)
 			if err != nil {
 				return 0, err
+			}
+			count += vc
+		case reflect.Int, reflect.Int64, reflect.Float64:
+			var vc int
+			// ⚡ BOLT: Optimization for integers to avoid Interface() allocation.
+			if c, handled, err := countTokensNumeric(t, entryVal); handled {
+				if err != nil {
+					return 0, err
+				}
+				vc = c
+			} else {
+				// Should be handled, but fallback
+				c, err := t.countRecursive(entryVal.Interface(), visited)
+				if err != nil {
+					return 0, err
+				}
+				vc = c
 			}
 			count += vc
 		default:
