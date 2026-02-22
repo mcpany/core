@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { DashboardProvider } from "@/components/dashboard/dashboard-context";
 import { ServiceFilter } from "@/components/dashboard/service-filter";
 import { TimeRangeFilter } from "@/components/dashboard/time-range-filter";
-import { OnboardingHero } from "@/components/dashboard/onboarding-hero";
+import { SetupWizard } from "@/components/dashboard/setup-wizard";
 import { apiClient } from "@/lib/client";
 import { Loader2 } from "lucide-react";
 
@@ -49,7 +49,7 @@ export default function DashboardPage() {
   }
 
   if (!hasServices) {
-      return <OnboardingHero />;
+      return <SetupWizard />;
   }
 
   return (
