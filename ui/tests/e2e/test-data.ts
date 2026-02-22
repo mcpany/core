@@ -294,12 +294,23 @@ export const seedWebhooks = async (requestContext?: APIRequestContext) => {
 export const cleanupServices = async (requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     try {
-        await context.delete('/api/v1/services/Payment Gateway', { headers: HEADERS });
-        await context.delete('/api/v1/services/User Service', { headers: HEADERS });
-        await context.delete('/api/v1/services/Math', { headers: HEADERS });
-        await context.delete('/api/v1/services/Echo Service', { headers: HEADERS });
+        const res = await context.get('/api/v1/services', { headers: HEADERS });
+        if (res.ok()) {
+            const data = await res.json();
+            const services = Array.isArray(data) ? data : (data.services || []);
+            for (const s of services) {
+                // Skip deleting the service under test if needed, but for onboarding we want empty state
+                // Use ID if available, otherwise name
+                const id = s.id || s.name;
+                try {
+                    await context.delete(`/api/v1/services/${id}`, { headers: HEADERS });
+                } catch (e) {
+                    console.log(`Failed to delete service ${id}: ${e}`);
+                }
+            }
+        }
     } catch (e) {
-        console.log(`Failed to cleanup services: ${e}`);
+        console.log(`Failed to list/cleanup services: ${e}`);
     }
 };
 

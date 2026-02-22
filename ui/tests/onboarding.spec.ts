@@ -4,52 +4,77 @@
  */
 
 import { test, expect } from '@playwright/test';
-import { seedCollection, cleanupCollection, cleanupServices } from './e2e/test-data';
 
 test.describe('Onboarding Flow', () => {
   test.beforeEach(async ({ request }) => {
-    // Ensure clean state by deleting known test data
-    // Use a try-catch to ignore errors if the collection/services don't exist
-    try { await cleanupCollection('mcpany-system', request); } catch (e) { }
-    try { await cleanupServices(request); } catch (e) { }
+    try { await request.delete('/api/v1/services/wizard-test-service', { headers: { 'X-API-Key': 'test-token' } }); } catch (e) { }
   });
 
-  test('shows onboarding hero when no services exist', async ({ page }) => {
+  test.afterEach(async ({ request }) => {
+    try { await request.delete('/api/v1/services/wizard-test-service', { headers: { 'X-API-Key': 'test-token' } }); } catch (e) { }
+  });
+
+  test('shows setup wizard when no services exist', async ({ page }) => {
+    // Mock services to be empty
+    await page.route('**/api/v1/services', async route => {
+        if (route.request().method() === 'GET') {
+            await route.fulfill({ json: [] });
+        } else {
+            await route.continue();
+        }
+    });
+
     await page.goto('/');
 
-    // Wait for the app to load and decide what to show
+    // Wait for the app to load
     await page.waitForLoadState('networkidle');
 
-    // Check for the "Welcome to MCP Any" text or "Dashboard" heading
-    // Using a more robust check for the "Welcome" text
     const welcome = page.getByText('Welcome to MCP Any');
-    const dashboard = page.getByRole('heading', { name: /Dashboard/i });
-
-    await Promise.race([
-      welcome.waitFor({ state: 'visible', timeout: 30000 }).catch(() => { }),
-      dashboard.waitFor({ state: 'visible', timeout: 30000 }).catch(() => { })
-    ]);
-
-    if (await welcome.isVisible()) {
-      await expect(welcome).toBeVisible();
-      await expect(page.getByRole('link', { name: /Connect Your First Service/i })).toBeVisible();
-    } else if (await dashboard.isVisible()) {
-    // Fallback: If environment is dirty, log warning but don't fail
-        console.warn("Skipping empty state assertion: Environment has leftover services.");
-    } else {
-      throw new Error("Neither Welcome screen nor Dashboard appeared within 30s");
-    }
+    await expect(welcome).toBeVisible();
+    await expect(page.getByRole('button', { name: /Get Started/i })).toBeVisible();
   });
 
-  test('shows dashboard when services exist', async ({ page, request }) => {
-    // Seed a service
-    await seedCollection('mcpany-system', request);
+  test('complete setup wizard flow', async ({ page }) => {
+    let mockServices = true;
+    // Mock services to be empty initially
+    await page.route('**/api/v1/services', async route => {
+        if (route.request().method() === 'GET' && mockServices) {
+             await route.fulfill({ json: [] });
+        } else {
+            await route.continue();
+        }
+    });
 
     await page.goto('/');
-    await expect(page.getByRole('heading', { name: /Dashboard/i })).toBeVisible();
-    await expect(page.getByText('Welcome to MCP Any')).not.toBeVisible();
 
-    // Cleanup
-    await cleanupCollection('mcpany-system', request);
+    // Check if we are on wizard
+    const welcome = page.getByText('Welcome to MCP Any');
+    await expect(welcome).toBeVisible();
+
+    // Step 1: Welcome
+    await page.getByRole('button', { name: /Get Started/i }).click();
+
+    // Step 2: Path Selection
+    await expect(page.getByText('How do you want to connect?')).toBeVisible();
+    await page.getByText('Remote API').click();
+    await page.getByRole('button', { name: 'Next', exact: true }).click();
+
+    // Step 3: Details
+    await expect(page.getByText('Configure Remote Service')).toBeVisible();
+    await page.getByLabel('Service Name').fill('wizard-test-service');
+    await page.getByLabel('URL').fill('http://localhost:8080'); // Dummy URL
+
+    // Disable mocking so reload sees real services
+    mockServices = false;
+
+    await page.getByRole('button', { name: /Connect Service/i }).click();
+
+    // Step 4: Verify Success and Redirect
+    await expect(page.getByText('Service Connected', { exact: true })).toBeVisible();
+
+    // Wait for reload (simulated by checking for dashboard)
+    // The reload happens after 1000ms.
+    // Dashboard should appear because backend has services (defaults + new one)
+    await expect(page.getByRole('heading', { name: /Dashboard/i })).toBeVisible({ timeout: 10000 });
   });
 });
