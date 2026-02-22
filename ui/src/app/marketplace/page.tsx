@@ -7,6 +7,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { marketplaceService, ServiceCollection, ExternalMarketplace, CommunityServer } from "@/lib/marketplace-service";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,14 +15,12 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Download, Package, Globe, ExternalLink, Users, Search, ShieldCheck } from "lucide-react";
+import { Download, Package, Globe, ExternalLink, Users, Search, ShieldCheck, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 
 import { ShareCollectionDialog } from "@/components/share-collection-dialog";
 import { CreateConfigWizard } from "@/components/marketplace/wizard/create-config-wizard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Trash2 } from "lucide-react";
-import { InstantiateDialog } from "@/components/marketplace/instantiate-dialog";
 import { CollectionDetailsDialog } from "@/components/marketplace/collection-details-dialog";
 import { apiClient, UpstreamServiceConfig, ServiceTemplate } from "@/lib/client";
 import { Badge } from "@/components/ui/badge";
@@ -33,6 +32,7 @@ import { SERVICE_REGISTRY } from "@/lib/service-registry";
  */
 export default function MarketplacePage() {
   const { toast } = useToast();
+  const router = useRouter();
   const [collections, setCollections] = useState<ServiceCollection[]>([]);
   const [backendTemplates, setBackendTemplates] = useState<ServiceCollection[]>([]);
   const [publicMarkets, setPublicMarkets] = useState<ExternalMarketplace[]>([]);
@@ -42,11 +42,7 @@ export default function MarketplacePage() {
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
   const [isWizardOpen, setIsWizardOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-    const [popularServices, setPopularServices] = useState<UpstreamServiceConfig[]>([]);
-
-  // Instantiate State
-  const [isInstantiateOpen, setIsInstantiateOpen] = useState(false);
-  const [selectedTemplate, setSelectedTemplate] = useState<UpstreamServiceConfig | undefined>(undefined);
+  const [popularServices, setPopularServices] = useState<UpstreamServiceConfig[]>([]);
 
   // Collection Details State
   const [selectedCollection, setSelectedCollection] = useState<ServiceCollection | undefined>(undefined);
@@ -74,9 +70,6 @@ export default function MarketplacePage() {
         setCollections(cols);
         setPublicMarkets(markets);
         setCommunityServers(community);
-        // Use catalog services for "Popular" tab
-        // We need to map them to the UI format if needed, but UpstreamServiceConfig is compatible?
-        // POPULAR_SERVICES was UpstreamServiceConfig[].
         setPopularServices(catalogServices);
 
         // Map backend templates to ServiceCollection format for consistent display
@@ -128,10 +121,8 @@ export default function MarketplacePage() {
 
   const handleWizardComplete = async (config: UpstreamServiceConfig) => {
       try {
-          // Context: Wizard returns UpstreamServiceConfig
-          // We need to wrap it in ServiceTemplate to save
           const template: ServiceTemplate = {
-              id: "", // Server generates ID
+              id: "",
               name: config.name,
               description: config.description || "Created via Wizard",
               icon: "package",
@@ -151,9 +142,6 @@ export default function MarketplacePage() {
   const deleteTemplate = async (templateSvc: UpstreamServiceConfig) => {
       if (!templateSvc.id && !templateSvc.name) return;
       try {
-          // Use templateId if available (injected during mapping), otherwise fallback to name?
-          // Actually for locally created ones via wizard, we might not have templateId if we didn't reload?
-          // But loadData is called after save.
           const idToDelete = templateSvc.templateId || templateSvc.id || templateSvc.name;
           await apiClient.deleteTemplate(idToDelete);
         loadData();
@@ -164,82 +152,26 @@ export default function MarketplacePage() {
   };
 
   const openInstantiate = (service: UpstreamServiceConfig) => {
-      setSelectedTemplate(service);
-      setIsInstantiateOpen(true);
+      const params = new URLSearchParams();
+      params.set('name', service.name);
+      if (service.description) params.set('description', service.description);
+      // For local templates, we might want to pass more config?
+      // Currently the wizard only accepts basic params and builds from scratch.
+      // Ideally we pass a template ID, but the wizard is for "New Install".
+      // Let's assume we just pre-fill identity.
+      router.push(`/marketplace/install?${params.toString()}`);
   };
 
   const openInstantiateCommunity = (server: CommunityServer) => {
-      // Check Registry First
-      const registryMatch = SERVICE_REGISTRY.find(item => {
-          // Check by name exact match
-          if (item.name.toLowerCase() === server.name.toLowerCase()) return true;
-          // Check by repo URL substring match
-          if (server.url.includes(item.repo)) return true;
-          return false;
-      });
+      const params = new URLSearchParams();
+      params.set('name', server.name);
+      params.set('description', server.description);
 
-      let command = "";
-      let configurationSchema = "";
-
-      if (registryMatch) {
-          command = registryMatch.command;
-          configurationSchema = JSON.stringify(registryMatch.configurationSchema);
-      } else {
-          // Fallback to best-effort heuristic
-          const isPython = server.tags.some(t => t.includes('🐍'));
-
-          // Try to extract repo name for npx
-          const repoMatch = server.url.match(/github\.com\/([^/]+)\/([^/]+)/);
-
-          if (repoMatch) {
-              const owner = repoMatch[1];
-              const repo = repoMatch[2];
-              if (isPython) {
-                 command = `uvx ${repo}`;
-              } else {
-                 if (owner === 'modelcontextprotocol' && repo.startsWith('server-')) {
-                     command = `npx -y @modelcontextprotocol/${repo}`;
-                 } else {
-                     command = `npx -y ${repo}`;
-                 }
-              }
-          } else {
-              command = isPython ? "uvx package-name" : "npx -y package-name";
-          }
+      // Try to extract repo URL from server.url
+      if (server.url.includes('github.com')) {
+          params.set('repo', server.url);
       }
-
-      const config: UpstreamServiceConfig = {
-          id: server.name.toLowerCase().replace(/[^a-z0-9-]/g, '-'),
-          name: server.name,
-          configurationSchema: configurationSchema,
-          version: "1.0.0",
-          commandLineService: {
-              command: command,
-              env: {},
-              workingDirectory: "",
-              tools: [],
-              resources: [],
-              prompts: [],
-              calls: {},
-              communicationProtocol: 0,
-              local: false
-          },
-          disable: false,
-          sanitizedName: server.name.toLowerCase().replace(/[^a-z0-9-]/g, '-'),
-          priority: 0,
-          loadBalancingStrategy: 0,
-          callPolicies: [],
-          preCallHooks: [],
-          postCallHooks: [],
-          prompts: [],
-          autoDiscoverTool: true,
-          configError: "",
-          tags: server.tags,
-          readOnly: false
-      };
-
-      setSelectedTemplate(config);
-      setIsInstantiateOpen(true);
+      router.push(`/marketplace/install?${params.toString()}`);
   };
 
   const openCollectionDetails = (col: ServiceCollection) => {
@@ -527,13 +459,6 @@ export default function MarketplacePage() {
         open={isWizardOpen}
         onOpenChange={setIsWizardOpen}
         onComplete={handleWizardComplete}
-      />
-
-      <InstantiateDialog
-        open={isInstantiateOpen}
-        onOpenChange={setIsInstantiateOpen}
-        templateConfig={selectedTemplate}
-        onComplete={() => {}}
       />
 
       <CollectionDetailsDialog
