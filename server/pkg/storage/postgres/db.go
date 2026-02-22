@@ -14,27 +14,37 @@ import (
 )
 
 // DB wraps the sql.DB connection.
+//
+// Summary: Wrapper around the standard sql.DB connection for PostgreSQL.
 type DB struct {
 	*sql.DB
 }
 
 // NewDB opens a PostgreSQL database connection.
 //
-// dsn is the dsn.
+// Summary: Establishes a new connection to a PostgreSQL database using the default driver.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - dsn: string. The Data Source Name (connection string).
+//
+// Returns:
+//   - *DB: A pointer to the DB wrapper.
+//   - error: Returns nil on success, or an error if the connection fails.
 func NewDB(dsn string) (*DB, error) {
 	return NewDBWithDriver("postgres", dsn)
 }
 
 // NewDBWithDriver opens a database connection with the specified driver.
 //
-// driver is the driver.
-// dsn is the dsn.
+// Summary: Establishes a new database connection using a specified driver.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - driver: string. The name of the SQL driver to use.
+//   - dsn: string. The Data Source Name (connection string).
+//
+// Returns:
+//   - *DB: A pointer to the DB wrapper.
+//   - error: Returns nil on success, or an error if the connection or ping fails.
 func NewDBWithDriver(driver, dsn string) (*DB, error) {
 	db, err := sql.Open(driver, dsn)
 	if err != nil {
@@ -63,10 +73,14 @@ func NewDBWithDriver(driver, dsn string) (*DB, error) {
 
 // NewDBFromSQLDB creates a new DB wrapper from an existing sql.DB connection.
 //
-// db is the db.
+// Summary: Creates a DB wrapper from an existing database connection.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - db: *sql.DB. The existing database connection.
+//
+// Returns:
+//   - *DB: A pointer to the DB wrapper.
+//   - error: Returns nil on success, or an error if the ping or schema initialization fails.
 func NewDBFromSQLDB(db *sql.DB) (*DB, error) {
 	if err := db.PingContext(context.Background()); err != nil {
 		return nil, fmt.Errorf("failed to ping db: %w", err)

@@ -16,10 +16,14 @@ import (
 
 // ListServiceTemplates retrieves all service templates.
 //
-// ctx is the context for the request.
+// Summary: Retrieves all service templates from PostgreSQL.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. Context for the operation.
+//
+// Returns:
+//   - []*configv1.ServiceTemplate: A slice of all service templates.
+//   - error: Returns nil on success, or an error if the operation fails.
 func (s *Store) ListServiceTemplates(ctx context.Context) ([]*configv1.ServiceTemplate, error) {
 	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM service_templates")
 	if err != nil {
@@ -48,11 +52,15 @@ func (s *Store) ListServiceTemplates(ctx context.Context) ([]*configv1.ServiceTe
 
 // GetServiceTemplate retrieves a service template by ID.
 //
-// ctx is the context for the request.
-// id is the unique identifier.
+// Summary: Retrieves a service template from PostgreSQL.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. Context for the operation.
+//   - id: string. The unique identifier of the service template.
+//
+// Returns:
+//   - *configv1.ServiceTemplate: The requested service template if found, or nil if not found.
+//   - error: Returns nil on success, or an error if the operation fails.
 func (s *Store) GetServiceTemplate(ctx context.Context, id string) (*configv1.ServiceTemplate, error) {
 	query := "SELECT config_json FROM service_templates WHERE id = $1"
 	row := s.db.QueryRowContext(ctx, query, id)
@@ -74,10 +82,17 @@ func (s *Store) GetServiceTemplate(ctx context.Context, id string) (*configv1.Se
 
 // SaveServiceTemplate saves a service template.
 //
-// ctx is the context for the request.
-// template is the template.
+// Summary: Persists a service template to PostgreSQL.
 //
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. Context for the operation.
+//   - template: *configv1.ServiceTemplate. The service template to save. Must have a valid ID.
+//
+// Returns:
+//   - error: Returns nil on success, or an error if the operation fails.
+//
+// Throws/Errors:
+//   - Returns error if "template ID is required".
 func (s *Store) SaveServiceTemplate(ctx context.Context, template *configv1.ServiceTemplate) error {
 	if template.GetId() == "" {
 		return fmt.Errorf("template ID is required")

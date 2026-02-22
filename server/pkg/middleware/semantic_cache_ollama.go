@@ -14,6 +14,8 @@ import (
 )
 
 // OllamaEmbeddingProvider implements EmbeddingProvider for Ollama.
+//
+// Summary: Embedding provider that uses the Ollama API.
 type OllamaEmbeddingProvider struct {
 	baseURL string
 	model   string
@@ -22,10 +24,14 @@ type OllamaEmbeddingProvider struct {
 
 // NewOllamaEmbeddingProvider creates a new OllamaEmbeddingProvider.
 //
-// baseURL is the baseURL.
-// model is the model.
+// Summary: Initializes a new Ollama embedding provider.
 //
-// Returns the result.
+// Parameters:
+//   - baseURL: string. The base URL of the Ollama server (default: "http://localhost:11434").
+//   - model: string. The model to use for embeddings (default: "nomic-embed-text").
+//
+// Returns:
+//   - *OllamaEmbeddingProvider: The initialized provider.
 func NewOllamaEmbeddingProvider(baseURL, model string) *OllamaEmbeddingProvider {
 	if baseURL == "" {
 		baseURL = "http://localhost:11434"
@@ -51,11 +57,15 @@ type ollamaEmbeddingResponse struct {
 
 // Embed generates an embedding for the given text using Ollama.
 //
-// ctx is the context for the request.
-// text is the text.
+// Summary: Calls the Ollama API to generate an embedding.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//   - text: string. The input text to embed.
+//
+// Returns:
+//   - []float32: The resulting embedding vector.
+//   - error: An error if the request fails or returns an empty embedding.
 func (p *OllamaEmbeddingProvider) Embed(ctx context.Context, text string) ([]float32, error) {
 	reqBody := ollamaEmbeddingRequest{
 		Model:  p.model,

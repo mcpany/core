@@ -85,6 +85,15 @@ We enforce **100% documentation coverage** and strict style guides.
 *   **Go:** We use `golangci-lint` with `revive` and `check-go-doc` to enforce GoDoc standards. We require structured docstrings (Summary, Parameters, Returns, Errors, Side Effects) for all public APIs.
 *   **Protocol:** We check for breaking changes in `.proto` files.
 
+**Documentation Standard:**
+
+We follow a strict documentation standard for all public interfaces. Every exported symbol (function, type, method, constant) must have a structured docstring:
+
+*   **Summary:** An active-voice description of the intent (e.g., "Validates user session").
+*   **Parameters:** Name, type, and constraints for each parameter.
+*   **Returns:** Type and meaning of the return value(s).
+*   **Throws/Errors:** Explicit list of errors or exceptions that must be handled.
+
 To run linters:
 ```bash
 make lint
