@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Node, Edge, useNodesState, useEdgesState } from '@xyflow/react';
 import { apiClient } from '@/lib/client';
 import dagre from 'dagre';
@@ -61,16 +61,23 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[]) => {
     return { nodes: layoutedNodes, edges };
 };
 
+const computeStructureHash = (nodes: Node[], edges: Edge[]) => {
+    const nodeIds = nodes.map(n => n.id).sort().join(',');
+    const edgeIds = edges.map(e => e.id).sort().join(',');
+    return `${nodeIds}|${edgeIds}`;
+};
+
 /**
  * Hook to fetch and manage the network topology graph.
  * @returns The topology state and controls.
  */
 export function useRealTimeTopology() {
-    const [nodes, setNodes, onNodesChange] = useNodesState([]);
-    const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+    const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
+    const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
     const [loading, setLoading] = useState(false);
     const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
     const [isLive, setIsLive] = useState(false);
+    const prevStructureHash = useRef<string>("");
 
     const fetchData = useCallback(async () => {
         try {
@@ -177,11 +184,37 @@ export function useRealTimeTopology() {
                 });
             }
 
+            // ⚡ BOLT: Memoize layout calculation to avoid thrashing on metrics updates.
+            // Randomized Selection from Top 5 High-Impact Targets
+            const currentHash = computeStructureHash(rawNodes, rawEdges);
+
+            if (currentHash === prevStructureHash.current) {
+                // Update metrics only, preserve layout
+                // ⚡ BOLT: Optimization - Use Map for O(1) lookup during data merge
+                const nodeDataMap = new Map(rawNodes.map(n => [n.id, n.data]));
+
+                setNodes((currentNodes) => {
+                    return currentNodes.map((node) => {
+                        const newData = nodeDataMap.get(node.id);
+                        if (newData) {
+                            return {
+                                ...node,
+                                data: newData,
+                            };
+                        }
+                        return node;
+                    });
+                });
+                setLastUpdated(new Date());
+                return;
+            }
+
             // Apply Layout
             const layout = getLayoutedElements(rawNodes, rawEdges);
             setNodes(layout.nodes);
             setEdges(layout.edges);
             setLastUpdated(new Date());
+            prevStructureHash.current = currentHash;
 
         } catch (e) {
             console.error("Failed to fetch topology", e);
