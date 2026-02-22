@@ -24,6 +24,9 @@ func TestSSRFArgumentProtection(t *testing.T) {
 	validation.IsSafeURL = func(urlStr string) error {
 		// Simple mock logic for test purposes
 		if urlStr == "http://127.0.0.1" {
+			if os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == "true" {
+				return nil
+			}
 			return assert.AnError
 		}
 		return nil

@@ -4273,6 +4273,36 @@ func validateSafePathAndInjection(val string, isDocker bool, commandName string)
 				return fmt.Errorf("unsafe IP argument: %w", err)
 			}
 		}
+
+		// Sentinel Security Update: For network tools (curl, wget), treat arguments as URLs
+		// even if they lack a scheme (e.g. "localtest.me" resolving to localhost).
+		// We prepend "http://" to force DNS resolution and IP validation.
+		if isNetworkTool(commandName) {
+			// If validation.IsSafeIP passed (returned "invalid IP address"), it means it's not an IP.
+			// It might be a hostname.
+			// We assume http as default scheme for validation purposes.
+			// Note: We only check this if it's NOT a flag (checked later) and NOT a path (checked later).
+			// But flags starting with - are blocked by checkForArgumentInjection.
+			// Paths are checked by checkForLocalFileAccess.
+			// So anything reaching here is likely a target hostname/URL.
+
+			// We use a temporary string with scheme for validation
+			urlToCheck := "http://" + val
+			if err := validation.IsSafeURL(urlToCheck); err != nil {
+				// Only block if it is explicitly unsafe (loopback, private, etc.)
+				// IsSafeURL returns error if resolution fails (NXDOMAIN), which is expected for headers/flags.
+				// We fail open on resolution errors to avoid breaking usability (flags, headers).
+				errStr := err.Error()
+				if strings.Contains(errStr, "unsafe IP") ||
+					strings.Contains(errStr, "loopback address is not allowed") ||
+					strings.Contains(errStr, "link-local address is not allowed") ||
+					strings.Contains(errStr, "private network address is not allowed") ||
+					strings.Contains(errStr, "multicast address is not allowed") ||
+					strings.Contains(errStr, "unspecified address") {
+					return fmt.Errorf("unsafe network argument: %w", err)
+				}
+			}
+		}
 	}
 
 	if err := checkForPathTraversal(val); err != nil {
@@ -4431,4 +4461,16 @@ func (s *quoteState) handleQuotes(char rune) bool {
 
 func (s *quoteState) inQuote() bool {
 	return s.inSingle || s.inDouble || s.inBacktick
+}
+
+func isNetworkTool(command string) bool {
+	base := strings.ToLower(filepath.Base(command))
+	// Tools that default to network connections and might support schema-less URLs
+	tools := []string{"curl", "wget", "fetch", "aria2c"}
+	for _, tool := range tools {
+		if base == tool {
+			return true
+		}
+	}
+	return false
 }
