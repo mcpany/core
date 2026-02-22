@@ -32,7 +32,7 @@ test.describe('Agent Skills', () => {
     // await cleanupUser(request, "e2e-admin-skills");
   });
 
-  test.fixme('should create and list a new skill', async ({ page }) => {
+  test('should create and list a new skill', async ({ page }) => {
     const testSkillName = `e2e-test-skill-${Date.now()}`;
 
     // 1. Fill Metadata
@@ -70,6 +70,7 @@ test.describe('Agent Skills', () => {
     // In K8s/Distributed systems, read-after-write might be eventually consistent.
     await expect(async () => {
         await page.reload();
+        await page.waitForLoadState('networkidle');
         await expect(page.locator(`text=${testSkillName}`)).toBeVisible({ timeout: 5000 });
     }).toPass({
         timeout: 45000, // Increased timeout for K8s
@@ -77,7 +78,7 @@ test.describe('Agent Skills', () => {
     });
   });
 
-  test.fixme('should view skill details', async ({ page }) => {
+  test('should view skill details', async ({ page }) => {
     const skillName = `view-test-skill-${Date.now()}`;
 
     // Create a skill first (minimal metadata)
@@ -104,6 +105,7 @@ test.describe('Agent Skills', () => {
     // Wait for list to sync
     await expect(async () => {
         await page.reload();
+        await page.waitForLoadState('networkidle');
         await expect(page.locator(`text=${skillName}`)).toBeVisible({ timeout: 5000 });
     }).toPass({ timeout: 45000, intervals: [2000, 5000, 10000] });
 

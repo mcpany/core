@@ -380,3 +380,31 @@ export const cleanupProfiles = async (requestContext?: APIRequestContext) => {
         }
     }
 };
+
+export const seedPrompts = async (requestContext?: APIRequestContext) => {
+    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    const prompts = [
+        {
+            name: "test-prompt",
+            description: "A test prompt",
+            arguments: [{ name: "arg1", description: "An argument" }]
+        }
+    ];
+
+    for (const prompt of prompts) {
+        try {
+            await context.post('/api/v1/prompts', { data: prompt, headers: HEADERS });
+        } catch (e) {
+            console.log(`Failed to seed prompt ${prompt.name}: ${e}`);
+        }
+    }
+};
+
+export const cleanupPrompts = async (requestContext?: APIRequestContext) => {
+    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    try {
+        await context.delete('/api/v1/prompts/test-prompt', { headers: HEADERS });
+    } catch (e) {
+        console.log(`Failed to cleanup prompts: ${e}`);
+    }
+};
