@@ -13,15 +13,29 @@ import { Input } from '@/components/ui/input';
 const TEMPLATES = [
     {
         id: 'manual',
-        name: 'Manual / Custom',
+        name: 'Manual Configuration',
         description: 'Configure everything from scratch.',
         config: {
-            commandLineService: {
-                command: '',
-                env: {},
-                workingDirectory: ''
-            },
+            commandLineService: undefined,
+            mcpService: undefined,
             openapiService: undefined
+        },
+        params: {}
+    },
+    {
+        id: 'generic-cli',
+        name: 'Generic CLI (Stdio)',
+        description: 'Run any MCP server that communicates via Stdio.',
+        config: {
+            mcpService: {
+                connectionType: {
+                    stdioConnection: {
+                        command: 'npx',
+                        args: [],
+                        env: {}
+                    }
+                }
+            }
         },
         params: {}
     },
@@ -30,13 +44,17 @@ const TEMPLATES = [
         name: 'PostgreSQL Database',
         description: 'Connect to a PostgreSQL database.',
         config: {
-            commandLineService: {
-                command: 'npx -y @modelcontextprotocol/server-postgres',
-                env: {
-                    "POSTGRES_URL": { plainText: "postgresql://user:password@localhost:5432/dbname", validationRegex: "" }
+            mcpService: {
+                connectionType: {
+                    stdioConnection: {
+                        command: 'npx',
+                        args: ['-y', '@modelcontextprotocol/server-postgres'],
+                        env: {
+                            "POSTGRES_URL": { plainText: "postgresql://user:password@localhost:5432/dbname", validationRegex: "" }
+                        }
+                    }
                 }
-            },
-            openapiService: undefined
+            }
         },
         params: {
             "POSTGRES_URL": "postgresql://user:password@localhost:5432/dbname"
@@ -47,13 +65,17 @@ const TEMPLATES = [
         name: 'Filesystem',
         description: 'Expose a local directory.',
         config: {
-            commandLineService: {
-                command: 'npx -y @modelcontextprotocol/server-filesystem',
-                env: {
-                    "ALLOWED_PATH": { plainText: "/home/user", validationRegex: "" }
+            mcpService: {
+                connectionType: {
+                    stdioConnection: {
+                        command: 'npx',
+                        args: ['-y', '@modelcontextprotocol/server-filesystem'],
+                        env: {
+                            "ALLOWED_PATH": { plainText: "/home/user", validationRegex: "" }
+                        }
+                    }
                 }
-            },
-            openapiService: undefined
+            }
         },
         params: {
             "ALLOWED_PATH": "/home/user"
