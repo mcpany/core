@@ -158,42 +158,52 @@ func SetAllowedPaths(paths []string) {
 //
 // Summary: Checks for sensitive file patterns.
 var IsSensitivePath = func(path string) error {
-	base := filepath.Base(path)
-	baseLower := strings.ToLower(base)
+	// Check all path components, not just the base name.
+	// This prevents access to sensitive files inside subdirectories (e.g. .git/config)
+	// or if the sensitive file is a directory itself in the path.
+	parts := strings.Split(filepath.Clean(path), string(os.PathSeparator))
 
-	// Block .env files
-	if strings.HasPrefix(baseLower, ".env") {
-		return fmt.Errorf("access to sensitive file %q is denied", base)
-	}
+	for _, part := range parts {
+		baseLower := strings.ToLower(part)
 
-	// Block .git directory
-	if baseLower == ".git" {
-		return fmt.Errorf("access to sensitive directory %q is denied", base)
-	}
+		// Block .env files
+		if strings.HasPrefix(baseLower, ".env") {
+			return fmt.Errorf("access to sensitive file/directory %q is denied", part)
+		}
 
-	// Block server configuration files
-	if baseLower == "config.yaml" || baseLower == "config.yml" || baseLower == "config.json" {
-		return fmt.Errorf("access to sensitive configuration file %q is denied", base)
-	}
+		// Block .git directory
+		if baseLower == ".git" {
+			return fmt.Errorf("access to sensitive directory %q is denied", part)
+		}
 
-	// Block database files
-	if baseLower == "mcpany.db" {
-		return fmt.Errorf("access to database file %q is denied", base)
-	}
+		// Block server configuration files
+		// We block any file starting with "config" and having a yaml/json extension
+		// to catch config.prod.yaml, config.local.json, etc.
+		if strings.HasPrefix(baseLower, "config") &&
+			(strings.HasSuffix(baseLower, ".yaml") || strings.HasSuffix(baseLower, ".yml") || strings.HasSuffix(baseLower, ".json")) {
+			return fmt.Errorf("access to sensitive configuration file %q is denied", part)
+		}
 
-	// Block private keys (known SSH formats)
-	if baseLower == "id_rsa" || baseLower == "id_dsa" || baseLower == "id_ed25519" || baseLower == "id_ecdsa" || baseLower == "id_rsa.key" || baseLower == "id_dsa.key" {
-		return fmt.Errorf("access to private key %q is denied", base)
-	}
+		// Block database files
+		if baseLower == "mcpany.db" {
+			return fmt.Errorf("access to database file %q is denied", part)
+		}
 
-	// Block sensitive directories
-	if baseLower == ".ssh" || baseLower == ".aws" || baseLower == ".kube" {
-		return fmt.Errorf("access to sensitive directory %q is denied", base)
-	}
+		// Block private keys (known SSH formats)
+		if baseLower == "id_rsa" || baseLower == "id_dsa" || baseLower == "id_ed25519" || baseLower == "id_ecdsa" ||
+			baseLower == "id_rsa.key" || baseLower == "id_dsa.key" || strings.HasSuffix(baseLower, ".pem") {
+			return fmt.Errorf("access to private key %q is denied", part)
+		}
 
-	// Block shell configuration files
-	if baseLower == ".bashrc" || baseLower == ".bash_profile" || baseLower == ".zshrc" || baseLower == ".profile" {
-		return fmt.Errorf("access to shell configuration file %q is denied", base)
+		// Block sensitive directories
+		if baseLower == ".ssh" || baseLower == ".aws" || baseLower == ".kube" {
+			return fmt.Errorf("access to sensitive directory %q is denied", part)
+		}
+
+		// Block shell configuration files
+		if baseLower == ".bashrc" || baseLower == ".bash_profile" || baseLower == ".zshrc" || baseLower == ".profile" {
+			return fmt.Errorf("access to shell configuration file %q is denied", part)
+		}
 	}
 
 	return nil

@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/validation"
 	"github.com/spf13/afero"
 )
 
@@ -238,6 +239,10 @@ func (p *LocalProvider) checkPathSecurity(targetPathCanonical, realRootCanonical
 
 	if !strings.HasPrefix(targetPathCanonical, rootWithSlash) && targetPathCanonical != realRootCanonical {
 		return fmt.Errorf("access denied: path traversal detected (prefix check)")
+	}
+
+	if err := validation.IsSensitivePath(targetPathCanonical); err != nil {
+		return fmt.Errorf("access denied: %w", err)
 	}
 
 	if len(p.allowedPaths) > 0 {
