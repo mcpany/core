@@ -87,7 +87,7 @@ The following metrics are exposed for rate limiting:
 
 | Metric Name | Type | Labels | Description |
 | :--- | :--- | :--- | :--- |
-| `rate_limit_requests_total` | Counter | `service_id`, `limit_type`, `status` | Total number of requests processed by the rate limiter. `status` can be `allowed` or `blocked`. `limit_type` indicates the scope (e.g., `service`, `tool`). |
+| `mcpany_rate_limit_requests_total` | Counter | `service_id`, `limit_type`, `status` | Total number of requests processed by the rate limiter. `status` can be `allowed` or `blocked`. `limit_type` indicates the scope (e.g., `service`, `tool`). |
 
 ## Public API Example
 
@@ -162,8 +162,8 @@ curl http://localhost:8081/metrics | grep rate_limit
 
 *Expected Output:*
 ```
-# HELP rate_limit_requests_total Total number of requests processed by the rate limiter
-# TYPE rate_limit_requests_total counter
-rate_limit_requests_total{service_id="httpbin-rate-limited",status="allowed"} 1.0
-rate_limit_requests_total{service_id="httpbin-rate-limited",status="blocked"} 4.0
+# HELP mcpany_rate_limit_requests_total Total number of requests processed by the rate limiter
+# TYPE mcpany_rate_limit_requests_total counter
+mcpany_rate_limit_requests_total{service_id="httpbin-rate-limited",status="allowed"} 1.0
+mcpany_rate_limit_requests_total{service_id="httpbin-rate-limited",status="blocked"} 4.0
 ```

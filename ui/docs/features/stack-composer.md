@@ -32,8 +32,8 @@ To add a service:
 
 You can fine-tune the configuration in the Monaco Editor.
 
-- **Validation**: Detailed error markers appear if you violate the schema.
-- **Auto-Complete**: Press `Ctrl+Space` to see available fields.
+- **Validation**: Validation errors are reported when you attempt to save the configuration.
+- **Auto-Complete**: Press `Ctrl+Space` to see available fields and snippets.
 
 ### 4. Deploy
 

@@ -6,6 +6,8 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { PlaygroundClientPro } from './playground-client-pro';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { apiClient } from '@/lib/client';
+import { TooltipProvider } from '@/components/ui/tooltip';
 
 // Mock dependencies
 vi.mock('@/lib/client', () => ({
@@ -51,12 +53,20 @@ window.ResizeObserver = vi.fn().mockImplementation(() => ({
 
 describe('PlaygroundClientPro', () => {
   it('renders correctly', () => {
-      render(<PlaygroundClientPro />);
+      render(
+        <TooltipProvider>
+            <PlaygroundClientPro />
+        </TooltipProvider>
+      );
       expect(screen.getByText('Console')).toBeInTheDocument();
   });
 
   it('imports history when file is selected', async () => {
-      const { container } = render(<PlaygroundClientPro />);
+      const { container } = render(
+        <TooltipProvider>
+            <PlaygroundClientPro />
+        </TooltipProvider>
+      );
 
       // Create a mock file
       const messages = [
@@ -92,6 +102,28 @@ describe('PlaygroundClientPro', () => {
       await waitFor(() => {
           expect(screen.getByText('imported command')).toBeInTheDocument();
           expect(screen.getByText('imported response')).toBeInTheDocument();
+      });
+  });
+
+  it('calculates and displays execution duration', async () => {
+      // Mock executeTool to resolve immediately
+      (apiClient.executeTool as any).mockResolvedValue({ result: "success" });
+
+      render(
+        <TooltipProvider>
+            <PlaygroundClientPro />
+        </TooltipProvider>
+      );
+
+      const input = screen.getByPlaceholderText('Enter command or select a tool...');
+      fireEvent.change(input, { target: { value: 'test_tool {}' } });
+      fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+
+      // Wait for execution to finish and result to appear
+      await waitFor(() => {
+          // Check for the duration format "Xms •"
+          // We use a regex because the exact duration varies (usually 0ms or 1ms in tests)
+          expect(screen.getByText(/\d+ms •/)).toBeInTheDocument();
       });
   });
 });

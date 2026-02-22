@@ -49,7 +49,8 @@ The execution result is displayed in the chat stream.
 ## Advanced Features
 
 - **JSON Mode**: Switch to the "JSON" tab in the tool configuration dialog to input raw parameters if the form is too constraining.
-- **History**: Previous tool calls in the session remain visible above.
+- **History Persistence**: Tool execution history is automatically saved to your browser's local storage, preserving your session across page reloads.
+- **Duration Tracking**: The execution time (latency) for each tool call is displayed in the result message.
 
 ### 5. Session History (Import/Export)
 

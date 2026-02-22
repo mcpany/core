@@ -55,6 +55,7 @@ export interface Message {
   toolResult?: unknown;
   previousResult?: unknown;
   timestamp: Date;
+  duration?: number;
 }
 
 interface ChatMessageProps {
@@ -213,8 +214,8 @@ export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
                                 <Sparkles className="size-3.5 text-green-600 dark:text-green-400" />
                             </div>
                             <span className="font-medium text-green-700 dark:text-green-400">Result: {message.toolName}</span>
-                            <span className="ml-2 text-[10px] opacity-60" title="Estimated token usage for result">
-                                ({formatTokenCount(estimateTokens(JSON.stringify(message.toolResult)))} tokens)
+                            <span className="ml-2 text-[10px] opacity-60" title="Execution duration and estimated token usage">
+                                ({message.duration ? `${message.duration}ms • ` : ''}{formatTokenCount(estimateTokens(JSON.stringify(message.toolResult)))} tokens)
                             </span>
                         </div>
                         <div className="flex items-center gap-2">

@@ -210,10 +210,12 @@ export function PlaygroundClientPro() {
       }]);
 
       try {
+          const startTime = Date.now();
           const result = await apiClient.executeTool({
               name: toolName,
               arguments: toolArgs
           }, isDryRun);
+          const duration = Date.now() - startTime;
 
           // Find previous execution for diffing
           let previousResult: unknown | undefined;
@@ -241,6 +243,7 @@ export function PlaygroundClientPro() {
               toolResult: result,
               previousResult,
               timestamp: new Date(),
+              duration,
           }]);
 
       } catch (err: unknown) {
