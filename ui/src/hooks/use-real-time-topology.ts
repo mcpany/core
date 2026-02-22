@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Node, Edge, useNodesState, useEdgesState } from '@xyflow/react';
 import { apiClient } from '@/lib/client';
 import dagre from 'dagre';
@@ -71,6 +71,10 @@ export function useRealTimeTopology() {
     const [loading, setLoading] = useState(false);
     const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
     const [isLive, setIsLive] = useState(false);
+
+    // ⚡ BOLT: Store previous structure hash to avoid unnecessary re-layouts
+    // Randomized Selection from Top 5 High-Impact Targets
+    const prevStructureHash = useRef<string>("");
 
     const fetchData = useCallback(async () => {
         try {
@@ -177,10 +181,36 @@ export function useRealTimeTopology() {
                 });
             }
 
-            // Apply Layout
-            const layout = getLayoutedElements(rawNodes, rawEdges);
-            setNodes(layout.nodes);
-            setEdges(layout.edges);
+            // ⚡ BOLT: Calculate structure hash to check if layout needs update
+            const nodeIds = rawNodes.map(n => n.id).sort().join(',');
+            const edgeIds = rawEdges.map(e => e.id).sort().join(',');
+            const currentHash = `${nodeIds}|${edgeIds}`;
+
+            if (currentHash === prevStructureHash.current && prevStructureHash.current !== "") {
+                // Structure matches, just update data (metrics/labels)
+                setNodes((currentNodes) => {
+                    return currentNodes.map((node) => {
+                        const rawNode = rawNodes.find((n) => n.id === node.id);
+                        if (rawNode) {
+                            // Preserve position, update data
+                            return {
+                                ...node,
+                                data: { ...node.data, ...rawNode.data },
+                            };
+                        }
+                        return node;
+                    });
+                });
+                // Update edges to ensure any property changes (like style/animation) are reflected
+                setEdges(rawEdges);
+            } else {
+                // Structure changed, apply full layout
+                const layout = getLayoutedElements(rawNodes, rawEdges);
+                setNodes(layout.nodes);
+                setEdges(layout.edges);
+                prevStructureHash.current = currentHash;
+            }
+
             setLastUpdated(new Date());
 
         } catch (e) {
