@@ -16,8 +16,8 @@ import (
 // Summary: Middleware for Data Loss Prevention (PII redaction).
 //
 // Parameters:
-//   - config (*configv1.DLPConfig): The DLP configuration settings.
-//   - log (*slog.Logger): The logger for reporting errors.
+//   - config: *configv1.DLPConfig. The DLP configuration settings.
+//   - log: *slog.Logger. The logger for reporting errors.
 //
 // Returns:
 //   - mcp.Middleware: The configured middleware function.

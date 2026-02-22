@@ -3,13 +3,28 @@
 [![Documentation: Gold Standard](https://img.shields.io/badge/Documentation-Gold%20Standard-gold.svg)](https://github.com/mcpany/core)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
+**MCP Any** is a universal adapter that instantly turns your existing APIs into [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) compliant tools. It acts as a configuration-driven gateway, bridging the gap between your backend services (REST, gRPC, OpenAPI, Command-line) and AI agents.
+
+---
+
+## Table of Contents
+
+- [Project Identity](#project-identity)
+- [Quick Start](#quick-start)
+- [Developer Workflow](#developer-workflow)
+- [Architecture](#architecture)
+- [Configuration](#configuration)
+- [License](#license)
+
+---
+
 ## Project Identity
 
-**What is this?**
+### What is this?
 
 **MCP Any** is a universal adapter that instantly turns your existing APIs into [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) compliant tools. It acts as a configuration-driven gateway, bridging the gap between your backend services (REST, gRPC, OpenAPI, Command-line) and AI agents.
 
-**Why does it exist?**
+### Why does it exist?
 
 Traditional MCP adoption often requires writing a separate server binary for every tool, leading to "binary fatigue" and significant maintenance overhead. MCP Any solves this problem by providing a single, unified server that acts as a gateway to multiple services, defined purely through lightweight configuration files. It unifies your infrastructure into a single, secure, and observable MCP endpoint, allowing you to focus on capabilities rather than plumbing.
 
@@ -104,11 +119,11 @@ make gen
 
 ## Architecture
 
-**High-Level Overview**
+### High-Level Overview
 
 MCP Any utilizes a modular, adapter-based architecture to decouple the MCP protocol from upstream API specifics. Built with Go for performance and concurrency, it serves as a robust middleware between AI clients and your infrastructure.
 
-**Core Components:**
+### Core Components
 
 1.  **Core Server**: A high-performance Go runtime that handles the MCP protocol (JSON-RPC) and manages client sessions.
 2.  **Service Registry**: The central nervous system of MCP Any. It implements the `ServiceRegistryInterface` to manage the lifecycle of upstream services. It handles dynamic loading, hot-reloading, and health checking of services defined in configuration.
@@ -145,7 +160,7 @@ graph TD
     end
 ```
 
-**Request Flow:**
+### Request Flow
 
 1.  **Client Request:** An AI agent (e.g., Claude) sends a JSON-RPC request (e.g., `tools/call`) to the MCP Any Core Server.
 2.  **Authentication:** The server verifies the request's API Key or Session Token.
@@ -155,7 +170,7 @@ graph TD
 6.  **Execution:** The adapter communicates with the upstream service.
 7.  **Response Transformation:** The upstream response is received, transformed back into MCP format (e.g., `CallToolResult`), and returned to the client.
 
-**Design Patterns:**
+### Design Patterns
 
 *   **Adapter Pattern**: The `Upstream` interface abstracts away the complexity of different backend protocols, providing a uniform interface for the Core Server.
 *   **Configuration as Code**: Services and capabilities are defined declaratively in YAML/JSON, enabling version control and CI/CD for your agent capabilities.
