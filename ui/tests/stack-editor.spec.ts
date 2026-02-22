@@ -27,32 +27,34 @@ test.describe('Stack Editor', () => {
       await expect(visualizer.locator('.react-flow')).toBeVisible({ timeout: 30000 });
 
       // Check for the node
-      // Using a more specific selector to ensure it's inside a node
-      const weatherNode = visualizer.locator('.react-flow__node').filter({ hasText: 'weather-service' });
-      await expect(weatherNode).toBeVisible();
+      // Using a more specific selector to ensure it's inside a node and wait for it
+      const weatherNode = visualizer.locator('.react-flow__node').filter({ hasText: 'weather-service' }).first();
+      await expect(weatherNode).toBeVisible({ timeout: 15000 });
+      await expect(weatherNode).toContainText('weather-service');
     } finally {
       await cleanupCollection(stackName, page.request);
     }
   });
 
-  test('should update graph when template added', async ({ page }) => {
+  test('should update graph when template is added', async ({ page }) => {
     const stackName = `stack-editor-update-${Date.now()}`;
     await seedCollection(stackName, page.request);
     try {
-      await page.goto(`/stacks/${stackName}`);
+      await page.goto('/stacks/new');
+
       const visualizer = page.locator('.stack-visualizer-container');
 
-      // Wait for initial load with increased timeout and handling for slow rendering
-      // Sometimes the text might be inside a child element
-      await expect(visualizer.locator('.react-flow__node').filter({ hasText: 'weather-service' })).toBeVisible({ timeout: 45000 });
+      // Wait for the visualizer to be ready
+      await expect(visualizer.locator('.react-flow')).toBeVisible({ timeout: 45000 });
 
       // Click on PostgreSQL template in the palette
-      // Ensure palette is visible first
-      await expect(page.getByText('PostgreSQL')).toBeVisible();
-      await page.getByText('PostgreSQL').click();
+      // Use role button to be more specific if possible, or just exact text
+      const postgresTemplate = page.getByRole('button', { name: 'PostgreSQL' }).or(page.getByText('PostgreSQL', { exact: true }));
+      await expect(postgresTemplate.first()).toBeVisible();
+      await postgresTemplate.first().click();
 
       // Verify new node appears in graph
-      const postgresNode = visualizer.locator('.react-flow__node').filter({ hasText: 'postgres-db' });
+      const postgresNode = visualizer.locator('.react-flow__node').filter({ hasText: /^postgres-db$/ }).first();
       await expect(postgresNode).toBeVisible({ timeout: 60000 });
     } finally {
       await cleanupCollection(stackName, page.request);

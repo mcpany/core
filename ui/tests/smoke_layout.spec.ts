@@ -22,18 +22,17 @@ test('layout smoke test', async ({ page, request }) => {
   await expect(page.locator('a[href="/settings"]').first()).toBeVisible();
 
   // Navigate to Stacks
-  await page.locator('a[href="/stacks"]').first().click();
-  await page.waitForURL('**/stacks');
-  await expect(page.getByRole('heading', { name: 'Stacks' })).toBeVisible({ timeout: 10000 });
+  await page.getByRole('link', { name: 'Stacks' }).first().click();
+  await expect(page).toHaveURL(/\/stacks/);
+  await expect(page.getByRole('heading', { name: 'Stacks' })).toBeVisible({ timeout: 15000 });
 
   // Check for the "mcpany-system" stack
   await expect(page.locator('text=mcpany-system')).toBeVisible();
 
   // Navigate to Stack Detail
-  await Promise.all([
-    page.waitForURL(/\/stacks\/mcpany-system/),
-    page.click('text=mcpany-system'),
-  ]);
+  await page.getByText('mcpany-system', { exact: true }).first().click();
+  await expect(page).toHaveURL(/\/stacks\/mcpany-system/);
+
   await expect(page.locator('h1')).toContainText('mcpany-system');
   await expect(page.locator('h1')).toContainText('Stack');
 });

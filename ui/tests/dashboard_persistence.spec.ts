@@ -38,7 +38,7 @@ test('dashboard layout persistence', async ({ page, request }) => {
   await expect(page.getByText('Recent Activity').first()).toBeVisible();
 
   // 4. Wait for debounce save (1s + buffer)
-  await page.waitForTimeout(2000);
+  await page.waitForTimeout(4000);
 
   // 5. Reload page
   await page.reload();

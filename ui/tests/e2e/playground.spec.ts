@@ -12,34 +12,32 @@ test.describe('Playground Complex Schema Support', () => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({
-          tools: [
-            {
-              name: 'complex_tool',
-              description: 'A tool with complex schema',
-              serviceName: 'test',
-              inputSchema: {
-                type: 'object',
-                properties: {
-                  user: {
-                    type: 'object',
-                    required: ['name'],
-                    properties: {
-                      name: { type: 'string' },
-                      age: { type: 'integer' },
-                      active: { type: 'boolean' }
-                    }
-                  },
-                  tags: {
-                    type: 'array',
-                    items: { type: 'string' }
+        body: JSON.stringify([
+          {
+            name: 'complex_tool',
+            description: 'A tool with complex schema',
+            serviceName: 'test',
+            inputSchema: {
+              type: 'object',
+              properties: {
+                user: {
+                  type: 'object',
+                  required: ['name'],
+                  properties: {
+                    name: { type: 'string' },
+                    age: { type: 'integer' },
+                    active: { type: 'boolean' }
                   }
                 },
-                required: ['user']
-              }
+                tags: {
+                  type: 'array',
+                  items: { type: 'string' }
+                }
+              },
+              required: ['user']
             }
-          ]
-        })
+          }
+        ])
       });
     });
 
@@ -83,7 +81,10 @@ test.describe('Playground Complex Schema Support', () => {
 
     // Add tag
     await page.getByRole('button', { name: 'Add Item' }).click();
-    await page.locator('input[placeholder="Item 1"], textarea').first().fill('developer');
+    // Wait for the new input to appear
+    const newItemInput = page.locator('input, textarea').last();
+    await expect(newItemInput).toBeVisible({ timeout: 5000 });
+    await newItemInput.fill('developer');
 
     // Execute command in Tool Runner
     await page.getByRole('button', { name: 'Execute', exact: true }).click();

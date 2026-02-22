@@ -39,6 +39,9 @@ test.describe('Playground Image Rendering', () => {
                 }
             }
         });
+        if (!response.ok() && response.status() !== 409) {
+            console.error(`Status: ${response.status()}, Body: ${await response.text()}`);
+        }
         expect(response.ok() || response.status() === 409).toBeTruthy();
     });
 

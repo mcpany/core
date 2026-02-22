@@ -39,6 +39,7 @@ jobs:
       - name: Check for changes
         id: filter
         run: |
+          set -e
           if [ "${{ github.event_name }}" == "pull_request" ]; then
             # Compare against the base branch
             DIFF=$(git diff --name-only origin/${{ github.base_ref }} HEAD)

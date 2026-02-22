@@ -113,8 +113,8 @@ test.describe('MCP Any UI E2E Tests', () => {
     await page.goto('/');
 
     // Ensure Service Health widget is visible
-    const userService = page.locator('.group', { hasText: 'User Service' }).first();
-    if (!(await userService.isVisible())) {
+    const userService = page.locator('.group').filter({ hasText: 'User Service' }).first();
+    if (!(await userService.isVisible({ timeout: 5000 }))) {
       await page.getByTestId('add-widget-trigger').first().click();
       await page.getByText('Service Health').first().click();
       await expect(userService).toBeVisible({ timeout: 30000 });
