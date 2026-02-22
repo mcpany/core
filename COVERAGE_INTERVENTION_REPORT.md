@@ -1,22 +1,15 @@
 # Coverage Intervention Report
 
-**Target:** `server/pkg/mcpserver/temporary_tool_manager.go`
-
-## Risk Profile
-This file was selected for intervention because:
-1.  **Criticality:** It is used by `ValidateService` to validate upstream service configurations before they are deployed.
-2.  **Implementation Gap:** The original implementation was a "No-Op" (embedded `NoOpToolManager`), meaning discovered tools were discarded immediately. This caused validation logic that depends on tool lookup (e.g., linking dynamic resources to tools) to fail silently or return incomplete results.
-3.  **Coverage Gap:** The file had **zero** test coverage, leaving this critical logic unverified.
-
-## New Coverage
-I have implemented the missing functionality in `server/pkg/mcpserver/temporary_tool_manager.go` and added a comprehensive test suite in `server/pkg/mcpserver/temporary_tool_manager_test.go` covering:
-
-*   **Tool Storage (`AddTool`):** Verified that tools are sanitized and stored correctly in an in-memory map.
-*   **Tool Retrieval (`GetTool`):** Verified that tools can be retrieved by their fully qualified ID.
-*   **Tool Listing (`ListTools`):** Verified listing of all stored tools.
-*   **Service Info Management (`AddServiceInfo`, `GetServiceInfo`):** Verified metadata storage.
-*   **Tool Counting (`GetToolCountForService`):** Verified correct counting of tools per service.
-
-## Verification
-*   **New Tests:** `go test -v ./server/pkg/mcpserver/ -run TestTemporaryToolManager` passed successfully.
-*   **Regression:** `go test -v ./server/pkg/mcpserver/` passed successfully, ensuring no regressions in the MCP server package (including `ValidateService` tests).
+*   **Target:** `server/pkg/api/rest/catalog.go` (specifically `CatalogServer` struct and `ListServices` method)
+*   **Risk Profile:**
+    *   This component serves as the primary entry point for the REST API to list available services (`/services`).
+    *   It was previously completely untested ("Dark Matter").
+    *   While the logic is currently simple (delegating to `catalog.Manager`), failures here would block all service discovery features, rendering the UI and CLI tools blind.
+    *   It sits at the boundary of the system, making it a critical integration point to verify.
+*   **New Coverage:**
+    *   **Happy Path:** Verifies that `ListServices` correctly retrieves and returns service configurations loaded from the filesystem.
+    *   **Edge Case:** Verifies behavior when the catalog is empty.
+    *   **Integration:** Validates the wiring between `CatalogServer` and `catalog.Manager`, ensuring that `afero.Fs` abstraction works as expected for loading configuration files.
+*   **Verification:**
+    *   `go test -v ./server/pkg/api/rest` passed cleanly.
+    *   The new test `TestCatalogServer_ListServices` mocks the filesystem using `afero.MemMapFs`, ensuring hermeticity and speed.
