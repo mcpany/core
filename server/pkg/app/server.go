@@ -1018,6 +1018,7 @@ func (a *Application) updateGlobalSettings(cfg *config_v1.McpAnyServerConfig) {
 	}
 }
 
+//nolint:gocyclo // complexity is fine here
 // reconcileServices reconciles the service registry with the new configuration.
 func (a *Application) reconcileServices(ctx context.Context, cfg *config_v1.McpAnyServerConfig) {
 	log := logging.GetLogger()
@@ -1049,72 +1050,71 @@ func (a *Application) reconcileServices(ctx context.Context, cfg *config_v1.McpA
 	// Map new services by name for easy lookup
 	newServices := make(map[string]*config_v1.UpstreamServiceConfig)
 
-        // Helper to deduplicate tools by name after proto.Merge appends them
-        dedupTools := func(svc *config_v1.UpstreamServiceConfig) {
-                if cmd := svc.GetCommandLineService(); cmd != nil {
-                        seen := make(map[string]bool)
-                        var deduplicated []*config_v1.ToolDefinition
-                        tools := cmd.GetTools()
-                        // Iterate backwards so the latter tools (from database override) take precedence
-                        for i := len(tools) - 1; i >= 0; i-- {
-                                t := tools[i]
-                                if !seen[t.GetName()] {
-                                        seen[t.GetName()] = true
-                                        // Prepend to keep original order with overrides
-                                        deduplicated = append([]*config_v1.ToolDefinition{t}, deduplicated...)
-                                }
-                        }
-                        cmd.SetTools(deduplicated)
-                }
-                
-                if http := svc.GetHttpService(); http != nil {
-                        seen := make(map[string]bool)
-                        var deduplicated []*config_v1.ToolDefinition
-                        tools := http.GetTools()
-                        for i := len(tools) - 1; i >= 0; i-- {
-                                t := tools[i]
-                                if !seen[t.GetName()] {
-                                        seen[t.GetName()] = true
-                                        deduplicated = append([]*config_v1.ToolDefinition{t}, deduplicated...)
-                                }
-                        }
-                        http.SetTools(deduplicated)
-                }
+	// Helper to deduplicate tools by name after proto.Merge appends them
+	dedupTools := func(svc *config_v1.UpstreamServiceConfig) {
+		if cmd := svc.GetCommandLineService(); cmd != nil {
+			seen := make(map[string]bool)
+			var deduplicated []*config_v1.ToolDefinition
+			tools := cmd.GetTools()
+			// Iterate backwards so the latter tools (from database override) take precedence
+			for i := len(tools) - 1; i >= 0; i-- {
+				t := tools[i]
+				if !seen[t.GetName()] {
+					seen[t.GetName()] = true
+					// Prepend to keep original order with overrides
+					deduplicated = append([]*config_v1.ToolDefinition{t}, deduplicated...)
+				}
+			}
+			cmd.SetTools(deduplicated)
+		}
 
-        }
-        if cfg.GetUpstreamServices() != nil {
-                for _, svc := range cfg.GetUpstreamServices() {
-                        if !svc.GetDisable() {
-                                if existing, ok := newServices[svc.GetName()]; ok {
-                                        proto.Merge(existing, svc)
-                                        dedupTools(existing)
-                                } else {
-                                        s := proto.Clone(svc).(*config_v1.UpstreamServiceConfig)
-                                        dedupTools(s)
-                                        newServices[svc.GetName()] = s
-                                }
-                        }
-                }
-        }
-        if cfg.GetCollections() != nil {
-                for _, collection := range cfg.GetCollections() {
-                        for _, svc := range collection.GetServices() {
-								if svc.GetName() == "" {
-									continue
-								}
-                                if !svc.GetDisable() {
-                                        if existing, ok := newServices[svc.GetName()]; ok {
-                                                proto.Merge(existing, svc)
-                                                dedupTools(existing)
-                                        } else {
-                                                s := proto.Clone(svc).(*config_v1.UpstreamServiceConfig)
-                                                dedupTools(s)
-                                                newServices[svc.GetName()] = s
-                                        }
-                                }
-                        }
-                }
-        }
+		if http := svc.GetHttpService(); http != nil {
+			seen := make(map[string]bool)
+			var deduplicated []*config_v1.ToolDefinition
+			tools := http.GetTools()
+			for i := len(tools) - 1; i >= 0; i-- {
+				t := tools[i]
+				if !seen[t.GetName()] {
+					seen[t.GetName()] = true
+					deduplicated = append([]*config_v1.ToolDefinition{t}, deduplicated...)
+				}
+			}
+			http.SetTools(deduplicated)
+		}
+	}
+	if cfg.GetUpstreamServices() != nil {
+		for _, svc := range cfg.GetUpstreamServices() {
+			if !svc.GetDisable() {
+				if existing, ok := newServices[svc.GetName()]; ok {
+					proto.Merge(existing, svc)
+					dedupTools(existing)
+				} else {
+					s := proto.Clone(svc).(*config_v1.UpstreamServiceConfig)
+					dedupTools(s)
+					newServices[svc.GetName()] = s
+				}
+			}
+		}
+	}
+	if cfg.GetCollections() != nil {
+		for _, collection := range cfg.GetCollections() {
+			for _, svc := range collection.GetServices() {
+				if svc.GetName() == "" {
+					continue
+				}
+				if !svc.GetDisable() {
+					if existing, ok := newServices[svc.GetName()]; ok {
+						proto.Merge(existing, svc)
+						dedupTools(existing)
+					} else {
+						s := proto.Clone(svc).(*config_v1.UpstreamServiceConfig)
+						dedupTools(s)
+						newServices[svc.GetName()] = s
+					}
+				}
+			}
+		}
+	}
 
 	// Identify removed services
 	for name := range currentServicesMap {
