@@ -5,24 +5,22 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { DashboardGrid } from "@/components/dashboard/dashboard-grid";
 import { Button } from "@/components/ui/button";
 import { DashboardProvider } from "@/components/dashboard/dashboard-context";
 import { ServiceFilter } from "@/components/dashboard/service-filter";
 import { TimeRangeFilter } from "@/components/dashboard/time-range-filter";
-import { OnboardingHero } from "@/components/dashboard/onboarding-hero";
+import { SetupWizard } from "@/components/dashboard/setup-wizard";
 import { apiClient } from "@/lib/client";
 import { Loader2 } from "lucide-react";
 
-/**
- * The main dashboard page component.
- * Displays an overview of metrics, service health, and request volume.
- * @returns The dashboard page.
- */
-export default function DashboardPage() {
+function DashboardContent() {
+  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(true);
   const [hasServices, setHasServices] = useState(false);
+  const forceWizard = searchParams.get("wizard") === "true";
 
   useEffect(() => {
     async function checkServices() {
@@ -48,8 +46,8 @@ export default function DashboardPage() {
       );
   }
 
-  if (!hasServices) {
-      return <OnboardingHero />;
+  if (!hasServices || forceWizard) {
+      return <SetupWizard />;
   }
 
   return (
@@ -69,4 +67,21 @@ export default function DashboardPage() {
       </div>
     </DashboardProvider>
   );
+}
+
+/**
+ * The main dashboard page component.
+ * Displays an overview of metrics, service health, and request volume.
+ * @returns The dashboard page.
+ */
+export default function DashboardPage() {
+    return (
+        <Suspense fallback={
+            <div className="flex h-screen items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            </div>
+        }>
+            <DashboardContent />
+        </Suspense>
+    );
 }
