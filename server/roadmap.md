@@ -6,6 +6,8 @@
 *   **[Comms] Recursive Context Protocol:** Standardize headers for Subagent inheritance.
 *   **[State] Shared Key-Value Store:** Embedded SQLite "Blackboard" tool for agents.
 *   **[Security] HITL Middleware:** Suspension protocol for user approval flows.
+*   **[Security] Zero Trust OpenClaw Bridge:** Secure sandboxing for OpenClaw local skills (Added: 2026-02-22).
+*   **[Comms] Recursive Context Headers:** Implementation of `X-MCP-Context-ID` for swarm inheritance (Added: 2026-02-22).
 
 ## 2. Updated Roadmap
 
