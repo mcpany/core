@@ -28,7 +28,7 @@ permissions:
 
 jobs:
   changes:
-    runs-on: oci-runner # ubuntu-slim
+    runs-on: ubuntu-latest # ubuntu-slim
     outputs:
       src: ${{ steps.filter.outputs.src }}
     steps:
@@ -67,7 +67,7 @@ jobs:
   lint:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
-    runs-on: oci-runner # ubuntu-latest
+    runs-on: ubuntu-latest # ubuntu-latest
     steps:
       - name: Free Disk Space (Fast)
         run: |
@@ -136,7 +136,7 @@ jobs:
         run: make lint
 
   unit-test:
-    runs-on: oci-runner # ubuntu-latest
+    runs-on: ubuntu-latest # ubuntu-latest
     timeout-minutes: 30
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -1046,7 +1046,7 @@ jobs:
           make k8s-e2e SKIP_IMAGE_BUILD=true IMAGE_TAG=latest
 
   ci-success:
-    runs-on: oci-runner # ubuntu-slim
+    runs-on: ubuntu-latest # ubuntu-slim
     needs:
       [
         changes,
