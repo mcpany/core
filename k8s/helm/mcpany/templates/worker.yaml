@@ -33,6 +33,10 @@ spec:
             - containerPort: 50050
               name: http
           env:
+            - name: MCPANY_GLOBAL_SETTINGS_DB_DRIVER
+              value: "postgres"
+            - name: MCPANY_GLOBAL_SETTINGS_DB_DSN
+              value: "postgres://{{ .Values.database.postgresUser }}:{{ .Values.database.postgresPassword }}@{{ include "mcpany.fullname" . }}-database:5432/{{ .Values.database.postgresDb }}?sslmode=disable"
             - name: POSTGRES_URL
               value: "postgres://{{ .Values.database.postgresUser }}:{{ .Values.database.postgresPassword }}@{{ include "mcpany.fullname" . }}-database:5432/{{ .Values.database.postgresDb }}?sslmode=disable"
             - name: REDIS_URL

@@ -47,7 +47,8 @@ interface AuditLogEntry {
 }
 
 /**
- * ToolRunner component.
+ * ToolRunner is a component that provides an interface for executing tools
+ * and viewing their results, metrics, and schema.
  *
  * @param props - The props.
  * @param props.tool - The tool.

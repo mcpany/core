@@ -90,9 +90,26 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
     for (const svc of services) {
         try {
             const res = await context.post('/api/v1/services', { data: svc, headers: HEADERS });
-            if (!res.ok()) {
+            if (!res.ok() && res.status() !== 409) {
                 const text = await res.text();
                 throw new Error(`${res.status()} ${text}`);
+            }
+
+            // Wait for service to be registered by the async worker
+            let ready = false;
+            for (let i = 0; i < 60; i++) {
+                const check = await context.get('/api/v1/services', { headers: HEADERS });
+                if (check.ok()) {
+                    const data = await check.json();
+                    if (data && Array.isArray(data) && data.some((s: any) => s.name === svc.name)) {
+                        ready = true;
+                        break;
+                    }
+                }
+                await new Promise(r => setTimeout(r, 500));
+            }
+            if (!ready) {
+                console.log(`Warning: service ${svc.name} not ready after 30s`);
             }
         } catch (e) {
             console.log(`Failed to seed service ${svc.name}: ${e}`);
@@ -129,9 +146,29 @@ export const seedCollection = async (name: string, requestContext?: APIRequestCo
     };
     try {
         const res = await context.post('/api/v1/collections', { data: collection, headers: HEADERS });
-        if (!res.ok()) {
+        if (!res.ok() && res.status() !== 409) {
             const text = await res.text();
             throw new Error(`Failed to seed collection ${name}: ${res.status()} ${text}`);
+        }
+
+        // Wait for weather-service to be registered by the async worker
+        let ready = false;
+        for (let i = 0; i < 60; i++) {
+            const check = await context.get('/api/v1/services', { headers: HEADERS });
+            if (check.ok()) {
+                const data = await check.json();
+                if (i === 0 || i === 59) {
+                    console.log("DEBUG /api/v1/services returned data:", JSON.stringify(data).substring(0, 500));
+                }
+                if (data && Array.isArray(data) && data.some((s: any) => s.name === 'weather-service' || s.id === 'weather-service')) {
+                    ready = true;
+                    break;
+                }
+            }
+            await new Promise(r => setTimeout(r, 500));
+        }
+        if (!ready) {
+            console.log("Warning: weather-service in collection not ready after 30s");
         }
     } catch (e) {
         console.log(`Failed to seed collection ${name}: ${e}`);

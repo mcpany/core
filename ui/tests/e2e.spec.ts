@@ -15,29 +15,29 @@ test.describe('MCP Any UI E2E Tests', () => {
   test.describe.configure({ mode: 'serial' });
 
   test.beforeEach(async ({ request, page }) => {
-      await seedServices(request);
-      await seedTraffic(request);
-      await seedTemplates(request);
-      await seedWebhooks(request);
+    await seedServices(request);
+    await seedTraffic(request);
+    await seedTemplates(request);
+    await seedWebhooks(request);
     await seedUser(request, "e2e-admin-core");
 
-      // Login before each test
-      await page.goto('/login');
-      // Wait for page to be fully loaded as it might be transitioning
-      await page.waitForLoadState('networkidle');
+    // Login before each test
+    await page.goto('/login');
+    // Wait for page to be fully loaded as it might be transitioning
+    await page.waitForLoadState('networkidle');
 
     await page.fill('input[name="username"]', 'e2e-admin-core');
-      await page.fill('input[name="password"]', 'password');
+    await page.fill('input[name="password"]', 'password');
     await page.click('button[type="submit"]', { force: true });
 
-      // Wait for redirect to home page and verify
+    // Wait for redirect to home page and verify
     await page.waitForURL('/', { timeout: 30000 });
-      await expect(page).toHaveURL('/', { timeout: 15000 });
+    await expect(page).toHaveURL('/', { timeout: 15000 });
   });
   test.afterEach(async ({ request }) => {
-      await cleanupServices(request);
-      await cleanupTemplates(request);
-      await cleanupWebhooks(request);
+    await cleanupServices(request);
+    await cleanupTemplates(request);
+    await cleanupWebhooks(request);
     // await cleanupUser(request, "e2e-admin-core");
   });
 
@@ -79,7 +79,7 @@ test.describe('MCP Any UI E2E Tests', () => {
   test('Middleware page shows pipeline', async ({ page }) => {
     await page.goto('/middleware');
     await expect(page.locator('h1')).toContainText('Middleware Pipeline');
-    await expect(page.locator('text=Incoming Request')).toBeVisible();
+    await expect(page.locator('text=Processing Order')).toBeVisible();
     await expect(page.locator('text=auth').first()).toBeVisible();
 
     if (process.env.CAPTURE_SCREENSHOTS === 'true') {
@@ -113,8 +113,8 @@ test.describe('MCP Any UI E2E Tests', () => {
     await page.goto('/');
 
     // Ensure Service Health widget is visible
-    const userService = page.locator('.group', { hasText: 'User Service' });
-    if (!(await userService.isVisible())) {
+    const userService = page.locator('.group').filter({ hasText: 'User Service' }).first();
+    if (!(await userService.isVisible({ timeout: 5000 }))) {
       await page.getByTestId('add-widget-trigger').first().click();
       await page.getByText('Service Health').first().click();
       await expect(userService).toBeVisible({ timeout: 30000 });

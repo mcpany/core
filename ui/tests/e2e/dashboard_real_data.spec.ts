@@ -4,12 +4,13 @@
  */
 
 import { test, expect } from '@playwright/test';
-import { seedUser, cleanupUser } from './test-data';
+import { seedUser, cleanupUser, seedCollection, cleanupCollection } from './test-data';
 
 test.describe('Dashboard Real Data', () => {
     test.describe.configure({ mode: 'serial' });
 
     test.beforeEach(async ({ request, page }) => {
+        await seedCollection('mcpany-system', request);
         await seedUser(request, "e2e-admin-dashboard");
         // Login
         await page.goto('/login');
@@ -22,6 +23,7 @@ test.describe('Dashboard Real Data', () => {
     });
 
     test.afterEach(async ({ request }) => {
+        await cleanupCollection('mcpany-system', request);
         // await cleanupUser(request, "e2e-admin-dashboard");
     });
 
@@ -75,21 +77,28 @@ test.describe('Dashboard Real Data', () => {
 
         // Ensure Metrics Overview widget is visible (contains Total Requests)
         console.log('Ensuring Metrics Overview widget is present...');
-        const metricsOverviewCard = page.getByText('Metrics Overview').first();
+        // The MetricsOverview component renders "Total Requests", "Avg Latency", etc. but not its own title.
+        const metricsOverviewCard = page.getByText(/^Total Requests$/).first();
+        const addWidgetButton = page.getByTestId('add-widget-trigger').first();
         if (!(await metricsOverviewCard.isVisible())) {
-            await page.getByTestId('add-widget-trigger').first().click();
-            await page.getByText('Metrics Overview', { exact: true }).first().click();
-            await expect(metricsOverviewCard).toBeVisible({ timeout: 30000 });
+            if (await addWidgetButton.isVisible()) {
+                await addWidgetButton.click();
+                await page.getByText('Metrics Overview', { exact: true }).first().click();
+            }
+            // we will wait for it regardless below
         }
 
         // Ensure Request Volume widget is visible
         console.log('Ensuring Request Volume widget is present...');
         const requestVolumeCard = page.getByText('Request Volume').first();
         if (!(await requestVolumeCard.isVisible())) {
-            await page.getByTestId('add-widget-trigger').first().click();
-            await page.getByText('Request Volume', { exact: true }).first().click();
-            await expect(requestVolumeCard).toBeVisible({ timeout: 30000 });
+            if (await addWidgetButton.isVisible()) {
+                await addWidgetButton.click();
+                await page.getByText('Request Volume', { exact: true }).first().click();
+            }
         }
+        await expect(requestVolumeCard).toBeVisible({ timeout: 15000 });
+        await expect(requestVolumeCard).toBeVisible({ timeout: 15000 });
 
         console.log('Waiting for Total Requests card...');
         const totalRequestsHeader = page.getByText(/^Total Requests$/).first();

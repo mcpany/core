@@ -98,6 +98,14 @@ jobs:
             retry_count=0
             success=false
 
+            # Check for file changes
+            file_count=$(gh pr view $pr_number --repo ${{ github.repository }} --json files --jq '.files | length')
+            if [ "$file_count" -eq 0 ]; then
+              echo "PR #$pr_number has no file changes. Closing it."
+              gh pr close $pr_number --repo ${{ github.repository }} --comment "🤖 **Automated Cleanup:** This PR has no file changes. Closing it."
+              continue
+            fi
+
             while [ $retry_count -lt $max_retries ]; do
               if gh pr merge $pr_number --squash --auto --repo ${{ github.repository }}; then
                 success=true

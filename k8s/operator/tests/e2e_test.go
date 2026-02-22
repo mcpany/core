@@ -145,6 +145,7 @@ nodes:
 		"--set", "env.MCPANY_ADMIN_INIT_PASSWORD=password",
 		"--set", "env.MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true",
 		"--set", "env.MCPANY_ALLOW_LOOPBACK_RESOURCES=true",
+		"--set-file", "config=server/config.minimal.yaml",
 		"--wait",
 		"--timeout", "10m",
 	); err != nil {
@@ -202,6 +203,9 @@ nodes:
 
 	t.Log("Executing npx playwright test in", uiDir)
 	if err := playwrightCmd.Run(); err != nil {
+						cmd := exec.Command("sh", "-c", "kubectl get pods -n mcp-system; kubectl logs -n mcp-system -l app.kubernetes.io/name=server --all-containers=true --tail=1000")
+						out, _ := cmd.CombinedOutput()
+						t.Logf("Server Logs:\n%s", out)
 		t.Fatalf("UI Tests failed: %v", err)
 	}
 }

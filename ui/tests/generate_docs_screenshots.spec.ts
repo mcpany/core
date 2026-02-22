@@ -322,7 +322,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
         await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'playground_tool_selected.png'), fullPage: true });
 
         // Fill Form
-        await page.getByLabel('path').fill('/var/log');
+        await page.getByLabel('path', { exact: false }).fill('/var/log');
         await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'playground_form_filled.png'), fullPage: true });
     }
 

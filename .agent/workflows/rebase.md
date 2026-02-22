@@ -4,7 +4,7 @@ description: Rebase the mentioned branch and test
 
 ## Objective
 
-Rebase the [target branch or current branch] onto the latest main, resolve any conflicts, verify code quality, and push to remote.
+Rebase the [target branch or current branch] onto the latest main, resolve any conflicts, verify code quality, and push to remote. If you are on main branch already, just make sure all tests pass as described below.
 
 ## Execution Steps
 

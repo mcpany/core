@@ -27,6 +27,13 @@ upstream_services:
         get_weather_call:
           endpoint_path: "/{{location}}?format=j1&lang={{lang}}"
           method: "HTTP_METHOD_GET"
+          parameters:
+            - schema:
+                name: "location"
+                type: "STRING"
+            - schema:
+                name: "lang"
+                type: "STRING"
           input_schema:
             type: "object"
             properties:
@@ -48,6 +55,10 @@ upstream_services:
         get_moon_phase_call:
           endpoint_path: "/moon{{if .args}}{{.args}}{{end}}"
           method: "HTTP_METHOD_GET"
+          parameters:
+            - schema:
+                name: "args"
+                type: "STRING"
           input_schema:
             type: "object"
             properties:
