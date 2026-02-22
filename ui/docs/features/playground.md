@@ -50,6 +50,12 @@ The execution result is displayed in the chat stream.
 
 - **JSON Mode**: Switch to the "JSON" tab in the tool configuration dialog to input raw parameters if the form is too constraining.
 - **History**: Previous tool calls in the session remain visible above.
+- **Saved Tool Arguments (Presets)**: Save frequently used argument combinations as presets for quick reuse.
+    - Click the **Bookmark** icon in the tool dialog.
+    - Click the **+** button to create a new preset.
+    - Enter a name and click **Save**.
+    - Click a saved preset to instantly populate the form.
+- **Native File Upload**: For tools that accept file inputs (base64 encoded strings or binary format), the form automatically renders a file picker. Selected files are automatically converted to base64 strings.
 
 ### 5. Session History (Import/Export)
 
