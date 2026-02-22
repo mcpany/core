@@ -66,7 +66,11 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
                   setPrompts([]);
                   return;
               }
-              setPrompts(data?.prompts || []);
+              if (Array.isArray(data)) {
+                  setPrompts(data);
+              } else {
+                  setPrompts(data.prompts || []);
+              }
           })
           .catch(err => {
               // Suppress console.error for expected network/auth errors to avoid noise
