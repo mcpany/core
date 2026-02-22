@@ -6,6 +6,9 @@
 *   **[Comms] Recursive Context Protocol:** Standardize headers for Subagent inheritance.
 *   **[State] Shared Key-Value Store:** Embedded SQLite "Blackboard" tool for agents.
 *   **[Security] HITL Middleware:** Suspension protocol for user approval flows.
+*   **[Security] Isolated Named Pipe Adapter:** Secure inter-agent communication via unix sockets/named pipes.
+*   **[Security] Recursive Scope Enforcer:** Capability-based access control for nested agent calls.
+*   **[Performance] Smart Tool Aggregator:** Intelligent deduplication and pruning for multi-MCP environments.
 
 ## 2. Updated Roadmap
 
