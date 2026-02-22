@@ -13,14 +13,34 @@ import { Input } from '@/components/ui/input';
 const TEMPLATES = [
     {
         id: 'manual',
-        name: 'Manual / Custom',
-        description: 'Configure everything from scratch.',
+        name: 'Manual (Legacy CLI)',
+        description: 'Wrap a raw CLI command as a tool.',
         config: {
             commandLineService: {
                 command: '',
                 env: {},
                 workingDirectory: ''
             },
+            mcpService: undefined,
+            openapiService: undefined
+        },
+        params: {}
+    },
+    {
+        id: 'stdio',
+        name: 'Generic MCP Server (Stdio)',
+        description: 'Run an MCP server via standard input/output.',
+        config: {
+            mcpService: {
+                connectionType: {
+                    stdioConnection: {
+                        command: 'npx',
+                        args: [],
+                        env: {}
+                    }
+                }
+            },
+            commandLineService: undefined,
             openapiService: undefined
         },
         params: {}
@@ -30,12 +50,18 @@ const TEMPLATES = [
         name: 'PostgreSQL Database',
         description: 'Connect to a PostgreSQL database.',
         config: {
-            commandLineService: {
-                command: 'npx -y @modelcontextprotocol/server-postgres',
-                env: {
-                    "POSTGRES_URL": { plainText: "postgresql://user:password@localhost:5432/dbname", validationRegex: "" }
+            mcpService: {
+                connectionType: {
+                    stdioConnection: {
+                        command: 'npx',
+                        args: ['-y', '@modelcontextprotocol/server-postgres'],
+                        env: {
+                            "POSTGRES_URL": { plainText: "postgresql://user:password@localhost:5432/dbname" }
+                        }
+                    }
                 }
             },
+            commandLineService: undefined,
             openapiService: undefined
         },
         params: {
@@ -47,12 +73,18 @@ const TEMPLATES = [
         name: 'Filesystem',
         description: 'Expose a local directory.',
         config: {
-            commandLineService: {
-                command: 'npx -y @modelcontextprotocol/server-filesystem',
-                env: {
-                    "ALLOWED_PATH": { plainText: "/home/user", validationRegex: "" }
+            mcpService: {
+                connectionType: {
+                    stdioConnection: {
+                        command: 'npx',
+                        args: ['-y', '@modelcontextprotocol/server-filesystem'],
+                        env: {
+                            "ALLOWED_PATH": { plainText: "/home/user" }
+                        }
+                    }
                 }
             },
+            commandLineService: undefined,
             openapiService: undefined
         },
         params: {
@@ -70,7 +102,8 @@ const TEMPLATES = [
                 specContent: "",
                 tools: []
             },
-            commandLineService: undefined
+            commandLineService: undefined,
+            mcpService: undefined
         },
         params: {}
     }
