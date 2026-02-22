@@ -12,15 +12,18 @@ import { Input } from '@/components/ui/input';
 
 const TEMPLATES = [
     {
-        id: 'manual',
-        name: 'Manual / Custom',
-        description: 'Configure everything from scratch.',
+        id: 'mcp-stdio',
+        name: 'Generic MCP Server (Stdio)',
+        description: 'Run any MCP server via command line (stdio). Recommended for most users.',
         config: {
-            commandLineService: {
-                command: '',
-                env: {},
-                workingDirectory: ''
+            mcpService: {
+                stdioConnection: {
+                    command: 'npx',
+                    args: ['-y', '@modelcontextprotocol/server-name'],
+                    env: {}
+                }
             },
+            commandLineService: undefined,
             openapiService: undefined
         },
         params: {}
@@ -30,34 +33,34 @@ const TEMPLATES = [
         name: 'PostgreSQL Database',
         description: 'Connect to a PostgreSQL database.',
         config: {
-            commandLineService: {
-                command: 'npx -y @modelcontextprotocol/server-postgres',
-                env: {
-                    "POSTGRES_URL": { plainText: "postgresql://user:password@localhost:5432/dbname", validationRegex: "" }
+            mcpService: {
+                stdioConnection: {
+                    command: 'npx',
+                    args: ['-y', '@modelcontextprotocol/server-postgres', 'postgresql://user:password@localhost:5432/dbname'],
+                    env: {}
                 }
             },
+            commandLineService: undefined,
             openapiService: undefined
         },
-        params: {
-            "POSTGRES_URL": "postgresql://user:password@localhost:5432/dbname"
-        }
+        params: {}
     },
     {
         id: 'filesystem',
         name: 'Filesystem',
         description: 'Expose a local directory.',
         config: {
-            commandLineService: {
-                command: 'npx -y @modelcontextprotocol/server-filesystem',
-                env: {
-                    "ALLOWED_PATH": { plainText: "/home/user", validationRegex: "" }
+            mcpService: {
+                stdioConnection: {
+                    command: 'npx',
+                    args: ['-y', '@modelcontextprotocol/server-filesystem', '/home/user'],
+                    env: {}
                 }
             },
+            commandLineService: undefined,
             openapiService: undefined
         },
-        params: {
-            "ALLOWED_PATH": "/home/user"
-        }
+        params: {}
     },
     {
         id: 'openapi',
@@ -70,7 +73,23 @@ const TEMPLATES = [
                 specContent: "",
                 tools: []
             },
+            mcpService: undefined,
             commandLineService: undefined
+        },
+        params: {}
+    },
+    {
+        id: 'manual',
+        name: 'Legacy Command Line (Raw)',
+        description: 'Configure a raw command line service wrapper (Advanced).',
+        config: {
+            commandLineService: {
+                command: '',
+                env: {},
+                workingDirectory: ''
+            },
+            mcpService: undefined,
+            openapiService: undefined
         },
         params: {}
     }
@@ -115,7 +134,7 @@ export function StepServiceType() {
 
             <div className="space-y-2">
                 <Label htmlFor="service-template">Template</Label>
-                <Select value={selectedTemplateId || 'manual'} onValueChange={handleTemplateChange}>
+                <Select value={selectedTemplateId || 'mcp-stdio'} onValueChange={handleTemplateChange}>
                     <SelectTrigger id="service-template">
                         <SelectValue placeholder="Select a template" />
                     </SelectTrigger>
@@ -130,10 +149,10 @@ export function StepServiceType() {
                 <Card className="mt-2 bg-muted/50">
                     <CardHeader>
                         <CardTitle className="text-base">
-                            {TEMPLATES.find(t => t.id === (selectedTemplateId || 'manual'))?.name}
+                            {TEMPLATES.find(t => t.id === (selectedTemplateId || 'mcp-stdio'))?.name}
                         </CardTitle>
                         <CardDescription>
-                            {TEMPLATES.find(t => t.id === (selectedTemplateId || 'manual'))?.description}
+                            {TEMPLATES.find(t => t.id === (selectedTemplateId || 'mcp-stdio'))?.description}
                         </CardDescription>
                     </CardHeader>
                 </Card>

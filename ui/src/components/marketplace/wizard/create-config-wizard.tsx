@@ -44,7 +44,7 @@ function WizardContent({ onComplete, onCancel }: { onComplete: (config: any) => 
                 if (config.openapiService) {
                     return <StepOpenAPI />;
                 }
-                return <StepParameters />;
+                return <StepParameters key={state.selectedTemplateId} />;
             case WizardStep.WEBHOOKS: return <StepWebhooks />;
             case WizardStep.AUTH: return <StepAuth />;
             case WizardStep.REVIEW: return <StepReview onComplete={onComplete} />;
