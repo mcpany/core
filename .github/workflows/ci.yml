@@ -29,6 +29,7 @@ permissions:
 jobs:
   changes:
     runs-on: oci-runner # ubuntu-slim
+    container: buildpack-deps:jammy-scm
     outputs:
       src: ${{ steps.filter.outputs.src }}
     steps:
@@ -68,6 +69,7 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: oci-runner # ubuntu-latest
+    container: buildpack-deps:jammy-scm
     steps:
       - name: Free Disk Space (Fast)
         run: |
@@ -137,6 +139,7 @@ jobs:
 
   unit-test:
     runs-on: oci-runner # ubuntu-latest
+    container: buildpack-deps:jammy-scm
     timeout-minutes: 30
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -272,6 +275,7 @@ jobs:
 
   e2e-parallel:
     runs-on: oci-runner # ubuntu-latest
+    container: buildpack-deps:jammy-scm
     timeout-minutes: 30
     needs: [build-images]
     strategy:
@@ -581,6 +585,7 @@ jobs:
 
   e2e-sequential:
     runs-on: oci-runner # ubuntu-latest
+    container: buildpack-deps:jammy-scm
     timeout-minutes: 60
     needs: [build-images]
     env:
@@ -718,6 +723,7 @@ jobs:
 
   e2e-public-api:
     runs-on: oci-runner # ubuntu-latest
+    container: buildpack-deps:jammy-scm
     timeout-minutes: 30
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -1047,6 +1053,7 @@ jobs:
 
   ci-success:
     runs-on: oci-runner # ubuntu-slim
+    container: buildpack-deps:jammy-scm
     needs:
       [
         changes,
