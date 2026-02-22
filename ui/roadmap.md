@@ -16,6 +16,9 @@
 - [ ] **[P2] Interactive Setup Wizard**: Guided "First Run" experience to generate `mcp.yaml` and configure agents.
 - [ ] **[P2] Agent Black Box Player**: Timeline-based replay of recorded agent sessions (Inputs, Outputs, State).
 - [ ] **[P2] Cost & metrics Dashboard**: Real-time visualization of token usage, costs, and tool performance metrics (P95 latency).
+- [ ] **[P0] Named Pipe Transport Manager**: UI for configuring and monitoring isolated socket-based inter-agent comms.
+- [ ] **[P0] Recursive Scope Debugger**: Visualizer for inherited vs. delegated capabilities in agent traces.
+- [ ] **[P1] Smart Discovery Dashboard**: Interface to manage tool deduplication and pruning rules.
 
 ### Existing Planned Features
 
