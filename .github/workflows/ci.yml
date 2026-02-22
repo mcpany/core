@@ -1023,6 +1023,11 @@ jobs:
         with:
           name: image-ui-${{ steps.detect-arch.outputs.slug }}
 
+      - name: Download HTTP Echo Image
+        uses: actions/download-artifact@v4
+        with:
+          name: image-http-echo-${{ steps.detect-arch.outputs.slug }}
+
       - name: Load Docker Images into Kind
         run: |
           # Load all tarballs into docker daemon first?

@@ -24,7 +24,7 @@ test.describe('MCP Any UI E2E Tests', () => {
       // Login before each test
       await page.goto('/login');
       // Wait for page to be fully loaded as it might be transitioning
-      await page.waitForLoadState('networkidle');
+      await page.waitForLoadState('domcontentloaded');
 
     await page.fill('input[name="username"]', 'e2e-admin-core');
       await page.fill('input[name="password"]', 'password');

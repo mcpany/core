@@ -70,7 +70,10 @@ test.describe('User Guide Walkthrough', () => {
 
     // Wait for hydration/network idle to ensure event listeners are attached
     // "domcontentloaded" is not enough for React effect listeners sometimes
-    await page.waitForLoadState('networkidle');
+    // But networkidle is flaky with polling, so we wait for hydration by waiting for a key element
+    // waiting for sidebar user section or just a small buffer
+    await page.waitForLoadState('domcontentloaded');
+    await page.waitForTimeout(2000); // Allow React hydration
 
     // Press Ctrl+K
     // Try forcing focus on body first
