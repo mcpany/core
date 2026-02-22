@@ -419,8 +419,8 @@ func runCommand(t *testing.T, dir string, name string, args ...string) {
 			cmdFallback.Stdout = os.Stdout
 			cmdFallback.Stderr = os.Stderr
 			t.Logf("Running Fallback: %s %s", fallbackName, strings.Join(fallbackArgs, " "))
-			errFallback := cmdFallback.Run()
-			require.NoError(t, errFallback, "Fallback command failed: %s %s", fallbackName, strings.Join(fallbackArgs, " "))
+			err = cmdFallback.Run()
+			require.NoError(t, err, "Fallback command failed: %s %s", fallbackName, strings.Join(fallbackArgs, " "))
 			return
 		}
 	}

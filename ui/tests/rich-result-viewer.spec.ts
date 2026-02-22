@@ -53,7 +53,8 @@ test.describe('Rich Result Viewer', () => {
 
     // Wait for inspector to open
     await expect(page.getByRole('dialog')).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'rich-result-test-service.get_complex_data' })).toBeVisible();
+    // Scope to dialog to avoid strict mode violations if heading appears elsewhere (e.g. table)
+    await expect(page.getByRole('dialog').getByRole('heading', { name: 'rich-result-test-service.get_complex_data' })).toBeVisible();
 
     // Execute tool (default args should work as they are empty object in seeded tool)
     await page.getByRole('button', { name: 'Execute' }).click();
