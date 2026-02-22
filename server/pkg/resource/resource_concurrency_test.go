@@ -14,6 +14,7 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
+// TestManager_ConcurrentAccess verifies that the Manager is thread-safe.
 func TestManager_ConcurrentAccess(t *testing.T) {
 	t.Parallel()
 	rm := NewManager()
