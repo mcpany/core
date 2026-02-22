@@ -97,3 +97,7 @@
 - [ ] **Log Source Color Coding**: Assign distinct colors to different log sources automatically for better visual separation.
 - [ ] **Context Usage History**: Track total context usage over time to identify growth trends (requires backend metrics persistence).
 - [ ] **Tool Schema Optimizer**: Analyze tool schemas and suggest removing unused properties or compacting descriptions to save context tokens.
+
+### Update: 2026-02-22 - Strategic Pivot to Universal Agent Bus
+- [ ] **[P0] Isolated Socket Management UI**: Visibility into active Unix Domain Socket connections and their permissions.
+- [ ] **[P0] Recursive Context Inspector**: Visualize how context is inherited and pruned across agent swarms.

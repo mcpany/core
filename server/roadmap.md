@@ -166,3 +166,7 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Core Middleware Pipeline**: The middleware architecture is robust and extensible.
 - **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates protocol details from business logic.
 - **Documentation**: The project has excellent documentation coverage for most features.
+
+### Update: 2026-02-22 - Strategic Pivot to Universal Agent Bus
+*   **[P0] Isolated Named Pipe Comms:** Secure UDS/Named Pipe transport for local agents.
+*   **[P0] Zero Trust Context Inheritance:** Capability-based context delegation for swarms.
