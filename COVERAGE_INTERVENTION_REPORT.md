@@ -1,22 +1,27 @@
 # Coverage Intervention Report
 
-**Target:** `server/pkg/mcpserver/temporary_tool_manager.go`
+**Target:** `server/pkg/tool/types.go` (specifically security logic for interpreted languages)
 
-## Risk Profile
-This file was selected for intervention because:
-1.  **Criticality:** It is used by `ValidateService` to validate upstream service configurations before they are deployed.
-2.  **Implementation Gap:** The original implementation was a "No-Op" (embedded `NoOpToolManager`), meaning discovered tools were discarded immediately. This caused validation logic that depends on tool lookup (e.g., linking dynamic resources to tools) to fail silently or return incomplete results.
-3.  **Coverage Gap:** The file had **zero** test coverage, leaving this critical logic unverified.
+**Risk Profile:**
+This code was selected because it handles the execution of arbitrary commands via the `CommandTool`. Specifically, it implements critical security checks to prevent Remote Code Execution (RCE) vulnerabilities when interacting with interpreters like PHP, Expect, and Lua. While Python, Ruby, and Perl had existing coverage, these other interpreters were "Dark Matter"—complex security logic protecting against RCE but lacking specific test cases. A failure in this logic would allow an attacker to bypass restrictions and execute arbitrary code on the server.
 
-## New Coverage
-I have implemented the missing functionality in `server/pkg/mcpserver/temporary_tool_manager.go` and added a comprehensive test suite in `server/pkg/mcpserver/temporary_tool_manager_test.go` covering:
+**New Coverage:**
+The following logic paths in `checkInterpreterFunctionCalls`, `checkNodePerlPhpInjection`, and `checkUnquotedKeywords` are now guarded:
 
-*   **Tool Storage (`AddTool`):** Verified that tools are sanitized and stored correctly in an in-memory map.
-*   **Tool Retrieval (`GetTool`):** Verified that tools can be retrieved by their fully qualified ID.
-*   **Tool Listing (`ListTools`):** Verified listing of all stored tools.
-*   **Service Info Management (`AddServiceInfo`, `GetServiceInfo`):** Verified metadata storage.
-*   **Tool Counting (`GetToolCountForService`):** Verified correct counting of tools per service.
+*   **PHP Injection Protection:**
+    *   Blocking `system('...')`, `exec('...')` calls.
+    *   Blocking backtick execution `` `...` ``.
+    *   Blocking variable interpolation `${...}`.
+    *   Blocking unquoted keywords (strict mode for PHP).
+*   **Expect Injection Protection:**
+    *   Blocking `spawn` command (unquoted keyword).
+    *   Blocking `system` command.
+*   **Lua Injection Protection:**
+    *   Blocking `os.execute` (via `os` object access).
+    *   Blocking `io.popen` (via `popen` keyword).
+    *   Blocking `require` (unquoted keyword).
 
-## Verification
-*   **New Tests:** `go test -v ./server/pkg/mcpserver/ -run TestTemporaryToolManager` passed successfully.
-*   **Regression:** `go test -v ./server/pkg/mcpserver/` passed successfully, ensuring no regressions in the MCP server package (including `ValidateService` tests).
+**Verification:**
+*   **New Tests:** Created `server/pkg/tool/interpreter_extra_security_test.go` with 10 robust test cases.
+*   **Results:** `go test -v ./server/pkg/tool -run TestInterpreterExtraSecurity` passed successfully.
+*   **Regressions:** Verified that existing tests in the package pass (`go test -v ./server/pkg/tool/...`).
