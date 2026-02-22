@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Node, Edge, useNodesState, useEdgesState } from '@xyflow/react';
 import { apiClient } from '@/lib/client';
 import dagre from 'dagre';
@@ -66,11 +66,14 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[]) => {
  * @returns The topology state and controls.
  */
 export function useRealTimeTopology() {
-    const [nodes, setNodes, onNodesChange] = useNodesState([]);
-    const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+    const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
+    const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
     const [loading, setLoading] = useState(false);
     const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
     const [isLive, setIsLive] = useState(false);
+
+    // ⚡ BOLT: Store previous structure hash to avoid re-layout
+    const prevStructHash = useRef<string>('');
 
     const fetchData = useCallback(async () => {
         try {
@@ -177,10 +180,32 @@ export function useRealTimeTopology() {
                 });
             }
 
-            // Apply Layout
-            const layout = getLayoutedElements(rawNodes, rawEdges);
-            setNodes(layout.nodes);
-            setEdges(layout.edges);
+            // ⚡ BOLT: Calculate structure hash to avoid expensive re-layout
+            // Randomized Selection from Top 5 High-Impact Targets
+            const structHash = rawNodes.map(n => n.id).sort().join('|') + '::' + rawEdges.map(e => e.id).sort().join('|');
+
+            if (structHash === prevStructHash.current && prevStructHash.current !== '') {
+                // Structure matches, update data only
+                setNodes((nds) => nds.map((node) => {
+                    const freshNode = rawNodes.find((n) => n.id === node.id);
+                    if (freshNode) {
+                         // Preserve position, update data
+                        return {
+                            ...node,
+                            data: freshNode.data
+                        };
+                    }
+                    return node;
+                }));
+                setEdges(rawEdges);
+            } else {
+                // Apply Layout
+                const layout = getLayoutedElements(rawNodes, rawEdges);
+                setNodes(layout.nodes);
+                setEdges(layout.edges);
+                prevStructHash.current = structHash;
+            }
+
             setLastUpdated(new Date());
 
         } catch (e) {
