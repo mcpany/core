@@ -82,51 +82,24 @@ export default function UsersPage() {
         }
     };
 
-    const handleSave = async (userUpdate: Partial<User>, password?: string, apiKey?: string) => {
+    const handleSave = async (user: User) => {
         try {
-            let authConfig: any = editingUser?.authentication || {};
-
-            if (apiKey) {
-                // Configure for API Key
-                authConfig = {
-                    api_key: {
-                        param_name: "X-API-Key",
-                        in: 0, // HEADER
-                        verification_value: apiKey
-                    }
-                };
-            } else if (password) {
-                // Configure for Password
-                authConfig = {
-                    basic_auth: {
-                        username: userUpdate.id, // Username usually matches ID
-                        password_hash: password
-                    }
-                };
-            }
-
-            // Construct the payload
-            // Server expects snake_case for fields.
-            const payload: any = {
-                id: userUpdate.id,
-                roles: userUpdate.roles,
-                authentication: authConfig,
-                profile_ids: editingUser?.profileIds || []
-            };
-
-
+            // We use the Generated Types which render to camelCase JSON.
+            // The server uses protojson.Unmarshal which supports camelCase.
+            // We do NOT wrap in { user: ... } because the client.ts methods send the object as body,
+            // and the server supports unwrapped body as fallback.
 
             if (editingUser) {
-                await apiClient.updateUser(payload);
+                await apiClient.updateUser(user);
                 toast({
                     title: "User Updated",
-                    description: `User ${payload.id} updated successfully.`
+                    description: `User ${user.id} updated successfully.`
                 });
             } else {
-                await apiClient.createUser(payload);
+                await apiClient.createUser(user);
                  toast({
                     title: "User Created",
-                    description: `User ${payload.id} created successfully.`
+                    description: `User ${user.id} created successfully.`
                 });
             }
             loadUsers();
@@ -137,9 +110,7 @@ export default function UsersPage() {
                 console.error("Error message:", e.message);
                 console.error("Error stack:", e.stack);
             }
-            throw e; // Re-throw to be caught by the Sheet's error handling if needed, or handle here.
-            // Actually Sheet handles it via `onSave` promise rejection?
-            // Yes, Sheet calls `await onSave(...)`.
+            throw e;
         }
     };
 

@@ -10,6 +10,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { User } from "@proto/config/v1/user";
+import { Authentication, APIKeyAuth_Location } from "@proto/config/v1/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -45,7 +46,7 @@ interface UserSheetProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     user: User | null;
-    onSave: (user: Partial<User>, password?: string, apiKey?: string) => Promise<void>;
+    onSave: (user: User) => Promise<void>;
 }
 
 const userSchema = z.object({
@@ -153,12 +154,37 @@ export function UserSheet({ open, onOpenChange, user, onSave }: UserSheetProps) 
                 }
             }
 
-            const userUpdate: Partial<User> = {
+            let authentication: Authentication | undefined;
+
+            if (data.authType === "password") {
+                authentication = {
+                    basicAuth: {
+                        username: data.id,
+                        password: { plainText: data.password || "", validationRegex: "" },
+                        passwordHash: user?.authentication?.basicAuth?.passwordHash || "",
+                    }
+                };
+            } else {
+                // API Key
+                authentication = {
+                    apiKey: {
+                        paramName: "X-API-Key",
+                        in: APIKeyAuth_Location.HEADER,
+                        verificationValue: generatedKey,
+                        value: undefined
+                    }
+                };
+            }
+
+            const newUser: User = {
                 id: data.id,
                 roles: [data.role],
+                authentication: authentication,
+                profileIds: user?.profileIds || [],
+                preferences: user?.preferences || {},
             };
 
-            await onSave(userUpdate, data.password, generatedKey);
+            await onSave(newUser);
             onOpenChange(false);
         } catch (error) {
             console.error(error);

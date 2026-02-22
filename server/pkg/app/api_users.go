@@ -268,6 +268,26 @@ func (a *Application) handleUserDetail(store storage.Storage) http.HandlerFunc {
 func hashUserPassword(ctx context.Context, user *configv1.User, store storage.Storage) error {
 	if user.GetAuthentication() != nil && user.GetAuthentication().GetBasicAuth() != nil {
 		basicAuth := user.GetAuthentication().GetBasicAuth()
+
+		// Case 0: Password provided in the semantically correct 'password' field (SecretValue).
+		// This takes precedence over password_hash usage for plain text.
+		if basicAuth.GetPassword() != nil {
+			if basicAuth.GetPassword().WhichValue() == configv1.SecretValue_PlainText_case {
+				plainText := basicAuth.GetPassword().GetPlainText()
+				if plainText != "" {
+					hash, err := passhash.Password(plainText)
+					if err != nil {
+						return err
+					}
+					basicAuth.SetPasswordHash(hash)
+					// Clear the plain text password to avoid storing it in the database
+					basicAuth.SetPassword(nil)
+					// Return early since we handled the password
+					return nil
+				}
+			}
+		}
+
 		plain := basicAuth.GetPasswordHash()
 
 		// Case 1: Password is REDACTED (from SanitizeUser). Restore existing hash.
@@ -286,9 +306,9 @@ func hashUserPassword(ctx context.Context, user *configv1.User, store storage.St
 			return nil
 		}
 
-		// Case 2: Password is provided (likely plain text from UI). Hash it.
+		// Case 2: Password is provided in password_hash (legacy/UI behavior). Hash it.
 		// We assume that if it's not REDACTED and not empty, it's a new password.
-		// We verify if it is already a bcrypt hash to avoid double hashing, although UI sends plain text.
+		// We verify if it is already a bcrypt hash to avoid double hashing.
 		// Bcrypt hashes start with $2a$, $2b$, $2y$ and are 60 chars long.
 		if plain != "" {
 			if len(plain) == 60 && strings.HasPrefix(plain, "$2") {
