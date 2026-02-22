@@ -3721,91 +3721,115 @@ func checkSQLInjection(val, base string, quoteLevel int) error {
 	valLower := strings.ToLower(valTrimmed)
 
 	if base == "sqlite3" {
-		// SQLite meta-commands start with "."
-		// We only check if the input starts with "." to avoid FPs in middle of SQL.
-		if strings.HasPrefix(valLower, ".") {
-			if strings.HasPrefix(valLower, ".shell") || strings.HasPrefix(valLower, ".system") {
-				return fmt.Errorf("sqlite3 injection detected: .shell/.system command")
-			}
-			if strings.HasPrefix(valLower, ".open") || strings.HasPrefix(valLower, ".output") || strings.HasPrefix(valLower, ".once") {
-				return fmt.Errorf("sqlite3 injection detected: file manipulation command")
-			}
-			// Also block .read, .import
-			if strings.HasPrefix(valLower, ".read") || strings.HasPrefix(valLower, ".import") || strings.HasPrefix(valLower, ".load") {
-				return fmt.Errorf("sqlite3 injection detected: dangerous meta-command")
-			}
+		if err := checkSqliteInjection(valLower); err != nil {
+			return err
 		}
 	}
 
 	if base == "mysql" {
-		// MySQL 'system' command
-		// checkUnquotedKeywords handles word boundaries and allows @system.
-		if err := checkUnquotedKeywords(val, []string{"system", "source"}); err != nil {
-			return fmt.Errorf("mysql injection detected: %w", err)
-		}
-		// LOAD DATA INFILE, SELECT ... INTO OUTFILE
-		// We check for these keywords (case-insensitive).
-		// Since we are unquoted, any occurrence is likely a keyword.
-		valUpper := strings.ToUpper(val)
-		if strings.Contains(valUpper, "INFILE") || strings.Contains(valUpper, "OUTFILE") {
-			return fmt.Errorf("mysql injection detected: file access")
+		if err := checkMysqlInjection(val); err != nil {
+			return err
 		}
 	}
 
 	if base == "psql" {
-		// PSQL meta-commands start with backslash.
-		// Note: checkUnquotedInjection already blocks '\', but we double check here specific commands
-		// in case checkUnquotedInjection rules change or are different context.
-		if strings.HasPrefix(valTrimmed, "\\!") || strings.HasPrefix(valTrimmed, "\\o") || strings.HasPrefix(valTrimmed, "\\copy") {
-			return fmt.Errorf("psql injection detected: dangerous meta-command")
-		}
-		// COPY ... TO PROGRAM
-		valUpper := strings.ToUpper(val)
-		if strings.Contains(valUpper, "COPY") && strings.Contains(valUpper, "PROGRAM") {
-			return fmt.Errorf("psql injection detected: COPY TO PROGRAM")
+		if err := checkPsqlInjection(valTrimmed, val); err != nil {
+			return err
 		}
 	}
 
-	if quoteLevel == 0 {
-		// Block common SQL keywords and comment markers
-		// We check for keywords surrounded by word boundaries or at start/end of string.
-		// val is user input, e.g. "1 OR 1=1"
-		upperVal := strings.ToUpper(val)
-		keywords := []string{
-			"OR", "AND", "UNION", "SELECT", "FROM", "WHERE", "JOIN",
-			"DROP", "ALTER", "CREATE", "INSERT", "UPDATE", "DELETE",
-			"--",
+	// General SQL keyword check
+	return checkGeneralSQLKeywords(val)
+}
+
+func checkSqliteInjection(valLower string) error {
+	// SQLite meta-commands start with "."
+	// We only check if the input starts with "." to avoid FPs in middle of SQL.
+	if strings.HasPrefix(valLower, ".") {
+		if strings.HasPrefix(valLower, ".shell") || strings.HasPrefix(valLower, ".system") {
+			return fmt.Errorf("sqlite3 injection detected: .shell/.system command")
+		}
+		if strings.HasPrefix(valLower, ".open") || strings.HasPrefix(valLower, ".output") || strings.HasPrefix(valLower, ".once") {
+			return fmt.Errorf("sqlite3 injection detected: file manipulation command")
+		}
+		// Also block .read, .import
+		if strings.HasPrefix(valLower, ".read") || strings.HasPrefix(valLower, ".import") || strings.HasPrefix(valLower, ".load") {
+			return fmt.Errorf("sqlite3 injection detected: dangerous meta-command")
+		}
+	}
+	return nil
+}
+
+func checkMysqlInjection(val string) error {
+	// MySQL 'system' command
+	// checkUnquotedKeywords handles word boundaries and allows @system.
+	if err := checkUnquotedKeywords(val, []string{"system", "source"}); err != nil {
+		return fmt.Errorf("mysql injection detected: %w", err)
+	}
+	// LOAD DATA INFILE, SELECT ... INTO OUTFILE
+	// We check for these keywords (case-insensitive).
+	// Since we are unquoted, any occurrence is likely a keyword.
+	valUpper := strings.ToUpper(val)
+	if strings.Contains(valUpper, "INFILE") || strings.Contains(valUpper, "OUTFILE") {
+		return fmt.Errorf("mysql injection detected: file access")
+	}
+	return nil
+}
+
+func checkPsqlInjection(valTrimmed, val string) error {
+	// PSQL meta-commands start with backslash.
+	// Note: checkUnquotedInjection already blocks '\', but we double check here specific commands
+	// in case checkUnquotedInjection rules change or are different context.
+	if strings.HasPrefix(valTrimmed, "\\!") || strings.HasPrefix(valTrimmed, "\\o") || strings.HasPrefix(valTrimmed, "\\copy") {
+		return fmt.Errorf("psql injection detected: dangerous meta-command")
+	}
+	// COPY ... TO PROGRAM
+	valUpper := strings.ToUpper(val)
+	if strings.Contains(valUpper, "COPY") && strings.Contains(valUpper, "PROGRAM") {
+		return fmt.Errorf("psql injection detected: COPY TO PROGRAM")
+	}
+	return nil
+}
+
+func checkGeneralSQLKeywords(val string) error {
+	// Block common SQL keywords and comment markers
+	// We check for keywords surrounded by word boundaries or at start/end of string.
+	// val is user input, e.g. "1 OR 1=1"
+	upperVal := strings.ToUpper(val)
+	keywords := []string{
+		"OR", "AND", "UNION", "SELECT", "FROM", "WHERE", "JOIN",
+		"DROP", "ALTER", "CREATE", "INSERT", "UPDATE", "DELETE",
+		"--",
+	}
+
+	// Helper to check word boundary
+	isBoundary := func(r byte) bool {
+		return !isWordChar(r)
+	}
+
+	for _, kw := range keywords {
+		if kw == "--" {
+			if strings.Contains(upperVal, "--") {
+				return fmt.Errorf("SQL injection detected: value contains '--'")
+			}
+			continue
 		}
 
-		// Helper to check word boundary
-		isBoundary := func(r byte) bool {
-			return !isWordChar(r)
-		}
+		idx := strings.Index(upperVal, kw)
+		for idx != -1 {
+			// Check boundaries
+			startOk := idx == 0 || isBoundary(upperVal[idx-1])
+			endOk := idx+len(kw) == len(upperVal) || isBoundary(upperVal[idx+len(kw)])
 
-		for _, kw := range keywords {
-			if kw == "--" {
-				if strings.Contains(upperVal, "--") {
-					return fmt.Errorf("SQL injection detected: value contains '--'")
-				}
-				continue
+			if startOk && endOk {
+				return fmt.Errorf("SQL injection detected: value contains SQL keyword %q in unquoted context", kw)
 			}
-
-			idx := strings.Index(upperVal, kw)
-			for idx != -1 {
-				// Check boundaries
-				startOk := idx == 0 || isBoundary(upperVal[idx-1])
-				endOk := idx+len(kw) == len(upperVal) || isBoundary(upperVal[idx+len(kw)])
-
-				if startOk && endOk {
-					return fmt.Errorf("SQL injection detected: value contains SQL keyword %q in unquoted context", kw)
-				}
-				// Find next occurrence
-				nextIdx := strings.Index(upperVal[idx+1:], kw)
-				if nextIdx == -1 {
-					break
-				}
-				idx += 1 + nextIdx
+			// Find next occurrence
+			nextIdx := strings.Index(upperVal[idx+1:], kw)
+			if nextIdx == -1 {
+				break
 			}
+			idx += 1 + nextIdx
 		}
 	}
 	return nil
