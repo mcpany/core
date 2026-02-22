@@ -3702,6 +3702,7 @@ func checkFindInjection(val, base string) error {
 	return nil
 }
 
+//nolint:gocyclo
 func checkSQLInjection(val, base string, quoteLevel int) error {
 	// SQL Injection Check
 	// If the command is a SQL client (psql, mysql, sqlite3) and the value is unquoted (Level 0),

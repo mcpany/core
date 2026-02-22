@@ -1552,6 +1552,16 @@ func (a *Application) runServerMode(
 		authMiddleware = a.createAuthMiddleware(false, trustProxy)
 	}
 
+	// Apply Profile RBAC Middleware
+	// This ensures that even if authentication passes, the user must satisfy profile requirements (if any).
+	if globalSettings != nil && len(globalSettings.GetProfileDefinitions()) > 0 {
+		profileRBACMiddleware := middleware.ProfileRBACMiddleware(globalSettings.GetProfileDefinitions())
+		baseAuthMiddleware := authMiddleware
+		authMiddleware = func(next http.Handler) http.Handler {
+			return baseAuthMiddleware(profileRBACMiddleware(next))
+		}
+	}
+
 	mux := http.NewServeMux()
 
 	// UI Handler

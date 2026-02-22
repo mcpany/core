@@ -91,7 +91,7 @@ func (m *TemporaryToolManager) ListTools() []tool.Tool {
 	if m.tools == nil {
 		return nil
 	}
-	var list []tool.Tool
+	list := make([]tool.Tool, 0, len(m.tools))
 	for _, t := range m.tools {
 		list = append(list, t)
 	}
