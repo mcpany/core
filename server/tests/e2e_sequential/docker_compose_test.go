@@ -81,7 +81,13 @@ func TestDockerComposeE2E(t *testing.T) {
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
 			if err := cmd.Run(); err != nil {
-				t.Logf("Failed to dump logs: %v", err)
+				t.Logf("Failed to dump logs via docker compose: %v", err)
+				// Try fallback to docker-compose if docker compose fails
+				t.Log("Trying fallback to docker-compose logs...")
+				cmdFallback := exec.Command("docker-compose", "-f", currentComposeFile, "logs")
+				cmdFallback.Stdout = os.Stdout
+				cmdFallback.Stderr = os.Stderr
+				_ = cmdFallback.Run()
 			}
 		}
 
@@ -100,7 +106,10 @@ func TestDockerComposeE2E(t *testing.T) {
 			cmd.Env = os.Environ()
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
-			_ = cmd.Run()
+			if err := cmd.Run(); err != nil {
+				// Fallback
+				_ = exec.Command("docker-compose", "-f", currentComposeFile, "down", "-v", "--remove-orphans").Run()
+			}
 		}
 
 		// Also try generic project down just in case
@@ -118,6 +127,12 @@ func TestDockerComposeE2E(t *testing.T) {
 		cmd := exec.Command("docker", "compose", "-f", composeFile, "--project-directory", projectDir, "port", service, internalPort)
 		cmd.Env = os.Environ()
 		out, err := cmd.Output()
+		if err != nil {
+			// Try fallback
+			cmdFallback := exec.Command("docker-compose", "-f", composeFile, "--project-directory", projectDir, "port", service, internalPort)
+			cmdFallback.Env = os.Environ()
+			out, err = cmdFallback.Output()
+		}
 		require.NoError(t, err, "Failed to get port for %s %s", service, internalPort)
 		// Output: 0.0.0.0:32xxx
 		addr := strings.TrimSpace(string(out))
@@ -380,6 +395,10 @@ func verifyToolMetricWithService(t *testing.T, metricsURL, toolName, serviceID s
 }
 
 func runCommand(t *testing.T, dir string, name string, args ...string) {
+	// If name is docker and first arg is compose, try fallback if it fails
+	// Note: We only fallback if we actually execute it and it fails with a specific error
+	// But exec.Command won't let us easily catch "command not found" for the subcommand logic.
+	// So we'll just try to execute.
 	cmd := exec.Command(name, args...)
 	cmd.Dir = dir
 	cmd.Env = os.Environ() // Explicitly pass environment to ensure t.Setenv works
@@ -387,6 +406,24 @@ func runCommand(t *testing.T, dir string, name string, args ...string) {
 	cmd.Stderr = os.Stderr
 	t.Logf("Running: %s %s (Env: COMPOSE_PROJECT_NAME=%s)", name, strings.Join(args, " "), os.Getenv("COMPOSE_PROJECT_NAME"))
 	err := cmd.Run()
+
+	if err != nil {
+		if name == "docker" && len(args) > 0 && args[0] == "compose" {
+			t.Logf("Command failed: %s %s. Attempting fallback to docker-compose...", name, strings.Join(args, " "))
+			// Fallback to docker-compose
+			fallbackName := "docker-compose"
+			fallbackArgs := args[1:] // remove "compose"
+			cmdFallback := exec.Command(fallbackName, fallbackArgs...)
+			cmdFallback.Dir = dir
+			cmdFallback.Env = os.Environ()
+			cmdFallback.Stdout = os.Stdout
+			cmdFallback.Stderr = os.Stderr
+			t.Logf("Running Fallback: %s %s", fallbackName, strings.Join(fallbackArgs, " "))
+			errFallback := cmdFallback.Run()
+			require.NoError(t, errFallback, "Fallback command failed: %s %s", fallbackName, strings.Join(fallbackArgs, " "))
+			return
+		}
+	}
 	require.NoError(t, err, "Command failed: %s %s", name, strings.Join(args, " "))
 }
 
