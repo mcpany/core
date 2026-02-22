@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Node, Edge, useNodesState, useEdgesState } from '@xyflow/react';
 import { apiClient } from '@/lib/client';
 import dagre from 'dagre';
@@ -71,6 +71,16 @@ export function useRealTimeTopology() {
     const [loading, setLoading] = useState(false);
     const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
     const [isLive, setIsLive] = useState(false);
+
+    // ⚡ BOLT: Store previous structure hash to avoid expensive re-layouts
+    // Randomized Selection from Top 5 High-Impact Targets
+    const prevStructureHash = useRef<string>('');
+    const prevNodesRef = useRef<Node[]>([]);
+
+    // Keep prevNodesRef in sync with state for access in fetchData closure
+    useEffect(() => {
+        prevNodesRef.current = nodes;
+    }, [nodes]);
 
     const fetchData = useCallback(async () => {
         try {
@@ -177,10 +187,43 @@ export function useRealTimeTopology() {
                 });
             }
 
-            // Apply Layout
-            const layout = getLayoutedElements(rawNodes, rawEdges);
-            setNodes(layout.nodes);
-            setEdges(layout.edges);
+            // Calculate structure hash
+            const nodeIds = rawNodes.map(n => n.id).sort().join(',');
+            const edgeIds = rawEdges.map(e => e.id).sort().join(',');
+            const structureHash = `${nodeIds}|${edgeIds}`;
+
+            if (structureHash === prevStructureHash.current && prevNodesRef.current.length > 0) {
+                 // Structure match! Reuse positions.
+                 const currentNodesMap = new Map(prevNodesRef.current.map(n => [n.id, n]));
+
+                 const nodesWithOldPositions = rawNodes.map(node => {
+                     const oldNode = currentNodesMap.get(node.id);
+                     if (oldNode) {
+                         return {
+                             ...node,
+                             position: oldNode.position,
+                             // Preserve dimensions if they were set by dagre previously or user resized
+                             width: oldNode.width,
+                             height: oldNode.height,
+                             // Preserve selected state if any (though usually managed by ReactFlow store)
+                             selected: oldNode.selected,
+                             dragging: oldNode.dragging
+                         };
+                     }
+                     return node;
+                 });
+
+                 setNodes(nodesWithOldPositions);
+                 // Edges might have changed properties but not IDs, so we update them
+                 setEdges(rawEdges);
+            } else {
+                // Structure changed, run full layout
+                const layout = getLayoutedElements(rawNodes, rawEdges);
+                setNodes(layout.nodes);
+                setEdges(layout.edges);
+                prevStructureHash.current = structureHash;
+            }
+
             setLastUpdated(new Date());
 
         } catch (e) {
