@@ -78,18 +78,36 @@ export default function ToolsPage() {
   const fetchTools = async () => {
     try {
       const res = await apiClient.listTools();
-      setTools(res?.tools || []);
+      if (!res) {
+        setTools([]);
+        return;
+      }
+      if (Array.isArray(res)) {
+        setTools(res);
+      } else {
+        setTools(res.tools || []);
+      }
     } catch (e) {
       console.error("Failed to fetch tools", e);
+      setTools([]);
     }
   };
 
   const fetchServices = async () => {
     try {
       const res = await apiClient.listServices();
-      setServices(res);
+      if (!res) {
+        setServices([]);
+        return;
+      }
+      if (Array.isArray(res)) {
+        setServices(res);
+      } else {
+        setServices(res.services || []);
+      }
     } catch (e) {
       console.error("Failed to fetch services", e);
+      setServices([]);
     }
   };
 

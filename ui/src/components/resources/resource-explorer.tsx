@@ -92,7 +92,11 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
                 setResources([]);
                 return;
             }
-            setResources(res?.resources || []);
+            if (Array.isArray(res)) {
+                setResources(res);
+            } else {
+                setResources(res.resources || []);
+            }
         } catch (e) {
             console.error("Failed to load resources", e);
             toast({

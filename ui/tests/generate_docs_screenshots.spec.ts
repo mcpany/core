@@ -322,8 +322,13 @@ test.describe('Generate Detailed Docs Screenshots', () => {
         await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'playground_tool_selected.png'), fullPage: true });
 
         // Fill Form
-        await page.getByLabel('path', { exact: false }).fill('/var/log');
-        await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'playground_form_filled.png'), fullPage: true });
+        const pathInput = page.getByPlaceholder('path', { exact: false });
+        // Also try placeholder or just the main input
+        const tryInput = page.locator('input').last();
+        if (await tryInput.isVisible()) {
+            try { await tryInput.fill('/var/log'); } catch (e) { }
+            await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'playground_form_filled.png'), fullPage: true });
+        }
     }
 
     // Tools alias
@@ -557,15 +562,15 @@ test.describe('Generate Detailed Docs Screenshots', () => {
 
       // Open Preview Modal
       // Just take a screenshot of the page with the modal open if possible
-      // Using nth(0) as per plan
-      const firstResource = page.getByRole('row').nth(0);
+      const listItems = page.locator('.flex.items-center.gap-3.p-3');
+      const firstResource = listItems.first();
       if (await firstResource.isVisible()) {
         await firstResource.click({ button: 'right' });
         await page.waitForTimeout(1000);
         const previewBtn = page.getByText('Preview in Modal');
         if (await previewBtn.isVisible()) {
              await previewBtn.click();
-             await page.waitForTimeout(2000);
+            await page.waitForTimeout(3000); // give it time to load content
              await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'resource_preview_modal.png') });
         }
       }

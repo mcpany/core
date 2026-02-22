@@ -90,17 +90,17 @@ export function HealthHistoryChart() {
         fetchData();
     }, []);
 
-    const STATUS_COLORS = {
+    const STATUS_COLORS: Record<string, string> = {
         healthy: "hsl(var(--chart-2))",
         ok: "hsl(var(--chart-2))",
         degraded: "hsl(var(--chart-4))",
         error: "hsl(var(--chart-1))",
-        offline: "hsl(var(--muted-foreground))",
-        unknown: "hsl(var(--muted-foreground))",
+        offline: "#9ca3af", // gray-400 for visible contrast in dark mode
+        unknown: "#9ca3af",
     };
 
-    const getBarColor = (status: HealthPoint["status"]) => {
-        return STATUS_COLORS[status] || "hsl(var(--muted))";
+    const getBarColor = (status: HealthPoint["status"]): string => {
+        return STATUS_COLORS[status] || "#9ca3af";
     };
 
     return (
