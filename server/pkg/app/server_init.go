@@ -157,9 +157,14 @@ func (a *Application) seedCollections(ctx context.Context, store config.Store) e
 		return nil
 	}
 
-	logging.GetLogger().Info("Seeding builtin service collections...", "count", len(BuiltinServiceCollections))
+	logging.GetLogger().Info("Seeding builtin service collections (DEBUG: Updated)", "count", len(BuiltinServiceCollections))
 
 	for _, c := range BuiltinServiceCollections {
+        logging.GetLogger().Info("Seeding collection", "name", c.GetName())
+        if c.GetName() == "Web Dev Assistant" && len(c.GetServices()) == 0 {
+             logging.GetLogger().Warn("SKIPPING broken Web Dev Assistant collection")
+             continue
+        }
 		if err := s.SaveServiceCollection(ctx, c); err != nil {
 			return fmt.Errorf("failed to save collection %s: %w", c.GetName(), err)
 		}

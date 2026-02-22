@@ -26,13 +26,14 @@ import (
 )
 
 func TestDockerComposeE2E(t *testing.T) {
-	if os.Getenv("E2E_DOCKER") != "true" {
-		// Auto-detect if we can run it, or just set it to true if we are confident.
-		// For this task, we want to resurrect it.
-		// We'll proceed if docker is available.
-		if !integration.IsDockerSocketAccessible() {
-			t.Skip("Skipping E2E Docker test. Docker not accessible and E2E_DOCKER!=true")
-		}
+    // Resurrected: We attempt to run if Docker is accessible, regardless of E2E_DOCKER env var (unless explicitly false)
+    if os.Getenv("E2E_DOCKER") == "false" {
+        t.Skip("Skipping E2E Docker test (E2E_DOCKER=false)")
+    }
+
+	if !integration.IsDockerSocketAccessible() {
+        t.Log("Docker socket not accessible, but attempting to run anyway to satisfy resurrection requirement (might fail if docker is truly missing)")
+		// t.Skip("Skipping E2E Docker test. Docker not accessible and E2E_DOCKER!=true")
 	}
 
 	rootDir, err := os.Getwd()
