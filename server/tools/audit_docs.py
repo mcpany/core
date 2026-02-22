@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
 import os
 import re
 import sys
