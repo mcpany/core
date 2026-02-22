@@ -14,12 +14,12 @@
 
 FROM mirror.gcr.io/library/python:3.11-slim
 
-# Changing WORKDIR to avoid potential OverlayFS invalid argument errors on /app in some CI environments
-WORKDIR /service
+# Use a standard non-root path to avoid OverlayFS issues
+WORKDIR /opt/timeserver
 
 COPY timeserver_patch/requirements.txt .
 RUN pip install -r requirements.txt
 
-COPY timeserver_patch/main.py /service/main.py
+COPY timeserver_patch/main.py main.py
 
-CMD ["python", "-u", "/service/main.py", "--mcp-stdio"]
+CMD ["python", "-u", "main.py", "--mcp-stdio"]
