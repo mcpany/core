@@ -6,10 +6,12 @@ package client
 import (
 	"context"
 	"net/http"
+	"sync"
+	"time"
 
 	"github.com/alexliesenfeld/health"
-	healthChecker "github.com/mcpany/core/server/pkg/health"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	healthChecker "github.com/mcpany/core/server/pkg/health"
 )
 
 // HTTPClientWrapper wraps an `*http.Client` to adapt it to the
@@ -21,6 +23,12 @@ type HTTPClientWrapper struct {
 	config *configv1.UpstreamServiceConfig
 	// checker is cached to avoid recreation overhead on every health check.
 	checker health.Checker
+
+	// ⚡ Bolt: Cache health status to avoid waterfall requests.
+	// Randomized Selection from Top 5 High-Impact Targets
+	mu         sync.Mutex
+	lastCheck  time.Time
+	lastStatus bool
 }
 
 // NewHTTPClientWrapper creates a new HTTPClientWrapper.
@@ -46,7 +54,25 @@ func (w *HTTPClientWrapper) IsHealthy(ctx context.Context) bool {
 	if w.checker == nil {
 		return true // No health check configured, assume healthy.
 	}
-	return w.checker.Check(ctx).Status == health.StatusUp
+
+	w.mu.Lock()
+	// ⚡ Bolt: Return cached status if within 5 seconds to prevent I/O storms.
+	if time.Since(w.lastCheck) < 5*time.Second {
+		status := w.lastStatus
+		w.mu.Unlock()
+		return status
+	}
+	w.mu.Unlock()
+
+	// Perform the check (this might take some time)
+	status := w.checker.Check(ctx).Status == health.StatusUp
+
+	w.mu.Lock()
+	w.lastCheck = time.Now()
+	w.lastStatus = status
+	w.mu.Unlock()
+
+	return status
 }
 
 // Close is a no-op for the wrapper as it does not own the http.Client.
