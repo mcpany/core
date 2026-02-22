@@ -6,6 +6,9 @@
 *   **[Comms] Recursive Context Protocol:** Standardize headers for Subagent inheritance.
 *   **[State] Shared Key-Value Store:** Embedded SQLite "Blackboard" tool for agents.
 *   **[Security] HITL Middleware:** Suspension protocol for user approval flows.
+*   **[Comms] Isolated Named Pipe Adapter:** Secure inter-agent communication (vNext).
+*   **[Security] Recursive Scope Enforcer:** Capability-based access control for nested agent calls.
+*   **[Intelligence] Smart Tool Aggregator:** Mitigate discovery fatigue via intelligent pruning.
 
 ## 2. Updated Roadmap
 
@@ -21,6 +24,9 @@ These features represent the next logical steps for the product, focusing on Ent
 | **P0** | **HITL Middleware** | **Safety:** Prevents catastrophic agent actions. | High |
 | **P1** | **Recursive Context** | **Usability:** Solves subagent configuration pain. | Medium |
 | **P1** | **Shared KV Store** | **Reliability:** Prevents multi-agent hallucinations. | Medium |
+| **P0** | **Isolated Named Pipe Adapter** | **Security:** Mitigates host-level SSRF and port exposure. | High |
+| **P0** | **Recursive Scope Enforcer** | **Security:** Prevents privilege escalation in swarms. | High |
+| **P1** | **Smart Tool Aggregator** | **UX:** Solves "Discovery Fatigue" in large MCP stacks. | Medium |
 | 1 | **Team Configuration Sync** | **Collaboration**: Allow teams to synchronize `mcpany` configurations and secrets securely, ensuring consistent dev environments. | Medium |
 | 2 | **Smart Error Recovery** | **Resilience**: Use an internal LLM loop to analyze tool errors and automatically retry with corrected parameters (Self-Healing). | High |
 | 3 | **Service Health History** | **Observability**: Store historical health check results to visualize availability trends (uptime graphs). | Medium |
