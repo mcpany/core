@@ -16,6 +16,8 @@
 - [ ] **[P2] Interactive Setup Wizard**: Guided "First Run" experience to generate `mcp.yaml` and configure agents.
 - [ ] **[P2] Agent Black Box Player**: Timeline-based replay of recorded agent sessions (Inputs, Outputs, State).
 - [ ] **[P2] Cost & metrics Dashboard**: Real-time visualization of token usage, costs, and tool performance metrics (P95 latency).
+- [ ] **[P0] Sandbox Security Dashboard**: Monitor and manage isolated tool containers.
+- [ ] **[P1] Context Inheritance Visualizer**: Sequence diagram showing mission goals passing through subagent chains.
 
 ### Existing Planned Features
 

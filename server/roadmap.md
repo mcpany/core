@@ -6,6 +6,9 @@
 *   **[Comms] Recursive Context Protocol:** Standardize headers for Subagent inheritance.
 *   **[State] Shared Key-Value Store:** Embedded SQLite "Blackboard" tool for agents.
 *   **[Security] HITL Middleware:** Suspension protocol for user approval flows.
+*   **[Security] Zero Trust Sandbox:** Docker-bound isolation for CLI/FS tools.
+*   **[Context] Just-in-Time Tool Loading:** Dynamic tool lifecycle management to reduce context bloat.
+*   **[Discovery] Dynamic Discovery Notifications:** SSE/Webhook notifications for tool availability.
 
 ## 2. Updated Roadmap
 
@@ -21,6 +24,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | **P0** | **HITL Middleware** | **Safety:** Prevents catastrophic agent actions. | High |
 | **P1** | **Recursive Context** | **Usability:** Solves subagent configuration pain. | Medium |
 | **P1** | **Shared KV Store** | **Reliability:** Prevents multi-agent hallucinations. | Medium |
+| **P0** | **Secure Sandbox Adapter**| **Security:** Docker-bound isolation for CLI/FS tools. | High |
+| **P1** | **JIT Tool Loading** | **Performance:** Dynamic tool registration to save context. | Medium |
 | 1 | **Team Configuration Sync** | **Collaboration**: Allow teams to synchronize `mcpany` configurations and secrets securely, ensuring consistent dev environments. | Medium |
 | 2 | **Smart Error Recovery** | **Resilience**: Use an internal LLM loop to analyze tool errors and automatically retry with corrected parameters (Self-Healing). | High |
 | 3 | **Service Health History** | **Observability**: Store historical health check results to visualize availability trends (uptime graphs). | Medium |
