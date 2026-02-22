@@ -5,6 +5,7 @@ package tool
 
 import (
 	"context"
+	"encoding/json"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -47,8 +48,13 @@ func TestPythonDoubleQuoteInjection(t *testing.T) {
 
 	req := &ExecutionRequest{
 		ToolName: "python_hello",
-		ToolInputs: []byte(`{"name": "` + payload + `"}`),
+		Arguments: map[string]interface{}{
+			"name": payload,
+		},
 	}
+	var err error
+	req.ToolInputs, err = json.Marshal(req.Arguments)
+	require.NoError(t, err)
 
 	result, err := tool.Execute(context.Background(), req)
 
@@ -87,4 +93,53 @@ func TestPythonDoubleQuoteInjection(t *testing.T) {
         stdout, _ := resMap["stdout"].(string)
         t.Logf("Stdout: %s", stdout)
 	}
+}
+
+func TestPythonGetattrBypass(t *testing.T) {
+	// This test attempts to bypass keyword blocking using getattr() and string concatenation.
+
+	service := configv1.CommandLineUpstreamService_builder{
+		Command: strPtrInj("python3"),
+	}.Build()
+
+	callDef := configv1.CommandLineCallDefinition_builder{
+		Args: []string{"-c", "print(\"{{code}}\")"},
+		Parameters: []*configv1.CommandLineParameterMapping{
+			configv1.CommandLineParameterMapping_builder{
+				Schema: configv1.ParameterSchema_builder{
+					Name: strPtrInj("code"),
+				}.Build(),
+			}.Build(),
+		},
+	}.Build()
+
+	toolProto := pb.Tool_builder{
+		Name: strPtrInj("python_bypass"),
+	}.Build()
+
+	tool := NewLocalCommandTool(toolProto, service, callDef, nil, "call-id")
+
+	// Payload: getattr(__builtins__, 'eva'+'l')('print(123)')
+	// We check if it is BLOCKED by getattr detection.
+	// Since we are inside double quotes "...", we cannot easily close them because " is blocked by generic check.
+	// But checkInterpreterFunctionCalls is called BEFORE generic check.
+	// And getattr(...) should be blocked by checkInterpreterFunctionCalls.
+	payload := "getattr(__builtins__, 'eva'+'l')('print(123)')"
+
+	req := &ExecutionRequest{
+		ToolName: "python_bypass",
+		Arguments: map[string]interface{}{
+			"code": payload,
+		},
+	}
+	var err error
+	req.ToolInputs, err = json.Marshal(req.Arguments)
+	require.NoError(t, err)
+
+	_, err = tool.Execute(context.Background(), req)
+
+	if err == nil {
+		t.Fatal("VULNERABILITY CONFIRMED: getattr bypass successful (not blocked)")
+	}
+	assert.Contains(t, err.Error(), "interpreter injection detected")
 }

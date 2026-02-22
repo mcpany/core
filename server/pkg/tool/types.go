@@ -3260,6 +3260,10 @@ func checkInterpreterFunctionCalls(val, language string) error {
 		"subprocess", "child_process", "os", "sys",
 		"open", "read", "write",
 		"phpinfo",
+		// Sentinel Security Update: Add Ruby/Perl specific dangerous methods
+		"syscall", "dlopen",
+		"send", "__send__", "public_send",
+		"const_get",
 	}
 
 	if isStrict {
@@ -3278,6 +3282,8 @@ func checkInterpreterFunctionCalls(val, language string) error {
 		functionKeywords = []string{
 			"system", "exec", "popen", "eval", "spawn", "fork",
 			"open", "read", "write",
+			// Sentinel Security Update: Block reflection methods often used to bypass checks (Python getattr)
+			"getattr", "setattr", "delattr",
 		}
 	}
 
