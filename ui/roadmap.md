@@ -4,6 +4,8 @@
 
 ### Universal Agent Bus (New Strategic Priorities)
 - [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
+- [ ] **[P0] Zero Trust Sandbox Monitoring**: [New 2026-02-22] Real-time visualization of subagent sandbox isolation and policy violations.
+- [ ] **[P1] RCP Trace Waterfall**: [New 2026-02-22] Sequential visualization of parent-child tool calls via Recursive Context Protocol.
 - [ ] **[P1] Tool Playground & Explorer**:
   - [ ] Auto-generated forms from Tool JSON Schemas.
   - [ ] "Execute" button with history and result visualization.
