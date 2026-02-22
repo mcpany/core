@@ -3718,52 +3718,9 @@ func checkSQLInjection(val, base string, quoteLevel int) error {
 	}
 
 	valTrimmed := strings.TrimSpace(val)
-	valLower := strings.ToLower(valTrimmed)
 
-	if base == "sqlite3" {
-		// SQLite meta-commands start with "."
-		// We only check if the input starts with "." to avoid FPs in middle of SQL.
-		if strings.HasPrefix(valLower, ".") {
-			if strings.HasPrefix(valLower, ".shell") || strings.HasPrefix(valLower, ".system") {
-				return fmt.Errorf("sqlite3 injection detected: .shell/.system command")
-			}
-			if strings.HasPrefix(valLower, ".open") || strings.HasPrefix(valLower, ".output") || strings.HasPrefix(valLower, ".once") {
-				return fmt.Errorf("sqlite3 injection detected: file manipulation command")
-			}
-			// Also block .read, .import
-			if strings.HasPrefix(valLower, ".read") || strings.HasPrefix(valLower, ".import") || strings.HasPrefix(valLower, ".load") {
-				return fmt.Errorf("sqlite3 injection detected: dangerous meta-command")
-			}
-		}
-	}
-
-	if base == "mysql" {
-		// MySQL 'system' command
-		// checkUnquotedKeywords handles word boundaries and allows @system.
-		if err := checkUnquotedKeywords(val, []string{"system", "source"}); err != nil {
-			return fmt.Errorf("mysql injection detected: %w", err)
-		}
-		// LOAD DATA INFILE, SELECT ... INTO OUTFILE
-		// We check for these keywords (case-insensitive).
-		// Since we are unquoted, any occurrence is likely a keyword.
-		valUpper := strings.ToUpper(val)
-		if strings.Contains(valUpper, "INFILE") || strings.Contains(valUpper, "OUTFILE") {
-			return fmt.Errorf("mysql injection detected: file access")
-		}
-	}
-
-	if base == "psql" {
-		// PSQL meta-commands start with backslash.
-		// Note: checkUnquotedInjection already blocks '\', but we double check here specific commands
-		// in case checkUnquotedInjection rules change or are different context.
-		if strings.HasPrefix(valTrimmed, "\\!") || strings.HasPrefix(valTrimmed, "\\o") || strings.HasPrefix(valTrimmed, "\\copy") {
-			return fmt.Errorf("psql injection detected: dangerous meta-command")
-		}
-		// COPY ... TO PROGRAM
-		valUpper := strings.ToUpper(val)
-		if strings.Contains(valUpper, "COPY") && strings.Contains(valUpper, "PROGRAM") {
-			return fmt.Errorf("psql injection detected: COPY TO PROGRAM")
-		}
+	if err := checkSpecificSQLClientInjection(valTrimmed, base); err != nil {
+		return err
 	}
 
 	if quoteLevel == 0 {
@@ -3806,6 +3763,56 @@ func checkSQLInjection(val, base string, quoteLevel int) error {
 				}
 				idx += 1 + nextIdx
 			}
+		}
+	}
+	return nil
+}
+
+func checkSpecificSQLClientInjection(valTrimmed, base string) error {
+	valLower := strings.ToLower(valTrimmed)
+	if base == "sqlite3" {
+		// SQLite meta-commands start with "."
+		// We only check if the input starts with "." to avoid FPs in middle of SQL.
+		if strings.HasPrefix(valLower, ".") {
+			if strings.HasPrefix(valLower, ".shell") || strings.HasPrefix(valLower, ".system") {
+				return fmt.Errorf("sqlite3 injection detected: .shell/.system command")
+			}
+			if strings.HasPrefix(valLower, ".open") || strings.HasPrefix(valLower, ".output") || strings.HasPrefix(valLower, ".once") {
+				return fmt.Errorf("sqlite3 injection detected: file manipulation command")
+			}
+			// Also block .read, .import
+			if strings.HasPrefix(valLower, ".read") || strings.HasPrefix(valLower, ".import") || strings.HasPrefix(valLower, ".load") {
+				return fmt.Errorf("sqlite3 injection detected: dangerous meta-command")
+			}
+		}
+	}
+
+	if base == "mysql" {
+		// MySQL 'system' command
+		// checkUnquotedKeywords handles word boundaries and allows @system.
+		if err := checkUnquotedKeywords(valTrimmed, []string{"system", "source"}); err != nil {
+			return fmt.Errorf("mysql injection detected: %w", err)
+		}
+		// LOAD DATA INFILE, SELECT ... INTO OUTFILE
+		// We check for these keywords (case-insensitive).
+		// Since we are unquoted, any occurrence is likely a keyword.
+		valUpper := strings.ToUpper(valTrimmed)
+		if strings.Contains(valUpper, "INFILE") || strings.Contains(valUpper, "OUTFILE") {
+			return fmt.Errorf("mysql injection detected: file access")
+		}
+	}
+
+	if base == "psql" {
+		// PSQL meta-commands start with backslash.
+		// Note: checkUnquotedInjection already blocks '\', but we double check here specific commands
+		// in case checkUnquotedInjection rules change or are different context.
+		if strings.HasPrefix(valTrimmed, "\\!") || strings.HasPrefix(valTrimmed, "\\o") || strings.HasPrefix(valTrimmed, "\\copy") {
+			return fmt.Errorf("psql injection detected: dangerous meta-command")
+		}
+		// COPY ... TO PROGRAM
+		valUpper := strings.ToUpper(valTrimmed)
+		if strings.Contains(valUpper, "COPY") && strings.Contains(valUpper, "PROGRAM") {
+			return fmt.Errorf("psql injection detected: COPY TO PROGRAM")
 		}
 	}
 	return nil
@@ -4251,58 +4258,8 @@ func validateSafePathAndInjection(val string, isDocker bool, commandName string)
 	val = strings.TrimSpace(val)
 
 	// Sentinel Security Update: Enforce SSRF protection on arguments that look like URLs.
-	// We check for "://" to capture any scheme (http, https, ftp, gopher, etc.).
-	// IsSafeURL will block any scheme other than http/https, and verify IPs for those.
-	if strings.Contains(val, "://") {
-		if err := validation.IsSafeURL(val); err != nil {
-			return fmt.Errorf("unsafe url argument: %w", err)
-		}
-	} else {
-		// Sentinel Security Update: Also block schema-less IPs and localhost to prevent SSRF
-		// via tools like curl/wget that accept them.
-		// Check for "localhost" (case-insensitive)
-		if strings.EqualFold(val, "localhost") {
-			allowLoopback := os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == trueStr
-			if !allowLoopback {
-				return fmt.Errorf("unsafe argument: localhost is not allowed")
-			}
-		} else if validation.IsSafeIP != nil {
-			// Check if it's an IP address and validate it against policy
-			// We ignore "invalid IP address" error as it just means it's not an IP
-			if err := validation.IsSafeIP(val); err != nil && err.Error() != "invalid IP address" {
-				return fmt.Errorf("unsafe IP argument: %w", err)
-			}
-		}
-
-		// Sentinel Security Update: For network tools (curl, wget), treat arguments as URLs
-		// even if they lack a scheme (e.g. "localtest.me" resolving to localhost).
-		// We prepend "http://" to force DNS resolution and IP validation.
-		if isNetworkTool(commandName) {
-			// If validation.IsSafeIP passed (returned "invalid IP address"), it means it's not an IP.
-			// It might be a hostname.
-			// We assume http as default scheme for validation purposes.
-			// Note: We only check this if it's NOT a flag (checked later) and NOT a path (checked later).
-			// But flags starting with - are blocked by checkForArgumentInjection.
-			// Paths are checked by checkForLocalFileAccess.
-			// So anything reaching here is likely a target hostname/URL.
-
-			// We use a temporary string with scheme for validation
-			urlToCheck := "http://" + val
-			if err := validation.IsSafeURL(urlToCheck); err != nil {
-				// Only block if it is explicitly unsafe (loopback, private, etc.)
-				// IsSafeURL returns error if resolution fails (NXDOMAIN), which is expected for headers/flags.
-				// We fail open on resolution errors to avoid breaking usability (flags, headers).
-				errStr := err.Error()
-				if strings.Contains(errStr, "unsafe IP") ||
-					strings.Contains(errStr, "loopback address is not allowed") ||
-					strings.Contains(errStr, "link-local address is not allowed") ||
-					strings.Contains(errStr, "private network address is not allowed") ||
-					strings.Contains(errStr, "multicast address is not allowed") ||
-					strings.Contains(errStr, "unspecified address") {
-					return fmt.Errorf("unsafe network argument: %w", err)
-				}
-			}
-		}
+	if err := validateURLArgument(val, commandName); err != nil {
+		return err
 	}
 
 	if err := checkForPathTraversal(val); err != nil {
@@ -4352,6 +4309,64 @@ func validateSafePathAndInjection(val string, isDocker bool, commandName string)
 		}
 	}
 
+	return nil
+}
+
+func validateURLArgument(val string, commandName string) error {
+	// We check for "://" to capture any scheme (http, https, ftp, gopher, etc.).
+	// IsSafeURL will block any scheme other than http/https, and verify IPs for those.
+	if strings.Contains(val, "://") {
+		if err := validation.IsSafeURL(val); err != nil {
+			return fmt.Errorf("unsafe url argument: %w", err)
+		}
+		return nil
+	}
+
+	// Sentinel Security Update: Also block schema-less IPs and localhost to prevent SSRF
+	// via tools like curl/wget that accept them.
+	// Check for "localhost" (case-insensitive)
+	if strings.EqualFold(val, "localhost") {
+		allowLoopback := os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == trueStr
+		if !allowLoopback {
+			return fmt.Errorf("unsafe argument: localhost is not allowed")
+		}
+	} else if validation.IsSafeIP != nil {
+		// Check if it's an IP address and validate it against policy
+		// We ignore "invalid IP address" error as it just means it's not an IP
+		if err := validation.IsSafeIP(val); err != nil && err.Error() != "invalid IP address" {
+			return fmt.Errorf("unsafe IP argument: %w", err)
+		}
+	}
+
+	// Sentinel Security Update: For network tools (curl, wget), treat arguments as URLs
+	// even if they lack a scheme (e.g. "localtest.me" resolving to localhost).
+	// We prepend "http://" to force DNS resolution and IP validation.
+	if isNetworkTool(commandName) {
+		// If validation.IsSafeIP passed (returned "invalid IP address"), it means it's not an IP.
+		// It might be a hostname.
+		// We assume http as default scheme for validation purposes.
+		// Note: We only check this if it's NOT a flag (checked later) and NOT a path (checked later).
+		// But flags starting with - are blocked by checkForArgumentInjection.
+		// Paths are checked by checkForLocalFileAccess.
+		// So anything reaching here is likely a target hostname/URL.
+
+		// We use a temporary string with scheme for validation
+		urlToCheck := "http://" + val
+		if err := validation.IsSafeURL(urlToCheck); err != nil {
+			// Only block if it is explicitly unsafe (loopback, private, etc.)
+			// IsSafeURL returns error if resolution fails (NXDOMAIN), which is expected for headers/flags.
+			// We fail open on resolution errors to avoid breaking usability (flags, headers).
+			errStr := err.Error()
+			if strings.Contains(errStr, "unsafe IP") ||
+				strings.Contains(errStr, "loopback address is not allowed") ||
+				strings.Contains(errStr, "link-local address is not allowed") ||
+				strings.Contains(errStr, "private network address is not allowed") ||
+				strings.Contains(errStr, "multicast address is not allowed") ||
+				strings.Contains(errStr, "unspecified address") {
+				return fmt.Errorf("unsafe network argument: %w", err)
+			}
+		}
+	}
 	return nil
 }
 

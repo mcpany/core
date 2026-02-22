@@ -42,7 +42,26 @@ func init() {
 			Name:        proto.String("Web Dev Assistant"),
 			Description: proto.String("GitHub, Browser, and Terminal tools for web development."),
 			Version:     proto.String("1.0.0"),
-			Services:    []*configv1.UpstreamServiceConfig{},
+			Services: []*configv1.UpstreamServiceConfig{
+				mkTemplate(
+					"github-tools",
+					"GitHub Tools",
+					`{
+  "type": "object",
+  "title": "GitHub Configuration",
+  "properties": {
+    "GITHUB_TOKEN": {
+      "type": "string",
+      "title": "GitHub Token",
+      "description": "Personal Access Token",
+      "default": ""
+    }
+  },
+  "required": ["GITHUB_TOKEN"]
+}`,
+					"npx -y @modelcontextprotocol/server-github",
+				),
+			},
 		}.Build(),
 	}
 }
