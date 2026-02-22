@@ -4,6 +4,7 @@
 
 ### Universal Agent Bus (New Strategic Priorities)
 - [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
+- [ ] **[P1] Zero-Trust Isolation Dashboard**: Monitor and manage Docker-bound subagent sandboxes.
 - [ ] **[P1] Tool Playground & Explorer**:
   - [ ] Auto-generated forms from Tool JSON Schemas.
   - [ ] "Execute" button with history and result visualization.
