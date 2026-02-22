@@ -277,6 +277,9 @@ func TestInitializeDatabase_Empty(t *testing.T) {
 	// Template Init expectations
 	mockStore.On("ListServiceTemplates", mock.Anything).Return(([]*configv1.ServiceTemplate)(nil), nil)
 	mockStore.On("SaveServiceTemplate", mock.Anything, mock.Anything).Return(nil)
+	// Service Collections Init expectations
+	mockStore.On("ListServiceCollections", mock.Anything).Return(([]*configv1.Collection)(nil), nil)
+	mockStore.On("SaveServiceCollection", mock.Anything, mock.Anything).Return(nil)
 	// Admin User Init expectations
 	mockStore.On("ListUsers", mock.Anything).Return(([]*configv1.User)(nil), nil)
 	mockStore.On("CreateUser", mock.Anything, mock.Anything).Return(nil)
