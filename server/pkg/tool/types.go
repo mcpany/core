@@ -8,9 +8,11 @@ import (
 	"context"
 	stdjson "encoding/json" // Renamed to stdjson to avoid conflict
 	"encoding/xml"
+	"errors"
 	"fmt"
 	"io"
 	"log/slog"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
@@ -4307,6 +4309,37 @@ func validateSafePathAndInjection(val string, isDocker bool, commandName string)
 		}
 	}
 
+	// Sentinel Security Update: Strict checks for known network tools
+	if isNetworkTool(commandName) {
+		// Block @ argument injection (LFI/Config injection)
+		if strings.HasPrefix(val, "@") {
+			return fmt.Errorf("unsafe argument: '@' prefix is not allowed for network tools")
+		}
+
+		// Enforce Host Validation for schema-less arguments (potential SSRF)
+		if !strings.Contains(val, "://") {
+			host := val
+			// Try to strip port if present (e.g. host:8080)
+			if h, _, err := net.SplitHostPort(val); err == nil {
+				host = h
+			}
+
+			// Handle user@host (for ssh/git)
+			if idx := strings.Index(host, "@"); idx != -1 {
+				host = host[idx+1:]
+			}
+
+			// Attempt to resolve and validate the host.
+			// If resolution fails, we allow it (assuming it's a file or invalid host).
+			// If resolution succeeds but points to an unsafe IP, we block it.
+			if err := validation.ValidateHost(host); err != nil {
+				if errors.Is(err, validation.ErrUnsafeIP) {
+					return fmt.Errorf("unsafe network argument: %w", err)
+				}
+			}
+		}
+	}
+
 	// Sentinel Security Update: Block dangerous pseudo-protocols/schemes
 	// We ONLY block these for tools known to be vulnerable (ImageMagick, FFmpeg, Git, etc.)
 	// Blocking them for generic tools (like echo) causes false positives (usability regression).
@@ -4323,6 +4356,20 @@ func validateSafePathAndInjection(val string, isDocker bool, commandName string)
 	}
 
 	return nil
+}
+
+func isNetworkTool(command string) bool {
+	base := strings.ToLower(filepath.Base(command))
+	tools := []string{
+		"curl", "wget", "git", "fetch", "ssh", "scp", "sftp", "rsync",
+		"nmap", "telnet", "nc", "netcat", "socat",
+	}
+	for _, tool := range tools {
+		if base == tool {
+			return true
+		}
+	}
+	return false
 }
 
 func isVulnerableToSchemes(command string) bool {
