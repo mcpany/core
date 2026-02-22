@@ -11,6 +11,11 @@
 
 ### Status: Active Development
 
+#### Strategic Evolution: Universal Agent Bus (Added 2025-05-22)
+*   **[P0] OPA/Rego Engine**: Core implementation of the Rego-based policy firewall for tool calls.
+*   **[P1] Blackboard API**: Standardized KV store tool for cross-agent state synchronization.
+*   **[P1] Context Registry**: Backend store for recursive context inheritance (session tracking).
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

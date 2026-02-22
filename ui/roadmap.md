@@ -4,6 +4,8 @@
 
 ### Universal Agent Bus (New Strategic Priorities)
 - [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
+- [ ] **[P0] Policy Visual Editor (Rego)**: (Added 2025-05-22) A low-code interface to define and test Rego policies for tool safety.
+- [ ] **[P1] Shared Blackboard Viewer**: (Added 2025-05-22) Real-time visualization of the shared agent state (KV store).
 - [ ] **[P1] Tool Playground & Explorer**:
   - [ ] Auto-generated forms from Tool JSON Schemas.
   - [ ] "Execute" button with history and result visualization.
