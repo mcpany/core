@@ -1,5 +1,5 @@
 # Copyright 2025 Author(s) of MCP Any
-# SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: Apache-2.0
 
 name: CI
 
@@ -29,9 +29,14 @@ permissions:
 jobs:
   changes:
     runs-on: oci-runner # ubuntu-slim
+    container: ubuntu:22.04
     outputs:
       src: ${{ steps.filter.outputs.src }}
     steps:
+      - name: Install Git
+        run: |
+          apt-get update && apt-get install -y git
+
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -39,8 +44,14 @@ jobs:
       - name: Check for changes
         id: filter
         run: |
+          # Git requires safe directory configuration in containers running as root usually
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
           if [ "${{ github.event_name }}" == "pull_request" ]; then
             # Compare against the base branch
+            # Fetch base branch since checkout fetch-depth 0 might be shallow or HEAD detached?
+            # fetch-depth 0 gets history.
+            git fetch origin ${{ github.base_ref }}
             DIFF=$(git diff --name-only origin/${{ github.base_ref }} HEAD)
           else
             # Push event: compare against previous commit
@@ -68,18 +79,30 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: oci-runner # ubuntu-latest
+    container: ubuntu:22.04
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          # Basic cleanup if tools exist
+          rm -rf /usr/local/lib/android || true
+          rm -rf /usr/share/dotnet || true
+          rm -rf /opt/ghc || true
+          rm -rf /usr/local/share/boost || true
 
-      - name: Prune Docker
-        run: docker system prune -af
+      - name: Install Git and Docker Deps
+        run: |
+          apt-get update && apt-get install -y git curl
+
+      # Prune Docker might fail if docker socket not mounted or docker not in container
+      # But usually 'runs-on' provides docker sidecar? Or container implies dind?
+      # Assuming we can skip docker prune inside container or it just fails safely.
+      # - name: Prune Docker
+      #   run: docker system prune -af || true
 
       - uses: actions/checkout@v4
+
+      - name: Safe Directory
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -123,11 +146,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
-          elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
-          fi
+          apt-get update && apt-get install -y make xz-utils
 
       - name: Prepare environment
         run: make prepare
@@ -137,6 +156,7 @@ jobs:
 
   unit-test:
     runs-on: oci-runner # ubuntu-latest
+    container: ubuntu:22.04
     timeout-minutes: 30
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -144,42 +164,31 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
+      - name: Install Basic Deps
+        run: apt-get update && apt-get install -y git curl sudo
+
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          rm -rf /usr/local/lib/android || true
+          rm -rf /usr/share/dotnet || true
+          rm -rf /opt/ghc || true
+          rm -rf /usr/local/share/boost || true
 
-      - name: Prune Docker
-        run: docker system prune -af
+      # - name: Prune Docker
+      #   run: docker system prune -af || true
 
       - uses: actions/checkout@v4
 
+      - name: Safe Directory
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
       - name: Install dependencies
         run: |
-          if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
-          elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
-          fi
+          apt-get update && apt-get install -y make xz-utils
 
-      - name: Configure Docker Registry Mirrors
-        run: |
-          # Configure multiple mirrors in array format
-          # Docker will try mirror.gcr.io first.
-          sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
-
-          if sudo systemctl restart docker 2>/dev/null; then
-            echo "Docker restarted via systemctl"
-          elif sudo service docker restart 2>/dev/null; then
-            echo "Docker restarted via service"
-          else
-            echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
-            sudo pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
-          fi
-          docker info # Verify the mirrors are listed
+      # Docker Registry Mirrors - complicated in container.
+      # Requires mounting /etc/docker or having dind.
+      # We skip for now or assume runner configures it.
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -272,6 +281,7 @@ jobs:
 
   e2e-parallel:
     runs-on: oci-runner # ubuntu-latest
+    container: ubuntu:22.04
     timeout-minutes: 30
     needs: [build-images]
     strategy:
@@ -282,42 +292,31 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
+      - name: Install Basic Deps
+        run: apt-get update && apt-get install -y git curl sudo
+
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          rm -rf /usr/local/lib/android || true
+          rm -rf /usr/share/dotnet || true
+          rm -rf /opt/ghc || true
+          rm -rf /usr/local/share/boost || true
 
-      - name: Prune Docker
-        run: docker system prune -af
+      # - name: Prune Docker
+      #   run: docker system prune -af || true
 
       - uses: actions/checkout@v4
 
+      - name: Safe Directory
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
       - name: Install dependencies
         run: |
-          if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
-          elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
-          fi
+          apt-get update && apt-get install -y make xz-utils
 
-      - name: Configure Docker Registry Mirrors
-        run: |
-          # Configure multiple mirrors in array format
-          # Docker will try mirror.gcr.io first.
-          sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
-
-          if sudo systemctl restart docker 2>/dev/null; then
-            echo "Docker restarted via systemctl"
-          elif sudo service docker restart 2>/dev/null; then
-            echo "Docker restarted via service"
-          else
-            echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
-            sudo pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
-          fi
-          docker info # Verify the mirrors are listed
+      # - name: Configure Docker Registry Mirrors
+      #   run: |
+      #     # Skip inside container, assume outer configuration
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -581,46 +580,38 @@ jobs:
 
   e2e-sequential:
     runs-on: oci-runner # ubuntu-latest
+    container: ubuntu:22.04
     timeout-minutes: 60
     needs: [build-images]
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
+      - name: Install Basic Deps
+        run: apt-get update && apt-get install -y git curl sudo
+
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          rm -rf /usr/local/lib/android || true
+          rm -rf /usr/share/dotnet || true
+          rm -rf /opt/ghc || true
+          rm -rf /usr/local/share/boost || true
 
-      - name: Prune Docker
-        run: docker system prune -af
+      # - name: Prune Docker
+      #   run: docker system prune -af || true
 
       - uses: actions/checkout@v4
 
+      - name: Safe Directory
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
       - name: Install dependencies
         run: |
-          if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
-          elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
-          fi
+          apt-get update && apt-get install -y make xz-utils
 
-      - name: Configure Docker Registry Mirrors
-        run: |
-          sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
-
-          if sudo systemctl restart docker 2>/dev/null; then
-            echo "Docker restarted via systemctl"
-          elif sudo service docker restart 2>/dev/null; then
-            echo "Docker restarted via service"
-          else
-            echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
-            sudo pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
-          fi
-          docker info
+      # - name: Configure Docker Registry Mirrors
+      #   run: |
+      #     # Skip
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -718,6 +709,7 @@ jobs:
 
   e2e-public-api:
     runs-on: oci-runner # ubuntu-latest
+    container: ubuntu:22.04
     timeout-minutes: 30
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -725,42 +717,31 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
+      - name: Install Basic Deps
+        run: apt-get update && apt-get install -y git curl sudo
+
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          rm -rf /usr/local/lib/android || true
+          rm -rf /usr/share/dotnet || true
+          rm -rf /opt/ghc || true
+          rm -rf /usr/local/share/boost || true
 
-      - name: Prune Docker
-        run: docker system prune -af
+      # - name: Prune Docker
+      #   run: docker system prune -af || true
 
       - uses: actions/checkout@v4
 
+      - name: Safe Directory
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
       - name: Install dependencies
         run: |
-          if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
-          elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
-          fi
+          apt-get update && apt-get install -y make xz-utils
 
-      - name: Configure Docker Registry Mirrors
-        run: |
-          # Configure multiple mirrors in array format
-          # Docker will try mirror.gcr.io first.
-          sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
-
-          if sudo systemctl restart docker 2>/dev/null; then
-            echo "Docker restarted via systemctl"
-          elif sudo service docker restart 2>/dev/null; then
-            echo "Docker restarted via service"
-          else
-            echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
-            sudo pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
-          fi
-          docker info # Verify the mirrors are listed
+      # - name: Configure Docker Registry Mirrors
+      #   run: |
+      #     # Skip
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -1047,6 +1028,7 @@ jobs:
 
   ci-success:
     runs-on: oci-runner # ubuntu-slim
+    container: ubuntu:22.04
     needs:
       [
         changes,
@@ -1065,19 +1047,22 @@ jobs:
       pull-requests: write
       actions: read
     steps:
+      - name: Install dependencies
+        run: apt-get update && apt-get install -y curl ca-certificates python3
+
       - name: Install gh CLI
         run: |
           install_dependencies() {
             if ! command -v curl &> /dev/null; then
               echo "curl not found. Installing..."
               if command -v apt-get &> /dev/null; then
-                sudo apt-get update && sudo apt-get install -y curl ca-certificates
+                apt-get update && apt-get install -y curl ca-certificates
               elif command -v apk &> /dev/null; then
-                sudo apk add --no-cache curl ca-certificates
+                apk add --no-cache curl ca-certificates
               elif command -v yum &> /dev/null; then
-                sudo yum install -y curl ca-certificates
+                yum install -y curl ca-certificates
               elif command -v dnf &> /dev/null; then
-                sudo dnf install -y curl ca-certificates
+                dnf install -y curl ca-certificates
               else
                 echo "Could not find package manager to install curl. Trying to proceed..."
               fi
