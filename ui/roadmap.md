@@ -97,3 +97,8 @@
 - [ ] **Log Source Color Coding**: Assign distinct colors to different log sources automatically for better visual separation.
 - [ ] **Context Usage History**: Track total context usage over time to identify growth trends (requires backend metrics persistence).
 - [ ] **Tool Schema Optimizer**: Analyze tool schemas and suggest removing unused properties or compacting descriptions to save context tokens.
+
+### Upcoming (Strategic Shift: 2026-02-22)
+*   **[P0] Subagent Pipe Configuration:** Visual interface for configuring and monitoring filesystem-bound agent communication.
+*   **[P1] Sandbox Health Dashboard:** Real-time monitoring of resource usage and security events within the Zero Trust Tool Sandbox.
+*   **[P1] Agent Discovery Feed:** Live feed of discovered tools and agents within the swarm.

@@ -166,3 +166,8 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Core Middleware Pipeline**: The middleware architecture is robust and extensible.
 - **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates protocol details from business logic.
 - **Documentation**: The project has excellent documentation coverage for most features.
+
+### Upcoming (Strategic Shift: 2026-02-22)
+*   **[Security] Isolated Subagent Comms:** Implement named pipes/Unix sockets transport to eliminate local port exposure (OpenClaw Mitigation).
+*   **[Security] Zero Trust Tool Sandbox:** Containerized environment for command-line tools to prevent unauthorized host access.
+*   **[Comms] MCP Notification Bus:** Support for dynamic agent/tool discovery via MCP notifications.
