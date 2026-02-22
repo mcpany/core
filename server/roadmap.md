@@ -6,6 +6,7 @@
 *   **[Comms] Recursive Context Protocol:** Standardize headers for Subagent inheritance.
 *   **[State] Shared Key-Value Store:** Embedded SQLite "Blackboard" tool for agents.
 *   **[Security] HITL Middleware:** Suspension protocol for user approval flows.
+*   **[Security] OpenClaw Sandbox:** Docker-isolated adapter for secure local execution.
 
 ## 2. Updated Roadmap
 

@@ -4,11 +4,13 @@
 
 ### Universal Agent Bus (New Strategic Priorities)
 - [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
+- [ ] **[P0] OpenClaw Sandbox Manager**: Visual control panel for Docker-isolated agent environments.
 - [ ] **[P1] Tool Playground & Explorer**:
   - [ ] Auto-generated forms from Tool JSON Schemas.
   - [ ] "Execute" button with history and result visualization.
   - [ ] "Copy as Curl/Python" code generation.
 - [ ] **[P1] Live Marble Diagrams**: Reactive visualization of concurrent agent flows, tool calls, and dependencies.
+- [ ] **[P1] Swarm Context Navigator**: Visual explorer for Recursive Context inheritance chains.
 - [ ] **[P1] Interactive Debugger**:
   - [ ] Breakpoint management for tool calls.
   - [ ] Variable inspection and modification during "Paused" state.
