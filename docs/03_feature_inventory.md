@@ -49,3 +49,19 @@
 
 ### Deprecations / Monitoring
 - **Upfront Tool Schema Pushing**: Monitoring for deprecation in favor of Lazy-Discovery.
+
+---
+
+## Evolution: 2026-02-26 Updates
+
+### Proposed Additions
+- **Secure Command Execution Gateway (SEG)**: (P0) Middleware to sanitize, validate, and intercept shell-like tool calls to prevent RCEs.
+- **Swarm Accountability Ledger**: (P1) A structured audit system that links every tool execution to a specific agent's provenance and parent intent.
+- **Cross-Agent Attestation Bridge**: (P1) Protocol for sub-agents to verify each other's security posture before sharing sensitive context.
+
+### Priority Shifts
+- **Supply Chain Integrity Guard**: Promoted from **P1** to **P0**. Critical for mitigating recent 0-day discovery-based attacks.
+- **Policy Firewall**: Remains **P0**. Expanding scope to include SEG regex-based rule sets.
+
+### Deprecations / Monitoring
+- **Unsanitized `exec` calls**: All internal and external MCP servers are being monitored for immediate migration to SEG.

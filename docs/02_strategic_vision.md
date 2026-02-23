@@ -37,3 +37,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Lazy-Discovery Architecture**: MCP Any will pivot from "pushing" all tool schemas to "serving" them on-demand via a high-performance similarity search middleware. This allows for virtually unlimited tool scaling.
 - **Supply Chain Provenance**: Implementing "Attested Tooling" where every MCP server must provide a cryptographic signature of its origin and configuration, preventing rogue installations like those seen in the Cline incident.
 - **Context-Aware Scoping**: Moving beyond simple capability tokens to "Intent-Aware" permissions, where a tool call is only allowed if it aligns with the high-level intent verified by the Policy Engine.
+
+---
+
+## Strategic Evolution: 2026-02-26
+### Focus: Hardened Command Execution & Swarm-Scale Accountability
+**Context**: The emergence of critical RCEs (CVE-2026-0755, CVE-2026-0757) targeting `execAsync` and unvalidated MCP inputs, combined with the rise of massive 100-agent swarms (Kimi K2.5), demands a shift toward active execution hardening.
+**Strategic Pivot**:
+- **Secure Execution Gateway (SEG)**: MCP Any will intercept all tool calls involving shell commands or system execution, applying a "Deny-by-Default" regex and argument-sanitization layer.
+- **Swarm Accountability Ledger**: Transitioning from simple logs to a structured "Accountability Ledger" that maps every tool call to a specific sub-agent, its parent intent, and its cryptographic provenance.
+- **Attestation-First Discovery**: Integrating the On-Demand Discovery system with the Supply Chain Integrity Guard to ensure that agents can only "discover" tools that have been cryptographically verified and meet the SEG standards.

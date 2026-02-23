@@ -57,3 +57,10 @@ As the number of available MCP tools grows, agents face "context pollution"—wh
 
 ## 7. Evolutionary Changelog
 *   **2026-02-25:** Initial Document Creation.
+
+### Update: 2026-02-26 - Attestation-First Discovery
+**Context:** Today's market sync revealed a new exploit pattern involving unverified tool discovery and RCE vulnerabilities (CVE-2026-0755).
+**Architecture Adjustment:**
+* Integrating the On-Demand Discovery middleware with the new Supply Chain Integrity Guard.
+* Defaulting discovery results to only include cryptographically attested tools.
+**Security Impact:** Prevents "Clinejection" and rogue tool discovery attacks in large-scale agent swarms.
