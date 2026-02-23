@@ -49,3 +49,19 @@
 
 ### Deprecations / Monitoring
 - **Upfront Tool Schema Pushing**: Monitoring for deprecation in favor of Lazy-Discovery.
+
+---
+
+## Evolution: [2026-02-26] Updates
+
+### Proposed Additions
+- **A2A Interop Bridge (Pseudo-MCP)**: (P0) Allows agents to interact with other agent frameworks using the A2A protocol, exposed as standard MCP tools.
+- **Federated MCP Node Peering**: (P1) Secure discovery and proxying of tools across distributed MCP Any instances.
+- **Cost & Latency Telemetry Middleware**: (P1) Automatically injects performance metadata into tool schemas to enable resource-aware agent reasoning.
+
+### Priority Shifts
+- **MCP Provenance Attestation**: Promoted to **P0** as it is a prerequisite for secure Federated MCP peering.
+- **Lazy-MCP Middleware**: Promoted to **P0** (Already P0, but re-affirming importance for Federated Tool Mesh).
+
+### Deprecations / Monitoring
+- **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
