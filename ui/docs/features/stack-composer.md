@@ -8,9 +8,13 @@ Transform "Config-as-Code" into a visual composition experience. The Stack Compo
 
 ## Usage Guide
 
-### 1. Stack Editor
+### 1. Stack List
 
-Navigate to `/stacks`. The editor is divided into three panes:
+Navigate to `/stacks` to see your list of available stacks. Click "Create Stack" or select an existing stack to open the **Stack Editor**.
+
+### 2. Stack Editor Interface
+
+The editor is divided into three panes:
 
 - **Left**: Service Palette (Templates).
 - **Center**: YAML Editor.
@@ -18,7 +22,7 @@ Navigate to `/stacks`. The editor is divided into three panes:
 
 ![Stack Composer Overview](screenshots/stack_composer_overview.png)
 
-### 2. Using the Palette
+### 3. Using the Palette
 
 To add a service:
 
@@ -28,13 +32,13 @@ To add a service:
 
 ![Service Palette](screenshots/stack_composer_palette.png)
 
-### 3. Manual Configuration
+### 4. Manual Configuration
 
 You can fine-tune the configuration in the Monaco Editor.
 
 - **Validation**: Detailed error markers appear if you violate the schema.
 - **Auto-Complete**: Press `Ctrl+Space` to see available fields.
 
-### 4. Deploy
+### 5. Deploy
 
 Once satisfied, click **"Save Changes"**. The system will save the configuration. If the server is configured for hot-reload, the changes will be applied automatically to the running instance.
