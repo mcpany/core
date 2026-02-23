@@ -234,14 +234,44 @@ export function useRealTimeTopology() {
         }
     }, [setNodes, setEdges]);
 
+    // Initial fetch on mount
     useEffect(() => {
         fetchData();
+    }, [fetchData]);
 
-        let interval: NodeJS.Timeout;
-        if (isLive) {
-            interval = setInterval(fetchData, 1000); // 1s refresh for smoother feel
-        }
-        return () => clearInterval(interval);
+    // Polling logic
+    useEffect(() => {
+        if (!isLive) return;
+
+        let timeoutId: NodeJS.Timeout;
+        let isMounted = true;
+
+        const loop = async () => {
+            if (!isMounted) return;
+
+            // ⚡ BOLT: Paused polling while tab is hidden to save resources.
+            // Randomized Selection from Top 5 High-Impact Targets (Network/IO)
+            if (document.hidden) {
+                timeoutId = setTimeout(loop, 1000);
+                return;
+            }
+
+            await fetchData();
+
+            if (isMounted) {
+                // ⚡ BOLT: Switched to setTimeout to prevent request waterfalls.
+                // Randomized Selection from Top 5 High-Impact Targets (Network/IO)
+                timeoutId = setTimeout(loop, 1000);
+            }
+        };
+
+        // Start the loop after delay to avoid immediate double-fetch
+        timeoutId = setTimeout(loop, 1000);
+
+        return () => {
+            isMounted = false;
+            clearTimeout(timeoutId);
+        };
     }, [fetchData, isLive]);
 
     return {
