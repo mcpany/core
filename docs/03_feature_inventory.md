@@ -49,3 +49,19 @@
 
 ### Deprecations / Monitoring
 - **Upfront Tool Schema Pushing**: Monitoring for deprecation in favor of Lazy-Discovery.
+
+---
+
+## Evolution: [2026-02-26] Updates
+
+### Proposed Additions
+- **MCP Apps (Rich UI) Support**: (P1) Enable rendering and brokering of rich UI components (charts, forms) provided by MCP servers.
+- **Agent-Human Interaction Layer**: (P1) A specialized middleware for delegating tasks to humans, including secure payment/wallet integration for "Agent-Rental" scenarios.
+- **Universal ToolSearchTool Implementation**: (P0) A standardized discovery tool that implements Anthropic's `ToolSearchTool` protocol for all connected upstreams.
+
+### Priority Shifts
+- **Lazy-MCP Discovery**: Solidified as **P0** with mandatory `ToolSearchTool` compatibility.
+- **Supply Chain Integrity Guard**: Confirmed as **P0** following OpenClaw CVE-2026-25253.
+
+### Deprecations / Monitoring
+- **Legacy SSE Transport**: Monitoring for deprecation in favor of HTTP/Stdio as per ecosystem trends.

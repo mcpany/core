@@ -37,3 +37,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Lazy-Discovery Architecture**: MCP Any will pivot from "pushing" all tool schemas to "serving" them on-demand via a high-performance similarity search middleware. This allows for virtually unlimited tool scaling.
 - **Supply Chain Provenance**: Implementing "Attested Tooling" where every MCP server must provide a cryptographic signature of its origin and configuration, preventing rogue installations like those seen in the Cline incident.
 - **Context-Aware Scoping**: Moving beyond simple capability tokens to "Intent-Aware" permissions, where a tool call is only allowed if it aligns with the high-level intent verified by the Policy Engine.
+
+---
+
+## Strategic Evolution: [2026-02-26]
+### Focus: Agent-Human Hybrid Workflows & Standardizing Lazy-Discovery
+**Context**: The emergence of "Agent-Rentals" in the OpenClaw ecosystem and "MCP Apps" in Claude Code marks a shift towards agents that interact both with rich UI components and real-world human services. Simultaneously, "Lazy-Discovery" (Tool Search) is becoming the standard for managing tool-heavy environments.
+**Strategic Pivot**:
+- **Agent-Human Interaction Layer**: MCP Any will evolve to support "Human-in-the-Loop" as a first-class citizen, not just for approvals, but for delegating tasks back to humans (e.g., via secure payment gateways or manual intervention triggers).
+- **Rich UI (MCP Apps) Gateway**: Transitioning from a text-only tool proxy to a "UI-Aware Gateway" that can broker and render rich MCP App components (charts, forms) across different agent interfaces.
+- **Universal Lazy-Discovery Protocol**: Adopting and extending Anthropic's `ToolSearchTool` standard to ensure that any LLM—not just Claude—can benefit from 80%+ context reduction when using MCP Any as its discovery hub.

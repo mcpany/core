@@ -24,6 +24,11 @@
 *   **[P0] Supply Chain Integrity Guard**: Cryptographic provenance verification for MCP servers to prevent unauthorized tool injection. (Added: 2026-02-25)
 *   **[P1] FastMCP Metadata Support**: Support for Pythonic FastMCP decorators and native Gemini CLI slash command mapping. (Added: 2026-02-25)
 
+#### Upcoming (2026-02-26 Evolution)
+*   **[P1] MCP Apps (Rich UI) Support**: Enable brokering of rich UI components (charts, forms) provided by MCP servers. (Added: 2026-02-26)
+*   **[P1] Agent-Human Interaction Layer**: Specialized middleware for task delegation to humans, including secure payment integration for "Agent-Rental" scenarios. (Added: 2026-02-26)
+*   **[P0] Universal ToolSearchTool Implementation**: Standardized discovery tool implementing Anthropic's protocol for all upstreams. (Added: 2026-02-26)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

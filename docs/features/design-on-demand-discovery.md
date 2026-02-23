@@ -57,3 +57,9 @@ As the number of available MCP tools grows, agents face "context pollution"—wh
 
 ## 7. Evolutionary Changelog
 *   **2026-02-25:** Initial Document Creation.
+*   **2026-02-26:** **Standardization on Anthropic's ToolSearchTool**
+    - **Context**: Today's market sync confirmed that Claude Code's `ToolSearchTool` is the emerging standard for lazy-loading MCP tools.
+    - **Architecture Adjustment**:
+        - Implementing native support for the `ToolSearchTool` protocol.
+        - MCP Any will now automatically inject a `ToolSearchTool` into any session where "Lazy Mode" is enabled.
+        - The internal search engine (Section 4) will be optimized to handle the specific parameters expected by Claude's implementation.
