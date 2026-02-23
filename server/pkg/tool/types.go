@@ -3255,11 +3255,13 @@ func checkInterpreterFunctionCalls(val, language string) error {
 
 	// Universal dangerous keywords
 	universal := []string{
-		"system", "exec", "popen", "eval", "spawn", "fork",
+		"system", "exec", "popen", "eval", "spawn", "fork", "syscall",
 		"import", "require",
 		"subprocess", "child_process", "os", "sys",
 		"open", "read", "write",
 		"phpinfo",
+		// Ruby specific method bypasses
+		"send", "__send__", "public_send", "const_get",
 	}
 
 	if isStrict {
