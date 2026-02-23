@@ -10,6 +10,9 @@
 ## 2. Updated Roadmap
 
 ### Status: Active Development
+*   **[P0] Policy Firewall Engine (Rego/CEL)**: Core implementation of the rule-based tool call interceptor.
+*   **[P0] Sandboxed Command Runner**: Secure execution environment for CLI-based upstreams.
+*   **[P0] Recursive Context Protocol**: Implementation of standardized context inheritance headers.
 
 ## 2. Top 10 Recommended Features
 

@@ -3,6 +3,8 @@
 ## Status: Active Development
 
 ### Universal Agent Bus (New Strategic Priorities)
+- [ ] **[P0] Policy Manager UI**: Interface for writing, testing, and deploying Rego/CEL policies.
+- [ ] **[P0] Security Audit Dashboard**: Real-time visualization of blocked tool calls and policy violations.
 - [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
 - [ ] **[P1] Tool Playground & Explorer**:
   - [ ] Auto-generated forms from Tool JSON Schemas.
