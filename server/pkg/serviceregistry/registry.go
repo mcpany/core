@@ -466,37 +466,51 @@ func (r *ServiceRegistry) checkAllHealth(ctx context.Context) {
 	}
 	r.mu.RUnlock()
 
-	// ⚡ BOLT: Parallelize health checks with concurrency limit
-	// Randomized Selection from Top 5 High-Impact Targets
-	var wg sync.WaitGroup
-	sem := make(chan struct{}, 20) // Limit to 20 concurrent checks
-
-	for id, u := range targets {
-		wg.Add(1)
-		go func(id string, u upstream.Upstream) {
-			defer wg.Done()
-			sem <- struct{}{}
-			defer func() { <-sem }()
-
-			var errStr string
-			if checker, ok := u.(upstream.HealthChecker); ok {
-				// Use a short timeout for health checks
-				checkCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
-				if err := checker.CheckHealth(checkCtx); err != nil {
-					errStr = err.Error()
-				}
-				cancel()
-			}
-
-			r.mu.Lock()
-			if errStr != "" {
-				r.healthErrors[id] = errStr
-			} else {
-				delete(r.healthErrors, id)
-			}
-			r.mu.Unlock()
-		}(id, u)
+	// ⚡ BOLT: Parallelize health checks using a fixed-size worker pool.
+	// Randomized Selection from Top 5 High-Impact Targets.
+	// Instead of spawning N goroutines (one per service), we spawn a fixed number of workers
+	// to process the health checks. This reduces memory overhead and scheduler pressure at scale.
+	const numWorkers = 20
+	type job struct {
+		id string
+		u  upstream.Upstream
 	}
+	jobs := make(chan job, len(targets))
+	var wg sync.WaitGroup
+
+	// Spawn workers
+	for i := 0; i < numWorkers; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for j := range jobs {
+				var errStr string
+				if checker, ok := j.u.(upstream.HealthChecker); ok {
+					// Use a short timeout for health checks
+					checkCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
+					if err := checker.CheckHealth(checkCtx); err != nil {
+						errStr = err.Error()
+					}
+					cancel()
+				}
+
+				r.mu.Lock()
+				if errStr != "" {
+					r.healthErrors[j.id] = errStr
+				} else {
+					delete(r.healthErrors, j.id)
+				}
+				r.mu.Unlock()
+			}
+		}()
+	}
+
+	// Submit jobs
+	for id, u := range targets {
+		jobs <- job{id: id, u: u}
+	}
+	close(jobs)
+
 	wg.Wait()
 }
 
