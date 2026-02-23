@@ -37,3 +37,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Lazy-Discovery Architecture**: MCP Any will pivot from "pushing" all tool schemas to "serving" them on-demand via a high-performance similarity search middleware. This allows for virtually unlimited tool scaling.
 - **Supply Chain Provenance**: Implementing "Attested Tooling" where every MCP server must provide a cryptographic signature of its origin and configuration, preventing rogue installations like those seen in the Cline incident.
 - **Context-Aware Scoping**: Moving beyond simple capability tokens to "Intent-Aware" permissions, where a tool call is only allowed if it aligns with the high-level intent verified by the Policy Engine.
+
+---
+
+## Strategic Evolution: [2026-02-26]
+### Focus: Interactive Application Protocol & Gateway Hardening
+**Context**: The emergence of "MCP Apps" (interactive UI components) and critical RCE vulnerabilities (CVE-2026-0757) in local MCP managers require MCP Any to evolve into a secure application orchestration layer.
+**Strategic Pivot**:
+- **Application-Layer Proxying**: MCP Any will pivot to support "MCP Apps," proxying and validating interactive UI components (dashboards, forms) between tools and agent interfaces.
+- **Native Containerized Isolation**: Moving towards a "Default-Isolated" model where all local MCP servers are automatically executed within ephemeral Docker containers or secure sandboxes.
+- **Synergistic Context Compaction**: Integrating with provider-native context compaction APIs (e.g., Claude 4.6) to provide a unified state management layer that works across heterogeneous LLM providers.

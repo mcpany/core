@@ -24,6 +24,11 @@
 *   **[P0] Supply Chain Integrity Guard**: Cryptographic provenance verification for MCP servers to prevent unauthorized tool injection. (Added: 2026-02-25)
 *   **[P1] FastMCP Metadata Support**: Support for Pythonic FastMCP decorators and native Gemini CLI slash command mapping. (Added: 2026-02-25)
 
+#### Upcoming (2026-02-26 Evolution)
+*   **[P0] Native Containerized MCP Execution**: Ephemeral Docker-bound execution for local MCP servers (CVE-2026-0757 Mitigation). (Added: 2026-02-26)
+*   **[P0] MCP UI Proxy (App-Layer MCP)**: Support for interactive UI components in tool responses. (Added: 2026-02-26)
+*   **[P1] Context Compaction Bridge**: Integration with provider-native context management (Claude 4.6). (Added: 2026-02-26)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

@@ -49,3 +49,16 @@
 
 ### Deprecations / Monitoring
 - **Upfront Tool Schema Pushing**: Monitoring for deprecation in favor of Lazy-Discovery.
+
+---
+
+## Evolution: [2026-02-26] Updates
+
+### Proposed Additions
+- **MCP UI Proxy (App-Layer MCP)**: (P0) Support for the "MCP Apps" standard, allowing interactive components (JSON-based UI) to pass through the gateway with security validation.
+- **Native Containerized MCP Execution**: (P0) Automated Docker-bound execution for local MCP servers to mitigate RCE risks (CVE-2026-0757).
+- **Context Compaction Bridge**: (P1) Integration with provider-specific context compaction APIs (e.g., Claude 4.6) for optimized state management.
+
+### Priority Shifts
+- **Supply Chain Integrity Guard**: Promoted to **P0**. High urgency due to increased RCE threats in the ecosystem.
+- **On-Demand Discovery Middleware (Lazy-MCP)**: Confirmed as **P0** to support the scale required by MCP Apps.
