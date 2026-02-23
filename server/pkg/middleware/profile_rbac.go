@@ -1,4 +1,4 @@
-// Copyright 2025 Author(s) of MCP Any
+// Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
 package middleware
@@ -15,6 +15,9 @@ import (
 // ProfileRBACMiddleware creates a middleware that enforces role requirements defined in active profiles.
 //
 // Summary: Restricts access to the server based on the required roles of active profiles.
+// Logic: A user is allowed if they satisfy the requirements of AT LEAST ONE active profile.
+// - If a profile has no RequiredRoles, it allows everyone (Public).
+// - If a profile has RequiredRoles, the user must have at least one of them to satisfy that profile.
 //
 // Parameters:
 //   - profiles: []*configv1.ProfileDefinition. The list of active profile definitions.
@@ -22,25 +25,25 @@ import (
 // Returns:
 //   - func(http.Handler) http.Handler: The middleware function.
 func ProfileRBACMiddleware(profiles []*configv1.ProfileDefinition) func(http.Handler) http.Handler {
-	// Pre-compute the set of required roles
-	requiredRoles := make(map[string]struct{})
-	hasRequirements := false
-
+	// Optimization: If any profile has NO requirements, then the server is effectively public.
+	// We can skip the middleware entirely in that case.
 	for _, p := range profiles {
-		for _, role := range p.GetRequiredRoles() {
-			requiredRoles[role] = struct{}{}
-			hasRequirements = true
+		if len(p.GetRequiredRoles()) == 0 {
+			logging.GetLogger().Info("Profile RBAC: Found unrestricted profile, allowing public access", "profile", p.GetName())
+			return func(next http.Handler) http.Handler {
+				return next
+			}
 		}
 	}
 
-	if !hasRequirements {
-		// Optimization: No requirements, return pass-through middleware
+	// Optimization: If no profiles are active, we default to allow (or should we fail closed? usually empty config = allow)
+	if len(profiles) == 0 {
 		return func(next http.Handler) http.Handler {
 			return next
 		}
 	}
 
-	logging.GetLogger().Info("Enforcing Profile RBAC", "required_roles", requiredRoles)
+	logging.GetLogger().Info("Enforcing Profile RBAC: All active profiles have role requirements")
 
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -49,26 +52,38 @@ func ProfileRBACMiddleware(profiles []*configv1.ProfileDefinition) func(http.Han
 			// Get user roles from context
 			userRoles, ok := auth.RolesFromContext(ctx)
 			if !ok {
-				// No roles found in context.
-				// If requirements exist, and user has no roles, access denied.
-				// Note: Anonymous users might not have roles.
-				http.Error(w, "Forbidden: Access requires specific roles", http.StatusForbidden)
-				return
+				userRoles = []string{} // Empty roles for anonymous/unauthenticated
 			}
 
-			// Check if user has at least one of the required roles
-			// Logic: If the server requires [A, B], and user has [A], access granted.
-			// This interprets the requirement as "User must have one of the allowed roles".
-			allowed := false
-			for _, userRole := range userRoles {
-				if _, found := requiredRoles[userRole]; found {
-					allowed = true
+			// Check if user satisfies ANY of the active profiles
+			satisfied := false
+			for _, p := range profiles {
+				reqs := p.GetRequiredRoles()
+				// This should not happen due to optimization above, but safe to check
+				if len(reqs) == 0 {
+					satisfied = true
+					break
+				}
+
+				// Check match
+				for _, userRole := range userRoles {
+					for _, reqRole := range reqs {
+						if userRole == reqRole {
+							satisfied = true
+							break
+						}
+					}
+					if satisfied {
+						break
+					}
+				}
+				if satisfied {
 					break
 				}
 			}
 
-			if !allowed {
-				http.Error(w, fmt.Sprintf("Forbidden: User roles %v do not satisfy profile requirements", userRoles), http.StatusForbidden)
+			if !satisfied {
+				http.Error(w, fmt.Sprintf("Forbidden: User roles %v do not satisfy any active profile requirements", userRoles), http.StatusForbidden)
 				return
 			}
 

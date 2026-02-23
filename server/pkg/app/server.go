@@ -1019,6 +1019,8 @@ func (a *Application) updateGlobalSettings(cfg *config_v1.McpAnyServerConfig) {
 }
 
 // reconcileServices reconciles the service registry with the new configuration.
+//
+
 func (a *Application) reconcileServices(ctx context.Context, cfg *config_v1.McpAnyServerConfig) {
 	log := logging.GetLogger()
 	// Get current active services

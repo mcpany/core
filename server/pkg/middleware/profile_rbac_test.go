@@ -1,4 +1,4 @@
-// Copyright 2025 Author(s) of MCP Any
+// Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
 package middleware
@@ -23,10 +23,36 @@ func TestProfileRBACMiddleware(t *testing.T) {
 		expectedBody  string
 	}{
 		{
-			name:          "No requirements, allow all",
+			name:          "No profiles, allow all",
 			profiles:      []*configv1.ProfileDefinition{},
 			userRoles:     []string{},
 			expectedCode:  http.StatusOK,
+		},
+		{
+			name: "Profile with no requirements (Public), allow all",
+			profiles: []*configv1.ProfileDefinition{
+				configv1.ProfileDefinition_builder{
+					Name:          proto.String("public"),
+					RequiredRoles: []string{},
+				}.Build(),
+			},
+			userRoles:    []string{},
+			expectedCode: http.StatusOK,
+		},
+		{
+			name: "Mixed Public and Private, allow public user",
+			profiles: []*configv1.ProfileDefinition{
+				configv1.ProfileDefinition_builder{
+					Name:          proto.String("public"),
+					RequiredRoles: []string{},
+				}.Build(),
+				configv1.ProfileDefinition_builder{
+					Name:          proto.String("admin-only"),
+					RequiredRoles: []string{"admin"},
+				}.Build(),
+			},
+			userRoles:    []string{}, // No roles
+			expectedCode: http.StatusOK,
 		},
 		{
 			name: "Requirement exists, user has matching role",

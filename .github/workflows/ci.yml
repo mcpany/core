@@ -271,7 +271,7 @@ jobs:
           verbose: true
 
   e2e-parallel:
-    runs-on: oci-runner # ubuntu-latest
+    runs-on: ubuntu-latest # ubuntu-latest
     timeout-minutes: 30
     needs: [build-images]
     strategy:
@@ -580,7 +580,7 @@ jobs:
           retention-days: 1
 
   e2e-sequential:
-    runs-on: oci-runner # ubuntu-latest
+    runs-on: ubuntu-latest # ubuntu-latest
     timeout-minutes: 60
     needs: [build-images]
     env:
@@ -717,9 +717,9 @@ jobs:
           verbose: true
 
   e2e-public-api:
-    runs-on: oci-runner # ubuntu-latest
+    runs-on: ubuntu-latest # ubuntu-latest
     timeout-minutes: 30
-    needs: [changes]
+    needs: [changes, build-images]
     if: ${{ needs.changes.outputs.src == 'true' }}
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
@@ -1022,6 +1022,11 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: image-ui-${{ steps.detect-arch.outputs.slug }}
+
+      - name: Download HTTP Echo Image
+        uses: actions/download-artifact@v4
+        with:
+          name: image-http-echo-${{ steps.detect-arch.outputs.slug }}
 
       - name: Load Docker Images into Kind
         run: |
