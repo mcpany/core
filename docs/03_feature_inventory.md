@@ -21,3 +21,15 @@
 
 ### Deprecations / Monitoring
 - *None today.*
+
+---
+
+## Evolution: [2026-02-24] Updates
+
+### Proposed Additions
+- **Advanced Multi-Agent Session Management**: (P0) A session-aware middleware that tracks tool state and handoffs between multiple specialized agents.
+- **Unified MCP Discovery Service**: (P1) Automated discovery and registry for local and remote MCP servers (Stdio, HTTP, FastMCP).
+- **Session-Bound State Persistence**: (P1) Ensuring that multi-agent "long-running" tasks maintain state across tool calls and agent switches.
+
+### Priority Shifts
+- **Policy Firewall**: Promoted to **P0** to support secure "Zero Trust" subagent isolation as ecosystems become more complex.
