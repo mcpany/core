@@ -76,10 +76,16 @@ type Upstream struct {
 // TCP connection check to the service address.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the health check.
+//   - ctx (context.Context): The context for the health check.
 //
 // Returns:
 //   - error: An error if the service is unhealthy or unreachable.
+//
+// Errors:
+//   - Returns an error if the health check fails or the address is not configured.
+//
+// Side Effects:
+//   - May establish a network connection to the service.
 func (u *Upstream) CheckHealth(ctx context.Context) error {
 	u.mu.RLock()
 	checker := u.checker
@@ -105,7 +111,7 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 // Summary: Shuts down the upstream service.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the shutdown operation (currently unused).
+//   - ctx (context.Context): The context for the shutdown operation (currently unused).
 //
 // Returns:
 //   - error: Always returns nil.
@@ -132,10 +138,13 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 // Summary: Initializes a new HTTP upstream.
 //
 // Parameters:
-//   - poolManager: *pool.Manager. The connection pool manager to be used for managing HTTP connections.
+//   - poolManager (*pool.Manager): The connection pool manager to be used for managing HTTP connections.
 //
 // Returns:
 //   - upstream.Upstream: An implementation of the upstream.Upstream interface.
+//
+// Side Effects:
+//   - Allocates memory for the Upstream struct.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	return &Upstream{
 		poolManager: poolManager,
@@ -149,18 +158,22 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 // Summary: Registers an HTTP service and its capabilities.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the registration process.
-//   - serviceConfig: *configv1.UpstreamServiceConfig. The configuration for the upstream service.
-//   - toolManager: tool.ManagerInterface. The manager where discovered tools will be registered.
-//   - promptManager: prompt.ManagerInterface. The manager where discovered prompts will be registered.
-//   - resourceManager: resource.ManagerInterface. The manager where discovered resources will be registered.
-//   - isReload: bool. Indicates whether this is a configuration reload.
+//   - ctx (context.Context): The context for the registration process.
+//   - serviceConfig (*configv1.UpstreamServiceConfig): The configuration for the upstream service.
+//   - toolManager (tool.ManagerInterface): The manager where discovered tools will be registered.
+//   - promptManager (prompt.ManagerInterface): The manager where discovered prompts will be registered.
+//   - resourceManager (resource.ManagerInterface): The manager where discovered resources will be registered.
+//   - isReload (bool): Indicates whether this is a configuration reload.
 //
 // Returns:
 //   - string: The unique service ID.
 //   - []*configv1.ToolDefinition: A list of registered tool definitions.
 //   - []*configv1.ResourceDefinition: A list of registered resource definitions.
 //   - error: An error if registration fails.
+//
+// Errors:
+//   - Returns error if service configuration is invalid (e.g., missing address).
+//   - Returns error if connection pool creation fails.
 //
 // Side Effects:
 //   - Creates and registers a new HTTP connection pool.

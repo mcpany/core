@@ -24,3 +24,45 @@ Instead of writing code to create a new MCP server, users should be able to:
 -   **Safety Policies**: We allow users to block dangerous operations (e.g. `DELETE`) or restrict access to specific URLs.
 -   **Upstream Authentication**: We handle API keys, Bearer tokens, and mTLS so the AI doesn't have to see them.
 -   **Multi-User & Multi-Profile**: We support complex multi-tenancy use cases.
+
+## Documentation Standards
+
+We adhere to a **Gold Standard** for documentation. All public API elements (functions, methods, types, constants) must have comprehensive docstrings.
+
+### Structure
+
+Every docstring must follow this structure:
+
+1.  **Summary**: A concise, one-line action statement (e.g., "Calculates the user's tax liability").
+2.  **Parameters**: Name, Type, and a meaningful description of what it represents.
+3.  **Returns**: Type and description of the output.
+4.  **Errors**: Explicitly list exceptions or error states this function might trigger.
+5.  **Side Effects**: Note if it modifies global state, writes to DB, or makes network calls.
+
+### Example
+
+```go
+// CalculateTax computes the tax amount for a given transaction.
+//
+// Parameters:
+//   - amount (float64): The transaction amount.
+//   - rate (float64): The tax rate as a percentage.
+//
+// Returns:
+//   - float64: The calculated tax amount.
+//   - error: An error if the rate is negative.
+//
+// Errors:
+//   - Returns "invalid rate" if the rate is less than 0.
+//
+// Side Effects:
+//   - None.
+func CalculateTax(amount, rate float64) (float64, error) {
+    // ...
+}
+```
+
+### Constraints
+
+*   **No Empty Calories**: Avoid comments like `// Sets the ID`. Instead, use `// Sets the unique request ID used for distributed tracing`.
+*   **Completeness**: Do not skip "simple" functions. Consistency is key.
