@@ -33,13 +33,13 @@ jobs:
     outputs:
       src: ${{ steps.filter.outputs.src }}
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
       - name: Install dependencies
         run: |
           apt-get update && apt-get install -y git
+
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Check for changes
         id: filter
@@ -1166,6 +1166,8 @@ jobs:
           GH_TOKEN: ${{ secrets.ORG_GITHUB_TOKEN }}
         run: |
           gh pr merge --auto --squash "${{ github.event.pull_request.html_url }}" || echo "Failed to enable auto-merge (check permissions/settings)"
+
+      - uses: actions/checkout@v4
 
       - name: Check Results and Comment
         env:
