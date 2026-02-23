@@ -22,8 +22,11 @@ type Storage interface {
 	//   - ctx (context.Context): The context for the request.
 	//
 	// Returns:
-	//   - (*configv1.McpAnyServerConfig): The loaded configuration.
-	//   - (error): An error if loading fails.
+	//   - *configv1.McpAnyServerConfig: The loaded configuration.
+	//   - error: An error if loading fails.
+	//
+	// Errors:
+	//   - Returns an error if the underlying storage encounters a read error.
 	Load(ctx context.Context) (*configv1.McpAnyServerConfig, error)
 
 	// HasConfigSources returns true if the store has configuration sources (e.g., file paths) configured.
@@ -31,7 +34,10 @@ type Storage interface {
 	// Summary: Checks if the store has any configuration sources.
 	//
 	// Returns:
-	//   - (bool): True if sources exist.
+	//   - bool: True if sources exist.
+	//
+	// Side Effects:
+	//   - None.
 	HasConfigSources() bool
 
 	// SaveService saves a single upstream service configuration.
@@ -43,7 +49,13 @@ type Storage interface {
 	//   - service (*configv1.UpstreamServiceConfig): The service configuration.
 	//
 	// Returns:
-	//   - (error): An error if saving fails.
+	//   - error: An error if saving fails.
+	//
+	// Errors:
+	//   - Returns an error if the service is invalid or storage write fails.
+	//
+	// Side Effects:
+	//   - Persists the service configuration to the underlying storage.
 	SaveService(ctx context.Context, service *configv1.UpstreamServiceConfig) error
 
 	// GetService retrieves a single upstream service configuration by name.
@@ -55,8 +67,11 @@ type Storage interface {
 	//   - name (string): The name of the service.
 	//
 	// Returns:
-	//   - (*configv1.UpstreamServiceConfig): The service configuration.
-	//   - (error): An error if retrieval fails.
+	//   - *configv1.UpstreamServiceConfig: The service configuration.
+	//   - error: An error if retrieval fails.
+	//
+	// Errors:
+	//   - Returns an error if the service is not found or storage read fails.
 	GetService(ctx context.Context, name string) (*configv1.UpstreamServiceConfig, error)
 
 	// ListServices lists all upstream service configurations.
@@ -67,8 +82,11 @@ type Storage interface {
 	//   - ctx (context.Context): The context for the request.
 	//
 	// Returns:
-	//   - ([]*configv1.UpstreamServiceConfig): A list of service configurations.
-	//   - (error): An error if listing fails.
+	//   - []*configv1.UpstreamServiceConfig: A list of service configurations.
+	//   - error: An error if listing fails.
+	//
+	// Errors:
+	//   - Returns an error if storage read fails.
 	ListServices(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error)
 
 	// DeleteService deletes an upstream service configuration by name.
@@ -80,7 +98,13 @@ type Storage interface {
 	//   - name (string): The name of the service to delete.
 	//
 	// Returns:
-	//   - (error): An error if deletion fails.
+	//   - error: An error if deletion fails.
+	//
+	// Errors:
+	//   - Returns an error if storage delete fails.
+	//
+	// Side Effects:
+	//   - Removes the service configuration from the underlying storage.
 	DeleteService(ctx context.Context, name string) error
 
 	// GetGlobalSettings retrieves the global configuration.
@@ -91,8 +115,11 @@ type Storage interface {
 	//   - ctx (context.Context): The context for the request.
 	//
 	// Returns:
-	//   - (*configv1.GlobalSettings): The global settings.
-	//   - (error): An error if retrieval fails.
+	//   - *configv1.GlobalSettings: The global settings.
+	//   - error: An error if retrieval fails.
+	//
+	// Errors:
+	//   - Returns an error if storage read fails.
 	GetGlobalSettings(ctx context.Context) (*configv1.GlobalSettings, error)
 
 	// SaveGlobalSettings saves the global configuration.
@@ -104,7 +131,13 @@ type Storage interface {
 	//   - settings (*configv1.GlobalSettings): The settings to save.
 	//
 	// Returns:
-	//   - (error): An error if saving fails.
+	//   - error: An error if saving fails.
+	//
+	// Errors:
+	//   - Returns an error if storage write fails.
+	//
+	// Side Effects:
+	//   - Persists the global settings to the underlying storage.
 	SaveGlobalSettings(ctx context.Context, settings *configv1.GlobalSettings) error
 
 	// ListSecrets retrieves all secrets.
@@ -115,8 +148,11 @@ type Storage interface {
 	//   - ctx (context.Context): The context for the request.
 	//
 	// Returns:
-	//   - ([]*configv1.Secret): A list of secrets.
-	//   - (error): An error if listing fails.
+	//   - []*configv1.Secret: A list of secrets.
+	//   - error: An error if listing fails.
+	//
+	// Errors:
+	//   - Returns an error if storage read fails.
 	ListSecrets(ctx context.Context) ([]*configv1.Secret, error)
 
 	// GetSecret retrieves a secret by ID.
@@ -128,8 +164,11 @@ type Storage interface {
 	//   - id (string): The secret ID.
 	//
 	// Returns:
-	//   - (*configv1.Secret): The secret.
-	//   - (error): An error if retrieval fails.
+	//   - *configv1.Secret: The secret.
+	//   - error: An error if retrieval fails.
+	//
+	// Errors:
+	//   - Returns an error if storage read fails or secret not found.
 	GetSecret(ctx context.Context, id string) (*configv1.Secret, error)
 
 	// SaveSecret saves a secret.
@@ -141,7 +180,13 @@ type Storage interface {
 	//   - secret (*configv1.Secret): The secret to save.
 	//
 	// Returns:
-	//   - (error): An error if saving fails.
+	//   - error: An error if saving fails.
+	//
+	// Errors:
+	//   - Returns an error if storage write fails.
+	//
+	// Side Effects:
+	//   - Persists the secret to the underlying storage.
 	SaveSecret(ctx context.Context, secret *configv1.Secret) error
 
 	// SaveServiceTemplate saves a service template.
@@ -153,7 +198,13 @@ type Storage interface {
 	//   - template (*configv1.ServiceTemplate): The template to save.
 	//
 	// Returns:
-	//   - (error): An error if saving fails.
+	//   - error: An error if saving fails.
+	//
+	// Errors:
+	//   - Returns an error if storage write fails.
+	//
+	// Side Effects:
+	//   - Persists the service template to the underlying storage.
 	SaveServiceTemplate(ctx context.Context, template *configv1.ServiceTemplate) error
 
 	// ListServiceTemplates lists all service templates.
@@ -164,8 +215,11 @@ type Storage interface {
 	//   - ctx (context.Context): The context for the request.
 	//
 	// Returns:
-	//   - ([]*configv1.ServiceTemplate): A list of service templates.
-	//   - (error): An error if listing fails.
+	//   - []*configv1.ServiceTemplate: A list of service templates.
+	//   - error: An error if listing fails.
+	//
+	// Errors:
+	//   - Returns an error if storage read fails.
 	ListServiceTemplates(ctx context.Context) ([]*configv1.ServiceTemplate, error)
 
 	// GetServiceTemplate retrieves a service template by ID.
@@ -177,8 +231,11 @@ type Storage interface {
 	//   - id (string): The template ID.
 	//
 	// Returns:
-	//   - (*configv1.ServiceTemplate): The service template.
-	//   - (error): An error if retrieval fails.
+	//   - *configv1.ServiceTemplate: The service template.
+	//   - error: An error if retrieval fails.
+	//
+	// Errors:
+	//   - Returns an error if storage read fails or template not found.
 	GetServiceTemplate(ctx context.Context, id string) (*configv1.ServiceTemplate, error)
 
 	// DeleteServiceTemplate deletes a service template by ID.
@@ -190,7 +247,13 @@ type Storage interface {
 	//   - id (string): The template ID to delete.
 	//
 	// Returns:
-	//   - (error): An error if deletion fails.
+	//   - error: An error if deletion fails.
+	//
+	// Errors:
+	//   - Returns an error if storage delete fails.
+	//
+	// Side Effects:
+	//   - Removes the service template from the underlying storage.
 	DeleteServiceTemplate(ctx context.Context, id string) error
 
 	// DeleteSecret deletes a secret by ID.
@@ -202,7 +265,13 @@ type Storage interface {
 	//   - id (string): The secret ID to delete.
 	//
 	// Returns:
-	//   - (error): An error if deletion fails.
+	//   - error: An error if deletion fails.
+	//
+	// Errors:
+	//   - Returns an error if storage delete fails.
+	//
+	// Side Effects:
+	//   - Removes the secret from the underlying storage.
 	DeleteSecret(ctx context.Context, id string) error
 
 	// CreateUser creates a new user.
@@ -214,7 +283,13 @@ type Storage interface {
 	//   - user (*configv1.User): The user to create.
 	//
 	// Returns:
-	//   - (error): An error if creation fails.
+	//   - error: An error if creation fails.
+	//
+	// Errors:
+	//   - Returns an error if storage write fails.
+	//
+	// Side Effects:
+	//   - Persists the new user to the underlying storage.
 	CreateUser(ctx context.Context, user *configv1.User) error
 
 	// GetUser retrieves a user by ID.
@@ -226,8 +301,11 @@ type Storage interface {
 	//   - id (string): The user ID.
 	//
 	// Returns:
-	//   - (*configv1.User): The user.
-	//   - (error): An error if retrieval fails.
+	//   - *configv1.User: The user.
+	//   - error: An error if retrieval fails.
+	//
+	// Errors:
+	//   - Returns an error if storage read fails or user not found.
 	GetUser(ctx context.Context, id string) (*configv1.User, error)
 
 	// ListUsers retrieves all users.
@@ -238,8 +316,11 @@ type Storage interface {
 	//   - ctx (context.Context): The context for the request.
 	//
 	// Returns:
-	//   - ([]*configv1.User): A list of users.
-	//   - (error): An error if listing fails.
+	//   - []*configv1.User: A list of users.
+	//   - error: An error if listing fails.
+	//
+	// Errors:
+	//   - Returns an error if storage read fails.
 	ListUsers(ctx context.Context) ([]*configv1.User, error)
 
 	// UpdateUser updates an existing user.
@@ -251,7 +332,13 @@ type Storage interface {
 	//   - user (*configv1.User): The user to update.
 	//
 	// Returns:
-	//   - (error): An error if update fails.
+	//   - error: An error if update fails.
+	//
+	// Errors:
+	//   - Returns an error if storage write fails.
+	//
+	// Side Effects:
+	//   - Persists the updated user to the underlying storage.
 	UpdateUser(ctx context.Context, user *configv1.User) error
 
 	// DeleteUser deletes a user by ID.
@@ -263,7 +350,13 @@ type Storage interface {
 	//   - id (string): The user ID to delete.
 	//
 	// Returns:
-	//   - (error): An error if deletion fails.
+	//   - error: An error if deletion fails.
+	//
+	// Errors:
+	//   - Returns an error if storage delete fails.
+	//
+	// Side Effects:
+	//   - Removes the user from the underlying storage.
 	DeleteUser(ctx context.Context, id string) error
 
 	// ListProfiles retrieves all profile definitions.
@@ -274,8 +367,11 @@ type Storage interface {
 	//   - ctx (context.Context): The context for the request.
 	//
 	// Returns:
-	//   - ([]*configv1.ProfileDefinition): A list of profiles.
-	//   - (error): An error if listing fails.
+	//   - []*configv1.ProfileDefinition: A list of profiles.
+	//   - error: An error if listing fails.
+	//
+	// Errors:
+	//   - Returns an error if storage read fails.
 	ListProfiles(ctx context.Context) ([]*configv1.ProfileDefinition, error)
 
 	// GetProfile retrieves a profile definition by name.
@@ -287,8 +383,11 @@ type Storage interface {
 	//   - name (string): The profile name.
 	//
 	// Returns:
-	//   - (*configv1.ProfileDefinition): The profile.
-	//   - (error): An error if retrieval fails.
+	//   - *configv1.ProfileDefinition: The profile.
+	//   - error: An error if retrieval fails.
+	//
+	// Errors:
+	//   - Returns an error if storage read fails or profile not found.
 	GetProfile(ctx context.Context, name string) (*configv1.ProfileDefinition, error)
 
 	// SaveProfile saves a profile definition.
@@ -300,7 +399,13 @@ type Storage interface {
 	//   - profile (*configv1.ProfileDefinition): The profile to save.
 	//
 	// Returns:
-	//   - (error): An error if saving fails.
+	//   - error: An error if saving fails.
+	//
+	// Errors:
+	//   - Returns an error if storage write fails.
+	//
+	// Side Effects:
+	//   - Persists the profile to the underlying storage.
 	SaveProfile(ctx context.Context, profile *configv1.ProfileDefinition) error
 
 	// DeleteProfile deletes a profile definition by name.
@@ -312,7 +417,13 @@ type Storage interface {
 	//   - name (string): The profile name to delete.
 	//
 	// Returns:
-	//   - (error): An error if deletion fails.
+	//   - error: An error if deletion fails.
+	//
+	// Errors:
+	//   - Returns an error if storage delete fails.
+	//
+	// Side Effects:
+	//   - Removes the profile from the underlying storage.
 	DeleteProfile(ctx context.Context, name string) error
 
 	// ListServiceCollections retrieves all service collections.
@@ -323,8 +434,11 @@ type Storage interface {
 	//   - ctx (context.Context): The context for the request.
 	//
 	// Returns:
-	//   - ([]*configv1.Collection): A list of collections.
-	//   - (error): An error if listing fails.
+	//   - []*configv1.Collection: A list of collections.
+	//   - error: An error if listing fails.
+	//
+	// Errors:
+	//   - Returns an error if storage read fails.
 	ListServiceCollections(ctx context.Context) ([]*configv1.Collection, error)
 
 	// GetServiceCollection retrieves a service collection by name.
@@ -336,8 +450,11 @@ type Storage interface {
 	//   - name (string): The collection name.
 	//
 	// Returns:
-	//   - (*configv1.Collection): The collection.
-	//   - (error): An error if retrieval fails.
+	//   - *configv1.Collection: The collection.
+	//   - error: An error if retrieval fails.
+	//
+	// Errors:
+	//   - Returns an error if storage read fails or collection not found.
 	GetServiceCollection(ctx context.Context, name string) (*configv1.Collection, error)
 
 	// SaveServiceCollection saves a service collection.
@@ -349,7 +466,13 @@ type Storage interface {
 	//   - collection (*configv1.Collection): The collection to save.
 	//
 	// Returns:
-	//   - (error): An error if saving fails.
+	//   - error: An error if saving fails.
+	//
+	// Errors:
+	//   - Returns an error if storage write fails.
+	//
+	// Side Effects:
+	//   - Persists the collection to the underlying storage.
 	SaveServiceCollection(ctx context.Context, collection *configv1.Collection) error
 
 	// DeleteServiceCollection deletes a service collection by name.
@@ -361,7 +484,13 @@ type Storage interface {
 	//   - name (string): The collection name to delete.
 	//
 	// Returns:
-	//   - (error): An error if deletion fails.
+	//   - error: An error if deletion fails.
+	//
+	// Errors:
+	//   - Returns an error if storage delete fails.
+	//
+	// Side Effects:
+	//   - Removes the collection from the underlying storage.
 	DeleteServiceCollection(ctx context.Context, name string) error
 
 	// SaveToken saves a user token.
@@ -373,7 +502,13 @@ type Storage interface {
 	//   - token (*configv1.UserToken): The token to save.
 	//
 	// Returns:
-	//   - (error): An error if saving fails.
+	//   - error: An error if saving fails.
+	//
+	// Errors:
+	//   - Returns an error if storage write fails.
+	//
+	// Side Effects:
+	//   - Persists the token to the underlying storage.
 	SaveToken(ctx context.Context, token *configv1.UserToken) error
 
 	// GetToken retrieves a user token by user ID and service ID.
@@ -386,8 +521,11 @@ type Storage interface {
 	//   - serviceID (string): The service ID.
 	//
 	// Returns:
-	//   - (*configv1.UserToken): The token.
-	//   - (error): An error if retrieval fails.
+	//   - *configv1.UserToken: The token.
+	//   - error: An error if retrieval fails.
+	//
+	// Errors:
+	//   - Returns an error if storage read fails.
 	GetToken(ctx context.Context, userID, serviceID string) (*configv1.UserToken, error)
 
 	// DeleteToken deletes a user token.
@@ -400,7 +538,13 @@ type Storage interface {
 	//   - serviceID (string): The service ID.
 	//
 	// Returns:
-	//   - (error): An error if deletion fails.
+	//   - error: An error if deletion fails.
+	//
+	// Errors:
+	//   - Returns an error if storage delete fails.
+	//
+	// Side Effects:
+	//   - Removes the token from the underlying storage.
 	DeleteToken(ctx context.Context, userID, serviceID string) error
 
 	// ListCredentials retrieves all credentials.
@@ -411,8 +555,11 @@ type Storage interface {
 	//   - ctx (context.Context): The context for the request.
 	//
 	// Returns:
-	//   - ([]*configv1.Credential): A list of credentials.
-	//   - (error): An error if listing fails.
+	//   - []*configv1.Credential: A list of credentials.
+	//   - error: An error if listing fails.
+	//
+	// Errors:
+	//   - Returns an error if storage read fails.
 	ListCredentials(ctx context.Context) ([]*configv1.Credential, error)
 
 	// GetCredential retrieves a credential by ID.
@@ -424,8 +571,11 @@ type Storage interface {
 	//   - id (string): The credential ID.
 	//
 	// Returns:
-	//   - (*configv1.Credential): The credential.
-	//   - (error): An error if retrieval fails.
+	//   - *configv1.Credential: The credential.
+	//   - error: An error if retrieval fails.
+	//
+	// Errors:
+	//   - Returns an error if storage read fails or credential not found.
 	GetCredential(ctx context.Context, id string) (*configv1.Credential, error)
 
 	// SaveCredential saves a credential.
@@ -437,7 +587,13 @@ type Storage interface {
 	//   - cred (*configv1.Credential): The credential to save.
 	//
 	// Returns:
-	//   - (error): An error if saving fails.
+	//   - error: An error if saving fails.
+	//
+	// Errors:
+	//   - Returns an error if storage write fails.
+	//
+	// Side Effects:
+	//   - Persists the credential to the underlying storage.
 	SaveCredential(ctx context.Context, cred *configv1.Credential) error
 
 	// DeleteCredential deletes a credential by ID.
@@ -449,7 +605,13 @@ type Storage interface {
 	//   - id (string): The credential ID to delete.
 	//
 	// Returns:
-	//   - (error): An error if deletion fails.
+	//   - error: An error if deletion fails.
+	//
+	// Errors:
+	//   - Returns an error if storage delete fails.
+	//
+	// Side Effects:
+	//   - Removes the credential from the underlying storage.
 	DeleteCredential(ctx context.Context, id string) error
 
 	// Close closes the underlying storage connection.
@@ -457,6 +619,12 @@ type Storage interface {
 	// Summary: Closes the storage connection.
 	//
 	// Returns:
-	//   - (error): An error if closing fails.
+	//   - error: An error if closing fails.
+	//
+	// Errors:
+	//   - Returns an error if the connection cannot be closed cleanly.
+	//
+	// Side Effects:
+	//   - Closes the connection to the storage backend.
 	Close() error
 }

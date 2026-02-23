@@ -38,11 +38,11 @@ var (
 // Summary: A client for fetching configuration from GitHub.
 //
 // Fields:
-//   - Owner: string. The owner of the repository (user or organization).
-//   - Repo: string. The repository name.
-//   - Path: string. The path to the file or directory within the repository.
-//   - Ref: string. The branch, tag, or commit hash.
-//   - URLType: string. The type of URL (tree or blob).
+//   - Owner (string): The owner of the repository (user or organization).
+//   - Repo (string): The repository name.
+//   - Path (string): The path to the file or directory within the repository.
+//   - Ref (string): The branch, tag, or commit hash.
+//   - URLType (string): The type of URL (tree or blob).
 type GitHub struct {
 	Owner         string
 	Repo          string
@@ -55,16 +55,25 @@ type GitHub struct {
 	httpClient    *http.Client
 }
 
-// NewGitHub creates a new GitHub client by parsing a GitHub URL. It supports
-// standard GitHub URLs for repositories, trees, and blobs.
+// NewGitHub creates a new GitHub client by parsing a GitHub URL.
+//
+// Summary: Creates a new GitHub client from a URL.
+//
+// It supports standard GitHub URLs for repositories, trees, and blobs.
 //
 // Parameters:
-//   - ctx: The context for the client creation.
-//   - rawURL: The GitHub URL to parse.
+//   - ctx (context.Context): The context for the client creation (unused in this function but kept for signature consistency).
+//   - rawURL (string): The GitHub URL to parse.
 //
 // Returns:
-//   - A pointer to a new GitHub client.
-//   - An error if the URL is invalid.
+//   - *GitHub: A pointer to a new GitHub client.
+//   - error: An error if the URL is invalid.
+//
+// Errors:
+//   - Returns an error if the URL cannot be parsed or does not match the GitHub URL format.
+//
+// Side Effects:
+//   - None.
 func NewGitHub(_ context.Context, rawURL string) (*GitHub, error) {
 	parsedURL, err := url.Parse(rawURL)
 	if err != nil {
@@ -110,8 +119,13 @@ func isGitHubURL(rawURL string) bool {
 
 // ToRawContentURL constructs the raw content URL for the configured GitHub path.
 //
+// Summary: Constructs the raw content URL.
+//
 // Returns:
-//   string: The raw content URL string.
+//   - string: The raw content URL string.
+//
+// Side Effects:
+//   - None.
 func (g *GitHub) ToRawContentURL() string {
 	return fmt.Sprintf("%s/%s/%s/%s/%s", g.rawContentURL, g.Owner, g.Repo, g.Ref, g.Path)
 }
@@ -121,10 +135,10 @@ func (g *GitHub) ToRawContentURL() string {
 // Summary: Metadata for a file or directory in a GitHub repository.
 //
 // Fields:
-//   - Name: string. The name of the file or directory.
-//   - Type: string. The type of content (e.g., "file", "dir").
-//   - HTMLURL: string. The URL to view the content on GitHub.
-//   - DownloadURL: string. The URL to download the content (only for files).
+//   - Name (string): The name of the file or directory.
+//   - Type (string): The type of content (e.g., "file", "dir").
+//   - HTMLURL (string): The URL to view the content on GitHub.
+//   - DownloadURL (string): The URL to download the content (only for files).
 type Content struct {
 	Name        string `json:"name"`
 	Type        string `json:"type"`
@@ -132,16 +146,25 @@ type Content struct {
 	DownloadURL string `json:"download_url"`
 }
 
-// List fetches the contents of the configured GitHub path. It handles authentication
-// if provided and returns a list of Content objects.
+// List fetches the contents of the configured GitHub path.
+//
+// Summary: Lists contents of the configured GitHub path.
+//
+// It handles authentication if provided and returns a list of Content objects.
 //
 // Parameters:
-//   - ctx: The context for the request.
-//   - auth: Optional authentication configuration for accessing private repos.
+//   - ctx (context.Context): The context for the request.
+//   - auth (*configv1.Authentication): Optional authentication configuration for accessing private repos.
 //
 // Returns:
-//   - A slice of Content objects.
-//   - An error if the fetch fails.
+//   - []Content: A slice of Content objects.
+//   - error: An error if the fetch fails.
+//
+// Errors:
+//   - Returns an error if the HTTP request creation fails, authentication application fails, or the API returns a non-200 status code.
+//
+// Side Effects:
+//   - Makes an HTTP GET request to the GitHub API.
 func (g *GitHub) List(ctx context.Context, auth *configv1.Authentication) ([]Content, error) {
 	apiURL := fmt.Sprintf("%s/repos/%s/%s/contents/%s", g.apiURL, g.Owner, g.Repo, g.Path)
 	if g.Ref != "" {
