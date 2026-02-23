@@ -188,7 +188,7 @@ func TestManager_RecordActivity(t *testing.T) {
 	m.RecordActivity("session-1", map[string]interface{}{
 		"userAgent": "test-agent",
 		"count":     1,
-	}, 10*time.Millisecond, false, "")
+	}, 10*time.Millisecond, false, "", 100)
 
 	assert.Eventually(t, func() bool {
 		m.mu.RLock()
@@ -208,9 +208,10 @@ func TestManager_RecordActivity(t *testing.T) {
 	assert.NotZero(t, session.LastActive)
 	assert.Equal(t, int64(1), session.RequestCount)
 	assert.Equal(t, 10*time.Millisecond, session.TotalLatency)
+	assert.Equal(t, int64(100), session.TotalBytes)
 
 	time.Sleep(100 * time.Millisecond)
-	m.RecordActivity("session-1", nil, 20*time.Millisecond, true, "")
+	m.RecordActivity("session-1", nil, 20*time.Millisecond, true, "", 200)
 
 	assert.Eventually(t, func() bool {
 		m.mu.RLock()
@@ -228,6 +229,7 @@ func TestManager_RecordActivity(t *testing.T) {
 	assert.Equal(t, int64(2), session2.RequestCount)
 	assert.Equal(t, 30*time.Millisecond, session2.TotalLatency)
 	assert.Equal(t, int64(1), session2.ErrorCount)
+	assert.Equal(t, int64(300), session2.TotalBytes)
 }
 
 func TestManager_GetStats(t *testing.T) {
@@ -236,8 +238,8 @@ func TestManager_GetStats(t *testing.T) {
 	m := NewManager(mockRegistry, mockTM)
 	defer m.Close()
 
-	m.RecordActivity("session-1", nil, 100*time.Millisecond, false, "")
-	m.RecordActivity("session-2", nil, 200*time.Millisecond, true, "")
+	m.RecordActivity("session-1", nil, 100*time.Millisecond, false, "", 0)
+	m.RecordActivity("session-2", nil, 200*time.Millisecond, true, "", 0)
 
 	assert.Eventually(t, func() bool {
 		stats := m.GetStats("")
@@ -269,7 +271,7 @@ func TestManager_GetGraph(t *testing.T) {
 	}.Build())
 	mockTM.On("ListTools").Return([]tool.Tool{mockTool})
 
-	m.RecordActivity("session-1", map[string]interface{}{"userAgent": "client-1"}, 10*time.Millisecond, false, "")
+	m.RecordActivity("session-1", map[string]interface{}{"userAgent": "client-1"}, 10*time.Millisecond, false, "", 0)
 
 	assert.Eventually(t, func() bool {
 		m.mu.RLock()
@@ -445,7 +447,7 @@ func TestManager_GetGraph_OldSession(t *testing.T) {
 	m := NewManager(mockRegistry, mockTM)
 	defer m.Close()
 
-	m.RecordActivity("old-session", nil, 0, false, "")
+	m.RecordActivity("old-session", nil, 0, false, "", 0)
 
 	assert.Eventually(t, func() bool {
 		m.mu.RLock()
@@ -469,7 +471,7 @@ func TestManager_GetTrafficHistory(t *testing.T) {
 	m := NewManager(mockRegistry, mockTM)
 	defer m.Close()
 
-	m.RecordActivity("session-1", nil, 100*time.Millisecond, false, "")
+	m.RecordActivity("session-1", nil, 100*time.Millisecond, false, "", 500)
 
 	assert.Eventually(t, func() bool {
 		history := m.GetTrafficHistory("")
@@ -488,6 +490,7 @@ func TestManager_GetTrafficHistory(t *testing.T) {
 	assert.Equal(t, int64(1), lastPoint.Total)
 	assert.Equal(t, int64(0), lastPoint.Errors)
 	assert.Equal(t, int64(100), lastPoint.Latency)
+	assert.Equal(t, int64(500), lastPoint.Bytes)
 }
 
 func TestManager_SeedTrafficHistory(t *testing.T) {
@@ -497,8 +500,8 @@ func TestManager_SeedTrafficHistory(t *testing.T) {
 	defer m.Close()
 
 	points := []TrafficPoint{
-		{Time: "12:00", Total: 10, Errors: 1, Latency: 50},
-		{Time: "12:01", Total: 20, Errors: 2, Latency: 60},
+		{Time: "12:00", Total: 10, Errors: 1, Latency: 50, Bytes: 100},
+		{Time: "12:01", Total: 20, Errors: 2, Latency: 60, Bytes: 200},
 	}
 
 	m.SeedTrafficHistory(points)
@@ -514,6 +517,7 @@ func TestManager_SeedTrafficHistory(t *testing.T) {
 	assert.Equal(t, int64(30), seedSession.RequestCount)
 	assert.Equal(t, int64(3), seedSession.ErrorCount)
 	assert.Equal(t, 1700*time.Millisecond, seedSession.TotalLatency)
+	assert.Equal(t, int64(300), seedSession.TotalBytes)
 }
 
 func TestManager_GetGraph_Metrics(t *testing.T) {

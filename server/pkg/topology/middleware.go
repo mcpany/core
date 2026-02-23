@@ -68,7 +68,38 @@ func (m *Manager) Middleware(next mcp.MethodHandler) mcp.MethodHandler {
 			}
 		}
 
-		m.RecordActivity(sessionID, meta, duration, isError, serviceID)
+		var responseLen int64
+		if res != nil {
+			if toolRes, ok := res.(*mcp.CallToolResult); ok {
+				for _, c := range toolRes.Content {
+					if tc, ok := c.(*mcp.TextContent); ok {
+						responseLen += int64(len(tc.Text))
+					} else if ic, ok := c.(*mcp.ImageContent); ok {
+						responseLen += int64(len(ic.Data))
+					} else if ec, ok := c.(*mcp.EmbeddedResource); ok {
+						if ec.Resource != nil {
+							if ec.Resource.Text != "" {
+								responseLen += int64(len(ec.Resource.Text))
+							}
+							if len(ec.Resource.Blob) > 0 {
+								responseLen += int64(len(ec.Resource.Blob))
+							}
+						}
+					}
+				}
+			} else if readRes, ok := res.(*mcp.ReadResourceResult); ok {
+				for _, c := range readRes.Contents {
+					if c.Text != "" {
+						responseLen += int64(len(c.Text))
+					}
+					if len(c.Blob) > 0 {
+						responseLen += int64(len(c.Blob))
+					}
+				}
+			}
+		}
+
+		m.RecordActivity(sessionID, meta, duration, isError, serviceID, responseLen)
 
 		return res, err
 	}

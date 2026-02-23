@@ -63,7 +63,7 @@ func TestHandleDashboardHealth_Integration(t *testing.T) {
 	serviceID := "test-service-id"
 
 	// Record some activity (200ms latency)
-	tm.RecordActivity("session-1", nil, 200*time.Millisecond, false, serviceID)
+	tm.RecordActivity("session-1", nil, 200*time.Millisecond, false, serviceID, 0)
 
 	// Wait a bit for processing
 	time.Sleep(100 * time.Millisecond)
