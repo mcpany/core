@@ -14,7 +14,7 @@ import { NetworkGraphFlow } from "@/components/network/network-graph-client";
  * Renders a simplified network topology graph.
  * @returns The rendered component.
  */
-export function NetworkGraphWidget() {
+export const NetworkGraphWidget = React.memo(function NetworkGraphWidget() {
     return (
         <div className="h-[350px] w-full border rounded-md overflow-hidden bg-muted/5 relative">
             <ReactFlowProvider>
@@ -22,4 +22,6 @@ export function NetworkGraphWidget() {
             </ReactFlowProvider>
         </div>
     );
-}
+});
+// ⚡ BOLT: Memoize widget to prevent re-renders during dashboard drag/resize operations.
+// Randomized Selection from Top 5 High-Impact Targets
