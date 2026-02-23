@@ -1,3 +1,8 @@
+/**
+ * Copyright 2026 Author(s) of MCP Any
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { renderHook } from '@testing-library/react';
 import { useNetworkTopology } from './use-network-topology';
 import { useTopology } from '../contexts/service-health-context';

@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
+import { FileInput } from "@/components/ui/file-input";
 
 /**
  * Schema definition interface.
@@ -223,6 +224,22 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
     // --- Simple Types ---
 
     if (type === "string") {
+        // Handle Base64 File Upload
+        if (schema.contentEncoding === "base64") {
+             return (
+                <div className="w-full">
+                    <FieldLabel label={label} required={isRequired} description={description} error={errors?.[path]} htmlFor={path} />
+                    <FileInput
+                        id={path}
+                        value={(value as string) || undefined}
+                        onChange={(v) => onChange(path, v || "")}
+                        accept={schema.contentMediaType}
+                        className={cn(hasError && "border-destructive ring-destructive/20")}
+                    />
+                </div>
+            );
+        }
+
         const isPassword = schema.format === "password" ||
                            (label && /password|secret|token|key/i.test(label));
         const isMultiline = schema.format === "multiline" || (label && /description|content/i.test(label));

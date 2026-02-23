@@ -8,6 +8,17 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { UniversalSchemaForm, Schema } from "./universal-schema-form";
 import { vi, describe, it, expect } from "vitest";
 
+// Mock FileInput to simplify testing
+vi.mock("@/components/ui/file-input", () => ({
+    FileInput: ({ onChange, value }: any) => (
+        <input
+            data-testid="file-input"
+            value={value || ""}
+            onChange={(e) => onChange(e.target.value)}
+        />
+    ),
+}));
+
 describe("UniversalSchemaForm", () => {
     it("renders basic string input", () => {
         const schema: Schema = {
@@ -101,5 +112,26 @@ describe("UniversalSchemaForm", () => {
         fireEvent.change(input, { target: { value: "42" } });
 
         expect(onChange).toHaveBeenCalledWith({ count: 42 });
+    });
+
+    it("renders file input for base64 contentEncoding", () => {
+        const schema: Schema = {
+            type: "object",
+            properties: {
+                image: {
+                    type: "string",
+                    title: "Image",
+                    contentEncoding: "base64",
+                    contentMediaType: "image/png"
+                }
+            }
+        };
+        const onChange = vi.fn();
+        render(<UniversalSchemaForm schema={schema} value={{}} onChange={onChange} />);
+
+        const input = screen.getByTestId("file-input");
+        fireEvent.change(input, { target: { value: "base64data" } });
+
+        expect(onChange).toHaveBeenCalledWith({ image: "base64data" });
     });
 });
