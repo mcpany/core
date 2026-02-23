@@ -5,22 +5,23 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
-import { InputTransformer } from "@proto/config/v1/call";
-import { Textarea } from "@/components/ui/textarea";
+import { useState, useEffect, useMemo } from "react";
+import { InputTransformer, HttpParameterMapping, ParameterType } from "@proto/config/v1/call";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Info } from "lucide-react";
+import { SmartTemplateEditor } from "./smart-template-editor";
 
 interface InputTransformerEditorProps {
     transformer?: InputTransformer;
     onChange: (transformer: InputTransformer) => void;
+    parameters?: HttpParameterMapping[];
 }
 
 /**
  * Editor for InputTransformer configuration.
  */
-export function InputTransformerEditor({ transformer, onChange }: InputTransformerEditorProps) {
+export function InputTransformerEditor({ transformer, onChange, parameters = [] }: InputTransformerEditorProps) {
     const [template, setTemplate] = useState(transformer?.template || "");
 
     useEffect(() => {
@@ -35,32 +36,58 @@ export function InputTransformerEditor({ transformer, onChange }: InputTransform
         });
     };
 
+    const variables = useMemo(() => {
+        return parameters
+            .map(p => p.schema?.name)
+            .filter((n): n is string => !!n);
+    }, [parameters]);
+
+    const initialTestData = useMemo(() => {
+        const data: Record<string, any> = {};
+        parameters.forEach(p => {
+            if (p.schema?.name) {
+                if (p.schema.type === ParameterType.STRING) {
+                    data[p.schema.name] = "example_value";
+                } else if (p.schema.type === ParameterType.NUMBER || p.schema.type === ParameterType.INTEGER) {
+                    data[p.schema.name] = 123;
+                } else if (p.schema.type === ParameterType.BOOLEAN) {
+                    data[p.schema.name] = true;
+                } else {
+                    data[p.schema.name] = null;
+                }
+            }
+        });
+        // If no parameters, provide a hint
+        if (Object.keys(data).length === 0) {
+            return "{\n  \"example_var\": \"value\"\n}";
+        }
+        return JSON.stringify(data, null, 2);
+    }, [parameters]);
+
     return (
         <div className="space-y-4">
-            <div className="space-y-2">
-                <Label htmlFor="input-template">Request Body Template</Label>
-                <div className="text-xs text-muted-foreground flex items-center gap-2 mb-2">
-                    <Info className="h-4 w-4" />
-                    Use Jinja2 syntax to construct the request body. Variables from input are available.
-                </div>
-                <Textarea
-                    id="input-template"
-                    value={template}
-                    onChange={(e) => handleTemplateChange(e.target.value)}
-                    placeholder='{"message": "{{ input_message }}"}'
-                    className="font-mono text-sm min-h-[200px]"
-                />
-            </div>
              {transformer?.webhook && (
-                <Card className="bg-muted/50">
+                <Card className="bg-muted/50 mb-4">
                     <CardContent className="pt-6">
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
                             <Info className="h-4 w-4" />
-                            A webhook is configured for input transformation. The template above will be ignored if the webhook is active.
+                            A webhook is configured for input transformation. The template below will be ignored if the webhook is active.
                         </div>
                     </CardContent>
                 </Card>
             )}
+
+            <div className="space-y-2">
+                <SmartTemplateEditor
+                    value={template}
+                    onChange={handleTemplateChange}
+                    variables={variables}
+                    initialTestData={initialTestData}
+                    label="Request Body Template"
+                    description="Use Jinja2 syntax to construct the request body. Variables from input parameters are available."
+                    placeholder='{"message": "{{ input_message }}"}'
+                />
+            </div>
         </div>
     );
 }

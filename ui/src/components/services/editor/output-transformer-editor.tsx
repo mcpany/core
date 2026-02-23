@@ -5,14 +5,14 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { OutputTransformer, OutputTransformer_OutputFormat } from "@proto/config/v1/call";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { KeyValueEditor } from "./key-value-editor";
 import { Separator } from "@/components/ui/separator";
+import { SmartTemplateEditor } from "./smart-template-editor";
 
 interface OutputTransformerEditorProps {
     transformer?: OutputTransformer;
@@ -46,6 +46,21 @@ export function OutputTransformerEditor({ transformer, onChange }: OutputTransfo
         setLocalTransformer(newVal);
         onChange(newVal);
     };
+
+    const variables = useMemo(() => {
+        return Object.keys(localTransformer.extractionRules || {});
+    }, [localTransformer.extractionRules]);
+
+    const initialTestData = useMemo(() => {
+        const data: Record<string, any> = {};
+        variables.forEach(v => {
+            data[v] = "example_value";
+        });
+        if (Object.keys(data).length === 0) {
+            return "{\n  \"example_field\": \"value\"\n}";
+        }
+        return JSON.stringify(data, null, 2);
+    }, [variables]);
 
     return (
         <div className="space-y-6">
@@ -107,17 +122,15 @@ export function OutputTransformerEditor({ transformer, onChange }: OutputTransfo
             <Separator />
 
             <div className="space-y-2">
-                <Label htmlFor="output-template">Result Template (Optional)</Label>
-                <Textarea
-                    id="output-template"
+                <SmartTemplateEditor
                     value={localTransformer.template}
-                    onChange={(e) => updateTransformer({ template: e.target.value })}
+                    onChange={(val) => updateTransformer({ template: val })}
+                    variables={variables}
+                    initialTestData={initialTestData}
+                    label="Result Template (Optional)"
+                    description="Use Jinja2 syntax to format the final output using extracted fields. If empty, the structured result is returned."
                     placeholder="Weather in {{ location }} is {{ temperature }}."
-                    className="font-mono text-sm min-h-[100px]"
                 />
-                 <p className="text-xs text-muted-foreground">
-                    Use Jinja2 syntax to format the final output using extracted fields. If empty, the structured result is returned.
-                </p>
             </div>
         </div>
     );
