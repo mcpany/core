@@ -12,7 +12,7 @@ import * as dagre from 'dagre';
 interface ProtoNode {
     id: string;
     label: string;
-    type: string; // Enum as string or int? usually string in JSON if emit defaults
+    type: string;
     status: string;
     metadata?: Record<string, string>;
     children?: ProtoNode[];
@@ -68,7 +68,6 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[]) => {
 export function useRealTimeTopology() {
     const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
-    const [loading, setLoading] = useState(false);
     const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
     const [isLive, setIsLive] = useState(false);
 
@@ -90,14 +89,11 @@ export function useRealTimeTopology() {
 
             // Helper to map type string to UI node type
             const mapType = (t: string | any) => {
-                // Proto enums might be strings like "NODE_TYPE_SERVICE" or integers.
-                // Assuming strings based on protojson default behavior for enums usually.
-                // But let's handle loose matching.
                 const typeStr = String(t).toUpperCase();
-                if (typeStr.includes('CLIENT')) return 'user'; // UserNode
-                if (typeStr.includes('SERVICE')) return 'service'; // ServiceNode
-                if (typeStr.includes('TOOL')) return 'tool'; // ToolNode
-                if (typeStr.includes('CORE')) return 'agent'; // AgentNode (Core/Gateway)
+                if (typeStr.includes('CLIENT')) return 'user';
+                if (typeStr.includes('SERVICE')) return 'service';
+                if (typeStr.includes('TOOL')) return 'tool';
+                if (typeStr.includes('CORE')) return 'agent';
                 if (typeStr.includes('RESOURCE')) return 'resource';
                 return 'default';
             };
@@ -110,7 +106,8 @@ export function useRealTimeTopology() {
                     data: {
                         label: data.core.label,
                         role: 'Gateway',
-                        status: 'Active'
+                        status: 'Active',
+                        metrics: { qps: 0, errorRate: 0, latencyMs: 0 }
                     },
                     position: { x: 0, y: 0 },
                 });
@@ -118,33 +115,45 @@ export function useRealTimeTopology() {
                 // Process Services (Children of Core)
                 if (data.core.children) {
                     data.core.children.forEach(svc => {
-                        // Middleware pipeline?
                         if (svc.type && String(svc.type).includes('MIDDLEWARE')) {
-                            // Skip or visualize differently? Let's skip for cleaner view for now
                             return;
                         }
+
+                        const metrics = svc.metrics || { qps: 0, error_rate: 0, latency_ms: 0 };
+                        const qps = metrics.qps || 0;
+                        const errorRate = metrics.error_rate || 0;
+                        const latencyMs = metrics.latency_ms || 0;
 
                         rawNodes.push({
                             id: svc.id,
                             type: mapType(svc.type),
                             data: {
                                 label: svc.label,
-                                status: svc.metrics ? `${svc.metrics.qps?.toFixed(1)} QPS` : undefined
+                                status: qps > 0 ? `${qps.toFixed(1)} QPS` : undefined,
+                                metrics: { qps, errorRate, latencyMs }
                             },
                             position: { x: 0, y: 0 },
                         });
 
+                        // Edge Core -> Service inherits service metrics (traffic flowing TO service)
                         rawEdges.push({
                             id: `e-${data.core.id}-${svc.id}`,
                             source: data.core.id,
                             target: svc.id,
-                            animated: true,
-                            style: { stroke: '#64748b' }
+                            type: 'traffic', // Use custom traffic edge
+                            data: { qps, errorRate, latencyMs },
+                            animated: false,
                         });
 
                         // Tools inside Service
                         if (svc.children) {
                             svc.children.forEach(tool => {
+                                // Tools don't have individual metrics in current proto usually,
+                                // but if they did, we would use them.
+                                // For now, assume a fraction of service traffic or 0.
+                                // Ideally backend provides per-tool metrics.
+                                // But `GetGraph` in `topology.go` doesn't set metrics on Tool nodes yet.
+                                // We'll leave them as default edges or inherit if needed.
                                 rawNodes.push({
                                     id: tool.id,
                                     type: mapType(tool.type),
@@ -155,7 +164,7 @@ export function useRealTimeTopology() {
                                     id: `e-${svc.id}-${tool.id}`,
                                     source: svc.id,
                                     target: tool.id,
-                                    type: 'smoothstep'
+                                    type: 'smoothstep', // Standard edge for internal hierarchy
                                 });
                             });
                         }
@@ -174,20 +183,23 @@ export function useRealTimeTopology() {
                     });
 
                     // Connect Client -> Core
+                    // Client traffic is aggregated at Core? Or do we know per-client?
+                    // Currently `GetGraph` doesn't provide per-client metrics.
+                    // We can estimate or just show "Active" (green) if any traffic.
                     if (data.core) {
                         rawEdges.push({
                             id: `e-${client.id}-${data.core.id}`,
                             source: client.id,
                             target: data.core.id,
-                            animated: true,
-                            style: { stroke: '#22c55e' } // Green for active traffic
+                            type: 'traffic',
+                            data: { qps: 1, errorRate: 0 }, // Fake minimal traffic to show connection
+                            animated: false,
                         });
                     }
                 });
             }
 
-            // ⚡ BOLT: Calculate structure hash to avoid unnecessary re-layouts (O(N) layout vs O(1) update)
-            // Randomized Selection from Top 5 High-Impact Targets
+            // ⚡ BOLT: Calculate structure hash to avoid unnecessary re-layouts
             const structureHash = rawNodes.map(n => n.id).sort().join(',') + '|' + rawEdges.map(e => e.id).sort().join(',');
 
             if (structureHash === prevStructureHash.current && nodesRef.current.length > 0) {
@@ -206,8 +218,7 @@ export function useRealTimeTopology() {
                 });
 
                 setNodes(updatedNodes);
-                // Even if structure is same, edges might have updated properties (e.g. animated state)
-                setEdges(rawEdges);
+                setEdges(rawEdges); // Update edges to propagate new metric data
             } else {
                 // Structure changed or first load, run full layout
                 const layout = getLayoutedElements(rawNodes, rawEdges);
@@ -221,14 +232,14 @@ export function useRealTimeTopology() {
         } catch (e) {
             console.error("Failed to fetch topology", e);
         }
-    }, [setNodes, setEdges]); // Removed nodes dependency to avoid infinite loop, using ref instead
+    }, [setNodes, setEdges]);
 
     useEffect(() => {
         fetchData();
 
         let interval: NodeJS.Timeout;
         if (isLive) {
-            interval = setInterval(fetchData, 2000);
+            interval = setInterval(fetchData, 1000); // 1s refresh for smoother feel
         }
         return () => clearInterval(interval);
     }, [fetchData, isLive]);
