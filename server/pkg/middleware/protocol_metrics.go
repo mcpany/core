@@ -195,14 +195,10 @@ func estimateResultTokens(t tokenizer.Tokenizer, res mcp.Result) int {
 		return count
 	}
 
-	// Fallback to JSON marshaling + token counting string
-	// This is expensive but safe fallback
-	b, err := json.Marshal(res)
-	if err == nil {
-		c, _ := t.CountTokens(string(b))
-		return c
-	}
-	return 0
+	// ⚡ BOLT: Avoid full JSON serialization for token counting
+	// Randomized Selection from Top 5 High-Impact Targets
+	c, _ := tokenizer.CountTokensInValue(t, res)
+	return c
 }
 
 // CalculateToolResultTokens calculates the number of tokens in a tool result.
