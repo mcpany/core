@@ -37,3 +37,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Lazy-Discovery Architecture**: MCP Any will pivot from "pushing" all tool schemas to "serving" them on-demand via a high-performance similarity search middleware. This allows for virtually unlimited tool scaling.
 - **Supply Chain Provenance**: Implementing "Attested Tooling" where every MCP server must provide a cryptographic signature of its origin and configuration, preventing rogue installations like those seen in the Cline incident.
 - **Context-Aware Scoping**: Moving beyond simple capability tokens to "Intent-Aware" permissions, where a tool call is only allowed if it aligns with the high-level intent verified by the Policy Engine.
+
+---
+
+## Strategic Evolution: [2026-02-26]
+### Focus: Hardware-Attested Identity & Input-Aware Firewalls
+**Context**: Today's research on OpenClaw's hardware-rooted security and the Gemini CLI RCE (CVE-2026-0755) necessitates a transition from "Identity-based" to "Environment-verified" security.
+**Strategic Pivot**:
+- **Hardware-Rooted Zero Trust**: MCP Any will integrate with device-level attestation (TPM/Secure Enclave) to verify agent identity and execution environment integrity before granting tool access.
+- **Input-Aware Policy Engine**: Moving from simple capability checks to **Deep Input Inspection (DII)**, where tool arguments are inspected for injection patterns using Rego/CEL at the gateway level.
+- **Proactive State Orchestration**: Evolving the Shared KV Store into a proactive "Agent Blackboard" that supports event-driven triggers for autonomous swarm coordination.

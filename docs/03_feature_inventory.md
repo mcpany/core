@@ -49,3 +49,19 @@
 
 ### Deprecations / Monitoring
 - **Upfront Tool Schema Pushing**: Monitoring for deprecation in favor of Lazy-Discovery.
+
+---
+
+## Evolution: [2026-02-26] Updates
+
+### Proposed Additions
+- **Hardware Attestation Middleware**: (P0) Verify agent device integrity via TPM/Secure Enclave before allowing high-privilege tool calls.
+- **Deep Input Inspection (DII) Middleware**: (P0) Inspect tool arguments for command injection and malicious patterns (mitigates CVE-2026-0755).
+- **Event-Driven Agent Blackboard**: (P1) Proactive notification system for the Shared KV store to support asynchronous swarm triggers.
+
+### Priority Shifts
+- **Policy Firewall**: Remains **P0** but expanded to include Deep Input Inspection.
+- **Shared KV Store**: Remains **P0** but expanded to support event-driven triggers.
+
+### Deprecations / Monitoring
+- **Unsanitized Command Execution**: All tool calls that execute shell commands are now flagged for mandatory DII inspection.

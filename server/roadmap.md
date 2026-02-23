@@ -24,6 +24,11 @@
 *   **[P0] Supply Chain Integrity Guard**: Cryptographic provenance verification for MCP servers to prevent unauthorized tool injection. (Added: 2026-02-25)
 *   **[P1] FastMCP Metadata Support**: Support for Pythonic FastMCP decorators and native Gemini CLI slash command mapping. (Added: 2026-02-25)
 
+#### Upcoming (2026-02-26 Evolution)
+*   **[P0] Deep Input Inspection (DII)**: Implement argument-level sanitization for tool calls to prevent command injection (Added: 2026-02-26).
+*   **[P0] Hardware Attestation Integration**: Support for TPM/Secure Enclave agent identity verification (Added: 2026-02-26).
+*   **[P1] Event-Driven Blackboard Triggers**: Extend Shared KV store with proactive notification hooks (Added: 2026-02-26).
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
