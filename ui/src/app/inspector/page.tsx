@@ -8,11 +8,19 @@
 import { InspectorTable } from "@/components/inspector/inspector-table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { RefreshCcw, Bug, Unplug, Pause, Play, Trash2, Database, Zap } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { RefreshCcw, Bug, Unplug, Pause, Play, Trash2, Zap, Search, Filter } from "lucide-react";
 import { useTraces } from "@/hooks/use-traces";
 import { apiClient } from "@/lib/client";
 import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
 /**
  * InspectorPage component.
@@ -30,6 +38,11 @@ export default function InspectorPage() {
   } = useTraces();
   const { toast } = useToast();
   const [seeding, setSeeding] = useState(false);
+
+  // Filter State
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [typeFilter, setTypeFilter] = useState("all");
 
   const handleSeedTrace = async () => {
       setSeeding(true);
@@ -111,9 +124,30 @@ export default function InspectorPage() {
       }
   };
 
+  const filteredTraces = useMemo(() => {
+      return traces.filter((trace) => {
+        // Filter by Status
+        if (statusFilter !== "all" && trace.status !== statusFilter) return false;
+
+        // Filter by Type (root span type)
+        if (typeFilter !== "all" && trace.rootSpan.type !== typeFilter) return false;
+
+        // Filter by Search (ID or Name)
+        if (searchQuery) {
+            const query = searchQuery.toLowerCase();
+            return (
+                trace.id.toLowerCase().includes(query) ||
+                trace.rootSpan.name.toLowerCase().includes(query)
+            );
+        }
+
+        return true;
+      });
+  }, [traces, statusFilter, typeFilter, searchQuery]);
+
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)] p-4 md:p-8 space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
             <Bug className="h-6 w-6" /> Inspector
@@ -139,7 +173,7 @@ export default function InspectorPage() {
             </Badge>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap md:flex-nowrap justify-end">
              <Button
                 variant="outline"
                 size="sm"
@@ -166,8 +200,52 @@ export default function InspectorPage() {
         </div>
       </div>
 
+      {/* Filtering Toolbar */}
+      <div className="flex flex-col md:flex-row gap-4 items-center bg-muted/20 p-2 rounded-lg border border-muted/50">
+          <div className="relative flex-1 w-full">
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                  placeholder="Search traces (ID, Name)..."
+                  className="pl-8 w-full bg-background"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+              />
+          </div>
+          <div className="flex gap-2 w-full md:w-auto">
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                  <SelectTrigger className="w-[140px] bg-background">
+                      <Filter className="mr-2 h-4 w-4 text-muted-foreground" />
+                      <SelectValue placeholder="Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                      <SelectItem value="all">All Status</SelectItem>
+                      <SelectItem value="success">Success</SelectItem>
+                      <SelectItem value="error">Error</SelectItem>
+                      <SelectItem value="pending">Pending</SelectItem>
+                  </SelectContent>
+              </Select>
+
+              <Select value={typeFilter} onValueChange={setTypeFilter}>
+                  <SelectTrigger className="w-[140px] bg-background">
+                      <Filter className="mr-2 h-4 w-4 text-muted-foreground" />
+                      <SelectValue placeholder="Type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                      <SelectItem value="all">All Types</SelectItem>
+                      <SelectItem value="tool">Tool</SelectItem>
+                      <SelectItem value="service">Service</SelectItem>
+                      <SelectItem value="core">Core</SelectItem>
+                      <SelectItem value="resource">Resource</SelectItem>
+                  </SelectContent>
+              </Select>
+          </div>
+          <div className="text-xs text-muted-foreground whitespace-nowrap px-2">
+              {filteredTraces.length} / {traces.length}
+          </div>
+      </div>
+
       <div className="flex-1 min-h-0">
-        <InspectorTable traces={traces} loading={loading && traces.length === 0} />
+        <InspectorTable traces={filteredTraces} loading={loading && traces.length === 0} />
       </div>
     </div>
   );
