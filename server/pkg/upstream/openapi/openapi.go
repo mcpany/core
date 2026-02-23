@@ -410,7 +410,11 @@ func (u *OpenAPIUpstream) createAndRegisterPrompts(
 			log.Info("Skipping disabled prompt", "promptName", promptDef.GetName())
 			continue
 		}
-		newPrompt := prompt.NewTemplatedPrompt(promptDef, serviceID)
+		newPrompt, err := prompt.NewTemplatedPrompt(promptDef, serviceID)
+		if err != nil {
+			log.Error("Failed to create prompt", "promptName", promptDef.GetName(), "error", err)
+			continue
+		}
 		promptManager.AddPrompt(newPrompt)
 		log.Info("Registered prompt", "prompt_name", newPrompt.Prompt().Name, "is_reload", isReload)
 	}

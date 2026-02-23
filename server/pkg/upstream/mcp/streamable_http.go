@@ -854,7 +854,11 @@ func (u *Upstream) registerPrompts(
 			logging.GetLogger().Info("Skipping disabled prompt (config)", "promptName", promptDef.GetName())
 			continue
 		}
-		newPrompt := prompt.NewTemplatedPrompt(promptDef, serviceID)
+		newPrompt, err := prompt.NewTemplatedPrompt(promptDef, serviceID)
+		if err != nil {
+			logging.GetLogger().Error("Failed to create prompt", "promptName", promptDef.GetName(), "error", err)
+			continue
+		}
 		promptManager.AddPrompt(newPrompt)
 	}
 }

@@ -63,8 +63,9 @@ type MCPServerProvider interface {
 //
 // Summary: Prompt implementation using templates.
 type TemplatedPrompt struct {
-	definition *configv1.PromptDefinition
-	serviceID  string
+	definition        *configv1.PromptDefinition
+	serviceID         string
+	compiledTemplates []*transformer.TextTemplate
 }
 
 // NewTemplatedPrompt creates a new TemplatedPrompt instance.
@@ -77,11 +78,26 @@ type TemplatedPrompt struct {
 //
 // Returns:
 //   - *TemplatedPrompt: The initialized TemplatedPrompt.
-func NewTemplatedPrompt(definition *configv1.PromptDefinition, serviceID string) *TemplatedPrompt {
-	return &TemplatedPrompt{
-		definition: definition,
-		serviceID:  serviceID,
+//   - error: An error if the prompt templates cannot be compiled.
+func NewTemplatedPrompt(definition *configv1.PromptDefinition, serviceID string) (*TemplatedPrompt, error) {
+	// ⚡ BOLT: Pre-compile templates to avoid parsing on every request.
+	// Randomized Selection from Top 5 High-Impact Targets
+	compiledTemplates := make([]*transformer.TextTemplate, len(definition.GetMessages()))
+	for i, msg := range definition.GetMessages() {
+		if text := msg.GetText(); text != nil {
+			tpl, err := transformer.NewTemplate(text.GetText(), "{{", "}}")
+			if err != nil {
+				return nil, err
+			}
+			compiledTemplates[i] = tpl
+		}
 	}
+
+	return &TemplatedPrompt{
+		definition:        definition,
+		serviceID:         serviceID,
+		compiledTemplates: compiledTemplates,
+	}, nil
 }
 
 // Prompt returns the MCP prompt definition.
@@ -179,10 +195,8 @@ func (p *TemplatedPrompt) Get(_ context.Context, args json.RawMessage) (*mcp.Get
 	messages := make([]*mcp.PromptMessage, len(p.definition.GetMessages()))
 	for i, msg := range p.definition.GetMessages() {
 		if text := msg.GetText(); text != nil {
-			tpl, err := transformer.NewTemplate(text.GetText(), "{{", "}}")
-			if err != nil {
-				return nil, err
-			}
+			// Use pre-compiled template
+			tpl := p.compiledTemplates[i]
 			renderedText, err := tpl.Render(inputs)
 			if err != nil {
 				return nil, err
@@ -212,5 +226,5 @@ func (p *TemplatedPrompt) Get(_ context.Context, args json.RawMessage) (*mcp.Get
 //   - Prompt: The created Prompt instance.
 //   - error: An error if the prompt cannot be created.
 func NewPromptFromConfig(definition *configv1.PromptDefinition, serviceID string) (Prompt, error) {
-	return NewTemplatedPrompt(definition, serviceID), nil
+	return NewTemplatedPrompt(definition, serviceID)
 }

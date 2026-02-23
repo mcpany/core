@@ -49,7 +49,8 @@ func TestTemplatedPrompt_Get(t *testing.T) {
 			}.Build(),
 		},
 	}.Build()
-	templatedPrompt := prompt.NewTemplatedPrompt(definition, "test-service")
+	templatedPrompt, err := prompt.NewTemplatedPrompt(definition, "test-service")
+	assert.NoError(t, err)
 
 	t.Run("with string arguments", func(t *testing.T) {
 		args, _ := json.Marshal(map[string]string{"name": "world"})
@@ -68,9 +69,10 @@ func TestTemplatedPrompt_Get(t *testing.T) {
 
 func TestTemplatedPrompt_Get_UnmarshalError(t *testing.T) {
 	definition := configv1.PromptDefinition_builder{}.Build()
-	templatedPrompt := prompt.NewTemplatedPrompt(definition, "test-service")
+	templatedPrompt, err := prompt.NewTemplatedPrompt(definition, "test-service")
+	assert.NoError(t, err)
 
-	_, err := templatedPrompt.Get(context.Background(), []byte("invalid json"))
+	_, err = templatedPrompt.Get(context.Background(), []byte("invalid json"))
 	assert.Error(t, err)
 }
 
@@ -86,10 +88,11 @@ func TestTemplatedPrompt_Get_RenderError(t *testing.T) {
 			}.Build(),
 		},
 	}.Build()
-	templatedPrompt := prompt.NewTemplatedPrompt(definition, "test-service")
+	templatedPrompt, err := prompt.NewTemplatedPrompt(definition, "test-service")
+	assert.NoError(t, err)
 
 	args, _ := json.Marshal(map[string]string{})
-	_, err := templatedPrompt.Get(context.Background(), args)
+	_, err = templatedPrompt.Get(context.Background(), args)
 	assert.Error(t, err)
 }
 
@@ -115,7 +118,8 @@ func TestTemplatedPrompt_Prompt(t *testing.T) {
 			},
 		},
 	}.Build()
-	templatedPrompt := prompt.NewTemplatedPrompt(definition, "test-service")
+	templatedPrompt, err := prompt.NewTemplatedPrompt(definition, "test-service")
+	assert.NoError(t, err)
 
 	mcpPrompt := templatedPrompt.Prompt()
 
@@ -128,7 +132,8 @@ func TestTemplatedPrompt_Prompt(t *testing.T) {
 
 func TestTemplatedPrompt_Service(t *testing.T) {
 	definition := configv1.PromptDefinition_builder{}.Build()
-	templatedPrompt := prompt.NewTemplatedPrompt(definition, "test-service")
+	templatedPrompt, err := prompt.NewTemplatedPrompt(definition, "test-service")
+	assert.NoError(t, err)
 	assert.Equal(t, "test-service", templatedPrompt.Service())
 }
 
@@ -156,7 +161,8 @@ func TestTemplatedPrompt_Get_NoText(t *testing.T) {
 			}.Build(),
 		},
 	}.Build()
-	templatedPrompt := prompt.NewTemplatedPrompt(definition, "test-service")
+	templatedPrompt, err := prompt.NewTemplatedPrompt(definition, "test-service")
+	assert.NoError(t, err)
 
 	args, _ := json.Marshal(map[string]string{})
 	result, err := templatedPrompt.Get(context.Background(), args)
