@@ -46,6 +46,7 @@ jobs:
           set -e
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             # Compare against the base branch
+            git fetch origin ${{ github.base_ref }} --depth=1
             DIFF=$(git diff --name-only origin/${{ github.base_ref }} HEAD)
           else
             # Push event: compare against previous commit
@@ -1083,19 +1084,19 @@ jobs:
         run: |
           install_dependencies() {
             SUDO=""
-            if command -v sudo &> /dev/null; then
+            if command -v sudo > /dev/null 2>&1; then
               SUDO="sudo"
             fi
 
-            if ! command -v curl &> /dev/null; then
+            if ! command -v curl > /dev/null 2>&1; then
               echo "curl not found. Installing..."
-              if command -v apt-get &> /dev/null; then
+              if command -v apt-get > /dev/null 2>&1; then
                 $SUDO apt-get update && $SUDO apt-get install -y curl ca-certificates
-              elif command -v apk &> /dev/null; then
+              elif command -v apk > /dev/null 2>&1; then
                 $SUDO apk add --no-cache curl ca-certificates
-              elif command -v yum &> /dev/null; then
+              elif command -v yum > /dev/null 2>&1; then
                 $SUDO yum install -y curl ca-certificates
-              elif command -v dnf &> /dev/null; then
+              elif command -v dnf > /dev/null 2>&1; then
                 $SUDO dnf install -y curl ca-certificates
               else
                 echo "Could not find package manager to install curl. Trying to proceed..."
@@ -1103,7 +1104,7 @@ jobs:
             fi
           }
 
-          if ! command -v gh &> /dev/null; then
+          if ! command -v gh > /dev/null 2>&1; then
             echo "gh not found. Installing..."
             install_dependencies
 
