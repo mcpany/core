@@ -106,16 +106,11 @@ func writeFileTool(prov provider.Provider, fs afero.Fs, readOnly bool) filesyste
 	}
 }
 
-// safeWriteFile writes content to a file safely, preventing TOCTOU attacks.
-// It ensures that:
-// 1. The path components have not changed (e.g. replaced by symlinks) since resolution.
-// 2. If the file does not exist, it is created exclusively (O_EXCL).
-// 3. If the file exists, it checks if it is a symlink before opening.
-func safeWriteFile(fs afero.Fs, path string, content []byte, perm os.FileMode) error {
-	// 1. Re-verify that the path is still canonical (no new symlinks introduced).
-	// This mitigates the directory swap attack (TOCTOU) where a parent directory
-	// is replaced by a symlink after the initial security check.
-	// Note: EvalSymlinks interacts with the OS filesystem. We should only do this check
+// verifyPathIntegrity checks that the path is free of symlinks that were introduced after resolution.
+// This is critical for preventing TOCTOU (Time-of-Check Time-of-Use) attacks where a directory
+// is swapped with a symlink between the time it was resolved/checked and the time it is used.
+func verifyPathIntegrity(fs afero.Fs, path string) error {
+	// EvalSymlinks interacts with the OS filesystem. We should only do this check
 	// if we are operating on the OS filesystem.
 	if _, isOsFs := fs.(*afero.OsFs); isOsFs {
 		realPath, err := filepath.EvalSymlinks(path)
@@ -123,6 +118,7 @@ func safeWriteFile(fs afero.Fs, path string, content []byte, perm os.FileMode) e
 			if os.IsNotExist(err) {
 				// File doesn't exist. Check parent directory integrity.
 				dir := filepath.Dir(path)
+				// If path is root or just a filename, Dir returns "." or "/"
 				realDir, err := filepath.EvalSymlinks(dir)
 				if err != nil {
 					return fmt.Errorf("failed to verify parent directory integrity: %w", err)
@@ -134,11 +130,24 @@ func safeWriteFile(fs afero.Fs, path string, content []byte, perm os.FileMode) e
 				return fmt.Errorf("failed to verify path integrity: %w", err)
 			}
 		} else {
-			// File exists.
+			// File/Dir exists.
 			if filepath.Clean(realPath) != filepath.Clean(path) {
 				return fmt.Errorf("access denied: path integrity violation (symlink detected)")
 			}
 		}
+	}
+	return nil
+}
+
+// safeWriteFile writes content to a file safely, preventing TOCTOU attacks.
+// It ensures that:
+// 1. The path components have not changed (e.g. replaced by symlinks) since resolution.
+// 2. If the file does not exist, it is created exclusively (O_EXCL).
+// 3. If the file exists, it checks if it is a symlink before opening.
+func safeWriteFile(fs afero.Fs, path string, content []byte, perm os.FileMode) error {
+	// 1. Re-verify that the path is still canonical (no new symlinks introduced).
+	if err := verifyPathIntegrity(fs, path); err != nil {
+		return err
 	}
 
 	// 2. Try to create the file exclusively first.
@@ -202,6 +211,29 @@ func safeWriteFile(fs afero.Fs, path string, content []byte, perm os.FileMode) e
 	return err
 }
 
+func safeRename(fs afero.Fs, source, destination string) error {
+	// Verify source path integrity
+	if err := verifyPathIntegrity(fs, source); err != nil {
+		return fmt.Errorf("source path verification failed: %w", err)
+	}
+	// Verify destination path integrity
+	if err := verifyPathIntegrity(fs, destination); err != nil {
+		return fmt.Errorf("destination path verification failed: %w", err)
+	}
+
+	return fs.Rename(source, destination)
+}
+
+func safeRemove(fs afero.Fs, path string, recursive bool) error {
+	if err := verifyPathIntegrity(fs, path); err != nil {
+		return fmt.Errorf("path verification failed: %w", err)
+	}
+	if recursive {
+		return fs.RemoveAll(path)
+	}
+	return fs.Remove(path)
+}
+
 func moveFileTool(prov provider.Provider, fs afero.Fs, readOnly bool) filesystemToolDef {
 	return filesystemToolDef{
 		Name:        "move_file",
@@ -242,7 +274,7 @@ func moveFileTool(prov provider.Provider, fs afero.Fs, readOnly bool) filesystem
 				return nil, fmt.Errorf("failed to create parent directory: %w", err)
 			}
 
-			if err := fs.Rename(resolvedSource, resolvedDest); err != nil {
+			if err := safeRename(fs, resolvedSource, resolvedDest); err != nil {
 				return nil, err
 			}
 			return map[string]interface{}{"success": true}, nil
@@ -276,14 +308,8 @@ func deleteFileTool(prov provider.Provider, fs afero.Fs, readOnly bool) filesyst
 				return nil, err
 			}
 
-			if recursive {
-				if err := fs.RemoveAll(resolvedPath); err != nil {
-					return nil, err
-				}
-			} else {
-				if err := fs.Remove(resolvedPath); err != nil {
-					return nil, err
-				}
+			if err := safeRemove(fs, resolvedPath, recursive); err != nil {
+				return nil, err
 			}
 			return map[string]interface{}{"success": true}, nil
 		},
