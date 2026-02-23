@@ -2,6 +2,7 @@
 
 ## 1. Top Priorities: The Universal Agent Bus (New Strategic Focus)
 *   **[Security] Policy Firewall Engine:** Implement Rego/CEL based hooking for tool calls.
+*   **[Security] Zero Trust Sandboxing:** isolated execution environment for command-based tools.
 *   **[Security] Granular Scopes:** implement capability-based token system (`fs:read:/tmp`).
 *   **[Comms] Recursive Context Protocol:** Standardize headers for Subagent inheritance.
 *   **[State] Shared Key-Value Store:** Embedded SQLite "Blackboard" tool for agents.
@@ -10,6 +11,8 @@
 ## 2. Updated Roadmap
 
 ### Status: Active Development
+*   **[2026-02-23]** Initializing Design for **Recursive Context Protocol** and **Policy Firewall Engine**.
+*   **[2026-02-23]** Drafting requirements for **Zero Trust Tool Sandboxing**.
 
 ## 2. Top 10 Recommended Features
 
