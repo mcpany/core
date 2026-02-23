@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { AlertCircle, CheckCircle2, Clock, ChevronDown, ChevronRight, Activity, Terminal, Code, Cpu, Database, Globe, Play, Download, Copy, Lightbulb, AlertTriangle } from "lucide-react";
+import { AlertCircle, CheckCircle2, Clock, ChevronDown, ChevronRight, Activity, Terminal, Code, Cpu, Database, Globe, Play, Download, Copy, Lightbulb, AlertTriangle, Coins } from "lucide-react";
 import { Trace, Span, SpanStatus } from "@/types/trace";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -22,6 +22,7 @@ import { JsonView } from "@/components/ui/json-view";
 import { analyzeTrace } from "@/lib/diagnostics";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { SequenceDiagram } from "@/components/traces/sequence-diagram";
+import { estimateTokens, calculateCost, formatCost } from "@/lib/tokens";
 
 /**
  * SpanIcon component.
@@ -160,6 +161,12 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
 
     const diagnostics = analyzeTrace(trace);
 
+    // Calculate estimation
+    const rootInputTokens = estimateTokens(trace.rootSpan.input);
+    const rootOutputTokens = estimateTokens(trace.rootSpan.output);
+    const totalTokens = rootInputTokens + rootOutputTokens;
+    const estimatedCost = calculateCost(totalTokens);
+
     const handleReplay = (toolName: string, args: Record<string, unknown> | undefined) => {
          const argsStr = JSON.stringify(args || {});
          const encodedArgs = encodeURIComponent(argsStr);
@@ -199,6 +206,20 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
                         <div className="flex items-center gap-1"><Clock className="h-3 w-3" /> {trace.totalDuration}ms</div>
                         <div className="flex items-center gap-1"><Activity className="h-3 w-3" /> {new Date(trace.timestamp).toLocaleString()}</div>
+
+                        <Separator orientation="vertical" className="h-4" />
+
+                        <div className="flex items-center gap-1" title={`Input: ${rootInputTokens} | Output: ${rootOutputTokens}`}>
+                            <span className="font-semibold text-[10px] uppercase tracking-wider text-muted-foreground">Tokens</span>
+                            <span className="font-mono">{totalTokens}</span>
+                        </div>
+                        <div className="flex items-center gap-1" title="Estimated Cost">
+                            <Coins className="h-3 w-3 text-amber-500" />
+                            <span className="font-mono">{formatCost(estimatedCost)}</span>
+                        </div>
+
+                        <Separator orientation="vertical" className="h-4" />
+
                         <div className="flex items-center gap-1 font-mono text-xs bg-muted px-1 rounded">{trace.id}</div>
                     </div>
                 </div>
