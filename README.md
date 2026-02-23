@@ -85,6 +85,8 @@ We enforce **100% documentation coverage** and strict style guides.
 *   **Go:** We use `golangci-lint` with `revive` and `check-go-doc` to enforce GoDoc standards. We require structured docstrings (Summary, Parameters, Returns, Errors, Side Effects) for all public APIs.
 *   **Protocol:** We check for breaking changes in `.proto` files.
 
+See [AGENTS.md](server/AGENTS.md) for detailed coding and documentation guidelines.
+
 To run linters:
 ```bash
 make lint
