@@ -90,11 +90,6 @@ test.describe('Generate Detailed Docs Screenshots', () => {
          });
      });
 
-     // Mock Logs
-     // await page.route('**/api/v1/logs/stream**', async route => {
-     //     // This might be WS, but if HTTP fallback:
-     //     await route.fulfill({ json: [] });
-     // });
 
      // Mock Health Check to prevent connection error banner
      await page.route('**/healthz', async route => {
@@ -146,7 +141,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
     });
 
 
-    await page.route(/.*\/api\/dashboard\/health/, async route => {
+      await page.route(/.*\/api(\/v1)?\/dashboard\/health/, async route => {
         await route.fulfill({
             json: [
                {
@@ -182,12 +177,12 @@ test.describe('Generate Detailed Docs Screenshots', () => {
       await expect(page.getByText('System Health').first()).toBeVisible();
     // Try to wait for data, but don't block if missing (e.g. backend down in test)
     try {
-        await expect(page.getByText('Primary DB')).toBeVisible({ timeout: 2000 });
+        await expect(page.getByText('Primary DB')).toBeVisible({ timeout: 10000 });
     } catch (e) {
         console.warn('Primary DB not visible, proceeding with screenshot of empty/error state');
     }
     // Give widgets extra time to render after data fetch
-    await page.waitForTimeout(5000);
+      await page.waitForTimeout(10000);
     await expect(page.locator('body')).toBeVisible();
 
     // Check for specific widget content before screenshot
@@ -298,35 +293,25 @@ test.describe('Generate Detailed Docs Screenshots', () => {
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'playground_blank.png'), fullPage: true });
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'playground.png'), fullPage: true });
 
-    // Mock Tools
-    await page.route('**/api/v1/tools', async route => {
-         await route.fulfill({
-             json: {
-                 tools: [
-                     { name: 'filesystem.list_dir', description: 'List files in directory', inputSchema: { type: 'object', properties: { path: { type: 'string' } }, required: ['path'] } },
-                     { name: 'calculator.add', description: 'Add two numbers', inputSchema: { type: 'object', properties: { a: { type: 'number' }, b: { type: 'number' } }, required: ['a', 'b'] } }
-                 ]
-             }
-         });
-    });
+      // We removed Mock Tools to use real tools like get_complex_data
 
     // Reload to get tools
     await page.reload();
     await page.waitForTimeout(1000);
 
     // Select Tool
-    const tool = page.getByText('filesystem.list_dir');
+      const tool = page.getByText('get_complex_data');
     if (await tool.isVisible()) {
         await tool.click();
         await page.waitForTimeout(500);
         await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'playground_tool_selected.png'), fullPage: true });
 
         // Fill Form
-        const pathInput = page.getByPlaceholder('path', { exact: false });
+        const pathInput = page.getByPlaceholder('dummy', { exact: false });
         // Also try placeholder or just the main input
         const tryInput = page.locator('input').last();
         if (await tryInput.isVisible()) {
-            try { await tryInput.fill('/var/log'); } catch (e) { }
+            try { await tryInput.fill('test_value'); } catch (e) { }
             await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'playground_form_filled.png'), fullPage: true });
         }
     }
@@ -561,18 +546,19 @@ test.describe('Generate Detailed Docs Screenshots', () => {
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'resources_split_view.png'), fullPage: true });
 
       // Open Preview Modal
-      // Just take a screenshot of the page with the modal open if possible
-      const listItems = page.locator('.flex.items-center.gap-3.p-3');
-      const firstResource = listItems.first();
-      if (await firstResource.isVisible()) {
-        await firstResource.click({ button: 'right' });
-        await page.waitForTimeout(1000);
-        const previewBtn = page.getByText('Preview in Modal');
-        if (await previewBtn.isVisible()) {
-             await previewBtn.click();
-            await page.waitForTimeout(3000); // give it time to load content
-             await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'resource_preview_modal.png') });
-        }
+      const firstResource = page.locator('.flex.items-center.gap-3.p-3').first();
+      try {
+          await firstResource.waitFor({ state: 'visible', timeout: 5000 });
+          await firstResource.click({ button: 'right' });
+
+          const previewBtn = page.getByText('Preview in Modal');
+          await previewBtn.waitFor({ state: 'visible', timeout: 3000 });
+          await previewBtn.click();
+
+          await page.waitForTimeout(3000); // give it time to load content
+          await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'resource_preview_modal.png') });
+      } catch (e) {
+          console.warn('Could not capture resource preview modal:', e);
       }
   });
 
@@ -742,7 +728,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
       });
 
       // Mock Health Check for backend health step
-      await page.route('**/api/dashboard/health', async route => {
+      await page.route(/.*\/api(\/v1)?\/dashboard\/health/, async route => {
         await route.fulfill({
             json: [
                {

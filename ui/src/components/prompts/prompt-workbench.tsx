@@ -68,8 +68,10 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
               }
               if (Array.isArray(data)) {
                   setPrompts(data);
+              } else if (data && Array.isArray(data.prompts)) {
+                  setPrompts(data.prompts);
               } else {
-                  setPrompts(data.prompts || []);
+                  setPrompts([]);
               }
           })
           .catch(err => {

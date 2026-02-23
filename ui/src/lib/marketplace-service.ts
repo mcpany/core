@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { UpstreamServiceConfig } from "@/lib/client";
+import { apiClient, UpstreamServiceConfig } from "@/lib/client";
 
 /**
  * A collection of services, typically organized by theme or use case.
