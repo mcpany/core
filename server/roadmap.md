@@ -14,6 +14,10 @@
 #### Upcoming (2026-02-23 Evolution)
 *   **[P0] Recursive Context Protocol**: Finalize header-based context inheritance for swarms.
 *   **[P0] Zero-Trust Subagent Scoping**: Implement intent-bound capability tokens.
+
+#### Upcoming (2026-02-24 Evolution)
+*   **[P0] Zero-Trust Egress Shield**: Policy-based egress filtering to prevent SSRF (Direct response to OpenClaw crisis).
+*   **[P0] Path Sanitization Middleware**: Strict boundary enforcement for filesystem-based tools to prevent path traversal.
 *   **[P1] Environment Bridging Middleware**: Secure state sync between cloud sandboxes and local tools.
 *   **[P1] Machine-Checkable Security Contracts**: Declarative tool safety models.
 

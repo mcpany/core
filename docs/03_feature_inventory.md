@@ -19,5 +19,17 @@
 - **Recursive Context Protocol**: Promoted from **P1** to **P0**. Essential for modern agent swarms to prevent state loss.
 - **Shared KV Store**: Promoted from **P1** to **P0**. Critical for coordinating multi-agent actions in complex workflows.
 
+---
+
+## Evolution: [2026-02-24] Updates
+
+### Proposed Additions
+- **Zero-Trust Egress Shield**: (P0) Mandatory egress filtering for tool calls (anti-SSRF).
+- **Path Sanitization Middleware**: (P0) Strict directory boundary enforcement for filesystem tools.
+- **Signed Intent Tokens**: (P1) Cryptographic attestation for tool invocations to prevent hijacking.
+
+### Priority Shifts
+- **Machine-Checkable Security Contracts**: Promoted from **P1** to **P0**. Essential for automated auditing of tool safety in light of recent exploits.
+
 ### Deprecations / Monitoring
 - *None today.*

@@ -3,6 +3,8 @@
 ## Status: Active Development
 
 ### Universal Agent Bus (New Strategic Priorities)
+- [ ] **[P0] Egress Policy Manager**: Visual interface for managing allowed domains and IP ranges. (Added: 2026-02-24)
+- [ ] **[P0] Security Audit Log Visualizer**: Real-time visualization of blocked SSRF and path traversal attempts. (Added: 2026-02-24)
 - [ ] **[P0] Recursive Context Dashboard**: Visualize state inheritance and session tokens across agent swarms. (Added: 2026-02-23)
 - [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
 - [ ] **[P1] Tool Playground & Explorer**:
