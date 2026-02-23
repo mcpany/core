@@ -33,6 +33,10 @@ jobs:
     outputs:
       src: ${{ steps.filter.outputs.src }}
     steps:
+      - name: Install Git
+        run: |
+          apt-get update && apt-get install -y git
+
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -41,7 +45,7 @@ jobs:
         id: filter
         run: |
           set -e
-          if [ "${{ github.event_name }}" == "pull_request" ]; then
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
             # Compare against the base branch
             DIFF=$(git diff --name-only origin/${{ github.base_ref }} HEAD)
           else
@@ -1080,13 +1084,29 @@ jobs:
             if ! command -v curl &> /dev/null; then
               echo "curl not found. Installing..."
               if command -v apt-get &> /dev/null; then
-                sudo apt-get update && sudo apt-get install -y curl ca-certificates
+                if command -v sudo &> /dev/null; then
+                  sudo apt-get update && sudo apt-get install -y curl ca-certificates
+                else
+                  apt-get update && apt-get install -y curl ca-certificates
+                fi
               elif command -v apk &> /dev/null; then
-                sudo apk add --no-cache curl ca-certificates
+                if command -v sudo &> /dev/null; then
+                  sudo apk add --no-cache curl ca-certificates
+                else
+                  apk add --no-cache curl ca-certificates
+                fi
               elif command -v yum &> /dev/null; then
-                sudo yum install -y curl ca-certificates
+                if command -v sudo &> /dev/null; then
+                  sudo yum install -y curl ca-certificates
+                else
+                  yum install -y curl ca-certificates
+                fi
               elif command -v dnf &> /dev/null; then
-                sudo dnf install -y curl ca-certificates
+                if command -v sudo &> /dev/null; then
+                  sudo dnf install -y curl ca-certificates
+                else
+                  dnf install -y curl ca-certificates
+                fi
               else
                 echo "Could not find package manager to install curl. Trying to proceed..."
               fi
@@ -1144,9 +1164,12 @@ jobs:
             elif command -v sudo &> /dev/null; then
                sudo cp "$BIN_PATH" /usr/local/bin/
             else
-               mkdir -p "$HOME/.local/bin"
-               cp "$BIN_PATH" "$HOME/.local/bin/"
-               echo "$HOME/.local/bin" >> $GITHUB_PATH
+               # Try to copy without sudo if we are root or have permissions
+               cp "$BIN_PATH" /usr/local/bin/ || {
+                 mkdir -p "$HOME/.local/bin"
+                 cp "$BIN_PATH" "$HOME/.local/bin/"
+                 echo "$HOME/.local/bin" >> $GITHUB_PATH
+               }
             fi
 
             rm -rf /tmp/gh-install
