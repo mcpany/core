@@ -27,3 +27,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Coordination Hub Architecture**: Transitioning to a model where MCP Any manages "agent sessions" and "handoffs" between specialized subagents, ensuring state stability.
 - **Unified Transport Layer**: Abstracting the complexity of different MCP transport types (FastMCP, Stdio, HTTP) into a single, high-performance gateway.
 - **Discovery Automation**: Moving towards an "Auto-Discovery" first approach to eliminate the manual configuration friction observed in the Gemini and Claude ecosystems.
+
+---
+
+## Strategic Evolution: [2026-02-25]
+### Focus: On-Demand Tool Discovery & Supply Chain Integrity
+**Context**: Recent breakthroughs in Claude Code (MCP Tool Search) and the "Clinejection" supply chain attack have shifted the landscape. Agents now need to handle thousands of tools without context pollution, and they must do so within a verified security perimeter.
+**Strategic Pivot**:
+- **Lazy-Discovery Architecture**: MCP Any will pivot from "pushing" all tool schemas to "serving" them on-demand via a high-performance similarity search middleware. This allows for virtually unlimited tool scaling.
+- **Supply Chain Provenance**: Implementing "Attested Tooling" where every MCP server must provide a cryptographic signature of its origin and configuration, preventing rogue installations like those seen in the Cline incident.
+- **Context-Aware Scoping**: Moving beyond simple capability tokens to "Intent-Aware" permissions, where a tool call is only allowed if it aligns with the high-level intent verified by the Policy Engine.

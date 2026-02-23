@@ -33,3 +33,19 @@
 
 ### Priority Shifts
 - **Policy Firewall**: Promoted to **P0** to support secure "Zero Trust" subagent isolation as ecosystems become more complex.
+
+---
+
+## Evolution: [2026-02-25] Updates
+
+### Proposed Additions
+- **On-Demand Discovery Middleware (Lazy-MCP)**: (P0) Implements similarity-based tool searching to prevent context pollution. Essential for massive (100+) tool libraries.
+- **MCP Provenance Attestation**: (P1) Cryptographic verification of MCP server origins to prevent "Clinejection"-style supply chain attacks.
+- **Slash-Command Bridge for Gemini**: (P1) Automatic mapping of MCP prompts to native Gemini CLI slash commands.
+
+### Priority Shifts
+- **Environment Bridging Middleware**: Promoted from **P1** to **P0**. The need for secure "Local-to-Cloud" tool bridging is increasing with more agents running in remote sandboxes.
+- **Supply Chain Integrity Guard**: (New entry but P0 priority) High urgency due to recent ecosystem exploits.
+
+### Deprecations / Monitoring
+- **Upfront Tool Schema Pushing**: Monitoring for deprecation in favor of Lazy-Discovery.
