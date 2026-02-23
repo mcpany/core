@@ -338,16 +338,20 @@ jobs:
         run: |
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
-          sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          SUDO=""
+          if command -v sudo >/dev/null 2>&1; then
+            SUDO="sudo"
+          fi
+          $SUDO mkdir -p /etc/docker
+          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json
 
-          if sudo systemctl restart docker 2>/dev/null; then
+          if $SUDO systemctl restart docker 2>/dev/null; then
             echo "Docker restarted via systemctl"
-          elif sudo service docker restart 2>/dev/null; then
+          elif $SUDO service docker restart 2>/dev/null; then
             echo "Docker restarted via service"
           else
             echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
-            sudo pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
+            $SUDO pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
           fi
           docker info # Verify the mirrors are listed
 
@@ -655,16 +659,20 @@ jobs:
 
       - name: Configure Docker Registry Mirrors
         run: |
-          sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          SUDO=""
+          if command -v sudo >/dev/null 2>&1; then
+            SUDO="sudo"
+          fi
+          $SUDO mkdir -p /etc/docker
+          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json
 
-          if sudo systemctl restart docker 2>/dev/null; then
+          if $SUDO systemctl restart docker 2>/dev/null; then
             echo "Docker restarted via systemctl"
-          elif sudo service docker restart 2>/dev/null; then
+          elif $SUDO service docker restart 2>/dev/null; then
             echo "Docker restarted via service"
           else
             echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
-            sudo pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
+            $SUDO pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
           fi
           docker info
 
@@ -804,16 +812,20 @@ jobs:
         run: |
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
-          sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          SUDO=""
+          if command -v sudo >/dev/null 2>&1; then
+            SUDO="sudo"
+          fi
+          $SUDO mkdir -p /etc/docker
+          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json
 
-          if sudo systemctl restart docker 2>/dev/null; then
+          if $SUDO systemctl restart docker 2>/dev/null; then
             echo "Docker restarted via systemctl"
-          elif sudo service docker restart 2>/dev/null; then
+          elif $SUDO service docker restart 2>/dev/null; then
             echo "Docker restarted via service"
           else
             echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
-            sudo pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
+            $SUDO pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
           fi
           docker info # Verify the mirrors are listed
 
@@ -903,16 +915,20 @@ jobs:
         run: |
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
-          sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          SUDO=""
+          if command -v sudo >/dev/null 2>&1; then
+            SUDO="sudo"
+          fi
+          $SUDO mkdir -p /etc/docker
+          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json
 
-          if sudo systemctl restart docker 2>/dev/null; then
+          if $SUDO systemctl restart docker 2>/dev/null; then
             echo "Docker restarted via systemctl"
-          elif sudo service docker restart 2>/dev/null; then
+          elif $SUDO service docker restart 2>/dev/null; then
             echo "Docker restarted via service"
           else
             echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
-            sudo pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
+            $SUDO pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
           fi
           docker info # Verify the mirrors are listed
 
@@ -961,10 +977,14 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          SUDO=""
+          if command -v sudo >/dev/null 2>&1; then
+            SUDO="sudo"
+          fi
+          $SUDO rm -rf /usr/local/lib/android
+          $SUDO rm -rf /usr/share/dotnet
+          $SUDO rm -rf /opt/ghc
+          $SUDO rm -rf /usr/local/share/boost
 
       - name: Prune Docker
         run: docker system prune -af
