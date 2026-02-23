@@ -2878,6 +2878,10 @@ var dangerousEnvVars = map[string]bool{
 
 	// Shell
 	"BASH_ENV": true, "ENV": true, "PS4": true, "SHELLOPTS": true, "PROMPT_COMMAND": true, "IFS": true,
+
+	// Execution & Config Hijacking
+	"GCONV_PATH": true, "SHELL": true, "HOME": true,
+	"XDG_CONFIG_HOME": true, "XDG_DATA_HOME": true, "XDG_CACHE_HOME": true,
 }
 
 // isDangerousEnvVar checks if the environment variable name is potentially dangerous.
@@ -3324,7 +3328,8 @@ func checkInterpreterFunctionCalls(val, language string) error {
 		// Block functions if followed by ( (call), = (assignment), : (type hint/dict)
 		// We do NOT block . (method access) on functions usually, but some might be objects too.
 		// For safety, we block ( and = and :.
-		if err := checkContextualKeywords(val, functionKeywords, []rune{'(', '=', ':'}); err != nil {
+		// Sentinel Security Update: Also block if followed by space or quotes to prevent unparenthesized calls (e.g. exec "cmd", system 'cmd')
+		if err := checkContextualKeywords(val, functionKeywords, []rune{'(', '=', ':', ' ', '\'', '"'}); err != nil {
 			return err
 		}
 	}
