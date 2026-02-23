@@ -6,6 +6,8 @@
 *   **[Comms] Recursive Context Protocol:** Standardize headers for Subagent inheritance.
 *   **[State] Shared Key-Value Store:** Embedded SQLite "Blackboard" tool for agents.
 *   **[Security] HITL Middleware:** Suspension protocol for user approval flows.
+*   **[Security] Zero Trust Sandboxing (Upcoming):** Isolated Docker/WASM execution for CLI upstreams to mitigate local port shadowing.
+*   **[Comms] Swarm Mesh Gateway (Upcoming):** Standardized discovery and routing for OpenClaw-style decentralized meshes.
 
 ## 2. Updated Roadmap
 

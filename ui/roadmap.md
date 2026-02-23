@@ -16,6 +16,8 @@
 - [ ] **[P2] Interactive Setup Wizard**: Guided "First Run" experience to generate `mcp.yaml` and configure agents.
 - [ ] **[P2] Agent Black Box Player**: Timeline-based replay of recorded agent sessions (Inputs, Outputs, State).
 - [ ] **[P2] Cost & metrics Dashboard**: Real-time visualization of token usage, costs, and tool performance metrics (P95 latency).
+- [ ] **[P0] Zero Trust Sandbox Status (Upcoming)**: Visualization of isolated execution environments and their security health.
+- [ ] **[P1] Swarm Mesh Explorer (Upcoming)**: Visual map of discovered agents in the decentralized swarm mesh.
 
 ### Existing Planned Features
 
