@@ -2168,6 +2168,11 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 			if safeForEnv {
 				env = append(env, fmt.Sprintf("%s=%s", name, valStr))
 			}
+
+			// Sentinel Security Update: Add sensitive inputs to the redactor's secret list
+			if util.IsSensitiveKey(name) {
+				secrets = append(secrets, valStr)
+			}
 		}
 	}
 
@@ -2189,6 +2194,12 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 	// ⚡ BOLT: Reuse Redactor to avoid re-sorting secrets and rebuilding replacer multiple times.
 	// Randomized Selection from Top 5 High-Impact Targets
 	redactor := util.NewSecretRedactor(secrets)
+
+	// Redact arguments before returning them in the result
+	redactedArgs := make([]string, len(args))
+	for i, arg := range args {
+		redactedArgs[i] = redactor.Redact(arg)
+	}
 
 	// Differentiate between JSON and environment variable-based communication
 	if t.service.GetCommunicationProtocol() == configv1.CommandLineUpstreamService_COMMUNICATION_PROTOCOL_JSON {
@@ -2265,7 +2276,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 
 	result := map[string]interface{}{
 		"command":         t.service.GetCommand(),
-		"args":            args,
+		"args":            redactedArgs,
 		"stdout":          redactor.Redact(stdoutBuf.String()),
 		"stderr":          redactor.Redact(stderrBuf.String()),
 		"combined_output": redactor.Redact(combinedBuf.String()),
@@ -2531,6 +2542,11 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 			if safeForEnv {
 				env = append(env, fmt.Sprintf("%s=%s", name, valStr))
 			}
+
+			// Sentinel Security Update: Add sensitive inputs to the redactor's secret list
+			if util.IsSensitiveKey(name) {
+				secrets = append(secrets, valStr)
+			}
 		}
 	}
 
@@ -2552,6 +2568,12 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	// ⚡ BOLT: Reuse Redactor to avoid re-sorting secrets and rebuilding replacer multiple times.
 	// Randomized Selection from Top 5 High-Impact Targets
 	redactor := util.NewSecretRedactor(secrets)
+
+	// Redact arguments before returning them in the result
+	redactedArgs := make([]string, len(args))
+	for i, arg := range args {
+		redactedArgs[i] = redactor.Redact(arg)
+	}
 
 	// Differentiate between JSON and environment variable-based communication
 	if t.service.GetCommunicationProtocol() == configv1.CommandLineUpstreamService_COMMUNICATION_PROTOCOL_JSON {
@@ -2628,7 +2650,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 
 	result := map[string]interface{}{
 		"command":         t.service.GetCommand(),
-		"args":            args,
+		"args":            redactedArgs,
 		"stdout":          redactor.Redact(stdoutBuf.String()),
 		"stderr":          redactor.Redact(stderrBuf.String()),
 		"combined_output": redactor.Redact(combinedBuf.String()),
