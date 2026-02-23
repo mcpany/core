@@ -1,0 +1,21 @@
+upstream_services:
+  - name: "test-service"
+    http_service:
+      address: "https://httpbin.org"
+      calls:
+        upload-call:
+          endpoint_path: "/post"
+          method: "HTTP_METHOD_POST"
+      tools:
+        - name: "upload_file"
+          description: "Upload a file"
+          call_id: "upload-call"
+          input_schema:
+            type: "object"
+            properties:
+              file:
+                type: "string"
+                title: "File"
+                description: "The file to upload"
+                contentEncoding: "base64"
+                contentMediaType: "image/png"
