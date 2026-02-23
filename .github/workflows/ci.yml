@@ -70,7 +70,7 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: oci-runner
-    container: ubuntu:24.04
+    # container: ubuntu:24.04
     steps:
       - name: Free Disk Space (Fast)
         run: |
@@ -140,7 +140,7 @@ jobs:
 
   unit-test:
     runs-on: oci-runner
-    container: ubuntu:24.04
+    # container: ubuntu:24.04
     timeout-minutes: 30
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -276,7 +276,7 @@ jobs:
 
   e2e-parallel:
     runs-on: oci-runner
-    container: ubuntu:24.04
+    # container: ubuntu:24.04
     timeout-minutes: 30
     needs: [build-images]
     strategy:
@@ -446,7 +446,7 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: ${{ matrix.runner }}
-    container: ubuntu:24.04
+    # container: ubuntu:24.04
     strategy:
       fail-fast: false
       matrix:
@@ -587,7 +587,7 @@ jobs:
 
   e2e-sequential:
     runs-on: oci-runner
-    container: ubuntu:24.04
+    # container: ubuntu:24.04
     timeout-minutes: 60
     needs: [build-images]
     env:
@@ -725,7 +725,7 @@ jobs:
 
   e2e-public-api:
     runs-on: oci-runner
-    container: ubuntu:24.04
+    # container: ubuntu:24.04
     timeout-minutes: 30
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
