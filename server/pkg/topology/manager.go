@@ -17,11 +17,12 @@ import (
 
 // activityEvent represents a single activity record event.
 type activityEvent struct {
-	SessionID string
-	Meta      map[string]interface{}
-	Latency   time.Duration
-	IsError   bool
-	ServiceID string
+	SessionID   string
+	Meta        map[string]interface{}
+	Latency     time.Duration
+	IsError     bool
+	ServiceID   string
+	ResponseLen int64
 }
 
 // Manager handles topology state tracking.
@@ -44,6 +45,7 @@ type SessionStats struct {
 	RequestCount   int64
 	TotalLatency   time.Duration
 	ErrorCount     int64
+	TotalBytes     int64
 	ServiceCounts  map[string]int64         // Per service request count
 	ServiceErrors  map[string]int64         // Per service error count
 	ServiceLatency map[string]time.Duration // Per service latency
@@ -61,6 +63,7 @@ type MinuteStats struct {
 	Requests     int64
 	Errors       int64
 	Latency      int64 // Total latency in ms
+	Bytes        int64 // Total response bytes
 	ServiceStats map[string]*ServiceTrafficStats
 }
 
@@ -69,6 +72,7 @@ type ServiceTrafficStats struct {
 	Requests int64
 	Errors   int64
 	Latency  int64
+	Bytes    int64
 }
 
 // TrafficPoint represents a data point for the traffic chart.
@@ -77,6 +81,7 @@ type TrafficPoint struct {
 	Total   int64  `json:"requests"` // mapped to "requests" for UI
 	Errors  int64  `json:"errors"`
 	Latency int64  `json:"latency"`
+	Bytes   int64  `json:"bytes"`
 }
 
 // NewManager creates a new Topology Manager.
@@ -140,6 +145,7 @@ func (m *Manager) handleActivity(event activityEvent) {
 	latency := event.Latency
 	isError := event.IsError
 	serviceID := event.ServiceID
+	responseLen := event.ResponseLen
 
 	if _, exists := m.sessions[sessionID]; !exists {
 		// Convert generic map to string map for proto compatibility
@@ -162,6 +168,7 @@ func (m *Manager) handleActivity(event activityEvent) {
 	session.LastActive = time.Now()
 	session.RequestCount++
 	session.TotalLatency += latency
+	session.TotalBytes += responseLen
 	if isError {
 		session.ErrorCount++
 	}
@@ -189,6 +196,7 @@ func (m *Manager) handleActivity(event activityEvent) {
 	stats := m.trafficHistory[now]
 	stats.Requests++
 	stats.Latency += latency.Milliseconds()
+	stats.Bytes += responseLen
 	if isError {
 		stats.Errors++
 	}
@@ -203,6 +211,7 @@ func (m *Manager) handleActivity(event activityEvent) {
 		sStats := stats.ServiceStats[serviceID]
 		sStats.Requests++
 		sStats.Latency += latency.Milliseconds()
+		sStats.Bytes += responseLen
 		if isError {
 			sStats.Errors++
 		}
@@ -226,7 +235,7 @@ func (m *Manager) handleActivity(event activityEvent) {
 // sessionID is the sessionID.
 // meta is the meta.
 // serviceID is the serviceID (optional).
-func (m *Manager) RecordActivity(sessionID string, meta map[string]interface{}, latency time.Duration, isError bool, serviceID string) {
+func (m *Manager) RecordActivity(sessionID string, meta map[string]interface{}, latency time.Duration, isError bool, serviceID string, responseLen int64) {
 	// ⚡ BOLT: Shallow copy meta to prevent race conditions as map is passed by reference
 	metaCopy := make(map[string]interface{}, len(meta))
 	for k, v := range meta {
@@ -235,11 +244,12 @@ func (m *Manager) RecordActivity(sessionID string, meta map[string]interface{}, 
 
 	select {
 	case m.activityCh <- activityEvent{
-		SessionID: sessionID,
-		Meta:      metaCopy,
-		Latency:   latency,
-		IsError:   isError,
-		ServiceID: serviceID,
+		SessionID:   sessionID,
+		Meta:        metaCopy,
+		Latency:     latency,
+		IsError:     isError,
+		ServiceID:   serviceID,
+		ResponseLen: responseLen,
 	}:
 		// Successfully queued
 	default:
@@ -355,18 +365,20 @@ func (m *Manager) GetTrafficHistory(serviceID string) []TrafficPoint {
 		key := t.Unix()
 
 		stats := m.trafficHistory[key]
-		var reqs, errs, lat int64
+		var reqs, errs, lat, bytes int64
 		if stats != nil {
 			if serviceID != "" && stats.ServiceStats != nil {
 				if sStats, ok := stats.ServiceStats[serviceID]; ok {
 					reqs = sStats.Requests
 					errs = sStats.Errors
 					lat = sStats.Latency
+					bytes = sStats.Bytes
 				}
 			} else if serviceID == "" {
 				reqs = stats.Requests
 				errs = stats.Errors
 				lat = stats.Latency
+				bytes = stats.Bytes
 			}
 		}
 
@@ -387,6 +399,7 @@ func (m *Manager) GetTrafficHistory(serviceID string) []TrafficPoint {
 			Total:   reqs,
 			Errors:  errs,
 			Latency: avgLat,
+			Bytes:   bytes,
 		})
 	}
 	return points
@@ -439,6 +452,7 @@ func (m *Manager) SeedTrafficHistory(points []TrafficPoint) {
 			Requests: p.Total,
 			Errors:   p.Errors,
 			Latency:  p.Latency * p.Total, // Reverse average
+			Bytes:    p.Bytes,
 		}
 		log.Info("Seeded point", "time", p.Time, "target_unix", targetTime.Unix(), "requests", p.Total)
 
@@ -446,6 +460,7 @@ func (m *Manager) SeedTrafficHistory(points []TrafficPoint) {
 		m.sessions["seed-data"].RequestCount += p.Total
 		m.sessions["seed-data"].ErrorCount += p.Errors
 		m.sessions["seed-data"].TotalLatency += time.Duration(p.Latency*p.Total) * time.Millisecond
+		m.sessions["seed-data"].TotalBytes += p.Bytes
 	}
 }
 

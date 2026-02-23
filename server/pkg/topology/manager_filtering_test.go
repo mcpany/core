@@ -17,13 +17,13 @@ func TestManager_Filtering(t *testing.T) {
 	defer m.Close()
 
 	// Record activity for Service A
-	m.RecordActivity("session-1", nil, 100*time.Millisecond, false, "service-a")
+	m.RecordActivity("session-1", nil, 100*time.Millisecond, false, "service-a", 0)
 
 	// Record activity for Service B
-	m.RecordActivity("session-2", nil, 200*time.Millisecond, true, "service-b")
+	m.RecordActivity("session-2", nil, 200*time.Millisecond, true, "service-b", 0)
 
 	// Record activity with no service
-	m.RecordActivity("session-3", nil, 50*time.Millisecond, false, "")
+	m.RecordActivity("session-3", nil, 50*time.Millisecond, false, "", 0)
 
 	// Wait for all 3 requests to be processed
 	assert.Eventually(t, func() bool {
