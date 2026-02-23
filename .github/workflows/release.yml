@@ -19,6 +19,7 @@ env:
 jobs:
   setup:
     runs-on: oci-runner # ubuntu-slim
+    container: ubuntu:22.04
     timeout-minutes: 30
     outputs:
       version: ${{ steps.vars.outputs.version }}

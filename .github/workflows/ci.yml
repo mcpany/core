@@ -29,9 +29,13 @@ permissions:
 jobs:
   changes:
     runs-on: oci-runner # ubuntu-slim
+    container: ubuntu:22.04
     outputs:
       src: ${{ steps.filter.outputs.src }}
     steps:
+      - name: Install dependencies
+        run: |
+          apt-get update && apt-get install -y git
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -68,7 +72,11 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: oci-runner # ubuntu-latest
+    container: ubuntu:22.04
     steps:
+      - name: Install Base Dependencies
+        run: |
+          apt-get update && apt-get install -y sudo curl git build-essential
       - name: Free Disk Space (Fast)
         run: |
           sudo rm -rf /usr/local/lib/android
@@ -137,6 +145,7 @@ jobs:
 
   unit-test:
     runs-on: oci-runner # ubuntu-latest
+    container: ubuntu:22.04
     timeout-minutes: 30
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -144,6 +153,9 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
+      - name: Install Base Dependencies
+        run: |
+          apt-get update && apt-get install -y sudo curl git build-essential
       - name: Free Disk Space (Fast)
         run: |
           sudo rm -rf /usr/local/lib/android
@@ -272,6 +284,7 @@ jobs:
 
   e2e-parallel:
     runs-on: oci-runner # ubuntu-latest
+    container: ubuntu:22.04
     timeout-minutes: 30
     needs: [build-images]
     strategy:
@@ -282,6 +295,9 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
+      - name: Install Base Dependencies
+        run: |
+          apt-get update && apt-get install -y sudo curl git build-essential
       - name: Free Disk Space (Fast)
         run: |
           sudo rm -rf /usr/local/lib/android
@@ -581,12 +597,16 @@ jobs:
 
   e2e-sequential:
     runs-on: oci-runner # ubuntu-latest
+    container: ubuntu:22.04
     timeout-minutes: 60
     needs: [build-images]
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
+      - name: Install Base Dependencies
+        run: |
+          apt-get update && apt-get install -y sudo curl git build-essential
       - name: Free Disk Space (Fast)
         run: |
           sudo rm -rf /usr/local/lib/android
@@ -718,6 +738,7 @@ jobs:
 
   e2e-public-api:
     runs-on: oci-runner # ubuntu-latest
+    container: ubuntu:22.04
     timeout-minutes: 30
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -725,6 +746,9 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
+      - name: Install Base Dependencies
+        run: |
+          apt-get update && apt-get install -y sudo curl git build-essential
       - name: Free Disk Space (Fast)
         run: |
           sudo rm -rf /usr/local/lib/android
@@ -1047,6 +1071,7 @@ jobs:
 
   ci-success:
     runs-on: oci-runner # ubuntu-slim
+    container: ubuntu:22.04
     needs:
       [
         changes,
@@ -1065,6 +1090,9 @@ jobs:
       pull-requests: write
       actions: read
     steps:
+      - name: Install Base Dependencies
+        run: |
+          apt-get update && apt-get install -y sudo curl git python3
       - name: Install gh CLI
         run: |
           install_dependencies() {
