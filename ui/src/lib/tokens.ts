@@ -4,13 +4,15 @@
  */
 
 /**
- * Estimates the number of tokens in a string using a simple heuristic.
+ * Estimates the number of tokens in a string or object using a simple heuristic.
  * This is meant for UI estimation only, not for precision.
- * @param text - The text to estimate tokens for.
+ * @param input - The text or object to estimate tokens for.
  * @returns Estimated token count.
  */
-export function estimateTokens(text: string): number {
-    if (!text) return 0;
+export function estimateTokens(input: any): number {
+    if (!input) return 0;
+
+    const text = typeof input === 'string' ? input : JSON.stringify(input);
 
     // Simple heuristic used by many LLM providers for estimation:
     // Approximately 4 characters per token for English text.
@@ -52,4 +54,28 @@ export function formatTokenCount(count: number): string {
         return (count / 1000).toFixed(1) + 'k';
     }
     return count.toString();
+}
+
+/**
+ * Calculates the estimated cost for a given number of tokens.
+ * Uses a generic pricing model (e.g., $0.005 / 1k tokens - blend of input/output).
+ * @param tokens - The number of tokens.
+ * @returns Estimated cost in USD.
+ */
+export function calculateCost(tokens: number): number {
+    // Generic blended rate: $5 per 1M tokens ($0.005 per 1k)
+    // This is roughly average for GPT-4o input/output blend or Claude 3.5 Sonnet.
+    const RATE_PER_1K = 0.005;
+    return (tokens / 1000) * RATE_PER_1K;
+}
+
+/**
+ * Formats a cost into a currency string.
+ * @param cost - The cost in USD.
+ * @returns Formatted string (e.g. $0.0024).
+ */
+export function formatCost(cost: number): string {
+    if (cost === 0) return "$0.00";
+    if (cost < 0.01) return `$${cost.toFixed(4)}`;
+    return `$${cost.toFixed(2)}`;
 }

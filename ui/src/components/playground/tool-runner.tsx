@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { ToolDefinition, apiClient, ToolAnalytics } from "@/lib/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { PlayCircle, Loader2, Zap, Activity, History as HistoryIcon, RefreshCw, Code, Terminal } from "lucide-react";
+import { PlayCircle, Loader2, Zap, Activity, History as HistoryIcon, RefreshCw, Code, Terminal, Coins, ArrowRightLeft } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer, Tooltip as ChartTooltip, XAxis, YAxis, CartesianGrid } from "recharts";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -22,6 +22,7 @@ import { RichResultViewer } from "@/components/tools/rich-result-viewer";
 import { Switch } from "@/components/ui/switch";
 import { generateCurlCommand, generatePythonCode } from "@/lib/code-generator";
 import { useToast } from "@/hooks/use-toast";
+import { estimateTokens, calculateCost, formatCost } from "@/lib/tokens";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -60,6 +61,7 @@ export function ToolRunner({ tool, onClose }: ToolRunnerProps) {
   const [output, setOutput] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [isDryRun, setIsDryRun] = useState(false);
+  const [lastRunStats, setLastRunStats] = useState<{ inputTokens: number, outputTokens: number, cost: number } | null>(null);
   const { toast } = useToast();
 
   // Real data state
@@ -71,6 +73,7 @@ export function ToolRunner({ tool, onClose }: ToolRunnerProps) {
   useEffect(() => {
       setInput("{}");
       setOutput(null);
+      setLastRunStats(null);
       setHistoricalStats(null);
       setAuditLogs([]);
       fetchMetrics();
@@ -122,16 +125,36 @@ export function ToolRunner({ tool, onClose }: ToolRunnerProps) {
   const handleExecute = async () => {
     setLoading(true);
     setOutput(null);
+    setLastRunStats(null);
     try {
       const args = JSON.parse(input);
+      // Calculate Input Tokens
+      const inputTokens = estimateTokens(input);
+
       const res = await apiClient.executeTool({
           name: tool.name,
           arguments: args
       }, isDryRun);
       setOutput(res);
+
+      // Calculate Output Tokens
+      const outputTokens = estimateTokens(res);
+      const totalTokens = inputTokens + outputTokens;
+      const cost = calculateCost(totalTokens);
+
+      setLastRunStats({ inputTokens, outputTokens, cost });
+
       setTimeout(fetchMetrics, 500);
     } catch (e: any) {
       setOutput({ error: e.message || String(e) });
+
+      // Estimate error tokens
+      const inputTokens = estimateTokens(input);
+      const outputTokens = estimateTokens(e.message || String(e));
+      const totalTokens = inputTokens + outputTokens;
+
+      setLastRunStats({ inputTokens, outputTokens, cost: calculateCost(totalTokens) });
+
       setTimeout(fetchMetrics, 500);
     } finally {
       setLoading(false);
@@ -256,7 +279,22 @@ export function ToolRunner({ tool, onClose }: ToolRunnerProps) {
                  {/* Right/Bottom: Output */}
                  <div className="flex-1 flex flex-col bg-muted/5 min-h-[300px]">
                       <div className="p-3 border-b bg-muted/10 flex justify-between items-center">
-                          <Label className="text-xs font-semibold text-muted-foreground uppercase">Result</Label>
+                          <div className="flex items-center gap-4">
+                              <Label className="text-xs font-semibold text-muted-foreground uppercase">Result</Label>
+                              {lastRunStats && (
+                                  <div className="hidden sm:flex items-center gap-3 text-[10px] text-muted-foreground bg-background/50 px-2 py-0.5 rounded border">
+                                      <span className="flex items-center gap-1" title="Estimated Input Tokens">
+                                          In: {lastRunStats.inputTokens}
+                                      </span>
+                                      <span className="flex items-center gap-1" title="Estimated Output Tokens">
+                                          Out: {lastRunStats.outputTokens}
+                                      </span>
+                                      <span className="flex items-center gap-1 text-primary font-medium" title="Estimated Cost">
+                                          <Coins className="h-3 w-3" /> {formatCost(lastRunStats.cost)}
+                                      </span>
+                                  </div>
+                              )}
+                          </div>
                           {output && (
                               <Badge variant={output.isError || output.error ? "destructive" : "outline"} className={cn("text-[10px]", output.isError || output.error ? "" : "text-green-600 border-green-200 bg-green-50")}>
                                   {output.isError || output.error ? "Failed" : "Success"}
