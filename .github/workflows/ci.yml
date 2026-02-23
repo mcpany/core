@@ -35,13 +35,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 2
 
       - name: Check for changes
         id: filter
         run: |
           set -e
           if [ "${{ github.event_name }}" == "pull_request" ]; then
+            # Fetch the base branch for comparison
+            git fetch origin ${{ github.base_ref }} --depth=1
             # Compare against the base branch
             DIFF=$(git diff --name-only origin/${{ github.base_ref }} HEAD)
           else
