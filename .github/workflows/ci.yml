@@ -29,7 +29,6 @@ permissions:
 jobs:
   changes:
     runs-on: oci-runner
-    container: ubuntu:24.04
     outputs:
       src: ${{ steps.filter.outputs.src }}
     steps:
@@ -1055,7 +1054,6 @@ jobs:
 
   ci-success:
     runs-on: oci-runner
-    container: ubuntu:24.04
     needs:
       [
         changes,
