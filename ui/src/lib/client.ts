@@ -168,6 +168,14 @@ export interface ReadResourceResponse {
     contents: ResourceContent[];
 }
 
+interface RawValidateServiceResponse {
+    valid?: boolean;
+    message?: string;
+    error?: string;
+    discovered_tools?: ToolDefinition[];
+    discovered_resources?: ResourceDefinition[];
+}
+
 /**
  * Result of a single system health check.
  */
@@ -745,6 +753,14 @@ export const apiClient = {
             }
             throw new Error(`Failed to validate service: ${response.status} ${text}`);
         }
+
+        if (data) {
+            // Map snake_case to camelCase
+            const raw = data as RawValidateServiceResponse;
+            if (raw.discovered_tools) (data as any).discoveredTools = raw.discovered_tools;
+            if (raw.discovered_resources) (data as any).discoveredResources = raw.discovered_resources;
+        }
+
         return data;
     },
 

@@ -6,7 +6,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { UpstreamServiceConfig, apiClient } from "@/lib/client";
+import { UpstreamServiceConfig, apiClient, ToolDefinition } from "@/lib/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,7 +19,7 @@ import { EnvVarEditor } from "@/components/services/env-var-editor";
 import { OAuthConfig } from "@/components/services/editor/oauth-config";
 import { OAuthConnect } from "@/components/services/editor/oauth-connect";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { AlertCircle, Plus, Trash2, CheckCircle2, XCircle, Loader2, Key, FileDiff } from "lucide-react";
+import { AlertCircle, Plus, Trash2, CheckCircle2, XCircle, Loader2, Key, FileDiff, Wrench } from "lucide-react";
 import { SecretPicker } from "@/components/secrets/secret-picker";
 import { DiffViewer } from "@/components/services/editor/diff-viewer";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -29,6 +29,14 @@ import { PolicyEditor } from "@/components/services/editor/policy-editor";
 import { ServiceInspector } from "@/components/services/editor/service-inspector";
 import { SourceEditor } from "@/components/services/editor/source-editor";
 import { HttpToolManager } from "@/components/services/editor/http-tool-manager";
+import { DiscoveredToolsViewer } from "@/components/services/editor/discovered-tools-viewer";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
 import yaml from "js-yaml";
 
 interface ServiceEditorProps {
@@ -49,6 +57,8 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
     const [yamlContent, setYamlContent] = useState("");
     const [originalYaml, setOriginalYaml] = useState("");
     const [yamlError, setYamlError] = useState<string | null>(null);
+    const [discoveredTools, setDiscoveredTools] = useState<ToolDefinition[]>([]);
+    const [showDiscoveredTools, setShowDiscoveredTools] = useState(false);
     const { toast } = useToast();
 
     // Snapshot original configuration for diffing
@@ -108,14 +118,27 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
 
     const handleValidate = async () => {
         setValidating(true);
+        setDiscoveredTools([]);
         try {
             const result = await apiClient.validateService(service);
             if (result.valid) {
-                toast({
-                    title: "Configuration Valid",
-                    description: "The service configuration is valid and reachable.",
-                    action: <CheckCircle2 className="h-5 w-5 text-green-500" />
-                });
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const tools = (result as any).discoveredTools;
+                if (tools && tools.length > 0) {
+                    setDiscoveredTools(tools);
+                    setShowDiscoveredTools(true);
+                    toast({
+                        title: "Configuration Valid",
+                        description: `The service is valid. Discovered ${tools.length} tools.`,
+                        action: <CheckCircle2 className="h-5 w-5 text-green-500" />
+                    });
+                } else {
+                    toast({
+                        title: "Configuration Valid",
+                        description: "The service configuration is valid and reachable.",
+                        action: <CheckCircle2 className="h-5 w-5 text-green-500" />
+                    });
+                }
             } else {
                  toast({
                     variant: "destructive",
@@ -626,6 +649,12 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
             </div>
 
             <div className="border-t p-4 flex justify-end gap-2 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+                {discoveredTools.length > 0 && (
+                    <Button variant="ghost" onClick={() => setShowDiscoveredTools(true)} className="mr-auto">
+                        <Wrench className="mr-2 h-4 w-4" />
+                        View {discoveredTools.length} Tools
+                    </Button>
+                )}
                 <Button variant="outline" onClick={handleValidate} disabled={validating}>
                     {validating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                     Validate
@@ -633,6 +662,23 @@ export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEd
                 <Button variant="outline" onClick={onCancel}>Cancel</Button>
                 <Button onClick={onSave}>Save Changes</Button>
             </div>
+
+            <Dialog open={showDiscoveredTools} onOpenChange={setShowDiscoveredTools}>
+                <DialogContent className="sm:max-w-3xl max-h-[80vh] flex flex-col">
+                    <DialogHeader>
+                        <DialogTitle>Discovered Capabilities</DialogTitle>
+                        <DialogDescription>
+                            The following tools were discovered from the service configuration.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="flex-1 overflow-y-auto pr-2">
+                        <DiscoveredToolsViewer tools={discoveredTools} />
+                    </div>
+                    <div className="flex justify-end pt-4 border-t mt-2">
+                        <Button onClick={() => setShowDiscoveredTools(false)}>Done</Button>
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }
