@@ -3260,6 +3260,7 @@ func checkInterpreterFunctionCalls(val, language string) error {
 		"subprocess", "child_process", "os", "sys",
 		"open", "read", "write",
 		"phpinfo",
+		"syscall", "dlopen", "fiddle", "send", "__send__", "public_send",
 	}
 
 	if isStrict {
