@@ -71,9 +71,6 @@ jobs:
     runs-on: oci-runner
     container: ubuntu:24.04
     steps:
-      - name: Prune Docker
-        run: docker system prune -af
-
       - uses: actions/checkout@v4
 
       - name: Set up Go
@@ -119,9 +116,9 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            apt-get update && apt-get install -y make xz-utils
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             apk add --no-cache make xz
           fi
 
       - name: Prepare environment
@@ -140,17 +137,14 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
-      - name: Prune Docker
-        run: docker system prune -af
-
       - uses: actions/checkout@v4
 
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            apt-get update && apt-get install -y make xz-utils
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             apk add --no-cache make xz
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -272,17 +266,14 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
-      - name: Prune Docker
-        run: docker system prune -af
-
       - uses: actions/checkout@v4
 
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            apt-get update && apt-get install -y make xz-utils
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             apk add --no-cache make xz
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -451,6 +442,12 @@ jobs:
           cache: "npm"
           cache-dependency-path: server/tests/integration/upstream/package-lock.json
 
+      - name: Install dependencies
+        run: |
+          if command -v apt-get &> /dev/null; then
+            apt-get update && apt-get install -y make
+          fi
+
       - name: Generate Protobufs
         run: |
           make gen
@@ -566,17 +563,14 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
-      - name: Prune Docker
-        run: docker system prune -af
-
       - uses: actions/checkout@v4
 
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            apt-get update && apt-get install -y make xz-utils
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             apk add --no-cache make xz
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -698,17 +692,14 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
-      - name: Prune Docker
-        run: docker system prune -af
-
       - uses: actions/checkout@v4
 
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            apt-get update && apt-get install -y make xz-utils
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             apk add --no-cache make xz
           fi
 
       - name: Configure Docker Registry Mirrors
