@@ -1,22 +1,23 @@
 # Coverage Intervention Report
 
-**Target:** `server/pkg/mcpserver/temporary_tool_manager.go`
+**Target:** `server/pkg/app/dashboard.go` and `server/pkg/app/api_system.go`
 
-## Risk Profile
-This file was selected for intervention because:
-1.  **Criticality:** It is used by `ValidateService` to validate upstream service configurations before they are deployed.
-2.  **Implementation Gap:** The original implementation was a "No-Op" (embedded `NoOpToolManager`), meaning discovered tools were discarded immediately. This caused validation logic that depends on tool lookup (e.g., linking dynamic resources to tools) to fail silently or return incomplete results.
-3.  **Coverage Gap:** The file had **zero** test coverage, leaving this critical logic unverified.
+**Risk Profile:**
+*   **High Visibility:** The dashboard endpoints directly power the user interface. Failures here lead to a degraded user experience (e.g., broken charts, missing metrics).
+*   **Integration Complexity:** `dashboard.go` aggregates data from multiple sources (`TopologyManager`, `ServiceRegistry`, `ToolManager`, `ResourceManager`, `PromptManager`), making it a critical integration point prone to errors if any dependency behaves unexpectedly.
+*   **Zero Coverage:** Prior to this intervention, these endpoints had 0% test coverage ("Dark Matter").
 
-## New Coverage
-I have implemented the missing functionality in `server/pkg/mcpserver/temporary_tool_manager.go` and added a comprehensive test suite in `server/pkg/mcpserver/temporary_tool_manager_test.go` covering:
+**New Coverage:**
+*   **`handleDashboardMetrics`:**
+    *   Verified Happy Path: Correctly aggregates stats from `TopologyManager` (requests, errors, latency).
+    *   Verified Throughput Calculation: Ensures time-windowed throughput (RPS) logic is correct.
+    *   Verified Counts: Validates counts from `ServiceRegistry`, `ToolManager`, etc. are correctly propagated to the response.
+    *   Verified Method Not Allowed: Ensures non-GET requests are rejected.
+*   **`handleSystemStatus`:**
+    *   Verified Happy Path: Checks that uptime, version, and warnings are returned correctly.
+    *   Verified Warning Logic: Ensures missing API Key generates a security warning.
 
-*   **Tool Storage (`AddTool`):** Verified that tools are sanitized and stored correctly in an in-memory map.
-*   **Tool Retrieval (`GetTool`):** Verified that tools can be retrieved by their fully qualified ID.
-*   **Tool Listing (`ListTools`):** Verified listing of all stored tools.
-*   **Service Info Management (`AddServiceInfo`, `GetServiceInfo`):** Verified metadata storage.
-*   **Tool Counting (`GetToolCountForService`):** Verified correct counting of tools per service.
-
-## Verification
-*   **New Tests:** `go test -v ./server/pkg/mcpserver/ -run TestTemporaryToolManager` passed successfully.
-*   **Regression:** `go test -v ./server/pkg/mcpserver/` passed successfully, ensuring no regressions in the MCP server package (including `ValidateService` tests).
+**Verification:**
+*   `go test -v ./server/pkg/app -run TestDashboardMetrics` passed.
+*   `go test -v ./server/pkg/app -run TestSystemStatus` passed.
+*   `make lint` passed cleanly.
