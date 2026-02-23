@@ -127,9 +127,9 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             sudo apk add --no-cache make xz build-base
           fi
 
       - name: Prepare environment
@@ -141,7 +141,7 @@ jobs:
   unit-test:
     runs-on: oci-runner
     # container: ubuntu:24.04
-    timeout-minutes: 30
+    timeout-minutes: 60
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
     env:
@@ -163,9 +163,9 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             sudo apk add --no-cache make xz build-base
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -302,9 +302,9 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             sudo apk add --no-cache make xz build-base
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -609,9 +609,9 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             sudo apk add --no-cache make xz build-base
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -748,9 +748,9 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             sudo apk add --no-cache make xz build-base
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -1040,10 +1040,15 @@ jobs:
             docker load -i "$f"
           done
 
+          # Check loaded images
+          docker images
+
           # Now load specific images into Kind
           kind load docker-image mcpany/server:latest --name mcp-e2e
           kind load docker-image mcpany/operator:latest --name mcp-e2e
           kind load docker-image mcpany/ui:latest --name mcp-e2e
+          # http-echo-server is needed for tests
+          kind load docker-image mcpany/http-echo-server:latest --name mcp-e2e
 
       - name: Load Docker Images already loaded above
         run: |
