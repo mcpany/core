@@ -219,6 +219,11 @@ func (d *Debugger) Handler(next http.Handler) http.Handler {
 			status:         http.StatusOK, // Default
 		}
 
+		// Inject Trace Context
+		ctx := r.Context()
+		ctx = WithTraceContext(ctx, traceID, spanID, parentID)
+		r = r.WithContext(ctx)
+
 		// Process request
 		next.ServeHTTP(blw, r)
 

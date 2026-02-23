@@ -8,9 +8,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
 	"sync"
 	"time"
 
+	"github.com/google/uuid"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/audit"
 	"github.com/mcpany/core/server/pkg/auth"
@@ -175,6 +177,17 @@ func (m *AuditMiddleware) Execute(ctx context.Context, req *tool.ExecutionReques
 
 	start := time.Now()
 
+	// Trace Context
+	traceID := GetTraceID(ctx)
+	if traceID == "" {
+		traceID = strings.ReplaceAll(uuid.New().String(), "-", "")
+	}
+	parentID := GetSpanID(ctx) // The parent is the current span in context
+	spanID := strings.ReplaceAll(uuid.New().String(), "-", "")[:16]
+
+	// Update context for downstream (Recursive Tracing)
+	ctx = WithTraceContext(ctx, traceID, spanID, parentID)
+
 	// Execute the tool
 	result, err := next(ctx, req)
 
@@ -186,6 +199,9 @@ func (m *AuditMiddleware) Execute(ctx context.Context, req *tool.ExecutionReques
 		ToolName:   req.ToolName,
 		Duration:   duration.String(),
 		DurationMs: duration.Milliseconds(),
+		TraceID:    traceID,
+		SpanID:     spanID,
+		ParentID:   parentID,
 	}
 
 	if userID, ok := auth.UserFromContext(ctx); ok {

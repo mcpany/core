@@ -51,6 +51,9 @@ func NewSQLiteAuditStore(path string) (*SQLiteAuditStore, error) {
 		tool_name TEXT,
 		user_id TEXT,
 		profile_id TEXT,
+		trace_id TEXT,
+		span_id TEXT,
+		parent_id TEXT,
 		arguments TEXT,
 		result TEXT,
 		error TEXT,
@@ -100,13 +103,22 @@ func ensureColumns(db *sql.DB) error {
 	if err := ensureColumn(db, "hash"); err != nil {
 		return err
 	}
+	if err := ensureColumn(db, "trace_id"); err != nil {
+		return err
+	}
+	if err := ensureColumn(db, "span_id"); err != nil {
+		return err
+	}
+	if err := ensureColumn(db, "parent_id"); err != nil {
+		return err
+	}
 	return nil
 }
 
 func ensureColumn(db *sql.DB, colName string) error {
 	// Whitelist valid column names to prevent SQL injection even from internal calls
 	switch colName {
-	case "prev_hash", "hash":
+	case "prev_hash", "hash", "trace_id", "span_id", "parent_id":
 		// Allowed
 	default:
 		return fmt.Errorf("invalid column name: %s", colName)
@@ -170,8 +182,8 @@ func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
 
 	query := `
 	INSERT INTO audit_logs (
-		timestamp, tool_name, user_id, profile_id, arguments, result, error, duration_ms, prev_hash, hash
-	) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+		timestamp, tool_name, user_id, profile_id, trace_id, span_id, parent_id, arguments, result, error, duration_ms, prev_hash, hash
+	) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 	`
 
 	_, err = s.db.ExecContext(ctx, query,
@@ -179,6 +191,9 @@ func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
 		entry.ToolName,
 		entry.UserID,
 		entry.ProfileID,
+		entry.TraceID,
+		entry.SpanID,
+		entry.ParentID,
 		argsJSON,
 		resultJSON,
 		entry.Error,
@@ -194,7 +209,7 @@ func (s *SQLiteAuditStore) Read(ctx context.Context, filter Filter) ([]Entry, er
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	query := "SELECT timestamp, tool_name, user_id, profile_id, arguments, result, error, duration_ms FROM audit_logs WHERE 1=1"
+	query := "SELECT timestamp, tool_name, user_id, profile_id, trace_id, span_id, parent_id, arguments, result, error, duration_ms FROM audit_logs WHERE 1=1"
 	var args []any
 
 	if filter.StartTime != nil {
@@ -239,7 +254,7 @@ func (s *SQLiteAuditStore) Read(ctx context.Context, filter Filter) ([]Entry, er
 	for rows.Next() {
 		var entry Entry
 		var tsStr, argsStr, resultStr string
-		if err := rows.Scan(&tsStr, &entry.ToolName, &entry.UserID, &entry.ProfileID, &argsStr, &resultStr, &entry.Error, &entry.DurationMs); err != nil {
+		if err := rows.Scan(&tsStr, &entry.ToolName, &entry.UserID, &entry.ProfileID, &entry.TraceID, &entry.SpanID, &entry.ParentID, &argsStr, &resultStr, &entry.Error, &entry.DurationMs); err != nil {
 			return nil, err
 		}
 

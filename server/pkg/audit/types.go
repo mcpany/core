@@ -15,6 +15,9 @@ type Entry struct {
 	ToolName   string          `json:"tool_name"`
 	UserID     string          `json:"user_id,omitempty"`
 	ProfileID  string          `json:"profile_id,omitempty"`
+	TraceID    string          `json:"trace_id,omitempty"`
+	SpanID     string          `json:"span_id,omitempty"`
+	ParentID   string          `json:"parent_id,omitempty"`
 	Arguments  json.RawMessage `json:"arguments,omitempty"`
 	Result     any             `json:"result,omitempty"`
 	Error      string          `json:"error,omitempty"`
