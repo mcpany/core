@@ -27,6 +27,9 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 
+/**
+ * Schema definition interface compatible with JSON Schema.
+ */
 export interface Schema {
     type?: string | string[];
     description?: string;
@@ -222,6 +225,42 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
         const isPassword = schema.format === "password" ||
                            (label && /password|secret|token|key/i.test(label));
         const isMultiline = schema.format === "multiline" || (label && /description|content/i.test(label));
+        const isBase64 = schema.contentEncoding === "base64";
+
+        if (isBase64) {
+            return (
+                <div className="w-full">
+                    <FieldLabel label={label} required={isRequired} description={description} error={errors?.[path]} htmlFor={path} />
+                    <div className="flex flex-col gap-2">
+                        <Input
+                            id={path}
+                            type="file"
+                            onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) {
+                                    const reader = new FileReader();
+                                    reader.onload = (ev) => {
+                                        const result = ev.target?.result;
+                                        if (typeof result === "string") {
+                                            onChange(path, result);
+                                        }
+                                    };
+                                    reader.readAsDataURL(file);
+                                } else {
+                                    onChange(path, "");
+                                }
+                            }}
+                            className={cn(hasError && "border-destructive focus-visible:ring-destructive/20")}
+                        />
+                        {value && typeof value === 'string' && (
+                            <p className="text-[10px] text-muted-foreground truncate font-mono bg-muted/30 p-1 rounded">
+                                {value.substring(0, 50)}... ({Math.round(value.length / 1024)} KB)
+                            </p>
+                        )}
+                    </div>
+                </div>
+            );
+        }
 
         return (
             <div className="w-full">

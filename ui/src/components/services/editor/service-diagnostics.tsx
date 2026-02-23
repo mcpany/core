@@ -65,6 +65,42 @@ export function ServiceDiagnostics({ service }: ServiceDiagnosticsProps) {
         newResults.push(configCheck);
         setResults([...newResults]);
 
+        // 1.5 Browser Connectivity Check
+        let serviceUrl: string | null = null;
+        if (service.httpService?.address) {
+            serviceUrl = service.httpService.address;
+        } else if (service.mcpService?.httpConnection?.httpAddress) {
+            serviceUrl = service.mcpService.httpConnection.httpAddress;
+        } else if (service.openapiService?.address) {
+            serviceUrl = service.openapiService.address;
+        }
+
+        if (serviceUrl) {
+            const browserCheck: DiagnosticResult = { name: "Browser Connectivity", status: "running" };
+            setResults([...newResults, browserCheck]);
+
+            try {
+                // Try fetch
+                // Using mode 'no-cors' allows checking opaque connectivity even if CORS is not set.
+                // If it fails with TypeError, it's likely network error.
+                await fetch(serviceUrl, { mode: 'no-cors', cache: 'no-store' });
+                browserCheck.status = "success";
+                browserCheck.message = "Service is reachable from your browser.";
+            } catch (e: any) {
+                browserCheck.status = "warning"; // Warning because browser access might not be required for backend
+                browserCheck.message = "Could not reach service from browser.";
+                browserCheck.details = `Error: ${e.message}`;
+
+                // Heuristic: Localhost check
+                if (serviceUrl.includes("localhost") || serviceUrl.includes("127.0.0.1")) {
+                     browserCheck.details += "\n\nNote: You are trying to connect to localhost. If the server is running in a Docker container, 'localhost' refers to the container itself, not your machine. Try using 'host.docker.internal' instead.";
+                     browserCheck.status = "error"; // Upgrade to error if localhost is involved likely cause
+                }
+            }
+            newResults.push(browserCheck);
+            setResults([...newResults]);
+        }
+
         // Only proceed if saved (has ID/Name)
         if (service.name && service.id) {
             // 2. Runtime Status

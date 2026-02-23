@@ -20,6 +20,12 @@ interface DiscoveredToolsViewerProps {
     tools: ToolDefinition[];
 }
 
+/**
+ * DiscoveredToolsViewer displays a list of discovered tools for a service.
+ * @param props - The component props.
+ * @param props.tools - The list of tools to display.
+ * @returns The rendered component.
+ */
 export function DiscoveredToolsViewer({ tools }: DiscoveredToolsViewerProps) {
     if (!tools || tools.length === 0) {
         return (
