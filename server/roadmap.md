@@ -10,6 +10,9 @@
 ## 2. Updated Roadmap
 
 ### Status: Active Development
+- **[2026-02-23] Recursive Context Protocol (RCP):** Initial design and header standardization for hierarchical agent swarms.
+- **[2026-02-23] Zero Trust Tool Sandboxing:** Exploring Docker-bound named pipes for isolated tool execution.
+- **[2026-02-23] Policy Firewall Engine:** Implementation of Rego-based evaluation middleware.
 
 ## 2. Top 10 Recommended Features
 
