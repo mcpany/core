@@ -7,12 +7,12 @@
 
 import { useState, useEffect } from "react";
 import { OutputTransformer, OutputTransformer_OutputFormat } from "@proto/config/v1/call";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { KeyValueEditor } from "./key-value-editor";
 import { Separator } from "@/components/ui/separator";
+import { SmartTemplateEditor } from "./smart-template-editor";
 
 interface OutputTransformerEditorProps {
     transformer?: OutputTransformer;
@@ -46,6 +46,8 @@ export function OutputTransformerEditor({ transformer, onChange }: OutputTransfo
         setLocalTransformer(newVal);
         onChange(newVal);
     };
+
+    const extractionKeys = Object.keys(localTransformer.extractionRules || {});
 
     return (
         <div className="space-y-6">
@@ -106,19 +108,14 @@ export function OutputTransformerEditor({ transformer, onChange }: OutputTransfo
 
             <Separator />
 
-            <div className="space-y-2">
-                <Label htmlFor="output-template">Result Template (Optional)</Label>
-                <Textarea
-                    id="output-template"
-                    value={localTransformer.template}
-                    onChange={(e) => updateTransformer({ template: e.target.value })}
-                    placeholder="Weather in {{ location }} is {{ temperature }}."
-                    className="font-mono text-sm min-h-[100px]"
-                />
-                 <p className="text-xs text-muted-foreground">
-                    Use Jinja2 syntax to format the final output using extracted fields. If empty, the structured result is returned.
-                </p>
-            </div>
+            <SmartTemplateEditor
+                label="Result Template (Optional)"
+                value={localTransformer.template}
+                onChange={(value) => updateTransformer({ template: value })}
+                variables={extractionKeys}
+                placeholder="Weather in {{ location }} is {{ temperature }}."
+                helperText="Use Jinja2 syntax to format the final output using extracted fields. If empty, the structured result is returned."
+            />
         </div>
     );
 }

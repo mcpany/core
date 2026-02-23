@@ -272,6 +272,7 @@ export function HttpToolEditor({ tool, call, serviceName, onChange }: HttpToolEd
                 <TabsContent value="input-transform" className="mt-4">
                     <InputTransformerEditor
                         transformer={localCall.inputTransformer}
+                        parameters={localCall.parameters}
                         onChange={handleInputTransformerChange}
                     />
                 </TabsContent>

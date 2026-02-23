@@ -5,22 +5,22 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
-import { InputTransformer } from "@proto/config/v1/call";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
+import { useState, useEffect, useMemo } from "react";
+import { InputTransformer, HttpParameterMapping } from "@proto/config/v1/call";
 import { Card, CardContent } from "@/components/ui/card";
 import { Info } from "lucide-react";
+import { SmartTemplateEditor } from "./smart-template-editor";
 
 interface InputTransformerEditorProps {
     transformer?: InputTransformer;
+    parameters?: HttpParameterMapping[];
     onChange: (transformer: InputTransformer) => void;
 }
 
 /**
  * Editor for InputTransformer configuration.
  */
-export function InputTransformerEditor({ transformer, onChange }: InputTransformerEditorProps) {
+export function InputTransformerEditor({ transformer, parameters = [], onChange }: InputTransformerEditorProps) {
     const [template, setTemplate] = useState(transformer?.template || "");
 
     useEffect(() => {
@@ -35,22 +35,25 @@ export function InputTransformerEditor({ transformer, onChange }: InputTransform
         });
     };
 
+    const variableNames = useMemo(() => {
+        return parameters.map(p => p.schema?.name || "").filter(n => n !== "");
+    }, [parameters]);
+
     return (
         <div className="space-y-4">
-            <div className="space-y-2">
-                <Label htmlFor="input-template">Request Body Template</Label>
-                <div className="text-xs text-muted-foreground flex items-center gap-2 mb-2">
-                    <Info className="h-4 w-4" />
-                    Use Jinja2 syntax to construct the request body. Variables from input are available.
-                </div>
-                <Textarea
-                    id="input-template"
-                    value={template}
-                    onChange={(e) => handleTemplateChange(e.target.value)}
-                    placeholder='{"message": "{{ input_message }}"}'
-                    className="font-mono text-sm min-h-[200px]"
-                />
-            </div>
+            <SmartTemplateEditor
+                label="Request Body Template"
+                value={template}
+                onChange={handleTemplateChange}
+                variables={variableNames}
+                placeholder='{"message": "{{ input_message }}"}'
+                helperText={
+                    <span className="flex items-center gap-1">
+                        <Info className="h-3 w-3 inline" /> Use Jinja2 syntax to construct the request body. Variables from input are available.
+                    </span>
+                }
+            />
+
              {transformer?.webhook && (
                 <Card className="bg-muted/50">
                     <CardContent className="pt-6">
