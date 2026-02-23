@@ -1074,6 +1074,8 @@ jobs:
       pull-requests: write
       actions: read
     steps:
+      - uses: actions/checkout@v4
+
       - name: Install gh CLI
         run: |
           install_dependencies() {

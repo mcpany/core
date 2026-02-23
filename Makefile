@@ -43,7 +43,7 @@ test: gen
 	$(MAKE) test-proto
 	$(MAKE) -C server test
 	$(MAKE) -C ui test
-	$(MAKE) -C k8s test
+	$(MAKE) -C kubernetes test
 
 
 docker-build-all:
@@ -58,7 +58,7 @@ test-proto:
 	@go test ./proto/...
 
 k8s-e2e:
-	@export PATH=$(TOOL_INSTALL_DIR):$$PATH; $(MAKE) -C k8s test
+	@export PATH=$(TOOL_INSTALL_DIR):$$PATH; $(MAKE) -C kubernetes test
 
 k8s-test: k8s-e2e
 
