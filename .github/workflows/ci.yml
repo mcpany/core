@@ -72,13 +72,6 @@ jobs:
     runs-on: oci-runner
     container: ubuntu:24.04
     steps:
-      - name: Free Disk Space (Fast)
-        run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
-
       - name: Prune Docker
         run: docker system prune -af
 
@@ -126,6 +119,11 @@ jobs:
 
       - name: Install dependencies
         run: |
+          # Define sudo fallback if missing
+          if ! command -v sudo &> /dev/null; then
+              sudo() { "$@"; }
+          fi
+
           if command -v apt-get &> /dev/null; then
             sudo apt-get update && sudo apt-get install -y make xz-utils
           elif command -v apk &> /dev/null; then
@@ -148,13 +146,6 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
-      - name: Free Disk Space (Fast)
-        run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
-
       - name: Prune Docker
         run: docker system prune -af
 
@@ -162,6 +153,11 @@ jobs:
 
       - name: Install dependencies
         run: |
+          # Define sudo fallback if missing
+          if ! command -v sudo &> /dev/null; then
+              sudo() { "$@"; }
+          fi
+
           if command -v apt-get &> /dev/null; then
             sudo apt-get update && sudo apt-get install -y make xz-utils
           elif command -v apk &> /dev/null; then
@@ -287,13 +283,6 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
-      - name: Free Disk Space (Fast)
-        run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
-
       - name: Prune Docker
         run: docker system prune -af
 
@@ -301,6 +290,11 @@ jobs:
 
       - name: Install dependencies
         run: |
+          # Define sudo fallback if missing
+          if ! command -v sudo &> /dev/null; then
+              sudo() { "$@"; }
+          fi
+
           if command -v apt-get &> /dev/null; then
             sudo apt-get update && sudo apt-get install -y make xz-utils
           elif command -v apk &> /dev/null; then
@@ -458,12 +452,6 @@ jobs:
             slug: arm64
             runner: ubuntu-24.04-arm
     steps:
-      - name: Free Disk Space (Fast)
-        run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
       - uses: actions/checkout@v4
 
       - name: Set up Go
@@ -594,13 +582,6 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
-      - name: Free Disk Space (Fast)
-        run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
-
       - name: Prune Docker
         run: docker system prune -af
 
@@ -608,6 +589,11 @@ jobs:
 
       - name: Install dependencies
         run: |
+          # Define sudo fallback if missing
+          if ! command -v sudo &> /dev/null; then
+              sudo() { "$@"; }
+          fi
+
           if command -v apt-get &> /dev/null; then
             sudo apt-get update && sudo apt-get install -y make xz-utils
           elif command -v apk &> /dev/null; then
@@ -733,13 +719,6 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
-      - name: Free Disk Space (Fast)
-        run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
-
       - name: Prune Docker
         run: docker system prune -af
 
@@ -747,6 +726,11 @@ jobs:
 
       - name: Install dependencies
         run: |
+          # Define sudo fallback if missing
+          if ! command -v sudo &> /dev/null; then
+              sudo() { "$@"; }
+          fi
+
           if command -v apt-get &> /dev/null; then
             sudo apt-get update && sudo apt-get install -y make xz-utils
           elif command -v apk &> /dev/null; then
@@ -1077,6 +1061,11 @@ jobs:
       - name: Install gh CLI
         run: |
           install_dependencies() {
+            # Define sudo fallback if missing
+            if ! command -v sudo &> /dev/null; then
+                sudo() { "$@"; }
+            fi
+
             if ! command -v curl &> /dev/null; then
               echo "curl not found. Installing..."
               if command -v apt-get &> /dev/null; then
