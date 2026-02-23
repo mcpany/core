@@ -12,6 +12,7 @@
 - [ ] **[P1] Interactive Debugger**:
   - [ ] Breakpoint management for tool calls.
   - [ ] Variable inspection and modification during "Paused" state.
+- [ ] **[P1] RCP Context Visualizer**: [NEW 2026-02-23] Visual representation of inherited context and shared blackboard state across agent swarms.
 - [ ] **[P2] Plugin Marketplace**: In-app browser to discover, install, and configure community MCP servers.
 - [ ] **[P2] Interactive Setup Wizard**: Guided "First Run" experience to generate `mcp.yaml` and configure agents.
 - [ ] **[P2] Agent Black Box Player**: Timeline-based replay of recorded agent sessions (Inputs, Outputs, State).
