@@ -186,7 +186,7 @@ export function useRealTimeTopology() {
                 });
             }
 
-            // ⚡ BOLT: Calculate structure hash to avoid unnecessary re-layouts
+            // ⚡ BOLT: Calculate structure hash to avoid unnecessary re-layouts (O(N) layout vs O(1) update)
             // Randomized Selection from Top 5 High-Impact Targets
             const structureHash = rawNodes.map(n => n.id).sort().join(',') + '|' + rawEdges.map(e => e.id).sort().join(',');
 
