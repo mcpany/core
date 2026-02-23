@@ -50,6 +50,8 @@ jobs:
           set -e
           # Fix: use single = for sh compatibility
           if [ "${{ github.event_name }}" = "pull_request" ]; then
+            # Ensure base branch is fetched
+            git fetch origin ${{ github.base_ref }} --depth=1
             # Compare against the base branch
             DIFF=$(git diff --name-only origin/${{ github.base_ref }} HEAD)
           else
@@ -1082,6 +1084,8 @@ jobs:
       pull-requests: write
       actions: read
     steps:
+      - uses: actions/checkout@v4
+
       - name: Install gh CLI
         run: |
           SUDO=""
