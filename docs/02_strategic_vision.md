@@ -17,3 +17,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Environment Bridging**: MCP Any will act as a "secure proxy" that synchronizes state between sandboxed environments and local execution.
 - **Context Inheritance Protocol**: Implementing a recursive header standard that allows subagents to automatically inherit "intent-scoped" context without bloating the LLM window.
 - **Zero-Knowledge Context**: Ensuring subagents only receive the minimal state required for their specific task, following the principle of least privilege.
+
+---
+
+## Strategic Evolution: [2026-02-24]
+### Focus: Standardizing Multi-Agent Coordination & Heterogeneous Transport
+**Context**: Today's findings show that as agents become more specialized (OpenClaw's multi-agent refinement) and transport layers more varied (Claude's HTTP/Stdio mix), MCP Any must evolve from a simple proxy to a sophisticated coordination hub.
+**Strategic Pivot**:
+- **Coordination Hub Architecture**: Transitioning to a model where MCP Any manages "agent sessions" and "handoffs" between specialized subagents, ensuring state stability.
+- **Unified Transport Layer**: Abstracting the complexity of different MCP transport types (FastMCP, Stdio, HTTP) into a single, high-performance gateway.
+- **Discovery Automation**: Moving towards an "Auto-Discovery" first approach to eliminate the manual configuration friction observed in the Gemini and Claude ecosystems.
