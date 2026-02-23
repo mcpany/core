@@ -6,8 +6,16 @@
 
 When a tool execution returns an error or hangs, you need visibility into the request lifecycle.
 
-### 1. Tracing (OpenTelemetry)
-Tracing allows you to see the "Waterfall" of a request as it passes through middleware, auth, and reaches the upstream.
+### 1. Telemetry (Tracing & Metrics)
+
+#### Application Metrics (Prometheus)
+Internal application metrics (tool usage, connection stats, Go runtime) are exposed via a Prometheus endpoint.
+
+- **Endpoint:** `GET /metrics`
+- **Port:** Default is `:8081` (configurable via `--metrics-listen-address`)
+
+#### Tracing & OTLP Export
+Tracing allows you to see the "Waterfall" of a request as it passes through middleware, auth, and reaches the upstream. You can configure OpenTelemetry to export traces (and OTel-instrumented metrics) to an OTLP collector.
 
 **Configuration:**
 ```yaml

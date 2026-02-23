@@ -39,6 +39,13 @@ Fill in the required arguments in the dialog. The form validates your input base
 
 ![Form Filled](screenshots/playground_form_filled.png)
 
+#### Native File Upload Support
+
+If a tool argument is defined with `contentEncoding: "base64"` or `format: "binary"` in its schema, the Playground will automatically render a native file picker.
+
+- Selecting a file will automatically convert its content to a base64 string.
+- This allows easy testing of tools that accept binary data (e.g., image analysis, file upload).
+
 ### 4. View Results
 
 The execution result is displayed in the chat stream.
