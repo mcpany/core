@@ -49,3 +49,19 @@
 
 ### Deprecations / Monitoring
 - **Upfront Tool Schema Pushing**: Monitoring for deprecation in favor of Lazy-Discovery.
+
+---
+
+## Evolution: [2026-02-26] Updates
+
+### Proposed Additions
+- **MCP Security Auditor Tool**: (P0) An automated scanner that checks connected MCP upstreams for common vulnerabilities (exposed admin panels, lack of auth).
+- **Documentation Injection Middleware**: (P1) Enrich tool definitions with real-time, version-specific documentation from providers like Context7.
+- **WebSocket-Native Transport Provider**: (P1) High-performance, session-persistent MCP transport for low-latency multi-agent swarms.
+
+### Priority Shifts
+- **Policy Firewall**: Promoted to **P0+** (Critical) due to widespread ecosystem exposure.
+- **Supply Chain Integrity Guard**: Remainder at **P0**.
+
+### Deprecations / Monitoring
+- **Default 0.0.0.0 Binding**: Slated for immediate removal in favor of `127.0.0.1` default.

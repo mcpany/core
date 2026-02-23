@@ -8,6 +8,8 @@
 - [ ] **[P1] Unified Discovery Manager**: UI for managing and auto-discovering MCP servers across transports. (Added: 2026-02-24)
 - [ ] **[P0] Lazy-MCP Tool Search Dashboard**: UI for managing the on-demand tool index and monitoring search hits/misses. (Added: 2026-02-25)
 - [ ] **[P0] Supply Chain Attestation Viewer**: Security dashboard for verifying the provenance and cryptographic signatures of connected MCP servers. (Added: 2026-02-25)
+- [ ] **[P0] MCP Security Audit Dashboard**: Real-time visualization of security probe results and remediation suggestions for connected upstreams. (Added: 2026-02-26)
+- [ ] **[P1] Doc-Enrichment Explorer**: UI for managing documentation sources and viewing enriched tool definitions. (Added: 2026-02-26)
 - [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
 - [ ] **[P1] Tool Playground & Explorer**:
   - [ ] Auto-generated forms from Tool JSON Schemas.

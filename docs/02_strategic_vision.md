@@ -37,3 +37,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Lazy-Discovery Architecture**: MCP Any will pivot from "pushing" all tool schemas to "serving" them on-demand via a high-performance similarity search middleware. This allows for virtually unlimited tool scaling.
 - **Supply Chain Provenance**: Implementing "Attested Tooling" where every MCP server must provide a cryptographic signature of its origin and configuration, preventing rogue installations like those seen in the Cline incident.
 - **Context-Aware Scoping**: Moving beyond simple capability tokens to "Intent-Aware" permissions, where a tool call is only allowed if it aligns with the high-level intent verified by the Policy Engine.
+
+---
+
+## Strategic Evolution: [2026-02-26]
+### Focus: Secure-by-Default Infrastructure & Automated Documentation Enrichment
+**Context**: The exposure of 8,000+ MCP servers highlights a massive failure in default security configurations across the ecosystem. Simultaneously, the emergence of specialized documentation servers like Context7 points toward a need for automated "Doc-Injection" to prevent model hallucinations.
+**Strategic Pivot**:
+- **Secure-by-Default Enforcement**: MCP Any will pivot to a strict "Local-Only" default posture, requiring explicit user opt-in for any public-facing listeners. We will also implement a built-in "Security Auditor" that proactively scans connected upstreams for vulnerabilities.
+- **Automated Documentation Injection**: Moving from raw tool schemas to "Rich Schemas" that automatically pull in version-specific documentation from external doc-providers (e.g., Context7) during the discovery phase.
+- **WebSocket-Native Connectivity**: To support the low-latency requirements of modern agent swarms (as seen in the LobeHub roadmap), MCP Any will treat WebSocket transports as first-class, session-persistent connections.
