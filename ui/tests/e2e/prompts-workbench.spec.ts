@@ -5,26 +5,27 @@
 
 
 import { test, expect } from '@playwright/test';
+import { seedPrompts, cleanupPrompts, seedUser, cleanupUser } from './test-data';
 
 test.describe('Prompts Workbench', () => {
-  test.fixme('should load prompts list and allow selection', async ({ page }) => { // Flaky in Docker/Kind environment
-    // Mock the prompts API to ensure consistent state
-    await page.route('**/api/v1/prompts', async route => {
-        await route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({
-                prompts: [
-                    {
-                        name: "test-prompt",
-                        description: "A test prompt",
-                        arguments: [{ name: "arg1", description: "An argument" }]
-                    }
-                ]
-            })
-        });
-    });
+  test.beforeEach(async ({ page, request }) => {
+      await seedPrompts(request);
+      await seedUser(request, "e2e-admin-prompts");
 
+      // Login
+      await page.goto('/login');
+      await page.fill('input[name="username"]', 'e2e-admin-prompts');
+      await page.fill('input[name="password"]', 'password');
+      await page.click('button[type="submit"]', { force: true });
+      await page.waitForURL('/', { timeout: 30000 });
+  });
+
+  test.afterEach(async ({ request }) => {
+      await cleanupPrompts(request);
+      await cleanupUser(request, "e2e-admin-prompts");
+  });
+
+  test('should load prompts list and allow selection', async ({ page }) => {
     // Navigate to prompts page
     await page.goto('/prompts');
 

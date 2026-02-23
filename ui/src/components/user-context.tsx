@@ -6,6 +6,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { apiClient } from '@/lib/client';
 
 /**
  * Defines the role of a user in the system.
@@ -25,7 +26,7 @@ export interface User {
   /** URL to avatar image. */
   avatar?: string;
   /** The user's role. */
-  role: UserRole;
+  roles: string[]; // Backend uses 'roles' array
 }
 
 /**
@@ -36,10 +37,12 @@ interface UserContextType {
   user: User | null;
   /** Whether authentication status is loading. */
   loading: boolean;
-  /** Logs in the user with the specified role (mock). */
-  login: (role: UserRole) => void;
+  /** Logs in the user (mock for now, real implementation would trigger OAuth/SSO). */
+  login: (role: UserRole) => Promise<void>;
   /** Logs out the current user. */
   logout: () => void;
+  /** Refreshes the user session. */
+  refresh: () => Promise<void>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -55,39 +58,52 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const fetchUser = async () => {
+    try {
+      const u = await apiClient.getCurrentUser();
+      if (u) {
+        setUser({
+            id: u.id,
+            name: u.name || u.id,
+            email: u.email || '',
+            roles: u.roles || [],
+            avatar: u.avatar
+        });
+      } else {
+        setUser(null);
+      }
+    } catch (e) {
+      console.error("Failed to fetch user:", e);
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    // Mock initial user for now - default to Admin for development
-    // In real app, check session/cookie
-    const storedRole = localStorage.getItem('mcp_user_role') as UserRole || 'admin';
-    setUser({
-      id: '1',
-      name: 'Admin User',
-      email: 'admin@mcp-any.io',
-      role: storedRole, // Default to admin for dev
-      avatar: '/avatars/admin.png'
-    });
-    setLoading(false);
+    fetchUser();
   }, []);
 
-  const login = (role: UserRole) => {
-    const newUser = {
-        id: '1',
-        name: role === 'admin' ? 'Admin User' : 'Regular User',
-        email: role === 'admin' ? 'admin@mcp-any.io' : 'user@mcp-any.io',
-        role: role,
-        avatar: role === 'admin' ? '/avatars/admin.png' : undefined
-    };
-    setUser(newUser);
-    localStorage.setItem('mcp_user_role', role);
+  const login = async (role: UserRole) => {
+    // In a real app, this would trigger a flow.
+    // For now, if we are using Basic Auth or API Key, the client is pre-configured via headers/localStorage.
+    // If we want to simulate "role selection" for dev/demo, we might need a backend endpoint to "switch role" or we assume login happened elsewhere.
+    // However, keeping the signature for now.
+    // If the backend has OAuth, we redirect.
+    // For now, let's just refresh.
+    await fetchUser();
   };
 
   const logout = () => {
     setUser(null);
+    localStorage.removeItem('mcp_auth_token');
     localStorage.removeItem('mcp_user_role');
+    // Force reload to clear client state
+    window.location.reload();
   };
 
   return (
-    <UserContext.Provider value={{ user, loading, login, logout }}>
+    <UserContext.Provider value={{ user, loading, login, logout, refresh: fetchUser }}>
       {children}
     </UserContext.Provider>
   );
