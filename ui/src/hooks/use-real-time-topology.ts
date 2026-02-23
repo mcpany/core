@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Node, Edge, useNodesState, useEdgesState } from '@xyflow/react';
 import { apiClient } from '@/lib/client';
 import dagre from 'dagre';
@@ -66,11 +66,12 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[]) => {
  * @returns The topology state and controls.
  */
 export function useRealTimeTopology() {
-    const [nodes, setNodes, onNodesChange] = useNodesState([]);
-    const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+    const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
+    const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
     const [loading, setLoading] = useState(false);
     const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
     const [isLive, setIsLive] = useState(false);
+    const prevStructureHash = useRef<string>('');
 
     const fetchData = useCallback(async () => {
         try {
@@ -177,10 +178,46 @@ export function useRealTimeTopology() {
                 });
             }
 
-            // Apply Layout
-            const layout = getLayoutedElements(rawNodes, rawEdges);
-            setNodes(layout.nodes);
-            setEdges(layout.edges);
+            // ⚡ BOLT: Memoize layout calculation to prevent layout thrashing and expensive re-renders
+            // Randomized Selection from Top 5 High-Impact Targets
+            const structureHash = rawNodes.map(n => n.id).sort().join(',') + '|' + rawEdges.map(e => e.id).sort().join(',');
+
+            if (structureHash === prevStructureHash.current && prevStructureHash.current !== '') {
+                // Structure matches: Update data/metrics only, preserve layout (positions)
+                // Use Map for O(1) lookup
+                const nodeMap = new Map(rawNodes.map(n => [n.id, n]));
+                const edgeMap = new Map(rawEdges.map(e => [e.id, e]));
+
+                setNodes((nds) => nds.map((n) => {
+                    const fresh = nodeMap.get(n.id);
+                    if (fresh) {
+                        return { ...n, data: fresh.data };
+                    }
+                    return n;
+                }));
+
+                setEdges((eds) => eds.map((e) => {
+                    const fresh = edgeMap.get(e.id);
+                    if (fresh) {
+                        // Update visual properties that might change (e.g. traffic animation)
+                        return {
+                            ...e,
+                            data: fresh.data,
+                            animated: fresh.animated,
+                            style: fresh.style,
+                            label: fresh.label
+                        };
+                    }
+                    return e;
+                }));
+            } else {
+                // Structure changed: Recalculate layout (expensive)
+                const layout = getLayoutedElements(rawNodes, rawEdges);
+                setNodes(layout.nodes);
+                setEdges(layout.edges);
+                prevStructureHash.current = structureHash;
+            }
+
             setLastUpdated(new Date());
 
         } catch (e) {
