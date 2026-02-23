@@ -2146,6 +2146,9 @@ type AuditLogEntry struct {
 	xxx_hidden_Error       *string                `protobuf:"bytes,7,opt,name=error"`
 	xxx_hidden_Duration    *string                `protobuf:"bytes,8,opt,name=duration"`
 	xxx_hidden_DurationMs  int64                  `protobuf:"varint,9,opt,name=duration_ms,json=durationMs"`
+	xxx_hidden_TraceId     *string                `protobuf:"bytes,10,opt,name=trace_id,json=traceId"`
+	xxx_hidden_SpanId      *string                `protobuf:"bytes,11,opt,name=span_id,json=spanId"`
+	xxx_hidden_ParentId    *string                `protobuf:"bytes,12,opt,name=parent_id,json=parentId"`
 	XXX_raceDetectHookData protoimpl.RaceDetectHookData
 	XXX_presence           [1]uint32
 	unknownFields          protoimpl.UnknownFields
@@ -2264,49 +2267,94 @@ func (x *AuditLogEntry) GetDurationMs() int64 {
 	return 0
 }
 
+func (x *AuditLogEntry) GetTraceId() string {
+	if x != nil {
+		if x.xxx_hidden_TraceId != nil {
+			return *x.xxx_hidden_TraceId
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *AuditLogEntry) GetSpanId() string {
+	if x != nil {
+		if x.xxx_hidden_SpanId != nil {
+			return *x.xxx_hidden_SpanId
+		}
+		return ""
+	}
+	return ""
+}
+
+func (x *AuditLogEntry) GetParentId() string {
+	if x != nil {
+		if x.xxx_hidden_ParentId != nil {
+			return *x.xxx_hidden_ParentId
+		}
+		return ""
+	}
+	return ""
+}
+
 func (x *AuditLogEntry) SetTimestamp(v string) {
 	x.xxx_hidden_Timestamp = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 9)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 12)
 }
 
 func (x *AuditLogEntry) SetToolName(v string) {
 	x.xxx_hidden_ToolName = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 9)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 12)
 }
 
 func (x *AuditLogEntry) SetUserId(v string) {
 	x.xxx_hidden_UserId = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 9)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 12)
 }
 
 func (x *AuditLogEntry) SetProfileId(v string) {
 	x.xxx_hidden_ProfileId = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 9)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 12)
 }
 
 func (x *AuditLogEntry) SetArguments(v string) {
 	x.xxx_hidden_Arguments = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 9)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 12)
 }
 
 func (x *AuditLogEntry) SetResult(v string) {
 	x.xxx_hidden_Result = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 9)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 12)
 }
 
 func (x *AuditLogEntry) SetError(v string) {
 	x.xxx_hidden_Error = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 9)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 12)
 }
 
 func (x *AuditLogEntry) SetDuration(v string) {
 	x.xxx_hidden_Duration = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 7, 9)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 7, 12)
 }
 
 func (x *AuditLogEntry) SetDurationMs(v int64) {
 	x.xxx_hidden_DurationMs = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 9)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 8, 12)
+}
+
+func (x *AuditLogEntry) SetTraceId(v string) {
+	x.xxx_hidden_TraceId = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 9, 12)
+}
+
+func (x *AuditLogEntry) SetSpanId(v string) {
+	x.xxx_hidden_SpanId = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 10, 12)
+}
+
+func (x *AuditLogEntry) SetParentId(v string) {
+	x.xxx_hidden_ParentId = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 11, 12)
 }
 
 func (x *AuditLogEntry) HasTimestamp() bool {
@@ -2372,6 +2420,27 @@ func (x *AuditLogEntry) HasDurationMs() bool {
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 8)
 }
 
+func (x *AuditLogEntry) HasTraceId() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 9)
+}
+
+func (x *AuditLogEntry) HasSpanId() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 10)
+}
+
+func (x *AuditLogEntry) HasParentId() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 11)
+}
+
 func (x *AuditLogEntry) ClearTimestamp() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_Timestamp = nil
@@ -2417,6 +2486,21 @@ func (x *AuditLogEntry) ClearDurationMs() {
 	x.xxx_hidden_DurationMs = 0
 }
 
+func (x *AuditLogEntry) ClearTraceId() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 9)
+	x.xxx_hidden_TraceId = nil
+}
+
+func (x *AuditLogEntry) ClearSpanId() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 10)
+	x.xxx_hidden_SpanId = nil
+}
+
+func (x *AuditLogEntry) ClearParentId() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 11)
+	x.xxx_hidden_ParentId = nil
+}
+
 type AuditLogEntry_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -2438,6 +2522,12 @@ type AuditLogEntry_builder struct {
 	Duration *string
 	// The duration of the execution in milliseconds.
 	DurationMs *int64
+	// The trace ID associated with this execution.
+	TraceId *string
+	// The span ID associated with this execution.
+	SpanId *string
+	// The parent span ID associated with this execution.
+	ParentId *string
 }
 
 func (b0 AuditLogEntry_builder) Build() *AuditLogEntry {
@@ -2445,40 +2535,52 @@ func (b0 AuditLogEntry_builder) Build() *AuditLogEntry {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Timestamp != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 9)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 12)
 		x.xxx_hidden_Timestamp = b.Timestamp
 	}
 	if b.ToolName != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 9)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 12)
 		x.xxx_hidden_ToolName = b.ToolName
 	}
 	if b.UserId != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 9)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 12)
 		x.xxx_hidden_UserId = b.UserId
 	}
 	if b.ProfileId != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 9)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 12)
 		x.xxx_hidden_ProfileId = b.ProfileId
 	}
 	if b.Arguments != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 9)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 12)
 		x.xxx_hidden_Arguments = b.Arguments
 	}
 	if b.Result != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 9)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 12)
 		x.xxx_hidden_Result = b.Result
 	}
 	if b.Error != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 9)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 12)
 		x.xxx_hidden_Error = b.Error
 	}
 	if b.Duration != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 7, 9)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 7, 12)
 		x.xxx_hidden_Duration = b.Duration
 	}
 	if b.DurationMs != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 9)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 8, 12)
 		x.xxx_hidden_DurationMs = *b.DurationMs
+	}
+	if b.TraceId != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 9, 12)
+		x.xxx_hidden_TraceId = b.TraceId
+	}
+	if b.SpanId != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 10, 12)
+		x.xxx_hidden_SpanId = b.SpanId
+	}
+	if b.ParentId != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 11, 12)
+		x.xxx_hidden_ParentId = b.ParentId
 	}
 	return m0
 }
@@ -2550,7 +2652,7 @@ const file_proto_admin_v1_admin_proto_rawDesc = "" +
 	"\x05limit\x18\x06 \x01(\x05R\x05limit\x12\x16\n" +
 	"\x06offset\x18\a \x01(\x05R\x06offset\"Q\n" +
 	"\x15ListAuditLogsResponse\x128\n" +
-	"\aentries\x18\x01 \x03(\v2\x1e.mcpany.admin.v1.AuditLogEntryR\aentries\"\x8b\x02\n" +
+	"\aentries\x18\x01 \x03(\v2\x1e.mcpany.admin.v1.AuditLogEntryR\aentries\"\xdc\x02\n" +
 	"\rAuditLogEntry\x12\x1c\n" +
 	"\ttimestamp\x18\x01 \x01(\tR\ttimestamp\x12\x1b\n" +
 	"\ttool_name\x18\x02 \x01(\tR\btoolName\x12\x17\n" +
@@ -2562,7 +2664,11 @@ const file_proto_admin_v1_admin_proto_rawDesc = "" +
 	"\x05error\x18\a \x01(\tR\x05error\x12\x1a\n" +
 	"\bduration\x18\b \x01(\tR\bduration\x12\x1f\n" +
 	"\vduration_ms\x18\t \x01(\x03R\n" +
-	"durationMs2\xcd\b\n" +
+	"durationMs\x12\x19\n" +
+	"\btrace_id\x18\n" +
+	" \x01(\tR\atraceId\x12\x17\n" +
+	"\aspan_id\x18\v \x01(\tR\x06spanId\x12\x1b\n" +
+	"\tparent_id\x18\f \x01(\tR\bparentId2\xcd\b\n" +
 	"\fAdminService\x12U\n" +
 	"\n" +
 	"ClearCache\x12\".mcpany.admin.v1.ClearCacheRequest\x1a#.mcpany.admin.v1.ClearCacheResponse\x12[\n" +
