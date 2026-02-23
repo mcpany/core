@@ -306,3 +306,49 @@ func hashUserPassword(ctx context.Context, user *configv1.User, store storage.St
 	}
 	return nil
 }
+
+// handleUserMe returns an HTTP handler for getting the current user.
+//
+// Summary: Gets the current authenticated user.
+//
+// Parameters:
+//   - store: storage.Storage. The storage interface.
+//
+// Returns:
+//   - http.HandlerFunc: The HTTP handler function.
+func (a *Application) handleUserMe(store storage.Storage) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		userID, ok := auth.UserFromContext(r.Context())
+		if !ok {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		// If user is system-admin (from API Key), we might not have a DB record.
+		// We return a synthetic user or check DB.
+		if userID == "system-admin" {
+			u := &configv1.User{}
+			u.SetId("system-admin")
+			u.SetRoles([]string{"admin"})
+			writeJSON(w, http.StatusOK, u)
+			return
+		}
+
+		user, err := store.GetUser(r.Context(), userID)
+		if err != nil {
+			logging.GetLogger().Error("failed to get current user", "id", userID, "error", err)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+		if user == nil {
+			http.NotFound(w, r)
+			return
+		}
+		writeJSON(w, http.StatusOK, util.SanitizeUser(user))
+	}
+}

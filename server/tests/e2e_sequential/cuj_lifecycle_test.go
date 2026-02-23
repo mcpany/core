@@ -10,7 +10,6 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -23,21 +22,11 @@ import (
 // TestCUJ_Lifecycle_And_Config tests lifecycle events and config changes.
 // Using Filesystem upstream to avoid dependency on external binaries or containers.
 func TestCUJ_Lifecycle_And_Config(t *testing.T) {
-	// Enable running local if Docker is not available
-	useLocal := os.Getenv("E2E_DOCKER") != "true"
+	binPath := BuildServer(t)
 
-	rootDir, err := os.Getwd()
-	require.NoError(t, err)
-	if strings.HasSuffix(rootDir, "tests/e2e_sequential") {
-		rootDir = filepath.Join(rootDir, "../../..")
-	} else if strings.HasSuffix(rootDir, "server") {
-		rootDir = filepath.Join(rootDir, "..")
-	}
-	rootDir, err = filepath.Abs(rootDir)
-	require.NoError(t, err)
-
+	rootDir := findRootDir(t)
 	configDir := filepath.Join(rootDir, "build", "e2e_config_lifecycle")
-	err = os.MkdirAll(configDir, 0755)
+	err := os.MkdirAll(configDir, 0755)
 	require.NoError(t, err)
 	defer os.RemoveAll(configDir)
 
@@ -46,16 +35,33 @@ func TestCUJ_Lifecycle_And_Config(t *testing.T) {
 	err = os.WriteFile(dummyFile, []byte("world"), 0644)
 	require.NoError(t, err)
 
-	// In local mode, paths must be absolute on the host
-	dataPath := "/config_data"
-	if useLocal {
-		dataPath = configDir
-	}
+	dataPath := configDir
 
 	// Initial Config: Enable Filesystem Upstream
+	// Note: We don't need mcp_listen_address here because StartServerProcess overrides it via flag.
+	// But we do need it for the logic inside the test that updates config?
+	// StartServerProcess uses "--mcp-listen-address" flag which takes precedence over config file usually.
+	// Let's verify precedence. `server.go` says:
+	// bindAddress := opts.JSONRPCPort (from flag)
+	// if cfg.GlobalSettings.McpListenAddress != "" { bindAddress = ... }
+	// So Config File OVERRIDES flag!
+	// This means we must ensure config file does NOT set it, OR sets it to what we want.
+	// But StartServerProcess picks a random port.
+	// If config file has a fixed port, it might conflict.
+	// If config file has "127.0.0.1:0", server might pick random, but we won't know which one unless we parse logs.
+	//
+	// Strategy:
+	// StartServerProcess sets the port via flag.
+	// We should OMIT mcp_listen_address from config file so flag is used.
+	// OR we update config file with the port chosen by StartServerProcess?
+	// StartServerProcess picks port -> runs command.
+	// If config file overrides it, we are in trouble.
+	//
+	// Let's omit mcp_listen_address from config yaml.
+
 	config1 := fmt.Sprintf(`
 global_settings:
-  mcp_listen_address: "127.0.0.1:0" # Random port
+  # mcp_listen_address omitted to use flag
   profile_definitions:
     - name: "default"
       selector:
@@ -77,38 +83,9 @@ upstream_services:
 	err = os.WriteFile(configPath, []byte(config1), 0644)
 	require.NoError(t, err)
 
-	var cmd *exec.Cmd
-	var baseURL string
-
-    // SIMPLIFICATION: Since I cannot easily implement full dynamic port parsing without changing server code or complex regex,
-    // I will use a fixed port for local execution (e.g. 50055) to ensure it works.
-    port := "50055"
-    if useLocal {
-        // Update config to use fixed port
-        config1 = strings.ReplaceAll(config1, "127.0.0.1:0", "127.0.0.1:"+port)
-        os.WriteFile(configPath, []byte(config1), 0644)
-
-        serverBin := filepath.Join(rootDir, "build/bin/server")
-        cmd = exec.Command(serverBin, "run", "--config-path", configPath, "--debug", "--api-key", "test-key")
-        // Redirect output for debugging
-        // logFile, _ := os.Create(filepath.Join(configDir, "server.log"))
-        // cmd.Stdout = logFile
-        // cmd.Stderr = logFile
-        err = cmd.Start()
-        require.NoError(t, err)
-
-        baseURL = fmt.Sprintf("http://127.0.0.1:%s", port)
-    } else {
-        // Docker logic preserved but simplified invocation for brevity in this diff
-        // (Assuming original logic was fine for Docker, but we are prioritizing local)
-        t.Skip("Docker mode not fully re-implemented in this diff, assuming local mode for this environment")
-    }
-
-	defer func() {
-		if cmd != nil && cmd.Process != nil {
-			cmd.Process.Kill()
-		}
-	}()
+	sp := StartServerProcess(t, binPath, "--config-path", configPath, "--debug", "--api-key", "test-key")
+	defer sp.Stop()
+	baseURL := sp.BaseURL
 
 	// CUJ 1: Health
 	verifyEndpoint(t, fmt.Sprintf("%s/healthz", baseURL), 200, 60*time.Second)
@@ -142,12 +119,10 @@ upstream_services:
 	}
 
 	// CUJ 2: Hot-Reload / Restart
-	// Local process restart is just killing and starting again
-    // Update config
-    // We use a new port to avoid TIME_WAIT issues
-    port2 := "50056"
-    config2 := strings.Replace(config1, "127.0.0.1:"+port, "127.0.0.1:"+port2, 1)
-	config2 = strings.Replace(config2, "enabled: true", "enabled: true\n        \"second-service\":\n          enabled: true", 1) + fmt.Sprintf(`
+	// We stop the previous process and start a new one to simulate restart/reload behavior with new config
+	sp.Stop()
+
+	config2 := strings.Replace(config1, "enabled: true", "enabled: true\n        \"second-service\":\n          enabled: true", 1) + fmt.Sprintf(`
   - id: "second-service"
     name: "Second Service"
     auto_discover_tool: true
@@ -156,22 +131,12 @@ upstream_services:
         "/data": "%s"
       os: {}
 `, dataPath)
-    t.Logf("Config 2 Content:\n%s", config2)
 	err = os.WriteFile(configPath, []byte(config2), 0644)
 	require.NoError(t, err)
 
-    if useLocal {
-        cmd.Process.Kill()
-        cmd.Wait()
-        // time.Sleep(1 * time.Second) // No wait needed if new port
-        cmd = exec.Command(filepath.Join(rootDir, "build/bin/server"), "run", "--config-path", configPath, "--debug", "--api-key", "test-key")
-        cmd.Env = os.Environ()
-        cmd.Stderr = os.Stderr
-        if err := cmd.Start(); err != nil {
-             t.Fatalf("Failed to restart server: %v", err)
-        }
-        baseURL = fmt.Sprintf("http://127.0.0.1:%s", port2)
-    }
+	sp = StartServerProcess(t, binPath, "--config-path", configPath, "--debug", "--api-key", "test-key")
+	defer sp.Stop()
+	baseURL = sp.BaseURL
 
 	// Wait for health
 	verifyEndpoint(t, fmt.Sprintf("%s/healthz", baseURL), 200, 60*time.Second)
@@ -196,10 +161,11 @@ upstream_services:
 	}, 15*time.Second, 1*time.Second, "New tool 'read_file' should appear")
 
 	// CUJ 3: Disable
-    port3 := "50057"
+	sp.Stop()
+
 	config3 := fmt.Sprintf(`
 global_settings:
-  mcp_listen_address: "127.0.0.1:%s"
+  # Omitted port
 upstream_services:
   - id: "fs-service"
     name: "Filesystem Service"
@@ -210,17 +176,13 @@ upstream_services:
       os: {}
       tools:
         - name: "list_files"
-`, port3, dataPath)
+`, dataPath)
 	err = os.WriteFile(configPath, []byte(config3), 0644)
 	require.NoError(t, err)
 
-    if useLocal {
-        cmd.Process.Kill()
-        cmd.Wait()
-        time.Sleep(1 * time.Second)
-        cmd = exec.Command(filepath.Join(rootDir, "build/bin/server"), "run", "--config-path", configPath, "--debug", "--api-key", "test-key")
-        cmd.Start()
-    }
+	sp = StartServerProcess(t, binPath, "--config-path", configPath, "--debug", "--api-key", "test-key")
+	defer sp.Stop()
+	baseURL = sp.BaseURL
 
 	// Wait for health
 	verifyEndpoint(t, fmt.Sprintf("%s/healthz", baseURL), 200, 60*time.Second)

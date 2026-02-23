@@ -6,6 +6,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { apiClient } from '@/lib/client';
 
 /**
  * Defines the role of a user in the system.
@@ -26,6 +27,8 @@ export interface User {
   avatar?: string;
   /** The user's role. */
   role: UserRole;
+  /** The user's roles list */
+  roles?: string[];
 }
 
 /**
@@ -56,34 +59,45 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Mock initial user for now - default to Admin for development
-    // In real app, check session/cookie
-    const storedRole = localStorage.getItem('mcp_user_role') as UserRole || 'admin';
-    setUser({
-      id: '1',
-      name: 'Admin User',
-      email: 'admin@mcp-any.io',
-      role: storedRole, // Default to admin for dev
-      avatar: '/avatars/admin.png'
-    });
-    setLoading(false);
+    async function fetchUser() {
+      try {
+        const userData = await apiClient.getCurrentUser();
+        // Map backend user to UI user
+        // Backend user: { id, name, email, roles: [] }
+        // UI User: { ..., role: 'admin' | ... }
+        // Determine primary role
+        let role: UserRole = 'viewer';
+        if (userData.roles?.includes('admin')) role = 'admin';
+        else if (userData.roles?.includes('editor')) role = 'editor';
+
+        setUser({
+          id: userData.id,
+          name: userData.name || userData.id, // Fallback if name empty
+          email: userData.email || '',
+          avatar: userData.avatar,
+          role: role,
+          roles: userData.roles
+        });
+      } catch (e) {
+        console.warn("Failed to fetch current user (likely not logged in):", e);
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchUser();
   }, []);
 
   const login = (role: UserRole) => {
-    const newUser = {
-        id: '1',
-        name: role === 'admin' ? 'Admin User' : 'Regular User',
-        email: role === 'admin' ? 'admin@mcp-any.io' : 'user@mcp-any.io',
-        role: role,
-        avatar: role === 'admin' ? '/avatars/admin.png' : undefined
-    };
-    setUser(newUser);
-    localStorage.setItem('mcp_user_role', role);
+    console.warn("Client-side login/role-switching is disabled. Use backend authentication.");
+    // No-op or trigger real login flow
   };
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('mcp_user_role');
+    localStorage.removeItem('mcp_auth_token');
+    // Optional: Redirect to login page
+    // window.location.href = '/login';
   };
 
   return (
