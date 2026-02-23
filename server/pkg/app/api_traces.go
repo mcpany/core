@@ -28,6 +28,7 @@ type Span struct {
 	Input        map[string]any `json:"input,omitempty"`
 	Output       map[string]any `json:"output,omitempty"`
 	ErrorMessage string         `json:"errorMessage,omitempty"`
+	Children     []Span         `json:"children,omitempty"`
 }
 
 // Trace represents a full trace.
@@ -108,40 +109,49 @@ func (a *Application) handleTraces() http.HandlerFunc {
 			return
 		}
 
-		if a.standardMiddlewares == nil || a.standardMiddlewares.Audit == nil {
-			// If audit is disabled, return empty list
-			w.Header().Set("Content-Type", "application/json")
-			_, _ = w.Write([]byte("[]"))
-			return
-		}
-
-		history := a.standardMiddlewares.Audit.GetHistory()
 		var traces []*Trace
 
-		// ⚡ BOLT: Optimized trace retrieval
-		// Randomized Selection from Top 5 High-Impact Targets
-		// Only unmarshal the requested number of recent traces to save CPU and bandwidth.
-		limitStr := r.URL.Query().Get("limit")
-		limit := len(history)
-		if limitStr != "" {
-			if parsed, err := strconv.Atoi(limitStr); err == nil && parsed > 0 {
-				limit = parsed
+		// 1. Get real audit logs
+		if a.standardMiddlewares != nil && a.standardMiddlewares.Audit != nil {
+			history := a.standardMiddlewares.Audit.GetHistory()
+
+			// ⚡ BOLT: Optimized trace retrieval
+			// Randomized Selection from Top 5 High-Impact Targets
+			// Only unmarshal the requested number of recent traces to save CPU and bandwidth.
+			limitStr := r.URL.Query().Get("limit")
+			limit := len(history)
+			if limitStr != "" {
+				if parsed, err := strconv.Atoi(limitStr); err == nil && parsed > 0 {
+					limit = parsed
+				}
+			}
+
+			// Determine start index. History is chronological (oldest -> newest).
+			// We want the last `limit` items.
+			startIdx := 0
+			if len(history) > limit {
+				startIdx = len(history) - limit
+			}
+
+			// Iterate backwards from end to startIdx to return newest first
+			for i := len(history) - 1; i >= startIdx; i-- {
+				if entry, ok := history[i].(audit.Entry); ok {
+					traces = append(traces, toTrace(entry))
+				}
 			}
 		}
 
-		// Determine start index. History is chronological (oldest -> newest).
-		// We want the last `limit` items.
-		startIdx := 0
-		if len(history) > limit {
-			startIdx = len(history) - limit
-		}
-
-		// Iterate backwards from end to startIdx to return newest first
-		for i := len(history) - 1; i >= startIdx; i-- {
-			if entry, ok := history[i].(audit.Entry); ok {
-				traces = append(traces, toTrace(entry))
+		// 2. Append seeded traces
+		a.seededTracesMu.RLock()
+		if len(a.seededTraces) > 0 {
+			// Seeded traces are stored [Oldest...Newest].
+			// We want to prepend them to the list so they appear at the top (Newest First).
+			// Iterating forwards and prepending achieves LIFO order in the final list.
+			for _, t := range a.seededTraces {
+				traces = append([]*Trace{t}, traces...)
 			}
 		}
+		a.seededTracesMu.RUnlock()
 
 		if traces == nil {
 			traces = []*Trace{}
@@ -230,5 +240,36 @@ func (a *Application) handleTracesWS() http.HandlerFunc {
 				return
 			}
 		}
+	}
+}
+
+func (a *Application) handleDebugSeedTraces() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		var trace Trace
+		if err := json.NewDecoder(r.Body).Decode(&trace); err != nil {
+			http.Error(w, "invalid json: "+err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		// Ensure timestamps are set if missing?
+		// For seeding, we trust the input.
+
+		a.seededTracesMu.Lock()
+		a.seededTraces = append(a.seededTraces, &trace)
+		// Prevent memory leak: cap at 50 traces
+		if len(a.seededTraces) > 50 {
+			a.seededTraces = a.seededTraces[len(a.seededTraces)-50:]
+		}
+		a.seededTracesMu.Unlock()
+
+		logging.GetLogger().Info("Seeded debug trace", "id", trace.ID)
+
+		w.WriteHeader(http.StatusCreated)
+		_ = json.NewEncoder(w).Encode(map[string]string{"status": "seeded", "id": trace.ID})
 	}
 }

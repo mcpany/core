@@ -1643,6 +1643,20 @@ export const apiClient = {
     },
 
     /**
+     * Seeds a debug trace.
+     * @param trace The trace object to seed.
+     */
+    seedTrace: async (trace: any) => {
+        const res = await fetchWithAuth('/api/v1/debug/traces', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(trace)
+        });
+        if (!res.ok) throw new Error('Failed to seed trace');
+        return res.json();
+    },
+
+    /**
      * Updates an alert status.
      * @param id The ID of the alert.
      * @param status The new status.
