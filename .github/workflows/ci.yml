@@ -29,7 +29,7 @@ permissions:
 jobs:
   changes:
     runs-on: oci-runner
-    container: ubuntu:24.04
+    # container: ubuntu:24.04
     outputs:
       src: ${{ steps.filter.outputs.src }}
     steps:
@@ -1055,7 +1055,7 @@ jobs:
 
   ci-success:
     runs-on: oci-runner
-    container: ubuntu:24.04
+    # container: ubuntu:24.04
     needs:
       [
         changes,
@@ -1074,6 +1074,7 @@ jobs:
       pull-requests: write
       actions: read
     steps:
+      - uses: actions/checkout@v4
       - name: Install gh CLI
         run: |
           install_dependencies() {
