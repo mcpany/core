@@ -1128,6 +1128,22 @@ export const apiClient = {
     },
 
     /**
+     * Gets the current authenticated user.
+     * @returns A promise that resolves to the current user.
+     */
+    getCurrentUser: async (): Promise<any> => {
+        const res = await fetchWithAuth('/api/v1/users/me');
+        if (!res.ok) {
+            if (res.status === 401 || res.status === 403) {
+                // Return null if not authenticated
+                return null;
+            }
+            throw new Error(`Failed to fetch current user: ${res.status}`);
+        }
+        return res.json();
+    },
+
+    /**
      * Creates a new user.
      * @param user The user data to create.
      * @returns A promise that resolves to the created user.

@@ -136,6 +136,7 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 
 	// Users
 	mux.HandleFunc("/users", a.handleUsers(store))
+	mux.HandleFunc("/users/me", a.handleUserMe(store))
 	mux.HandleFunc("/users/", a.handleUserDetail(store))
 
 	// Credentials
@@ -178,6 +179,7 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 
 	// Auth (OAuth)
 	mux.Handle("/auth/login", loginRateLimiter.Handler(http.HandlerFunc(a.handleLogin)))
+	mux.HandleFunc("/auth/me", a.handleUserMe(store))
 	mux.HandleFunc("/auth/oauth/initiate", a.handleInitiateOAuth)
 	mux.HandleFunc("/auth/oauth/callback", a.handleOAuthCallback)
 

@@ -203,7 +203,7 @@ export function AppSidebar() {
   const pathname = usePathname()
   const { user, login } = useUser()
 
-  const isAdmin = user?.role === 'admin';
+  const isAdmin = user?.roles?.includes('admin');
 
   // Filter items based on role
   // Regular users see Dashboard, Network Graph, Analytics, Marketplace for Platform?
@@ -338,7 +338,7 @@ export function AppSidebar() {
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => login(user?.role === 'admin' ? 'viewer' : 'admin')}>
+                <DropdownMenuItem onClick={() => login(isAdmin ? 'viewer' : 'admin')}>
                    <User className="mr-2 h-4 w-4" />
                    Switch Role (Demo)
                 </DropdownMenuItem>

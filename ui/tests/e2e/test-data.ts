@@ -118,6 +118,67 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
     }
 };
 
+export const seedPrompts = async (requestContext?: APIRequestContext) => {
+    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    // Prompts are usually associated with a service or global?
+    // Based on server code, prompts are managed by PromptManager.
+    // There is no POST /api/v1/prompts to create a prompt directly if it's not part of a service?
+    // Wait, PromptManager loads from config/services.
+    // To seed a prompt, we need to register a service that has prompts.
+
+    // We use a command line service (echo) which passes validation if unsafe config is allowed
+    // or we use a mocked http service if we could, but connectivity check blocks it.
+    // We assume backend runs with MCPANY_ALLOW_UNSAFE_CONFIG=true for E2E.
+    const serviceWithPrompts = {
+        id: "svc_prompts",
+        name: "Prompt Service",
+        version: "v1.0",
+        command_line_service: {
+            command: "echo",
+            args: ["hello"],
+            prompts: [
+                {
+                    name: "test-prompt",
+                    description: "A test prompt",
+                    arguments: [{ name: "arg1", description: "An argument" }]
+                }
+            ]
+        }
+    };
+
+    try {
+        await context.post('/api/v1/services', { data: serviceWithPrompts, headers: HEADERS });
+
+        // Wait for service to be ready (registered) so prompts are available
+        let ready = false;
+        for (let i = 0; i < 60; i++) {
+            const check = await context.get('/api/v1/services', { headers: HEADERS });
+            if (check.ok()) {
+                const data = await check.json();
+                if (data && Array.isArray(data) && data.some((s: any) => s.name === 'Prompt Service')) {
+                    ready = true;
+                    break;
+                }
+            }
+            await new Promise(r => setTimeout(r, 500));
+        }
+        if (!ready) {
+            console.log("Warning: Prompt Service not ready after 30s");
+        }
+    } catch (e) {
+        console.log(`Failed to seed prompts service: ${e}`);
+    }
+};
+
+export const cleanupPrompts = async (requestContext?: APIRequestContext) => {
+    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    try {
+        await context.delete('/api/v1/services/Prompt Service', { headers: HEADERS });
+    } catch (e) {
+        console.log(`Failed to cleanup prompts service: ${e}`);
+    }
+};
+
 export const seedCollection = async (name: string, requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     const collection = {
@@ -385,7 +446,10 @@ export const seedProfiles = async (requestContext?: APIRequestContext) => {
             name: "dev",
             required_roles: ["admin"],
             service_config: {
-                "svc_01": { enabled: true }
+                "svc_01": { enabled: true },
+                "svc_prompts": { enabled: true },
+                "Prompt Service": { enabled: true }, // Name fallback
+                "*": { enabled: true } // Wildcard for all services (if supported by backend, or just cover bases)
             }
         },
         {
