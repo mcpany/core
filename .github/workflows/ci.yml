@@ -33,6 +33,16 @@ jobs:
     outputs:
       src: ${{ steps.filter.outputs.src }}
     steps:
+      - name: Install Git
+        run: |
+          if ! command -v git &> /dev/null; then
+            if command -v apt-get &> /dev/null; then
+              apt-get update && apt-get install -y git
+            elif command -v apk &> /dev/null; then
+              apk add --no-cache git
+            fi
+          fi
+
       - uses: actions/checkout@v4
         with:
           fetch-depth: 2
@@ -41,7 +51,8 @@ jobs:
         id: filter
         run: |
           set -e
-          if [ "${{ github.event_name }}" == "pull_request" ]; then
+          # POSIX compliant string comparison
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
             # Fetch the base branch for comparison
             git fetch origin ${{ github.base_ref }} --depth=1
             # Compare against the base branch
@@ -1081,14 +1092,20 @@ jobs:
           install_dependencies() {
             if ! command -v curl &> /dev/null; then
               echo "curl not found. Installing..."
+              # Check for sudo, use it if available, otherwise assume root
+              SUDO=""
+              if command -v sudo &> /dev/null; then
+                SUDO="sudo"
+              fi
+
               if command -v apt-get &> /dev/null; then
-                sudo apt-get update && sudo apt-get install -y curl ca-certificates
+                $SUDO apt-get update && $SUDO apt-get install -y curl ca-certificates
               elif command -v apk &> /dev/null; then
-                sudo apk add --no-cache curl ca-certificates
+                $SUDO apk add --no-cache curl ca-certificates
               elif command -v yum &> /dev/null; then
-                sudo yum install -y curl ca-certificates
+                $SUDO yum install -y curl ca-certificates
               elif command -v dnf &> /dev/null; then
-                sudo dnf install -y curl ca-certificates
+                $SUDO dnf install -y curl ca-certificates
               else
                 echo "Could not find package manager to install curl. Trying to proceed..."
               fi
@@ -1146,6 +1163,7 @@ jobs:
             elif command -v sudo &> /dev/null; then
                sudo cp "$BIN_PATH" /usr/local/bin/
             else
+               # Fallback if no sudo and cannot write to /usr/local/bin
                mkdir -p "$HOME/.local/bin"
                cp "$BIN_PATH" "$HOME/.local/bin/"
                echo "$HOME/.local/bin" >> $GITHUB_PATH
