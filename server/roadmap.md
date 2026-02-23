@@ -19,6 +19,11 @@
 *   **[P0] Multi-Agent Session Management**: Session-aware middleware for agent coordination (Added: 2026-02-24).
 *   **[P1] Unified MCP Discovery Service**: Automated registry for Stdio/HTTP/FastMCP servers (Added: 2026-02-24).
 
+#### Upcoming (2026-02-25 Evolution)
+*   **[P0] On-Demand Discovery Middleware (Lazy-MCP)**: Implements similarity-based tool searching to prevent context pollution. (Added: 2026-02-25)
+*   **[P0] Supply Chain Integrity Guard**: Cryptographic provenance verification for MCP servers to prevent unauthorized tool injection. (Added: 2026-02-25)
+*   **[P1] FastMCP Metadata Support**: Support for Pythonic FastMCP decorators and native Gemini CLI slash command mapping. (Added: 2026-02-25)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
