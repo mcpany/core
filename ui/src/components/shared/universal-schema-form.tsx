@@ -27,6 +27,9 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 
+/**
+ * Schema interface for JSON schema definitions.
+ */
 export interface Schema {
     type?: string | string[];
     description?: string;

@@ -9,6 +9,7 @@
   - [ ] "Execute" button with history and result visualization.
   - [ ] "Copy as Curl/Python" code generation.
 - [ ] **[P1] Live Marble Diagrams**: Reactive visualization of concurrent agent flows, tool calls, and dependencies.
+- [ ] **[P1] Context Inheritance Debugger**: Visualizer for how session state and security scopes are passed to subagents.
 - [ ] **[P1] Interactive Debugger**:
   - [ ] Breakpoint management for tool calls.
   - [ ] Variable inspection and modification during "Paused" state.

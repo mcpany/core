@@ -112,7 +112,9 @@ func TestPromptsEndToEnd(t *testing.T) {
 			}.Build(),
 		},
 	}.Build()
-	promptManager.AddPrompt(prompt.NewTemplatedPrompt(definition, "test-service"))
+	templatedPrompt, err := prompt.NewTemplatedPrompt(definition, "test-service")
+	require.NoError(t, err)
+	promptManager.AddPrompt(templatedPrompt)
 
 	// Client setup
 	client := mcp.NewClient(&mcp.Implementation{Name: "test-client"}, nil)
