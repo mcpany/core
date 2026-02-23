@@ -37,3 +37,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Lazy-Discovery Architecture**: MCP Any will pivot from "pushing" all tool schemas to "serving" them on-demand via a high-performance similarity search middleware. This allows for virtually unlimited tool scaling.
 - **Supply Chain Provenance**: Implementing "Attested Tooling" where every MCP server must provide a cryptographic signature of its origin and configuration, preventing rogue installations like those seen in the Cline incident.
 - **Context-Aware Scoping**: Moving beyond simple capability tokens to "Intent-Aware" permissions, where a tool call is only allowed if it aligns with the high-level intent verified by the Policy Engine.
+
+---
+
+## Strategic Evolution: [2026-02-26]
+### Focus: Hardened Gateway Security & Infrastructure-Level Isolation
+**Context**: The discovery of CVE-2026-0757 (RCE in Claude Desktop MCP Manager) and the rise of "SecureClaw" signal a critical shift. Prompt-based security is no longer sufficient; agents need hardened infrastructure that survives prompt injection.
+**Strategic Pivot**:
+- **Gateway-Level Hardening**: Decoupling security logic from the LLM's context window. MCP Any will implement a "Security Plugin" architecture that enforces rules at the gateway level, similar to SecureClaw, ensuring policies are immutable even if the LLM is compromised.
+- **Isolated Execution Sandboxes**: Every MCP server should ideally run in its own isolated environment (e.g., a lightweight WASM sandbox or a gVisor-hardened container). This prevents an exploit in one tool from compromising the entire host system.
+- **Attestation-First Connectivity**: Moving towards a model where only cryptographically signed and attested MCP servers can be executed, mitigating supply chain risks and unauthorized tool injection.

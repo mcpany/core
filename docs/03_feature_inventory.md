@@ -49,3 +49,19 @@
 
 ### Deprecations / Monitoring
 - **Upfront Tool Schema Pushing**: Monitoring for deprecation in favor of Lazy-Discovery.
+
+---
+
+## Evolution: [2026-02-26] Updates
+
+### Proposed Additions
+- **Gateway-Level Security Plugin**: (P0) A hardcoded security layer that enforces tool call policies before they reach the LLM, preventing prompt injection from bypassing security controls (aligned with SecureClaw).
+- **Isolated MCP Sandbox (WASM-based)**: (P0) Infrastructure to run local MCP servers in a restricted WASM runtime to mitigate RCE risks like CVE-2026-0757.
+- **Agentic Audit Logs (Immutable)**: (P1) High-fidelity, tamper-proof logs of all tool calls and agent intents for forensic analysis.
+
+### Priority Shifts
+- **MCP Provenance Attestation**: Promoted from **P1** to **P0**. Essential to prevent unauthorized tool injection in high-stakes environments.
+- **Supply Chain Integrity Guard**: Remained at **P0**. Re-emphasized as the top priority given recent RCE findings.
+
+### Deprecations / Monitoring
+- **Native Shell Tool Execution**: Monitoring for deprecation in favor of **Isolated MCP Sandboxes** for security reasons.

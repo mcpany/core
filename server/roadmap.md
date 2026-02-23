@@ -24,6 +24,11 @@
 *   **[P0] Supply Chain Integrity Guard**: Cryptographic provenance verification for MCP servers to prevent unauthorized tool injection. (Added: 2026-02-25)
 *   **[P1] FastMCP Metadata Support**: Support for Pythonic FastMCP decorators and native Gemini CLI slash command mapping. (Added: 2026-02-25)
 
+#### Upcoming (2026-02-26 Evolution)
+*   **[P0] Gateway-Level Security Plugin**: Hardcoded security layer to enforce tool policies independently of LLM context (SecureClaw alignment). (Added: 2026-02-26)
+*   **[P0] Isolated MCP Sandbox (WASM)**: Restricted runtime for local MCP servers to mitigate RCE risks (CVE-2026-0757). (Added: 2026-02-26)
+*   **[P1] Immutable Agentic Audit Logs**: Tamper-proof logging for forensic tool-call analysis. (Added: 2026-02-26)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

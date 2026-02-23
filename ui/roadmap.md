@@ -8,6 +8,9 @@
 - [ ] **[P1] Unified Discovery Manager**: UI for managing and auto-discovering MCP servers across transports. (Added: 2026-02-24)
 - [ ] **[P0] Lazy-MCP Tool Search Dashboard**: UI for managing the on-demand tool index and monitoring search hits/misses. (Added: 2026-02-25)
 - [ ] **[P0] Supply Chain Attestation Viewer**: Security dashboard for verifying the provenance and cryptographic signatures of connected MCP servers. (Added: 2026-02-25)
+- [ ] **[P0] Sandbox Isolation Manager**: UI for configuring WASM sandboxes, managing capabilities (FS/Net), and monitoring sandbox health. (Added: 2026-02-26)
+- [ ] **[P0] Security Plugin Dashboard**: Hardened interface for defining gateway-level security policies that are immutable by agents. (Added: 2026-02-26)
+- [ ] **[P1] Immutable Audit Log Explorer**: Forensic UI for searching and analyzing tamper-proof tool execution logs. (Added: 2026-02-26)
 - [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
 - [ ] **[P1] Tool Playground & Explorer**:
   - [ ] Auto-generated forms from Tool JSON Schemas.
