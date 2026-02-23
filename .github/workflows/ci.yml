@@ -1077,23 +1077,28 @@ jobs:
       - name: Install gh CLI
         run: |
           install_dependencies() {
-            if ! command -v curl &> /dev/null; then
+            if ! command -v curl > /dev/null 2>&1; then
               echo "curl not found. Installing..."
-              if command -v apt-get &> /dev/null; then
-                sudo apt-get update && sudo apt-get install -y curl ca-certificates
-              elif command -v apk &> /dev/null; then
-                sudo apk add --no-cache curl ca-certificates
-              elif command -v yum &> /dev/null; then
-                sudo yum install -y curl ca-certificates
-              elif command -v dnf &> /dev/null; then
-                sudo dnf install -y curl ca-certificates
+              SUDO=""
+              if command -v sudo > /dev/null 2>&1; then
+                SUDO="sudo"
+              fi
+
+              if command -v apt-get > /dev/null 2>&1; then
+                $SUDO apt-get update && $SUDO apt-get install -y curl ca-certificates
+              elif command -v apk > /dev/null 2>&1; then
+                $SUDO apk add --no-cache curl ca-certificates
+              elif command -v yum > /dev/null 2>&1; then
+                $SUDO yum install -y curl ca-certificates
+              elif command -v dnf > /dev/null 2>&1; then
+                $SUDO dnf install -y curl ca-certificates
               else
                 echo "Could not find package manager to install curl. Trying to proceed..."
               fi
             fi
           }
 
-          if ! command -v gh &> /dev/null; then
+          if ! command -v gh > /dev/null 2>&1; then
             echo "gh not found. Installing..."
             install_dependencies
 
@@ -1109,7 +1114,7 @@ jobs:
             URL="https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_${ARCH_STR}.tar.gz"
             TARBALL="/tmp/gh-install/gh.tar.gz"
 
-            if command -v curl &> /dev/null; then
+            if command -v curl > /dev/null 2>&1; then
               echo "Downloading with curl..."
               for i in {1..5}; do
                 curl -fsSL --retry 5 --retry-connrefused --retry-max-time 60 "$URL" -o "$TARBALL" && break || {
@@ -1117,7 +1122,7 @@ jobs:
                   sleep 10
                 }
               done
-            elif command -v wget &> /dev/null; then
+            elif command -v wget > /dev/null 2>&1; then
               echo "Downloading with wget..."
               for i in {1..5}; do
                 wget -q "$URL" -O "$TARBALL" && break || {
@@ -1141,7 +1146,7 @@ jobs:
 
             if [ -w /usr/local/bin ]; then
                cp "$BIN_PATH" /usr/local/bin/
-            elif command -v sudo &> /dev/null; then
+            elif command -v sudo > /dev/null 2>&1; then
                sudo cp "$BIN_PATH" /usr/local/bin/
             else
                mkdir -p "$HOME/.local/bin"
