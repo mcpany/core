@@ -49,9 +49,13 @@ type CachingMiddleware struct {
 
 // NewCachingMiddleware creates a new CachingMiddleware.
 //
-// toolManager is the toolManager.
+// Summary: Initializes the caching middleware.
 //
-// Returns the result.
+// Parameters:
+//   - toolManager (tool.ManagerInterface): The tool manager to access tool/service configurations.
+//
+// Returns:
+//   - (*CachingMiddleware): The initialized middleware.
 func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware {
 	goCacheStore := gocache_store.NewGoCache(go_cache.New(5*time.Minute, 10*time.Minute))
 	cacheManager := cache.New[any](goCacheStore)
@@ -112,19 +116,32 @@ func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware 
 
 // SetProviderFactory allows overriding the default provider factory for testing.
 //
-// factory is the factory.
+// Summary: Sets a custom provider factory.
+//
+// Parameters:
+//   - factory (ProviderFactory): The new factory function.
 func (m *CachingMiddleware) SetProviderFactory(factory ProviderFactory) {
 	m.providerFactory = factory
 }
 
 // Execute executes the caching middleware.
 //
-// ctx is the context for the request.
-// req is the request object.
-// next is the next.
+// Summary: Checks the cache before executing the tool, and caches the result if configured.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// It supports both exact matching (key-value) and semantic matching (vector similarity).
+//
+// Parameters:
+//   - ctx (context.Context): The request context.
+//   - req (*tool.ExecutionRequest): The tool execution request.
+//   - next (tool.ExecutionFunc): The next handler in the chain.
+//
+// Returns:
+//   - (any): The result (either from cache or execution).
+//   - (error): An error if execution fails.
+//
+// Side Effects:
+//   - Reads/Writes to the cache store.
+//   - May invoke embedding providers for semantic caching.
 func (m *CachingMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := tool.GetFromContext(ctx)
 	if !ok {
@@ -419,9 +436,13 @@ func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
 
 // Clear clears the cache.
 //
-// ctx is the context for the request.
+// Summary: Clears all entries from the cache.
 //
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx (context.Context): The context for the operation.
+//
+// Returns:
+//   - (error): An error if clearing fails.
 func (m *CachingMiddleware) Clear(ctx context.Context) error {
 	return m.cache.Clear(ctx)
 }

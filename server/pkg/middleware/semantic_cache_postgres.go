@@ -20,7 +20,22 @@ type PostgresVectorStore struct {
 }
 
 // NewPostgresVectorStore creates a new PostgresVectorStore.
-// It connects to the database and ensures the schema exists.
+//
+// Summary: Creates and initializes a new PostgresVectorStore.
+//
+// It connects to the specified PostgreSQL database using the provided DSN and ensures
+// that the required vector extension and schema tables exist.
+//
+// Parameters:
+//   - dsn (string): The data source name for the PostgreSQL connection.
+//
+// Returns:
+//   - (*PostgresVectorStore): The initialized vector store instance.
+//   - (error): An error if the connection fails or schema creation fails.
+//
+// Errors:
+//   - Returns an error if the DSN is empty.
+//   - Returns an error if the database connection cannot be established.
 func NewPostgresVectorStore(dsn string) (*PostgresVectorStore, error) {
 	if dsn == "" {
 		return nil, fmt.Errorf("postgres dsn is required")
@@ -41,7 +56,21 @@ func NewPostgresVectorStore(dsn string) (*PostgresVectorStore, error) {
 }
 
 // NewPostgresVectorStoreWithDB creates a new PostgresVectorStore using an existing database connection.
-// It ensures the schema exists.
+//
+// Summary: Initializes the vector store with an existing DB connection.
+//
+// It verifies the connection and ensures the pgvector extension and schema tables exist.
+//
+// Parameters:
+//   - db (*sql.DB): An existing database connection.
+//
+// Returns:
+//   - (*PostgresVectorStore): The initialized vector store instance.
+//   - (error): An error if the connection verification or schema setup fails.
+//
+// Side Effects:
+//   - Creates the `vector` extension if it doesn't exist.
+//   - Creates the `semantic_cache_entries` table and indexes if they don't exist.
 func NewPostgresVectorStoreWithDB(db *sql.DB) (*PostgresVectorStore, error) {
 	// Verify connection
 	ctxPing, cancelPing := context.WithTimeout(context.Background(), 5*time.Second)
@@ -85,13 +114,20 @@ func NewPostgresVectorStoreWithDB(db *sql.DB) (*PostgresVectorStore, error) {
 
 // Add adds a new entry to the vector store.
 //
-// ctx is the context for the request.
-// key is the key.
-// vector is the vector.
-// result is the result.
-// ttl is the ttl.
+// Summary: Inserts a new semantic cache entry into the database.
 //
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx (context.Context): The context for the database operation.
+//   - key (string): The unique identifier for the cache entry (e.g., query hash).
+//   - vector ([]float32): The embedding vector associated with the entry.
+//   - result (any): The result object to store (serialized to JSON).
+//   - ttl (time.Duration): The time-to-live for the cache entry.
+//
+// Returns:
+//   - (error): An error if marshaling fails or the database insert fails.
+//
+// Side Effects:
+//   - Writes a new row to the `semantic_cache_entries` table.
 func (s *PostgresVectorStore) Add(ctx context.Context, key string, vector []float32, result any, ttl time.Duration) error {
 	vectorJSON, err := json.Marshal(vector)
 	if err != nil {
@@ -121,13 +157,23 @@ func (s *PostgresVectorStore) Add(ctx context.Context, key string, vector []floa
 
 // Search searches for the most similar entry in the vector store.
 //
-// ctx is the context for the request.
-// key is the key.
-// query is the query.
+// Summary: Finds the nearest neighbor vector in the cache.
 //
-// Returns the result.
-// Returns the result.
-// Returns true if successful.
+// It calculates the cosine distance between the query vector and stored vectors,
+// returning the closest match that hasn't expired.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the database query.
+//   - key (string): The key to filter by (optional optimization).
+//   - query ([]float32): The query embedding vector.
+//
+// Returns:
+//   - (any): The cached result object.
+//   - (float32): The similarity score (1.0 - cosine distance).
+//   - (bool): True if a match was found, false otherwise.
+//
+// Errors:
+//   - Returns false if no matching row is found or if unmarshaling fails.
 func (s *PostgresVectorStore) Search(ctx context.Context, key string, query []float32) (any, float32, bool) {
 	queryJSON, err := json.Marshal(query)
 	if err != nil {
@@ -172,8 +218,17 @@ func (s *PostgresVectorStore) Search(ctx context.Context, key string, query []fl
 
 // Prune removes expired entries.
 //
-// ctx is the context for the request.
-// key is the key.
+// Summary: Deletes expired cache entries from the database.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the database operation.
+//   - key (string): Optional key to scope the pruning. If empty, prunes all expired entries.
+//
+// Returns:
+//   None.
+//
+// Side Effects:
+//   - Deletes rows from `semantic_cache_entries`.
 func (s *PostgresVectorStore) Prune(ctx context.Context, key string) {
 	query := "DELETE FROM semantic_cache_entries WHERE expires_at <= $1"
 	args := []interface{}{time.Now()}
@@ -188,7 +243,13 @@ func (s *PostgresVectorStore) Prune(ctx context.Context, key string) {
 
 // Close closes the database connection.
 //
-// Returns an error if the operation fails.
+// Summary: Closes the underlying SQL database connection.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   - (error): An error if the closing operation fails.
 func (s *PostgresVectorStore) Close() error {
 	return s.db.Close()
 }

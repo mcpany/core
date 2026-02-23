@@ -18,9 +18,18 @@ type SSOConfig struct {
 
 // SSOMiddleware creates a new SSO middleware.
 //
-// config holds the configuration settings.
+// Summary: Returns a Gin middleware that enforces SSO authentication.
 //
-// Returns the result.
+// Parameters:
+//   - config (SSOConfig): The SSO configuration including enablement status and IDP URL.
+//
+// Returns:
+//   - (gin.HandlerFunc): The Gin middleware function.
+//
+// Side Effects:
+//   - Aborts the request with 401 Unauthorized if authentication fails.
+//   - Redirects to the IDP login URL.
+//   - Sets "UserID" in the context if authentication succeeds.
 func SSOMiddleware(config SSOConfig) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if !config.Enabled {

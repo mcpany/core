@@ -109,12 +109,22 @@ func NewToolMetricsMiddleware(t tokenizer.Tokenizer) *ToolMetricsMiddleware {
 
 // Execute executes the tool metrics middleware.
 //
-// ctx is the context for the request.
-// req is the request object.
-// next is the next.
+// Summary: Records metrics for tool executions.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// It tracks execution duration, total calls, input/output size, and token usage,
+// labeling them with tool name, service ID, status, and error type.
+//
+// Parameters:
+//   - ctx (context.Context): The request context.
+//   - req (*tool.ExecutionRequest): The tool execution request.
+//   - next (tool.ExecutionFunc): The next handler in the chain.
+//
+// Returns:
+//   - (any): The result of the tool execution.
+//   - (error): An error if the tool execution fails.
+//
+// Side Effects:
+//   - Updates Prometheus metrics.
 func (m *ToolMetricsMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	// Get Service ID if possible (from context or tool)
 	var serviceID string

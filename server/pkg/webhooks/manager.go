@@ -30,6 +30,11 @@ type Manager struct {
 }
 
 // NewManager creates a new Webhook Manager.
+//
+// Summary: Initializes a new webhook manager.
+//
+// Returns:
+//   - (*Manager): The initialized manager.
 func NewManager() *Manager {
 	return &Manager{
 		webhooks:   make(map[string]*WebhookConfig),
@@ -38,6 +43,11 @@ func NewManager() *Manager {
 }
 
 // ListWebhooks returns all configured webhooks.
+//
+// Summary: Retrieves all registered webhooks.
+//
+// Returns:
+//   - ([]*WebhookConfig): A list of configured webhooks.
 func (m *Manager) ListWebhooks() []*WebhookConfig {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -49,6 +59,11 @@ func (m *Manager) ListWebhooks() []*WebhookConfig {
 }
 
 // AddWebhook adds or updates a webhook.
+//
+// Summary: Registers or updates a webhook configuration.
+//
+// Parameters:
+//   - w (*WebhookConfig): The webhook configuration to add.
 func (m *Manager) AddWebhook(w *WebhookConfig) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -60,6 +75,15 @@ func (m *Manager) AddWebhook(w *WebhookConfig) {
 }
 
 // GetWebhook returns a webhook by ID.
+//
+// Summary: Retrieves a webhook by its ID.
+//
+// Parameters:
+//   - id (string): The webhook ID.
+//
+// Returns:
+//   - (*WebhookConfig): The webhook configuration if found.
+//   - (bool): True if the webhook exists.
 func (m *Manager) GetWebhook(id string) (*WebhookConfig, bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -68,6 +92,11 @@ func (m *Manager) GetWebhook(id string) (*WebhookConfig, bool) {
 }
 
 // DeleteWebhook removes a webhook by ID.
+//
+// Summary: Deletes a webhook.
+//
+// Parameters:
+//   - id (string): The webhook ID.
 func (m *Manager) DeleteWebhook(id string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -75,6 +104,19 @@ func (m *Manager) DeleteWebhook(id string) {
 }
 
 // TestWebhook sends a test payload to the webhook URL.
+//
+// Summary: Triggers a test event for a specific webhook.
+//
+// Parameters:
+//   - ctx (context.Context): The request context.
+//   - id (string): The webhook ID to test.
+//
+// Returns:
+//   - (error): An error if the test fails (e.g. 404 Not Found, connection error).
+//
+// Side Effects:
+//   - Sends an HTTP POST request to the webhook URL.
+//   - Updates the webhook status.
 func (m *Manager) TestWebhook(ctx context.Context, id string) error {
 	w, ok := m.GetWebhook(id)
 	if !ok {

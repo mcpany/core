@@ -69,13 +69,24 @@ func (m *GlobalRateLimitMiddleware) UpdateConfig(config *configv1.RateLimitConfi
 
 // Execute executes the rate limiting middleware.
 //
-// ctx is the context for the request.
-// method is the method.
-// req is the request object.
-// next is the next.
+// Summary: Enforces the configured rate limits on the incoming request.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// It identifies the request partition (e.g., by IP, user ID) and checks the associated rate limiter.
+// If the limit is exceeded, it returns an error.
+//
+// Parameters:
+//   - ctx (context.Context): The request context.
+//   - method (string): The MCP method being called.
+//   - req (mcp.Request): The request payload.
+//   - next (mcp.MethodHandler): The next handler in the chain.
+//
+// Returns:
+//   - (mcp.Result): The result of the next handler if allowed.
+//   - (error): An error if the rate limit is exceeded or the next handler fails.
+//
+// Side Effects:
+//   - Increments request counters in the rate limiter (Redis or local).
+//   - Records metrics for allowed/blocked requests.
 func (m *GlobalRateLimitMiddleware) Execute(ctx context.Context, method string, req mcp.Request, next mcp.MethodHandler) (mcp.Result, error) {
 	m.mu.RLock()
 	config := m.config

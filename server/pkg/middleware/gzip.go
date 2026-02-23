@@ -122,6 +122,9 @@ type gzipResponseWriter struct {
 // Returns:
 //   - int: The number of bytes written.
 //   - error: An error if the write fails.
+//
+// Side Effects:
+//   - May flush headers and start compression if the buffer threshold is exceeded.
 func (w *gzipResponseWriter) Write(b []byte) (int, error) {
 	// If we are already compressing, write to gzip writer
 	if w.writer != nil {
@@ -178,6 +181,12 @@ func (w *gzipResponseWriter) Write(b []byte) (int, error) {
 //
 // Parameters:
 //   - code: int. The HTTP status code.
+//
+// Returns:
+//   None.
+//
+// Side Effects:
+//   - If content is not compressible, headers are flushed immediately.
 func (w *gzipResponseWriter) WriteHeader(code int) {
 	if w.headerWritten {
 		return
@@ -259,6 +268,15 @@ func (w *gzipResponseWriter) flushBuffer(startGzip bool) error {
 // Flush implements the http.Flusher interface.
 //
 // Summary: Flushes the compressed stream to the client.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   None.
+//
+// Side Effects:
+//   - Flushes the underlying response writer.
 func (w *gzipResponseWriter) Flush() {
 	// If we haven't written headers yet, we are still buffering.
 	// Force flush the buffer to start gzip stream (even if small).
@@ -281,6 +299,16 @@ func (w *gzipResponseWriter) Flush() {
 // Close closes the gzip writer and returns it to the pool.
 //
 // Summary: Closes the Gzip writer and releases resources.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   None.
+//
+// Side Effects:
+//   - Writes any remaining buffered data.
+//   - Returns the gzip writer to the pool.
 func (w *gzipResponseWriter) Close() {
 	if w.writer != nil {
 		_ = w.writer.Close()

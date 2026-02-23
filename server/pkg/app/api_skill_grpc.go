@@ -22,9 +22,13 @@ type SkillServiceServer struct {
 
 // NewSkillServiceServer creates a new SkillServiceServer.
 //
-// manager handles the resource management.
+// Summary: Initializes a new gRPC server for managing skills.
 //
-// Returns the result.
+// Parameters:
+//   - manager (*skill.Manager): The skill manager instance.
+//
+// Returns:
+//   - (*SkillServiceServer): The initialized gRPC server.
 func NewSkillServiceServer(manager *skill.Manager) *SkillServiceServer {
 	return &SkillServiceServer{
 		manager: manager,
@@ -33,11 +37,15 @@ func NewSkillServiceServer(manager *skill.Manager) *SkillServiceServer {
 
 // ListSkills lists all available skills.
 //
-// _ is an unused parameter.
-// _ is an unused parameter.
+// Summary: Retrieves a list of all skills.
 //
-// Returns the response.
-// Returns an error if the operation fails.
+// Parameters:
+//   - _ (context.Context): The request context.
+//   - _ (*pb.ListSkillsRequest): The request parameters (currently unused).
+//
+// Returns:
+//   - (*pb.ListSkillsResponse): The response containing the list of skills.
+//   - (error): An error if the operation fails.
 func (s *SkillServiceServer) ListSkills(_ context.Context, _ *pb.ListSkillsRequest) (*pb.ListSkillsResponse, error) {
 	skills, err := s.manager.ListSkills()
 	if err != nil {
@@ -56,11 +64,15 @@ func (s *SkillServiceServer) ListSkills(_ context.Context, _ *pb.ListSkillsReque
 
 // GetSkill retrieves a specific skill by name.
 //
-// _ is an unused parameter.
-// req is the request object.
+// Summary: Retrieves a skill definition by name.
 //
-// Returns the response.
-// Returns an error if the operation fails.
+// Parameters:
+//   - _ (context.Context): The request context.
+//   - req (*pb.GetSkillRequest): The request containing the skill name.
+//
+// Returns:
+//   - (*pb.GetSkillResponse): The response containing the skill details.
+//   - (error): An error if the skill is not found or retrieval fails.
 func (s *SkillServiceServer) GetSkill(_ context.Context, req *pb.GetSkillRequest) (*pb.GetSkillResponse, error) {
 	if req.GetName() == "" {
 		return nil, status.Error(codes.InvalidArgument, "skill name is required")
@@ -80,11 +92,15 @@ func (s *SkillServiceServer) GetSkill(_ context.Context, req *pb.GetSkillRequest
 
 // CreateSkill creates a new skill.
 //
-// _ is an unused parameter.
-// req is the request object.
+// Summary: Creates a new skill definition.
 //
-// Returns the response.
-// Returns an error if the operation fails.
+// Parameters:
+//   - _ (context.Context): The request context.
+//   - req (*pb.CreateSkillRequest): The request containing the skill definition.
+//
+// Returns:
+//   - (*pb.CreateSkillResponse): The created skill.
+//   - (error): An error if creation fails.
 func (s *SkillServiceServer) CreateSkill(_ context.Context, req *pb.CreateSkillRequest) (*pb.CreateSkillResponse, error) {
 	if req.GetSkill() == nil {
 		return nil, status.Error(codes.InvalidArgument, "skill is required")
@@ -102,11 +118,15 @@ func (s *SkillServiceServer) CreateSkill(_ context.Context, req *pb.CreateSkillR
 
 // UpdateSkill updates an existing skill.
 //
-// _ is an unused parameter.
-// req is the request object.
+// Summary: Updates an existing skill.
 //
-// Returns the response.
-// Returns an error if the operation fails.
+// Parameters:
+//   - _ (context.Context): The request context.
+//   - req (*pb.UpdateSkillRequest): The request containing the skill name and new definition.
+//
+// Returns:
+//   - (*pb.UpdateSkillResponse): The updated skill.
+//   - (error): An error if the update fails.
 func (s *SkillServiceServer) UpdateSkill(_ context.Context, req *pb.UpdateSkillRequest) (*pb.UpdateSkillResponse, error) {
 	if req.GetName() == "" {
 		return nil, status.Error(codes.InvalidArgument, "skill name is required")
@@ -129,11 +149,15 @@ func (s *SkillServiceServer) UpdateSkill(_ context.Context, req *pb.UpdateSkillR
 
 // DeleteSkill deletes a skill.
 //
-// _ is an unused parameter.
-// req is the request object.
+// Summary: Deletes a skill by name.
 //
-// Returns the response.
-// Returns an error if the operation fails.
+// Parameters:
+//   - _ (context.Context): The request context.
+//   - req (*pb.DeleteSkillRequest): The request containing the skill name.
+//
+// Returns:
+//   - (*pb.DeleteSkillResponse): Empty response on success.
+//   - (error): An error if deletion fails.
 func (s *SkillServiceServer) DeleteSkill(_ context.Context, req *pb.DeleteSkillRequest) (*pb.DeleteSkillResponse, error) {
 	if req.GetName() == "" {
 		return nil, status.Error(codes.InvalidArgument, "skill name is required")

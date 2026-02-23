@@ -178,6 +178,15 @@ func (w *smartResponseWriter) flushHeader() {
 // Flush implements http.Flusher to support streaming.
 //
 // Summary: Flushes the response buffer to the client.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   None.
+//
+// Side Effects:
+//   - Flushes the underlying response writer if pass-through is enabled.
 func (w *smartResponseWriter) Flush() {
 	if w.passThrough {
 		if f, ok := w.w.(http.Flusher); ok {

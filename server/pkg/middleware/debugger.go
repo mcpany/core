@@ -82,6 +82,12 @@ func (d *Debugger) process() {
 // Close stops the background processor.
 //
 // Summary: Shuts down the debugger and releases resources.
+//
+// Parameters:
+//   None.
+//
+// Returns:
+//   None.
 func (d *Debugger) Close() {
 	close(d.ingress)
 	<-d.done
@@ -106,6 +112,9 @@ type bodyLogWriter struct {
 // Returns:
 //   - int: The number of bytes written.
 //   - error: An error if the write fails.
+//
+// Side Effects:
+//   - Buffers the response body for debugging purposes.
 func (w *bodyLogWriter) Write(b []byte) (int, error) {
 	if !w.wroteHeader {
 		w.WriteHeader(http.StatusOK)
@@ -132,6 +141,9 @@ func (w *bodyLogWriter) Write(b []byte) (int, error) {
 //
 // Parameters:
 //   - statusCode: int. The HTTP status code.
+//
+// Returns:
+//   None.
 func (w *bodyLogWriter) WriteHeader(statusCode int) {
 	if w.wroteHeader {
 		return
@@ -155,7 +167,10 @@ type readCloserWrapper struct {
 //   - next: http.Handler. The next handler in the chain.
 //
 // Returns:
-//   - http.Handler: The wrapped handler.
+//   - http.Handler: The wrapped handler that performs debug logging.
+//
+// Side Effects:
+//   - Intercepts requests and responses to log detailed debug information.
 func (d *Debugger) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
@@ -274,6 +289,9 @@ func isTextContent(contentType string) bool {
 //
 // Summary: Retrieves the list of captured debug entries.
 //
+// Parameters:
+//   None.
+//
 // Returns:
 //   - []DebugEntry: A list of captured requests and responses.
 func (d *Debugger) Entries() []DebugEntry {
@@ -292,6 +310,9 @@ func (d *Debugger) Entries() []DebugEntry {
 // APIHandler returns a http.HandlerFunc to view entries.
 //
 // Summary: Returns an HTTP handler that exposes the debug entries as JSON.
+//
+// Parameters:
+//   None.
 //
 // Returns:
 //   - http.HandlerFunc: The API handler function.

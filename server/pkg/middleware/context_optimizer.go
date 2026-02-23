@@ -21,9 +21,13 @@ type ContextOptimizer struct {
 
 // NewContextOptimizer creates a new ContextOptimizer.
 //
-// maxChars is the maxChars.
+// Summary: Initializes a context optimizer with a character limit.
 //
-// Returns the result.
+// Parameters:
+//   - maxChars (int): The maximum number of characters allowed in text fields.
+//
+// Returns:
+//   - (*ContextOptimizer): The initialized optimizer.
 func NewContextOptimizer(maxChars int) *ContextOptimizer {
 	return &ContextOptimizer{
 		MaxChars: maxChars,
@@ -40,9 +44,17 @@ var bufferPool = sync.Pool{
 
 // Handler returns the middleware handler.
 //
-// next is the next.
+// Summary: Returns an HTTP handler that truncates large text fields in JSON responses.
 //
-// Returns the result.
+// Parameters:
+//   - next (http.Handler): The next handler in the chain.
+//
+// Returns:
+//   - (http.Handler): The wrapped handler.
+//
+// Side Effects:
+//   - Buffers the response body for inspection and modification.
+//   - Modifies the response body if fields exceed the configured character limit.
 func (co *ContextOptimizer) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		wb := bufferPool.Get().(*responseBuffer)
@@ -176,10 +188,14 @@ func (w *responseBuffer) checkBuffer() {
 
 // Write writes the data to the buffer or the underlying ResponseWriter.
 //
-// b is the b.
+// Summary: Writes data to the response buffer or pass-through.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - b ([]byte): The data to write.
+//
+// Returns:
+//   - (int): Number of bytes written.
+//   - (error): Error if write fails.
 func (w *responseBuffer) Write(b []byte) (int, error) {
 	w.checkBuffer()
 
@@ -195,7 +211,10 @@ func (w *responseBuffer) Write(b []byte) (int, error) {
 
 // WriteHeader captures the status code and decides whether to buffer based on headers.
 //
-// statusCode is the HTTP status code to write.
+// Summary: Captures HTTP status code.
+//
+// Parameters:
+//   - statusCode (int): The HTTP status code.
 func (w *responseBuffer) WriteHeader(statusCode int) {
 	if w.wroteHeader {
 		return
