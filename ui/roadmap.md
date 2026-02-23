@@ -16,6 +16,8 @@
 - [ ] **[P2] Interactive Setup Wizard**: Guided "First Run" experience to generate `mcp.yaml` and configure agents.
 - [ ] **[P2] Agent Black Box Player**: Timeline-based replay of recorded agent sessions (Inputs, Outputs, State).
 - [ ] **[P2] Cost & metrics Dashboard**: Real-time visualization of token usage, costs, and tool performance metrics (P95 latency).
+- [ ] **[P1] Dynamic Tool Discovery Dashboard**: UI for managing and searching massive toolsets via the new Search API.
+- [ ] **[P0] OpenClaw Governance View**: Security dashboard specifically for monitoring and constraining local OpenClaw agents.
 
 ### Existing Planned Features
 
