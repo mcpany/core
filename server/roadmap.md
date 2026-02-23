@@ -11,6 +11,12 @@
 
 ### Status: Active Development
 
+#### Upcoming (2026-02-23 Evolution)
+*   **[P0] Recursive Context Protocol**: Finalize header-based context inheritance for swarms.
+*   **[P0] Zero-Trust Subagent Scoping**: Implement intent-bound capability tokens.
+*   **[P1] Environment Bridging Middleware**: Secure state sync between cloud sandboxes and local tools.
+*   **[P1] Machine-Checkable Security Contracts**: Declarative tool safety models.
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
