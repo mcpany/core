@@ -50,6 +50,7 @@ The execution result is displayed in the chat stream.
 
 - **JSON Mode**: Switch to the "JSON" tab in the tool configuration dialog to input raw parameters if the form is too constraining.
 - **History**: Previous tool calls in the session remain visible above.
+- **Native File Upload**: Automatically detects base64 encoded fields in tool schemas (e.g., `contentEncoding: "base64"`) and provides a native file picker for seamless file uploads.
 
 ### 5. Session History (Import/Export)
 
