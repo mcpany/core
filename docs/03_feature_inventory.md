@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **Federated Skill Subscription Adapter**: (P1) Allows agents to dynamically "install" tools from the OpenClaw skill registry through MCP Any.
+- **Semantic Embedding Middleware**: (P0) Pluggable embedding support for "Lazy-MCP" discovery, enabling high-precision intent matching.
+- **Gemini Slash-Command Mapper**: (P1) Automatically generates optimized metadata to support Gemini CLI 2.4 native slash commands.
+
+### Priority Shifts
+- **A2A Interop Bridge (Pseudo-MCP)**: Promoted to **P0** to support the surge in multi-framework agent swarms.
+- **Lazy-MCP Discovery**: Re-confirmed as **P0** with new emphasis on "Semantic-First" indexing.
+
+### Deprecations / Monitoring
+- **Keyword-Only Tool Search**: Monitoring for deprecation in favor of Semantic Search.

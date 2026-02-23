@@ -47,3 +47,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **A2A Gateway Protocol**: MCP Any will implement a protocol-neutral bridge for A2A communication, allowing disparate agent frameworks (e.g., OpenClaw, AutoGen) to exchange state and tasks via a unified MCP-like interface.
 - **Federated Tool Mesh**: Moving from a standalone server to a "Mesh" architecture where multiple MCP Any instances can peer and share resources across network boundaries, governed by global Zero-Trust policies.
 - **Resource-Aware Intelligence**: Integrating cost and latency telemetry into the tool discovery process, allowing LLMs to perform "Economical Reasoning" when selecting tools.
+
+---
+
+## Strategic Evolution: [2026-02-27]
+### Focus: Federated Skill Acquisition & Semantic Search Purity
+**Context**: Today's research on OpenClaw's "Skill Federation" and Claude Code's enhanced "MCP Tool Search" indicates that the gateway must evolve from a "Config-Push" model to a "Skill-Pull" model. Agents no longer just use what is configured; they actively seek and subscribe to new capabilities.
+**Strategic Pivot**:
+- **Federated Skill Plane**: MCP Any will introduce a "Skill Subscription" layer that allows for the safe acquisition of federated MCP tools, treating the gateway as a secure "Skill Sandbox."
+- **Semantic-First Discovery**: Pivoting from keyword-based tool discovery to a "Semantic-First" architecture where every tool is indexed with multi-modal embeddings, enabling true "Intent-to-Tool" mapping.
+- **Dynamic Credential Orchestration**: Implementing a "Secret Mesh" that automatically maps user-scoped credentials to federated skills, eliminating manual configuration for acquired tools.

@@ -57,3 +57,4 @@ As the number of available MCP tools grows, agents face "context pollution"—wh
 
 ## 7. Evolutionary Changelog
 *   **2026-02-25:** Initial Document Creation.
+*   **2026-02-27:** **Semantic Discovery Refinement**: Pivoting from keyword-based indexing to multi-modal semantic embeddings to align with Claude Code's "Intent-to-Tool" mapping. Added "Pluggable Embedding Middleware" to Section 4.
