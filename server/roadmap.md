@@ -10,6 +10,9 @@
 ## 2. Updated Roadmap
 
 ### Status: Active Development
+*   **[P0] Policy Firewall Engine:** Implementing Rego/CEL middleware for tool call inspection (In Review).
+*   **[P1] Recursive Context Protocol:** Standardizing context propagation for subagents (Drafting).
+*   **[P1] Lazy Tool Discovery:** On-demand tool listing to address context bloat (Upcoming).
 
 ## 2. Top 10 Recommended Features
 
