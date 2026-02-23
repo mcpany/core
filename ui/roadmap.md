@@ -8,6 +8,8 @@
 - [ ] **[P1] Unified Discovery Manager**: UI for managing and auto-discovering MCP servers across transports. (Added: 2026-02-24)
 - [ ] **[P0] Lazy-MCP Tool Search Dashboard**: UI for managing the on-demand tool index and monitoring search hits/misses. (Added: 2026-02-25)
 - [ ] **[P0] Supply Chain Attestation Viewer**: Security dashboard for verifying the provenance and cryptographic signatures of connected MCP servers. (Added: 2026-02-25)
+- [ ] **[P0] Attestation Status Badge**: Visual indicator of a tool's attestation status in the Tool List and Playground. (Added: 2026-02-26)
+- [ ] **[P1] SOP Swarm Visualizer**: Live sequence diagrams showing state handoffs between agents using the Swarm Orchestration Protocol. (Added: 2026-02-26)
 - [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
 - [ ] **[P1] Tool Playground & Explorer**:
   - [ ] Auto-generated forms from Tool JSON Schemas.

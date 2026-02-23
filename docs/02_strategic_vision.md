@@ -37,3 +37,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Lazy-Discovery Architecture**: MCP Any will pivot from "pushing" all tool schemas to "serving" them on-demand via a high-performance similarity search middleware. This allows for virtually unlimited tool scaling.
 - **Supply Chain Provenance**: Implementing "Attested Tooling" where every MCP server must provide a cryptographic signature of its origin and configuration, preventing rogue installations like those seen in the Cline incident.
 - **Context-Aware Scoping**: Moving beyond simple capability tokens to "Intent-Aware" permissions, where a tool call is only allowed if it aligns with the high-level intent verified by the Policy Engine.
+
+---
+
+## Strategic Evolution: [2026-02-26]
+### Focus: Agent Supply Chain Attestation & Secure Swarm Orchestration
+**Context**: Today's findings on "Agentic Spear-Phishing" and the release of OpenClaw's SOP v1.0 underscore the need for MCP Any to evolve into a "Trust Anchor" for agent ecosystems.
+**Strategic Pivot**:
+- **Attested Tooling Pipeline**: Moving from simple provenance to a full "Attestation" model where MCP Any verifies the runtime integrity and identity of every connected tool.
+- **Swarm Transit Layer**: Implementing native support for OpenClaw's SOP to facilitate secure, multi-agent coordination without exposing raw state to the LLM.
+- **Isolated Execution First**: Pivoting the "Command Adapter" to default-isolated execution (using containers or WASM) to match the security posture of modern CLI agents like Gemini's.

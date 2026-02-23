@@ -49,3 +49,19 @@
 
 ### Deprecations / Monitoring
 - **Upfront Tool Schema Pushing**: Monitoring for deprecation in favor of Lazy-Discovery.
+
+---
+
+## Evolution: [2026-02-26] Updates
+
+### Proposed Additions
+- **Attested Tooling Pipeline**: (P0) A system to verify the cryptographic signatures and runtime integrity of MCP servers before they are allowed to register tools. Essential to prevent "Agentic Spear-Phishing."
+- **SOP Swarm Middleware**: (P1) Implementation of the OpenClaw Swarm Orchestration Protocol to support secure agent handoffs and state sync.
+- **Isolated Command Containerizer**: (P1) A specialized adapter that automatically wraps `command` upstreams in ephemeral, restricted containers (Docker/WASM).
+
+### Priority Shifts
+- **Supply Chain Integrity Guard**: Promoted to **P0**. Urgent requirement to defend against emerging "Spear-Phishing" and "Clinejection" variants.
+- **On-Demand Discovery Middleware (Lazy-MCP)**: Remains **P0**. Crucial for scaling to enterprise toolsets.
+
+### Deprecations / Monitoring
+- **Direct Host Execution for Commands**: Marked for deprecation. All command executions will require an isolation profile by default starting in v1.2.

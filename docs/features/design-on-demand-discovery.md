@@ -57,3 +57,9 @@ As the number of available MCP tools grows, agents face "context pollution"—wh
 
 ## 7. Evolutionary Changelog
 *   **2026-02-25:** Initial Document Creation.
+*   **2026-02-26:** **Update: Semantic Ranking & Context Budgeting.**
+    - **Context**: Today's market sync revealed that Claude Code and Gemini CLI are moving towards "Context Budgeting."
+    - **Architecture Adjustment**:
+        - Introduced a `budget_limit` parameter to the search tool.
+        - Upgraded the search index to support semantic ranking (Embeddings + Cosine Similarity) to ensure the highest-value tools are returned first within the budget.
+    - **Security Impact**: Reduces the risk of "Tool Injection" where a malicious tool with a generic name matches many queries. Semantic ranking prioritizes trusted/attested tools.
