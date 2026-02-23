@@ -3,6 +3,9 @@
 [![Documentation: Gold Standard](https://img.shields.io/badge/Documentation-Gold%20Standard-gold.svg)](https://github.com/mcpany/core)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
+> **Code describes *How*, Documentation describes *Why*.**
+> We strive to decrease the "Time-to-Understand" for every developer.
+
 ## Project Identity
 
 **What is this?**

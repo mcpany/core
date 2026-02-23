@@ -89,6 +89,15 @@ func (m *AuditMiddleware) initializeStore(config *configv1.AuditConfig) error {
 }
 
 // SetStore sets the audit store.
+//
+// Summary: Sets the audit store.
+//
+// Parameters:
+//   - store: audit.Store. The audit store to set.
+//
+// Side Effects:
+//   - Updates the middleware's store reference.
+//
 // This is primarily used for testing.
 func (m *AuditMiddleware) SetStore(store audit.Store) {
 	m.mu.Lock()
