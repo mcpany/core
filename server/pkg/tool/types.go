@@ -3833,6 +3833,20 @@ func checkRubyInjection(val, base string, quoteLevel int) error {
 		if strings.Contains(val, "#{") {
 			return fmt.Errorf("ruby interpolation injection detected: value contains '#{'")
 		}
+		// Sentinel Security Update: Block instance/class variable interpolation (#@var, #$var)
+		// Ruby interpolates #$var and #@var in double quotes/backticks.
+		// #$ is blocked by generic checks (contains $), but #@ is not.
+		if strings.Contains(val, "#@") {
+			return fmt.Errorf("ruby variable interpolation injection detected: value contains '#@'")
+		}
+	}
+
+	// Unquoted Ruby: @var and $var are dangerous.
+	// $var is blocked by generic checks. @var is not.
+	if quoteLevel == 0 {
+		if strings.Contains(val, "@") {
+			return fmt.Errorf("ruby variable injection detected: value contains '@'")
+		}
 	}
 
 	// Sentinel Security Update:
@@ -3868,6 +3882,19 @@ func checkNodePerlPhpInjection(val, base string, quoteLevel int) error {
 	}
 
 	if isPerl {
+		// Sentinel Security Update: Block dangerous Perl variables (@, %) in all contexts where they might be interpolated.
+		// @var (array) and %var (hash) are interpolated in Unquoted (0), Double Quoted (1), and Backtick (3).
+		// $var is blocked by generic checks for Double Quoted and Unquoted (via blocked characters), but @ and % are not.
+		// We must explicitly block them to prevent info leakage (e.g., @INC).
+		if quoteLevel == 0 || quoteLevel == 1 || quoteLevel == 3 {
+			if strings.Contains(val, "@") {
+				return fmt.Errorf("perl array interpolation injection detected: value contains '@'")
+			}
+			if strings.Contains(val, "%") {
+				return fmt.Errorf("perl hash interpolation injection detected: value contains '%%'")
+			}
+		}
+
 		// Sentinel Security Update:
 		// Block qx operator (command execution) regardless of quoting.
 		// qx can be used in unquoted contexts with safe delimiters (e.g. qx/cmd/)
@@ -3903,12 +3930,6 @@ func checkNodePerlPhpInjection(val, base string, quoteLevel int) error {
 					}
 					idx += 2 + next
 				}
-			}
-		}
-
-		if quoteLevel == 1 || quoteLevel == 3 {
-			if strings.Contains(val, "@{") {
-				return fmt.Errorf("perl array interpolation injection detected: value contains '@{'")
 			}
 		}
 
