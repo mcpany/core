@@ -11,6 +11,11 @@
 
 ### Status: Active Development
 
+*   **[2026-02-07] Market Sync Update:**
+    *   **Isolation via Named Pipes:** Researching replacement of HTTP tunneling for inter-agent comms to mitigate host exposure.
+    *   **Lethal Trifecta detection:** Adding heuristic monitoring for cross-domain data leakage.
+    *   **Subagent Context Propagation:** Standardizing `x-mcp-context` headers for recursive agent flows.
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
