@@ -1,394 +1,340 @@
 /**
- * Copyright 2025 Author(s) of MCP Any
+ * Copyright 2026 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
  */
 
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { Trace, Span } from "@/types/trace";
-import { User, Cpu, Terminal, ArrowRight, ArrowLeft, MessageSquare, Globe, Database } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { JsonView } from "@/components/ui/json-view";
 import { Badge } from "@/components/ui/badge";
+import { User, Cpu, Terminal, Globe, Database, HelpCircle, ArrowRight, ArrowLeft, Clock } from "lucide-react";
 
 interface SequenceDiagramProps {
   trace: Trace;
 }
 
-interface Interaction {
-  id: number;
+interface Actor {
+  id: string;
+  label: string;
+  type: 'user' | 'core' | 'tool' | 'service' | 'resource';
+  icon: React.ElementType;
+}
+
+interface Message {
+  id: string;
   from: string;
   to: string;
   label: string;
-  type: "request" | "response";
+  type: 'request' | 'response';
   payload: any;
-  status?: "success" | "error" | "pending";
-  description?: string;
+  status: string;
+  error?: string;
+  timestamp: number;
 }
 
-interface Participant {
-  id: string;
-  label: string;
-  icon: React.ElementType;
-  color: string;
-  bg: string;
-}
+// Config
+const ACTOR_WIDTH = 120;
+const ACTOR_GAP = 160;
+const MESSAGE_HEIGHT = 60;
+const PADDING_TOP = 60;
+const PADDING_BOTTOM = 40;
+const PADDING_X = 40;
 
-/**
- * SequenceDiagram renders an interactive sequence diagram of a trace.
- * It visualizes the flow of messages between the user, MCP core, and tools.
- *
- * @param props - The component props.
- * @param props.trace - The trace data to visualize.
- * @returns A rendered SVG sequence diagram.
- */
 export function SequenceDiagram({ trace }: SequenceDiagramProps) {
-  const [selectedInteraction, setSelectedInteraction] = useState<Interaction | null>(null);
+  const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
 
-  const { interactions, participants } = useMemo(() => {
-    const parts = new Map<string, Participant>();
-    const acts: Interaction[] = [];
-    let actId = 1;
+  const { actors, messages } = useMemo(() => {
+    const actorMap = new Map<string, Actor>();
+    const msgs: Message[] = [];
 
-    // Default Participants
-    parts.set("user", { id: "user", label: "Client", icon: User, color: "text-blue-500", bg: "bg-blue-500/10" });
-    parts.set("core", { id: "core", label: "MCP Core", icon: Cpu, color: "text-purple-500", bg: "bg-purple-500/10" });
+    // Helper to ensure actor exists
+    const getActorId = (span: Span | null, role: 'caller' | 'callee'): string => {
+        if (!span) return 'user'; // Root caller is user
 
-    // Helper to get or create participant
-    const getParticipant = (span: Span): string => {
-      let id = span.serviceName ? `svc:${span.serviceName}` : `tool:${span.name}`;
-      // Sanitize ID
-      id = id.replace(/[^a-zA-Z0-9-_:]/g, "_");
+        // Normalize ID
+        let id = span.serviceName ? `svc:${span.serviceName}` : `tool:${span.name}`;
+        if (span.type === 'core') id = 'core';
 
-      if (!parts.has(id)) {
-        let icon = Terminal;
-        let color = "text-amber-500";
-        let bg = "bg-amber-500/10";
-        let label = span.name;
-
-        if (span.type === 'service') {
-            icon = Globe;
-            color = "text-indigo-500";
-            bg = "bg-indigo-500/10";
-            label = span.serviceName || span.name;
-        } else if (span.type === 'resource') {
-            icon = Database;
-            color = "text-cyan-500";
-            bg = "bg-cyan-500/10";
+        // Root caller override
+        if (role === 'caller' && !actorMap.has('core')) {
+             actorMap.set('core', { id: 'core', label: 'MCP Core', type: 'core', icon: Cpu });
         }
 
-        parts.set(id, { id, label, icon, color, bg });
-      }
-      return id;
+        if (id === 'core') return 'core';
+
+        if (!actorMap.has(id)) {
+            let label = span.name;
+            let type: Actor['type'] = 'tool';
+            let icon = Terminal;
+
+            if (span.type === 'service') {
+                type = 'service';
+                icon = Globe;
+                label = span.serviceName || span.name;
+            } else if (span.type === 'resource') {
+                type = 'resource';
+                icon = Database;
+            }
+
+            actorMap.set(id, { id, label, type, icon });
+        }
+        return id;
     };
 
-    // Initial Trigger
-    acts.push({
-        id: actId++,
-        from: "user",
-        to: "core",
-        label: "Execute Request",
-        type: "request",
-        payload: trace.rootSpan.input,
-        description: "Client requests execution",
-    });
+    // Add User and Core by default
+    actorMap.set('user', { id: 'user', label: 'User', type: 'user', icon: User });
+    actorMap.set('core', { id: 'core', label: 'MCP Core', type: 'core', icon: Cpu });
 
-    // Recursive traversal
-    const traverse = (span: Span, caller: string) => {
-        const callee = getParticipant(span);
+    let msgId = 0;
+
+    const traverse = (span: Span, callerId: string) => {
+        const calleeId = getActorId(span, 'callee');
 
         // Request
-        acts.push({
-            id: actId++,
-            from: caller,
-            to: callee,
-            label: span.type === 'tool' ? `Call ${span.name}` : `Access ${span.name}`,
-            type: "request",
+        msgs.push({
+            id: `msg-${msgId++}`,
+            from: callerId,
+            to: calleeId,
+            label: span.name,
+            type: 'request',
             payload: span.input,
-            description: `${caller} calls ${callee}`,
+            status: 'pending', // Initial status
+            timestamp: span.startTime
         });
 
         // Children
-        if (span.children && span.children.length > 0) {
-            span.children.forEach(child => traverse(child, callee));
+        if (span.children) {
+            span.children.forEach(child => traverse(child, calleeId));
         }
 
         // Response
-        acts.push({
-            id: actId++,
-            from: callee,
-            to: caller,
-            label: "Result",
-            type: "response",
+        msgs.push({
+            id: `msg-${msgId++}`,
+            from: calleeId,
+            to: callerId,
+            label: `Return`,
+            type: 'response',
             payload: span.output,
             status: span.status,
-            description: `${callee} returns result`,
+            error: span.errorMessage,
+            timestamp: span.endTime
         });
     };
 
-    // Start traversal from Root Span (Caller is Core)
-    traverse(trace.rootSpan, "core");
+    // Start with root span
+    // Root span is usually executed by Core, triggered by User
+    // So we add a "User -> Core" message first if the root span is the entry point
 
-    // Final Response
-    acts.push({
-        id: actId++,
-        from: "core",
-        to: "user",
-        label: "Response",
-        type: "response",
-        payload: trace.rootSpan.output,
-        status: trace.status,
-        description: "MCP Core returns response to client",
+    // Initial Trigger
+    msgs.push({
+        id: `msg-${msgId++}`,
+        from: 'user',
+        to: 'core',
+        label: trace.rootSpan.name,
+        type: 'request',
+        payload: trace.rootSpan.input,
+        status: 'pending',
+        timestamp: trace.rootSpan.startTime
     });
 
-    return { interactions: acts, participants: Array.from(parts.values()) };
+    // Traverse root children or treat root as the first execution inside Core?
+    // If root is "tool", then Core calls Tool.
+    traverse(trace.rootSpan, 'core');
+
+    // Final Response
+    msgs.push({
+        id: `msg-${msgId++}`,
+        from: 'core',
+        to: 'user',
+        label: 'Response',
+        type: 'response',
+        payload: trace.rootSpan.output,
+        status: trace.status,
+        error: trace.rootSpan.errorMessage,
+        timestamp: trace.rootSpan.endTime
+    });
+
+    return {
+        actors: Array.from(actorMap.values()),
+        messages: msgs
+    };
   }, [trace]);
 
-  // Config
-  const stepHeight = 70;
-  const svgHeight = Math.max(400, (interactions.length + 1) * stepHeight * 0.8 + 100);
-  const colWidth = 250;
-  const paddingX = 100;
-  const svgWidth = Math.max(800, paddingX * 2 + (participants.length - 1) * colWidth);
-  const startY = 80;
+  const width = (actors.length - 1) * ACTOR_GAP + ACTOR_WIDTH + PADDING_X * 2;
+  const height = messages.length * MESSAGE_HEIGHT + PADDING_TOP + PADDING_BOTTOM;
 
-  const getX = (id: string) => {
-    const idx = participants.findIndex((p) => p.id === id);
-    return paddingX + idx * colWidth;
-  };
+  const getActorX = (index: number) => PADDING_X + index * ACTOR_GAP + ACTOR_WIDTH / 2;
 
   return (
-    <div className="w-full flex flex-col items-center py-8 select-none">
-      <div className="relative w-full overflow-x-auto">
-        <svg
-          width={svgWidth}
-          height={svgHeight}
-          viewBox={`0 0 ${svgWidth} ${svgHeight}`}
-          className="font-sans mx-auto"
-        >
-          {/* Lifelines */}
-          {participants.map((p) => {
-            const x = getX(p.id);
-            return (
-              <g key={p.id}>
-                {/* Line */}
-                <line
-                  x1={x}
-                  y1={startY}
-                  x2={x}
-                  y2={svgHeight - 20}
-                  stroke="currentColor"
-                  strokeOpacity={0.1}
-                  strokeWidth={2}
-                  strokeDasharray="6 6"
-                />
-                {/* Header */}
-                <foreignObject x={x - 60} y={0} width={120} height={80}>
-                  <div className="flex flex-col items-center justify-center h-full">
-                    <div
-                      className={cn(
-                        "p-3 rounded-xl border shadow-sm transition-transform hover:scale-105 mb-2",
-                        p.bg,
-                        "bg-background" // Ensure readable on dark mode
-                      )}
-                    >
-                      <p.icon className={cn("w-6 h-6", p.color)} />
-                    </div>
-                    <span className="text-xs font-semibold text-muted-foreground truncate w-full text-center">
-                      {p.label}
-                    </span>
-                  </div>
-                </foreignObject>
-              </g>
-            );
-          })}
-
-          {/* Interactions */}
-          {interactions.map((interaction, i) => {
-            const y = startY + (i + 1) * stepHeight * 0.8;
-            const x1 = getX(interaction.from);
-            const x2 = getX(interaction.to);
-            const isRight = x2 > x1;
-
-            // Loopback (self-call) handling
-            const isSelf = x1 === x2;
-
-            const color =
-              interaction.status === "error"
-                ? "text-red-500"
-                : "text-primary";
-            const strokeColor =
-              interaction.status === "error" ? "#ef4444" : "currentColor";
-
-            if (isSelf) {
-                 return (
-                    <g
-                        key={interaction.id}
-                        className="group cursor-pointer"
-                        onClick={() => setSelectedInteraction(interaction)}
-                    >
-                        <path
-                            d={`M ${x1} ${y} L ${x1+40} ${y} L ${x1+40} ${y+20} L ${x1} ${y+20}`}
-                            fill="none"
-                            stroke={strokeColor}
-                            strokeWidth={2}
-                            markerEnd={`url(#arrowhead-${interaction.status === "error" ? "error" : "default"})`}
+    <div className="w-full overflow-x-auto border rounded-md bg-white dark:bg-zinc-950 p-4">
+        <svg width={width} height={height} className="font-sans text-xs">
+            {/* Lifelines */}
+            {actors.map((actor, i) => {
+                const x = getActorX(i);
+                return (
+                    <g key={actor.id}>
+                        {/* Line */}
+                        <line
+                            x1={x}
+                            y1={PADDING_TOP}
+                            x2={x}
+                            y2={height - PADDING_BOTTOM}
+                            stroke="currentColor"
+                            strokeWidth={1}
+                            strokeDasharray="4 4"
+                            className="text-muted-foreground/30"
                         />
-                         <foreignObject
-                            x={x1 + 50}
-                            y={y - 5}
-                            width={150}
-                            height={30}
-                        >
-                            <span className={cn(
-                                "text-[10px] font-medium px-2 py-0.5 rounded-full bg-background border shadow-sm",
-                                color
-                            )}>
-                                {interaction.label}
-                            </span>
+                        {/* Header */}
+                        <foreignObject x={x - ACTOR_WIDTH / 2} y={0} width={ACTOR_WIDTH} height={50}>
+                            <div className="flex flex-col items-center justify-center h-full">
+                                <div className={cn(
+                                    "p-2 rounded-lg border shadow-sm flex items-center justify-center mb-1",
+                                    actor.type === 'user' ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 border-blue-200 dark:border-blue-800" :
+                                    actor.type === 'core' ? "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400 border-purple-200 dark:border-purple-800" :
+                                    actor.type === 'tool' ? "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 border-amber-200 dark:border-amber-800" :
+                                    "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-400 border-slate-200 dark:border-slate-700"
+                                )}>
+                                    <actor.icon className="w-4 h-4" />
+                                </div>
+                                <span className="font-semibold truncate max-w-full text-[10px] text-muted-foreground">
+                                    {actor.label}
+                                </span>
+                            </div>
                         </foreignObject>
                     </g>
-                 )
-            }
+                );
+            })}
 
-            return (
-              <g
-                key={interaction.id}
-                className="group cursor-pointer"
-                onClick={() => setSelectedInteraction(interaction)}
-              >
-                {/* Hit area for easier clicking */}
-                <rect
-                    x={Math.min(x1, x2)}
-                    y={y - 20}
-                    width={Math.abs(x2 - x1)}
-                    height={40}
-                    fill="transparent"
-                />
+            {/* Messages */}
+            {messages.map((msg, i) => {
+                const fromIndex = actors.findIndex(a => a.id === msg.from);
+                const toIndex = actors.findIndex(a => a.id === msg.to);
 
-                {/* Arrow Line */}
-                <line
-                  x1={x1 + (isRight ? 10 : -10)}
-                  y1={y}
-                  x2={x2 + (isRight ? -15 : 15)}
-                  y2={y}
-                  stroke={strokeColor}
-                  strokeWidth={2}
-                  className={cn(
-                    "transition-all duration-300 group-hover:stroke-[3px]",
-                    interaction.type === "response" && "stroke-dasharray 4 4"
-                  )}
-                  markerEnd={`url(#arrowhead-${interaction.status === "error" ? "error" : "default"})`}
-                />
+                if (fromIndex === -1 || toIndex === -1) return null;
 
-                {/* Label Box */}
-                <foreignObject
-                    x={Math.min(x1, x2) + Math.abs(x2 - x1) / 2 - 100}
-                    y={y - 28}
-                    width={200}
-                    height={30}
-                >
-                    <div className="flex items-center justify-center">
-                        <span className={cn(
-                            "text-[10px] font-medium px-2 py-0.5 rounded-full bg-background border shadow-sm transition-all group-hover:scale-110",
-                            color,
-                            interaction.status === "error" ? "border-red-200 bg-red-50 dark:bg-red-950/30 dark:border-red-900" : "border-border"
-                        )}>
-                            {interaction.label}
-                        </span>
-                    </div>
-                </foreignObject>
+                const x1 = getActorX(fromIndex);
+                const x2 = getActorX(toIndex);
+                const y = PADDING_TOP + (i + 1) * MESSAGE_HEIGHT - MESSAGE_HEIGHT / 2;
+                const isRight = x2 > x1;
+                const isSelf = x1 === x2;
 
-                {/* Payload Icon (on hover) */}
-                {(interaction.payload || interaction.status === "error") && (
-                   <foreignObject
-                        x={x1 + (x2 - x1) / 2 - 10}
-                        y={y + 5}
-                        width={20}
-                        height={20}
-                        className="opacity-0 group-hover:opacity-100 transition-opacity"
-                   >
-                        <MessageSquare className="w-4 h-4 text-muted-foreground" />
-                   </foreignObject>
-                )}
+                const color = msg.error || msg.status === 'error' ? "text-red-500" : "text-primary";
+                const strokeColor = msg.error || msg.status === 'error' ? "#ef4444" : "currentColor";
 
-              </g>
-            );
-          })}
+                return (
+                    <g
+                        key={msg.id}
+                        className="group cursor-pointer hover:opacity-80 transition-opacity"
+                        onClick={() => setSelectedMessage(msg)}
+                    >
+                        {/* Hit Area */}
+                        <rect
+                            x={Math.min(x1, x2)}
+                            y={y - 15}
+                            width={Math.abs(x2 - x1) || 60}
+                            height={30}
+                            fill="transparent"
+                        />
 
-          {/* Defs for arrowheads */}
-          <defs>
-            <marker
-              id="arrowhead-default"
-              markerWidth="10"
-              markerHeight="7"
-              refX="9"
-              refY="3.5"
-              orient="auto"
-            >
-              <polygon points="0 0, 10 3.5, 0 7" fill="currentColor" className="text-primary" />
-            </marker>
-            <marker
-              id="arrowhead-error"
-              markerWidth="10"
-              markerHeight="7"
-              refX="9"
-              refY="3.5"
-              orient="auto"
-            >
-              <polygon points="0 0, 10 3.5, 0 7" fill="#ef4444" />
-            </marker>
-          </defs>
+                        {isSelf ? (
+                            <>
+                                <path
+                                    d={`M ${x1} ${y} L ${x1 + 30} ${y} L ${x1 + 30} ${y + 15} L ${x1} ${y + 15}`}
+                                    fill="none"
+                                    stroke={strokeColor}
+                                    strokeWidth={1.5}
+                                    markerEnd="url(#arrowhead)"
+                                    className="text-muted-foreground"
+                                />
+                                <text x={x1 + 35} y={y + 10} className={cn("text-[10px] fill-current", color)}>
+                                    {msg.label}
+                                </text>
+                            </>
+                        ) : (
+                            <>
+                                <line
+                                    x1={x1 + (isRight ? 0 : 0)}
+                                    y1={y}
+                                    x2={x2 + (isRight ? -5 : 5)}
+                                    y2={y}
+                                    stroke={strokeColor}
+                                    strokeWidth={1.5}
+                                    strokeDasharray={msg.type === 'response' ? "4 2" : "none"}
+                                    markerEnd="url(#arrowhead)"
+                                    className={cn("transition-all", msg.type === 'response' && "opacity-70")}
+                                />
+                                <rect
+                                    x={(x1 + x2) / 2 - (msg.label.length * 3 + 10)}
+                                    y={y - 12}
+                                    width={msg.label.length * 6 + 20}
+                                    height={16}
+                                    rx={4}
+                                    fill="var(--background)"
+                                    className="stroke-border"
+                                    strokeWidth={0} // Hide border for cleaner look, relying on background masking
+                                />
+                                <text
+                                    x={(x1 + x2) / 2}
+                                    y={y - 1}
+                                    textAnchor="middle"
+                                    className={cn("text-[10px] font-medium fill-current select-none", color)}
+                                >
+                                    {msg.label}
+                                </text>
+                            </>
+                        )}
+                    </g>
+                );
+            })}
+
+            <defs>
+                <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="currentColor" className="text-muted-foreground/80" />
+                </marker>
+            </defs>
         </svg>
-      </div>
 
-      <Dialog open={!!selectedInteraction} onOpenChange={(open) => !open && setSelectedInteraction(null)}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-                {selectedInteraction?.type === 'request' ? <ArrowRight className="h-4 w-4" /> : <ArrowLeft className="h-4 w-4" />}
-                {selectedInteraction?.label}
-            </DialogTitle>
-            <DialogDescription>
-                {selectedInteraction?.description}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-2">
-            <div className="flex items-center justify-between text-sm">
-                 <div className="flex items-center gap-2">
-                    <span className="text-muted-foreground">From:</span>
-                    <Badge variant="outline" className="uppercase">{selectedInteraction?.from.split(':')[0]}</Badge>
-                    <span className="font-mono text-xs">{selectedInteraction?.from.split(':')[1] || selectedInteraction?.from}</span>
-                 </div>
-                 <ArrowRight className="h-3 w-3 text-muted-foreground" />
-                 <div className="flex items-center gap-2">
-                    <span className="text-muted-foreground">To:</span>
-                    <Badge variant="outline" className="uppercase">{selectedInteraction?.to.split(':')[0]}</Badge>
-                    <span className="font-mono text-xs">{selectedInteraction?.to.split(':')[1] || selectedInteraction?.to}</span>
-                 </div>
-            </div>
+        {/* Message Details Dialog */}
+        <Dialog open={!!selectedMessage} onOpenChange={(open) => !open && setSelectedMessage(null)}>
+            <DialogContent className="sm:max-w-lg">
+                <DialogHeader>
+                    <DialogTitle className="flex items-center gap-2">
+                        {selectedMessage?.type === 'request' ? <ArrowRight className="h-4 w-4" /> : <ArrowLeft className="h-4 w-4" />}
+                        {selectedMessage?.label}
+                    </DialogTitle>
+                    <DialogDescription className="flex items-center gap-2 text-xs">
+                        <Clock className="h-3 w-3" />
+                        {selectedMessage && new Date(selectedMessage.timestamp).toLocaleTimeString()}
+                        {selectedMessage?.status === 'error' && <Badge variant="destructive" className="ml-2 h-5">Error</Badge>}
+                    </DialogDescription>
+                </DialogHeader>
 
-            {selectedInteraction?.status === 'error' && (
-                <div className="p-3 bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 rounded-md text-xs font-mono border border-red-200 dark:border-red-900">
-                    Error
+                <div className="space-y-4">
+                    {selectedMessage?.error && (
+                        <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md text-red-600 dark:text-red-400 text-xs font-mono break-all">
+                            {selectedMessage.error}
+                        </div>
+                    )}
+
+                    <div className="space-y-1">
+                        <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Payload</div>
+                        <div className="max-h-[300px] overflow-y-auto border rounded-md">
+                            <JsonView data={selectedMessage?.payload || {}} />
+                        </div>
+                    </div>
                 </div>
-            )}
-
-            <div className="space-y-2">
-                <span className="text-xs font-medium text-muted-foreground">Payload</span>
-                <JsonView data={selectedInteraction?.payload} maxHeight={300} />
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+            </DialogContent>
+        </Dialog>
     </div>
   );
 }

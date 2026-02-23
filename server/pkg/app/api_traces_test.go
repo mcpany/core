@@ -198,7 +198,7 @@ func TestHandleTraces_DisabledAudit(t *testing.T) {
 		t.Errorf("Expected status OK, got %v", resp.Status)
 	}
 
-	body := w.Body.String()
+	body := strings.TrimSpace(w.Body.String())
 	if body != "[]" {
 		t.Errorf("Expected '[]', got '%s'", body)
 	}

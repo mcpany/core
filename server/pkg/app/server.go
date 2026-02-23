@@ -300,6 +300,10 @@ type Application struct {
 	// statsCache for dashboard
 	statsCacheMu sync.RWMutex
 	statsCache   map[string]statsCacheEntry
+
+	// seededTraces for debug/demo
+	seededTracesMu sync.RWMutex
+	seededTraces   []*Trace
 }
 
 type statsCacheEntry struct {
@@ -2049,6 +2053,7 @@ func (a *Application) runServerMode(
 	mux.Handle("/debug/auth-test", authMiddleware(http.HandlerFunc(a.testAuthHandler)))
 	mux.Handle("/api/v1/debug/seed_traffic", authMiddleware(a.handleDebugSeedTraffic()))
 	mux.Handle("/api/v1/debug/seed", authMiddleware(a.handleDebugSeed()))
+	mux.Handle("/api/v1/debug/traces", authMiddleware(a.handleDebugSeedTraces()))
 
 	// User Preferences
 	mux.Handle("/api/v1/user/preferences", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
