@@ -14,6 +14,7 @@ import {
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { UserNode, AgentNode, ToolNode, ResourceNode, ServiceNode } from './custom-nodes';
+import { TrafficEdge } from './traffic-edge';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
@@ -30,6 +31,10 @@ const nodeTypes = {
   tool: ToolNode,
   resource: ResourceNode,
   service: ServiceNode,
+};
+
+const edgeTypes = {
+  traffic: TrafficEdge,
 };
 
 /**
@@ -54,14 +59,23 @@ export function AgentFlow() {
   const handleSeedData = async () => {
       setSeeding(true);
       try {
-          // Seed some dummy traffic
+          // Seed high-volume traffic to demonstrate animation
+          // Current minute logic in backend looks for "HH:MM" matching current time.
+          // We'll generate points for "now" and "1 min ago".
+          const now = new Date();
+          const formatTime = (d: Date) => `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+
           const points = [
-              { time: "10:00", total: 100, errors: 2, latency: 50 },
-              { time: "10:01", total: 120, errors: 0, latency: 45 },
+              { time: formatTime(now), requests: 3000, errors: 50, latency: 45 }, // ~50 QPS
           ];
+
           await apiClient.seedTrafficData(points);
-          toast({ title: "Traffic Seeded", description: "Injected sample traffic data." });
+          toast({ title: "Traffic Seeded", description: "Injected 50 QPS load test pattern." });
           refresh();
+
+          // Auto-enable live mode if off
+          if (!isLive) setIsLive(true);
+
       } catch (e) {
           toast({ title: "Seeding Failed", variant: "destructive", description: String(e) });
       } finally {
@@ -97,7 +111,7 @@ export function AgentFlow() {
             title="Inject fake traffic for demo"
           >
               <Database className="h-3 w-3" />
-              Seed Data
+              Simulate Load
           </Button>
         </Card>
       </div>
@@ -118,6 +132,7 @@ export function AgentFlow() {
         onNodeClick={onNodeClick}
         onPaneClick={onPaneClick}
         nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
         fitView
         attributionPosition="bottom-right"
         className="bg-muted/5"
