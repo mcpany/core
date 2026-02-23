@@ -10,8 +10,9 @@ import (
 	"io"
 )
 
-// JSONExecutor is a struct that sends JSON-encoded data to a writer and decodes
-// JSON-encoded data from a reader.
+// JSONExecutor is a struct that sends JSON-encoded data to a writer and decodes JSON-encoded data from a reader.
+//
+// Summary: JSONExecutor is a struct that sends JSON-encoded data to a writer and decodes JSON-encoded data from a reader.
 type JSONExecutor struct {
 	// in is the writer where JSON commands are written to (e.g. stdin of a process).
 	in io.Writer
@@ -19,14 +20,16 @@ type JSONExecutor struct {
 	out io.Reader
 }
 
-// NewJSONExecutor creates a new JSONExecutor with the given writer and reader.
+// NewJSONExecutor creates a new JSONExecutor with the given writer and reader.  Parameters: - in: io.Writer. The destination for writing JSON requests. - out: io.Reader. The source for reading JSON responses.  Returns: - *JSONExecutor: A new JSONExecutor instance.
+//
+// Summary: Creates a new JSONExecutor with the given writer and reader.  Parameters: - in: io.Writer. The destination for writing JSON requests. - out: io.Reader. The source for reading JSON responses.  Returns: - *JSONExecutor: A new JSONExecutor instance.
 //
 // Parameters:
-//   - in: io.Writer. The destination for writing JSON requests.
-//   - out: io.Reader. The source for reading JSON responses.
+//   - in (io.Writer): Description for in.
+//   - out (io.Reader): Description for out.
 //
 // Returns:
-//   - *JSONExecutor: A new JSONExecutor instance.
+//   - (*JSONExecutor): Result.
 func NewJSONExecutor(in io.Writer, out io.Reader) *JSONExecutor {
 	return &JSONExecutor{
 		in:  in,
@@ -34,8 +37,16 @@ func NewJSONExecutor(in io.Writer, out io.Reader) *JSONExecutor {
 	}
 }
 
-// Execute sends the given data as a JSON-encoded message to the writer and
-// decodes the JSON-encoded response from the reader into the given result.
+// Execute sends the given data as a JSON-encoded message to the writer and decodes the JSON-encoded response from the reader into the given result.
+//
+// Summary: Sends the given data as a JSON-encoded message to the writer and decodes the JSON-encoded response from the reader into the given result.
+//
+// Parameters:
+//   - data: Parameter.
+//   - result (any): Description for result.
+//
+// Returns:
+//   - (error): Result.
 func (e *JSONExecutor) Execute(data, result any) error {
 	if err := json.NewEncoder(e.in).Encode(data); err != nil {
 		return fmt.Errorf("failed to encode data: %w", err)
