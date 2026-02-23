@@ -14,7 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { Textarea } from "@/components/ui/textarea";
 import { EnvVarEditor } from "@/components/services/env-var-editor";
-import { SchemaForm } from "./schema-form";
+import { UniversalSchemaForm as SchemaForm } from "@/components/shared/universal-schema-form";
 import { SecretValue } from "@proto/config/v1/auth";
 
 interface InstantiateDialogProps {
@@ -43,7 +43,7 @@ export function InstantiateDialog({ open, onOpenChange, templateConfig, onComple
 
     // Schema state
     const [parsedSchema, setParsedSchema] = useState<any>(null);
-    const [schemaValues, setSchemaValues] = useState<Record<string, string>>({});
+    const [schemaValues, setSchemaValues] = useState<any>({});
     const [isSchemaValid, setIsSchemaValid] = useState(true);
 
     // Helper to determine if we should show CLI options
@@ -126,23 +126,37 @@ export function InstantiateDialog({ open, onOpenChange, templateConfig, onComple
         }
     }, [open, templateConfig]);
 
-    const checkSchemaValidity = (values: Record<string, string>, schema: any) => {
+    const checkSchemaValidity = (values: any, schema: any) => {
         if (!schema || !schema.required) {
             setIsSchemaValid(true);
             return;
         }
-        const missing = schema.required.some((field: string) => !values[field]);
+        const missing = schema.required.some((field: string) => {
+            const val = values[field];
+            return val === undefined || val === null || val === "";
+        });
         setIsSchemaValid(!missing);
     };
 
-    const handleSchemaChange = (newValues: Record<string, string>) => {
+    const handleSchemaChange = (newValues: any) => {
         setSchemaValues(newValues);
         // Sync to envVars for compatibility with handleInstantiate logic
         const newEnv: Record<string, SecretValue> = { ...envVars }; // Preserve existing secrets if any (though schema mode might overwrite)
 
         // Update with new values
+        // We flatten or stringify values because Env Vars are strings.
+        // For nested objects returned by UniversalSchemaForm, we JSON stringify them if they are objects,
+        // or just String() them if primitives.
         Object.entries(newValues).forEach(([k, v]) => {
-            newEnv[k] = { plainText: v, validationRegex: "" };
+            let stringValue = "";
+            if (typeof v === 'object' && v !== null) {
+                stringValue = JSON.stringify(v);
+            } else if (v === undefined || v === null) {
+                stringValue = "";
+            } else {
+                stringValue = String(v);
+            }
+            newEnv[k] = { plainText: stringValue, validationRegex: "" };
         });
 
         setEnvVars(newEnv);
