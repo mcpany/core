@@ -27,6 +27,10 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 
+/**
+ * Schema definition interface.
+ * Represents a JSON Schema object used for form generation.
+ */
 export interface Schema {
     type?: string | string[];
     description?: string;

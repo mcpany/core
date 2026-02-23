@@ -19,22 +19,50 @@ import (
 )
 
 // IPResolver defines an interface for looking up IP addresses.
+//
+// Summary: Interface for IP address resolution.
+//
 // It matches the signature of net.Resolver.LookupIP.
 type IPResolver interface {
 	// LookupIP looks up host using the local resolver.
-	// It returns a slice of that host's IPv4 and IPv6 addresses.
+	//
+	// Summary: Looks up host IP addresses.
+	//
+	// Parameters:
+	//   - ctx (context.Context): The context for the lookup.
+	//   - network (string): The network type (e.g., "ip", "ip4", "ip6").
+	//   - host (string): The host to look up.
+	//
+	// Returns:
+	//   - ([]net.IP): A slice of that host's IPv4 and IPv6 addresses.
+	//   - (error): An error if the lookup fails.
 	LookupIP(ctx context.Context, network, host string) ([]net.IP, error)
 }
 
 // NetDialer defines an interface for dialing network connections.
+//
+// Summary: Interface for network dialing.
+//
 // It matches the signature of net.Dialer.DialContext.
 type NetDialer interface {
-	// DialContext connects to the address on the named network using
-	// the provided context.
+	// DialContext connects to the address on the named network using the provided context.
+	//
+	// Summary: Dials a network connection.
+	//
+	// Parameters:
+	//   - ctx (context.Context): The context for the dial operation.
+	//   - network (string): The network type.
+	//   - address (string): The address to connect to.
+	//
+	// Returns:
+	//   - (net.Conn): The established connection.
+	//   - (error): An error if the connection fails.
 	DialContext(ctx context.Context, network, address string) (net.Conn, error)
 }
 
 // SafeDialer provides control over outbound connections to prevent Server-Side Request Forgery (SSRF).
+//
+// Summary: Secure network dialer preventing SSRF.
 type SafeDialer struct {
 	// AllowLoopback allows connections to loopback addresses (127.0.0.1, ::1).
 	AllowLoopback bool
@@ -194,6 +222,9 @@ func NewSafeHTTPClient() *http.Client {
 }
 
 // CheckConnection verifies if a TCP connection can be established to the given address.
+//
+// Summary: Verifies TCP connectivity to an address.
+//
 // This is typically used for health checks or validating upstream service reachability.
 // It uses SafeDialer to respect egress policies, but allows overriding via environment variables.
 //
@@ -263,6 +294,9 @@ func CheckConnection(ctx context.Context, address string) error {
 }
 
 // ListenWithRetry attempts to listen on the given address with retries to handle transient port conflicts.
+//
+// Summary: Listens on an address with retry logic.
+//
 // It is particularly useful for avoiding race conditions when binding to port 0 (dynamic allocation)
 // in high-churn environments.
 //

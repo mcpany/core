@@ -20,6 +20,10 @@ interface DiscoveredToolsViewerProps {
     tools: ToolDefinition[];
 }
 
+/**
+ * DiscoveredToolsViewer component.
+ * Displays a list of discovered tools in an accordion view.
+ */
 export function DiscoveredToolsViewer({ tools }: DiscoveredToolsViewerProps) {
     if (!tools || tools.length === 0) {
         return (
