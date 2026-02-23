@@ -46,6 +46,8 @@ jobs:
         run: |
           set -e
           if [ "${{ github.event_name }}" = "pull_request" ]; then
+            # Ensure base branch is available
+            git fetch origin ${{ github.base_ref }}:refs/remotes/origin/${{ github.base_ref }}
             # Compare against the base branch
             DIFF=$(git diff --name-only origin/${{ github.base_ref }} HEAD)
           else
@@ -1081,28 +1083,28 @@ jobs:
       - name: Install gh CLI
         run: |
           install_dependencies() {
-            if ! command -v curl &> /dev/null; then
+            if ! command -v curl > /dev/null 2>&1; then
               echo "curl not found. Installing..."
-              if command -v apt-get &> /dev/null; then
-                if command -v sudo &> /dev/null; then
+              if command -v apt-get > /dev/null 2>&1; then
+                if command -v sudo > /dev/null 2>&1; then
                   sudo apt-get update && sudo apt-get install -y curl ca-certificates
                 else
                   apt-get update && apt-get install -y curl ca-certificates
                 fi
-              elif command -v apk &> /dev/null; then
-                if command -v sudo &> /dev/null; then
+              elif command -v apk > /dev/null 2>&1; then
+                if command -v sudo > /dev/null 2>&1; then
                   sudo apk add --no-cache curl ca-certificates
                 else
                   apk add --no-cache curl ca-certificates
                 fi
-              elif command -v yum &> /dev/null; then
-                if command -v sudo &> /dev/null; then
+              elif command -v yum > /dev/null 2>&1; then
+                if command -v sudo > /dev/null 2>&1; then
                   sudo yum install -y curl ca-certificates
                 else
                   yum install -y curl ca-certificates
                 fi
-              elif command -v dnf &> /dev/null; then
-                if command -v sudo &> /dev/null; then
+              elif command -v dnf > /dev/null 2>&1; then
+                if command -v sudo > /dev/null 2>&1; then
                   sudo dnf install -y curl ca-certificates
                 else
                   dnf install -y curl ca-certificates
@@ -1113,7 +1115,7 @@ jobs:
             fi
           }
 
-          if ! command -v gh &> /dev/null; then
+          if ! command -v gh > /dev/null 2>&1; then
             echo "gh not found. Installing..."
             install_dependencies
 
@@ -1129,7 +1131,7 @@ jobs:
             URL="https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_${ARCH_STR}.tar.gz"
             TARBALL="/tmp/gh-install/gh.tar.gz"
 
-            if command -v curl &> /dev/null; then
+            if command -v curl > /dev/null 2>&1; then
               echo "Downloading with curl..."
               for i in {1..5}; do
                 curl -fsSL --retry 5 --retry-connrefused --retry-max-time 60 "$URL" -o "$TARBALL" && break || {
@@ -1137,7 +1139,7 @@ jobs:
                   sleep 10
                 }
               done
-            elif command -v wget &> /dev/null; then
+            elif command -v wget > /dev/null 2>&1; then
               echo "Downloading with wget..."
               for i in {1..5}; do
                 wget -q "$URL" -O "$TARBALL" && break || {
@@ -1161,7 +1163,7 @@ jobs:
 
             if [ -w /usr/local/bin ]; then
                cp "$BIN_PATH" /usr/local/bin/
-            elif command -v sudo &> /dev/null; then
+            elif command -v sudo > /dev/null 2>&1; then
                sudo cp "$BIN_PATH" /usr/local/bin/
             else
                # Try to copy without sudo if we are root or have permissions
