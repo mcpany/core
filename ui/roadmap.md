@@ -3,7 +3,9 @@
 ## Status: Active Development
 
 ### Universal Agent Bus (New Strategic Priorities)
+- [ ] **[P0] Policy Firewall Management**: UI for editing Rego/CEL policies and viewing security violations.
 - [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
+- [ ] **[P1] Context Inheritance Debugger**: Visualizing the flow of context from parent to child agents in a swarm.
 - [ ] **[P1] Tool Playground & Explorer**:
   - [ ] Auto-generated forms from Tool JSON Schemas.
   - [ ] "Execute" button with history and result visualization.

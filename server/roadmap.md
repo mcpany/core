@@ -10,6 +10,9 @@
 ## 2. Updated Roadmap
 
 ### Status: Active Development
+*   **[P0] Zero Trust Tool Sandboxing:** Execute CLI/Script tools in isolated WASM/Docker environments.
+*   **[P0] Metadata Injection Firewall:** Schema-based validation for tool call metadata.
+*   **[P1] Cross-Agent Blackboard:** Shared KV store for multi-agent state synchronization.
 
 ## 2. Top 10 Recommended Features
 
