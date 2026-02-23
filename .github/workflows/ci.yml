@@ -44,6 +44,9 @@ jobs:
         id: filter
         run: |
           set -e
+          # Ensure we have the base branch for comparison
+          git fetch origin ${{ github.base_ref || 'main' }}
+
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             # Compare against the base branch
             DIFF=$(git diff --name-only origin/${{ github.base_ref }} HEAD)
@@ -1079,7 +1082,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install gh CLI
+      - name: Install Dependencies (gh, jq)
         run: |
           SUDO=""
           if command -v sudo >/dev/null; then
@@ -1087,18 +1090,18 @@ jobs:
           fi
 
           install_dependencies() {
-            if ! command -v curl &> /dev/null; then
-              echo "curl not found. Installing..."
+            if ! command -v curl &> /dev/null || ! command -v jq &> /dev/null; then
+              echo "curl or jq not found. Installing..."
               if command -v apt-get &> /dev/null; then
-                $SUDO apt-get update && $SUDO apt-get install -y curl ca-certificates
+                $SUDO apt-get update && $SUDO apt-get install -y curl ca-certificates jq
               elif command -v apk &> /dev/null; then
-                $SUDO apk add --no-cache curl ca-certificates
+                $SUDO apk add --no-cache curl ca-certificates jq
               elif command -v yum &> /dev/null; then
-                $SUDO yum install -y curl ca-certificates
+                $SUDO yum install -y curl ca-certificates jq
               elif command -v dnf &> /dev/null; then
-                $SUDO dnf install -y curl ca-certificates
+                $SUDO dnf install -y curl ca-certificates jq
               else
-                echo "Could not find package manager to install curl. Trying to proceed..."
+                echo "Could not find package manager. Trying to proceed..."
               fi
             fi
           }
