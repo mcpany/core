@@ -1076,17 +1076,22 @@ jobs:
     steps:
       - name: Install gh CLI
         run: |
+          SUDO=""
+          if command -v sudo &> /dev/null; then
+            SUDO="sudo"
+          fi
+
           install_dependencies() {
             if ! command -v curl &> /dev/null; then
               echo "curl not found. Installing..."
               if command -v apt-get &> /dev/null; then
-                sudo apt-get update && sudo apt-get install -y curl ca-certificates
+                $SUDO apt-get update && $SUDO apt-get install -y curl ca-certificates
               elif command -v apk &> /dev/null; then
-                sudo apk add --no-cache curl ca-certificates
+                $SUDO apk add --no-cache curl ca-certificates
               elif command -v yum &> /dev/null; then
-                sudo yum install -y curl ca-certificates
+                $SUDO yum install -y curl ca-certificates
               elif command -v dnf &> /dev/null; then
-                sudo dnf install -y curl ca-certificates
+                $SUDO dnf install -y curl ca-certificates
               else
                 echo "Could not find package manager to install curl. Trying to proceed..."
               fi
