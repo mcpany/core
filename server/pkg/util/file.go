@@ -55,7 +55,10 @@ func ReadLastNLines(path string, n int) ([][]byte, error) {
 	if filesize < 64*1024 { // 64KB arbitrarily small enough to read fully
 		scanner := bufio.NewScanner(f)
 		for scanner.Scan() {
-			lines = append(lines, scanner.Bytes())
+			b := scanner.Bytes()
+			tmp := make([]byte, len(b))
+			copy(tmp, b)
+			lines = append(lines, tmp)
 		}
 		if len(lines) > n {
 			return lines[len(lines)-n:], nil
