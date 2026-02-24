@@ -2393,6 +2393,19 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 				return
 			}
 
+			// Support passing Authorization via query parameter (essential for WebSockets)
+			if r.Header.Get("Authorization") == "" {
+				if authToken := r.URL.Query().Get("auth_token"); authToken != "" {
+					// We assume Basic auth for now as that's what the UI uses for user login.
+					// If the token doesn't start with "Basic " or "Bearer ", prepend "Basic ".
+					if !strings.HasPrefix(authToken, "Basic ") && !strings.HasPrefix(authToken, "Bearer ") {
+						r.Header.Set("Authorization", "Basic "+authToken)
+					} else {
+						r.Header.Set("Authorization", authToken)
+					}
+				}
+			}
+
 			ip := util.GetClientIP(r, trustProxy)
 			ctx := util.ContextWithRemoteIP(r.Context(), ip)
 			r = r.WithContext(ctx)

@@ -97,4 +97,24 @@ test.describe('Logs Page', () => {
     // Verify it expanded (Collapse button visible)
     await expect(page.getByLabel("Collapse JSON")).toBeVisible();
   });
+
+  test('should include auth token in websocket url', async ({ page }) => {
+    // Set a fake token in localStorage
+    await page.addInitScript(() => {
+        localStorage.setItem('mcp_auth_token', 'fake-token-123');
+    });
+
+    let wsUrl = '';
+    // Intercept WebSocket creation to capture the URL
+    await page.routeWebSocket(/\/api\/v1\/ws\/logs/, (ws) => {
+        wsUrl = ws.url().toString();
+        // Mock the connection to prevent actual network error if backend is not running or auth fails
+        ws.onMessage(() => {});
+    });
+
+    await page.goto('/logs');
+
+    // Verify the URL contained the token
+    await expect.poll(() => wsUrl).toContain('auth_token=fake-token-123');
+  });
 });

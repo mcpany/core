@@ -125,7 +125,17 @@ export function LogStream({
       const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
       const host = window.location.host
 
-      const wsUrl = `${protocol}//${host}/api/v1/ws/logs`
+      let wsUrl = `${protocol}//${host}/api/v1/ws/logs`
+
+      // Append auth token if available to authenticate the WebSocket connection
+      if (typeof window !== 'undefined') {
+        const token = localStorage.getItem('mcp_auth_token')
+        if (token) {
+            const separator = wsUrl.includes('?') ? '&' : '?';
+            wsUrl += `${separator}auth_token=${encodeURIComponent(token)}`;
+        }
+      }
+
       const ws = new WebSocket(wsUrl)
 
       ws.onopen = () => {
