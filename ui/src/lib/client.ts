@@ -2421,5 +2421,39 @@ export const apiClient = {
         const res = await fetchWithAuth(`/api/v1/audit/logs?${query.toString()}`);
         if (!res.ok) throw new Error('Failed to fetch audit logs');
         return res.json();
+    },
+
+    /**
+     * Gets the discovery status.
+     *
+     * Summary: Retrieves auto-discovery status.
+     *
+     * @returns A promise that resolves to the list of provider statuses.
+     * @throws {Error} If the request fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/discovery/status.
+     */
+    getDiscoveryStatus: async (): Promise<any[]> => {
+        const res = await fetchWithAuth('/api/v1/discovery/status');
+        if (!res.ok) throw new Error('Failed to fetch discovery status');
+        return res.json();
+    },
+
+    /**
+     * Triggers auto-discovery.
+     *
+     * Summary: Triggers a new discovery run.
+     *
+     * @returns A promise that resolves when the trigger is accepted.
+     * @throws {Error} If the request fails.
+     *
+     * Side Effects: Makes a POST request to /api/v1/discovery/trigger.
+     */
+    triggerDiscovery: async () => {
+        const res = await fetchWithAuth('/api/v1/discovery/trigger', {
+            method: 'POST'
+        });
+        if (!res.ok) throw new Error('Failed to trigger discovery');
+        return {};
     }
 };
