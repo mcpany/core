@@ -29,6 +29,13 @@ interface ContextState {
 
 const ContextContext = createContext<ContextState | undefined>(undefined);
 
+/**
+ * ContextProvider component that manages the application context state.
+ * It provides tools, services, and simulation capabilities to its children.
+ *
+ * @param props - The component props.
+ * @param props.children - The child components to render.
+ */
 export function ContextProvider({ children }: { children: React.ReactNode }) {
     const [tools, setTools] = useState<ToolDefinition[]>([]);
     const [services, setServices] = useState<UpstreamServiceConfig[]>([]);
@@ -57,7 +64,7 @@ export function ContextProvider({ children }: { children: React.ReactNode }) {
                 // "Simulator" implies simulated state.
                 // Let's assume we start with everything enabled (or respecting tool.disable)
                 const initialDisabled = new Set<string>();
-                toolList.forEach(t => {
+                toolList.forEach((t: ToolDefinition) => {
                     if (t.disable) {
                         initialDisabled.add(`${t.serviceId}.${t.name}`);
                     }
@@ -126,6 +133,12 @@ export function ContextProvider({ children }: { children: React.ReactNode }) {
     );
 }
 
+/**
+ * Hook to access the context state from any component within the provider.
+ * Throws an error if used outside of a ContextProvider.
+ *
+ * @returns The context state including tools, services, and simulation helpers.
+ */
 export function useRecursiveContext() {
     const context = useContext(ContextContext);
     if (!context) {

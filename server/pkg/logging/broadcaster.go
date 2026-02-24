@@ -33,6 +33,17 @@ func NewBroadcaster() *Broadcaster {
 	}
 }
 
+// Reset clears the broadcaster history and subscribers.
+// This is primarily for testing to ensure a clean state.
+func (b *Broadcaster) Reset() {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	b.subscribers = make(map[chan any]struct{})
+	b.history = make([]any, b.limit)
+	b.head = 0
+	b.full = false
+}
+
 // Subscribe returns a channel that will receive broadcast messages.
 // The channel has a small buffer to prevent slow consumers from blocking the broadcaster.
 // It is the caller's responsibility to read from the channel promptly.
