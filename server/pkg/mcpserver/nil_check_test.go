@@ -4,6 +4,7 @@
 package mcpserver
 
 import (
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"context"
 	"encoding/json"
 	"testing"
@@ -119,3 +120,4 @@ func TestListResources_NilCheck(t *testing.T) {
 	}
 	assert.False(t, foundNil, "ListResources should NOT contain nil")
 }
+func (p *nilPrompt) Definition() *configv1.PromptDefinition { return nil }

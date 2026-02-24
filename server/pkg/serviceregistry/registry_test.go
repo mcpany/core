@@ -694,3 +694,4 @@ func TestServiceRegistry_RegisterService_RetryFailed(t *testing.T) {
 	msg, ok = registry.GetServiceError(serviceID)
 	assert.False(t, ok)
 }
+func (m *mockPrompt) Definition() *configv1.PromptDefinition { return nil }

@@ -4,6 +4,7 @@
 package integration
 
 import (
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"context"
 	"encoding/json"
 	"sync"
@@ -231,3 +232,4 @@ func TestPromptLifecycle(t *testing.T) {
 	require.NoError(t, err)
 	assert.Empty(t, listEmptyResult.Prompts, "Prompt list should be empty after removal")
 }
+func (p *testPrompt) Definition() *configv1.PromptDefinition { return nil }

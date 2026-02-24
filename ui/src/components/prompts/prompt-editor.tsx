@@ -63,6 +63,9 @@ const promptSchema = z.object({
 
 type PromptValues = z.infer<typeof promptSchema>;
 
+/**
+ * PromptEditor is a modal component for creating and editing prompt definitions.
+ */
 export function PromptEditor({ open, onOpenChange, prompt, services, onSave }: PromptEditorProps) {
     const { theme } = useTheme();
     const [isSubmitting, setIsSubmitting] = useState(false);

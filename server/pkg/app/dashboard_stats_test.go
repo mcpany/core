@@ -452,3 +452,4 @@ func TestCalculateUptime(t *testing.T) {
 		})
 	}
 }
+func (p *TestMockPrompt) Definition() *configv1.PromptDefinition { return nil }

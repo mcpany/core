@@ -313,3 +313,4 @@ func TestPromptListFilteringMiddleware(t *testing.T) {
 	_, ok = res.(*mcp.CallToolResult)
 	require.True(t, ok)
 }
+func (m *mockPrompt) Definition() *configv1.PromptDefinition { return nil }

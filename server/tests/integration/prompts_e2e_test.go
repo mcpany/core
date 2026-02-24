@@ -180,3 +180,4 @@ func TestPromptsEndToEnd(t *testing.T) {
 	require.True(t, ok)
 	assert.Equal(t, "Hello, world!", textContent.Text)
 }
+func (m *mockPrompt) Definition() *configv1.PromptDefinition { return nil }
