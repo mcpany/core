@@ -105,3 +105,6 @@
 - [ ] **Log Source Color Coding**: Assign distinct colors to different log sources automatically for better visual separation.
 - [ ] **Context Usage History**: Track total context usage over time to identify growth trends (requires backend metrics persistence).
 - [ ] **Tool Schema Optimizer**: Analyze tool schemas and suggest removing unused properties or compacting descriptions to save context tokens.
+- [ ] **[P0] Isolated Transport Monitor**: UI indicator for secure vs. insecure (HTTP) transport channels. (Added: 2026-02-27)
+- [ ] **[P0] A2A Threat Detection Dashboard**: Real-time alerts for unauthorized side-channel discovery attempts. (Added: 2026-02-27)
+- [ ] **[P1] Skill Manifest Importer**: One-click ingestion of OpenClaw Foundation Skill Manifests. (Added: 2026-02-27)

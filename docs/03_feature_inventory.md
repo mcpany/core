@@ -65,3 +65,20 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **Isolated Transport Middleware (Named Pipes)**: (P0) Moves inter-agent communication to Unix domain sockets or named pipes to prevent "Shadow Agent" side-channel discovery.
+- **A2A Security Shield**: (P0) Active monitoring and blocking of unauthorized MCP handshakes within a subagent's network namespace.
+- **OpenClaw Skill Manifest (SSM) Adapter**: (P1) Automatic conversion of OpenClaw Foundation Skill Manifests into MCP-compatible tool definitions.
+- **Agentic Context Summarizer**: (P1) Middleware that intelligently summarizes historical context during A2A handoffs to prevent context window overflow.
+
+### Priority Shifts
+- **A2A Interop Bridge (Pseudo-MCP)**: Re-affirming **P0**. Critical for the expanding ecosystem of specialized subagents.
+- **Supply Chain Integrity Guard**: Remained **P0**. Increasingly urgent as more third-party SSMs are shared.
+
+### Deprecations / Monitoring
+- **Local HTTP for Inter-Agent Comms**: Monitoring for deprecation in favor of Isolated Transport.

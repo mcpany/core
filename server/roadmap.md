@@ -184,3 +184,9 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Core Middleware Pipeline**: The middleware architecture is robust and extensible.
 - **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates protocol details from business logic.
 - **Documentation**: The project has excellent documentation coverage for most features.
+
+#### Upcoming (2026-02-27 Evolution)
+*   **[P0] Isolated Transport Middleware**: Implement Unix Domain Sockets and Windows Named Pipes for secure inter-agent comms. (Added: 2026-02-27)
+*   **[P0] A2A Security Shield**: Side-channel discovery monitoring and blocking for subagent sessions. (Added: 2026-02-27)
+*   **[P1] OpenClaw SSM Adapter**: Support for OpenClaw Foundation "Standardized Skill Manifests". (Added: 2026-02-27)
+*   **[P1] Agentic Context Summarizer**: Intelligent history pruning for A2A handoffs. (Added: 2026-02-27)
