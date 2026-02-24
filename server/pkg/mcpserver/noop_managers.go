@@ -43,17 +43,38 @@ func (m *NoOpToolManager) GetTool(_ string) (tool.Tool, bool) { return nil, fals
 
 // ListTools implements tool.ManagerInterface.
 //
+// Summary: Returns an empty list of tools.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - []tool.Tool: Always nil.
+//
 // Side Effects:
 //   - None.
 func (m *NoOpToolManager) ListTools() []tool.Tool { return nil }
 
 // ListMCPTools implements tool.ManagerInterface.
 //
+// Summary: Returns an empty list of MCP tools.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - []*mcp.Tool: Always nil.
+//
 // Side Effects:
 //   - None.
 func (m *NoOpToolManager) ListMCPTools() []*mcp.Tool { return nil }
 
 // ClearToolsForService implements tool.ManagerInterface.
+//
+// Summary: No-op ClearToolsForService.
+//
+// Parameters:
+//   - _ (string): Unused.
 //
 // Returns:
 //   - None.
@@ -79,6 +100,11 @@ func (m *NoOpToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionReques
 
 // SetMCPServer implements tool.ManagerInterface.
 //
+// Summary: No-op SetMCPServer.
+//
+// Parameters:
+//   - _ (tool.MCPServerProvider): Unused.
+//
 // Returns:
 //   - None.
 //
@@ -88,6 +114,11 @@ func (m *NoOpToolManager) SetMCPServer(_ tool.MCPServerProvider) {}
 
 // AddMiddleware implements tool.ManagerInterface.
 //
+// Summary: No-op AddMiddleware.
+//
+// Parameters:
+//   - _ (tool.ExecutionMiddleware): Unused.
+//
 // Returns:
 //   - None.
 //
@@ -96,6 +127,12 @@ func (m *NoOpToolManager) SetMCPServer(_ tool.MCPServerProvider) {}
 func (m *NoOpToolManager) AddMiddleware(_ tool.ExecutionMiddleware) {}
 
 // AddServiceInfo implements tool.ManagerInterface.
+//
+// Summary: No-op AddServiceInfo.
+//
+// Parameters:
+//   - _ (string): Unused.
+//   - _ (*tool.ServiceInfo): Unused.
 //
 // Returns:
 //   - None.
@@ -118,11 +155,25 @@ func (m *NoOpToolManager) GetServiceInfo(_ string) (*tool.ServiceInfo, bool) { r
 
 // ListServices implements tool.ManagerInterface.
 //
+// Summary: Returns an empty list of services.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - []*tool.ServiceInfo: Always nil.
+//
 // Side Effects:
 //   - None.
 func (m *NoOpToolManager) ListServices() []*tool.ServiceInfo { return nil }
 
 // SetProfiles implements tool.ManagerInterface.
+//
+// Summary: No-op SetProfiles.
+//
+// Parameters:
+//   - _ ([]string): Unused.
+//   - _ ([]*configv1.ProfileDefinition): Unused.
 //
 // Returns:
 //   - None.
@@ -188,6 +239,11 @@ type NoOpPromptManager struct{}
 
 // AddPrompt implements prompt.ManagerInterface.
 //
+// Summary: No-op AddPrompt.
+//
+// Parameters:
+//   - _ (prompt.Prompt): Unused.
+//
 // Returns:
 //   - None.
 //
@@ -196,6 +252,11 @@ type NoOpPromptManager struct{}
 func (m *NoOpPromptManager) AddPrompt(_ prompt.Prompt) {}
 
 // UpdatePrompt implements prompt.ManagerInterface.
+//
+// Summary: No-op UpdatePrompt.
+//
+// Parameters:
+//   - _ (prompt.Prompt): Unused.
 //
 // Returns:
 //   - None.
@@ -218,11 +279,24 @@ func (m *NoOpPromptManager) GetPrompt(_ string) (prompt.Prompt, bool) { return n
 
 // ListPrompts implements prompt.ManagerInterface.
 //
+// Summary: Returns an empty list of prompts.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - []prompt.Prompt: Always nil.
+//
 // Side Effects:
 //   - None.
 func (m *NoOpPromptManager) ListPrompts() []prompt.Prompt { return nil }
 
 // ClearPromptsForService implements prompt.ManagerInterface.
+//
+// Summary: No-op ClearPromptsForService.
+//
+// Parameters:
+//   - _ (string): Unused.
 //
 // Returns:
 //   - None.
@@ -232,6 +306,11 @@ func (m *NoOpPromptManager) ListPrompts() []prompt.Prompt { return nil }
 func (m *NoOpPromptManager) ClearPromptsForService(_ string) {}
 
 // SetMCPServer implements prompt.ManagerInterface.
+//
+// Summary: No-op SetMCPServer.
+//
+// Parameters:
+//   - _ (prompt.MCPServerProvider): Unused.
 //
 // Returns:
 //   - None.
@@ -259,6 +338,11 @@ func (m *NoOpResourceManager) GetResource(_ string) (resource.Resource, bool) { 
 
 // AddResource implements resource.ManagerInterface.
 //
+// Summary: No-op AddResource.
+//
+// Parameters:
+//   - _ (resource.Resource): Unused.
+//
 // Returns:
 //   - None.
 //
@@ -267,6 +351,11 @@ func (m *NoOpResourceManager) GetResource(_ string) (resource.Resource, bool) { 
 func (m *NoOpResourceManager) AddResource(_ resource.Resource) {}
 
 // RemoveResource implements resource.ManagerInterface.
+//
+// Summary: No-op RemoveResource.
+//
+// Parameters:
+//   - _ (string): Unused.
 //
 // Returns:
 //   - None.
@@ -277,20 +366,38 @@ func (m *NoOpResourceManager) RemoveResource(_ string) {}
 
 // ListResources implements resource.ManagerInterface.
 //
+// Summary: Returns an empty list of resources.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - []resource.Resource: Always nil.
+//
 // Side Effects:
 //   - None.
 func (m *NoOpResourceManager) ListResources() []resource.Resource { return nil }
 
 // OnListChanged implements resource.ManagerInterface.
 //
+// Summary: No-op OnListChanged.
+//
+// Parameters:
+//   - _ (func()): Unused.
+//
 // Returns:
-//   - ): The result.
+//   - None.
 //
 // Side Effects:
 //   - None.
 func (m *NoOpResourceManager) OnListChanged(_ func()) {}
 
 // ClearResourcesForService implements resource.ManagerInterface.
+//
+// Summary: No-op ClearResourcesForService.
+//
+// Parameters:
+//   - _ (string): Unused.
 //
 // Returns:
 //   - None.

@@ -20,6 +20,17 @@ type Retry struct {
 
 // NewRetry creates a new Retry instance with the given configuration.
 // It sets default values for base and max backoff if they are not provided.
+//
+// Summary: Creates a new retry policy.
+//
+// Parameters:
+//   - config (*configv1.RetryConfig): The configuration for the retry policy.
+//
+// Returns:
+//   - *Retry: A new Retry instance.
+//
+// Side Effects:
+//   - None.
 func NewRetry(config *configv1.RetryConfig) *Retry {
 	if config == nil {
 		config = &configv1.RetryConfig{}
@@ -37,6 +48,18 @@ func NewRetry(config *configv1.RetryConfig) *Retry {
 
 // Execute runs the provided work function, retrying it if it fails according
 // to the configured policy.
+//
+// Summary: Executes a function with retries.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - work (func(context.Context) error): The function to execute.
+//
+// Returns:
+//   - error: An error if all retries fail.
+//
+// Side Effects:
+//   - Executes the provided function multiple times.
 func (r *Retry) Execute(ctx context.Context, work func(context.Context) error) error {
 	var err error
 	// Use int64 for attempts to match usage, though retries count is usually small.

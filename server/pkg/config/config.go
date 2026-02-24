@@ -23,7 +23,7 @@ import (
 //   - cmd (*cobra.Command): The command instance to which the persistent flags will be attached.
 //
 // Returns:
-//   None.
+//   - None.
 //
 // Side Effects:
 //   - Modifies the global Viper configuration state.
