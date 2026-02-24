@@ -26,6 +26,10 @@ import (
 )
 
 func TestDockerComposeE2E(t *testing.T) {
+	if os.Getenv("INSIDE_DOCKER_CONTAINER") == "1" {
+		t.Skip("Skipping Docker-based E2E test inside Docker container")
+	}
+
 if os.Getenv("INSIDE_DOCKER_CONTAINER") == "1" {
 t.Skip("Skipping docker-compose test inside make docker-test due to volume mapping limitations")
 }

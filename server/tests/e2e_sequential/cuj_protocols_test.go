@@ -23,6 +23,10 @@ import (
 
 // TestCUJ_Protocols covers CUJs 6-10: HTTP(SSE), External integrations, Errors, etc.
 func TestCUJ_Protocols(t *testing.T) {
+	if os.Getenv("INSIDE_DOCKER_CONTAINER") == "1" {
+		t.Skip("Skipping Docker-based E2E test inside Docker container")
+	}
+
 	rootDir, err := os.Getwd()
 	require.NoError(t, err)
 	if strings.HasSuffix(rootDir, "tests/e2e_sequential") {
