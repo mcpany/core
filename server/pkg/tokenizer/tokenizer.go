@@ -249,6 +249,46 @@ func countWordsInValueFast(v interface{}) (int, bool) {
 			count += countWords(item)
 		}
 		return count, true
+	case map[string]int:
+		// ⚡ BOLT: Optimization for map[string]int to avoid reflection.
+		// Randomized Selection from Top 5 High-Impact Targets
+		count := 0
+		for key := range val {
+			count += countWords(key)
+			// int counts as 1 word
+			count++
+		}
+		return count, true
+	case map[string]int64:
+		// ⚡ BOLT: Optimization for map[string]int64 to avoid reflection.
+		// Randomized Selection from Top 5 High-Impact Targets
+		count := 0
+		for key := range val {
+			count += countWords(key)
+			// int64 counts as 1 word
+			count++
+		}
+		return count, true
+	case map[string]float64:
+		// ⚡ BOLT: Optimization for map[string]float64 to avoid reflection.
+		// Randomized Selection from Top 5 High-Impact Targets
+		count := 0
+		for key := range val {
+			count += countWords(key)
+			// float64 counts as 1 word
+			count++
+		}
+		return count, true
+	case map[string]bool:
+		// ⚡ BOLT: Optimization for map[string]bool to avoid reflection.
+		// Randomized Selection from Top 5 High-Impact Targets
+		count := 0
+		for key := range val {
+			count += countWords(key)
+			// bool counts as 1 word
+			count++
+		}
+		return count, true
 	case []byte:
 		// ⚡ BOLT: Optimization for []byte to avoid expensive reflection and Sprintf fallback.
 		// Randomized Selection from Top 5 High-Impact Targets
@@ -259,7 +299,7 @@ func countWordsInValueFast(v interface{}) (int, bool) {
 
 // countTokensInValueSimpleFast handles fast-path tokenization for SimpleTokenizer.
 // It returns (count, handled, error). If handled is false, the caller should fallback.
-func countTokensInValueSimpleFast(st *SimpleTokenizer, v interface{}) (int, bool, error) {
+func countTokensInValueSimpleFast(st *SimpleTokenizer, v interface{}) (int, bool, error) { //nolint:gocyclo // Performance optimization: type switch is faster than reflection/helpers
 	switch val := v.(type) {
 	case string:
 		c, err := st.CountTokens(val)
@@ -339,6 +379,59 @@ func countTokensInValueSimpleFast(st *SimpleTokenizer, v interface{}) (int, bool
 			count += kc
 			vc, _ := st.CountTokens(item)
 			count += vc
+		}
+		return count, true, nil
+	case map[string]int:
+		// ⚡ BOLT: Optimization for map[string]int to avoid reflection.
+		// Randomized Selection from Top 5 High-Impact Targets
+		count := 0
+		for key, item := range val {
+			kc, _ := st.CountTokens(key)
+			count += kc
+			count += simpleTokenizeInt(item)
+		}
+		return count, true, nil
+	case map[string]int64:
+		// ⚡ BOLT: Optimization for map[string]int64 to avoid reflection.
+		// Randomized Selection from Top 5 High-Impact Targets
+		count := 0
+		for key, item := range val {
+			kc, _ := st.CountTokens(key)
+			count += kc
+			count += simpleTokenizeInt64(item)
+		}
+		return count, true, nil
+	case map[string]float64:
+		// ⚡ BOLT: Optimization for map[string]float64 to avoid reflection.
+		// Randomized Selection from Top 5 High-Impact Targets
+		count := 0
+		// OPTIMIZATION: Reuse stack buffer to avoid string allocation per item.
+		var buf [64]byte
+		for key, item := range val {
+			kc, _ := st.CountTokens(key)
+			count += kc
+
+			if i := int64(item); float64(i) == item {
+				count += simpleTokenizeInt64(i)
+				continue
+			}
+			b := strconv.AppendFloat(buf[:0], item, 'g', -1, 64)
+			c := len(b) / 4
+			if c < 1 {
+				c = 1
+			}
+			count += c
+		}
+		return count, true, nil
+	case map[string]bool:
+		// ⚡ BOLT: Optimization for map[string]bool to avoid reflection.
+		// Randomized Selection from Top 5 High-Impact Targets
+		count := 0
+		for key := range val {
+			kc, _ := st.CountTokens(key)
+			count += kc
+			// "true" or "false" -> 4 or 5 chars -> 1 token (4/4=1, 5/4=1)
+			count++
 		}
 		return count, true, nil
 	case []byte:
