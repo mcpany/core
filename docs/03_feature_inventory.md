@@ -65,3 +65,16 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-24] Updates
+
+### Proposed Additions
+- **Secure Context Inheritance Middleware**: (P0) Extends the Recursive Context Protocol with cryptographic verification, ensuring that subagents only inherit context that has been explicitly signed by the parent or a verified policy engine.
+- **Local Tool Isolation Wrappers**: (P1) Provides a sandboxed runtime for local command-line tools turned into MCP tools, mitigating risks from autonomous agents like OpenClaw.
+- **Heartbeat Policy Guard**: (P1) A specialized middleware that enforces stricter security policies for "autonomous/scheduled" agent sessions compared to user-initiated ones.
+
+### Priority Shifts
+- **Zero-Trust Subagent Scoping**: Re-affirming **P0** status. Critical for preventing lateral movement by specialized subagents in a swarm.
+- **A2A Interop Bridge**: Re-affirming **P0** status. Essential for the emerging agentic social networks and federated tool usage.

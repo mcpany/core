@@ -29,6 +29,11 @@
 *   **[P1] Federated MCP Peering**: Distributed node discovery and tool proxying. (Added: 2026-02-26)
 *   **[P1] Resource Telemetry Middleware**: Inject latency/cost metrics into tool schemas. (Added: 2026-02-26)
 
+#### Upcoming (2026-02-24 Evolution - Post-Market Sync)
+*   **[P0] Zero-Trust Subagent Scoping**: Capability-based token system to restrict subagent tool access. (Updated: 2026-02-24)
+*   **[P0] Secure Context Inheritance**: Cryptographically verified state passing for agent swarms. (Added: 2026-02-24)
+*   **[P1] Local Tool Isolation Wrappers**: Sandboxed runtime for local CLI-based MCP tools. (Added: 2026-02-24)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
