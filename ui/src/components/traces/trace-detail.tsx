@@ -11,14 +11,15 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { AlertCircle, CheckCircle2, Clock, ChevronDown, ChevronRight, Activity, Terminal, Code, Cpu, Database, Globe, Play, Download, Copy, Lightbulb, AlertTriangle, Coins, RefreshCcw } from "lucide-react";
-import { Trace, Span, SpanStatus } from "@/types/trace";
+import { Clock, ChevronDown, ChevronRight, Activity, Terminal, Code, Cpu, Database, Globe, Play, Download, Copy, Lightbulb, AlertTriangle, Coins, RefreshCcw } from "lucide-react";
+import { Trace, Span } from "@/types/trace";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import React from "react";
 import { useRouter } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { JsonView } from "@/components/ui/json-view";
+import { RichResultViewer } from "@/components/tools/rich-result-viewer";
 import { analyzeTrace } from "@/lib/diagnostics";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { SequenceDiagram } from "@/components/traces/sequence-diagram";
@@ -331,7 +332,7 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
                                     <CardTitle className="text-sm font-medium flex items-center gap-2"><Code className="h-4 w-4"/> Root Input</CardTitle>
                                 </CardHeader>
                                 <CardContent>
-                                    <JsonView data={trace.rootSpan.input} />
+                                    <RichResultViewer result={trace.rootSpan.input} />
                                 </CardContent>
                             </Card>
                             <Card>
@@ -339,7 +340,7 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
                                     <CardTitle className="text-sm font-medium flex items-center gap-2"><Terminal className="h-4 w-4"/> Root Output</CardTitle>
                                 </CardHeader>
                                 <CardContent>
-                                     <JsonView data={trace.rootSpan.output} />
+                                     <RichResultViewer result={trace.rootSpan.output} />
                                 </CardContent>
                             </Card>
                         </div>
