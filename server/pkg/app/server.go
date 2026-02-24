@@ -581,6 +581,12 @@ func (a *Application) Run(opts RunOptions) error {
 	// Start background workers
 	upstreamWorker.Start(workerCtx)
 	registrationWorker.Start(workerCtx)
+	// Start log persistence worker
+	if lp, ok := storageStore.(logging.LogPersister); ok {
+		a.startLogPersistence(workerCtx, lp)
+	} else {
+		logging.GetLogger().Warn("Storage does not support log persistence")
+	}
 	// Start periodic health checks (every 30 seconds)
 	serviceRegistry.StartHealthChecks(workerCtx, 30*time.Second)
 

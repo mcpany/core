@@ -88,6 +88,57 @@ export function LogStream({
   const logBufferRef = React.useRef<LogEntry[]>([])
 
   React.useEffect(() => {
+    // Fetch initial logs from persistent storage
+    const fetchHistory = async () => {
+      try {
+        let url = '/api/v1/logs?limit=2000'
+        const headers: Record<string, string> = {}
+
+        if (typeof window !== 'undefined') {
+          const token = localStorage.getItem('mcp_auth_token')
+          if (token) {
+            if (!token.startsWith('Basic ') && !token.startsWith('Bearer ')) {
+              headers['Authorization'] = 'Basic ' + token
+            } else {
+              headers['Authorization'] = token
+            }
+          }
+        }
+
+        const res = await fetch(url, { headers })
+        if (res.ok) {
+          const initialLogs: LogEntry[] = await res.json()
+          if (Array.isArray(initialLogs)) {
+            // Pre-format time
+            initialLogs.forEach((l) => {
+              l.formattedTime = timeFormatter
+                ? timeFormatter.format(new Date(l.timestamp))
+                : new Date(l.timestamp).toLocaleTimeString()
+            })
+
+            setLogs((prev) => {
+              // Merge and dedup
+              const map = new Map<string, LogEntry>()
+              initialLogs.forEach((l) => map.set(l.id, l))
+              prev.forEach((l) => map.set(l.id, l)) // WS logs take precedence if overlapping (newer?)
+
+              // Convert back to array and sort by timestamp
+              const merged = Array.from(map.values()).sort(
+                (a, b) =>
+                  new Date(a.timestamp).getTime() -
+                  new Date(b.timestamp).getTime()
+              )
+              return merged
+            })
+          }
+        }
+      } catch (e) {
+        console.error("Failed to fetch log history", e)
+      }
+    }
+
+    fetchHistory()
+
     // Optimization: Flush buffer periodically to limit re-renders
     const flushInterval = setInterval(() => {
       if (logBufferRef.current.length > 0) {
@@ -96,23 +147,27 @@ export function LogStream({
           logBufferRef.current = [] // Clear buffer
           const MAX_LOGS = 2000 // Increased limit to allow for more history
 
-          // Optimization: Efficient array handling to minimize memory allocation and gc pressure.
-          // Avoiding large intermediate arrays reduces garbage collection overhead during rapid logging.
+          // Robust Deduplication: Merge buffer into prev using ID map
+          const map = new Map<string, LogEntry>()
+          // Assuming prev is sorted, we add them first
+          prev.forEach((l) => map.set(l.id, l))
+          // Buffer updates/adds to map
+          buffer.forEach((l) => map.set(l.id, l))
 
-          // Case 1: Total logs fit within limit - simple concat
-          if (prev.length + buffer.length <= MAX_LOGS) {
-            return [...prev, ...buffer]
+          // Convert back to array
+          // Optimization: If buffer contains only new items and we assume time order, we could optimize.
+          // But safe bet is to sort. Since prev is sorted, maybe we can optimize sort?
+          // For < 2000 items, full sort is fast enough (few ms).
+          let merged = Array.from(map.values()).sort(
+            (a, b) =>
+              new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+          )
+
+          // Truncate
+          if (merged.length > MAX_LOGS) {
+            merged = merged.slice(merged.length - MAX_LOGS)
           }
-
-          // Case 2: Buffer itself exceeds limit (unlikely but possible) - take last MAX_LOGS
-          if (buffer.length >= MAX_LOGS) {
-            return buffer.slice(buffer.length - MAX_LOGS)
-          }
-
-          // Case 3: Need to trim from prev to make room for buffer
-          // We need (MAX_LOGS - buffer.length) from the end of prev
-          const keepCount = MAX_LOGS - buffer.length
-          return [...prev.slice(-keepCount), ...buffer]
+          return merged
         })
       }
     }, 100) // Flush every 100ms

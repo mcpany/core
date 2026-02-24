@@ -8,6 +8,7 @@ import (
 	"context"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/logging"
 )
 
 // Storage defines the interface for persisting configuration.
@@ -613,6 +614,32 @@ type Storage interface {
 	// Side Effects:
 	//   - Removes the credential from the underlying storage.
 	DeleteCredential(ctx context.Context, id string) error
+
+	// SaveLog saves a single log entry.
+	//
+	// Summary: Persists a log entry.
+	//
+	// Parameters:
+	//   - ctx (context.Context): The context for the request.
+	//   - entry (logging.LogEntry): The log entry to save.
+	//
+	// Returns:
+	//   - error: An error if saving fails.
+	SaveLog(ctx context.Context, entry logging.LogEntry) error
+
+	// ListLogs retrieves logs with pagination.
+	//
+	// Summary: Lists logs.
+	//
+	// Parameters:
+	//   - ctx (context.Context): The context for the request.
+	//   - limit (int): Max number of logs to return.
+	//   - offset (int): Number of logs to skip.
+	//
+	// Returns:
+	//   - []logging.LogEntry: A list of log entries.
+	//   - error: An error if listing fails.
+	ListLogs(ctx context.Context, limit, offset int) ([]logging.LogEntry, error)
 
 	// Close closes the underlying storage connection.
 	//

@@ -6,10 +6,12 @@ package sqlite
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"sync"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/logging"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -325,6 +327,80 @@ func (s *Store) SaveService(ctx context.Context, service *configv1.UpstreamServi
 		return fmt.Errorf("failed to save service: %w", err)
 	}
 	return nil
+}
+
+// SaveLog saves a single log entry.
+//
+// Summary: Persists a log entry.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - entry (logging.LogEntry): The log entry to save.
+//
+// Returns:
+//   - error: An error if saving fails.
+func (s *Store) SaveLog(ctx context.Context, entry logging.LogEntry) error {
+	metadataJSON, err := json.Marshal(entry.Metadata)
+	if err != nil {
+		return fmt.Errorf("failed to marshal metadata: %w", err)
+	}
+
+	query := `
+	INSERT INTO system_logs (log_id, timestamp, level, source, message, metadata_json)
+	VALUES (?, ?, ?, ?, ?, ?)
+	`
+	_, err = s.db.ExecContext(ctx, query, entry.ID, entry.Timestamp, entry.Level, entry.Source, entry.Message, string(metadataJSON))
+	if err != nil {
+		return fmt.Errorf("failed to save log: %w", err)
+	}
+	return nil
+}
+
+// ListLogs retrieves logs with pagination.
+//
+// Summary: Lists logs.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - limit (int): Max number of logs to return.
+//   - offset (int): Number of logs to skip.
+//
+// Returns:
+//   - []logging.LogEntry: A list of log entries.
+//   - error: An error if listing fails.
+func (s *Store) ListLogs(ctx context.Context, limit, offset int) ([]logging.LogEntry, error) {
+	query := `
+	SELECT log_id, timestamp, level, source, message, metadata_json
+	FROM system_logs
+	ORDER BY timestamp DESC
+	LIMIT ? OFFSET ?
+	`
+	rows, err := s.db.QueryContext(ctx, query, limit, offset)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query logs: %w", err)
+	}
+	defer func() { _ = rows.Close() }()
+
+	var logs []logging.LogEntry
+	for rows.Next() {
+		var entry logging.LogEntry
+		var metadataJSON []byte
+		if err := rows.Scan(&entry.ID, &entry.Timestamp, &entry.Level, &entry.Source, &entry.Message, &metadataJSON); err != nil {
+			return nil, fmt.Errorf("failed to scan log: %w", err)
+		}
+		if len(metadataJSON) > 0 {
+			if err := json.Unmarshal(metadataJSON, &entry.Metadata); err != nil {
+				// Don't fail the whole list? Just warn? Or fail?
+				// For now, let's just initialize empty map
+				entry.Metadata = make(map[string]any)
+			}
+		}
+		logs = append(logs, entry)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating rows: %w", err)
+	}
+	return logs, nil
 }
 
 // GetService retrieves an upstream service configuration by name.

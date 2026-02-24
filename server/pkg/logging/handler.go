@@ -13,17 +13,6 @@ import (
 	"github.com/google/uuid"
 )
 
-// LogEntry is the structure for logs sent over WebSocket.
-// It matches the frontend expectation.
-type LogEntry struct {
-	ID        string         `json:"id"`
-	Timestamp string         `json:"timestamp"`
-	Level     string         `json:"level"`
-	Message   string         `json:"message"`
-	Source    string         `json:"source,omitempty"`
-	Metadata  map[string]any `json:"metadata,omitempty"`
-}
-
 // BroadcastHandler implements slog.Handler and sends logs to the Broadcaster.
 type BroadcastHandler struct {
 	broadcaster *Broadcaster
