@@ -7,6 +7,7 @@ import (
 	"context"
 	"encoding/json"
 	"testing"
+"os/exec"
 
 	apiv1 "github.com/mcpany/core/proto/api/v1"
 	"github.com/mcpany/core/server/pkg/util"
