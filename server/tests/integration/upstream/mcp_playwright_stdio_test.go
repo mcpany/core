@@ -18,7 +18,7 @@ import (
 )
 
 func TestUpstreamService_MCP_Playwright_Stdio(t *testing.T) {
-if _, err := exec.LookPath("node"); err != nil {
+if _, err := exec.LookPath("npm"); err != nil {
 t.Skip("Skipping test because node is not installed")
 }
 	testCase := &framework.E2ETestCase{
