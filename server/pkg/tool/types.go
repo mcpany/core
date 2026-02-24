@@ -3090,11 +3090,21 @@ func checkForShellInjection(val string, template string, placeholder string, com
 		argBase := strings.ToLower(filepath.Base(args[0]))
 		// Avoid double checking if it's the same command (already checked above)
 		if argBase != base && isInterpreter(argBase) {
-			if err := checkInterpreterInjection(val, template, argBase, quoteLevel); err != nil {
+			effectiveQuoteLevel := quoteLevel
+			if isShell {
+				// Sentinel Security Update: Nested Shell Protection
+				// If the outer command is a shell, assume the quotes around the inner command arguments
+				// are shell quotes that will be stripped before the inner interpreter sees them.
+				// This forces strict (Unquoted) checks on the inner interpreter arguments.
+				effectiveQuoteLevel = 0
+			}
+
+			if err := checkInterpreterInjection(val, template, argBase, effectiveQuoteLevel); err != nil {
 				return fmt.Errorf("argument interpreter injection detected (%s): %w", argBase, err)
 			}
 			// Also check function calls for the detected interpreter context
-			if quoteLevel == 1 || quoteLevel == 2 {
+			// Sentinel Security Update: Check for Unquoted (0), Double (1), Single (2) contexts.
+			if effectiveQuoteLevel == 0 || effectiveQuoteLevel == 1 || effectiveQuoteLevel == 2 {
 				if err := checkInterpreterFunctionCalls(val, argBase); err != nil {
 					return fmt.Errorf("argument interpreter injection detected (%s): %w", argBase, err)
 				}
@@ -3866,6 +3876,11 @@ func checkRubyInjection(val, base string, quoteLevel int) error {
 	// Unquoted Ruby: @var and $var are dangerous.
 	// $var is blocked by generic checks. @var is not.
 	if quoteLevel == 0 {
+		// Sentinel Security Update: Block %x(...) execution syntax
+		// %x is dangerous in Unquoted contexts (code execution)
+		if strings.Contains(val, "%x") {
+			return fmt.Errorf("ruby execution injection detected: value contains '%%x'")
+		}
 		if strings.Contains(val, "@") {
 			return fmt.Errorf("ruby variable injection detected: value contains '@'")
 		}
