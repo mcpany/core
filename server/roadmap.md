@@ -29,6 +29,11 @@
 *   **[P1] Federated MCP Peering**: Distributed node discovery and tool proxying. (Added: 2026-02-26)
 *   **[P1] Resource Telemetry Middleware**: Inject latency/cost metrics into tool schemas. (Added: 2026-02-26)
 
+#### Upcoming (2026-02-27 Evolution)
+*   **[P0] Isolated Subprocess Runner**: Implement sandboxed execution (gVisor/nsjail) for local command-based tools. (Added: 2026-02-27)
+*   **[P1] Secret Masking Middleware**: Automatic redaction of credentials in logs and tool outputs. (Added: 2026-02-27)
+*   **[P1] Tool Argument Schema Guard**: Strict validation of tool inputs to prevent command/path injection. (Added: 2026-02-27)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

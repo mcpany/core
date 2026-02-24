@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **Isolated Subprocess Runner**: (P0) A secure middleware that executes local command-based tools in a restricted sandbox (gVisor/nsjail) to prevent host escalation.
+- **Secret Masking Middleware**: (P1) Automatic detection and redaction of credentials (API keys, session tokens) in tool outputs, error messages, and trace logs.
+- **Tool Argument Schema Guard**: (P1) Enforcement of strict validation rules on tool input arguments to prevent command injection and unauthorized file path access.
+
+### Priority Shifts
+- **A2A Interop Bridge**: Re-affirmed as **P0**. Essential for the emerging "Agent-to-Agent" task delegation patterns seen in modern swarms.
+- **Supply Chain Integrity Guard**: Promoted to **P0** (Already P0, but increased urgency due to recent ecosystem audits).
+
+### Deprecations / Monitoring
+- **Unsanitized Log Output**: Monitoring for deprecation; transitioning all logging through the Secret Masking pipeline.
