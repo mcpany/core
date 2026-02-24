@@ -65,3 +65,15 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-24] Updates
+
+### Proposed Additions
+- **Proactive Heartbeat Monitoring**: (P1) Middleware to track and limit "heartbeat" agent loops, preventing runaway token costs and unintended autonomous actions.
+- **Strict Schema Enforcement Middleware**: (P0) A gateway-level validation layer that ensures all tool calls from agents strictly adhere to the defined JSON schemas (inspired by Claude Code `strict: true`).
+- **Terminal Capability Sandboxing**: (P0) Granular, capability-based permissions for terminal-based tools to prevent host-level escapes.
+
+### Priority Shifts
+- **Policy Firewall**: Re-affirming **P0**. Essential for governing autonomous agent intent.

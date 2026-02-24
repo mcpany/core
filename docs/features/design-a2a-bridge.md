@@ -46,3 +46,10 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+
+### Update: 2026-02-24 - Hardened A2A Channel Isolation
+**Context**: Today's research on OpenClaw's security vulnerabilities and the "MoltMatch" incident highlights the risk of data leakage during inter-agent communication.
+**Architecture Adjustment**:
+- **Isolated A2A Channels**: Implementing mandatory "Intent-Bound" channels for A2A handoffs. Agents can no longer share global state by default.
+- **Strict Payload Validation**: Leveraging the new `Strict Schema Enforcement Middleware` to validate A2A messages before they are translated to MCP tool outputs.
+**Security Impact**: Prevents a compromised subagent from using the A2A bridge to exfiltrate sensitive parent context to unauthorized external agents.

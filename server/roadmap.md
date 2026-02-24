@@ -18,6 +18,8 @@
 *   **[P1] Machine-Checkable Security Contracts**: Declarative tool safety models.
 *   **[P0] Multi-Agent Session Management**: Session-aware middleware for agent coordination (Added: 2026-02-24).
 *   **[P1] Unified MCP Discovery Service**: Automated registry for Stdio/HTTP/FastMCP servers (Added: 2026-02-24).
+*   **[P0] Strict Schema Enforcement Middleware**: Enforce strict JSON schema validation for all tool calls (Added: 2026-02-24).
+*   **[P1] Proactive Heartbeat Monitoring**: Track and limit autonomous agent heartbeat loops (Added: 2026-02-24).
 
 #### Upcoming (2026-02-25 Evolution)
 *   **[P0] On-Demand Discovery Middleware (Lazy-MCP)**: Implements similarity-based tool searching to prevent context pollution. (Added: 2026-02-25)
