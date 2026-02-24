@@ -63,6 +63,17 @@ const promptSchema = z.object({
 
 type PromptValues = z.infer<typeof promptSchema>;
 
+/**
+ * PromptEditor is a form component for creating and editing prompt definitions.
+ * It handles the configuration of prompt metadata, input schema, and message templates.
+ *
+ * @param props - The component props.
+ * @param props.open - Whether the editor sheet is open.
+ * @param props.onOpenChange - Callback when the open state changes.
+ * @param props.prompt - The existing prompt to edit, or null for creating a new one.
+ * @param props.services - List of available services.
+ * @param props.onSave - Callback when the prompt is saved.
+ */
 export function PromptEditor({ open, onOpenChange, prompt, services, onSave }: PromptEditorProps) {
     const { theme } = useTheme();
     const [isSubmitting, setIsSubmitting] = useState(false);

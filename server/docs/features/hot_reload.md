@@ -4,7 +4,7 @@ MCP Any supports dynamic configuration reloading without restarting the server.
 
 ## How it works
 
-The server watches the configuration file (and referenced files) for changes. When a change is detected:
+The server watches the configuration file(s) for changes. When a change is detected:
 
 1. The server debounces the events to avoid rapid reloads.
 2. It parses the new configuration.
