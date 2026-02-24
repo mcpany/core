@@ -536,6 +536,16 @@ test.describe('Generate Detailed Docs Screenshots', () => {
   });
 
   test('Resources Screenshots', async ({ page }) => {
+      // Provide mock resources to ensure list is populated
+      await page.route(/.*\/api(\/v1)?\/resources/, async route => {
+          await route.fulfill({
+              json: [
+                  { uri: 'file:///path/to/log.txt', name: 'System Log', description: 'Application error log', mimeType: 'text/plain' },
+                  { uri: 'postgres://localhost:5432/db', name: 'Users Database', description: 'Primary user data', mimeType: 'application/sql' }
+              ]
+          });
+      });
+
       await page.goto('/resources');
 
       await page.waitForTimeout(2000);
@@ -546,7 +556,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'resources_split_view.png'), fullPage: true });
 
       // Open Preview Modal
-      const firstResource = page.locator('.flex.items-center.gap-3.p-3').first();
+      const firstResource = page.locator('.flex.items-center.gap-3.p-3.px-4').first();
       try {
           await firstResource.waitFor({ state: 'visible', timeout: 5000 });
           await firstResource.click({ button: 'right' });

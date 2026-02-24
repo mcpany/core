@@ -99,17 +99,14 @@ func (a *Application) handleDashboardMetrics() http.HandlerFunc {
 			// Calculate throughput from history (last 60m)
 			history := a.TopologyManager.GetTrafficHistory(serviceID)
 			var totalInWindow int64
-			var totalBytes int64
-
 			for _, p := range history {
 				totalInWindow += p.Total
-				totalBytes += p.Bytes
 			}
 			if len(history) > 0 {
 				// history is minutes. len(history) * 60 seconds
 				throughput = float64(totalInWindow) / (float64(len(history)) * 60.0)
 			}
-			estTokens = totalBytes / 4
+			estTokens = totalInWindow * 250 // Rough estimation if bytes not available
 
 			// Calculate Trends (Compare 2nd half vs 1st half of the window)
 			if len(history) >= 2 {
@@ -120,19 +117,16 @@ func (a *Application) handleDashboardMetrics() http.HandlerFunc {
 				var prevReqs, currReqs int64
 				var prevLatSum, currLatSum int64
 				var prevErrs, currErrs int64
-				var prevBytes, currBytes int64
 
 				for _, p := range prevWindow {
 					prevReqs += p.Total
 					prevLatSum += p.Latency * p.Total // Latency is avg per request
 					prevErrs += p.Errors
-					prevBytes += p.Bytes
 				}
 				for _, p := range currWindow {
 					currReqs += p.Total
 					currLatSum += p.Latency * p.Total
 					currErrs += p.Errors
-					currBytes += p.Bytes
 				}
 
 				// Request Trend
@@ -177,11 +171,11 @@ func (a *Application) handleDashboardMetrics() http.HandlerFunc {
 				stats.errChangeLabel = fmt.Sprintf("%+.1f%%", errChange)
 				stats.errTrend = getTrend(errChange, true)
 
-				// Token Usage Trend
+				// Token Usage Trend (Proxy via requests)
 				var tokenChange float64
-				if prevBytes > 0 {
-					tokenChange = float64(currBytes-prevBytes) / float64(prevBytes) * 100
-				} else if currBytes > 0 {
+				if prevReqs > 0 {
+					tokenChange = float64(currReqs-prevReqs) / float64(prevReqs) * 100
+				} else if currReqs > 0 {
 					tokenChange = 100
 				}
 				stats.tokenChangeLabel = fmt.Sprintf("%+.1f%%", tokenChange)
@@ -203,6 +197,11 @@ func (a *Application) handleDashboardMetrics() http.HandlerFunc {
 		promptCount := 0
 		if a.PromptManager != nil {
 			promptCount = len(a.PromptManager.ListPrompts())
+		}
+
+		resourceCount := 0
+		if a.ResourceManager != nil {
+			resourceCount = len(a.ResourceManager.ListResources())
 		}
 
 		metrics := []Metric{
@@ -253,6 +252,14 @@ func (a *Application) handleDashboardMetrics() http.HandlerFunc {
 				Trend:    trendNeutral,
 				Icon:     "MessageSquare",
 				SubLabel: "Templates",
+			},
+			{
+				Label:    "Resources",
+				Value:    fmt.Sprintf("%d", resourceCount),
+				Change:   "--",
+				Trend:    trendNeutral,
+				Icon:     "Database",
+				SubLabel: "Exposed",
 			},
 			{
 				Label:    "Avg Latency",

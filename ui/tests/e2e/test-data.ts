@@ -214,14 +214,17 @@ export const seedCollection = async (name: string, requestContext?: APIRequestCo
 
         // Wait for weather-service to be registered by the async worker
         let ready = false;
-        for (let i = 0; i < 60; i++) {
+        const maxIterations = 180; // 90 seconds
+        for (let i = 0; i < maxIterations; i++) {
             const check = await context.get('/api/v1/services', { headers: HEADERS });
             if (check.ok()) {
                 const data = await check.json();
-                if (i === 0 || i === 59) {
+                if (i === 0 || i === (maxIterations - 1)) {
                     console.log("DEBUG /api/v1/services returned data:", JSON.stringify(data).substring(0, 500));
                 }
-                if (data && Array.isArray(data) && data.some((s: any) => s.name === 'weather-service' || s.id === 'weather-service')) {
+                if (data && Array.isArray(data) && data.some((s: any) => {
+                    return (s.name === 'weather-service' || s.id === 'weather-service') && (s.tool_count > 0 || (s.tools && s.tools.length > 0));
+                })) {
                     ready = true;
                     break;
                 }
@@ -355,10 +358,45 @@ export const seedWebhooks = async (requestContext?: APIRequestContext) => {
 export const cleanupServices = async (requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     try {
-        await context.delete('/api/v1/services/Payment Gateway', { headers: HEADERS });
-        await context.delete('/api/v1/services/User Service', { headers: HEADERS });
-        await context.delete('/api/v1/services/Math', { headers: HEADERS });
-        await context.delete('/api/v1/services/Echo Service', { headers: HEADERS });
+        // First delete collections to avoid async worker recreating them
+        const colRes = await context.get('/api/v1/collections', { headers: HEADERS });
+        if (colRes.ok()) {
+            const colData = await colRes.json();
+            const collections = Array.isArray(colData) ? colData : (colData.collections || []);
+            for (const col of collections) {
+                const identifier = col.name || col.id;
+                if (identifier) {
+                    await context.delete(`/api/v1/collections/${identifier}`, { headers: HEADERS }).catch(() => { });
+                }
+            }
+        }
+
+        const res = await context.get('/api/v1/services', { headers: HEADERS });
+        if (res.ok()) {
+            const data = await res.json();
+            const services = Array.isArray(data) ? data : (data.services || []);
+            for (const svc of services) {
+                // Delete by name which usually works, or by ID
+                const identifier = svc.name || svc.id;
+                if (identifier) {
+                    // Requires Mcp-Session-Id if it was a direct MCP connection, but typically operator deletes it via collection
+                    await context.delete(`/api/v1/services/${identifier}`, { headers: HEADERS }).catch(() => { });
+                }
+            }
+        }
+
+        // Wait for all services to be completely terminated by the operator
+        for (let i = 0; i < 60; i++) {
+            const check = await context.get('/api/v1/services', { headers: HEADERS });
+            if (check.ok()) {
+                const data = await check.json();
+                const currentServices = Array.isArray(data) ? data : (data.services || []);
+                if (currentServices.length === 0) {
+                    break; // Fully clean
+                }
+            }
+            await new Promise(r => setTimeout(r, 1000));
+        }
     } catch (e) {
         console.log(`Failed to cleanup services: ${e}`);
     }
@@ -368,6 +406,19 @@ export const cleanupCollection = async (name: string, requestContext?: APIReques
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     try {
         await context.delete(`/api/v1/collections/${name}`, { headers: HEADERS });
+
+        // Wait for all services to be completely terminated by the operator
+        for (let i = 0; i < 60; i++) {
+            const check = await context.get('/api/v1/services', { headers: HEADERS });
+            if (check.ok()) {
+                const data = await check.json();
+                const currentServices = Array.isArray(data) ? data : (data.services || []);
+                if (currentServices.length === 0) {
+                    break; // Fully clean
+                }
+            }
+            await new Promise(r => setTimeout(r, 1000));
+        }
     } catch (e) {
         console.log(`Failed to cleanup collection ${name}: ${e}`);
     }

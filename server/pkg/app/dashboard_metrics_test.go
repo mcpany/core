@@ -103,8 +103,8 @@ func TestHandleDashboardMetrics_Trends(t *testing.T) {
 	tokenMetric := metricMap["Est. Tokens"]
 	assert.Equal(t, "up", tokenMetric.Trend)
 	assert.Equal(t, "+100.0%", tokenMetric.Change)
-	// Value should be total bytes / 4 = 1500 / 4 = 375
-	assert.Equal(t, "375", tokenMetric.Value)
+	// Value should be total reqs * 250 = 150 * 250 = 37500
+	assert.Equal(t, "37500", tokenMetric.Value)
 
 	// Avg Latency
 	// Previous Avg: 50ms

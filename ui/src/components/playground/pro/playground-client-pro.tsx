@@ -92,7 +92,19 @@ export function PlaygroundClientPro() {
 
   useEffect(() => {
     apiClient.listTools()
-        .then(data => setAvailableTools(data.tools || []))
+        .then(data => {
+            if (!data) {
+                setAvailableTools([]);
+                return;
+            }
+            if (Array.isArray(data)) {
+                setAvailableTools(data);
+            } else if (data && Array.isArray(data.tools)) {
+                setAvailableTools(data.tools);
+            } else {
+                setAvailableTools([]);
+            }
+        })
         .catch(err => console.error("Failed to load tools:", err));
   }, []);
 

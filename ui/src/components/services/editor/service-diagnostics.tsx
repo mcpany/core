@@ -102,7 +102,8 @@ export function ServiceDiagnostics({ service }: ServiceDiagnosticsProps) {
             try {
                 const toolsResponse = await apiClient.listTools();
                 // Filter tools by serviceId (which might be service name or ID)
-                const tools = toolsResponse.tools.filter((t: any) => t.serviceId === service.name || t.serviceId === service.id);
+                const allTools = Array.isArray(toolsResponse) ? toolsResponse : (toolsResponse.tools || []);
+                const tools = allTools.filter((t: any) => t.serviceId === service.name || t.serviceId === service.id);
 
                 if (tools.length > 0) {
                     toolCheck.status = "success";

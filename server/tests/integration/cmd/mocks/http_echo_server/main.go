@@ -6,6 +6,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
@@ -33,20 +34,20 @@ func echoHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", consts.ContentTypeApplicationJSON)
 	w.WriteHeader(http.StatusOK)
 
-	// Construct a simple JSON response echoing request details
-	// We do this manually to avoid importing large encoding/json structs if not needed,
-	// but standard library is fine.
-	// We want to verify URL contains "test-execution".
+	respMap := map[string]interface{}{
+		"method":  r.Method,
+		"url":     r.URL.Path,
+		"body":    string(bodyBytes),
+		"headers": map[string]string{},
+	}
+	responseBytes, errMarshal := json.Marshal(respMap)
+	if errMarshal != nil {
+		slog.Error("http_echo_server: Error marshalling response body", "error", errMarshal)
+		http.Error(w, "Failed to marshal response body", http.StatusInternalServerError)
+		return
+	}
 
-	response := fmt.Sprintf(`{
-		"method": "%s",
-		"url": "%s",
-		"body": "%s",
-		"headers": {}
-	}`, r.Method, r.URL.Path, string(bodyBytes))
-	// Note: Headers handling is simplified for this mock.
-
-	if _, errWrite := w.Write([]byte(response)); errWrite != nil {
+	if _, errWrite := w.Write(responseBytes); errWrite != nil {
 		slog.Error("http_echo_server: Error writing response body", "error", errWrite)
 	}
 	slog.Info("http_echo_server: Responded to request", "path", r.URL.Path)

@@ -241,7 +241,9 @@ export function ProfileEditor({ profile, open, onOpenChange, onSave }: ProfileEd
                 try {
                     const res = await apiClient.listTools();
                     // Filter by service ID (svcName matches ID usually)
-                    const tools = res.tools.filter((t: ToolDefinition) => t.serviceId === svcName);
+                    const tools = Array.isArray(res)
+                        ? res.filter((t: ToolDefinition) => t.serviceId === svcName)
+                        : (res.tools || []).filter((t: ToolDefinition) => t.serviceId === svcName);
                     setServiceTools(prev => ({ ...prev, [svcName]: tools }));
                 } catch (e) {
                     console.error("Failed to fetch tools", e);

@@ -57,6 +57,18 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
              }
         }
 
+        // Handle stringified JSON inside a single text block
+        if (Array.isArray(content) && content.length === 1 && content[0].type === 'text' && typeof content[0].text === 'string') {
+            try {
+                const inner = JSON.parse(content[0].text);
+                if (Array.isArray(inner) || (typeof inner === 'object' && inner !== null)) {
+                    content = inner;
+                }
+            } catch (e) {
+                // text is not JSON
+            }
+        }
+
         // Handle deeply nested "content" (e.g. from stdout containing MCP content object)
         if (content && typeof content === 'object' && !Array.isArray(content) && Array.isArray(content.content)) {
             content = content.content;

@@ -301,6 +301,7 @@ func TestHandleDashboardMetrics(t *testing.T) {
 	assert.Equal(t, "1", metricMap["Connected Tools"])
 	assert.Equal(t, "1", metricMap["Prompts"])
 	assert.Equal(t, "1", metricMap["Resources"])
+	assert.Equal(t, "1", metricMap["Resources"]) // Wait, why twice? Ah, I see.
 	assert.Equal(t, "60", metricMap["Total Requests"])
 }
 

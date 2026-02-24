@@ -99,7 +99,9 @@ export function AnalyticsDashboard() {
                 setToolUsageMap(usageMap);
 
                 // Calculate Context Usage
-                const allTools: ToolDefinition[] = toolsResponse.tools || [];
+                const allTools: ToolDefinition[] = Array.isArray(toolsResponse)
+                    ? toolsResponse
+                    : (toolsResponse.tools || []);
                 setTools(allTools);
                 let totalTokens = 0;
                 const serviceMap: Record<string, number> = {};

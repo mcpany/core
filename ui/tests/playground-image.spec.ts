@@ -84,9 +84,8 @@ test.describe('Playground Image Rendering', () => {
         // Increased timeout for CI stability
         await expect(page.locator(`img[src^="${srcPrefix}"]`)).toBeVisible({ timeout: 60000 });
 
-        // Also check if "Rich" view button is active/visible
-        // Since logic forces Rich view for images, it should be rendered directly.
-        // We can check if "Rich" button exists in the result renderer toolbar.
-        await expect(page.getByRole('button', { name: 'Rich' })).toBeVisible();
+        // Also check if "Image" tab is active/visible
+        // Since logic forces Image view for images, it should be rendered directly.
+        await expect(page.getByRole('tab', { name: 'Image' })).toBeVisible();
     });
 });

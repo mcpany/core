@@ -20,20 +20,20 @@ interface RichResultViewerProps {
 }
 
 interface TextContent {
-  type: "text";
-  text: string;
+    type: "text";
+    text: string;
 }
 
 interface ImageContent {
-  type: "image";
-  data: string;
-  mimeType: string;
+    type: "image";
+    data: string;
+    mimeType: string;
 }
 
 type McpContent = TextContent | ImageContent;
 
 interface McpContentRendererProps {
-  content: McpContent[];
+    content: McpContent[];
 }
 
 function McpContentRenderer({ content }: McpContentRendererProps) {
@@ -49,7 +49,7 @@ function McpContentRenderer({ content }: McpContentRendererProps) {
                         </div>
                     );
                 } else if (item.type === "image") {
-                     return (
+                    return (
                         <div key={index} className="rounded-lg overflow-hidden border bg-muted/20 inline-block max-w-full">
                             <img
                                 src={`data:${item.mimeType};base64,${item.data}`}
@@ -92,7 +92,7 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
 
         // Handle raw string that is JSON
         if (typeof result === 'string') {
-             try {
+            try {
                 const parsed = JSON.parse(result);
                 return [parsed, true];
             } catch {
@@ -116,9 +116,13 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
         return null;
     }, [content]);
 
+    const isImageEligible = useMemo(() => {
+        return Array.isArray(content) && content.length === 1 && typeof content[0] === 'object' && content[0] !== null && content[0].type === 'image' && !!content[0].data;
+    }, [content]);
+
     const isTableEligible = useMemo(() => {
-        return !mcpContent && Array.isArray(content) && content.length > 0 && typeof content[0] === 'object' && content[0] !== null;
-    }, [content, mcpContent]);
+        return !mcpContent && !isImageEligible && Array.isArray(content) && content.length > 0 && typeof content[0] === 'object' && content[0] !== null;
+    }, [content, mcpContent, isImageEligible]);
 
     // Get columns for table
     const columns = useMemo(() => {
@@ -141,15 +145,20 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
         return <span className="truncate max-w-[300px] block" title={String(value)}>{String(value)}</span>;
     }
 
-    const defaultTab = mcpContent ? "rendered" : (isTableEligible ? "table" : "json");
+    const defaultTab = mcpContent ? "rendered" : (isImageEligible ? "image" : (isTableEligible ? "table" : "json"));
 
     return (
         <Tabs defaultValue={defaultTab} className="w-full">
             <div className="flex items-center justify-between mb-2">
                 <TabsList>
                     {mcpContent && (
-                         <TabsTrigger value="rendered" className="flex items-center gap-2">
+                        <TabsTrigger value="rendered" className="flex items-center gap-2">
                             <FileText className="h-4 w-4" /> Rendered
+                        </TabsTrigger>
+                    )}
+                    {isImageEligible && (
+                        <TabsTrigger value="image" className="flex items-center gap-2">
+                            <ImageIcon className="h-4 w-4" /> Image
                         </TabsTrigger>
                     )}
                     {isTableEligible && (
@@ -161,7 +170,7 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
                         <FileJson className="h-4 w-4" /> JSON
                     </TabsTrigger>
                     {isExtracted && (
-                         <TabsTrigger value="raw" className="flex items-center gap-2">
+                        <TabsTrigger value="raw" className="flex items-center gap-2">
                             <Terminal className="h-4 w-4" /> Raw Output
                         </TabsTrigger>
                     )}
@@ -173,6 +182,16 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
                     <ScrollArea className="h-[400px]">
                         <McpContentRenderer content={mcpContent} />
                     </ScrollArea>
+                </TabsContent>
+            )}
+
+            {isImageEligible && (
+                <TabsContent value="image" className="border rounded-md p-4 bg-muted/20 flex justify-center">
+                    <img
+                        src={`data:${content[0].mimeType || 'image/png'};base64,${content[0].data}`}
+                        alt="Tool Result"
+                        className="max-w-full max-h-[500px] object-contain rounded-md shadow-sm border"
+                    />
                 </TabsContent>
             )}
 
@@ -216,7 +235,7 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
                 </div>
             </TabsContent>
 
-             {isExtracted && (
+            {isExtracted && (
                 <TabsContent value="raw">
                     <div className="rounded-md overflow-hidden border">
                         <SyntaxHighlighter
