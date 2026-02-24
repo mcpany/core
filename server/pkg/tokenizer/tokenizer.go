@@ -215,7 +215,8 @@ func (r *rawWordCounter) countRecursive(v interface{}, visited map[uintptr]bool)
 
 	// Optimization: Handle []interface{} explicitly to avoid reflection.
 	if s, ok := v.([]interface{}); ok {
-		return countSliceInterface(r, s, visited)
+		// ⚡ BOLT: Optimized path for []interface{}
+		return countSliceInterfaceRaw(r, s, visited)
 	}
 
 	return countTokensReflectGeneric(r, v, visited)
@@ -536,7 +537,9 @@ func countTokensInValueSimple(t *SimpleTokenizer, v interface{}, visited map[uin
 	// Optimization: Handle []interface{} explicitly to avoid reflection.
 	// This is very common for JSON lists.
 	if s, ok := v.([]interface{}); ok {
-		return countSliceInterface(t, s, visited)
+		// ⚡ BOLT: Optimization for []interface{} to avoid recursion overhead.
+		// Randomized Selection from Top 5 High-Impact Targets
+		return countSliceInterfaceSimple(t, s, visited)
 	}
 
 	return countTokensReflectGeneric(t, v, visited)
@@ -899,8 +902,87 @@ func countMapStringInterface[T recursiveTokenizer](t T, m map[string]interface{}
 	return count, nil
 }
 
-func countSliceInterface[T recursiveTokenizer](t T, s []interface{}, visited map[uintptr]bool) (int, error) {
+
+func countSliceInterfaceSimple(st *SimpleTokenizer, s []interface{}, visited map[uintptr]bool) (int, error) {
 	// Cycle detection
+	// OPTIMIZATION: Check if slice is empty first
+	if len(s) == 0 {
+		return 0, nil
+	}
+
+	val := reflect.ValueOf(s)
+	if !val.IsNil() {
+		ptr := val.Pointer()
+		if visited[ptr] {
+			return 0, fmt.Errorf("cycle detected in value")
+		}
+		visited[ptr] = true
+		defer delete(visited, ptr)
+	}
+
+	count := 0
+	var buf [64]byte
+
+	for _, item := range s {
+		// INLINE: Fast path for common types to avoid recursion overhead
+		switch v := item.(type) {
+		case string:
+			c, err := st.CountTokens(v)
+			if err != nil {
+				return 0, err
+			}
+			count += c
+		case float64:
+			if i := int64(v); float64(i) == v {
+				count += simpleTokenizeInt64(i)
+			} else {
+				b := strconv.AppendFloat(buf[:0], v, 'g', -1, 64)
+				c := len(b) / 4
+				if c < 1 {
+					c = 1
+				}
+				count += c
+			}
+		case int:
+			count += simpleTokenizeInt(v)
+		case int64:
+			count += simpleTokenizeInt64(v)
+		case bool:
+			count++
+		case nil:
+			count++
+		case []interface{}:
+			// Recurse using the specialized function
+			c, err := countSliceInterfaceSimple(st, v, visited)
+			if err != nil {
+				return 0, err
+			}
+			count += c
+		case map[string]interface{}:
+			// Recurse using the specialized map function if we had one exposed,
+			// but countMapStringInterface is generic.
+			// Calling st.countRecursive will eventually call countMapStringInterface.
+			c, err := st.countRecursive(item, visited)
+			if err != nil {
+				return 0, err
+			}
+			count += c
+		default:
+			c, err := st.countRecursive(item, visited)
+			if err != nil {
+				return 0, err
+			}
+			count += c
+		}
+	}
+	return count, nil
+}
+
+func countSliceInterfaceRaw(r *rawWordCounter, s []interface{}, visited map[uintptr]bool) (int, error) {
+	if len(s) == 0 {
+		return 0, nil
+	}
+
 	val := reflect.ValueOf(s)
 	if !val.IsNil() {
 		ptr := val.Pointer()
@@ -913,11 +995,25 @@ func countSliceInterface[T recursiveTokenizer](t T, s []interface{}, visited map
 
 	count := 0
 	for _, item := range s {
-		c, err := t.countRecursive(item, visited)
-		if err != nil {
-			return 0, err
+		// INLINE: Fast path for common types
+		switch v := item.(type) {
+		case string:
+			count += countWords(v)
+		case float64, int, int64, bool, nil:
+			count++ // 1 word
+		case []interface{}:
+			c, err := countSliceInterfaceRaw(r, v, visited)
+			if err != nil {
+				return 0, err
+			}
+			count += c
+		default:
+			c, err := r.countRecursive(item, visited)
+			if err != nil {
+				return 0, err
+			}
+			count += c
 		}
-		count += c
 	}
 	return count, nil
 }
