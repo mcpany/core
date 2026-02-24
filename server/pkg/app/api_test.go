@@ -628,6 +628,7 @@ func (m *mockPrompt) Prompt() *mcp.Prompt {
 	return &mcp.Prompt{Name: m.name}
 }
 func (m *mockPrompt) Service() string { return "mock" }
+func (m *mockPrompt) Definition() *configv1.PromptDefinition { return nil }
 func (m *mockPrompt) Get(ctx context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {
 	return &mcp.GetPromptResult{
 		Messages: []*mcp.PromptMessage{
@@ -1085,6 +1086,7 @@ type errorPrompt struct{}
 
 func (e *errorPrompt) Prompt() *mcp.Prompt { return &mcp.Prompt{Name: "error-prompt"} }
 func (e *errorPrompt) Service() string     { return "test" }
+func (e *errorPrompt) Definition() *configv1.PromptDefinition { return nil }
 func (e *errorPrompt) Get(ctx context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {
 	return nil, errors.New("get failed")
 }
