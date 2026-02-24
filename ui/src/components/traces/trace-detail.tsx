@@ -23,6 +23,7 @@ import { analyzeTrace } from "@/lib/diagnostics";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { SequenceDiagram } from "@/components/traces/sequence-diagram";
 import { estimateTokens, calculateCost, formatCost } from "@/lib/tokens";
+import { LogStream } from "@/components/logs/log-stream";
 
 /**
  * SpanIcon component.
@@ -247,6 +248,7 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
                 <div className="px-6 border-b">
                    <TabsList className="bg-transparent border-b-0 p-0 h-auto">
                        <TabsTrigger value="overview" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-2">Overview</TabsTrigger>
+                       <TabsTrigger value="logs" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-2">Logs</TabsTrigger>
                        <TabsTrigger value="payload" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-2">Payload</TabsTrigger>
                    </TabsList>
                 </div>
@@ -330,6 +332,13 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
                             </Card>
                         </div>
                     </ScrollArea>
+                </TabsContent>
+                <TabsContent value="logs" className="flex-1 p-0 overflow-hidden m-0">
+                    <LogStream
+                        traceId={trace.id}
+                        traceStartTime={trace.rootSpan.startTime}
+                        traceEndTime={trace.rootSpan.endTime}
+                    />
                 </TabsContent>
                 <TabsContent value="payload" className="flex-1 p-0 overflow-hidden m-0">
                      <ScrollArea className="h-full p-6">
