@@ -1,31 +1,32 @@
 # Coverage Intervention Report
 
-**Target:** `server/pkg/util/redact_fast.go`
+## Target
+**File:** `server/cmd/mcpctl/doctor.go`
 
 ## Risk Profile
-*   **Selection Criteria:** Identified as "Dark Matter" - high complexity (170 cyclomatic complexity) with **zero direct test coverage**.
-*   **Business Impact:** This component is responsible for redacting sensitive information (passwords, tokens, secrets) from JSON payloads before logging or processing.
-*   **Risk:** Failure in this component could lead to:
-    *   **Data Leakage:** Sensitive PII/credentials leaking into logs.
-    *   **Service Instability:** Malformed JSON handling causing panics or infinite loops in the hot path.
-    *   **Security Vulnerabilities:** Incomplete redaction due to edge cases (escaped characters, unicode).
+**Selection Reason:** High Risk / Critical Maintenance Tool.
+The `doctor` command is the primary diagnostic tool used by administrators when the MCP Any system is malfunctioning. It is responsible for:
+1.  **Configuration Validation:** Loading and checking complex configuration files.
+2.  **Network Connectivity:** Diagnosing connection issues between the CLI and the server.
+3.  **System Health:** Parsing and displaying detailed health reports from the server.
+
+**Prior State:**
+-   **Coverage:** 0% (Untested "Dark Matter").
+-   **Complexity:** High (Handles file I/O, HTTP networking, JSON parsing, and error handling).
+-   **Impact:** Bugs in this tool would leave users blind during outages, unable to diagnose why their system is failing.
 
 ## New Coverage
-Implemented a robust Table-Driven Test suite in `server/pkg/util/redact_fast_test.go` covering:
+**Implemented Defenses:**
+Refactored the code to use Dependency Injection (`DoctorRunner`), enabling robust testing of all logic paths.
 
-1.  **Core Redaction Logic:** Verified redaction of sensitive keys in flat and nested JSON objects and arrays.
-2.  **Escaping Mechanisms:** Extensive testing of JSON string escaping (`\"`, `\\`, mixed sequences) to ensure keys are correctly identified even when escaped.
-3.  **Unicode Handling:** Verified correct handling of Unicode escapes (`\uXXXX`) in keys and values, preventing evasion via encoding.
-4.  **Comments & Whitespace:** Verified the custom parser correctly skips JSON comments (`//`, `/* */`) and whitespace, which are often used to bypass regex-based redactors.
-5.  **Data Types:** Covered redaction for various JSON types: strings, numbers (int, float, scientific), booleans, and nulls.
-6.  **Resilience:** Tested against malformed JSON (unclosed strings, missing values) to ensure the redactor degrades gracefully without crashing or hanging.
-    *   *Observation:* The redactor robustly handles missing values by inserting `"[REDACTED]"`, effectively repairing the structure while hiding potential data.
-7.  **Performance Limits:** Verified behavior with large keys and deep nesting to ensure stack limits and buffer boundaries are handled correctly.
+**Guarded Paths:**
+1.  **Happy Path:** Verifies that a fully healthy system is correctly reported as "OK" with all checks passing.
+2.  **Server Connectivity Failure:** Ensures that if the server is unreachable (e.g., down or network issue), the tool reports a failure and provides a helpful suggestion.
+3.  **Health Endpoint Failure:** Verifies that if the server responds with a 500 error on `/health` or `/doctor`, the tool correctly reports the error.
+4.  **Degraded State:** Verifies that if the server reports a "degraded" status (e.g., database down), the CLI correctly reflects this status and lists the failing components.
+5.  **Address Parsing:** Indirectly tests the logic for parsing `host:port` strings through the test scenarios.
 
 ## Verification
-*   **New Tests:** `go test -v ./server/pkg/util` passed successfully.
-*   **Regression Suite:** Ran tests for dependent packages (`server/pkg/logging`, `server/pkg/mcpserver`, `server/pkg/middleware`, `server/pkg/upstream/sql`) with 100% pass rate.
-*   **Linting:** `make -C server lint` passed cleanly (including `golangci-lint` and `addlicense`).
-
-## Conclusion
-The intervention has transformed `server/pkg/util/redact_fast.go` from a high-risk, untested component into a well-verified, robust utility. The new test suite provides a safety net for future optimizations and refactoring, ensuring that security-critical redaction logic remains correct.
+-   **New Tests:** `go test ./server/cmd/mcpctl/...` passed successfully.
+-   **Regression Testing:** `go test ./server/pkg/...` passed successfully, ensuring no negative impact on the core server logic.
+-   **Build Integrity:** `make gen` was executed to verify that the project builds and generates necessary artifacts (protobufs) correctly.
