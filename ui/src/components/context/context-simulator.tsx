@@ -14,13 +14,17 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Ghost, RefreshCw, Zap } from "lucide-react";
+import { Ghost, RefreshCw } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
+/**
+ * ContextSimulator provides a UI to simulate context reduction by toggling tools.
+ *
+ * @returns The rendered component.
+ */
 export function ContextSimulator() {
     const {
         tools,
-        services,
         disabledToolIds,
         toggleTool,
         enableAll,
@@ -41,7 +45,6 @@ export function ContextSimulator() {
     const savings = totalTokens - projectedTokens;
     const savingsPercent = totalTokens > 0 ? (savings / totalTokens) * 100 : 0;
     const cost = calculateCost(projectedTokens);
-    const costSavings = calculateCost(savings);
 
     return (
         <Card className="h-full flex flex-col border-l rounded-none lg:rounded-lg">

@@ -104,6 +104,11 @@ const CustomTooltip = ({ active, payload }: any) => {
     return null;
 };
 
+/**
+ * ContextTreemap visualizes the context hierarchy as a treemap.
+ *
+ * @returns The rendered component.
+ */
 export function ContextTreemap() {
     const { tools, getToolCost, loading, disabledToolIds } = useRecursiveContext();
 

@@ -29,6 +29,13 @@ interface ContextState {
 
 const ContextContext = createContext<ContextState | undefined>(undefined);
 
+/**
+ * ContextProvider manages the global context state for tools and services.
+ *
+ * @param props - The component props.
+ * @param props.children - The child components.
+ * @returns The context provider.
+ */
 export function ContextProvider({ children }: { children: React.ReactNode }) {
     const [tools, setTools] = useState<ToolDefinition[]>([]);
     const [services, setServices] = useState<UpstreamServiceConfig[]>([]);
@@ -126,6 +133,11 @@ export function ContextProvider({ children }: { children: React.ReactNode }) {
     );
 }
 
+/**
+ * useRecursiveContext is a hook to access the context state.
+ *
+ * @returns The context state.
+ */
 export function useRecursiveContext() {
     const context = useContext(ContextContext);
     if (!context) {
