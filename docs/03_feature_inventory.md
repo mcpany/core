@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **CSRF-Protected Local Gateway**: (P0) Cryptographic origin verification and stateful handshakes for browser-to-local tool calls. Prevents RCE via malicious web pages (Fixes CVE-2026-25253 pattern).
+- **Snapshot-based Context Forking**: (P1) Middleware to allow agents to "fork" session state for speculative execution paths, mapping to Claude's `/fork` capability.
+- **Behavioral Anomaly Detector**: (P1) Sequence-aware monitoring of tool calls to detect and block offensive automation patterns (e.g., HexStrike/ARXON indicators).
+
+### Priority Shifts
+- **MCP Provenance Attestation**: Re-affirmed as **P0**. Critical for preventing malicious tool injection in the wake of HexStrike emergence.
+- **Policy Firewall**: Re-affirmed as **P0**. Necessary for enforcing origin-based restrictions.
+
+### Deprecations / Monitoring
+- **Unauthenticated Local Transport**: Monitoring for full deprecation. All local traffic must transition to verified-origin handshakes.

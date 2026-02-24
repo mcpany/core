@@ -11,6 +11,9 @@
 - [ ] **[P0] Agent Chain Tracer (A2A)**: Visual timeline of multi-agent handoffs and message passing. (Added: 2026-02-26)
 - [ ] **[P1] Federated Node Manager**: UI for peering with remote MCP Any instances and managing shared tool access. (Added: 2026-02-26)
 - [ ] **[P1] Resource Cost/Latency Overlay**: Real-time performance metrics displayed directly on tool cards. (Added: 2026-02-26)
+- [ ] **[P0] CSRF Security Dashboard**: Visualize blocked CSRF attempts and manage authorized origins/tokens. (Added: 2026-02-27)
+- [ ] **[P1] Speculative Branching UI**: Visual DAG of forked agent sessions and tool execution paths. (Added: 2026-02-27)
+- [ ] **[P1] Anomaly Alert System**: Real-time UI notifications for detected behavioral anomalies in tool calls. (Added: 2026-02-27)
 - [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
 - [x] **[P1] Tool Playground & Explorer**:
   - [x] Auto-generated forms from Tool JSON Schemas.
