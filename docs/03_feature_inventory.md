@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Market Update
+
+### Proposed Additions
+- **MCP App UI Proxy**: (P0) A middleware layer that intercepts interactive UI components from MCP Apps and translates them for the target client (Web dashboard, CLI, or Messaging app).
+- **Messaging-Native MCP Gateway**: (P1) Dedicated adapters for WhatsApp, Telegram, and Slack, allowing OpenClaw-style agents to interact with MCP Any as a secure backend.
+- **Risk-Aware Tool Labeling**: (P1) Automated labeling of tools based on their "vulnerability score" derived from global security feeds (e.g., Anthropic's Red Team findings).
+
+### Priority Shifts
+- **A2A Interop Bridge**: Re-affirmed as **P0**. Critical for supporting the explosion of specialized agents needing to coordinate.
+- **MCP Provenance Attestation**: Remains **P0** and promoted to high-urgency due to "Clinejection" trends.
+
+### Deprecations / Monitoring
+- **Local HTTP Tool Loop**: Monitoring for deprecation in favor of isolated named pipes for inter-agent communication.

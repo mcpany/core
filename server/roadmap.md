@@ -24,6 +24,10 @@
 *   **[P0] Supply Chain Integrity Guard**: Cryptographic provenance verification for MCP servers to prevent unauthorized tool injection. (Added: 2026-02-25)
 *   **[P1] FastMCP Metadata Support**: Support for Pythonic FastMCP decorators and native Gemini CLI slash command mapping. (Added: 2026-02-25)
 
+#### Upcoming (2026-02-27 Evolution)
+*   **[P0] MCP App UI Proxy**: Middleware to translate MCP App interactive components for diverse frontends. (Added: 2026-02-27)
+*   **[P1] Messaging-Native MCP Gateway**: Bridge for messaging platforms (OpenClaw style) to interact with MCP tools. (Added: 2026-02-27)
+
 #### Upcoming (2026-02-26 Evolution)
 *   **[P0] A2A Interop Bridge**: Implement Pseudo-MCP wrapper for A2A-compliant agents. (Added: 2026-02-26)
 *   **[P1] Federated MCP Peering**: Distributed node discovery and tool proxying. (Added: 2026-02-26)

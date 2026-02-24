@@ -46,3 +46,10 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+
+### Update: 2026-02-27 - Resolving Messaging-Based Callback Security
+**Context:** The massive growth of OpenClaw and similar messaging-based agents introduces a new challenge: these agents often operate over non-persistent or long-polling connections, making traditional persistent RPC callbacks unreliable.
+**Architecture Adjustment:**
+- **Webhook Callback Bridge**: Introducing an authenticated Webhook-to-A2A bridge. When an A2A agent (the delegate) finishes its task, it posts the result to a unique, short-lived MCP Any Webhook URL.
+- **Polling Fallback**: For environments where Webhooks are blocked, implementing a mailbox-style "Result Retrieval" tool that messaging agents can poll.
+**Security Impact:** Mitigates the risk of session hijacking by using cryptographically signed callback URLs. Each callback is bound to a specific `Trace-ID` and `Session-ID`, ensuring that only the authorized delegate can return results for a specific task.

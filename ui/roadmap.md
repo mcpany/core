@@ -3,6 +3,8 @@
 ## Status: Active Development
 
 ### Universal Agent Bus (New Strategic Priorities)
+- [ ] **[P0] MCP App Interactive Renderer**: Frontend components for rendering dynamic UI from MCP App responses. (Added: 2026-02-27)
+- [ ] **[P1] Messaging Platform Connector**: UI for configuring WhatsApp/Telegram/Slack bridges for agents. (Added: 2026-02-27)
 - [ ] **[P0] Recursive Context Dashboard**: Visualize state inheritance and session tokens across agent swarms. (Added: 2026-02-23)
 - [ ] **[P0] Multi-Agent Session Timeline**: Visual tracking of agent handoffs and shared tool state. (Added: 2026-02-24)
 - [ ] **[P1] Unified Discovery Manager**: UI for managing and auto-discovering MCP servers across transports. (Added: 2026-02-24)
