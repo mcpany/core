@@ -47,3 +47,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **A2A Gateway Protocol**: MCP Any will implement a protocol-neutral bridge for A2A communication, allowing disparate agent frameworks (e.g., OpenClaw, AutoGen) to exchange state and tasks via a unified MCP-like interface.
 - **Federated Tool Mesh**: Moving from a standalone server to a "Mesh" architecture where multiple MCP Any instances can peer and share resources across network boundaries, governed by global Zero-Trust policies.
 - **Resource-Aware Intelligence**: Integrating cost and latency telemetry into the tool discovery process, allowing LLMs to perform "Economical Reasoning" when selecting tools.
+
+---
+
+## Strategic Evolution: [2026-02-27]
+### Focus: Universal A2A Gateway & Latency-Aware Federated Discovery
+**Context**: Today's findings reveal that the bottleneck for agent swarms is shifting from "Tool Execution" to "Agent Coordination" (A2A) and "Distributed Discovery" (Federation). The rise of Moltbook and OpenClaw swarms necessitates a standard way for agents to discover and hand off tasks to each other across heterogeneous frameworks.
+**Strategic Pivot**:
+- **Universal A2A Gateway**: MCP Any will evolve into a primary A2A gateway, allowing any A2A-compliant agent to be "mounted" as a standard MCP tool. This enables cross-framework interoperability (e.g., an OpenClaw agent calling a LangGraph agent via MCP Any).
+- **Latency-Aware Federated Discovery**: To solve the "last-mile" latency in federated meshes, MCP Any will implement predictive discovery and localized caching of tool registries. This ensures that agent reasoning is never blocked by distributed network lookups.
+- **Context-Pruned Handoffs**: Implementing a "Privacy-Preserving Handoff" protocol that automatically prunes sensitive PII or irrelevant context before passing state between specialized agents in a swarm.

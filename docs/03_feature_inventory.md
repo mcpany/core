@@ -65,3 +65,20 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **A2A-to-MCP Adapter**: (P0) A gateway middleware that allows A2A-compliant agents (e.g., OpenClaw, AutoGen) to be registered and invoked as standard MCP tools.
+- **Predictive Federated Registry Sync**: (P1) Background synchronization of tool registries across federated nodes based on historical usage patterns to minimize discovery latency.
+- **Privacy-Preserving Handoff Middleware**: (P1) Automatic PII redaction and context pruning for multi-agent task handoffs.
+- **Social Context Persistence Provider**: (P2) A specialized state provider for OpenClaw agents to manage their "Moltbook" social identity and reputation.
+
+### Priority Shifts
+- **Federated MCP Node Peering**: Promoted to **P0**. Critical for supporting the rapid decentralization of agent swarms.
+- **Cost & Latency Telemetry Middleware**: Promoted to **P0**. Essential for enabling "Latency-Aware Discovery" in federated meshes.
+
+### Deprecations / Monitoring
+- **Centralized Registry Lookups**: Monitoring for deprecation in favor of distributed, peer-to-peer discovery models.
