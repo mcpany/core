@@ -57,3 +57,7 @@ As the number of available MCP tools grows, agents face "context pollution"—wh
 
 ## 7. Evolutionary Changelog
 *   **2026-02-25:** Initial Document Creation.
+*   **2026-02-27: Addressing "Context Smog" via Relevance Scoring**
+    *   **Context**: Feedback from large-scale deployments shows that simple similarity search is not enough. Agents still face "Context Smog" when too many relevant-looking but ultimately useless tools are returned.
+    *   **Architecture Adjustment**: Introducing "Intelligence-Based Relevance Scoring" in Section 4. The search engine will now factor in "Historical Success Rate" (how often this tool actually solved a similar task) and "Intent-Alignment" (using an LLM-based mini-classifier to prune tools that match keywords but not intent).
+    *   **Security Impact**: Reduces the risk of "Tool Shadowing" where a benign-looking tool is chosen over a correct one due to better SEO in its description.
