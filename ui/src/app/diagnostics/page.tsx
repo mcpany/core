@@ -4,6 +4,7 @@
  */
 
 import { SystemHealth } from "@/components/diagnostics/system-health";
+import { DiscoveryStatus } from "@/components/diagnostics/discovery-status";
 
 /**
  * DiagnosticsPage component.
@@ -19,7 +20,8 @@ export default function DiagnosticsPage() {
         </div>
       </div>
 
-      <div className="flex-1 overflow-auto rounded-md border bg-muted/10 p-4">
+      <div className="flex-1 overflow-auto rounded-md border bg-muted/10 p-4 space-y-6">
+           <DiscoveryStatus />
            <SystemHealth />
       </div>
     </div>
