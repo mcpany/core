@@ -30,7 +30,7 @@ type BroadcastHandler struct {
 	attrs       []slog.Attr
 	groups      []string
 	mu          sync.Mutex
-	level       slog.Level
+	level       slog.Leveler
 }
 
 // NewBroadcastHandler creates a new BroadcastHandler.
@@ -39,7 +39,7 @@ type BroadcastHandler struct {
 // level is the minimum log level to broadcast.
 //
 // Returns the result.
-func NewBroadcastHandler(broadcaster *Broadcaster, level slog.Level) *BroadcastHandler {
+func NewBroadcastHandler(broadcaster *Broadcaster, level slog.Leveler) *BroadcastHandler {
 	return &BroadcastHandler{
 		broadcaster: broadcaster,
 		level:       level,
@@ -53,7 +53,7 @@ func NewBroadcastHandler(broadcaster *Broadcaster, level slog.Level) *BroadcastH
 //
 // Returns true if successful.
 func (h *BroadcastHandler) Enabled(_ context.Context, level slog.Level) bool {
-	return level >= h.level
+	return level >= h.level.Level()
 }
 
 // Handle handles the log record by converting it to LogEntry and broadcasting it.

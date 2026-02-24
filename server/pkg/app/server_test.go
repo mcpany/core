@@ -2600,6 +2600,57 @@ func TestRunServerMode_Auth(t *testing.T) {
 	<-errChan
 }
 
+func TestHealthEndpointAlias(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	l, err := net.Listen("tcp", "127.0.0.1:0")
+	require.NoError(t, err)
+	addr := l.Addr().String()
+	_ = l.Close()
+
+	// Minimal config
+	configContent := `
+global_settings:
+  log_level: INFO
+upstream_services: []
+`
+	err = afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
+	require.NoError(t, err)
+
+	app := NewApplication()
+	mockStore := new(MockStore)
+	mockStore.On("Load", mock.Anything).Return((*configv1.McpAnyServerConfig)(nil), nil)
+	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
+	mockStore.On("GetGlobalSettings", mock.Anything).Return(configv1.GlobalSettings_builder{}.Build(), nil)
+	mockStore.On("ListUsers", mock.Anything).Return([]*configv1.User{}, nil)
+	mockStore.On("Close").Return(nil)
+	app.Storage = mockStore
+
+	errChan := make(chan error, 1)
+	go func() {
+		errChan <- app.Run(RunOptions{Ctx: ctx, Fs: fs, Stdio: false, JSONRPCPort: addr, GRPCPort: "", ConfigPaths: []string{"/config.yaml"}, APIKey: "", ShutdownTimeout: 5 * time.Second})
+	}()
+
+	waitForServerReady(t, addr)
+
+	// Test /healthz
+	resp, err := http.Get("http://" + addr + "/healthz")
+	require.NoError(t, err)
+	resp.Body.Close()
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+
+	// Test /health (Alias)
+	resp, err = http.Get("http://" + addr + "/health")
+	require.NoError(t, err)
+	resp.Body.Close()
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+
+	cancel()
+	<-errChan
+}
+
 func TestAuthMiddleware_LocalhostSecurity(t *testing.T) {
 	app := NewApplication()
 	app.SettingsManager = NewGlobalSettingsManager("", nil, nil)
