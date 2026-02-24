@@ -65,3 +65,15 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-24] Supplemental Updates
+
+### Proposed Additions
+- **AI-BOM Generator Middleware**: (P0) Automatically generates a cryptographically signed Bill of Materials for all components used in an agent session. Critical for supply chain security.
+- **Provenance-Aware Tool Discovery**: (P0) Middleware that filters discovered tools based on the cryptographic attestation of the upstream MCP server.
+- **Skill-Sandbox Integration**: (P1) Support for executing third-party MCP tools (especially OpenClaw skills) within an isolated, resource-constrained container.
+
+### Priority Shifts
+- **MCP Provenance Attestation**: Promoted to **P0** (Previously P1 in some contexts, now globally P0 due to current crisis).

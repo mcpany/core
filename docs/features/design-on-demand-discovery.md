@@ -57,3 +57,7 @@ As the number of available MCP tools grows, agents face "context pollution"—wh
 
 ## 7. Evolutionary Changelog
 *   **2026-02-25:** Initial Document Creation.
+*   **2026-02-24:** Supplemental Update - Provenance-Aware Discovery.
+    - **Context**: The Clinejection crisis requires that discovery results are filtered by provenance.
+    - **Architecture Adjustment**: The `mcpany_search_tools` tool will now return an `attestation` field for each tool, verifying its origin.
+    - **Security Impact**: Prevents "Toxic Flow" by ensuring the LLM only selects tools from verified, cryptographically signed MCP servers.

@@ -29,6 +29,11 @@
 *   **[P1] Federated MCP Peering**: Distributed node discovery and tool proxying. (Added: 2026-02-26)
 *   **[P1] Resource Telemetry Middleware**: Inject latency/cost metrics into tool schemas. (Added: 2026-02-26)
 
+#### Upcoming (2026-02-24 Supplemental Evolution)
+*   **[P0] AI-BOM Generator Middleware**: Automatically generates cryptographically signed Bill of Materials for agent sessions. (Added: 2026-02-24)
+*   **[P0] Zero-Trust Subagent Scoping**: Dynamic capability-bound tokens for subagent isolation. (Added: 2026-02-24)
+*   **[P1] Skill-Sandbox Integration**: Isolated containerized execution for third-party MCP tools. (Added: 2026-02-24)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

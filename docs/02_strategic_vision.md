@@ -47,3 +47,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **A2A Gateway Protocol**: MCP Any will implement a protocol-neutral bridge for A2A communication, allowing disparate agent frameworks (e.g., OpenClaw, AutoGen) to exchange state and tasks via a unified MCP-like interface.
 - **Federated Tool Mesh**: Moving from a standalone server to a "Mesh" architecture where multiple MCP Any instances can peer and share resources across network boundaries, governed by global Zero-Trust policies.
 - **Resource-Aware Intelligence**: Integrating cost and latency telemetry into the tool discovery process, allowing LLMs to perform "Economical Reasoning" when selecting tools.
+
+---
+
+## Strategic Evolution: [2026-02-24] (Supplemental)
+### Focus: Supply Chain Integrity & Automated AI-BOM
+**Context**: The OpenClaw security crisis and the "Clinejection" attack pattern have exposed the vulnerability of unverified MCP toolchains. MCP Any must pivot to be the primary auditor of agentic supply chains.
+**Strategic Pivot**:
+- **Automated AI-BOM Generation**: MCP Any will automatically generate a cryptographically signed Bill of Materials (AI-BOM) for every agent session, tracking all models, tools, and MCP servers involved.
+- **Provenance-First Discovery**: Moving from "any-tool" discovery to "attested-tool" discovery, where tool calls are rejected if the upstream MCP server cannot provide a valid provenance signature.
+- **Intent-Aware Governance**: Enhancing the Policy Engine to correlate tool calls with the high-level intent signature of the agent, preventing "Toxic Flows" from unauthorized subagents.
