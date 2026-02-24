@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useCallback, useEffect } from "react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle2, XCircle, Clock, ArrowRight, Activity, Loader2 } from "lucide-react";
 import { apiClient } from "@/lib/client";
 import { cn } from "@/lib/utils";
+import { usePolling } from "@/hooks/use-polling";
 
 const formatTime = (timestamp: string) => {
   const date = new Date(timestamp);
@@ -43,7 +44,7 @@ export function RecentActivityWidget() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchTraces = async () => {
+  const fetchTraces = useCallback(async () => {
     try {
       const data = await apiClient.getTraces({ limit: 5 });
       // ⚡ BOLT: Explicitly slice data to prevent rendering thousands of items if backend ignores limit.
@@ -56,32 +57,17 @@ export function RecentActivityWidget() {
     } finally {
       setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    fetchTraces();
-    const interval = setInterval(fetchTraces, 5000);
-    return () => clearInterval(interval);
   }, []);
 
-  const formatTime = (timestamp: string) => {
-      const date = new Date(timestamp);
-      const now = new Date();
-      const diffMs = now.getTime() - date.getTime();
-      const diffSec = Math.floor(diffMs / 1000);
-      const diffMin = Math.floor(diffSec / 60);
+  // ⚡ BOLT: Smart polling using Page Visibility API.
+  // Stops polling when the tab is hidden to save bandwidth and resources.
+  // Randomized Selection from Top 5 High-Impact Targets
+  usePolling(fetchTraces, 5000);
 
-      if (diffSec < 60) return "Just now";
-      if (diffMin < 60) return `${diffMin}m ago`;
-      const diffHour = Math.floor(diffMin / 60);
-      if (diffHour < 24) return `${diffHour}h ago`;
-      return date.toLocaleDateString();
-  };
-
-  const getDurationColor = (ms: number) => {
-      if (ms > 1000) return "text-amber-500";
-      return "text-muted-foreground";
-  };
+  // Initial fetch on mount
+  useEffect(() => {
+      fetchTraces();
+  }, [fetchTraces]);
 
   return (
     <Card className="col-span-3 backdrop-blur-sm bg-background/50">
