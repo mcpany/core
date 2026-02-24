@@ -12,6 +12,9 @@
 ### Status: Active Development
 
 #### Upcoming (2026-02-23 Evolution)
+* **[P0] Secret Masking Middleware**: Automated redaction of sensitive tokens in logs/traces (Added: 2026-02-24).
+* **[P1] Agent Heartbeat Protocol**: Standardized health checks for autonomous swarms (Added: 2026-02-24).
+* **[P1] Cross-Sandbox State Anchor**: Secure state synchronization between local and cloud sandboxes (Added: 2026-02-24).
 *   **[P0] Recursive Context Protocol**: Finalize header-based context inheritance for swarms.
 *   **[P0] Zero-Trust Subagent Scoping**: Implement intent-bound capability tokens.
 *   **[P1] Environment Bridging Middleware**: Secure state sync between cloud sandboxes and local tools.

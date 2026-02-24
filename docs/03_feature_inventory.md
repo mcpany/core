@@ -65,3 +65,16 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-24] Updates
+
+### Proposed Additions
+- **Secret Masking Middleware**: (P0) High-performance interceptor that redacts API keys, PII, and sensitive tokens from logs, traces, and tool outputs. Essential for complying with OWASP MCP Top 10.
+- **Agent Heartbeat Protocol**: (P1) Standardized health check API for autonomous agents. Enables MCP Any to monitor long-running swarm sessions and restart failed components.
+- **Cross-Sandbox State Anchor**: (P1) Secure synchronization layer for bridging state between local MCP Any and cloud-based agent sandboxes (e.g., Gemini CLI).
+
+### Priority Shifts
+- **MCP Provenance Attestation**: Confirmed as **P0** to mitigate supply chain risks identified in recent ecosystem audits.
+- **A2A Interop Bridge**: Confirmed as **P0** to support the rapid adoption of agent-to-agent communication protocols.

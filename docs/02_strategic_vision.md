@@ -47,3 +47,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **A2A Gateway Protocol**: MCP Any will implement a protocol-neutral bridge for A2A communication, allowing disparate agent frameworks (e.g., OpenClaw, AutoGen) to exchange state and tasks via a unified MCP-like interface.
 - **Federated Tool Mesh**: Moving from a standalone server to a "Mesh" architecture where multiple MCP Any instances can peer and share resources across network boundaries, governed by global Zero-Trust policies.
 - **Resource-Aware Intelligence**: Integrating cost and latency telemetry into the tool discovery process, allowing LLMs to perform "Economical Reasoning" when selecting tools.
+
+---
+
+## Strategic Evolution: [2026-02-24] (Update)
+### Focus: Secret Sovereignty & Persistent Swarm Resilience
+**Context**: Latest findings from the OWASP MCP Top 10 and OpenClaw's heartbeat system indicate that as swarms become more autonomous and long-running, they are increasingly vulnerable to "Secret Bleed" (exposure in logs) and "Session Decay" (lack of health monitoring).
+**Strategic Pivot**:
+- **Secret Masking Sovereignty**: MCP Any will implement a Zero-Trust middleware that automatically identifies and masks sensitive tokens (API keys, Bearer tokens) in all outgoing logs, traces, and model context, ensuring secrets never leave the secure boundary.
+- **Heartbeat-as-a-Service**: Introducing a standardized health check protocol for MCP servers and agents. MCP Any will act as the "keep-alive" hub, monitoring agent vitality and triggering automatic recovery or alerting for crashed subagents.
+- **Cross-Sandbox Context Anchoring**: As agents bridge between local tools and remote sandboxes (Gemini/Claude), MCP Any will serve as the "State Anchor," ensuring that context is not just passed but verified and secured across environment boundaries.

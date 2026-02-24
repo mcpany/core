@@ -23,3 +23,8 @@ Today's research highlights a significant push toward multi-agent coordination a
 *   **Context Inheritance**: Subagents often lose the "intent" or "scoped state" of the parent agent.
 *   **Discovery Friction**: Manually configuring dozens of MCP servers across different environments is a major developer friction point.
 *   **Security Vulnerabilities**: Local file access by subagents remains a concern, necessitating "Zero Trust" boundaries.
+
+### [Update: 2026-02-24 PM] - Persistent Agent Health & Secret Exposure Risks
+- **OpenClaw Evolution**: Integration of "Agent Heartbeats" for long-running sessions. Agents now perform scheduled "rituals" (heartbeats) to check sensors and flag anomalies without user intervention.
+- **Gemini CLI + Claude Code**: Emerging "background agent" patterns where Gemini CLI acts as a sandbox execution provider for Claude Code. This increases the need for secure, cross-environment context bridging.
+- **OWASP MCP Top 10 (Dec 2025 Release)**: New high-priority risk: **Token Mismanagement & Secret Exposure**. Secrets are being leaked through model memory, protocol logs, and debugging traces during complex agent-to-agent handoffs.

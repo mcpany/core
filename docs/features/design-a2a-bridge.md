@@ -46,3 +46,11 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+
+### Update: 2026-02-24 - Heartbeat-Driven Persistence
+**Context**: Today's research on OpenClaw reveals the importance of "Heartbeats" for long-running autonomous sessions.
+**Architecture Adjustment**:
+*   Added `HeartbeatMonitor` to the `A2ABridgeMiddleware`.
+*   A2A agents can now send periodic "Keep-Alive" heartbeats to MCP Any to maintain session state.
+*   MCP Any will automatically trigger a "Task Re-assignment" if a delegated A2A agent misses 3 consecutive heartbeats.
+**Security Impact**: Ensures that zombie agents don't hold locks on shared resources in the `Shared KV Store`.
