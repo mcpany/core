@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { AlertCircle, CheckCircle2, Clock, ChevronDown, ChevronRight, Activity, Terminal, Code, Cpu, Database, Globe, Play, Download, Copy, Lightbulb, AlertTriangle, Coins } from "lucide-react";
+import { AlertCircle, CheckCircle2, Clock, ChevronDown, ChevronRight, Activity, Terminal, Code, Cpu, Database, Globe, Play, Download, Copy, Lightbulb, AlertTriangle, Coins, RefreshCcw } from "lucide-react";
 import { Trace, Span, SpanStatus } from "@/types/trace";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -24,6 +24,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { SequenceDiagram } from "@/components/traces/sequence-diagram";
 import { estimateTokens, calculateCost, formatCost } from "@/lib/tokens";
 import { LogStream } from "@/components/logs/log-stream";
+import { ReplayDiffDialog } from "@/components/traces/replay-diff-dialog";
 
 /**
  * SpanIcon component.
@@ -150,6 +151,7 @@ function WaterfallItem({
 export function TraceDetail({ trace }: { trace: Trace | null }) {
     const router = useRouter();
     const { toast } = useToast();
+    const [isReplayOpen, setIsReplayOpen] = useState(false);
 
     if (!trace) {
         return (
@@ -226,14 +228,24 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
                 </div>
                 <div className="flex gap-2">
                     {trace.rootSpan.type === 'tool' && (
-                        <Button
-                            variant="default"
-                            size="sm"
-                            onClick={() => handleReplay(trace.rootSpan.name, trace.rootSpan.input)}
-                            className="gap-2"
-                        >
-                            <Play className="h-3 w-3" /> Replay in Playground
-                        </Button>
+                        <>
+                            <Button
+                                variant="default"
+                                size="sm"
+                                onClick={() => setIsReplayOpen(true)}
+                                className="gap-2"
+                            >
+                                <RefreshCcw className="h-3 w-3" /> Replay & Diff
+                            </Button>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleReplay(trace.rootSpan.name, trace.rootSpan.input)}
+                                className="gap-2"
+                            >
+                                <Play className="h-3 w-3" /> Replay in Playground
+                            </Button>
+                        </>
                     )}
                     <Button variant="outline" size="sm" onClick={handleCopyJSON} className="gap-2">
                         <Copy className="h-3 w-3" /> Copy
@@ -359,6 +371,12 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
                      </ScrollArea>
                 </TabsContent>
             </Tabs>
+
+            <ReplayDiffDialog
+                open={isReplayOpen}
+                onOpenChange={setIsReplayOpen}
+                trace={trace}
+            />
         </div>
     );
 }

@@ -12,25 +12,27 @@ import { useTheme } from "next-themes";
 interface DiffViewerProps {
     original: string;
     modified: string;
+    language?: string;
 }
 
 /**
- * DiffViewer component for comparing YAML configurations.
+ * DiffViewer component for comparing configurations (YAML/JSON).
  * Uses Monaco Diff Editor.
  *
  * @param props - The component props.
- * @param props.original - The original YAML string.
- * @param props.modified - The modified YAML string.
+ * @param props.original - The original content string.
+ * @param props.modified - The modified content string.
+ * @param props.language - The language for syntax highlighting (default: "yaml").
  * @returns The rendered diff editor.
  */
-export function DiffViewer({ original, modified }: DiffViewerProps) {
+export function DiffViewer({ original, modified, language = "yaml" }: DiffViewerProps) {
     const { theme } = useTheme();
 
     return (
         <div className="h-[500px] border rounded-md overflow-hidden">
             <DiffEditor
                 height="100%"
-                language="yaml"
+                language={language}
                 original={original}
                 modified={modified}
                 theme={theme === "dark" ? "vs-dark" : "light"}
@@ -38,7 +40,6 @@ export function DiffViewer({ original, modified }: DiffViewerProps) {
                     minimap: { enabled: false },
                     scrollBeyondLastLine: false,
                     fontSize: 12,
-                    tabSize: 2,
                     wordWrap: "on",
                     readOnly: true,
                     renderSideBySide: true
