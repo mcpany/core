@@ -34,10 +34,8 @@ type Router struct {
 
 // NewRouter creates and returns a new, empty Router.
 //
-// Summary: Creates a new Router.
-//
-// Returns:
-//   - *Router: A pointer to a new, initialized Router.
+// Side Effects:
+//   - None.
 func NewRouter() *Router {
 	return &Router{
 		handlers: make(map[string]MethodHandler),
@@ -46,14 +44,8 @@ func NewRouter() *Router {
 
 // Register associates a handler function with a specific MCP method name.
 //
-// Summary: Registers a handler for an MCP method.
-//
-// Parameters:
-//   - method (string): The name of the MCP method (e.g., "tools/call").
-//   - handler (MethodHandler): The function that will handle the method call.
-//
-// Side Effects:
-//   - If a handler for the method already exists, it will be overwritten.
+// Returns:
+//   - None.
 func (r *Router) Register(method string, handler MethodHandler) {
 	r.handlers[method] = handler
 }

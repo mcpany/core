@@ -71,12 +71,8 @@ func NewSkillAssetResource(s *skill.Skill, assetPath string) *SkillResource {
 
 // URI returns the URI of the resource.
 //
-// Constructs a unique URI for the resource using the scheme "skills://".
-// For the main skill documentation, the URI is "skills://<skill_name>/SKILL.md".
-// For assets, the URI is "skills://<skill_name>/<asset_path>".
-//
-// Returns:
-//   - string: The unique URI of the resource.
+// Side Effects:
+//   - None.
 func (r *SkillResource) URI() string {
 	if r.assetPath == "" {
 		return fmt.Sprintf("skills://%s/SKILL.md", r.skill.Name)
@@ -86,8 +82,8 @@ func (r *SkillResource) URI() string {
 
 // Name returns the human-readable name of the resource.
 //
-// Returns:
-//   - string: The name of the resource, including the skill name and asset path if applicable.
+// Side Effects:
+//   - None.
 func (r *SkillResource) Name() string {
 	if r.assetPath == "" {
 		return fmt.Sprintf("Skill: %s", r.skill.Name)
@@ -97,20 +93,16 @@ func (r *SkillResource) Name() string {
 
 // Service returns the service identifier associated with the resource.
 //
-// All skill resources belong to the "skills" service.
-//
-// Returns:
-//   - string: The fixed string "skills".
+// Side Effects:
+//   - None.
 func (r *SkillResource) Service() string {
 	return "skills"
 }
 
 // Resource returns the underlying MCP resource definition.
 //
-// It constructs the mcp.Resource object, determining the MIME type based on the file extension.
-//
-// Returns:
-//   - *mcp.Resource: The MCP resource definition.
+// Side Effects:
+//   - None.
 func (r *SkillResource) Resource() *mcp.Resource {
 	mimeType := "text/markdown"
 	if r.assetPath != "" {

@@ -26,10 +26,8 @@ type RootsTool struct {
 
 // NewRootsTool creates a new instance of the RootsTool.
 //
-// It initializes the tool definition including its schema and service ID.
-//
-// Returns:
-//   - *RootsTool: A pointer to the initialized RootsTool.
+// Side Effects:
+//   - None.
 func NewRootsTool() *RootsTool {
 	inputSchema := &structpb.Struct{
 		Fields: map[string]*structpb.Value{
@@ -53,16 +51,16 @@ func NewRootsTool() *RootsTool {
 
 // Tool returns the protobuf definition of the tool.
 //
-// Returns:
-//   - *v1.Tool: The protobuf tool definition.
+// Side Effects:
+//   - None.
 func (t *RootsTool) Tool() *v1.Tool {
 	return t.tool
 }
 
 // MCPTool returns the MCP-compliant tool definition.
 //
-// Returns:
-//   - *mcp.Tool: The MCP tool definition.
+// Side Effects:
+//   - None.
 func (t *RootsTool) MCPTool() *mcp.Tool {
 	return t.mcpTool
 }
@@ -95,8 +93,8 @@ func (t *RootsTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any,
 
 // GetCacheConfig returns the caching configuration for this tool.
 //
-// Returns:
-//   - *configv1.CacheConfig: Always nil, as this tool depends on client state and should not be cached.
+// Side Effects:
+//   - None.
 func (t *RootsTool) GetCacheConfig() *configv1.CacheConfig {
 	return nil
 }

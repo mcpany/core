@@ -24,13 +24,18 @@ type LocalProvider struct {
 
 // NewLocalProvider creates a new LocalProvider from the given configuration.
 //
-// _ is an unused parameter.
-// rootPaths is the rootPaths.
-// allowedPaths is the allowedPaths.
-// deniedPaths is the deniedPaths.
-// symlinkMode is the symlinkMode.
+// Parameters:
+//   - _ (*configv1.OsFs): The parameter.
+//   - rootPaths (map[string]string): The parameter.
+//   -  (allowedPaths): The parameter.
+//   - deniedPaths ([]string): The parameter.
+//   - symlinkMode (configv1.FilesystemUpstreamService_SymlinkMode): The parameter.
 //
-// Returns the result.
+// Returns:
+//   - *LocalProvider: The result.
+//
+// Side Effects:
+//   - None.
 func NewLocalProvider(_ *configv1.OsFs, rootPaths map[string]string, allowedPaths, deniedPaths []string, symlinkMode configv1.FilesystemUpstreamService_SymlinkMode) *LocalProvider {
 	return &LocalProvider{
 		fs:           afero.NewOsFs(),
@@ -43,17 +48,29 @@ func NewLocalProvider(_ *configv1.OsFs, rootPaths map[string]string, allowedPath
 
 // GetFs returns the underlying filesystem.
 //
-// Returns the result.
+// Returns:
+//   - afero.Fs: The result.
+//
+// Side Effects:
+//   - None.
 func (p *LocalProvider) GetFs() afero.Fs {
 	return p.fs
 }
 
 // ResolvePath resolves the virtual path to a real path in the local filesystem.
 //
-// virtualPath is the virtualPath.
+// Parameters:
+//   - virtualPath (string): The parameter.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//   - string: The result.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
 func (p *LocalProvider) ResolvePath(virtualPath string) (string, error) {
 	if len(p.rootPaths) == 0 {
 		return "", fmt.Errorf("no root paths defined")
@@ -305,7 +322,14 @@ func (p *LocalProvider) containsSymlink(virtualPath, bestMatchVirtual, bestMatch
 
 // Close closes the provider.
 //
-// Returns an error if the operation fails.
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
 func (p *LocalProvider) Close() error {
 	return nil
 }

@@ -57,11 +57,8 @@ func ValidateConfigAgainstSchema(rawConfig map[string]interface{}) error {
 
 // GenerateJSONSchemaBytes returns the JSON schema for McpAnyServerConfig as a byte slice.
 //
-// Summary: Generates the JSON schema for the server configuration.
-//
-// Returns:
-//   - []byte: The JSON schema bytes.
-//   - error: An error if schema generation fails.
+// Side Effects:
+//   - None.
 func GenerateJSONSchemaBytes() ([]byte, error) {
 	cfg := configv1.McpAnyServerConfig_builder{}.Build()
 	schemaMap := GenerateSchemaMapFromProto(cfg.ProtoReflect())

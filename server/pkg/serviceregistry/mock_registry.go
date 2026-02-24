@@ -53,11 +53,8 @@ func (m *MockServiceRegistry) UnregisterService(ctx context.Context, serviceName
 
 // GetAllServices returns a list of all currently registered services.
 //
-// Summary: Mock implementation of GetAllServices.
-//
-// Returns:
-//   - []*configv1.UpstreamServiceConfig: A list of service configurations.
-//   - error: An error if retrieval fails.
+// Side Effects:
+//   - None.
 func (m *MockServiceRegistry) GetAllServices() ([]*configv1.UpstreamServiceConfig, error) {
 	args := m.Called()
 	if args.Get(0) == nil {

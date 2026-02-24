@@ -30,16 +30,28 @@ type Upstream struct {
 
 // NewUpstream creates a new SQL upstream.
 //
-// Returns the result.
+// Returns:
+//   - *Upstream: The result.
+//
+// Side Effects:
+//   - None.
 func NewUpstream() *Upstream {
 	return &Upstream{}
 }
 
 // Shutdown closes the database connection.
 //
-// _ is an unused parameter.
+// Parameters:
+//   - _ (context.Context): The parameter.
 //
-// Returns an error if the operation fails.
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()

@@ -34,17 +34,6 @@ type Watcher struct {
 
 // NewWatcher creates a new file watcher.
 //
-// Summary: Creates a new Watcher instance.
-//
-// Returns:
-//   - *Watcher: A pointer to a new Watcher.
-//   - error: An error if the watcher creation fails.
-//
-// Errors:
-//   - Returns an error if fsnotify.NewWatcher fails.
-//
-// Side Effects:
-//   - Allocates resources for file watching.
 func NewWatcher() (*Watcher, error) {
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
@@ -188,14 +177,8 @@ func (w *Watcher) Watch(paths []string, reloadFunc func()) error {
 
 // Close stops the file watcher and releases resources.
 //
-// Summary: Stops the file watcher.
-//
-// Returns:
-//   None.
-//
-// Side Effects:
-//   - Closes the done channel, unblocking Watch.
-//   - Closes the underlying fsnotify watcher.
+// Parameters:
+//   - None.
 func (w *Watcher) Close() {
 	close(w.done)
 	_ = w.watcher.Close()

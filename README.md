@@ -23,30 +23,17 @@ Follow these steps to get up and running with MCP Any immediately.
 *   `make` (for build automation)
 *   [Docker](https://docs.docker.com/get-docker/) (optional, for containerized run)
 
-### Installation
+### One-Shot Setup
 
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/mcpany/core.git
-    cd core
-    ```
+The exact commands to clone, install dependencies, and run the app:
 
-2.  **Prepare dependencies:**
-    ```bash
-    make prepare
-    ```
-    This command installs necessary tools (protoc, linter, hooks) into `build/env/bin`.
-
-3.  **Build the server:**
-    ```bash
-    make build
-    ```
-    This compiles the source and places the `server` binary in `build/bin/`.
-
-4.  **Run with an example configuration:**
-    ```bash
-    ./build/bin/server run --config-path server/config.minimal.yaml
-    ```
+```bash
+git clone https://github.com/mcpany/core.git
+cd core
+make prepare
+make build
+./build/bin/server run --config-path server/config.minimal.yaml
+```
 
 ### Hello World
 

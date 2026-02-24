@@ -41,6 +41,18 @@ type Upstream struct {
 }
 
 // CheckHealth performs a health check on the upstream service.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
 func (u *Upstream) CheckHealth(ctx context.Context) error {
 	u.mu.RLock()
 	checker := u.checker
