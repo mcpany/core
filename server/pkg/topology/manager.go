@@ -86,10 +86,17 @@ type TrafficPoint struct {
 
 // NewManager creates a new Topology Manager.
 //
-// registry is the registry.
-// tm is the tm.
+// Summary: Creates a new Topology Manager instance.
 //
-// Returns the result.
+// Parameters:
+//   - registry (serviceregistry.ServiceRegistryInterface): The service registry interface.
+//   - tm (tool.ManagerInterface): The tool manager interface.
+//
+// Returns:
+//   - *Manager: A new instance of the Topology Manager.
+//
+// Side Effects:
+//   - Starts the background process loop.
 func NewManager(registry serviceregistry.ServiceRegistryInterface, tm tool.ManagerInterface) *Manager {
 	m := &Manager{
 		sessions:        make(map[string]*SessionStats),
@@ -232,9 +239,18 @@ func (m *Manager) handleActivity(event activityEvent) {
 // ⚡ BOLT: Offloaded to asynchronous channel to prevent blocking the request path.
 // Randomized Selection from Top 5 High-Impact Targets
 //
-// sessionID is the sessionID.
-// meta is the meta.
-// serviceID is the serviceID (optional).
+// Summary: Records a new activity event for a session.
+//
+// Parameters:
+//   - sessionID (string): The unique identifier of the session.
+//   - meta (map[string]interface{}): Metadata associated with the activity.
+//   - latency (time.Duration): The duration of the operation.
+//   - isError (bool): Whether the operation resulted in an error.
+//   - serviceID (string): The identifier of the service involved (optional).
+//   - responseLen (int64): The length of the response in bytes.
+//
+// Side Effects:
+//   - Sends an activity event to the processing channel (non-blocking).
 func (m *Manager) RecordActivity(sessionID string, meta map[string]interface{}, latency time.Duration, isError bool, serviceID string, responseLen int64) {
 	// ⚡ BOLT: Shallow copy meta to prevent race conditions as map is passed by reference
 	metaCopy := make(map[string]interface{}, len(meta))
@@ -259,12 +275,30 @@ func (m *Manager) RecordActivity(sessionID string, meta map[string]interface{}, 
 }
 
 // Close stops the background worker.
+//
+// Summary: gracefully shuts down the Topology Manager.
+//
+// Parameters:
+//   - None.
+//
+// Side Effects:
+//   - Closes the shutdown channel, stopping the background loop.
 func (m *Manager) Close() {
 	close(m.shutdownCh)
 }
 
 // GetStats returns the aggregated stats.
-// serviceID is optional.
+//
+// Summary: Retrieves aggregated statistics, optionally filtered by service ID.
+//
+// Parameters:
+//   - serviceID (string): The service ID to filter by (optional).
+//
+// Returns:
+//   - Stats: The aggregated statistics.
+//
+// Side Effects:
+//   - None.
 func (m *Manager) GetStats(serviceID string) Stats {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -305,10 +339,18 @@ func (m *Manager) GetStats(serviceID string) Stats {
 // GetRecentServiceStats returns the aggregated statistics for a service over a given time window.
 // It uses trafficHistory which stores minute-level stats.
 //
-// serviceID is the serviceID.
-// window is the window.
+// Summary: Calculates recent statistics for a service within a time window.
 //
-// Returns the avgLatency and errorRate.
+// Parameters:
+//   - serviceID (string): The service ID to calculate stats for.
+//   - window (time.Duration): The time window to look back.
+//
+// Returns:
+//   - avgLatency (time.Duration): The average latency over the window.
+//   - errorRate (float64): The error rate over the window.
+//
+// Side Effects:
+//   - None.
 func (m *Manager) GetRecentServiceStats(serviceID string, window time.Duration) (avgLatency time.Duration, errorRate float64) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -351,7 +393,17 @@ func (m *Manager) GetRecentServiceStats(serviceID string, window time.Duration) 
 }
 
 // GetTrafficHistory returns the traffic history for the last 24 hours.
-// serviceID is optional.
+//
+// Summary: Retrieves traffic history points for the last hour (minute granularity).
+//
+// Parameters:
+//   - serviceID (string): The service ID to filter by (optional).
+//
+// Returns:
+//   - []TrafficPoint: A slice of traffic data points.
+//
+// Side Effects:
+//   - None.
 func (m *Manager) GetTrafficHistory(serviceID string) []TrafficPoint {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -407,6 +459,15 @@ func (m *Manager) GetTrafficHistory(serviceID string) []TrafficPoint {
 
 // SeedTrafficHistory allows seeding the traffic history with external data.
 // This is primarily for testing and debugging purposes.
+//
+// Summary: Seeds the traffic history with provided data points.
+//
+// Parameters:
+//   - points ([]TrafficPoint): The traffic data points to seed.
+//
+// Side Effects:
+//   - Modifies the internal traffic history state.
+//   - Updates the "seed-data" session stats.
 func (m *Manager) SeedTrafficHistory(points []TrafficPoint) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -466,9 +527,16 @@ func (m *Manager) SeedTrafficHistory(points []TrafficPoint) {
 
 // GetGraph generates the current topology graph.
 //
-// _ is an unused parameter.
+// Summary: Constructs the network topology graph.
 //
-// Returns the result.
+// Parameters:
+//   - _ (context.Context): Unused context parameter.
+//
+// Returns:
+//   - *topologyv1.Graph: The constructed topology graph.
+//
+// Side Effects:
+//   - Fetches all services and tools (may involve I/O).
 func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
 	// ⚡ BOLT: Fetch external data OUTSIDE lock to prevent blocking the event loop.
 	// Randomized Selection from Top 5 High-Impact Targets

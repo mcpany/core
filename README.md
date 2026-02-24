@@ -150,6 +150,14 @@ Regenerate Protocol Buffers and other auto-generated files if you modify `.proto
 make gen
 ```
 
+### UI Development
+To work on the frontend dashboard (Next.js):
+```bash
+cd ui
+npm install
+npm run dev
+```
+
 ## Configuration
 
 MCP Any is configured via environment variables and YAML/JSON configuration files. This allows for flexible deployment across different environments.
