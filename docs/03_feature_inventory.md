@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **MoltHandoff Adapter (A2A)**: (P0) Implements the OpenClaw handoff protocol, allowing agents to transfer tasks and state to specialized peers securely.
+- **Verified MCP Registry Proxy**: (P0) A gateway that intercepts community MCP server connections and validates them against a trusted cryptographic registry (mitigates Registry Hijacking).
+- **Active Intent Tool Matcher**: (P1) Local NLP-based middleware that filters available tools based on the current agent session's "Intent Header" to eliminate Context Smog.
+
+### Priority Shifts
+- **A2A Interop Bridge**: Re-affirming **P0** status. It is now the foundation for MoltHandoff support.
+- **Lazy-MCP Middleware**: Promoted to **P0** with requirement for "Active Intent Matching" integration.
+
+### Deprecations / Monitoring
+- **Unverified MCP Community Servers**: Warning users when connecting to un-attested third-party servers.

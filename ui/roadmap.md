@@ -11,6 +11,9 @@
 - [ ] **[P0] Agent Chain Tracer (A2A)**: Visual timeline of multi-agent handoffs and message passing. (Added: 2026-02-26)
 - [ ] **[P1] Federated Node Manager**: UI for peering with remote MCP Any instances and managing shared tool access. (Added: 2026-02-26)
 - [ ] **[P1] Resource Cost/Latency Overlay**: Real-time performance metrics displayed directly on tool cards. (Added: 2026-02-26)
+- [ ] **[P0] Handoff Sovereignty Dashboard**: (Added: 2026-02-27) Visual control for managing and approving A2A task handoffs.
+- [ ] **[P0] Trusted Registry Manager**: (Added: 2026-02-27) Security interface for managing verified MCP server signatures and certificates.
+- [ ] **[P1] Intent-Aware Search UI**: (Added: 2026-02-27) Enhanced tool search bar that allows users (and agents) to specify intent for better results.
 - [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
 - [x] **[P1] Tool Playground & Explorer**:
   - [x] Auto-generated forms from Tool JSON Schemas.

@@ -57,3 +57,9 @@ As the number of available MCP tools grows, agents face "context pollution"—wh
 
 ## 7. Evolutionary Changelog
 *   **2026-02-25:** Initial Document Creation.
+*   **2026-02-27:** **Update: Registry-Aware Discovery & Intent Matching**
+    - **Context**: "Clinejection" and "Context Smog" have highlighted the need for safer and smarter discovery.
+    - **Architecture Adjustment**:
+        - Integrated **"Active Intent Matching"** into the search pipeline. The search tool now accepts an optional `intent_context` hint from the LLM to further prune results.
+        - Added **"Trust Score"** to search results, sourced from the **Verified MCP Registry Proxy**.
+    - **Security Impact**: Prevents agents from accidentally discovering and calling unverified or high-risk "shadow" tools.
