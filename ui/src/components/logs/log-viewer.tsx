@@ -26,8 +26,14 @@ const JsonViewer = dynamic(() => import("./json-viewer"), {
   ssr: false,
 });
 
+/**
+ * LogLevel defines the severity of a log entry.
+ */
 export type LogLevel = "INFO" | "WARN" | "ERROR" | "DEBUG"
 
+/**
+ * LogEntry represents a single structured log message.
+ */
 export interface LogEntry {
   id: string
   timestamp: string
@@ -45,6 +51,9 @@ interface LogViewerProps {
 }
 
 // Optimization: Reuse DateTimeFormat instance
+/**
+ * timeFormatter is a shared Intl.DateTimeFormat instance for formatting log timestamps.
+ */
 export const timeFormatter = typeof Intl !== 'undefined' ? new Intl.DateTimeFormat(undefined, {
   hour: 'numeric',
   minute: 'numeric',
@@ -192,6 +201,14 @@ const LogRow = React.memo(({ log, highlightRegex }: { log: LogEntry; highlightRe
 })
 LogRow.displayName = 'LogRow'
 
+/**
+ * LogViewer component.
+ * @param props - The component props.
+ * @param props.logs - The list of log entries to display.
+ * @param props.highlightRegex - The regex to use for highlighting text.
+ * @param props.isPaused - Whether the log stream is paused.
+ * @returns The rendered component.
+ */
 export function LogViewer({ logs, highlightRegex, isPaused }: LogViewerProps) {
   return (
     <Virtuoso
