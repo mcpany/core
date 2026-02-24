@@ -65,3 +65,17 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-24] Updates
+
+### Proposed Additions
+- **Isolated Workspace Middleware (Git-Worktree aware)**: (P1) Automatic creation and management of git worktrees to support parallel agent sessions without state collision.
+- **Agent Context Forking Support**: (P1) API and protocol support for branching an agent session while inheriting current context and tool state.
+
+### Priority Shifts
+- **HITL Middleware**: Promoted to **P0**. Essential for secure governance in autonomous agent swarms as highlighted by the OpenClaw research.
+
+### Deprecations / Monitoring
+- *None today.*

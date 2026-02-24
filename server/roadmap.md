@@ -184,3 +184,7 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Core Middleware Pipeline**: The middleware architecture is robust and extensible.
 - **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates protocol details from business logic.
 - **Documentation**: The project has excellent documentation coverage for most features.
+
+#### Upcoming (2026-02-24 Evolution - Parallelism & Governance)
+* **[P1] Isolated Workspace Middleware**: Support parallel agent runs via git worktrees (Added: 2026-02-24)
+* **[P1] Agent Context Forking Support**: Standardized API for session branching (Added: 2026-02-24)

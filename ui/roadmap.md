@@ -105,3 +105,7 @@
 - [ ] **Log Source Color Coding**: Assign distinct colors to different log sources automatically for better visual separation.
 - [ ] **Context Usage History**: Track total context usage over time to identify growth trends (requires backend metrics persistence).
 - [ ] **Tool Schema Optimizer**: Analyze tool schemas and suggest removing unused properties or compacting descriptions to save context tokens.
+
+### Parallelism & Governance (Added: 2026-02-24)
+- [ ] [P1] Worktree Manager: UI for isolated agent workspaces (Added: 2026-02-24)
+- [ ] [P1] Context Branching Visualizer: View conversation forks and session inheritance (Added: 2026-02-24)
