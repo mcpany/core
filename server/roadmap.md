@@ -29,6 +29,12 @@
 *   **[P1] Federated MCP Peering**: Distributed node discovery and tool proxying. (Added: 2026-02-26)
 *   **[P1] Resource Telemetry Middleware**: Inject latency/cost metrics into tool schemas. (Added: 2026-02-26)
 
+#### Upcoming (2026-02-27 Evolution)
+*   **[P0] Isolated Transport (Unix/Named Pipes)**: Implement UDS and Named Pipes for secure local-first IPC to mitigate port-scanning. (Added: 2026-02-27)
+*   **[P0] A2A Security Shield**: Deep-packet inspection for A2A delegated tasks. (Added: 2026-02-27)
+*   **[P1] OpenClaw Skill Manifest Support**: Portability layer for the Agentic Open Source Foundation's skill format. (Added: 2026-02-27)
+*   **[P1] DAG-Aware Session Persistence**: Stateful middleware optimized for "Deep Thinking" agent razonement chains. (Added: 2026-02-27)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

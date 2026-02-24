@@ -65,3 +65,20 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **Isolated Transport (Unix Domain Sockets/Named Pipes)**: (P0) Moves inter-agent and agent-to-tool communication to isolated sockets to mitigate "Shadow Agent" port-scanning exploits.
+- **A2A Security Shield Middleware**: (P0) A deep-packet inspection layer for A2A messages that validates task delegations against the Policy Firewall before execution.
+- **OpenClaw Skill Manifest Support**: (P1) Native support for the Agentic Open Source Foundation's new portable skill format for easier agent onboarding.
+- **DAG-Aware Session Persistence**: (P1) Specialized middleware that automatically snapshots and resumes shared state for complex, multi-step "Deep Thinking" tool chains.
+
+### Priority Shifts
+- **A2A Interop Bridge (Pseudo-MCP)**: Confirmed as **P0**. Essential for unifying the increasingly fragmented A2A/MCP landscape.
+- **Shared KV Store**: Evolving from a "Tool" to a "Core Service" to support the new DAG-Aware Session Persistence.
+
+### Deprecations / Monitoring
+- **Local HTTP for MCP**: Monitoring for deprecation in favor of Isolated Transport for all local-first deployments.
