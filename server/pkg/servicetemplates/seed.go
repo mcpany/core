@@ -9,9 +9,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/gogo/protobuf/proto"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/storage"
+	"google.golang.org/protobuf/proto"
 	"gopkg.in/yaml.v3"
 )
 
