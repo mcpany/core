@@ -4,9 +4,12 @@
 package tool
 
 import (
+	"encoding/json"
 	"fmt"
 	"regexp"
 
+	"github.com/google/cel-go/cel"
+	"github.com/google/cel-go/common/types"
 	"github.com/mcpany/core/server/pkg/logging"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
@@ -124,6 +127,7 @@ type compiledCallPolicyRule struct {
 	nameRegex     *regexp.Regexp
 	callIDRegex   *regexp.Regexp
 	argumentRegex *regexp.Regexp
+	celProgram    cel.Program
 	rule          *configv1.CallPolicyRule
 }
 
@@ -172,9 +176,21 @@ func CompileCallPolicies(policies []*configv1.CallPolicy) ([]*CompiledCallPolicy
 //   - error: An error if compilation fails.
 func NewCompiledCallPolicy(policy *configv1.CallPolicy) (*CompiledCallPolicy, error) {
 	compiledRules := make([]compiledCallPolicyRule, len(policy.GetRules()))
+
+	// Create CEL environment
+	env, err := cel.NewEnv(
+		cel.Variable("tool_name", types.StringType),
+		cel.Variable("call_id", types.StringType),
+		cel.Variable("arguments", types.DynType),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create CEL environment: %w", err)
+	}
+
 	for i, rule := range policy.GetRules() {
 		var nameRe, callIDRe, argRe *regexp.Regexp
 		var err error
+		var celPrg cel.Program
 
 		if rule.GetNameRegex() != "" {
 			nameRe, err = regexp.Compile(rule.GetNameRegex())
@@ -197,10 +213,22 @@ func NewCompiledCallPolicy(policy *configv1.CallPolicy) (*CompiledCallPolicy, er
 			}
 		}
 
+		if rule.GetCelExpression() != "" {
+			ast, issues := env.Compile(rule.GetCelExpression())
+			if issues != nil && issues.Err() != nil {
+				return nil, fmt.Errorf("invalid CEL expression %q: %w", rule.GetCelExpression(), issues.Err())
+			}
+			celPrg, err = env.Program(ast)
+			if err != nil {
+				return nil, fmt.Errorf("failed to create CEL program: %w", err)
+			}
+		}
+
 		compiledRules[i] = compiledCallPolicyRule{
 			nameRegex:     nameRe,
 			callIDRegex:   callIDRe,
 			argumentRegex: argRe,
+			celProgram:    celPrg,
 			rule:          rule,
 		}
 	}
@@ -224,6 +252,9 @@ func NewCompiledCallPolicy(policy *configv1.CallPolicy) (*CompiledCallPolicy, er
 //   - bool: True if the call is allowed, false otherwise.
 //   - error: An error if evaluation fails.
 func EvaluateCompiledCallPolicy(policies []*CompiledCallPolicy, toolName, callID string, arguments []byte) (bool, error) {
+	var argsMap map[string]interface{}
+	argsParsed := false
+
 	for _, policy := range policies {
 		policyBlocked := false
 		matchedRule := false
@@ -246,6 +277,35 @@ func EvaluateCompiledCallPolicy(policies []*CompiledCallPolicy, toolName, callID
 					matched = false
 				} else if cRule.argumentRegex == nil || !cRule.argumentRegex.Match(arguments) {
 					matched = false
+				}
+			}
+
+			if matched && cRule.celProgram != nil {
+				if !argsParsed && arguments != nil {
+					if err := json.Unmarshal(arguments, &argsMap); err != nil {
+						logging.GetLogger().Error("Failed to unmarshal arguments for CEL evaluation", "error", err)
+						// Treat unmarshal error as non-match or error?
+						// For safety, let's treat it as non-match for this rule, but it might mean we skip a DENY rule?
+						// It's safer to block if we can't evaluate, but here we are matching rules.
+						// If arguments are malformed, maybe we shouldn't have reached here?
+						// Let's assume non-match for the rule condition.
+						matched = false
+					}
+					argsParsed = true
+				}
+
+				if matched { // Only evaluate if arguments parsed successfully (or weren't needed)
+					out, _, err := cRule.celProgram.Eval(map[string]interface{}{
+						"tool_name": toolName,
+						"call_id":   callID,
+						"arguments": argsMap,
+					})
+					if err != nil {
+						logging.GetLogger().Error("CEL evaluation failed", "error", err)
+						matched = false
+					} else if val, ok := out.Value().(bool); !ok || !val {
+						matched = false
+					}
 				}
 			}
 

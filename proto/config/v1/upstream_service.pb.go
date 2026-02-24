@@ -1882,6 +1882,7 @@ type CallPolicyRule struct {
 	xxx_hidden_ArgumentRegex *string                `protobuf:"bytes,3,opt,name=argument_regex,json=argumentRegex"`
 	xxx_hidden_UrlRegex      *string                `protobuf:"bytes,4,opt,name=url_regex"`
 	xxx_hidden_CallIdRegex   *string                `protobuf:"bytes,5,opt,name=call_id_regex"`
+	xxx_hidden_CelExpression *string                `protobuf:"bytes,6,opt,name=cel_expression,json=cel"`
 	XXX_raceDetectHookData   protoimpl.RaceDetectHookData
 	XXX_presence             [1]uint32
 	unknownFields            protoimpl.UnknownFields
@@ -1962,29 +1963,44 @@ func (x *CallPolicyRule) GetCallIdRegex() string {
 	return ""
 }
 
+func (x *CallPolicyRule) GetCelExpression() string {
+	if x != nil {
+		if x.xxx_hidden_CelExpression != nil {
+			return *x.xxx_hidden_CelExpression
+		}
+		return ""
+	}
+	return ""
+}
+
 func (x *CallPolicyRule) SetAction(v CallPolicy_Action) {
 	x.xxx_hidden_Action = v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 5)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 6)
 }
 
 func (x *CallPolicyRule) SetNameRegex(v string) {
 	x.xxx_hidden_NameRegex = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 5)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 6)
 }
 
 func (x *CallPolicyRule) SetArgumentRegex(v string) {
 	x.xxx_hidden_ArgumentRegex = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 5)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 6)
 }
 
 func (x *CallPolicyRule) SetUrlRegex(v string) {
 	x.xxx_hidden_UrlRegex = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 5)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 6)
 }
 
 func (x *CallPolicyRule) SetCallIdRegex(v string) {
 	x.xxx_hidden_CallIdRegex = &v
-	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 5)
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 6)
+}
+
+func (x *CallPolicyRule) SetCelExpression(v string) {
+	x.xxx_hidden_CelExpression = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 6)
 }
 
 func (x *CallPolicyRule) HasAction() bool {
@@ -2022,6 +2038,13 @@ func (x *CallPolicyRule) HasCallIdRegex() bool {
 	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
 }
 
+func (x *CallPolicyRule) HasCelExpression() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 5)
+}
+
 func (x *CallPolicyRule) ClearAction() {
 	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
 	x.xxx_hidden_Action = CallPolicy_ALLOW
@@ -2047,6 +2070,11 @@ func (x *CallPolicyRule) ClearCallIdRegex() {
 	x.xxx_hidden_CallIdRegex = nil
 }
 
+func (x *CallPolicyRule) ClearCelExpression() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 5)
+	x.xxx_hidden_CelExpression = nil
+}
+
 type CallPolicyRule_builder struct {
 	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
 
@@ -2060,6 +2088,9 @@ type CallPolicyRule_builder struct {
 	UrlRegex *string
 	// Regex to match call ID. Empty means match all.
 	CallIdRegex *string
+	// CEL expression to evaluate against the tool call.
+	// The environment includes 'tool_name' (string), 'call_id' (string), and 'arguments' (map).
+	CelExpression *string
 }
 
 func (b0 CallPolicyRule_builder) Build() *CallPolicyRule {
@@ -2067,24 +2098,28 @@ func (b0 CallPolicyRule_builder) Build() *CallPolicyRule {
 	b, x := &b0, m0
 	_, _ = b, x
 	if b.Action != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 5)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 6)
 		x.xxx_hidden_Action = *b.Action
 	}
 	if b.NameRegex != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 5)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 6)
 		x.xxx_hidden_NameRegex = b.NameRegex
 	}
 	if b.ArgumentRegex != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 5)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 6)
 		x.xxx_hidden_ArgumentRegex = b.ArgumentRegex
 	}
 	if b.UrlRegex != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 5)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 6)
 		x.xxx_hidden_UrlRegex = b.UrlRegex
 	}
 	if b.CallIdRegex != nil {
-		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 5)
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 6)
 		x.xxx_hidden_CallIdRegex = b.CallIdRegex
+	}
+	if b.CelExpression != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 6)
+		x.xxx_hidden_CelExpression = b.CelExpression
 	}
 	return m0
 }
@@ -8806,7 +8841,7 @@ const file_proto_config_v1_upstream_service_proto_rawDesc = "" +
 	"\x04DENY\x10\x01\x12\x0e\n" +
 	"\n" +
 	"SAVE_CACHE\x10\x02\x12\x10\n" +
-	"\fDELETE_CACHE\x10\x03\"\xd8\x01\n" +
+	"\fDELETE_CACHE\x10\x03\"\xf5\x01\n" +
 	"\x0eCallPolicyRule\x12;\n" +
 	"\x06action\x18\x01 \x01(\x0e2#.mcpany.config.v1.CallPolicy.ActionR\x06action\x12\x1e\n" +
 	"\n" +
@@ -8814,7 +8849,8 @@ const file_proto_config_v1_upstream_service_proto_rawDesc = "" +
 	"name_regex\x12%\n" +
 	"\x0eargument_regex\x18\x03 \x01(\tR\rargumentRegex\x12\x1c\n" +
 	"\turl_regex\x18\x04 \x01(\tR\turl_regex\x12$\n" +
-	"\rcall_id_regex\x18\x05 \x01(\tR\rcall_id_regex\"\xd3\x01\n" +
+	"\rcall_id_regex\x18\x05 \x01(\tR\rcall_id_regex\x12\x1b\n" +
+	"\x0ecel_expression\x18\x06 \x01(\tR\x03cel\"\xd3\x01\n" +
 	"\fExportPolicy\x12L\n" +
 	"\x0edefault_action\x18\x01 \x01(\x0e2%.mcpany.config.v1.ExportPolicy.ActionR\rdefaultAction\x122\n" +
 	"\x05rules\x18\x02 \x03(\v2\x1c.mcpany.config.v1.ExportRuleR\x05rules\"A\n" +

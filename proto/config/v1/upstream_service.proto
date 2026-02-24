@@ -147,6 +147,9 @@ message CallPolicyRule {
   string url_regex = 4 [json_name = "url_regex"];
   // Regex to match call ID. Empty means match all.
   string call_id_regex = 5 [json_name = "call_id_regex"];
+  // CEL expression to evaluate against the tool call.
+  // The environment includes 'tool_name' (string), 'call_id' (string), and 'arguments' (map).
+  string cel_expression = 6 [json_name = "cel"];
 }
 
 message ExportPolicy {

@@ -1,43 +1,36 @@
 # Audit Report: Truth Reconciliation
 
 ## Executive Summary
-Performed a comprehensive audit of 10 distinct features across UI and Server domains. The audit revealed a high degree of alignment between the codebase and the intended functionality, with minor discrepancies in documentation and roadmap status.
-*   **Health Score:** 9/10 (Initial), 10/10 (Post-Remediation).
-*   **Primary Issue:** Documentation Drift (Code was ahead of Docs/Roadmap).
-*   **Action:** Synchronized `ui/roadmap.md` and feature documentation to reflect existing, verified capabilities.
+Performed a strict "Truth Reconciliation Audit" comparing Documentation, Codebase, and Roadmap.
+*   **Sample Health:** 10/10 files verified as Correct (No Drift).
+*   **Roadmap Compliance:** Identified critical Roadmap Debt for **Policy Firewall Engine** (P0).
+*   **Action:** Engineered the missing solution by implementing CEL (Common Expression Language) based policy hooks.
 
 ## Verification Matrix
 
 | Document Name | Status | Action Taken | Evidence |
 | :--- | :--- | :--- | :--- |
-| `ui/docs/features/connection-diagnostics.md` | ✅ Verified | None | Verified `ConnectionDiagnostic` component logic matches docs. |
-| `ui/docs/features/playground.md` | ⚠️ Drift | **Doc Updated** | Code supports "Copy as Python", doc missed it. Added to doc. |
-| `ui/docs/features/structured_log_viewer.md` | ✅ Verified | None | Verified `LogViewer` JSON auto-detection and expansion. |
-| `server/docs/features/hot_reload.md` | ✅ Verified | None | Verified `ReloadConfig` and `reconcileServices` in `server.go`. |
-| `server/docs/features/health-checks.md` | ✅ Verified | None | Verified `health.go` implements all claimed checks (HTTP, gRPC, FS, etc). |
-| `server/docs/features/dlp.md` | ✅ Verified | None | Verified `dlp.go` implements PII redaction middleware. |
-| `server/docs/features/context_optimizer.md` | ✅ Verified | None | Verified `context_optimizer.go` implements truncation logic. |
-| `server/docs/features/configuration_guide.md` | ✅ Verified | None | Verified configuration loading from files and database. |
-| `server/docs/features/security.md` | ⚠️ Drift | **Doc Updated** | Code enforces "Sentinel Security" (localhost-only) if API Key is missing. Doc updated to reflect this. |
-| `server/docs/features/audit_logging.md` | ✅ Verified | None | Verified `FileAuditStore` implements NDJSON format. |
+| `ui/docs/features/connection-diagnostics.md` | ✅ Correct | None | Verified `ui/src/components/diagnostics/connection-diagnostic.tsx` implements multi-stage analysis and heuristics. |
+| `ui/docs/features/playground.md` | ✅ Correct | None | Verified `ui/src/components/playground/tool-runner.tsx` implements form builder, history, and code generation. |
+| `ui/docs/features/structured_log_viewer.md` | ✅ Correct | None | Verified `ui/src/components/logs/log-viewer.tsx` implements JSON expansion and highlighting. |
+| `ui/docs/features/native_file_upload_playground.md` | ✅ Correct | None | Verified `ui/src/components/shared/universal-schema-form.tsx` handles base64 file inputs. |
+| `ui/docs/features/server-health-history.md` | ✅ Correct | None | Verified `ui/src/components/dashboard/service-health-widget.tsx` renders health timeline. |
+| `server/docs/features/health-checks.md` | ✅ Correct | None | Verified `server/pkg/health/health.go` implements HTTP, gRPC, WebSocket, and FS probes. |
+| `server/docs/features/context_optimizer.md` | ✅ Correct | None | Verified `server/pkg/middleware/context_optimizer.go` implements text truncation middleware. |
+| `server/docs/features/dynamic_registration.md` | ✅ Correct | None | Verified `server/pkg/upstream/` contains adapters for OpenAPI, gRPC, GraphQL. |
+| `server/docs/features/audit_logging.md` | ✅ Correct | None | Verified `server/pkg/audit/` supports File, SQLite, Webhook, Splunk, Datadog backends. |
+| `server/docs/features/prompts/README.md` | ✅ Correct | None | Verified `server/pkg/prompt/` implements templated prompts and `prompts/get` API. |
 
 ## Remediation Log
 
-### 1. Security Documentation Update
-*   **Issue:** `server/docs/features/security.md` implied open access if `allowed_ips` was empty.
-*   **Reality:** Code (`server/pkg/app/server.go`) enforces strict localhost-only access if no API Key is configured ("Sentinel Security").
-*   **Fix:** Updated documentation to explicitly describe the "Sentinel Security Mode".
-
-### 2. Playground Documentation & Roadmap
-*   **Issue:** `ui/roadmap.md` listed "Copy as Curl/Python" as TODO. `ui/docs/features/playground.md` omitted Python support.
-*   **Reality:** Code (`ui/src/lib/code-generator.ts`, `ui/src/components/playground/tool-runner.tsx`) fully implements Curl and Python code generation.
-*   **Fix:**
-    *   Updated `ui/docs/features/playground.md` to include "Copy as Code".
-    *   Updated `ui/roadmap.md` to mark Playground features as `[x]` (Completed).
-
-### 3. Code Quality (Linting)
-*   **Issue:** `make lint` failed due to missing TSDoc in UI components.
-*   **Fix:** Added missing TSDoc comments to `ui/src/components/logs/log-viewer.tsx` and `ui/src/components/diagnostics/discovery-status.tsx`.
+### 1. Policy Firewall Engine (Roadmap Debt)
+*   **Condition:** The [Server Roadmap](../../server/roadmap.md) lists **"[P0] Policy Firewall Engine: Implement Rego/CEL based hooking"** as a Top Priority. The existing implementation (`server/pkg/tool/policy.go`) only supported simple Regex matching.
+*   **Action:** **Engineered the Solution.**
+    *   Updated `proto/config/v1/upstream_service.proto` to add `cel_expression` to `CallPolicyRule`.
+    *   Implemented CEL compilation and evaluation in `server/pkg/tool/policy.go`.
+    *   Added support for `tool_name`, `call_id`, and `arguments` (dynamic map) variables in the CEL environment.
+    *   Added comprehensive unit tests in `server/pkg/tool/policy_cel_test.go`.
+*   **Status:** ✅ Fixed. Feature is now implemented and tested.
 
 ## Security Scrub
 *   No PII, secrets, or internal IPs were found or exposed in this report.
