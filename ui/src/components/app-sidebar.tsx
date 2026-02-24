@@ -27,7 +27,8 @@ import {
   Zap,
   ClipboardCheck,
   Bug,
-  Workflow
+  Workflow,
+  Brain
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -102,6 +103,11 @@ const platformItems = [
     title: "Analytics",
     url: "/stats",
     icon: Activity,
+  },
+  {
+    title: "Context",
+    url: "/context",
+    icon: Brain,
   },
   {
     title: "Marketplace",
