@@ -49,6 +49,12 @@ func TestSSRFLoopbackShorthand(t *testing.T) {
 			errorContains: "loopback shorthand address is not allowed",
 		},
 		{
+			name:          "Block 127. shorthand",
+			input:         "127.",
+			expectError:   true,
+			errorContains: "loopback shorthand address is not allowed",
+		},
+		{
 			name:          "Block 127.0.1 shorthand",
 			input:         "127.0.1",
 			expectError:   true,

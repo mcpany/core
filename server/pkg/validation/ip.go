@@ -5,6 +5,7 @@ package validation
 
 import (
 	"net"
+	"strings"
 )
 
 var privateNetworkBlocksIPv6 []*net.IPNet
@@ -223,7 +224,7 @@ func IsPrivateNetworkIPv4(ip net.IP) bool {
 //   - bool: True if it looks like a loopback shorthand, false otherwise.
 func IsLoopbackShorthand(val string) bool {
 	// Check for "127." prefix
-	if len(val) < 5 || val[0] != '1' || val[1] != '2' || val[2] != '7' || val[3] != '.' {
+	if !strings.HasPrefix(val, "127.") {
 		return false
 	}
 
