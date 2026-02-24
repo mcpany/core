@@ -8,9 +8,7 @@ package public_api
 import (
 	"context"
 	"encoding/json"
-	"strings"
 	"testing"
-	"time"
 
 	"github.com/mcpany/core/server/pkg/util"
 	apiv1 "github.com/mcpany/core/proto/api/v1"
@@ -28,13 +26,20 @@ func TestUpstreamService_IPInfo(t *testing.T) {
 	t.Log("INFO: Starting E2E Test Scenario for IP Info Server...")
 	t.Parallel()
 
-	// --- 1. Start MCPANY Server ---
+	// --- 1. Start Mock Server ---
+	mockResponse := `{"query": "8.8.8.8", "status": "success", "country": "United States", "regionName": "Virginia", "city": "Ashburn", "isp": "Google LLC"}`
+	mockServer := integration.CreateMockServerWithResponses(t, map[string]string{
+		"/json/8.8.8.8": mockResponse,
+	})
+	defer mockServer.Close()
+
+	// --- 2. Start MCPANY Server ---
 	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2EIPInfoServerTest")
 	defer mcpAnyTestServerInfo.CleanupFunc()
 
-	// --- 2. Register IP Info Server with MCPANY ---
+	// --- 3. Register IP Info Server with MCPANY ---
 	const ipInfoServiceID = "e2e_ipinfo"
-	ipInfoServiceEndpoint := "http://ip-api.com"
+	ipInfoServiceEndpoint := mockServer.URL
 	t.Logf("INFO: Registering '%s' with MCPANY at endpoint %s...", ipInfoServiceID, ipInfoServiceEndpoint)
 	registrationGRPCClient := mcpAnyTestServerInfo.RegistrationClient
 
@@ -92,46 +97,8 @@ func TestUpstreamService_IPInfo(t *testing.T) {
 	toolName := serviceID + "." + sanitizedToolName
 	ipAddress := `{"ip": "8.8.8.8"}`
 
-	const maxRetries = 3
-	var res *mcp.CallToolResult
-
-	for i := 0; i < maxRetries; i++ {
-		res, err = cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(ipAddress)})
-		if err == nil {
-			if !res.IsError {
-				break // Success
-			}
-			// Handle tool-level errors (e.g. 429 Too Many Requests)
-			var errorText string
-			if len(res.Content) > 0 {
-				if tc, ok := res.Content[0].(*mcp.TextContent); ok {
-					errorText = tc.Text
-				}
-			}
-			if strings.Contains(errorText, "Too Many Requests") || strings.Contains(errorText, "503") {
-				t.Logf("Attempt %d/%d: Call to ip-api.com failed with a transient tool error: %s. Retrying...", i+1, maxRetries, errorText)
-				time.Sleep(2 * time.Second)
-				continue
-			}
-			// Fail for other tool errors
-			t.Fatalf("Tool execution failed: %s", errorText)
-		}
-
-		// If the error is a 503 or a timeout, we can retry. Otherwise, fail fast.
-		if strings.Contains(err.Error(), "503 Service Temporarily Unavailable") || strings.Contains(err.Error(), "context deadline exceeded") || strings.Contains(err.Error(), "connection reset by peer") {
-			t.Logf("Attempt %d/%d: Call to ip-api.com failed with a transient error: %v. Retrying...", i+1, maxRetries, err)
-			time.Sleep(2 * time.Second) // Wait before retrying
-			continue
-		}
-
-		// For any other error, fail the test immediately.
-		require.NoError(t, err, "unrecoverable error calling getIPInfo tool")
-	}
-
-	if err != nil {
-		// t.Skipf("Skipping test: all %d retries to ip-api.com failed with transient errors. Last error: %v", maxRetries, err)
-	}
-
+	// Call the tool directly
+	res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(ipAddress)})
 	require.NoError(t, err, "Error calling getIPInfo tool")
 	require.NotNil(t, res, "Nil response from getIPInfo tool")
 	require.False(t, res.IsError, "Tool execution returned an error")

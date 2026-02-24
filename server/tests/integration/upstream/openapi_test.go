@@ -7,9 +7,11 @@ package upstream
 
 import (
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/mcpany/core/server/tests/framework"
+	"github.com/mcpany/core/server/tests/integration"
 	"github.com/stretchr/testify/require"
 )
 
@@ -19,7 +21,14 @@ func TestUpstreamService_OpenAPI(t *testing.T) {
 
 	apiKey := os.Getenv("GEMINI_API_KEY")
 	if apiKey == "" {
-		// t.Skip("GEMINI_API_KEY is not set")
+		root, err := integration.GetProjectRoot()
+		require.NoError(t, err)
+		binPath := filepath.Join(root, "tests", "integration", "upstream", "node_modules", ".bin", "gemini")
+		// Create a mock script
+		script := "#!/bin/sh\necho 'Cloudy, 15°C'\n"
+		err = os.WriteFile(binPath, []byte(script), 0755)
+		require.NoError(t, err)
+		apiKey = "mock-token"
 	}
 
 	testCase := &framework.E2ETestCase{

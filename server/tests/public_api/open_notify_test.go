@@ -8,9 +8,7 @@ package public_api
 import (
 	"context"
 	"encoding/json"
-	"strings"
 	"testing"
-	"time"
 
 	apiv1 "github.com/mcpany/core/proto/api/v1"
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -29,13 +27,20 @@ func TestUpstreamService_OpenNotify(t *testing.T) {
 	t.Log("INFO: Starting E2E Test Scenario for Open Notify Server...")
 	t.Parallel()
 
-	// --- 1. Start MCPANY Server ---
+	// --- 1. Start Mock Server ---
+	mockResponse := `{"message": "success", "number": 2, "people": [{"name": "A", "craft": "ISS"}, {"name": "B", "craft": "ISS"}]}`
+	mockServer := integration.CreateMockServerWithResponses(t, map[string]string{
+		"/astros.json": mockResponse,
+	})
+	defer mockServer.Close()
+
+	// --- 2. Start MCPANY Server ---
 	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2EOpenNotifyServerTest")
 	defer mcpAnyTestServerInfo.CleanupFunc()
 
-	// --- 2. Register Open Notify Server with MCPANY ---
+	// --- 3. Register Open Notify Server with MCPANY ---
 	const openNotifyServiceID = "e2e_opennnotify"
-	openNotifyServiceEndpoint := "http://api.open-notify.org"
+	openNotifyServiceEndpoint := mockServer.URL
 	t.Logf("INFO: Registering '%s' with MCPANY at endpoint %s...", openNotifyServiceID, openNotifyServiceEndpoint)
 	registrationGRPCClient := mcpAnyTestServerInfo.RegistrationClient
 
@@ -85,51 +90,9 @@ func TestUpstreamService_OpenNotify(t *testing.T) {
 	sanitizedToolName, _ := util.SanitizeToolName("getAstronauts")
 	toolName := serviceID + "." + sanitizedToolName
 
-	const maxRetries = 3
-	var res *mcp.CallToolResult
-
-	for i := 0; i < maxRetries; i++ {
-		res, err = cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(`{}`)})
-		if err == nil {
-			// Check if response is valid JSON before declaring success
-			if len(res.Content) > 0 {
-				if textContent, ok := res.Content[0].(*mcp.TextContent); ok {
-					var js map[string]interface{}
-					if jsonErr := json.Unmarshal([]byte(textContent.Text), &js); jsonErr == nil {
-						break // Success and valid JSON
-					} else {
-						// Log invalid JSON error and continue retry
-						t.Logf("Attempt %d/%d: Received non-JSON response from api.open-notify.org (likely rate limit message): %q. Retrying...", i+1, maxRetries, textContent.Text)
-						err = jsonErr // Set err to retry logic works if this was the last attempt
-						time.Sleep(2 * time.Second)
-						continue
-					}
-				}
-			}
-			break // Success (or empty content, handled later)
-		}
-
-		errMsg := err.Error()
-		if strings.Contains(errMsg, "503 Service Temporarily Unavailable") ||
-			strings.Contains(errMsg, "context deadline exceeded") ||
-			strings.Contains(errMsg, "connection reset by peer") ||
-			strings.Contains(errMsg, "i/o timeout") ||
-			strings.Contains(errMsg, "connection timed out") ||
-			strings.Contains(errMsg, "Client.Timeout exceeded") ||
-			strings.Contains(errMsg, "Too Many Requests") {
-			t.Logf("Attempt %d/%d: Call to api.open-notify.org failed with a transient error: %v. Retrying...", i+1, maxRetries, err)
-			time.Sleep(2 * time.Second) // Wait before retrying
-			continue
-		}
-
-		require.NoError(t, err, "unrecoverable error calling getAstronauts tool")
-	}
-
-	if err != nil {
-		t.Skipf("Skipping test: all %d retries to api.open-notify.org failed with transient errors. Last error: %v", maxRetries, err)
-		return
-	}
-
+	// Call the tool directly
+	res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(`{}`)})
+	require.NoError(t, err, "unrecoverable error calling getAstronauts tool")
 	require.NotNil(t, res, "Nil response from getAstronauts tool")
 
 	// --- 4. Assert Response ---
@@ -139,11 +102,7 @@ func TestUpstreamService_OpenNotify(t *testing.T) {
 
 	var openNotifyResponse map[string]interface{}
 	err = json.Unmarshal([]byte(textContent.Text), &openNotifyResponse)
-	if err != nil {
-		// If we still have invalid JSON after retries, skip instead of failing, as this is an external dependency issue
-		t.Skipf("Skipping test: Failed to unmarshal JSON response from api.open-notify.org: %v. Body: %s", err, textContent.Text)
-		return
-	}
+	require.NoError(t, err, "Failed to unmarshal JSON response")
 
 	require.Equal(t, "success", openNotifyResponse["message"], "The message should be success")
 	require.NotEmpty(t, openNotifyResponse["number"], "The number should not be empty")

@@ -8,9 +8,7 @@ package public_api
 import (
 	"context"
 	"encoding/json"
-	"strings"
 	"testing"
-	"time"
 
 	"github.com/mcpany/core/server/pkg/util"
 	apiv1 "github.com/mcpany/core/proto/api/v1"
@@ -28,13 +26,22 @@ func TestUpstreamService_PokeAPI(t *testing.T) {
 	t.Log("INFO: Starting E2E Test Scenario for PokeAPI Server...")
 	t.Parallel()
 
-	// --- 1. Start MCPANY Server ---
+	// --- 1. Start Mock Server ---
+	mockResponseDitto := `{"name": "ditto", "abilities": [{"ability": {"name": "limber"}}]}`
+	mockResponsePikachu := `{"name": "pikachu", "abilities": [{"ability": {"name": "static"}}]}`
+	mockServer := integration.CreateMockServerWithResponses(t, map[string]string{
+		"/api/v2/pokemon/ditto":   mockResponseDitto,
+		"/api/v2/pokemon/pikachu": mockResponsePikachu,
+	})
+	defer mockServer.Close()
+
+	// --- 2. Start MCPANY Server ---
 	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2EPokeAPIServerTest")
 	defer mcpAnyTestServerInfo.CleanupFunc()
 
-	// --- 2. Register PokeAPI Server with MCPANY ---
+	// --- 3. Register PokeAPI Server with MCPANY ---
 	const pokeAPIServiceID = "e2e_pokeapi"
-	pokeAPIServiceEndpoint := "https://pokeapi.co"
+	pokeAPIServiceEndpoint := mockServer.URL
 	t.Logf("INFO: Registering '%s' with MCPANY at endpoint %s...", pokeAPIServiceID, pokeAPIServiceEndpoint)
 	registrationGRPCClient := mcpAnyTestServerInfo.RegistrationClient
 
@@ -92,28 +99,8 @@ func TestUpstreamService_PokeAPI(t *testing.T) {
 	toolName := serviceID + "." + sanitizedToolName
 	name := `{"name": "ditto"}`
 
-	const maxRetries = 3
-	var res *mcp.CallToolResult
-
-	for i := 0; i < maxRetries; i++ {
-		res, err = cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(name)})
-		if err == nil {
-			break // Success
-		}
-
-		if strings.Contains(err.Error(), "503 Service Temporarily Unavailable") || strings.Contains(err.Error(), "context deadline exceeded") || strings.Contains(err.Error(), "connection reset by peer") {
-			t.Logf("Attempt %d/%d: Call to pokeapi.co failed with a transient error: %v. Retrying...", i+1, maxRetries, err)
-			time.Sleep(2 * time.Second) // Wait before retrying
-			continue
-		}
-
-		require.NoError(t, err, "unrecoverable error calling getPokemon tool")
-	}
-
-	if err != nil {
-		// t.Skipf("Skipping test: all %d retries to pokeapi.co failed with transient errors. Last error: %v", maxRetries, err)
-	}
-
+	// Call the tool directly
+	res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(name)})
 	require.NoError(t, err, "Error calling getPokemon tool")
 	require.NotNil(t, res, "Nil response from getPokemon tool")
 
@@ -140,13 +127,20 @@ func TestUpstreamService_PokeAPI_ParameterSubstitution(t *testing.T) {
 	t.Log("INFO: Starting E2E Test Scenario for PokeAPI Server...")
 	t.Parallel()
 
-	// --- 1. Start MCPANY Server ---
+	// --- 1. Start Mock Server ---
+	mockResponsePikachu := `{"name": "pikachu", "abilities": [{"ability": {"name": "static"}}]}`
+	mockServer := integration.CreateMockServerWithResponses(t, map[string]string{
+		"/api/v2/pokemon/pikachu": mockResponsePikachu,
+	})
+	defer mockServer.Close()
+
+	// --- 2. Start MCPANY Server ---
 	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2EPokeAPIServerTest")
 	defer mcpAnyTestServerInfo.CleanupFunc()
 
-	// --- 2. Register PokeAPI Server with MCPANY ---
+	// --- 3. Register PokeAPI Server with MCPANY ---
 	const pokeAPIServiceID = "e2e_pokeapi_param_subst"
-	pokeAPIServiceEndpoint := "https://pokeapi.co"
+	pokeAPIServiceEndpoint := mockServer.URL
 	t.Logf("INFO: Registering '%s' with MCPANY at endpoint %s...", pokeAPIServiceID, pokeAPIServiceEndpoint)
 	registrationGRPCClient := mcpAnyTestServerInfo.RegistrationClient
 
@@ -205,28 +199,8 @@ func TestUpstreamService_PokeAPI_ParameterSubstitution(t *testing.T) {
 	pokemonName := "pikachu"
 	name := `{"name": "` + pokemonName + `"}`
 
-	const maxRetries = 3
-	var res *mcp.CallToolResult
-
-	for i := 0; i < maxRetries; i++ {
-		res, err = cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(name)})
-		if err == nil {
-			break // Success
-		}
-
-		if strings.Contains(err.Error(), "503 Service Temporarily Unavailable") || strings.Contains(err.Error(), "context deadline exceeded") || strings.Contains(err.Error(), "connection reset by peer") {
-			t.Logf("Attempt %d/%d: Call to pokeapi.co failed with a transient error: %v. Retrying...", i+1, maxRetries, err)
-			time.Sleep(2 * time.Second) // Wait before retrying
-			continue
-		}
-
-		require.NoError(t, err, "unrecoverable error calling getPokemon tool")
-	}
-
-	if err != nil {
-		// t.Skipf("Skipping test: all %d retries to pokeapi.co failed with transient errors. Last error: %v", maxRetries, err)
-	}
-
+	// Call the tool directly
+	res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(name)})
 	require.NoError(t, err, "Error calling getPokemon tool")
 	require.NotNil(t, res, "Nil response from getPokemon tool")
 
