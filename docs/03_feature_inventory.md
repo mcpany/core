@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **HITL Verification Protocol (P0)**: A standardized JSON-RPC extension for MCP Any that allows agents to request explicit human consent for high-risk actions with rich context.
+- **Isolated Worktree Provisioner (P1)**: Middleware that automatically clones the working directory into an isolated Git worktree for agentic execution, merging changes back only after approval.
+- **Admin MCP Allowlisting (P1)**: A centralized governance tool for administrators to define "Gold-Standard" MCP server configurations that agents are permitted to use.
+
+### Priority Shifts
+- **Policy Firewall**: Re-affirming **P0** status. Now integrated with HITL flows for dynamic policy escalation.
+- **Machine-Checkable Security Contracts**: Promoted to **P0**. Essential for agents to autonomously verify the safety of a tool before calling it.
+
+### Deprecations / Monitoring
+- *None today.*

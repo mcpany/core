@@ -47,3 +47,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **A2A Gateway Protocol**: MCP Any will implement a protocol-neutral bridge for A2A communication, allowing disparate agent frameworks (e.g., OpenClaw, AutoGen) to exchange state and tasks via a unified MCP-like interface.
 - **Federated Tool Mesh**: Moving from a standalone server to a "Mesh" architecture where multiple MCP Any instances can peer and share resources across network boundaries, governed by global Zero-Trust policies.
 - **Resource-Aware Intelligence**: Integrating cost and latency telemetry into the tool discovery process, allowing LLMs to perform "Economical Reasoning" when selecting tools.
+
+---
+
+## Strategic Evolution: [2026-02-27]
+### Focus: Autonomous Risk Mitigation & HITL Orchestration
+**Context**: The rapid adoption of autonomous agents like OpenClaw, coupled with the security-first approach of Claude 4.6, highlights a critical gap: the need for a standardized "Consent & Isolation" layer. MCP Any must evolve to become the "Safety Gateway" that governs autonomous tool execution.
+**Strategic Pivot**:
+- **HITL as a First-Class Citizen**: Transitioning from optional middleware to a core protocol requirement for high-risk tool categories (Filesystem, Shell, Payments).
+- **Ephemeral Isolation**: Implementing "Just-in-Time" isolated environments (Worktrees, Containers) for agent tasks to ensure zero side-effects on the host system.
+- **Governance-as-Code**: Providing admins with declarative "Allowlists" and "Policy Contracts" to bound agent behavior in enterprise environments.

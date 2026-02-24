@@ -11,7 +11,9 @@
 - [ ] **[P0] Agent Chain Tracer (A2A)**: Visual timeline of multi-agent handoffs and message passing. (Added: 2026-02-26)
 - [ ] **[P1] Federated Node Manager**: UI for peering with remote MCP Any instances and managing shared tool access. (Added: 2026-02-26)
 - [ ] **[P1] Resource Cost/Latency Overlay**: Real-time performance metrics displayed directly on tool cards. (Added: 2026-02-26)
-- [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
+- [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions. (Added: 2026-02-27)
+- [ ] **[P1] Worktree Isolation Monitor**: UI for visualizing and managing ephemeral agent worktrees. (Added: 2026-02-27)
+- [ ] **[P1] Admin Governance Dashboard**: Centralized UI for MCP server allowlisting and policy management. (Added: 2026-02-27)
 - [x] **[P1] Tool Playground & Explorer**:
   - [x] Auto-generated forms from Tool JSON Schemas.
   - [x] "Execute" button with history and result visualization.
