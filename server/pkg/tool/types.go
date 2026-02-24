@@ -3033,7 +3033,7 @@ func isShell(cmd string) bool {
 	shells := []string{
 		"sh", "bash", "zsh", "dash", "ash", "ksh", "csh", "tcsh", "fish",
 		"pwsh", "powershell", "powershell.exe", "pwsh.exe", "cmd", "cmd.exe",
-		"ssh", "scp", "su", "sudo", "env",
+		"ssh", "scp", "su", "sudo",
 		"busybox", "expect", "watch", "tmux", "screen",
 	}
 	base := filepath.Base(cmd)
@@ -4152,6 +4152,7 @@ func isInterpreter(command string) bool {
 		"jq",
 		"psql", "mysql", "sqlite3",
 		"docker",
+		"env", // env is technically a command runner but we treat it as interpreter to enforce injection checks without blocking spaces
 		"tclsh", "wish",
 		"irb", "php-cgi",
 		// Editors and pagers that can execute commands
