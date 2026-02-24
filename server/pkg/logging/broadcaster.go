@@ -54,9 +54,15 @@ func (b *Broadcaster) SubscribeBuffered(size int) chan any {
 // SubscribeWithHistory returns a channel that will receive broadcast messages,
 // and the current history of messages. This is atomic to ensure no messages are missed or duplicated.
 func (b *Broadcaster) SubscribeWithHistory() (chan any, []any) {
+	return b.SubscribeWithHistoryBuffered(100)
+}
+
+// SubscribeWithHistoryBuffered returns a channel that will receive broadcast messages with a custom buffer size,
+// and the current history of messages. This is atomic to ensure no messages are missed or duplicated.
+func (b *Broadcaster) SubscribeWithHistoryBuffered(size int) (chan any, []any) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
-	ch := make(chan any, 100)
+	ch := make(chan any, size)
 	b.subscribers[ch] = struct{}{}
 
 	count := b.limit

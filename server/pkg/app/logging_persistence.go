@@ -37,13 +37,38 @@ func (a *Application) initializeLogPersistence(ctx context.Context, store storag
 // startLogPersistence starts a background worker to persist logs to storage.
 func (a *Application) startLogPersistence(ctx context.Context, store storage.Storage) {
 	log := logging.GetLogger()
-	// Create a buffered channel for log persistence to avoid blocking the broadcaster
+	// Create a buffered channel for log persistence to avoid blocking the broadcaster.
 	// We use a large buffer (e.g. 5000) to handle bursts.
-	logCh := logging.GlobalBroadcaster.SubscribeBuffered(5000)
+	// We use SubscribeWithHistoryBuffered to catch logs generated during startup before DB was ready.
+	logCh, history := logging.GlobalBroadcaster.SubscribeWithHistoryBuffered(5000)
 
 	go func() {
 		defer logging.GlobalBroadcaster.Unsubscribe(logCh)
 
+		// 1. Flush history (Catch-up)
+		// This includes both startup logs (not in DB) and logs we just hydrated (in DB).
+		// Since SaveLog is now idempotent (INSERT OR IGNORE), we can blindly try to save all.
+		if len(history) > 0 {
+			log.Info("Flushing log history to storage...", "count", len(history))
+			for _, msg := range history {
+				// Type assertion
+				var entry logging.LogEntry
+				if e, ok := msg.(logging.LogEntry); ok {
+					entry = e
+				} else if ptr, ok := msg.(*logging.LogEntry); ok {
+					entry = *ptr
+				} else {
+					continue
+				}
+
+				saveCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+				// Ignore errors during flush as duplicates are expected (for logs already in DB)
+				_ = store.SaveLog(saveCtx, &entry)
+				cancel()
+			}
+		}
+
+		// 2. Consume new logs
 		for {
 			select {
 			case <-ctx.Done():
