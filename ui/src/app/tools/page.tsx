@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { apiClient, UpstreamServiceConfig, ToolAnalytics } from "@/lib/client";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
@@ -42,7 +42,7 @@ export default function ToolsPage() {
   const [toolUsage, setToolUsage] = useState<Record<string, ToolAnalytics>>({});
   const [selectedTool, setSelectedTool] = useState<ToolDefinition | null>(null);
   const [inspectorOpen, setInspectorOpen] = useState(false);
-  const { isPinned, togglePin, bulkPin, bulkUnpin, isLoaded } = usePinnedTools();
+  const { isPinned, togglePin, bulkPin, bulkUnpin, isLoaded, pinnedTools } = usePinnedTools();
   const [showPinnedOnly, setShowPinnedOnly] = useState(false);
   const [selectedService, setSelectedService] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -171,8 +171,10 @@ export default function ToolsPage() {
       setInspectorOpen(true);
   };
 
-  const filteredTools = tools
-    .filter((t) => !showPinnedOnly || isPinned(t.name))
+  // ⚡ BOLT: Memoize expensive filtering/sorting/grouping to prevent re-calc on every render.
+  // Randomized Selection from Top 5 High-Impact Targets
+  const filteredTools = useMemo(() => tools
+    .filter((t) => !showPinnedOnly || pinnedTools.includes(t.name))
     .filter((t) => selectedService === "all" || t.serviceId === selectedService)
     .filter((t) =>
       searchQuery === "" ||
@@ -180,15 +182,15 @@ export default function ToolsPage() {
       t.description.toLowerCase().includes(searchQuery.toLowerCase())
     )
     .sort((a, b) => {
-      const aPinned = isPinned(a.name);
-      const bPinned = isPinned(b.name);
+      const aPinned = pinnedTools.includes(a.name);
+      const bPinned = pinnedTools.includes(b.name);
       if (aPinned && !bPinned) return -1;
       if (!aPinned && bPinned) return 1;
       return a.name.localeCompare(b.name);
-    });
+    }), [tools, showPinnedOnly, pinnedTools, selectedService, searchQuery]);
 
   // Grouping logic
-  const groupedTools = filteredTools.reduce((acc, tool) => {
+  const groupedTools = useMemo(() => filteredTools.reduce((acc, tool) => {
     let key = "Other";
     if (groupBy === "service") {
       const service = services.find((s) => s.id === tool.serviceId);
@@ -202,7 +204,7 @@ export default function ToolsPage() {
     }
     acc[key].push(tool);
     return acc;
-  }, {} as Record<string, ToolDefinition[]>);
+  }, {} as Record<string, ToolDefinition[]>), [filteredTools, groupBy, services]);
 
 
   if (!isLoaded) {
@@ -300,13 +302,13 @@ export default function ToolsPage() {
                     <span className="font-medium text-lg flex items-center">
                       {groupName}
                       <Badge variant="secondary" className="ml-2 text-xs">
-                        {groupTools.length}
+                        {(groupTools as ToolDefinition[]).length}
                       </Badge>
                     </span>
                   </AccordionTrigger>
                   <AccordionContent>
                     <ToolTable
-                      tools={groupTools}
+                      tools={groupTools as ToolDefinition[]}
                       isCompact={isCompact}
                       isPinned={isPinned}
                       togglePin={togglePin}
