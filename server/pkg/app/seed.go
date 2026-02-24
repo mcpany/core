@@ -23,6 +23,7 @@ type SeedRequest struct {
 	SecretsRaw     []json.RawMessage `json:"secrets"`
 	ProfilesRaw    []json.RawMessage `json:"profiles"`
 	UsersRaw       []json.RawMessage `json:"users"`
+	TemplatesRaw   []json.RawMessage `json:"service_templates"`
 }
 
 // handleDebugSeed creates a handler to seed the database with data.
@@ -132,6 +133,19 @@ func (a *Application) clearData(ctx context.Context, log *slog.Logger) error {
 			}
 		}
 	}
+
+	// Service Templates
+	templates, err := a.Storage.ListServiceTemplates(ctx)
+	if err != nil {
+		log.Error("Failed to list service templates for clearing", "error", err)
+	} else {
+		for _, t := range templates {
+			if err := a.Storage.DeleteServiceTemplate(ctx, t.GetId()); err != nil {
+				log.Error("Failed to delete service template", "id", t.GetId(), "error", err)
+			}
+		}
+	}
+
 	return nil
 }
 
@@ -179,6 +193,15 @@ func (a *Application) seedData(ctx context.Context, req SeedRequest) error {
 		}
 		if err := a.Storage.CreateUser(ctx, u); err != nil {
 			return fmt.Errorf("failed to create user %s: %w", u.GetId(), err)
+		}
+	}
+	for _, raw := range req.TemplatesRaw {
+		t := configv1.ServiceTemplate_builder{}.Build()
+		if err := protojson.Unmarshal(raw, t); err != nil {
+			return fmt.Errorf("invalid json")
+		}
+		if err := a.Storage.SaveServiceTemplate(ctx, t); err != nil {
+			return fmt.Errorf("failed to save service template %s: %w", t.GetId(), err)
 		}
 	}
 	return nil

@@ -5,7 +5,7 @@
 
 import { test, expect } from '@playwright/test';
 import path from 'path';
-import { seedServices, seedTraffic, seedTemplates, seedWebhooks, cleanupServices, cleanupTemplates, cleanupWebhooks, seedUser, cleanupUser } from './e2e/test-data';
+import { seedGlobalState, seedTraffic, seedWebhooks } from './e2e/test-data';
 
 const DATE = new Date().toISOString().split('T')[0];
 // Use test-results directory which is writable in CI
@@ -15,11 +15,11 @@ test.describe('MCP Any UI E2E Tests', () => {
   test.describe.configure({ mode: 'serial' });
 
   test.beforeEach(async ({ request, page }) => {
-    await seedServices(request);
+    // Use atomic seeding for core state
+    await seedGlobalState(request);
+    // Seed auxiliary data
     await seedTraffic(request);
-    await seedTemplates(request);
     await seedWebhooks(request);
-    await seedUser(request, "e2e-admin-core");
 
     // Login before each test
     await page.goto('/login');
@@ -35,10 +35,9 @@ test.describe('MCP Any UI E2E Tests', () => {
     await expect(page).toHaveURL('/', { timeout: 15000 });
   });
   test.afterEach(async ({ request }) => {
-    await cleanupServices(request);
-    await cleanupTemplates(request);
-    await cleanupWebhooks(request);
-    // await cleanupUser(request, "e2e-admin-core");
+    // Seeding handles cleanup automatically, so we don't need explicit cleanup here
+    // unless we want to leave a clean state.
+    // For now, we rely on atomic seeding at start of next test.
   });
 
   test('Dashboard loads correctly', async ({ page }) => {

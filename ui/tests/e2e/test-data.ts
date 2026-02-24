@@ -7,10 +7,11 @@ import { request, APIRequestContext } from '@playwright/test';
 
 const BASE_URL = process.env.BACKEND_URL || 'http://localhost:50050';
 const API_KEY = process.env.MCPANY_API_KEY || 'test-token';
-const HEADERS = { 'X-API-Key': API_KEY };
+const HEADERS = { 'X-API-Key': API_KEY, 'Content-Type': 'application/json' };
 
-export const seedServices = async (requestContext?: APIRequestContext) => {
+export const seedGlobalState = async (requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+
     const services = [
         {
             id: "svc_01",
@@ -46,7 +47,6 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
                 }
             }
         },
-        // Add a service with calculator for existing test compatibility if desired
         {
             id: "svc_03",
             name: "Math",
@@ -87,170 +87,6 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
         }
     ];
 
-    for (const svc of services) {
-        try {
-            const res = await context.post('/api/v1/services', { data: svc, headers: HEADERS });
-            if (!res.ok() && res.status() !== 409) {
-                const text = await res.text();
-                throw new Error(`${res.status()} ${text}`);
-            }
-
-            // Wait for service to be registered by the async worker
-            let ready = false;
-            for (let i = 0; i < 60; i++) {
-                const check = await context.get('/api/v1/services', { headers: HEADERS });
-                if (check.ok()) {
-                    const data = await check.json();
-                    if (data && Array.isArray(data) && data.some((s: any) => s.name === svc.name)) {
-                        ready = true;
-                        break;
-                    }
-                }
-                await new Promise(r => setTimeout(r, 500));
-            }
-            if (!ready) {
-                console.log(`Warning: service ${svc.name} not ready after 30s`);
-            }
-        } catch (e) {
-            console.log(`Failed to seed service ${svc.name}: ${e}`);
-            throw e;
-        }
-    }
-};
-
-export const seedPrompts = async (requestContext?: APIRequestContext) => {
-    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
-    // Prompts are usually associated with a service or global?
-    // Based on server code, prompts are managed by PromptManager.
-    // There is no POST /api/v1/prompts to create a prompt directly if it's not part of a service?
-    // Wait, PromptManager loads from config/services.
-    // To seed a prompt, we need to register a service that has prompts.
-
-    // We use a command line service (echo) which passes validation if unsafe config is allowed
-    // or we use a mocked http service if we could, but connectivity check blocks it.
-    // We assume backend runs with MCPANY_ALLOW_UNSAFE_CONFIG=true for E2E.
-    const serviceWithPrompts = {
-        id: "svc_prompts",
-        name: "Prompt Service",
-        version: "v1.0",
-        command_line_service: {
-            command: "echo",
-            args: ["hello"],
-            prompts: [
-                {
-                    name: "test-prompt",
-                    description: "A test prompt",
-                    arguments: [{ name: "arg1", description: "An argument" }]
-                }
-            ]
-        }
-    };
-
-    try {
-        await context.post('/api/v1/services', { data: serviceWithPrompts, headers: HEADERS });
-
-        // Wait for service to be ready (registered) so prompts are available
-        let ready = false;
-        for (let i = 0; i < 60; i++) {
-            const check = await context.get('/api/v1/services', { headers: HEADERS });
-            if (check.ok()) {
-                const data = await check.json();
-                if (data && Array.isArray(data) && data.some((s: any) => s.name === 'Prompt Service')) {
-                    ready = true;
-                    break;
-                }
-            }
-            await new Promise(r => setTimeout(r, 500));
-        }
-        if (!ready) {
-            console.log("Warning: Prompt Service not ready after 30s");
-        }
-    } catch (e) {
-        console.log(`Failed to seed prompts service: ${e}`);
-    }
-};
-
-export const cleanupPrompts = async (requestContext?: APIRequestContext) => {
-    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
-    try {
-        await context.delete('/api/v1/services/Prompt Service', { headers: HEADERS });
-    } catch (e) {
-        console.log(`Failed to cleanup prompts service: ${e}`);
-    }
-};
-
-export const seedCollection = async (name: string, requestContext?: APIRequestContext) => {
-    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
-    const collection = {
-        name: name,
-        services: [
-            {
-                name: "weather-service",
-                // Use command_line_service matching config.minimal.yaml to avoid Docker issues in E2E
-                command_line_service: {
-                    command: "echo",
-                    tools: [
-                        {
-                            name: "get_weather",
-                            description: "Get current weather",
-                            call_id: "get_weather"
-                        }
-                    ],
-                    calls: {
-                        get_weather: {
-                            args: ['{"weather": "sunny"}']
-                        }
-                    }
-                }
-            }
-        ]
-    };
-    try {
-        const res = await context.post('/api/v1/collections', { data: collection, headers: HEADERS });
-        if (!res.ok() && res.status() !== 409) {
-            const text = await res.text();
-            throw new Error(`Failed to seed collection ${name}: ${res.status()} ${text}`);
-        }
-
-        // Wait for weather-service to be registered by the async worker
-        let ready = false;
-        for (let i = 0; i < 60; i++) {
-            const check = await context.get('/api/v1/services', { headers: HEADERS });
-            if (check.ok()) {
-                const data = await check.json();
-                if (i === 0 || i === 59) {
-                    console.log("DEBUG /api/v1/services returned data:", JSON.stringify(data).substring(0, 500));
-                }
-                if (data && Array.isArray(data) && data.some((s: any) => s.name === 'weather-service' || s.id === 'weather-service')) {
-                    ready = true;
-                    break;
-                }
-            }
-            await new Promise(r => setTimeout(r, 500));
-        }
-        if (!ready) {
-            console.log("Warning: weather-service in collection not ready after 30s");
-        }
-    } catch (e) {
-        console.log(`Failed to seed collection ${name}: ${e}`);
-        throw e;
-    }
-};
-
-export const seedTraffic = async (requestContext?: APIRequestContext) => {
-    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
-    const points = [
-        { timestamp: new Date().toISOString(), requests: 100, errors: 2 }
-    ];
-    try {
-        await context.post('/api/v1/debug/seed_traffic', { data: points, headers: HEADERS });
-    } catch (e) {
-        console.log(`Failed to seed traffic: ${e}`);
-    }
-};
-
-export const seedTemplates = async (requestContext?: APIRequestContext) => {
-    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     const templates = [
         {
             id: "google-calendar",
@@ -263,8 +99,8 @@ export const seedTemplates = async (requestContext?: APIRequestContext) => {
                 upstream_auth: {
                     oauth2: {
                         token_url: "https://oauth2.googleapis.com/token",
-                        client_id: { plain_text: "" },
-                        client_secret: { plain_text: "" },
+                        client_id: { plainText: "" },
+                        client_secret: { plainText: "" },
                         scopes: "https://www.googleapis.com/auth/calendar"
                     }
                 },
@@ -282,7 +118,7 @@ export const seedTemplates = async (requestContext?: APIRequestContext) => {
             service_config: {
                 name: "github",
                 upstream_auth: {
-                    bearer_token: { token: { plain_text: "" } }
+                    bearer_token: { token: { plainText: "" } }
                 },
                 openapi_service: {
                     address: "https://api.github.com",
@@ -299,7 +135,7 @@ export const seedTemplates = async (requestContext?: APIRequestContext) => {
             service_config: {
                 name: "linear",
                 upstream_auth: {
-                    api_key: { plain_text: "" }
+                    api_key: { value: { plainText: "" } }
                 },
                 openapi_service: {
                     spec_url: "https://raw.githubusercontent.com/linear/linear/master/api/openapi.yaml"
@@ -308,15 +144,77 @@ export const seedTemplates = async (requestContext?: APIRequestContext) => {
         }
     ];
 
-    for (const tmpl of templates) {
-        try {
-            await context.post('/api/v1/templates', { data: tmpl, headers: HEADERS });
-        } catch (e) {
-            console.log(`Failed to seed template ${tmpl.name}: ${e}`);
+    const users = [
+        {
+            id: "e2e-admin-core",
+            authentication: {
+                basic_auth: {
+                    username: "e2e-admin-core",
+                    // hash for "password" (bcrypt cost 12)
+                    password_hash: "$2a$12$KPRtQETm7XKJP/L6FjYYxuCFpTK/oRs7v9U6hWx9XFnWy6UuDqK/a"
+                }
+            },
+            roles: ["admin"],
+            profile_ids: ["dev", "prod"]
         }
+    ];
+
+    const seedRequest = {
+        upstream_services: services,
+        service_templates: templates,
+        users: users,
+        credentials: [],
+        secrets: [],
+        profiles: []
+    };
+
+    try {
+        const res = await context.post('/api/v1/debug/seed', { data: seedRequest, headers: HEADERS });
+        if (!res.ok()) {
+            const text = await res.text();
+            throw new Error(`Failed to seed global state: ${res.status()} ${text}`);
+        }
+        console.log("Global state seeded successfully.");
+    } catch (e) {
+        console.log(`Failed to seed global state: ${e}`);
+        throw e;
     }
 };
 
+// Wrappers for backward compatibility if needed, or deprecate
+export const seedServices = async (requestContext?: APIRequestContext) => {
+    // No-op or call seedGlobalState?
+    // Since individual seeding is flaky/slow, we prefer seedGlobalState.
+    // We'll leave this as a no-op assuming seedGlobalState was called in setup.
+    // Or we can log a warning.
+    console.warn("seedServices is deprecated. Use seedGlobalState.");
+};
+
+export const seedTemplates = async (requestContext?: APIRequestContext) => {
+    console.warn("seedTemplates is deprecated. Use seedGlobalState.");
+};
+
+export const seedUser = async (requestContext?: APIRequestContext, username: string) => {
+    console.warn("seedUser is deprecated. Use seedGlobalState.");
+};
+
+export const cleanupServices = async (requestContext?: APIRequestContext) => {
+    // No-op, seeding overwrites/clears data
+};
+
+export const cleanupTemplates = async (requestContext?: APIRequestContext) => {
+    // No-op
+};
+
+export const cleanupUser = async (requestContext?: APIRequestContext, username: string) => {
+    // No-op
+};
+
+export const cleanupWebhooks = async (requestContext?: APIRequestContext) => {
+    // No-op
+};
+
+// Webhooks still need manual seeding as they are not in SeedRequest yet
 export const seedWebhooks = async (requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
 
@@ -330,7 +228,7 @@ export const seedWebhooks = async (requestContext?: APIRequestContext) => {
         console.log(`Failed to seed global webhook: ${e}`);
     }
 
-    // Seed alert rules (which might be displayed as webhooks or alerts)
+    // Seed alert rules
     const alerts = [
         {
             id: "alert_1",
@@ -342,9 +240,6 @@ export const seedWebhooks = async (requestContext?: APIRequestContext) => {
 
     for (const alert of alerts) {
         try {
-            // Note: If /api/v1/alerts supports POST for creating alerts/rules
-            // api_alerts.go has handleAlerts (POST -> CreateAlert) and handleAlertRules (POST -> CreateRule).
-            // The object above looks more like a Rule.
             await context.post('/api/v1/alerts/rules', { data: alert, headers: HEADERS });
         } catch (e) {
             console.log(`Failed to seed alert ${alert.name}: ${e}`);
@@ -352,132 +247,14 @@ export const seedWebhooks = async (requestContext?: APIRequestContext) => {
     }
 };
 
-export const cleanupServices = async (requestContext?: APIRequestContext) => {
+export const seedTraffic = async (requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
-    try {
-        await context.delete('/api/v1/services/Payment Gateway', { headers: HEADERS });
-        await context.delete('/api/v1/services/User Service', { headers: HEADERS });
-        await context.delete('/api/v1/services/Math', { headers: HEADERS });
-        await context.delete('/api/v1/services/Echo Service', { headers: HEADERS });
-    } catch (e) {
-        console.log(`Failed to cleanup services: ${e}`);
-    }
-};
-
-export const cleanupCollection = async (name: string, requestContext?: APIRequestContext) => {
-    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
-    try {
-        await context.delete(`/api/v1/collections/${name}`, { headers: HEADERS });
-    } catch (e) {
-        console.log(`Failed to cleanup collection ${name}: ${e}`);
-    }
-};
-
-export const cleanupTemplates = async (requestContext?: APIRequestContext) => {
-    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
-    const ids = ["google-calendar", "github", "linear"];
-    for (const id of ids) {
-        try {
-            await context.delete(`/api/v1/templates/${id}`, { headers: HEADERS });
-        } catch (e) {
-            console.log(`Failed to cleanup template ${id}: ${e}`);
-        }
-    }
-};
-
-export const cleanupWebhooks = async (requestContext?: APIRequestContext) => {
-    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
-    // Cleanup global webhook (set to empty)
-    try {
-        await context.post('/api/v1/alerts/webhook', { data: { url: "" }, headers: HEADERS });
-    } catch (e) {
-        console.log(`Failed to cleanup global webhook: ${e}`);
-    }
-    // Cleanup alerts/rules
-    try {
-        await context.delete(`/api/v1/alerts/rules/alert_1`, { headers: HEADERS });
-    } catch (e) {
-        console.log(`Failed to cleanup alert rule: ${e}`);
-    }
-};
-
-export const seedUser = async (requestContext?: APIRequestContext, username: string = "admin") => {
-    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
-    const user = {
-        id: username,
-        authentication: {
-            basic_auth: {
-                username: username,
-                // hash for "password" (bcrypt cost 12)
-                password_hash: "$2a$12$KPRtQETm7XKJP/L6FjYYxuCFpTK/oRs7v9U6hWx9XFnWy6UuDqK/a"
-            }
-        },
-        roles: ["admin"],
-        profile_ids: ["dev", "prod"]
-    };
-    // We don't delete first anymore to avoid race conditions in parallel tests
-    // await cleanupUser(context, username);
-    try {
-        // We use the internal API to seed the user. This request uses HEADERS (API Key) which bypasses auth on backend.
-        const res = await context.post('/api/v1/users', { data: user, headers: HEADERS });
-        if (!res.ok() && res.status() !== 409) {
-            const text = await res.text();
-            throw new Error(`${res.status()} ${text}`);
-        }
-    } catch (e) {
-        console.log(`Failed to seed user: ${e}`);
-        throw e;
-    }
-};
-
-export const cleanupUser = async (requestContext?: APIRequestContext, username: string = "admin") => {
-    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
-    try {
-        await context.delete(`/api/v1/users/${username}`, { headers: HEADERS });
-    } catch (e) {
-        console.log(`Failed to cleanup user: ${e}`);
-    }
-};
-
-export const seedProfiles = async (requestContext?: APIRequestContext) => {
-    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
-    const profiles = [
-        {
-            name: "dev",
-            required_roles: ["admin"],
-            service_config: {
-                "svc_01": { enabled: true },
-                "svc_prompts": { enabled: true },
-                "Prompt Service": { enabled: true }, // Name fallback
-                "*": { enabled: true } // Wildcard for all services (if supported by backend, or just cover bases)
-            }
-        },
-        {
-            name: "prod",
-            required_roles: ["admin"],
-            service_config: {
-                "svc_01": { enabled: false }
-            }
-        }
+    const points = [
+        { timestamp: new Date().toISOString(), requests: 100, errors: 2 }
     ];
-
-    for (const p of profiles) {
-        try {
-            await context.post('/api/v1/profiles', { data: p, headers: HEADERS });
-        } catch (e) {
-            console.log(`Failed to seed profile ${p.name}: ${e}`);
-        }
-    }
-};
-
-export const cleanupProfiles = async (requestContext?: APIRequestContext) => {
-    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
-    const names = ["dev", "prod"];
-    for (const name of names) {
-        try {
-            await context.delete(`/api/v1/profiles/${name}`, { headers: HEADERS });
-        } catch (e) {
-            console.log(`Failed to cleanup profile ${name}: ${e}`);
-        }
+    try {
+        await context.post('/api/v1/debug/seed_traffic', { data: points, headers: HEADERS });
+    } catch (e) {
+        console.log(`Failed to seed traffic: ${e}`);
     }
 };
