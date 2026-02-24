@@ -104,6 +104,16 @@ const CustomTooltip = ({ active, payload }: any) => {
     return null;
 };
 
+/**
+ * ContextTreemap renders a treemap visualization of token usage by service and tool.
+ * It uses the recursive context state to display active tools and their relative costs.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - (JSX.Element): The rendered treemap component.
+ */
 export function ContextTreemap() {
     const { tools, getToolCost, loading, disabledToolIds } = useRecursiveContext();
 

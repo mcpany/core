@@ -17,7 +17,9 @@ import (
 	"github.com/mcpany/core/server/pkg/util"
 )
 
-// SmartRecoveryMiddleware handles automatic error recovery using LLM.
+// SmartRecoveryMiddleware handles automatic error recovery using an LLM.
+// It intercepts tool execution failures and attempts to correct the input arguments
+// by querying an LLM with the error message and original arguments.
 type SmartRecoveryMiddleware struct {
 	config      *configv1.SmartRecoveryConfig
 	llmClient   llm.Client
@@ -25,7 +27,20 @@ type SmartRecoveryMiddleware struct {
 	mu          sync.RWMutex
 }
 
-// NewSmartRecoveryMiddleware creates a new SmartRecoveryMiddleware.
+// NewSmartRecoveryMiddleware creates a new SmartRecoveryMiddleware instance.
+//
+// Parameters:
+//   - config (*configv1.SmartRecoveryConfig): The configuration for smart recovery, including LLM settings.
+//   - toolManager (tool.ManagerInterface): The tool manager for context (though not heavily used currently).
+//
+// Returns:
+//   - (*SmartRecoveryMiddleware): A pointer to the initialized middleware.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewSmartRecoveryMiddleware(config *configv1.SmartRecoveryConfig, toolManager tool.ManagerInterface) *SmartRecoveryMiddleware {
 	return &SmartRecoveryMiddleware{
 		config:      config,
@@ -33,7 +48,26 @@ func NewSmartRecoveryMiddleware(config *configv1.SmartRecoveryConfig, toolManage
 	}
 }
 
-// Execute executes the middleware logic.
+// Execute runs the middleware logic, attempting to recover from tool execution errors.
+// If the next handler fails, it uses an LLM to generate corrected arguments and retries execution.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - req (*tool.ExecutionRequest): The tool execution request containing tool name and arguments.
+//   - next (tool.ExecutionFunc): The next handler in the chain.
+//
+// Returns:
+//   - (any): The result of the tool execution (potentially after recovery).
+//   - (error): The final error if recovery fails or all retries are exhausted.
+//
+// Errors:
+//   - Returns the original error if recovery is disabled or fails.
+//   - Returns LLM errors if the recovery process encounters issues.
+//
+// Side Effects:
+//   - Lazily initializes the LLM client on the first error encountered.
+//   - Logs info/warnings about recovery attempts and failures.
+//   - Modifies req.Arguments and req.ToolInputs in place during retry.
 func (m *SmartRecoveryMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	if m.config == nil || !m.config.GetEnabled() {
 		return next(ctx, req)

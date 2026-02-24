@@ -29,6 +29,16 @@ interface ContextState {
 
 const ContextContext = createContext<ContextState | undefined>(undefined);
 
+/**
+ * ContextProvider manages the global state for the context simulation.
+ * It fetches available tools and services and provides methods to manipulate the simulation state.
+ *
+ * Parameters:
+ *   - children (React.ReactNode): The child components to be wrapped.
+ *
+ * Returns:
+ *   - (JSX.Element): The context provider component.
+ */
 export function ContextProvider({ children }: { children: React.ReactNode }) {
     const [tools, setTools] = useState<ToolDefinition[]>([]);
     const [services, setServices] = useState<UpstreamServiceConfig[]>([]);
@@ -126,6 +136,15 @@ export function ContextProvider({ children }: { children: React.ReactNode }) {
     );
 }
 
+/**
+ * useRecursiveContext is a hook to access the context simulation state.
+ *
+ * Returns:
+ *   - (ContextState): The current context state including tools, services, and simulation controls.
+ *
+ * Throws:
+ *   - Error: If used outside of a ContextProvider.
+ */
 export function useRecursiveContext() {
     const context = useContext(ContextContext);
     if (!context) {

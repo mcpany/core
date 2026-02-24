@@ -13,30 +13,51 @@ import (
 )
 
 // CallPolicyMiddleware is a middleware that enforces call policies (allow/deny)
-// based on tool name and arguments.
+// based on tool name and arguments. It integrates with the tool manager to
+// retrieve service-specific policy configurations.
 type CallPolicyMiddleware struct {
 	toolManager tool.ManagerInterface
 }
 
-// NewCallPolicyMiddleware creates a new CallPolicyMiddleware.
+// NewCallPolicyMiddleware creates a new CallPolicyMiddleware instance.
 //
-// toolManager is the toolManager.
+// Parameters:
+//   - toolManager (tool.ManagerInterface): The tool manager interface used to look up tool and service information.
 //
-// Returns the result.
+// Returns:
+//   - (*CallPolicyMiddleware): A pointer to the initialized middleware.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewCallPolicyMiddleware(toolManager tool.ManagerInterface) *CallPolicyMiddleware {
 	return &CallPolicyMiddleware{
 		toolManager: toolManager,
 	}
 }
 
-// Execute enforces call policies before proceeding to the next handler.
+// Execute enforces call policies before proceeding to the next handler in the chain.
+// It checks if the requested tool execution is permitted by the active service policies.
 //
-// ctx is the context for the request.
-// req is the request object.
-// next is the next.
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - req (*tool.ExecutionRequest): The tool execution request containing tool name and arguments.
+//   - next (tool.ExecutionFunc): The next handler to call if the policy allows execution.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//   - (any): The result of the tool execution from the next handler.
+//   - (error): An error if the policy check fails, the service info is missing, or the execution is denied.
+//
+// Errors:
+//   - Returns error if the service info cannot be found (fail closed).
+//   - Returns error if policy evaluation fails.
+//   - Returns "execution denied by policy" if the policy blocks the request.
+//
+// Side Effects:
+//   - Increments "call_policy.blocked_total" metric if a request is blocked.
+//   - Logs errors if service info is missing or policy evaluation fails.
 func (m *CallPolicyMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := m.toolManager.GetTool(req.ToolName)
 	if !ok {

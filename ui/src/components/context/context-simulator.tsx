@@ -17,6 +17,17 @@ import { Button } from "@/components/ui/button";
 import { Ghost, RefreshCw, Zap } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
+/**
+ * ContextSimulator renders a UI component for simulating context reduction strategies.
+ * It allows users to toggle individual tools and services to visualize the impact on
+ * total token usage and estimated cost savings.
+ *
+ * Parameters:
+ *   - None (Uses context).
+ *
+ * Returns:
+ *   - (JSX.Element): The rendered simulator card component.
+ */
 export function ContextSimulator() {
     const {
         tools,
