@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/util/passhash"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -264,6 +265,19 @@ func (m *MockStore) SaveServiceTemplate(ctx context.Context, tmpl *configv1.Serv
 func (m *MockStore) DeleteServiceTemplate(ctx context.Context, id string) error {
 	args := m.Called(ctx, id)
 	return args.Error(0)
+}
+
+func (m *MockStore) SaveLog(ctx context.Context, entry *logging.LogEntry) error {
+	args := m.Called(ctx, entry)
+	return args.Error(0)
+}
+
+func (m *MockStore) GetRecentLogs(ctx context.Context, limit int) ([]*logging.LogEntry, error) {
+	args := m.Called(ctx, limit)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).([]*logging.LogEntry), args.Error(1)
 }
 
 func TestInitializeDatabase_Empty(t *testing.T) {

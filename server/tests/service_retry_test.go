@@ -14,6 +14,7 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/app"
+	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/util"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/mock"
@@ -268,4 +269,12 @@ func (m *MockStorage) DeleteServiceTemplate(ctx context.Context, id string) erro
 func (m *MockStorage) Close() error {
 	args := m.Called()
 	return args.Error(0)
+}
+
+func (m *MockStorage) SaveLog(ctx context.Context, entry *logging.LogEntry) error {
+	return nil
+}
+
+func (m *MockStorage) GetRecentLogs(ctx context.Context, limit int) ([]*logging.LogEntry, error) {
+	return nil, nil
 }

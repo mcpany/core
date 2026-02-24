@@ -8,6 +8,7 @@ import (
 	"context"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/logging"
 )
 
 // Storage defines the interface for persisting configuration.
@@ -627,4 +628,38 @@ type Storage interface {
 	// Side Effects:
 	//   - Closes the connection to the storage backend.
 	Close() error
+
+	// SaveLog saves a log entry.
+	//
+	// Summary: Persists a log entry.
+	//
+	// Parameters:
+	//   - ctx (context.Context): The context for the request.
+	//   - entry (*logging.LogEntry): The log entry to save.
+	//
+	// Returns:
+	//   - error: An error if saving fails.
+	//
+	// Errors:
+	//   - Returns an error if storage write fails.
+	//
+	// Side Effects:
+	//   - Persists the log entry to the underlying storage.
+	SaveLog(ctx context.Context, entry *logging.LogEntry) error
+
+	// GetRecentLogs retrieves recent log entries.
+	//
+	// Summary: Retrieves recent log entries.
+	//
+	// Parameters:
+	//   - ctx (context.Context): The context for the request.
+	//   - limit (int): The maximum number of logs to retrieve.
+	//
+	// Returns:
+	//   - []*logging.LogEntry: A list of log entries.
+	//   - error: An error if retrieval fails.
+	//
+	// Errors:
+	//   - Returns an error if storage read fails.
+	GetRecentLogs(ctx context.Context, limit int) ([]*logging.LogEntry, error)
 }

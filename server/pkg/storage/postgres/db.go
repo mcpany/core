@@ -142,6 +142,17 @@ func initSchema(db *sql.DB) error {
 		created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
 		updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 	);
+
+	CREATE TABLE IF NOT EXISTS logs (
+		id TEXT PRIMARY KEY,
+		timestamp TIMESTAMPTZ NOT NULL,
+		level TEXT NOT NULL,
+		source TEXT,
+		message TEXT NOT NULL,
+		metadata_json TEXT,
+		created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+	);
+	CREATE INDEX IF NOT EXISTS idx_logs_timestamp ON logs(timestamp);
 	`
 	_, err := db.ExecContext(context.Background(), query)
 	if err != nil {
