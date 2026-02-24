@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"testing"
 
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -28,6 +29,14 @@ func (m *MockPrompt) Prompt() *mcp.Prompt {
 func (m *MockPrompt) Service() string {
 	args := m.Called()
 	return args.String(0)
+}
+
+func (m *MockPrompt) Definition() *configv1.PromptDefinition {
+	args := m.Called()
+	if args.Get(0) == nil {
+		return nil
+	}
+	return args.Get(0).(*configv1.PromptDefinition)
 }
 
 func (m *MockPrompt) Get(

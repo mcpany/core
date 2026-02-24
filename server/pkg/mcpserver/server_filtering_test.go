@@ -87,6 +87,10 @@ func (m *mockPrompt) Service() string {
 	return m.service
 }
 
+func (m *mockPrompt) Definition() *configv1.PromptDefinition {
+	return nil
+}
+
 func (m *mockPrompt) Get(ctx context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {
 	return nil, nil
 }

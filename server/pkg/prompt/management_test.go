@@ -58,6 +58,14 @@ func (m *MockPrompt) Service() string {
 	return args.String(0)
 }
 
+func (m *MockPrompt) Definition() *configv1.PromptDefinition {
+	args := m.Called()
+	if args.Get(0) == nil {
+		return nil
+	}
+	return args.Get(0).(*configv1.PromptDefinition)
+}
+
 func (m *MockPrompt) Get(ctx context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {
 	calledArgs := m.Called(ctx, args)
 	return calledArgs.Get(0).(*mcp.GetPromptResult), calledArgs.Error(1)
