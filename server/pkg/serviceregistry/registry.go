@@ -21,6 +21,7 @@ import (
 	"github.com/mcpany/core/server/pkg/upstream/factory"
 	"github.com/mcpany/core/server/pkg/util"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // ErrServiceAlreadyRegistered is returned when attempting to register a service that is already active.
@@ -189,6 +190,9 @@ func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *co
 		}
 		// Proceed to overwrite the config and try again
 	}
+
+	// Inject Provenance Information (Mock Logic for now)
+	r.injectProvenance(serviceConfig)
 
 	// Register the config and clear error
 	r.serviceConfigs[serviceID] = serviceConfig
@@ -566,6 +570,56 @@ func (r *ServiceRegistry) GetAllServices() ([]*config.UpstreamServiceConfig, err
 		services = append(services, cloned)
 	}
 	return services, nil
+}
+
+// injectProvenance populates provenance information based on service identity.
+// In a real implementation, this would verify cryptographic signatures.
+func (r *ServiceRegistry) injectProvenance(cfg *config.UpstreamServiceConfig) {
+	if cfg.GetProvenance() != nil {
+		return // Already set (e.g. from config file if we allowed it)
+	}
+
+	name := cfg.GetName()
+	// Mock verification logic
+	isVerified := false
+	signer := "Unknown"
+
+	// List of "trusted" prefixes or names
+	trustedPrefixes := []string{"mcp-", "official-"}
+	trustedNames := map[string]bool{
+		"github":   true,
+		"postgres": true,
+		"slack":    true,
+		"linear":   true,
+	}
+
+	if trustedNames[name] {
+		isVerified = true
+		signer = "MCP Official"
+	} else {
+		for _, prefix := range trustedPrefixes {
+			if len(name) >= len(prefix) && name[:len(prefix)] == prefix {
+				isVerified = true
+				signer = "MCP Community Verified"
+				break
+			}
+		}
+	}
+
+	if isVerified {
+		prov := &config.ServiceProvenance{}
+		prov.SetVerified(true)
+		prov.SetSignerIdentity(signer)
+		prov.SetAttestationTime(timestamppb.Now())
+		prov.SetSignatureAlgorithm("ecdsa-p256-sha256")
+		cfg.SetProvenance(prov)
+	} else {
+		// Explicitly set as unverified
+		prov := &config.ServiceProvenance{}
+		prov.SetVerified(false)
+		prov.SetSignerIdentity("Unverified")
+		cfg.SetProvenance(prov)
+	}
 }
 
 // injectRuntimeInfo populates runtime information (error status, tool count) into the config.

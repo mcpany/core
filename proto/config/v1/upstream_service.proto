@@ -6,6 +6,7 @@ edition = "2023";
 package mcpany.config.v1;
 
 import "google/protobuf/duration.proto";
+import "google/protobuf/timestamp.proto";
 import "google/protobuf/go_features.proto";
 import "proto/bus/bus.proto";
 import "proto/config/v1/auth.proto";
@@ -105,6 +106,21 @@ message UpstreamServiceConfig {
   // JSON Schema string defining the configuration parameters (env vars, args) required by this service.
   // This is used by the UI to generate a configuration form.
   string configuration_schema = 38 [json_name = "configuration_schema"];
+  // Provenance information for the service (attestation, signature).
+  // @inject_tag: yaml:"-"
+  ServiceProvenance provenance = 39 [json_name = "provenance"];
+}
+
+// ServiceProvenance defines the security attestation for a service.
+message ServiceProvenance {
+  // If true, the service has been verified.
+  bool verified = 1;
+  // The identity of the signer (e.g. "Google", "Community").
+  string signer_identity = 2 [json_name = "signer_identity"];
+  // The timestamp of the attestation.
+  google.protobuf.Timestamp attestation_time = 3 [json_name = "attestation_time"];
+  // The algorithm used for signing.
+  string signature_algorithm = 4 [json_name = "signature_algorithm"];
 }
 
 message CallPolicy {

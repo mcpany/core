@@ -9,7 +9,7 @@
  */
 
 import { GrpcWebImpl, RegistrationServiceClientImpl } from '@proto/api/v1/registration';
-import { UpstreamServiceConfig as BaseUpstreamServiceConfig, HttpUpstreamService } from '@proto/config/v1/upstream_service';
+import { UpstreamServiceConfig as BaseUpstreamServiceConfig, HttpUpstreamService, ServiceProvenance } from '@proto/config/v1/upstream_service';
 import { ProfileDefinition } from '@proto/config/v1/config';
 import { ToolDefinition } from '@proto/config/v1/tool';
 import { ResourceDefinition } from '@proto/config/v1/resource';
@@ -41,7 +41,7 @@ export interface UpstreamServiceConfig extends Omit<BaseUpstreamServiceConfig, '
 }
 
 // Re-export generated types
-export type { ToolDefinition, ResourceDefinition, PromptDefinition, Credential, Authentication, ProfileDefinition };
+export type { ToolDefinition, ResourceDefinition, PromptDefinition, Credential, Authentication, ProfileDefinition, ServiceProvenance };
 export type { ListServicesResponse, GetServiceResponse, GetServiceStatusResponse, ValidateServiceResponse } from '../../../proto/api/v1/registration';
 
 /**
@@ -60,6 +60,12 @@ export interface ServiceTemplate {
 // Helper to map snake_case config to camelCase UpstreamServiceConfig
 const mapUpstreamServiceConfig = (s: any): UpstreamServiceConfig => ({
     ...s,
+    provenance: s.provenance ? {
+        verified: s.provenance.verified,
+        signerIdentity: s.provenance.signer_identity,
+        attestationTime: s.provenance.attestation_time,
+        signatureAlgorithm: s.provenance.signature_algorithm
+    } : undefined,
     connectionPool: s.connection_pool,
     httpService: s.http_service ? HttpUpstreamService.fromJSON(s.http_service) : undefined,
     grpcService: s.grpc_service,
