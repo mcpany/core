@@ -25,10 +25,11 @@ var (
 
 // SetLevel updates the global log level dynamically.
 //
-// Summary: Sets the global log level.
-//
 // Parameters:
-//   - level: slog.Level. The new log level.
+//   - level (slog.Level): The new log level.
+//
+// Side Effects:
+//   - Updates the global log level atomic variable.
 func SetLevel(level slog.Level) {
 	programLevel.Set(level)
 }
@@ -44,20 +45,20 @@ func ForTestsOnlyResetLogger() {
 }
 
 // Init initializes the application's global logger with a specific log level
-// and output destination. This function is designed to be called only once,
-// typically at the start of the application, to ensure a consistent logging
-// setup.
+// and output destination.
 //
-// Summary: Initializes the global logger singleton.
+// This function is designed to be called only once, typically at the start of the application,
+// to ensure a consistent logging setup.
 //
 // Parameters:
-//   - level: slog.Level. The minimum log level to be recorded (e.g., `slog.LevelInfo`).
-//   - output: io.Writer. The `io.Writer` to which log entries will be written (e.g., `os.Stdout`).
-//   - logFilePath: string. Optional path to a log file. If provided, JSON logs will be written here.
-//   - format: ...string. Optional format string ("json" or "text"). Defaults to "text".
+//   - level (slog.Level): The minimum log level to be recorded.
+//   - output (io.Writer): The output destination for logs.
+//   - logFilePath (string): Optional path to a log file for JSON output.
+//   - format (...string): Optional format string ("json" or "text"). Defaults to "text".
 //
-// Returns:
-//   None.
+// Side Effects:
+//   - Sets the global logger instance.
+//   - May open a file for writing.
 func Init(level slog.Level, output io.Writer, logFilePath string, format ...string) {
 	mu.Lock()
 	defer mu.Unlock()
@@ -124,14 +125,16 @@ func Init(level slog.Level, output io.Writer, logFilePath string, format ...stri
 	// Init complete
 }
 
-// GetLogger returns the shared global logger instance. If the logger has not yet
-// been initialized through a call to `Init`, this function will initialize it
-// with default settings: logging to `os.Stderr` at `slog.LevelInfo`.
+// GetLogger returns the shared global logger instance.
 //
-// Summary: Retrieves the global logger instance.
+// If the logger has not yet been initialized through a call to `Init`, this function will
+// initialize it with default settings: logging to `os.Stderr` at `slog.LevelInfo`.
 //
 // Returns:
 //   - *slog.Logger: The global `*slog.Logger` instance.
+//
+// Side Effects:
+//   - May initialize the default logger if not already set.
 func GetLogger() *slog.Logger {
 	// ⚡ Bolt Optimization: Fast path to avoid lock contention on every log call.
 	// Atomic load is much cheaper than mutex lock.
@@ -153,13 +156,14 @@ func GetLogger() *slog.Logger {
 
 // ToSlogLevel converts a string log level to a slog.Level.
 //
-// Summary: Converts protobuf log level to slog level.
-//
 // Parameters:
-//   - level: configv1.GlobalSettings_LogLevel. The log level from the configuration.
+//   - level (configv1.GlobalSettings_LogLevel): The log level from the configuration.
 //
 // Returns:
 //   - slog.Level: The corresponding slog.Level.
+//
+// Side Effects:
+//   - None.
 func ToSlogLevel(level configv1.GlobalSettings_LogLevel) slog.Level {
 	switch level {
 	case configv1.GlobalSettings_LOG_LEVEL_DEBUG:

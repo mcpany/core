@@ -38,8 +38,6 @@ import (
 
 // Upstream implements the upstream.Upstream interface for gRPC services.
 //
-// Summary: gRPC upstream service implementation.
-//
 // It uses gRPC reflection to discover services and methods, and creates tools
 // for them. It also manages a connection pool and a cache for reflection data.
 type Upstream struct {
@@ -53,13 +51,14 @@ type Upstream struct {
 
 // CheckHealth performs a health check on the upstream service.
 //
-// Summary: Verifies the health of the gRPC service.
-//
 // Parameters:
-//   - ctx: context.Context. The context for the health check.
+//   - ctx (context.Context): The context for the health check.
 //
 // Returns:
 //   - error: An error if the service is unhealthy.
+//
+// Side Effects:
+//   - Performs a health check RPC.
 func (u *Upstream) CheckHealth(ctx context.Context) error {
 	u.mu.RLock()
 	checker := u.checker
@@ -77,13 +76,14 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 
 // NewUpstream creates a new instance of Upstream.
 //
-// Summary: Initializes a new gRPC upstream.
-//
 // Parameters:
-//   - poolManager: *pool.Manager. The connection pool manager to be used for managing gRPC connections.
+//   - poolManager (*pool.Manager): The connection pool manager to be used for managing gRPC connections.
 //
 // Returns:
 //   - upstream.Upstream: An implementation of the upstream.Upstream interface.
+//
+// Side Effects:
+//   - Starts a background cache cleaner.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	cache := ttlcache.New[string, *descriptorpb.FileDescriptorSet](
 		ttlcache.WithTTL[string, *descriptorpb.FileDescriptorSet](5 * time.Minute),
@@ -99,10 +99,8 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 // Shutdown gracefully terminates the gRPC upstream service by shutting down the
 // associated connection pool.
 //
-// Summary: Shuts down the upstream service.
-//
 // Parameters:
-//   - ctx: context.Context. The context for the shutdown operation (currently unused).
+//   - ctx (context.Context): The context for the shutdown operation (currently unused).
 //
 // Returns:
 //   - error: Always returns nil.
@@ -131,15 +129,13 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 // definitions, and then creates and registers tools based on the discovered
 // methods and any MCP annotations.
 //
-// Summary: Registers a gRPC service and its capabilities.
-//
 // Parameters:
-//   - ctx: context.Context. The registration context.
-//   - serviceConfig: *configv1.UpstreamServiceConfig. The configuration for the service.
-//   - toolManager: tool.ManagerInterface. The manager for tools.
-//   - promptManager: prompt.ManagerInterface. The manager for prompts.
-//   - resourceManager: resource.ManagerInterface. The manager for resources.
-//   - isReload: bool. Indicates whether this is a reload.
+//   - ctx (context.Context): The registration context.
+//   - serviceConfig (*configv1.UpstreamServiceConfig): The configuration for the service.
+//   - toolManager (tool.ManagerInterface): The manager for tools.
+//   - promptManager (prompt.ManagerInterface): The manager for prompts.
+//   - resourceManager (resource.ManagerInterface): The manager for resources.
+//   - isReload (bool): Indicates whether this is a reload.
 //
 // Returns:
 //   - string: The unique service ID.
