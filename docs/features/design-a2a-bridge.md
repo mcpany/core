@@ -46,3 +46,11 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+
+### Update: 2026-02-27 - Asynchronous Handoff Support
+**Context:** Market research into agent swarms (OpenClaw, Gemini CLI) shows that many tasks are too long-running for a standard synchronous JSON-RPC tool call.
+**Architecture Adjustment:**
+*   **Callback Tooling**: Introducing a "Task ID" based response. If an A2A agent cannot finish immediately, it returns a `TASK_PENDING` status with a `task_id`.
+*   **State Suspension**: MCP Any will suspend the tool execution state and expose a `check_agent_task_status` tool to the caller.
+*   **Webhook Integration**: Support for A2A agents to "POST" results back to an MCP Any webhook, which then populates the `Shared KV Store` (Blackboard) for the caller to pick up.
+**Security Impact:** Prevents timeout-based denial of service attacks and ensures state is persisted even if the caller agent restarts.

@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **MCP Metadata Sanitizer Middleware**: (P0) A security layer that cleans tool descriptions of prompt injection payloads and hidden instructions.
+- **Asynchronous A2A Handoff Bridge**: (P1) Extends the A2A bridge to support non-blocking handoffs with callback support.
+- **Agent Governance Dashboard**: (P1) A centralized view for monitoring and controlling the actions of autonomous local agents like OpenClaw.
+
+### Priority Shifts
+- **A2A Interop Bridge (Pseudo-MCP)**: (P0) Re-affirming P0 status due to the rise of swarm interoperability.
+- **Federated MCP Node Peering**: Promoted to **P0** to support secure cross-organization agent collaboration.
+
+### Deprecations / Monitoring
+- **Unsanitized Metadata Passthrough**: Marked for deprecation. All tool metadata must pass through the Sanitizer by default.

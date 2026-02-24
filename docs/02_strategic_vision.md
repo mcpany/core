@@ -47,3 +47,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **A2A Gateway Protocol**: MCP Any will implement a protocol-neutral bridge for A2A communication, allowing disparate agent frameworks (e.g., OpenClaw, AutoGen) to exchange state and tasks via a unified MCP-like interface.
 - **Federated Tool Mesh**: Moving from a standalone server to a "Mesh" architecture where multiple MCP Any instances can peer and share resources across network boundaries, governed by global Zero-Trust policies.
 - **Resource-Aware Intelligence**: Integrating cost and latency telemetry into the tool discovery process, allowing LLMs to perform "Economical Reasoning" when selecting tools.
+
+---
+
+## Strategic Evolution: [2026-02-27]
+### Focus: Federated Trust & Metadata Security
+**Context**: The emergence of "Log-To-Leak" and "Tool-Jacking" via metadata injection indicates that the MCP transport layer itself is now an attack surface. Furthermore, the rapid growth of OpenClaw and agent swarms demands a more robust way to handle state synchronization during inter-agent handoffs.
+**Strategic Pivot**:
+- **Metadata Sanitization Pipeline**: MCP Any will implement a mandatory "Sanitization Layer" that strips executable instructions or suspicious patterns from tool descriptions before they reach the LLM's context.
+- **Asynchronous Handoff Protocol**: Evolving the A2A bridge to support long-running asynchronous tasks where the "caller" agent can suspend and resume based on a "callback" from the "delegate" agent.
+- **Governance for Autonomous Local Agents**: Positioning MCP Any as the "Local Control Plane" for unmanaged agents like OpenClaw, providing visibility and policy enforcement for every action they take.
