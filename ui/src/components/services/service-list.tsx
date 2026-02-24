@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import Link from "next/link";
-import { Settings, Trash2, CheckCircle, XCircle, AlertTriangle, MoreHorizontal, Copy, Download, Filter, PlayCircle, PauseCircle, Activity, RefreshCw, Terminal } from "lucide-react";
+import { Settings, Trash2, CheckCircle, XCircle, AlertTriangle, MoreHorizontal, Copy, Download, Filter, PlayCircle, PauseCircle, Activity, RefreshCw, Terminal, ShieldCheck, ShieldAlert } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -169,6 +169,7 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
               </TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Name</TableHead>
+              <TableHead>Trust</TableHead>
               <TableHead>Type</TableHead>
               <TableHead>Activity</TableHead>
               <TableHead>Tags</TableHead>
@@ -337,6 +338,34 @@ const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onT
                          </Tooltip>
                      )}
                  </div>
+             </TableCell>
+             <TableCell>
+                  {service.provenance?.verified ? (
+                      <Tooltip>
+                          <TooltipTrigger>
+                              <div className="flex items-center gap-1 text-green-600">
+                                  <ShieldCheck className="h-4 w-4" />
+                                  <span className="text-xs font-medium">Verified</span>
+                              </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                              <p className="font-semibold">Verified Source</p>
+                              <p className="text-xs text-muted-foreground">Signer: {service.provenance.signerIdentity}</p>
+                          </TooltipContent>
+                      </Tooltip>
+                  ) : (
+                      <Tooltip>
+                          <TooltipTrigger>
+                              <div className="flex items-center gap-1 text-muted-foreground opacity-50">
+                                  <ShieldAlert className="h-4 w-4" />
+                                  <span className="text-xs">Unverified</span>
+                              </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                              <p>Unverified Source</p>
+                          </TooltipContent>
+                      </Tooltip>
+                  )}
              </TableCell>
              <TableCell>
                  <Badge variant="outline">{type}</Badge>

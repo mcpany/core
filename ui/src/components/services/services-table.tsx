@@ -16,7 +16,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, Settings, Trash, RefreshCw, AlertCircle, CheckCircle2, CircleOff } from "lucide-react";
+import { MoreHorizontal, Settings, Trash, RefreshCw, AlertCircle, CheckCircle2, CircleOff, ShieldCheck, ShieldAlert } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -57,6 +57,7 @@ export function ServicesTable({ services, loading, onToggle, onDelete }: Service
         <TableHeader>
           <TableRow>
             <TableHead>Name</TableHead>
+            <TableHead>Trust</TableHead>
             <TableHead>Type</TableHead>
             <TableHead>Tools</TableHead>
             <TableHead>Version</TableHead>
@@ -68,7 +69,7 @@ export function ServicesTable({ services, loading, onToggle, onDelete }: Service
         <TableBody>
           {services.length === 0 && (
               <TableRow>
-                  <TableCell colSpan={7} className="text-center h-24 text-muted-foreground">
+                  <TableCell colSpan={8} className="text-center h-24 text-muted-foreground">
                       No services registered.
                   </TableCell>
               </TableRow>
@@ -79,6 +80,34 @@ export function ServicesTable({ services, loading, onToggle, onDelete }: Service
                 <Link href={`/services/${service.name}`} className="hover:underline">
                     {service.name}
                 </Link>
+              </TableCell>
+              <TableCell>
+                  {service.provenance?.verified ? (
+                      <Tooltip>
+                          <TooltipTrigger>
+                              <div className="flex items-center gap-1 text-green-600">
+                                  <ShieldCheck className="h-4 w-4" />
+                                  <span className="text-xs font-medium">Verified</span>
+                              </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                              <p className="font-semibold">Verified Source</p>
+                              <p className="text-xs text-muted-foreground">Signer: {service.provenance.signerIdentity}</p>
+                          </TooltipContent>
+                      </Tooltip>
+                  ) : (
+                      <Tooltip>
+                          <TooltipTrigger>
+                              <div className="flex items-center gap-1 text-muted-foreground opacity-50">
+                                  <ShieldAlert className="h-4 w-4" />
+                                  <span className="text-xs">Unverified</span>
+                              </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                              <p>Unverified Source</p>
+                          </TooltipContent>
+                      </Tooltip>
+                  )}
               </TableCell>
               <TableCell>
                 <Badge variant="outline">

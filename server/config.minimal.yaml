@@ -60,3 +60,15 @@ upstream_services:
           args: ['[{"id": 1, "name": "Alice", "role": "Admin", "details": {"active": true}}, {"id": 2, "name": "Bob", "role": "User", "details": {"active": false}}]']
         get_rich_content:
           args: ['{"content": [{"type": "text", "text": "# Rich Content Test\n\nThis is a **markdown** test with a list:\n- Item 1\n- Item 2\n\nAnd an image below:"}, {"type": "image", "data": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==", "mimeType": "image/png"}], "isError": false}']
+
+  - id: "mcp-verified-service"
+    name: "mcp-verified-service"
+    command_line_service:
+      command: "echo"
+      tools:
+        - name: "verified_tool"
+          description: "A tool from a verified service"
+          call_id: "verified_tool"
+      calls:
+        verified_tool:
+          args: ['{"status": "verified"}']
