@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **Nested HITL Approval Routing**: (P0) Standardized mechanism for subagents to delegate interactive prompts (e.g., `askQuestions`) to the parent user session without breaking autonomy.
+- **Dynamic Security Contract Validator**: (P0) Automated validation of MCP server "contracts" before tool execution. Addresses the "AI-speed" vulnerability discovery threat.
+- **Context Branching (Fork) Manager**: (P1) Middleware to handle state isolation and merging for "forked" agent sessions, enabling parallel task exploration.
+
+### Priority Shifts
+- **Unified MCP Discovery Service**: Promoted to **P0**. Essential to compete with native VS Code/Claude MCP integration and provide a cross-platform discovery hub.
+- **A2A Interop Bridge**: (P0) Confirmed high priority to facilitate the emerging "Agent Mesh" where frameworks must collaborate.
+
+### Deprecations / Monitoring
+- **Manual Tool Approval**: Monitoring for transition to "Contract-Based Approval" where humans only intervene when a security contract is violated or ambiguous.

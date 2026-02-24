@@ -43,3 +43,7 @@ As AI agent ecosystems evolve from single-agent monoliths to multi-agent swarms 
 
 ## 7. Evolutionary Changelog
 * **2026-02-24**: Initial Document Creation.
+* **2026-02-27**: **Context Branching (Forking) Integration**.
+    * **Context**: Inspired by VS Code's `/fork` command, the coordination hub now supports session branching.
+    * **Architecture Adjustment**: Added `POST /session/{id}/fork` to create isolated child sessions that inherit the current blackboard state but allow divergent tool execution paths.
+    * **Security Impact**: Branching ensures that "experimental" subagent paths cannot corrupt the primary session state until explicitly merged.

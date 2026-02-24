@@ -47,3 +47,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **A2A Gateway Protocol**: MCP Any will implement a protocol-neutral bridge for A2A communication, allowing disparate agent frameworks (e.g., OpenClaw, AutoGen) to exchange state and tasks via a unified MCP-like interface.
 - **Federated Tool Mesh**: Moving from a standalone server to a "Mesh" architecture where multiple MCP Any instances can peer and share resources across network boundaries, governed by global Zero-Trust policies.
 - **Resource-Aware Intelligence**: Integrating cost and latency telemetry into the tool discovery process, allowing LLMs to perform "Economical Reasoning" when selecting tools.
+
+---
+
+## Strategic Evolution: [2026-02-27]
+### Focus: Autonomous Trust & Human-in-the-Loop (HITL) Delegation
+**Context**: Recent shifts in Claude Code (subagent interactivity) and OpenClaw security investigations highlight a critical gap: agents need a standardized way to "delegate up" to humans without losing session integrity, and they must do so within a verified trust perimeter.
+**Strategic Pivot**:
+- **Standardized HITL Delegation**: MCP Any will evolve its HITL middleware to support "nested approvals," where subagents can trigger interactive prompts that are securely routed back to the primary user interface, preserving the original intent-scope.
+- **Machine-Checkable Security Contracts**: Transitioning from static policies to dynamic "Security Contracts" that MCP servers must satisfy before being admitted to the tool mesh. These contracts will be verifiable by automated "Security Auditor" agents.
+- **Fork-Aware Context Branching**: Adopting the "Conversation Fork" pattern to allow agents to explore multiple execution paths in parallel (e.g., trying two different fix strategies) while MCP Any manages the state isolation for each branch.
