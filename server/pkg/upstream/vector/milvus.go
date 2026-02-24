@@ -22,10 +22,18 @@ type MilvusClient struct {
 
 // NewMilvusClient creates a new Milvus client.
 //
-// config holds the configuration settings.
+// Parameters:
+//   - config (*configv1.MilvusVectorDB): The parameter.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//   - *MilvusClient: The result.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
 func NewMilvusClient(config *configv1.MilvusVectorDB) (*MilvusClient, error) {
 	if config.GetAddress() == "" {
 		return nil, fmt.Errorf("address is required for Milvus")
@@ -68,14 +76,18 @@ func NewMilvusClient(config *configv1.MilvusVectorDB) (*MilvusClient, error) {
 
 // Query searches for similar vectors.
 //
-// ctx is the context for the request.
-// vector is the vector.
-// topK is the topK.
-// filter is the filter.
-// namespace is the namespace.
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - vector ([]float32): The parameter.
+//   - topK (int64): The parameter.
+//   - filter (map[string]interface{}): The parameter.
+//   - namespace (string): The parameter.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//   - (map[string]interface: The result.
+//
+// Side Effects:
+//   - None.
 func (c *MilvusClient) Query(ctx context.Context, vector []float32, topK int64, filter map[string]interface{}, namespace string) (map[string]interface{}, error) {
 	// Milvus uses partitions as namespaces usually, or just metadata fields.
 	// Assuming namespace maps to partition names if provided.
@@ -189,12 +201,16 @@ func (c *MilvusClient) Query(ctx context.Context, vector []float32, topK int64, 
 
 // Upsert inserts or updates vectors.
 //
-// ctx is the context for the request.
-// vectors is the vectors.
-// namespace is the namespace.
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - vectors ([]map[string]interface{}): The parameter.
+//   - namespace (string): The parameter.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//   - (map[string]interface: The result.
+//
+// Side Effects:
+//   - None.
 func (c *MilvusClient) Upsert(ctx context.Context, vectors []map[string]interface{}, namespace string) (map[string]interface{}, error) {
 	// Milvus Upsert (v2.3+)
 	if len(vectors) == 0 {
@@ -400,13 +416,17 @@ func fillMetadataColumn(col entity.Column, i int, val interface{}) {
 
 // Delete removes vectors.
 //
-// ctx is the context for the request.
-// ids is the ids.
-// namespace is the namespace.
-// filter is the filter.
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - ids ([]string): The parameter.
+//   - namespace (string): The parameter.
+//   - filter (map[string]interface{}): The parameter.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//   - (map[string]interface: The result.
+//
+// Side Effects:
+//   - None.
 func (c *MilvusClient) Delete(ctx context.Context, ids []string, namespace string, filter map[string]interface{}) (map[string]interface{}, error) {
 	// Construct expression
 	var expr string
@@ -467,11 +487,15 @@ func (c *MilvusClient) Delete(ctx context.Context, ids []string, namespace strin
 
 // DescribeIndexStats returns statistics about the index.
 //
-// ctx is the context for the request.
-// _ is an unused parameter.
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - _ (map[string]interface{}): The parameter.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//   - (map[string]interface: The result.
+//
+// Side Effects:
+//   - None.
 func (c *MilvusClient) DescribeIndexStats(ctx context.Context, _ map[string]interface{}) (map[string]interface{}, error) {
 	coll, err := c.client.DescribeCollection(ctx, c.config.GetCollectionName())
 	if err != nil {

@@ -22,20 +22,16 @@ type ActionableError struct {
 
 // Error implements the error interface.
 //
-// Summary: Returns the error message including the suggestion.
-//
-// Returns:
-//   - string: The formatted error message.
+// Side Effects:
+//   - None.
 func (e *ActionableError) Error() string {
 	return fmt.Sprintf("%v\n\t-> Fix: %s", e.Err, e.Suggestion)
 }
 
 // Unwrap returns the underlying error.
 //
-// Summary: Returns the original error wrapped by ActionableError.
-//
-// Returns:
-//   - error: The wrapped error.
+// Side Effects:
+//   - None.
 func (e *ActionableError) Unwrap() error {
 	return e.Err
 }

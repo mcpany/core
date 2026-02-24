@@ -93,16 +93,28 @@ type Upstream struct{}
 
 // NewGraphQLUpstream creates a new GraphQL upstream.
 //
-// Returns the result.
+// Returns:
+//   - upstream.Upstream: The result.
+//
+// Side Effects:
+//   - None.
 func NewGraphQLUpstream() upstream.Upstream {
 	return &Upstream{}
 }
 
 // Shutdown shuts down the upstream.
 //
-// _ is an unused parameter.
+// Parameters:
+//   - _ (context.Context): The parameter.
 //
-// Returns an error if the operation fails.
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
 func (g *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
@@ -174,11 +186,19 @@ type Callable struct {
 
 // Call executes the GraphQL query.
 //
-// ctx is the context for the request.
-// req is the request object.
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - req (*tool.ExecutionRequest): The parameter.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//   - any: The result.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
 func (c *Callable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	graphqlReq := graphql.NewRequest(c.query)
 	for key, value := range req.Arguments {

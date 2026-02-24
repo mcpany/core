@@ -25,10 +25,8 @@ type TemporaryToolManager struct {
 
 // NewTemporaryToolManager creates a new TemporaryToolManager.
 //
-// Summary: Initializes a new TemporaryToolManager.
-//
-// Returns:
-//   - *TemporaryToolManager: A new instance of TemporaryToolManager.
+// Side Effects:
+//   - None.
 func NewTemporaryToolManager() *TemporaryToolManager {
 	return &TemporaryToolManager{
 		serviceInfo: make(map[string]*tool.ServiceInfo),
@@ -38,11 +36,11 @@ func NewTemporaryToolManager() *TemporaryToolManager {
 
 // AddServiceInfo implements tool.ManagerInterface.
 //
-// Summary: Adds service information to the manager.
+// Returns:
+//   - None.
 //
-// Parameters:
-//   - serviceID: string. The ID of the service.
-//   - info: *tool.ServiceInfo. The service information.
+// Side Effects:
+//   - None.
 func (m *TemporaryToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -125,10 +123,8 @@ func (m *TemporaryToolManager) GetTool(toolName string) (tool.Tool, bool) {
 
 // ListTools implements tool.ManagerInterface.
 //
-// Summary: Lists all tools in the manager.
-//
-// Returns:
-//   - []tool.Tool: A slice of all tools.
+// Side Effects:
+//   - None.
 func (m *TemporaryToolManager) ListTools() []tool.Tool {
 	m.mu.RLock()
 	defer m.mu.RUnlock()

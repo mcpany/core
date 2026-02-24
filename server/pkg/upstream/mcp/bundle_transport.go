@@ -32,7 +32,11 @@ type transportError struct {
 
 // Error returns the error message.
 //
-// Returns the result.
+// Returns:
+//   - string: The result.
+//
+// Side Effects:
+//   - None.
 func (e *transportError) Error() string {
 	return e.Message
 }
@@ -54,10 +58,18 @@ type BundleDockerTransport struct {
 
 // Connect establishes a connection to the service within the Docker container.
 //
-// ctx is the context for the request.
+// Parameters:
+//   - ctx (context.Context): The context for the request.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//   - mcp.Connection: The result.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
 func (t *BundleDockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 	log := logging.GetLogger()
 
@@ -170,10 +182,18 @@ type bundleDockerConn struct {
 
 // Read reads a JSON-RPC message from the connection.
 //
-// _ is an unused parameter.
+// Parameters:
+//   - _ (context.Context): The parameter.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//   - jsonrpc.Message: The result.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
 func (c *bundleDockerConn) Read(_ context.Context) (jsonrpc.Message, error) {
 	var raw json.RawMessage
 	if err := c.decoder.Decode(&raw); err != nil {
@@ -304,10 +324,18 @@ func setUnexportedID(idPtr interface{}, val interface{}) error {
 
 // Write writes a JSON-RPC message to the connection.
 //
-// _ is an unused parameter.
-// msg is the msg.
+// Parameters:
+//   - _ (context.Context): The parameter.
+//   - msg (jsonrpc.Message): The parameter.
 //
-// Returns an error if the operation fails.
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
 func (c *bundleDockerConn) Write(_ context.Context, msg jsonrpc.Message) error {
 	// Workaround: jsonrpc.ID in the SDK marshals to {} because of unexported fields.
 	// We extract the value manually and send an intermediate struct.
@@ -429,14 +457,25 @@ func fixIDExtracted(val interface{}) interface{} {
 
 // Close closes the connection.
 //
-// Returns an error if the operation fails.
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
 func (c *bundleDockerConn) Close() error {
 	return c.rwc.Close()
 }
 
 // SessionID returns the session ID of the connection.
 //
-// Returns the result.
+// Returns:
+//   - string: The result.
+//
+// Side Effects:
+//   - None.
 func (c *bundleDockerConn) SessionID() string {
 	return "bundle-docker"
 }
@@ -449,10 +488,18 @@ type bundleSlogWriter struct {
 
 // Write writes the log message to the logger.
 //
-// p is the p.
+// Parameters:
+//   - p ([]byte): The parameter.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//   - n (int): The result.
+//   - err (error): An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
 func (s *bundleSlogWriter) Write(p []byte) (n int, err error) {
 	msg := string(p)
 	s.log.Log(context.Background(), s.level, msg)

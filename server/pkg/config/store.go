@@ -119,16 +119,47 @@ type yamlEngine struct {
 }
 
 // SetSkipValidation sets whether to skip schema validation.
+//
+// Parameters:
+//   - skip (bool): The parameter.
+//
+// Returns:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (e *yamlEngine) SetSkipValidation(skip bool) {
 	e.skipValidation = skip
 }
 
 // SetIgnoreEnv sets whether to ignore environment variables.
+//
+// Parameters:
+//   - ignore (bool): The parameter.
+//
+// Returns:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (e *yamlEngine) SetIgnoreEnv(ignore bool) {
 	e.ignoreEnv = ignore
 }
 
 // Unmarshal parses a YAML byte slice into a `proto.Message`.
+//
+// Parameters:
+//   - b ([]byte): The parameter.
+//   - v (proto.Message): The parameter.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
 func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 	// First, unmarshal YAML into a generic map.
 	var yamlMap map[string]interface{}
@@ -148,6 +179,20 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 }
 
 // UnmarshalFromMap populates the provided proto.Message from a raw map.
+//
+// Parameters:
+//   - yamlMap (map[string]interface{}): The parameter.
+//   - v (proto.Message): The parameter.
+//   - originalBytes ([]byte): The parameter.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
 func (e *yamlEngine) UnmarshalFromMap(yamlMap map[string]interface{}, v proto.Message, originalBytes []byte) error {
 	return e.unmarshalInternal(yamlMap, v, originalBytes)
 }
@@ -253,6 +298,19 @@ func (e *yamlEngine) unmarshalInternal(yamlMap map[string]interface{}, v proto.M
 type textprotoEngine struct{}
 
 // Unmarshal parses a textproto byte slice into a `proto.Message`.
+//
+// Parameters:
+//   - b ([]byte): The parameter.
+//   - v (proto.Message): The parameter.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
 func (e *textprotoEngine) Unmarshal(b []byte, v proto.Message) error {
 	return prototext.Unmarshal(b, v)
 }
@@ -261,6 +319,19 @@ func (e *textprotoEngine) Unmarshal(b []byte, v proto.Message) error {
 type jsonEngine struct{}
 
 // Unmarshal parses a JSON byte slice into a `proto.Message`.
+//
+// Parameters:
+//   - b ([]byte): The parameter.
+//   - v (proto.Message): The parameter.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
 func (e *jsonEngine) Unmarshal(b []byte, v proto.Message) error {
 	if err := protojson.Unmarshal(b, v); err != nil {
 		// Detect if the user is using Claude Desktop config format
@@ -587,20 +658,22 @@ type FileStore struct {
 
 // SetSkipValidation configures whether to skip schema validation during loading.
 //
-// Summary: Sets the skip validation flag.
+// Returns:
+//   - None.
 //
-// Parameters:
-//   - skip (bool): True to skip validation.
+// Side Effects:
+//   - None.
 func (s *FileStore) SetSkipValidation(skip bool) {
 	s.skipValidation = skip
 }
 
 // SetIgnoreMissingEnv configures whether to ignore missing environment variables during loading.
 //
-// Summary: Sets the ignore missing environment variables flag.
+// Returns:
+//   - None.
 //
-// Parameters:
-//   - ignore (bool): True to ignore missing environment variables.
+// Side Effects:
+//   - None.
 func (s *FileStore) SetIgnoreMissingEnv(ignore bool) {
 	s.IgnoreMissingEnv = ignore
 }
@@ -635,10 +708,8 @@ func NewFileStoreWithSkipErrors(fs afero.Fs, paths []string) *FileStore {
 
 // HasConfigSources returns true if the store has configuration paths configured.
 //
-// Summary: Checks if the store has any configured paths.
-//
-// Returns:
-//   - (bool): True if paths are configured, false otherwise.
+// Side Effects:
+//   - None.
 func (s *FileStore) HasConfigSources() bool {
 	return len(s.paths) > 0
 }
@@ -1255,10 +1326,8 @@ func collectFieldNames(md protoreflect.MessageDescriptor, candidates map[string]
 
 // HasConfigSources returns true if any of the underlying stores have configuration sources.
 //
-// Summary: Checks if any underlying store has configuration sources.
-//
-// Returns:
-//   - bool: True if at least one store has sources, false otherwise.
+// Side Effects:
+//   - None.
 func (ms *MultiStore) HasConfigSources() bool {
 	for _, s := range ms.stores {
 		if s.HasConfigSources() {

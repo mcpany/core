@@ -62,10 +62,8 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 
 // NewUpstream creates a new instance of CommandUpstream.
 //
-// Summary: Initializes a new command upstream.
-//
-// Returns:
-//   - upstream.Upstream: An implementation of the upstream.Upstream interface.
+// Side Effects:
+//   - None.
 func NewUpstream() upstream.Upstream {
 	return &Upstream{}
 }

@@ -308,14 +308,8 @@ func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *co
 
 // AddServiceInfo stores metadata about a service.
 //
-// Summary: Registers metadata for a service.
-//
-// Parameters:
-//   - serviceID (string): The service ID.
-//   - info (*tool.ServiceInfo): The service metadata to store.
-//
-// Side Effects:
-//   - Updates the internal service info map.
+// Returns:
+//   - None.
 func (r *ServiceRegistry) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -575,14 +569,6 @@ func (r *ServiceRegistry) Close(ctx context.Context) error {
 
 // GetAllServices returns a list of all registered services.
 //
-// Summary: Retrieves all registered service configurations.
-//
-// Returns:
-//   - []*config.UpstreamServiceConfig: A list of service configurations.
-//   - error: Always nil.
-//
-// Side Effects:
-//   - None.
 func (r *ServiceRegistry) GetAllServices() ([]*config.UpstreamServiceConfig, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()

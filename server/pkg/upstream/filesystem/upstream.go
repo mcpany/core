@@ -43,10 +43,8 @@ type Upstream struct {
 
 // NewUpstream creates a new instance of FilesystemUpstream.
 //
-// Summary: Initializes a new filesystem upstream.
-//
-// Returns:
-//   - upstream.Upstream: An implementation of the upstream.Upstream interface.
+// Side Effects:
+//   - None.
 func NewUpstream() upstream.Upstream {
 	return &Upstream{
 		closers: make([]io.Closer, 0),
