@@ -8,9 +8,7 @@ package public_api
 import (
 	"context"
 	"encoding/json"
-	"strings"
 	"testing"
-	"time"
 
 	"github.com/mcpany/core/server/pkg/util"
 	apiv1 "github.com/mcpany/core/proto/api/v1"
@@ -29,13 +27,20 @@ func TestUpstreamService_CatFacts(t *testing.T) {
 	t.Log("INFO: Starting E2E Test Scenario for Cat Facts Server...")
 	t.Parallel()
 
-	// --- 1. Start MCPANY Server ---
+	// --- 1. Start Mock Server ---
+	mockResponse := `{"fact":"Cats are cool","length":13}`
+	mockServer := integration.CreateMockServerWithResponses(t, map[string]string{
+		"/fact": mockResponse,
+	})
+	defer mockServer.Close()
+
+	// --- 2. Start MCPANY Server ---
 	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2ECatFactsServerTest")
 	defer mcpAnyTestServerInfo.CleanupFunc()
 
-	// --- 2. Register Cat Facts Server with MCPANY ---
+	// --- 3. Register Cat Facts Server with MCPANY ---
 	const catFactsServiceID = "e2e_catfacts"
-	catFactsServiceEndpoint := "https://catfact.ninja"
+	catFactsServiceEndpoint := mockServer.URL
 	t.Logf("INFO: Registering '%s' with MCPANY at endpoint %s...", catFactsServiceID, catFactsServiceEndpoint)
 	registrationGRPCClient := mcpAnyTestServerInfo.RegistrationClient
 
@@ -85,47 +90,8 @@ func TestUpstreamService_CatFacts(t *testing.T) {
 	sanitizedToolName, _ := util.SanitizeToolName("getCatFact")
 	toolName := serviceID + "." + sanitizedToolName
 
-	const maxRetries = 3
-	var res *mcp.CallToolResult
-
-	for i := 0; i < maxRetries; i++ {
-		res, err = cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(`{}`)})
-
-		// Check for SDK error
-		if err != nil {
-			if strings.Contains(err.Error(), "503 Service Temporarily Unavailable") || strings.Contains(err.Error(), "context deadline exceeded") || strings.Contains(err.Error(), "connection reset by peer") {
-				t.Logf("Attempt %d/%d: Call to catfact.ninja failed with a transient error (SDK error): %v. Retrying...", i+1, maxRetries, err)
-				time.Sleep(2 * time.Second) // Wait before retrying
-				continue
-			}
-			require.NoError(t, err, "unrecoverable error calling getCatFact tool")
-		}
-
-		// Check for MCP protocol error (isError: true)
-		if res.IsError {
-			var errorMsg string
-			if len(res.Content) > 0 {
-				if textContent, ok := res.Content[0].(*mcp.TextContent); ok {
-					errorMsg = textContent.Text
-				}
-			}
-
-			if strings.Contains(errorMsg, "503 Service Temporarily Unavailable") || strings.Contains(errorMsg, "context deadline exceeded") || strings.Contains(errorMsg, "connection reset by peer") {
-				t.Logf("Attempt %d/%d: Call to catfact.ninja failed with a transient error (MCP error): %s. Retrying...", i+1, maxRetries, errorMsg)
-				time.Sleep(2 * time.Second) // Wait before retrying
-				continue
-			}
-			// If it's a non-transient error, we stop retrying and let the assertions fail
-			break
-		}
-
-		// Success
-		break
-	}
-
-	if err != nil {
-		// t.Skipf("Skipping test: all %d retries to catfact.ninja failed with transient errors. Last error: %v", maxRetries, err)
-	}
+	// Call the tool directly (mock server is fast, no retries needed)
+	res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(`{}`)})
 
 	require.NoError(t, err, "Error calling getCatFact tool")
 	require.NotNil(t, res, "Nil response from getCatFact tool")

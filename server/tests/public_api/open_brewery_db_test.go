@@ -8,9 +8,7 @@ package public_api
 import (
 	"context"
 	"encoding/json"
-	"strings"
 	"testing"
-	"time"
 
 	"github.com/mcpany/core/server/pkg/util"
 	apiv1 "github.com/mcpany/core/proto/api/v1"
@@ -28,13 +26,20 @@ func TestUpstreamService_OpenBreweryDB(t *testing.T) {
 	t.Log("INFO: Starting E2E Test Scenario for Open Brewery DB Server...")
 	t.Parallel()
 
-	// --- 1. Start MCPANY Server ---
+	// --- 1. Start Mock Server ---
+	mockResponse := `[{"name": "Brewery Mock", "brewery_type": "micro"}]`
+	mockServer := integration.CreateMockServerWithResponses(t, map[string]string{
+		"/breweries": mockResponse,
+	})
+	defer mockServer.Close()
+
+	// --- 2. Start MCPANY Server ---
 	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2EOpenBreweryDBServerTest")
 	defer mcpAnyTestServerInfo.CleanupFunc()
 
-	// --- 2. Register Open Brewery DB Server with MCPANY ---
+	// --- 3. Register Open Brewery DB Server with MCPANY ---
 	const openBreweryDBServiceID = "e2e_openbrewerydb"
-	openBreweryDBServiceEndpoint := "https://api.openbrewerydb.org/v1"
+	openBreweryDBServiceEndpoint := mockServer.URL
 	t.Logf("INFO: Registering '%s' with MCPANY at endpoint %s...", openBreweryDBServiceID, openBreweryDBServiceEndpoint)
 	registrationGRPCClient := mcpAnyTestServerInfo.RegistrationClient
 
@@ -84,28 +89,8 @@ func TestUpstreamService_OpenBreweryDB(t *testing.T) {
 	sanitizedToolName, _ := util.SanitizeToolName("getBreweries")
 	toolName := serviceID + "." + sanitizedToolName
 
-	const maxRetries = 3
-	var res *mcp.CallToolResult
-
-	for i := 0; i < maxRetries; i++ {
-		res, err = cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(`{}`)})
-		if err == nil {
-			break // Success
-		}
-
-		if strings.Contains(err.Error(), "503 Service Temporarily Unavailable") || strings.Contains(err.Error(), "context deadline exceeded") || strings.Contains(err.Error(), "connection reset by peer") {
-			t.Logf("Attempt %d/%d: Call to api.openbrewerydb.org failed with a transient error: %v. Retrying...", i+1, maxRetries, err)
-			time.Sleep(2 * time.Second) // Wait before retrying
-			continue
-		}
-
-		require.NoError(t, err, "unrecoverable error calling getBreweries tool")
-	}
-
-	if err != nil {
-		// t.Skipf("Skipping test: all %d retries to api.openbrewerydb.org failed with transient errors. Last error: %v", maxRetries, err)
-	}
-
+	// Call the tool directly
+	res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(`{}`)})
 	require.NoError(t, err, "Error calling getBreweries tool")
 	require.NotNil(t, res, "Nil response from getBreweries tool")
 

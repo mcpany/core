@@ -8,9 +8,7 @@ package public_api
 import (
 	"context"
 	"encoding/json"
-	"strings"
 	"testing"
-	"time"
 
 	"github.com/mcpany/core/server/pkg/util"
 	apiv1 "github.com/mcpany/core/proto/api/v1"
@@ -29,13 +27,20 @@ func TestUpstreamService_Agify(t *testing.T) {
 	t.Log("INFO: Starting E2E Test Scenario for Agify Server...")
 	t.Parallel()
 
-	// --- 1. Start MCPANY Server ---
+	// --- 1. Start Mock Server ---
+	mockResponse := `{"name": "michael", "age": 50, "count": 100}`
+	mockServer := integration.CreateMockServerWithResponses(t, map[string]string{
+		"/?name=michael": mockResponse,
+	})
+	defer mockServer.Close()
+
+	// --- 2. Start MCPANY Server ---
 	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2EAgifyServerTest")
 	defer mcpAnyTestServerInfo.CleanupFunc()
 
-	// --- 2. Register Agify Server with MCPANY ---
+	// --- 3. Register Agify Server with MCPANY ---
 	const agifyServiceID = "e2e_agify"
-	agifyServiceEndpoint := "https://api.agify.io"
+	agifyServiceEndpoint := mockServer.URL
 	t.Logf("INFO: Registering '%s' with MCPANY at endpoint %s...", agifyServiceID, agifyServiceEndpoint)
 	registrationGRPCClient := mcpAnyTestServerInfo.RegistrationClient
 
@@ -86,32 +91,8 @@ func TestUpstreamService_Agify(t *testing.T) {
 	toolName := serviceID + "." + sanitizedToolName
 	name := `{"name": "michael"}`
 
-	// --- Log the generated URL ---
-	url := agifyServiceEndpoint + "/?name=michael"
-	t.Logf("Generated URL: %s", url)
-
-	const maxRetries = 3
-	var res *mcp.CallToolResult
-
-	for i := 0; i < maxRetries; i++ {
-		res, err = cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(name)})
-		if err == nil {
-			break // Success
-		}
-
-		if strings.Contains(err.Error(), "503 Service Temporarily Unavailable") || strings.Contains(err.Error(), "context deadline exceeded") || strings.Contains(err.Error(), "connection reset by peer") {
-			t.Logf("Attempt %d/%d: Call to api.agify.io failed with a transient error: %v. Retrying...", i+1, maxRetries, err)
-			time.Sleep(2 * time.Second) // Wait before retrying
-			continue
-		}
-
-		require.NoError(t, err, "unrecoverable error calling getAge tool")
-	}
-
-	if err != nil {
-		// t.Skipf("Skipping test: all %d retries to api.agify.io failed with transient errors. Last error: %v", maxRetries, err)
-	}
-
+	// Call the tool directly
+	res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(name)})
 	require.NoError(t, err, "Error calling getAge tool")
 	require.NotNil(t, res, "Nil response from getAge tool")
 
