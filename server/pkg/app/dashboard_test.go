@@ -89,8 +89,8 @@ func TestDashboardMetrics(t *testing.T) {
 	require.NoError(t, err)
 
 	// Verify Metrics Content
-	// We expect 8 metrics
-	assert.Len(t, metrics, 8)
+	// We expect 9 metrics
+	assert.Len(t, metrics, 9)
 
 	metricsMap := make(map[string]Metric)
 	for _, m := range metrics {
@@ -118,6 +118,13 @@ func TestDashboardMetrics(t *testing.T) {
 	// 5. Resources
 	// Mock returned 0
 	assert.Equal(t, "0", metricsMap["Resources"].Value)
+
+	// 5.5 Est. Tokens
+	// Seeded: 100 requests, points also have Bytes.
+	// But in test SeedTrafficHistory only sets Total, Errors, Latency.
+	// TrafficPoint struct: {Time, Total, Errors, Latency, Bytes?}
+	// If Bytes is not set, it's 0.
+	assert.Equal(t, "0", metricsMap["Est. Tokens"].Value)
 
 	// 6. Prompts
 	// Mock returned 0

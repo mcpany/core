@@ -229,6 +229,7 @@ func (m *TestMockPrompt) Prompt() *mcp.Prompt {
 	return &mcp.Prompt{Name: m.name}
 }
 func (m *TestMockPrompt) Service() string { return "test" }
+func (m *TestMockPrompt) Definition() *configv1.PromptDefinition { return nil }
 func (m *TestMockPrompt) Get(ctx context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {
 	return nil, nil
 }
