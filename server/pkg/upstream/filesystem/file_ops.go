@@ -202,6 +202,15 @@ func safeWriteFile(fs afero.Fs, path string, content []byte, perm os.FileMode) e
 		}
 	}
 
+	// Check if it is a directory
+	fInfo, err := f.Stat()
+	if err != nil {
+		return err
+	}
+	if fInfo.IsDir() {
+		return fmt.Errorf("path is a directory")
+	}
+
 	// Now that we verified identity, it is safe to truncate.
 	if err := f.Truncate(0); err != nil {
 		return fmt.Errorf("failed to truncate file: %w", err)
