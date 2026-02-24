@@ -17,6 +17,10 @@ import { Button } from "@/components/ui/button";
 import { Ghost, RefreshCw, Zap } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
+/**
+ * Component that simulates context reduction by allowing users to toggle tools.
+ * It displays statistics about current tokens and potential savings.
+ */
 export function ContextSimulator() {
     const {
         tools,
