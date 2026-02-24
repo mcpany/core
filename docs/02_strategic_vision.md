@@ -47,3 +47,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **A2A Gateway Protocol**: MCP Any will implement a protocol-neutral bridge for A2A communication, allowing disparate agent frameworks (e.g., OpenClaw, AutoGen) to exchange state and tasks via a unified MCP-like interface.
 - **Federated Tool Mesh**: Moving from a standalone server to a "Mesh" architecture where multiple MCP Any instances can peer and share resources across network boundaries, governed by global Zero-Trust policies.
 - **Resource-Aware Intelligence**: Integrating cost and latency telemetry into the tool discovery process, allowing LLMs to perform "Economical Reasoning" when selecting tools.
+
+---
+
+## Strategic Evolution: [2026-02-27]
+### Focus: Context Smog Mitigation & Shadow MCP Governance
+**Context**: As the "Agentic Mesh" grows, agents are experiencing "Context Smog"—token exhaustion caused by excessive tool schemas and A2A chatter. Simultaneously, "Shadow MCP" servers are emerging as a primary vector for unauthorized local execution.
+**Strategic Pivot**:
+- **Intelligence-Based Context Filtering**: MCP Any will evolve its Lazy-Discovery architecture to include "Relevance Scoring." Instead of just searching for tools, it will dynamically prune schemas based on the current agent's success history and intent-alignment.
+- **Shadow MCP Discovery**: Implementing an active "Discovery & Governance" layer that scans for undocumented local MCP servers and automatically wraps them in the MCP Any Policy Firewall.
+- **Handoff Token Validation**: Moving towards a "Verified Handoff" model where task handoffs between agents (e.g., MoltHandoff) are cryptographically signed and context-bound to prevent "Handoff Injection" attacks.

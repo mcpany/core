@@ -29,6 +29,12 @@
 *   **[P1] Federated MCP Peering**: Distributed node discovery and tool proxying. (Added: 2026-02-26)
 *   **[P1] Resource Telemetry Middleware**: Inject latency/cost metrics into tool schemas. (Added: 2026-02-26)
 
+#### Upcoming (2026-02-27 Evolution)
+*   **[P0] MoltHandoff Adapter**: Support for OpenClaw standardized agent task handoffs. (Added: 2026-02-27)
+*   **[P0] Signed Handoff Middleware**: Cryptographic verification for A2A task transfers. (Added: 2026-02-27)
+*   **[P1] Intelligence-Based Relevance Scoring**: Historical & intent-aware tool filtering. (Added: 2026-02-27)
+*   **[P1] Shadow MCP Detector**: Active scanning and governance of undocumented local MCP servers. (Added: 2026-02-27)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

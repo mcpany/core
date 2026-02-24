@@ -65,3 +65,20 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **MoltHandoff Adapter (A2A)**: (P0) Translates OpenClaw standardized handoff tokens into MCP-compatible session states. Essential for local-to-cloud handoffs.
+- **Intelligence-Based Relevance Scoring**: (P1) Extends Lazy-MCP to prioritize tools based on historical success rates and session intent, mitigating "Context Smog."
+- **Shadow MCP Discovery & Governance**: (P1) Actively scans local networks for undocumented MCP servers and enforces centralized security policies.
+- **Signed Handoff Middleware**: (P0) Cryptographic verification for inter-agent task handoffs to prevent prompt injection via handoff tokens.
+
+### Priority Shifts
+- **A2A Interop Bridge (Pseudo-MCP)**: Re-affirming **P0**. As specialized agents proliferate, the bridge becomes the primary bottleneck for complex workflows.
+- **Federated MCP Node Peering**: Promoted to **P0**. Critical for scaling tools across hybrid environments without compromising local security.
+
+### Deprecations / Monitoring
+- **Manual Tool Search**: Monitoring for deprecation in favor of Intelligence-Based Relevance Scoring.
