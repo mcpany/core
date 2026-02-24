@@ -37,7 +37,7 @@ interface UserContextType {
   user: User | null;
   /** Whether authentication status is loading. */
   loading: boolean;
-  /** Logs in the user (mock for now, real implementation would trigger OAuth/SSO). */
+  /** Logs in the user (simulated for dev/test, real implementation would trigger OAuth/SSO). */
   login: (role: UserRole) => Promise<void>;
   /** Logs out the current user. */
   logout: () => void;
@@ -85,12 +85,10 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const login = async (role: UserRole) => {
-    // In a real app, this would trigger a flow.
-    // For now, if we are using Basic Auth or API Key, the client is pre-configured via headers/localStorage.
-    // If we want to simulate "role selection" for dev/demo, we might need a backend endpoint to "switch role" or we assume login happened elsewhere.
-    // However, keeping the signature for now.
-    // If the backend has OAuth, we redirect.
-    // For now, let's just refresh.
+    // In a real app, this would trigger an OAuth flow or redirect to login page.
+    // For development/testing with Basic Auth or API Key, the client is pre-configured via headers/localStorage.
+    // We simulate a login by refreshing the user state from the backend.
+    console.log(`[UserContext] Simulating login for role: ${role}`);
     await fetchUser();
   };
 

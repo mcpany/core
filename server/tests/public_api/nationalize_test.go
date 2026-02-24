@@ -8,9 +8,7 @@ package public_api
 import (
 	"context"
 	"encoding/json"
-	"strings"
 	"testing"
-	"time"
 
 	"github.com/mcpany/core/server/pkg/util"
 	apiv1 "github.com/mcpany/core/proto/api/v1"
@@ -29,21 +27,44 @@ func TestUpstreamService_Nationalize(t *testing.T) {
 	t.Log("INFO: Starting E2E Test Scenario for Nationalize Server...")
 	t.Parallel()
 
-	// --- 1. Start MCPANY Server ---
+	// --- 1. Start Mock Server ---
+	mockResponse := `{
+		"name": "michael",
+		"country": [
+			{
+				"country_id": "US",
+				"probability": 0.42
+			}
+		]
+	}`
+	mockServer := integration.CreateMockServerWithResponses(t, map[string]string{
+		"/": mockResponse,
+	})
+	defer mockServer.Close()
+
+	// --- 2. Start MCPANY Server ---
 	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2ENationalizeServerTest")
 	defer mcpAnyTestServerInfo.CleanupFunc()
 
-	// --- 2. Register Nationalize Server with MCPANY ---
+	// --- 3. Register Nationalize Server with MCPANY ---
 	const nationalizeServiceID = "e2e_nationalize"
-	nationalizeServiceEndpoint := "https://api.nationalize.io"
+	nationalizeServiceEndpoint := mockServer.URL
 	t.Logf("INFO: Registering '%s' with MCPANY at endpoint %s...", nationalizeServiceID, nationalizeServiceEndpoint)
 	registrationGRPCClient := mcpAnyTestServerInfo.RegistrationClient
 
 	callID := "getNationality"
 	httpCall := configv1.HttpCallDefinition_builder{
 		Id:           proto.String(callID),
-		EndpointPath: proto.String("/?name=michael"),
+		EndpointPath: proto.String("/?name={{name}}"), // Dynamic parameter
 		Method:       configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value["HTTP_METHOD_GET"]).Enum(),
+		Parameters: []*configv1.HttpParameterMapping{
+			configv1.HttpParameterMapping_builder{
+				Schema: configv1.ParameterSchema_builder{
+					Name: proto.String("name"),
+					Type: configv1.ParameterType_STRING.Enum(),
+				}.Build(),
+			}.Build(),
+		},
 	}.Build()
 
 	toolDef := configv1.ToolDefinition_builder{
@@ -69,7 +90,7 @@ func TestUpstreamService_Nationalize(t *testing.T) {
 	integration.RegisterServiceViaAPI(t, registrationGRPCClient, req)
 	t.Logf("INFO: '%s' registered.", nationalizeServiceID)
 
-	// --- 3. Call Tool via MCPANY ---
+	// --- 4. Call Tool via MCPANY ---
 	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
 	cs, err := testMCPClient.Connect(ctx, &mcp.StreamableClientTransport{Endpoint: mcpAnyTestServerInfo.HTTPEndpoint}, nil)
 	require.NoError(t, err)
@@ -86,32 +107,11 @@ func TestUpstreamService_Nationalize(t *testing.T) {
 	toolName := serviceID + "." + sanitizedToolName
 	name := `{"name": "michael"}`
 
-	const maxRetries = 3
-	var res *mcp.CallToolResult
-
-	for i := 0; i < maxRetries; i++ {
-		res, err = cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(name)})
-		if err == nil {
-			break // Success
-		}
-
-		if strings.Contains(err.Error(), "503 Service Temporarily Unavailable") || strings.Contains(err.Error(), "context deadline exceeded") || strings.Contains(err.Error(), "connection reset by peer") {
-			t.Logf("Attempt %d/%d: Call to api.nationalize.io failed with a transient error: %v. Retrying...", i+1, maxRetries, err)
-			time.Sleep(2 * time.Second) // Wait before retrying
-			continue
-		}
-
-		require.NoError(t, err, "unrecoverable error calling getNationality tool")
-	}
-
-	if err != nil {
-		// t.Skipf("Skipping test: all %d retries to api.nationalize.io failed with transient errors. Last error: %v", maxRetries, err)
-	}
-
+	res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(name)})
 	require.NoError(t, err, "Error calling getNationality tool")
 	require.NotNil(t, res, "Nil response from getNationality tool")
 
-	// --- 4. Assert Response ---
+	// --- 5. Assert Response ---
 	require.Len(t, res.Content, 1, "Expected exactly one content item")
 	textContent, ok := res.Content[0].(*mcp.TextContent)
 	require.True(t, ok, "Expected text content")
