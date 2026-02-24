@@ -2028,10 +2028,10 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 
 	// Substitute placeholders in args with input values
 	if inputs != nil {
-		for i, arg := range args {
+		for i := range args {
 			for k, v := range inputs {
 				placeholder := "{{" + k + "}}"
-				if strings.Contains(arg, placeholder) {
+				if strings.Contains(args[i], placeholder) {
 					val := util.ToString(v)
 					if err := validateSafePathAndInjection(val, isDocker, commandName); err != nil {
 						return nil, fmt.Errorf("parameter %q: %w", k, err)
@@ -2039,11 +2039,11 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 					// If running a shell or interpreter, validate that inputs are safe
 					cmd := t.service.GetCommand()
 					if isShellCommand(cmd) {
-						if err := checkForShellInjection(val, arg, placeholder, cmd, isShell(cmd)); err != nil {
+						if err := checkForShellInjection(val, args[i], placeholder, cmd, isShell(cmd)); err != nil {
 							return nil, fmt.Errorf("parameter %q: %w", k, err)
 						}
 					}
-					args[i] = strings.ReplaceAll(arg, placeholder, val)
+					args[i] = strings.ReplaceAll(args[i], placeholder, val)
 				}
 			}
 		}
@@ -2384,10 +2384,10 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 
 	// Substitute placeholders in args with input values
 	if inputs != nil {
-		for i, arg := range args {
+		for i := range args {
 			for k, v := range inputs {
 				placeholder := "{{" + k + "}}"
-				if strings.Contains(arg, placeholder) {
+				if strings.Contains(args[i], placeholder) {
 					val := util.ToString(v)
 					// Use validateSafePathAndInjection which now centralizes all checks
 					if err := validateSafePathAndInjection(val, isDocker, commandName); err != nil {
@@ -2396,11 +2396,11 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 					// If running a shell or interpreter, validate that inputs are safe
 					cmd := t.service.GetCommand()
 					if isShellCommand(cmd) {
-						if err := checkForShellInjection(val, arg, placeholder, cmd, isShell(cmd)); err != nil {
+						if err := checkForShellInjection(val, args[i], placeholder, cmd, isShell(cmd)); err != nil {
 							return nil, fmt.Errorf("parameter %q: %w", k, err)
 						}
 					}
-					args[i] = strings.ReplaceAll(arg, placeholder, val)
+					args[i] = strings.ReplaceAll(args[i], placeholder, val)
 				}
 			}
 		}
@@ -3109,6 +3109,13 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	if quoteLevel == 2 { // Single Quoted
 		if strings.Contains(val, "'") {
 			return fmt.Errorf("shell injection detected: value contains single quote which breaks out of single-quoted argument")
+		}
+
+		// Sentinel Security Update: For interpreters (non-shells), backslash is dangerous in single quotes
+		// because it can escape the closing quote (e.g. python -c 'print("{{val}}")' where val="\")
+		// This prevents "eating" subsequent arguments or code by escaping the quote.
+		if !isShell && strings.Contains(val, "\\") {
+			return fmt.Errorf("interpreter injection detected: value contains backslash inside single-quoted argument")
 		}
 
 		// Block backticks (used by Perl, Ruby, PHP for execution)
