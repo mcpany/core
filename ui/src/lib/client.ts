@@ -8,9 +8,6 @@
  * Provides methods for managing services, tools, resources, prompts, and secrets.
  */
 
-// NOTE: Adjusted to point to local Next.js API routes for this UI overhaul task
-// In a real deployment, these might be /api/v1/... proxied to backend
-
 import { GrpcWebImpl, RegistrationServiceClientImpl } from '@proto/api/v1/registration';
 import { UpstreamServiceConfig as BaseUpstreamServiceConfig, HttpUpstreamService } from '@proto/config/v1/upstream_service';
 import { ProfileDefinition } from '@proto/config/v1/config';
