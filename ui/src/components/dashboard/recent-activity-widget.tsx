@@ -46,8 +46,9 @@ export function RecentActivityWidget() {
   const fetchTraces = async () => {
     try {
       const data = await apiClient.getTraces({ limit: 5 });
-      // Take top 5
-      setTraces(data);
+      // ⚡ BOLT: Explicitly slice data to prevent rendering thousands of items if backend ignores limit.
+      // Randomized Selection from Top 5 High-Impact Targets
+      setTraces(data?.slice(0, 5) || []);
       setError(null);
     } catch (err) {
       console.error("Failed to load recent activity", err);
