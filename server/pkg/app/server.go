@@ -992,6 +992,13 @@ func (a *Application) updateGlobalSettings(cfg *config_v1.McpAnyServerConfig) {
 		a.SettingsManager.Update(cfg.GetGlobalSettings(), a.explicitAPIKey)
 	}
 
+	// Update log level
+	if cfg.GetGlobalSettings().GetLogLevel() != 0 {
+		newLevel := logging.ToSlogLevel(cfg.GetGlobalSettings().GetLogLevel())
+		logging.SetLevel(newLevel)
+		log.Info("Updated log level", "level", newLevel)
+	}
+
 	// Update Health Alerts
 	if cfg.GetGlobalSettings().GetAlerts() != nil {
 		health.SetGlobalAlertConfig(cfg.GetGlobalSettings().GetAlerts())
@@ -1938,10 +1945,12 @@ func (a *Application) runServerMode(
 		http.StripPrefix(prefix, delegate).ServeHTTP(w, r.WithContext(ctx))
 	})
 
-	mux.Handle("/healthz", http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+	healthHandler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		_, _ = fmt.Fprintln(w, "OK")
-	}))
+	})
+	mux.Handle("/healthz", healthHandler)
+	mux.Handle("/health", healthHandler)
 	mux.Handle("/metrics", authMiddleware(metrics.Handler()))
 	mux.Handle("/upload", authMiddleware(http.HandlerFunc(a.uploadFile)))
 

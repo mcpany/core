@@ -19,7 +19,19 @@ var (
 	mu            sync.Mutex
 	once          sync.Once
 	defaultLogger atomic.Pointer[slog.Logger]
+	// programLevel is the dynamic log level control.
+	programLevel = new(slog.LevelVar)
 )
+
+// SetLevel updates the global log level dynamically.
+//
+// Summary: Sets the global log level.
+//
+// Parameters:
+//   - level: slog.Level. The new log level.
+func SetLevel(level slog.Level) {
+	programLevel.Set(level)
+}
 
 // ForTestsOnlyResetLogger is for use in tests to reset the `sync.Once`
 // mechanism. This allows the global logger to be re-initialized in different
@@ -50,6 +62,9 @@ func Init(level slog.Level, output io.Writer, logFilePath string, format ...stri
 	mu.Lock()
 	defer mu.Unlock()
 	once.Do(func() {
+		// Initialize dynamic level
+		programLevel.Set(level)
+
 		fmtStr := "text"
 		if len(format) > 0 {
 			fmtStr = format[0]
@@ -58,7 +73,7 @@ func Init(level slog.Level, output io.Writer, logFilePath string, format ...stri
 		// ⚡ BOLT: Only add source code location in DEBUG mode to avoid expensive runtime.Callers lookup.
 		// Randomized Selection from Top 5 High-Impact Targets
 		opts := &slog.HandlerOptions{
-			Level:     level,
+			Level:     programLevel,
 			AddSource: level == slog.LevelDebug,
 			ReplaceAttr: func(_ []string, a slog.Attr) slog.Attr {
 				if util.IsSensitiveKey(a.Key) {
@@ -99,7 +114,7 @@ func Init(level slog.Level, output io.Writer, logFilePath string, format ...stri
 		}
 
 		// 3. Broadcast Handler (WebSocket)
-		broadcastHandler := NewBroadcastHandler(GlobalBroadcaster, level)
+		broadcastHandler := NewBroadcastHandler(GlobalBroadcaster, programLevel)
 		handlers = append(handlers, broadcastHandler)
 
 		teeHandler := NewTeeHandler(handlers...)
