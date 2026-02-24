@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	bus_pb "github.com/mcpany/core/proto/bus"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/mcpany/core/server/pkg/mcpserver"
@@ -57,6 +58,10 @@ func (m *mockSecurityPrompt) Prompt() *mcp.Prompt {
 
 func (m *mockSecurityPrompt) Service() string {
 	return m.serviceID
+}
+
+func (m *mockSecurityPrompt) Definition() *configv1.PromptDefinition {
+	return nil
 }
 
 func (m *mockSecurityPrompt) Get(_ context.Context, _ json.RawMessage) (*mcp.GetPromptResult, error) {

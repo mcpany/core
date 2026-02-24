@@ -529,6 +529,10 @@ func (m *mockPrompt) Service() string {
 	return m.serviceID
 }
 
+func (m *mockPrompt) Definition() *configv1.PromptDefinition {
+	return nil
+}
+
 func (m *mockPrompt) Get(_ context.Context, _ json.RawMessage) (*mcp.GetPromptResult, error) {
 	return nil, nil
 }

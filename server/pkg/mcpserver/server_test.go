@@ -366,6 +366,10 @@ func (p *testPrompt) Service() string {
 	return p.ServiceValue
 }
 
+func (p *testPrompt) Definition() *configv1.PromptDefinition {
+	return nil
+}
+
 func (p *testPrompt) Get(_ context.Context, _ json.RawMessage) (*mcp.GetPromptResult, error) {
 	return &mcp.GetPromptResult{}, nil
 }

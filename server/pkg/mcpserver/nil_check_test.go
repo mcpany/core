@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"testing"
 
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/mcpany/core/server/pkg/pool"
@@ -34,6 +35,7 @@ func (n *nilPrompt) Prompt() *mcp.Prompt {
 }
 
 func (n *nilPrompt) Service() string { return "nil-service" }
+func (n *nilPrompt) Definition() *configv1.PromptDefinition { return nil }
 func (n *nilPrompt) Get(ctx context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {
 	return nil, nil
 }
