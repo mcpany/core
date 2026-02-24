@@ -29,6 +29,11 @@
 *   **[P1] Federated MCP Peering**: Distributed node discovery and tool proxying. (Added: 2026-02-26)
 *   **[P1] Resource Telemetry Middleware**: Inject latency/cost metrics into tool schemas. (Added: 2026-02-26)
 
+#### Upcoming (2026-02-27 Evolution)
+*   **[P0] Anti-CSRF Management API**: Implement strict origin validation and CSRF tokens for the gateway management plane. (Added: 2026-02-27)
+*   **[P0] Autonomous Shell Execution Guard**: High-assurance middleware for intercepting and validating terminal/shell tool calls. (Added: 2026-02-27)
+*   **[P1] Context-Aware Capability Leasing**: Dynamic, short-lived permission scoping for agent sessions. (Added: 2026-02-27)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

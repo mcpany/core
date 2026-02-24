@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **Anti-CSRF Management API Protection**: (P0) Hardened management interface that prevents unauthorized external requests from tampering with gateway configuration (Mitigates CVE-2026-25253).
+- **Autonomous Shell Execution Guard**: (P0) A high-assurance middleware that intercepts shell/terminal tool calls and validates them against a strictly defined "Intent Manifest."
+- **Context-Aware Capability Leasing**: (P1) Temporary, short-lived permissions granted to an agent based on its current task context, automatically revoked once the task is complete.
+
+### Priority Shifts
+- **Policy Firewall**: Promoted to **P0** (Re-affirming importance) as the primary defense against autonomous loop escapes.
+- **HITL Middleware**: Promoted to **P0**. Essential for validating high-risk autonomous actions in "Cowork"-style multitasking.
+
+### Deprecations / Monitoring
+- **Mutable Runtime Config**: Monitoring for deprecation in favor of "Signed Configuration Updates" to prevent unauthorized tampering.
