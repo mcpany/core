@@ -15,9 +15,9 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { JsonView } from "@/components/ui/json-view";
+import { RichResultViewer } from "@/components/tools/rich-result-viewer";
 import { Badge } from "@/components/ui/badge";
-import { User, Cpu, Terminal, Globe, Database, HelpCircle, ArrowRight, ArrowLeft, Clock } from "lucide-react";
+import { User, Cpu, Terminal, Globe, Database, ArrowRight, ArrowLeft, Clock } from "lucide-react";
 
 interface SequenceDiagramProps {
   trace: Trace;
@@ -333,8 +333,8 @@ export function SequenceDiagram({ trace }: SequenceDiagramProps) {
 
                     <div className="space-y-1">
                         <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Payload</div>
-                        <div className="max-h-[300px] overflow-y-auto border rounded-md">
-                            <JsonView data={selectedMessage?.payload || {}} />
+                        <div className="max-h-[400px] overflow-y-auto border rounded-md">
+                            <RichResultViewer result={selectedMessage?.payload || {}} />
                         </div>
                     </div>
                 </div>

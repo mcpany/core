@@ -5,13 +5,12 @@
 
 "use client";
 
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { FileJson, Table as TableIcon, Terminal, FileText, Image as ImageIcon } from "lucide-react";
+import { FileJson, Table as TableIcon, Terminal, FileText } from "lucide-react";
+import { JsonView } from "@/components/ui/json-view";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
@@ -204,29 +203,12 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
             )}
 
             <TabsContent value="json">
-                <div className="rounded-md overflow-hidden border">
-                    <SyntaxHighlighter
-                        language="json"
-                        style={vscDarkPlus}
-                        customStyle={{ margin: 0, fontSize: '12px', maxHeight: '400px', overflowY: 'auto' }}
-                        showLineNumbers
-                    >
-                        {JSON.stringify(content, null, 2)}
-                    </SyntaxHighlighter>
-                </div>
+                <JsonView data={content} maxHeight={400} />
             </TabsContent>
 
              {isExtracted && (
                 <TabsContent value="raw">
-                    <div className="rounded-md overflow-hidden border">
-                        <SyntaxHighlighter
-                            language="json"
-                            style={vscDarkPlus}
-                            customStyle={{ margin: 0, fontSize: '12px', maxHeight: '400px', overflowY: 'auto' }}
-                        >
-                            {JSON.stringify(result, null, 2)}
-                        </SyntaxHighlighter>
-                    </div>
+                    <JsonView data={result} maxHeight={400} />
                 </TabsContent>
             )}
         </Tabs>
