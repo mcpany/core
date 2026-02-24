@@ -16,16 +16,9 @@ import {
   Terminal,
   Unplug,
   Monitor,
-  ChevronRight,
-  ChevronDown
 } from "lucide-react"
 
 import { useSearchParams } from "next/navigation"
-import dynamic from "next/dynamic";
-// ⚡ Bolt Optimization: Lazy load Virtuoso to avoid SSR issues.
-// react-virtuoso uses window/DOM which can cause hydration mismatches or server-side crashes.
-// By loading it client-side only (ssr: false), we ensure stability in the K8s container.
-const Virtuoso = dynamic(() => import("react-virtuoso").then((m) => m.Virtuoso), { ssr: false });
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -39,223 +32,28 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
-
-// ⚡ Bolt Optimization: Lazy load the syntax highlighter.
-// react-syntax-highlighter is a heavy dependency. By lazy loading it only when a user
-// expands a JSON log, we significantly reduce the initial bundle size of the LogStream.
-const JsonViewer = dynamic(() => import("./json-viewer"), {
-  loading: () => (
-    <div className="p-4 text-xs text-muted-foreground bg-[#1e1e1e] rounded-lg border border-white/10">
-      Loading highlighter...
-    </div>
-  ),
-  ssr: false,
-});
-
-/**
- * LogLevel type definition.
- */
-export type LogLevel = "INFO" | "WARN" | "ERROR" | "DEBUG"
-
-/**
- * LogEntry type definition.
- */
-export interface LogEntry {
-  id: string
-  timestamp: string
-  level: LogLevel
-  message: string
-  source?: string
-  metadata?: Record<string, unknown>
-  // Optimization: Pre-computed formatted time string to avoid repeated Date parsing
-  formattedTime?: string
-}
-
-/**
- * Helper component to highlight search terms within text.
- */
-// Optimization: Memoize HighlightText to avoid unnecessary re-renders.
-// Accepting a regex instead of string prevents re-compiling the RegExp for every row.
-/**
- * Renders text with highlighted matches based on a regular expression.
- *
- * @param props - The component props.
- * @param props.text - The text content to display.
- * @param props.regex - The regular expression to match against the text for highlighting.
- * @returns The rendered component with highlighted matches.
- */
-const HighlightText = React.memo(({ text, regex }: { text: string; regex: RegExp | null }) => {
-  if (!regex || !text) return <>{text}</>;
-
-  const parts = text.split(regex);
-
-  return (
-    <>
-      {parts.map((part, i) =>
-        // Since the regex has a capturing group `(...)`, split includes separators.
-        // Even indices are non-matches, odd indices are matches.
-        i % 2 === 1 ? (
-          <mark key={i} className="bg-yellow-500/40 text-inherit rounded-sm px-0.5 -mx-0.5">
-            {part}
-          </mark>
-        ) : (
-          part
-        )
-      )}
-    </>
-  );
-});
-HighlightText.displayName = 'HighlightText';
-
-// ⚡ Bolt Optimization: Reuse DateTimeFormat instance to avoid recreating it for every log message.
-// This improves performance significantly (4.5x in benchmarks) when processing high-frequency logs.
-const timeFormatter = typeof Intl !== 'undefined' ? new Intl.DateTimeFormat(undefined, {
-  hour: 'numeric',
-  minute: 'numeric',
-  second: 'numeric',
-}) : null;
-
-const getLevelColor = (level: LogLevel) => {
-  switch (level) {
-    case "INFO": return "text-blue-400"
-    case "WARN": return "text-yellow-400"
-    case "ERROR": return "text-red-400"
-    case "DEBUG": return "text-gray-400"
-    default: return "text-foreground"
-  }
-}
-
-const getSourceHue = (source: string) => {
-  let hash = 0;
-  for (let i = 0; i < source.length; i++) {
-    hash = source.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  return Math.abs(hash % 360);
-};
-
-const isLikelyJson = (str: string): boolean => {
-  if (typeof str !== 'string') return false;
-  const trimmed = str.trim();
-  return (trimmed.startsWith('{') && trimmed.endsWith('}')) ||
-         (trimmed.startsWith('[') && trimmed.endsWith(']'));
-};
-
-const safeParseJson = (str: string): unknown | null => {
-  if (typeof str !== 'string') return null;
-  try {
-    return JSON.parse(str);
-  } catch {
-    return null;
-  }
-};
-
-// Optimization: Memoize LogRow to prevent unnecessary re-renders when list updates
-/**
- * Renders a single log entry row, with support for expandable JSON content and text highlighting.
- *
- * @param props - The component props.
- * @param props.log - The log entry to display.
- * @param props.highlightRegex - The regex used to highlight matching search terms.
- * @returns The rendered log row component.
- */
-const LogRow = React.memo(({ log, highlightRegex }: { log: LogEntry; highlightRegex: RegExp | null }) => {
-  const duration = log.metadata?.duration as string | undefined
-  const [isExpanded, setIsExpanded] = React.useState(false);
-
-  // Optimization: Defer JSON parsing until expanded to avoid O(N) parsing on render.
-  // We use a heuristic to decide if we should show the expand button.
-  const isPotentialJson = React.useMemo(() => isLikelyJson(log.message), [log.message]);
-
-  // Only parse if expanded and looks like JSON
-  const jsonContent = React.useMemo(() => {
-    if (isExpanded && isPotentialJson) {
-      return safeParseJson(log.message);
-    }
-    return null;
-  }, [isExpanded, isPotentialJson, log.message]);
-
-  return (
-    <div
-      className="group flex flex-col items-start hover:bg-white/5 p-2 sm:p-1 rounded transition-colors break-words border-b border-white/5 sm:border-0"
-      // Optimization: content-visibility allows the browser to skip rendering work for off-screen rows.
-      // This significantly improves performance when the log list grows large.
-      style={{ contentVisibility: 'auto', containIntrinsicSize: '0 32px' } as React.CSSProperties}
-    >
-      <div className="flex flex-row w-full items-start gap-1 sm:gap-3">
-          <div className="flex items-center gap-2 sm:contents">
-              <span className="text-muted-foreground whitespace-nowrap opacity-50 text-[10px] sm:text-xs sm:mt-0.5">
-                {log.formattedTime || new Date(log.timestamp).toLocaleTimeString()}
-              </span>
-              <span className={cn("font-bold w-12 text-[10px] sm:text-xs sm:mt-0.5", getLevelColor(log.level))}>
-                {log.level}
-              </span>
-              {log.source && (
-                <span
-                  className="sm:hidden inline-block truncate text-[10px] flex-1 text-right text-[hsl(var(--source-hue),60%,40%)] dark:text-[hsl(var(--source-hue),60%,70%)]"
-                  style={{ "--source-hue": getSourceHue(log.source) } as React.CSSProperties}
-                  title={log.source}
-                >
-                  [<HighlightText text={log.source} regex={highlightRegex} />]
-                </span>
-              )}
-          </div>
-
-          {log.source && (
-            <span
-              className="hidden sm:inline-block w-24 truncate text-xs mt-0.5 shrink-0 text-[hsl(var(--source-hue),60%,40%)] dark:text-[hsl(var(--source-hue),60%,70%)]"
-              style={{ "--source-hue": getSourceHue(log.source) } as React.CSSProperties}
-              title={log.source}
-            >
-              [<HighlightText text={log.source} regex={highlightRegex} />]
-            </span>
-          )}
-
-          <div className="flex-1 min-w-0 flex flex-col">
-            <span className="text-gray-300 text-xs sm:text-sm pl-0 flex items-start">
-               {isPotentialJson && (
-                  <button
-                    onClick={() => setIsExpanded(!isExpanded)}
-                    className="mr-1 mt-0.5 text-muted-foreground hover:text-foreground"
-                    aria-label={isExpanded ? "Collapse JSON" : "Expand JSON"}
-                  >
-                    {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-                  </button>
-               )}
-               <span className="break-all whitespace-pre-wrap">
-                 <HighlightText text={log.message} regex={highlightRegex} />
-               </span>
-               {duration && (
-                <span className="ml-2 inline-flex items-center rounded-sm bg-white/10 px-1.5 py-0.5 text-[10px] font-medium text-gray-400 font-mono shrink-0">
-                  {duration}
-                </span>
-              )}
-            </span>
-
-            {isExpanded && isPotentialJson && (
-              <div className="mt-2 w-full max-w-full overflow-hidden text-xs">
-                {jsonContent ? (
-                  <JsonViewer data={jsonContent} />
-                ) : (
-                  <div className="p-2 bg-muted/20 rounded border border-white/10 text-muted-foreground italic">
-                    Invalid JSON
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-      </div>
-    </div>
-  )
-})
-LogRow.displayName = 'LogRow'
+import { LogViewer, LogEntry, timeFormatter } from "./log-viewer"
 
 /**
  * LogStream component.
  * @param props - The component props.
  * @param props.source - Optional source to filter by initially.
+ * @param props.traceId - Optional trace ID to filter logs by (requires support in log metadata).
+ * @param props.traceStartTime - Optional start time of the trace for time-window filtering.
+ * @param props.traceEndTime - Optional end time of the trace for time-window filtering.
  * @returns The rendered component.
  */
-export function LogStream({ source }: { source?: string }) {
+export function LogStream({
+  source,
+  traceId,
+  traceStartTime,
+  traceEndTime
+}: {
+  source?: string;
+  traceId?: string;
+  traceStartTime?: number;
+  traceEndTime?: number;
+}) {
   const [logs, setLogs] = React.useState<LogEntry[]>([])
   const [isPaused, setIsPaused] = React.useState(false)
   // Optimization: Use a ref to access the latest isPaused state inside the WebSocket closure
@@ -296,7 +94,7 @@ export function LogStream({ source }: { source?: string }) {
         setLogs((prev) => {
           const buffer = logBufferRef.current
           logBufferRef.current = [] // Clear buffer
-          const MAX_LOGS = 1000
+          const MAX_LOGS = 2000 // Increased limit to allow for more history
 
           // Optimization: Efficient array handling to minimize memory allocation and gc pressure.
           // Avoiding large intermediate arrays reduces garbage collection overhead during rapid logging.
@@ -321,6 +119,9 @@ export function LogStream({ source }: { source?: string }) {
 
     const connect = () => {
       // Determine protocol (ws or wss)
+      // Check if we are running in a browser environment
+      if (typeof window === 'undefined') return;
+
       const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
       const host = window.location.host
 
@@ -386,31 +187,54 @@ export function LogStream({ source }: { source?: string }) {
   // Optimization: Memoize filtered logs and pre-calculate lowercase search query
   // to avoid O(N) redundant string operations during filtering
   const filteredLogs = React.useMemo(() => {
-    // Optimization: Fast path for when no filters are active.
-    if (filterLevel === "ALL" && filterSource === "ALL" && !deferredSearchQuery) {
-      return logs
-    }
-
     const lowerSearchQuery = deferredSearchQuery.toLowerCase()
+
     return logs.filter((log) => {
+      // 1. Trace ID Filtering (Highest Priority)
+      if (traceId) {
+        // Check metadata for trace_id
+        const logTraceId = log.metadata?.trace_id as string | undefined;
+        if (logTraceId && logTraceId === traceId) {
+            return true;
+        }
+        // Fallback: Check if message contains trace ID
+        if (log.message.includes(traceId)) {
+            return true;
+        }
+
+        // 2. Time Window Filtering (Heuristic fallback if explicit traceId match fails but we are in trace mode)
+        if (traceStartTime && traceEndTime) {
+             const logTime = new Date(log.timestamp).getTime();
+             // Allow 500ms buffer around trace
+             if (logTime >= traceStartTime - 500 && logTime <= traceEndTime + 500) {
+                 return true;
+             }
+        }
+
+        // If we are in "Trace Mode" (traceId passed) and neither ID match nor time match, exclude.
+        // Unless user wants to see ALL logs? Usually correlation implies filtering.
+        return false;
+      }
+
+      // Normal Filtering
       const matchesLevel = filterLevel === "ALL" || log.level === filterLevel
       const matchesSource = filterSource === "ALL" || log.source === filterSource
 
       // ⚡ BOLT: Optimized memory usage by removing eager search string allocation.
       // Randomized Selection from Top 5 High-Impact Targets
       // We calculate matches on demand to avoid O(N) memory overhead for search strings.
-      const matchesSearch =
+      const matchesSearch = !deferredSearchQuery ||
         log.message.toLowerCase().includes(lowerSearchQuery) ||
         log.source?.toLowerCase().includes(lowerSearchQuery)
 
       return matchesLevel && matchesSource && matchesSearch
     })
-  }, [logs, filterLevel, filterSource, deferredSearchQuery])
+  }, [logs, filterLevel, filterSource, deferredSearchQuery, traceId, traceStartTime, traceEndTime])
 
   const clearLogs = () => setLogs([])
 
   const downloadLogs = () => {
-    const content = logs.map(l => `[${l.timestamp}] [${l.level}] [${l.source}] ${l.message}`).join('\n')
+    const content = filteredLogs.map(l => `[${l.timestamp}] [${l.level}] [${l.source}] ${l.message}`).join('\n')
     const blob = new Blob([content], { type: 'text/plain' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
@@ -419,121 +243,126 @@ export function LogStream({ source }: { source?: string }) {
     a.click()
   }
 
+  // If running in trace correlation mode, show a simpler header or no header?
+  // We should still allow searching within the correlated logs.
+  const isEmbedded = !!traceId;
+
   return (
     <div className="flex flex-col h-full gap-4">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center justify-between">
-        <div className="flex items-center justify-between md:justify-start gap-2">
-            <div className="flex items-center gap-2">
-                <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
-                    <Terminal className="w-6 h-6" /> Live Logs
-                </h1>
-                <Badge variant={isConnected ? "outline" : "destructive"} className="font-mono text-xs gap-1">
-                    {isConnected ? (
-                      <>
-                        <span className="relative flex h-2 w-2">
-                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                          <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                        </span>
-                        Live
-                      </>
-                    ) : (
-                      <>
-                        <Unplug className="h-3 w-3" /> Disconnected
-                      </>
-                    )}
-                </Badge>
-                <Badge variant="secondary" className="font-mono text-xs">
-                    {logs.length} events
-                </Badge>
+      {!isEmbedded && (
+        <div className="flex flex-col gap-4 md:flex-row md:items-center justify-between">
+            <div className="flex items-center justify-between md:justify-start gap-2">
+                <div className="flex items-center gap-2">
+                    <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
+                        <Terminal className="w-6 h-6" /> Live Logs
+                    </h1>
+                    <Badge variant={isConnected ? "outline" : "destructive"} className="font-mono text-xs gap-1">
+                        {isConnected ? (
+                        <>
+                            <span className="relative flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                            </span>
+                            Live
+                        </>
+                        ) : (
+                        <>
+                            <Unplug className="h-3 w-3" /> Disconnected
+                        </>
+                        )}
+                    </Badge>
+                    <Badge variant="secondary" className="font-mono text-xs">
+                        {filteredLogs.length} events
+                    </Badge>
+                </div>
+                {/* Mobile-only pause/resume for better access */}
+                <div className="md:hidden">
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setIsPaused(!isPaused)}
+                >
+                    {isPaused ? <Play className="h-4 w-4" /> : <Pause className="h-4 w-4" />}
+                </Button>
+                </div>
             </div>
-            {/* Mobile-only pause/resume for better access */}
-            <div className="md:hidden">
-               <Button
-                variant="ghost"
-                size="icon"
+
+            <div className="flex items-center gap-2 justify-end">
+            <Button
+                variant="outline"
+                size="sm"
                 onClick={() => setIsPaused(!isPaused)}
-              >
-                {isPaused ? <Play className="h-4 w-4" /> : <Pause className="h-4 w-4" />}
-              </Button>
+                className="w-24 hidden md:flex"
+            >
+                {isPaused ? <><Play className="mr-2 h-4 w-4" /> Resume</> : <><Pause className="mr-2 h-4 w-4" /> Pause</>}
+            </Button>
+            <Button variant="outline" size="sm" onClick={clearLogs} className="flex-1 md:flex-none">
+                <Trash2 className="mr-2 h-4 w-4" /> Clear
+            </Button>
+            <Button variant="outline" size="sm" onClick={downloadLogs} className="flex-1 md:flex-none">
+                <Download className="mr-2 h-4 w-4" /> Export
+            </Button>
             </div>
         </div>
+      )}
 
-        <div className="flex items-center gap-2 justify-end">
-           <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setIsPaused(!isPaused)}
-            className="w-24 hidden md:flex"
-          >
-            {isPaused ? <><Play className="mr-2 h-4 w-4" /> Resume</> : <><Pause className="mr-2 h-4 w-4" /> Pause</>}
-          </Button>
-          <Button variant="outline" size="sm" onClick={clearLogs} className="flex-1 md:flex-none">
-            <Trash2 className="mr-2 h-4 w-4" /> Clear
-          </Button>
-          <Button variant="outline" size="sm" onClick={downloadLogs} className="flex-1 md:flex-none">
-            <Download className="mr-2 h-4 w-4" /> Export
-          </Button>
-        </div>
-      </div>
-
-      <Card className="flex-1 flex flex-col overflow-hidden border-muted/50 shadow-sm bg-background/50 backdrop-blur-sm">
-        <CardHeader className="p-4 border-b bg-muted/20">
+      <Card className={cn("flex-1 flex flex-col overflow-hidden border-muted/50 shadow-sm bg-background/50 backdrop-blur-sm", isEmbedded && "border-0 shadow-none bg-transparent")}>
+        <CardHeader className={cn("p-4 border-b bg-muted/20", isEmbedded && "p-2 bg-transparent border-b")}>
              <div className="flex flex-col md:flex-row gap-4 justify-between">
                 <div className="relative flex-1 max-w-sm w-full">
                     <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                     <Input
-                    placeholder="Search logs..."
+                    placeholder={isEmbedded ? "Search within correlated logs..." : "Search logs..."}
                     className="pl-8 bg-background w-full"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     />
                 </div>
-                <div className="flex items-center gap-2 justify-end">
-                    <Monitor className="h-4 w-4 text-muted-foreground" />
-                    <Select value={filterSource} onValueChange={setFilterSource}>
-                        <SelectTrigger className="w-[140px] bg-background">
-                            <SelectValue placeholder="Source" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="ALL">All Sources</SelectItem>
-                            {uniqueSources.map(source => (
-                                <SelectItem key={source} value={source}>{source}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                {isEmbedded && (
+                    <div className="text-[10px] text-muted-foreground flex items-center justify-end px-2 italic">
+                        Note: Showing live logs only. Historical logs may not be available.
+                    </div>
+                )}
+                {!isEmbedded && (
+                    <div className="flex items-center gap-2 justify-end">
+                        <Monitor className="h-4 w-4 text-muted-foreground" />
+                        <Select value={filterSource} onValueChange={setFilterSource}>
+                            <SelectTrigger className="w-[140px] bg-background">
+                                <SelectValue placeholder="Source" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="ALL">All Sources</SelectItem>
+                                {uniqueSources.map(source => (
+                                    <SelectItem key={source} value={source}>{source}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
 
-                    <Filter className="h-4 w-4 text-muted-foreground ml-2" />
-                    <Select value={filterLevel} onValueChange={setFilterLevel}>
-                        <SelectTrigger className="w-[120px] bg-background">
-                            <SelectValue placeholder="Level" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="ALL">All Levels</SelectItem>
-                            <SelectItem value="INFO">Info</SelectItem>
-                            <SelectItem value="WARN">Warning</SelectItem>
-                            <SelectItem value="ERROR">Error</SelectItem>
-                            <SelectItem value="DEBUG">Debug</SelectItem>
-                        </SelectContent>
-                    </Select>
-                </div>
+                        <Filter className="h-4 w-4 text-muted-foreground ml-2" />
+                        <Select value={filterLevel} onValueChange={setFilterLevel}>
+                            <SelectTrigger className="w-[120px] bg-background">
+                                <SelectValue placeholder="Level" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="ALL">All Levels</SelectItem>
+                                <SelectItem value="INFO">Info</SelectItem>
+                                <SelectItem value="WARN">Warning</SelectItem>
+                                <SelectItem value="ERROR">Error</SelectItem>
+                                <SelectItem value="DEBUG">Debug</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                )}
              </div>
         </CardHeader>
         <CardContent className="flex-1 p-0 overflow-hidden bg-black/90 font-mono text-sm relative">
-             {/* ⚡ BOLT: Implemented virtualization for log stream using react-virtuoso.
-                 Randomized Selection from Top 5 High-Impact Targets */}
-             <Virtuoso
-                style={{ height: '100%' }}
-                data={filteredLogs}
-                followOutput={isPaused ? false : 'auto'}
-                className="p-4 scroll-smooth"
-                itemContent={(index, log) => (
-                  <LogRow key={log.id} log={log} highlightRegex={highlightRegex} />
-                )}
-             />
+             <LogViewer logs={filteredLogs} highlightRegex={highlightRegex} isPaused={isPaused} />
              {filteredLogs.length === 0 && (
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                     <div className="text-muted-foreground text-center italic">
-                        {isConnected ? "No logs found matching your criteria..." : "Waiting for connection..."}
+                        {isEmbedded
+                            ? "No correlated logs found."
+                            : (isConnected ? "No logs found matching your criteria..." : "Waiting for connection...")}
                     </div>
                 </div>
              )}
