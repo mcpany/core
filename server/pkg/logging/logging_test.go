@@ -58,7 +58,7 @@ func TestGetLogger_DefaultInitialization(t *testing.T) {
 	assert.Empty(t, buf.String(), "Default logger should not log DEBUG messages")
 }
 
-func TestInit_Once(t *testing.T) {
+func TestInit_Reconfiguration(t *testing.T) {
 	// Reset the logger to ensure a clean state for this test.
 	ForTestsOnlyResetLogger()
 
@@ -68,13 +68,15 @@ func TestInit_Once(t *testing.T) {
 	GetLogger().Debug("first init")
 	assert.True(t, strings.Contains(buf1.String(), "first init"), "Logger should be initialized by the first call")
 
-	// A second Init call should be ignored. The logger should continue to write
-	// to the first buffer, not the second one.
+	// A second Init call should be allowed and overwrite the previous one.
 	var buf2 bytes.Buffer
-	Init(slog.LevelError, &buf2, "")
+	Init(slog.LevelDebug, &buf2, "")
 	GetLogger().Debug("second init")
-	assert.True(t, strings.Contains(buf1.String(), "second init"), "Logger should not be re-initialized by the second call")
-	assert.Empty(t, buf2.String(), "Second Init call should be a no-op")
+
+	// The second buffer should contain the new log
+	assert.True(t, strings.Contains(buf2.String(), "second init"), "Logger should be re-initialized by the second call")
+	// The first buffer should NOT contain the new log (because the logger was replaced)
+	assert.False(t, strings.Contains(buf1.String(), "second init"), "First logger should not receive logs after re-init")
 }
 
 func TestToSlogLevel(t *testing.T) {
