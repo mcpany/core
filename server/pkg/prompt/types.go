@@ -34,6 +34,12 @@ type Prompt interface {
 	//   - string: The service ID.
 	Service() string
 
+	// Definition returns the raw configuration definition of the prompt.
+	//
+	// Returns:
+	//   - *configv1.PromptDefinition: The prompt definition.
+	Definition() *configv1.PromptDefinition
+
 	// Get executes the prompt with the provided arguments.
 	//
 	// Parameters:
@@ -167,6 +173,11 @@ func (p *TemplatedPrompt) Prompt() *mcp.Prompt {
 //   - string: The service ID.
 func (p *TemplatedPrompt) Service() string {
 	return p.serviceID
+}
+
+// Definition returns the raw configuration definition of the prompt.
+func (p *TemplatedPrompt) Definition() *configv1.PromptDefinition {
+	return p.definition
 }
 
 // Get executes the prompt with the provided arguments.

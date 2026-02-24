@@ -796,7 +796,27 @@ func (a *Application) handlePrompts() http.HandlerFunc {
 		case http.MethodGet:
 			prompts := a.PromptManager.ListPrompts()
 			w.Header().Set("Content-Type", "application/json")
-			_ = json.NewEncoder(w).Encode(prompts)
+
+			var jsonPrompts []map[string]any
+			opts := protojson.MarshalOptions{UseProtoNames: false, EmitUnpopulated: false}
+
+			for _, p := range prompts {
+				if p.Definition() == nil {
+					continue
+				}
+				b, err := opts.Marshal(p.Definition())
+				if err != nil {
+					logging.GetLogger().Error("failed to marshal prompt", "name", p.Definition().GetName(), "error", err)
+					continue
+				}
+				var m map[string]any
+				if err := json.Unmarshal(b, &m); err == nil {
+					m["serviceId"] = p.Service()
+					jsonPrompts = append(jsonPrompts, m)
+				}
+			}
+
+			_ = json.NewEncoder(w).Encode(jsonPrompts)
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
