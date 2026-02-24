@@ -6,6 +6,8 @@
 - [ ] **[P0] Recursive Context Dashboard**: Visualize state inheritance and session tokens across agent swarms. (Added: 2026-02-23)
 - [ ] **[P0] Multi-Agent Session Timeline**: Visual tracking of agent handoffs and shared tool state. (Added: 2026-02-24)
 - [ ] **[P1] Unified Discovery Manager**: UI for managing and auto-discovering MCP servers across transports. (Added: 2026-02-24)
+- [ ] **[P0] Safe-Execution Sandbox Status**: UI indicators for tool execution isolation and security health. (Added: 2026-02-24)
+- [ ] **[P1] A2A Security Isolation Monitor**: Real-time monitoring of inter-agent task sanitization. (Added: 2026-02-24)
 - [ ] **[P0] Lazy-MCP Tool Search Dashboard**: UI for managing the on-demand tool index and monitoring search hits/misses. (Added: 2026-02-25)
 - [ ] **[P0] Supply Chain Attestation Viewer**: Security dashboard for verifying the provenance and cryptographic signatures of connected MCP servers. (Added: 2026-02-25)
 - [ ] **[P0] Agent Chain Tracer (A2A)**: Visual timeline of multi-agent handoffs and message passing. (Added: 2026-02-26)

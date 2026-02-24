@@ -46,3 +46,10 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+
+### Update: 2026-02-24 - Security Isolation for A2A Communications
+**Context:** Today's research on CVE-2026-0755 highlights the risk of unvetted tool inputs. A2A handoffs are essentially high-level tool calls and must be similarly protected.
+**Architecture Adjustment:**
+* Mandatory input sanitization for all A2A task payloads in `A2ABridgeMiddleware`.
+* Enforcement of "Safe-Execution" sandboxing for any local scripts generated or executed during an A2A session.
+**Security Impact:** Prevents cross-agent command injection attacks where one agent might compromise another via crafted A2A task descriptions.

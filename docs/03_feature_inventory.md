@@ -65,3 +65,15 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-24] Updates
+
+### Proposed Additions
+- **Safe-Execution Middleware (Sandbox)**: (P0) A mandatory isolation layer for all MCP tool calls to prevent RCE and command injection (Address CVE-2026-0755).
+- **Delegated Tool Allowlisting**: (P1) Hierarchical scoping system allowing parent agents to restrict tool access for child/sub-agents (Inspired by OpenClaw Agent Teams).
+- **Session-Bound Secret Injection**: (P1) Middleware to securely inject environment variables into tool execution contexts without exposing them globally.
+
+### Priority Shifts
+- **Unified MCP Discovery Service**: Promoted to **P0** to ensure all discovered tools are subjected to the new Safe-Execution perimeter.

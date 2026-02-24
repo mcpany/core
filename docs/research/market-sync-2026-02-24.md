@@ -1,25 +1,24 @@
 # Market Sync: 2026-02-24
 
-## Ecosystem Shift Overview
-Today's research highlights a significant push toward multi-agent coordination and standardized transport mechanisms for MCP. Major players like OpenClaw, Anthropic (Claude), and Google (Gemini) are refining how agents discover and interact with tools.
+## 1. Critical Ecosystem Vulnerability: CVE-2026-0755
+A critical zero-day command injection vulnerability has been disclosed in the `gemini-mcp-tool`.
+- **Impact**: Allows unauthenticated remote attackers to execute arbitrary code (RCE) via the `execAsync` method.
+- **Root Cause**: Failure to sanitize user-supplied input strings before passing them to a system call.
+- **CVSS Score**: 9.8 (Critical).
+- **Implication for MCP Any**: High urgency for implementing a "Safe Execution" middleware that sandboxes all tool calls and provides robust command sanitization.
 
-## Key Findings
+## 2. OpenClaw "Agent Teams" RFC
+OpenClaw is proposing a new orchestration model called "Agent Teams".
+- **Coordination Mode**: "delegate".
+- **Mechanics**: Lead sessions (Planners) have a modified tool allowlist that excludes implementation tools (exec, write, edit), which are delegated to worker agents.
+- **Implication for MCP Any**: Need for "Delegated Tool Allowlisting" to support hierarchical agent architectures and prevent privilege escalation.
 
-### 1. OpenClaw: Multi-Agent Coordination & Session Stability
-*   **Coordination Refinement**: Recent updates focused on deeper refinements in how agents coordinate.
-*   **Session Stability**: Improved reliability in handling real workflows without interruptions, even during demanding sequences.
-*   **Memory Handling**: Enhanced memory management to maintain context through longer sequences, enabling more advanced automation.
+## 3. Local Execution & Cloud Sandbox Friction
+Observations from Claude Code and Gemini CLI users indicate significant friction when bridging local resources (secrets, files) with cloud-based agent sandboxes.
+- **Pain Point**: Securely sharing environment variables without global exposure.
+- **Implication for MCP Any**: Opportunity to serve as a secure "Secret Proxy" and "Context Bridge" between disparate execution environments.
 
-### 2. Claude Code: Transport & Discovery
-*   **Heterogeneous Transport**: Support for multiple transport types (local processes, HTTP) is becoming standard.
-*   **Tool Search**: Implementing efficient tool search for large tool sets to prevent context bloat.
-*   **Configuration**: Standardized configuration via files like `.mcp.json` for easier deployment.
-
-### 3. Gemini CLI: FastMCP Integration
-*   **Seamless Integration**: Gemini CLI now integrates with FastMCP (Python) to simplify MCP server development.
-*   **ReAct Loop**: Leveraging the Reason-and-Act (ReAct) loop for better intent understanding and tool utilization.
-
-## Autonomous Agent Pain Points
-*   **Context Inheritance**: Subagents often lose the "intent" or "scoped state" of the parent agent.
-*   **Discovery Friction**: Manually configuring dozens of MCP servers across different environments is a major developer friction point.
-*   **Security Vulnerabilities**: Local file access by subagents remains a concern, necessitating "Zero Trust" boundaries.
+## 4. Autonomous Agent Persistence Patterns
+OpenClaw and other frameworks are moving towards "Always-On" agents using heartbeats and scheduled rituals.
+- **Trend**: Long-running agent sessions that survive individual tool call lifecycles.
+- **Implication for MCP Any**: Gateway must support persistent session state and heartbeat monitoring to ensure agent reliability.
