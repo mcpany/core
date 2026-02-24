@@ -39,6 +39,13 @@ interface PromptWorkbenchProps {
   initialPrompts?: PromptDefinition[];
 }
 
+/**
+ * PromptWorkbench is a component that provides an interface for creating, editing, and testing prompts.
+ * It allows users to manage prompt templates and test them with different inputs.
+ *
+ * @param props - The component props.
+ * @param props.initialPrompts - The initial list of prompts to display.
+ */
 export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
   const [prompts, setPrompts] = useState<PromptDefinition[]>(initialPrompts);
   const [services, setServices] = useState<UpstreamServiceConfig[]>([]);
