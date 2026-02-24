@@ -47,3 +47,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **A2A Gateway Protocol**: MCP Any will implement a protocol-neutral bridge for A2A communication, allowing disparate agent frameworks (e.g., OpenClaw, AutoGen) to exchange state and tasks via a unified MCP-like interface.
 - **Federated Tool Mesh**: Moving from a standalone server to a "Mesh" architecture where multiple MCP Any instances can peer and share resources across network boundaries, governed by global Zero-Trust policies.
 - **Resource-Aware Intelligence**: Integrating cost and latency telemetry into the tool discovery process, allowing LLMs to perform "Economical Reasoning" when selecting tools.
+
+---
+
+## Strategic Evolution: [2026-02-27]
+### Focus: Audit-in-the-Middle & Heartbeat Persistence
+**Context**: Today's research highlights a critical shift in the threat landscape toward Indirect Prompt Injection via tool inputs, and a growing trend in agent swarms (OpenClaw) toward heartbeat-driven persistence.
+**Strategic Pivot**:
+- **Audit-in-the-Middle (AitM)**: MCP Any will evolve from a passive gateway to an active security auditor. Every tool response and document input will be passed through a real-time "Sanitization Middleware" to detect and neutralize indirect injection attempts before they reach the LLM.
+- **Heartbeat Persistence Protocol**: Implementing a "Keep-Alive" state management system that allows agents to maintain long-running context and shared "Blackboard" state across asynchronous heartbeats, ensuring stability in autonomous swarms.
+- **Self-Auditing Agent Infrastructure**: Providing native MCP tools that allow agents to audit their own tool chain and environment, leveraging Anthropic's autonomous vulnerability hunting patterns.

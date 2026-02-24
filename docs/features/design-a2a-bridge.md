@@ -46,3 +46,7 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-02-27:** Added Heartbeat & State Resumption.
+    *   **Context**: Findings from OpenClaw show a need for heartbeat-driven persistence.
+    *   **Adjustment**: Introducing a "Keep-Alive" mechanism in Section 4 to maintain A2A session stability.
+    *   **Security Impact**: Prevents session hijacking during asynchronous handoffs by binding sessions to attested heartbeats.

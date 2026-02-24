@@ -128,6 +128,8 @@ These features represent the next logical steps for the product, focusing on Ent
 | 81 | **Interactive Env Var Fixer** | **DevX**: A CLI tool that detects validation errors like hidden whitespace and offers to interactively fix the .env file. | Medium |
 | 78 | **Upstream Connectivity Debugger** | **DevX**: CLI tool to debug connectivity issues with upstreams (like `curl` but with MCP auth/headers injected from config). | Medium |
 | 79 | **Configuration Template Generator** | **DevX**: CLI command to generate a scaffold `config.yaml` based on a list of desired services (e.g. `mcpany config init --services github,postgres`). | Low |
+| 82 | **Agent Heartbeat Protocol** | **Resilience**: Implement a state-resumption protocol for asynchronous agent swarms to ensure session stability across heartbeats. | High |
+| 83 | **MCP Provenance Attestation** | **Security**: Cryptographic verification of MCP server manifests to prevent supply chain attacks and rogue tool registrations. | Critical |
 
 ## 1. Completed Features
 

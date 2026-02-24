@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **Agent Heartbeat Middleware**: (P1) Implements a keep-alive and state-resumption protocol for asynchronous agent swarms (OpenClaw style).
+- **Audit-in-the-Middle (AitM) Sanitizer**: (P0) Real-time scanning and neutralization of indirect prompt injection in tool outputs and document ingestion.
+- **Autonomous Tool-Chain Auditor**: (P1) A native MCP tool that allows agents to perform self-audits of their configured tool-chain for known vulnerabilities.
+
+### Priority Shifts
+- **A2A Interop Bridge (Pseudo-MCP)**: Promoted to **P0** (Already P0, but re-affirming importance for swarm stability).
+- **MCP Provenance Attestation**: Promoted to **P0**. Critical for securing the "Audit-in-the-Middle" supply chain.
+
+### Deprecations / Monitoring
+- **Passive Document Proxying**: Monitoring for deprecation in favor of active "Sanitized" ingestion.
