@@ -17,8 +17,6 @@ import (
 
 // AuthMiddleware creates an MCP middleware for handling authentication.
 //
-// Summary: MCP Middleware for request authentication.
-//
 // It is intended to inspect incoming requests and use the provided `AuthManager` to
 // verify credentials before passing the request to the next handler.
 //

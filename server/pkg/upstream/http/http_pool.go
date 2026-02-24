@@ -28,6 +28,11 @@ type httpPool struct {
 
 // Close closes the connection pool and the idle connections.
 //
+// Returns:
+//   - error: An error if the pool cannot be closed.
+//
+// Side Effects:
+//   - Closes idle network connections.
 func (p *httpPool) Close() error {
 	if err := p.Pool.Close(); err != nil {
 		return err
@@ -37,8 +42,6 @@ func (p *httpPool) Close() error {
 }
 
 // NewHTTPPool creates a new connection pool for HTTP clients.
-//
-// Summary: Creates a new HTTP connection pool.
 //
 // It is defined as a variable to allow for easy mocking in tests.
 //

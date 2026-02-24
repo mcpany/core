@@ -31,8 +31,6 @@ import (
 
 // Upstream implements the upstream.Upstream interface for filesystem services.
 //
-// Summary: Filesystem upstream service implementation.
-//
 // It provides tools for interacting with various filesystem backends (local,
 // S3, GCS, etc.) as defined in the service configuration.
 type Upstream struct {
@@ -42,6 +40,9 @@ type Upstream struct {
 }
 
 // NewUpstream creates a new instance of FilesystemUpstream.
+//
+// Returns:
+//   - upstream.Upstream: A new instance of the filesystem upstream.
 //
 // Side Effects:
 //   - None.
@@ -53,10 +54,8 @@ func NewUpstream() upstream.Upstream {
 
 // Shutdown implements the upstream.Upstream interface.
 //
-// Summary: Shuts down the filesystem upstream.
-//
 // Parameters:
-//   - ctx: context.Context. The context for the shutdown operation (currently unused).
+//   - ctx (context.Context): The context for the shutdown operation (currently unused).
 //
 // Returns:
 //   - error: Always returns nil.
@@ -79,15 +78,13 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 
 // Register processes the configuration for a filesystem service.
 //
-// Summary: Registers a filesystem service and its tools.
-//
 // Parameters:
-//   - ctx: context.Context. The context for the registration process.
-//   - serviceConfig: *configv1.UpstreamServiceConfig. The configuration for the upstream service.
-//   - toolManager: tool.ManagerInterface. The manager where discovered tools will be registered.
-//   - _ prompt.ManagerInterface: Unused prompt manager.
-//   - _ resource.ManagerInterface: Unused resource manager.
-//   - _ bool: Unused reload flag.
+//   - ctx (context.Context): The context for the registration process.
+//   - serviceConfig (*configv1.UpstreamServiceConfig): The configuration for the upstream service.
+//   - toolManager (tool.ManagerInterface): The manager where discovered tools will be registered.
+//   - _ (prompt.ManagerInterface): Unused prompt manager.
+//   - _ (resource.ManagerInterface): Unused resource manager.
+//   - _ (bool): Unused reload flag.
 //
 // Returns:
 //   - string: The unique service ID.
