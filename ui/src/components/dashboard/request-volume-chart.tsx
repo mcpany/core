@@ -14,7 +14,7 @@ import { useDashboard } from "@/components/dashboard/dashboard-context";
  * @returns The rendered component.
  */
 export function RequestVolumeChart() {
-  const [data, setData] = useState<{ time: string; total: number }[]>([]);
+  const [data, setData] = useState<{ time: string; requests: number }[]>([]);
   const [mounted, setMounted] = useState(false);
   const { serviceId, timeRange } = useDashboard();
 
