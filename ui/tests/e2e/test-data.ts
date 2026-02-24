@@ -181,72 +181,6 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
     }
 };
 
-// Wrappers for backward compatibility if needed, or deprecate
-export const seedServices = async (requestContext?: APIRequestContext) => {
-    // No-op or call seedGlobalState?
-    // Since individual seeding is flaky/slow, we prefer seedGlobalState.
-    // We'll leave this as a no-op assuming seedGlobalState was called in setup.
-    // Or we can log a warning.
-    console.warn("seedServices is deprecated. Use seedGlobalState.");
-};
-
-export const seedTemplates = async (requestContext?: APIRequestContext) => {
-    console.warn("seedTemplates is deprecated. Use seedGlobalState.");
-};
-
-export const seedUser = async (requestContext?: APIRequestContext, username: string) => {
-    console.warn("seedUser is deprecated. Use seedGlobalState.");
-};
-
-export const cleanupServices = async (requestContext?: APIRequestContext) => {
-    // No-op, seeding overwrites/clears data
-};
-
-export const cleanupTemplates = async (requestContext?: APIRequestContext) => {
-    // No-op
-};
-
-export const cleanupUser = async (requestContext?: APIRequestContext, username: string) => {
-    // No-op
-};
-
-export const cleanupWebhooks = async (requestContext?: APIRequestContext) => {
-    // No-op
-};
-
-// Webhooks still need manual seeding as they are not in SeedRequest yet
-export const seedWebhooks = async (requestContext?: APIRequestContext) => {
-    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
-
-    // Seed global webhook
-    try {
-        await context.post('/api/v1/alerts/webhook', {
-            data: { url: "https://example.com/webhook" },
-            headers: HEADERS
-        });
-    } catch (e) {
-        console.log(`Failed to seed global webhook: ${e}`);
-    }
-
-    // Seed alert rules
-    const alerts = [
-        {
-            id: "alert_1",
-            name: "Critical Service Down",
-            condition: "service.status == 'down' && service.priority <= 1",
-            action: { webhook: { url: "https://pagerduty.com/webhook" } }
-        }
-    ];
-
-    for (const alert of alerts) {
-        try {
-            await context.post('/api/v1/alerts/rules', { data: alert, headers: HEADERS });
-        } catch (e) {
-            console.log(`Failed to seed alert ${alert.name}: ${e}`);
-        }
-    }
-};
-
 export const seedTraffic = async (requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     const points = [
@@ -257,4 +191,70 @@ export const seedTraffic = async (requestContext?: APIRequestContext) => {
     } catch (e) {
         console.log(`Failed to seed traffic: ${e}`);
     }
+};
+
+// Backward compatibility wrappers to ensure other tests don't break
+export const seedServices = async (requestContext?: APIRequestContext) => {
+    // Calling seedGlobalState ensures services are present.
+    await seedGlobalState(requestContext);
+};
+
+export const seedUser = async (requestContext: APIRequestContext | undefined, username: string) => {
+    // We create a specific user if requested, in addition to the core user.
+    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    const user = {
+        id: username,
+        authentication: {
+            basic_auth: {
+                username: username,
+                password_hash: "$2a$12$KPRtQETm7XKJP/L6FjYYxuCFpTK/oRs7v9U6hWx9XFnWy6UuDqK/a" // password
+            }
+        },
+        roles: ["admin"], // Default to admin for e2e tests
+        profile_ids: ["dev"]
+    };
+
+    try {
+        const res = await context.post('/api/v1/users', { data: user, headers: HEADERS });
+        if (!res.ok() && res.status() !== 409) { // Ignore conflict if user exists
+             // If user creation fails, we might create it via seed?
+             // But seed clears everything.
+             // If this is called AFTER seedGlobalState, it adds a user.
+             console.log(`Failed to create user ${username}: ${res.status()}`);
+        }
+    } catch (e) {
+        console.log(`Error seeding user ${username}: ${e}`);
+    }
+};
+
+export const cleanupServices = async (requestContext?: APIRequestContext) => {
+    // No-op
+};
+
+export const cleanupUser = async (requestContext?: APIRequestContext, username: string) => {
+    // No-op
+};
+
+export const seedProfiles = async (requestContext?: APIRequestContext) => {
+    // Included in seedGlobalState (empty profiles list currently, but we can add if needed)
+};
+
+export const cleanupProfiles = async (requestContext?: APIRequestContext) => {
+    // No-op
+};
+
+export const seedPrompts = async (requestContext?: APIRequestContext) => {
+    // No-op
+};
+
+export const cleanupPrompts = async (requestContext?: APIRequestContext) => {
+    // No-op
+};
+
+export const seedCollection = async (requestContext?: APIRequestContext) => {
+    // No-op
+};
+
+export const cleanupCollection = async (requestContext?: APIRequestContext) => {
+    // No-op
 };

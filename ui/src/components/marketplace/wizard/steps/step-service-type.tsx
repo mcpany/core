@@ -3,78 +3,29 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useWizard } from '../wizard-context';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
+import { apiClient, ServiceTemplate } from '@/lib/client';
+import { Loader2 } from 'lucide-react';
 
-const TEMPLATES = [
-    {
-        id: 'manual',
-        name: 'Manual / Custom',
-        description: 'Configure everything from scratch.',
-        config: {
-            commandLineService: {
-                command: '',
-                env: {},
-                workingDirectory: ''
-            },
-            openapiService: undefined
+const MANUAL_TEMPLATE: any = {
+    id: 'manual',
+    name: 'Manual / Custom',
+    description: 'Configure everything from scratch.',
+    config: {
+        commandLineService: {
+            command: '',
+            env: {},
+            workingDirectory: ''
         },
-        params: {}
+        openapiService: undefined
     },
-    {
-        id: 'postgres',
-        name: 'PostgreSQL Database',
-        description: 'Connect to a PostgreSQL database.',
-        config: {
-            commandLineService: {
-                command: 'npx -y @modelcontextprotocol/server-postgres',
-                env: {
-                    "POSTGRES_URL": { plainText: "postgresql://user:password@localhost:5432/dbname", validationRegex: "" }
-                }
-            },
-            openapiService: undefined
-        },
-        params: {
-            "POSTGRES_URL": "postgresql://user:password@localhost:5432/dbname"
-        }
-    },
-    {
-        id: 'filesystem',
-        name: 'Filesystem',
-        description: 'Expose a local directory.',
-        config: {
-            commandLineService: {
-                command: 'npx -y @modelcontextprotocol/server-filesystem',
-                env: {
-                    "ALLOWED_PATH": { plainText: "/home/user", validationRegex: "" }
-                }
-            },
-            openapiService: undefined
-        },
-        params: {
-            "ALLOWED_PATH": "/home/user"
-        }
-    },
-    {
-        id: 'openapi',
-        name: 'OpenAPI / Swagger Import',
-        description: 'Import tools from an OpenAPI specification.',
-        config: {
-            openapiService: {
-                address: "",
-                specUrl: "",
-                specContent: "",
-                tools: []
-            },
-            commandLineService: undefined
-        },
-        params: {}
-    }
-];
+    params: {}
+};
 
 /**
  * StepServiceType component.
@@ -83,22 +34,75 @@ const TEMPLATES = [
 export function StepServiceType() {
     const { state, updateConfig, updateState } = useWizard();
     const { config, selectedTemplateId } = state;
+    const [templates, setTemplates] = useState<any[]>([MANUAL_TEMPLATE]);
+    const [loading, setLoading] = useState(true);
 
+    useEffect(() => {
+        async function fetchTemplates() {
+            try {
+                setLoading(true);
+                const data = await apiClient.getServiceTemplates();
+
+                const mapped = data.map(t => {
+                    // Extract params from config
+                    const params: Record<string, string> = {};
+                    const sc = t.serviceConfig;
+
+                    if (sc.commandLineService && sc.commandLineService.env) {
+                        for (const [key, val] of Object.entries(sc.commandLineService.env)) {
+                            // Handle if val is string or object (EnvVarValue)
+                            if (typeof val === 'string') {
+                                params[key] = val;
+                            } else if (val && typeof val === 'object' && (val as any).plainText) {
+                                params[key] = (val as any).plainText;
+                            } else {
+                                // Fallback
+                                params[key] = "";
+                            }
+                        }
+                    }
+                    // Handle HTTP service env? Usually not present, but good to check.
+
+                    return {
+                        ...t,
+                        config: t.serviceConfig,
+                        params: params
+                    };
+                });
+
+                setTemplates([MANUAL_TEMPLATE, ...mapped]);
+            } catch (e) {
+                console.error("Failed to load templates", e);
+            } finally {
+                setLoading(false);
+            }
+        }
+        fetchTemplates();
+    }, []);
 
     const handleTemplateChange = (val: string) => {
-        const template = TEMPLATES.find(t => t.id === val);
+        const template = templates.find(t => t.id === val);
         if (template) {
             updateState({
                 selectedTemplateId: val,
-                params: template.params as Record<string, string>
+                params: template.params || {}
             });
+            // Don't overwrite name if user already typed one, unless it was empty or default
+            const newName = config.name && config.name !== MANUAL_TEMPLATE.name ? config.name : template.name;
             updateConfig({
-                ...template.config as any,
-                name: config.name || template.name,
+                ...template.config,
+                name: newName,
             });
         }
     };
 
+    if (loading) {
+        return (
+            <div className="flex h-40 items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-6">
@@ -120,7 +124,7 @@ export function StepServiceType() {
                         <SelectValue placeholder="Select a template" />
                     </SelectTrigger>
                     <SelectContent>
-                        {TEMPLATES.map(t => (
+                        {templates.map(t => (
                             <SelectItem key={t.id} value={t.id}>
                                 {t.name}
                             </SelectItem>
@@ -130,10 +134,10 @@ export function StepServiceType() {
                 <Card className="mt-2 bg-muted/50">
                     <CardHeader>
                         <CardTitle className="text-base">
-                            {TEMPLATES.find(t => t.id === (selectedTemplateId || 'manual'))?.name}
+                            {templates.find(t => t.id === (selectedTemplateId || 'manual'))?.name}
                         </CardTitle>
                         <CardDescription>
-                            {TEMPLATES.find(t => t.id === (selectedTemplateId || 'manual'))?.description}
+                            {templates.find(t => t.id === (selectedTemplateId || 'manual'))?.description}
                         </CardDescription>
                     </CardHeader>
                 </Card>

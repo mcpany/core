@@ -520,7 +520,7 @@ func (u *Upstream) Register(
 type mcpConnection struct {
 	client          *mcp.Client
 	stdioConfig     *configv1.McpStdioConnection
-	bundleTransport *BundleDockerTransport
+	bundleTransport mcp.Transport
 	httpAddress     string
 	httpClient      *http.Client
 	sessionRegistry *SessionRegistry

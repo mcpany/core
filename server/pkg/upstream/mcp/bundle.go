@@ -98,6 +98,11 @@ func (u *Upstream) createAndRegisterMCPItemsFromBundle(
 
 	// 3. Determine Container Configuration
 	containerMountPath := "/app/bundle"
+	runtimeMode := os.Getenv("MCP_BUNDLE_RUNTIME")
+	targetDir := containerMountPath
+	if runtimeMode == "local" {
+		targetDir = tempDir
+	}
 
 	imageName := bundleConfig.GetContainerImage()
 	if imageName == "" {
@@ -155,19 +160,19 @@ func (u *Upstream) createAndRegisterMCPItemsFromBundle(
 		if ep == "" {
 			ep = "main.py"
 		}
-		args = []string{filepath.Join(containerMountPath, ep)}
+		args = []string{filepath.Join(targetDir, ep)}
 	case "uv":
 		runCmd := []string{"uv", "run"}
 		ep := manifest.Server.EntryPoint
 		if ep != "" {
-			runCmd = append(runCmd, filepath.Join(containerMountPath, ep))
+			runCmd = append(runCmd, filepath.Join(targetDir, ep))
 		}
 		command = runCmd[0]
 		args = runCmd[1:]
 	}
 	// Variable substitution for ${__dirname}
 	for i, arg := range args {
-		args[i] = strings.ReplaceAll(arg, "${__dirname}", containerMountPath)
+		args[i] = strings.ReplaceAll(arg, "${__dirname}", targetDir)
 	}
 
 	envList := make([]string, 0, len(env))
@@ -181,20 +186,32 @@ func (u *Upstream) createAndRegisterMCPItemsFromBundle(
 	} else {
 		logging.GetLogger().Info("Bundle temp dir exists", "path", tempDir, "mode", stat.Mode())
 	}
-	transport := &BundleDockerTransport{
-		Image:      imageName,
-		Command:    command,
-		Args:       args,
-		Env:        envList,
-		WorkingDir: containerMountPath,
-		Mounts: []mount.Mount{
-			{
-				Type:     mount.TypeBind,
-				Source:   tempDir,
-				Target:   containerMountPath,
-				ReadOnly: true,
+
+	var transport mcp.Transport
+	if runtimeMode == "local" {
+		logging.GetLogger().Info("Using local bundle transport", "command", command, "args", args, "dir", tempDir)
+		transport = &BundleLocalTransport{
+			Command:    command,
+			Args:       args,
+			Env:        envList,
+			WorkingDir: tempDir,
+		}
+	} else {
+		transport = &BundleDockerTransport{
+			Image:      imageName,
+			Command:    command,
+			Args:       args,
+			Env:        envList,
+			WorkingDir: containerMountPath,
+			Mounts: []mount.Mount{
+				{
+					Type:     mount.TypeBind,
+					Source:   tempDir,
+					Target:   containerMountPath,
+					ReadOnly: true,
+				},
 			},
-		},
+		}
 	}
 
 	// 5. Connect and Register

@@ -232,26 +232,30 @@ func createE2EBundle(t *testing.T, dir string) string {
 }
 
 func TestE2E_Bundle_Filesystem(t *testing.T) {
+	// If Docker is not available or disabled, fallback to local execution.
+	useLocal := false
 	if os.Getenv("SKIP_DOCKER_TESTS") == "true" {
-		t.Skip("Skipping Docker tests because SKIP_DOCKER_TESTS is set")
+		useLocal = true
 	}
-	// if os.Getenv("CI") == "true" {
-	// 	t.Skip("Skipping Docker tests in CI due to potential overlayfs/mount issues")
-	// }
-    // Actually, I should skip if CI is true OR if docker fails.
-    // The environment seems to satisfy "docker info" but fails on run.
-    // I will skip if CI=true as requested by the error message logic.
 	if os.Getenv("CI") == "true" {
-		t.Skip("Skipping Docker tests in CI due to potential overlayfs/mount issues")
+		useLocal = true
+	}
+	if err := exec.Command("docker", "info").Run(); err != nil {
+		useLocal = true
 	}
 
-	// Check if Docker is available and accessible
-	if err := exec.Command("docker", "info").Run(); err != nil {
-		t.Skipf("Skipping Docker tests: docker info failed: %v", err)
+	if useLocal {
+		t.Log("Docker not available or tests skipped; falling back to local bundle execution.")
+		t.Setenv("MCP_BUNDLE_RUNTIME", "local")
+		// Verify node is available for local execution
+		if err := exec.Command("node", "--version").Run(); err != nil {
+			t.Skipf("Skipping bundle tests: node not found for local execution: %v", err)
+		}
 	}
 
 	tempDir := t.TempDir()
 	bundlePath := createE2EBundle(t, tempDir)
+	bundleBaseDir := filepath.Join(t.TempDir(), "bundles")
 
 	toolManager := tool.NewManager(nil)
 	promptManager := prompt.NewManager()
@@ -261,7 +265,7 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 		// Use a test-specific temp directory for bundles to ensure isolation
 		// and avoid conflicts with global state or other tests.
 		// We use a subdirectory "bundles" inside t.TempDir() to keep it clean.
-		impl.BundleBaseDir = filepath.Join(t.TempDir(), "bundles")
+		impl.BundleBaseDir = bundleBaseDir
 		if err := os.MkdirAll(impl.BundleBaseDir, 0755); err != nil {
 			t.Fatalf("Failed to create test bundle dir: %v", err)
 		}
@@ -317,7 +321,14 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 	require.True(t, ok, "Tool should be registered: %s", toolID)
 
 	// Prepare Call
-	callArgs := json.RawMessage(`{"path": "/app/bundle/hello.txt"}`)
+	targetPath := "/app/bundle/hello.txt"
+	if useLocal {
+		targetPath = filepath.Join(bundleBaseDir, "fs-bundle-service", "hello.txt")
+	}
+	callArgsMap := map[string]string{"path": targetPath}
+	callArgsBytes, _ := json.Marshal(callArgsMap)
+	callArgs := json.RawMessage(callArgsBytes)
+
 	req := &tool.ExecutionRequest{
 		ToolName:   toolID,
 		ToolInputs: callArgs,
@@ -337,7 +348,14 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 	mcpListTool, ok := toolManager.GetTool(listToolID)
 	require.True(t, ok)
 
-	listArgs := json.RawMessage(`{"path": "/app/bundle"}`)
+	listPath := "/app/bundle"
+	if useLocal {
+		listPath = filepath.Join(bundleBaseDir, "fs-bundle-service")
+	}
+	listArgsMap := map[string]string{"path": listPath}
+	listArgsBytes, _ := json.Marshal(listArgsMap)
+	listArgs := json.RawMessage(listArgsBytes)
+
 	listReq := &tool.ExecutionRequest{
 		ToolName:   listToolID,
 		ToolInputs: listArgs,
