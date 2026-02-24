@@ -47,3 +47,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **A2A Gateway Protocol**: MCP Any will implement a protocol-neutral bridge for A2A communication, allowing disparate agent frameworks (e.g., OpenClaw, AutoGen) to exchange state and tasks via a unified MCP-like interface.
 - **Federated Tool Mesh**: Moving from a standalone server to a "Mesh" architecture where multiple MCP Any instances can peer and share resources across network boundaries, governed by global Zero-Trust policies.
 - **Resource-Aware Intelligence**: Integrating cost and latency telemetry into the tool discovery process, allowing LLMs to perform "Economical Reasoning" when selecting tools.
+
+---
+
+## Strategic Evolution: [2026-02-27]
+### Focus: Local-First Agentic Memory & Hardened MCP Subprocess Isolation
+**Context**: Today's research highlights the meteoric rise of OpenClaw and its local-first data model, alongside critical security flaws in how current MCP adapters handle subprocess execution and logging.
+**Strategic Pivot**:
+- **Local-First Memory Integration**: MCP Any will pivot to become the primary interface for local agentic memory, providing a standardized way for agents to read and write to local state while maintaining security boundaries.
+- **Hardened Subprocess Sandboxing**: Moving beyond simple proxying, MCP Any will implement a mandatory sandboxing layer for all tool calls that trigger subprocesses, mitigating the risk of injection attacks.
+- **Zero-Exposure Logging**: Implementing a global "Secrets Filter" in the middleware pipeline that automatically redacts sensitive patterns (API keys, PII) before logs are persisted or transmitted.

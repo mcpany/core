@@ -46,3 +46,10 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+
+### Update: 2026-02-27 - Hardening A2A Subprocesses
+**Context:** Recent audits revealed that A2A bridges are susceptible to subprocess injection if the underlying agent executes shell commands based on bridge inputs.
+**Architecture Adjustment:**
+- Integrating the **Subprocess Sandboxing Middleware** into the A2ABridge lifecycle.
+- All data passed from an A2A agent to a local tool via the bridge must pass through a strict sanitization layer.
+**Security Impact:** Prevents "Bridge-to-Host" escalation where an external A2A agent gains local shell access through a misconfigured bridge tool.

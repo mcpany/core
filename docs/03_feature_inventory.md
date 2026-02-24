@@ -65,3 +65,16 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **Local-First Agentic Memory Standard**: (P1) Standardizing how agents store and retrieve local state, aligning with the OpenClaw ecosystem.
+- **Subprocess Sandboxing Middleware**: (P0) Hardening MCP tool execution against unsafe patterns (e.g., shell injection) in third-party servers.
+- **Log Sanitization Filter**: (P1) Middleware to automatically scrub sensitive data (API keys, PII) from agent logs and traces.
+
+### Priority Shifts
+- **Policy Firewall**: Re-affirming **P0**. Essential for enforcing subprocess sandboxing policies.
+- **A2A Interop Bridge (Pseudo-MCP)**: Re-affirming **P0**. Critical for integrating with the growing number of specialized agents.

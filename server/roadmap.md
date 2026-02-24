@@ -184,3 +184,8 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Core Middleware Pipeline**: The middleware architecture is robust and extensible.
 - **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates protocol details from business logic.
 - **Documentation**: The project has excellent documentation coverage for most features.
+
+#### Upcoming (2026-02-27 Evolution)
+* **[P0] Subprocess Sandboxing Middleware**: Addressing unsafe execution patterns in third-party MCP servers.
+* **[P1] Local-First Agentic Memory Standard**: Alignment with the OpenClaw ecosystem.
+* **[P1] Log Sanitization Filter**: Automatic removal of API keys and PII from agent logs.
