@@ -627,6 +627,9 @@ type mockPrompt struct {
 func (m *mockPrompt) Prompt() *mcp.Prompt {
 	return &mcp.Prompt{Name: m.name}
 }
+func (m *mockPrompt) Definition() *configv1.PromptDefinition {
+	return configv1.PromptDefinition_builder{Name: proto.String(m.name)}.Build()
+}
 func (m *mockPrompt) Service() string { return "mock" }
 func (m *mockPrompt) Get(ctx context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {
 	return &mcp.GetPromptResult{
@@ -1084,7 +1087,10 @@ func (e *errorResource) Subscribe(ctx context.Context) error { return nil }
 type errorPrompt struct{}
 
 func (e *errorPrompt) Prompt() *mcp.Prompt { return &mcp.Prompt{Name: "error-prompt"} }
-func (e *errorPrompt) Service() string     { return "test" }
+func (e *errorPrompt) Definition() *configv1.PromptDefinition {
+	return configv1.PromptDefinition_builder{Name: proto.String("error-prompt")}.Build()
+}
+func (e *errorPrompt) Service() string { return "test" }
 func (e *errorPrompt) Get(ctx context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {
 	return nil, errors.New("get failed")
 }

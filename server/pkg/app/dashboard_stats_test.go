@@ -24,6 +24,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestHandleDashboardToolFailures(t *testing.T) {
@@ -227,6 +228,9 @@ type TestMockPrompt struct {
 
 func (m *TestMockPrompt) Prompt() *mcp.Prompt {
 	return &mcp.Prompt{Name: m.name}
+}
+func (m *TestMockPrompt) Definition() *configv1.PromptDefinition {
+	return configv1.PromptDefinition_builder{Name: proto.String(m.name)}.Build()
 }
 func (m *TestMockPrompt) Service() string { return "test" }
 func (m *TestMockPrompt) Get(ctx context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {

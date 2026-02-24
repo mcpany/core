@@ -205,6 +205,11 @@ func (a *Application) handleDashboardMetrics() http.HandlerFunc {
 			promptCount = len(a.PromptManager.ListPrompts())
 		}
 
+		resourceCount := 0
+		if a.ResourceManager != nil {
+			resourceCount = len(a.ResourceManager.ListResources())
+		}
+
 		metrics := []Metric{
 			{
 				Label:    "Total Requests",
@@ -253,6 +258,14 @@ func (a *Application) handleDashboardMetrics() http.HandlerFunc {
 				Trend:    trendNeutral,
 				Icon:     "MessageSquare",
 				SubLabel: "Templates",
+			},
+			{
+				Label:    "Resources",
+				Value:    fmt.Sprintf("%d", resourceCount),
+				Change:   "--",
+				Trend:    trendNeutral,
+				Icon:     "Database",
+				SubLabel: "Available",
 			},
 			{
 				Label:    "Avg Latency",

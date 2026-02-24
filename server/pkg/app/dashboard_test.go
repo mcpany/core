@@ -89,8 +89,8 @@ func TestDashboardMetrics(t *testing.T) {
 	require.NoError(t, err)
 
 	// Verify Metrics Content
-	// We expect 8 metrics
-	assert.Len(t, metrics, 8)
+	// We expect 9 metrics
+	assert.Len(t, metrics, 9)
 
 	metricsMap := make(map[string]Metric)
 	for _, m := range metrics {
