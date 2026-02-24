@@ -4270,6 +4270,20 @@ func analyzeQuoteContext(template, placeholder string) int {
 			if !inSingle {
 				inBacktick = !inBacktick
 			}
+			// Sentinel Security Update: Detect backticks inside double quotes as complex context.
+			// This forces strict (Level 0) checks because we cannot reliably determine if we are inside
+			// a nested command substitution or string literal without full shell parsing.
+			if inDouble && !inSingle {
+				minLevel = 0
+			}
+		case '$':
+			// Sentinel Security Update: Detect $(...) or ${...} inside double quotes as complex context.
+			if inDouble && !inSingle && !inBacktick && i+1 < len(template) {
+				next := template[i+1]
+				if next == '(' || next == '{' {
+					minLevel = 0
+				}
+			}
 		}
 	}
 
