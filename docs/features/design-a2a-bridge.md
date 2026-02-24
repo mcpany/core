@@ -46,3 +46,10 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+
+### Update: 2026-02-24 - Heartbeat Sync & Collaborative Routing
+**Context**: Recent OpenClaw research and the rise of "Collaborative Bridges" (e.g., Claude + Gemini) reveal the need for heartbeat-driven session management in persistent agent teams.
+**Architecture Adjustment**:
+*   **HeartbeatSyncMiddleware**: Introducing a background synchronization task that maintains liveness between federated A2A agents.
+*   **Collaborative Session Router**: New logic in the `A2ABridgeMiddleware` to handle circular refinement loops where multiple models work on the same task.
+**Security Impact**: Prevents "Shadow Sessions" from persisting after a parent agent has terminated.

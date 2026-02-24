@@ -65,3 +65,16 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-24] Updates (Part 2)
+
+### Proposed Additions
+- **Metadata Sanitization Engine**: (P0) A proactive security layer that sanitizes tool schemas and descriptions to prevent Tool Poisoning (MCP03).
+- **Intent-Flow Validation Middleware**: (P1) Heuristic-based monitoring of agent-tool interactions to detect and block Intent Flow Subversion (MCP06).
+- **Immutable Agent Audit Log**: (P1) A secure, append-only log of all tool calls and inter-agent handoffs to address MCP08.
+
+### Priority Shifts
+- **A2A Interop Bridge (Pseudo-MCP)**: Promoted to **P0**. High urgency due to the trend in collaborative agent sessions (Claude Code + Gemini) requiring secure model-to-model bridging.
+- **Supply Chain Integrity Guard**: Promoted to **P0**. Essential for preventing Shadow MCP servers and unverified tool installations.

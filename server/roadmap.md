@@ -18,6 +18,9 @@
 *   **[P1] Machine-Checkable Security Contracts**: Declarative tool safety models.
 *   **[P0] Multi-Agent Session Management**: Session-aware middleware for agent coordination (Added: 2026-02-24).
 *   **[P1] Unified MCP Discovery Service**: Automated registry for Stdio/HTTP/FastMCP servers (Added: 2026-02-24).
+*   **[P0] Metadata Sanitization Engine**: Scrub tool schemas for prompt injection (MCP03) (Added: 2026-02-24).
+*   **[P1] Intent-Flow Heuristic Monitor**: Detect agent decision loop subversion (MCP06) (Added: 2026-02-24).
+*   **[P1] Immutable Agent Audit Log**: Append-only storage for agent-to-agent handoffs (MCP08) (Added: 2026-02-24).
 
 #### Upcoming (2026-02-25 Evolution)
 *   **[P0] On-Demand Discovery Middleware (Lazy-MCP)**: Implements similarity-based tool searching to prevent context pollution. (Added: 2026-02-25)
