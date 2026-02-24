@@ -6,6 +6,7 @@ package tool
 import (
 	"context"
 	"encoding/json"
+	"strings"
 	"testing"
 	"time"
 
@@ -54,9 +55,12 @@ func TestLocalCommandTool_VimInjection_Prevention(t *testing.T) {
 
 	_, err := localTool.Execute(ctx, reqAttack)
 
-	// Expect error "shell injection detected"
+	// Expect error "shell injection detected" or "argument injection detected" (if + is blocked)
 	assert.Error(t, err)
 	if err != nil {
-		assert.Contains(t, err.Error(), "shell injection detected")
+		// We accept either, as blocking + is an even stronger defense that runs earlier.
+		isShellInjection := strings.Contains(err.Error(), "shell injection detected")
+		isArgInjection := strings.Contains(err.Error(), "argument injection detected")
+		assert.True(t, isShellInjection || isArgInjection, "Error should indicate shell or argument injection, got: %v", err)
 	}
 }
