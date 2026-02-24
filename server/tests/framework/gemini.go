@@ -29,6 +29,9 @@ type GeminiCLI struct {
 //
 // Returns the result.
 func NewGeminiCLI(t *testing.T) *GeminiCLI {
+if _, err := exec.LookPath("npm"); err != nil {
+t.Skip("Skipping test because npm is not installed (required for gemini-cli)")
+}
 	return &GeminiCLI{t: t}
 }
 
