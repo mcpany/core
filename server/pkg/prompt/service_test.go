@@ -4,6 +4,7 @@
 package prompt_test
 
 import (
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -206,3 +207,4 @@ func TestService_SetMCPServer(t *testing.T) {
 
 	mockPromptManager.AssertExpectations(t)
 }
+func (m *MockPrompt) Definition() *configv1.PromptDefinition { return nil }
