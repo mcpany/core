@@ -11,6 +11,8 @@
 - [ ] **[P0] Agent Chain Tracer (A2A)**: Visual timeline of multi-agent handoffs and message passing. (Added: 2026-02-26)
 - [ ] **[P1] Federated Node Manager**: UI for peering with remote MCP Any instances and managing shared tool access. (Added: 2026-02-26)
 - [ ] **[P1] Resource Cost/Latency Overlay**: Real-time performance metrics displayed directly on tool cards. (Added: 2026-02-26)
+- [ ] **[P0] RCE Mitigation Dashboard**: Real-time visualization of blocked/sanitized tool calls and security alerts (CVE-2026-0755). (Added: 2026-02-24)
+- [ ] **[P1] Agent Team coordination UI**: Visual management of sub-agent spawning and permission delegation. (Added: 2026-02-24)
 - [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
 - [ ] **[P1] Tool Playground & Explorer**:
   - [ ] Auto-generated forms from Tool JSON Schemas.

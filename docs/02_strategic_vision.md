@@ -47,3 +47,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **A2A Gateway Protocol**: MCP Any will implement a protocol-neutral bridge for A2A communication, allowing disparate agent frameworks (e.g., OpenClaw, AutoGen) to exchange state and tasks via a unified MCP-like interface.
 - **Federated Tool Mesh**: Moving from a standalone server to a "Mesh" architecture where multiple MCP Any instances can peer and share resources across network boundaries, governed by global Zero-Trust policies.
 - **Resource-Aware Intelligence**: Integrating cost and latency telemetry into the tool discovery process, allowing LLMs to perform "Economical Reasoning" when selecting tools.
+
+---
+
+## Strategic Evolution: [2026-02-24] - Part 2
+### Focus: Mitigating RCE Vulnerabilities & Standardizing Agent Team Coordination
+**Context**: Today's findings reveal a critical zero-day (CVE-2026-0755) in Gemini MCP and the rapid rise of "Agent Teams" in OpenClaw and Claude Code.
+**Strategic Pivot**:
+- **Execution Isolation (RCE Mitigation)**: MCP Any will evolve from a policy engine to an "execution-aware" gateway. This involves mandatory sanitization and sandboxing for all tool calls that interact with the host system.
+- **Delegated Trust Model**: Moving towards a model where agent swarms use cryptographic delegation for tool access. A sub-agent's permissions will be a verifiable "slice" of the parent's, preventing lateral movement.
+- **Protocol-Native Coordination**: Instead of frameworks handling coordination opaque to the transport, MCP Any will implement "Coordination Handoffs" at the protocol level to maintain state integrity across agent swaps.

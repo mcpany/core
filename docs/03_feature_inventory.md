@@ -65,3 +65,18 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-24] - Part 2 Updates
+
+### Proposed Additions
+- **Gemini MCP RCE (CVE-2026-0755) Mitigation Layer**: (P0) A mandatory input sanitization and system-call interception layer to prevent command injection in dynamic tool calls.
+- **Claude Code Agent Teams Integration**: (P1) Standardized MCP extensions to support the "Agent Teams" delegation model, allowing for secure sub-agent spawning and permission inheritance.
+- **Cryptographic Capability Delegation**: (P1) Verifiable tokens that allow parent agents to delegate a subset of their capabilities to sub-agents without sharing full API keys.
+
+### Priority Shifts
+- **Zero-Trust Subagent Scoping**: Promoted to **P0** (from P1) in response to the Gemini RCE threat, as it provides the necessary isolation for delegated tasks.
+
+### Deprecations / Monitoring
+- **Direct System Shell Tools**: Monitoring for strict isolation or deprecation in favor of sandboxed execution environments.

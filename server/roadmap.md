@@ -29,6 +29,10 @@
 *   **[P1] Federated MCP Peering**: Distributed node discovery and tool proxying. (Added: 2026-02-26)
 *   **[P1] Resource Telemetry Middleware**: Inject latency/cost metrics into tool schemas. (Added: 2026-02-26)
 
+#### Upcoming (2026-02-24 Evolution - Part 2)
+*   **[P0] RCE protection (CVE-2026-0755)**: Implement mandatory input sanitization and system-call interception for all MCP tool executions. (Added: 2026-02-24)
+*   **[P1] Claude Code Agent Teams Integration**: Standardize MCP extensions for secure sub-agent delegation and permission handoff. (Added: 2026-02-24)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
