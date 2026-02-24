@@ -3,6 +3,7 @@
 
 """
 This script checks for missing documentation (JSDoc) on exported symbols in TypeScript files.
+It enforces the presence of 'Side Effects:' section in the docstring.
 """
 
 import os
@@ -17,7 +18,7 @@ def check_file(filepath):
         filepath: The path to the file to check.
 
     Returns:
-        A list of tuples containing (line_number, symbol_name) for missing docs.
+        A list of tuples containing (line_number, symbol_name, error_message) for missing docs.
     """
     with open(filepath, 'r') as f:
         content = f.read()
@@ -25,16 +26,6 @@ def check_file(filepath):
     lines = content.split('\n')
 
     # Regex for exported functions/classes/interfaces/types/consts
-    # export function Name
-    # export class Name
-    # export interface Name
-    # export type Name
-    # export const Name
-
-    # We want to catch:
-    # export default function ...
-    # export default class ...
-
     pattern = re.compile(r'^\s*export\s+(default\s+)?(function|class|interface|type|const|enum)\s+([a-zA-Z0-9_]+)')
 
     missing_docs = []
@@ -45,6 +36,7 @@ def check_file(filepath):
             name = match.group(3)
             # Check for docstring above
             has_doc = False
+            doc_lines = []
             j = i - 1
             while j >= 0:
                 prev = lines[j].strip()
@@ -55,13 +47,37 @@ def check_file(filepath):
                     j -= 1
                     continue
                 if prev.endswith('*/'):
-                    has_doc = True
+                    # Found end of docstring
+                    # Walk backwards to capture lines until /**
+                    k = j
+                    while k >= 0:
+                        l = lines[k].strip()
+                        doc_lines.insert(0, l) # Prepend
+                        if l.startswith('/**'):
+                            has_doc = True
+                            break
+                        k -= 1
+                    break
                 break
 
             if not has_doc:
-                missing_docs.append((i + 1, name))
+                missing_docs.append((i + 1, name, "Missing docstring"))
+            else:
+                doc_text = "\n".join(doc_lines)
+                validate_ts_doc(doc_text, name, i + 1, missing_docs)
 
     return missing_docs
+
+def validate_ts_doc(doc_text, name, line_num, missing_docs):
+    """
+    Validates the structure of the docstring.
+    """
+    # Check for Summary (at least some text that is not a tag)
+    # This is a weak check, just ensuring it's not empty or just tags.
+
+    # Check for Side Effects section
+    if "Side Effects:" not in doc_text:
+        missing_docs.append((line_num, name, "Missing 'Side Effects:' section"))
 
 def main():
     """
@@ -86,8 +102,8 @@ def main():
 
                 if missing:
                     has_errors = True
-                    for line_num, name in missing:
-                        print(f"{filepath}:{line_num}: missing doc for exported symbol {name}")
+                    for line_num, name, msg in missing:
+                        print(f"{filepath}:{line_num}: {msg} for exported symbol {name}")
 
     if has_errors:
         sys.exit(1)

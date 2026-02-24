@@ -11,6 +11,9 @@ export type { ServiceHealth, HealthHistoryPoint };
 
 /**
  * ServiceHistory maps service IDs to their list of historical health points.
+ *
+ * Side Effects:
+ * - None.
  */
 export interface ServiceHistory {
   [serviceId: string]: HealthHistoryPoint[];
@@ -21,6 +24,10 @@ export interface ServiceHistory {
  * It polls the backend API for health data (which now includes server-side history).
  *
  * @returns An object containing the current services list, their health history, and a loading state.
+ *
+ * Side Effects:
+ * - Fetches data from the API every 10 seconds.
+ * - Adds visibility change event listener.
  */
 export function useServiceHealthHistory() {
   const [history, setHistory] = useState<ServiceHistory>({});

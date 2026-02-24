@@ -1,6 +1,6 @@
 # MCP Any
 
-[![Documentation: Gold Standard](https://img.shields.io/badge/Documentation-Gold%20Standard-gold.svg)](https://github.com/mcpany/core)
+[![Documentation: Gold Standard](https://img.shields.io/badge/Documentation-Gold%20Standard-gold.svg)](server/AGENTS.md)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
 ## Elevator Pitch
@@ -195,6 +195,12 @@ upstreamAuth:
 ```
 
 Ensure `OPENAI_API_KEY` (or your specific secret) is set in the server's environment before starting.
+
+## Documentation
+
+We adhere to a strict "Gold Standard" for documentation.
+*   **Style Guide:** See [AGENTS.md](server/AGENTS.md).
+*   **Coverage:** 100% documentation coverage is enforced by CI.
 
 ## License
 

@@ -60,6 +60,8 @@ func checkFile(f *ast.File, fset *token.FileSet, path string) {
 			if x.Name.IsExported() {
 				if x.Doc == nil {
 					fmt.Printf("%s:%d: missing doc for function %s\n", path, fset.Position(x.Pos()).Line, x.Name.Name)
+				} else {
+					checkDocStructure(x.Doc.Text(), x, fset, path)
 				}
 			}
 		case *ast.GenDecl:
@@ -67,6 +69,48 @@ func checkFile(f *ast.File, fset *token.FileSet, path string) {
 		}
 		return true
 	})
+}
+
+func checkDocStructure(docText string, fn *ast.FuncDecl, fset *token.FileSet, path string) {
+	// Check Side Effects (Always required)
+	if !strings.Contains(docText, "Side Effects:") {
+		fmt.Printf("%s:%d: missing 'Side Effects:' section in doc for function %s\n", path, fset.Position(fn.Pos()).Line, fn.Name.Name)
+	}
+
+	// Check Parameters
+	if fn.Type.Params != nil && len(fn.Type.Params.List) > 0 {
+		if !strings.Contains(docText, "Parameters:") {
+			fmt.Printf("%s:%d: missing 'Parameters:' section in doc for function %s\n", path, fset.Position(fn.Pos()).Line, fn.Name.Name)
+		}
+	}
+
+	// Check Returns
+	if fn.Type.Results != nil && len(fn.Type.Results.List) > 0 {
+		if !strings.Contains(docText, "Returns:") {
+			fmt.Printf("%s:%d: missing 'Returns:' section in doc for function %s\n", path, fset.Position(fn.Pos()).Line, fn.Name.Name)
+		}
+
+		// Check Errors
+		hasError := false
+		for _, field := range fn.Type.Results.List {
+			if isErrorType(field.Type) {
+				hasError = true
+				break
+			}
+		}
+		if hasError {
+			if !strings.Contains(docText, "Errors:") {
+				fmt.Printf("%s:%d: missing 'Errors:' section in doc for function %s\n", path, fset.Position(fn.Pos()).Line, fn.Name.Name)
+			}
+		}
+	}
+}
+
+func isErrorType(expr ast.Expr) bool {
+	if ident, ok := expr.(*ast.Ident); ok {
+		return ident.Name == "error"
+	}
+	return false
 }
 
 func checkGenDecl(x *ast.GenDecl, fset *token.FileSet, path string) {
@@ -77,13 +121,25 @@ func checkGenDecl(x *ast.GenDecl, fset *token.FileSet, path string) {
 				if ts.Name.IsExported() {
 					if x.Doc == nil && ts.Doc == nil {
 						fmt.Printf("%s:%d: missing doc for type %s\n", path, fset.Position(ts.Pos()).Line, ts.Name.Name)
-					}
-					// Check methods in interface
-					if iface, ok := ts.Type.(*ast.InterfaceType); ok {
-						for _, field := range iface.Methods.List {
-							if len(field.Names) > 0 && field.Names[0].IsExported() {
-								if field.Doc == nil {
-									fmt.Printf("%s:%d: missing doc for interface method %s.%s\n", path, fset.Position(field.Pos()).Line, ts.Name.Name, field.Names[0].Name)
+					} else {
+						// Check methods in interface
+						if iface, ok := ts.Type.(*ast.InterfaceType); ok {
+							for _, field := range iface.Methods.List {
+								if len(field.Names) > 0 && field.Names[0].IsExported() {
+									if field.Doc == nil {
+										fmt.Printf("%s:%d: missing doc for interface method %s.%s\n", path, fset.Position(field.Pos()).Line, ts.Name.Name, field.Names[0].Name)
+									} else {
+										// Check interface method docs structure?
+										// AGENTS.md says "For every Public function, method..."
+										// Interface methods are public methods.
+										// But getting params/returns from Field is slightly harder (it's FuncType inside Type).
+										if funcType, ok := field.Type.(*ast.FuncType); ok {
+											// Create a fake FuncDecl to reuse logic?
+											// Or separate logic.
+											// Let's implement simpler check here or reuse.
+											checkInterfaceMethodDoc(field.Doc.Text(), funcType, fset, path, fmt.Sprintf("%s.%s", ts.Name.Name, field.Names[0].Name), field.Pos())
+										}
+									}
 								}
 							}
 						}
@@ -97,6 +153,42 @@ func checkGenDecl(x *ast.GenDecl, fset *token.FileSet, path string) {
 						}
 					}
 				}
+			}
+		}
+	}
+}
+
+func checkInterfaceMethodDoc(docText string, fnType *ast.FuncType, fset *token.FileSet, path string, name string, pos token.Pos) {
+	// Reuse logic
+	// Check Side Effects (Always required)
+	if !strings.Contains(docText, "Side Effects:") {
+		fmt.Printf("%s:%d: missing 'Side Effects:' section in doc for interface method %s\n", path, fset.Position(pos).Line, name)
+	}
+
+	// Check Parameters
+	if fnType.Params != nil && len(fnType.Params.List) > 0 {
+		if !strings.Contains(docText, "Parameters:") {
+			fmt.Printf("%s:%d: missing 'Parameters:' section in doc for interface method %s\n", path, fset.Position(pos).Line, name)
+		}
+	}
+
+	// Check Returns
+	if fnType.Results != nil && len(fnType.Results.List) > 0 {
+		if !strings.Contains(docText, "Returns:") {
+			fmt.Printf("%s:%d: missing 'Returns:' section in doc for interface method %s\n", path, fset.Position(pos).Line, name)
+		}
+
+		// Check Errors
+		hasError := false
+		for _, field := range fnType.Results.List {
+			if isErrorType(field.Type) {
+				hasError = true
+				break
+			}
+		}
+		if hasError {
+			if !strings.Contains(docText, "Errors:") {
+				fmt.Printf("%s:%d: missing 'Errors:' section in doc for interface method %s\n", path, fset.Position(pos).Line, name)
 			}
 		}
 	}

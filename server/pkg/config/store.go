@@ -77,6 +77,12 @@ type ConfigurableEngine interface {
 	//
 	// Parameters:
 	//   - skip (bool): True to skip validation.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Side Effects:
+	//   - Updates the engine configuration.
 	SetSkipValidation(skip bool)
 
 	// SetIgnoreEnv sets whether to ignore environment variables and other external overrides.
@@ -85,6 +91,12 @@ type ConfigurableEngine interface {
 	//
 	// Parameters:
 	//   - ignore (bool): True to ignore environment variables.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Side Effects:
+	//   - Updates the engine configuration.
 	SetIgnoreEnv(ignore bool)
 }
 
@@ -98,6 +110,12 @@ type ConfigurableEngine interface {
 // Returns:
 //   - (Engine): An initialized Engine implementation.
 //   - (error): An error if the file extension is not supported.
+//
+// Errors:
+//   - Returns an error if the file extension is not supported.
+//
+// Side Effects:
+//   - None.
 func NewEngine(path string) (Engine, error) {
 	ext := strings.ToLower(filepath.Ext(path))
 	switch ext {
@@ -156,7 +174,7 @@ func (e *yamlEngine) SetIgnoreEnv(ignore bool) {
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Returns an error if the YAML is invalid.
 //
 // Side Effects:
 //   - None.
@@ -189,7 +207,7 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 //   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Returns an error if the map cannot be marshaled or unmarshaled.
 //
 // Side Effects:
 //   - None.
@@ -378,6 +396,12 @@ type Store interface {
 	// Returns:
 	//   - (*configv1.McpAnyServerConfig): The loaded configuration.
 	//   - (error): An error if loading fails.
+	//
+	// Errors:
+	//   - Returns error if config cannot be loaded or parsed.
+	//
+	// Side Effects:
+	//   - Reads from the underlying storage.
 	Load(ctx context.Context) (*configv1.McpAnyServerConfig, error)
 
 	// HasConfigSources returns true if the store has configuration sources (e.g., file paths) configured.
@@ -386,6 +410,9 @@ type Store interface {
 	//
 	// Returns:
 	//   - (bool): True if sources are configured, false otherwise.
+	//
+	// Side Effects:
+	//   - None.
 	HasConfigSources() bool
 }
 
@@ -404,6 +431,12 @@ type ServiceStore interface {
 	//
 	// Returns:
 	//   - (error): An error if the operation fails.
+	//
+	// Errors:
+	//   - Returns error if saving fails.
+	//
+	// Side Effects:
+	//   - Persists the service to storage.
 	SaveService(ctx context.Context, service *configv1.UpstreamServiceConfig) error
 
 	// GetService retrieves a service configuration by name.
@@ -417,6 +450,12 @@ type ServiceStore interface {
 	// Returns:
 	//   - (*configv1.UpstreamServiceConfig): The service configuration.
 	//   - (error): An error if the service is not found or the operation fails.
+	//
+	// Errors:
+	//   - Returns error if retrieval fails.
+	//
+	// Side Effects:
+	//   - Reads from storage.
 	GetService(ctx context.Context, name string) (*configv1.UpstreamServiceConfig, error)
 
 	// ListServices retrieves all stored service configurations.
@@ -429,6 +468,12 @@ type ServiceStore interface {
 	// Returns:
 	//   - ([]*configv1.UpstreamServiceConfig): A slice of service configurations.
 	//   - (error): An error if the operation fails.
+	//
+	// Errors:
+	//   - Returns error if listing fails.
+	//
+	// Side Effects:
+	//   - Reads from storage.
 	ListServices(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error)
 
 	// DeleteService removes a service configuration by name.
@@ -441,6 +486,12 @@ type ServiceStore interface {
 	//
 	// Returns:
 	//   - (error): An error if the operation fails.
+	//
+	// Errors:
+	//   - Returns error if deletion fails.
+	//
+	// Side Effects:
+	//   - Removes the service from storage.
 	DeleteService(ctx context.Context, name string) error
 }
 
@@ -688,6 +739,9 @@ func (s *FileStore) SetIgnoreMissingEnv(ignore bool) {
 //
 // Returns:
 //   - (*FileStore): A new instance of FileStore.
+//
+// Side Effects:
+//   - None.
 func NewFileStore(fs afero.Fs, paths []string) *FileStore {
 	return &FileStore{fs: fs, paths: paths}
 }
@@ -702,6 +756,9 @@ func NewFileStore(fs afero.Fs, paths []string) *FileStore {
 //
 // Returns:
 //   - (*FileStore): A new instance of FileStore.
+//
+// Side Effects:
+//   - None.
 func NewFileStoreWithSkipErrors(fs afero.Fs, paths []string) *FileStore {
 	return &FileStore{fs: fs, paths: paths, skipErrors: true}
 }
@@ -724,6 +781,12 @@ func (s *FileStore) HasConfigSources() bool {
 // Returns:
 //   - (*configv1.McpAnyServerConfig): The merged configuration.
 //   - (error): An error if loading or merging fails.
+//
+// Errors:
+//   - Returns error if file reading or parsing fails.
+//
+// Side Effects:
+//   - Reads files from the filesystem.
 func (s *FileStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
 	filePaths, err := s.collectFilePaths()
 	if err != nil {
@@ -1235,6 +1298,12 @@ func NewMultiStore(stores ...Store) *MultiStore {
 // Returns:
 //   - *configv1.McpAnyServerConfig: The merged configuration.
 //   - error: An error if loading fails.
+//
+// Errors:
+//   - Returns error if any store fails to load.
+//
+// Side Effects:
+//   - Invokes Load on all underlying stores.
 func (ms *MultiStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
 	mergedConfig := configv1.McpAnyServerConfig_builder{}.Build()
 	for _, s := range ms.stores {
