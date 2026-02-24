@@ -27,6 +27,10 @@ func TestCUJ_Protocols(t *testing.T) {
 		t.Skip("Skipping Docker-based E2E test inside Docker container")
 	}
 
+	if os.Getenv("INSIDE_DOCKER_CONTAINER") == "1" {
+		t.Skip("Skipping Docker-based E2E test inside Docker container")
+	}
+
 	rootDir, err := os.Getwd()
 	require.NoError(t, err)
 	if strings.HasSuffix(rootDir, "tests/e2e_sequential") {
