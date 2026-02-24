@@ -11,10 +11,58 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { FileJson, Table as TableIcon, Terminal } from "lucide-react";
+import { FileJson, Table as TableIcon, Terminal, FileText, Image as ImageIcon } from "lucide-react";
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 interface RichResultViewerProps {
     result: any;
+}
+
+interface TextContent {
+  type: "text";
+  text: string;
+}
+
+interface ImageContent {
+  type: "image";
+  data: string;
+  mimeType: string;
+}
+
+type McpContent = TextContent | ImageContent;
+
+interface McpContentRendererProps {
+  content: McpContent[];
+}
+
+function McpContentRenderer({ content }: McpContentRendererProps) {
+    return (
+        <div className="space-y-6 p-4">
+            {content.map((item, index) => {
+                if (item.type === "text") {
+                    return (
+                        <div key={index} className="prose prose-sm dark:prose-invert max-w-none break-words">
+                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                {item.text}
+                            </ReactMarkdown>
+                        </div>
+                    );
+                } else if (item.type === "image") {
+                     return (
+                        <div key={index} className="rounded-lg overflow-hidden border bg-muted/20 inline-block max-w-full">
+                            <img
+                                src={`data:${item.mimeType};base64,${item.data}`}
+                                alt="Tool Result Image"
+                                className="max-w-full h-auto"
+                            />
+                        </div>
+                    );
+                }
+                return null;
+            })}
+        </div>
+    );
 }
 
 /**
@@ -54,9 +102,23 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
         return [result, false];
     }, [result]);
 
-    const isTableEligible = useMemo(() => {
-        return Array.isArray(content) && content.length > 0 && typeof content[0] === 'object' && content[0] !== null;
+    const mcpContent = useMemo<McpContent[] | null>(() => {
+        if (content && typeof content === 'object' && Array.isArray(content.content)) {
+            // Check if it looks like MCP content
+            const isValid = content.content.every((item: any) =>
+                (item.type === 'text' && typeof item.text === 'string') ||
+                (item.type === 'image' && typeof item.data === 'string' && typeof item.mimeType === 'string')
+            );
+            if (isValid) {
+                return content.content;
+            }
+        }
+        return null;
     }, [content]);
+
+    const isTableEligible = useMemo(() => {
+        return !mcpContent && Array.isArray(content) && content.length > 0 && typeof content[0] === 'object' && content[0] !== null;
+    }, [content, mcpContent]);
 
     // Get columns for table
     const columns = useMemo(() => {
@@ -79,10 +141,17 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
         return <span className="truncate max-w-[300px] block" title={String(value)}>{String(value)}</span>;
     }
 
+    const defaultTab = mcpContent ? "rendered" : (isTableEligible ? "table" : "json");
+
     return (
-        <Tabs defaultValue={isTableEligible ? "table" : "json"} className="w-full">
+        <Tabs defaultValue={defaultTab} className="w-full">
             <div className="flex items-center justify-between mb-2">
                 <TabsList>
+                    {mcpContent && (
+                         <TabsTrigger value="rendered" className="flex items-center gap-2">
+                            <FileText className="h-4 w-4" /> Rendered
+                        </TabsTrigger>
+                    )}
                     {isTableEligible && (
                         <TabsTrigger value="table" className="flex items-center gap-2">
                             <TableIcon className="h-4 w-4" /> Table
@@ -98,6 +167,14 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
                     )}
                 </TabsList>
             </div>
+
+            {mcpContent && (
+                <TabsContent value="rendered" className="border rounded-md bg-card">
+                    <ScrollArea className="h-[400px]">
+                        <McpContentRenderer content={mcpContent} />
+                    </ScrollArea>
+                </TabsContent>
+            )}
 
             {isTableEligible && (
                 <TabsContent value="table" className="border rounded-md">
