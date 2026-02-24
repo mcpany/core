@@ -26,6 +26,16 @@ type SmartRecoveryMiddleware struct {
 }
 
 // NewSmartRecoveryMiddleware creates a new SmartRecoveryMiddleware.
+//
+// Parameters:
+//   - config: The config.
+//   - toolManager: The toolManager.
+//
+// Returns:
+//   - result: The result.
+//
+// Side Effects:
+//   - None.
 func NewSmartRecoveryMiddleware(config *configv1.SmartRecoveryConfig, toolManager tool.ManagerInterface) *SmartRecoveryMiddleware {
 	return &SmartRecoveryMiddleware{
 		config:      config,
@@ -34,6 +44,20 @@ func NewSmartRecoveryMiddleware(config *configv1.SmartRecoveryConfig, toolManage
 }
 
 // Execute executes the middleware logic.
+//
+// Parameters:
+//   - ctx: The context for the operation.
+//   - req: The request object.
+//   - next: The next.
+//
+// Returns:
+//   - result: The result.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func (m *SmartRecoveryMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	if m.config == nil || !m.config.GetEnabled() {
 		return next(ctx, req)

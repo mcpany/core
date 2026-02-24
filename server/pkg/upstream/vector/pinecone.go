@@ -132,6 +132,9 @@ func (c *PineconeClient) doRequest(ctx context.Context, method, path string, bod
 //
 // Side Effects:
 //   - None.
+//
+// Errors:
+//   - Returns error if operation fails.
 func (c *PineconeClient) Query(ctx context.Context, vector []float32, topK int64, filter map[string]interface{}, namespace string) (map[string]interface{}, error) {
 	req := map[string]interface{}{
 		"vector":          vector,
@@ -161,6 +164,9 @@ func (c *PineconeClient) Query(ctx context.Context, vector []float32, topK int64
 //
 // Side Effects:
 //   - None.
+//
+// Errors:
+//   - Returns error if operation fails.
 func (c *PineconeClient) Upsert(ctx context.Context, vectors []map[string]interface{}, namespace string) (map[string]interface{}, error) {
 	req := map[string]interface{}{
 		"vectors": vectors,
@@ -185,6 +191,9 @@ func (c *PineconeClient) Upsert(ctx context.Context, vectors []map[string]interf
 //
 // Side Effects:
 //   - None.
+//
+// Errors:
+//   - Returns error if operation fails.
 func (c *PineconeClient) Delete(ctx context.Context, ids []string, namespace string, filter map[string]interface{}) (map[string]interface{}, error) {
 	req := map[string]interface{}{}
 	if len(ids) > 0 {
@@ -215,6 +224,9 @@ func (c *PineconeClient) Delete(ctx context.Context, ids []string, namespace str
 //
 // Side Effects:
 //   - None.
+//
+// Errors:
+//   - Returns error if operation fails.
 func (c *PineconeClient) DescribeIndexStats(ctx context.Context, filter map[string]interface{}) (map[string]interface{}, error) {
 	req := map[string]interface{}{}
 	if filter != nil {

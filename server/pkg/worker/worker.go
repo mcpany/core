@@ -42,6 +42,9 @@ type Worker struct {
 //
 // Returns:
 //   - *Worker: The initialized worker.
+//
+// Side Effects:
+//   - None.
 func New(busProvider *bus.Provider, cfg *Config) *Worker {
 	return &Worker{
 		busProvider: busProvider,
@@ -58,6 +61,9 @@ func New(busProvider *bus.Provider, cfg *Config) *Worker {
 //
 // Parameters:
 //   - ctx: context.Context. The context for the worker.
+//
+// Side Effects:
+//   - None.
 func (w *Worker) Start(ctx context.Context) {
 	w.wg.Add(1)
 	go w.startToolExecutionWorker(ctx)

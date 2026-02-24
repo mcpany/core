@@ -30,6 +30,9 @@ type MockServiceRegistry struct {
 //
 // Side Effects:
 //   - Records method call for mock.
+//
+// Errors:
+//   - Returns error if operation fails.
 func (m *MockServiceRegistry) RegisterService(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	args := m.Called(ctx, serviceConfig)
 	return args.String(0), args.Get(1).([]*configv1.ToolDefinition), args.Get(2).([]*configv1.ResourceDefinition), args.Error(3)
@@ -46,6 +49,9 @@ func (m *MockServiceRegistry) RegisterService(ctx context.Context, serviceConfig
 //
 // Side Effects:
 //   - Records method call for mock.
+//
+// Errors:
+//   - Returns error if operation fails.
 func (m *MockServiceRegistry) UnregisterService(ctx context.Context, serviceName string) error {
 	args := m.Called(ctx, serviceName)
 	return args.Error(0)
@@ -59,6 +65,9 @@ func (m *MockServiceRegistry) UnregisterService(ctx context.Context, serviceName
 //
 // Side Effects:
 //   - Records method call for mock.
+//
+// Errors:
+//   - Returns error if operation fails.
 func (m *MockServiceRegistry) GetAllServices() ([]*configv1.UpstreamServiceConfig, error) {
 	args := m.Called()
 	if args.Get(0) == nil {

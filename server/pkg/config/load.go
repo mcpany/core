@@ -26,6 +26,12 @@ import (
 // Returns:
 //   - *configv1.McpAnyServerConfig: A validated configuration object.
 //   - error: An error if loading or validation fails.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func LoadServices(ctx context.Context, store Store, binaryType string) (*configv1.McpAnyServerConfig, error) {
 	log := logging.GetLogger().With("component", "configLoader")
 
@@ -105,6 +111,12 @@ func LoadServices(ctx context.Context, store Store, binaryType string) (*configv
 // Returns:
 //   - *configv1.McpAnyServerConfig: The resolved configuration.
 //   - error: An error if loading fails.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func LoadResolvedConfig(ctx context.Context, store Store) (*configv1.McpAnyServerConfig, error) {
 	log := logging.GetLogger().With("component", "configLoader")
 

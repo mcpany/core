@@ -44,6 +44,12 @@ type Engine interface {
 	//
 	// Returns:
 //   - (error): An error if parsing fails.
+	//
+	// Errors:
+	//   - Returns error if operation fails.
+	//
+	// Side Effects:
+	//   - None.
 	Unmarshal(b []byte, v proto.Message) error
 }
 
@@ -63,6 +69,12 @@ type StructuredEngine interface {
 	//
 	// Returns:
 	//   - (error): An error if parsing fails.
+	//
+	// Errors:
+	//   - Returns error if operation fails.
+	//
+	// Side Effects:
+	//   - None.
 	UnmarshalFromMap(m map[string]interface{}, v proto.Message, originalBytes []byte) error
 }
 
@@ -77,6 +89,9 @@ type ConfigurableEngine interface {
 	//
 	// Parameters:
 	//   - skip (bool): True to skip validation.
+	//
+	// Side Effects:
+	//   - None.
 	SetSkipValidation(skip bool)
 
 	// SetIgnoreEnv sets whether to ignore environment variables and other external overrides.
@@ -85,6 +100,9 @@ type ConfigurableEngine interface {
 	//
 	// Parameters:
 	//   - ignore (bool): True to ignore environment variables.
+//
+// Side Effects:
+//   - None.
 	SetIgnoreEnv(ignore bool)
 }
 
@@ -98,6 +116,12 @@ type ConfigurableEngine interface {
 // Returns:
 //   - (Engine): An initialized Engine implementation.
 //   - (error): An error if the file extension is not supported.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func NewEngine(path string) (Engine, error) {
 	ext := strings.ToLower(filepath.Ext(path))
 	switch ext {
@@ -378,6 +402,12 @@ type Store interface {
 	// Returns:
 	//   - (*configv1.McpAnyServerConfig): The loaded configuration.
 	//   - (error): An error if loading fails.
+	//
+	// Errors:
+	//   - Returns error if operation fails.
+	//
+	// Side Effects:
+	//   - None.
 	Load(ctx context.Context) (*configv1.McpAnyServerConfig, error)
 
 	// HasConfigSources returns true if the store has configuration sources (e.g., file paths) configured.
@@ -386,6 +416,9 @@ type Store interface {
 	//
 	// Returns:
 	//   - (bool): True if sources are configured, false otherwise.
+//
+// Side Effects:
+//   - None.
 	HasConfigSources() bool
 }
 
@@ -404,6 +437,12 @@ type ServiceStore interface {
 	//
 	// Returns:
 	//   - (error): An error if the operation fails.
+	//
+	// Errors:
+	//   - Returns error if operation fails.
+	//
+	// Side Effects:
+	//   - None.
 	SaveService(ctx context.Context, service *configv1.UpstreamServiceConfig) error
 
 	// GetService retrieves a service configuration by name.
@@ -417,6 +456,12 @@ type ServiceStore interface {
 	// Returns:
 	//   - (*configv1.UpstreamServiceConfig): The service configuration.
 	//   - (error): An error if the service is not found or the operation fails.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 	GetService(ctx context.Context, name string) (*configv1.UpstreamServiceConfig, error)
 
 	// ListServices retrieves all stored service configurations.
@@ -429,6 +474,12 @@ type ServiceStore interface {
 	// Returns:
 	//   - ([]*configv1.UpstreamServiceConfig): A slice of service configurations.
 	//   - (error): An error if the operation fails.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 	ListServices(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error)
 
 	// DeleteService removes a service configuration by name.
@@ -441,6 +492,12 @@ type ServiceStore interface {
 	//
 	// Returns:
 	//   - (error): An error if the operation fails.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 	DeleteService(ctx context.Context, name string) error
 }
 
@@ -663,6 +720,9 @@ type FileStore struct {
 //
 // Side Effects:
 //   - None.
+//
+// Parameters:
+//   - skip: The skip.
 func (s *FileStore) SetSkipValidation(skip bool) {
 	s.skipValidation = skip
 }
@@ -674,6 +734,9 @@ func (s *FileStore) SetSkipValidation(skip bool) {
 //
 // Side Effects:
 //   - None.
+//
+// Parameters:
+//   - ignore: The ignore.
 func (s *FileStore) SetIgnoreMissingEnv(ignore bool) {
 	s.IgnoreMissingEnv = ignore
 }
@@ -688,6 +751,9 @@ func (s *FileStore) SetIgnoreMissingEnv(ignore bool) {
 //
 // Returns:
 //   - (*FileStore): A new instance of FileStore.
+//
+// Side Effects:
+//   - None.
 func NewFileStore(fs afero.Fs, paths []string) *FileStore {
 	return &FileStore{fs: fs, paths: paths}
 }
@@ -702,6 +768,9 @@ func NewFileStore(fs afero.Fs, paths []string) *FileStore {
 //
 // Returns:
 //   - (*FileStore): A new instance of FileStore.
+//
+// Side Effects:
+//   - None.
 func NewFileStoreWithSkipErrors(fs afero.Fs, paths []string) *FileStore {
 	return &FileStore{fs: fs, paths: paths, skipErrors: true}
 }
@@ -710,6 +779,9 @@ func NewFileStoreWithSkipErrors(fs afero.Fs, paths []string) *FileStore {
 //
 // Side Effects:
 //   - None.
+//
+// Returns:
+//   - result: The result.
 func (s *FileStore) HasConfigSources() bool {
 	return len(s.paths) > 0
 }
@@ -724,6 +796,12 @@ func (s *FileStore) HasConfigSources() bool {
 // Returns:
 //   - (*configv1.McpAnyServerConfig): The merged configuration.
 //   - (error): An error if loading or merging fails.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func (s *FileStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
 	filePaths, err := s.collectFilePaths()
 	if err != nil {
@@ -1221,6 +1299,9 @@ type MultiStore struct {
 //
 // Returns:
 //   - *MultiStore: A new instance of MultiStore.
+//
+// Side Effects:
+//   - None.
 func NewMultiStore(stores ...Store) *MultiStore {
 	return &MultiStore{stores: stores}
 }
@@ -1235,6 +1316,12 @@ func NewMultiStore(stores ...Store) *MultiStore {
 // Returns:
 //   - *configv1.McpAnyServerConfig: The merged configuration.
 //   - error: An error if loading fails.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func (ms *MultiStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
 	mergedConfig := configv1.McpAnyServerConfig_builder{}.Build()
 	for _, s := range ms.stores {
@@ -1328,6 +1415,9 @@ func collectFieldNames(md protoreflect.MessageDescriptor, candidates map[string]
 //
 // Side Effects:
 //   - None.
+//
+// Returns:
+//   - result: The result.
 func (ms *MultiStore) HasConfigSources() bool {
 	for _, s := range ms.stores {
 		if s.HasConfigSources() {

@@ -17,10 +17,22 @@ type Message interface {
 	// CorrelationID returns the unique identifier used to correlate messages.
 	//
 	// Returns the result.
+	//
+	// Returns:
+	//   - result: The result.
+	//
+	// Side Effects:
+	//   - None.
 	CorrelationID() string
 	// SetCorrelationID sets the correlation identifier for the message.
 	//
 	// id is the unique identifier.
+	//
+	// Parameters:
+	//   - id: The unique identifier.
+	//
+	// Side Effects:
+	//   - None.
 	SetCorrelationID(id string)
 }
 
@@ -34,12 +46,24 @@ type BaseMessage struct {
 // CorrelationID returns the correlation ID of the message. This ID is used to
 // associate requests with their corresponding responses in asynchronous
 // workflows.
+//
+// Returns:
+//   - result: The result.
+//
+// Side Effects:
+//   - None.
 func (m *BaseMessage) CorrelationID() string {
 	return m.CID
 }
 
 // SetCorrelationID sets the correlation ID for the message. This is typically
 // called by the message publisher to assign a unique ID to a request.
+//
+// Parameters:
+//   - id: The unique identifier.
+//
+// Side Effects:
+//   - None.
 func (m *BaseMessage) SetCorrelationID(id string) {
 	m.CID = id
 }

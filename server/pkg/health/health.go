@@ -64,11 +64,17 @@ type HTTPServiceWithHealthCheck interface {
 	//
 	// Returns:
 	//   - string: The network address of the service.
+	//
+	// Side Effects:
+	//   - None.
 	GetAddress() string
 	// GetHealthCheck returns the HTTP health check configuration for the service.
 	//
 	// Returns:
 	//   - *configv1.HttpHealthCheck: The health check configuration.
+	//
+	// Side Effects:
+	//   - None.
 	GetHealthCheck() *configv1.HttpHealthCheck
 }
 

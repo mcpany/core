@@ -234,6 +234,23 @@ func (c *Callable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, e
 // Returns the result.
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - ctx: The context for the operation.
+//   - serviceConfig: The serviceConfig.
+//   - toolManager: The toolManager.
+//   - _: The _.
+//   - _: The _.
+//   - _: The _.
+//
+// Returns:
+//   - result: The result.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func (g *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

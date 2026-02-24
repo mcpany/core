@@ -37,6 +37,19 @@ type OIDCProvider struct {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - ctx: The context for the operation.
+//   - config: The config.
+//
+// Returns:
+//   - result: The result.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func NewOIDCProvider(ctx context.Context, config OIDCConfig) (*OIDCProvider, error) {
 	provider, err := oidc.NewProvider(ctx, config.Issuer)
 	if err != nil {
@@ -65,6 +78,13 @@ func NewOIDCProvider(ctx context.Context, config OIDCConfig) (*OIDCProvider, err
 //
 // w is the HTTP response writer.
 // r is the HTTP request.
+//
+// Parameters:
+//   - w: The HTTP response writer.
+//   - r: The HTTP request.
+//
+// Side Effects:
+//   - None.
 func (p *OIDCProvider) HandleLogin(w http.ResponseWriter, r *http.Request) {
 	state, err := generateRandomState()
 	if err != nil {
@@ -91,6 +111,13 @@ func (p *OIDCProvider) HandleLogin(w http.ResponseWriter, r *http.Request) {
 //
 // w is the HTTP response writer.
 // r is the HTTP request.
+//
+// Parameters:
+//   - w: The HTTP response writer.
+//   - r: The HTTP request.
+//
+// Side Effects:
+//   - None.
 func (p *OIDCProvider) HandleCallback(w http.ResponseWriter, r *http.Request) {
 	stateCookie, err := r.Cookie("oauth_state")
 	if err != nil {

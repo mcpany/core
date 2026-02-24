@@ -23,6 +23,9 @@ const RedactedString = "REDACTED"
 //
 // Returns:
 //   - *configv1.User: A sanitized copy of the user object, or nil if input is nil.
+//
+// Side Effects:
+//   - None.
 func SanitizeUser(u *configv1.User) *configv1.User {
 	if u == nil {
 		return nil
@@ -46,6 +49,9 @@ func SanitizeUser(u *configv1.User) *configv1.User {
 //
 // Returns:
 //   - *configv1.Credential: A sanitized copy of the credential object, or nil if input is nil.
+//
+// Side Effects:
+//   - None.
 func SanitizeCredential(c *configv1.Credential) *configv1.Credential {
 	if c == nil {
 		return nil
@@ -73,6 +79,9 @@ func SanitizeCredential(c *configv1.Credential) *configv1.Credential {
 //
 // Returns:
 //   - *configv1.Authentication: The sanitized authentication object, or nil if input is nil.
+//
+// Side Effects:
+//   - None.
 func SanitizeAuthentication(a *configv1.Authentication) *configv1.Authentication {
 	if a == nil {
 		return nil
@@ -122,6 +131,9 @@ func SanitizeAuthentication(a *configv1.Authentication) *configv1.Authentication
 //
 // Returns:
 //   - *configv1.UserToken: The sanitized user token, or nil if input is nil.
+//
+// Side Effects:
+//   - None.
 func SanitizeUserToken(t *configv1.UserToken) *configv1.UserToken {
 	if t == nil {
 		return nil
@@ -144,6 +156,9 @@ func SanitizeUserToken(t *configv1.UserToken) *configv1.UserToken {
 //
 // Returns:
 //   - *configv1.SecretValue: The sanitized secret value, or nil if input is nil.
+//
+// Side Effects:
+//   - None.
 func SanitizeSecretValue(s *configv1.SecretValue) *configv1.SecretValue {
 	if s == nil {
 		return nil

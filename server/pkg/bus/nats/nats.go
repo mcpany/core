@@ -33,6 +33,12 @@ type Bus[T any] struct {
 // Returns:
 //   - *Bus[T]: A pointer to the initialized NATS bus.
 //   - error: An error if the connection or embedded server startup fails.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func New[T any](config *bus.NatsBus) (*Bus[T], error) {
 	var s *server.Server
 	if config.GetServerUrl() == "" {
@@ -65,6 +71,9 @@ func New[T any](config *bus.NatsBus) (*Bus[T], error) {
 //
 // Returns:
 //   None.
+//
+// Side Effects:
+//   - None.
 func (b *Bus[T]) Close() {
 	if b.nc != nil {
 		b.nc.Close()
@@ -85,6 +94,12 @@ func (b *Bus[T]) Close() {
 //
 // Returns:
 //   - error: An error if marshaling or publishing fails.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func (b *Bus[T]) Publish(_ context.Context, topic string, msg T) error {
 	data, err := json.Marshal(msg)
 	if err != nil {
@@ -104,6 +119,9 @@ func (b *Bus[T]) Publish(_ context.Context, topic string, msg T) error {
 //
 // Returns:
 //   - func(): A function that unsubscribes the handler when called.
+//
+// Side Effects:
+//   - None.
 func (b *Bus[T]) Subscribe(_ context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	sub, _ := b.nc.Subscribe(topic, func(m *natsgo.Msg) {
 		var msg T
@@ -128,6 +146,9 @@ func (b *Bus[T]) Subscribe(_ context.Context, topic string, handler func(T)) (un
 //
 // Returns:
 //   - func(): A function that unsubscribes the handler if called before the message is received.
+//
+// Side Effects:
+//   - None.
 func (b *Bus[T]) SubscribeOnce(_ context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	sub, err := b.nc.Subscribe(topic, func(m *natsgo.Msg) {
 		var msg T

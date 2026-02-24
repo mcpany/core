@@ -54,6 +54,9 @@ import (
 //
 // Side Effects:
 //   - None.
+//
+// Errors:
+//   - Returns error if operation fails.
 func SanitizeID(ids []string, alwaysAppendHash bool, maxSanitizedPrefixLength, reqHashLength int) (string, error) {
 	if len(ids) == 0 {
 		return "", nil
@@ -222,6 +225,9 @@ func isValidChar(c byte) bool {
 //
 // Side Effects:
 //   - None.
+//
+// Errors:
+//   - Returns error if operation fails.
 func SanitizeServiceName(name string) (string, error) {
 	return SanitizeID([]string{name}, false, maxSanitizedPrefixLength, hashLength)
 }
@@ -242,6 +248,9 @@ func SanitizeServiceName(name string) (string, error) {
 //
 // Side Effects:
 //   - None.
+//
+// Errors:
+//   - Returns error if operation fails.
 func SanitizeToolName(name string) (string, error) {
 	return SanitizeID([]string{name}, false, maxSanitizedPrefixLength, hashLength)
 }
@@ -318,6 +327,9 @@ func GenerateUUID() string {
 //
 // Side Effects:
 //   - None.
+//
+// Errors:
+//   - Returns error if operation fails.
 func ParseToolName(toolName string) (service, bareToolName string, err error) {
 	parts := strings.SplitN(toolName, consts.ToolNameServiceSeparator, 2)
 	if len(parts) == 2 {

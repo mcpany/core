@@ -25,12 +25,18 @@ type Resource interface {
 	//
 	// Returns:
 	//   - *mcp.Resource: The MCP resource definition.
+	//
+	// Side Effects:
+	//   - None.
 	Resource() *mcp.Resource
 
 	// Service returns the ID of the service that provides this resource.
 	//
 	// Returns:
 	//   - string: The service ID.
+//
+// Side Effects:
+//   - None.
 	Service() string
 
 	// Read retrieves the content of the resource.
@@ -41,6 +47,12 @@ type Resource interface {
 	// Returns:
 	//   - *mcp.ReadResourceResult: The content of the resource.
 	//   - error: An error if reading fails.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 	Read(ctx context.Context) (*mcp.ReadResourceResult, error)
 
 	// Subscribe establishes a subscription to the resource, allowing for receiving updates.
@@ -50,6 +62,12 @@ type Resource interface {
 	//
 	// Returns:
 	//   - error: An error if subscription fails.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 	Subscribe(ctx context.Context) error
 }
 
@@ -68,6 +86,9 @@ type ManagerInterface interface {
 	// Returns:
 	//   - Resource: The resource instance.
 	//   - bool: True if found, false otherwise.
+	//
+	// Side Effects:
+	//   - None.
 	GetResource(uri string) (Resource, bool)
 
 	// AddResource adds a new resource to the manager.
@@ -77,6 +98,9 @@ type ManagerInterface interface {
 	//
 	// Returns:
 	//   None.
+//
+// Side Effects:
+//   - None.
 	AddResource(resource Resource)
 
 	// RemoveResource removes a resource from the manager by its URI.
@@ -86,12 +110,18 @@ type ManagerInterface interface {
 	//
 	// Returns:
 	//   None.
+//
+// Side Effects:
+//   - None.
 	RemoveResource(uri string)
 
 	// ListResources returns a slice of all resources currently in the manager.
 	//
 	// Returns:
 	//   - []Resource: A slice of resources.
+//
+// Side Effects:
+//   - None.
 	ListResources() []Resource
 
 	// OnListChanged registers a callback function to be called when the list of resources changes.
@@ -101,6 +131,9 @@ type ManagerInterface interface {
 	//
 	// Returns:
 	//   None.
+//
+// Side Effects:
+//   - None.
 	OnListChanged(f func())
 
 	// ClearResourcesForService removes all resources associated with a given service ID.
@@ -110,6 +143,9 @@ type ManagerInterface interface {
 	//
 	// Returns:
 	//   None.
+//
+// Side Effects:
+//   - None.
 	ClearResourcesForService(serviceID string)
 }
 
@@ -132,6 +168,9 @@ type Manager struct {
 //
 // Returns:
 //   - *Manager: A new Manager instance.
+//
+// Side Effects:
+//   - None.
 func NewManager() *Manager {
 	return &Manager{
 		resources: make(map[string]Resource),
@@ -148,6 +187,9 @@ func NewManager() *Manager {
 // Returns:
 //   - Resource: The resource instance.
 //   - bool: True if found, false otherwise.
+//
+// Side Effects:
+//   - None.
 func (rm *Manager) GetResource(uri string) (Resource, bool) {
 	rm.mu.RLock()
 	defer rm.mu.RUnlock()
@@ -220,6 +262,9 @@ func (rm *Manager) RemoveResource(uri string) {
 //
 // Returns:
 //   - []Resource: A slice of currently registered resources.
+//
+// Side Effects:
+//   - None.
 func (rm *Manager) ListResources() []Resource {
 	// ⚡ Bolt: Use a read-through cache to avoid repeated map iteration and slice allocation.
 	// The cache is invalidated on any write operation (Add/Remove).
@@ -267,6 +312,9 @@ func (rm *Manager) ListResources() []Resource {
 //
 // Returns:
 //   None.
+//
+// Side Effects:
+//   - None.
 func (rm *Manager) OnListChanged(f func()) {
 	rm.mu.Lock()
 	defer rm.mu.Unlock()
@@ -283,6 +331,12 @@ func (rm *Manager) OnListChanged(f func()) {
 //
 // Returns:
 //   - error: An error if resource not found or subscription fails.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func (rm *Manager) Subscribe(ctx context.Context, uri string) error {
 	resource, ok := rm.GetResource(uri)
 	if !ok {

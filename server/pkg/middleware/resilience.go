@@ -22,6 +22,15 @@ type ResilienceMiddleware struct {
 // toolManager is the toolManager.
 //
 // Returns the result.
+//
+// Parameters:
+//   - toolManager: The toolManager.
+//
+// Returns:
+//   - result: The result.
+//
+// Side Effects:
+//   - None.
 func NewResilienceMiddleware(toolManager tool.ManagerInterface) *ResilienceMiddleware {
 	return &ResilienceMiddleware{
 		toolManager: toolManager,
@@ -36,6 +45,20 @@ func NewResilienceMiddleware(toolManager tool.ManagerInterface) *ResilienceMiddl
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - ctx: The context for the operation.
+//   - req: The request object.
+//   - next: The next.
+//
+// Returns:
+//   - result: The result.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func (m *ResilienceMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := m.toolManager.GetTool(req.ToolName)
 	if !ok {

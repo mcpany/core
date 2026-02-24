@@ -33,6 +33,9 @@ type httpPool struct {
 //
 // Side Effects:
 //   - Closes idle network connections.
+//
+// Errors:
+//   - Returns error if operation fails.
 func (p *httpPool) Close() error {
 	if err := p.Pool.Close(); err != nil {
 		return err

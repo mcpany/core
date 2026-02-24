@@ -39,6 +39,15 @@ type PolicyHook struct {
 // policy is the policy.
 //
 // Returns the result.
+//
+// Parameters:
+//   - policy: The policy.
+//
+// Returns:
+//   - result: The result.
+//
+// Side Effects:
+//   - None.
 func NewPolicyHook(policy *configv1.CallPolicy) *PolicyHook {
 	compiledRules := make([]compiledRule, len(policy.GetRules()))
 	for i, rule := range policy.GetRules() {
@@ -82,6 +91,19 @@ func NewPolicyHook(policy *configv1.CallPolicy) *PolicyHook {
 // Returns the result.
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: The _.
+//   - req: The request object.
+//
+// Returns:
+//   - result: The result.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func (h *PolicyHook) ExecutePre(
 	_ context.Context,
 	req *ExecutionRequest,
@@ -146,6 +168,15 @@ type WebhookClient struct {
 // config holds the configuration settings.
 //
 // Returns the result.
+//
+// Parameters:
+//   - config: The config.
+//
+// Returns:
+//   - result: The result.
+//
+// Side Effects:
+//   - None.
 func NewWebhookClient(config *configv1.WebhookConfig) *WebhookClient {
 	timeout := 5 * time.Second
 	if t := config.GetTimeout(); t != nil {
@@ -185,6 +216,20 @@ func NewWebhookClient(config *configv1.WebhookConfig) *WebhookClient {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - ctx: The context for the operation.
+//   - eventType: The eventType.
+//   - data: The data.
+//
+// Returns:
+//   - result: The result.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func (c *WebhookClient) Call(ctx context.Context, eventType string, data any) (*cloudevents.Event, error) {
 	event := cloudevents.NewEvent()
 	event.SetID(uuid.New().String())
@@ -232,6 +277,15 @@ type WebhookHook struct {
 // config holds the configuration settings.
 //
 // Returns the result.
+//
+// Parameters:
+//   - config: The config.
+//
+// Returns:
+//   - result: The result.
+//
+// Side Effects:
+//   - None.
 func NewWebhookHook(config *configv1.WebhookConfig) *WebhookHook {
 	return &WebhookHook{
 		client: NewWebhookClient(config),
@@ -246,6 +300,19 @@ func NewWebhookHook(config *configv1.WebhookConfig) *WebhookHook {
 // Returns the result.
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - ctx: The context for the operation.
+//   - req: The request object.
+//
+// Returns:
+//   - result: The result.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func (h *WebhookHook) ExecutePre(
 	ctx context.Context,
 	req *ExecutionRequest,
@@ -314,6 +381,20 @@ func (h *WebhookHook) ExecutePre(
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - ctx: The context for the operation.
+//   - req: The request object.
+//   - result: The result.
+//
+// Returns:
+//   - result: The result.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func (h *WebhookHook) ExecutePost(
 	ctx context.Context,
 	req *ExecutionRequest,
@@ -383,6 +464,18 @@ type SigningRoundTripper struct {
 //
 // Returns the response.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - req: The request object.
+//
+// Returns:
+//   - result: The result.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func (s *SigningRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
 	if s.signer != nil {
 		payload := []byte{} // Signing requires payload, but request body might be stream.

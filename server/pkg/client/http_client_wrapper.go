@@ -25,6 +25,17 @@ type HTTPClientWrapper struct {
 
 // NewHTTPClientWrapper creates a new HTTPClientWrapper.
 // It accepts a shared health checker to avoid creating a new one for every client.
+//
+// Parameters:
+//   - client: The client.
+//   - config: The config.
+//   - checker: The checker.
+//
+// Returns:
+//   - result: The result.
+//
+// Side Effects:
+//   - None.
 func NewHTTPClientWrapper(client *http.Client, config *configv1.UpstreamServiceConfig, checker health.Checker) *HTTPClientWrapper {
 	// If no checker is provided, create a new one (backward compatibility or standalone usage).
 	if checker == nil {
@@ -42,6 +53,15 @@ func NewHTTPClientWrapper(client *http.Client, config *configv1.UpstreamServiceC
 // ctx is the context for the request.
 //
 // Returns true if successful.
+//
+// Parameters:
+//   - ctx: The context for the operation.
+//
+// Returns:
+//   - result: The result.
+//
+// Side Effects:
+//   - None.
 func (w *HTTPClientWrapper) IsHealthy(ctx context.Context) bool {
 	if w.checker == nil {
 		return true // No health check configured, assume healthy.
@@ -55,6 +75,15 @@ func (w *HTTPClientWrapper) IsHealthy(ctx context.Context) bool {
 //
 // Previously, this called CloseIdleConnections on the shared transport, which would negatively
 // impact other concurrent requests sharing the same Transport.
+//
+// Returns:
+//   - result: The result.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func (w *HTTPClientWrapper) Close() error {
 	return nil
 }

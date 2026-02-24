@@ -32,6 +32,15 @@ type Worker struct {
 // config holds the configuration settings.
 //
 // Returns the result.
+//
+// Parameters:
+//   - config: The config.
+//
+// Returns:
+//   - result: The result.
+//
+// Side Effects:
+//   - None.
 func New(config Config) *Worker {
 	if config.Interval <= 0 {
 		config.Interval = 1 * time.Hour // Default 1 hour
@@ -46,6 +55,12 @@ func New(config Config) *Worker {
 
 // Start runs the GC worker in the background.
 // It returns immediately and runs cleanup periodically until the context is canceled.
+//
+// Parameters:
+//   - ctx: The context for the operation.
+//
+// Side Effects:
+//   - None.
 func (w *Worker) Start(ctx context.Context) {
 	if !w.config.Enabled {
 		logging.GetLogger().Info("Global GC worker is disabled")

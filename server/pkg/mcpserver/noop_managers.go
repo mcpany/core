@@ -27,6 +27,12 @@ type NoOpToolManager struct{}
 //
 // Returns:
 //   - error: Always returns nil.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func (m *NoOpToolManager) AddTool(_ tool.Tool) error { return nil }
 
 // GetTool implements tool.ManagerInterface.
@@ -39,6 +45,9 @@ func (m *NoOpToolManager) AddTool(_ tool.Tool) error { return nil }
 // Returns:
 //   - tool.Tool: Always nil.
 //   - bool: Always false.
+//
+// Side Effects:
+//   - None.
 func (m *NoOpToolManager) GetTool(_ string) (tool.Tool, bool) { return nil, false }
 
 // ListTools implements tool.ManagerInterface.
@@ -94,6 +103,12 @@ func (m *NoOpToolManager) ClearToolsForService(_ string) {}
 // Returns:
 //   - any: Always nil.
 //   - error: Always nil.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func (m *NoOpToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
 	return nil, nil
 }
@@ -151,6 +166,9 @@ func (m *NoOpToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
 // Returns:
 //   - *tool.ServiceInfo: Always nil.
 //   - bool: Always false.
+//
+// Side Effects:
+//   - None.
 func (m *NoOpToolManager) GetServiceInfo(_ string) (*tool.ServiceInfo, bool) { return nil, false }
 
 // ListServices implements tool.ManagerInterface.
@@ -191,6 +209,9 @@ func (m *NoOpToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinitio
 //
 // Returns:
 //   - bool: Always true (allow all).
+//
+// Side Effects:
+//   - None.
 func (m *NoOpToolManager) IsServiceAllowed(_, _ string) bool { return true }
 
 // ToolMatchesProfile implements tool.ManagerInterface.
@@ -203,6 +224,9 @@ func (m *NoOpToolManager) IsServiceAllowed(_, _ string) bool { return true }
 //
 // Returns:
 //   - bool: Always true.
+//
+// Side Effects:
+//   - None.
 func (m *NoOpToolManager) ToolMatchesProfile(_ tool.Tool, _ string) bool { return true }
 
 // GetAllowedServiceIDs implements tool.ManagerInterface.
@@ -215,6 +239,9 @@ func (m *NoOpToolManager) ToolMatchesProfile(_ tool.Tool, _ string) bool { retur
 // Returns:
 //   - map[string]bool: Always nil.
 //   - bool: Always false.
+//
+// Side Effects:
+//   - None.
 func (m *NoOpToolManager) GetAllowedServiceIDs(_ string) (map[string]bool, bool) {
 	return nil, false
 }
@@ -228,6 +255,9 @@ func (m *NoOpToolManager) GetAllowedServiceIDs(_ string) (map[string]bool, bool)
 //
 // Returns:
 //   - int: Always 0.
+//
+// Side Effects:
+//   - None.
 func (m *NoOpToolManager) GetToolCountForService(_ string) int {
 	return 0
 }
@@ -275,6 +305,9 @@ func (m *NoOpPromptManager) UpdatePrompt(_ prompt.Prompt) {}
 // Returns:
 //   - prompt.Prompt: Always nil.
 //   - bool: Always false.
+//
+// Side Effects:
+//   - None.
 func (m *NoOpPromptManager) GetPrompt(_ string) (prompt.Prompt, bool) { return nil, false }
 
 // ListPrompts implements prompt.ManagerInterface.
@@ -334,6 +367,9 @@ type NoOpResourceManager struct{}
 // Returns:
 //   - resource.Resource: Always nil.
 //   - bool: Always false.
+//
+// Side Effects:
+//   - None.
 func (m *NoOpResourceManager) GetResource(_ string) (resource.Resource, bool) { return nil, false }
 
 // AddResource implements resource.ManagerInterface.

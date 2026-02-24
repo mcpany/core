@@ -27,6 +27,12 @@ type Bus[T any] struct {
 // Returns:
 //   - *Bus[T]: A pointer to the initialized Redis bus.
 //   - error: An error if initialization fails (currently always nil).
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func New[T any](redisConfig *bus.RedisBus) (*Bus[T], error) {
 	options := redis.Options{
 		Addr: "127.0.0.1:6379",
@@ -48,6 +54,9 @@ func New[T any](redisConfig *bus.RedisBus) (*Bus[T], error) {
 //
 // Returns:
 //   - *Bus[T]: A pointer to the initialized Redis bus.
+//
+// Side Effects:
+//   - None.
 func NewWithClient[T any](client *redis.Client) *Bus[T] {
 	return &Bus[T]{
 		client: client,
@@ -65,6 +74,12 @@ func NewWithClient[T any](client *redis.Client) *Bus[T] {
 //
 // Returns:
 //   - error: An error if marshaling or publishing fails.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
 	payload, err := json.Marshal(msg)
 	if err != nil {
@@ -85,6 +100,9 @@ func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
 //
 // Returns:
 //   - func(): A function that unsubscribes the handler when called.
+//
+// Side Effects:
+//   - None.
 func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	if handler == nil {
 		logging.GetLogger().Error("redis bus: handler cannot be nil")
@@ -145,6 +163,9 @@ func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (
 //
 // Returns:
 //   - func(): A function that unsubscribes the handler if called before the message is received.
+//
+// Side Effects:
+//   - None.
 func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	if handler == nil {
 		logging.GetLogger().Error("redis bus: handler cannot be nil")
@@ -182,6 +203,12 @@ func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T
 //
 // Returns:
 //   - error: An error if closing fails.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func (b *Bus[T]) Close() error {
 	return b.client.Close()
 }

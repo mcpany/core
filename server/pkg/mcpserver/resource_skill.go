@@ -202,6 +202,9 @@ func (r *SkillResource) resolvePath() (string, error) {
 // Side Effects:
 //   - Reads file content from disk.
 //   - Updates internal cache.
+//
+// Errors:
+//   - Returns error if operation fails.
 func (r *SkillResource) Read(_ context.Context) (*mcp.ReadResourceResult, error) {
 	realPath, err := r.resolvePath()
 	if err != nil {
@@ -297,6 +300,9 @@ func isTextMime(mimeType string) bool {
 //
 // Side Effects:
 //   - None.
+//
+// Errors:
+//   - Returns error if operation fails.
 func (r *SkillResource) Subscribe(_ context.Context) error {
 	// No-op for now
 	return nil
@@ -316,6 +322,9 @@ func (r *SkillResource) Subscribe(_ context.Context) error {
 //
 // Side Effects:
 //   - Registers resources with the manager.
+//
+// Errors:
+//   - Returns error if operation fails.
 func RegisterSkillResources(rm resource.ManagerInterface, sm *skill.Manager) error {
 	skills, err := sm.ListSkills()
 	if err != nil {

@@ -39,6 +39,12 @@ type Factory interface {
 	// Returns:
 	//   - upstream.Upstream: The created upstream service.
 	//   - error: An error if creation fails.
+	//
+	// Errors:
+	//   - Returns error if operation fails.
+	//
+	// Side Effects:
+	//   - None.
 	NewUpstream(config *configv1.UpstreamServiceConfig) (upstream.Upstream, error)
 }
 
@@ -63,6 +69,9 @@ type UpstreamServiceFactory struct {
 //
 // Returns:
 //   - Factory: A new Factory instance.
+//
+// Side Effects:
+//   - None.
 func NewUpstreamServiceFactory(poolManager *pool.Manager, globalSettings *configv1.GlobalSettings) Factory {
 	return &UpstreamServiceFactory{
 		poolManager:    poolManager,
@@ -81,6 +90,12 @@ func NewUpstreamServiceFactory(poolManager *pool.Manager, globalSettings *config
 // Returns:
 //   - upstream.Upstream: A new upstream service instance.
 //   - error: An error if the service type is unknown.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func (f *UpstreamServiceFactory) NewUpstream(config *configv1.UpstreamServiceConfig) (upstream.Upstream, error) {
 	if config == nil {
 		return nil, fmt.Errorf("upstream service config cannot be nil")

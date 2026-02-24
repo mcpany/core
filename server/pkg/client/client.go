@@ -24,6 +24,15 @@ type GrpcClient interface {
 	//   - args: The request message to be sent.
 	//   - reply: The response message to be populated.
 	//   - opts: gRPC call options.
+	//
+	// Returns:
+	//   - result: The result.
+	//
+	// Errors:
+	//   - Returns error if operation fails.
+	//
+	// Side Effects:
+	//   - None.
 	Invoke(ctx context.Context, method string, args any, reply any, opts ...grpc.CallOption) error
 
 	// NewStream creates a new gRPC stream.
@@ -33,6 +42,15 @@ type GrpcClient interface {
 	//   - desc: The stream description.
 	//   - method: The full gRPC method string.
 	//   - opts: gRPC call options.
+//
+// Returns:
+//   - result: The result.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 	NewStream(ctx context.Context, desc *grpc.StreamDesc, method string, opts ...grpc.CallOption) (grpc.ClientStream, error)
 }
 
@@ -44,6 +62,15 @@ type HTTPClient interface {
 	//
 	// Parameters:
 	//   - req: The HTTP request to send.
+	//
+	// Returns:
+	//   - result: The result.
+	//
+	// Errors:
+	//   - Returns error if operation fails.
+	//
+	// Side Effects:
+	//   - None.
 	Do(req *http.Request) (*http.Response, error)
 }
 
@@ -57,5 +84,14 @@ type MCPClient interface {
 	//   - ctx: The context for the call.
 	//   - params: The parameters for the tool call, including the tool name and
 	//     arguments.
+	//
+	// Returns:
+	//   - result: The result.
+	//
+	// Errors:
+	//   - Returns error if operation fails.
+	//
+	// Side Effects:
+	//   - None.
 	CallTool(ctx context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error)
 }

@@ -76,6 +76,12 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 //
 // Returns:
 //   - error: An error if the shutdown operation fails, or nil on success.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	if u.checker != nil {
@@ -97,6 +103,9 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //
 // Returns:
 //   - upstream.Upstream: A new Upstream instance for WebSocket services.
+//
+// Side Effects:
+//   - None.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	return &Upstream{
 		poolManager: poolManager,
@@ -120,6 +129,12 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 //   - []*configv1.ToolDefinition: A list of discovered tool definitions.
 //   - []*configv1.ResourceDefinition: A list of discovered resource definitions.
 //   - error: An error if registration fails.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

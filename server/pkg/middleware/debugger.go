@@ -56,6 +56,9 @@ type Debugger struct {
 //
 // Returns:
 //   - *Debugger: The initialized debugger.
+//
+// Side Effects:
+//   - None.
 func NewDebugger(size int) *Debugger {
 	d := &Debugger{
 		ring:        ring.New(size),
@@ -82,6 +85,9 @@ func (d *Debugger) process() {
 // Close stops the background processor.
 //
 // Summary: Shuts down the debugger and releases resources.
+//
+// Side Effects:
+//   - None.
 func (d *Debugger) Close() {
 	close(d.ingress)
 	<-d.done
@@ -106,6 +112,12 @@ type bodyLogWriter struct {
 // Returns:
 //   - int: The number of bytes written.
 //   - error: An error if the write fails.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func (w *bodyLogWriter) Write(b []byte) (int, error) {
 	if !w.wroteHeader {
 		w.WriteHeader(http.StatusOK)
@@ -132,6 +144,9 @@ func (w *bodyLogWriter) Write(b []byte) (int, error) {
 //
 // Parameters:
 //   - statusCode: int. The HTTP status code.
+//
+// Side Effects:
+//   - None.
 func (w *bodyLogWriter) WriteHeader(statusCode int) {
 	if w.wroteHeader {
 		return
@@ -156,6 +171,9 @@ type readCloserWrapper struct {
 //
 // Returns:
 //   - http.Handler: The wrapped handler.
+//
+// Side Effects:
+//   - None.
 func (d *Debugger) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
@@ -281,6 +299,9 @@ func isTextContent(contentType string) bool {
 //
 // Returns:
 //   - []DebugEntry: A list of captured requests and responses.
+//
+// Side Effects:
+//   - None.
 func (d *Debugger) Entries() []DebugEntry {
 	d.mu.RLock()
 	defer d.mu.RUnlock()
@@ -300,6 +321,9 @@ func (d *Debugger) Entries() []DebugEntry {
 //
 // Returns:
 //   - http.HandlerFunc: The API handler function.
+//
+// Side Effects:
+//   - None.
 func (d *Debugger) APIHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")

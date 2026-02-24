@@ -16,6 +16,15 @@ import (
 
 // NewTestPoolManager creates a new pool.Manager for testing purposes.
 // It initializes a default HTTP connection pool and registers it with the manager.
+//
+// Parameters:
+//   - t: The t.
+//
+// Returns:
+//   - result: The result.
+//
+// Side Effects:
+//   - None.
 func NewTestPoolManager(t *testing.T) *pool.Manager {
 	t.Helper()
 	pm := pool.NewManager()
@@ -44,6 +53,18 @@ type MockAuthenticator struct {
 // req is the request object.
 //
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - req: The request object.
+//
+// Returns:
+//   - result: The result.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func (m *MockAuthenticator) Authenticate(req *http.Request) error {
 	if m.AuthenticateFunc != nil {
 		return m.AuthenticateFunc(req)

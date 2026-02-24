@@ -41,6 +41,12 @@ var (
 // NewTextParser returns a shared instance of TextParser.
 //
 // Returns the result.
+//
+// Returns:
+//   - result: The result.
+//
+// Side Effects:
+//   - None.
 func NewTextParser() *TextParser {
 	defaultTextParserOnce.Do(func() {
 		defaultTextParser = &TextParser{
@@ -57,6 +63,19 @@ func NewTextParser() *TextParser {
 // data is the map containing the data to be used in the template.
 // It returns the transformed data as a byte slice or an error if the
 // transformation fails.
+//
+// Parameters:
+//   - templateStr: The templateStr.
+//   - data: The data.
+//
+// Returns:
+//   - result: The result.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func (p *TextParser) Transform(templateStr string, data any) ([]byte, error) {
 	return p.transformer.Transform(templateStr, data)
 }
@@ -70,6 +89,21 @@ func (p *TextParser) Transform(templateStr string, data any) ([]byte, error) {
 // extraction rules (JSONPath, XPath, or regex) for the corresponding data.
 // jqQuery is the JQ query string (only used when inputType is "jq").
 // It returns the extracted data (as a map or any for JQ) or an error if parsing fails.
+//
+// Parameters:
+//   - inputType: The inputType.
+//   - input: The input.
+//   - config: The config.
+//   - jqQuery: The jqQuery.
+//
+// Returns:
+//   - result: The result.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func (p *TextParser) Parse(inputType string, input []byte, config map[string]string, jqQuery string) (any, error) {
 	switch strings.ToLower(inputType) {
 	case "json":

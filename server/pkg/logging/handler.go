@@ -39,6 +39,16 @@ type BroadcastHandler struct {
 // level is the minimum log level to broadcast.
 //
 // Returns the result.
+//
+// Parameters:
+//   - broadcaster: The broadcaster.
+//   - level: The level.
+//
+// Returns:
+//   - result: The result.
+//
+// Side Effects:
+//   - None.
 func NewBroadcastHandler(broadcaster *Broadcaster, level slog.Leveler) *BroadcastHandler {
 	return &BroadcastHandler{
 		broadcaster: broadcaster,
@@ -52,6 +62,16 @@ func NewBroadcastHandler(broadcaster *Broadcaster, level slog.Leveler) *Broadcas
 // level is the log level.
 //
 // Returns true if successful.
+//
+// Parameters:
+//   - _: The _.
+//   - level: The level.
+//
+// Returns:
+//   - result: The result.
+//
+// Side Effects:
+//   - None.
 func (h *BroadcastHandler) Enabled(_ context.Context, level slog.Level) bool {
 	return level >= h.level.Level()
 }
@@ -62,6 +82,19 @@ func (h *BroadcastHandler) Enabled(_ context.Context, level slog.Level) bool {
 // r is the r.
 //
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: The _.
+//   - r: The HTTP request.
+//
+// Returns:
+//   - result: The result.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func (h *BroadcastHandler) Handle(_ context.Context, r slog.Record) error {
 	entry := LogEntry{
 		ID:        uuid.New().String(),
@@ -140,6 +173,15 @@ func (h *BroadcastHandler) Handle(_ context.Context, r slog.Record) error {
 // attrs is the attrs.
 //
 // Returns the result.
+//
+// Parameters:
+//   - attrs: The attrs.
+//
+// Returns:
+//   - result: The result.
+//
+// Side Effects:
+//   - None.
 func (h *BroadcastHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 	h.mu.Lock()
 	defer h.mu.Unlock()
@@ -161,6 +203,15 @@ func (h *BroadcastHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 // name is the name of the resource.
 //
 // Returns the result.
+//
+// Parameters:
+//   - name: The name.
+//
+// Returns:
+//   - result: The result.
+//
+// Side Effects:
+//   - None.
 func (h *BroadcastHandler) WithGroup(name string) slog.Handler {
 	h.mu.Lock()
 	defer h.mu.Unlock()
@@ -187,6 +238,15 @@ type TeeHandler struct {
 // handlers is the handlers.
 //
 // Returns the result.
+//
+// Parameters:
+//   - handlers: The handlers.
+//
+// Returns:
+//   - result: The result.
+//
+// Side Effects:
+//   - None.
 func NewTeeHandler(handlers ...slog.Handler) *TeeHandler {
 	return &TeeHandler{handlers: handlers}
 }
@@ -197,6 +257,16 @@ func NewTeeHandler(handlers ...slog.Handler) *TeeHandler {
 // level is the level.
 //
 // Returns true if successful.
+//
+// Parameters:
+//   - ctx: The context for the operation.
+//   - level: The level.
+//
+// Returns:
+//   - result: The result.
+//
+// Side Effects:
+//   - None.
 func (h *TeeHandler) Enabled(ctx context.Context, level slog.Level) bool {
 	for _, handler := range h.handlers {
 		if handler.Enabled(ctx, level) {
@@ -212,6 +282,19 @@ func (h *TeeHandler) Enabled(ctx context.Context, level slog.Level) bool {
 // r is the r.
 //
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - ctx: The context for the operation.
+//   - r: The HTTP request.
+//
+// Returns:
+//   - result: The result.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func (h *TeeHandler) Handle(ctx context.Context, r slog.Record) error {
 	var err error
 	for _, handler := range h.handlers {
@@ -229,6 +312,15 @@ func (h *TeeHandler) Handle(ctx context.Context, r slog.Record) error {
 // attrs is the attrs.
 //
 // Returns the result.
+//
+// Parameters:
+//   - attrs: The attrs.
+//
+// Returns:
+//   - result: The result.
+//
+// Side Effects:
+//   - None.
 func (h *TeeHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 	handlers := make([]slog.Handler, len(h.handlers))
 	for i, handler := range h.handlers {
@@ -242,6 +334,15 @@ func (h *TeeHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 // name is the name of the resource.
 //
 // Returns the result.
+//
+// Parameters:
+//   - name: The name.
+//
+// Returns:
+//   - result: The result.
+//
+// Side Effects:
+//   - None.
 func (h *TeeHandler) WithGroup(name string) slog.Handler {
 	handlers := make([]slog.Handler, len(h.handlers))
 	for i, handler := range h.handlers {

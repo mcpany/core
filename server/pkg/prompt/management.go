@@ -20,12 +20,18 @@ type ManagerInterface interface {
 	//
 	// Parameters:
 	//   - prompt: Prompt. The prompt definition to add.
+	//
+	// Side Effects:
+	//   - None.
 	AddPrompt(prompt Prompt)
 
 	// UpdatePrompt updates an existing prompt.
 	//
 	// Parameters:
 	//   - prompt: Prompt. The prompt with updated information.
+//
+// Side Effects:
+//   - None.
 	UpdatePrompt(prompt Prompt)
 
 	// GetPrompt retrieves a prompt by its name.
@@ -36,24 +42,36 @@ type ManagerInterface interface {
 	// Returns:
 	//   - Prompt: The prompt instance.
 	//   - bool: True if the prompt was found, false otherwise.
+//
+// Side Effects:
+//   - None.
 	GetPrompt(name string) (Prompt, bool)
 
 	// ListPrompts returns all registered prompts.
 	//
 	// Returns:
 	//   - []Prompt: A slice of all registered prompts.
+//
+// Side Effects:
+//   - None.
 	ListPrompts() []Prompt
 
 	// ClearPromptsForService removes all prompts associated with a specific service.
 	//
 	// Parameters:
 	//   - serviceID: string. The unique identifier of the service.
+//
+// Side Effects:
+//   - None.
 	ClearPromptsForService(serviceID string)
 
 	// SetMCPServer sets the MCP server provider.
 	//
 	// Parameters:
 	//   - mcpServer: MCPServerProvider. The provider interface.
+//
+// Side Effects:
+//   - None.
 	SetMCPServer(mcpServer MCPServerProvider)
 }
 
@@ -71,6 +89,9 @@ type Manager struct {
 //
 // Returns:
 //   - *Manager: A pointer to the newly created Manager.
+//
+// Side Effects:
+//   - None.
 func NewManager() *Manager {
 	return &Manager{
 		prompts: xsync.NewMap[string, Prompt](),
@@ -81,6 +102,9 @@ func NewManager() *Manager {
 //
 // Parameters:
 //   - mcpServer: MCPServerProvider. The MCP server provider.
+//
+// Side Effects:
+//   - None.
 func (pm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 	pm.mu.Lock()
 	defer pm.mu.Unlock()
@@ -137,6 +161,9 @@ func (pm *Manager) UpdatePrompt(prompt Prompt) {
 // Returns:
 //   - Prompt: The prompt instance.
 //   - bool: True if found, false otherwise.
+//
+// Side Effects:
+//   - None.
 func (pm *Manager) GetPrompt(name string) (Prompt, bool) {
 	prompt, ok := pm.prompts.Load(name)
 	return prompt, ok
@@ -148,6 +175,9 @@ func (pm *Manager) GetPrompt(name string) (Prompt, bool) {
 //
 // Returns:
 //   - []Prompt: A slice of currently registered prompts.
+//
+// Side Effects:
+//   - None.
 func (pm *Manager) ListPrompts() []Prompt {
 	// ⚡ Bolt: Use a read-through cache to avoid repeated map iteration and slice allocation.
 	// The cache is invalidated on any write operation (Add/Update/Clear).

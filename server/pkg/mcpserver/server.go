@@ -116,6 +116,9 @@ func (s *Server) Server() *mcp.Server {
 //   - Registers HTTP handlers.
 //   - Registers built-in tools.
 //   - Registers middleware.
+//
+// Errors:
+//   - Returns error if operation fails.
 func NewServer(
 	_ context.Context,
 	toolManager tool.ManagerInterface,
@@ -423,6 +426,9 @@ func (s *Server) toolListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodH
 //
 // Side Effects:
 //   - None.
+//
+// Errors:
+//   - Returns error if operation fails.
 func (s *Server) ListPrompts(
 	_ context.Context,
 	_ *mcp.ListPromptsRequest,
@@ -453,6 +459,9 @@ func (s *Server) ListPrompts(
 //
 // Side Effects:
 //   - Sends a message creation request to the client.
+//
+// Errors:
+//   - Returns error if operation fails.
 func (s *Server) CreateMessage(ctx context.Context, params *mcp.CreateMessageParams) (*mcp.CreateMessageResult, error) {
 	// Attempt to retrieve session from context, which is populated during request handling
 	if session, ok := tool.GetSession(ctx); ok {
@@ -521,6 +530,9 @@ func (s *Server) GetPrompt(
 //
 // Side Effects:
 //   - None.
+//
+// Errors:
+//   - Returns error if operation fails.
 func (s *Server) ListResources(
 	_ context.Context,
 	_ *mcp.ListResourcesRequest,
@@ -702,6 +714,9 @@ func (s *Server) ListTools() []tool.Tool {
 //   - Executes the tool (which may have side effects).
 //   - Logs execution details.
 //   - Updates metrics.
+//
+// Errors:
+//   - Returns error if operation fails.
 func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	logger := logging.GetLogger()
 	// ⚡ Bolt Optimization: Check if logging is enabled to avoid unnecessary allocations.
@@ -862,6 +877,9 @@ func (s *Server) SetMCPServer(mcpServer tool.MCPServerProvider) {
 //
 // Side Effects:
 //   - Adds the tool to the tool manager.
+//
+// Errors:
+//   - Returns error if operation fails.
 func (s *Server) AddTool(t tool.Tool) error {
 	return s.toolManager.AddTool(t)
 }
@@ -917,6 +935,9 @@ func (s *Server) SetReloadFunc(f func(context.Context) error) {
 //
 // Side Effects:
 //   - Executes the reload callback if set.
+//
+// Errors:
+//   - Returns error if operation fails.
 func (s *Server) Reload(ctx context.Context) error {
 	if s.reloadFunc != nil {
 		return s.reloadFunc(ctx)

@@ -17,6 +17,18 @@ type Limiter interface {
 	//
 	// Returns true if successful.
 	// Returns an error if the operation fails.
+	//
+	// Parameters:
+	//   - ctx: The context for the operation.
+	//
+	// Returns:
+	//   - result: The result.
+	//
+	// Errors:
+	//   - Returns error if operation fails.
+	//
+	// Side Effects:
+	//   - None.
 	Allow(ctx context.Context) (bool, error)
 	// AllowN checks if the request is allowed with a specific cost.
 	//
@@ -25,11 +37,31 @@ type Limiter interface {
 	//
 	// Returns true if successful.
 	// Returns an error if the operation fails.
+	//
+	// Parameters:
+	//   - ctx: The context for the operation.
+	//   - n: The n.
+	//
+	// Returns:
+	//   - result: The result.
+	//
+	// Errors:
+	//   - Returns error if operation fails.
+	//
+	// Side Effects:
+	//   - None.
 	AllowN(ctx context.Context, n int) (bool, error)
 	// Update updates the limiter configuration.
 	//
 	// rps is the rps.
 	// burst is the burst.
+	//
+	// Parameters:
+	//   - rps: The rps.
+	//   - burst: The burst.
+	//
+	// Side Effects:
+	//   - None.
 	Update(rps float64, burst int)
 }
 
@@ -45,5 +77,21 @@ type RateLimitStrategy interface {
 	//
 	// Returns the result.
 	// Returns an error if the operation fails.
+	//
+	// Parameters:
+	//   - ctx: The context for the operation.
+	//   - serviceID: The serviceID.
+	//   - limitScopeKey: The limitScopeKey.
+	//   - partitionKey: The partitionKey.
+	//   - config: The config.
+	//
+	// Returns:
+	//   - result: The result.
+	//
+	// Errors:
+	//   - Returns error if operation fails.
+	//
+	// Side Effects:
+	//   - None.
 	Create(ctx context.Context, serviceID, limitScopeKey, partitionKey string, config *configv1.RateLimitConfig) (Limiter, error)
 }

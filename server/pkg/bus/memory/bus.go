@@ -33,6 +33,12 @@ type DefaultBus[T any] struct {
 // default publish timeout.
 //
 // The type parameter T specifies the type of message that the bus will handle.
+//
+// Returns:
+//   - result: The result.
+//
+// Side Effects:
+//   - None.
 func New[T any]() *DefaultBus[T] {
 	return &DefaultBus[T]{
 		subscribers:    make(map[string]map[uintptr]chan T),
@@ -52,6 +58,15 @@ func New[T any]() *DefaultBus[T] {
 // Parameters:
 //   - topic: The topic to publish the message to.
 //   - msg: The message to be sent.
+//
+// Returns:
+//   - result: The result.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func (b *DefaultBus[T]) Publish(_ context.Context, topic string, msg T) error {
 	b.mu.RLock()
 	defer b.mu.RUnlock()
@@ -98,6 +113,12 @@ func (b *DefaultBus[T]) Publish(_ context.Context, topic string, msg T) error {
 // Returns an `unsubscribe` function that can be called to remove the
 // subscription. When called, it removes the subscriber from the bus and closes
 // its channel, terminating the associated goroutine.
+//
+// Returns:
+//   - result: The result.
+//
+// Side Effects:
+//   - None.
 func (b *DefaultBus[T]) Subscribe(_ context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
@@ -153,6 +174,12 @@ func (b *DefaultBus[T]) Subscribe(_ context.Context, topic string, handler func(
 //
 // Returns a function that can be used to unsubscribe before the handler is
 // invoked.
+//
+// Returns:
+//   - result: The result.
+//
+// Side Effects:
+//   - None.
 func (b *DefaultBus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	var once sync.Once
 	var unsub func()

@@ -65,6 +65,19 @@ func NewStore() *Store {
 // SaveLog saves a log entry.
 //
 // Summary: Persists a log entry.
+//
+// Parameters:
+//   - _: The _.
+//   - entry: The entry.
+//
+// Returns:
+//   - result: The result.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func (s *Store) SaveLog(_ context.Context, entry *logging.LogEntry) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -75,6 +88,19 @@ func (s *Store) SaveLog(_ context.Context, entry *logging.LogEntry) error {
 // GetRecentLogs retrieves recent log entries.
 //
 // Summary: Retrieves recent log entries.
+//
+// Parameters:
+//   - _: The _.
+//   - limit: The limit.
+//
+// Returns:
+//   - result: The result.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func (s *Store) GetRecentLogs(_ context.Context, limit int) ([]*logging.LogEntry, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -133,6 +159,9 @@ func (s *Store) SaveToken(_ context.Context, token *configv1.UserToken) error {
 //
 // Errors:
 //   - Returns nil, nil if token is not found.
+//
+// Side Effects:
+//   - None.
 func (s *Store) GetToken(_ context.Context, userID, serviceID string) (*configv1.UserToken, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -187,6 +216,9 @@ func (s *Store) DeleteToken(_ context.Context, userID, serviceID string) error {
 //
 // Errors:
 //   - None expected for in-memory store.
+//
+// Side Effects:
+//   - None.
 func (s *Store) Load(_ context.Context) (*configv1.McpAnyServerConfig, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -262,6 +294,9 @@ func (s *Store) SaveService(_ context.Context, service *configv1.UpstreamService
 //
 // Errors:
 //   - Returns nil, nil if service is not found.
+//
+// Side Effects:
+//   - None.
 func (s *Store) GetService(_ context.Context, name string) (*configv1.UpstreamServiceConfig, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -284,6 +319,9 @@ func (s *Store) GetService(_ context.Context, name string) (*configv1.UpstreamSe
 //
 // Errors:
 //   - None expected for in-memory store.
+//
+// Side Effects:
+//   - None.
 func (s *Store) ListServices(_ context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -326,6 +364,9 @@ func (s *Store) DeleteService(_ context.Context, name string) error {
 //
 // Errors:
 //   - None expected for in-memory store.
+//
+// Side Effects:
+//   - None.
 func (s *Store) Close() error {
 	return nil
 }
@@ -356,6 +397,9 @@ func (s *Store) HasConfigSources() bool {
 //
 // Errors:
 //   - Returns empty settings if none exist.
+//
+// Side Effects:
+//   - None.
 func (s *Store) GetGlobalSettings(_ context.Context) (*configv1.GlobalSettings, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -401,6 +445,9 @@ func (s *Store) SaveGlobalSettings(_ context.Context, settings *configv1.GlobalS
 //
 // Errors:
 //   - None expected for in-memory store.
+//
+// Side Effects:
+//   - None.
 func (s *Store) ListSecrets(_ context.Context) ([]*configv1.Secret, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -425,6 +472,9 @@ func (s *Store) ListSecrets(_ context.Context) ([]*configv1.Secret, error) {
 //
 // Errors:
 //   - Returns nil, nil if secret is not found.
+//
+// Side Effects:
+//   - None.
 func (s *Store) GetSecret(_ context.Context, id string) (*configv1.Secret, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -523,6 +573,9 @@ func (s *Store) CreateUser(_ context.Context, user *configv1.User) error {
 //
 // Errors:
 //   - Returns nil, nil if user is not found.
+//
+// Side Effects:
+//   - None.
 func (s *Store) GetUser(_ context.Context, id string) (*configv1.User, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -545,6 +598,9 @@ func (s *Store) GetUser(_ context.Context, id string) (*configv1.User, error) {
 //
 // Errors:
 //   - None expected for in-memory store.
+//
+// Side Effects:
+//   - None.
 func (s *Store) ListUsers(_ context.Context) ([]*configv1.User, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -619,6 +675,9 @@ func (s *Store) DeleteUser(_ context.Context, id string) error {
 //
 // Errors:
 //   - None expected for in-memory store.
+//
+// Side Effects:
+//   - None.
 func (s *Store) ListProfiles(_ context.Context) ([]*configv1.ProfileDefinition, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -643,6 +702,9 @@ func (s *Store) ListProfiles(_ context.Context) ([]*configv1.ProfileDefinition, 
 //
 // Errors:
 //   - Returns nil, nil if profile is not found.
+//
+// Side Effects:
+//   - None.
 func (s *Store) GetProfile(_ context.Context, name string) (*configv1.ProfileDefinition, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -713,6 +775,9 @@ func (s *Store) DeleteProfile(_ context.Context, name string) error {
 //
 // Errors:
 //   - None expected for in-memory store.
+//
+// Side Effects:
+//   - None.
 func (s *Store) ListServiceCollections(_ context.Context) ([]*configv1.Collection, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -737,6 +802,9 @@ func (s *Store) ListServiceCollections(_ context.Context) ([]*configv1.Collectio
 //
 // Errors:
 //   - Returns nil, nil if collection is not found.
+//
+// Side Effects:
+//   - None.
 func (s *Store) GetServiceCollection(_ context.Context, name string) (*configv1.Collection, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -807,6 +875,9 @@ func (s *Store) DeleteServiceCollection(_ context.Context, name string) error {
 //
 // Errors:
 //   - None expected for in-memory store.
+//
+// Side Effects:
+//   - None.
 func (s *Store) ListCredentials(_ context.Context) ([]*configv1.Credential, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -831,6 +902,9 @@ func (s *Store) ListCredentials(_ context.Context) ([]*configv1.Credential, erro
 //
 // Errors:
 //   - Returns nil, nil if credential is not found.
+//
+// Side Effects:
+//   - None.
 func (s *Store) GetCredential(_ context.Context, id string) (*configv1.Credential, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()

@@ -17,6 +17,15 @@ import (
 // next is the next.
 //
 // Returns the result.
+//
+// Parameters:
+//   - next: The next.
+//
+// Returns:
+//   - result: The result.
+//
+// Side Effects:
+//   - None.
 func (m *Manager) Middleware(next mcp.MethodHandler) mcp.MethodHandler {
 	return func(
 		ctx context.Context,

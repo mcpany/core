@@ -59,6 +59,9 @@ type Upstream struct {
 //
 // Side Effects:
 //   - Performs a health check RPC.
+//
+// Errors:
+//   - Returns error if operation fails.
 func (u *Upstream) CheckHealth(ctx context.Context) error {
 	u.mu.RLock()
 	checker := u.checker
@@ -109,6 +112,9 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 //   - Stops the health checker.
 //   - Stops the reflection cache.
 //   - Deregisters the connection pool.
+//
+// Errors:
+//   - Returns error if operation fails.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	if u.checker != nil {
@@ -147,6 +153,9 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //   - Creates a gRPC connection pool.
 //   - Fetches and caches service descriptors (via reflection or config).
 //   - Registers tools and prompts.
+//
+// Errors:
+//   - Returns error if operation fails.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

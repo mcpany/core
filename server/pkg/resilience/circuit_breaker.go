@@ -73,6 +73,9 @@ func NewCircuitBreaker(config *configv1.CircuitBreakerConfig) *CircuitBreaker {
 // Side Effects:
 //   - May change the state of the circuit breaker.
 //   - Executes the provided function.
+//
+// Errors:
+//   - Returns error if operation fails.
 func (cb *CircuitBreaker) Execute(ctx context.Context, work func(context.Context) error) error {
 	originState := StateClosed
 

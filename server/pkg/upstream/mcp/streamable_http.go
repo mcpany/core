@@ -51,6 +51,19 @@ type ClientSession interface {
 	//
 	// Returns the result.
 	// Returns an error if the operation fails.
+	//
+	// Parameters:
+	//   - ctx: The context for the operation.
+	//   - params: The params.
+	//
+	// Returns:
+	//   - result: The result.
+	//
+	// Errors:
+	//   - Returns error if operation fails.
+	//
+	// Side Effects:
+	//   - None.
 	ListTools(ctx context.Context, params *mcp.ListToolsParams) (*mcp.ListToolsResult, error)
 	// ListPrompts lists the prompts available in the session.
 	//
@@ -59,6 +72,19 @@ type ClientSession interface {
 	//
 	// Returns the result.
 	// Returns an error if the operation fails.
+	//
+	// Parameters:
+	//   - ctx: The context for the operation.
+	//   - params: The params.
+	//
+	// Returns:
+	//   - result: The result.
+	//
+	// Errors:
+	//   - Returns error if operation fails.
+	//
+	// Side Effects:
+	//   - None.
 	ListPrompts(ctx context.Context, params *mcp.ListPromptsParams) (*mcp.ListPromptsResult, error)
 	// ListResources lists the resources available in the session.
 	//
@@ -67,6 +93,19 @@ type ClientSession interface {
 	//
 	// Returns the result.
 	// Returns an error if the operation fails.
+	//
+	// Parameters:
+	//   - ctx: The context for the operation.
+	//   - params: The params.
+	//
+	// Returns:
+	//   - result: The result.
+	//
+	// Errors:
+	//   - Returns error if operation fails.
+	//
+	// Side Effects:
+	//   - None.
 	ListResources(ctx context.Context, params *mcp.ListResourcesParams) (*mcp.ListResourcesResult, error)
 	// GetPrompt retrieves a prompt from the session.
 	//
@@ -75,6 +114,19 @@ type ClientSession interface {
 	//
 	// Returns the result.
 	// Returns an error if the operation fails.
+	//
+	// Parameters:
+	//   - ctx: The context for the operation.
+	//   - params: The params.
+	//
+	// Returns:
+	//   - result: The result.
+	//
+	// Errors:
+	//   - Returns error if operation fails.
+	//
+	// Side Effects:
+	//   - None.
 	GetPrompt(ctx context.Context, params *mcp.GetPromptParams) (*mcp.GetPromptResult, error)
 	// ReadResource reads a resource from the session.
 	//
@@ -83,6 +135,19 @@ type ClientSession interface {
 	//
 	// Returns the result.
 	// Returns an error if the operation fails.
+	//
+	// Parameters:
+	//   - ctx: The context for the operation.
+	//   - params: The params.
+	//
+	// Returns:
+	//   - result: The result.
+	//
+	// Errors:
+	//   - Returns error if operation fails.
+	//
+	// Side Effects:
+	//   - None.
 	ReadResource(ctx context.Context, params *mcp.ReadResourceParams) (*mcp.ReadResourceResult, error)
 	// CallTool calls a tool in the session.
 	//
@@ -91,10 +156,32 @@ type ClientSession interface {
 	//
 	// Returns the result.
 	// Returns an error if the operation fails.
+	//
+	// Parameters:
+	//   - ctx: The context for the operation.
+	//   - params: The params.
+	//
+	// Returns:
+	//   - result: The result.
+	//
+	// Errors:
+	//   - Returns error if operation fails.
+	//
+	// Side Effects:
+	//   - None.
 	CallTool(ctx context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error)
 	// Close closes the session.
 	//
 	// Returns an error if the operation fails.
+	//
+	// Returns:
+	//   - result: The result.
+	//
+	// Errors:
+	//   - Returns error if operation fails.
+	//
+	// Side Effects:
+	//   - None.
 	Close() error
 }
 
@@ -281,6 +368,12 @@ func (p *mcpPrompt) Service() string {
 }
 
 // Definition returns the raw configuration definition of the prompt.
+//
+// Returns:
+//   - result: The result.
+//
+// Side Effects:
+//   - None.
 func (p *mcpPrompt) Definition() *configv1.PromptDefinition {
 	// Construct a partial definition from p.mcpPrompt
 	properties := make(map[string]*structpb.Value)
@@ -442,6 +535,23 @@ func (r *mcpResource) Subscribe(_ context.Context) error {
 // determines the connection type (stdio or HTTP), connects to the downstream
 // service, lists its available tools, prompts, and resources, and registers
 // them with the appropriate managers.
+//
+// Parameters:
+//   - ctx: The context for the operation.
+//   - serviceConfig: The serviceConfig.
+//   - toolManager: The toolManager.
+//   - promptManager: The promptManager.
+//   - resourceManager: The resourceManager.
+//   - isReload: The isReload.
+//
+// Returns:
+//   - result: The result.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

@@ -29,6 +29,22 @@ interface ContextState {
 
 const ContextContext = createContext<ContextState | undefined>(undefined);
 
+/**
+ * Unknown component/function.
+ *
+ * Summary: Unknown component/function.
+ *
+ * Side Effects:
+ * - None.
+ */
+/**
+ * ContextProvider component/function.
+ *
+ * Summary: ContextProvider component/function.
+ *
+ * Side Effects:
+ * - None.
+ */
 export function ContextProvider({ children }: { children: React.ReactNode }) {
     const [tools, setTools] = useState<ToolDefinition[]>([]);
     const [services, setServices] = useState<UpstreamServiceConfig[]>([]);
@@ -118,6 +134,14 @@ export function ContextProvider({ children }: { children: React.ReactNode }) {
         projectedTokens,
         getToolCost
     };
+/**
+ * Unknown component/function.
+ *
+ * Summary: Unknown component/function.
+ *
+ * Side Effects:
+ * - None.
+ */
 
     return (
         <ContextContext.Provider value={value}>
@@ -126,6 +150,14 @@ export function ContextProvider({ children }: { children: React.ReactNode }) {
     );
 }
 
+/**
+ * useRecursiveContext component/function.
+ *
+ * Summary: useRecursiveContext component/function.
+ *
+ * Side Effects:
+ * - None.
+ */
 export function useRecursiveContext() {
     const context = useContext(ContextContext);
     if (!context) {

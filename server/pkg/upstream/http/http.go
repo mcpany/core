@@ -113,6 +113,9 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 // Side Effects:
 //   - Stops the health checker.
 //   - Deregisters the connection pool.
+//
+// Errors:
+//   - Returns error if operation fails.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	if u.checker != nil {

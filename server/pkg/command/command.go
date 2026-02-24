@@ -42,6 +42,12 @@ type Executor interface {
 	//   - stderr (io.ReadCloser): The standard error stream.
 	//   - exitCode (<-chan int): A channel that receives the exit code.
 	//   - err (error): An error if the operation fails.
+	//
+	// Errors:
+	//   - Returns error if operation fails.
+	//
+	// Side Effects:
+	//   - None.
 	Execute(ctx context.Context, command string, args []string, workingDir string, env []string) (stdout, stderr io.ReadCloser, exitCode <-chan int, err error)
 	// ExecuteWithStdIO executes a command and returns the stdin, stdout, and stderr as streams.
 	//
@@ -60,6 +66,12 @@ type Executor interface {
 	//   - stderr (io.ReadCloser): The standard error stream.
 	//   - exitCode (<-chan int): A channel that receives the exit code.
 	//   - err (error): An error if the operation fails.
+	//
+	// Errors:
+	//   - Returns error if operation fails.
+	//
+	// Side Effects:
+	//   - None.
 	ExecuteWithStdIO(ctx context.Context, command string, args []string, workingDir string, env []string) (stdin io.WriteCloser, stdout, stderr io.ReadCloser, exitCode <-chan int, err error)
 }
 
@@ -119,6 +131,9 @@ type localExecutor struct{}
 //
 // Side Effects:
 //   - Spawns a subprocess.
+//
+// Errors:
+//   - Returns error if operation fails.
 func (e *localExecutor) Execute(ctx context.Context, command string, args []string, workingDir string, env []string) (io.ReadCloser, io.ReadCloser, <-chan int, error) {
 	if workingDir != "" {
 		if err := validation.IsAllowedPath(workingDir); err != nil {
@@ -184,6 +199,9 @@ func (e *localExecutor) Execute(ctx context.Context, command string, args []stri
 //
 // Side Effects:
 //   - Spawns a subprocess.
+//
+// Errors:
+//   - Returns error if operation fails.
 func (e *localExecutor) ExecuteWithStdIO(ctx context.Context, command string, args []string, workingDir string, env []string) (io.WriteCloser, io.ReadCloser, io.ReadCloser, <-chan int, error) {
 	if workingDir != "" {
 		if err := validation.IsAllowedPath(workingDir); err != nil {
@@ -270,6 +288,9 @@ func newDockerExecutor(containerEnv *configv1.ContainerEnvironment) Executor {
 //
 // Side Effects:
 //   - Creates and starts a Docker container.
+//
+// Errors:
+//   - Returns error if operation fails.
 func (e *dockerExecutor) Execute(ctx context.Context, command string, args []string, workingDir string, env []string) (io.ReadCloser, io.ReadCloser, <-chan int, error) {
 	log := logging.GetLogger()
 	cli, err := e.clientFactory()
@@ -407,6 +428,9 @@ func (e *dockerExecutor) Execute(ctx context.Context, command string, args []str
 //
 // Side Effects:
 //   - Creates and starts a Docker container.
+//
+// Errors:
+//   - Returns error if operation fails.
 func (e *dockerExecutor) ExecuteWithStdIO(ctx context.Context, command string, args []string, workingDir string, env []string) (io.WriteCloser, io.ReadCloser, io.ReadCloser, <-chan int, error) {
 	log := logging.GetLogger()
 	cli, err := e.clientFactory()
@@ -539,6 +563,9 @@ type closeWriter struct {
 //
 // Side Effects:
 //   - Writes to the network connection.
+//
+// Errors:
+//   - Returns error if operation fails.
 func (c *closeWriter) Write(p []byte) (n int, err error) {
 	return c.conn.Write(p)
 }
@@ -555,6 +582,9 @@ func (c *closeWriter) Write(p []byte) (n int, err error) {
 //
 // Side Effects:
 //   - Closes the connection writer.
+//
+// Errors:
+//   - Returns error if operation fails.
 func (c *closeWriter) Close() error {
 	if cw, ok := c.conn.(interface{ CloseWrite() error }); ok {
 		return cw.CloseWrite()

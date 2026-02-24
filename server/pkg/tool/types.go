@@ -88,12 +88,18 @@ type Tool interface {
 	//
 	// Returns:
 	//   - *v1.Tool: The protobuf tool definition.
+	//
+	// Side Effects:
+	//   - None.
 	Tool() *v1.Tool
 
 	// MCPTool returns the MCP tool definition.
 	//
 	// Returns:
 	//   - *mcp.Tool: The MCP tool definition.
+//
+// Side Effects:
+//   - None.
 	MCPTool() *mcp.Tool
 
 	// Execute runs the tool with the provided context and request, returning
@@ -111,6 +117,9 @@ type Tool interface {
 	//
 	// Side Effects:
 	//   - Executes the underlying service logic (network calls, command execution, etc.).
+//
+// Errors:
+//   - Returns error if operation fails.
 	Execute(ctx context.Context, req *ExecutionRequest) (any, error)
 
 	// GetCacheConfig returns the cache configuration for the tool.
@@ -119,6 +128,9 @@ type Tool interface {
 	//
 	// Returns:
 	//   - *configv1.CacheConfig: The cache configuration, or nil if none.
+//
+// Side Effects:
+//   - None.
 	GetCacheConfig() *configv1.CacheConfig
 }
 
@@ -181,6 +193,9 @@ type ServiceRegistry interface {
 	// Returns:
 	//   - Tool: The tool instance if found.
 	//   - bool: True if the tool exists, false otherwise.
+	//
+	// Side Effects:
+	//   - None.
 	GetTool(toolName string) (Tool, bool)
 
 	// GetServiceInfo retrieves metadata for a service.
@@ -191,6 +206,9 @@ type ServiceRegistry interface {
 	// Returns:
 	//   - *ServiceInfo: The service metadata info if found.
 	//   - bool: True if the service exists, false otherwise.
+//
+// Side Effects:
+//   - None.
 	GetServiceInfo(serviceID string) (*ServiceInfo, bool)
 }
 
@@ -221,6 +239,9 @@ const toolContextKey = contextKey("tool")
 //
 // Returns:
 //   - context.Context: A new context containing the tool.
+//
+// Side Effects:
+//   - None.
 func NewContextWithTool(ctx context.Context, t Tool) context.Context {
 	return context.WithValue(ctx, toolContextKey, t)
 }
@@ -235,6 +256,9 @@ func NewContextWithTool(ctx context.Context, t Tool) context.Context {
 // Returns:
 //   - Tool: The tool instance from the context.
 //   - bool: True if a tool was found, false otherwise.
+//
+// Side Effects:
+//   - None.
 func GetFromContext(ctx context.Context) (Tool, bool) {
 	t, ok := ctx.Value(toolContextKey).(Tool)
 	return t, ok
@@ -253,6 +277,12 @@ type Callable interface {
 	// Returns:
 	//   - any: The result of the execution.
 	//   - error: An error if the operation fails.
+	//
+	// Errors:
+	//   - Returns error if operation fails.
+	//
+	// Side Effects:
+	//   - None.
 	Call(ctx context.Context, req *ExecutionRequest) (any, error)
 }
 
@@ -299,6 +329,9 @@ const cacheControlContextKey = contextKey("cache_control")
 //
 // Returns:
 //   - context.Context: A new context containing the CacheControl.
+//
+// Side Effects:
+//   - None.
 func NewContextWithCacheControl(ctx context.Context, cc *CacheControl) context.Context {
 	return context.WithValue(ctx, cacheControlContextKey, cc)
 }
@@ -313,6 +346,9 @@ func NewContextWithCacheControl(ctx context.Context, cc *CacheControl) context.C
 // Returns:
 //   - *CacheControl: The CacheControl instance if found.
 //   - bool: True if CacheControl exists, false otherwise.
+//
+// Side Effects:
+//   - None.
 func GetCacheControl(ctx context.Context) (*CacheControl, bool) {
 	cc, ok := ctx.Value(cacheControlContextKey).(*CacheControl)
 	return cc, ok
@@ -324,6 +360,19 @@ func GetCacheControl(ctx context.Context) (*CacheControl, bool) {
 type PreCallHook interface {
 	// ExecutePre runs the hook. It returns an action (Allow/Deny),
 	// a potentially modified request (or nil if unchanged), and an error.
+	//
+	// Parameters:
+	//   - ctx: The context for the operation.
+	//   - req: The request object.
+	//
+	// Returns:
+	//   - result: The result.
+	//
+	// Errors:
+	//   - Returns error if operation fails.
+	//
+	// Side Effects:
+	//   - None.
 	ExecutePre(ctx context.Context, req *ExecutionRequest) (Action, *ExecutionRequest, error)
 }
 
@@ -333,6 +382,20 @@ type PreCallHook interface {
 type PostCallHook interface {
 	// ExecutePost runs the hook. It returns the potentially modified result
 	// (or original if unchanged) and an error.
+	//
+	// Parameters:
+	//   - ctx: The context for the operation.
+	//   - req: The request object.
+	//   - result: The result.
+	//
+	// Returns:
+	//   - result: The result.
+	//
+	// Errors:
+	//   - Returns error if operation fails.
+	//
+	// Side Effects:
+	//   - None.
 	ExecutePost(ctx context.Context, req *ExecutionRequest, result any) (any, error)
 }
 
@@ -369,6 +432,9 @@ type GRPCTool struct {
 //
 // Returns:
 //   - *GRPCTool: The initialized GRPCTool.
+//
+// Side Effects:
+//   - None.
 func NewGRPCTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, method protoreflect.MethodDescriptor, callDefinition *configv1.GrpcCallDefinition, resilienceConfig *configv1.ResilienceConfig) *GRPCTool {
 	return &GRPCTool{
 		tool:              tool,
@@ -385,6 +451,9 @@ func NewGRPCTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, met
 //
 // Returns:
 //   - *v1.Tool: The underlying protobuf definition.
+//
+// Side Effects:
+//   - None.
 func (t *GRPCTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -395,6 +464,9 @@ func (t *GRPCTool) Tool() *v1.Tool {
 //
 // Returns:
 //   - *mcp.Tool: The MCP tool definition.
+//
+// Side Effects:
+//   - None.
 func (t *GRPCTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -410,6 +482,9 @@ func (t *GRPCTool) MCPTool() *mcp.Tool {
 //
 // Returns:
 //   - *configv1.CacheConfig: The cache configuration, if any.
+//
+// Side Effects:
+//   - None.
 func (t *GRPCTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
@@ -433,6 +508,9 @@ func (t *GRPCTool) GetCacheConfig() *configv1.CacheConfig {
 //   - Makes a gRPC call to the upstream service.
 //   - Updates metrics (latency, success/error counts).
 //   - Logs execution details.
+//
+// Errors:
+//   - Returns error if operation fails.
 func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
@@ -554,6 +632,9 @@ type HTTPTool struct {
 //
 // Returns:
 //   - *HTTPTool: The initialized HTTPTool.
+//
+// Side Effects:
+//   - None.
 func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, authenticator auth.UpstreamAuthenticator, callDefinition *configv1.HttpCallDefinition, cfg *configv1.ResilienceConfig, policies []*configv1.CallPolicy, callID string) *HTTPTool {
 	var webhookClient *WebhookClient
 	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
@@ -658,6 +739,9 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 //
 // Returns:
 //   - *v1.Tool: The underlying protobuf definition.
+//
+// Side Effects:
+//   - None.
 func (t *HTTPTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -668,6 +752,9 @@ func (t *HTTPTool) Tool() *v1.Tool {
 //
 // Returns:
 //   - *mcp.Tool: The MCP tool definition.
+//
+// Side Effects:
+//   - None.
 func (t *HTTPTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -683,6 +770,9 @@ func (t *HTTPTool) MCPTool() *mcp.Tool {
 //
 // Returns:
 //   - *configv1.CacheConfig: The cache configuration, if any.
+//
+// Side Effects:
+//   - None.
 func (t *HTTPTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
@@ -706,6 +796,9 @@ func (t *HTTPTool) GetCacheConfig() *configv1.CacheConfig {
 //   - Makes an HTTP request to the upstream service.
 //   - Updates metrics.
 //   - Logs execution details.
+//
+// Errors:
+//   - Returns error if operation fails.
 func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
@@ -1322,6 +1415,9 @@ type MCPTool struct {
 //
 // Returns:
 //   - *MCPTool: The initialized MCPTool.
+//
+// Side Effects:
+//   - None.
 func NewMCPTool(tool *v1.Tool, client client.MCPClient, callDefinition *configv1.MCPCallDefinition) *MCPTool {
 	var webhookClient *WebhookClient
 	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
@@ -1360,6 +1456,9 @@ func NewMCPTool(tool *v1.Tool, client client.MCPClient, callDefinition *configv1
 //
 // Returns:
 //   - *v1.Tool: The underlying protobuf definition.
+//
+// Side Effects:
+//   - None.
 func (t *MCPTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -1370,6 +1469,9 @@ func (t *MCPTool) Tool() *v1.Tool {
 //
 // Returns:
 //   - *mcp.Tool: The MCP tool definition.
+//
+// Side Effects:
+//   - None.
 func (t *MCPTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -1385,6 +1487,9 @@ func (t *MCPTool) MCPTool() *mcp.Tool {
 //
 // Returns:
 //   - *configv1.CacheConfig: The cache configuration, if any.
+//
+// Side Effects:
+//   - None.
 func (t *MCPTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
@@ -1407,6 +1512,9 @@ func (t *MCPTool) GetCacheConfig() *configv1.CacheConfig {
 // Side Effects:
 //   - Makes an MCP call to the upstream service.
 //   - Logs execution details.
+//
+// Errors:
+//   - Returns error if operation fails.
 func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if t.initError != nil {
 		return nil, t.initError
@@ -1560,6 +1668,9 @@ type OpenAPITool struct {
 //
 // Returns:
 //   - *OpenAPITool: The initialized OpenAPITool.
+//
+// Side Effects:
+//   - None.
 func NewOpenAPITool(tool *v1.Tool, client client.HTTPClient, parameterDefs map[string]string, method, url string, authenticator auth.UpstreamAuthenticator, callDefinition *configv1.OpenAPICallDefinition) *OpenAPITool {
 	var webhookClient *WebhookClient
 	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
@@ -1602,6 +1713,9 @@ func NewOpenAPITool(tool *v1.Tool, client client.HTTPClient, parameterDefs map[s
 //
 // Returns:
 //   - *v1.Tool: The underlying protobuf definition.
+//
+// Side Effects:
+//   - None.
 func (t *OpenAPITool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -1612,6 +1726,9 @@ func (t *OpenAPITool) Tool() *v1.Tool {
 //
 // Returns:
 //   - *mcp.Tool: The MCP tool definition.
+//
+// Side Effects:
+//   - None.
 func (t *OpenAPITool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -1627,6 +1744,9 @@ func (t *OpenAPITool) MCPTool() *mcp.Tool {
 //
 // Returns:
 //   - *configv1.CacheConfig: The cache configuration, if any.
+//
+// Side Effects:
+//   - None.
 func (t *OpenAPITool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
@@ -1649,6 +1769,9 @@ func (t *OpenAPITool) GetCacheConfig() *configv1.CacheConfig {
 // Side Effects:
 //   - Makes an HTTP request to the upstream service.
 //   - Logs execution details.
+//
+// Errors:
+//   - Returns error if operation fails.
 func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError
@@ -1838,6 +1961,9 @@ type CommandTool struct {
 //
 // Returns:
 //   - Tool: The created CommandTool.
+//
+// Side Effects:
+//   - None.
 func NewCommandTool(
 	tool *v1.Tool,
 	service *configv1.CommandLineUpstreamService,
@@ -1890,6 +2016,9 @@ type LocalCommandTool struct {
 //
 // Returns:
 //   - Tool: The created LocalCommandTool.
+//
+// Side Effects:
+//   - None.
 func NewLocalCommandTool(
 	tool *v1.Tool,
 	service *configv1.CommandLineUpstreamService,
@@ -1936,6 +2065,9 @@ func NewLocalCommandTool(
 //
 // Returns:
 //   - *v1.Tool: The underlying protobuf definition.
+//
+// Side Effects:
+//   - None.
 func (t *LocalCommandTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -1946,6 +2078,9 @@ func (t *LocalCommandTool) Tool() *v1.Tool {
 //
 // Returns:
 //   - *mcp.Tool: The MCP tool definition.
+//
+// Side Effects:
+//   - None.
 func (t *LocalCommandTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -1961,6 +2096,9 @@ func (t *LocalCommandTool) MCPTool() *mcp.Tool {
 //
 // Returns:
 //   - *configv1.CacheConfig: The cache configuration, if any.
+//
+// Side Effects:
+//   - None.
 func (t *LocalCommandTool) GetCacheConfig() *configv1.CacheConfig {
 	if t.callDefinition == nil {
 		return nil
@@ -1987,6 +2125,9 @@ func (t *LocalCommandTool) GetCacheConfig() *configv1.CacheConfig {
 //   - Executes a subprocess on the local system.
 //   - Consumes system resources (CPU, memory).
 //   - Logs execution details.
+//
+// Errors:
+//   - Returns error if operation fails.
 func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError
@@ -2296,6 +2437,9 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 //
 // Returns:
 //   - *v1.Tool: The underlying protobuf definition.
+//
+// Side Effects:
+//   - None.
 func (t *CommandTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -2306,6 +2450,9 @@ func (t *CommandTool) Tool() *v1.Tool {
 //
 // Returns:
 //   - *mcp.Tool: The MCP tool definition.
+//
+// Side Effects:
+//   - None.
 func (t *CommandTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -2321,6 +2468,9 @@ func (t *CommandTool) MCPTool() *mcp.Tool {
 //
 // Returns:
 //   - *configv1.CacheConfig: The cache configuration, if any.
+//
+// Side Effects:
+//   - None.
 func (t *CommandTool) GetCacheConfig() *configv1.CacheConfig {
 	if t.callDefinition == nil {
 		return nil
@@ -2347,6 +2497,9 @@ func (t *CommandTool) GetCacheConfig() *configv1.CacheConfig {
 //   - Executes a subprocess (potentially inside a container).
 //   - Consumes system resources.
 //   - Logs execution details.
+//
+// Errors:
+//   - Returns error if operation fails.
 func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
 	if t.initError != nil {
 		return nil, t.initError
@@ -2679,6 +2832,12 @@ type threadSafeBuffer struct {
 // Returns:
 //   - n: The number of bytes written.
 //   - err: An error if one occurred.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func (tsb *threadSafeBuffer) Write(p []byte) (n int, err error) {
 	tsb.mu.Lock()
 	defer tsb.mu.Unlock()
@@ -2689,6 +2848,9 @@ func (tsb *threadSafeBuffer) Write(p []byte) (n int, err error) {
 //
 // Returns:
 //   - string: The contents of the buffer.
+//
+// Side Effects:
+//   - None.
 func (tsb *threadSafeBuffer) String() string {
 	tsb.mu.Lock()
 	defer tsb.mu.Unlock()

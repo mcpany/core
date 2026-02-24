@@ -104,6 +104,22 @@ const CustomTooltip = ({ active, payload }: any) => {
     return null;
 };
 
+/**
+ * Unknown component/function.
+ *
+ * Summary: Unknown component/function.
+ *
+ * Side Effects:
+ * - None.
+ */
+/**
+ * ContextTreemap component/function.
+ *
+ * Summary: ContextTreemap component/function.
+ *
+ * Side Effects:
+ * - None.
+ */
 export function ContextTreemap() {
     const { tools, getToolCost, loading, disabledToolIds } = useRecursiveContext();
 

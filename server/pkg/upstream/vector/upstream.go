@@ -81,6 +81,23 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 // Returns the result.
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: The _.
+//   - serviceConfig: The serviceConfig.
+//   - toolManager: The toolManager.
+//   - _: The _.
+//   - _: The _.
+//   - _: The _.
+//
+// Returns:
+//   - result: The result.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func (u *Upstream) Register(
 	_ context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
@@ -213,21 +230,79 @@ type Client interface {
 	// It accepts a context, a query vector, the number of results to return (topK),
 	// a metadata filter, and a namespace.
 	// It returns a map containing the search results or an error.
+	//
+	// Parameters:
+	//   - ctx: The context for the operation.
+	//   - vector: The vector.
+	//   - topK: The topK.
+	//   - filter: The filter.
+	//   - namespace: The namespace.
+	//
+	// Returns:
+	//   - result: The result.
+	//
+	// Errors:
+	//   - Returns error if operation fails.
+	//
+	// Side Effects:
+	//   - None.
 	Query(ctx context.Context, vector []float32, topK int64, filter map[string]interface{}, namespace string) (map[string]interface{}, error)
 
 	// Upsert inserts or updates vectors in the database.
 	// It accepts a context, a list of vectors (each as a map), and a namespace.
 	// It returns a map containing the operation result (e.g., upserted count) or an error.
+//
+// Parameters:
+//   - ctx: The context for the operation.
+//   - vectors: The vectors.
+//   - namespace: The namespace.
+//
+// Returns:
+//   - result: The result.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 	Upsert(ctx context.Context, vectors []map[string]interface{}, namespace string) (map[string]interface{}, error)
 
 	// Delete removes vectors from the database.
 	// It accepts a context, a list of IDs to delete, a namespace, and an optional metadata filter.
 	// It returns a map containing the operation result or an error.
+//
+// Parameters:
+//   - ctx: The context for the operation.
+//   - ids: The ids.
+//   - namespace: The namespace.
+//   - filter: The filter.
+//
+// Returns:
+//   - result: The result.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 	Delete(ctx context.Context, ids []string, namespace string, filter map[string]interface{}) (map[string]interface{}, error)
 
 	// DescribeIndexStats retrieves statistics about the vector index.
 	// It accepts a context and an optional metadata filter.
 	// It returns a map containing the index statistics or an error.
+//
+// Parameters:
+//   - ctx: The context for the operation.
+//   - filter: The filter.
+//
+// Returns:
+//   - result: The result.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 	DescribeIndexStats(ctx context.Context, filter map[string]interface{}) (map[string]interface{}, error)
 }
 

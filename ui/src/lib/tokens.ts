@@ -8,6 +8,9 @@
  * This is meant for UI estimation only, not for precision.
  * @param input - The text or object to estimate tokens for.
  * @returns Estimated token count.
+ *
+ * Side Effects:
+ * - None.
  */
 export function estimateTokens(input: any): number {
     if (!input) return 0;

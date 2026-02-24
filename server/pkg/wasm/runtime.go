@@ -20,12 +20,24 @@ type Runtime interface {
 	// Returns:
 	//   - Plugin: The instantiated plugin.
 	//   - error: An error if the operation fails.
+	//
+	// Errors:
+	//   - Returns error if operation fails.
+	//
+	// Side Effects:
+	//   - None.
 	LoadPlugin(ctx context.Context, bytecode []byte) (Plugin, error)
 
 	// Close closes the runtime and releases resources.
 	//
 	// Returns:
 	//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 	Close() error
 }
 
@@ -41,12 +53,24 @@ type Plugin interface {
 	// Returns:
 	//   - []byte: The result of the execution.
 	//   - error: An error if the operation fails.
+	//
+	// Errors:
+	//   - Returns error if operation fails.
+	//
+	// Side Effects:
+	//   - None.
 	Execute(ctx context.Context, function string, args ...[]byte) ([]byte, error)
 
 	// Close closes the plugin instance.
 	//
 	// Returns:
 	//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 	Close() error
 }
 
@@ -57,6 +81,9 @@ type MockRuntime struct{}
 //
 // Returns:
 //   - *MockRuntime: A new mock runtime instance.
+//
+// Side Effects:
+//   - None.
 func NewMockRuntime() *MockRuntime {
 	return &MockRuntime{}
 }
@@ -70,6 +97,12 @@ func NewMockRuntime() *MockRuntime {
 // Returns:
 //   - Plugin: A mock plugin.
 //   - error: An error if the bytecode is empty.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func (m *MockRuntime) LoadPlugin(_ context.Context, bytecode []byte) (Plugin, error) {
 	if len(bytecode) == 0 {
 		return nil, fmt.Errorf("btyecode cannot be empty")
@@ -81,6 +114,12 @@ func (m *MockRuntime) LoadPlugin(_ context.Context, bytecode []byte) (Plugin, er
 //
 // Returns:
 //   - error: Always returns nil.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func (m *MockRuntime) Close() error {
 	return nil
 }
@@ -98,6 +137,12 @@ type MockPlugin struct{}
 // Returns:
 //   - []byte: The result ("success").
 //   - error: An error if the function name is "error".
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func (p *MockPlugin) Execute(_ context.Context, function string, _ ...[]byte) ([]byte, error) {
 	if function == "error" {
 		return nil, fmt.Errorf("simulated error")
@@ -109,6 +154,12 @@ func (p *MockPlugin) Execute(_ context.Context, function string, _ ...[]byte) ([
 //
 // Returns:
 //   - error: Always returns nil.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func (p *MockPlugin) Close() error {
 	return nil
 }

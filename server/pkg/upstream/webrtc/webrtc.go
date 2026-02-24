@@ -112,6 +112,23 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 
 // Register processes the configuration for a WebRTC service, creating and
 // registering tools for each call definition specified in the configuration.
+//
+// Parameters:
+//   - ctx: The context for the operation.
+//   - serviceConfig: The serviceConfig.
+//   - toolManager: The toolManager.
+//   - promptManager: The promptManager.
+//   - resourceManager: The resourceManager.
+//   - isReload: The isReload.
+//
+// Returns:
+//   - result: The result.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

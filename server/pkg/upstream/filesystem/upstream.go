@@ -63,6 +63,9 @@ func NewUpstream() upstream.Upstream {
 // Side Effects:
 //   - Stops the health checker.
 //   - Closes all registered filesystem providers.
+//
+// Errors:
+//   - Returns error if operation fails.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -96,6 +99,9 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //   - Creates a filesystem provider.
 //   - Starts a health checker.
 //   - Registers tools with the tool manager.
+//
+// Errors:
+//   - Returns error if operation fails.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
@@ -222,6 +228,12 @@ type fsCallable struct {
 // Returns:
 //   - any: The result of the execution.
 //   - error: An error if execution fails.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func (c *fsCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	args := req.Arguments
 	if args == nil && len(req.ToolInputs) > 0 {

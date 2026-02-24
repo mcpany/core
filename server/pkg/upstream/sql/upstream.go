@@ -78,6 +78,23 @@ func ptr(s string) *string {
 // Returns the result.
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - ctx: The context for the operation.
+//   - serviceConfig: The serviceConfig.
+//   - toolManager: The toolManager.
+//   - _: The _.
+//   - _: The _.
+//   - _: The _.
+//
+// Returns:
+//   - result: The result.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

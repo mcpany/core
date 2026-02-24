@@ -23,6 +23,12 @@ type RedisStrategy struct {
 // NewRedisStrategy creates a new RedisStrategy.
 //
 // Returns the result.
+//
+// Returns:
+//   - result: The result.
+//
+// Side Effects:
+//   - None.
 func NewRedisStrategy() *RedisStrategy {
 	return &RedisStrategy{}
 }
@@ -37,6 +43,22 @@ func NewRedisStrategy() *RedisStrategy {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: The _.
+//   - serviceID: The serviceID.
+//   - limitScopeKey: The limitScopeKey.
+//   - partitionKey: The partitionKey.
+//   - config: The config.
+//
+// Returns:
+//   - result: The result.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func (s *RedisStrategy) Create(_ context.Context, serviceID, limitScopeKey, partitionKey string, config *configv1.RateLimitConfig) (Limiter, error) {
 	if config.GetRedis() == nil {
 		return nil, fmt.Errorf("redis config is missing")

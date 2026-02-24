@@ -21,6 +21,9 @@ import (
 //
 // Returns:
 //   - bool: True if the item should be exported, false otherwise.
+//
+// Side Effects:
+//   - None.
 func ShouldExport(name string, policy *configv1.ExportPolicy) bool {
 	if policy == nil {
 		// Default to Allow/Export if no policy is present?
@@ -67,6 +70,12 @@ func ShouldExport(name string, policy *configv1.ExportPolicy) bool {
 // Returns:
 //   - bool: True if the call is allowed, false otherwise.
 //   - error: An error if evaluation fails.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func EvaluateCallPolicy(policies []*configv1.CallPolicy, toolName, callID string, arguments []byte) (bool, error) {
 	// Fallback to slower implementation if not using compiled policies
 	for _, policy := range policies {
@@ -145,6 +154,12 @@ type CompiledCallPolicy struct {
 // Returns:
 //   - []*CompiledCallPolicy: The compiled policies.
 //   - error: An error if compilation fails (e.g., invalid regex).
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func CompileCallPolicies(policies []*configv1.CallPolicy) ([]*CompiledCallPolicy, error) {
 	compiled := make([]*CompiledCallPolicy, 0, len(policies))
 	for _, p := range policies {
@@ -170,6 +185,12 @@ func CompileCallPolicies(policies []*configv1.CallPolicy) ([]*CompiledCallPolicy
 // Returns:
 //   - *CompiledCallPolicy: The compiled policy.
 //   - error: An error if compilation fails.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func NewCompiledCallPolicy(policy *configv1.CallPolicy) (*CompiledCallPolicy, error) {
 	compiledRules := make([]compiledCallPolicyRule, len(policy.GetRules()))
 	for i, rule := range policy.GetRules() {
@@ -223,6 +244,12 @@ func NewCompiledCallPolicy(policy *configv1.CallPolicy) (*CompiledCallPolicy, er
 // Returns:
 //   - bool: True if the call is allowed, false otherwise.
 //   - error: An error if evaluation fails.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func EvaluateCompiledCallPolicy(policies []*CompiledCallPolicy, toolName, callID string, arguments []byte) (bool, error) {
 	for _, policy := range policies {
 		policyBlocked := false

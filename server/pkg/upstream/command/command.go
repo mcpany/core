@@ -46,6 +46,9 @@ type Upstream struct {
 //
 // Side Effects:
 //   - Stops the health checker.
+//
+// Errors:
+//   - Returns error if operation fails.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -87,6 +90,9 @@ func NewUpstream() upstream.Upstream {
 // Side Effects:
 //   - Starts a health checker for the service.
 //   - Registers tools and prompts with their respective managers.
+//
+// Errors:
+//   - Returns error if operation fails.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

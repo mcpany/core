@@ -84,6 +84,9 @@ func (m *TemporaryToolManager) GetServiceInfo(serviceID string) (*tool.ServiceIn
 //
 // Side Effects:
 //   - Updates the internal tool map.
+//
+// Errors:
+//   - Returns error if operation fails.
 func (m *TemporaryToolManager) AddTool(t tool.Tool) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()

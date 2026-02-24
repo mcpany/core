@@ -45,6 +45,12 @@ type Bus[T any] struct {
 // Returns:
 //   - *Bus[T]: A pointer to the initialized Kafka bus.
 //   - error: An error if no brokers are provided or initialization fails.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func New[T any](config *bus.KafkaBus) (*Bus[T], error) {
 	if len(config.GetBrokers()) == 0 {
 		return nil, fmt.Errorf("kafka brokers are missing")
@@ -78,6 +84,12 @@ func New[T any](config *bus.KafkaBus) (*Bus[T], error) {
 //
 // Returns:
 //   - error: An error if marshaling or publishing fails.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
 	payload, err := json.Marshal(msg)
 	if err != nil {
@@ -106,6 +118,9 @@ func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
 //
 // Returns:
 //   - func(): A function that unsubscribes the handler when called.
+//
+// Side Effects:
+//   - None.
 func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	if handler == nil {
 		logging.GetLogger().Error("kafka bus: handler cannot be nil")
@@ -191,6 +206,9 @@ func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (
 //
 // Returns:
 //   - func(): A function that unsubscribes the handler if called before the message is received.
+//
+// Side Effects:
+//   - None.
 func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	if handler == nil {
 		logging.GetLogger().Error("kafka bus: handler cannot be nil")
@@ -214,6 +232,12 @@ func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T
 //
 // Returns:
 //   - error: An error if closing fails.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func (b *Bus[T]) Close() error {
 	return b.writer.Close()
 }

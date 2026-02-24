@@ -17,6 +17,22 @@ import { Button } from "@/components/ui/button";
 import { Ghost, RefreshCw, Zap } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
+/**
+ * Unknown component/function.
+ *
+ * Summary: Unknown component/function.
+ *
+ * Side Effects:
+ * - None.
+ */
+/**
+ * ContextSimulator component/function.
+ *
+ * Summary: ContextSimulator component/function.
+ *
+ * Side Effects:
+ * - None.
+ */
 export function ContextSimulator() {
     const {
         tools,

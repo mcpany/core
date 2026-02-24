@@ -25,6 +25,18 @@ import (
 type UpstreamAuthenticator interface {
 	// Authenticate modifies the given HTTP request to add authentication
 	// information, such as headers or basic auth credentials.
+	//
+	// Parameters:
+	//   - req: The request object.
+	//
+	// Returns:
+	//   - result: The result.
+	//
+	// Errors:
+	//   - Returns error if operation fails.
+	//
+	// Side Effects:
+	//   - None.
 	Authenticate(req *http.Request) error
 }
 
@@ -61,6 +73,12 @@ type UpstreamAuthenticator interface {
 // Returns:
 //   - An `UpstreamAuthenticator` implementation, or nil if no auth is configured.
 //   - An error if the configuration is invalid.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func NewUpstreamAuthenticator(authConfig *configv1.Authentication) (UpstreamAuthenticator, error) {
 	if authConfig == nil {
 		return nil, nil
@@ -139,6 +157,12 @@ type APIKeyAuth struct {
 //
 // Returns:
 //   - nil on success, or an error if the secret cannot be resolved.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func (a *APIKeyAuth) Authenticate(req *http.Request) error {
 	if a.Value == nil {
 		return errors.New("api key secret is not configured")
@@ -179,6 +203,12 @@ type BearerTokenAuth struct {
 //
 // Returns:
 //   - nil on success, or an error if the secret cannot be resolved.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func (b *BearerTokenAuth) Authenticate(req *http.Request) error {
 	if b.Token == nil {
 		return errors.New("bearer token secret is not configured")
@@ -205,6 +235,12 @@ type BasicAuth struct {
 //
 // Returns:
 //   - nil on success, or an error if the secret cannot be resolved.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func (b *BasicAuth) Authenticate(req *http.Request) error {
 	if b.Password == nil {
 		return errors.New("basic auth password secret is not configured")
@@ -257,6 +293,12 @@ func (o *OAuth2Auth) getTokenURL(ctx context.Context) (string, error) {
 //
 // Returns:
 //   - nil on success, or an error if the token cannot be obtained.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func (o *OAuth2Auth) Authenticate(req *http.Request) error {
 	tokenURL, err := o.getTokenURL(req.Context())
 	if err != nil {

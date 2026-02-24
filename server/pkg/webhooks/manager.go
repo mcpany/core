@@ -63,6 +63,9 @@ func NewManager() *Manager {
 //
 // Returns:
 //   - []*WebhookConfig: A list of webhook configurations.
+//
+// Side Effects:
+//   - None.
 func (m *Manager) ListWebhooks() []*WebhookConfig {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -103,6 +106,9 @@ func (m *Manager) AddWebhook(w *WebhookConfig) {
 // Returns:
 //   - *WebhookConfig: The webhook configuration.
 //   - bool: True if found, false otherwise.
+//
+// Side Effects:
+//   - None.
 func (m *Manager) GetWebhook(id string) (*WebhookConfig, bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()

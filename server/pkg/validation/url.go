@@ -112,6 +112,20 @@ var IsSafeURL = func(urlStr string) error {
 }
 
 // ValidateIP checks if the IP address is allowed based on the policy.
+//
+// Parameters:
+//   - ip: The ip.
+//   - allowLoopback: The allowLoopback.
+//   - allowPrivate: The allowPrivate.
+//
+// Returns:
+//   - result: The result.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func ValidateIP(ip net.IP, allowLoopback, allowPrivate bool) error {
 	if !allowLoopback && (ip.IsLoopback() || IsNAT64Loopback(ip) || (IsIPv4Compatible(ip) && ip[12] == 127)) {
 		return fmt.Errorf("loopback address is not allowed")

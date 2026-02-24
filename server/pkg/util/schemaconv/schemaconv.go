@@ -42,6 +42,12 @@ const MaxRecursionDepth = 10
 // Returns:
 //   - *structpb.Struct: The properties structure for the input schema.
 //   - error: An error if the conversion fails.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func MethodDescriptorToProtoProperties(methodDesc protoreflect.MethodDescriptor) (*structpb.Struct, error) {
 	return fieldsToProperties(methodDesc.Input().Fields(), 0)
 }
@@ -56,6 +62,12 @@ func MethodDescriptorToProtoProperties(methodDesc protoreflect.MethodDescriptor)
 // Returns:
 //   - *structpb.Struct: The properties structure for the output schema.
 //   - error: An error if the conversion fails.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func MethodOutputDescriptorToProtoProperties(methodDesc protoreflect.MethodDescriptor) (*structpb.Struct, error) {
 	return fieldsToProperties(methodDesc.Output().Fields(), 0)
 }
@@ -156,6 +168,9 @@ type ConfigParameter interface {
 	//
 	// Returns:
 	//   - *configv1.ParameterSchema: The parameter schema.
+	//
+	// Side Effects:
+	//   - None.
 	GetSchema() *configv1.ParameterSchema
 }
 
@@ -165,21 +180,33 @@ type McpFieldParameter interface {
 	//
 	// Returns:
 	//   - string: The name of the parameter.
+	//
+	// Side Effects:
+	//   - None.
 	GetName() string
 	// GetDescription returns the description of the parameter.
 	//
 	// Returns:
 	//   - string: The description of the parameter.
+	//
+	// Side Effects:
+	//   - None.
 	GetDescription() string
 	// GetType returns the type of the parameter.
 	//
 	// Returns:
 	//   - string: The type of the parameter.
+	//
+	// Side Effects:
+	//   - None.
 	GetType() string
 	// GetIsRepeated returns true if the parameter is a repeated field (array).
 	//
 	// Returns:
 	//   - bool: True if the parameter is repeated.
+	//
+	// Side Effects:
+	//   - None.
 	GetIsRepeated() bool
 }
 
@@ -194,6 +221,12 @@ type McpFieldParameter interface {
 //   - *structpb.Struct: The properties structure for the input schema.
 //   - []string: A list of required parameter names.
 //   - error: An error if the conversion fails.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func ConfigSchemaToProtoProperties[T ConfigParameter](params []T) (*structpb.Struct, []string, error) {
 	properties := &structpb.Struct{Fields: make(map[string]*structpb.Value)}
 	var required []string
@@ -239,6 +272,12 @@ func ConfigSchemaToProtoProperties[T ConfigParameter](params []T) (*structpb.Str
 // Returns:
 //   - *structpb.Struct: The properties structure for the input schema.
 //   - error: An error if the conversion fails.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func McpFieldsToProtoProperties[T McpFieldParameter](params []T) (*structpb.Struct, error) {
 	properties := &structpb.Struct{Fields: make(map[string]*structpb.Value)}
 

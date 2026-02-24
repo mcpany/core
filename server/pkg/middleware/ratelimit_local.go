@@ -23,6 +23,18 @@ type LocalLimiter struct {
 //
 // Returns true if successful.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: The _.
+//
+// Returns:
+//   - result: The result.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func (l *LocalLimiter) Allow(_ context.Context) (bool, error) {
 	return l.Limiter.Allow(), nil
 }
@@ -34,6 +46,19 @@ func (l *LocalLimiter) Allow(_ context.Context) (bool, error) {
 //
 // Returns true if successful.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: The _.
+//   - n: The n.
+//
+// Returns:
+//   - result: The result.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func (l *LocalLimiter) AllowN(_ context.Context, n int) (bool, error) {
 	return l.Limiter.AllowN(time.Now(), n), nil
 }
@@ -42,6 +67,13 @@ func (l *LocalLimiter) AllowN(_ context.Context, n int) (bool, error) {
 //
 // rps is the rps.
 // burst is the burst.
+//
+// Parameters:
+//   - rps: The rps.
+//   - burst: The burst.
+//
+// Side Effects:
+//   - None.
 func (l *LocalLimiter) Update(rps float64, burst int) {
 	limit := rate.Limit(rps)
 	if l.Limit() != limit {
@@ -58,6 +90,12 @@ type LocalStrategy struct{}
 // NewLocalStrategy creates a new LocalStrategy.
 //
 // Returns the result.
+//
+// Returns:
+//   - result: The result.
+//
+// Side Effects:
+//   - None.
 func NewLocalStrategy() *LocalStrategy {
 	return &LocalStrategy{}
 }
@@ -72,6 +110,22 @@ func NewLocalStrategy() *LocalStrategy {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - _: The _.
+//   - _: The _.
+//   - _: The _.
+//   - _: The _.
+//   - config: The config.
+//
+// Returns:
+//   - result: The result.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func (s *LocalStrategy) Create(_ context.Context, _, _, _ string, config *configv1.RateLimitConfig) (Limiter, error) {
 	rps := config.GetRequestsPerSecond()
 	burst := int(config.GetBurst())

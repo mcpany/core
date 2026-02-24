@@ -31,6 +31,12 @@ type Bus[T any] interface {
 	//
 	// Returns:
 	//   - error: An error if the publish operation fails (e.g. underlying transport error).
+	//
+	// Errors:
+	//   - Returns error if operation fails.
+	//
+	// Side Effects:
+	//   - None.
 	Publish(ctx context.Context, topic string, msg T) error
 
 	// Subscribe registers a handler function for a given topic. It starts a
@@ -45,6 +51,9 @@ type Bus[T any] interface {
 	//
 	// Returns:
 	//   - func(): A cleanup function that removes the subscription when called.
+//
+// Side Effects:
+//   - None.
 	Subscribe(ctx context.Context, topic string, handler func(T)) (unsubscribe func())
 
 	// SubscribeOnce registers a handler function that will be invoked only once
@@ -58,6 +67,9 @@ type Bus[T any] interface {
 	//
 	// Returns:
 	//   - func(): A cleanup function that removes the subscription if called before the first message.
+//
+// Side Effects:
+//   - None.
 	SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func())
 }
 
@@ -86,6 +98,12 @@ var NewProviderHook func(*bus.MessageBus) (*Provider, error)
 // Returns:
 //   *Provider: The created Provider.
 //   error: An error if creation fails.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func NewProvider(messageBus *bus.MessageBus) (*Provider, error) {
 	if NewProviderHook != nil {
 		return NewProviderHook(messageBus)
@@ -136,6 +154,12 @@ var GetBusHook func(p *Provider, topic string) (any, error)
 // Returns:
 //   Bus[T]: The requested Bus instance.
 //   error: An error if retrieval or creation fails.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func GetBus[T any](p *Provider, topic string) (Bus[T], error) {
 	if GetBusHook != nil {
 		bus, err := GetBusHook(p, topic)

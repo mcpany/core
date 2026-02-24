@@ -95,6 +95,9 @@ func (s *Settings) ToProto() *configv1.GlobalSettings {
 //   - Modifies the global settings instance.
 //   - Initializes logging.
 //   - Reads environment variables.
+//
+// Errors:
+//   - Returns error if operation fails.
 func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 	s.cmd = cmd
 	s.fs = fs

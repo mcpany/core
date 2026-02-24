@@ -21,6 +21,15 @@ type SSOConfig struct {
 // config holds the configuration settings.
 //
 // Returns the result.
+//
+// Parameters:
+//   - config: The config.
+//
+// Returns:
+//   - result: The result.
+//
+// Side Effects:
+//   - None.
 func SSOMiddleware(config SSOConfig) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if !config.Enabled {

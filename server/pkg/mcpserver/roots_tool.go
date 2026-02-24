@@ -89,6 +89,9 @@ func (t *RootsTool) MCPTool() *mcp.Tool {
 //
 // Side Effects:
 //   - Sends a "roots/list" request to the client.
+//
+// Errors:
+//   - Returns error if operation fails.
 func (t *RootsTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
 	session, ok := tool.GetSession(ctx)
 	if !ok {

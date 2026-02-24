@@ -26,18 +26,27 @@ type Prompt interface {
 	//
 	// Returns:
 	//   - *mcp.Prompt: The MCP prompt definition.
+	//
+	// Side Effects:
+	//   - None.
 	Prompt() *mcp.Prompt
 
 	// Service returns the ID of the service that provides this prompt.
 	//
 	// Returns:
 	//   - string: The service ID.
+//
+// Side Effects:
+//   - None.
 	Service() string
 
 	// Definition returns the raw configuration definition of the prompt.
 	//
 	// Returns:
 	//   - *configv1.PromptDefinition: The prompt definition.
+//
+// Side Effects:
+//   - None.
 	Definition() *configv1.PromptDefinition
 
 	// Get executes the prompt with the provided arguments.
@@ -49,6 +58,12 @@ type Prompt interface {
 	// Returns:
 	//   - *mcp.GetPromptResult: The result of the prompt execution.
 	//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 	Get(ctx context.Context, args json.RawMessage) (*mcp.GetPromptResult, error)
 }
 
@@ -62,6 +77,9 @@ type MCPServerProvider interface {
 	//
 	// Returns:
 	//   - *mcp.Server: The MCP server instance.
+	//
+	// Side Effects:
+	//   - None.
 	Server() *mcp.Server
 }
 
@@ -85,6 +103,12 @@ type TemplatedPrompt struct {
 // Returns:
 //   - *TemplatedPrompt: The initialized TemplatedPrompt.
 //   - error: An error if the prompt templates cannot be compiled.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func NewTemplatedPrompt(definition *configv1.PromptDefinition, serviceID string) (*TemplatedPrompt, error) {
 	// ⚡ BOLT: Pre-compile templates to avoid parsing on every request.
 	// Randomized Selection from Top 5 High-Impact Targets
@@ -112,6 +136,9 @@ func NewTemplatedPrompt(definition *configv1.PromptDefinition, serviceID string)
 //
 // Returns:
 //   - *mcp.Prompt: The MCP prompt definition.
+//
+// Side Effects:
+//   - None.
 func (p *TemplatedPrompt) Prompt() *mcp.Prompt {
 	args := make([]*mcp.PromptArgument, 0)
 	if p.definition.GetInputSchema() != nil {
@@ -171,11 +198,20 @@ func (p *TemplatedPrompt) Prompt() *mcp.Prompt {
 //
 // Returns:
 //   - string: The service ID.
+//
+// Side Effects:
+//   - None.
 func (p *TemplatedPrompt) Service() string {
 	return p.serviceID
 }
 
 // Definition returns the raw configuration definition of the prompt.
+//
+// Returns:
+//   - result: The result.
+//
+// Side Effects:
+//   - None.
 func (p *TemplatedPrompt) Definition() *configv1.PromptDefinition {
 	return p.definition
 }
@@ -197,6 +233,9 @@ func (p *TemplatedPrompt) Definition() *configv1.PromptDefinition {
 // Throws/Errors:
 //   - json.UnmarshalTypeError: If args cannot be unmarshaled.
 //   - template error: If template rendering fails.
+//
+// Side Effects:
+//   - None.
 func (p *TemplatedPrompt) Get(_ context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {
 	var inputs map[string]any
 	if err := json.Unmarshal(args, &inputs); err != nil {
@@ -236,6 +275,12 @@ func (p *TemplatedPrompt) Get(_ context.Context, args json.RawMessage) (*mcp.Get
 // Returns:
 //   - Prompt: The created Prompt instance.
 //   - error: An error if the prompt cannot be created.
+//
+// Errors:
+//   - Returns error if operation fails.
+//
+// Side Effects:
+//   - None.
 func NewPromptFromConfig(definition *configv1.PromptDefinition, serviceID string) (Prompt, error) {
 	return NewTemplatedPrompt(definition, serviceID)
 }
