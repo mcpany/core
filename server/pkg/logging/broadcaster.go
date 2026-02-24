@@ -37,9 +37,16 @@ func NewBroadcaster() *Broadcaster {
 // The channel has a small buffer to prevent slow consumers from blocking the broadcaster.
 // It is the caller's responsibility to read from the channel promptly.
 func (b *Broadcaster) Subscribe() chan any {
+	return b.SubscribeBuffered(100)
+}
+
+// SubscribeBuffered returns a channel that will receive broadcast messages with a custom buffer size.
+// The channel has a buffer to prevent slow consumers from blocking the broadcaster.
+// It is the caller's responsibility to read from the channel promptly.
+func (b *Broadcaster) SubscribeBuffered(size int) chan any {
 	b.mu.Lock()
 	defer b.mu.Unlock()
-	ch := make(chan any, 100)
+	ch := make(chan any, size)
 	b.subscribers[ch] = struct{}{}
 	return ch
 }

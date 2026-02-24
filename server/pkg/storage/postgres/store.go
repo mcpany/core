@@ -6,10 +6,13 @@ package postgres
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"sync"
+	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/logging"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -825,6 +828,99 @@ func (s *Store) DeleteSecret(ctx context.Context, id string) error {
 		return fmt.Errorf("failed to delete secret: %w", err)
 	}
 	return nil
+}
+
+// SaveLog saves a log entry.
+//
+// Summary: Persists a log entry.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - entry (*logging.LogEntry): The log entry to save.
+//
+// Returns:
+//   - error: An error if saving fails.
+//
+// Errors:
+//   - Returns an error if storage write fails.
+//
+// Side Effects:
+//   - Persists the log entry to the underlying storage.
+func (s *Store) SaveLog(ctx context.Context, entry *logging.LogEntry) error {
+	metadataJSON, err := json.Marshal(entry.Metadata)
+	if err != nil {
+		return fmt.Errorf("failed to marshal metadata: %w", err)
+	}
+
+	query := `
+	INSERT INTO logs (id, timestamp, level, source, message, metadata_json, created_at)
+	VALUES ($1, $2, $3, $4, $5, $6, CURRENT_TIMESTAMP)
+	`
+	_, err = s.db.ExecContext(ctx, query, entry.ID, entry.Timestamp, entry.Level, entry.Source, entry.Message, string(metadataJSON))
+	if err != nil {
+		return fmt.Errorf("failed to save log: %w", err)
+	}
+	return nil
+}
+
+// GetRecentLogs retrieves recent log entries.
+//
+// Summary: Retrieves recent log entries.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - limit (int): The maximum number of logs to retrieve.
+//
+// Returns:
+//   - []*logging.LogEntry: A list of log entries.
+//   - error: An error if retrieval fails.
+//
+// Errors:
+//   - Returns an error if storage read fails.
+func (s *Store) GetRecentLogs(ctx context.Context, limit int) ([]*logging.LogEntry, error) {
+	query := `
+    SELECT id, timestamp, level, source, message, metadata_json
+    FROM (
+        SELECT id, timestamp, level, source, message, metadata_json
+        FROM logs
+        ORDER BY timestamp DESC
+        LIMIT $1
+    ) AS recent_logs
+    ORDER BY timestamp ASC
+    `
+	rows, err := s.db.QueryContext(ctx, query, limit)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query logs: %w", err)
+	}
+	defer func() { _ = rows.Close() }()
+
+	var logs []*logging.LogEntry
+	for rows.Next() {
+		var entry logging.LogEntry
+		var metadataJSON string
+		var ts time.Time
+		var source sql.NullString
+
+		if err := rows.Scan(&entry.ID, &ts, &entry.Level, &source, &entry.Message, &metadataJSON); err != nil {
+			return nil, fmt.Errorf("failed to scan log: %w", err)
+		}
+		entry.Timestamp = ts.Format(time.RFC3339)
+		if source.Valid {
+			entry.Source = source.String
+		}
+
+		if metadataJSON != "" {
+			if err := json.Unmarshal([]byte(metadataJSON), &entry.Metadata); err != nil {
+				// Ignore unmarshal error
+				_ = err
+			}
+		}
+		logs = append(logs, &entry)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating logs: %w", err)
+	}
+	return logs, nil
 }
 
 // Profiles

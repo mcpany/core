@@ -1488,6 +1488,14 @@ func (s *MockServiceStore) DeleteServiceTemplate(ctx context.Context, id string)
 	return nil
 }
 
+func (s *MockServiceStore) SaveLog(ctx context.Context, entry *logging.LogEntry) error {
+	return nil
+}
+
+func (s *MockServiceStore) GetRecentLogs(ctx context.Context, limit int) ([]*logging.LogEntry, error) {
+	return nil, nil
+}
+
 type TestMockServiceRegistry struct {
 	services []*configv1.UpstreamServiceConfig
 }

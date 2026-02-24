@@ -10,6 +10,7 @@ import (
 	"sync"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/logging"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -35,6 +36,7 @@ type Store struct {
 	tokens             map[tokenKey]*configv1.UserToken
 	credentials        map[string]*configv1.Credential
 	serviceTemplates   map[string]*configv1.ServiceTemplate
+	logs               []*logging.LogEntry
 }
 
 // NewStore creates a new memory store.
@@ -56,7 +58,37 @@ func NewStore() *Store {
 		tokens:             make(map[tokenKey]*configv1.UserToken),
 		credentials:        make(map[string]*configv1.Credential),
 		serviceTemplates:   make(map[string]*configv1.ServiceTemplate),
+		logs:               make([]*logging.LogEntry, 0),
 	}
+}
+
+// SaveLog saves a log entry.
+//
+// Summary: Persists a log entry.
+func (s *Store) SaveLog(_ context.Context, entry *logging.LogEntry) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.logs = append(s.logs, entry)
+	return nil
+}
+
+// GetRecentLogs retrieves recent log entries.
+//
+// Summary: Retrieves recent log entries.
+func (s *Store) GetRecentLogs(_ context.Context, limit int) ([]*logging.LogEntry, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	count := len(s.logs)
+	if count == 0 {
+		return []*logging.LogEntry{}, nil
+	}
+	start := count - limit
+	if start < 0 {
+		start = 0
+	}
+	result := make([]*logging.LogEntry, count-start)
+	copy(result, s.logs[start:])
+	return result, nil
 }
 
 // SaveToken saves a user token.
