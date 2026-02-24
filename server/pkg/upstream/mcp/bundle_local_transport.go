@@ -33,7 +33,7 @@ type BundleLocalTransport struct {
 // Side Effects:
 //   - Starts a local process.
 func (t *BundleLocalTransport) Connect(ctx context.Context) (mcp.Connection, error) {
-	cmd := exec.CommandContext(ctx, t.Command, t.Args...)
+	cmd := exec.CommandContext(ctx, t.Command, t.Args...) //nolint:gosec // Trusted configuration
 	cmd.Env = t.Env
 	cmd.Dir = t.WorkingDir
 

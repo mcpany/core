@@ -3083,33 +3083,8 @@ func checkForShellInjection(val string, template string, placeholder string, com
 	}
 
 	// Check if the argument itself (template) invokes an interpreter.
-	// This covers cases where the main command is a shell or runner (e.g. bash -c "awk ...")
-	// and the argument is the command line for that interpreter.
-	args := strings.Fields(template)
-	if len(args) > 0 {
-		argBase := strings.ToLower(filepath.Base(args[0]))
-		// Avoid double checking if it's the same command (already checked above)
-		if argBase != base && isInterpreter(argBase) {
-			effectiveQuoteLevel := quoteLevel
-			if isShell {
-				// Sentinel Security Update: Nested Shell Protection
-				// If the outer command is a shell, assume the quotes around the inner command arguments
-				// are shell quotes that will be stripped before the inner interpreter sees them.
-				// This forces strict (Unquoted) checks on the inner interpreter arguments.
-				effectiveQuoteLevel = 0
-			}
-
-			if err := checkInterpreterInjection(val, template, argBase, effectiveQuoteLevel); err != nil {
-				return fmt.Errorf("argument interpreter injection detected (%s): %w", argBase, err)
-			}
-			// Also check function calls for the detected interpreter context
-			// Sentinel Security Update: Check for Unquoted (0), Double (1), Single (2) contexts.
-			if effectiveQuoteLevel == 0 || effectiveQuoteLevel == 1 || effectiveQuoteLevel == 2 {
-				if err := checkInterpreterFunctionCalls(val, argBase); err != nil {
-					return fmt.Errorf("argument interpreter injection detected (%s): %w", argBase, err)
-				}
-			}
-		}
+	if err := checkArgumentInterpreterInjection(val, template, base, quoteLevel, isShell); err != nil {
+		return err
 	}
 
 	if quoteLevel == 3 { // Backticked
@@ -3375,7 +3350,8 @@ func checkInterpreterFunctionCalls(val, language string) error {
 
 func checkContextualKeywords(val string, keywords []string, suffixes []rune) error {
 	var state quoteState
-	var wordBuilder strings.Builder
+	// ⚡ Bolt Optimization: Use []byte buffer to avoid string allocations
+	wordBuf := make([]byte, 0, 64)
 	inWord := false
 	runes := []rune(val)
 
@@ -3402,8 +3378,7 @@ func checkContextualKeywords(val string, keywords []string, suffixes []rune) err
 
 		if state.handleQuotes(char) {
 			if state.inQuote() && inWord { // Entered quote
-				word := wordBuilder.String()
-				if err := checkWordSuffix(word, keywords, runes, i, isSuffix); err != nil {
+				if err := checkWordSuffix(wordBuf, keywords, runes, i, isSuffix); err != nil {
 					return err
 				}
 				inWord = false
@@ -3418,14 +3393,13 @@ func checkContextualKeywords(val string, keywords []string, suffixes []rune) err
 		if char < 128 && isWordChar(byte(char)) {
 			if !inWord {
 				inWord = true
-				wordBuilder.Reset()
+				wordBuf = wordBuf[:0]
 			}
-			wordBuilder.WriteRune(char)
+			wordBuf = append(wordBuf, byte(char))
 		} else if inWord {
 			// Delimiter
-			word := wordBuilder.String()
 			// Look ahead starting from current char i
-			if err := checkWordSuffix(word, keywords, runes, i, isSuffix); err != nil {
+			if err := checkWordSuffix(wordBuf, keywords, runes, i, isSuffix); err != nil {
 				return err
 			}
 			inWord = false
@@ -3433,7 +3407,7 @@ func checkContextualKeywords(val string, keywords []string, suffixes []rune) err
 	}
 
 	if inWord {
-		if err := checkWordSuffix(wordBuilder.String(), keywords, runes, len(runes), isSuffix); err != nil {
+		if err := checkWordSuffix(wordBuf, keywords, runes, len(runes), isSuffix); err != nil {
 			return err
 		}
 	}
@@ -3447,9 +3421,10 @@ func checkUnquotedKeywords(val string, keywords []string) error {
 	inBacktick := false
 	escaped := false
 
-	var wordBuilder strings.Builder
+	// ⚡ Bolt Optimization: Use []byte buffer to avoid string allocations
+	wordBuf := make([]byte, 0, 64)
 	lastChar := rune(0) // Last non-whitespace char before current word
-	lastWord := ""      // Last word seen before current word (separated only by whitespace)
+	var lastWord []byte // Last word seen before current word (separated only by whitespace)
 
 	for _, char := range val {
 		if escaped {
@@ -3466,56 +3441,54 @@ func checkUnquotedKeywords(val string, keywords []string) error {
 			inSingle = !inSingle
 			// Treat quotes as delimiters
 			if inSingle { // Entered quote
-				if wordBuilder.Len() > 0 {
-					word := wordBuilder.String()
-					if err := checkKeyword(word, keywords, lastChar, lastWord); err != nil {
+				if len(wordBuf) > 0 {
+					if err := checkKeyword(wordBuf, keywords, lastChar, lastWord); err != nil {
 						return err
 					}
-					lastWord = word
-					wordBuilder.Reset()
+					// Copy wordBuf to lastWord
+					lastWord = append(lastWord[:0], wordBuf...)
+					wordBuf = wordBuf[:0]
 				}
 			}
 			// When exiting quote, we don't update lastWord because quoted string is not a word
 			// But we should update lastChar to the quote
 			if !inSingle {
 				lastChar = char
-				lastWord = ""
+				lastWord = lastWord[:0]
 			}
 			continue
 		}
 		if char == '"' && !inSingle && !inBacktick {
 			inDouble = !inDouble
 			if inDouble { // Entered quote
-				if wordBuilder.Len() > 0 {
-					word := wordBuilder.String()
-					if err := checkKeyword(word, keywords, lastChar, lastWord); err != nil {
+				if len(wordBuf) > 0 {
+					if err := checkKeyword(wordBuf, keywords, lastChar, lastWord); err != nil {
 						return err
 					}
-					lastWord = word
-					wordBuilder.Reset()
+					lastWord = append(lastWord[:0], wordBuf...)
+					wordBuf = wordBuf[:0]
 				}
 			}
 			if !inDouble {
 				lastChar = char
-				lastWord = ""
+				lastWord = lastWord[:0]
 			}
 			continue
 		}
 		if char == '`' && !inSingle && !inDouble {
 			inBacktick = !inBacktick
 			if inBacktick { // Entered quote
-				if wordBuilder.Len() > 0 {
-					word := wordBuilder.String()
-					if err := checkKeyword(word, keywords, lastChar, lastWord); err != nil {
+				if len(wordBuf) > 0 {
+					if err := checkKeyword(wordBuf, keywords, lastChar, lastWord); err != nil {
 						return err
 					}
-					lastWord = word
-					wordBuilder.Reset()
+					lastWord = append(lastWord[:0], wordBuf...)
+					wordBuf = wordBuf[:0]
 				}
 			}
 			if !inBacktick {
 				lastChar = char
-				lastWord = ""
+				lastWord = lastWord[:0]
 			}
 			continue
 		}
@@ -3525,47 +3498,49 @@ func checkUnquotedKeywords(val string, keywords []string) error {
 		}
 
 		if char < 128 && isWordChar(byte(char)) {
-			wordBuilder.WriteByte(byte(char))
+			wordBuf = append(wordBuf, byte(char))
 		} else {
 			// Delimiter (including non-ASCII characters)
 			// Non-ASCII characters cannot be part of the dangerous keywords we check (which are ASCII only).
 			// We treat them as delimiters to ensure we correctly isolate potential keywords.
-			if wordBuilder.Len() > 0 {
-				word := wordBuilder.String()
-				if err := checkKeyword(word, keywords, lastChar, lastWord); err != nil {
+			if len(wordBuf) > 0 {
+				if err := checkKeyword(wordBuf, keywords, lastChar, lastWord); err != nil {
 					return err
 				}
-				lastWord = word
-				wordBuilder.Reset()
+				lastWord = append(lastWord[:0], wordBuf...)
+				wordBuf = wordBuf[:0]
 			}
 
 			if !unicode.IsSpace(char) {
 				lastChar = char
-				lastWord = "" // Clear lastWord if we hit a non-space delimiter
+				lastWord = lastWord[:0] // Clear lastWord if we hit a non-space delimiter
 			}
 		}
 	}
 
 	// Check last word
-	if wordBuilder.Len() > 0 {
-		word := wordBuilder.String()
-		if err := checkKeyword(word, keywords, lastChar, lastWord); err != nil {
+	if len(wordBuf) > 0 {
+		if err := checkKeyword(wordBuf, keywords, lastChar, lastWord); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func checkKeyword(word string, keywords []string, lastChar rune, lastWord string) error {
+func checkKeyword(word []byte, keywords []string, lastChar rune, lastWord []byte) error {
 	// Check if word is dangerous keyword
 	for _, kw := range keywords {
-		if word == kw {
+		// Randomized Selection from Top 5 High-Impact Targets
+		// ⚡ Bolt Optimization: Using string(word) == kw is optimized by the compiler
+		// to avoid allocation when comparing []byte with string.
+		if string(word) == kw {
 			// Allow $var, @var, %var, ->method
 			if lastChar == '$' || lastChar == '@' || lastChar == '%' || lastChar == '>' {
 				return nil
 			}
 			// Allow sub open, package open, use open
-			if lastWord == "sub" || lastWord == "package" || lastWord == "use" || lastWord == "class" {
+			// Optimized check against lastWord byte slice
+			if string(lastWord) == "sub" || string(lastWord) == "package" || string(lastWord) == "use" || string(lastWord) == "class" {
 				return nil
 			}
 			return fmt.Errorf("interpreter injection detected: dangerous keyword %q found (unquoted)", kw)
@@ -4080,6 +4055,38 @@ func checkAwkInjection(val, base string) error {
 	return nil
 }
 
+func checkArgumentInterpreterInjection(val string, template string, base string, quoteLevel int, isShell bool) error {
+	// This covers cases where the main command is a shell or runner (e.g. bash -c "awk ...")
+	// and the argument is the command line for that interpreter.
+	args := strings.Fields(template)
+	if len(args) > 0 {
+		argBase := strings.ToLower(filepath.Base(args[0]))
+		// Avoid double checking if it's the same command (already checked above)
+		if argBase != base && isInterpreter(argBase) {
+			effectiveQuoteLevel := quoteLevel
+			if isShell {
+				// Sentinel Security Update: Nested Shell Protection
+				// If the outer command is a shell, assume the quotes around the inner command arguments
+				// are shell quotes that will be stripped before the inner interpreter sees them.
+				// This forces strict (Unquoted) checks on the inner interpreter arguments.
+				effectiveQuoteLevel = 0
+			}
+
+			if err := checkInterpreterInjection(val, template, argBase, effectiveQuoteLevel); err != nil {
+				return fmt.Errorf("argument interpreter injection detected (%s): %w", argBase, err)
+			}
+			// Also check function calls for the detected interpreter context
+			// Sentinel Security Update: Check for Unquoted (0), Double (1), Single (2) contexts.
+			if effectiveQuoteLevel == 0 || effectiveQuoteLevel == 1 || effectiveQuoteLevel == 2 {
+				if err := checkInterpreterFunctionCalls(val, argBase); err != nil {
+					return fmt.Errorf("argument interpreter injection detected (%s): %w", argBase, err)
+				}
+			}
+		}
+	}
+	return nil
+}
+
 func checkBacktickInjection(val, command string) error {
 	// Backticks in Shell are command substitution (Level 0 danger).
 	// Unless it is a known interpreter that uses backticks safely (like JS template literals),
@@ -4479,10 +4486,10 @@ func (s *quoteState) inQuote() bool {
 	return s.inSingle || s.inDouble || s.inBacktick
 }
 
-func checkWordSuffix(word string, keywords []string, runes []rune, nextIdx int, isSuffix func(rune) bool) error {
+func checkWordSuffix(word []byte, keywords []string, runes []rune, nextIdx int, isSuffix func(rune) bool) error {
 	found := false
 	for _, kw := range keywords {
-		if word == kw {
+		if string(word) == kw {
 			found = true
 			break
 		}
