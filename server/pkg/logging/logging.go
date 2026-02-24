@@ -62,66 +62,66 @@ func ForTestsOnlyResetLogger() {
 func Init(level slog.Level, output io.Writer, logFilePath string, format ...string) {
 	mu.Lock()
 	defer mu.Unlock()
-	once.Do(func() {
-		// Initialize dynamic level
-		programLevel.Set(level)
+	// NOTE: We intentionally bypass sync.Once here to allow reconfiguration and overwrite lazy default logger.
 
-		fmtStr := "text"
-		if len(format) > 0 {
-			fmtStr = format[0]
-		}
+	// Initialize dynamic level
+	programLevel.Set(level)
 
-		// ⚡ BOLT: Only add source code location in DEBUG mode to avoid expensive runtime.Callers lookup.
-		// Randomized Selection from Top 5 High-Impact Targets
-		opts := &slog.HandlerOptions{
-			Level:     programLevel,
-			AddSource: level == slog.LevelDebug,
-			ReplaceAttr: func(_ []string, a slog.Attr) slog.Attr {
-				if util.IsSensitiveKey(a.Key) {
-					return slog.String(a.Key, "[REDACTED]")
-				}
-				return a
-			},
-		}
+	fmtStr := "text"
+	if len(format) > 0 {
+		fmtStr = format[0]
+	}
 
-		var handlers []slog.Handler
-
-		// 1. Main Output (Stderr/Stdout)
-		var mainHandler slog.Handler
-		if fmtStr == "json" {
-			output = &RedactingWriter{w: output}
-			mainHandler = slog.NewJSONHandler(output, opts)
-		} else {
-			mainHandler = slog.NewTextHandler(output, opts)
-		}
-		handlers = append(handlers, mainHandler)
-
-		// 2. File Output (JSON only, for hydration)
-		if logFilePath != "" {
-			// Ensure file can be opened/created
-			// We use O_APPEND to preserve logs across restarts (until rotation logic is added)
-			f, err := os.OpenFile(logFilePath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
-			if err != nil {
-				// Fallback: log to main output that we failed to open log file
-				// Use a temporary logger since defaultLogger is not set yet
-				// Actually we can't log easily yet. Just ignore or print to stderr?
-				// Best effort.
-				_ = err // prevent empty block lint error
-			} else {
-				// Use JSON handler for file to ensure hydration works
-				fileHandler := slog.NewJSONHandler(&RedactingWriter{w: f}, opts)
-				handlers = append(handlers, fileHandler)
+	// ⚡ BOLT: Only add source code location in DEBUG mode to avoid expensive runtime.Callers lookup.
+	// Randomized Selection from Top 5 High-Impact Targets
+	opts := &slog.HandlerOptions{
+		Level:     programLevel,
+		AddSource: level == slog.LevelDebug,
+		ReplaceAttr: func(_ []string, a slog.Attr) slog.Attr {
+			if util.IsSensitiveKey(a.Key) {
+				return slog.String(a.Key, "[REDACTED]")
 			}
+			return a
+		},
+	}
+
+	var handlers []slog.Handler
+
+	// 1. Main Output (Stderr/Stdout)
+	var mainHandler slog.Handler
+	if fmtStr == "json" {
+		output = &RedactingWriter{w: output}
+		mainHandler = slog.NewJSONHandler(output, opts)
+	} else {
+		mainHandler = slog.NewTextHandler(output, opts)
+	}
+	handlers = append(handlers, mainHandler)
+
+	// 2. File Output (JSON only, for hydration)
+	if logFilePath != "" {
+		// Ensure file can be opened/created
+		// We use O_APPEND to preserve logs across restarts (until rotation logic is added)
+		f, err := os.OpenFile(logFilePath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+		if err != nil {
+			// Fallback: log to main output that we failed to open log file
+			// Use a temporary logger since defaultLogger is not set yet
+			// Actually we can't log easily yet. Just ignore or print to stderr?
+			// Best effort.
+			_ = err // prevent empty block lint error
+		} else {
+			// Use JSON handler for file to ensure hydration works
+			fileHandler := slog.NewJSONHandler(&RedactingWriter{w: f}, opts)
+			handlers = append(handlers, fileHandler)
 		}
+	}
 
-		// 3. Broadcast Handler (WebSocket)
-		broadcastHandler := NewBroadcastHandler(GlobalBroadcaster, programLevel)
-		handlers = append(handlers, broadcastHandler)
+	// 3. Broadcast Handler (WebSocket)
+	broadcastHandler := NewBroadcastHandler(GlobalBroadcaster, programLevel)
+	handlers = append(handlers, broadcastHandler)
 
-		teeHandler := NewTeeHandler(handlers...)
+	teeHandler := NewTeeHandler(handlers...)
 
-		defaultLogger.Store(slog.New(teeHandler))
-	})
+	defaultLogger.Store(slog.New(teeHandler))
 	// Init complete
 }
 
