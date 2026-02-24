@@ -163,8 +163,6 @@ func TestPromptManager(t *testing.T) {
 
 func (m *MockPrompt) Definition() *configv1.PromptDefinition {
 args := m.Called()
-if args.Get(0) == nil {
- nil
-}
+if args.Get(0) == nil { return nil }
 return args.Get(0).(*configv1.PromptDefinition)
 }

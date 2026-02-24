@@ -5,7 +5,6 @@ package logging
 
 import (
 	"bytes"
-	"encoding/json"
 	"log/slog"
 	"testing"
 

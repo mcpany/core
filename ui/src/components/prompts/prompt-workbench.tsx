@@ -39,6 +39,9 @@ interface PromptWorkbenchProps {
   initialPrompts?: PromptDefinition[];
 }
 
+/**
+ * PromptWorkbench is the main UI component for managing and testing prompts.
+ */
 export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
   const [prompts, setPrompts] = useState<PromptDefinition[]>(initialPrompts);
   const [services, setServices] = useState<UpstreamServiceConfig[]>([]);

@@ -1256,3 +1256,4 @@ func TestServer_RouterDispatch(t *testing.T) {
 		})
 	}
 }
+func (t *testPrompt) Definition() *configv1.PromptDefinition { return nil }

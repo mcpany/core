@@ -4,6 +4,7 @@
 package mcpserver_test
 
 import (
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"context"
 	"encoding/json"
 	"testing"
@@ -168,3 +169,4 @@ func TestAuthorizationBypass(t *testing.T) {
 		}
 	})
 }
+func (m *mockSecurityPrompt) Definition() *configv1.PromptDefinition { return nil }
