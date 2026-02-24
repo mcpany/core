@@ -849,7 +849,7 @@ func (s *Store) SaveLog(ctx context.Context, entry *logging.LogEntry) error {
 	}
 
 	query := `
-	INSERT INTO logs (id, timestamp, level, source, message, metadata_json, created_at)
+	INSERT OR IGNORE INTO logs (id, timestamp, level, source, message, metadata_json, created_at)
 	VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
 	`
 	_, err = s.db.ExecContext(ctx, query, entry.ID, entry.Timestamp, entry.Level, entry.Source, entry.Message, string(metadataJSON))

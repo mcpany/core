@@ -855,6 +855,7 @@ func (s *Store) SaveLog(ctx context.Context, entry *logging.LogEntry) error {
 	query := `
 	INSERT INTO logs (id, timestamp, level, source, message, metadata_json, created_at)
 	VALUES ($1, $2, $3, $4, $5, $6, CURRENT_TIMESTAMP)
+	ON CONFLICT (id) DO NOTHING
 	`
 	_, err = s.db.ExecContext(ctx, query, entry.ID, entry.Timestamp, entry.Level, entry.Source, entry.Message, string(metadataJSON))
 	if err != nil {

@@ -126,21 +126,6 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 
 			log.Info("Configuration", "mcp-listen-address", bindAddress, "registration-port", grpcPort, "stdio", stdio, "config-path", configPaths)
 
-			// Track 2: Product Gap - Log Persistence
-			// Hydrate logs from persistent history file.
-			if path := cfg.PersistentLog(); path != "" {
-				go func() {
-					if err := logging.HydrateFromFile(path); err != nil {
-						// Don't warn if file doesn't exist yet (first run)
-						if !os.IsNotExist(err) {
-							log.Warn("Failed to hydrate logs from file", "path", path, "error", err)
-						}
-					} else {
-						log.Info("Hydrated log history from file", "path", path)
-					}
-				}()
-			}
-
 			// Track 1: Friction Fighter - Verify config files exist before proceeding
 			if len(configPaths) > 0 {
 				log.Info("Attempting to load services from config path", "paths", configPaths)
