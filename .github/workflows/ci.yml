@@ -86,10 +86,18 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          # If sudo is available, use it. Otherwise assume root.
+          if command -v sudo >/dev/null; then
+            sudo rm -rf /usr/local/lib/android
+            sudo rm -rf /usr/share/dotnet
+            sudo rm -rf /opt/ghc
+            sudo rm -rf /usr/local/share/boost
+          else
+            rm -rf /usr/local/lib/android
+            rm -rf /usr/share/dotnet
+            rm -rf /opt/ghc
+            rm -rf /usr/local/share/boost
+          fi
 
       - name: Prune Docker
         run: docker system prune -af
@@ -139,9 +147,17 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            if command -v sudo >/dev/null; then
+              sudo apt-get update && sudo apt-get install -y make xz-utils gcc build-essential
+            else
+              apt-get update && apt-get install -y make xz-utils gcc build-essential
+            fi
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             if command -v sudo >/dev/null; then
+               sudo apk add --no-cache make xz build-base
+             else
+               apk add --no-cache make xz build-base
+             fi
           fi
 
       - name: Prepare environment
@@ -162,10 +178,18 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          # If sudo is available, use it. Otherwise assume root.
+          if command -v sudo >/dev/null; then
+            sudo rm -rf /usr/local/lib/android
+            sudo rm -rf /usr/share/dotnet
+            sudo rm -rf /opt/ghc
+            sudo rm -rf /usr/local/share/boost
+          else
+            rm -rf /usr/local/lib/android
+            rm -rf /usr/share/dotnet
+            rm -rf /opt/ghc
+            rm -rf /usr/local/share/boost
+          fi
 
       - name: Prune Docker
         run: docker system prune -af
@@ -175,9 +199,17 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            if command -v sudo >/dev/null; then
+              sudo apt-get update && sudo apt-get install -y make xz-utils gcc build-essential
+            else
+              apt-get update && apt-get install -y make xz-utils gcc build-essential
+            fi
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             if command -v sudo >/dev/null; then
+               sudo apk add --no-cache make xz build-base
+             else
+               apk add --no-cache make xz build-base
+             fi
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -301,10 +333,18 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          # If sudo is available, use it. Otherwise assume root.
+          if command -v sudo >/dev/null; then
+            sudo rm -rf /usr/local/lib/android
+            sudo rm -rf /usr/share/dotnet
+            sudo rm -rf /opt/ghc
+            sudo rm -rf /usr/local/share/boost
+          else
+            rm -rf /usr/local/lib/android
+            rm -rf /usr/share/dotnet
+            rm -rf /opt/ghc
+            rm -rf /usr/local/share/boost
+          fi
 
       - name: Prune Docker
         run: docker system prune -af
@@ -314,9 +354,17 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            if command -v sudo >/dev/null; then
+              sudo apt-get update && sudo apt-get install -y make xz-utils gcc build-essential
+            else
+              apt-get update && apt-get install -y make xz-utils gcc build-essential
+            fi
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             if command -v sudo >/dev/null; then
+               sudo apk add --no-cache make xz build-base
+             else
+               apk add --no-cache make xz build-base
+             fi
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -472,10 +520,18 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          # If sudo is available, use it. Otherwise assume root.
+          if command -v sudo >/dev/null; then
+            sudo rm -rf /usr/local/lib/android
+            sudo rm -rf /usr/share/dotnet
+            sudo rm -rf /opt/ghc
+            sudo rm -rf /usr/local/share/boost
+          else
+            rm -rf /usr/local/lib/android
+            rm -rf /usr/share/dotnet
+            rm -rf /opt/ghc
+            rm -rf /usr/local/share/boost
+          fi
       - uses: actions/checkout@v6
 
       - name: Set up Go
@@ -608,10 +664,18 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          # If sudo is available, use it. Otherwise assume root.
+          if command -v sudo >/dev/null; then
+            sudo rm -rf /usr/local/lib/android
+            sudo rm -rf /usr/share/dotnet
+            sudo rm -rf /opt/ghc
+            sudo rm -rf /usr/local/share/boost
+          else
+            rm -rf /usr/local/lib/android
+            rm -rf /usr/share/dotnet
+            rm -rf /opt/ghc
+            rm -rf /usr/local/share/boost
+          fi
 
       - name: Prune Docker
         run: docker system prune -af
@@ -621,9 +685,17 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            if command -v sudo >/dev/null; then
+              sudo apt-get update && sudo apt-get install -y make xz-utils gcc build-essential
+            else
+              apt-get update && apt-get install -y make xz-utils gcc build-essential
+            fi
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             if command -v sudo >/dev/null; then
+               sudo apk add --no-cache make xz build-base
+             else
+               apk add --no-cache make xz build-base
+             fi
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -747,10 +819,18 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          # If sudo is available, use it. Otherwise assume root.
+          if command -v sudo >/dev/null; then
+            sudo rm -rf /usr/local/lib/android
+            sudo rm -rf /usr/share/dotnet
+            sudo rm -rf /opt/ghc
+            sudo rm -rf /usr/local/share/boost
+          else
+            rm -rf /usr/local/lib/android
+            rm -rf /usr/share/dotnet
+            rm -rf /opt/ghc
+            rm -rf /usr/local/share/boost
+          fi
 
       - name: Prune Docker
         run: docker system prune -af
@@ -926,10 +1006,18 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          # If sudo is available, use it. Otherwise assume root.
+          if command -v sudo >/dev/null; then
+            sudo rm -rf /usr/local/lib/android
+            sudo rm -rf /usr/share/dotnet
+            sudo rm -rf /opt/ghc
+            sudo rm -rf /usr/local/share/boost
+          else
+            rm -rf /usr/local/lib/android
+            rm -rf /usr/share/dotnet
+            rm -rf /opt/ghc
+            rm -rf /usr/local/share/boost
+          fi
 
       - name: Prune Docker
         run: docker system prune -af
