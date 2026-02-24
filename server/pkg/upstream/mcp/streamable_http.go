@@ -280,6 +280,43 @@ func (p *mcpPrompt) Service() string {
 	return p.service
 }
 
+// Definition returns the raw configuration definition of the prompt.
+func (p *mcpPrompt) Definition() *configv1.PromptDefinition {
+	// Construct a partial definition from p.mcpPrompt
+	properties := make(map[string]*structpb.Value)
+	var required []any
+
+	for _, arg := range p.mcpPrompt.Arguments {
+		prop := map[string]any{
+			"description": arg.Description,
+			"type":        "string", // Default assumption
+		}
+		propValue, _ := structpb.NewValue(prop)
+		properties[arg.Name] = propValue
+
+		if arg.Required {
+			required = append(required, arg.Name)
+		}
+	}
+
+	fields := make(map[string]*structpb.Value)
+	fields["type"] = structpb.NewStringValue("object")
+
+	propsStruct := &structpb.Struct{Fields: properties}
+	fields["properties"] = structpb.NewStructValue(propsStruct)
+
+	reqList, _ := structpb.NewList(required)
+	fields["required"] = structpb.NewListValue(reqList)
+
+	inputSchema := &structpb.Struct{Fields: fields}
+
+	return configv1.PromptDefinition_builder{
+		Name:        proto.String(p.mcpPrompt.Name),
+		Description: proto.String(p.mcpPrompt.Description),
+		InputSchema: inputSchema,
+	}.Build()
+}
+
 // Get executes the prompt by establishing a session with the downstream MCP
 // service and calling its GetPrompt method.
 //

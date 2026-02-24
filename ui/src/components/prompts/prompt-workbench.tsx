@@ -17,39 +17,41 @@ import {
   Sparkles,
   Loader2,
   ExternalLink,
-  Bug
+  Bug,
+  Plus,
+  Pencil,
+  Trash2
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { apiClient, PromptDefinition } from "@/lib/client";
+import { apiClient, PromptDefinition, UpstreamServiceConfig } from "@/lib/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
+import { PromptEditor } from "./prompt-editor";
 
 interface PromptWorkbenchProps {
   initialPrompts?: PromptDefinition[];
 }
 
-/**
- * PromptWorkbench.
- *
- * @param { initialPrompts = [] - The { initialPrompts = [].
- */
 export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
   const [prompts, setPrompts] = useState<PromptDefinition[]>(initialPrompts);
+  const [services, setServices] = useState<UpstreamServiceConfig[]>([]);
   const [selectedPrompt, setSelectedPrompt] = useState<PromptDefinition | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [argumentValues, setArgumentValues] = useState<Record<string, string>>({});
   const [executionResult, setExecutionResult] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Editor State
+  const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [editingPrompt, setEditingPrompt] = useState<PromptDefinition | null>(null);
+
   const router = useRouter();
   const { toast } = useToast();
 
@@ -57,41 +59,38 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
     if (initialPrompts.length === 0) {
       loadPrompts();
     }
+    loadServices();
   }, []);
+
+  const loadServices = async () => {
+      try {
+          const list = await apiClient.listServices();
+          setServices(list);
+      } catch (e) {
+          console.error("Failed to load services", e);
+      }
+  };
 
   const loadPrompts = () => {
       apiClient.listPrompts()
           .then((data) => {
-              if (!data) {
-                  setPrompts([]);
-                  return;
-              }
-              if (Array.isArray(data)) {
-                  setPrompts(data);
-              } else if (data && Array.isArray(data.prompts)) {
-                  setPrompts(data.prompts);
-              } else {
-                  setPrompts([]);
+              // Ensure we have an array
+              const list = Array.isArray(data) ? data : (data && Array.isArray(data.prompts) ? data.prompts : []);
+              setPrompts(list);
+              // Refresh selected prompt if it exists in the new list
+              if (selectedPrompt) {
+                  const updated = list.find((p: any) => p.name === selectedPrompt.name && (p as any).serviceId === (selectedPrompt as any).serviceId);
+                  if (updated) setSelectedPrompt(updated);
               }
           })
           .catch(err => {
-              // Suppress console.error for expected network/auth errors to avoid noise
               console.warn("Failed to list prompts:", err.message);
-              // Silent fail or toast? The list will just be empty.
               toast({
                   title: "Connection Error",
                   description: "Could not fetch prompts from server.",
                   variant: "destructive"
               });
           });
-  };
-
-  const loadDemoData = () => {
-      setPrompts([
-          { name: "summarize_notes", description: "Summarizes meeting notes into key action items", inputSchema: { type: "object", properties: { notes: { description: "The raw notes text", type: "string" }, style: { description: "bullet or paragraph", type: "string" } }, required: ["notes"] }, disable: false, profiles: [], title: "Summarize Notes", messages: [] },
-          { name: "code_review", description: "Analyzes code for bugs and security issues", inputSchema: { type: "object", properties: { code: { description: "Source code", type: "string" }, language: { description: "Programming language", type: "string" } }, required: ["code", "language"] }, disable: false, profiles: [], title: "Code Review", messages: [] },
-          { name: "write_email", description: "Drafts a professional email", inputSchema: { type: "object", properties: { recipient: { description: "Name", type: "string" }, topic: { description: "Main topic", type: "string" } }, required: ["recipient", "topic"] }, disable: true, profiles: [], title: "Write Email", messages: [] },
-      ]);
   };
 
   const filteredPrompts = prompts.filter(
@@ -142,13 +141,77 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
     }
   };
 
+  const handleSavePrompt = async (newPrompt: PromptDefinition, serviceId: string) => {
+      try {
+          const service = await apiClient.getService(serviceId);
+          if (!service) throw new Error("Service not found");
+
+          // Ensure prompts array exists
+          const currentPrompts = service.service.prompts || [];
+
+          // Check if updating existing
+          const existingIdx = currentPrompts.findIndex((p: any) => p.name === newPrompt.name);
+
+          let updatedPrompts = [...currentPrompts];
+          if (existingIdx >= 0) {
+              updatedPrompts[existingIdx] = newPrompt;
+          } else {
+              updatedPrompts.push(newPrompt);
+          }
+
+          const updatedService = {
+              ...service.service,
+              prompts: updatedPrompts
+          };
+
+          await apiClient.updateService(updatedService);
+          toast({ title: "Prompt Saved", description: `Prompt ${newPrompt.name} saved to service ${service.service.name}` });
+
+          loadPrompts();
+          setIsEditorOpen(false);
+      } catch (e) {
+          console.error(e);
+          toast({ title: "Failed to save prompt", description: String(e), variant: "destructive" });
+      }
+  };
+
+  const handleDeletePrompt = async (prompt: PromptDefinition) => {
+      if (!confirm(`Are you sure you want to delete prompt "${prompt.name}"?`)) return;
+
+      const serviceId = (prompt as any).serviceId;
+      if (!serviceId) {
+          toast({ title: "Error", description: "Cannot delete prompt: Service ID unknown", variant: "destructive" });
+          return;
+      }
+
+      try {
+          const service = await apiClient.getService(serviceId);
+          if (!service) throw new Error("Service not found");
+
+          const updatedPrompts = (service.service.prompts || []).filter((p: any) => p.name !== prompt.name);
+
+          const updatedService = {
+              ...service.service,
+              prompts: updatedPrompts
+          };
+
+          await apiClient.updateService(updatedService);
+          toast({ title: "Prompt Deleted", description: `Prompt ${prompt.name} removed.` });
+
+          if (selectedPrompt?.name === prompt.name) {
+              setSelectedPrompt(null);
+          }
+          loadPrompts();
+      } catch (e) {
+          console.error(e);
+          toast({ title: "Failed to delete prompt", description: String(e), variant: "destructive" });
+      }
+  };
+
   const togglePromptStatus = async (prompt: PromptDefinition) => {
       const newDisable = !prompt.disable;
-
       // Optimistic update
-      const updatedPrompts = prompts.map(p => p.name === prompt.name ? {...p, disable: newDisable} : p);
-      setPrompts(updatedPrompts);
-
+      setPrompts(prompts.map(p => p.name === prompt.name ? {...p, disable: newDisable} : p));
       if (selectedPrompt?.name === prompt.name) {
           setSelectedPrompt({...selectedPrompt, disable: newDisable});
       }
@@ -157,16 +220,8 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
           await apiClient.setPromptStatus(prompt.name, newDisable);
       } catch (e) {
           console.error("Failed to toggle status", e);
-          toast({
-              title: "Error",
-              description: "Failed to update prompt status.",
-              variant: "destructive"
-          });
-          // Revert
-          setPrompts(prompts.map(p => p.name === prompt.name ? {...p, disable: prompt.disable} : p));
-             if (selectedPrompt?.name === prompt.name) {
-                setSelectedPrompt({...selectedPrompt, disable: prompt.disable});
-            }
+          toast({ title: "Error", description: "Failed to update prompt status.", variant: "destructive" });
+          loadPrompts(); // Revert
       }
   };
 
@@ -181,10 +236,6 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
   };
 
   const openInPlayground = () => {
-      // Encode the result or logic to transfer state.
-      // Since Playground is a separate page, we might pass data via URL or localStorage.
-      // URL might be too long.
-      // For now, we'll just navigate to playground.
       router.push("/playground");
       toast({
           title: "Navigating to Playground",
@@ -197,9 +248,17 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
       {/* Left Sidebar: Prompt List */}
       <div className="w-[300px] md:w-[350px] border-r flex flex-col bg-muted/10">
         <div className="p-4 border-b space-y-3">
-            <h3 className="font-semibold text-sm flex items-center gap-2">
-                <MessageSquare className="h-4 w-4" /> Prompt Library
-            </h3>
+            <div className="flex items-center justify-between">
+                <h3 className="font-semibold text-sm flex items-center gap-2">
+                    <MessageSquare className="h-4 w-4" /> Prompt Library
+                </h3>
+                <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => {
+                    setEditingPrompt(null);
+                    setIsEditorOpen(true);
+                }}>
+                    <Plus className="h-4 w-4" />
+                </Button>
+            </div>
             <div className="relative">
                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -231,9 +290,8 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
                             </p>
                         )}
                         <div className="flex items-center gap-2 mt-1">
-                             {/* serviceName is not available in PromptDefinition, showing system default or we need to fetch service info */}
                             <Badge variant="outline" className="text-[10px] px-1 py-0 h-4">
-                                System
+                                {(prompt as any).serviceId || "System"}
                             </Badge>
                              {(getArguments(prompt).length || 0) > 0 && (
                                 <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
@@ -246,8 +304,8 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
                 {filteredPrompts.length === 0 && (
                     <div className="p-8 text-center text-sm text-muted-foreground flex flex-col items-center gap-2">
                         <p>No prompts found.</p>
-                        <Button variant="outline" size="sm" onClick={loadDemoData} className="h-6 text-xs gap-1">
-                            <Bug className="h-3 w-3" /> Load Demo Data
+                        <Button variant="outline" size="sm" onClick={() => setIsEditorOpen(true)} className="h-6 text-xs gap-1">
+                            <Plus className="h-3 w-3" /> Create First Prompt
                         </Button>
                     </div>
                 )}
@@ -263,7 +321,15 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
                 <div className="p-6 border-b pb-4">
                     <div className="flex items-start justify-between">
                         <div>
-                            <h2 className="text-2xl font-bold tracking-tight">{selectedPrompt.name}</h2>
+                            <h2 className="text-2xl font-bold tracking-tight flex items-center gap-2">
+                                {selectedPrompt.name}
+                                <Button size="icon" variant="ghost" className="h-6 w-6 opacity-50 hover:opacity-100" onClick={() => {
+                                    setEditingPrompt(selectedPrompt);
+                                    setIsEditorOpen(true);
+                                }}>
+                                    <Pencil className="h-3 w-3" />
+                                </Button>
+                            </h2>
                             <p className="text-muted-foreground mt-1">{selectedPrompt.description || "No description provided."}</p>
                         </div>
                         <div className="flex items-center gap-3">
@@ -276,6 +342,9 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
                                     {!selectedPrompt.disable ? "Enabled" : "Disabled"}
                                 </Label>
                              </div>
+                             <Button variant="destructive" size="icon" className="h-8 w-8" onClick={() => handleDeletePrompt(selectedPrompt)}>
+                                 <Trash2 className="h-4 w-4" />
+                             </Button>
                         </div>
                     </div>
                 </div>
@@ -383,8 +452,19 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
                 <p className="max-w-xs text-center mt-2">
                     Select a prompt from the library to view details, configure arguments, and test execution.
                 </p>
+                <Button variant="outline" onClick={() => setIsEditorOpen(true)}>
+                    <Plus className="mr-2 h-4 w-4" /> Create New Prompt
+                </Button>
             </div>
         )}
+
+        <PromptEditor
+            open={isEditorOpen}
+            onOpenChange={setIsEditorOpen}
+            prompt={editingPrompt}
+            services={services}
+            onSave={handleSavePrompt}
+        />
       </div>
     </div>
   );
