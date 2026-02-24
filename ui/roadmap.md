@@ -12,10 +12,10 @@
 - [ ] **[P1] Federated Node Manager**: UI for peering with remote MCP Any instances and managing shared tool access. (Added: 2026-02-26)
 - [ ] **[P1] Resource Cost/Latency Overlay**: Real-time performance metrics displayed directly on tool cards. (Added: 2026-02-26)
 - [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
-- [ ] **[P1] Tool Playground & Explorer**:
-  - [ ] Auto-generated forms from Tool JSON Schemas.
-  - [ ] "Execute" button with history and result visualization.
-  - [ ] "Copy as Curl/Python" code generation.
+- [x] **[P1] Tool Playground & Explorer**:
+  - [x] Auto-generated forms from Tool JSON Schemas.
+  - [x] "Execute" button with history and result visualization.
+  - [x] "Copy as Curl/Python" code generation.
 - [ ] **[P1] Live Marble Diagrams**: Reactive visualization of concurrent agent flows, tool calls, and dependencies.
 - [ ] **[P1] Interactive Debugger**:
   - [ ] Breakpoint management for tool calls.

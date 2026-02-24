@@ -22,6 +22,9 @@ interface ProviderStatus {
     discoveredCount: number;
 }
 
+/**
+ * DiscoveryStatus displays the status of auto-discovery providers.
+ */
 export function DiscoveryStatus() {
     const [statuses, setStatuses] = useState<ProviderStatus[]>([]);
     const [loading, setLoading] = useState(true);

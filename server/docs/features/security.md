@@ -16,7 +16,10 @@ global_settings:
     - "::1"             # Allow IPv6 local access
 ```
 
-If `allowed_ips` is empty or not specified, the server accepts connections from any IP address.
+If `allowed_ips` is empty or not specified, the server accepts connections from any IP address, **unless no API Key is configured**.
+
+### Sentinel Security Mode
+If no API Key is configured (and no other authentication method succeeds), the server enters a "Sentinel Security" mode to prevent accidental public exposure. In this mode, the server **enforces localhost-only access**, blocking requests from non-private IP addresses even if the IP allowlist is empty. This prevents Remote Code Execution (RCE) risks on open networks.
 
 ### Behavior
 
