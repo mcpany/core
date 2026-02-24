@@ -42,6 +42,7 @@ func ForTestsOnlyResetLogger() {
 	defer mu.Unlock()
 	once = sync.Once{}
 	defaultLogger.Store(nil)
+	GlobalBroadcaster.Reset()
 }
 
 // Init initializes the application's global logger with a specific log level
