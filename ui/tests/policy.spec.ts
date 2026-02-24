@@ -16,7 +16,7 @@ test.describe('Policy Editor', () => {
     const response = await request.post('/api/v1/services', {
       data: {
         name: serviceName,
-        http_service: {
+        httpService: {
             address: "http://example.com"
         }
       }

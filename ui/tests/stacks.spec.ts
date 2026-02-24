@@ -25,7 +25,7 @@ test.describe('Stacks Management', () => {
 version: 1.0.0
 services:
 - name: s1
-  command_line_service: { command: ls }`;
+  commandLineService: { command: ls }`;
 
     await page.click('.monaco-editor');
     await page.keyboard.press('Control+A');

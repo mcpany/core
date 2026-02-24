@@ -16,7 +16,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             id: "svc_01",
             name: "Payment Gateway",
             version: "v1.2.0",
-            http_service: {
+            httpService: {
                 address: "https://stripe.com",
                 tools: [
                     { name: "process_payment", description: "Process a payment", call_id: "process_payment_call" }
@@ -33,7 +33,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             id: "svc_02",
             name: "User Service",
             version: "v1.0",
-            http_service: {
+            httpService: {
                 address: "http://localhost:50051", // Dummy address
                 tools: [
                     { name: "get_user", description: "Get user details", call_id: "get_user_call" }
@@ -51,7 +51,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             id: "svc_03",
             name: "Math",
             version: "v1.0",
-            http_service: {
+            httpService: {
                 address: "http://math-service.local:8080", // Dummy
                 tools: [
                     { name: "calculator", description: "calc", call_id: "calc_call" }
@@ -68,8 +68,8 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
             id: "svc_echo",
             name: "Echo Service",
             version: "v1.0",
-            command_line_service: {
-                command: "echo",
+            commandLineService: {
+                command: "echo hello",
                 tools: [
                     {
                         name: "echo_tool",
@@ -133,21 +133,21 @@ export const seedPrompts = async (requestContext?: APIRequestContext) => {
         id: "svc_prompts",
         name: "Prompt Service",
         version: "v1.0",
-        command_line_service: {
-            command: "echo",
-            args: ["hello"],
+        commandLineService: {
+            command: "echo hello",
+
             prompts: [
                 {
                     name: "test-prompt",
                     description: "A test prompt",
-                    arguments: [{ name: "arg1", description: "An argument" }]
+                    input_schema: { type: "object", properties: { arg1: { type: "string" } } }
                 }
             ]
         }
     };
 
     try {
-        await context.post('/api/v1/services', { data: serviceWithPrompts, headers: HEADERS });
+        const resp = await context.post('/api/v1/services', { data: serviceWithPrompts, headers: HEADERS }); if (!resp.ok()) { console.log("POST FAILED:", await resp.text()); }
 
         // Wait for service to be ready (registered) so prompts are available
         let ready = false;
@@ -186,9 +186,9 @@ export const seedCollection = async (name: string, requestContext?: APIRequestCo
         services: [
             {
                 name: "weather-service",
-                // Use command_line_service matching config.minimal.yaml to avoid Docker issues in E2E
-                command_line_service: {
-                    command: "echo",
+                // Use commandLineService matching config.minimal.yaml to avoid Docker issues in E2E
+                commandLineService: {
+                    command: "echo hello",
                     tools: [
                         {
                             name: "get_weather",
@@ -271,7 +271,7 @@ export const seedTemplates = async (requestContext?: APIRequestContext) => {
                         scopes: "https://www.googleapis.com/auth/calendar"
                     }
                 },
-                openapi_service: {
+                openapiService: {
                     spec_url: "https://api.apis.guru/v2/specs/googleapis.com/calendar/v3/openapi.yaml"
                 }
             }
@@ -287,7 +287,7 @@ export const seedTemplates = async (requestContext?: APIRequestContext) => {
                 upstream_auth: {
                     bearer_token: { token: { plain_text: "" } }
                 },
-                openapi_service: {
+                openapiService: {
                     address: "https://api.github.com",
                     spec_url: "https://raw.githubusercontent.com/github/rest-api-description/main/descriptions/api.github.com/api.github.com.yaml"
                 }
@@ -304,7 +304,7 @@ export const seedTemplates = async (requestContext?: APIRequestContext) => {
                 upstream_auth: {
                     api_key: { plain_text: "" }
                 },
-                openapi_service: {
+                openapiService: {
                     spec_url: "https://raw.githubusercontent.com/linear/linear/master/api/openapi.yaml"
                 }
             }

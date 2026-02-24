@@ -15,7 +15,7 @@ test.describe('HTTP Tool Editor - Live Preview', () => {
     const response = await request.post('/api/v1/services', {
       data: {
         name: serviceName,
-        http_service: {
+        httpService: {
           // Point to local echo server
           address: "http://ui-http-echo-server:5678"
         }

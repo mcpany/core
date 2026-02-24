@@ -21,7 +21,7 @@ test.describe('Tool Detail Performance Optimization', () => {
                 json: {
                     service: {
                         name: serviceId,
-                        http_service: {
+                        httpService: {
                             tools: [
                                 {
                                     name: toolName,

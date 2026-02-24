@@ -1,6 +1,8 @@
 {
 			"server": {
-				"type": "uv",
-				"entry_point": "script.py"
+				"type": "node",
+				"mcp_config": {
+					"env": {"FOO": "ORIGINAL", "BAR": "BAZ"}
+				}
 			}
 		}

@@ -13,7 +13,7 @@ test.describe('Resilience Configuration E2E', () => {
     const response = await request.post('/api/v1/services', {
       data: {
         name: serviceName,
-        http_service: {
+        httpService: {
             address: "http://example.com"
         },
         priority: 10
@@ -78,18 +78,18 @@ test.describe('Resilience Configuration E2E', () => {
     // Wait, `request.get` returns the raw JSON from backend.
     // Backend protobuf uses snake_case JSON mapping.
     // `ResilienceConfig` -> `timeout` (json_name="timeout")
-    // `CircuitBreakerConfig` -> `consecutive_failures` (json_name="consecutive_failures")
+    // `CircuitBreakerConfig` -> `consecutiveFailures` (json_name="consecutiveFailures")
 
     // The backend might return duration as string "45s".
     expect(service.resilience.timeout).toBe('45s');
 
     // Circuit Breaker
     expect(service.resilience.circuit_breaker).toBeDefined();
-    expect(service.resilience.circuit_breaker.consecutive_failures).toBe(10);
-    expect(service.resilience.circuit_breaker.open_duration).toBe('120s');
+    expect(service.resilience.circuit_breaker.consecutiveFailures).toBe(10);
+    expect(service.resilience.circuit_breaker.openDuration).toBe('120s');
 
     // Retry Policy
     expect(service.resilience.retry_policy).toBeDefined();
-    expect(service.resilience.retry_policy.number_of_retries).toBe(5);
+    expect(service.resilience.retry_policy.numberOfRetries).toBe(5);
   });
 });

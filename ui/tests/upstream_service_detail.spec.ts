@@ -15,7 +15,7 @@ test.describe('Upstream Service Detail Page', () => {
     const response = await request.post('/api/v1/services', {
       data: {
         name: serviceName,
-        http_service: {
+        httpService: {
             address: "http://example.com"
         },
         priority: 10

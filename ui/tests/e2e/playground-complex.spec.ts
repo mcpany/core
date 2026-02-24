@@ -11,7 +11,7 @@ const SERVICE_CONFIG = {
   name: SERVICE_ID,
   id: SERVICE_ID,
   version: "1.0.0",
-  command_line_service: {
+  commandLineService: {
     command: "echo",
     tools: [
       {

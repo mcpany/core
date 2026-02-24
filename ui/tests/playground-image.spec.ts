@@ -18,7 +18,7 @@ test.describe('Playground Image Rendering', () => {
         const response = await request.post('/api/v1/services', {
             data: {
                 name: SERVICE_NAME,
-                command_line_service: {
+                commandLineService: {
                     command: 'echo',
                     tools: [
                         { name: 'get_image', call_id: 'call1', description: 'Returns an image' }

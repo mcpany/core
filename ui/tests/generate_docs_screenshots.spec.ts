@@ -44,7 +44,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
                             id: 'broken-service',
                             name: 'Legacy API',
                             type: 'http',
-                            http_service: { address: 'https://api.example.com' },
+                            httpService: { address: 'https://api.example.com' },
                             status: 'unhealthy',
                             last_error: 'ZodError: Invalid input: expected string, received number',
                             lastError: 'ZodError: Invalid input: expected string, received number',
@@ -67,7 +67,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
                     name: 'Primary DB',
 
                     type: 'grpc',
-                    grpc_service: { address: 'postgres:5432' },
+                    grpcService: { address: 'postgres:5432' },
                     endpoint: 'grpc://postgres:5432',
                     status: 'healthy',
                     config: {
@@ -137,7 +137,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
             'openai-gateway': Array(50).fill(0).map((_, i) => ({ timestamp: Date.now() - i * 10000, status: Math.random() > 0.9 ? 'degraded' : 'healthy' })).reverse(),
             'broken-service': Array(50).fill(0).map((_, i) => ({ timestamp: Date.now() - i * 10000, status: 'unhealthy' })).reverse()
         };
-        window.localStorage.setItem('mcp_service_health_history', JSON.stringify(history));
+        window.localStorage.setItem('mcpService_health_history', JSON.stringify(history));
     });
 
 
@@ -726,7 +726,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
                       id: 'broken-service',
                       name: 'Legacy API',
                       type: 'http',
-                      http_service: { address: 'https://api.example.com' },
+                      httpService: { address: 'https://api.example.com' },
                       status: 'unhealthy',
                       last_error: 'ZodError: Invalid input: expected string, received number',
                       lastError: 'ZodError: Invalid input: expected string, received number',

@@ -16,7 +16,7 @@ test.describe('Rich Result Viewer', () => {
     const response = await request.post('/api/v1/services', {
       data: {
         name: serviceName,
-        command_line_service: {
+        commandLineService: {
           command: 'echo',
           tools: [
             { name: 'get_complex_data', call_id: 'call1', description: 'Returns complex data' }
