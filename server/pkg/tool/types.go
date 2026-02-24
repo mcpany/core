@@ -3309,12 +3309,15 @@ func checkInterpreterFunctionCalls(val, language string) error {
 		// Objects/Modules: Block if accessed or called
 		objectKeywords = []string{
 			"subprocess", "child_process", "os", "sys",
+			"__builtins__", "__class__", "__base__", "__subclasses__",
 		}
 
 		// Functions: Block if called
 		functionKeywords = []string{
 			"system", "exec", "popen", "eval", "spawn", "fork",
 			"open", "read", "write",
+			"getattr", "setattr", "delattr",
+			"compile", "globals", "locals", "vars",
 		}
 	}
 
