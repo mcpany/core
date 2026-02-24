@@ -15,6 +15,7 @@ import { ToolDefinition } from '@proto/config/v1/tool';
 import { ResourceDefinition } from '@proto/config/v1/resource';
 import { PromptDefinition } from '@proto/config/v1/prompt';
 import { Credential, Authentication } from '@proto/config/v1/auth';
+import { GetDiscoveryStatusResponse } from '@proto/admin/v1/admin';
 
 import { BrowserHeaders } from 'browser-headers';
 
@@ -41,7 +42,7 @@ export interface UpstreamServiceConfig extends Omit<BaseUpstreamServiceConfig, '
 }
 
 // Re-export generated types
-export type { ToolDefinition, ResourceDefinition, PromptDefinition, Credential, Authentication, ProfileDefinition };
+export type { ToolDefinition, ResourceDefinition, PromptDefinition, Credential, Authentication, ProfileDefinition, GetDiscoveryStatusResponse };
 export type { ListServicesResponse, GetServiceResponse, GetServiceStatusResponse, ValidateServiceResponse } from '../../../proto/api/v1/registration';
 
 /**
@@ -1981,6 +1982,22 @@ export const apiClient = {
     getDoctorStatus: async (): Promise<DoctorReport> => {
         const res = await fetchWithAuth('/api/v1/doctor');
         if (!res.ok) throw new Error('Failed to fetch doctor status');
+        return res.json();
+    },
+
+    /**
+     * Gets the discovery status.
+     *
+     * Summary: Retrieves auto-discovery status.
+     *
+     * @returns A promise that resolves to the discovery status.
+     * @throws {Error} If the request fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/discovery/status.
+     */
+    getDiscoveryStatus: async (): Promise<GetDiscoveryStatusResponse> => {
+        const res = await fetchWithAuth('/api/v1/discovery/status');
+        if (!res.ok) throw new Error('Failed to fetch discovery status');
         return res.json();
     },
 

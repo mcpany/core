@@ -2668,7 +2668,7 @@ const file_proto_admin_v1_admin_proto_rawDesc = "" +
 	"\btrace_id\x18\n" +
 	" \x01(\tR\atraceId\x12\x17\n" +
 	"\aspan_id\x18\v \x01(\tR\x06spanId\x12\x1b\n" +
-	"\tparent_id\x18\f \x01(\tR\bparentId2\xcd\b\n" +
+	"\tparent_id\x18\f \x01(\tR\bparentId2\xf0\b\n" +
 	"\fAdminService\x12U\n" +
 	"\n" +
 	"ClearCache\x12\".mcpany.admin.v1.ClearCacheRequest\x1a#.mcpany.admin.v1.ClearCacheResponse\x12[\n" +
@@ -2684,8 +2684,8 @@ const file_proto_admin_v1_admin_proto_rawDesc = "" +
 	"\n" +
 	"UpdateUser\x12\".mcpany.admin.v1.UpdateUserRequest\x1a#.mcpany.admin.v1.UpdateUserResponse\x12U\n" +
 	"\n" +
-	"DeleteUser\x12\".mcpany.admin.v1.DeleteUserRequest\x1a#.mcpany.admin.v1.DeleteUserResponse\x12m\n" +
-	"\x12GetDiscoveryStatus\x12*.mcpany.admin.v1.GetDiscoveryStatusRequest\x1a+.mcpany.admin.v1.GetDiscoveryStatusResponse\x12z\n" +
+	"DeleteUser\x12\".mcpany.admin.v1.DeleteUserRequest\x1a#.mcpany.admin.v1.DeleteUserResponse\x12\x8f\x01\n" +
+	"\x12GetDiscoveryStatus\x12*.mcpany.admin.v1.GetDiscoveryStatusRequest\x1a+.mcpany.admin.v1.GetDiscoveryStatusResponse\" \x82\xd3\xe4\x93\x02\x1a\x12\x18/api/v1/discovery/status\x12z\n" +
 	"\rListAuditLogs\x12%.mcpany.admin.v1.ListAuditLogsRequest\x1a&.mcpany.admin.v1.ListAuditLogsResponse\"\x1a\x82\xd3\xe4\x93\x02\x14\x12\x12/api/v1/audit/logsB;B\n" +
 	"AdminProtoZ%github.com/mcpany/core/proto/admin/v1\x92\x03\x05\xd2>\x02\x10\x03b\beditionsp\xe8\a"
 
