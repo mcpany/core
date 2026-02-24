@@ -1727,3 +1727,4 @@ func TestHandleAuthTest(t *testing.T) {
 	assert.Equal(t, http.StatusOK, w.Code)
 }
 func (m *mockPrompt) Definition() *configv1.PromptDefinition { return nil }
+func (e *errorPrompt) Definition() *configv1.PromptDefinition { return nil }
