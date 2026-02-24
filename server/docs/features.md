@@ -20,5 +20,4 @@ This section details the capabilities of the MCP Any Server.
 - [DLP](features/dlp.md) - Redacting sensitive data.
 
 ## Advanced
-- [WASM Plugins](features/wasm.md) - Extending server logic.
 - [Message Bus](features/message_bus.md) - Event-driven integrations.
