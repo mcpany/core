@@ -282,7 +282,7 @@ jobs:
             ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-
 
       - name: Prepare environment
-        run: make prepare CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache
+        run: make prepare CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache SKIP_PLAYWRIGHT=true
 
       - name: Test (Short)
         run: |
@@ -315,6 +315,9 @@ jobs:
           sudo rm -rf /usr/share/dotnet
           sudo rm -rf /opt/ghc
           sudo rm -rf /usr/local/share/boost
+          sudo rm -rf /home/runner/_work/_tool/Java*
+          sudo rm -rf /home/runner/_work/_tool/go*
+          sudo rm -rf /home/runner/_work/_tool/node*
 
       - name: Prune Docker
         run: docker system prune -af
@@ -627,6 +630,9 @@ jobs:
           sudo rm -rf /usr/share/dotnet
           sudo rm -rf /opt/ghc
           sudo rm -rf /usr/local/share/boost
+          sudo rm -rf /home/runner/_work/_tool/Java*
+          sudo rm -rf /home/runner/_work/_tool/go*
+          sudo rm -rf /home/runner/_work/_tool/node*
 
       - name: Prune Docker
         run: docker system prune -af
