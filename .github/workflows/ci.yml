@@ -343,6 +343,7 @@ jobs:
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
+      CGO_ENABLED: 1
     steps:
       - name: Free Disk Space (Fast)
         run: |
@@ -366,12 +367,22 @@ jobs:
 
       - name: Install dependencies
         run: |
+          set -x
+          export DEBIAN_FRONTEND=noninteractive
+
+          install_apt() {
+             CMD=$1
+             if command -v sudo >/dev/null; then
+               sudo apt-get update || true
+               sudo apt-get install -y $CMD
+             else
+               apt-get update || true
+               apt-get install -y $CMD
+             fi
+          }
+
           if command -v apt-get &> /dev/null; then
-            if command -v sudo >/dev/null; then
-              sudo apt-get update && sudo apt-get install -y make xz-utils gcc build-essential
-            else
-              apt-get update && apt-get install -y make xz-utils gcc build-essential
-            fi
+            install_apt "make xz-utils gcc build-essential"
           elif command -v apk &> /dev/null; then
              if command -v sudo >/dev/null; then
                sudo apk add --no-cache make xz build-base
@@ -379,6 +390,9 @@ jobs:
                apk add --no-cache make xz build-base
              fi
           fi
+          # Verify gcc
+          which gcc || echo "GCC NOT FOUND after install"
+          gcc --version || echo "GCC version check failed"
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -564,11 +578,8 @@ jobs:
         run: |
           set -x
           export DEBIAN_FRONTEND=noninteractive
-          if command -v sudo >/dev/null; then
-            sudo apt-get update && sudo apt-get install -y make git curl unzip
-          else
-            apt-get update && apt-get install -y make git curl unzip
-          fi
+          # In container, we are root. Using sudo might fail if not installed.
+          apt-get update && apt-get install -y make git curl unzip
 
       - name: Generate Protobufs
         run: |
@@ -710,12 +721,18 @@ jobs:
         run: |
           set -x
           export DEBIAN_FRONTEND=noninteractive
+
+          install_apt() {
+             CMD=$1
+             if command -v sudo >/dev/null; then
+               sudo apt-get update && sudo apt-get install -y $CMD
+             else
+               apt-get update && apt-get install -y $CMD
+             fi
+          }
+
           if command -v apt-get &> /dev/null; then
-            if command -v sudo >/dev/null; then
-              sudo apt-get update && sudo apt-get install -y make xz-utils gcc build-essential
-            else
-              apt-get update && apt-get install -y make xz-utils gcc build-essential
-            fi
+            install_apt "make xz-utils gcc build-essential"
           elif command -v apk &> /dev/null; then
              if command -v sudo >/dev/null; then
                sudo apk add --no-cache make xz build-base
@@ -845,6 +862,7 @@ jobs:
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
+      CGO_ENABLED: 1
     steps:
       - name: Free Disk Space (Fast)
         run: |
@@ -868,12 +886,22 @@ jobs:
 
       - name: Install dependencies
         run: |
+          set -x
+          export DEBIAN_FRONTEND=noninteractive
+
+          install_apt() {
+             CMD=$1
+             if command -v sudo >/dev/null; then
+               sudo apt-get update || true
+               sudo apt-get install -y $CMD
+             else
+               apt-get update || true
+               apt-get install -y $CMD
+             fi
+          }
+
           if command -v apt-get &> /dev/null; then
-            if command -v sudo >/dev/null; then
-              sudo apt-get update && sudo apt-get install -y make xz-utils gcc build-essential
-            else
-              apt-get update && apt-get install -y make xz-utils gcc build-essential
-            fi
+            install_apt "make xz-utils gcc build-essential"
           elif command -v apk &> /dev/null; then
              if command -v sudo >/dev/null; then
                sudo apk add --no-cache make xz build-base
@@ -881,6 +909,9 @@ jobs:
                apk add --no-cache make xz build-base
              fi
           fi
+          # Verify gcc
+          which gcc || echo "GCC NOT FOUND after install"
+          gcc --version || echo "GCC version check failed"
 
       - name: Configure Docker Registry Mirrors
         run: |
