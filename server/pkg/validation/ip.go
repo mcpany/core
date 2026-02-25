@@ -212,3 +212,32 @@ func IsPrivateNetworkIPv4(ip net.IP) bool {
 
 	return false
 }
+
+// IsLoopbackShorthand checks if the string is a shorthand representation of a loopback address
+// that might bypass standard net.ParseIP checks but is accepted by tools like curl/wget.
+//
+// Specifically, it checks for strings starting with "127." that contain only digits and dots.
+// Examples: "127.1", "127.0.1", "127.0.0.1".
+//
+// Parameters:
+//   - s: The string to check.
+//
+// Returns:
+//   - bool: True if it looks like a loopback shorthand.
+func IsLoopbackShorthand(s string) bool {
+	if len(s) < 5 || !isAsciiDigit(s[0]) || s[0] != '1' || s[1] != '2' || s[2] != '7' || s[3] != '.' {
+		return false
+	}
+
+	for i := 4; i < len(s); i++ {
+		c := s[i]
+		if c != '.' && (c < '0' || c > '9') {
+			return false
+		}
+	}
+	return true
+}
+
+func isAsciiDigit(c byte) bool {
+	return c >= '0' && c <= '9'
+}
