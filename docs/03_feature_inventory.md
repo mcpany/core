@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **Convention-Aware Routing Middleware**: (P0) Integrates with Drift/Codebase-Intelligence tools to inject architectural patterns into tool prompts.
+- **Interactive Subagent Challenge (askQuestions)**: (P0) A protocol enabling subagents to pause execution and prompt users for high-stakes tool approvals.
+- **Autonomous Policy Hardener**: (P1) ML-driven middleware that suggests Rego/CEL policy updates based on recent ecosystem exploit patterns (e.g. MITRE ATLAS OpenClaw findings).
+
+### Priority Shifts
+- **A2A Interop Bridge**: Promoted to **P0** to support the surge in multi-framework agent swarms (OpenClaw + AutoGen).
+- **Cost & Latency Telemetry**: Promoted to **P0**. Essential for agents to perform "Economical Reasoning" in a multi-model environment.
+
+### Deprecations / Monitoring
+- **Manual Policy Writing**: Monitoring for future deprecation in favor of Autonomous Hardening.

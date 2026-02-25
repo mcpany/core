@@ -47,3 +47,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **A2A Gateway Protocol**: MCP Any will implement a protocol-neutral bridge for A2A communication, allowing disparate agent frameworks (e.g., OpenClaw, AutoGen) to exchange state and tasks via a unified MCP-like interface.
 - **Federated Tool Mesh**: Moving from a standalone server to a "Mesh" architecture where multiple MCP Any instances can peer and share resources across network boundaries, governed by global Zero-Trust policies.
 - **Resource-Aware Intelligence**: Integrating cost and latency telemetry into the tool discovery process, allowing LLMs to perform "Economical Reasoning" when selecting tools.
+
+---
+
+## Strategic Evolution: [2026-02-27]
+### Focus: Convention-Aware Agency & Interactive Defensive Loops
+**Context**: Today's findings reveal two critical shifts: the emergence of "Convention-Aware" tools (like Drift) to combat architectural drift, and the success of autonomous security agents (like shannon) which necessitate a "Defensive Loop" in the MCP layer.
+**Strategic Pivot**:
+- **Convention-Aware Routing**: MCP Any will integrate with codebase intelligence tools to provide agents with "Style & Pattern" metadata. This ensures that tool-generated code adheres to the specific architectural conventions of the target project.
+- **Interactive Defensive Middleware**: Inspired by Claude's `askQuestions` in subagents, MCP Any will implement a protocol for subagents to interactively prompt users or parent agents when security-sensitive tool calls are detected, closing the "autonomy-security" gap.
+- **Autonomous Hardening**: Moving from passive auditing to active hardening, where MCP Any can automatically suggest (or enforce) policy updates based on observed attack patterns in the ecosystem (e.g., mitigating OpenClaw-style config exploits).

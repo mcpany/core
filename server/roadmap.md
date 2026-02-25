@@ -29,6 +29,11 @@
 *   **[P1] Federated MCP Peering**: Distributed node discovery and tool proxying. (Added: 2026-02-26)
 *   **[P1] Resource Telemetry Middleware**: Inject latency/cost metrics into tool schemas. (Added: 2026-02-26)
 
+#### Upcoming (2026-02-27 Evolution)
+*   **[P0] Convention-Aware Routing Middleware**: Integrate with Drift/Codebase-Intelligence tools for pattern-injected tool discovery. (Added: 2026-02-27)
+*   **[P0] Interactive Subagent Challenge (askQuestions)**: Protocol for interactive user/parent approval prompts in subagent contexts. (Added: 2026-02-27)
+*   **[P1] Autonomous Policy Hardener**: ML-driven suggestions for Rego/CEL policies based on ecosystem exploit patterns. (Added: 2026-02-27)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
