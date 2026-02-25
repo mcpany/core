@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { apiClient, UpstreamServiceConfig, ToolAnalytics } from "@/lib/client";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
@@ -171,7 +171,9 @@ export default function ToolsPage() {
       setInspectorOpen(true);
   };
 
-  const filteredTools = tools
+  // ⚡ BOLT: Memoize filtered and grouped tools to avoid expensive re-calculations on every render
+  // Randomized Selection from Top 5 High-Impact Targets
+  const filteredTools = useMemo(() => tools
     .filter((t) => !showPinnedOnly || isPinned(t.name))
     .filter((t) => selectedService === "all" || t.serviceId === selectedService)
     .filter((t) =>
@@ -185,10 +187,10 @@ export default function ToolsPage() {
       if (aPinned && !bPinned) return -1;
       if (!aPinned && bPinned) return 1;
       return a.name.localeCompare(b.name);
-    });
+    }), [tools, showPinnedOnly, isPinned, selectedService, searchQuery]);
 
   // Grouping logic
-  const groupedTools = filteredTools.reduce((acc, tool) => {
+  const groupedTools = useMemo(() => filteredTools.reduce((acc, tool) => {
     let key = "Other";
     if (groupBy === "service") {
       const service = services.find((s) => s.id === tool.serviceId);
@@ -202,7 +204,7 @@ export default function ToolsPage() {
     }
     acc[key].push(tool);
     return acc;
-  }, {} as Record<string, ToolDefinition[]>);
+  }, {} as Record<string, ToolDefinition[]>), [filteredTools, groupBy, services]);
 
 
   if (!isLoaded) {
