@@ -216,11 +216,19 @@ jobs:
              fi
 
              if command -v apt-get &> /dev/null; then
-                # Reset sources list to ensure it's clean and pointing to Azure archive if possible (and if writable)
+                # Dynamic source configuration using Mirror Director
                 if [ -w /etc/apt/sources.list ]; then
-                   $SUDO sh -c 'echo "deb http://azure.archive.ubuntu.com/ubuntu/ noble main restricted universe multiverse" > /etc/apt/sources.list'
-                   $SUDO sh -c 'echo "deb http://azure.archive.ubuntu.com/ubuntu/ noble-updates main restricted universe multiverse" >> /etc/apt/sources.list'
-                   $SUDO sh -c 'echo "deb http://azure.archive.ubuntu.com/ubuntu/ noble-security main restricted universe multiverse" >> /etc/apt/sources.list'
+                   if command -v lsb_release >/dev/null; then
+                      CODENAME=$(lsb_release -cs)
+                   elif [ -f /etc/os-release ]; then
+                      CODENAME=$(grep VERSION_CODENAME /etc/os-release | cut -d= -f2)
+                   fi
+
+                   if [ -n "$CODENAME" ]; then
+                      $SUDO sh -c "echo 'deb mirror://mirrors.ubuntu.com/mirrors.txt $CODENAME main restricted universe multiverse' > /etc/apt/sources.list"
+                      $SUDO sh -c "echo 'deb mirror://mirrors.ubuntu.com/mirrors.txt $CODENAME-updates main restricted universe multiverse' >> /etc/apt/sources.list"
+                      $SUDO sh -c "echo 'deb mirror://mirrors.ubuntu.com/mirrors.txt $CODENAME-security main restricted universe multiverse' >> /etc/apt/sources.list"
+                   fi
                 fi
 
                 # Retry loop for apt-get update
@@ -434,11 +442,19 @@ jobs:
              fi
 
              if command -v apt-get &> /dev/null; then
-                # Reset sources list to ensure it's clean and pointing to Azure archive if possible (and if writable)
+                # Dynamic source configuration using Mirror Director
                 if [ -w /etc/apt/sources.list ]; then
-                   $SUDO sh -c 'echo "deb http://azure.archive.ubuntu.com/ubuntu/ noble main restricted universe multiverse" > /etc/apt/sources.list'
-                   $SUDO sh -c 'echo "deb http://azure.archive.ubuntu.com/ubuntu/ noble-updates main restricted universe multiverse" >> /etc/apt/sources.list'
-                   $SUDO sh -c 'echo "deb http://azure.archive.ubuntu.com/ubuntu/ noble-security main restricted universe multiverse" >> /etc/apt/sources.list'
+                   if command -v lsb_release >/dev/null; then
+                      CODENAME=$(lsb_release -cs)
+                   elif [ -f /etc/os-release ]; then
+                      CODENAME=$(grep VERSION_CODENAME /etc/os-release | cut -d= -f2)
+                   fi
+
+                   if [ -n "$CODENAME" ]; then
+                      $SUDO sh -c "echo 'deb mirror://mirrors.ubuntu.com/mirrors.txt $CODENAME main restricted universe multiverse' > /etc/apt/sources.list"
+                      $SUDO sh -c "echo 'deb mirror://mirrors.ubuntu.com/mirrors.txt $CODENAME-updates main restricted universe multiverse' >> /etc/apt/sources.list"
+                      $SUDO sh -c "echo 'deb mirror://mirrors.ubuntu.com/mirrors.txt $CODENAME-security main restricted universe multiverse' >> /etc/apt/sources.list"
+                   fi
                 fi
 
                 # Retry loop for apt-get update
@@ -681,10 +697,21 @@ jobs:
           echo "Checking connectivity to archive.ubuntu.com..."
           curl -I http://archive.ubuntu.com/ubuntu/ || echo "Failed to connect to archive.ubuntu.com"
 
-          # Reset sources list to ensure it's clean and pointing to Azure archive (more reliable in cloud)
-          echo "deb http://azure.archive.ubuntu.com/ubuntu/ noble main restricted universe multiverse" > /etc/apt/sources.list
-          echo "deb http://azure.archive.ubuntu.com/ubuntu/ noble-updates main restricted universe multiverse" >> /etc/apt/sources.list
-          echo "deb http://azure.archive.ubuntu.com/ubuntu/ noble-security main restricted universe multiverse" >> /etc/apt/sources.list
+          # Dynamic source configuration using Mirror Director
+          if command -v lsb_release >/dev/null; then
+             CODENAME=$(lsb_release -cs)
+          else
+             CODENAME=$(grep VERSION_CODENAME /etc/os-release | cut -d= -f2)
+          fi
+
+          if [ -n "$CODENAME" ]; then
+             echo "Detected distro codename: $CODENAME"
+             echo "deb mirror://mirrors.ubuntu.com/mirrors.txt $CODENAME main restricted universe multiverse" > /etc/apt/sources.list
+             echo "deb mirror://mirrors.ubuntu.com/mirrors.txt $CODENAME-updates main restricted universe multiverse" >> /etc/apt/sources.list
+             echo "deb mirror://mirrors.ubuntu.com/mirrors.txt $CODENAME-security main restricted universe multiverse" >> /etc/apt/sources.list
+          else
+             echo "Could not detect codename, falling back to existing sources"
+          fi
 
           # Retry loop for apt-get update with increased timeout
           UPDATE_SUCCESS=0
@@ -860,11 +887,19 @@ jobs:
              fi
 
              if command -v apt-get &> /dev/null; then
-                # Reset sources list to ensure it's clean and pointing to Azure archive if possible (and if writable)
+                # Dynamic source configuration using Mirror Director
                 if [ -w /etc/apt/sources.list ]; then
-                   $SUDO sh -c 'echo "deb http://azure.archive.ubuntu.com/ubuntu/ noble main restricted universe multiverse" > /etc/apt/sources.list'
-                   $SUDO sh -c 'echo "deb http://azure.archive.ubuntu.com/ubuntu/ noble-updates main restricted universe multiverse" >> /etc/apt/sources.list'
-                   $SUDO sh -c 'echo "deb http://azure.archive.ubuntu.com/ubuntu/ noble-security main restricted universe multiverse" >> /etc/apt/sources.list'
+                   if command -v lsb_release >/dev/null; then
+                      CODENAME=$(lsb_release -cs)
+                   elif [ -f /etc/os-release ]; then
+                      CODENAME=$(grep VERSION_CODENAME /etc/os-release | cut -d= -f2)
+                   fi
+
+                   if [ -n "$CODENAME" ]; then
+                      $SUDO sh -c "echo 'deb mirror://mirrors.ubuntu.com/mirrors.txt $CODENAME main restricted universe multiverse' > /etc/apt/sources.list"
+                      $SUDO sh -c "echo 'deb mirror://mirrors.ubuntu.com/mirrors.txt $CODENAME-updates main restricted universe multiverse' >> /etc/apt/sources.list"
+                      $SUDO sh -c "echo 'deb mirror://mirrors.ubuntu.com/mirrors.txt $CODENAME-security main restricted universe multiverse' >> /etc/apt/sources.list"
+                   fi
                 fi
 
                 # Retry loop for apt-get update
@@ -1071,11 +1106,19 @@ jobs:
              fi
 
              if command -v apt-get &> /dev/null; then
-                # Reset sources list to ensure it's clean and pointing to Azure archive if possible (and if writable)
+                # Dynamic source configuration using Mirror Director
                 if [ -w /etc/apt/sources.list ]; then
-                   $SUDO sh -c 'echo "deb http://azure.archive.ubuntu.com/ubuntu/ noble main restricted universe multiverse" > /etc/apt/sources.list'
-                   $SUDO sh -c 'echo "deb http://azure.archive.ubuntu.com/ubuntu/ noble-updates main restricted universe multiverse" >> /etc/apt/sources.list'
-                   $SUDO sh -c 'echo "deb http://azure.archive.ubuntu.com/ubuntu/ noble-security main restricted universe multiverse" >> /etc/apt/sources.list'
+                   if command -v lsb_release >/dev/null; then
+                      CODENAME=$(lsb_release -cs)
+                   elif [ -f /etc/os-release ]; then
+                      CODENAME=$(grep VERSION_CODENAME /etc/os-release | cut -d= -f2)
+                   fi
+
+                   if [ -n "$CODENAME" ]; then
+                      $SUDO sh -c "echo 'deb mirror://mirrors.ubuntu.com/mirrors.txt $CODENAME main restricted universe multiverse' > /etc/apt/sources.list"
+                      $SUDO sh -c "echo 'deb mirror://mirrors.ubuntu.com/mirrors.txt $CODENAME-updates main restricted universe multiverse' >> /etc/apt/sources.list"
+                      $SUDO sh -c "echo 'deb mirror://mirrors.ubuntu.com/mirrors.txt $CODENAME-security main restricted universe multiverse' >> /etc/apt/sources.list"
+                   fi
                 fi
 
                 # Retry loop for apt-get update
