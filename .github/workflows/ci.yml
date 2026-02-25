@@ -216,11 +216,11 @@ jobs:
              fi
 
              if command -v apt-get &> /dev/null; then
-                # Reset sources list to ensure it's clean and pointing to main archive if possible (and if writable)
+                # Reset sources list to ensure it's clean and pointing to Azure archive if possible (and if writable)
                 if [ -w /etc/apt/sources.list ]; then
-                   $SUDO sh -c 'echo "deb http://archive.ubuntu.com/ubuntu/ noble main restricted universe multiverse" > /etc/apt/sources.list'
-                   $SUDO sh -c 'echo "deb http://archive.ubuntu.com/ubuntu/ noble-updates main restricted universe multiverse" >> /etc/apt/sources.list'
-                   $SUDO sh -c 'echo "deb http://archive.ubuntu.com/ubuntu/ noble-security main restricted universe multiverse" >> /etc/apt/sources.list'
+                   $SUDO sh -c 'echo "deb http://azure.archive.ubuntu.com/ubuntu/ noble main restricted universe multiverse" > /etc/apt/sources.list'
+                   $SUDO sh -c 'echo "deb http://azure.archive.ubuntu.com/ubuntu/ noble-updates main restricted universe multiverse" >> /etc/apt/sources.list'
+                   $SUDO sh -c 'echo "deb http://azure.archive.ubuntu.com/ubuntu/ noble-security main restricted universe multiverse" >> /etc/apt/sources.list'
                 fi
 
                 # Retry loop for apt-get update
@@ -434,11 +434,11 @@ jobs:
              fi
 
              if command -v apt-get &> /dev/null; then
-                # Reset sources list to ensure it's clean and pointing to main archive if possible (and if writable)
+                # Reset sources list to ensure it's clean and pointing to Azure archive if possible (and if writable)
                 if [ -w /etc/apt/sources.list ]; then
-                   $SUDO sh -c 'echo "deb http://archive.ubuntu.com/ubuntu/ noble main restricted universe multiverse" > /etc/apt/sources.list'
-                   $SUDO sh -c 'echo "deb http://archive.ubuntu.com/ubuntu/ noble-updates main restricted universe multiverse" >> /etc/apt/sources.list'
-                   $SUDO sh -c 'echo "deb http://archive.ubuntu.com/ubuntu/ noble-security main restricted universe multiverse" >> /etc/apt/sources.list'
+                   $SUDO sh -c 'echo "deb http://azure.archive.ubuntu.com/ubuntu/ noble main restricted universe multiverse" > /etc/apt/sources.list'
+                   $SUDO sh -c 'echo "deb http://azure.archive.ubuntu.com/ubuntu/ noble-updates main restricted universe multiverse" >> /etc/apt/sources.list'
+                   $SUDO sh -c 'echo "deb http://azure.archive.ubuntu.com/ubuntu/ noble-security main restricted universe multiverse" >> /etc/apt/sources.list'
                 fi
 
                 # Retry loop for apt-get update
@@ -681,10 +681,10 @@ jobs:
           echo "Checking connectivity to archive.ubuntu.com..."
           curl -I http://archive.ubuntu.com/ubuntu/ || echo "Failed to connect to archive.ubuntu.com"
 
-          # Reset sources list to ensure it's clean and pointing to main archive
-          echo "deb http://archive.ubuntu.com/ubuntu/ noble main restricted universe multiverse" > /etc/apt/sources.list
-          echo "deb http://archive.ubuntu.com/ubuntu/ noble-updates main restricted universe multiverse" >> /etc/apt/sources.list
-          echo "deb http://archive.ubuntu.com/ubuntu/ noble-security main restricted universe multiverse" >> /etc/apt/sources.list
+          # Reset sources list to ensure it's clean and pointing to Azure archive (more reliable in cloud)
+          echo "deb http://azure.archive.ubuntu.com/ubuntu/ noble main restricted universe multiverse" > /etc/apt/sources.list
+          echo "deb http://azure.archive.ubuntu.com/ubuntu/ noble-updates main restricted universe multiverse" >> /etc/apt/sources.list
+          echo "deb http://azure.archive.ubuntu.com/ubuntu/ noble-security main restricted universe multiverse" >> /etc/apt/sources.list
 
           # Retry loop for apt-get update with increased timeout
           UPDATE_SUCCESS=0
@@ -860,11 +860,11 @@ jobs:
              fi
 
              if command -v apt-get &> /dev/null; then
-                # Reset sources list to ensure it's clean and pointing to main archive if possible (and if writable)
+                # Reset sources list to ensure it's clean and pointing to Azure archive if possible (and if writable)
                 if [ -w /etc/apt/sources.list ]; then
-                   $SUDO sh -c 'echo "deb http://archive.ubuntu.com/ubuntu/ noble main restricted universe multiverse" > /etc/apt/sources.list'
-                   $SUDO sh -c 'echo "deb http://archive.ubuntu.com/ubuntu/ noble-updates main restricted universe multiverse" >> /etc/apt/sources.list'
-                   $SUDO sh -c 'echo "deb http://archive.ubuntu.com/ubuntu/ noble-security main restricted universe multiverse" >> /etc/apt/sources.list'
+                   $SUDO sh -c 'echo "deb http://azure.archive.ubuntu.com/ubuntu/ noble main restricted universe multiverse" > /etc/apt/sources.list'
+                   $SUDO sh -c 'echo "deb http://azure.archive.ubuntu.com/ubuntu/ noble-updates main restricted universe multiverse" >> /etc/apt/sources.list'
+                   $SUDO sh -c 'echo "deb http://azure.archive.ubuntu.com/ubuntu/ noble-security main restricted universe multiverse" >> /etc/apt/sources.list'
                 fi
 
                 # Retry loop for apt-get update
@@ -1071,11 +1071,11 @@ jobs:
              fi
 
              if command -v apt-get &> /dev/null; then
-                # Reset sources list to ensure it's clean and pointing to main archive if possible (and if writable)
+                # Reset sources list to ensure it's clean and pointing to Azure archive if possible (and if writable)
                 if [ -w /etc/apt/sources.list ]; then
-                   $SUDO sh -c 'echo "deb http://archive.ubuntu.com/ubuntu/ noble main restricted universe multiverse" > /etc/apt/sources.list'
-                   $SUDO sh -c 'echo "deb http://archive.ubuntu.com/ubuntu/ noble-updates main restricted universe multiverse" >> /etc/apt/sources.list'
-                   $SUDO sh -c 'echo "deb http://archive.ubuntu.com/ubuntu/ noble-security main restricted universe multiverse" >> /etc/apt/sources.list'
+                   $SUDO sh -c 'echo "deb http://azure.archive.ubuntu.com/ubuntu/ noble main restricted universe multiverse" > /etc/apt/sources.list'
+                   $SUDO sh -c 'echo "deb http://azure.archive.ubuntu.com/ubuntu/ noble-updates main restricted universe multiverse" >> /etc/apt/sources.list'
+                   $SUDO sh -c 'echo "deb http://azure.archive.ubuntu.com/ubuntu/ noble-security main restricted universe multiverse" >> /etc/apt/sources.list'
                 fi
 
                 # Retry loop for apt-get update
