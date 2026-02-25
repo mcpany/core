@@ -25,6 +25,14 @@ ifeq ($(UNAME_M), aarch64)
 	PROTOC_ARCH := aarch_64
 endif
 
+# Check for sudo
+SUDO ?=
+ifneq ($(shell id -u), 0)
+	ifneq ($(shell command -v sudo >/dev/null 2>&1 && echo sudo),)
+		SUDO := sudo
+	endif
+endif
+
 PROTOC_GEN_GO := $(TOOL_INSTALL_DIR)/protoc-gen-go
 PROTOC_GEN_GO_GRPC := $(TOOL_INSTALL_DIR)/protoc-gen-go-grpc
 PROTOC_GEN_GRPC_GATEWAY := $(TOOL_INSTALL_DIR)/protoc-gen-grpc-gateway
@@ -96,7 +104,7 @@ prepare-proto:
 		echo "protoc not found, attempting to install version $${PROTOC_TAG}..."; \
 		if ! command -v curl >/dev/null 2>&1 || ! command -v unzip >/dev/null 2>&1; then \
 			echo "curl and unzip are not installed. Installing..."; \
-			apt-get update && apt-get install -y curl unzip; \
+			$(SUDO) apt-get update && $(SUDO) apt-get install -y curl unzip; \
 		fi; \
 		PROTOC_VERSION_NO_V=$$(echo "$${PROTOC_TAG}" | sed 's/v//'); \
 		PROTOC_DOWNLOAD_URL_NO_V="$(PROTOC_DOWNLOAD_URL_BASE)/$${PROTOC_TAG}/protoc-$${PROTOC_VERSION_NO_V}-linux-$(PROTOC_ARCH).zip"; \
