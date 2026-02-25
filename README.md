@@ -182,6 +182,13 @@ MCP Any is configured via environment variables and YAML/JSON configuration file
 | `MCPANY_SHUTDOWN_TIMEOUT` | Graceful shutdown timeout | `5s` |
 | `MCPANY_ALLOWED_ENV` | Comma-separated list of allowed env vars for config expansion | Empty |
 | `MCPANY_STRICT_ENV_MODE` | Block all env vars unless whitelisted | `false` |
+| `MCPANY_ENABLE_FILE_CONFIG` | Enable file-based configuration loading | `false` |
+| `MCPANY_TRUST_PROXY` | Trust X-Real-IP and X-Forwarded-For headers | `false` |
+| `MCPANY_DANGEROUS_ALLOW_LOCAL_IPS` | Allow all local connections (loopback, private) | `false` |
+| `MCPANY_ALLOW_LOOPBACK_RESOURCES` | Allow loopback connections for resources | `false` |
+| `MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES` | Allow private network connections for resources | `false` |
+| `MCPANY_ALLOW_LOOPBACK_SECRETS` | Allow loopback connections for secrets fetching | `false` |
+| `MCPANY_ALLOW_PRIVATE_NETWORK_SECRETS` | Allow private network connections for secrets fetching | `false` |
 
 ### Required Secrets
 

@@ -17,8 +17,13 @@ import { Loader2 } from "lucide-react";
 
 /**
  * The main dashboard page component.
- * Displays an overview of metrics, service health, and request volume.
+ *
+ * Summary: Displays an overview of metrics, service health, and request volume.
+ *
  * @returns The dashboard page.
+ *
+ * Side Effects:
+ *   - Fetches services list on mount.
  */
 export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
