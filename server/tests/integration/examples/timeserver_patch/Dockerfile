@@ -12,13 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM mirror.gcr.io/library/python:3.11-slim
+FROM mirror.gcr.io/library/python:3.11-bookworm
 
 # Use /app as working directory
 WORKDIR /app
 
 # Install dependencies directly to minimize layer issues
-RUN pip install "fastmcp>=2.0.0"
+# Use --no-cache-dir to avoid potential overlayfs issues with cache files
+RUN pip install --no-cache-dir "fastmcp>=2.0.0"
 
 # Inline main.py content to avoid COPY context mount issues on some CI runners
 # Content is base64 encoded to preserve formatting and avoid escaping hell
