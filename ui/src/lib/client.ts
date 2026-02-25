@@ -38,6 +38,10 @@ export interface UpstreamServiceConfig extends Omit<BaseUpstreamServiceConfig, '
      * Optional template ID if this config was loaded from a template.
      */
     templateId?: string;
+    /**
+     * Provenance information for the service.
+     */
+    provenance?: ServiceProvenance;
 }
 
 // Re-export generated types
@@ -543,6 +547,12 @@ export const apiClient = {
             priority: config.priority,
             load_balancing_strategy: config.loadBalancingStrategy,
             tags: config.tags,
+            provenance: config.provenance ? {
+                verified: config.provenance.verified,
+                signer_identity: config.provenance.signerIdentity,
+                attestation_time: config.provenance.attestationTime,
+                signature_algorithm: config.provenance.signatureAlgorithm,
+            } : undefined,
         };
 
         if (config.httpService) {
@@ -654,6 +664,12 @@ export const apiClient = {
             priority: config.priority,
             load_balancing_strategy: config.loadBalancingStrategy,
             tags: config.tags,
+            provenance: config.provenance ? {
+                verified: config.provenance.verified,
+                signer_identity: config.provenance.signerIdentity,
+                attestation_time: config.provenance.attestationTime,
+                signature_algorithm: config.provenance.signatureAlgorithm,
+            } : undefined,
         };
         // Reuse mapping logic or duplicate for now safely
          if (config.httpService) {
