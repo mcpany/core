@@ -218,8 +218,9 @@ jobs:
              if command -v apt-get &> /dev/null; then
                 # Clear apt lists to avoid hash sum mismatch
                 $SUDO rm -rf /var/lib/apt/lists/*
-                # Update with retries
-                ($SUDO apt-get update -y) || (sleep 10 && $SUDO apt-get update -y) || (sleep 20 && $SUDO apt-get update -y) || exit 1
+                $SUDO apt-get clean
+                # Update with retries - Force IPv4 to avoid IPv6 timeouts
+                ($SUDO apt-get -o Acquire::ForceIPv4=true update -y) || (sleep 10 && $SUDO apt-get -o Acquire::ForceIPv4=true update -y) || (sleep 20 && $SUDO apt-get -o Acquire::ForceIPv4=true update -y) || exit 1
                 $SUDO apt-get install -y --no-install-recommends $PKGS
              elif command -v apk &> /dev/null; then
                 $SUDO apk add --no-cache $PKGS
@@ -417,8 +418,9 @@ jobs:
              if command -v apt-get &> /dev/null; then
                 # Clear apt lists to avoid hash sum mismatch
                 $SUDO rm -rf /var/lib/apt/lists/*
-                # Update with retries
-                ($SUDO apt-get update -y) || (sleep 10 && $SUDO apt-get update -y) || (sleep 20 && $SUDO apt-get update -y) || exit 1
+                $SUDO apt-get clean
+                # Update with retries - Force IPv4 to avoid IPv6 timeouts
+                ($SUDO apt-get -o Acquire::ForceIPv4=true update -y) || (sleep 10 && $SUDO apt-get -o Acquire::ForceIPv4=true update -y) || (sleep 20 && $SUDO apt-get -o Acquire::ForceIPv4=true update -y) || exit 1
                 $SUDO apt-get install -y --no-install-recommends $PKGS
              elif command -v apk &> /dev/null; then
                 $SUDO apk add --no-cache $PKGS
@@ -640,9 +642,10 @@ jobs:
 
           # Clear apt lists to avoid hash sum mismatch
           rm -rf /var/lib/apt/lists/*
+          apt-get clean
 
-          # Retry update to handle transient network issues
-          (apt-get update -y) || (sleep 10 && apt-get update -y) || (sleep 20 && apt-get update -y) || exit 1
+          # Retry update to handle transient network issues - Force IPv4 to avoid IPv6 timeouts
+          (apt-get -o Acquire::ForceIPv4=true update -y) || (sleep 10 && apt-get -o Acquire::ForceIPv4=true update -y) || (sleep 20 && apt-get -o Acquire::ForceIPv4=true update -y) || exit 1
 
           # Install dependencies
           apt-get install -y --no-install-recommends make git curl unzip build-essential
@@ -805,8 +808,9 @@ jobs:
              if command -v apt-get &> /dev/null; then
                 # Clear apt lists to avoid hash sum mismatch
                 $SUDO rm -rf /var/lib/apt/lists/*
-                # Update with retries
-                ($SUDO apt-get update -y) || (sleep 10 && $SUDO apt-get update -y) || (sleep 20 && $SUDO apt-get update -y) || exit 1
+                $SUDO apt-get clean
+                # Update with retries - Force IPv4 to avoid IPv6 timeouts
+                ($SUDO apt-get -o Acquire::ForceIPv4=true update -y) || (sleep 10 && $SUDO apt-get -o Acquire::ForceIPv4=true update -y) || (sleep 20 && $SUDO apt-get -o Acquire::ForceIPv4=true update -y) || exit 1
                 $SUDO apt-get install -y --no-install-recommends $PKGS
              elif command -v apk &> /dev/null; then
                 $SUDO apk add --no-cache $PKGS
@@ -997,8 +1001,9 @@ jobs:
              if command -v apt-get &> /dev/null; then
                 # Clear apt lists to avoid hash sum mismatch
                 $SUDO rm -rf /var/lib/apt/lists/*
-                # Update with retries
-                ($SUDO apt-get update -y) || (sleep 10 && $SUDO apt-get update -y) || (sleep 20 && $SUDO apt-get update -y) || exit 1
+                $SUDO apt-get clean
+                # Update with retries - Force IPv4 to avoid IPv6 timeouts
+                ($SUDO apt-get -o Acquire::ForceIPv4=true update -y) || (sleep 10 && $SUDO apt-get -o Acquire::ForceIPv4=true update -y) || (sleep 20 && $SUDO apt-get -o Acquire::ForceIPv4=true update -y) || exit 1
                 $SUDO apt-get install -y --no-install-recommends $PKGS
              elif command -v apk &> /dev/null; then
                 $SUDO apk add --no-cache $PKGS
