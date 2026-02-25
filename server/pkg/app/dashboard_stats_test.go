@@ -315,9 +315,29 @@ func TestHandleDashboardToolUsage(t *testing.T) {
 		[]string{"tool", "service_id", "status", "error_type"},
 	)
 
+	// Define latency summary (simulating go-metrics)
+	toolsCallLatency := prometheus.NewSummaryVec(
+		prometheus.SummaryOpts{
+			Name: "mcpany_tools_call_latency",
+			Help: "Tool call latency",
+		},
+		[]string{"tool", "service_id"},
+	)
+
+	// Define tokens counter
+	toolsTokensTotal := prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "mcpany_tools_tokens_total",
+			Help: "Total tokens",
+		},
+		[]string{"tool", "service_id"},
+	)
+
 	// Use a local registry for isolation
 	registry := prometheus.NewRegistry()
 	require.NoError(t, registry.Register(toolsCallTotal))
+	require.NoError(t, registry.Register(toolsCallLatency))
+	require.NoError(t, registry.Register(toolsTokensTotal))
 
 	toolA := "tool_usage_A"
 	toolB := "tool_usage_B"
@@ -325,9 +345,21 @@ func TestHandleDashboardToolUsage(t *testing.T) {
 	// Tool A: 5 success, 5 error => 50% success
 	toolsCallTotal.WithLabelValues(toolA, "service1", "success", "").Add(5)
 	toolsCallTotal.WithLabelValues(toolA, "service1", "error", "some_error").Add(5)
+	// Tool A: Latency. 10 calls. Avg 100ms. Total 1000ms.
+	for i := 0; i < 10; i++ {
+		toolsCallLatency.WithLabelValues(toolA, "service1").Observe(100)
+	}
+	// Tool A: Tokens. 1000 total.
+	toolsTokensTotal.WithLabelValues(toolA, "service1").Add(1000)
 
 	// Tool B: 10 success, 0 error => 100% success
 	toolsCallTotal.WithLabelValues(toolB, "service1", "success", "").Add(10)
+	// Tool B: Latency. 10 calls. Avg 50ms.
+	for i := 0; i < 10; i++ {
+		toolsCallLatency.WithLabelValues(toolB, "service1").Observe(50)
+	}
+	// Tool B: Tokens. 500 total.
+	toolsTokensTotal.WithLabelValues(toolB, "service1").Add(500)
 
 	// Create Request
 	req, err := http.NewRequest("GET", "/dashboard/tool-usage", nil)
@@ -361,10 +393,14 @@ func TestHandleDashboardToolUsage(t *testing.T) {
 	assert.Equal(t, toolA, myStats[0].Name)
 	assert.Equal(t, int64(10), myStats[0].TotalCalls)
 	assert.Equal(t, 50.0, myStats[0].SuccessRate)
+	assert.Equal(t, 100.0, myStats[0].AvgLatency)
+	assert.Equal(t, int64(1000), myStats[0].TotalTokens)
 
 	assert.Equal(t, toolB, myStats[1].Name)
 	assert.Equal(t, int64(10), myStats[1].TotalCalls)
 	assert.Equal(t, 100.0, myStats[1].SuccessRate)
+	assert.Equal(t, 50.0, myStats[1].AvgLatency)
+	assert.Equal(t, int64(500), myStats[1].TotalTokens)
 }
 
 func TestStatsCacheEviction(t *testing.T) {

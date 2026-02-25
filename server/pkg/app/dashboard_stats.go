@@ -15,6 +15,7 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/topology"
 	"github.com/prometheus/client_golang/prometheus"
+	dto "github.com/prometheus/client_model/go"
 )
 
 // getStatsCache returns cached data if valid.
@@ -57,10 +58,13 @@ func (a *Application) setStatsCache(key string, data any) {
 }
 
 const (
-	metricToolsCallTotal = "mcpany_tools_call_total"
-	labelTool            = "tool"
-	labelServiceID       = "service_id"
-	labelStatus          = "status"
+	metricToolsCallTotal   = "mcpany_tools_call_total"
+	metricToolsCallLatency = "mcpany_tools_call_latency"
+	//nolint:gosec // False positive: metric name
+	metricToolsTokensTotal = "mcpany_tools_tokens_total"
+	labelTool              = "tool"
+	labelServiceID         = "service_id"
+	labelStatus            = "status"
 )
 
 // ToolUsageStats represents usage statistics for a tool.
@@ -335,6 +339,19 @@ type ToolAnalytics struct {
 	ServiceID   string  `json:"serviceId"`
 	TotalCalls  int64   `json:"totalCalls"`
 	SuccessRate float64 `json:"successRate"`
+	AvgLatency  float64 `json:"avgLatency"`  // In milliseconds
+	TotalTokens int64   `json:"totalTokens"` // Estimated total tokens
+}
+
+// ToolUsageAggregator helper struct.
+type ToolUsageAggregator struct {
+	Name        string
+	ServiceID   string
+	Success     int64
+	Error       int64
+	LatencySum  float64
+	LatencyCnt  int64
+	TotalTokens int64
 }
 
 // handleDashboardToolUsage returns detailed usage statistics for all tools.
@@ -367,75 +384,8 @@ func (a *Application) handleDashboardToolUsage() http.HandlerFunc {
 			return
 		}
 
-		type aggregatedStats struct {
-			Name      string
-			ServiceID string
-			Success   int64
-			Error     int64
-		}
+		analytics := processToolMetrics(mfs, filterServiceID)
 
-		toolStats := make(map[string]*aggregatedStats)
-
-		for _, mf := range mfs {
-			if mf.GetName() == metricToolsCallTotal {
-				for _, m := range mf.GetMetric() {
-					var toolName, serviceID, status string
-					for _, label := range m.GetLabel() {
-						if label.GetName() == labelTool {
-							toolName = label.GetValue()
-						}
-						if label.GetName() == labelServiceID {
-							serviceID = label.GetValue()
-						}
-						if label.GetName() == labelStatus {
-							status = label.GetValue()
-						}
-					}
-
-					if filterServiceID != "" && serviceID != filterServiceID {
-						continue
-					}
-
-					if toolName != "" {
-						key := toolName + "@" + serviceID
-						if _, exists := toolStats[key]; !exists {
-							toolStats[key] = &aggregatedStats{
-								Name:      toolName,
-								ServiceID: serviceID,
-							}
-						}
-						count := int64(m.GetCounter().GetValue())
-						if status == "error" {
-							toolStats[key].Error += count
-						} else {
-							toolStats[key].Success += count
-						}
-					}
-				}
-			}
-		}
-
-		var analytics []ToolAnalytics
-		for _, s := range toolStats {
-			total := s.Success + s.Error
-			rate := 0.0
-			if total > 0 {
-				rate = (float64(s.Success) / float64(total)) * 100.0
-			}
-			analytics = append(analytics, ToolAnalytics{
-				Name:        s.Name,
-				ServiceID:   s.ServiceID,
-				TotalCalls:  total,
-				SuccessRate: rate,
-			})
-		}
-
-		// Sort by Name
-		sort.Slice(analytics, func(i, j int) bool {
-			return analytics[i].Name < analytics[j].Name
-		})
-
-		// ⚡ Bolt Optimization: Update cache
 		a.setStatsCache(cacheKey, analytics)
 
 		w.Header().Set("Content-Type", "application/json")
@@ -443,9 +393,115 @@ func (a *Application) handleDashboardToolUsage() http.HandlerFunc {
 	}
 }
 
+func processToolMetrics(mfs []*dto.MetricFamily, filterServiceID string) []ToolAnalytics {
+	toolStats := make(map[string]*ToolUsageAggregator)
+
+	getOrCreate := func(toolName, serviceID string) *ToolUsageAggregator {
+		key := toolName + "@" + serviceID
+		if _, exists := toolStats[key]; !exists {
+			toolStats[key] = &ToolUsageAggregator{
+				Name:      toolName,
+				ServiceID: serviceID,
+			}
+		}
+		return toolStats[key]
+	}
+
+	// Helper to extract common labels
+	getLabels := func(m interface{ GetLabel() []*dto.LabelPair }) (toolName, serviceID, status string) {
+		for _, label := range m.GetLabel() {
+			switch label.GetName() {
+			case labelTool:
+				toolName = label.GetValue()
+			case labelServiceID:
+				serviceID = label.GetValue()
+			case labelStatus:
+				status = label.GetValue()
+			}
+		}
+		return
+	}
+
+	for _, mf := range mfs {
+		switch mf.GetName() {
+		case metricToolsCallTotal:
+			for _, m := range mf.GetMetric() {
+				toolName, serviceID, status := getLabels(m)
+				if filterServiceID != "" && serviceID != filterServiceID {
+					continue
+				}
+				if toolName != "" {
+					stats := getOrCreate(toolName, serviceID)
+					count := int64(m.GetCounter().GetValue())
+					if status == "error" {
+						stats.Error += count
+					} else {
+						stats.Success += count
+					}
+				}
+			}
+		case metricToolsCallLatency:
+			for _, m := range mf.GetMetric() {
+				toolName, serviceID, _ := getLabels(m)
+				if filterServiceID != "" && serviceID != filterServiceID {
+					continue
+				}
+				if toolName != "" {
+					stats := getOrCreate(toolName, serviceID)
+					if s := m.GetSummary(); s != nil {
+						//nolint:gosec // G115: SampleCount unlikely to exceed int64
+						stats.LatencyCnt += int64(s.GetSampleCount())
+						stats.LatencySum += s.GetSampleSum()
+					}
+				}
+			}
+		case metricToolsTokensTotal:
+			for _, m := range mf.GetMetric() {
+				toolName, serviceID, _ := getLabels(m)
+				if filterServiceID != "" && serviceID != filterServiceID {
+					continue
+				}
+				if toolName != "" {
+					stats := getOrCreate(toolName, serviceID)
+					stats.TotalTokens += int64(m.GetCounter().GetValue())
+				}
+			}
+		}
+	}
+
+	analytics := make([]ToolAnalytics, 0, len(toolStats))
+	for _, s := range toolStats {
+		total := s.Success + s.Error
+		rate := 0.0
+		if total > 0 {
+			rate = (float64(s.Success) / float64(total)) * 100.0
+		}
+
+		avgLat := 0.0
+		if s.LatencyCnt > 0 {
+			avgLat = s.LatencySum / float64(s.LatencyCnt)
+		}
+
+		analytics = append(analytics, ToolAnalytics{
+			Name:        s.Name,
+			ServiceID:   s.ServiceID,
+			TotalCalls:  total,
+			SuccessRate: rate,
+			AvgLatency:  avgLat,
+			TotalTokens: s.TotalTokens,
+		})
+	}
+
+	sort.Slice(analytics, func(i, j int) bool {
+		return analytics[i].Name < analytics[j].Name
+	})
+
+	return analytics
+}
+
 // ServiceHealthResponse represents the response for the health dashboard.
 type ServiceHealthResponse struct {
-	Services []ServiceHealth                 `json:"services"`
+	Services []ServiceHealth                  `json:"services"`
 	History  map[string][]health.HistoryPoint `json:"history"`
 }
 

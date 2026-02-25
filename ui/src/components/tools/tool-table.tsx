@@ -137,6 +137,8 @@ export const ToolTable = memo(function ToolTable({
             <TableHead>Service</TableHead>
             <TableHead className="text-right">Calls</TableHead>
             <TableHead className="text-right">Success</TableHead>
+            <TableHead className="text-right">Avg Latency</TableHead>
+            <TableHead className="text-right">Total Tokens</TableHead>
             <TableHead title="Estimated context size when tool is defined">Est. Context</TableHead>
             <TableHead>Status</TableHead>
             <TableHead className="text-right">Actions</TableHead>
@@ -184,6 +186,24 @@ export const ToolTable = memo(function ToolTable({
                       if (rate < 50) color = "text-red-500";
                       else if (rate < 90) color = "text-yellow-500";
                       return <span className={cn("font-bold", color)}>{rate.toFixed(1)}%</span>;
+                  })()}
+              </TableCell>
+              <TableCell className={cn("text-right font-mono", isCompact ? "py-0 px-2" : "")}>
+                  {(() => {
+                      const stats = usageStats?.[`${tool.name}@${tool.serviceId}`];
+                      if (!stats || !stats.avgLatency) return "-";
+                      const lat = Math.round(stats.avgLatency);
+                      let color = "";
+                      if (lat > 1000) color = "text-red-500";
+                      else if (lat > 500) color = "text-yellow-500";
+                      return <span className={cn(color)}>{lat}ms</span>;
+                  })()}
+              </TableCell>
+              <TableCell className={cn("text-right font-mono", isCompact ? "py-0 px-2" : "")}>
+                  {(() => {
+                      const stats = usageStats?.[`${tool.name}@${tool.serviceId}`];
+                      if (!stats || !stats.totalTokens) return "-";
+                      return formatTokenCount(stats.totalTokens);
                   })()}
               </TableCell>
               <TableCell className={isCompact ? "py-0 px-2" : ""}>

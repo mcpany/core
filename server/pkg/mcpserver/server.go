@@ -35,6 +35,7 @@ var (
 	metricToolsCallTotal   = []string{"tools", "call", "total"}
 	metricToolsCallErrors  = []string{"tools", "call", "errors"}
 	metricToolsCallLatency = []string{"tools", "call", "latency"}
+	metricToolsTokensTotal = []string{"tools", "tokens", "total"}
 )
 
 // fastJSON is a jsoniter configuration that disables map key sorting for performance.
@@ -821,6 +822,33 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 			},
 		}
 	}
+
+	// Calculate and record token usage
+	// Estimate: (input chars + output chars) / 4
+	// Reuse jsonBytes if available, otherwise estimate from finalResult
+	outputLen := 0
+	if jsonBytes != nil {
+		outputLen = len(jsonBytes)
+	} else if finalResult != nil {
+		// Rough estimation from content
+		for _, c := range finalResult.Content {
+			if tc, ok := c.(*mcp.TextContent); ok {
+				outputLen += len(tc.Text)
+			}
+			// For images/resources, maybe ignore or count bytes?
+			// Let's stick to text for now as it's the main context driver.
+		}
+	}
+
+	totalTokens := int64((len(req.ToolInputs) + outputLen) / 4)
+	if totalTokens < 1 {
+		totalTokens = 1
+	}
+
+	metrics.IncrCounterWithLabels(metricToolsTokensTotal, float32(totalTokens), []metrics.Label{
+		{Name: "tool", Value: req.ToolName},
+		{Name: "service_id", Value: serviceID},
+	})
 
 	// Log the result
 	if logger.Enabled(ctx, slog.LevelInfo) {
