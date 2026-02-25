@@ -39,7 +39,7 @@ echo "Installing missing dependencies: $MISSING_DEPS"
 set -- $MISSING_DEPS
 
 SUDO=""
-if command -v sudo >/dev/null 2>&1; then
+if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null 2>&1; then
     SUDO="sudo"
 fi
 
