@@ -97,17 +97,13 @@ prepare-proto:
 		if ! command -v curl >/dev/null 2>&1 || ! command -v unzip >/dev/null 2>&1; then \
 			echo "curl and unzip are not installed. Installing..."; \
 			if command -v apt-get >/dev/null 2>&1; then \
-				if [ "$$(id -u)" -eq 0 ]; then \
-					apt-get update && apt-get install -y curl unzip; \
-				else \
-					sudo apt-get update && sudo apt-get install -y curl unzip; \
-				fi; \
+				CMD="apt-get"; \
+				if [ "$$(id -u)" -ne 0 ]; then CMD="sudo apt-get"; fi; \
+				$$CMD update && $$CMD install -y curl unzip; \
 			elif command -v apk >/dev/null 2>&1; then \
-				if [ "$$(id -u)" -eq 0 ]; then \
-					apk add --no-cache curl unzip; \
-				else \
-					sudo apk add --no-cache curl unzip; \
-				fi; \
+				CMD="apk"; \
+				if [ "$$(id -u)" -ne 0 ]; then CMD="sudo apk"; fi; \
+				$$CMD add --no-cache curl unzip; \
 			else \
 				echo "Could not find apt-get or apk to install dependencies."; \
 				exit 1; \
