@@ -1,32 +1,27 @@
 # Coverage Intervention Report
 
 ## Target
-**File:** `server/cmd/mcpctl/doctor.go`
+**File:** `server/pkg/tool/websocket.go`
 
 ## Risk Profile
-**Selection Reason:** High Risk / Critical Maintenance Tool.
-The `doctor` command is the primary diagnostic tool used by administrators when the MCP Any system is malfunctioning. It is responsible for:
-1.  **Configuration Validation:** Loading and checking complex configuration files.
-2.  **Network Connectivity:** Diagnosing connection issues between the CLI and the server.
-3.  **System Health:** Parsing and displaying detailed health reports from the server.
+**Selection Reason:** High Risk / Core Logic.
+The `WebsocketTool` handles real-time communication with upstream services. It is responsible for:
+1.  **Connection Management:** Managing WebSocket connections via a pool.
+2.  **Secret Injection:** Resolving and injecting sensitive secrets (API keys) into parameters.
+3.  **Data Transformation:** Transforming input and output data using templates and JQ queries.
 
 **Prior State:**
--   **Coverage:** 0% (Untested "Dark Matter").
--   **Complexity:** High (Handles file I/O, HTTP networking, JSON parsing, and error handling).
--   **Impact:** Bugs in this tool would leave users blind during outages, unable to diagnose why their system is failing.
+-   **Coverage:** Partial. While basic execution was tested, specific edge cases like **secret resolution** and integration with the environment were not fully covered or were relying on mock implementations that didn't exercise the full `ResolveSecret` path in context.
+-   **Complexity:** Medium-High (Async communication, error handling, dynamic configuration).
 
 ## New Coverage
 **Implemented Defenses:**
-Refactored the code to use Dependency Injection (`DoctorRunner`), enabling robust testing of all logic paths.
+Enhanced `server/pkg/tool/websocket_tool_test.go` to include a dedicated test case for Secret Resolution.
 
 **Guarded Paths:**
-1.  **Happy Path:** Verifies that a fully healthy system is correctly reported as "OK" with all checks passing.
-2.  **Server Connectivity Failure:** Ensures that if the server is unreachable (e.g., down or network issue), the tool reports a failure and provides a helpful suggestion.
-3.  **Health Endpoint Failure:** Verifies that if the server responds with a 500 error on `/health` or `/doctor`, the tool correctly reports the error.
-4.  **Degraded State:** Verifies that if the server reports a "degraded" status (e.g., database down), the CLI correctly reflects this status and lists the failing components.
-5.  **Address Parsing:** Indirectly tests the logic for parsing `host:port` strings through the test scenarios.
+1.  **Secret Resolution:** Verifies that environment variables referenced in `WebsocketParameterMapping` are correctly resolved and injected into the WebSocket message payload.
+2.  **Concurrency Safety:** Modified the test suite to safely handle environment variable manipulation (`t.Setenv`) by ensuring conflicting tests do not run in parallel.
 
 ## Verification
--   **New Tests:** `go test ./server/cmd/mcpctl/...` passed successfully.
--   **Regression Testing:** `go test ./server/pkg/...` passed successfully, ensuring no negative impact on the core server logic.
--   **Build Integrity:** `make gen` was executed to verify that the project builds and generates necessary artifacts (protobufs) correctly.
+-   **New Tests:** `go test -v ./server/pkg/tool/ -run TestWebsocketTool_Execute` passed successfully.
+-   **Regression Testing:** `go test -v ./server/pkg/tool/...` passed successfully, ensuring no negative impact on other tool implementations.

@@ -79,7 +79,6 @@ func (m *mockWebsocketPool) Len() int {
 }
 
 func TestWebsocketTool_Execute(t *testing.T) {
-	t.Parallel()
 	t.Run("successful execution", func(t *testing.T) {
 		server := mockWebsocketServer(t, func(w http.ResponseWriter, r *http.Request) {
 			conn, err := upgrader.Upgrade(w, r, nil)
@@ -128,6 +127,73 @@ func TestWebsocketTool_Execute(t *testing.T) {
 		result, err := wsTool.Execute(context.Background(), req)
 		require.NoError(t, err)
 		assert.Equal(t, map[string]interface{}{"message": "hello"}, result)
+	})
+
+	t.Run("with secrets", func(t *testing.T) {
+		t.Setenv("TEST_SECRET", "secret-value")
+
+		server := mockWebsocketServer(t, func(w http.ResponseWriter, r *http.Request) {
+			conn, err := upgrader.Upgrade(w, r, nil)
+			require.NoError(t, err)
+			defer func() { _ = conn.Close() }()
+			_, msg, err := conn.ReadMessage()
+			require.NoError(t, err)
+			// Verify that the secret was resolved and sent
+			assert.JSONEq(t, `{"message": "hello", "api_key": "secret-value"}`, string(msg))
+
+			err = conn.WriteMessage(websocket.TextMessage, []byte(`{"status": "ok"}`))
+			require.NoError(t, err)
+		})
+		defer server.Close()
+
+		wsURL := "ws" + strings.TrimPrefix(server.URL, "http")
+		conn, resp, err := websocket.DefaultDialer.Dial(wsURL, nil)
+		require.NoError(t, err)
+		defer func() { _ = resp.Body.Close() }()
+		wrapper := &client.WebsocketClientWrapper{Conn: conn}
+
+		pm := pool.NewManager()
+		mockPool := &mockWebsocketPool{
+			getFunc: func(_ context.Context) (*client.WebsocketClientWrapper, error) {
+				return wrapper, nil
+			},
+			putFunc: func(c *client.WebsocketClientWrapper) {
+				_ = c.Close()
+			},
+		}
+		serviceID := "ws-secrets-test"
+		pm.Register(serviceID, mockPool)
+
+		toolProto := v1.Tool_builder{}.Build()
+		toolProto.SetName("secrets")
+		toolProto.SetServiceId(serviceID)
+
+		callDef := &configv1.WebsocketCallDefinition{}
+		// Setup parameter mapping with secret
+		paramMapping := &configv1.WebsocketParameterMapping{}
+
+		paramSchema := configv1.ParameterSchema_builder{}.Build()
+		paramSchema.SetName("api_key")
+		paramMapping.SetSchema(paramSchema)
+
+		secretValue := &configv1.SecretValue{}
+		secretValue.SetEnvironmentVariable("TEST_SECRET")
+		paramMapping.SetSecret(secretValue)
+
+		callDef.SetParameters([]*configv1.WebsocketParameterMapping{paramMapping})
+
+		wsTool := NewWebsocketTool(toolProto, pm, serviceID, nil, callDef)
+
+		// Input does not contain the secret key, only the message
+		inputs := json.RawMessage(`{"message": "hello"}`)
+		req := &ExecutionRequest{
+			ToolName:   serviceID + "/-/secrets",
+			ToolInputs: inputs,
+		}
+
+		result, err := wsTool.Execute(context.Background(), req)
+		require.NoError(t, err)
+		assert.Equal(t, map[string]interface{}{"status": "ok"}, result)
 	})
 
 	t.Run("with input and output transformation", func(t *testing.T) {
