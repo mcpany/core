@@ -29,6 +29,11 @@
 *   **[P1] Federated MCP Peering**: Distributed node discovery and tool proxying. (Added: 2026-02-26)
 *   **[P1] Resource Telemetry Middleware**: Inject latency/cost metrics into tool schemas. (Added: 2026-02-26)
 
+#### Upcoming (2026-02-27 Evolution)
+*   **[P0] Worktree Isolation Provider**: Automated Git worktree management for agent sessions. (Added: 2026-02-27)
+*   **[P0] Gateway CSRF & CORS Hardening**: Mandatory security for local config API (CVE-2026-25253 mitigation). (Added: 2026-02-27)
+*   **[P1] Agent Team State Scavenger**: Automated GC for session artifacts and worktrees. (Added: 2026-02-27)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

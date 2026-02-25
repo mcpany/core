@@ -47,3 +47,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **A2A Gateway Protocol**: MCP Any will implement a protocol-neutral bridge for A2A communication, allowing disparate agent frameworks (e.g., OpenClaw, AutoGen) to exchange state and tasks via a unified MCP-like interface.
 - **Federated Tool Mesh**: Moving from a standalone server to a "Mesh" architecture where multiple MCP Any instances can peer and share resources across network boundaries, governed by global Zero-Trust policies.
 - **Resource-Aware Intelligence**: Integrating cost and latency telemetry into the tool discovery process, allowing LLMs to perform "Economical Reasoning" when selecting tools.
+
+---
+
+## Strategic Evolution: [2026-02-27]
+### Focus: Isolated Execution & Gateway Hardening
+**Context**: The OpenClaw RCE crisis (CVE-2026-25253) and Claude Code's shift to worktree-based isolation have redefined the security perimeter for local agents. The "Local Gateway" is now a primary attack surface.
+**Strategic Pivot**:
+- **Worktree-First Isolation**: MCP Any will pivot to a "Worktree-First" architecture for all filesystem-touching tools. Every agent session will, by default, operate in an isolated Git worktree or ephemeral container, preventing host pollution and cross-session contamination.
+- **Hardened Gateway Protocol**: Implementing mandatory CORS/CSRF protection and "Configuration Attestation" for the local gateway. Any modification to the MCP Any configuration must be signed or locally approved via a secure OOB (Out-Of-Band) channel.
+- **Ephemeral State Management**: Introducing an automated "State Scavenger" that garbage collects session artifacts, Git worktrees, and shared KV entries once an agent team task is finalized, preventing the "Memory Leak" observed in complex swarm deployments.

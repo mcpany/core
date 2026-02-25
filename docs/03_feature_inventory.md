@@ -65,3 +65,20 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **Worktree Isolation Provider**: (P0) Automates the creation and management of isolated Git worktrees for agent sessions. Prevents directory pollution.
+- **Gateway CSRF & CORS Hardening**: (P0) Mandatory protection for the local configuration API to mitigate RCE risks like CVE-2026-25253.
+- **Agent Team State Scavenger**: (P1) Automated garbage collection for ephemeral session data, including worktrees and shared KV entries.
+- **Out-of-Band (OOB) Config Approval**: (P1) Requires manual approval via a CLI or secure mobile app for any "high-risk" configuration changes.
+
+### Priority Shifts
+- **MCP Provenance Attestation**: (Re-affirmed P0) Critical for blocking "Offensive MCP" tools like ARXON.
+- **Policy Firewall**: (Re-affirmed P0) Essential for enforcing "Read-Only" worktree policies.
+
+### Deprecations / Monitoring
+- **Bare-Metal Filesystem Access**: Monitoring for deprecation in favor of mandatory Worktree/Container isolation.
