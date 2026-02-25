@@ -57,3 +57,9 @@ As the number of available MCP tools grows, agents face "context pollution"—wh
 
 ## 7. Evolutionary Changelog
 *   **2026-02-25:** Initial Document Creation.
+*   **2026-02-27:** **Update: Intent-Bound Tool Discovery.**
+    *   **Context:** Market sync shows that "Shadow Tooling" (agents finding and using tools they weren't intended to) is a growing threat.
+    *   **Architecture Adjustment:**
+        *   Discovery search results are now filtered by the active **Goal Manifest**.
+        *   Tools that do not align with the current session intent are hidden from search results, even if the agent has the raw capability to use them.
+    *   **Security Impact:** Drastically reduces the attack surface for prompt injection by ensuring the agent never even "sees" irrelevant powerful tools.

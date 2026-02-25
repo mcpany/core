@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **Intent-Verification Middleware (IVM)**: (P0) A security layer that validates tool calls against a verified "Goal Manifest" using a secondary LLM validator.
+- **A2A-to-MCP Protocol Bridge**: (P0) A bi-directional bridge allowing A2A-native agents to consume MCP tools as if they were ACP messages.
+- **Tiered HITL Triage Engine**: (P1) Automated prioritization of user approval requests, with auto-approval for pre-vetted low-risk actions.
+
+### Priority Shifts
+- **A2A Interop Bridge**: Promoted to **P0**. Critical for the next wave of agentic swarms.
+- **Policy Firewall**: Re-affirmed as **P0**. Integrating with Intent-Verification is now mandatory.
+
+### Deprecations / Monitoring
+- **Manual Capability Tokenization**: Moving towards dynamic, intent-bound tokens.

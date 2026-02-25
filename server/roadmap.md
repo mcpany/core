@@ -29,6 +29,11 @@
 *   **[P1] Federated MCP Peering**: Distributed node discovery and tool proxying. (Added: 2026-02-26)
 *   **[P1] Resource Telemetry Middleware**: Inject latency/cost metrics into tool schemas. (Added: 2026-02-26)
 
+#### Upcoming (2026-02-27 Evolution)
+*   **[P0] Intent-Verification Middleware (IVM)**: Secondary LLM-based validation of tool calls against goal manifests. (Added: 2026-02-27)
+*   **[P0] A2A-to-MCP Protocol Bridge**: Bi-directional bridge for A2A swarms to consume local tools. (Added: 2026-02-27)
+*   **[P1] Tiered HITL Triage Engine**: Automated prioritization and auto-approval for low-risk agent actions. (Added: 2026-02-27)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

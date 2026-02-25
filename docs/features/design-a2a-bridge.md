@@ -46,3 +46,9 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-02-27:** **Update: Protocol-Agnostic Bridging & Intent Verification.**
+    *   **Context:** Market research reveals that A2A coordination is susceptible to "abuse of trust" where a subagent may misinterpret or hijack a handoff.
+    *   **Architecture Adjustment:**
+        *   Introducing **Intent-Verification Tokens (IVT)** into the A2A header.
+        *   Ensuring that A2A handoffs are bi-directionally validated against the parent agent's original goal manifest.
+    *   **Security Impact:** Prevents a compromised A2A-subagent from escalating its task scope during a handoff.
