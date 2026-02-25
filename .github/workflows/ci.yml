@@ -96,6 +96,8 @@ jobs:
             sudo rm -rf /usr/lib/google-cloud-sdk
             sudo rm -rf /opt/pipx
             sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+            sudo apt-get clean
+            sudo rm -rf /var/lib/apt/lists/*
           else
             rm -rf /usr/local/lib/android
             rm -rf /usr/share/dotnet
@@ -189,6 +191,8 @@ jobs:
             sudo rm -rf /usr/lib/google-cloud-sdk
             sudo rm -rf /opt/pipx
             sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+            sudo apt-get clean
+            sudo rm -rf /var/lib/apt/lists/*
           else
             rm -rf /usr/local/lib/android
             rm -rf /usr/share/dotnet
