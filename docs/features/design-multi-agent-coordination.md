@@ -30,6 +30,7 @@ As AI agent ecosystems evolve from single-agent monoliths to multi-agent swarms 
     * `POST /session/init`: Creates a new multi-agent session.
     * `POST /session/{id}/handoff`: Securely transfers context headers to a new agent ID.
     * `GET /session/{id}/state`: Retrieves current shared state/tool results.
+    * `POST /session/{id}/interact`: A specialized endpoint that allows a subagent to register a pending "user question" that bubbles up to the primary orchestrator.
 * **Data Storage/State:**
     * State is managed in an embedded SQLite "Blackboard" per session, ensuring persistence and isolation.
 
@@ -43,3 +44,4 @@ As AI agent ecosystems evolve from single-agent monoliths to multi-agent swarms 
 
 ## 7. Evolutionary Changelog
 * **2026-02-24**: Initial Document Creation.
+* **2026-02-27**: Added "Interactive Passthrough" to support subagent-to-user communication (`askQuestions`).

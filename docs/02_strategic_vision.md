@@ -47,3 +47,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **A2A Gateway Protocol**: MCP Any will implement a protocol-neutral bridge for A2A communication, allowing disparate agent frameworks (e.g., OpenClaw, AutoGen) to exchange state and tasks via a unified MCP-like interface.
 - **Federated Tool Mesh**: Moving from a standalone server to a "Mesh" architecture where multiple MCP Any instances can peer and share resources across network boundaries, governed by global Zero-Trust policies.
 - **Resource-Aware Intelligence**: Integrating cost and latency telemetry into the tool discovery process, allowing LLMs to perform "Economical Reasoning" when selecting tools.
+
+---
+
+## Strategic Evolution: [2026-02-27]
+### Focus: Intent-Aware Governance & Interactive Multi-Agent Handoffs
+**Context**: Today's research on OpenClaw's trust-abuse vulnerabilities and Claude's interactive subagent capabilities reveals that the gateway must move beyond simple tool-call mediation. It must now understand *intent* and support *active user participation* within automated workflows.
+**Strategic Pivot**:
+- **Intent-Aware Policy Engine**: Moving from static Rego/CEL policies to "Intent-Bounded" governance. MCP Any will validate that tool calls remain within the semantic boundaries of the initial user request, preventing "feature-to-exploit" conversions identified in the MITRE OpenClaw report.
+- **Interactive Gateway Protocol**: Extending MCP to support "Ask-the-User" passthroughs from deep subagent chains. MCP Any will act as the orchestrator for user-interventions, ensuring that even remote or sandboxed subagents can securely prompt for clarification or approval.
+- **Branch-Aware Context Routing**: Supporting non-linear agent workflows (like Claude's `/fork`) by implementing "State Branching" in the context middleware. This allows agents to explore multiple execution paths in parallel without state collisions.

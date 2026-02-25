@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **Intent-Bounded Governance Middleware**: (P0) A security layer that uses LLM-based reasoning to ensure tool calls align with the high-level user intent. Mitigates "trust-abuse" patterns in autonomous swarms.
+- **Interactive "Ask-the-User" Passthrough**: (P1) Extends the MCP gateway to allow subagents to securely bubble up interactive prompts (`askQuestions`) to the primary user interface.
+- **State Branching & Forking Service**: (P2) Support for parallel agent execution paths by creating lightweight, inherited state branches.
+
+### Priority Shifts
+- **HITL Middleware**: Promoted to **P0**. Now considered the critical "last line of defense" for autonomous discovery and execution.
+- **Cost & Latency Telemetry**: Promoted to **P0** to support Gemini 3.1's custom tool prioritization and "Economical Reasoning".
+
+### Deprecations / Monitoring
+- **Implicit Subagent Trust**: Monitoring for deprecation. All subagents will eventually require explicit capability tokens or intent-verification.
