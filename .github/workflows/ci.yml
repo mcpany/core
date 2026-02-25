@@ -223,6 +223,10 @@ jobs:
                 $SUDO apt-get install -y --no-install-recommends $PKGS
              elif command -v apk &> /dev/null; then
                 $SUDO apk add --no-cache $PKGS
+             elif command -v dnf &> /dev/null; then
+                $SUDO dnf install -y $PKGS
+             elif command -v yum &> /dev/null; then
+                $SUDO yum install -y $PKGS
              fi
           }
 
@@ -231,6 +235,8 @@ jobs:
              install_pkg "make xz-utils gcc build-essential git"
           elif command -v apk &> /dev/null; then
              install_pkg "make xz build-base git"
+          elif command -v dnf &> /dev/null || command -v yum &> /dev/null; then
+             install_pkg "make git gcc"
           fi
 
           # Verify gcc
@@ -410,6 +416,10 @@ jobs:
                 $SUDO apt-get install -y --no-install-recommends $PKGS
              elif command -v apk &> /dev/null; then
                 $SUDO apk add --no-cache $PKGS
+             elif command -v dnf &> /dev/null; then
+                $SUDO dnf install -y $PKGS
+             elif command -v yum &> /dev/null; then
+                $SUDO yum install -y $PKGS
              fi
           }
 
@@ -418,6 +428,8 @@ jobs:
              install_pkg "make xz-utils gcc build-essential git"
           elif command -v apk &> /dev/null; then
              install_pkg "make xz build-base git"
+          elif command -v dnf &> /dev/null || command -v yum &> /dev/null; then
+             install_pkg "make git gcc"
           fi
 
           # Verify gcc
@@ -609,14 +621,23 @@ jobs:
           set -e
           set -x
           export DEBIAN_FRONTEND=noninteractive
+
           # Retry update to handle transient network issues
+          UPDATE_SUCCESS=0
           for i in 1 2 3; do
             if apt-get update -y; then
+              UPDATE_SUCCESS=1
               break
             fi
             echo "apt-get update failed, retrying in 10s..."
             sleep 10
           done
+
+          if [ "$UPDATE_SUCCESS" -ne 1 ]; then
+             echo "Failed to update apt repositories after retries."
+             exit 1
+          fi
+
           apt-get install -y --no-install-recommends make git curl unzip build-essential
           which make
 
@@ -782,6 +803,10 @@ jobs:
                 $SUDO apt-get install -y --no-install-recommends $PKGS
              elif command -v apk &> /dev/null; then
                 $SUDO apk add --no-cache $PKGS
+             elif command -v dnf &> /dev/null; then
+                $SUDO dnf install -y $PKGS
+             elif command -v yum &> /dev/null; then
+                $SUDO yum install -y $PKGS
              fi
           }
 
@@ -790,6 +815,8 @@ jobs:
              install_pkg "make xz-utils gcc build-essential git"
           elif command -v apk &> /dev/null; then
              install_pkg "make xz build-base git"
+          elif command -v dnf &> /dev/null || command -v yum &> /dev/null; then
+             install_pkg "make git gcc"
           fi
 
           # Verify gcc
@@ -962,6 +989,10 @@ jobs:
                 $SUDO apt-get install -y --no-install-recommends $PKGS
              elif command -v apk &> /dev/null; then
                 $SUDO apk add --no-cache $PKGS
+             elif command -v dnf &> /dev/null; then
+                $SUDO dnf install -y $PKGS
+             elif command -v yum &> /dev/null; then
+                $SUDO yum install -y $PKGS
              fi
           }
 
@@ -970,6 +1001,8 @@ jobs:
              install_pkg "make xz-utils gcc build-essential git"
           elif command -v apk &> /dev/null; then
              install_pkg "make xz build-base git"
+          elif command -v dnf &> /dev/null || command -v yum &> /dev/null; then
+             install_pkg "make git gcc"
           fi
 
           # Verify gcc
