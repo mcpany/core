@@ -46,3 +46,10 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+
+### Update: 2026-02-27 - JIT Integration for Cross-Agent Handoffs
+**Context**: During A2A handoffs, the receiving agent often lacks the specific permissions held by the sender, leading to "Handoff Failures."
+**Architecture Adjustment**:
+* Integrating the **JIT Permission Broker** into the A2A Bridge.
+* When an A2A message is received, MCP Any can now pre-emptively request "Shadow Elevations" for the target agent based on the sender's verified capabilities.
+**Security Impact**: Ensures that delegated tasks don't fail due to permission mismatches while still maintaining Zero-Trust isolation between distinct agent frameworks.

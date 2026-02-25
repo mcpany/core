@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **JIT Permission Broker**: (P0) A dynamic authorization engine that allows agents to request temporary, intent-scoped permission elevations without manual human approval.
+- **Self-Healing Tool Sandbox**: (P1) An isolated execution environment for testing and verifying agent-mutated tool code before it is promoted to the global registry.
+- **Shared Workspace (VFS) Resource**: (P1) Standardized MCP resource for shared filesystems, enabling multi-agent collaboration on persistent artifacts.
+
+### Priority Shifts
+- **Policy Firewall**: Re-affirmed as **P0**. It is the critical foundation for safe JIT permission escalation.
+- **Shared KV Store**: Promoted to **P0**. Essential for tracking the "High-Level Intent" required for JIT adjudication.
+
+### Deprecations / Monitoring
+- **Static Permission Tokens**: Monitoring for deprecation in favor of dynamic, session-bound JIT tokens.

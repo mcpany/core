@@ -28,6 +28,9 @@
 *   **[P0] A2A Interop Bridge**: Implement Pseudo-MCP wrapper for A2A-compliant agents. (Added: 2026-02-26)
 *   **[P1] Federated MCP Peering**: Distributed node discovery and tool proxying. (Added: 2026-02-26)
 *   **[P1] Resource Telemetry Middleware**: Inject latency/cost metrics into tool schemas. (Added: 2026-02-26)
+*   **[P0] JIT Permission Broker**: Implement dynamic privilege escalation middleware with intent-based adjudication. (Added: 2026-02-27)
+*   **[P1] Self-Healing Tool Sandbox**: Isolated runtime for verifying agent-mutated tool code. (Added: 2026-02-27)
+*   **[P1] Shared Workspace (VFS) Support**: Implement virtual filesystem mounting as an MCP resource. (Added: 2026-02-27)
 
 ## 2. Top 10 Recommended Features
 
