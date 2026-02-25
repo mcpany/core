@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	_ "modernc.org/sqlite" // Register sqlite driver
 )
@@ -34,11 +35,26 @@ type DB struct {
 //   - Creates the database file and directories if they don't exist.
 //   - Initializes the database schema.
 func NewDB(path string) (*DB, error) {
-	if err := os.MkdirAll(filepath.Dir(path), 0750); err != nil {
-		return nil, fmt.Errorf("failed to create db directory: %w", err)
+	if path != ":memory:" {
+		if err := os.MkdirAll(filepath.Dir(path), 0750); err != nil {
+			return nil, fmt.Errorf("failed to create db directory: %w", err)
+		}
 	}
 
-	db, err := sql.Open("sqlite", path)
+	// Use DSN parameters to ensure pragmas are applied to all connections in the pool.
+	// This helps avoid SQLITE_BUSY errors in high concurrency scenarios.
+	dsn := path
+	if !strings.Contains(path, "?") {
+		dsn += "?"
+	} else {
+		dsn += "&"
+	}
+	// _pragma=busy_timeout=30000: Wait up to 30s for the lock.
+	// _pragma=journal_mode=WAL: Better concurrency.
+	// _pragma=synchronous=NORMAL: Better performance in WAL mode.
+	dsn += "_pragma=busy_timeout=30000&_pragma=journal_mode=WAL&_pragma=synchronous=NORMAL"
+
+	db, err := sql.Open("sqlite", dsn)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open sqlite db: %w", err)
 	}
