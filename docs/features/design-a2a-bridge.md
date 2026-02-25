@@ -46,3 +46,4 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-02-27:** Added support for JIT Permission Escalation within A2A handoffs. When an A2A agent requires higher permissions, the bridge can now propagate that request back to the MCP Any JIT Broker.

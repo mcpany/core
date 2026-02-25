@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **JIT Permission Broker**: (P0) A protocol and middleware for dynamic, intent-bound capability escalation with integrated HITL (Human-In-The-Loop) triggers.
+- **Self-Healing Tool Bridge**: (P1) A sandboxed execution environment where agents can submit, test, and hot-reload fixes for failing MCP server integrations.
+- **Attention-Ranked Lazy Discovery**: (P1) Extension to the Lazy-MCP middleware that injects relevance scores into tool search results based on the current agent session context.
+
+### Priority Shifts
+- **HITL Middleware**: Promoted to **P0** (Already P0, but re-affirming as it is the foundation for JIT Permission Brokerage).
+- **Federated MCP Node Peering**: (P1) Increasing importance as JIT permissions need to be propagated across federated boundaries.
+
+### Deprecations / Monitoring
+- **Static Capability Tokens**: Monitoring for deprecation in favor of JIT-bound tokens.
