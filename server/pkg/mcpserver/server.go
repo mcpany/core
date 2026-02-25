@@ -725,22 +725,20 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 		}
 	}
 
-	metrics.IncrCounterWithLabels(metricToolsCallTotal, 1, []metrics.Label{
+	// ⚡ BOLT: Reuse metrics labels slice to avoid redundant allocations
+	// Randomized Selection from Top 5 High-Impact Targets
+	labels := []metrics.Label{
 		{Name: "tool", Value: req.ToolName},
 		{Name: "service_id", Value: serviceID},
-	})
+	}
+
+	metrics.IncrCounterWithLabels(metricToolsCallTotal, 1, labels)
 	startTime := time.Now()
-	metrics.MeasureSinceWithLabels(metricToolsCallLatency, startTime, []metrics.Label{
-		{Name: "tool", Value: req.ToolName},
-		{Name: "service_id", Value: serviceID},
-	})
+	metrics.MeasureSinceWithLabels(metricToolsCallLatency, startTime, labels)
 
 	result, err := s.toolManager.ExecuteTool(ctx, req)
 	if err != nil {
-		metrics.IncrCounterWithLabels(metricToolsCallErrors, 1, []metrics.Label{
-			{Name: "tool", Value: req.ToolName},
-			{Name: "service_id", Value: serviceID},
-		})
+		metrics.IncrCounterWithLabels(metricToolsCallErrors, 1, labels)
 	}
 
 	// ⚡ Bolt Optimization: Defer logging until AFTER we have processed the result.
