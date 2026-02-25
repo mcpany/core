@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **JIT Permission Broker**: (P0) A security middleware that handles asynchronous and autonomous permission elevation requests from agents, using a context-aware risk engine.
+- **Self-Healing Fallback Middleware**: (P1) Automatically intercepts tool errors and suggests alternative tools from the "Federated Tool Mesh" or "Lazy-MCP" index to the agent.
+- **Metadata Deep-Inspection Firewall**: (P1) Prevents "Agent Hijacking" by scanning tool descriptions and input schemas for prompt injection patterns before they reach the agent.
+
+### Priority Shifts
+- **Federated MCP Node Peering**: Promoted to **P0**. Essential for providing the global tool pool needed for "Self-Healing Fallback."
+- **A2A Interop Bridge**: Promoted to **P0**. Critical for coordinating cross-framework "Swarm State Bundles."
+
+### Deprecations / Monitoring
+- **Static Capability Tokens**: Monitoring for deprecation in favor of dynamic, JIT-issued tokens.

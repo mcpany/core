@@ -29,6 +29,11 @@
 *   **[P1] Federated MCP Peering**: Distributed node discovery and tool proxying. (Added: 2026-02-26)
 *   **[P1] Resource Telemetry Middleware**: Inject latency/cost metrics into tool schemas. (Added: 2026-02-26)
 
+#### Upcoming (2026-02-27 Evolution)
+*   **[P0] JIT Permission Broker**: Security middleware for autonomous/asynchronous permission elevation. (Added: 2026-02-27)
+*   **[P1] Self-Healing Fallback Middleware**: Intercept tool errors and suggest alternatives from Federated Tool Mesh. (Added: 2026-02-27)
+*   **[P1] Metadata Deep-Inspection Firewall**: Prevent Agent Hijacking via tool metadata inspection. (Added: 2026-02-27)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

@@ -46,3 +46,10 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+
+### Update: 2026-02-27 - Integrating JIT Permission Escalation for Handoffs
+**Context**: Research into "Self-Healing Swarms" shows that A2A handoffs often fail when the target agent lacks the necessary permissions to fulfill the delegated task.
+**Architecture Adjustment**:
+* **JIT Handoff Support**: When a "Pseudo-MCP" tool (A2A agent) is called, MCP Any will now include a "Delegated JIT Request" capability.
+* **Escalation Routing**: If the target agent hits a 403, it can route a JIT request back through the A2A Bridge to the original caller's JIT Broker for approval.
+**Security Impact**: Ensures that the principle of least privilege is maintained during agent-to-agent delegation while preventing "Permission Deadlocks" in complex swarms.
