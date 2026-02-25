@@ -524,6 +524,13 @@ jobs:
 
       - name: Generate Protobufs
         run: |
+          # Ensure make is available even if previous step failed/skipped
+          if ! command -v make >/dev/null; then
+            echo "Make not found, installing..."
+            SUDO=""
+            if command -v sudo >/dev/null; then SUDO="sudo"; fi
+            $SUDO apt-get update && $SUDO apt-get install -y make build-essential git curl xz-utils
+          fi
           make gen
 
       - name: Set up QEMU
