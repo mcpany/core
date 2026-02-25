@@ -216,10 +216,17 @@ jobs:
              fi
 
              if command -v apt-get &> /dev/null; then
+                # Reset sources list to ensure it's clean and pointing to main archive if possible (and if writable)
+                if [ -w /etc/apt/sources.list ]; then
+                   $SUDO sh -c 'echo "deb http://archive.ubuntu.com/ubuntu/ noble main restricted universe multiverse" > /etc/apt/sources.list'
+                   $SUDO sh -c 'echo "deb http://archive.ubuntu.com/ubuntu/ noble-updates main restricted universe multiverse" >> /etc/apt/sources.list'
+                   $SUDO sh -c 'echo "deb http://archive.ubuntu.com/ubuntu/ noble-security main restricted universe multiverse" >> /etc/apt/sources.list'
+                fi
+
                 # Retry loop for apt-get update
                 UPDATE_SUCCESS=0
                 for i in 1 2 3 4 5; do
-                  if $SUDO apt-get update -y; then
+                  if $SUDO apt-get -o Acquire::http::Timeout=60 update -y; then
                     UPDATE_SUCCESS=1
                     break
                   fi
@@ -427,10 +434,17 @@ jobs:
              fi
 
              if command -v apt-get &> /dev/null; then
+                # Reset sources list to ensure it's clean and pointing to main archive if possible (and if writable)
+                if [ -w /etc/apt/sources.list ]; then
+                   $SUDO sh -c 'echo "deb http://archive.ubuntu.com/ubuntu/ noble main restricted universe multiverse" > /etc/apt/sources.list'
+                   $SUDO sh -c 'echo "deb http://archive.ubuntu.com/ubuntu/ noble-updates main restricted universe multiverse" >> /etc/apt/sources.list'
+                   $SUDO sh -c 'echo "deb http://archive.ubuntu.com/ubuntu/ noble-security main restricted universe multiverse" >> /etc/apt/sources.list'
+                fi
+
                 # Retry loop for apt-get update
                 UPDATE_SUCCESS=0
                 for i in 1 2 3 4 5; do
-                  if $SUDO apt-get update -y; then
+                  if $SUDO apt-get -o Acquire::http::Timeout=60 update -y; then
                     UPDATE_SUCCESS=1
                     break
                   fi
@@ -663,10 +677,19 @@ jobs:
           fi
           df -h
 
-          # Simple retry loop for apt-get update
+          # Diagnostics
+          echo "Checking connectivity to archive.ubuntu.com..."
+          curl -I http://archive.ubuntu.com/ubuntu/ || echo "Failed to connect to archive.ubuntu.com"
+
+          # Reset sources list to ensure it's clean and pointing to main archive
+          echo "deb http://archive.ubuntu.com/ubuntu/ noble main restricted universe multiverse" > /etc/apt/sources.list
+          echo "deb http://archive.ubuntu.com/ubuntu/ noble-updates main restricted universe multiverse" >> /etc/apt/sources.list
+          echo "deb http://archive.ubuntu.com/ubuntu/ noble-security main restricted universe multiverse" >> /etc/apt/sources.list
+
+          # Retry loop for apt-get update with increased timeout
           UPDATE_SUCCESS=0
           for i in 1 2 3 4 5; do
-            if apt-get update -y; then
+            if apt-get -o Acquire::http::Timeout=60 update -y; then
               UPDATE_SUCCESS=1
               break
             fi
@@ -837,10 +860,17 @@ jobs:
              fi
 
              if command -v apt-get &> /dev/null; then
+                # Reset sources list to ensure it's clean and pointing to main archive if possible (and if writable)
+                if [ -w /etc/apt/sources.list ]; then
+                   $SUDO sh -c 'echo "deb http://archive.ubuntu.com/ubuntu/ noble main restricted universe multiverse" > /etc/apt/sources.list'
+                   $SUDO sh -c 'echo "deb http://archive.ubuntu.com/ubuntu/ noble-updates main restricted universe multiverse" >> /etc/apt/sources.list'
+                   $SUDO sh -c 'echo "deb http://archive.ubuntu.com/ubuntu/ noble-security main restricted universe multiverse" >> /etc/apt/sources.list'
+                fi
+
                 # Retry loop for apt-get update
                 UPDATE_SUCCESS=0
                 for i in 1 2 3 4 5; do
-                  if $SUDO apt-get update -y; then
+                  if $SUDO apt-get -o Acquire::http::Timeout=60 update -y; then
                     UPDATE_SUCCESS=1
                     break
                   fi
@@ -1041,10 +1071,17 @@ jobs:
              fi
 
              if command -v apt-get &> /dev/null; then
+                # Reset sources list to ensure it's clean and pointing to main archive if possible (and if writable)
+                if [ -w /etc/apt/sources.list ]; then
+                   $SUDO sh -c 'echo "deb http://archive.ubuntu.com/ubuntu/ noble main restricted universe multiverse" > /etc/apt/sources.list'
+                   $SUDO sh -c 'echo "deb http://archive.ubuntu.com/ubuntu/ noble-updates main restricted universe multiverse" >> /etc/apt/sources.list'
+                   $SUDO sh -c 'echo "deb http://archive.ubuntu.com/ubuntu/ noble-security main restricted universe multiverse" >> /etc/apt/sources.list'
+                fi
+
                 # Retry loop for apt-get update
                 UPDATE_SUCCESS=0
                 for i in 1 2 3 4 5; do
-                  if $SUDO apt-get update -y; then
+                  if $SUDO apt-get -o Acquire::http::Timeout=60 update -y; then
                     UPDATE_SUCCESS=1
                     break
                   fi
