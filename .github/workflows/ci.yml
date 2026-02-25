@@ -35,9 +35,8 @@ jobs:
     steps:
       - name: Install dependencies
         run: |
-          SUDO=""
-          if [ "$(id -u)" -ne 0 ]; then SUDO="sudo"; fi
-          $SUDO apt-get update && $SUDO apt-get install -y git
+          (sudo apt-get update && sudo apt-get install -y git) || \
+          (apt-get update && apt-get install -y git)
 
       - uses: actions/checkout@v6
         with:
@@ -137,13 +136,11 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            SUDO=""
-            if [ "$(id -u)" -ne 0 ]; then SUDO="sudo"; fi
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils
+            (sudo apt-get update && sudo apt-get install -y make xz-utils) || \
+            (apt-get update && apt-get install -y make xz-utils)
           elif command -v apk &> /dev/null; then
-             SUDO=""
-             if [ "$(id -u)" -ne 0 ]; then SUDO="sudo"; fi
-             $SUDO apk add --no-cache make xz
+             (sudo apk add --no-cache make xz) || \
+             (apk add --no-cache make xz)
           fi
 
       - name: Prepare environment
@@ -177,13 +174,11 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            SUDO=""
-            if [ "$(id -u)" -ne 0 ]; then SUDO="sudo"; fi
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils
+            (sudo apt-get update && sudo apt-get install -y make xz-utils) || \
+            (apt-get update && apt-get install -y make xz-utils)
           elif command -v apk &> /dev/null; then
-             SUDO=""
-             if [ "$(id -u)" -ne 0 ]; then SUDO="sudo"; fi
-             $SUDO apk add --no-cache make xz
+             (sudo apk add --no-cache make xz) || \
+             (apk add --no-cache make xz)
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -320,13 +315,11 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            SUDO=""
-            if [ "$(id -u)" -ne 0 ]; then SUDO="sudo"; fi
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils
+            (sudo apt-get update && sudo apt-get install -y make xz-utils) || \
+            (apt-get update && apt-get install -y make xz-utils)
           elif command -v apk &> /dev/null; then
-             SUDO=""
-             if [ "$(id -u)" -ne 0 ]; then SUDO="sudo"; fi
-             $SUDO apk add --no-cache make xz
+             (sudo apk add --no-cache make xz) || \
+             (apk add --no-cache make xz)
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -631,13 +624,11 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            SUDO=""
-            if [ "$(id -u)" -ne 0 ]; then SUDO="sudo"; fi
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils
+            (sudo apt-get update && sudo apt-get install -y make xz-utils) || \
+            (apt-get update && apt-get install -y make xz-utils)
           elif command -v apk &> /dev/null; then
-             SUDO=""
-             if [ "$(id -u)" -ne 0 ]; then SUDO="sudo"; fi
-             $SUDO apk add --no-cache make xz
+             (sudo apk add --no-cache make xz) || \
+             (apk add --no-cache make xz)
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -774,13 +765,11 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            SUDO=""
-            if [ "$(id -u)" -ne 0 ]; then SUDO="sudo"; fi
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils
+            (sudo apt-get update && sudo apt-get install -y make xz-utils) || \
+            (apt-get update && apt-get install -y make xz-utils)
           elif command -v apk &> /dev/null; then
-             SUDO=""
-             if [ "$(id -u)" -ne 0 ]; then SUDO="sudo"; fi
-             $SUDO apk add --no-cache make xz
+             (sudo apk add --no-cache make xz) || \
+             (apk add --no-cache make xz)
           fi
 
       - name: Configure Docker Registry Mirrors
