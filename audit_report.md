@@ -1,43 +1,40 @@
-# Audit Report: Truth Reconciliation
+# Truth Reconciliation Audit Report
 
 ## Executive Summary
-Performed a comprehensive audit of 10 distinct features across UI and Server domains. The audit revealed a high degree of alignment between the codebase and the intended functionality, with minor discrepancies in documentation and roadmap status.
-*   **Health Score:** 9/10 (Initial), 10/10 (Post-Remediation).
-*   **Primary Issue:** Documentation Drift (Code was ahead of Docs/Roadmap).
-*   **Action:** Synchronized `ui/roadmap.md` and feature documentation to reflect existing, verified capabilities.
+This audit performed a sampling verification of 10 features across UI and Server documentation to ensure alignment with the Codebase and Product Roadmap. The majority of sampled features (90%) were found to be **Verified Correct**, indicating a high level of documentation accuracy and code health.
+
+One significant discrepancy was identified: **Server Health History visualization**. While the Roadmap promised a visual timeline, the implementation relied on change-based recording which produced a sparse/broken timeline in the UI. This was classified as **Roadmap Debt** and has been remediated.
+
+**Health Status:**
+*   **Total Sampled:** 10
+*   **Verified:** 9
+*   **Drift/Debt:** 1 (Fixed)
+*   **Pass Rate:** 90% (Pre-remediation) -> 100% (Post-remediation)
 
 ## Verification Matrix
 
 | Document Name | Status | Action Taken | Evidence |
 | :--- | :--- | :--- | :--- |
-| `ui/docs/features/connection-diagnostics.md` | ✅ Verified | None | Verified `ConnectionDiagnostic` component logic matches docs. |
-| `ui/docs/features/playground.md` | ⚠️ Drift | **Doc Updated** | Code supports "Copy as Python", doc missed it. Added to doc. |
-| `ui/docs/features/structured_log_viewer.md` | ✅ Verified | None | Verified `LogViewer` JSON auto-detection and expansion. |
-| `server/docs/features/hot_reload.md` | ✅ Verified | None | Verified `ReloadConfig` and `reconcileServices` in `server.go`. |
-| `server/docs/features/health-checks.md` | ✅ Verified | None | Verified `health.go` implements all claimed checks (HTTP, gRPC, FS, etc). |
-| `server/docs/features/dlp.md` | ✅ Verified | None | Verified `dlp.go` implements PII redaction middleware. |
-| `server/docs/features/context_optimizer.md` | ✅ Verified | None | Verified `context_optimizer.go` implements truncation logic. |
-| `server/docs/features/configuration_guide.md` | ✅ Verified | None | Verified configuration loading from files and database. |
-| `server/docs/features/security.md` | ⚠️ Drift | **Doc Updated** | Code enforces "Sentinel Security" (localhost-only) if API Key is missing. Doc updated to reflect this. |
-| `server/docs/features/audit_logging.md` | ✅ Verified | None | Verified `FileAuditStore` implements NDJSON format. |
+| `ui/docs/features/connection-diagnostics.md` | **Verified** | None | Component exists in `ui/src/components/diagnostics`, supports browser-side checks. |
+| `ui/docs/features/playground.md` | **Verified** | None | Playground exists, supports history persistence and execution duration. |
+| `ui/docs/features/structured_log_viewer.md` | **Verified** | None | Log viewer supports JSON structure and search highlighting. |
+| `ui/docs/features/native_file_upload_playground.md` | **Verified** | None | `UniversalSchemaForm` implements `FileInput` for base64 encoded fields. |
+| `ui/docs/features/server-health-history.md` | **Roadmap Debt** | **Fix Implemented** | Roadmap requires "Visual timeline over last 24h". Code only recorded changes, leading to sparse timeline. |
+| `server/docs/features/health-checks.md` | **Verified** | None | Health checks implemented in `server/pkg/health`. |
+| `server/docs/features/context_optimizer.md` | **Verified** | None | Middleware exists in `server/pkg/middleware/context_optimizer.go`. |
+| `server/docs/features/dynamic_registration.md` | **Verified** | None | Service Registry supports dynamic operations. |
+| `server/docs/features/audit_logging.md` | **Verified** | None | Audit logging implemented in `server/pkg/logging/audit.go`. |
+| `server/docs/features/prompts/README.md` | **Verified** | None | Prompts supported in `UpstreamServiceConfig` and `server/pkg/prompt`. |
 
 ## Remediation Log
 
-### 1. Security Documentation Update
-*   **Issue:** `server/docs/features/security.md` implied open access if `allowed_ips` was empty.
-*   **Reality:** Code (`server/pkg/app/server.go`) enforces strict localhost-only access if no API Key is configured ("Sentinel Security").
-*   **Fix:** Updated documentation to explicitly describe the "Sentinel Security Mode".
-
-### 2. Playground Documentation & Roadmap
-*   **Issue:** `ui/roadmap.md` listed "Copy as Curl/Python" as TODO. `ui/docs/features/playground.md` omitted Python support.
-*   **Reality:** Code (`ui/src/lib/code-generator.ts`, `ui/src/components/playground/tool-runner.tsx`) fully implements Curl and Python code generation.
-*   **Fix:**
-    *   Updated `ui/docs/features/playground.md` to include "Copy as Code".
-    *   Updated `ui/roadmap.md` to mark Playground features as `[x]` (Completed).
-
-### 3. Code Quality (Linting)
-*   **Issue:** `make lint` failed due to missing TSDoc in UI components.
-*   **Fix:** Added missing TSDoc comments to `ui/src/components/logs/log-viewer.tsx` and `ui/src/components/diagnostics/discovery-status.tsx`.
+### 1. Server Health History (Roadmap Debt)
+*   **Issue:** The "Visual timeline" feature relies on a dense stream of data points to render a heatmap/timeline bar. The existing backend implementation (`server/pkg/health`) only recorded history points when the health status *changed* (deduplication). For a stable healthy service, this resulted in a single point at startup, causing the UI timeline to appear empty or broken for the last 24h.
+*   **Fix:** Modified `server/pkg/health/health.go` to implement **Periodic Heartbeat Recording**.
+    *   Updated the check wrapper logic to enforce a write to the history store at least every `2 minutes`, even if the status has not changed.
+    *   This ensures the UI receives a continuous stream of "Up" status points to render a solid green bar.
+*   **Verification:** Added `TestPeriodicHistoryRecording` in `server/pkg/health/history_period_test.go` which simulates a stable service and asserts that multiple history points are recorded over time.
 
 ## Security Scrub
-*   No PII, secrets, or internal IPs were found or exposed in this report.
+*   No PII, secrets, or internal IPs were exposed in this report.
+*   New test code uses dummy service names and does not access external resources.

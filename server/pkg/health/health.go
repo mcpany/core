@@ -35,6 +35,13 @@ const (
 )
 
 var (
+	// heartbeatInterval is the interval at which we record a health status even if it hasn't changed.
+	// This ensures a continuous timeline in the UI.
+	heartbeatInterval = 2 * time.Minute
+
+	// cacheDuration is the duration for which health check results are cached.
+	cacheDuration = 1 * time.Second
+
 	globalAlertConfig   *configv1.AlertConfig
 	globalAlertConfigMu sync.RWMutex
 )
@@ -125,7 +132,11 @@ func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
 
 	interval, timeout := getHealthCheckConfig(uc)
 
-	// Wrap check to measure latency
+	var lastStatus health.AvailabilityStatus
+	var lastRecordedTime time.Time
+	var lastStatusMu sync.Mutex
+
+	// Wrap check to measure latency and record history (heartbeat)
 	originalCheck := check.Check
 	check.Check = func(ctx context.Context) error {
 		start := time.Now()
@@ -135,33 +146,47 @@ func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
 			{Name: "service", Value: serviceName},
 			{Name: "status", Value: lo.Ternary(err == nil, "success", "failure")},
 		})
+
+		// Determine current status based on error
+		currentStatus := health.StatusUp
+		if err != nil {
+			currentStatus = health.StatusDown
+		}
+
+		lastStatusMu.Lock()
+		prev := lastStatus
+		lastRecord := lastRecordedTime
+
+		// Record if status changed OR heartbeat interval exceeded
+		// Note: prev is initially empty (unknown), so first check (prev != currentStatus) is true.
+		shouldRecord := prev != currentStatus || time.Since(lastRecord) > heartbeatInterval
+
+		if shouldRecord {
+			lastStatus = currentStatus
+			lastRecordedTime = time.Now()
+
+			// Unlock before calling AddHealthStatus to avoid potential deadlocks
+			lastStatusMu.Unlock()
+			AddHealthStatus(serviceName, string(currentStatus))
+		} else {
+			lastStatusMu.Unlock()
+		}
+
 		return err
 	}
 
-	var lastStatus health.AvailabilityStatus
-	var lastStatusMu sync.Mutex
-
 	opts := []health.CheckerOption{
 		health.WithStatusListener(func(ctx context.Context, state health.CheckerState) {
-			lastStatusMu.Lock()
-			prev := lastStatus
-			lastStatus = state.Status
-			lastStatusMu.Unlock()
-
-			// Skip if status hasn't changed (deduplication)
-			if prev == state.Status {
-				return
-			}
-
+			// Metrics
 			status := float32(0.0)
 			if state.Status == health.StatusUp {
 				status = 1.0
 			}
 			metrics.SetGauge(healthStatusGauge, status, serviceName)
-			logging.GetLogger().Info("health status changed", "service", serviceName, "status", state.Status)
 
-			// Record history
-			AddHealthStatus(serviceName, string(state.Status))
+			// Logging & Webhook (on change)
+			// The library deduplicates listeners, so this only fires on change.
+			logging.GetLogger().Info("health status changed", "service", serviceName, "status", state.Status)
 
 			globalAlertConfigMu.RLock()
 			alertConfig := globalAlertConfig
@@ -171,7 +196,7 @@ func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
 				sendWebhook(ctx, alertConfig.GetWebhookUrl(), serviceName, state.Status)
 			}
 		}),
-		health.WithCacheDuration(1 * time.Second),
+		health.WithCacheDuration(cacheDuration),
 	}
 
 	if interval > 0 {
