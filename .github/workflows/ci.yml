@@ -90,6 +90,66 @@ jobs:
           $SUDO rm -rf /usr/share/dotnet
           $SUDO rm -rf /opt/ghc
           $SUDO rm -rf /usr/local/share/boost
+          $SUDO rm -rf /usr/lib/jvm
+          $SUDO rm -rf /usr/local/graalvm
+          $SUDO rm -rf /usr/local/.ghcup
+          $SUDO rm -rf /usr/local/share/powershell
+          $SUDO rm -rf /usr/share/swift
+          $SUDO rm -rf /usr/lib/jvm
+          $SUDO rm -rf /usr/local/graalvm
+          $SUDO rm -rf /usr/local/.ghcup
+          $SUDO rm -rf /usr/local/share/powershell
+          $SUDO rm -rf /usr/share/swift
+          $SUDO rm -rf /usr/lib/jvm
+          $SUDO rm -rf /usr/local/graalvm
+          $SUDO rm -rf /usr/local/.ghcup
+          $SUDO rm -rf /usr/local/share/powershell
+          $SUDO rm -rf /usr/share/swift
+          $SUDO rm -rf /usr/lib/jvm
+          $SUDO rm -rf /usr/local/graalvm
+          $SUDO rm -rf /usr/local/.ghcup
+          $SUDO rm -rf /usr/local/share/powershell
+          $SUDO rm -rf /usr/share/swift
+          $SUDO rm -rf /usr/lib/jvm
+          $SUDO rm -rf /usr/local/graalvm
+          $SUDO rm -rf /usr/local/.ghcup
+          $SUDO rm -rf /usr/local/share/powershell
+          $SUDO rm -rf /usr/share/swift
+          $SUDO rm -rf /usr/lib/jvm
+          $SUDO rm -rf /usr/local/graalvm
+          $SUDO rm -rf /usr/local/.ghcup
+          $SUDO rm -rf /usr/local/share/powershell
+          $SUDO rm -rf /usr/share/swift
+          $SUDO rm -rf /usr/lib/jvm
+          $SUDO rm -rf /usr/local/graalvm
+          $SUDO rm -rf /usr/local/.ghcup
+          $SUDO rm -rf /usr/local/share/powershell
+          $SUDO rm -rf /usr/share/swift
+          $SUDO rm -rf /usr/lib/jvm
+          $SUDO rm -rf /usr/local/graalvm
+          $SUDO rm -rf /usr/local/.ghcup
+          $SUDO rm -rf /usr/local/share/powershell
+          $SUDO rm -rf /usr/share/swift
+          $SUDO rm -rf /usr/lib/jvm
+          $SUDO rm -rf /usr/local/graalvm
+          $SUDO rm -rf /usr/local/.ghcup
+          $SUDO rm -rf /usr/local/share/powershell
+          $SUDO rm -rf /usr/share/swift
+          $SUDO rm -rf /usr/lib/jvm
+          $SUDO rm -rf /usr/local/graalvm
+          $SUDO rm -rf /usr/local/.ghcup
+          $SUDO rm -rf /usr/local/share/powershell
+          $SUDO rm -rf /usr/share/swift
+          $SUDO rm -rf /usr/lib/jvm
+          $SUDO rm -rf /usr/local/graalvm
+          $SUDO rm -rf /usr/local/.ghcup
+          $SUDO rm -rf /usr/local/share/powershell
+          $SUDO rm -rf /usr/share/swift
+          $SUDO rm -rf /usr/lib/jvm
+          $SUDO rm -rf /usr/local/graalvm
+          $SUDO rm -rf /usr/local/.ghcup
+          $SUDO rm -rf /usr/local/share/powershell
+          $SUDO rm -rf /usr/share/swift
 
       - name: Prune Docker
         run: |
