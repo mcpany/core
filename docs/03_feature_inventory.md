@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **JIT Permission Broker**: (P0) A middleware that enables temporary, intent-based capability elevation for agents, reducing human-in-the-loop bottlenecks.
+- **Self-Healing Tool Bridge**: (P1) Provides an isolated sandbox where agents can propose and test fixes for broken MCP tools.
+- **Multi-Agent Workspace Mediator**: (P1) Coordinates file and resource access between disparate agents to prevent state collisions in shared environments.
+
+### Priority Shifts
+- **A2A Interop Bridge (Pseudo-MCP)**: (P0) Re-affirming P0 status due to the increased risk of "Agent Hijacking" and the need for standardized identity in A2A handoffs.
+- **Policy Firewall**: (P0) Expanding scope to include "Intent-Aware" filtering for JIT permission requests.
+
+### Deprecations / Monitoring
+- **Static Capability Tokens**: Monitoring for deprecation in favor of time-bound, JIT-escalated tokens.

@@ -46,3 +46,11 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+
+### Update: 2026-02-27 - Mitigating Agent Hijacking via JIT Integration
+**Context**: New research identifies "Agent Hijacking" where a subagent is tricked into requesting unauthorized capabilities during an A2A handoff.
+**Architecture Adjustment**:
+* Integrating the **JIT Permission Broker** into the A2ABridgeMiddleware.
+* All A2A handoffs that require capability elevation must now provide a "Proof of Intent" that matches the parent agent's authorized scope.
+* Implementing mandatory A2A Attestation for all peer-to-peer messages to ensure identity provenance.
+**Security Impact**: Prevents "Capability Theft" by ensuring that delegated tasks cannot escalate permissions beyond what the human orchestrator originally intended for the swarm.
