@@ -204,6 +204,7 @@ jobs:
 
           # Helper to install with retries and sudo handling
           install_pkg() {
+             set -e
              PKGS=$1
              SUDO=""
              if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null; then
@@ -212,11 +213,14 @@ jobs:
 
              if command -v apt-get &> /dev/null; then
                 # Retry loop for apt-get update
-                if ! ($SUDO apt-get update || (sleep 5 && $SUDO apt-get update) || (sleep 5 && $SUDO apt-get update)); then
-                   echo "apt-get update failed"
-                   # Continue to try install, might work if cache exists
-                fi
-                $SUDO apt-get install -y $PKGS
+                for i in 1 2 3; do
+                  if $SUDO apt-get update -y; then
+                    break
+                  fi
+                  echo "apt-get update failed, retrying in 10s..."
+                  sleep 10
+                done
+                $SUDO apt-get install -y --no-install-recommends $PKGS
              elif command -v apk &> /dev/null; then
                 $SUDO apk add --no-cache $PKGS
              fi
@@ -387,6 +391,7 @@ jobs:
 
           # Helper to install with retries and sudo handling
           install_pkg() {
+             set -e
              PKGS=$1
              SUDO=""
              if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null; then
@@ -395,10 +400,14 @@ jobs:
 
              if command -v apt-get &> /dev/null; then
                 # Retry loop for apt-get update
-                if ! ($SUDO apt-get update || (sleep 5 && $SUDO apt-get update) || (sleep 5 && $SUDO apt-get update)); then
-                   echo "apt-get update failed"
-                fi
-                $SUDO apt-get install -y $PKGS
+                for i in 1 2 3; do
+                  if $SUDO apt-get update -y; then
+                    break
+                  fi
+                  echo "apt-get update failed, retrying in 10s..."
+                  sleep 10
+                done
+                $SUDO apt-get install -y --no-install-recommends $PKGS
              elif command -v apk &> /dev/null; then
                 $SUDO apk add --no-cache $PKGS
              fi
@@ -597,14 +606,18 @@ jobs:
 
       - name: Install dependencies
         run: |
+          set -e
           set -x
           export DEBIAN_FRONTEND=noninteractive
           # Retry update to handle transient network issues
-          if ! (apt-get update || (sleep 5 && apt-get update) || (sleep 5 && apt-get update)); then
-             echo "apt-get update failed"
-             exit 1
-          fi
-          apt-get install -y make git curl unzip build-essential
+          for i in 1 2 3; do
+            if apt-get update -y; then
+              break
+            fi
+            echo "apt-get update failed, retrying in 10s..."
+            sleep 10
+          done
+          apt-get install -y --no-install-recommends make git curl unzip build-essential
           which make
 
       - name: Generate Protobufs
@@ -750,6 +763,7 @@ jobs:
 
           # Helper to install with retries and sudo handling
           install_pkg() {
+             set -e
              PKGS=$1
              SUDO=""
              if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null; then
@@ -758,10 +772,14 @@ jobs:
 
              if command -v apt-get &> /dev/null; then
                 # Retry loop for apt-get update
-                if ! ($SUDO apt-get update || (sleep 5 && $SUDO apt-get update) || (sleep 5 && $SUDO apt-get update)); then
-                   echo "apt-get update failed"
-                fi
-                $SUDO apt-get install -y $PKGS
+                for i in 1 2 3; do
+                  if $SUDO apt-get update -y; then
+                    break
+                  fi
+                  echo "apt-get update failed, retrying in 10s..."
+                  sleep 10
+                done
+                $SUDO apt-get install -y --no-install-recommends $PKGS
              elif command -v apk &> /dev/null; then
                 $SUDO apk add --no-cache $PKGS
              fi
@@ -925,6 +943,7 @@ jobs:
 
           # Helper to install with retries and sudo handling
           install_pkg() {
+             set -e
              PKGS=$1
              SUDO=""
              if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null; then
@@ -933,10 +952,14 @@ jobs:
 
              if command -v apt-get &> /dev/null; then
                 # Retry loop for apt-get update
-                if ! ($SUDO apt-get update || (sleep 5 && $SUDO apt-get update) || (sleep 5 && $SUDO apt-get update)); then
-                   echo "apt-get update failed"
-                fi
-                $SUDO apt-get install -y $PKGS
+                for i in 1 2 3; do
+                  if $SUDO apt-get update -y; then
+                    break
+                  fi
+                  echo "apt-get update failed, retrying in 10s..."
+                  sleep 10
+                done
+                $SUDO apt-get install -y --no-install-recommends $PKGS
              elif command -v apk &> /dev/null; then
                 $SUDO apk add --no-cache $PKGS
              fi
