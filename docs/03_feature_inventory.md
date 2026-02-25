@@ -63,5 +63,18 @@
 - **MCP Provenance Attestation**: Promoted to **P0** as it is a prerequisite for secure Federated MCP peering.
 - **Lazy-MCP Middleware**: Promoted to **P0** (Already P0, but re-affirming importance for Federated Tool Mesh).
 
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **Immutable Agentic Config Store**: (P0) A secure, read-only configuration plane for agents to prevent "self-compromise" via configuration modification.
+- **Governor-Agent Intercept Protocol**: (P1) Specialized HITL middleware that allows "Governor" agents (restricted models) to triage tool calls before human review.
+- **LSP-Enhanced Tool Discovery**: (P1) Middleware that enriches tool search with semantic data from Language Server Protocols, enabling deeper code-aware tool discovery.
+
+### Priority Shifts
+- **HITL Middleware**: Promoted to **P0**. High-fidelity human-in-the-loop flows are critical as agent autonomy increases and security risks evolve.
+- **Supply Chain Integrity Guard**: Re-affirming **P0** status due to rising "Config-Injection" and "Clinejection" patterns.
+
 ### Deprecations / Monitoring
-- **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+- **Agent-Writeable Security Policies**: Monitoring for deprecation. Security policies must move to an immutable infrastructure layer.

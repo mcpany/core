@@ -29,6 +29,11 @@
 *   **[P1] Federated MCP Peering**: Distributed node discovery and tool proxying. (Added: 2026-02-26)
 *   **[P1] Resource Telemetry Middleware**: Inject latency/cost metrics into tool schemas. (Added: 2026-02-26)
 
+#### Upcoming (2026-02-27 Evolution)
+*   **[P0] Immutable Agentic Config Store**: Implement a secure, read-only configuration plane to prevent "self-compromise." (Added: 2026-02-27)
+*   **[P1] Governor-Agent Intercept Protocol**: Specialized HITL middleware for agent-led triage of high-risk tool calls. (Added: 2026-02-27)
+*   **[P1] LSP-Enhanced Discovery Middleware**: Integrate semantic code context into the tool search and indexing pipeline. (Added: 2026-02-27)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
