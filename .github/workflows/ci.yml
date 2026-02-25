@@ -499,98 +499,148 @@ jobs:
             [registry."docker.io"]
               mirrors = ["mirror.gcr.io"]
 
-      - name: Build and Save Images
-        run: |
+      - name: Build, Save, and Upload Images (Sequential to save space)
+        uses: actions/upload-artifact@v4
+        with:
+          name: image-server-${{ matrix.slug }}
+          path: server.tar
+          retention-days: 1
+      - run: |
           PLATFORM="${{ matrix.platform }}"
           SLUG="${{ matrix.slug }}"
 
           # Server
           make -C server build-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=server-$SLUG CACHE_FROM=type=gha,scope=server-$SLUG
           docker save -o server.tar mcpany/server:latest
+          # Upload happens via step above? No, upload-artifact runs at end if configured as step.
+          # We need to interleave upload and delete.
+          # Since actions/upload-artifact cannot be called in a loop within 'run', we have to split steps.
+          # But we can't split steps easily if we want to share the logic.
+          # We will delete the tarball immediately after upload.
+          # Wait, standard actions cannot be called from shell.
+          # We must split this big block into multiple steps.
 
-          # HTTP Echo
-          make -C server build-http-echo-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=http-echo-$SLUG CACHE_FROM=type=gha,scope=http-echo-$SLUG
-          docker save -o http-echo.tar mcpany/http-echo-server:latest
+      # Split builds to save disk space
 
-          # Time Server
-          make -C server build-e2e-timeserver-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=time-server-$SLUG CACHE_FROM=type=gha,scope=time-server-$SLUG
-          docker save -o time-server.tar mcpany-e2e-time-server
-
-          # Cowsay
-          make -C server build-cowsay-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=cowsay-$SLUG CACHE_FROM=type=gha,scope=cowsay-$SLUG
-          docker save -o cowsay.tar mcpany/e2e-cowsay-server:latest
-
-          # Everything
-          make -C server build-everything-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=everything-$SLUG CACHE_FROM=type=gha,scope=everything-$SLUG
-          docker save -o everything.tar mcpany/everything:latest
-
-          # UI
-          make -C server docker-build-ui PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=ui-$SLUG CACHE_FROM=type=gha,scope=ui-$SLUG
-          docker save -o ui.tar mcpany/ui:latest
-
-          # Operator
-          make -C server docker-build-operator PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=operator-$SLUG CACHE_FROM=type=gha,scope=operator-$SLUG
-          docker save -o operator.tar mcpany/operator:latest
-
-          # UI Test Image
-          make -C ui build-test-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=ui-test-$SLUG CACHE_FROM=type=gha,scope=ui-test-$SLUG
-          docker save -o ui-test-image.tar mcpany-ui-e2e:latest
-
-      - name: Upload Server Image
-        uses: actions/upload-artifact@v4
+      # 1. Server
+      - name: Build Server
+        run: |
+          PLATFORM="${{ matrix.platform }}"
+          SLUG="${{ matrix.slug }}"
+          make -C server build-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=server-$SLUG CACHE_FROM=type=gha,scope=server-$SLUG
+          docker save -o server.tar mcpany/server:latest
+      - uses: actions/upload-artifact@v4
         with:
           name: image-server-${{ matrix.slug }}
           path: server.tar
           retention-days: 1
+      - name: Clean Server
+        run: rm server.tar && docker system prune -af
 
-      - name: Upload HTTP Echo Image
-        uses: actions/upload-artifact@v4
+      # 2. HTTP Echo
+      - name: Build HTTP Echo
+        run: |
+          PLATFORM="${{ matrix.platform }}"
+          SLUG="${{ matrix.slug }}"
+          make -C server build-http-echo-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=http-echo-$SLUG CACHE_FROM=type=gha,scope=http-echo-$SLUG
+          docker save -o http-echo.tar mcpany/http-echo-server:latest
+      - uses: actions/upload-artifact@v4
         with:
           name: image-http-echo-${{ matrix.slug }}
           path: http-echo.tar
           retention-days: 1
+      - name: Clean HTTP Echo
+        run: rm http-echo.tar && docker system prune -af
 
-      - name: Upload Time Server Image
-        uses: actions/upload-artifact@v4
+      # 3. Time Server
+      - name: Build Time Server
+        run: |
+          PLATFORM="${{ matrix.platform }}"
+          SLUG="${{ matrix.slug }}"
+          make -C server build-e2e-timeserver-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=time-server-$SLUG CACHE_FROM=type=gha,scope=time-server-$SLUG
+          docker save -o time-server.tar mcpany-e2e-time-server
+      - uses: actions/upload-artifact@v4
         with:
           name: image-time-server-${{ matrix.slug }}
           path: time-server.tar
           retention-days: 1
+      - name: Clean Time Server
+        run: rm time-server.tar && docker system prune -af
 
-      - name: Upload Cowsay Image
-        uses: actions/upload-artifact@v4
+      # 4. Cowsay
+      - name: Build Cowsay
+        run: |
+          PLATFORM="${{ matrix.platform }}"
+          SLUG="${{ matrix.slug }}"
+          make -C server build-cowsay-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=cowsay-$SLUG CACHE_FROM=type=gha,scope=cowsay-$SLUG
+          docker save -o cowsay.tar mcpany/e2e-cowsay-server:latest
+      - uses: actions/upload-artifact@v4
         with:
           name: image-cowsay-${{ matrix.slug }}
           path: cowsay.tar
           retention-days: 1
+      - name: Clean Cowsay
+        run: rm cowsay.tar && docker system prune -af
 
-      - name: Upload Everything Image
-        uses: actions/upload-artifact@v4
+      # 5. Everything
+      - name: Build Everything
+        run: |
+          PLATFORM="${{ matrix.platform }}"
+          SLUG="${{ matrix.slug }}"
+          make -C server build-everything-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=everything-$SLUG CACHE_FROM=type=gha,scope=everything-$SLUG
+          docker save -o everything.tar mcpany/everything:latest
+      - uses: actions/upload-artifact@v4
         with:
           name: image-everything-${{ matrix.slug }}
           path: everything.tar
           retention-days: 1
+      - name: Clean Everything
+        run: rm everything.tar && docker system prune -af
 
-      - name: Upload UI Image
-        uses: actions/upload-artifact@v4
+      # 6. UI
+      - name: Build UI
+        run: |
+          PLATFORM="${{ matrix.platform }}"
+          SLUG="${{ matrix.slug }}"
+          make -C server docker-build-ui PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=ui-$SLUG CACHE_FROM=type=gha,scope=ui-$SLUG
+          docker save -o ui.tar mcpany/ui:latest
+      - uses: actions/upload-artifact@v4
         with:
           name: image-ui-${{ matrix.slug }}
           path: ui.tar
           retention-days: 1
+      - name: Clean UI
+        run: rm ui.tar && docker system prune -af
 
-      - name: Upload Operator Image
-        uses: actions/upload-artifact@v4
+      # 7. Operator
+      - name: Build Operator
+        run: |
+          PLATFORM="${{ matrix.platform }}"
+          SLUG="${{ matrix.slug }}"
+          make -C server docker-build-operator PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=operator-$SLUG CACHE_FROM=type=gha,scope=operator-$SLUG
+          docker save -o operator.tar mcpany/operator:latest
+      - uses: actions/upload-artifact@v4
         with:
           name: image-operator-${{ matrix.slug }}
           path: operator.tar
           retention-days: 1
+      - name: Clean Operator
+        run: rm operator.tar && docker system prune -af
 
-      - name: Upload UI Test Image
-        uses: actions/upload-artifact@v4
+      # 8. UI Test Image
+      - name: Build UI Test Image
+        run: |
+          PLATFORM="${{ matrix.platform }}"
+          SLUG="${{ matrix.slug }}"
+          make -C ui build-test-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=ui-test-$SLUG CACHE_FROM=type=gha,scope=ui-test-$SLUG
+          docker save -o ui-test-image.tar mcpany-ui-e2e:latest
+      - uses: actions/upload-artifact@v4
         with:
           name: image-ui-test-${{ matrix.slug }}
           path: ui-test-image.tar
           retention-days: 1
+      - name: Clean UI Test Image
+        run: rm ui-test-image.tar && docker system prune -af
 
   e2e-sequential:
     runs-on: oci-runner
