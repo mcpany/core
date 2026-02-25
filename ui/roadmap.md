@@ -11,6 +11,10 @@
 - [ ] **[P0] Agent Chain Tracer (A2A)**: Visual timeline of multi-agent handoffs and message passing. (Added: 2026-02-26)
 - [ ] **[P1] Federated Node Manager**: UI for peering with remote MCP Any instances and managing shared tool access. (Added: 2026-02-26)
 - [ ] **[P1] Resource Cost/Latency Overlay**: Real-time performance metrics displayed directly on tool cards. (Added: 2026-02-26)
+- [ ] **[P0] Gateway Security Center**: Dashboard for managing Config Locks, MFA status, and CSRF protection. (Added: 2026-02-27)
+- [ ] **[P1] Recursive HITL Inbox**: A unified inbox for subagent "Ask-User" requests bubbling up from parent sessions. (Added: 2026-02-27)
+- [ ] **[P1] Context DAG Explorer**: Visual explorer for branched and forked agent contexts (Shared KV DAG). (Added: 2026-02-27)
+- [ ] **[P2] Vulnerability Shielding Monitor**: Real-time view of tool calls being blocked by the Autonomous Shielding middleware. (Added: 2026-02-27)
 - [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
 - [x] **[P1] Tool Playground & Explorer**:
   - [x] Auto-generated forms from Tool JSON Schemas.

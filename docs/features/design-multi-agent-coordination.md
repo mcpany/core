@@ -43,3 +43,6 @@ As AI agent ecosystems evolve from single-agent monoliths to multi-agent swarms 
 
 ## 7. Evolutionary Changelog
 * **2026-02-24**: Initial Document Creation.
+* **2026-02-27**: Added support for Recursive HITL.
+    * **Context**: Subagents now need to prompt users directly (e.g., Claude Code `askQuestions`).
+    * **Architecture Adjustment**: Introduced `Delegated HITL` protocol where subagents can emit a `REQUEST_USER_INPUT` event that is proxied through the parent session to the primary UI.

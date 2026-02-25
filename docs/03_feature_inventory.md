@@ -63,5 +63,19 @@
 - **MCP Provenance Attestation**: Promoted to **P0** as it is a prerequisite for secure Federated MCP peering.
 - **Lazy-MCP Middleware**: Promoted to **P0** (Already P0, but re-affirming importance for Federated Tool Mesh).
 
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **Gateway Config Lock (MFA-Auth)**: (P0) Hardens the local MCP Any gateway against CSRF attacks (CVE-2026-25253). Requires out-of-band confirmation for config changes.
+- **Recursive HITL Protocol**: (P1) Enables subagents to delegate "Ask-User" tasks to the primary agent session, maintaining a unified user interface.
+- **Context Branching Support**: (P1) Allows the Shared KV store to "fork" state to support non-linear agent exploration (e.g., Claude Code's /fork).
+- **Autonomous Shielding Middleware**: (P2) Ingests vulnerability feeds to dynamically block risky tool arguments before they reach the MCP server.
+
+### Priority Shifts
+- **HITL Middleware**: Promoted from **P1** to **P0**. Now critical for supporting complex subagent-human interactions.
+- **Shared KV Store**: Re-affirming **P0**. Essential for state consistency during context branching.
+
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.

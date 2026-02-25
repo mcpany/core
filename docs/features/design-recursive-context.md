@@ -53,3 +53,6 @@ As agentic workflows evolve from single-agent tasks to multi-agent swarms (e.g.,
 
 ## 7. Evolutionary Changelog
 * **2026-02-23:** Initial Document Creation. Standardizing Recursive Context Protocol for multi-agent swarm orchestration.
+* **2026-02-27:** Support for Context Branching (Forking).
+    * **Context**: Agents now support non-linear exploration paths (e.g., Claude Code `/fork`).
+    * **Architecture Adjustment**: Updated Context Store to support directed acyclic graph (DAG) based state inheritance. Subagents can now "fork" a parent context into a new, independent branch while maintaining a read-only reference to the source.

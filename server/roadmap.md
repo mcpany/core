@@ -29,6 +29,12 @@
 *   **[P1] Federated MCP Peering**: Distributed node discovery and tool proxying. (Added: 2026-02-26)
 *   **[P1] Resource Telemetry Middleware**: Inject latency/cost metrics into tool schemas. (Added: 2026-02-26)
 
+#### Upcoming (2026-02-27 Evolution)
+*   **[P0] Gateway Config Lock (MFA-Auth)**: Hardens local gateway against CSRF attacks (CVE-2026-25253). (Added: 2026-02-27)
+*   **[P1] Recursive HITL Protocol**: Enables subagent delegation of user-interaction requests through parent sessions. (Added: 2026-02-27)
+*   **[P1] Context Branching Support**: DAG-based state inheritance for non-linear exploration (e.g. /fork). (Added: 2026-02-27)
+*   **[P2] Autonomous Shielding Middleware**: Vulnerability-feed based tool call blocking. (Added: 2026-02-27)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
