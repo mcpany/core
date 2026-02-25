@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **JIT Tool Sandbox (WASM/Docker)**: (P0) Transient execution environment for untrusted or "healed" tools. Prevents host escape.
+- **Dynamic Permission Broker**: (P1) Middleware that handles JIT privilege escalation requests from subagents with human-in-the-loop fallback.
+- **Abstract Tool Discovery (Metadata-Only)**: (P1) Optimization for massive context windows (Gemini) that serves only tool names/intents initially to prevent context bloat.
+
+### Priority Shifts
+- **Environment Bridging Middleware**: Promoted to **P0** to support the increasing need for secure tool access from isolated agent workspaces (Claude Code).
+- **A2A Interop Bridge**: Promoted to **P0** (Already P0, but re-affirming criticality for self-healing swarms across frameworks).
+
+### Deprecations / Monitoring
+- **Static Token Scoping**: Monitoring for deprecation in favor of Dynamic JIT Permission Brokerage.

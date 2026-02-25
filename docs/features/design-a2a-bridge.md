@@ -46,3 +46,10 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+
+### Update: 2026-02-27 - JIT Sandbox for Untrusted Peer Agents
+**Context:** Recent market sync findings indicate that self-healing swarms can modify their own behaviors, making peer agents potentially "untrusted" during inter-framework handoffs.
+**Architecture Adjustment:**
+* Integration with the **JIT Tool Sandbox**. A2A-delegated tasks that involve local tool execution on the peer side can now be proxied through a transient sandbox.
+* **Dynamic Permission Escalation:** A2A messages can now include "Permission Request" intents, allowing the bridge to request JIT elevation from the parent agent's context.
+**Security Impact:** Prevents a compromised peer agent from using an A2A handoff to execute malicious local tool modifications on the host.

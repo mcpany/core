@@ -11,6 +11,9 @@
 - [ ] **[P0] Agent Chain Tracer (A2A)**: Visual timeline of multi-agent handoffs and message passing. (Added: 2026-02-26)
 - [ ] **[P1] Federated Node Manager**: UI for peering with remote MCP Any instances and managing shared tool access. (Added: 2026-02-26)
 - [ ] **[P1] Resource Cost/Latency Overlay**: Real-time performance metrics displayed directly on tool cards. (Added: 2026-02-26)
+- [ ] **[P0] JIT Sandbox Monitor**: Real-time visualization of transient sandboxes, syscall logs, and resource isolation. (Added: 2026-02-27)
+- [ ] **[P1] JIT Permission Request UI**: Human-in-the-loop interface for approving/denying dynamic privilege escalation requests. (Added: 2026-02-27)
+- [ ] **[P1] Tool Abstract Viewer**: UI component for browsing "Abstracted" tool intents before loading full schemas. (Added: 2026-02-27)
 - [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
 - [x] **[P1] Tool Playground & Explorer**:
   - [x] Auto-generated forms from Tool JSON Schemas.

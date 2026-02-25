@@ -29,6 +29,11 @@
 *   **[P1] Federated MCP Peering**: Distributed node discovery and tool proxying. (Added: 2026-02-26)
 *   **[P1] Resource Telemetry Middleware**: Inject latency/cost metrics into tool schemas. (Added: 2026-02-26)
 
+#### Upcoming (2026-02-27 Evolution)
+*   **[P0] JIT Tool Sandbox**: Implement transient WASM/Docker execution for untrusted or agent-healed tools. (Added: 2026-02-27)
+*   **[P1] Dynamic Permission Broker**: Just-In-Time privilege escalation middleware with parent intent verification. (Added: 2026-02-27)
+*   **[P1] Abstract Tool Discovery**: Lazy-discovery optimization to serve metadata-only schemas for massive context windows. (Added: 2026-02-27)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
