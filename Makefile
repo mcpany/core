@@ -96,9 +96,11 @@ prepare-proto:
 		echo "protoc not found, attempting to install version $${PROTOC_TAG}..."; \
 		if ! command -v curl >/dev/null 2>&1 || ! command -v unzip >/dev/null 2>&1; then \
 			echo "curl and unzip are not installed. Installing..."; \
-			SUDO=""; \
-			if command -v sudo >/dev/null 2>&1; then SUDO="sudo"; fi; \
-			$${SUDO} apt-get update && $${SUDO} apt-get install -y curl unzip; \
+			if [ "$$(id -u)" = "0" ]; then \
+				apt-get update && apt-get install -y curl unzip; \
+			else \
+				sudo apt-get update && sudo apt-get install -y curl unzip; \
+			fi; \
 		fi; \
 		PROTOC_VERSION_NO_V=$$(echo "$${PROTOC_TAG}" | sed 's/v//'); \
 		PROTOC_DOWNLOAD_URL_NO_V="$(PROTOC_DOWNLOAD_URL_BASE)/$${PROTOC_TAG}/protoc-$${PROTOC_VERSION_NO_V}-linux-$(PROTOC_ARCH).zip"; \
