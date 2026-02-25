@@ -85,6 +85,10 @@ jobs:
           sudo rm -rf /usr/share/dotnet
           sudo rm -rf /opt/ghc
           sudo rm -rf /usr/local/share/boost
+          sudo rm -rf /opt/hostedtoolcache
+          sudo rm -rf /usr/share/swift
+          sudo rm -rf /usr/local/.ghcup
+          sudo rm -rf /usr/lib/jvm
 
       - name: Prune Docker
         run: docker system prune -af
@@ -161,6 +165,10 @@ jobs:
           sudo rm -rf /usr/share/dotnet
           sudo rm -rf /opt/ghc
           sudo rm -rf /usr/local/share/boost
+          sudo rm -rf /opt/hostedtoolcache
+          sudo rm -rf /usr/share/swift
+          sudo rm -rf /usr/local/.ghcup
+          sudo rm -rf /usr/lib/jvm
 
       - name: Prune Docker
         run: docker system prune -af
@@ -271,7 +279,7 @@ jobs:
 
       - name: Test (Short)
         run: |
-          make test-fast CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache COVERAGE_FILE=coverage-fast.out
+          make test-fast SKIP_DOCKER_TESTS=true CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache COVERAGE_FILE=coverage-fast.out
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
@@ -300,6 +308,10 @@ jobs:
           sudo rm -rf /usr/share/dotnet
           sudo rm -rf /opt/ghc
           sudo rm -rf /usr/local/share/boost
+          sudo rm -rf /opt/hostedtoolcache
+          sudo rm -rf /usr/share/swift
+          sudo rm -rf /usr/local/.ghcup
+          sudo rm -rf /usr/lib/jvm
 
       - name: Prune Docker
         run: docker system prune -af
@@ -471,6 +483,10 @@ jobs:
           sudo rm -rf /usr/share/dotnet
           sudo rm -rf /opt/ghc
           sudo rm -rf /usr/local/share/boost
+          sudo rm -rf /opt/hostedtoolcache
+          sudo rm -rf /usr/share/swift
+          sudo rm -rf /usr/local/.ghcup
+          sudo rm -rf /usr/lib/jvm
       - uses: actions/checkout@v6
 
       - name: Set up Go
@@ -607,6 +623,10 @@ jobs:
           sudo rm -rf /usr/share/dotnet
           sudo rm -rf /opt/ghc
           sudo rm -rf /usr/local/share/boost
+          sudo rm -rf /opt/hostedtoolcache
+          sudo rm -rf /usr/share/swift
+          sudo rm -rf /usr/local/.ghcup
+          sudo rm -rf /usr/lib/jvm
 
       - name: Prune Docker
         run: docker system prune -af
@@ -746,6 +766,10 @@ jobs:
           sudo rm -rf /usr/share/dotnet
           sudo rm -rf /opt/ghc
           sudo rm -rf /usr/local/share/boost
+          sudo rm -rf /opt/hostedtoolcache
+          sudo rm -rf /usr/share/swift
+          sudo rm -rf /usr/local/.ghcup
+          sudo rm -rf /usr/lib/jvm
 
       - name: Prune Docker
         run: docker system prune -af
@@ -925,6 +949,10 @@ jobs:
           sudo rm -rf /usr/share/dotnet
           sudo rm -rf /opt/ghc
           sudo rm -rf /usr/local/share/boost
+          sudo rm -rf /opt/hostedtoolcache
+          sudo rm -rf /usr/share/swift
+          sudo rm -rf /usr/local/.ghcup
+          sudo rm -rf /usr/lib/jvm
 
       - name: Prune Docker
         run: docker system prune -af
@@ -978,6 +1006,10 @@ jobs:
           sudo rm -rf /usr/share/dotnet
           sudo rm -rf /opt/ghc
           sudo rm -rf /usr/local/share/boost
+          sudo rm -rf /opt/hostedtoolcache
+          sudo rm -rf /usr/share/swift
+          sudo rm -rf /usr/local/.ghcup
+          sudo rm -rf /usr/lib/jvm
 
       - name: Prune Docker
         run: docker system prune -af
