@@ -201,19 +201,41 @@ jobs:
         run: |
           set -x
           export DEBIAN_FRONTEND=noninteractive
-          if command -v apt-get &> /dev/null; then
-            if command -v sudo >/dev/null; then
-              sudo apt-get update && sudo apt-get install -y make xz-utils gcc build-essential
-            else
-              apt-get update && apt-get install -y make xz-utils gcc build-essential
-            fi
-          elif command -v apk &> /dev/null; then
-             if command -v sudo >/dev/null; then
-               sudo apk add --no-cache make xz build-base
-             else
-               apk add --no-cache make xz build-base
+
+          # Helper to install with retries and sudo handling
+          install_pkg() {
+             PKGS=$1
+             if command -v apt-get &> /dev/null; then
+                # Retry loop for apt-get update
+                for i in 1 2 3; do
+                  if command -v sudo >/dev/null; then
+                    sudo -n apt-get update && break || sleep 5
+                  else
+                    apt-get update && break || sleep 5
+                  fi
+                done
+
+                if command -v sudo >/dev/null; then
+                   sudo -n apt-get install -y $PKGS
+                else
+                   apt-get install -y $PKGS
+                fi
+             elif command -v apk &> /dev/null; then
+                if command -v sudo >/dev/null; then
+                   sudo -n apk add --no-cache $PKGS
+                else
+                   apk add --no-cache $PKGS
+                fi
              fi
+          }
+
+          # Install packages needed for CGO and build
+          if command -v apt-get &> /dev/null; then
+             install_pkg "make xz-utils gcc build-essential git"
+          elif command -v apk &> /dev/null; then
+             install_pkg "make xz build-base git"
           fi
+
           # Verify gcc
           which gcc || echo "GCC NOT FOUND after install"
           gcc --version || echo "GCC version check failed"
@@ -370,26 +392,40 @@ jobs:
           set -x
           export DEBIAN_FRONTEND=noninteractive
 
-          install_apt() {
-             CMD=$1
-             if command -v sudo >/dev/null; then
-               sudo apt-get update || true
-               sudo apt-get install -y $CMD
-             else
-               apt-get update || true
-               apt-get install -y $CMD
+          # Helper to install with retries and sudo handling
+          install_pkg() {
+             PKGS=$1
+             if command -v apt-get &> /dev/null; then
+                # Retry loop for apt-get update
+                for i in 1 2 3; do
+                  if command -v sudo >/dev/null; then
+                    sudo -n apt-get update && break || sleep 5
+                  else
+                    apt-get update && break || sleep 5
+                  fi
+                done
+
+                if command -v sudo >/dev/null; then
+                   sudo -n apt-get install -y $PKGS
+                else
+                   apt-get install -y $PKGS
+                fi
+             elif command -v apk &> /dev/null; then
+                if command -v sudo >/dev/null; then
+                   sudo -n apk add --no-cache $PKGS
+                else
+                   apk add --no-cache $PKGS
+                fi
              fi
           }
 
+          # Install packages needed for CGO and build
           if command -v apt-get &> /dev/null; then
-            install_apt "make xz-utils gcc build-essential"
+             install_pkg "make xz-utils gcc build-essential git"
           elif command -v apk &> /dev/null; then
-             if command -v sudo >/dev/null; then
-               sudo apk add --no-cache make xz build-base
-             else
-               apk add --no-cache make xz build-base
-             fi
+             install_pkg "make xz build-base git"
           fi
+
           # Verify gcc
           which gcc || echo "GCC NOT FOUND after install"
           gcc --version || echo "GCC version check failed"
@@ -578,8 +614,10 @@ jobs:
         run: |
           set -x
           export DEBIAN_FRONTEND=noninteractive
-          # In container, we are root. Using sudo might fail if not installed.
-          apt-get update && apt-get install -y make git curl unzip
+          # Retry update to handle transient network issues
+          apt-get update || echo "apt-get update failed, continuing..."
+          apt-get install -y make git curl unzip build-essential || echo "Install failed"
+          which make || echo "Make NOT FOUND"
 
       - name: Generate Protobufs
         run: |
@@ -722,24 +760,40 @@ jobs:
           set -x
           export DEBIAN_FRONTEND=noninteractive
 
-          install_apt() {
-             CMD=$1
-             if command -v sudo >/dev/null; then
-               sudo apt-get update && sudo apt-get install -y $CMD
-             else
-               apt-get update && apt-get install -y $CMD
+          # Helper to install with retries and sudo handling
+          install_pkg() {
+             PKGS=$1
+             if command -v apt-get &> /dev/null; then
+                # Retry loop for apt-get update
+                for i in 1 2 3; do
+                  if command -v sudo >/dev/null; then
+                    sudo -n apt-get update && break || sleep 5
+                  else
+                    apt-get update && break || sleep 5
+                  fi
+                done
+
+                if command -v sudo >/dev/null; then
+                   sudo -n apt-get install -y $PKGS
+                else
+                   apt-get install -y $PKGS
+                fi
+             elif command -v apk &> /dev/null; then
+                if command -v sudo >/dev/null; then
+                   sudo -n apk add --no-cache $PKGS
+                else
+                   apk add --no-cache $PKGS
+                fi
              fi
           }
 
+          # Install packages needed for CGO and build
           if command -v apt-get &> /dev/null; then
-            install_apt "make xz-utils gcc build-essential"
+             install_pkg "make xz-utils gcc build-essential git"
           elif command -v apk &> /dev/null; then
-             if command -v sudo >/dev/null; then
-               sudo apk add --no-cache make xz build-base
-             else
-               apk add --no-cache make xz build-base
-             fi
+             install_pkg "make xz build-base git"
           fi
+
           # Verify gcc
           which gcc || echo "GCC NOT FOUND after install"
           gcc --version || echo "GCC version check failed"
@@ -889,26 +943,40 @@ jobs:
           set -x
           export DEBIAN_FRONTEND=noninteractive
 
-          install_apt() {
-             CMD=$1
-             if command -v sudo >/dev/null; then
-               sudo apt-get update || true
-               sudo apt-get install -y $CMD
-             else
-               apt-get update || true
-               apt-get install -y $CMD
+          # Helper to install with retries and sudo handling
+          install_pkg() {
+             PKGS=$1
+             if command -v apt-get &> /dev/null; then
+                # Retry loop for apt-get update
+                for i in 1 2 3; do
+                  if command -v sudo >/dev/null; then
+                    sudo -n apt-get update && break || sleep 5
+                  else
+                    apt-get update && break || sleep 5
+                  fi
+                done
+
+                if command -v sudo >/dev/null; then
+                   sudo -n apt-get install -y $PKGS
+                else
+                   apt-get install -y $PKGS
+                fi
+             elif command -v apk &> /dev/null; then
+                if command -v sudo >/dev/null; then
+                   sudo -n apk add --no-cache $PKGS
+                else
+                   apk add --no-cache $PKGS
+                fi
              fi
           }
 
+          # Install packages needed for CGO and build
           if command -v apt-get &> /dev/null; then
-            install_apt "make xz-utils gcc build-essential"
+             install_pkg "make xz-utils gcc build-essential git"
           elif command -v apk &> /dev/null; then
-             if command -v sudo >/dev/null; then
-               sudo apk add --no-cache make xz build-base
-             else
-               apk add --no-cache make xz build-base
-             fi
+             install_pkg "make xz build-base git"
           fi
+
           # Verify gcc
           which gcc || echo "GCC NOT FOUND after install"
           gcc --version || echo "GCC version check failed"
