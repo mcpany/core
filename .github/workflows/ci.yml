@@ -488,11 +488,13 @@ jobs:
             slug: arm64
             runner: ubuntu-24.04-arm
     steps:
-      - uses: actions/checkout@v6
-
       - name: Install dependencies
         run: |
           echo "Installing build dependencies..."
+          set -x
+          whoami
+          id
+          env
           SUDO=""
           if command -v sudo >/dev/null; then
             SUDO="sudo"
@@ -503,7 +505,9 @@ jobs:
           $SUDO apt-get install -y make git curl xz-utils
 
           echo "Dependencies installed."
-          make --version
+          make --version || echo "Make not found after install"
+
+      - uses: actions/checkout@v6
 
       - name: Set up Go
         uses: actions/setup-go@v6

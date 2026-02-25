@@ -348,7 +348,12 @@ prepare:
 		echo "golangci-lint v1.64.5 is already installed."; \
 	else \
 		echo "Installing golangci-lint v1.64.5 to $(TOOL_INSTALL_DIR)..."; \
-		curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(TOOL_INSTALL_DIR) v1.64.5; \
+		if curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(TOOL_INSTALL_DIR) v1.64.5; then \
+			echo "golangci-lint installed via install.sh successfully."; \
+		else \
+			echo "Install script failed (likely network/DNS). Falling back to go install..."; \
+			GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.64.5; \
+		fi; \
 		if test -f "$(GOLANGCI_LINT_BIN)"; then \
 			echo "golangci-lint installed successfully."; \
 		else \
