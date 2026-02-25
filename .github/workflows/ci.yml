@@ -149,7 +149,7 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils curl unzip git
+            sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils curl unzip git
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz curl unzip git
           fi
@@ -185,7 +185,7 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils curl unzip git
+            sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils curl unzip git
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz curl unzip git
           fi
@@ -324,7 +324,7 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils curl unzip git
+            sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils curl unzip git
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz curl unzip git
           fi
@@ -468,7 +468,6 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: ${{ matrix.runner }}
-    container: public.ecr.aws/docker/library/ubuntu:24.04
     strategy:
       fail-fast: false
       matrix:
@@ -504,11 +503,7 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            if command -v sudo &> /dev/null; then
-              sudo apt-get update && sudo apt-get install -y make curl unzip git
-            else
-              apt-get update && apt-get install -y make curl unzip git
-            fi
+            sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y make curl unzip git
           fi
 
       - name: Generate Protobufs
@@ -641,7 +636,7 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils curl unzip git
+            sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils curl unzip git
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz curl unzip git
           fi
@@ -780,7 +775,7 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils curl unzip git
+            sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils curl unzip git
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz curl unzip git
           fi
