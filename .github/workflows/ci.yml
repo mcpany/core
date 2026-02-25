@@ -114,6 +114,17 @@ jobs:
           cache-dependency-path: server/tests/integration/upstream/package-lock.json
 
       # Cache Tools (protoc, helm, etc.)
+      - name: Detect Architecture
+        id: detect-arch
+        run: |
+          ARCH=$(uname -m)
+          case $ARCH in
+            x86_64) SLUG="amd64" ;;
+            aarch64) SLUG="arm64" ;;
+            *) echo "Unsupported arch: $ARCH"; exit 1 ;;
+          esac
+          echo "slug=$SLUG" >> $GITHUB_OUTPUT
+
       - name: Cache Tools
         uses: actions/cache@v4
         with:
@@ -149,7 +160,7 @@ jobs:
     runs-on: oci-runner
     # container: public.ecr.aws/docker/library/ubuntu:24.04
     timeout-minutes: 30
-    needs: [changes]
+    needs: [changes, build-images]
     if: ${{ needs.changes.outputs.src == 'true' }}
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
@@ -266,12 +277,44 @@ jobs:
             ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
             ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-
 
+      - name: Download Server Image
+        uses: actions/download-artifact@v4
+        with:
+          name: image-server-${{ steps.detect-arch.outputs.slug }}
+
+      - name: Download HTTP Echo Image
+        uses: actions/download-artifact@v4
+        with:
+          name: image-http-echo-${{ steps.detect-arch.outputs.slug }}
+
+      - name: Download Time Server Image
+        uses: actions/download-artifact@v4
+        with:
+          name: image-time-server-${{ steps.detect-arch.outputs.slug }}
+
+      - name: Download Cowsay Image
+        uses: actions/download-artifact@v4
+        with:
+          name: image-cowsay-${{ steps.detect-arch.outputs.slug }}
+
+      - name: Download Everything Image
+        uses: actions/download-artifact@v4
+        with:
+          name: image-everything-${{ steps.detect-arch.outputs.slug }}
+
+      - name: Load Docker Images
+        run: |
+          for f in *.tar.gz; do
+            gunzip -c "$f" | docker load
+            rm "$f"
+          done
+
       - name: Prepare environment
         run: make prepare CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache
 
       - name: Test (Short)
         run: |
-          make test-fast CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache COVERAGE_FILE=coverage-fast.out
+          make test-fast SKIP_DOCKER_REBUILD=true CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache COVERAGE_FILE=coverage-fast.out
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
@@ -431,6 +474,7 @@ jobs:
         run: |
           for f in *.tar.gz; do
             gunzip -c "$f" | docker load
+            rm "$f"
           done
 
       - name: Prepare environment
@@ -753,6 +797,7 @@ jobs:
         run: |
           for f in *.tar.gz; do
             gunzip -c "$f" | docker load
+            rm "$f"
           done
 
       - name: Cache Tools
@@ -953,6 +998,7 @@ jobs:
       - name: Load Docker Image
         run: |
           gunzip -c server.tar.gz | docker load
+          rm server.tar.gz
 
       - name: Smoke Test
         run: |
@@ -1010,6 +1056,7 @@ jobs:
         run: |
           for f in *.tar.gz; do
             gunzip -c "$f" | docker load
+            rm "$f"
           done
 
       - name: Test UI
@@ -1094,6 +1141,7 @@ jobs:
           # kind load image-archive might be better but let's stick to docker daemon for consistency
           for f in *.tar.gz; do
             gunzip -c "$f" | docker load
+            rm "$f"
           done
 
           # Now load specific images into Kind
