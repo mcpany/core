@@ -216,12 +216,10 @@ jobs:
              fi
 
              if command -v apt-get &> /dev/null; then
-                $SUDO apt-get clean
-                $SUDO rm -rf /var/lib/apt/lists/*
-
+                # Retry loop for apt-get update
                 UPDATE_SUCCESS=0
                 for i in 1 2 3 4 5; do
-                  if $SUDO apt-get -o Acquire::ForceIPv4=true update -y; then
+                  if $SUDO apt-get update -y; then
                     UPDATE_SUCCESS=1
                     break
                   fi
@@ -234,7 +232,7 @@ jobs:
                    exit 1
                 fi
 
-                $SUDO apt-get install -y --no-install-recommends $PKGS
+                $SUDO apt-get install -y --fix-missing --no-install-recommends $PKGS
              elif command -v apk &> /dev/null; then
                 $SUDO apk add --no-cache $PKGS
              elif command -v dnf &> /dev/null; then
@@ -429,12 +427,10 @@ jobs:
              fi
 
              if command -v apt-get &> /dev/null; then
-                $SUDO apt-get clean
-                $SUDO rm -rf /var/lib/apt/lists/*
-
+                # Retry loop for apt-get update
                 UPDATE_SUCCESS=0
                 for i in 1 2 3 4 5; do
-                  if $SUDO apt-get -o Acquire::ForceIPv4=true update -y; then
+                  if $SUDO apt-get update -y; then
                     UPDATE_SUCCESS=1
                     break
                   fi
@@ -447,7 +443,7 @@ jobs:
                    exit 1
                 fi
 
-                $SUDO apt-get install -y --no-install-recommends $PKGS
+                $SUDO apt-get install -y --fix-missing --no-install-recommends $PKGS
              elif command -v apk &> /dev/null; then
                 $SUDO apk add --no-cache $PKGS
              elif command -v dnf &> /dev/null; then
@@ -667,13 +663,10 @@ jobs:
           fi
           df -h
 
-          # Clean and Update with ForceIPv4 and Retries
-          apt-get clean
-          rm -rf /var/lib/apt/lists/*
-
+          # Simple retry loop for apt-get update
           UPDATE_SUCCESS=0
           for i in 1 2 3 4 5; do
-            if apt-get -o Acquire::ForceIPv4=true update -y; then
+            if apt-get update -y; then
               UPDATE_SUCCESS=1
               break
             fi
@@ -686,7 +679,7 @@ jobs:
              exit 1
           fi
 
-          apt-get install -y --no-install-recommends make git curl unzip build-essential
+          apt-get install -y --fix-missing --no-install-recommends make git curl unzip build-essential
           which make
 
       - name: Generate Protobufs
@@ -844,12 +837,10 @@ jobs:
              fi
 
              if command -v apt-get &> /dev/null; then
-                $SUDO apt-get clean
-                $SUDO rm -rf /var/lib/apt/lists/*
-
+                # Retry loop for apt-get update
                 UPDATE_SUCCESS=0
                 for i in 1 2 3 4 5; do
-                  if $SUDO apt-get -o Acquire::ForceIPv4=true update -y; then
+                  if $SUDO apt-get update -y; then
                     UPDATE_SUCCESS=1
                     break
                   fi
@@ -862,7 +853,7 @@ jobs:
                    exit 1
                 fi
 
-                $SUDO apt-get install -y --no-install-recommends $PKGS
+                $SUDO apt-get install -y --fix-missing --no-install-recommends $PKGS
              elif command -v apk &> /dev/null; then
                 $SUDO apk add --no-cache $PKGS
              elif command -v dnf &> /dev/null; then
@@ -1050,12 +1041,10 @@ jobs:
              fi
 
              if command -v apt-get &> /dev/null; then
-                $SUDO apt-get clean
-                $SUDO rm -rf /var/lib/apt/lists/*
-
+                # Retry loop for apt-get update
                 UPDATE_SUCCESS=0
                 for i in 1 2 3 4 5; do
-                  if $SUDO apt-get -o Acquire::ForceIPv4=true update -y; then
+                  if $SUDO apt-get update -y; then
                     UPDATE_SUCCESS=1
                     break
                   fi
@@ -1068,7 +1057,7 @@ jobs:
                    exit 1
                 fi
 
-                $SUDO apt-get install -y --no-install-recommends $PKGS
+                $SUDO apt-get install -y --fix-missing --no-install-recommends $PKGS
              elif command -v apk &> /dev/null; then
                 $SUDO apk add --no-cache $PKGS
              elif command -v dnf &> /dev/null; then
