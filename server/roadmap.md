@@ -184,3 +184,8 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Core Middleware Pipeline**: The middleware architecture is robust and extensible.
 - **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates protocol details from business logic.
 - **Documentation**: The project has excellent documentation coverage for most features.
+
+#### Upcoming (2026-02-27 Evolution)
+*   **[P0] JIT Permission Broker**: Implement "Intent-Based Escalation" with cryptographically signed tokens. (Added: 2026-02-27)
+*   **[P1] Self-Healing Tool Bridge**: Protocol for agent-led tool schema patching and HITL verification. (Added: 2026-02-27)
+*   **[P1] Predictive Discovery Engine**: Reasoning-trace based pre-caching for Lazy-MCP. (Added: 2026-02-27)

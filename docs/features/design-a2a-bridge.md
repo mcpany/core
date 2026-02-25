@@ -46,3 +46,10 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+
+### Update: 2026-02-27 - Integrating JIT Permissions for Inter-Agent Delegation
+**Context**: Modern swarms are hitting "Permission Deadlocks" during A2A handoffs, where the receiving agent lacks the specific capabilities of the delegating agent.
+**Architecture Adjustment**:
+*   **Trust Delegation**: When an MCP-native agent calls an A2A-native agent via the bridge, it can now attach a "Delegated Intent Token."
+*   **JIT Integration**: The A2A Bridge will now automatically interface with the `JIT Permission Broker` to request temporary elevation for the subagent if the handoff involves restricted resources.
+**Security Impact**: Ensures that inter-agent delegation follows the principle of least privilege while preventing workflow stalls.

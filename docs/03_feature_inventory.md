@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **JIT Permission Broker (Intent-Escalation)**: (P0) A security middleware that allows agents to request temporary, scoped permission elevation via signed "Intent Tokens." Prevents "Permission Deadlock."
+- **Self-Healing Tool Bridge**: (P1) A protocol allowing agents to submit "Tool Patch Requests" to fix broken or outdated tool schemas, subject to human-in-the-loop (HITL) approval.
+- **Predictive Discovery Engine**: (P1) An extension of Lazy-MCP that uses agent reasoning traces to pre-cache tools, reducing discovery latency.
+
+### Priority Shifts
+- **HITL Middleware**: Promoted to **P0**. Critical for validating "Self-Healing" tool patches and JIT permission requests.
+- **On-Demand Discovery Middleware (Lazy-MCP)**: Promoted to **P0** (Re-affirming importance due to JIT trends).
+
+### Deprecations / Monitoring
+- **Static Access Control Lists (ACLs)**: Moving towards dynamic, intent-bound capability tokens.

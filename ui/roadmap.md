@@ -105,3 +105,8 @@
 - [ ] **Log Source Color Coding**: Assign distinct colors to different log sources automatically for better visual separation.
 - [ ] **Context Usage History**: Track total context usage over time to identify growth trends (requires backend metrics persistence).
 - [ ] **Tool Schema Optimizer**: Analyze tool schemas and suggest removing unused properties or compacting descriptions to save context tokens.
+
+#### Upcoming (2026-02-27 Evolution)
+- [ ] **[P0] Intent Escalation Manager**: UI for reviewing and approving JIT permission requests from agents. (Added: 2026-02-27)
+- [ ] **[P1] Tool Patch Verification Portal**: Interface for humans to review and commit agent-proposed tool self-healing patches. (Added: 2026-02-27)
+- [ ] **[P1] Predictive Discovery Visualizer**: Dashboard showing pre-cached tools and reasoning-trace hits. (Added: 2026-02-27)
