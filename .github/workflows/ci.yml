@@ -28,7 +28,7 @@ permissions:
 
 env:
   GOMAXPROCS: 1
-  GOGC: 20
+  GOGC: 10 # Aggressive GC to reduce memory usage on constrained runners
   GO_RACE: "" # Disable race detector in CI due to OOM on constrained runners
 
 jobs:
@@ -158,7 +158,7 @@ jobs:
   unit-test:
     runs-on: oci-runner
     # container: public.ecr.aws/docker/library/ubuntu:24.04
-    timeout-minutes: 120
+    timeout-minutes: 180
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
     env:
@@ -279,7 +279,7 @@ jobs:
   e2e-parallel:
     runs-on: oci-runner
     # container: public.ecr.aws/docker/library/ubuntu:24.04
-    timeout-minutes: 120
+    timeout-minutes: 180
     needs: [build-images]
     strategy:
       fail-fast: false
@@ -585,7 +585,7 @@ jobs:
   e2e-sequential:
     runs-on: oci-runner
     # container: public.ecr.aws/docker/library/ubuntu:24.04
-    timeout-minutes: 120
+    timeout-minutes: 180
     needs: [build-images]
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
@@ -710,7 +710,7 @@ jobs:
   e2e-public-api:
     runs-on: oci-runner
     # container: public.ecr.aws/docker/library/ubuntu:24.04
-    timeout-minutes: 120
+    timeout-minutes: 180
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
     env:
@@ -866,7 +866,7 @@ jobs:
 
   ui-test:
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 180
     needs: [build-images]
     env:
       PLAYWRIGHT_WORKERS: 1
