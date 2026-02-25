@@ -207,14 +207,15 @@ jobs:
              PKGS=$1
              SUDO=""
              if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null; then
-               SUDO="sudo -n"
+               SUDO="sudo"
              fi
 
              if command -v apt-get &> /dev/null; then
                 # Retry loop for apt-get update
-                for i in 1 2 3; do
-                  $SUDO apt-get update && break || sleep 5
-                done
+                if ! ($SUDO apt-get update || (sleep 5 && $SUDO apt-get update) || (sleep 5 && $SUDO apt-get update)); then
+                   echo "apt-get update failed"
+                   # Continue to try install, might work if cache exists
+                fi
                 $SUDO apt-get install -y $PKGS
              elif command -v apk &> /dev/null; then
                 $SUDO apk add --no-cache $PKGS
@@ -389,14 +390,14 @@ jobs:
              PKGS=$1
              SUDO=""
              if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null; then
-               SUDO="sudo -n"
+               SUDO="sudo"
              fi
 
              if command -v apt-get &> /dev/null; then
                 # Retry loop for apt-get update
-                for i in 1 2 3; do
-                  $SUDO apt-get update && break || sleep 5
-                done
+                if ! ($SUDO apt-get update || (sleep 5 && $SUDO apt-get update) || (sleep 5 && $SUDO apt-get update)); then
+                   echo "apt-get update failed"
+                fi
                 $SUDO apt-get install -y $PKGS
              elif command -v apk &> /dev/null; then
                 $SUDO apk add --no-cache $PKGS
@@ -599,7 +600,10 @@ jobs:
           set -x
           export DEBIAN_FRONTEND=noninteractive
           # Retry update to handle transient network issues
-          for i in 1 2 3; do apt-get update && break || sleep 5; done
+          if ! (apt-get update || (sleep 5 && apt-get update) || (sleep 5 && apt-get update)); then
+             echo "apt-get update failed"
+             exit 1
+          fi
           apt-get install -y make git curl unzip build-essential
           which make
 
@@ -749,14 +753,14 @@ jobs:
              PKGS=$1
              SUDO=""
              if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null; then
-               SUDO="sudo -n"
+               SUDO="sudo"
              fi
 
              if command -v apt-get &> /dev/null; then
                 # Retry loop for apt-get update
-                for i in 1 2 3; do
-                  $SUDO apt-get update && break || sleep 5
-                done
+                if ! ($SUDO apt-get update || (sleep 5 && $SUDO apt-get update) || (sleep 5 && $SUDO apt-get update)); then
+                   echo "apt-get update failed"
+                fi
                 $SUDO apt-get install -y $PKGS
              elif command -v apk &> /dev/null; then
                 $SUDO apk add --no-cache $PKGS
@@ -924,14 +928,14 @@ jobs:
              PKGS=$1
              SUDO=""
              if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null; then
-               SUDO="sudo -n"
+               SUDO="sudo"
              fi
 
              if command -v apt-get &> /dev/null; then
                 # Retry loop for apt-get update
-                for i in 1 2 3; do
-                  $SUDO apt-get update && break || sleep 5
-                done
+                if ! ($SUDO apt-get update || (sleep 5 && $SUDO apt-get update) || (sleep 5 && $SUDO apt-get update)); then
+                   echo "apt-get update failed"
+                fi
                 $SUDO apt-get install -y $PKGS
              elif command -v apk &> /dev/null; then
                 $SUDO apk add --no-cache $PKGS
