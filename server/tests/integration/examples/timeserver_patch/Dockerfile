@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM mirror.gcr.io/library/python:3.11-alpine
+FROM mirror.gcr.io/library/python:3.11-slim
 
 # Use /app as working directory
 WORKDIR /app
