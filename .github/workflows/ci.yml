@@ -216,12 +216,6 @@ jobs:
              fi
 
              if command -v apt-get &> /dev/null; then
-                # Use Google mirror for better reliability in CI
-                if [ -f /etc/apt/sources.list ]; then
-                   $SUDO sed -i 's/http:\/\/archive.ubuntu.com\/ubuntu\//http:\/\/mirror.gcr.io\/ubuntu\//g' /etc/apt/sources.list || true
-                   $SUDO sed -i 's/http:\/\/security.ubuntu.com\/ubuntu\//http:\/\/mirror.gcr.io\/ubuntu\//g' /etc/apt/sources.list || true
-                fi
-
                 # Tiered retry logic for apt-get update
                 ($SUDO apt-get update -y) || \
                 (echo "Standard update failed. Retrying with cleanup..." && $SUDO apt-get clean && $SUDO rm -rf /var/lib/apt/lists/* && $SUDO apt-get update -y) || \
@@ -232,13 +226,13 @@ jobs:
              elif command -v apk &> /dev/null; then
                 $SUDO apk add --no-cache $PKGS
              elif command -v dnf &> /dev/null; then
-                $SUDO dnf install -y $PKGS
+                (for i in 1 2 3; do $SUDO dnf install -y $PKGS && exit 0; sleep 5; done; exit 1)
              elif command -v yum &> /dev/null; then
-                $SUDO yum install -y $PKGS
+                (for i in 1 2 3; do $SUDO yum install -y $PKGS && exit 0; sleep 5; done; exit 1)
              elif command -v microdnf &> /dev/null; then
-                $SUDO microdnf install -y $PKGS
+                (for i in 1 2 3; do $SUDO microdnf install -y $PKGS && exit 0; sleep 5; done; exit 1)
              elif command -v zypper &> /dev/null; then
-                $SUDO zypper install -y $PKGS
+                (for i in 1 2 3; do $SUDO zypper install -y $PKGS && exit 0; sleep 5; done; exit 1)
              fi
           }
 
@@ -423,12 +417,6 @@ jobs:
              fi
 
              if command -v apt-get &> /dev/null; then
-                # Use Google mirror for better reliability in CI
-                if [ -f /etc/apt/sources.list ]; then
-                   $SUDO sed -i 's/http:\/\/archive.ubuntu.com\/ubuntu\//http:\/\/mirror.gcr.io\/ubuntu\//g' /etc/apt/sources.list || true
-                   $SUDO sed -i 's/http:\/\/security.ubuntu.com\/ubuntu\//http:\/\/mirror.gcr.io\/ubuntu\//g' /etc/apt/sources.list || true
-                fi
-
                 # Tiered retry logic for apt-get update
                 ($SUDO apt-get update -y) || \
                 (echo "Standard update failed. Retrying with cleanup..." && $SUDO apt-get clean && $SUDO rm -rf /var/lib/apt/lists/* && $SUDO apt-get update -y) || \
@@ -439,13 +427,13 @@ jobs:
              elif command -v apk &> /dev/null; then
                 $SUDO apk add --no-cache $PKGS
              elif command -v dnf &> /dev/null; then
-                $SUDO dnf install -y $PKGS
+                (for i in 1 2 3; do $SUDO dnf install -y $PKGS && exit 0; sleep 5; done; exit 1)
              elif command -v yum &> /dev/null; then
-                $SUDO yum install -y $PKGS
+                (for i in 1 2 3; do $SUDO yum install -y $PKGS && exit 0; sleep 5; done; exit 1)
              elif command -v microdnf &> /dev/null; then
-                $SUDO microdnf install -y $PKGS
+                (for i in 1 2 3; do $SUDO microdnf install -y $PKGS && exit 0; sleep 5; done; exit 1)
              elif command -v zypper &> /dev/null; then
-                $SUDO zypper install -y $PKGS
+                (for i in 1 2 3; do $SUDO zypper install -y $PKGS && exit 0; sleep 5; done; exit 1)
              fi
           }
 
@@ -654,10 +642,6 @@ jobs:
             cat /etc/os-release
           fi
 
-          # Use Google mirror for better reliability in CI
-          sed -i 's/http:\/\/archive.ubuntu.com\/ubuntu\//http:\/\/mirror.gcr.io\/ubuntu\//g' /etc/apt/sources.list || true
-          sed -i 's/http:\/\/security.ubuntu.com\/ubuntu\//http:\/\/mirror.gcr.io\/ubuntu\//g' /etc/apt/sources.list || true
-
           # Tiered retry logic for apt-get update
           # 1. Standard update
           # 2. Clean cache and update (fixes hash mismatches)
@@ -826,12 +810,6 @@ jobs:
              fi
 
              if command -v apt-get &> /dev/null; then
-                # Use Google mirror for better reliability in CI
-                if [ -f /etc/apt/sources.list ]; then
-                   $SUDO sed -i 's/http:\/\/archive.ubuntu.com\/ubuntu\//http:\/\/mirror.gcr.io\/ubuntu\//g' /etc/apt/sources.list || true
-                   $SUDO sed -i 's/http:\/\/security.ubuntu.com\/ubuntu\//http:\/\/mirror.gcr.io\/ubuntu\//g' /etc/apt/sources.list || true
-                fi
-
                 # Tiered retry logic for apt-get update
                 ($SUDO apt-get update -y) || \
                 (echo "Standard update failed. Retrying with cleanup..." && $SUDO apt-get clean && $SUDO rm -rf /var/lib/apt/lists/* && $SUDO apt-get update -y) || \
@@ -842,13 +820,13 @@ jobs:
              elif command -v apk &> /dev/null; then
                 $SUDO apk add --no-cache $PKGS
              elif command -v dnf &> /dev/null; then
-                $SUDO dnf install -y $PKGS
+                (for i in 1 2 3; do $SUDO dnf install -y $PKGS && exit 0; sleep 5; done; exit 1)
              elif command -v yum &> /dev/null; then
-                $SUDO yum install -y $PKGS
+                (for i in 1 2 3; do $SUDO yum install -y $PKGS && exit 0; sleep 5; done; exit 1)
              elif command -v microdnf &> /dev/null; then
-                $SUDO microdnf install -y $PKGS
+                (for i in 1 2 3; do $SUDO microdnf install -y $PKGS && exit 0; sleep 5; done; exit 1)
              elif command -v zypper &> /dev/null; then
-                $SUDO zypper install -y $PKGS
+                (for i in 1 2 3; do $SUDO zypper install -y $PKGS && exit 0; sleep 5; done; exit 1)
              fi
           }
 
@@ -1026,12 +1004,6 @@ jobs:
              fi
 
              if command -v apt-get &> /dev/null; then
-                # Use Google mirror for better reliability in CI
-                if [ -f /etc/apt/sources.list ]; then
-                   $SUDO sed -i 's/http:\/\/archive.ubuntu.com\/ubuntu\//http:\/\/mirror.gcr.io\/ubuntu\//g' /etc/apt/sources.list || true
-                   $SUDO sed -i 's/http:\/\/security.ubuntu.com\/ubuntu\//http:\/\/mirror.gcr.io\/ubuntu\//g' /etc/apt/sources.list || true
-                fi
-
                 # Tiered retry logic for apt-get update
                 ($SUDO apt-get update -y) || \
                 (echo "Standard update failed. Retrying with cleanup..." && $SUDO apt-get clean && $SUDO rm -rf /var/lib/apt/lists/* && $SUDO apt-get update -y) || \
@@ -1042,13 +1014,13 @@ jobs:
              elif command -v apk &> /dev/null; then
                 $SUDO apk add --no-cache $PKGS
              elif command -v dnf &> /dev/null; then
-                $SUDO dnf install -y $PKGS
+                (for i in 1 2 3; do $SUDO dnf install -y $PKGS && exit 0; sleep 5; done; exit 1)
              elif command -v yum &> /dev/null; then
-                $SUDO yum install -y $PKGS
+                (for i in 1 2 3; do $SUDO yum install -y $PKGS && exit 0; sleep 5; done; exit 1)
              elif command -v microdnf &> /dev/null; then
-                $SUDO microdnf install -y $PKGS
+                (for i in 1 2 3; do $SUDO microdnf install -y $PKGS && exit 0; sleep 5; done; exit 1)
              elif command -v zypper &> /dev/null; then
-                $SUDO zypper install -y $PKGS
+                (for i in 1 2 3; do $SUDO zypper install -y $PKGS && exit 0; sleep 5; done; exit 1)
              fi
           }
 
