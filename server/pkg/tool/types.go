@@ -3294,6 +3294,8 @@ func checkInterpreterFunctionCalls(val, language string) error {
 	if isStrict {
 		// For strict languages, ALL dangerous keywords are blocked if they appear as unquoted words.
 		statementKeywords = universal
+		// Sentinel Security Update: Block reflection methods to prevent bypassing keyword checks in strict languages too (e.g. Ruby)
+		functionKeywords = []string{"method", "public_method", "singleton_method"}
 	} else {
 		// For standard languages (Python, Node, Java, etc.), we differentiate.
 		statementKeywords = []string{"import", "require"} // Blocked as words
@@ -3310,6 +3312,8 @@ func checkInterpreterFunctionCalls(val, language string) error {
 			"open", "read", "write",
 			"getattr", "setattr", "delattr",
 			"compile", "globals", "locals", "vars",
+			// Sentinel Security Update: Block reflection methods to prevent bypassing keyword checks
+			"method", "public_method", "singleton_method",
 		}
 	}
 
@@ -4318,76 +4322,64 @@ func validateSafePathAndInjection(val string, isDocker bool, commandName string)
 	// Sentinel Security Update: Trim whitespace to prevent bypasses using leading spaces
 	val = strings.TrimSpace(val)
 
-	// Sentinel Security Update: Enforce SSRF protection on arguments that look like URLs.
-	// We check for "://" to capture any scheme (http, https, ftp, gopher, etc.).
-	// IsSafeURL will block any scheme other than http/https, and verify IPs for those.
-	if strings.Contains(val, "://") {
-		if err := validation.IsSafeURL(val); err != nil {
-			return fmt.Errorf("unsafe url argument: %w", err)
-		}
-	} else {
-		// Sentinel Security Update: Also block schema-less IPs and localhost to prevent SSRF
-		// via tools like curl/wget that accept them.
-		// Check for "localhost" (case-insensitive)
-		if strings.EqualFold(val, "localhost") {
-			allowLoopback := os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == trueStr
-			if !allowLoopback {
-				return fmt.Errorf("unsafe argument: localhost is not allowed")
+	// Perform validation on the original value and recursively decoded values
+	// This prevents bypasses using double URL encoding (e.g. %252d -> %2d -> -)
+	current := val
+	for i := 0; i < 3; i++ { // Limit recursion depth to avoid DoS
+		// 1. SSRF / URL checks
+		if strings.Contains(current, "://") {
+			if err := validation.IsSafeURL(current); err != nil {
+				return fmt.Errorf("unsafe url argument: %w", err)
 			}
-		} else if validation.IsSafeIP != nil {
-			// Check if it's an IP address and validate it against policy
-			// We ignore "invalid IP address" error as it just means it's not an IP
-			if err := validation.IsSafeIP(val); err != nil && err.Error() != "invalid IP address" {
-				return fmt.Errorf("unsafe IP argument: %w", err)
+		} else {
+			// Sentinel Security Update: Also block schema-less IPs and localhost to prevent SSRF
+			// via tools like curl/wget that accept them.
+			// Check for "localhost" (case-insensitive)
+			if strings.EqualFold(current, "localhost") {
+				allowLoopback := os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == trueStr
+				if !allowLoopback {
+					return fmt.Errorf("unsafe argument: localhost is not allowed")
+				}
+			} else if validation.IsSafeIP != nil {
+				// Check if it's an IP address and validate it against policy
+				// We ignore "invalid IP address" error as it just means it's not an IP
+				if err := validation.IsSafeIP(current); err != nil && err.Error() != "invalid IP address" {
+					return fmt.Errorf("unsafe IP argument: %w", err)
+				}
 			}
 		}
-	}
 
-	if err := checkForPathTraversal(val); err != nil {
-		return err
-	}
-	// Also check decoded value just in case the input was already encoded
-	if decodedVal, err := url.QueryUnescape(val); err == nil && decodedVal != val {
-		if err := checkForPathTraversal(decodedVal); err != nil {
-			return fmt.Errorf("%w (decoded)", err)
-		}
-	}
-
-	if !isDocker {
-		if err := checkForLocalFileAccess(val); err != nil {
+		// 2. Path Traversal
+		if err := checkForPathTraversal(current); err != nil {
 			return err
 		}
-		// Also check decoded value for local file access (e.g. %66ile://)
-		if decodedVal, err := url.QueryUnescape(val); err == nil && decodedVal != val {
-			if err := checkForLocalFileAccess(decodedVal); err != nil {
-				return fmt.Errorf("%w (decoded)", err)
+
+		// 3. Local File Access (if not docker)
+		if !isDocker {
+			if err := checkForLocalFileAccess(current); err != nil {
+				return err
 			}
 		}
-	}
 
-	if err := checkForArgumentInjection(val); err != nil {
-		return err
-	}
-	// Also check decoded value for argument injection (e.g. %2drf)
-	if decodedVal, err := url.QueryUnescape(val); err == nil && decodedVal != val {
-		if err := checkForArgumentInjection(decodedVal); err != nil {
-			return fmt.Errorf("%w (decoded)", err)
-		}
-	}
-
-	// Sentinel Security Update: Block dangerous pseudo-protocols/schemes
-	// We ONLY block these for tools known to be vulnerable (ImageMagick, FFmpeg, Git, etc.)
-	// Blocking them for generic tools (like echo) causes false positives (usability regression).
-	if isVulnerableToSchemes(commandName) {
-		if err := checkForDangerousSchemes(val); err != nil {
+		// 4. Argument Injection
+		if err := checkForArgumentInjection(current); err != nil {
 			return err
 		}
-		// Also check decoded value for dangerous schemes
-		if decodedVal, err := url.QueryUnescape(val); err == nil && decodedVal != val {
-			if err := checkForDangerousSchemes(decodedVal); err != nil {
-				return fmt.Errorf("%w (decoded)", err)
+
+		// 5. Dangerous Schemes (for vulnerable tools)
+		if isVulnerableToSchemes(commandName) {
+			if err := checkForDangerousSchemes(current); err != nil {
+				return err
 			}
 		}
+
+		// Decode for next iteration
+		decoded, err := url.QueryUnescape(current)
+		// If decoding failed or didn't change anything, stop
+		if err != nil || decoded == current {
+			break
+		}
+		current = decoded
 	}
 
 	return nil
