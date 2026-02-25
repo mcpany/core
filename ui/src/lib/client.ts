@@ -9,7 +9,7 @@
  */
 
 import { GrpcWebImpl, RegistrationServiceClientImpl } from '@proto/api/v1/registration';
-import { UpstreamServiceConfig as BaseUpstreamServiceConfig, HttpUpstreamService, ServiceProvenance } from '@proto/config/v1/upstream_service';
+import { UpstreamServiceConfig as BaseUpstreamServiceConfig, HttpUpstreamService, ServiceProvenance, FilesystemUpstreamService } from '@proto/config/v1/upstream_service';
 import { ProfileDefinition } from '@proto/config/v1/config';
 import { ToolDefinition } from '@proto/config/v1/tool';
 import { ResourceDefinition } from '@proto/config/v1/resource';
@@ -71,6 +71,7 @@ const mapUpstreamServiceConfig = (s: any): UpstreamServiceConfig => ({
     grpcService: s.grpc_service,
     commandLineService: s.command_line_service,
     mcpService: s.mcp_service,
+    filesystemService: s.filesystem_service ? FilesystemUpstreamService.fromJSON(s.filesystem_service) : undefined,
     upstreamAuth: s.upstream_auth,
     preCallHooks: s.pre_call_hooks,
     postCallHooks: s.post_call_hooks,
@@ -559,6 +560,9 @@ export const apiClient = {
                 env: config.commandLineService.env
             };
         }
+        if (config.filesystemService) {
+            payload.filesystem_service = FilesystemUpstreamService.toJSON(config.filesystemService);
+        }
         if (config.mcpService) {
             payload.mcp_service = { ...config.mcpService };
         }
@@ -667,6 +671,9 @@ export const apiClient = {
                 command: config.commandLineService.command,
                 working_directory: config.commandLineService.workingDirectory,
             };
+        }
+        if (config.filesystemService) {
+            payload.filesystem_service = FilesystemUpstreamService.toJSON(config.filesystemService);
         }
         if (config.mcpService) {
             payload.mcp_service = { ...config.mcpService };
@@ -797,6 +804,9 @@ export const apiClient = {
                 env: config.commandLineService.env,
                 container_environment: config.commandLineService.containerEnvironment, // Include this if needed
             };
+        }
+        if (config.filesystemService) {
+            payload.filesystem_service = FilesystemUpstreamService.toJSON(config.filesystemService);
         }
         if (config.mcpService) {
             payload.mcp_service = { ...config.mcpService };
@@ -1122,6 +1132,7 @@ export const apiClient = {
                     grpcService: sc.grpc_service,
                     commandLineService: sc.command_line_service,
                     mcpService: sc.mcp_service,
+                    filesystemService: sc.filesystem_service ? FilesystemUpstreamService.fromJSON(sc.filesystem_service) : undefined,
                     upstreamAuth: sc.upstream_auth,
                     preCallHooks: sc.pre_call_hooks,
                     postCallHooks: sc.post_call_hooks,

@@ -20,8 +20,9 @@ import { useToast } from "@/hooks/use-toast";
 import { apiClient } from "@/lib/client";
 import { UpstreamServiceConfig } from "@/lib/types";
 import { Credential } from "@proto/config/v1/auth";
-import { Plus, RotateCw, ChevronLeft, Loader2, Activity, CheckCircle2, XCircle, ArrowLeft, AlertTriangle } from "lucide-react";
+import { Plus, RotateCw, ChevronLeft, Loader2, Activity, CheckCircle2, XCircle, ArrowLeft, AlertTriangle, Trash2 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Switch } from "@/components/ui/switch";
 import { SERVICE_TEMPLATES, ServiceTemplate } from "@/lib/templates";
 import { ServiceTemplateSelector } from "./services/service-template-selector";
 import { ServiceConfigDiff } from "./services/service-config-diff";
@@ -30,9 +31,11 @@ import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  type: z.enum(["grpc", "http", "command_line", "openapi", "other"]),
+  type: z.enum(["grpc", "http", "command_line", "openapi", "filesystem", "other"]),
   address: z.string().optional(),
   command: z.string().optional(),
+  rootPaths: z.array(z.object({ virtual: z.string(), local: z.string() })).optional(),
+  readOnly: z.boolean().optional(),
   configJson: z.string().optional(), // For advanced mode
   upstreamAuth: z.any().optional(), // Store auth config object
   tags: z.string().optional(),
@@ -95,9 +98,12 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
       type: (serviceToEdit.grpcService ? "grpc" :
             serviceToEdit.httpService ? "http" :
             serviceToEdit.commandLineService ? "command_line" :
-            serviceToEdit.openapiService ? "openapi" : "other") as "grpc" | "http" | "command_line" | "openapi" | "other",
+            serviceToEdit.openapiService ? "openapi" :
+            serviceToEdit.filesystemService ? "filesystem" : "other") as "grpc" | "http" | "command_line" | "openapi" | "filesystem" | "other",
       address: serviceToEdit.grpcService?.address || serviceToEdit.httpService?.address || serviceToEdit.openapiService?.address || "",
       command: serviceToEdit.commandLineService?.command || "",
+      rootPaths: serviceToEdit.filesystemService?.rootPaths ? Object.entries(serviceToEdit.filesystemService.rootPaths).map(([k, v]) => ({ virtual: k, local: v })) : [{ virtual: "", local: "" }],
+      readOnly: serviceToEdit.filesystemService?.readOnly || false,
       configJson: JSON.stringify(serviceToEdit, null, 2),
       upstreamAuth: serviceToEdit.upstreamAuth,
       tags: serviceToEdit.tags?.join(", ") || "",
@@ -106,6 +112,8 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
       type: "http" as const,
       address: "",
       command: "",
+      rootPaths: [{ virtual: "", local: "" }],
+      readOnly: false,
       configJson: "{\n  \"name\": \"my-service\",\n  \"httpService\": {\n    \"address\": \"https://api.example.com\"\n  }\n}",
       upstreamAuth: undefined,
       tags: "",
@@ -207,7 +215,8 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
       const type = config.grpcService ? "grpc" :
                    config.httpService ? "http" :
                    config.commandLineService ? "command_line" :
-                   config.openapiService ? "openapi" : "other";
+                   config.openapiService ? "openapi" :
+                   config.filesystemService ? "filesystem" : "other";
 
       form.setValue("name", config.name || "");
       form.setValue("type", type as any);
@@ -216,6 +225,10 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
       if (config.grpcService?.address) form.setValue("address", config.grpcService.address);
       if (config.openapiService?.address) form.setValue("address", config.openapiService.address);
       if (config.commandLineService?.command) form.setValue("command", config.commandLineService.command);
+      if (config.filesystemService) {
+          form.setValue("rootPaths", config.filesystemService.rootPaths ? Object.entries(config.filesystemService.rootPaths).map(([k, v]) => ({ virtual: k, local: v })) : []);
+          form.setValue("readOnly", config.filesystemService.readOnly);
+      }
       if (config.tags) form.setValue("tags", config.tags?.join(", ") || "");
 
       // Also set the JSON for advanced usage
@@ -278,6 +291,23 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
 
       } else if (values.type === 'openapi') {
            config.openapiService = { address: values.address || "", tools: [], calls: {}, resources: [], prompts: [], specContent: undefined, specUrl: undefined, healthCheck: undefined, tlsConfig: undefined };
+      } else if (values.type === 'filesystem') {
+          const rootPathsMap: Record<string, string> = {};
+          values.rootPaths?.forEach(rp => {
+              if (rp.virtual && rp.local) {
+                  rootPathsMap[rp.virtual] = rp.local;
+              }
+          });
+          config.filesystemService = {
+              rootPaths: rootPathsMap,
+              readOnly: values.readOnly || false,
+              tools: [],
+              resources: [],
+              prompts: [],
+              allowedPaths: [],
+              deniedPaths: [],
+              symlinkMode: 0
+          };
       }
 
       if (values.upstreamAuth) {
@@ -485,6 +515,7 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
                             <SelectItem value="grpc">gRPC</SelectItem>
                             <SelectItem value="command_line">Command Line</SelectItem>
                             <SelectItem value="openapi">OpenAPI</SelectItem>
+                            <SelectItem value="filesystem">Filesystem</SelectItem>
                             <SelectItem value="other">Other / Advanced</SelectItem>
                             </SelectContent>
                         </Select>
@@ -544,6 +575,90 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
                         )}
                         />
                     )}
+
+                    {selectedType === 'filesystem' && (
+                        <div className="space-y-4">
+                            <FormField
+                                control={form.control}
+                                name="readOnly"
+                                render={({ field }) => (
+                                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                                        <div className="space-y-0.5">
+                                            <FormLabel>Read Only</FormLabel>
+                                            <FormDescription>
+                                                Prevent the AI from modifying files.
+                                            </FormDescription>
+                                        </div>
+                                        <FormControl>
+                                            <Switch
+                                                checked={field.value}
+                                                onCheckedChange={field.onChange}
+                                            />
+                                        </FormControl>
+                                    </FormItem>
+                                )}
+                            />
+
+                            <div className="space-y-2">
+                                <FormLabel>Root Paths</FormLabel>
+                                <FormDescription>
+                                    Map virtual paths (seen by AI) to local paths (on disk).
+                                </FormDescription>
+                                <div className="space-y-2">
+                                    {form.watch("rootPaths")?.map((_, index) => (
+                                        <div key={index} className="flex gap-2 items-start">
+                                            <FormField
+                                                control={form.control}
+                                                name={`rootPaths.${index}.virtual`}
+                                                render={({ field }) => (
+                                                    <FormItem className="flex-1">
+                                                        <FormControl>
+                                                            <Input placeholder="/workspace" {...field} />
+                                                        </FormControl>
+                                                    </FormItem>
+                                                )}
+                                            />
+                                            <div className="flex items-center pt-2">→</div>
+                                            <FormField
+                                                control={form.control}
+                                                name={`rootPaths.${index}.local`}
+                                                render={({ field }) => (
+                                                    <FormItem className="flex-1">
+                                                        <FormControl>
+                                                            <Input placeholder="/home/user/projects" {...field} />
+                                                        </FormControl>
+                                                    </FormItem>
+                                                )}
+                                            />
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={() => {
+                                                    const current = form.getValues("rootPaths") || [];
+                                                    form.setValue("rootPaths", current.filter((_, i) => i !== index));
+                                                }}
+                                            >
+                                                <Trash2 className="h-4 w-4 text-destructive" />
+                                            </Button>
+                                        </div>
+                                    ))}
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => {
+                                            const current = form.getValues("rootPaths") || [];
+                                            form.setValue("rootPaths", [...current, { virtual: "", local: "" }]);
+                                        }}
+                                    >
+                                        <Plus className="mr-2 h-4 w-4" /> Add Path
+                                    </Button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     {selectedType === 'other' && (
                         <div className="text-sm text-muted-foreground">
                             Please switch to the Advanced tab to configure other service types using JSON.
