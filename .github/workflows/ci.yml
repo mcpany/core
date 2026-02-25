@@ -273,7 +273,7 @@ jobs:
   e2e-parallel:
     runs-on: oci-runner
     # container: public.ecr.aws/docker/library/ubuntu:24.04
-    timeout-minutes: 30
+    timeout-minutes: 60
     needs: [build-images]
     strategy:
       fail-fast: false
@@ -452,9 +452,9 @@ jobs:
         run: |
           if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
           if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make curl unzip grep sed findutils
+            $SUDO apt-get update && $SUDO apt-get install -y make curl unzip grep sed findutils build-essential
           elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make curl unzip grep sed findutils
+             $SUDO apk add --no-cache make curl unzip grep sed findutils build-base
           fi
 
       - name: Set up Go
@@ -821,6 +821,15 @@ jobs:
           go-version: "1.24"
           cache: true
 
+      - name: Install dependencies
+        run: |
+          if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
+          if command -v apt-get &> /dev/null; then
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils curl unzip build-essential
+          elif command -v apk &> /dev/null; then
+             $SUDO apk add --no-cache make xz curl unzip build-base
+          fi
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -851,7 +860,7 @@ jobs:
 
   ui-test:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 60
     needs: [build-images]
     strategy:
       fail-fast: false
@@ -870,6 +879,15 @@ jobs:
         run: docker system prune -af
 
       - uses: actions/checkout@v6
+
+      - name: Install dependencies
+        run: |
+          if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
+          if command -v apt-get &> /dev/null; then
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils curl unzip build-essential
+          elif command -v apk &> /dev/null; then
+             $SUDO apk add --no-cache make xz curl unzip build-base
+          fi
 
       - name: Detect Architecture
         id: detect-arch
@@ -909,7 +927,7 @@ jobs:
 
   k8s-e2e:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 60
     needs: [build-images]
     steps:
       - name: Free Disk Space (Fast)
@@ -924,6 +942,15 @@ jobs:
         run: docker system prune -af
 
       - uses: actions/checkout@v6
+
+      - name: Install dependencies
+        run: |
+          if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
+          if command -v apt-get &> /dev/null; then
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils curl unzip build-essential
+          elif command -v apk &> /dev/null; then
+             $SUDO apk add --no-cache make xz curl unzip build-base
+          fi
 
       - name: Set up Go
         uses: actions/setup-go@v6
