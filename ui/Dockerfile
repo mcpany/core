@@ -38,7 +38,7 @@ RUN mkdir -p public
 
 # Production image, copy all the files and run next
 FROM base AS runner
-# WORKDIR /app
+WORKDIR /app
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1

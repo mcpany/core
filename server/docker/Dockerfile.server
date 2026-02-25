@@ -70,5 +70,7 @@ EXPOSE 50051
 # Switch to non-root user
 USER mcpany
 
+WORKDIR /app
+
 # Set the entrypoint to run the server
 ENTRYPOINT ["/app/server"]
