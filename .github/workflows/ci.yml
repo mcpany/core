@@ -84,6 +84,8 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
+          echo "Before cleanup:"
+          df -h
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
           $SUDO rm -rf /usr/local/lib/android
@@ -98,6 +100,8 @@ jobs:
           $SUDO rm -rf /usr/local/lib/node_modules
           $SUDO rm -rf /usr/local/lib/heroku
           $SUDO rm -rf /opt/az
+          echo "After cleanup:"
+          df -h
           $SUDO rm -rf /usr/local/lib/node_modules
           $SUDO rm -rf /usr/local/lib/heroku
           $SUDO rm -rf /opt/az
@@ -248,6 +252,8 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
+          echo "Before cleanup:"
+          df -h
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
           $SUDO rm -rf /usr/local/lib/android
@@ -405,6 +411,8 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
+          echo "Before cleanup:"
+          df -h
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
           $SUDO rm -rf /usr/local/lib/android
@@ -594,6 +602,8 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
+          echo "Before cleanup:"
+          df -h
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
           $SUDO rm -rf /usr/local/lib/android
@@ -732,6 +742,8 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
+          echo "Before cleanup:"
+          df -h
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
           $SUDO rm -rf /usr/local/lib/android
@@ -886,6 +898,8 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
+          echo "Before cleanup:"
+          df -h
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
           $SUDO rm -rf /usr/local/lib/android
@@ -1094,6 +1108,8 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
+          echo "Before cleanup:"
+          df -h
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
           $SUDO rm -rf /usr/local/lib/android
@@ -1152,6 +1168,8 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
+          echo "Before cleanup:"
+          df -h
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
           $SUDO rm -rf /usr/local/lib/android
