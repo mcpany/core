@@ -284,44 +284,12 @@ jobs:
             ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
             ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-
 
-      - name: Download Server Image
-        uses: actions/download-artifact@v4
-        with:
-          name: image-server-${{ steps.detect-arch.outputs.slug }}
-
-      - name: Download HTTP Echo Image
-        uses: actions/download-artifact@v4
-        with:
-          name: image-http-echo-${{ steps.detect-arch.outputs.slug }}
-
-      - name: Download Time Server Image
-        uses: actions/download-artifact@v4
-        with:
-          name: image-time-server-${{ steps.detect-arch.outputs.slug }}
-
-      - name: Download Cowsay Image
-        uses: actions/download-artifact@v4
-        with:
-          name: image-cowsay-${{ steps.detect-arch.outputs.slug }}
-
-      - name: Download Everything Image
-        uses: actions/download-artifact@v4
-        with:
-          name: image-everything-${{ steps.detect-arch.outputs.slug }}
-
-      - name: Load Docker Images
-        run: |
-          for f in *.tar.gz; do
-            gunzip -c "$f" | docker load
-            rm "$f"
-          done
-
       - name: Prepare environment
         run: make prepare CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache
 
       - name: Test (Short)
         run: |
-          make test-fast SKIP_DOCKER_REBUILD=true CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache COVERAGE_FILE=coverage-fast.out
+          make test-fast SKIP_DOCKER_REBUILD=true SKIP_DOCKER_TESTS=true CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache COVERAGE_FILE=coverage-fast.out
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
