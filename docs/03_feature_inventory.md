@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **Just-In-Time (JIT) Permission Broker**: (P0) Allows agents to request temporary, scoped permission elevation via HITL and context-verification.
+- **Self-Healing Tool Bridge**: (P1) A staging middleware that allows agents to propose and test tool fixes (wrappers/shims) without breaking production.
+- **Tool Metadata Sanitizer**: (P0) Prevents prompt injection attacks that leverage tool descriptions and schemas.
+
+### Priority Shifts
+- **HITL Middleware**: Promoted to **P0** as it is a critical dependency for the JIT Permission Broker.
+- **Federated MCP Node Peering**: Promoted to **P0** to support global agent swarms requiring localized tool execution.
+
+### Deprecations / Monitoring
+- **Static Capability Tokens**: Monitoring for deprecation in favor of JIT/Dynamic scopes.

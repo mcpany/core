@@ -184,3 +184,8 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Core Middleware Pipeline**: The middleware architecture is robust and extensible.
 - **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates protocol details from business logic.
 - **Documentation**: The project has excellent documentation coverage for most features.
+
+#### Upcoming (2026-02-27 Evolution)
+*   **[P0] Just-In-Time (JIT) Permission Broker**: Dynamic, short-lived elevation system for autonomous agents.
+*   **[P0] Tool Metadata Sanitizer**: Anti-injection middleware for MCP tool schemas and descriptions.
+*   **[P1] Self-Healing Tool Bridge**: Staging mesh for agent-generated tool fixes and wrappers.

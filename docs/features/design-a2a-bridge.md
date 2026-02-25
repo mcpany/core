@@ -46,3 +46,10 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+
+### Update: 2026-02-27 - Secure A2A Identity Attestation
+**Context**: Today's market sync revealed a new "Agent Hijacking" vulnerability where malicious subagents spoof A2A identities during handoffs.
+**Architecture Adjustment**:
+*   **Identity Layer**: Introducing a mandatory `Attestation Header` for all A2A tool calls.
+*   **Verification**: MCP Any will now verify the cryptographic signature of the requesting agent against a known "Agent Registry" before performing the A2A translation.
+**Security Impact**: Prevents rogue agents from impersonating authorized peers to gain access to sensitive tools via the A2A bridge.

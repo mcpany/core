@@ -47,3 +47,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **A2A Gateway Protocol**: MCP Any will implement a protocol-neutral bridge for A2A communication, allowing disparate agent frameworks (e.g., OpenClaw, AutoGen) to exchange state and tasks via a unified MCP-like interface.
 - **Federated Tool Mesh**: Moving from a standalone server to a "Mesh" architecture where multiple MCP Any instances can peer and share resources across network boundaries, governed by global Zero-Trust policies.
 - **Resource-Aware Intelligence**: Integrating cost and latency telemetry into the tool discovery process, allowing LLMs to perform "Economical Reasoning" when selecting tools.
+
+---
+
+## Strategic Evolution: [2026-02-27]
+### Focus: Dynamic Governance & Self-Healing Infrastructure
+**Context**: As agents move from execution to evolution (self-healing) and encounter complex organizational boundaries, static security and discovery models are breaking down. The "Universal Agent Bus" must become a dynamic governance layer.
+**Strategic Pivot**:
+- **JIT Permission Architecture**: Moving from static capability tokens to a dynamic, "Just-In-Time" permission broker that leverages HITL and task-context to authorize temporary elevation.
+- **Self-Healing Tool Mesh**: Implementing a "Staging Mesh" where agent-proposed tool fixes can be validated and promoted, ensuring the agentic ecosystem remains resilient to upstream breaking changes.
+- **Context Integrity Guard**: Developing anti-injection middleware that sanitizes tool metadata to prevent "Metadata-based Prompt Injection" attacks.
