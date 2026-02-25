@@ -43,8 +43,6 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
 
 # Stage 2: Create the small runtime image
 FROM mirror.gcr.io/library/debian:bookworm-slim
-# Changing WORKDIR to avoid potential OverlayFS invalid argument errors on /app in some CI environments
-WORKDIR /tmp/app
 
 # Create a non-root user
 RUN addgroup --system --gid 1001 mcpany && \
@@ -55,15 +53,15 @@ RUN apt-get update && apt-get install -y ca-certificates curl && rm -rf /var/lib
 
 # Copy the binary from the builder stage
 # Copy the binary from the builder stage
-COPY --from=builder --chown=mcpany:mcpany /server /tmp/app/server
+COPY --from=builder --chown=mcpany:mcpany /server /app/server
 # Copy curl from the builder stage to be used in healthchecks
 # COPY --from=builder /usr/bin/curl /usr/bin/curl
 
 # Copy proto files for runtime usage
-COPY --from=builder --chown=mcpany:mcpany /app/proto /tmp/app/proto
+COPY --from=builder --chown=mcpany:mcpany /app/proto /app/proto
 
-# Ensure /tmp/app is owned by the non-root user
-RUN chown mcpany:mcpany /tmp/app
+# Ensure /app is owned by the non-root user
+RUN chown mcpany:mcpany /app
 
 # Expose the ports the server listens on
 EXPOSE 50050
@@ -73,4 +71,4 @@ EXPOSE 50051
 USER mcpany
 
 # Set the entrypoint to run the server
-ENTRYPOINT ["/tmp/app/server"]
+ENTRYPOINT ["/app/server"]

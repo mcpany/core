@@ -13,19 +13,19 @@
 # limitations under the License.
 
 FROM mirror.gcr.io/library/node:24-alpine
-WORKDIR /tmp/app
+# WORKDIR /app
 RUN npm install -g @modelcontextprotocol/server-everything@latest
 
 # Add the bin directory to the PATH
-ENV PATH="/tmp/app/bin:${PATH}"
+ENV PATH="/app/bin:${PATH}"
 
 EXPOSE 3001
 
 COPY docker/entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-# Ensure /tmp/app is owned by the non-root user
-RUN chown node:node /tmp/app
+# Ensure /app is owned by the non-root user
+# RUN chown node:node /app
 
 # Use non-root user 'node' provided by the base image
 USER node

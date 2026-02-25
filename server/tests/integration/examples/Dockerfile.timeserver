@@ -15,11 +15,12 @@
 FROM mirror.gcr.io/library/python:3.11-slim
 
 # Changing WORKDIR to avoid potential OverlayFS invalid argument errors on /app in some CI environments
-WORKDIR /tmp/app
+# Use absolute paths and avoid WORKDIR instruction if possible or set to existing path
+# WORKDIR /app
 
-COPY timeserver_patch/requirements.txt .
-RUN pip install -r requirements.txt
+COPY timeserver_patch/requirements.txt /app/requirements.txt
+RUN pip install -r /app/requirements.txt
 
-COPY timeserver_patch/main.py /tmp/app/main.py
+COPY timeserver_patch/main.py /app/main.py
 
-CMD ["python", "-u", "/tmp/app/main.py", "--mcp-stdio"]
+CMD ["python", "-u", "/app/main.py", "--mcp-stdio"]
