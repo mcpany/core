@@ -92,7 +92,10 @@ jobs:
           $SUDO rm -rf /usr/local/share/boost
 
       - name: Prune Docker
-        run: docker system prune -af
+        run: |
+          if command -v docker &> /dev/null; then
+            docker system prune -af || true
+          fi
 
       - uses: actions/checkout@v6
 
@@ -172,7 +175,10 @@ jobs:
           $SUDO rm -rf /usr/local/share/boost
 
       - name: Prune Docker
-        run: docker system prune -af
+        run: |
+          if command -v docker &> /dev/null; then
+            docker system prune -af || true
+          fi
 
       - uses: actions/checkout@v6
 
@@ -317,7 +323,10 @@ jobs:
           $SUDO rm -rf /usr/local/share/boost
 
       - name: Prune Docker
-        run: docker system prune -af
+        run: |
+          if command -v docker &> /dev/null; then
+            docker system prune -af || true
+          fi
 
       - uses: actions/checkout@v6
 
@@ -632,7 +641,10 @@ jobs:
           $SUDO rm -rf /usr/local/share/boost
 
       - name: Prune Docker
-        run: docker system prune -af
+        run: |
+          if command -v docker &> /dev/null; then
+            docker system prune -af || true
+          fi
 
       - uses: actions/checkout@v6
 
@@ -777,7 +789,10 @@ jobs:
           $SUDO rm -rf /usr/local/share/boost
 
       - name: Prune Docker
-        run: docker system prune -af
+        run: |
+          if command -v docker &> /dev/null; then
+            docker system prune -af || true
+          fi
 
       - uses: actions/checkout@v6
 
@@ -964,7 +979,10 @@ jobs:
           $SUDO rm -rf /usr/local/share/boost
 
       - name: Prune Docker
-        run: docker system prune -af
+        run: |
+          if command -v docker &> /dev/null; then
+            docker system prune -af || true
+          fi
 
       - uses: actions/checkout@v6
 
@@ -1019,7 +1037,10 @@ jobs:
           $SUDO rm -rf /usr/local/share/boost
 
       - name: Prune Docker
-        run: docker system prune -af
+        run: |
+          if command -v docker &> /dev/null; then
+            docker system prune -af || true
+          fi
 
       - uses: actions/checkout@v6
 
