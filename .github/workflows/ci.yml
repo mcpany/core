@@ -159,7 +159,7 @@ jobs:
     runs-on: oci-runner
     # container: public.ecr.aws/docker/library/ubuntu:24.04
     timeout-minutes: 180
-    needs: [changes]
+    needs: [build-images]
     if: ${{ needs.changes.outputs.src == 'true' }}
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
@@ -238,19 +238,16 @@ jobs:
           echo "week=$(/bin/date -u "+%V")" >> $GITHUB_OUTPUT
         shell: bash
 
-      - name: Docker Cache
-        uses: actions/cache@v4
-        with:
-          path: build/buildx-cache
-          key: ${{ runner.os }}-buildx-v3-${{ steps.get-date.outputs.week }}-${{ hashFiles('tests/integration/examples/Dockerfile.timeserver', 'tests/integration/examples/timeserver_patch/**') }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-v3-${{ steps.get-date.outputs.week }}-${{ hashFiles('tests/integration/examples/Dockerfile.timeserver', 'tests/integration/examples/timeserver_patch/**') }}-
-            ${{ runner.os }}-buildx-v3-${{ steps.get-date.outputs.week }}-
-
-      - name: Cache Docker images
-        uses: ScribeMD/docker-cache@0.5.0
-        with:
-          key: docker-images-v3-${{ runner.os }}-${{ steps.get-date.outputs.week }}
+      - name: Detect Architecture
+        id: detect-arch
+        run: |
+          ARCH=$(uname -m)
+          case $ARCH in
+            x86_64) SLUG="amd64" ;;
+            aarch64) SLUG="arm64" ;;
+            *) echo "Unsupported arch: $ARCH"; exit 1 ;;
+          esac
+          echo "slug=$SLUG" >> $GITHUB_OUTPUT
 
       - name: Cache Tools
         uses: actions/cache@v4
@@ -261,12 +258,24 @@ jobs:
             ${{ runner.os }}-build-env-bin-v3-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
             ${{ runner.os }}-build-env-bin-v3-${{ steps.get-date.outputs.week }}-
 
+      - name: Download Time Server Image
+        uses: actions/download-artifact@v4
+        with:
+          name: image-time-server-${{ steps.detect-arch.outputs.slug }}
+
+      - name: Load Docker Images
+        run: |
+          for f in *.tar; do
+            docker load -i "$f"
+            rm "$f"
+          done
+
       - name: Prepare environment
         run: make prepare CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache
 
       - name: Test (Short)
         run: |
-          make test-fast CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache COVERAGE_FILE=coverage-fast.out
+          make test-fast SKIP_DOCKER_REBUILD=true CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache COVERAGE_FILE=coverage-fast.out
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
@@ -381,37 +390,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-build-env-bin-v3-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
             ${{ runner.os }}-build-env-bin-v3-${{ steps.get-date.outputs.week }}-
-
-      - name: Download Server Image
-        uses: actions/download-artifact@v4
-        with:
-          name: image-server-${{ steps.detect-arch.outputs.slug }}
-
-      - name: Download HTTP Echo Image
-        uses: actions/download-artifact@v4
-        with:
-          name: image-http-echo-${{ steps.detect-arch.outputs.slug }}
-
-      - name: Download Time Server Image
-        uses: actions/download-artifact@v4
-        with:
-          name: image-time-server-${{ steps.detect-arch.outputs.slug }}
-
-      - name: Download Cowsay Image
-        uses: actions/download-artifact@v4
-        with:
-          name: image-cowsay-${{ steps.detect-arch.outputs.slug }}
-
-      - name: Download Everything Image
-        uses: actions/download-artifact@v4
-        with:
-          name: image-everything-${{ steps.detect-arch.outputs.slug }}
-
-      - name: Load Docker Images
-        run: |
-          for f in *.tar; do
-            docker load -i "$f"
-          done
 
       - name: Prepare environment
         run: make prepare
@@ -652,6 +630,15 @@ jobs:
           esac
           echo "slug=$SLUG" >> $GITHUB_OUTPUT
 
+      - name: Cache Tools
+        uses: actions/cache@v4
+        with:
+          path: build/env/bin
+          key: ${{ runner.os }}-build-env-bin-v3-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}
+          restore-keys: |
+            ${{ runner.os }}-build-env-bin-v3-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
+            ${{ runner.os }}-build-env-bin-v3-${{ steps.get-date.outputs.week }}-
+
       - name: Download Server Image
         uses: actions/download-artifact@v4
         with:
@@ -681,16 +668,8 @@ jobs:
         run: |
           for f in *.tar; do
             docker load -i "$f"
+            rm "$f"
           done
-
-      - name: Cache Tools
-        uses: actions/cache@v4
-        with:
-          path: build/env/bin
-          key: ${{ runner.os }}-build-env-bin-v3-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}
-          restore-keys: |
-            ${{ runner.os }}-build-env-bin-v3-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
-            ${{ runner.os }}-build-env-bin-v3-${{ steps.get-date.outputs.week }}-
 
       - name: Prepare environment
         run: make prepare
@@ -711,7 +690,7 @@ jobs:
     runs-on: oci-runner
     # container: public.ecr.aws/docker/library/ubuntu:24.04
     timeout-minutes: 180
-    needs: [changes]
+    needs: [build-images]
     if: ${{ needs.changes.outputs.src == 'true' }}
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
@@ -790,6 +769,17 @@ jobs:
           echo "week=$(/bin/date -u "+%V")" >> $GITHUB_OUTPUT
         shell: bash
 
+      - name: Detect Architecture
+        id: detect-arch
+        run: |
+          ARCH=$(uname -m)
+          case $ARCH in
+            x86_64) SLUG="amd64" ;;
+            aarch64) SLUG="arm64" ;;
+            *) echo "Unsupported arch: $ARCH"; exit 1 ;;
+          esac
+          echo "slug=$SLUG" >> $GITHUB_OUTPUT
+
       - name: Cache Tools
         uses: actions/cache@v4
         with:
@@ -799,12 +789,44 @@ jobs:
             ${{ runner.os }}-build-env-bin-v3-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
             ${{ runner.os }}-build-env-bin-v3-${{ steps.get-date.outputs.week }}-
 
+      - name: Download Server Image
+        uses: actions/download-artifact@v4
+        with:
+          name: image-server-${{ steps.detect-arch.outputs.slug }}
+
+      - name: Download HTTP Echo Image
+        uses: actions/download-artifact@v4
+        with:
+          name: image-http-echo-${{ steps.detect-arch.outputs.slug }}
+
+      - name: Download Time Server Image
+        uses: actions/download-artifact@v4
+        with:
+          name: image-time-server-${{ steps.detect-arch.outputs.slug }}
+
+      - name: Download Cowsay Image
+        uses: actions/download-artifact@v4
+        with:
+          name: image-cowsay-${{ steps.detect-arch.outputs.slug }}
+
+      - name: Download Everything Image
+        uses: actions/download-artifact@v4
+        with:
+          name: image-everything-${{ steps.detect-arch.outputs.slug }}
+
+      - name: Load Docker Images
+        run: |
+          for f in *.tar; do
+            docker load -i "$f"
+            rm "$f"
+          done
+
       - name: Prepare environment
         run: make prepare
 
       - name: test public api
         run: |
-          make test-public-api CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-public-api.out
+          make test-public-api SKIP_DOCKER_REBUILD=true CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-public-api.out
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
@@ -858,6 +880,7 @@ jobs:
       - name: Load Docker Image
         run: |
           docker load -i server.tar
+          rm server.tar
 
       - name: Smoke Test
         run: |
@@ -927,6 +950,7 @@ jobs:
         run: |
           for f in *.tar; do
             docker load -i "$f"
+            rm "$f"
           done
 
       - name: Test UI
@@ -935,7 +959,7 @@ jobs:
 
   k8s-e2e:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 180
     needs: [build-images]
     steps:
       - name: Free Disk Space (Fast)
@@ -1012,6 +1036,10 @@ jobs:
           # kind load image-archive might be better but let's stick to docker daemon for consistency
           for f in *.tar; do
             docker load -i "$f"
+            # Kind loads from docker daemon, so we can't delete tar yet?
+            # Wait, `docker load` loads into daemon. Once loaded, tar is useless.
+            # So we CAN delete tar.
+            rm "$f"
           done
 
           # Now load specific images into Kind
