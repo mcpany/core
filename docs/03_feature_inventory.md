@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **JIT Permission Broker**: (P0) A middleware that manages asynchronous requests for temporary capability elevation. Supports auto-approval via Rego and human-in-the-loop escalation.
+- **Self-Healing Tool Sandbox**: (P1) A virtualized execution environment where agents can test modified or patched tool definitions before they are merged into the active registry.
+- **Discovery Schema Sanitizer**: (P0) High-performance middleware that scrubs instructional keywords and potential prompt injections from MCP tool descriptions.
+
+### Priority Shifts
+- **Policy Firewall**: Promoted from **P0** to **Core Infrastructure**. Essential for enforcing JIT permission boundaries.
+- **HITL Middleware**: Promoted from **P1** to **P0**. Critical for supporting human-approved JIT escalations.
+
+### Deprecations / Monitoring
+- **Static Token-Only Scoping**: Monitoring for deprecation in favor of JIT dynamic scoping.

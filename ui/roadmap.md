@@ -3,6 +3,9 @@
 ## Status: Active Development
 
 ### Universal Agent Bus (New Strategic Priorities)
+- [ ] **[P0] JIT Escalation Manager**: UI for monitoring and approving Just-In-Time permission requests from agent swarms. (Added: 2026-02-27)
+- [ ] **[P1] Tool Sandbox Debugger**: Interface for agents to propose tool patches and view sandbox test results. (Added: 2026-02-27)
+- [ ] **[P0] Metadata Injection Alerts**: Security notifications for intercepted instructional keywords in tool schemas. (Added: 2026-02-27)
 - [ ] **[P0] Recursive Context Dashboard**: Visualize state inheritance and session tokens across agent swarms. (Added: 2026-02-23)
 - [ ] **[P0] Multi-Agent Session Timeline**: Visual tracking of agent handoffs and shared tool state. (Added: 2026-02-24)
 - [ ] **[P1] Unified Discovery Manager**: UI for managing and auto-discovering MCP servers across transports. (Added: 2026-02-24)

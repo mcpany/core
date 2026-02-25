@@ -46,3 +46,10 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+
+### Update: 2026-02-27 - JIT Permission Propagation
+**Context**: A2A handoffs are failing when the target agent requires higher permissions than the source agent currently holds.
+**Architecture Adjustment**:
+* Integrating the `JIT Permission Broker` into the A2A handoff flow.
+* When an A2A agent returns a `PermissionDenied` error, MCP Any will now catch this and trigger a JIT escalation request on behalf of the agent chain, rather than failing the call immediately.
+**Security Impact**: Ensures that the "Least Privilege" principle is maintained across agent boundaries while preventing task abandonment.
