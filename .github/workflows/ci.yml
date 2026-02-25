@@ -453,7 +453,8 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: ${{ matrix.runner }}
-    container: public.ecr.aws/docker/library/ubuntu:24.04
+    # Remove container to use host VM (which has make/tools)
+    # container: public.ecr.aws/docker/library/ubuntu:24.04
     strategy:
       fail-fast: false
       matrix:
@@ -490,12 +491,12 @@ jobs:
         run: |
           if command -v apt-get &> /dev/null; then
             if command -v sudo >/dev/null 2>&1; then
-              sudo apt-get update && sudo apt-get install -y make curl unzip
+              sudo apt-get update && sudo apt-get install -y make curl unzip git
             else
-              apt-get update && apt-get install -y make curl unzip
+              apt-get update && apt-get install -y make curl unzip git
             fi
           elif command -v apk &> /dev/null; then
-             apk add --no-cache make curl unzip
+             apk add --no-cache make curl unzip git
           fi
 
       - name: Generate Protobufs
@@ -628,9 +629,9 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils curl unzip
+            sudo apt-get update && sudo apt-get install -y make xz-utils curl unzip git
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz curl unzip
+             sudo apk add --no-cache make xz curl unzip git
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -767,9 +768,9 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            sudo apt-get update && sudo apt-get install -y make xz-utils curl unzip git
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             sudo apk add --no-cache make xz curl unzip git
           fi
 
       - name: Configure Docker Registry Mirrors
