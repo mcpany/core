@@ -336,7 +336,7 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          if command -v sudo &> /dev/null; then
+          if command -v sudo > /dev/null 2>&1; then
             sudo rm -rf /usr/local/lib/android
             sudo rm -rf /usr/share/dotnet
             sudo rm -rf /opt/ghc
@@ -355,14 +355,14 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if command -v apt-get &> /dev/null; then
-            if command -v sudo &> /dev/null; then
+          if command -v apt-get > /dev/null 2>&1; then
+            if command -v sudo > /dev/null 2>&1; then
               sudo apt-get update && sudo apt-get install -y make xz-utils
             else
               apt-get update && apt-get install -y make xz-utils
             fi
-          elif command -v apk &> /dev/null; then
-             if command -v sudo &> /dev/null; then
+          elif command -v apk > /dev/null 2>&1; then
+             if command -v sudo > /dev/null 2>&1; then
                sudo apk add --no-cache make xz
              else
                apk add --no-cache make xz
@@ -866,7 +866,7 @@ jobs:
         run: |
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
-          if command -v sudo &> /dev/null; then
+          if command -v sudo > /dev/null 2>&1; then
             sudo mkdir -p /etc/docker
             echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
