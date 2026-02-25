@@ -429,8 +429,8 @@ jobs:
 
       - name: Load Docker Images
         run: |
-          for f in *.tar; do
-            docker load -i "$f"
+          for f in *.tar.gz; do
+            gunzip -c "$f" | docker load
           done
 
       - name: Prepare environment
@@ -528,14 +528,14 @@ jobs:
           PLATFORM="${{ matrix.platform }}"
           SLUG="${{ matrix.slug }}"
           make -C server build-docker PLATFORMS=$PLATFORM
-          docker save -o server.tar mcpany/server:latest
+          docker save mcpany/server:latest | gzip > server.tar.gz
       - uses: actions/upload-artifact@v4
         with:
           name: image-server-${{ matrix.slug }}
-          path: server.tar
+          path: server.tar.gz
           retention-days: 1
       - name: Clean Server
-        run: rm server.tar && docker system prune -af
+        run: rm server.tar.gz && docker system prune -af
 
       # 2. HTTP Echo
       - name: Build HTTP Echo
@@ -543,14 +543,14 @@ jobs:
           PLATFORM="${{ matrix.platform }}"
           SLUG="${{ matrix.slug }}"
           make -C server build-http-echo-docker PLATFORMS=$PLATFORM
-          docker save -o http-echo.tar mcpany/http-echo-server:latest
+          docker save mcpany/http-echo-server:latest | gzip > http-echo.tar.gz
       - uses: actions/upload-artifact@v4
         with:
           name: image-http-echo-${{ matrix.slug }}
-          path: http-echo.tar
+          path: http-echo.tar.gz
           retention-days: 1
       - name: Clean HTTP Echo
-        run: rm http-echo.tar && docker system prune -af
+        run: rm http-echo.tar.gz && docker system prune -af
 
       # 3. Time Server
       - name: Build Time Server
@@ -558,14 +558,14 @@ jobs:
           PLATFORM="${{ matrix.platform }}"
           SLUG="${{ matrix.slug }}"
           make -C server build-e2e-timeserver-docker PLATFORMS=$PLATFORM
-          docker save -o time-server.tar mcpany-e2e-time-server
+          docker save mcpany-e2e-time-server | gzip > time-server.tar.gz
       - uses: actions/upload-artifact@v4
         with:
           name: image-time-server-${{ matrix.slug }}
-          path: time-server.tar
+          path: time-server.tar.gz
           retention-days: 1
       - name: Clean Time Server
-        run: rm time-server.tar && docker system prune -af
+        run: rm time-server.tar.gz && docker system prune -af
 
       # 4. Cowsay
       - name: Build Cowsay
@@ -573,14 +573,14 @@ jobs:
           PLATFORM="${{ matrix.platform }}"
           SLUG="${{ matrix.slug }}"
           make -C server build-cowsay-docker PLATFORMS=$PLATFORM
-          docker save -o cowsay.tar mcpany/e2e-cowsay-server:latest
+          docker save mcpany/e2e-cowsay-server:latest | gzip > cowsay.tar.gz
       - uses: actions/upload-artifact@v4
         with:
           name: image-cowsay-${{ matrix.slug }}
-          path: cowsay.tar
+          path: cowsay.tar.gz
           retention-days: 1
       - name: Clean Cowsay
-        run: rm cowsay.tar && docker system prune -af
+        run: rm cowsay.tar.gz && docker system prune -af
 
       # 5. Everything
       - name: Build Everything
@@ -588,14 +588,14 @@ jobs:
           PLATFORM="${{ matrix.platform }}"
           SLUG="${{ matrix.slug }}"
           make -C server build-everything-docker PLATFORMS=$PLATFORM
-          docker save -o everything.tar mcpany/everything:latest
+          docker save mcpany/everything:latest | gzip > everything.tar.gz
       - uses: actions/upload-artifact@v4
         with:
           name: image-everything-${{ matrix.slug }}
-          path: everything.tar
+          path: everything.tar.gz
           retention-days: 1
       - name: Clean Everything
-        run: rm everything.tar && docker system prune -af
+        run: rm everything.tar.gz && docker system prune -af
 
       # 6. UI
       - name: Build UI
@@ -603,14 +603,14 @@ jobs:
           PLATFORM="${{ matrix.platform }}"
           SLUG="${{ matrix.slug }}"
           make -C server docker-build-ui PLATFORMS=$PLATFORM
-          docker save -o ui.tar mcpany/ui:latest
+          docker save mcpany/ui:latest | gzip > ui.tar.gz
       - uses: actions/upload-artifact@v4
         with:
           name: image-ui-${{ matrix.slug }}
-          path: ui.tar
+          path: ui.tar.gz
           retention-days: 1
       - name: Clean UI
-        run: rm ui.tar && docker system prune -af
+        run: rm ui.tar.gz && docker system prune -af
 
       # 7. Operator
       - name: Build Operator
@@ -618,14 +618,14 @@ jobs:
           PLATFORM="${{ matrix.platform }}"
           SLUG="${{ matrix.slug }}"
           make -C server docker-build-operator PLATFORMS=$PLATFORM
-          docker save -o operator.tar mcpany/operator:latest
+          docker save mcpany/operator:latest | gzip > operator.tar.gz
       - uses: actions/upload-artifact@v4
         with:
           name: image-operator-${{ matrix.slug }}
-          path: operator.tar
+          path: operator.tar.gz
           retention-days: 1
       - name: Clean Operator
-        run: rm operator.tar && docker system prune -af
+        run: rm operator.tar.gz && docker system prune -af
 
       # 8. UI Test Image
       - name: Build UI Test Image
@@ -633,14 +633,14 @@ jobs:
           PLATFORM="${{ matrix.platform }}"
           SLUG="${{ matrix.slug }}"
           make -C ui build-test-docker PLATFORMS=$PLATFORM
-          docker save -o ui-test-image.tar mcpany-ui-e2e:latest
+          docker save mcpany-ui-e2e:latest | gzip > ui-test-image.tar.gz
       - uses: actions/upload-artifact@v4
         with:
           name: image-ui-test-${{ matrix.slug }}
-          path: ui-test-image.tar
+          path: ui-test-image.tar.gz
           retention-days: 1
       - name: Clean UI Test Image
-        run: rm ui-test-image.tar && docker system prune -af
+        run: rm ui-test-image.tar.gz && docker system prune -af
 
   e2e-sequential:
     runs-on: oci-runner
@@ -752,8 +752,8 @@ jobs:
 
       - name: Load Docker Images
         run: |
-          for f in *.tar; do
-            docker load -i "$f"
+          for f in *.tar.gz; do
+            gunzip -c "$f" | docker load
           done
 
       - name: Cache Tools
@@ -953,7 +953,7 @@ jobs:
 
       - name: Load Docker Image
         run: |
-          docker load -i server.tar
+          gunzip -c server.tar.gz | docker load
 
       - name: Smoke Test
         run: |
@@ -1009,8 +1009,8 @@ jobs:
 
       - name: Load Docker Images
         run: |
-          for f in *.tar; do
-            docker load -i "$f"
+          for f in *.tar.gz; do
+            gunzip -c "$f" | docker load
           done
 
       - name: Test UI
@@ -1093,8 +1093,8 @@ jobs:
           # Load all tarballs into docker daemon first?
           # kind load docker-image requires image in docker daemon or archive.
           # kind load image-archive might be better but let's stick to docker daemon for consistency
-          for f in *.tar; do
-            docker load -i "$f"
+          for f in *.tar.gz; do
+            gunzip -c "$f" | docker load
           done
 
           # Now load specific images into Kind
