@@ -465,12 +465,6 @@ jobs:
             slug: arm64
             runner: ubuntu-24.04-arm
     steps:
-      - name: Free Disk Space (Fast)
-        run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
       - uses: actions/checkout@v6
 
       - name: Set up Go
