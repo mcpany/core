@@ -21,10 +21,14 @@ import (
 // 3. In Strict Mode (`MCPANY_STRICT_ENV_MODE=true`), block ALL variables unless whitelisted.
 //
 // Parameters:
-//   - name: The name of the environment variable to check.
+//   - name (string): The name of the environment variable to check.
 //
 // Returns:
 //   - bool: True if the environment variable is allowed, false otherwise.
+//
+// Side Effects:
+//   - Reads environment variables.
+//   - Logs warnings for blocked variables in strict mode.
 func IsEnvVarAllowed(name string) bool {
 	// 1. Check Allowlist
 	allowedEnv := os.Getenv("MCPANY_ALLOWED_ENV")

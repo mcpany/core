@@ -9,6 +9,13 @@
 
 **MCP Any** is a universal adapter that instantly turns your existing APIs into [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) compliant tools. It acts as a configuration-driven gateway, bridging the gap between your backend services (REST, gRPC, OpenAPI, Command-line) and AI agents.
 
+**Key Features:**
+
+*   **Universal Adapter:** Supports HTTP, gRPC, Command-line, and Filesystem upstreams.
+*   **Zero Code:** Purely configuration-driven.
+*   **Secure:** Built-in authentication, rate limiting, and policy enforcement.
+*   **Observable:** Prometheus metrics and OpenTelemetry tracing.
+
 **Why does it exist?**
 
 Traditional MCP adoption often requires writing a separate server binary for every tool, leading to "binary fatigue" and significant maintenance overhead. MCP Any solves this problem by providing a single, unified server that acts as a gateway to multiple services, defined purely through lightweight configuration files. It unifies your infrastructure into a single, secure, and observable MCP endpoint, allowing you to focus on capabilities rather than plumbing.
@@ -195,6 +202,14 @@ upstreamAuth:
 ```
 
 Ensure `OPENAI_API_KEY` (or your specific secret) is set in the server's environment before starting.
+
+## Troubleshooting
+
+**Common Issues:**
+
+*   **Port Conflicts:** Ensure port `50050` (MCP) is free. If using gRPC registration, ensure `50051` is also free.
+*   **Docker Errors:** If using Docker, ensure the Docker daemon is running and you have sufficient permissions (or use `sudo`).
+*   **Configuration Errors:** Use `./build/bin/server validate` to check your configuration files for syntax and schema errors.
 
 ## License
 

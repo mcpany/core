@@ -16,8 +16,8 @@ import (
 // Summary: Reads the tail of a file.
 //
 // Parameters:
-//   - path: string. The path to the file.
-//   - n: int. The number of lines to read.
+//   - path (string): The path to the file.
+//   - n (int): The number of lines to read.
 //
 // Returns:
 //   - [][]byte: A slice of byte slices representing the lines.

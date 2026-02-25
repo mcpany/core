@@ -12,6 +12,8 @@ import (
 )
 
 // CheckResult represents a single check result.
+//
+// Summary: The outcome of a health check execution.
 type CheckResult struct {
 	Status  string `json:"status"`
 	Message string `json:"message,omitempty"`
@@ -20,9 +22,19 @@ type CheckResult struct {
 }
 
 // CheckFunc is a function that performs a health check.
+//
+// Summary: Function signature for a health check.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the check execution.
+//
+// Returns:
+//   - CheckResult: The result of the check.
 type CheckFunc func(context.Context) CheckResult
 
 // DoctorReport represents the full doctor report.
+//
+// Summary: Aggregated health report for all checks.
 type DoctorReport struct {
 	Status    string                 `json:"status"`
 	Timestamp time.Time              `json:"timestamp"`
@@ -30,6 +42,8 @@ type DoctorReport struct {
 }
 
 // Doctor is the health check handler.
+//
+// Summary: Manages and executes health checks.
 type Doctor struct {
 	checks     map[string]CheckFunc
 	mu         sync.RWMutex
@@ -38,7 +52,13 @@ type Doctor struct {
 
 // NewDoctor creates a new Doctor.
 //
-// Returns the result.
+// Summary: Initializes a new Doctor instance.
+//
+// Returns:
+//   - *Doctor: A pointer to the new Doctor.
+//
+// Side Effects:
+//   - Allocates memory.
 func NewDoctor() *Doctor {
 	return &Doctor{
 		checks:     make(map[string]CheckFunc),
@@ -48,8 +68,14 @@ func NewDoctor() *Doctor {
 
 // AddCheck adds a named health check.
 //
-// name is the name of the resource.
-// check is the check.
+// Summary: Registers a new health check function.
+//
+// Parameters:
+//   - name (string): The unique name of the check.
+//   - check (CheckFunc): The check function to execute.
+//
+// Side Effects:
+//   - Modifies internal map of checks.
 func (d *Doctor) AddCheck(name string, check CheckFunc) {
 	d.mu.Lock()
 	defer d.mu.Unlock()
@@ -58,7 +84,14 @@ func (d *Doctor) AddCheck(name string, check CheckFunc) {
 
 // Handler returns the http handler.
 //
-// Returns the result.
+// Summary: Returns an HTTP handler that executes all checks and returns a JSON report.
+//
+// Returns:
+//   - http.HandlerFunc: The HTTP handler function.
+//
+// Side Effects:
+//   - None (when calling Handler itself).
+//   - The returned handler will execute checks, which may have network side effects.
 func (d *Doctor) Handler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		report := DoctorReport{

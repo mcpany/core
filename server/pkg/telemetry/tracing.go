@@ -32,6 +32,24 @@ const (
 // InitTelemetry initializes OpenTelemetry tracing and metrics.
 // It writes traces/metrics to the provided writer (e.g., os.Stderr) if stdout exporter is selected.
 // It returns a shutdown function that should be called when the application exits.
+//
+// Summary: Initializes global OpenTelemetry providers.
+//
+// Parameters:
+//   - ctx (context.Context): The context for initialization (used for resource detection).
+//   - serviceName (string): The name of the service for telemetry attribution.
+//   - version (string): The version of the service.
+//   - cfg (*config_v1.TelemetryConfig): The telemetry configuration.
+//   - writer (io.Writer): The writer to use for stdout export (if configured).
+//
+// Returns:
+//   - func(context.Context) error: A function to gracefully shutdown the providers.
+//   - error: An error if initialization fails.
+//
+// Side Effects:
+//   - Registers global OpenTelemetry TracerProvider and MeterProvider.
+//   - Starts background processes for exporting telemetry.
+//   - May write to stdout/stderr.
 func InitTelemetry(ctx context.Context, serviceName string, version string, cfg *config_v1.TelemetryConfig, writer io.Writer) (func(context.Context) error, error) {
 	// If writer is nil, discard output
 	if writer == nil {
