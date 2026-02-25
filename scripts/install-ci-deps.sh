@@ -5,6 +5,35 @@ set -x
 echo "Installing CI dependencies..."
 echo "User: $(id -u):$(id -g)"
 
+# Check if dependencies are already installed
+MISSING_DEPS=""
+for arg in "$@"; do
+    case "$arg" in
+        xz-utils) CMD="xz" ;;
+        build-essential) CMD="make" ;;
+        ca-certificates) CMD="update-ca-certificates" ;; # Rough check, or check file existence?
+        *) CMD="$arg" ;;
+    esac
+
+    # Special handling for ca-certificates check?
+    if [ "$arg" = "ca-certificates" ]; then
+        if [ ! -f /etc/ssl/certs/ca-certificates.crt ] && [ ! -f /etc/pki/tls/certs/ca-bundle.crt ]; then
+             MISSING_DEPS="$MISSING_DEPS $arg"
+        fi
+    elif ! command -v "$CMD" >/dev/null 2>&1; then
+        MISSING_DEPS="$MISSING_DEPS $arg"
+    fi
+done
+
+if [ -z "$MISSING_DEPS" ]; then
+    echo "All dependencies already installed."
+    exit 0
+fi
+
+echo "Installing missing dependencies: $MISSING_DEPS"
+# Reset args to missing deps
+set -- $MISSING_DEPS
+
 SUDO=""
 if command -v sudo >/dev/null 2>&1; then
     SUDO="sudo"
