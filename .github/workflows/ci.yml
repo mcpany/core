@@ -218,7 +218,22 @@ jobs:
              if command -v apt-get &> /dev/null; then
                 $SUDO apt-get clean
                 $SUDO rm -rf /var/lib/apt/lists/*
-                $SUDO apt-get update -y
+
+                UPDATE_SUCCESS=0
+                for i in 1 2 3 4 5; do
+                  if $SUDO apt-get -o Acquire::ForceIPv4=true update -y; then
+                    UPDATE_SUCCESS=1
+                    break
+                  fi
+                  echo "apt-get update failed, retrying in 20s..."
+                  sleep 20
+                done
+
+                if [ "$UPDATE_SUCCESS" -ne 1 ]; then
+                   echo "Failed to update apt repositories after retries."
+                   exit 1
+                fi
+
                 $SUDO apt-get install -y --no-install-recommends $PKGS
              elif command -v apk &> /dev/null; then
                 $SUDO apk add --no-cache $PKGS
@@ -416,7 +431,22 @@ jobs:
              if command -v apt-get &> /dev/null; then
                 $SUDO apt-get clean
                 $SUDO rm -rf /var/lib/apt/lists/*
-                $SUDO apt-get update -y
+
+                UPDATE_SUCCESS=0
+                for i in 1 2 3 4 5; do
+                  if $SUDO apt-get -o Acquire::ForceIPv4=true update -y; then
+                    UPDATE_SUCCESS=1
+                    break
+                  fi
+                  echo "apt-get update failed, retrying in 20s..."
+                  sleep 20
+                done
+
+                if [ "$UPDATE_SUCCESS" -ne 1 ]; then
+                   echo "Failed to update apt repositories after retries."
+                   exit 1
+                fi
+
                 $SUDO apt-get install -y --no-install-recommends $PKGS
              elif command -v apk &> /dev/null; then
                 $SUDO apk add --no-cache $PKGS
@@ -637,10 +667,25 @@ jobs:
           fi
           df -h
 
-          # Simple update and install
+          # Clean and Update with ForceIPv4 and Retries
           apt-get clean
           rm -rf /var/lib/apt/lists/*
-          apt-get update -y
+
+          UPDATE_SUCCESS=0
+          for i in 1 2 3 4 5; do
+            if apt-get -o Acquire::ForceIPv4=true update -y; then
+              UPDATE_SUCCESS=1
+              break
+            fi
+            echo "apt-get update failed, retrying in 20s..."
+            sleep 20
+          done
+
+          if [ "$UPDATE_SUCCESS" -ne 1 ]; then
+             echo "Failed to update apt repositories after retries."
+             exit 1
+          fi
+
           apt-get install -y --no-install-recommends make git curl unzip build-essential
           which make
 
@@ -801,7 +846,22 @@ jobs:
              if command -v apt-get &> /dev/null; then
                 $SUDO apt-get clean
                 $SUDO rm -rf /var/lib/apt/lists/*
-                $SUDO apt-get update -y
+
+                UPDATE_SUCCESS=0
+                for i in 1 2 3 4 5; do
+                  if $SUDO apt-get -o Acquire::ForceIPv4=true update -y; then
+                    UPDATE_SUCCESS=1
+                    break
+                  fi
+                  echo "apt-get update failed, retrying in 20s..."
+                  sleep 20
+                done
+
+                if [ "$UPDATE_SUCCESS" -ne 1 ]; then
+                   echo "Failed to update apt repositories after retries."
+                   exit 1
+                fi
+
                 $SUDO apt-get install -y --no-install-recommends $PKGS
              elif command -v apk &> /dev/null; then
                 $SUDO apk add --no-cache $PKGS
@@ -992,7 +1052,22 @@ jobs:
              if command -v apt-get &> /dev/null; then
                 $SUDO apt-get clean
                 $SUDO rm -rf /var/lib/apt/lists/*
-                $SUDO apt-get update -y
+
+                UPDATE_SUCCESS=0
+                for i in 1 2 3 4 5; do
+                  if $SUDO apt-get -o Acquire::ForceIPv4=true update -y; then
+                    UPDATE_SUCCESS=1
+                    break
+                  fi
+                  echo "apt-get update failed, retrying in 20s..."
+                  sleep 20
+                done
+
+                if [ "$UPDATE_SUCCESS" -ne 1 ]; then
+                   echo "Failed to update apt repositories after retries."
+                   exit 1
+                fi
+
                 $SUDO apt-get install -y --no-install-recommends $PKGS
              elif command -v apk &> /dev/null; then
                 $SUDO apk add --no-cache $PKGS
