@@ -2992,8 +2992,15 @@ func checkForLocalFileAccess(val string) error {
 		return fmt.Errorf("absolute path detected: %s (only relative paths are allowed for local execution)", val)
 	}
 	// Also block "file:" scheme to prevent SSRF/LFI (e.g. curl file:///etc/passwd)
-	// We check for "file:" prefix case-insensitively.
-	if strings.HasPrefix(strings.ToLower(val), "file:") {
+	// Sentinel Security Update: Handle whitespace in scheme check
+	idx := strings.Index(val, ":")
+	if idx != -1 {
+		scheme := strings.ToLower(strings.TrimSpace(val[:idx]))
+		if scheme == "file" {
+			return fmt.Errorf("file: scheme detected: %s (local file access is not allowed)", val)
+		}
+	} else if strings.HasPrefix(strings.ToLower(val), "file:") {
+		// Fallback if index approach misses something strange, though TrimSpace above handles most
 		return fmt.Errorf("file: scheme detected: %s (local file access is not allowed)", val)
 	}
 
@@ -4343,51 +4350,39 @@ func validateSafePathAndInjection(val string, isDocker bool, commandName string)
 		}
 	}
 
-	if err := checkForPathTraversal(val); err != nil {
-		return err
-	}
-	// Also check decoded value just in case the input was already encoded
-	if decodedVal, err := url.QueryUnescape(val); err == nil && decodedVal != val {
-		if err := checkForPathTraversal(decodedVal); err != nil {
-			return fmt.Errorf("%w (decoded)", err)
+	// Sentinel Security Update: Recursive decoding to prevent multi-layer encoding bypasses
+	// We check the value and then recursively decode and check again up to a limit.
+	currentVal := val
+	for i := 0; i <= 5; i++ {
+		if err := checkForPathTraversal(currentVal); err != nil {
+			return fmt.Errorf("%w (decoded %d times)", err, i)
 		}
-	}
 
-	if !isDocker {
-		if err := checkForLocalFileAccess(val); err != nil {
-			return err
-		}
-		// Also check decoded value for local file access (e.g. %66ile://)
-		if decodedVal, err := url.QueryUnescape(val); err == nil && decodedVal != val {
-			if err := checkForLocalFileAccess(decodedVal); err != nil {
-				return fmt.Errorf("%w (decoded)", err)
+		if !isDocker {
+			if err := checkForLocalFileAccess(currentVal); err != nil {
+				return fmt.Errorf("%w (decoded %d times)", err, i)
 			}
 		}
-	}
 
-	if err := checkForArgumentInjection(val); err != nil {
-		return err
-	}
-	// Also check decoded value for argument injection (e.g. %2drf)
-	if decodedVal, err := url.QueryUnescape(val); err == nil && decodedVal != val {
-		if err := checkForArgumentInjection(decodedVal); err != nil {
-			return fmt.Errorf("%w (decoded)", err)
+		if err := checkForArgumentInjection(currentVal); err != nil {
+			return fmt.Errorf("%w (decoded %d times)", err, i)
 		}
-	}
 
-	// Sentinel Security Update: Block dangerous pseudo-protocols/schemes
-	// We ONLY block these for tools known to be vulnerable (ImageMagick, FFmpeg, Git, etc.)
-	// Blocking them for generic tools (like echo) causes false positives (usability regression).
-	if isVulnerableToSchemes(commandName) {
-		if err := checkForDangerousSchemes(val); err != nil {
-			return err
-		}
-		// Also check decoded value for dangerous schemes
-		if decodedVal, err := url.QueryUnescape(val); err == nil && decodedVal != val {
-			if err := checkForDangerousSchemes(decodedVal); err != nil {
-				return fmt.Errorf("%w (decoded)", err)
+		// Sentinel Security Update: Block dangerous pseudo-protocols/schemes
+		// We ONLY block these for tools known to be vulnerable (ImageMagick, FFmpeg, Git, etc.)
+		// Blocking them for generic tools (like echo) causes false positives (usability regression).
+		if isVulnerableToSchemes(commandName) {
+			if err := checkForDangerousSchemes(currentVal); err != nil {
+				return fmt.Errorf("%w (decoded %d times)", err, i)
 			}
 		}
+
+		// Decode for next iteration
+		decodedVal, err := url.QueryUnescape(currentVal)
+		if err != nil || decodedVal == currentVal {
+			break
+		}
+		currentVal = decodedVal
 	}
 
 	return nil
@@ -4436,7 +4431,8 @@ func checkForDangerousSchemes(val string) error {
 	}
 
 	// Extract scheme and convert to lower case
-	scheme := strings.ToLower(val[:idx])
+	// Sentinel Security Update: Trim whitespace to prevent bypasses like "scheme : ..."
+	scheme := strings.ToLower(strings.TrimSpace(val[:idx]))
 
 	// Validate scheme characters (alpha, digit, +, -, .) to prevent false positives on random colons
 	for _, r := range scheme {
