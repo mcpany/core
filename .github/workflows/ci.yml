@@ -92,10 +92,12 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          CMD="sudo"
+          if [ "$(id -u)" -eq 0 ]; then CMD=""; fi
+          $CMD rm -rf /usr/local/lib/android
+          $CMD rm -rf /usr/share/dotnet
+          $CMD rm -rf /opt/ghc
+          $CMD rm -rf /usr/local/share/boost
 
       - name: Prune Docker
         run: docker system prune -af
@@ -157,7 +159,7 @@ jobs:
   unit-test:
     runs-on: oci-runner
     # container: public.ecr.aws/docker/library/ubuntu:24.04
-    timeout-minutes: 30
+    timeout-minutes: 60
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
     env:
@@ -166,10 +168,12 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          CMD="sudo"
+          if [ "$(id -u)" -eq 0 ]; then CMD=""; fi
+          $CMD rm -rf /usr/local/lib/android
+          $CMD rm -rf /usr/share/dotnet
+          $CMD rm -rf /opt/ghc
+          $CMD rm -rf /usr/local/share/boost
 
       - name: Prune Docker
         run: docker system prune -af
@@ -300,10 +304,12 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          CMD="sudo"
+          if [ "$(id -u)" -eq 0 ]; then CMD=""; fi
+          $CMD rm -rf /usr/local/lib/android
+          $CMD rm -rf /usr/share/dotnet
+          $CMD rm -rf /opt/ghc
+          $CMD rm -rf /usr/local/share/boost
 
       - name: Prune Docker
         run: docker system prune -af
@@ -466,10 +472,12 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          CMD="sudo"
+          if [ "$(id -u)" -eq 0 ]; then CMD=""; fi
+          $CMD rm -rf /usr/local/lib/android
+          $CMD rm -rf /usr/share/dotnet
+          $CMD rm -rf /opt/ghc
+          $CMD rm -rf /usr/local/share/boost
       - uses: actions/checkout@v6
 
       - name: Set up Go
@@ -602,10 +610,12 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          CMD="sudo"
+          if [ "$(id -u)" -eq 0 ]; then CMD=""; fi
+          $CMD rm -rf /usr/local/lib/android
+          $CMD rm -rf /usr/share/dotnet
+          $CMD rm -rf /opt/ghc
+          $CMD rm -rf /usr/local/share/boost
 
       - name: Prune Docker
         run: docker system prune -af
@@ -727,7 +737,7 @@ jobs:
   e2e-public-api:
     runs-on: oci-runner
     # container: public.ecr.aws/docker/library/ubuntu:24.04
-    timeout-minutes: 30
+    timeout-minutes: 60
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
     env:
@@ -736,10 +746,12 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          CMD="sudo"
+          if [ "$(id -u)" -eq 0 ]; then CMD=""; fi
+          $CMD rm -rf /usr/local/lib/android
+          $CMD rm -rf /usr/share/dotnet
+          $CMD rm -rf /opt/ghc
+          $CMD rm -rf /usr/local/share/boost
 
       - name: Prune Docker
         run: docker system prune -af
@@ -910,10 +922,12 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          CMD="sudo"
+          if [ "$(id -u)" -eq 0 ]; then CMD=""; fi
+          $CMD rm -rf /usr/local/lib/android
+          $CMD rm -rf /usr/share/dotnet
+          $CMD rm -rf /opt/ghc
+          $CMD rm -rf /usr/local/share/boost
 
       - name: Prune Docker
         run: docker system prune -af

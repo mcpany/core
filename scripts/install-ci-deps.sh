@@ -1,4 +1,7 @@
 #!/bin/sh
+# Copyright 2025 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
 set -e
 set -x
 
@@ -114,7 +117,7 @@ elif command -v dnf >/dev/null 2>&1; then
             *) NEW_ARGS="$NEW_ARGS $arg" ;;
         esac
     done
-    install_dnf $NEW_ARGS
+    install_dnf "$NEW_ARGS"
 elif command -v yum >/dev/null 2>&1; then
     NEW_ARGS=""
     for arg in "$@"; do
@@ -124,7 +127,7 @@ elif command -v yum >/dev/null 2>&1; then
             *) NEW_ARGS="$NEW_ARGS $arg" ;;
         esac
     done
-    install_yum $NEW_ARGS
+    install_yum "$NEW_ARGS"
 elif command -v microdnf >/dev/null 2>&1; then
     NEW_ARGS=""
     for arg in "$@"; do
@@ -134,7 +137,7 @@ elif command -v microdnf >/dev/null 2>&1; then
             *) NEW_ARGS="$NEW_ARGS $arg" ;;
         esac
     done
-    install_microdnf $NEW_ARGS
+    install_microdnf "$NEW_ARGS"
 elif command -v zypper >/dev/null 2>&1; then
     NEW_ARGS=""
     for arg in "$@"; do
@@ -144,7 +147,7 @@ elif command -v zypper >/dev/null 2>&1; then
             *) NEW_ARGS="$NEW_ARGS $arg" ;;
         esac
     done
-    install_zypper $NEW_ARGS
+    install_zypper "$NEW_ARGS"
 else
     echo "No supported package manager found."
     exit 1
