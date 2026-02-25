@@ -26,20 +26,13 @@ func TestUpstreamService_TheCocktailDB(t *testing.T) {
 	t.Log("INFO: Starting E2E Test Scenario for TheCocktailDB Server...")
 	t.Parallel()
 
-	// --- 1. Start Mock Server ---
-	mockResponse := `{"drinks": [{"strDrink": "Margarita"}]}`
-	mockServer := integration.CreateMockServerWithResponses(t, map[string]string{
-		"/api/json/v1/1/search.php": mockResponse,
-	})
-	defer mockServer.Close()
-
 	// --- 2. Start MCPANY Server ---
 	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2ETheCocktailDBServerTest")
 	defer mcpAnyTestServerInfo.CleanupFunc()
 
 	// --- 3. Register TheCocktailDB Server with MCPANY ---
 	const theCocktailDBServiceID = "e2e_thecocktaildb"
-	theCocktailDBServiceEndpoint := mockServer.URL
+	theCocktailDBServiceEndpoint := "https://www.thecocktaildb.com"
 	t.Logf("INFO: Registering '%s' with MCPANY at endpoint %s...", theCocktailDBServiceID, theCocktailDBServiceEndpoint)
 	registrationGRPCClient := mcpAnyTestServerInfo.RegistrationClient
 
@@ -113,12 +106,6 @@ func TestUpstreamService_TheCocktailDB(t *testing.T) {
 	err = json.Unmarshal([]byte(textContent.Text), &theCocktailDBResponse)
 	require.NoError(t, err, "Failed to unmarshal JSON response")
 
-	if _, ok := theCocktailDBResponse["drinks"].(string); ok {
-		// t.Skip("Skipping test, no drinks found in response")
-	}
-	if theCocktailDBResponse["drinks"] == nil {
-		// t.Skip("Skipping test, no drinks found in response")
-	}
 	drinks, ok := theCocktailDBResponse["drinks"].([]interface{})
 	require.True(t, ok, "The drinks should be an array")
 	require.True(t, len(drinks) > 0, "The response should contain at least one drink")

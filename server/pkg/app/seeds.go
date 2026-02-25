@@ -356,6 +356,82 @@ func init() {
 				}.Build(),
 			}.Build(),
 		}.Build(),
+		configv1.ServiceTemplate_builder{
+			Id:          proto.String("postgres"),
+			Name:        proto.String("PostgreSQL Database"),
+			Description: proto.String("Query and manage PostgreSQL databases."),
+			Icon:        proto.String("database"),
+			Tags:        []string{"database", "sql"},
+			ServiceConfig: configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("postgres"),
+				CommandLineService: configv1.CommandLineUpstreamService_builder{
+					Command: proto.String("npx -y @modelcontextprotocol/server-postgres ${POSTGRES_URL}"),
+					Env: map[string]*configv1.SecretValue{
+						"POSTGRES_URL": configv1.SecretValue_builder{
+							PlainText: proto.String("postgresql://user:password@localhost:5432/dbname"),
+						}.Build(),
+					},
+				}.Build(),
+				AutoDiscoverTool: proto.Bool(true),
+			}.Build(),
+		}.Build(),
+		configv1.ServiceTemplate_builder{
+			Id:          proto.String("filesystem"),
+			Name:        proto.String("Filesystem"),
+			Description: proto.String("Read/Write access to local files and directories."),
+			Icon:        proto.String("hard-drive"),
+			Tags:        []string{"system", "files"},
+			ServiceConfig: configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("filesystem"),
+				CommandLineService: configv1.CommandLineUpstreamService_builder{
+					Command: proto.String("npx -y @modelcontextprotocol/server-filesystem ${ALLOWED_PATH}"),
+					Env: map[string]*configv1.SecretValue{
+						"ALLOWED_PATH": configv1.SecretValue_builder{
+							PlainText: proto.String("."),
+						}.Build(),
+					},
+				}.Build(),
+				AutoDiscoverTool: proto.Bool(true),
+			}.Build(),
+		}.Build(),
+		configv1.ServiceTemplate_builder{
+			Id:          proto.String("linear-cli"),
+			Name:        proto.String("Linear (CLI)"),
+			Description: proto.String("Issue tracking via CLI."),
+			Icon:        proto.String("linear"),
+			Tags:        []string{"development", "pm", "cli"},
+			ServiceConfig: configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("linear-cli"),
+				CommandLineService: configv1.CommandLineUpstreamService_builder{
+					Command: proto.String("npx -y @modelcontextprotocol/server-linear"),
+					Env: map[string]*configv1.SecretValue{
+						"LINEAR_API_KEY": configv1.SecretValue_builder{
+							PlainText: proto.String(""),
+						}.Build(),
+					},
+				}.Build(),
+				AutoDiscoverTool: proto.Bool(true),
+			}.Build(),
+		}.Build(),
+		configv1.ServiceTemplate_builder{
+			Id:          proto.String("sqlite"),
+			Name:        proto.String("SQLite"),
+			Description: proto.String("Query and manage SQLite databases."),
+			Icon:        proto.String("database"),
+			Tags:        []string{"database", "sql"},
+			ServiceConfig: configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("sqlite"),
+				CommandLineService: configv1.CommandLineUpstreamService_builder{
+					Command: proto.String("npx -y @modelcontextprotocol/server-sqlite ${DB_PATH}"),
+					Env: map[string]*configv1.SecretValue{
+						"DB_PATH": configv1.SecretValue_builder{
+							PlainText: proto.String("mcp.db"),
+						}.Build(),
+					},
+				}.Build(),
+				AutoDiscoverTool: proto.Bool(true),
+			}.Build(),
+		}.Build(),
 	}
 }
 
