@@ -39,6 +39,9 @@ var initDockerClientDefault = func() {
 //
 // Returns:
 //   - bool: True if the Docker daemon is accessible, false otherwise.
+//
+// Side Effects:
+//   - Pings the Docker daemon.
 func IsDockerSocketAccessible() bool {
 	return IsDockerSocketAccessibleFunc()
 }

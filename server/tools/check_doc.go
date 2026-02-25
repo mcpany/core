@@ -60,6 +60,8 @@ func checkFile(f *ast.File, fset *token.FileSet, path string) {
 			if x.Name.IsExported() {
 				if x.Doc == nil {
 					fmt.Printf("%s:%d: missing doc for function %s\n", path, fset.Position(x.Pos()).Line, x.Name.Name)
+				} else {
+					checkDocStructure(x.Doc.Text(), x.Type, path, fset.Position(x.Pos()).Line, x.Name.Name)
 				}
 			}
 		case *ast.GenDecl:
@@ -84,6 +86,8 @@ func checkGenDecl(x *ast.GenDecl, fset *token.FileSet, path string) {
 							if len(field.Names) > 0 && field.Names[0].IsExported() {
 								if field.Doc == nil {
 									fmt.Printf("%s:%d: missing doc for interface method %s.%s\n", path, fset.Position(field.Pos()).Line, ts.Name.Name, field.Names[0].Name)
+								} else {
+									checkDocStructure(field.Doc.Text(), field.Type.(*ast.FuncType), path, fset.Position(field.Pos()).Line, ts.Name.Name+"."+field.Names[0].Name)
 								}
 							}
 						}
@@ -100,4 +104,57 @@ func checkGenDecl(x *ast.GenDecl, fset *token.FileSet, path string) {
 			}
 		}
 	}
+}
+
+func checkDocStructure(doc string, funcType *ast.FuncType, path string, line int, name string) {
+	// 1. Summary
+	lines := strings.Split(strings.TrimSpace(doc), "\n")
+	if len(lines) == 0 {
+		fmt.Printf("%s:%d: empty doc for function %s\n", path, line, name)
+		return
+	}
+	// We assume first line is Summary.
+
+	// 2. Parameters
+	hasParams := false
+	if funcType.Params != nil && len(funcType.Params.List) > 0 {
+		hasParams = true
+	}
+	if hasParams && !strings.Contains(doc, "Parameters:") {
+		fmt.Printf("%s:%d: missing 'Parameters:' section in doc for function %s\n", path, line, name)
+	}
+
+	// 3. Returns
+	hasReturns := false
+	hasError := false
+	if funcType.Results != nil && len(funcType.Results.List) > 0 {
+		hasReturns = true
+		for _, field := range funcType.Results.List {
+			// Basic check for error return
+			if isErrorType(field.Type) {
+				hasError = true
+			}
+		}
+	}
+	if hasReturns && !strings.Contains(doc, "Returns:") {
+		fmt.Printf("%s:%d: missing 'Returns:' section in doc for function %s\n", path, line, name)
+	}
+
+	// 4. Errors
+	if hasError && !strings.Contains(doc, "Errors:") {
+		fmt.Printf("%s:%d: missing 'Errors:' section in doc for function %s (returns error)\n", path, line, name)
+	}
+
+	// 5. Side Effects (Mandatory per spec)
+	if !strings.Contains(doc, "Side Effects:") {
+		fmt.Printf("%s:%d: missing 'Side Effects:' section in doc for function %s\n", path, line, name)
+	}
+}
+
+func isErrorType(expr ast.Expr) bool {
+	if ident, ok := expr.(*ast.Ident); ok && ident.Name == "error" {
+		return true
+	}
+	// Could check for qualified name like pkg.Error but error is usually just error
+	return false
 }

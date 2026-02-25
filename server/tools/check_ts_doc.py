@@ -9,15 +9,75 @@ import os
 import re
 import sys
 
+def get_doc_block(lines, export_line_idx):
+    """
+    Backtracks from export line to find JSDoc block.
+    Returns the docstring content as a string, or None.
+    """
+    i = export_line_idx - 1
+    # Skip decorators and empty lines
+    while i >= 0:
+        line = lines[i].strip()
+        if not line or line.startswith('@'):
+            i -= 1
+            continue
+        break
+
+    if i < 0:
+        return None
+
+    if lines[i].strip().endswith('*/'):
+        end_idx = i
+        # Find start
+        while i >= 0:
+            if lines[i].strip().startswith('/**'):
+                # Found block
+                # Extract content
+                doc_lines = []
+                for k in range(i, end_idx + 1):
+                    # Strip /**, */, *
+                    l = lines[k].strip()
+                    if l.startswith('/**'):
+                        l = l[3:]
+                    if l.endswith('*/'):
+                        l = l[:-2]
+                    l = l.strip()
+                    if l.startswith('*'):
+                        l = l[1:]
+                    doc_lines.append(l.strip())
+                return "\n".join(doc_lines)
+            i -= 1
+    return None
+
+def check_structure(doc, name, symbol_type):
+    issues = []
+    if not doc or not doc.strip():
+        return ["empty docstring"]
+
+    # Check Summary (first line not empty)
+    lines = doc.strip().split('\n')
+    first_line = lines[0].strip()
+    if not first_line:
+        issues.append("missing summary")
+    elif first_line.startswith("Copyright"):
+         pass
+
+    # Check Side Effects (Mandatory per AGENTS.md for logic components)
+    # Skip for purely structural types
+    if symbol_type not in ['interface', 'type', 'enum']:
+        # For const, it might be a variable or function.
+        # Ideally we'd check if it's a function, but for now we enforce it unless we are sure.
+        # If it's a UPPER_CASE const, likely a value?
+        if symbol_type == 'const' and name.isupper():
+            pass # Skip side effects for constants like MAX_RETRIES
+        elif "Side Effects:" not in doc:
+            issues.append("missing 'Side Effects:' section")
+
+    return issues
+
 def check_file(filepath):
     """
     Checks a single file for missing documentation on exported symbols.
-
-    Args:
-        filepath: The path to the file to check.
-
-    Returns:
-        A list of tuples containing (line_number, symbol_name) for missing docs.
     """
     with open(filepath, 'r') as f:
         content = f.read()
@@ -25,71 +85,61 @@ def check_file(filepath):
     lines = content.split('\n')
 
     # Regex for exported functions/classes/interfaces/types/consts
-    # export function Name
-    # export class Name
-    # export interface Name
-    # export type Name
-    # export const Name
-
-    # We want to catch:
-    # export default function ...
-    # export default class ...
-
+    # Capture: 1=default(opt), 2=type, 3=name
     pattern = re.compile(r'^\s*export\s+(default\s+)?(function|class|interface|type|const|enum)\s+([a-zA-Z0-9_]+)')
 
-    missing_docs = []
+    errors = []
 
     for i, line in enumerate(lines):
         match = pattern.match(line)
         if match:
+            symbol_type = match.group(2)
             name = match.group(3)
-            # Check for docstring above
-            has_doc = False
-            j = i - 1
-            while j >= 0:
-                prev = lines[j].strip()
-                if not prev:
-                    j -= 1
-                    continue
-                if prev.startswith('@'): # decorators
-                    j -= 1
-                    continue
-                if prev.endswith('*/'):
-                    has_doc = True
-                break
+            doc = get_doc_block(lines, i)
 
-            if not has_doc:
-                missing_docs.append((i + 1, name))
+            if not doc:
+                errors.append((i + 1, name, "missing docstring"))
+            else:
+                structure_issues = check_structure(doc, name, symbol_type)
+                for issue in structure_issues:
+                    errors.append((i + 1, name, issue))
 
-    return missing_docs
+    return errors
+
+def process_path(path):
+    has_errors = False
+    if os.path.isfile(path):
+        missing = check_file(path)
+        if missing:
+            has_errors = True
+            for line_num, name, issue in missing:
+                print(f"{path}:{line_num}: {issue} for exported symbol {name}")
+    else:
+        for dirpath, dirnames, filenames in os.walk(path):
+            # skip node_modules
+            if 'node_modules' in dirnames:
+                dirnames.remove('node_modules')
+
+            for filename in filenames:
+                if filename.endswith('.ts') or filename.endswith('.tsx'):
+                    if filename.endswith('.d.ts') or filename.endswith('.test.ts') or filename.endswith('.test.tsx'):
+                        continue
+
+                    filepath = os.path.join(dirpath, filename)
+                    missing = check_file(filepath)
+
+                    if missing:
+                        has_errors = True
+                        for line_num, name, issue in missing:
+                            print(f"{filepath}:{line_num}: {issue} for exported symbol {name}")
+    return has_errors
 
 def main():
-    """
-    Main function to walk the directory and check all applicable files.
-    Exits with status code 1 if any missing documentation is found.
-    """
-    root_dir = 'ui/src'
-    has_errors = False
+    root_path = 'ui/src'
+    if len(sys.argv) > 1:
+        root_path = sys.argv[1]
 
-    for dirpath, dirnames, filenames in os.walk(root_dir):
-        # skip node_modules
-        if 'node_modules' in dirnames:
-            dirnames.remove('node_modules')
-
-        for filename in filenames:
-            if filename.endswith('.ts') or filename.endswith('.tsx'):
-                if filename.endswith('.d.ts') or filename.endswith('.test.ts') or filename.endswith('.test.tsx'):
-                    continue
-
-                filepath = os.path.join(dirpath, filename)
-                missing = check_file(filepath)
-
-                if missing:
-                    has_errors = True
-                    for line_num, name in missing:
-                        print(f"{filepath}:{line_num}: missing doc for exported symbol {name}")
-
-    if has_errors:
+    if process_path(root_path):
         sys.exit(1)
 
 if __name__ == "__main__":

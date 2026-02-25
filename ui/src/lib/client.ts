@@ -347,6 +347,9 @@ const getMetadata = () => {
 
 /**
  * API Client for interacting with the MCP Any server.
+ *
+ * Side Effects:
+ *   - None.
  */
 export const apiClient = {
     // Services (Migrated to gRPC)

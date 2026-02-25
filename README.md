@@ -182,6 +182,9 @@ MCP Any is configured via environment variables and YAML/JSON configuration file
 | `MCPANY_SHUTDOWN_TIMEOUT` | Graceful shutdown timeout | `5s` |
 | `MCPANY_ALLOWED_ENV` | Comma-separated list of allowed env vars for config expansion | Empty |
 | `MCPANY_STRICT_ENV_MODE` | Block all env vars unless whitelisted | `false` |
+| `MCPANY_TRUST_PROXY` | Trust headers like X-Forwarded-For (set true behind LB) | `false` |
+| `MCPANY_ENABLE_FILE_CONFIG` | Enable loading configuration from files | `false` |
+| `MCPANY_DANGEROUS_ALLOW_LOCAL_IPS` | Allow tools to access local network (Use with caution!) | `false` |
 
 ### Required Secrets
 
