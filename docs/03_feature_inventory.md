@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **JIT Permission Broker**: (P0) A middleware that dynamically escalates agent permissions based on intent-validation and real-time risk scoring. Prevents "Permission Deadlock."
+- **Self-Healing Tool Bridge**: (P1) An interceptor that catches tool execution errors and provides the calling agent with structured metadata to facilitate autonomous recovery or alternative tool selection.
+- **Attention-Sphere Discovery Filter**: (P1) A dynamic filter for the Lazy-MCP middleware that hides tools outside the current "Attention Sphere" of the agent's task.
+
+### Priority Shifts
+- **HITL Middleware**: Promoted to **P0**. Essential for managing the high-risk escalations requested by the JIT Permission Broker.
+- **On-Demand Discovery Middleware (Lazy-MCP)**: (P0) Re-prioritizing "Attention-Aware" features within Lazy-MCP to address million-token context hallucinations.
+
+### Deprecations / Monitoring
+- **Static Capability Tokens**: Monitoring for deprecation in favor of JIT/Intent-based tokens.

@@ -11,6 +11,9 @@
 - [ ] **[P0] Agent Chain Tracer (A2A)**: Visual timeline of multi-agent handoffs and message passing. (Added: 2026-02-26)
 - [ ] **[P1] Federated Node Manager**: UI for peering with remote MCP Any instances and managing shared tool access. (Added: 2026-02-26)
 - [ ] **[P1] Resource Cost/Latency Overlay**: Real-time performance metrics displayed directly on tool cards. (Added: 2026-02-26)
+- [ ] **[P0] JIT Escalation Request Hub**: UI for agents to request and humans to approve dynamic permission escalations. (Added: 2026-02-27)
+- [ ] **[P1] Self-Healing Recovery Console**: Dashboard for monitoring and manually assisting agent self-healing attempts. (Added: 2026-02-27)
+- [ ] **[P1] Attention-Sphere Visualizer**: Debugging tool to visualize which tools are currently in an agent's "Attention Sphere." (Added: 2026-02-27)
 - [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
 - [x] **[P1] Tool Playground & Explorer**:
   - [x] Auto-generated forms from Tool JSON Schemas.

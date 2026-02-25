@@ -46,3 +46,10 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+
+### Update: 2026-02-27 - Integrating JIT Escalation for A2A Handoffs
+**Context**: A2A handoffs often involve a "Permission Gap" where the target agent requires more permissions than the calling agent possessed.
+**Architecture Adjustment**:
+*   The A2A Bridge will now support "Permission Forwarding" and "JIT Request" propagation.
+*   When an A2A agent requires an escalation, the request can be proxied back through the bridge to the JIT Permission Broker.
+**Security Impact**: Ensures that delegated tasks across agent frameworks still adhere to the dynamic Zero-Trust policies of MCP Any.
