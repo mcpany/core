@@ -225,7 +225,7 @@ func IsPrivateNetworkIPv4(ip net.IP) bool {
 // Returns:
 //   - bool: True if it looks like a loopback shorthand.
 func IsLoopbackShorthand(s string) bool {
-	if len(s) < 5 || !isAsciiDigit(s[0]) || s[0] != '1' || s[1] != '2' || s[2] != '7' || s[3] != '.' {
+	if len(s) < 5 || !isASCIIDigit(s[0]) || s[0] != '1' || s[1] != '2' || s[2] != '7' || s[3] != '.' {
 		return false
 	}
 
@@ -238,6 +238,6 @@ func IsLoopbackShorthand(s string) bool {
 	return true
 }
 
-func isAsciiDigit(c byte) bool {
+func isASCIIDigit(c byte) bool {
 	return c >= '0' && c <= '9'
 }
