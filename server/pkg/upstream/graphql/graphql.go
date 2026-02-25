@@ -23,6 +23,11 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
+const (
+	kindNonNull = "NON_NULL"
+	kindList    = "LIST"
+)
+
 const introspectionQuery = `
   query IntrospectionQuery {
     __schema {
@@ -145,7 +150,7 @@ func getUnderlyingType(t *graphQLType) *graphQLType {
 	if t == nil {
 		return nil
 	}
-	if t.Kind == "NON_NULL" || t.Kind == "LIST" {
+	if t.Kind == kindNonNull || t.Kind == kindList {
 		return getUnderlyingType(t.OfType)
 	}
 	return t
@@ -157,9 +162,9 @@ func convertGraphQLTypeToJSONSchema(t *graphQLType) *structpb.Value {
 	}
 
 	switch t.Kind {
-	case "NON_NULL":
+	case kindNonNull:
 		return convertGraphQLTypeToJSONSchema(t.OfType)
-	case "LIST":
+	case kindList:
 		itemsSchema := convertGraphQLTypeToJSONSchema(t.OfType)
 		return &structpb.Value{
 			Kind: &structpb.Value_StructValue{
@@ -423,9 +428,9 @@ func formatGraphQLType(t *graphQLType) string {
 		return ""
 	}
 	switch t.Kind {
-	case "NON_NULL":
+	case kindNonNull:
 		return formatGraphQLType(t.OfType) + "!"
-	case "LIST":
+	case kindList:
 		return "[" + formatGraphQLType(t.OfType) + "]"
 	default:
 		if t.Name != nil {
