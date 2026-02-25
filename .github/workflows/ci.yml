@@ -196,7 +196,7 @@ jobs:
         run: |
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
-          if ! command -v docker &> /dev/null; then
+          if ! command -v docker > /dev/null 2>&1; then
             echo "Docker not found, skipping registry mirror configuration"
             exit 0
           fi
@@ -213,7 +213,12 @@ jobs:
             echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
             $SUDO pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
           fi
-          docker info # Verify the mirrors are listed
+
+          if docker info > /dev/null 2>&1; then
+             docker info
+          else
+             echo "Docker daemon not reachable, skipping docker info"
+          fi
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -348,7 +353,7 @@ jobs:
         run: |
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
-          if ! command -v docker &> /dev/null; then
+          if ! command -v docker > /dev/null 2>&1; then
             echo "Docker not found, skipping registry mirror configuration"
             exit 0
           fi
@@ -365,7 +370,12 @@ jobs:
             echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
             $SUDO pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
           fi
-          docker info # Verify the mirrors are listed
+
+          if docker info > /dev/null 2>&1; then
+             docker info
+          else
+             echo "Docker daemon not reachable, skipping docker info"
+          fi
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -670,7 +680,7 @@ jobs:
         run: |
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
-          if ! command -v docker &> /dev/null; then
+          if ! command -v docker > /dev/null 2>&1; then
             echo "Docker not found, skipping registry mirror configuration"
             exit 0
           fi
@@ -824,7 +834,7 @@ jobs:
         run: |
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
-          if ! command -v docker &> /dev/null; then
+          if ! command -v docker > /dev/null 2>&1; then
             echo "Docker not found, skipping registry mirror configuration"
             exit 0
           fi
@@ -841,7 +851,12 @@ jobs:
             echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
             $SUDO pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
           fi
-          docker info # Verify the mirrors are listed
+
+          if docker info > /dev/null 2>&1; then
+             docker info
+          else
+             echo "Docker daemon not reachable, skipping docker info"
+          fi
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -929,7 +944,7 @@ jobs:
         run: |
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
-          if ! command -v docker &> /dev/null; then
+          if ! command -v docker > /dev/null 2>&1; then
             echo "Docker not found, skipping registry mirror configuration"
             exit 0
           fi
@@ -946,7 +961,12 @@ jobs:
             echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
             $SUDO pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
           fi
-          docker info # Verify the mirrors are listed
+
+          if docker info > /dev/null 2>&1; then
+             docker info
+          else
+             echo "Docker daemon not reachable, skipping docker info"
+          fi
 
       - name: Set up Go
         uses: actions/setup-go@v6
