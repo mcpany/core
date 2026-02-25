@@ -46,3 +46,7 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-02-27:** **Update: Mitigating A2A Spoofing with Intent-Bound Tokens**
+    - **Context**: Market sync revealed a new "A2A Spoofing" pattern where rogue agents impersonate peers.
+    - **Architecture Adjustment**: Introducing "Context-Bound Session Tokens" in Section 4. The bridge now requires every A2A message to include a token cryptographically tied to the parent agent's `Recursive Context` and high-level `Intent`.
+    - **Security Impact**: Prevents unauthorized lateral movement by agents that have been compromised via prompt injection.

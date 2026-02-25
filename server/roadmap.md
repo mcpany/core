@@ -26,8 +26,13 @@
 
 #### Upcoming (2026-02-26 Evolution)
 *   **[P0] A2A Interop Bridge**: Implement Pseudo-MCP wrapper for A2A-compliant agents. (Added: 2026-02-26)
-*   **[P1] Federated MCP Peering**: Distributed node discovery and tool proxying. (Added: 2026-02-26)
+*   **[P0] Federated MCP Peering**: Distributed node discovery and tool proxying (Promoted to P0: 2026-02-27). (Added: 2026-02-26)
 *   **[P1] Resource Telemetry Middleware**: Inject latency/cost metrics into tool schemas. (Added: 2026-02-26)
+
+#### Upcoming (2026-02-27 Evolution)
+*   **[P0] Context-Bound Session Tokens**: Cryptographic intent-binding for subagent handoffs to prevent spoofing. (Added: 2026-02-27)
+*   **[P1] Ephemeral MCP Sandbox (JIT-MCP)**: Secure isolation for agent-synthesized tool adapters. (Added: 2026-02-27)
+*   **[P1] Self-Healing Tool Registry**: Automated configuration patching based on agent feedback. (Added: 2026-02-27)
 
 ## 2. Top 10 Recommended Features
 

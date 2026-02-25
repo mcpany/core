@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **Context-Bound Session Token Middleware**: (P0) Cryptographically ties subagent tokens to specific parent intents to prevent A2A spoofing.
+- **Ephemeral MCP Sandbox (JIT-MCP)**: (P1) A secure, isolated runtime for executing temporary, agent-synthesized MCP adapters.
+- **Self-Healing Tool Registry**: (P1) Middleware that monitors tool failures and applies minor, agent-proposed configuration patches (e.g., parameter renaming).
+
+### Priority Shifts
+- **Federated MCP Node Peering**: Promoted from **P1** to **P0**. Rapid adoption of Global Tool Mesh makes secure peering a critical infrastructure requirement.
+- **Supply Chain Integrity Guard**: (P0) Re-affirming high priority due to Recursive Context Poisoning threats.
+
+### Deprecations / Monitoring
+- **Long-Lived A2A Session Tokens**: Monitoring for deprecation in favor of short-lived, intent-bound tokens.
