@@ -79,12 +79,22 @@ jobs:
     runs-on: oci-runner
     # container: public.ecr.aws/docker/library/ubuntu:24.04
     steps:
+      - name: Check Disk Space Before
+        run: df -h
+
       - name: Free Disk Space (Fast)
         run: |
           sudo rm -rf /usr/local/lib/android
           sudo rm -rf /usr/share/dotnet
           sudo rm -rf /opt/ghc
           sudo rm -rf /usr/local/share/boost
+          sudo rm -rf /usr/local/lib/node_modules
+          sudo rm -rf /usr/lib/jvm
+          sudo rm -rf /usr/local/share/powershell
+          sudo rm -rf /usr/share/swift
+
+      - name: Check Disk Space After
+        run: df -h
 
       - name: Prune Docker
         run: docker system prune -af
@@ -161,6 +171,10 @@ jobs:
           sudo rm -rf /usr/share/dotnet
           sudo rm -rf /opt/ghc
           sudo rm -rf /usr/local/share/boost
+          sudo rm -rf /usr/local/lib/node_modules
+          sudo rm -rf /usr/lib/jvm
+          sudo rm -rf /usr/local/share/powershell
+          sudo rm -rf /usr/share/swift
 
       - name: Prune Docker
         run: docker system prune -af
@@ -300,6 +314,10 @@ jobs:
           sudo rm -rf /usr/share/dotnet
           sudo rm -rf /opt/ghc
           sudo rm -rf /usr/local/share/boost
+          sudo rm -rf /usr/local/lib/node_modules
+          sudo rm -rf /usr/lib/jvm
+          sudo rm -rf /usr/local/share/powershell
+          sudo rm -rf /usr/share/swift
 
       - name: Prune Docker
         run: docker system prune -af
@@ -472,6 +490,10 @@ jobs:
           sudo rm -rf /usr/share/dotnet
           sudo rm -rf /opt/ghc
           sudo rm -rf /usr/local/share/boost
+          sudo rm -rf /usr/local/lib/node_modules
+          sudo rm -rf /usr/lib/jvm
+          sudo rm -rf /usr/local/share/powershell
+          sudo rm -rf /usr/share/swift
       - uses: actions/checkout@v6
 
       - name: Set up Go
@@ -608,6 +630,10 @@ jobs:
           sudo rm -rf /usr/share/dotnet
           sudo rm -rf /opt/ghc
           sudo rm -rf /usr/local/share/boost
+          sudo rm -rf /usr/local/lib/node_modules
+          sudo rm -rf /usr/lib/jvm
+          sudo rm -rf /usr/local/share/powershell
+          sudo rm -rf /usr/share/swift
 
       - name: Prune Docker
         run: docker system prune -af
@@ -748,6 +774,10 @@ jobs:
           sudo rm -rf /usr/share/dotnet
           sudo rm -rf /opt/ghc
           sudo rm -rf /usr/local/share/boost
+          sudo rm -rf /usr/local/lib/node_modules
+          sudo rm -rf /usr/lib/jvm
+          sudo rm -rf /usr/local/share/powershell
+          sudo rm -rf /usr/share/swift
 
       - name: Prune Docker
         run: docker system prune -af
@@ -927,6 +957,10 @@ jobs:
           sudo rm -rf /usr/share/dotnet
           sudo rm -rf /opt/ghc
           sudo rm -rf /usr/local/share/boost
+          sudo rm -rf /usr/local/lib/node_modules
+          sudo rm -rf /usr/lib/jvm
+          sudo rm -rf /usr/local/share/powershell
+          sudo rm -rf /usr/share/swift
 
       - name: Prune Docker
         run: docker system prune -af
@@ -981,6 +1015,10 @@ jobs:
           sudo rm -rf /usr/share/dotnet
           sudo rm -rf /opt/ghc
           sudo rm -rf /usr/local/share/boost
+          sudo rm -rf /usr/local/lib/node_modules
+          sudo rm -rf /usr/lib/jvm
+          sudo rm -rf /usr/local/share/powershell
+          sudo rm -rf /usr/share/swift
 
       - name: Prune Docker
         run: docker system prune -af
@@ -1064,6 +1102,8 @@ jobs:
       - name: Load Docker Images already loaded above
         run: |
           echo "Images already loaded in previous step."
+          docker images
+          kind load docker-image mcpany/http-echo-server:latest --name mcp-e2e
 
       - name: Run K8s E2E Tests
         run: |
