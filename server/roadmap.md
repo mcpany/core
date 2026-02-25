@@ -29,6 +29,11 @@
 *   **[P1] Federated MCP Peering**: Distributed node discovery and tool proxying. (Added: 2026-02-26)
 *   **[P1] Resource Telemetry Middleware**: Inject latency/cost metrics into tool schemas. (Added: 2026-02-26)
 
+#### Upcoming (2026-02-27 Evolution)
+*   **[P0] Asynchronous Tool Orchestrator**: Background worker pool for detached tool calls (Claude Code parity). (Added: 2026-02-27)
+*   **[P0] CSRF & Origin Guard**: Mandatory request signing and origin validation to mitigate browser-based RCE. (Added: 2026-02-27)
+*   **[P1] Control-Token Sanitizer**: Middleware to strip model-specific control tokens from tool outputs. (Added: 2026-02-27)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

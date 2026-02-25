@@ -47,3 +47,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **A2A Gateway Protocol**: MCP Any will implement a protocol-neutral bridge for A2A communication, allowing disparate agent frameworks (e.g., OpenClaw, AutoGen) to exchange state and tasks via a unified MCP-like interface.
 - **Federated Tool Mesh**: Moving from a standalone server to a "Mesh" architecture where multiple MCP Any instances can peer and share resources across network boundaries, governed by global Zero-Trust policies.
 - **Resource-Aware Intelligence**: Integrating cost and latency telemetry into the tool discovery process, allowing LLMs to perform "Economical Reasoning" when selecting tools.
+
+---
+
+## Strategic Evolution: [2026-02-27]
+### Focus: Asynchronous Agency & Deterministic Security
+**Context**: The OpenClaw CSRF-to-RCE exploit and the rise of "Background Agents" in Claude Code represent a shift in the agentic landscape. Agents are moving from synchronous request-response loops to long-running, asynchronous task orchestrations, while facing increasingly sophisticated side-channel attacks.
+**Strategic Pivot**:
+- **Asynchronous Execution Pipeline**: MCP Any will evolve to support "Detached Tool Execution," where the gateway manages long-running background workers, handles state persistence for pending tasks, and provides standardized callback/polling interfaces for agents.
+- **Deterministic Security (Signed Commands)**: Moving beyond simple policy checks to a "Signed-Intent" model. Sensitive configuration changes and high-risk tool calls (e.g., shell execution) will require cryptographic signatures from verified local clients, mitigating CSRF and other browser-based side-channel attacks.
+- **Context Sanitization Hub**: Implementing an active "Sanitization Layer" that strips model-control tokens and malicious injection patterns from tool outputs before they are returned to the LLM, preventing persistent C2 and indirect prompt injection.

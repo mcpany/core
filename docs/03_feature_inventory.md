@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **Asynchronous Tool Orchestrator**: (P0) Middleware and worker pool for managing background tool execution, task polling, and result callbacks. Required for Claude Code-style background agents.
+- **CSRF & Origin Guard**: (P0) Hardened request validation that enforces strict Origin/Referer checks and requires cryptographic signatures for sensitive configuration and tool calls (e.g., shell commands).
+- **Control-Token Sanitization Middleware**: (P1) Automatic filtering of model-specific control tokens from tool outputs to prevent indirect prompt injection and unauthorized C2 channel establishment.
+
+### Priority Shifts
+- **Policy Firewall**: Promoted to include **Origin-Aware Execution**. Tool calls now require validation of the calling client's identity and origin to prevent browser-based exploits.
+- **Shared KV Store**: Elevated focus on **Distributed State Synchronization** to support swarms where subagents may be running in disparate environments.
+
+### Deprecations / Monitoring
+- **Unsigned Configuration API**: Monitoring for deprecation in favor of the Signed Command Protocol.
