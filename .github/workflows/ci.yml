@@ -705,7 +705,7 @@ jobs:
 
       - name: Configure Docker Registry Mirrors
         run: |
-          if command -v sudo &> /dev/null; then
+          if command -v sudo > /dev/null 2>&1; then
             sudo mkdir -p /etc/docker
             echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
