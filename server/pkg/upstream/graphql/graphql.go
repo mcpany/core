@@ -136,6 +136,19 @@ type graphQLType struct {
 	Kind   string       `json:"kind"`
 	Name   *string      `json:"name"`
 	OfType *graphQLType `json:"ofType"`
+	Fields []struct {
+		Name string `json:"name"`
+	} `json:"fields"`
+}
+
+func getUnderlyingType(t *graphQLType) *graphQLType {
+	if t == nil {
+		return nil
+	}
+	if t.Kind == "NON_NULL" || t.Kind == "LIST" {
+		return getUnderlyingType(t.OfType)
+	}
+	return t
 }
 
 func convertGraphQLTypeToJSONSchema(t *graphQLType) *structpb.Value {
@@ -291,13 +304,7 @@ func (g *Upstream) Register(
 						Name string
 						Type graphQLType `json:"type"`
 					} `json:"args"`
-					Type struct {
-						Kind   string
-						Name   string
-						Fields []struct {
-							Name string
-						} `json:"fields"`
-					} `json:"type"`
+					Type graphQLType `json:"type"`
 				} `json:"fields"`
 			} `json:"types"`
 		} `json:"__schema"`
@@ -370,23 +377,27 @@ func (g *Upstream) Register(
 					}
 					i++
 				}
-				sb.WriteString(") ")
+				sb.WriteString(")")
 				selectionSet := ""
 				if call, ok := graphqlConfig.GetCalls()[field.Name]; ok {
 					selectionSet = call.GetSelectionSet()
 				}
 
 				if selectionSet != "" {
+					sb.WriteString(" ")
 					sb.WriteString(selectionSet)
-				} else if len(field.Type.Fields) > 0 {
-					sb.WriteString("{ ")
-					for i, f := range field.Type.Fields {
-						sb.WriteString(f.Name)
-						if i < len(field.Type.Fields)-1 {
-							sb.WriteString(" ")
+				} else {
+					underlyingType := getUnderlyingType(&field.Type)
+					if underlyingType != nil && len(underlyingType.Fields) > 0 {
+						sb.WriteString(" { ")
+						for i, f := range underlyingType.Fields {
+							sb.WriteString(f.Name)
+							if i < len(underlyingType.Fields)-1 {
+								sb.WriteString(" ")
+							}
 						}
+						sb.WriteString(" }")
 					}
-					sb.WriteString(" }")
 				}
 
 				sb.WriteString(" }")

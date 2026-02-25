@@ -1,32 +1,31 @@
 # Coverage Intervention Report
 
 ## Target
-**File:** `server/cmd/mcpctl/doctor.go`
+**File:** `server/pkg/upstream/graphql/graphql.go`
 
 ## Risk Profile
-**Selection Reason:** High Risk / Critical Maintenance Tool.
-The `doctor` command is the primary diagnostic tool used by administrators when the MCP Any system is malfunctioning. It is responsible for:
-1.  **Configuration Validation:** Loading and checking complex configuration files.
-2.  **Network Connectivity:** Diagnosing connection issues between the CLI and the server.
-3.  **System Health:** Parsing and displaying detailed health reports from the server.
+**Selection Reason:** High Risk / Core Integration Logic.
+The GraphQL upstream implementation is responsible for:
+1.  **Introspection:** Parsing complex GraphQL schemas.
+2.  **Tool Registration:** Dynamically creating MCP tools from GraphQL operations.
+3.  **Query Generation:** Constructing valid GraphQL queries from tool calls.
 
 **Prior State:**
--   **Coverage:** 0% (Untested "Dark Matter").
--   **Complexity:** High (Handles file I/O, HTTP networking, JSON parsing, and error handling).
--   **Impact:** Bugs in this tool would leave users blind during outages, unable to diagnose why their system is failing.
+-   **Bug:** The logic for generating default selection sets failed for return types wrapped in `LIST` or `NON_NULL` modifiers (e.g., `[User!]!`). This resulted in invalid GraphQL queries (missing fields) for any operation returning a list of objects.
+-   **Coverage:** Existing tests only covered scalar return types and simple object return types, leaving this complex recursive path untested.
+-   **Impact:** Users integrating with GraphQL APIs (a primary use case) would experience failures for any list-returning operations, breaking the "Universal Adapter" promise.
 
 ## New Coverage
 **Implemented Defenses:**
-Refactored the code to use Dependency Injection (`DoctorRunner`), enabling robust testing of all logic paths.
+1.  **Recursive Type Unwrapping:** Implemented `getUnderlyingType` helper to correctly traverse `NON_NULL` and `LIST` wrappers to find the underlying object definition.
+2.  **Struct Definition Update:** Updated the `graphQLType` struct to correctly capture `Fields` during introspection unmarshaling, enabling accurate type analysis.
+3.  **Robust Query Generation:** Updated the query builder logic to use the unwrapped type when generating default selection sets.
 
 **Guarded Paths:**
-1.  **Happy Path:** Verifies that a fully healthy system is correctly reported as "OK" with all checks passing.
-2.  **Server Connectivity Failure:** Ensures that if the server is unreachable (e.g., down or network issue), the tool reports a failure and provides a helpful suggestion.
-3.  **Health Endpoint Failure:** Verifies that if the server responds with a 500 error on `/health` or `/doctor`, the tool correctly reports the error.
-4.  **Degraded State:** Verifies that if the server reports a "degraded" status (e.g., database down), the CLI correctly reflects this status and lists the failing components.
-5.  **Address Parsing:** Indirectly tests the logic for parsing `host:port` strings through the test scenarios.
+1.  **List Return Types:** Verifies that operations returning lists (e.g., `[User]`) correctly generate selection sets for the inner object fields.
+2.  **Wrapped Types:** Verifies that combinations of `NON_NULL` and `LIST` (e.g., `[User!]!`) are handled correctly.
+3.  **Whitespace consistency:** Improved query string formatting to ensure valid and readable GraphQL.
 
 ## Verification
--   **New Tests:** `go test ./server/cmd/mcpctl/...` passed successfully.
--   **Regression Testing:** `go test ./server/pkg/...` passed successfully, ensuring no negative impact on the core server logic.
--   **Build Integrity:** `make gen` was executed to verify that the project builds and generates necessary artifacts (protobufs) correctly.
+-   **New Tests:** `go test -v ./server/pkg/upstream/graphql/ -run TestGraphQLUpstream_Register_ListHandling` passed, verifying the fix.
+-   **Regression Testing:** `go test -v ./server/pkg/upstream/graphql/` passed, ensuring existing functionality (scalars, simple objects) remains intact.
