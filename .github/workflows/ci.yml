@@ -150,9 +150,9 @@ jobs:
           fi
 
           if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils curl unzip
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils curl unzip ca-certificates
           elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz curl unzip
+             $SUDO apk add --no-cache make xz curl unzip ca-certificates
           fi
 
       - name: Prepare environment
@@ -191,9 +191,9 @@ jobs:
           fi
 
           if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils curl unzip
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils curl unzip ca-certificates
           elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz curl unzip
+             $SUDO apk add --no-cache make xz curl unzip ca-certificates
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -335,9 +335,9 @@ jobs:
           fi
 
           if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils curl unzip
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils curl unzip ca-certificates
           elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz curl unzip
+             $SUDO apk add --no-cache make xz curl unzip ca-certificates
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -520,9 +520,9 @@ jobs:
           fi
 
           if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils curl unzip
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils curl unzip ca-certificates
           elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz curl unzip
+             $SUDO apk add --no-cache make xz curl unzip ca-certificates
           fi
 
       - name: Generate Protobufs
@@ -660,9 +660,9 @@ jobs:
           fi
 
           if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils curl unzip
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils curl unzip ca-certificates
           elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz curl unzip
+             $SUDO apk add --no-cache make xz curl unzip ca-certificates
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -804,9 +804,9 @@ jobs:
           fi
 
           if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils curl unzip
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils curl unzip ca-certificates
           elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz curl unzip
+             $SUDO apk add --no-cache make xz curl unzip ca-certificates
           fi
 
       - name: Configure Docker Registry Mirrors
