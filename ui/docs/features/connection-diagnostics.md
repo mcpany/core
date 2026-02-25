@@ -18,12 +18,12 @@ The **Connection Diagnostic Tool** helps users troubleshoot connectivity issues 
 
 ## Usage
 
-1.  Navigate to the **Services** page.
-2.  Click the **Status Icon** (or the "Troubleshoot" button) next to any service.
-3.  Click **Start Diagnostics**.
+1.  Navigate to the **Service Detail** page (click on a service name from the Services list).
+2.  Click the **Troubleshoot** button in the header actions area.
+3.  Click **Start Diagnostics** (or **Rerun Diagnostics**).
 4.  Follow the on-screen progress and review the **Diagnostic Result** card for suggestions.
 
 ## Screenshots
 
 *(Screenshot of the connection diagnostics dialog showing a localhost warning)*
-![Connection Diagnostics](../screenshots/connection-diagnostics.png)
+<!-- ![Connection Diagnostics](../screenshots/connection-diagnostics.png) -->
