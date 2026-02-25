@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Bookmark, Trash2, Save, Plus } from "lucide-react";
-import { toast } from "sonner";
+import { useToast } from "@/hooks/use-toast";
 
 interface Preset {
   name: string;
@@ -37,6 +37,7 @@ export function ToolPresets({ toolName, currentData, onSelect }: ToolPresetsProp
   const [newPresetName, setNewPresetName] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [isSaveMode, setIsSaveMode] = useState(false);
+  const { toast } = useToast();
 
   const storageKey = `mcpany-presets-${toolName}`;
 
@@ -78,7 +79,7 @@ export function ToolPresets({ toolName, currentData, onSelect }: ToolPresetsProp
     localStorage.setItem(storageKey, JSON.stringify(updatedPresets));
     setNewPresetName("");
     setIsSaveMode(false);
-    toast.success("Preset saved");
+    toast({ title: "Preset saved" });
   };
 
   const deletePreset = (name: string, e: React.MouseEvent) => {
@@ -86,7 +87,7 @@ export function ToolPresets({ toolName, currentData, onSelect }: ToolPresetsProp
     const updatedPresets = presets.filter((p) => p.name !== name);
     setPresets(updatedPresets);
     localStorage.setItem(storageKey, JSON.stringify(updatedPresets));
-    toast.success("Preset deleted");
+    toast({ title: "Preset deleted" });
   };
 
   return (
@@ -144,7 +145,7 @@ export function ToolPresets({ toolName, currentData, onSelect }: ToolPresetsProp
                   onClick={() => {
                       onSelect(preset.data);
                       setIsOpen(false);
-                      toast.success(`Loaded preset: ${preset.name}`);
+                      toast({ title: "Preset loaded", description: preset.name });
                   }}
                 >
                   <span className="text-sm truncate max-w-[180px]">{preset.name}</span>

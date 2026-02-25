@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { ToolDefinition, apiClient, ToolAnalytics } from "@/lib/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { PlayCircle, Loader2, Zap, Activity, History as HistoryIcon, RefreshCw, Code, Terminal, Coins, ArrowRightLeft } from "lucide-react";
+import { PlayCircle, Loader2, Zap, Activity, History as HistoryIcon, RefreshCw, Code, Terminal, Coins, ArrowRightLeft, Bug } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer, Tooltip as ChartTooltip, XAxis, YAxis, CartesianGrid } from "recharts";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -29,6 +29,8 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ToolPresets } from "./tool-presets";
+import { InterceptorDialog } from "./interceptor-dialog";
 
 interface ToolRunnerProps {
   tool: ToolDefinition;
@@ -61,6 +63,9 @@ export function ToolRunner({ tool, onClose }: ToolRunnerProps) {
   const [output, setOutput] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [isDryRun, setIsDryRun] = useState(false);
+  const [isInterceptorOn, setIsInterceptorOn] = useState(false);
+  const [interceptorOpen, setInterceptorOpen] = useState(false);
+  const [pendingPayload, setPendingPayload] = useState<Record<string, unknown>>({});
   const [lastRunStats, setLastRunStats] = useState<{ inputTokens: number, outputTokens: number, cost: number } | null>(null);
   const { toast } = useToast();
 
@@ -122,14 +127,23 @@ export function ToolRunner({ tool, onClose }: ToolRunnerProps) {
       }
   };
 
-  const handleExecute = async () => {
+  const handleExecute = async (overrideArgs?: Record<string, unknown>) => {
     setLoading(true);
     setOutput(null);
     setLastRunStats(null);
     try {
-      const args = JSON.parse(input);
+      const args = overrideArgs || JSON.parse(input);
+
+      // Interception logic
+      if (isInterceptorOn && !overrideArgs) {
+          setPendingPayload(args);
+          setInterceptorOpen(true);
+          setLoading(false);
+          return;
+      }
+
       // Calculate Input Tokens
-      const inputTokens = estimateTokens(input);
+      const inputTokens = estimateTokens(JSON.stringify(args));
 
       const res = await apiClient.executeTool({
           name: tool.name,
@@ -190,6 +204,24 @@ export function ToolRunner({ tool, onClose }: ToolRunnerProps) {
                  </div>
              </div>
              <div className="flex items-center gap-2">
+                 <div className="flex items-center space-x-2 border-r pr-4">
+                      <ToolPresets
+                          toolName={tool.name}
+                          currentData={parsedInput || {}}
+                          onSelect={(data) => setInput(JSON.stringify(data, null, 2))}
+                      />
+                 </div>
+                 <div className="flex items-center space-x-2 border-r pr-4">
+                      <Button
+                          variant={isInterceptorOn ? "default" : "ghost"}
+                          size="sm"
+                          className={cn("h-8 w-8 p-0", isInterceptorOn && "bg-amber-100 text-amber-700 hover:bg-amber-200 dark:bg-amber-900/50 dark:text-amber-400")}
+                          onClick={() => setIsInterceptorOn(!isInterceptorOn)}
+                          title="Interceptor Mode (Breakpoint)"
+                      >
+                          <Bug className="h-4 w-4" />
+                      </Button>
+                 </div>
                  <div className="flex items-center space-x-2 mr-4 border-r pr-4">
                       <Switch id="dry-run" checked={isDryRun} onCheckedChange={setIsDryRun} />
                       <Label htmlFor="dry-run" className="text-sm font-normal">Dry Run</Label>
@@ -212,7 +244,7 @@ export function ToolRunner({ tool, onClose }: ToolRunnerProps) {
                           </DropdownMenuItem>
                       </DropdownMenuContent>
                   </DropdownMenu>
-                  <Button onClick={handleExecute} disabled={loading} size="sm">
+                  <Button onClick={() => handleExecute()} disabled={loading} size="sm">
                     {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <PlayCircle className="mr-2 h-4 w-4" />}
                     Execute
                   </Button>
@@ -409,6 +441,18 @@ export function ToolRunner({ tool, onClose }: ToolRunnerProps) {
                     </Tabs>
              </TabsContent>
         </Tabs>
+
+        <InterceptorDialog
+            open={interceptorOpen}
+            onOpenChange={setInterceptorOpen}
+            toolName={tool.name}
+            payload={pendingPayload}
+            onExecute={(modified) => handleExecute(modified)}
+            onCancel={() => {
+                setLoading(false);
+                toast({ title: "Execution Cancelled", description: "Request was intercepted and stopped." });
+            }}
+        />
     </div>
   );
 }
