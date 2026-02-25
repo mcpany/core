@@ -12,14 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM mirror.gcr.io/library/python:3.11-slim
+FROM mirror.gcr.io/library/python:3.11-alpine
 
-# Use /app as working directory, matching other functional Dockerfiles
+# Use /app as working directory
 WORKDIR /app
+
+COPY main.py .
 
 # Install dependencies directly to minimize layer issues
 RUN pip install "fastmcp>=2.0.0"
-
-COPY main.py .
 
 CMD ["python", "-u", "main.py", "--mcp-stdio"]
