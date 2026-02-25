@@ -211,15 +211,30 @@ jobs:
                SUDO="sudo"
              fi
 
+             if [ -f /etc/os-release ]; then
+                cat /etc/os-release
+             fi
+
              if command -v apt-get &> /dev/null; then
+                # Clear apt lists to avoid hash sum mismatch
+                $SUDO rm -rf /var/lib/apt/lists/*
+
                 # Retry loop for apt-get update
-                for i in 1 2 3; do
+                UPDATE_SUCCESS=0
+                for i in 1 2 3 4 5; do
                   if $SUDO apt-get update -y; then
+                    UPDATE_SUCCESS=1
                     break
                   fi
-                  echo "apt-get update failed, retrying in 10s..."
-                  sleep 10
+                  echo "apt-get update failed, retrying in 20s..."
+                  sleep 20
                 done
+
+                if [ "$UPDATE_SUCCESS" -ne 1 ]; then
+                   echo "Failed to update apt repositories after retries."
+                   exit 1
+                fi
+
                 $SUDO apt-get install -y --no-install-recommends $PKGS
              elif command -v apk &> /dev/null; then
                 $SUDO apk add --no-cache $PKGS
@@ -410,15 +425,30 @@ jobs:
                SUDO="sudo"
              fi
 
+             if [ -f /etc/os-release ]; then
+                cat /etc/os-release
+             fi
+
              if command -v apt-get &> /dev/null; then
+                # Clear apt lists to avoid hash sum mismatch
+                $SUDO rm -rf /var/lib/apt/lists/*
+
                 # Retry loop for apt-get update
-                for i in 1 2 3; do
+                UPDATE_SUCCESS=0
+                for i in 1 2 3 4 5; do
                   if $SUDO apt-get update -y; then
+                    UPDATE_SUCCESS=1
                     break
                   fi
-                  echo "apt-get update failed, retrying in 10s..."
-                  sleep 10
+                  echo "apt-get update failed, retrying in 20s..."
+                  sleep 20
                 done
+
+                if [ "$UPDATE_SUCCESS" -ne 1 ]; then
+                   echo "Failed to update apt repositories after retries."
+                   exit 1
+                fi
+
                 $SUDO apt-get install -y --no-install-recommends $PKGS
              elif command -v apk &> /dev/null; then
                 $SUDO apk add --no-cache $PKGS
@@ -634,6 +664,13 @@ jobs:
           set -x
           export DEBIAN_FRONTEND=noninteractive
 
+          if [ -f /etc/os-release ]; then
+            cat /etc/os-release
+          fi
+
+          # Clear apt lists to avoid hash sum mismatch
+          rm -rf /var/lib/apt/lists/*
+
           # Retry update to handle transient network issues
           UPDATE_SUCCESS=0
           for i in 1 2 3 4 5; do
@@ -803,15 +840,30 @@ jobs:
                SUDO="sudo"
              fi
 
+             if [ -f /etc/os-release ]; then
+                cat /etc/os-release
+             fi
+
              if command -v apt-get &> /dev/null; then
+                # Clear apt lists to avoid hash sum mismatch
+                $SUDO rm -rf /var/lib/apt/lists/*
+
                 # Retry loop for apt-get update
-                for i in 1 2 3; do
+                UPDATE_SUCCESS=0
+                for i in 1 2 3 4 5; do
                   if $SUDO apt-get update -y; then
+                    UPDATE_SUCCESS=1
                     break
                   fi
-                  echo "apt-get update failed, retrying in 10s..."
-                  sleep 10
+                  echo "apt-get update failed, retrying in 20s..."
+                  sleep 20
                 done
+
+                if [ "$UPDATE_SUCCESS" -ne 1 ]; then
+                   echo "Failed to update apt repositories after retries."
+                   exit 1
+                fi
+
                 $SUDO apt-get install -y --no-install-recommends $PKGS
              elif command -v apk &> /dev/null; then
                 $SUDO apk add --no-cache $PKGS
@@ -995,15 +1047,30 @@ jobs:
                SUDO="sudo"
              fi
 
+             if [ -f /etc/os-release ]; then
+                cat /etc/os-release
+             fi
+
              if command -v apt-get &> /dev/null; then
+                # Clear apt lists to avoid hash sum mismatch
+                $SUDO rm -rf /var/lib/apt/lists/*
+
                 # Retry loop for apt-get update
-                for i in 1 2 3; do
+                UPDATE_SUCCESS=0
+                for i in 1 2 3 4 5; do
                   if $SUDO apt-get update -y; then
+                    UPDATE_SUCCESS=1
                     break
                   fi
-                  echo "apt-get update failed, retrying in 10s..."
-                  sleep 10
+                  echo "apt-get update failed, retrying in 20s..."
+                  sleep 20
                 done
+
+                if [ "$UPDATE_SUCCESS" -ne 1 ]; then
+                   echo "Failed to update apt repositories after retries."
+                   exit 1
+                fi
+
                 $SUDO apt-get install -y --no-install-recommends $PKGS
              elif command -v apk &> /dev/null; then
                 $SUDO apk add --no-cache $PKGS
