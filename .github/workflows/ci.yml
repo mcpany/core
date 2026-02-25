@@ -35,9 +35,9 @@ jobs:
     steps:
       - name: Install dependencies
         run: |
-          if command -v apt-get &> /dev/null; then
+          if command -v apt-get >/dev/null 2>&1; then
             sudo apt-get update && sudo apt-get install -y git
-          elif command -v apk &> /dev/null; then
+          elif command -v apk >/dev/null 2>&1; then
              sudo apk add --no-cache git
           fi
 
@@ -157,9 +157,9 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if command -v apt-get &> /dev/null; then
+          if command -v apt-get >/dev/null 2>&1; then
             sudo apt-get update && sudo apt-get install -y make xz-utils
-          elif command -v apk &> /dev/null; then
+          elif command -v apk >/dev/null 2>&1; then
              sudo apk add --no-cache make xz
           fi
 
@@ -212,9 +212,9 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if command -v apt-get &> /dev/null; then
+          if command -v apt-get >/dev/null 2>&1; then
             sudo apt-get update && sudo apt-get install -y make xz-utils
-          elif command -v apk &> /dev/null; then
+          elif command -v apk >/dev/null 2>&1; then
              sudo apk add --no-cache make xz
           fi
 
@@ -358,9 +358,9 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if command -v apt-get &> /dev/null; then
+          if command -v apt-get >/dev/null 2>&1; then
             sudo apt-get update && sudo apt-get install -y make xz-utils
-          elif command -v apk &> /dev/null; then
+          elif command -v apk >/dev/null 2>&1; then
              sudo apk add --no-cache make xz
           fi
 
@@ -679,9 +679,9 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if command -v apt-get &> /dev/null; then
+          if command -v apt-get >/dev/null 2>&1; then
             sudo apt-get update && sudo apt-get install -y make xz-utils
-          elif command -v apk &> /dev/null; then
+          elif command -v apk >/dev/null 2>&1; then
              sudo apk add --no-cache make xz
           fi
 
@@ -825,9 +825,9 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if command -v apt-get &> /dev/null; then
+          if command -v apt-get >/dev/null 2>&1; then
             sudo apt-get update && sudo apt-get install -y make xz-utils
-          elif command -v apk &> /dev/null; then
+          elif command -v apk >/dev/null 2>&1; then
              sudo apk add --no-cache make xz
           fi
 
