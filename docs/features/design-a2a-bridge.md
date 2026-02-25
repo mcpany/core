@@ -46,3 +46,4 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-02-27:** Integrating with JIT Permission Broker. A2A handoffs now trigger JIT capability requests if the destination agent requires higher privileges than the caller.

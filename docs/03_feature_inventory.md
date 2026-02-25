@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **JIT Permission Broker (Lease-Based Auth)**: (P0) Allows agents to request temporary capability elevations for specific tasks, verified against the Policy Engine.
+- **Agent-to-Agent Data Mesh (Blob Store)**: (P1) Extends the KV store to support file/object sharing between agents via the MCP gateway.
+- **Intent-Aware Relevance Engine**: (P0) A middleware that scores tools based on agent intent and historical success, optimizing the "Lazy-MCP" discovery process.
+
+### Priority Shifts
+- **Shared KV Store**: Promoted to **P0** (Already P0, but expanding scope to include Data Mesh primitives).
+- **Federated MCP Node Peering**: Promoted to **P0**. Inter-node coordination is critical for dynamic permission brokering across distributed swarms.
+
+### Deprecations / Monitoring
+- **Coarse-Grained Tool Tokens**: Monitoring for deprecation in favor of fine-grained, JIT "capability leases."
