@@ -29,6 +29,12 @@
 *   **[P1] Federated MCP Peering**: Distributed node discovery and tool proxying. (Added: 2026-02-26)
 *   **[P1] Resource Telemetry Middleware**: Inject latency/cost metrics into tool schemas. (Added: 2026-02-26)
 
+#### Upcoming (2026-02-27 Evolution)
+*   **[P0] Subagent Recursion Limiter**: Middleware to prevent context depth exhaustion and infinite loops. (Added: 2026-02-27)
+*   **[P1] Stateful Policy Engine**: Conversation-aware guardrails using real-time safety scores. (Added: 2026-02-27)
+*   **[P1] Ephemeral WASM Runtime**: Secure sandbox for agent-generated tools. (Added: 2026-02-27)
+*   **[P1] Native Sidecar Bridge**: Standardize proprietary context injectors (Gemini/Claude) as MCP resources. (Added: 2026-02-27)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
