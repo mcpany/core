@@ -462,6 +462,9 @@ func TestTools_ErrorPaths(t *testing.T) {
 	})
 
 	t.Run("read_file_permission_error", func(t *testing.T) {
+		if os.Geteuid() == 0 {
+			t.Skip("Skipping permission test when running as root")
+		}
 		readTool := findTool("read_file")
 
 		fPath := filepath.Join(tempDir, "unreadable")
@@ -477,6 +480,9 @@ func TestTools_ErrorPaths(t *testing.T) {
 	})
 
 	t.Run("search_files_unreadable", func(t *testing.T) {
+		if os.Geteuid() == 0 {
+			t.Skip("Skipping permission test when running as root")
+		}
 		// Search should skip unreadable files without error
 		search := findTool("search_files")
 

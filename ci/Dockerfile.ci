@@ -22,7 +22,15 @@ RUN apk add --no-cache \
     zip \
     unzip \
     which \
-    openssl
+    openssl \
+    xz \
+    sed \
+    mailcap
+
+# Config git to treat all directories as safe (fixes CI ownership issues)
+# Config git to treat all directories as safe (fixes CI ownership issues)
+# We use --system to ensure it applies to all users, including those created at runtime
+RUN git config --system --add safe.directory '*'
 
 # Install Python tools
 RUN pip3 install --break-system-packages pre-commit
@@ -30,6 +38,7 @@ RUN pip3 install --break-system-packages pre-commit
 # Install specific versions of tools (Pre-bake to avoid download during build)
 # Using the same logic as Makefile but baking it in
 ENV TOOL_INSTALL_DIR=/usr/local/bin
+ENV PATH=$TOOL_INSTALL_DIR:$PATH
 
 # Install GolangCI-Lint
 RUN curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $TOOL_INSTALL_DIR v1.64.5
@@ -71,7 +80,29 @@ RUN curl -sSL -o googleapis.zip https://github.com/googleapis/googleapis/archive
     mv googleapis-master /usr/local/include/googleapis && \
     rm googleapis.zip
 
+# Cache Go modules
+# We copy go.mod and go.sum from the context (root of repo) to /build-cache/core
+WORKDIR /build-cache/core
+COPY go.mod go.sum ./
+RUN go mod download
+
+# Cache Node modules for integration tests
+# We assume the context includes the whole repo, so we copy the relevant package.json
+# Note: We need to be careful about paths. The build context for this Dockerfile is usually the root of the repo.
+WORKDIR /build-cache/server/tests/integration/upstream
+COPY server/tests/integration/upstream/package.json server/tests/integration/upstream/package-lock.json ./
+# We cache node_modules but we might skip browser install if it fails on Alpine
+# Playwright on Alpine is tricky. We'll just install dependencies.
+# If we need browsers, we might need a specific build or just rely on the fact that we use a different image for running tests?
+# Actually, the CI runner IS the image used for running tests.
+# But for now, let's just do npm ci. We can install browsers at runtime if needed, or use a specific playwright docker image if we were smart.
+# But we are building a "server-ci" image.
+RUN npm ci
+# We skip playwright install here because it fails on Alpine without some hacks.
+# We will rely on "npx playwright install" running in the job if needed, OR we install dependencies manually.
+# For now, just npm ci to cache the node_modules.
+
 # Cleanup
-RUN rm -rf /go/pkg/mod/* /root/.cache
+RUN rm -rf /root/.cache
 
 WORKDIR /workspace

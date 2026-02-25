@@ -81,39 +81,47 @@ prepare-proto:
 	@echo "Preparing protobuf environment..."
 	@mkdir -p $(TOOL_INSTALL_DIR)
 	@# Check if protoc is installed
-	@export PATH=$(TOOL_INSTALL_DIR):$$PATH; \
-	PROTOC_TAG=$(PROTOC_VERSION); \
-	if test -f "$(PROTOC_BIN)"; then \
-		INSTALLED_VERSION=v$$($(PROTOC_BIN) --version | sed 's/libprotoc //'); \
-		if test "$${INSTALLED_VERSION}" = "$${PROTOC_TAG}"; then \
-			echo "protoc version $${INSTALLED_VERSION} is already installed."; \
-		else \
-			echo "protoc version mismatch. Installed: $${INSTALLED_VERSION}, Required: $${PROTOC_TAG}. Re-installing..."; \
-			rm -f "$(PROTOC_BIN)"; \
-			$(MAKE) prepare-proto; \
-		fi; \
+	@if [ -n "$(CI)" ] && [ -x "$$(command -v protoc)" ]; then \
+		echo "CI detected and protoc found. Skipping installation check."; \
 	else \
-		echo "protoc not found, attempting to install version $${PROTOC_TAG}..."; \
-		if ! command -v curl >/dev/null 2>&1 || ! command -v unzip >/dev/null 2>&1; then \
-			echo "curl and unzip are not installed. Installing..."; \
-			apt-get update && apt-get install -y curl unzip; \
-		fi; \
-		PROTOC_VERSION_NO_V=$$(echo "$${PROTOC_TAG}" | sed 's/v//'); \
-		PROTOC_DOWNLOAD_URL_NO_V="$(PROTOC_DOWNLOAD_URL_BASE)/$${PROTOC_TAG}/protoc-$${PROTOC_VERSION_NO_V}-linux-$(PROTOC_ARCH).zip"; \
-		echo "Downloading protoc from $${PROTOC_DOWNLOAD_URL_NO_V}..."; \
-		if curl -sSL "$${PROTOC_DOWNLOAD_URL_NO_V}" -o "$(PROTOC_ZIP)"; then \
-			echo "Unzipping to $(TOOL_INSTALL_DIR)..."; \
-			unzip -o "$(PROTOC_ZIP)" -d "$(TOOL_INSTALL_DIR)"; \
-			mv "$(TOOL_INSTALL_DIR)/bin/protoc" "$(PROTOC_BIN)"; \
-			rm -f "$(PROTOC_ZIP)"; \
+		export PATH=$(TOOL_INSTALL_DIR):$$PATH; \
+		PROTOC_TAG=$(PROTOC_VERSION); \
+		if test -f "$(PROTOC_BIN)"; then \
+			INSTALLED_VERSION=v$$($(PROTOC_BIN) --version | sed 's/libprotoc //'); \
+			if test "$${INSTALLED_VERSION}" = "$${PROTOC_TAG}"; then \
+				echo "protoc version $${INSTALLED_VERSION} is already installed."; \
+			else \
+				echo "protoc version mismatch. Installed: $${INSTALLED_VERSION}, Required: $${PROTOC_TAG}. Re-installing..."; \
+				rm -f "$(PROTOC_BIN)"; \
+				$(MAKE) prepare-proto; \
+			fi; \
+		else \
+			echo "protoc not found, attempting to install version $${PROTOC_TAG}..."; \
+			if ! command -v curl >/dev/null 2>&1 || ! command -v unzip >/dev/null 2>&1; then \
+				echo "curl and unzip are not installed. Installing..."; \
+				apt-get update && apt-get install -y curl unzip; \
+			fi; \
+			PROTOC_VERSION_NO_V=$$(echo "$${PROTOC_TAG}" | sed 's/v//'); \
+			PROTOC_DOWNLOAD_URL_NO_V="$(PROTOC_DOWNLOAD_URL_BASE)/$${PROTOC_TAG}/protoc-$${PROTOC_VERSION_NO_V}-linux-$(PROTOC_ARCH).zip"; \
+			echo "Downloading protoc from $${PROTOC_DOWNLOAD_URL_NO_V}..."; \
+			if curl -sSL "$${PROTOC_DOWNLOAD_URL_NO_V}" -o "$(PROTOC_ZIP)"; then \
+				echo "Unzipping to $(TOOL_INSTALL_DIR)..."; \
+				unzip -o "$(PROTOC_ZIP)" -d "$(TOOL_INSTALL_DIR)"; \
+				mv "$(TOOL_INSTALL_DIR)/bin/protoc" "$(PROTOC_BIN)"; \
+				rm -f "$(PROTOC_ZIP)"; \
+			fi; \
 		fi; \
 	fi
 	@# Install Go protobuf plugins
 	@echo "Installing Go protobuf plugins..."
-	@if ! test -f "$(PROTOC_GEN_GO)"; then GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install google.golang.org/protobuf/cmd/protoc-gen-go@$(PROTOC_GEN_GO_VERSION); fi
-	@if ! test -f "$(PROTOC_GEN_GO_GRPC)"; then GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install google.golang.org/grpc/cmd/protoc-gen-go-grpc@$(PROTOC_GEN_GO_GRPC_VERSION); fi
-	@if ! test -f "$(PROTOC_GEN_GRPC_GATEWAY)"; then GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@$(GRPC_GATEWAY_VERSION); fi
-	@if ! test -f "$(PROTOC_GEN_OPENAPIV2)"; then GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@$(GRPC_GATEWAY_VERSION); fi
+	@if [ -n "$(CI)" ]; then \
+		echo "CI detected. Assuming plugins are pre-installed in image."; \
+	else \
+		if ! test -f "$(PROTOC_GEN_GO)"; then GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install google.golang.org/protobuf/cmd/protoc-gen-go@$(PROTOC_GEN_GO_VERSION); fi; \
+		if ! test -f "$(PROTOC_GEN_GO_GRPC)"; then GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install google.golang.org/grpc/cmd/protoc-gen-go-grpc@$(PROTOC_GEN_GO_GRPC_VERSION); fi; \
+		if ! test -f "$(PROTOC_GEN_GRPC_GATEWAY)"; then GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@$(GRPC_GATEWAY_VERSION); fi; \
+		if ! test -f "$(PROTOC_GEN_OPENAPIV2)"; then GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@$(GRPC_GATEWAY_VERSION); fi; \
+	fi
 	@# Download grpc-gateway source for protos
 	@if ! test -d "$(BUILD_DIR)/grpc-gateway"; then \
 		echo "Downloading grpc-gateway protos..."; \

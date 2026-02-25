@@ -14,6 +14,9 @@ import (
 )
 
 func TestToolHashCmd(t *testing.T) {
+	cleanupConfig()
+	defer cleanupConfig()
+
 	tempDir := t.TempDir()
 
 	configContent := `

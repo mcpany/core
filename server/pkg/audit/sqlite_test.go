@@ -357,6 +357,10 @@ func TestEnsureColumns_Failure(t *testing.T) {
 	validation.SetAllowedPaths([]string{os.TempDir()})
 	defer validation.SetAllowedPaths(nil)
 
+	if os.Geteuid() == 0 {
+		t.Skip("Skipping permission test when running as root")
+	}
+
 	// This test is tricky because we need to simulate a failure in ensureColumns.
 	// Since NewSQLiteAuditStore calls ensureColumns internally, we can try to
 	// create a table with a schema that conflicts or create a read-only db?

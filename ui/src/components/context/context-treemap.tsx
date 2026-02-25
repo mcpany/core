@@ -13,14 +13,14 @@ import { ToolDefinition } from "@/lib/client";
 
 // Custom colors for different services (generated based on name or index)
 const COLORS = [
-  "#3b82f6", // Blue
-  "#10b981", // Emerald
-  "#f59e0b", // Amber
-  "#8b5cf6", // Violet
-  "#ef4444", // Red
-  "#ec4899", // Pink
-  "#6366f1", // Indigo
-  "#14b8a6", // Teal
+    "#3b82f6", // Blue
+    "#10b981", // Emerald
+    "#f59e0b", // Amber
+    "#8b5cf6", // Violet
+    "#ef4444", // Red
+    "#ec4899", // Pink
+    "#6366f1", // Indigo
+    "#14b8a6", // Teal
 ];
 
 const getColor = (index: number) => COLORS[index % COLORS.length];
@@ -34,58 +34,58 @@ interface TreemapNode {
 }
 
 const CustomizedContent = (props: any) => {
-  const { root, depth, x, y, width, height, index, name, size } = props;
+    const { root, depth, x, y, width, height, index, name, size } = props;
 
-  // We only render labels for leaf nodes (tools) or top-level services if there's space
-  // depth 1 = Service
-  // depth 2 = Tool
+    // We only render labels for leaf nodes (tools) or top-level services if there's space
+    // depth 1 = Service
+    // depth 2 = Tool
 
-  if (width < 50 || height < 30) return null;
+    if (width < 50 || height < 30) return null;
 
-  const fontSize = Math.min(width / 5, height / 2, 14);
-  const color = props.colors ? props.colors[index % props.colors.length] : '#fff';
+    const fontSize = Math.min(width / 5, height / 2, 14);
+    const color = props.colors ? props.colors[index % props.colors.length] : '#fff';
 
-  return (
-    <g>
-      <rect
-        x={x}
-        y={y}
-        width={width}
-        height={height}
-        style={{
-          fill: depth === 1 ? 'rgba(255,255,255,0.1)' : (props.color || getColor(index)),
-          stroke: '#fff',
-          strokeWidth: 2 / (depth + 1e-10),
-          strokeOpacity: 1 / (depth + 1e-10),
-        }}
-      />
-      {depth > 1 && (
-        <text
-          x={x + width / 2}
-          y={y + height / 2}
-          textAnchor="middle"
-          fill="#fff"
-          fontSize={fontSize}
-          fontWeight="bold"
-          style={{ pointerEvents: 'none', textShadow: '0px 1px 2px rgba(0,0,0,0.5)' }}
-        >
-          {name}
-        </text>
-      )}
-       {depth > 1 && (
-        <text
-          x={x + width / 2}
-          y={y + height / 2 + fontSize + 4}
-          textAnchor="middle"
-          fill="rgba(255,255,255,0.8)"
-          fontSize={fontSize * 0.8}
-          style={{ pointerEvents: 'none' }}
-        >
-          {formatTokenCount(size)}
-        </text>
-      )}
-    </g>
-  );
+    return (
+        <g>
+            <rect
+                x={x}
+                y={y}
+                width={width}
+                height={height}
+                style={{
+                    fill: depth === 1 ? 'rgba(255,255,255,0.1)' : (props.color || getColor(index)),
+                    stroke: '#fff',
+                    strokeWidth: 2 / (depth + 1e-10),
+                    strokeOpacity: 1 / (depth + 1e-10),
+                }}
+            />
+            {depth > 1 && (
+                <text
+                    x={x + width / 2}
+                    y={y + height / 2}
+                    textAnchor="middle"
+                    fill="#fff"
+                    fontSize={fontSize}
+                    fontWeight="bold"
+                    style={{ pointerEvents: 'none', textShadow: '0px 1px 2px rgba(0,0,0,0.5)' }}
+                >
+                    {name}
+                </text>
+            )}
+            {depth > 1 && (
+                <text
+                    x={x + width / 2}
+                    y={y + height / 2 + fontSize + 4}
+                    textAnchor="middle"
+                    fill="rgba(255,255,255,0.8)"
+                    fontSize={fontSize * 0.8}
+                    style={{ pointerEvents: 'none' }}
+                >
+                    {formatTokenCount(size)}
+                </text>
+            )}
+        </g>
+    );
 };
 
 const CustomTooltip = ({ active, payload }: any) => {

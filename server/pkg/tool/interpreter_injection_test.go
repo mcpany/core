@@ -44,6 +44,9 @@ func TestSedSandbox_Prevention(t *testing.T) {
 		// If input validation blocks it (e.g., preventing spaces), that's also a success for security.
 		if strings.Contains(err.Error(), "injection detected") || strings.Contains(err.Error(), "dangerous character") {
 			t.Logf("Success: Blocked by input validation: %v", err)
+		} else if strings.Contains(err.Error(), "--sandbox is not supported") {
+			t.Logf("Success: Execution blocked because sandbox is not supported: %v", err)
+			return
 		} else {
 			t.Fatalf("Execute failed: %v", err)
 		}

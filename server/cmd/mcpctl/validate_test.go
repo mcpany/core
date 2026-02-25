@@ -14,6 +14,9 @@ import (
 )
 
 func TestValidateCmd(t *testing.T) {
+	cleanupConfig()
+	defer cleanupConfig()
+
 	tempDir := t.TempDir()
 
 	// 1. Valid Configuration

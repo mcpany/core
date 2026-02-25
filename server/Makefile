@@ -131,76 +131,83 @@ prepare:
 	@mkdir -p $(LOCAL_BIN_DIR)
 	@mkdir -p $(TOOL_INSTALL_DIR)
 	@# Check if protoc is installed
-	@export PATH=$(TOOL_INSTALL_DIR):$$PATH; \
-	PROTOC_TAG=$(PROTOC_VERSION); \
-	if test -f "$(PROTOC_BIN)"; then \
-		INSTALLED_VERSION=v$$($(PROTOC_BIN) --version | sed 's/libprotoc //'); \
-		if test "$${INSTALLED_VERSION}" = "$${PROTOC_TAG}"; then \
-			echo "protoc version $${INSTALLED_VERSION} is already installed."; \
-		else \
-			echo "protoc version mismatch. Installed: $${INSTALLED_VERSION}, Required: $${PROTOC_TAG}. Re-installing..."; \
-			rm -f "$(PROTOC_BIN)"; \
-			$(MAKE) prepare; \
-		fi; \
+	@if [ -n "$(CI)" ] && [ -x "$$(command -v protoc)" ]; then \
+		echo "CI detected and protoc found. Skipping installation check."; \
 	else \
-		echo "protoc not found, attempting to install version $${PROTOC_TAG}..."; \
-		if ! command -v curl >/dev/null 2>&1 || ! command -v unzip >/dev/null 2>&1; then \
-			echo "curl and unzip are not installed. Installing..."; \
-			apt-get update && apt-get install -y curl unzip; \
-		fi; \
-		PROTOC_VERSION_NO_V=$$(echo "$${PROTOC_TAG}" | sed 's/v//'); \
-		PROTOC_DOWNLOAD_URL_NO_V="$(PROTOC_DOWNLOAD_URL_BASE)/$${PROTOC_TAG}/protoc-$${PROTOC_VERSION_NO_V}-linux-$(PROTOC_ARCH).zip"; \
-		echo "Downloading protoc from $${PROTOC_DOWNLOAD_URL_NO_V}..."; \
-		if curl -sSL "$${PROTOC_DOWNLOAD_URL_NO_V}" -o "$(PROTOC_ZIP)"; then \
-			echo "Unzipping to $(TOOL_INSTALL_DIR)..."; \
-			unzip -o "$(PROTOC_ZIP)" -d "$(TOOL_INSTALL_DIR)"; \
-			mv "$(TOOL_INSTALL_DIR)/bin/protoc" "$(PROTOC_BIN)"; \
-			if test -f "$(PROTOC_BIN)"; then \
-				export PATH=$(TOOL_INSTALL_DIR):$$PATH; \
-				echo "protoc installed successfully to $(TOOL_INSTALL_DIR). This directory has been added to PATH for this session."; \
-				echo "You may want to add it to your system PATH permanently: export PATH=$(TOOL_INSTALL_DIR):$$PATH"; \
-				$(PROTOC_BIN) --version; \
+		export PATH=$(TOOL_INSTALL_DIR):$$PATH; \
+		PROTOC_TAG=$(PROTOC_VERSION); \
+		if test -f "$(PROTOC_BIN)"; then \
+			INSTALLED_VERSION=v$$($(PROTOC_BIN) --version | sed 's/libprotoc //'); \
+			if test "$${INSTALLED_VERSION}" = "$${PROTOC_TAG}"; then \
+				echo "protoc version $${INSTALLED_VERSION} is already installed."; \
 			else \
-				echo "Error: protoc binary not found in $(TOOL_INSTALL_DIR) after unzip. The downloaded archive may not have the expected structure."; \
-				exit 1; \
+				echo "protoc version mismatch. Installed: $${INSTALLED_VERSION}, Required: $${PROTOC_TAG}. Re-installing..."; \
+				rm -f "$(PROTOC_BIN)"; \
+				$(MAKE) prepare; \
 			fi; \
-			rm -f "$(PROTOC_ZIP)"; \
+		else \
+			echo "protoc not found, attempting to install version $${PROTOC_TAG}..."; \
+			if ! command -v curl >/dev/null 2>&1 || ! command -v unzip >/dev/null 2>&1; then \
+				echo "curl and unzip are not installed. Installing..."; \
+				apt-get update && apt-get install -y curl unzip; \
+			fi; \
+			PROTOC_VERSION_NO_V=$$(echo "$${PROTOC_TAG}" | sed 's/v//'); \
+			PROTOC_DOWNLOAD_URL_NO_V="$(PROTOC_DOWNLOAD_URL_BASE)/$${PROTOC_TAG}/protoc-$${PROTOC_VERSION_NO_V}-linux-$(PROTOC_ARCH).zip"; \
+			echo "Downloading protoc from $${PROTOC_DOWNLOAD_URL_NO_V}..."; \
+			if curl -sSL "$${PROTOC_DOWNLOAD_URL_NO_V}" -o "$(PROTOC_ZIP)"; then \
+				echo "Unzipping to $(TOOL_INSTALL_DIR)..."; \
+				unzip -o "$(PROTOC_ZIP)" -d "$(TOOL_INSTALL_DIR)"; \
+				mv "$(TOOL_INSTALL_DIR)/bin/protoc" "$(PROTOC_BIN)"; \
+				if test -f "$(PROTOC_BIN)"; then \
+					export PATH=$(TOOL_INSTALL_DIR):$$PATH; \
+					echo "protoc installed successfully to $(TOOL_INSTALL_DIR)."; \
+					$(PROTOC_BIN) --version; \
+				else \
+					echo "Error: protoc binary not found in $(TOOL_INSTALL_DIR) after unzip."; \
+					exit 1; \
+				fi; \
+				rm -f "$(PROTOC_ZIP)"; \
+			fi; \
 		fi; \
 	fi
 	@# Install Go protobuf plugins
 	@echo "Installing Go protobuf plugins..."
-	@if test -f "$(PROTOC_GEN_GO)"; then \
-		INSTALLED_VER=$$($(PROTOC_GEN_GO) --version | awk '{print $$2}'); \
-		if [ "$$INSTALLED_VER" != "$(PROTOC_GEN_GO_VERSION)" ]; then \
-			echo "protoc-gen-go version mismatch. Installed: $$INSTALLED_VER, Required: $(PROTOC_GEN_GO_VERSION). Re-installing..."; \
-			rm -f "$(PROTOC_GEN_GO)"; \
+	@if [ -n "$(CI)" ]; then \
+		echo "CI detected. Assuming plugins are pre-installed in image."; \
+	else \
+		if test -f "$(PROTOC_GEN_GO)"; then \
+			INSTALLED_VER=$$($(PROTOC_GEN_GO) --version | awk '{print $$2}'); \
+			if [ "$$INSTALLED_VER" != "$(PROTOC_GEN_GO_VERSION)" ]; then \
+				echo "protoc-gen-go version mismatch. Installed: $$INSTALLED_VER, Required: $(PROTOC_GEN_GO_VERSION). Re-installing..."; \
+				rm -f "$(PROTOC_GEN_GO)"; \
+			fi; \
 		fi; \
-	fi
-	@if test -f "$(PROTOC_GEN_GO_GRPC)"; then \
-		INSTALLED_VER=$$($(PROTOC_GEN_GO_GRPC) --version | awk '{print $$2}'); \
-		if [ "$$INSTALLED_VER" != "$(PROTOC_GEN_GO_GRPC_VERSION)" ] && [ "v$$INSTALLED_VER" != "$(PROTOC_GEN_GO_GRPC_VERSION)" ]; then \
-			echo "protoc-gen-go-grpc version mismatch. Installed: $$INSTALLED_VER, Required: $(PROTOC_GEN_GO_GRPC_VERSION). Re-installing..."; \
-			rm -f "$(PROTOC_GEN_GO_GRPC)"; \
+		if test -f "$(PROTOC_GEN_GO_GRPC)"; then \
+			INSTALLED_VER=$$($(PROTOC_GEN_GO_GRPC) --version | awk '{print $$2}'); \
+			if [ "$$INSTALLED_VER" != "$(PROTOC_GEN_GO_GRPC_VERSION)" ] && [ "v$$INSTALLED_VER" != "$(PROTOC_GEN_GO_GRPC_VERSION)" ]; then \
+				echo "protoc-gen-go-grpc version mismatch. Installed: $$INSTALLED_VER, Required: $(PROTOC_GEN_GO_GRPC_VERSION). Re-installing..."; \
+				rm -f "$(PROTOC_GEN_GO_GRPC)"; \
+			fi; \
 		fi; \
+		if ! test -f "$(PROTOC_GEN_GO)"; then GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install google.golang.org/protobuf/cmd/protoc-gen-go@$(PROTOC_GEN_GO_VERSION); fi; \
+		if ! test -f "$(PROTOC_GEN_GO_GRPC)"; then GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install google.golang.org/grpc/cmd/protoc-gen-go-grpc@$(PROTOC_GEN_GO_GRPC_VERSION); fi; \
+		if ! test -f "$(PROTOC_GEN_GRPC_GATEWAY)"; then GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@$(GRPC_GATEWAY_VERSION); fi; \
+		if ! test -f "$(PROTOC_GEN_OPENAPIV2)"; then GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@$(GRPC_GATEWAY_VERSION); fi; \
+		echo "Checking for Go protobuf plugins..."; \
+		if ! test -f "$(PROTOC_GEN_GO)"; then \
+			echo "protoc-gen-go not found at $(PROTOC_GEN_GO) after attempting install. Please check your GOPATH/GOBIN setup and PATH."; \
+			exit 1; \
+		fi; \
+		if ! test -f "$(PROTOC_GEN_GO_GRPC)"; then \
+			echo "protoc-gen-go-grpc not found at $(PROTOC_GEN_GO_GRPC) after attempting install. Please check your GOPATH/GOBIN setup and PATH."; \
+			exit 1; \
+		fi; \
+		if ! test -f "$(PROTOC_GEN_GRPC_GATEWAY)"; then \
+			echo "protoc-gen-grpc-gateway not found at $(PROTOC_GEN_GRPC_GATEWAY) after attempting install."; \
+			exit 1; \
+		fi; \
+		echo "Go protobuf plugins installation check complete."; \
 	fi
-	@if ! test -f "$(PROTOC_GEN_GO)"; then GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install google.golang.org/protobuf/cmd/protoc-gen-go@$(PROTOC_GEN_GO_VERSION); fi
-	@if ! test -f "$(PROTOC_GEN_GO_GRPC)"; then GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install google.golang.org/grpc/cmd/protoc-gen-go-grpc@$(PROTOC_GEN_GO_GRPC_VERSION); fi
-	@if ! test -f "$(PROTOC_GEN_GRPC_GATEWAY)"; then GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@$(GRPC_GATEWAY_VERSION); fi
-	@if ! test -f "$(PROTOC_GEN_OPENAPIV2)"; then GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@$(GRPC_GATEWAY_VERSION); fi
-	@echo "Checking for Go protobuf plugins..."
-	@if ! test -f "$(PROTOC_GEN_GO)"; then \
-		echo "protoc-gen-go not found at $(PROTOC_GEN_GO) after attempting install. Please check your GOPATH/GOBIN setup and PATH."; \
-		exit 1; \
-	fi
-	@if ! test -f "$(PROTOC_GEN_GO_GRPC)"; then \
-		echo "protoc-gen-go-grpc not found at $(PROTOC_GEN_GO_GRPC) after attempting install. Please check your GOPATH/GOBIN setup and PATH."; \
-		exit 1; \
-	fi
-	@if ! test -f "$(PROTOC_GEN_GRPC_GATEWAY)"; then \
-		echo "protoc-gen-grpc-gateway not found at $(PROTOC_GEN_GRPC_GATEWAY) after attempting install."; \
-		exit 1; \
-	fi
-	@echo "Go protobuf plugins installation check complete."
 	@# Download grpc-gateway source for protos
 	@if ! test -d "$(BUILD_DIR)/grpc-gateway"; then \
 		echo "Downloading grpc-gateway protos..."; \
@@ -261,99 +268,120 @@ prepare:
 	fi
 	@#
 	@echo "Installing Node.js dependencies for integration tests..."
-	@if command -v npm >/dev/null 2>&1; then \
-		if test -f "tests/integration/upstream/package.json"; then \
-			echo "Found package.json, running npm install..."; \
-			(cd tests/integration/upstream && npm install) || true; \
-			if [ -n "$(CI)" ] && [ -z "$(INSIDE_DOCKER_CONTAINER)" ]; then \
-				echo "CI detected, installing Playwright with system dependencies..."; \
-				(cd tests/integration/upstream && npx playwright install --with-deps) || true; \
-			else \
-				echo "Installing Playwright browsers (skipping system deps)..."; \
-				(cd tests/integration/upstream && npx playwright install) || true; \
-			fi; \
+	@if [ -n "$(CI)" ]; then \
+		echo "CI detected, checking if dependencies are pre-installed..."; \
+		if test -d "tests/integration/upstream/node_modules"; then \
+			echo "node_modules found, skipping npm install."; \
 		else \
-			echo "No package.json found in tests/integration/upstream, skipping npm install."; \
+			echo "node_modules not found, attempting npm ci..."; \
+			(cd tests/integration/upstream && npm ci) || true; \
 		fi; \
 	else \
-		echo "npm not found, skipping Node.js dependency installation."; \
+		if command -v npm >/dev/null 2>&1; then \
+			if test -f "tests/integration/upstream/package.json"; then \
+				echo "Found package.json, running npm install..."; \
+				(cd tests/integration/upstream && npm install) || true; \
+				echo "Installing Playwright browsers (skipping system deps)..."; \
+				(cd tests/integration/upstream && npx playwright install) || true; \
+			else \
+				echo "No package.json found in tests/integration/upstream, skipping npm install."; \
+			fi; \
+		else \
+			echo "npm not found, skipping Node.js dependency installation."; \
+		fi; \
 	fi
 	@# Install Helm
 	@echo "Checking for Helm..."
-	@if test -f "$(HELM_BIN)"; then \
-		echo "Helm is already installed."; \
+	@if [ -n "$(CI)" ]; then \
+		echo "CI detected. Assuming Helm is pre-installed."; \
 	else \
-		echo "Installing Helm to $(TOOL_INSTALL_DIR)..."; \
-		OS=$$(uname -s | tr '[:upper:]' '[:lower:]'); \
-		ARCH=$$(uname -m); \
-		case $${ARCH} in \
-			x86_64) ARCH=amd64 ;; \
-			aarch64) ARCH=arm64 ;; \
-		esac; \
-		HELM_TARBALL="helm-$(HELM_VERSION)-$${OS}-$${ARCH}.tar.gz"; \
-		HELM_DOWNLOAD_URL="$(HELM_DOWNLOAD_URL_BASE)/$${HELM_TARBALL}"; \
-		echo "Downloading Helm from $${HELM_DOWNLOAD_URL}..."; \
-		if curl -sSL "$${HELM_DOWNLOAD_URL}" -o "/tmp/$${HELM_TARBALL}"; then \
-			echo "Unpacking to $(TOOL_INSTALL_DIR)..."; \
-			tar -zxvf "/tmp/$${HELM_TARBALL}" -C "/tmp"; \
-			mv "/tmp/$${OS}-$${ARCH}/helm" "$(HELM_BIN)"; \
-			rm "/tmp/$${HELM_TARBALL}"; \
-			rm -rf "/tmp/$${OS}-$${ARCH}"; \
-			if test -f "$(HELM_BIN)"; then \
-				echo "Helm installed successfully."; \
+		if test -f "$(HELM_BIN)"; then \
+			echo "Helm is already installed."; \
+		else \
+			echo "Installing Helm to $(TOOL_INSTALL_DIR)..."; \
+			OS=$$(uname -s | tr '[:upper:]' '[:lower:]'); \
+			ARCH=$$(uname -m); \
+			case $${ARCH} in \
+				x86_64) ARCH=amd64 ;; \
+				aarch64) ARCH=arm64 ;; \
+			esac; \
+			HELM_TARBALL="helm-$(HELM_VERSION)-$${OS}-$${ARCH}.tar.gz"; \
+			HELM_DOWNLOAD_URL="$(HELM_DOWNLOAD_URL_BASE)/$${HELM_TARBALL}"; \
+			echo "Downloading Helm from $${HELM_DOWNLOAD_URL}..."; \
+			if curl -sSL "$${HELM_DOWNLOAD_URL}" -o "/tmp/$${HELM_TARBALL}"; then \
+				echo "Unpacking to $(TOOL_INSTALL_DIR)..."; \
+				tar -zxvf "/tmp/$${HELM_TARBALL}" -C "/tmp"; \
+				mv "/tmp/$${OS}-$${ARCH}/helm" "$(HELM_BIN)"; \
+				rm "/tmp/$${HELM_TARBALL}"; \
+				rm -rf "/tmp/$${OS}-$${ARCH}"; \
+				if test -f "$(HELM_BIN)"; then \
+					echo "Helm installed successfully."; \
+				else \
+					echo "Helm installation failed."; \
+					exit 1; \
+				fi; \
 			else \
-				echo "Helm installation failed."; \
+				echo "Failed to download Helm."; \
 				exit 1; \
 			fi; \
-		else \
-			echo "Failed to download Helm."; \
-			exit 1; \
 		fi; \
 	fi
 	@# Install ShellCheck
 	@echo "Checking for ShellCheck..."
-	@if test -f "$(SHELLCHECK_BIN)"; then \
-		echo "ShellCheck is already installed."; \
+	@if [ -n "$(CI)" ]; then \
+		echo "CI detected. Assuming ShellCheck is pre-installed."; \
 	else \
-		echo "Installing ShellCheck to $(TOOL_INSTALL_DIR)..."; \
-		SC_VERSION="stable"; \
-		curl -sSL "https://github.com/koalaman/shellcheck/releases/download/$${SC_VERSION}/shellcheck-$${SC_VERSION}.linux.x86_64.tar.xz" | tar -xJv -C /tmp; \
-		mv "/tmp/shellcheck-$${SC_VERSION}/shellcheck" "$(SHELLCHECK_BIN)"; \
-		rm -rf "/tmp/shellcheck-$${SC_VERSION}"; \
 		if test -f "$(SHELLCHECK_BIN)"; then \
-			echo "ShellCheck installed successfully."; \
+			echo "ShellCheck is already installed."; \
 		else \
-			echo "ShellCheck installation failed."; \
-			exit 1; \
+			echo "Installing ShellCheck to $(TOOL_INSTALL_DIR)..."; \
+			SC_VERSION="stable"; \
+			curl -sSL "https://github.com/koalaman/shellcheck/releases/download/$${SC_VERSION}/shellcheck-$${SC_VERSION}.linux.x86_64.tar.xz" | tar -xJv -C /tmp; \
+			mv "/tmp/shellcheck-$${SC_VERSION}/shellcheck" "$(SHELLCHECK_BIN)"; \
+			rm -rf "/tmp/shellcheck-$${SC_VERSION}"; \
+			if test -f "$(SHELLCHECK_BIN)"; then \
+				echo "ShellCheck installed successfully."; \
+			else \
+				echo "ShellCheck installation failed."; \
+				exit 1; \
+			fi; \
 		fi; \
 	fi
 	@# Install nats-server
 	@echo "Checking for nats-server..."
-	@if test -f "$(NATS_SERVER_BIN)"; then \
-		echo "nats-server is already installed."; \
+	@if [ -n "$(CI)" ]; then \
+		echo "CI detected. Assuming nats-server is pre-installed."; \
 	else \
-		echo "Installing nats-server to $(TOOL_INSTALL_DIR)..."; \
-		GOBIN=$(TOOL_INSTALL_DIR) go install github.com/nats-io/nats-server/v2@latest; \
 		if test -f "$(NATS_SERVER_BIN)"; then \
-			echo "nats-server installed successfully."; \
+			echo "nats-server is already installed."; \
 		else \
-			echo "nats-server installation failed."; \
-			exit 1; \
+			echo "Installing nats-server to $(TOOL_INSTALL_DIR)..."; \
+			GOBIN=$(TOOL_INSTALL_DIR) go install github.com/nats-io/nats-server/v2@latest; \
+			if test -f "$(NATS_SERVER_BIN)"; then \
+				echo "nats-server installed successfully."; \
+			else \
+				echo "nats-server installation failed."; \
+				exit 1; \
+			fi; \
 		fi; \
 	fi
 	@# Install golangci-lint
 	@echo "Checking for golangci-lint..."
-	@LINT_VER_CHECK=$$($(GOLANGCI_LINT_BIN) --version 2>/dev/null | grep "v1.64.5"); \
-	if [ -n "$$LINT_VER_CHECK" ]; then \
-		echo "golangci-lint v1.64.5 is already installed."; \
+	@if [ -n "$(CI)" ]; then \
+		echo "CI detected. Assuming golangci-lint is pre-installed."; \
 	else \
-		echo "Installing golangci-lint v1.64.5 to $(TOOL_INSTALL_DIR)..."; \
-		curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(TOOL_INSTALL_DIR) v1.64.5; \
-		if test -f "$(GOLANGCI_LINT_BIN)"; then \
-			echo "golangci-lint installed successfully."; \
+		LINT_VER_CHECK=$$($(GOLANGCI_LINT_BIN) --version 2>/dev/null | grep "v1.64.5"); \
+		if [ -n "$$LINT_VER_CHECK" ]; then \
+			echo "golangci-lint v1.64.5 is already installed."; \
 		else \
-			echo "golangci-lint installation failed."; \
-			exit 1; \
+			echo "Installing golangci-lint v1.64.5 to $(TOOL_INSTALL_DIR)..."; \
+			curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(TOOL_INSTALL_DIR) v1.64.5; \
+			if test -f "$(GOLANGCI_LINT_BIN)"; then \
+				echo "golangci-lint installed successfully."; \
+			else \
+				echo "golangci-lint installation failed."; \
+				exit 1; \
+			fi; \
 		fi; \
 	fi
 	@echo "Downloading go modules..." && \
@@ -641,21 +669,21 @@ else
 endif
 
 # Target to build CI builder image (Alpine)
-docker-build-ci-runner: docker/Dockerfile.ci
+docker-build-ci-runner: ../ci/Dockerfile.ci
 	@echo "Building CI builder Docker image (iowoi/mcpany-runner-ci:latest)..."
 	@if [ "$(PUSH)" = "true" ]; then \
-		$(DOCKER_BUILD_CMD) --push -t iowoi/mcpany-runner-ci:latest -f docker/Dockerfile.ci $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) ..; \
+		$(DOCKER_BUILD_CMD) --push -t iowoi/mcpany-runner-ci:latest -f ../ci/Dockerfile.ci $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) ..; \
 	else \
-		$(DOCKER_BUILD_CMD) -t iowoi/mcpany-runner-ci:latest -f docker/Dockerfile.ci $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) ..; \
+		$(DOCKER_BUILD_CMD) -t iowoi/mcpany-runner-ci:latest -f ../ci/Dockerfile.ci $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) ..; \
 	fi
 
 docker-build-ci: docker-build-ci-runner
 ifdef HAS_DOCKER
 	@echo "Building CI builder Docker image (iowoi/mcpany-runner-ci:latest)..."
 	@if [ "$(PUSH)" = "true" ]; then \
-		$(DOCKER_BUILD_CMD) --push -t iowoi/mcpany-runner-ci:latest -f docker/Dockerfile.ci $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) ..; \
+		$(DOCKER_BUILD_CMD) --push -t iowoi/mcpany-runner-ci:latest -f ../ci/Dockerfile.ci $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) ..; \
 	else \
-		$(DOCKER_BUILD_CMD) -t iowoi/mcpany-runner-ci:latest -f docker/Dockerfile.ci $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) ..; \
+		$(DOCKER_BUILD_CMD) -t iowoi/mcpany-runner-ci:latest -f ../ci/Dockerfile.ci $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) ..; \
 	fi
 else
 	@echo "Docker not found. Cannot build CI image."

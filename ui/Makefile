@@ -95,9 +95,9 @@ build-test-docker:
 docker-build-ci-runner:
 	@echo "Building UI CI runner Docker image (iowoi/mcpany-runner-ui:latest)..."
 	@if [ "$(PUSH)" = "true" ]; then \
-		$(DOCKER_BUILD_CMD) --push -t iowoi/mcpany-runner-ui:latest -f Dockerfile.ci $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) ..; \
+		$(DOCKER_BUILD_CMD) --push -t iowoi/mcpany-runner-ui:latest -f ../ci/Dockerfile.ui $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) ..; \
 	else \
-		$(DOCKER_BUILD_CMD) -t iowoi/mcpany-runner-ui:latest -f Dockerfile.ci $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) ..; \
+		$(DOCKER_BUILD_CMD) -t iowoi/mcpany-runner-ui:latest -f ../ci/Dockerfile.ui $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) ..; \
 	fi
 
 docker-build-ui:

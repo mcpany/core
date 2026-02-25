@@ -17,6 +17,8 @@ import (
 func TestLogPersistence_CatchUp(t *testing.T) {
 	// Setup Logger
 	logging.ForTestsOnlyResetLogger()
+	// Use a buffer or something that we can check?
+	// The test relies on Broadcaster history which is in memory.
 	logging.Init(slog.LevelInfo, os.Stderr, "")
 
 	// 1. Generate logs BEFORE persistence starts
@@ -31,12 +33,23 @@ func TestLogPersistence_CatchUp(t *testing.T) {
 	}
 
 	// 2. Setup SQLite DB
-	db, err := sqlite.NewDB(":memory:")
+	// Use sqlite.NewDB to ensure schema is initialized
+	sqlDB, err := sqlite.NewDB("file::memory:?cache=shared")
 	if err != nil {
 		t.Fatalf("Failed to create memory db: %v", err)
 	}
-	defer db.Close()
-	store := sqlite.NewStore(db)
+	defer sqlDB.Close()
+
+	// Verify table exists
+	var tableName string
+	err = sqlDB.QueryRow("SELECT name FROM sqlite_master WHERE type='table' AND name='logs'").Scan(&tableName)
+	if err != nil {
+		t.Logf("DEBUG: logs table verification failed: %v", err)
+	} else {
+		t.Logf("DEBUG: Found table: %s", tableName)
+	}
+
+	store := sqlite.NewStore(sqlDB)
 
 	// 3. Start Persistence (Catch-up)
 	app := NewApplication()
@@ -50,9 +63,17 @@ func TestLogPersistence_CatchUp(t *testing.T) {
 	time.Sleep(500 * time.Millisecond)
 
 	// 4. Verify logs are in DB
-	recentLogs, err := store.GetRecentLogs(ctx, 100)
-	if err != nil {
-		t.Fatalf("Failed to get logs from DB: %v", err)
+	// Poll for logs because flush is async
+	var recentLogs []*logging.LogEntry
+	for i := 0; i < 20; i++ {
+		recentLogs, err = store.GetRecentLogs(ctx, 100)
+		if err != nil {
+			t.Fatalf("Failed to get logs from DB: %v", err)
+		}
+		if len(recentLogs) >= 2 {
+			break
+		}
+		time.Sleep(100 * time.Millisecond)
 	}
 
 	found1 := false
@@ -75,15 +96,23 @@ func TestLogPersistence_CatchUp(t *testing.T) {
 
 	// 5. Log AFTER persistence started
 	log.Info("Runtime log 3")
-	time.Sleep(100 * time.Millisecond)
 
-	recentLogs, _ = store.GetRecentLogs(ctx, 100)
+	// Poll for runtime log
 	found3 := false
-	for _, l := range recentLogs {
-		if l.Message == "Runtime log 3" {
-			found3 = true
+	for i := 0; i < 20; i++ {
+		recentLogs, _ = store.GetRecentLogs(ctx, 100)
+		for _, l := range recentLogs {
+			if l.Message == "Runtime log 3" {
+				found3 = true
+				break
+			}
 		}
+		if found3 {
+			break
+		}
+		time.Sleep(100 * time.Millisecond)
 	}
+
 	if !found3 {
 		t.Error("Runtime log 3 not persisted to DB")
 	}
@@ -95,7 +124,7 @@ func TestLogPersistence_Idempotency(t *testing.T) {
 	logging.Init(slog.LevelInfo, os.Stderr, "")
 
 	// 1. Setup SQLite DB
-	db, err := sqlite.NewDB(":memory:")
+	db, err := sqlite.NewDB("file::memory:?cache=shared")
 	if err != nil {
 		t.Fatalf("Failed to create memory db: %v", err)
 	}

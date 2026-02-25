@@ -68,7 +68,7 @@ ENV TOOL_INSTALL_DIR=/tools
 RUN pip3 install --break-system-packages pre-commit fastmcp
 # Set CI=true to skip venv setup in Makefile
 ENV CI=true
-RUN mkdir -p /tools && make prepare && chmod -R 777 /tools
+RUN mkdir -p /tools && CI= make prepare && chmod -R 777 /tools
 
 # Create a non-root user to match the host user
 # We use a fixed fallback UID/GID or passed build args potentially?

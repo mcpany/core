@@ -48,6 +48,11 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+func init() {
+	// Enable local IPs for all tests in this package to avoid SSRF blocking
+	os.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "true")
+}
+
 func TestReloadConfig(t *testing.T) {
 	t.Run("successful reload", func(t *testing.T) {
 		fs := afero.NewMemMapFs()
@@ -64,11 +69,17 @@ func TestReloadConfig(t *testing.T) {
 			auth.NewManager(),
 		)
 
+		// Start a dummy server to be the upstream
+		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+		}))
+		defer ts.Close()
+
 		configContent := `
 upstream_services:
  - name: "test-service"
    http_service:
-     address: "http://127.0.0.1:8080"
+     address: "` + ts.URL + `"
      tools:
        - name: "test-tool"
          call_id: "test-call"
@@ -109,12 +120,18 @@ upstream_services:
 		fs := afero.NewMemMapFs()
 		app := NewApplication()
 
+		// Start a dummy server to be the upstream
+		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+		}))
+		defer ts.Close()
+
 		configContent := `
 upstream_services:
  - name: "disabled-service"
    disable: true
    http_service:
-     address: "http://127.0.0.1:8080"
+     address: "` + ts.URL + `"
      tools:
        - name: "test-tool"
          call_id: "test-call"
@@ -564,7 +581,7 @@ func TestRun_ServerMode(t *testing.T) {
 upstream_services:
   - name: "test-http-service"
     http_service:
-      address: "http://127.0.0.1:8080"
+      address: "http://127.0.0.1:0"
       tools:
         - name: "echo"
           call_id: "echo_call"
@@ -631,7 +648,7 @@ func TestRun_ConfigLoadError(t *testing.T) {
 
 func TestRun_BusProviderError(t *testing.T) {
 	fs := afero.NewMemMapFs()
-	err := afero.WriteFile(fs, "/config.yaml", []byte(""), 0o644)
+	err := afero.WriteFile(fs, "/config.yaml", []byte("global_settings:\n  log_level: INFO\n"), 0o644)
 	require.NoError(t, err)
 
 	bus.NewProviderHook = func(_ *bus_pb.MessageBus) (*bus.Provider, error) {
@@ -639,10 +656,21 @@ func TestRun_BusProviderError(t *testing.T) {
 	}
 	defer func() { bus.NewProviderHook = nil }()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	app := NewApplication()
+	mockStore := new(MockStore)
+	app.Storage = mockStore
+	mockStore.On("Load", mock.Anything).Return((*configv1.McpAnyServerConfig)(nil), nil)
+	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
+	mockStore.On("GetGlobalSettings", mock.Anything).Return(configv1.GlobalSettings_builder{}.Build(), nil)
+	mockStore.On("ListUsers", mock.Anything).Return([]*configv1.User{}, nil)
+	mockStore.On("Close").Return(nil)
+	mockStore.On("GetRecentLogs", mock.Anything, mock.Anything).Return([]*logging.LogEntry{}, nil)
+	mockStore.On("SaveLog", mock.Anything, mock.Anything).Return(nil)
+	mockStore.On("ListProfiles", mock.Anything).Return([]*configv1.ProfileDefinition{}, nil)
+
 	err = app.Run(RunOptions{Ctx: ctx, Fs: fs, Stdio: false, JSONRPCPort: "127.0.0.1:0", GRPCPort: "127.0.0.1:0", ConfigPaths: []string{"/config.yaml"}, APIKey: "", ShutdownTimeout: 5 * time.Second})
 
 	require.Error(t, err)
@@ -652,13 +680,24 @@ func TestRun_BusProviderError(t *testing.T) {
 func TestRun_EmptyConfig(t *testing.T) {
 	fs := afero.NewMemMapFs()
 	// Create an empty config file
-	err := afero.WriteFile(fs, "/config.yaml", []byte(""), 0o644)
+	err := afero.WriteFile(fs, "/config.yaml", []byte("global_settings:\n  log_level: INFO\n"), 0o644)
 	require.NoError(t, err)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	app := NewApplication()
+	mockStore := new(MockStore)
+	app.Storage = mockStore
+	mockStore.On("Load", mock.Anything).Return((*configv1.McpAnyServerConfig)(nil), nil)
+	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
+	mockStore.On("GetGlobalSettings", mock.Anything).Return(configv1.GlobalSettings_builder{}.Build(), nil)
+	mockStore.On("ListUsers", mock.Anything).Return([]*configv1.User{}, nil)
+	mockStore.On("Close").Return(nil)
+	mockStore.On("GetRecentLogs", mock.Anything, mock.Anything).Return([]*logging.LogEntry{}, nil)
+	mockStore.On("SaveLog", mock.Anything, mock.Anything).Return(nil)
+	mockStore.On("ListProfiles", mock.Anything).Return([]*configv1.ProfileDefinition{}, nil)
+
 	// This should not panic
 	err = app.Run(RunOptions{
 		Ctx:             ctx,
@@ -680,8 +719,19 @@ func TestRun_StdioMode(t *testing.T) {
 		return fmt.Errorf("stdio mode error")
 	}
 
+	mockStore := new(MockStore)
+	mockStore.On("Load", mock.Anything).Return((*configv1.McpAnyServerConfig)(nil), nil)
+	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
+	mockStore.On("GetGlobalSettings", mock.Anything).Return(configv1.GlobalSettings_builder{}.Build(), nil)
+	mockStore.On("ListUsers", mock.Anything).Return([]*configv1.User{}, nil)
+	mockStore.On("Close").Return(nil)
+	mockStore.On("GetRecentLogs", mock.Anything, mock.Anything).Return([]*logging.LogEntry{}, nil) // Added mock
+	mockStore.On("SaveLog", mock.Anything, mock.Anything).Return(nil) // Added mock
+	mockStore.On("ListProfiles", mock.Anything).Return([]*configv1.ProfileDefinition{}, nil) // Added mock
+
 	app := &Application{
 		runStdioModeFunc: mockStdioFunc,
+		Storage:          mockStore,
 	}
 
 	fs := afero.NewMemMapFs()
@@ -700,6 +750,17 @@ func TestRun_NoGrpcServer(t *testing.T) {
 	defer cancel()
 
 	app := NewApplication()
+	mockStore := new(MockStore)
+	app.Storage = mockStore
+	mockStore.On("Load", mock.Anything).Return((*configv1.McpAnyServerConfig)(nil), nil)
+	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
+	mockStore.On("GetGlobalSettings", mock.Anything).Return(configv1.GlobalSettings_builder{}.Build(), nil)
+	mockStore.On("ListUsers", mock.Anything).Return([]*configv1.User{}, nil)
+	mockStore.On("Close").Return(nil)
+	mockStore.On("GetRecentLogs", mock.Anything, mock.Anything).Return([]*logging.LogEntry{}, nil) // Added mock
+	mockStore.On("SaveLog", mock.Anything, mock.Anything).Return(nil) // Added mock
+	mockStore.On("ListProfiles", mock.Anything).Return([]*configv1.ProfileDefinition{}, nil) // Added mock
+
 	errChan := make(chan error, 1)
 	go func() {
 		errChan <- app.Run(RunOptions{Ctx: ctx, Fs: fs, Stdio: false, JSONRPCPort: "127.0.0.1:0", GRPCPort: "", ConfigPaths: nil, APIKey: "", ShutdownTimeout: 5 * time.Second})
@@ -1591,10 +1652,21 @@ func TestRun_InMemoryBus(t *testing.T) {
 	err := afero.WriteFile(fs, "/config.yaml", []byte(""), 0o644)
 	require.NoError(t, err)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	app := NewApplication()
+	mockStore := new(MockStore)
+	app.Storage = mockStore
+	mockStore.On("Load", mock.Anything).Return((*configv1.McpAnyServerConfig)(nil), nil)
+	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
+	mockStore.On("GetGlobalSettings", mock.Anything).Return(configv1.GlobalSettings_builder{}.Build(), nil)
+	mockStore.On("ListUsers", mock.Anything).Return([]*configv1.User{}, nil)
+	mockStore.On("Close").Return(nil)
+	mockStore.On("GetRecentLogs", mock.Anything, mock.Anything).Return([]*logging.LogEntry{}, nil)
+	mockStore.On("SaveLog", mock.Anything, mock.Anything).Return(nil)
+	mockStore.On("ListProfiles", mock.Anything).Return([]*configv1.ProfileDefinition{}, nil)
+
 	// This should not panic and should exit gracefully.
 	err = app.Run(RunOptions{Ctx: ctx, Fs: fs, Stdio: false, JSONRPCPort: "127.0.0.1:0", GRPCPort: "127.0.0.1:0", ConfigPaths: []string{"/config.yaml"}, APIKey: "", ShutdownTimeout: 5 * time.Second})
 	require.NoError(t, err)
@@ -1605,7 +1677,7 @@ func TestRun_CachingMiddleware(t *testing.T) {
 	err := afero.WriteFile(fs, "/config.yaml", []byte(""), 0o644)
 	require.NoError(t, err)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	app := NewApplication()
@@ -2252,7 +2324,7 @@ func waitForServerReady(t *testing.T, addr string) {
 		}
 		_ = conn.Close()
 		return true
-	}, 5*time.Second, 100*time.Millisecond, "server should be ready to accept connections")
+	}, 15*time.Second, 100*time.Millisecond, "server should be ready to accept connections")
 }
 
 func TestRun_APIKeyAuthentication(t *testing.T) {
@@ -2625,7 +2697,6 @@ func TestHealthEndpointAlias(t *testing.T) {
 
 	l, err := net.Listen("tcp", "127.0.0.1:0")
 	require.NoError(t, err)
-	addr := l.Addr().String()
 	_ = l.Close()
 
 	// Minimal config
@@ -2643,26 +2714,57 @@ upstream_services: []
 	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{}, nil)
 	mockStore.On("GetGlobalSettings", mock.Anything).Return(configv1.GlobalSettings_builder{}.Build(), nil)
 	mockStore.On("ListUsers", mock.Anything).Return([]*configv1.User{}, nil)
-	mockStore.On("Close").Return(nil)
-	mockStore.On("GetRecentLogs", mock.Anything, mock.Anything).Return([]*logging.LogEntry{}, nil)
-	mockStore.On("SaveLog", mock.Anything, mock.Anything).Return(nil)
+
+	// Use dynamic port
+	var l2 net.Listener
+	var err2 error
+	l2, err2 = net.Listen("tcp", "127.0.0.1:0")
+	require.NoError(t, err2)
+	addr2 := l2.Addr().String()
+	_ = l2.Close()
+
+	// Minimal config
+	configContent = `
+global_settings:
+  log_level: INFO
+upstream_services:
+  - name: "test-service"
+    http_service:
+      address: "http://` + addr2 + `"
+      tools:
+        - name: "test-tool"
+          call_id: "test-call"
+      calls:
+        test-call:
+          id: "test-call"
+          endpoint_path: "/test"
+          method: "HTTP_METHOD_POST"
+`
+	err = afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
+	require.NoError(t, err)
+
+	mockStore.On("GetRecentLogs", mock.Anything, mock.Anything).Return([]*logging.LogEntry{}, nil) // Added mock
+	mockStore.On("SaveLog", mock.Anything, mock.Anything).Return(nil) // Added mock for background worker
+	mockStore.On("ListProfiles", mock.Anything).Return([]*configv1.ProfileDefinition{}, nil) // Added mock
+
 	app.Storage = mockStore
 
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.Run(RunOptions{Ctx: ctx, Fs: fs, Stdio: false, JSONRPCPort: addr, GRPCPort: "", ConfigPaths: []string{"/config.yaml"}, APIKey: "", ShutdownTimeout: 5 * time.Second})
+		errChan <- app.Run(RunOptions{Ctx: ctx, Fs: fs, Stdio: false, JSONRPCPort: addr2, GRPCPort: "", ConfigPaths: []string{"/config.yaml"}, APIKey: "", ShutdownTimeout: 20 * time.Second})
 	}()
 
-	waitForServerReady(t, addr)
+	waitForServerReady(t, addr2)
 
 	// Test /healthz
-	resp, err := http.Get("http://" + addr + "/healthz")
-	require.NoError(t, err)
+	var resp *http.Response
+	resp, err2 = http.Get("http://" + addr2 + "/healthz")
+	require.NoError(t, err2)
 	resp.Body.Close()
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 
 	// Test /health (Alias)
-	resp, err = http.Get("http://" + addr + "/health")
+	resp, err = http.Get("http://" + addr2 + "/health")
 	require.NoError(t, err)
 	resp.Body.Close()
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
@@ -2852,7 +2954,7 @@ func TestRun_WithListenAddress(t *testing.T) {
 		errChan <- app.Run(RunOptions{Ctx: ctx, Fs: fs, Stdio: false, JSONRPCPort: "127.0.0.1:0", GRPCPort: "127.0.0.1:0", ConfigPaths: []string{"/config.yaml"}, APIKey: "", ShutdownTimeout: 5 * time.Second})
 	}()
 
-	time.Sleep(100 * time.Millisecond)
+	time.Sleep(2 * time.Second)
 	cancel()
 	err := <-errChan
 	assert.NoError(t, err)

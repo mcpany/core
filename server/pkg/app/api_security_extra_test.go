@@ -18,6 +18,10 @@ import (
 )
 
 func TestHandleUploadSkillAsset_PathDisclosure(t *testing.T) {
+	if os.Geteuid() == 0 {
+		t.Skip("Skipping permission test when running as root")
+	}
+
 	// Create a directory
 	tmpDir := t.TempDir()
 

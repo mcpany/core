@@ -397,14 +397,29 @@ func (a *Application) Run(opts RunOptions) error {
 			if dsn == "" {
 				return fmt.Errorf("postgres driver selected but db_dsn is empty")
 			}
-			pgDB, err := postgres.NewDB(dsn)
+			// Retry loop for Postgres connection
+			var pgDB *postgres.DB
+			maxRetries := 30
+			for i := 0; i < maxRetries; i++ {
+				pgDB, err = postgres.NewDB(dsn)
+				if err == nil {
+					break
+				}
+				log.Warn("Failed to connect to postgres, retrying...", "attempt", i+1, "error", err)
+				time.Sleep(2 * time.Second)
+			}
 			if err != nil {
-				return fmt.Errorf("failed to initialize postgres db: %w", err)
+				return fmt.Errorf("failed to initialize postgres db after retries: %w", err)
 			}
 			storageCloser = func() error { return pgDB.Close() }
 			storageStore = postgres.NewStore(pgDB)
 		default:
 			return fmt.Errorf("unsupported db driver: %s", dbDriver)
+		}
+	}
+	if a.Storage == nil {
+		if s, ok := storageStore.(storage.Storage); ok {
+			a.Storage = s
 		}
 	}
 	defer func() {
@@ -429,13 +444,11 @@ func (a *Application) Run(opts RunOptions) error {
 	}
 
 	// Determine config sources
-	// Priority: Database < File (if enabled)
-	stores = append(stores, storageStore)
-
+	// Priority: File < Database (Dynamic Overrides Static)
 	enableFileConfig := os.Getenv("MCPANY_ENABLE_FILE_CONFIG") == "true"
 	if len(opts.ConfigPaths) > 0 {
 		// Always load config files if they are explicitly provided
-		log.Info("Loading config from files (overrides database)", "paths", opts.ConfigPaths)
+		log.Info("Loading config from files", "paths", opts.ConfigPaths)
 		stores = append(stores, config.NewFileStore(fs, opts.ConfigPaths))
 	} else if enableFileConfig {
 		// If enabled but no paths provided, we might still want to load from default locations (if any)
@@ -443,6 +456,8 @@ func (a *Application) Run(opts RunOptions) error {
 		// but for now, we just log that we are enabled but have no paths.
 		log.Info("File configuration enabled via env var, but no config paths provided.")
 	}
+
+	stores = append(stores, storageStore)
 	multiStore := config.NewMultiStore(stores...)
 
 	var cfg *config_v1.McpAnyServerConfig
@@ -981,13 +996,13 @@ func (a *Application) ReloadConfig(ctx context.Context, fs afero.Fs, configPaths
 func (a *Application) loadConfig(ctx context.Context, fs afero.Fs, configPaths []string) (*config_v1.McpAnyServerConfig, error) {
 	var stores []config.Store
 
-	if a.Storage != nil {
-		stores = append(stores, a.Storage)
-	}
-
 	enableFileConfig := os.Getenv("MCPANY_ENABLE_FILE_CONFIG") == "true"
 	if enableFileConfig && len(configPaths) > 0 {
 		stores = append(stores, config.NewFileStore(fs, configPaths))
+	}
+
+	if a.Storage != nil {
+		stores = append(stores, a.Storage)
 	}
 
 	store := config.NewMultiStore(stores...)
