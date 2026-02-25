@@ -26,6 +26,10 @@ concurrency:
 permissions:
   contents: read
 
+env:
+  GOMAXPROCS: 1
+  GOGC: 20
+
 jobs:
   changes:
     runs-on: oci-runner
@@ -80,6 +84,7 @@ jobs:
     if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: oci-runner
     # container: public.ecr.aws/docker/library/ubuntu:24.04
+    timeout-minutes: 90
     steps:
       - name: Free Disk Space (Fast)
         run: |
@@ -121,18 +126,18 @@ jobs:
         uses: actions/cache@v4
         with:
           path: build/env/bin
-          key: ${{ runner.os }}-build-env-bin-v2-${{ hashFiles('Makefile', 'server/Makefile') }}
+          key: ${{ runner.os }}-build-env-bin-v3-${{ hashFiles('Makefile', 'server/Makefile') }}
           restore-keys: |
-            ${{ runner.os }}-build-env-bin-v2-
+            ${{ runner.os }}-build-env-bin-v3-
 
       # Cache Lint (golangci-lint, pre-commit)
       - name: Cache Lint
         uses: actions/cache@v4
         with:
           path: build/.cache
-          key: ${{ runner.os }}-lint-cache-v2-${{ hashFiles('server/go.sum', 'server/.pre-commit-config.yaml') }}
+          key: ${{ runner.os }}-lint-cache-v3-${{ hashFiles('server/go.sum', 'server/.pre-commit-config.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-lint-cache-v2-
+            ${{ runner.os }}-lint-cache-v3-
 
       - name: Install dependencies
         run: |
@@ -152,13 +157,12 @@ jobs:
   unit-test:
     runs-on: oci-runner
     # container: public.ecr.aws/docker/library/ubuntu:24.04
-    timeout-minutes: 60
+    timeout-minutes: 90
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
-      GOMAXPROCS: 2
     steps:
       - name: Free Disk Space (Fast)
         run: |
@@ -237,24 +241,24 @@ jobs:
         uses: actions/cache@v4
         with:
           path: build/buildx-cache
-          key: ${{ runner.os }}-buildx-v2-${{ steps.get-date.outputs.week }}-${{ hashFiles('tests/integration/examples/Dockerfile.timeserver', 'tests/integration/examples/timeserver_patch/**') }}
+          key: ${{ runner.os }}-buildx-v3-${{ steps.get-date.outputs.week }}-${{ hashFiles('tests/integration/examples/Dockerfile.timeserver', 'tests/integration/examples/timeserver_patch/**') }}
           restore-keys: |
-            ${{ runner.os }}-buildx-v2-${{ steps.get-date.outputs.week }}-${{ hashFiles('tests/integration/examples/Dockerfile.timeserver', 'tests/integration/examples/timeserver_patch/**') }}-
-            ${{ runner.os }}-buildx-v2-${{ steps.get-date.outputs.week }}-
+            ${{ runner.os }}-buildx-v3-${{ steps.get-date.outputs.week }}-${{ hashFiles('tests/integration/examples/Dockerfile.timeserver', 'tests/integration/examples/timeserver_patch/**') }}-
+            ${{ runner.os }}-buildx-v3-${{ steps.get-date.outputs.week }}-
 
       - name: Cache Docker images
         uses: ScribeMD/docker-cache@0.5.0
         with:
-          key: docker-images-v2-${{ runner.os }}-${{ steps.get-date.outputs.week }}
+          key: docker-images-v3-${{ runner.os }}-${{ steps.get-date.outputs.week }}
 
       - name: Cache Tools
         uses: actions/cache@v4
         with:
           path: build/env/bin
-          key: ${{ runner.os }}-build-env-bin-v2-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}
+          key: ${{ runner.os }}-build-env-bin-v3-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}
           restore-keys: |
-            ${{ runner.os }}-build-env-bin-v2-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
-            ${{ runner.os }}-build-env-bin-v2-${{ steps.get-date.outputs.week }}-
+            ${{ runner.os }}-build-env-bin-v3-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
+            ${{ runner.os }}-build-env-bin-v3-${{ steps.get-date.outputs.week }}-
 
       - name: Prepare environment
         run: make prepare CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache
@@ -274,7 +278,7 @@ jobs:
   e2e-parallel:
     runs-on: oci-runner
     # container: public.ecr.aws/docker/library/ubuntu:24.04
-    timeout-minutes: 60
+    timeout-minutes: 90
     needs: [build-images]
     strategy:
       fail-fast: false
@@ -283,7 +287,6 @@ jobs:
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
-      GOMAXPROCS: 2
     steps:
       - name: Free Disk Space (Fast)
         run: |
@@ -373,10 +376,10 @@ jobs:
         uses: actions/cache@v4
         with:
           path: build/env/bin
-          key: ${{ runner.os }}-build-env-bin-v2-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}
+          key: ${{ runner.os }}-build-env-bin-v3-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}
           restore-keys: |
-            ${{ runner.os }}-build-env-bin-v2-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
-            ${{ runner.os }}-build-env-bin-v2-${{ steps.get-date.outputs.week }}-
+            ${{ runner.os }}-build-env-bin-v3-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
+            ${{ runner.os }}-build-env-bin-v3-${{ steps.get-date.outputs.week }}-
 
       - name: Download Server Image
         uses: actions/download-artifact@v4
@@ -581,12 +584,11 @@ jobs:
   e2e-sequential:
     runs-on: oci-runner
     # container: public.ecr.aws/docker/library/ubuntu:24.04
-    timeout-minutes: 60
+    timeout-minutes: 90
     needs: [build-images]
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
-      GOMAXPROCS: 2
     steps:
       - name: Free Disk Space (Fast)
         run: |
@@ -684,10 +686,10 @@ jobs:
         uses: actions/cache@v4
         with:
           path: build/env/bin
-          key: ${{ runner.os }}-build-env-bin-v2-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}
+          key: ${{ runner.os }}-build-env-bin-v3-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}
           restore-keys: |
-            ${{ runner.os }}-build-env-bin-v2-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
-            ${{ runner.os }}-build-env-bin-v2-${{ steps.get-date.outputs.week }}-
+            ${{ runner.os }}-build-env-bin-v3-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
+            ${{ runner.os }}-build-env-bin-v3-${{ steps.get-date.outputs.week }}-
 
       - name: Prepare environment
         run: make prepare
@@ -707,13 +709,12 @@ jobs:
   e2e-public-api:
     runs-on: oci-runner
     # container: public.ecr.aws/docker/library/ubuntu:24.04
-    timeout-minutes: 60
+    timeout-minutes: 90
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
-      GOMAXPROCS: 2
     steps:
       - name: Free Disk Space (Fast)
         run: |
@@ -792,10 +793,10 @@ jobs:
         uses: actions/cache@v4
         with:
           path: build/env/bin
-          key: ${{ runner.os }}-build-env-bin-v2-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}
+          key: ${{ runner.os }}-build-env-bin-v3-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}
           restore-keys: |
-            ${{ runner.os }}-build-env-bin-v2-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
-            ${{ runner.os }}-build-env-bin-v2-${{ steps.get-date.outputs.week }}-
+            ${{ runner.os }}-build-env-bin-v3-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
+            ${{ runner.os }}-build-env-bin-v3-${{ steps.get-date.outputs.week }}-
 
       - name: Prepare environment
         run: make prepare
@@ -864,10 +865,10 @@ jobs:
 
   ui-test:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 90
     needs: [build-images]
     env:
-      PLAYWRIGHT_WORKERS: 2
+      PLAYWRIGHT_WORKERS: 1
     strategy:
       fail-fast: false
       matrix:
