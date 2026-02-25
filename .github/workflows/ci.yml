@@ -1016,6 +1016,16 @@ jobs:
 
       - uses: actions/checkout@v6
 
+      - name: Install dependencies
+        run: |
+          SUDO=""
+          if command -v sudo >/dev/null; then
+            SUDO="sudo"
+          fi
+          if command -v apt-get >/dev/null; then
+             $SUDO apt-get update && $SUDO apt-get install -y make git curl xz-utils
+          fi
+
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
