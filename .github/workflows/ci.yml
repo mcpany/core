@@ -492,13 +492,18 @@ jobs:
 
       - name: Install dependencies
         run: |
+          echo "Installing build dependencies..."
           SUDO=""
           if command -v sudo >/dev/null; then
             SUDO="sudo"
           fi
-          if command -v apt-get >/dev/null; then
-             $SUDO apt-get update && $SUDO apt-get install -y make git curl xz-utils
-          fi
+
+          # Unconditional install for ubuntu container
+          $SUDO apt-get update
+          $SUDO apt-get install -y make git curl xz-utils
+
+          echo "Dependencies installed."
+          make --version
 
       - name: Set up Go
         uses: actions/setup-go@v6
