@@ -154,7 +154,15 @@ prepare:
 		echo "protoc not found, attempting to install version $${PROTOC_TAG}..."; \
 		if ! command -v curl >/dev/null 2>&1 || ! command -v unzip >/dev/null 2>&1; then \
 			echo "curl and unzip are not installed. Installing..."; \
-			$(SUDO) apt-get update && $(SUDO) DEBIAN_FRONTEND=noninteractive apt-get install -y curl unzip; \
+			if command -v apt-get >/dev/null 2>&1; then \
+				$(SUDO) apt-get update && $(SUDO) DEBIAN_FRONTEND=noninteractive apt-get install -y curl unzip; \
+			elif command -v apk >/dev/null 2>&1; then \
+				$(SUDO) apk add --no-cache curl unzip; \
+			elif command -v dnf >/dev/null 2>&1; then \
+				$(SUDO) dnf install -y curl unzip; \
+			elif command -v yum >/dev/null 2>&1; then \
+				$(SUDO) yum install -y curl unzip; \
+			fi; \
 		fi; \
 		PROTOC_VERSION_NO_V=$$(echo "$${PROTOC_TAG}" | sed 's/v//'); \
 		PROTOC_DOWNLOAD_URL_NO_V="$(PROTOC_DOWNLOAD_URL_BASE)/$${PROTOC_TAG}/protoc-$${PROTOC_VERSION_NO_V}-linux-$(PROTOC_ARCH).zip"; \

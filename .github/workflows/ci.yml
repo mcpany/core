@@ -142,6 +142,10 @@ jobs:
             $SUDO apt-get update && $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils
           elif command -v apk &> /dev/null; then
              $SUDO apk add --no-cache make xz
+          elif command -v dnf &> /dev/null; then
+             $SUDO dnf install -y make xz
+          elif command -v yum &> /dev/null; then
+             $SUDO yum install -y make xz
           fi
 
       - name: Prepare environment
@@ -180,6 +184,10 @@ jobs:
             $SUDO apt-get update && $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils
           elif command -v apk &> /dev/null; then
              $SUDO apk add --no-cache make xz
+          elif command -v dnf &> /dev/null; then
+             $SUDO dnf install -y make xz
+          elif command -v yum &> /dev/null; then
+             $SUDO yum install -y make xz
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -323,6 +331,10 @@ jobs:
             $SUDO apt-get update && $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils
           elif command -v apk &> /dev/null; then
              $SUDO apk add --no-cache make xz
+          elif command -v dnf &> /dev/null; then
+             $SUDO dnf install -y make xz
+          elif command -v yum &> /dev/null; then
+             $SUDO yum install -y make xz
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -503,7 +515,7 @@ jobs:
         run: |
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
-          $SUDO apt-get update && $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y make git curl unzip
+          $SUDO apt-get update && $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y make git curl unzip docker.io
 
       - name: Generate Protobufs
         run: |
@@ -640,6 +652,10 @@ jobs:
             $SUDO apt-get update && $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils
           elif command -v apk &> /dev/null; then
              $SUDO apk add --no-cache make xz
+          elif command -v dnf &> /dev/null; then
+             $SUDO dnf install -y make xz
+          elif command -v yum &> /dev/null; then
+             $SUDO yum install -y make xz
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -785,6 +801,10 @@ jobs:
             $SUDO apt-get update && $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils
           elif command -v apk &> /dev/null; then
              $SUDO apk add --no-cache make xz
+          elif command -v dnf &> /dev/null; then
+             $SUDO dnf install -y make xz
+          elif command -v yum &> /dev/null; then
+             $SUDO yum install -y make xz
           fi
 
       - name: Configure Docker Registry Mirrors
