@@ -9,7 +9,16 @@ import (
 
 // CheckAuth performs health checks for authentication configuration.
 //
-// Returns the result.
+// Summary: Checks the presence of common authentication environment variables.
+//
+// It verifies the existence of API keys (Anthropic, OpenAI, Gemini) and OAuth credentials
+// (Google, GitHub) without exposing the actual secrets.
+//
+// Returns:
+//   - map[string]CheckResult: A map of check results keyed by the environment variable or provider name.
+//
+// Side Effects:
+//   - Reads environment variables.
 func CheckAuth() map[string]CheckResult {
 	results := make(map[string]CheckResult)
 

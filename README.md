@@ -116,46 +116,43 @@ Ask your agent:
 
 The agent will use the `get_weather` tool exposed by MCP Any (configured in `config.minimal.yaml`) to fetch the simulated data.
 
-## Development
+## Developer Workflow
 
 We adhere to a strict development workflow to ensure code quality and maintainability.
 
-### Testing
+### 1. Testing
 Run all unit and integration tests to ensure code correctness. We practice proactive testing and continuous integration.
+
 ```bash
 make test
 ```
 
-### Linting
-We enforce **100% documentation coverage** and strict style guides.
-*   **Go:** We use `golangci-lint` with `revive` and `check-go-doc` to enforce GoDoc standards. We require structured docstrings (Summary, Parameters, Returns, Errors, Side Effects) for all public APIs.
-*   **Protocol:** We check for breaking changes in `.proto` files.
+### 2. Linting & Documentation
+We enforce **100% documentation coverage** and strict style guides using `golangci-lint` and `check-go-doc`.
+*   **Gold Standard Documentation**: All public API elements (functions, methods, types, constants) must have comprehensive docstrings following the structure:
+    *   **Summary**: Active-voice description of intent.
+    *   **Parameters**: Name, Type, and constraints.
+    *   **Returns**: Type and meaning.
+    *   **Errors**: Explicitly listed exceptions.
+    *   **Side Effects**: External state modifications.
 
-See [AGENTS.md](server/AGENTS.md) for detailed coding and documentation guidelines.
-
-To run linters:
+To verify compliance:
 ```bash
 make lint
 ```
 
-### Building
+### 3. Building
 Compile the server binary and UI assets.
+
 ```bash
 make build
 ```
 
-### Code Generation
+### 4. Code Generation
 Regenerate Protocol Buffers and other auto-generated files if you modify `.proto` definitions.
+
 ```bash
 make gen
-```
-
-### UI Development
-To work on the frontend dashboard (Next.js):
-```bash
-cd ui
-npm install
-npm run dev
 ```
 
 ## Configuration

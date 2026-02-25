@@ -9,13 +9,20 @@ import (
 )
 
 // HistoryPoint represents a single point in time for a service's health.
+//
+// Summary: Records the health status of a service at a specific timestamp.
 type HistoryPoint struct {
-	Timestamp int64  `json:"timestamp"` // Unix millis
-	Status    string `json:"status"`
+	// Timestamp is the Unix timestamp in milliseconds.
+	Timestamp int64 `json:"timestamp"`
+	// Status is the health status string (e.g., "healthy", "unhealthy").
+	Status string `json:"status"`
 }
 
-// ServiceHealthHistory stores the history for a service.
+// ServiceHealthHistory stores the health history for a single service.
+//
+// Summary: Collection of historical health data points for a service.
 type ServiceHealthHistory struct {
+	// Points contains the list of health status points.
 	Points []HistoryPoint
 }
 
@@ -24,7 +31,22 @@ var (
 	historyMu    sync.RWMutex
 )
 
-// AddHealthStatus adds a status point to the history.
+// AddHealthStatus adds a new status point to the health history of a service.
+//
+// Summary: Appends a health status snapshot to the service's history.
+//
+// It maintains a maximum of 1000 history points, pruning the oldest if necessary.
+//
+// Parameters:
+//   - serviceName (string): The name of the service.
+//   - status (string): The current health status of the service.
+//
+// Returns:
+//   - None.
+//
+// Side Effects:
+//   - Modifies the global history store.
+//   - Allocates memory if the service is not yet tracked.
 func AddHealthStatus(serviceName string, status string) {
 	historyMu.Lock()
 	defer historyMu.Unlock()
@@ -60,7 +82,16 @@ func AddHealthStatus(serviceName string, status string) {
 	}
 }
 
-// GetHealthHistory returns the history for all services.
+// GetHealthHistory retrieves the complete health history for all tracked services.
+//
+// Summary: Returns a snapshot of all service health histories.
+//
+// Returns:
+//   - map[string][]HistoryPoint: A map where keys are service names and values are lists of history points.
+//
+// Side Effects:
+//   - Allocates memory for the result map and slices (deep copy).
+//   - Acquires a read lock on the global history store.
 func GetHealthHistory() map[string][]HistoryPoint {
 	historyMu.RLock()
 	defer historyMu.RUnlock()
