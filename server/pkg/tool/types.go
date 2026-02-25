@@ -4340,6 +4340,13 @@ func validateSafePathAndInjection(val string, isDocker bool, commandName string)
 			if err := validation.IsSafeIP(val); err != nil && err.Error() != "invalid IP address" {
 				return fmt.Errorf("unsafe IP argument: %w", err)
 			}
+			// Sentinel Security Update: Check for loopback shorthand (e.g. 127.1)
+			if validation.IsLoopbackShorthand(val) {
+				allowLoopback := os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == trueStr
+				if !allowLoopback {
+					return fmt.Errorf("unsafe argument: loopback shorthand is not allowed")
+				}
+			}
 		}
 	}
 

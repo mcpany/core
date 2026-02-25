@@ -5,6 +5,7 @@ package validation
 
 import (
 	"net"
+	"strings"
 )
 
 var privateNetworkBlocksIPv6 []*net.IPNet
@@ -60,6 +61,39 @@ func IsPrivateNetworkIP(ip net.IP) bool {
 		}
 	}
 	return false
+}
+
+// IsLoopbackShorthand checks if the input string is a shorthand IPv4 loopback address (e.g., 127.1).
+// These are not parsed by net.ParseIP (which requires 4 octets) but are accepted by many tools (curl, ping).
+//
+// Parameters:
+//   - val: The string to check.
+//
+// Returns:
+//   - bool: True if it looks like a loopback shorthand.
+func IsLoopbackShorthand(val string) bool {
+	// Standard decimal loopback prefix
+	isDecimal := strings.HasPrefix(val, "127.")
+	// Octal loopback prefix (0177 = 127)
+	isOctal := strings.HasPrefix(val, "0177.")
+
+	if !isDecimal && !isOctal {
+		return false
+	}
+
+	startIdx := 4 // "127." length
+	if isOctal {
+		startIdx = 5 // "0177." length
+	}
+
+	// Check if the rest are digits or dots
+	for i := startIdx; i < len(val); i++ {
+		c := val[i]
+		if (c < '0' || c > '9') && c != '.' {
+			return false
+		}
+	}
+	return true
 }
 
 // IsNAT64 checks for NAT64 (IPv4-embedded IPv6) addresses - 64:ff9b::/96 (RFC 6052).
