@@ -20,19 +20,11 @@ import (
 )
 
 func TestUpstreamService_CatFacts(t *testing.T) {
-	// t.Skip("Skipping flaky cat facts test due to rate limiting issues")
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 
 	t.Log("INFO: Starting E2E Test Scenario for Cat Facts Server...")
 	t.Parallel()
-
-	// --- 1. Start Mock Server ---
-	mockResponse := `{"fact":"Cats are cool","length":13}`
-	mockServer := integration.CreateMockServerWithResponses(t, map[string]string{
-		"/fact": mockResponse,
-	})
-	defer mockServer.Close()
 
 	// --- 2. Start MCPANY Server ---
 	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2ECatFactsServerTest")
@@ -40,7 +32,7 @@ func TestUpstreamService_CatFacts(t *testing.T) {
 
 	// --- 3. Register Cat Facts Server with MCPANY ---
 	const catFactsServiceID = "e2e_catfacts"
-	catFactsServiceEndpoint := mockServer.URL
+	catFactsServiceEndpoint := "https://catfact.ninja"
 	t.Logf("INFO: Registering '%s' with MCPANY at endpoint %s...", catFactsServiceID, catFactsServiceEndpoint)
 	registrationGRPCClient := mcpAnyTestServerInfo.RegistrationClient
 

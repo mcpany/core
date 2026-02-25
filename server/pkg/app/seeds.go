@@ -356,6 +356,107 @@ func init() {
 				}.Build(),
 			}.Build(),
 		}.Build(),
+		configv1.ServiceTemplate_builder{
+			Id:          proto.String("postgresql"),
+			Name:        proto.String("PostgreSQL Database"),
+			Description: proto.String("Query and manage PostgreSQL databases."),
+			Icon:        proto.String("database"),
+			Tags:        []string{"database", "sql"},
+			ServiceConfig: configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("postgresql"),
+				CommandLineService: configv1.CommandLineUpstreamService_builder{
+					Command: proto.String("npx -y @modelcontextprotocol/server-postgres ${POSTGRES_URL}"),
+					Env: map[string]*configv1.SecretValue{
+						"POSTGRES_URL": configv1.SecretValue_builder{
+							PlainText: proto.String("postgresql://postgres:postgres@localhost:5432/postgres"),
+						}.Build(),
+					},
+				}.Build(),
+				AutoDiscoverTool: proto.Bool(true),
+			}.Build(),
+		}.Build(),
+		configv1.ServiceTemplate_builder{
+			Id:          proto.String("test-service"),
+			Name:        proto.String("Test Service"),
+			Description: proto.String("Service for E2E testing."),
+			Icon:        proto.String("beaker"),
+			Tags:        []string{"test"},
+			ServiceConfig: configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("test-service"),
+				CommandLineService: configv1.CommandLineUpstreamService_builder{
+					Command: proto.String("echo hello"),
+					Env: map[string]*configv1.SecretValue{
+						"TEST_VAR": configv1.SecretValue_builder{
+							PlainText: proto.String("default"),
+						}.Build(),
+					},
+				}.Build(),
+				UpstreamAuth: configv1.Authentication_builder{
+					ApiKey: configv1.APIKeyAuth_builder{
+						ParamName: proto.String("Authorization"),
+						In:        configv1.APIKeyAuth_Location(configv1.APIKeyAuth_HEADER).Enum(),
+					}.Build(),
+				}.Build(),
+				AutoDiscoverTool: proto.Bool(true),
+			}.Build(),
+		}.Build(),
+		configv1.ServiceTemplate_builder{
+			Id:          proto.String("linear-cli"),
+			Name:        proto.String("Linear (CLI)"),
+			Description: proto.String("Linear issue tracking integration via CLI."),
+			Icon:        proto.String("linear"),
+			Tags:        []string{"development", "pm", "cli"},
+			ServiceConfig: configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("linear-cli"),
+				CommandLineService: configv1.CommandLineUpstreamService_builder{
+					Command: proto.String("npx -y @modelcontextprotocol/server-linear"),
+					Env: map[string]*configv1.SecretValue{
+						"LINEAR_API_KEY": configv1.SecretValue_builder{
+							PlainText: proto.String(""),
+						}.Build(),
+					},
+				}.Build(),
+				AutoDiscoverTool: proto.Bool(true),
+			}.Build(),
+		}.Build(),
+		configv1.ServiceTemplate_builder{
+			Id:          proto.String("filesystem"),
+			Name:        proto.String("Filesystem"),
+			Description: proto.String("Read/Write access to local files and directories."),
+			Icon:        proto.String("hard-drive"),
+			Tags:        []string{"system", "files"},
+			ServiceConfig: configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("filesystem"),
+				CommandLineService: configv1.CommandLineUpstreamService_builder{
+					Command: proto.String("npx -y @modelcontextprotocol/server-filesystem ${ALLOWED_PATH}"),
+					Env: map[string]*configv1.SecretValue{
+						"ALLOWED_PATH": configv1.SecretValue_builder{
+							PlainText: proto.String("."),
+						}.Build(),
+					},
+				}.Build(),
+				AutoDiscoverTool: proto.Bool(true),
+			}.Build(),
+		}.Build(),
+		configv1.ServiceTemplate_builder{
+			Id:          proto.String("sqlite"),
+			Name:        proto.String("SQLite"),
+			Description: proto.String("Query and manage SQLite databases."),
+			Icon:        proto.String("database"),
+			Tags:        []string{"database", "sql", "local"},
+			ServiceConfig: configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("sqlite"),
+				CommandLineService: configv1.CommandLineUpstreamService_builder{
+					Command: proto.String("npx -y @modelcontextprotocol/server-sqlite ${DB_PATH}"),
+					Env: map[string]*configv1.SecretValue{
+						"DB_PATH": configv1.SecretValue_builder{
+							PlainText: proto.String("mcp.db"),
+						}.Build(),
+					},
+				}.Build(),
+				AutoDiscoverTool: proto.Bool(true),
+			}.Build(),
+		}.Build(),
 	}
 }
 
