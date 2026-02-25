@@ -34,7 +34,17 @@ jobs:
       src: ${{ steps.filter.outputs.src }}
     steps:
       - name: Install dependencies
-        run: apt-get update && apt-get install -y git
+        run: |
+          if ! command -v git &> /dev/null; then
+            echo "git not found. Installing..."
+            SUDO=""
+            if command -v sudo &> /dev/null; then
+              SUDO="sudo"
+            fi
+            $SUDO apt-get update && $SUDO apt-get install -y git
+          else
+            echo "git is already installed."
+          fi
 
       - uses: actions/checkout@v6
         with:
