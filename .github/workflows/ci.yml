@@ -82,6 +82,9 @@ jobs:
       - name: Check Disk Space Before
         run: df -h
 
+      - name: Check Disk Space Before
+        run: df -h
+
       - name: Free Disk Space (Fast)
         run: |
           sudo rm -rf /usr/local/lib/android
@@ -92,12 +95,14 @@ jobs:
           sudo rm -rf /usr/lib/jvm
           sudo rm -rf /usr/local/share/powershell
           sudo rm -rf /usr/share/swift
+          sudo swapoff -a
+          sudo rm -f /swapfile
 
       - name: Check Disk Space After
         run: df -h
 
       - name: Prune Docker
-        run: docker system prune -af
+        run: docker system prune -af --volumes
 
       - uses: actions/checkout@v6
 
@@ -164,6 +169,7 @@ jobs:
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
+      SKIP_DOCKER_TESTS: true
     steps:
       - name: Free Disk Space (Fast)
         run: |
@@ -175,9 +181,11 @@ jobs:
           sudo rm -rf /usr/lib/jvm
           sudo rm -rf /usr/local/share/powershell
           sudo rm -rf /usr/share/swift
+          sudo swapoff -a
+          sudo rm -f /swapfile
 
       - name: Prune Docker
-        run: docker system prune -af
+        run: docker system prune -af --volumes
 
       - uses: actions/checkout@v6
 
@@ -318,9 +326,11 @@ jobs:
           sudo rm -rf /usr/lib/jvm
           sudo rm -rf /usr/local/share/powershell
           sudo rm -rf /usr/share/swift
+          sudo swapoff -a
+          sudo rm -f /swapfile
 
       - name: Prune Docker
-        run: docker system prune -af
+        run: docker system prune -af --volumes
 
       - uses: actions/checkout@v6
 
@@ -634,9 +644,11 @@ jobs:
           sudo rm -rf /usr/lib/jvm
           sudo rm -rf /usr/local/share/powershell
           sudo rm -rf /usr/share/swift
+          sudo swapoff -a
+          sudo rm -f /swapfile
 
       - name: Prune Docker
-        run: docker system prune -af
+        run: docker system prune -af --volumes
 
       - uses: actions/checkout@v6
 
@@ -778,9 +790,11 @@ jobs:
           sudo rm -rf /usr/lib/jvm
           sudo rm -rf /usr/local/share/powershell
           sudo rm -rf /usr/share/swift
+          sudo swapoff -a
+          sudo rm -f /swapfile
 
       - name: Prune Docker
-        run: docker system prune -af
+        run: docker system prune -af --volumes
 
       - uses: actions/checkout@v6
 
@@ -961,9 +975,11 @@ jobs:
           sudo rm -rf /usr/lib/jvm
           sudo rm -rf /usr/local/share/powershell
           sudo rm -rf /usr/share/swift
+          sudo swapoff -a
+          sudo rm -f /swapfile
 
       - name: Prune Docker
-        run: docker system prune -af
+        run: docker system prune -af --volumes
 
       - uses: actions/checkout@v6
 
@@ -1019,9 +1035,11 @@ jobs:
           sudo rm -rf /usr/lib/jvm
           sudo rm -rf /usr/local/share/powershell
           sudo rm -rf /usr/share/swift
+          sudo swapoff -a
+          sudo rm -f /swapfile
 
       - name: Prune Docker
-        run: docker system prune -af
+        run: docker system prune -af --volumes
 
       - uses: actions/checkout@v6
 
