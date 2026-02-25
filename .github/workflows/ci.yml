@@ -34,7 +34,7 @@ jobs:
       src: ${{ steps.filter.outputs.src }}
     steps:
       - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y git
+        run: sudo apt-get update || true && sudo apt-get install -y git
 
       - uses: actions/checkout@v6
         with:
@@ -134,7 +134,7 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils curl unzip
+            sudo apt-get update || true && sudo apt-get install -y make xz-utils curl unzip
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz curl unzip
           fi
@@ -170,7 +170,7 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils curl unzip
+            sudo apt-get update || true && sudo apt-get install -y make xz-utils curl unzip
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz curl unzip
           fi
@@ -309,7 +309,7 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils curl unzip
+            sudo apt-get update || true && sudo apt-get install -y make xz-utils curl unzip
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz curl unzip
           fi
@@ -489,7 +489,7 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils curl unzip
+            sudo apt-get update || true && sudo apt-get install -y make xz-utils curl unzip
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz curl unzip
           fi
@@ -624,7 +624,7 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils curl unzip
+            sudo apt-get update || true && sudo apt-get install -y make xz-utils curl unzip
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz curl unzip
           fi
@@ -763,7 +763,7 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils curl unzip
+            sudo apt-get update || true && sudo apt-get install -y make xz-utils curl unzip
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz curl unzip
           fi
