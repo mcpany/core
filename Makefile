@@ -100,7 +100,14 @@ prepare-proto:
 			if command -v sudo >/dev/null 2>&1; then \
 				SUDO="sudo"; \
 			fi; \
-			$$SUDO apt-get update && $$SUDO apt-get install -y curl unzip; \
+			if command -v apt-get >/dev/null 2>&1; then \
+				$$SUDO apt-get update && $$SUDO apt-get install -y curl unzip; \
+			elif command -v apk >/dev/null 2>&1; then \
+				$$SUDO apk add --no-cache curl unzip; \
+			else \
+				echo "Could not find apt-get or apk to install dependencies."; \
+				exit 1; \
+			fi; \
 		fi; \
 		PROTOC_VERSION_NO_V=$$(echo "$${PROTOC_TAG}" | sed 's/v//'); \
 		PROTOC_DOWNLOAD_URL_NO_V="$(PROTOC_DOWNLOAD_URL_BASE)/$${PROTOC_TAG}/protoc-$${PROTOC_VERSION_NO_V}-linux-$(PROTOC_ARCH).zip"; \
