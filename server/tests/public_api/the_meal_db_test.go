@@ -27,11 +27,12 @@ func TestUpstreamService_TheMealDB(t *testing.T) {
 	t.Parallel()
 
 	// --- 1. Start Mock Server ---
-	mockResponse := `{"meals": [{"strMeal": "Arrabiata"}]}`
-	mockServer := integration.CreateMockServerWithResponses(t, map[string]string{
-		"/api/json/v1/1/search.php": mockResponse,
-	})
-	defer mockServer.Close()
+	// Removed mock server to test against real API as per "Real Data Policy"
+	// mockResponse := `{"meals": [{"strMeal": "Arrabiata"}]}`
+	// mockServer := integration.CreateMockServerWithResponses(t, map[string]string{
+	// 	"/api/json/v1/1/search.php": mockResponse,
+	// })
+	// defer mockServer.Close()
 
 	// --- 2. Start MCPANY Server ---
 	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2ETheMealDBServerTest")
@@ -39,7 +40,7 @@ func TestUpstreamService_TheMealDB(t *testing.T) {
 
 	// --- 3. Register TheMealDB Server with MCPANY ---
 	const theMealDBServiceID = "e2e_themealdb"
-	theMealDBServiceEndpoint := mockServer.URL
+	theMealDBServiceEndpoint := "https://www.themealdb.com"
 	t.Logf("INFO: Registering '%s' with MCPANY at endpoint %s...", theMealDBServiceID, theMealDBServiceEndpoint)
 	registrationGRPCClient := mcpAnyTestServerInfo.RegistrationClient
 
@@ -112,10 +113,10 @@ func TestUpstreamService_TheMealDB(t *testing.T) {
 	require.NoError(t, err, "Failed to unmarshal JSON response")
 
 	if _, ok := theMealDBResponse["meals"].(string); ok {
-		// t.Skip("Skipping test, no meals found in response")
+		t.Log("No meals found (string response)")
 	}
 	if theMealDBResponse["meals"] == nil {
-		// t.Skip("Skipping test, no meals found in response")
+		t.Log("No meals found (nil response)")
 	}
 	meals, ok := theMealDBResponse["meals"].([]interface{})
 	require.True(t, ok, "The meals should be an array")
