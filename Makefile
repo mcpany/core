@@ -99,13 +99,26 @@ prepare-proto:
 			if command -v apt-get >/dev/null 2>&1; then \
 				CMD="apt-get"; \
 				if [ "$$(id -u)" -ne 0 ]; then CMD="sudo apt-get"; fi; \
-				$$CMD update && $$CMD install -y curl unzip; \
+				$$CMD update || true; \
+				$$CMD install -y curl unzip; \
 			elif command -v apk >/dev/null 2>&1; then \
 				CMD="apk"; \
 				if [ "$$(id -u)" -ne 0 ]; then CMD="sudo apk"; fi; \
 				$$CMD add --no-cache curl unzip; \
+			elif command -v dnf >/dev/null 2>&1; then \
+				CMD="dnf"; \
+				if [ "$$(id -u)" -ne 0 ]; then CMD="sudo dnf"; fi; \
+				$$CMD install -y curl unzip; \
+			elif command -v yum >/dev/null 2>&1; then \
+				CMD="yum"; \
+				if [ "$$(id -u)" -ne 0 ]; then CMD="sudo yum"; fi; \
+				$$CMD install -y curl unzip; \
+			elif command -v microdnf >/dev/null 2>&1; then \
+				CMD="microdnf"; \
+				if [ "$$(id -u)" -ne 0 ]; then CMD="sudo microdnf"; fi; \
+				$$CMD install -y curl unzip; \
 			else \
-				echo "Could not find apt-get or apk to install dependencies."; \
+				echo "Could not find package manager to install dependencies."; \
 				exit 1; \
 			fi; \
 		fi; \
