@@ -95,6 +95,27 @@ jobs:
           $SUDO rm -rf /usr/local/.ghcup
           $SUDO rm -rf /usr/local/share/powershell
           $SUDO rm -rf /usr/share/swift
+          $SUDO rm -rf /usr/local/lib/node_modules
+          $SUDO rm -rf /usr/local/lib/heroku
+          $SUDO rm -rf /opt/az
+          $SUDO rm -rf /usr/local/lib/node_modules
+          $SUDO rm -rf /usr/local/lib/heroku
+          $SUDO rm -rf /opt/az
+          $SUDO rm -rf /usr/local/lib/node_modules
+          $SUDO rm -rf /usr/local/lib/heroku
+          $SUDO rm -rf /opt/az
+          $SUDO rm -rf /usr/local/lib/node_modules
+          $SUDO rm -rf /usr/local/lib/heroku
+          $SUDO rm -rf /opt/az
+          $SUDO rm -rf /usr/local/lib/node_modules
+          $SUDO rm -rf /usr/local/lib/heroku
+          $SUDO rm -rf /opt/az
+          $SUDO rm -rf /usr/local/lib/node_modules
+          $SUDO rm -rf /usr/local/lib/heroku
+          $SUDO rm -rf /opt/az
+          $SUDO rm -rf /usr/local/lib/node_modules
+          $SUDO rm -rf /usr/local/lib/heroku
+          $SUDO rm -rf /opt/az
           $SUDO rm -rf /usr/lib/jvm
           $SUDO rm -rf /usr/local/graalvm
           $SUDO rm -rf /usr/local/.ghcup
