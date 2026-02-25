@@ -46,3 +46,4 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-02-27:** Integrated with the **A2A Capability Negotiator**. The bridge now supports dynamic binding to agent endpoints discovered via semantic intent matching, reducing the need for static tool mapping.

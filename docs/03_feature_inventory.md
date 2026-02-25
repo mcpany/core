@@ -65,3 +65,16 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **A2A Capability Negotiator**: (P0) A discovery-focused middleware that allows agents to query and filter the capabilities of other A2A-connected agents.
+- **Mutual TLS for Federated Nodes**: (P1) Enforces cryptographic node identity verification before allowing tool discovery or execution across federated boundaries.
+- **Federated Policy Sync**: (P1) Automated synchronization of Rego/CEL policies across the Federated Tool Mesh.
+
+### Priority Shifts
+- **Federated MCP Node Peering**: Promoted to **P0**. Critical for the next phase of agent scaling.
+- **A2A Interop Bridge (Pseudo-MCP)**: (Re-affirming P0) Essential foundation for the Capability Negotiator.
