@@ -57,6 +57,15 @@ install_microdnf() {
     fi
 }
 
+install_zypper() {
+    echo "Detected zypper."
+    if [ -n "$SUDO" ]; then
+        $SUDO zypper install -y "$@"
+    else
+        zypper install -y "$@"
+    fi
+}
+
 # Determine package manager
 if command -v apt-get >/dev/null 2>&1; then
     install_apt "$@"
@@ -97,6 +106,16 @@ elif command -v microdnf >/dev/null 2>&1; then
         esac
     done
     install_microdnf $NEW_ARGS
+elif command -v zypper >/dev/null 2>&1; then
+    NEW_ARGS=""
+    for arg in "$@"; do
+        case "$arg" in
+            xz-utils) NEW_ARGS="$NEW_ARGS xz" ;;
+            build-essential) NEW_ARGS="$NEW_ARGS make" ;;
+            *) NEW_ARGS="$NEW_ARGS $arg" ;;
+        esac
+    done
+    install_zypper $NEW_ARGS
 else
     echo "No supported package manager found."
     exit 1
