@@ -196,6 +196,10 @@ jobs:
         run: |
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if ! command -v docker &> /dev/null; then
+            echo "Docker not found, skipping registry mirror configuration"
+            exit 0
+          fi
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
           $SUDO mkdir -p /etc/docker
@@ -344,6 +348,10 @@ jobs:
         run: |
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if ! command -v docker &> /dev/null; then
+            echo "Docker not found, skipping registry mirror configuration"
+            exit 0
+          fi
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
           $SUDO mkdir -p /etc/docker
@@ -662,6 +670,12 @@ jobs:
         run: |
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if ! command -v docker &> /dev/null; then
+            echo "Docker not found, skipping registry mirror configuration"
+            exit 0
+          fi
+          # Configure multiple mirrors in array format
+          # Docker will try mirror.gcr.io first.
           $SUDO mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json
 
@@ -810,6 +824,10 @@ jobs:
         run: |
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if ! command -v docker &> /dev/null; then
+            echo "Docker not found, skipping registry mirror configuration"
+            exit 0
+          fi
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
           $SUDO mkdir -p /etc/docker
@@ -911,6 +929,10 @@ jobs:
         run: |
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if ! command -v docker &> /dev/null; then
+            echo "Docker not found, skipping registry mirror configuration"
+            exit 0
+          fi
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
           $SUDO mkdir -p /etc/docker
