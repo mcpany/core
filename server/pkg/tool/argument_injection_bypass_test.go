@@ -31,6 +31,21 @@ func TestValidateSafePathAndInjection_Bypass(t *testing.T) {
 			input:    " /etc/passwd", // Absolute path check
 			isDocker: false,
 		},
+		{
+			name:     "Double Encoded Argument Injection",
+			input:    "%252dRF", // %252d -> %2d -> -
+			isDocker: false,
+		},
+		{
+			name:     "Double Encoded Path Traversal",
+			input:    "%252e%252e", // %252e -> %2e -> .
+			isDocker: false,
+		},
+		{
+			name:     "Triple Encoded Argument Injection",
+			input:    "%25252d", // %25252d -> %252d -> %2d -> -
+			isDocker: false,
+		},
 	}
 
 	for _, tt := range tests {

@@ -4318,6 +4318,37 @@ func validateSafePathAndInjection(val string, isDocker bool, commandName string)
 	// Sentinel Security Update: Trim whitespace to prevent bypasses using leading spaces
 	val = strings.TrimSpace(val)
 
+	// Check original value
+	if err := checkValueSafety(val, isDocker, commandName); err != nil {
+		return err
+	}
+
+	// Sentinel Security Update: Recursive Decoding Check
+	// Prevent double/triple encoding bypasses (e.g. %252d -> %2d -> -)
+	// We decode up to 3 times to catch layered obfuscation.
+	decodedVal := val
+	for i := 0; i < 3; i++ {
+		newDecoded, err := url.QueryUnescape(decodedVal)
+		if err != nil {
+			// If decoding fails, we stop. The original value was already checked.
+			break
+		}
+		if newDecoded == decodedVal {
+			// No change, stop decoding
+			break
+		}
+		decodedVal = newDecoded
+		// Check the decoded value
+		if err := checkValueSafety(decodedVal, isDocker, commandName); err != nil {
+			return fmt.Errorf("%w (decoded level %d)", err, i+1)
+		}
+	}
+
+	return nil
+}
+
+// checkValueSafety performs all safety checks on a single string value.
+func checkValueSafety(val string, isDocker bool, commandName string) error {
 	// Sentinel Security Update: Enforce SSRF protection on arguments that look like URLs.
 	// We check for "://" to capture any scheme (http, https, ftp, gopher, etc.).
 	// IsSafeURL will block any scheme other than http/https, and verify IPs for those.
@@ -4346,33 +4377,15 @@ func validateSafePathAndInjection(val string, isDocker bool, commandName string)
 	if err := checkForPathTraversal(val); err != nil {
 		return err
 	}
-	// Also check decoded value just in case the input was already encoded
-	if decodedVal, err := url.QueryUnescape(val); err == nil && decodedVal != val {
-		if err := checkForPathTraversal(decodedVal); err != nil {
-			return fmt.Errorf("%w (decoded)", err)
-		}
-	}
 
 	if !isDocker {
 		if err := checkForLocalFileAccess(val); err != nil {
 			return err
 		}
-		// Also check decoded value for local file access (e.g. %66ile://)
-		if decodedVal, err := url.QueryUnescape(val); err == nil && decodedVal != val {
-			if err := checkForLocalFileAccess(decodedVal); err != nil {
-				return fmt.Errorf("%w (decoded)", err)
-			}
-		}
 	}
 
 	if err := checkForArgumentInjection(val); err != nil {
 		return err
-	}
-	// Also check decoded value for argument injection (e.g. %2drf)
-	if decodedVal, err := url.QueryUnescape(val); err == nil && decodedVal != val {
-		if err := checkForArgumentInjection(decodedVal); err != nil {
-			return fmt.Errorf("%w (decoded)", err)
-		}
 	}
 
 	// Sentinel Security Update: Block dangerous pseudo-protocols/schemes
@@ -4381,12 +4394,6 @@ func validateSafePathAndInjection(val string, isDocker bool, commandName string)
 	if isVulnerableToSchemes(commandName) {
 		if err := checkForDangerousSchemes(val); err != nil {
 			return err
-		}
-		// Also check decoded value for dangerous schemes
-		if decodedVal, err := url.QueryUnescape(val); err == nil && decodedVal != val {
-			if err := checkForDangerousSchemes(decodedVal); err != nil {
-				return fmt.Errorf("%w (decoded)", err)
-			}
 		}
 	}
 
