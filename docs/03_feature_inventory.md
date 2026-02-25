@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **Agent Identity Provider (AIDP) Middleware**: (P0) A core service that issues and validates verifiable identities for agents. Integrates with SPIFFE for secure inter-agent mTLS.
+- **Cross-Node Transaction Coordinator**: (P1) Middleware that manages multi-step tool calls across federated nodes, providing rollback and commit semantics.
+- **Contextual State Diffing Engine**: (P1) High-performance engine to calculate and apply state deltas between agent execution rounds, optimizing long-context usage.
+
+### Priority Shifts
+- **Federated MCP Node Peering**: Promoted to **P0**. Identity-First Governance (AIDP) makes secure peering viable for production swarms.
+- **A2A Interop Bridge**: Promoted to **P0**. Standardizing agent identity is the final piece needed for robust cross-framework communication.
+
+### Deprecations / Monitoring
+- **Anonymous Tool Calls**: Monitoring for deprecation. All tool calls will eventually require a signed Agent Identity.
