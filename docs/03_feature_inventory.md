@@ -65,3 +65,20 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-25] Supplemental Updates
+
+### Proposed Additions
+- **WASM-MCP Runtime Layer**: (P1) Isolated, secure runtime for executing local MCP servers as WASM modules. Mitigates host-level compromise.
+- **Agent DID Identity Gateway**: (P1) Integration with decentralized identifier (DID) registries for verifiable agent identity in A2A handoffs.
+- **Active Context Pruning Middleware**: (P0) Dynamic middleware that removes inactive/low-relevance tool schemas from the context window during long-running sessions.
+- **Skill Negotiation Protocol**: (P1) Automated capability discovery and negotiation tools for agents to verify skill compatibility before task delegation.
+
+### Priority Shifts
+- **A2A Interop Bridge**: (P0) High priority re-affirmed to support DID-based verification.
+- **Lazy-MCP Middleware**: (P0) Now coupled with Active Context Pruning for maximum token efficiency.
+
+### Deprecations / Monitoring
+- **Stdio-based Command Execution**: Monitoring for deprecation in favor of WASM-isolated execution for sensitive tools.

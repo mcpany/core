@@ -47,3 +47,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **A2A Gateway Protocol**: MCP Any will implement a protocol-neutral bridge for A2A communication, allowing disparate agent frameworks (e.g., OpenClaw, AutoGen) to exchange state and tasks via a unified MCP-like interface.
 - **Federated Tool Mesh**: Moving from a standalone server to a "Mesh" architecture where multiple MCP Any instances can peer and share resources across network boundaries, governed by global Zero-Trust policies.
 - **Resource-Aware Intelligence**: Integrating cost and latency telemetry into the tool discovery process, allowing LLMs to perform "Economical Reasoning" when selecting tools.
+
+---
+
+## Strategic Evolution: [2026-02-25] - Agentic Trust & Identity
+### Focus: Autonomous Capability Negotiation & Verified Identity
+**Context**: Today's supplemental findings highlight the friction in multi-agent handoffs where agents lack a standardized way to negotiate skills or verify identities. Security is also shifting from "host-based" to "sandbox-based" (WASM).
+**Strategic Pivot**:
+- **Capability Negotiation Protocol**: Implementing a "Skill-Gating" mechanism where agents can query and negotiate tool compatibility before a handoff, ensuring deterministic success.
+- **Identity-First Agency (DID)**: Integrating W3C Decentralized Identifiers (DIDs) for agents, allowing for cryptographically verifiable identity and permissions that traverse different agent frameworks and environments.
+- **Isolated WASM Runtime**: Moving towards an "Isolated-by-Default" execution model where local tools run in a WASM runtime instead of directly on the host, eliminating entire classes of security exploits.
+- **Intelligent Context Pruning**: Evolving from lazy-loading to active pruning of tool contexts based on the agent's real-time goal state, minimizing token waste and maximizing reasoning accuracy.

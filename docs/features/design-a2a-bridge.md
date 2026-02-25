@@ -46,3 +46,7 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-02-25:** **Integrating Agent DID Identity Verification.** (Simulated Supplemental Update)
+    - **Context**: Market research (Supplemental 2026-02-25) identified identity spoofing in A2A as a critical risk.
+    - **Architecture Adjustment**: Every A2A handoff now requires a W3C-compliant Decentralized Identifier (DID). MCP Any acts as the "DID Verification Gateway," checking the cryptographically signed identity of both the source and destination agents.
+    - **Security Impact**: Prevents rogue agents from intercepting handoffs or masquerading as trusted "Manager" agents within a swarm.
