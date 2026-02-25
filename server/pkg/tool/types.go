@@ -3289,6 +3289,7 @@ func checkInterpreterFunctionCalls(val, language string) error {
 		"open", "read", "write",
 		"phpinfo",
 		"syscall", "dlopen", "fiddle", "send", "__send__", "public_send",
+		"method", "public_method", "singleton_method", "const_get",
 	}
 
 	if isStrict {
@@ -3310,6 +3311,7 @@ func checkInterpreterFunctionCalls(val, language string) error {
 			"open", "read", "write",
 			"getattr", "setattr", "delattr",
 			"compile", "globals", "locals", "vars",
+			"__getattribute__",
 		}
 	}
 
