@@ -85,6 +85,13 @@ jobs:
           sudo rm -rf /usr/share/dotnet
           sudo rm -rf /opt/ghc
           sudo rm -rf /usr/local/share/boost
+          sudo rm -rf /opt/hostedtoolcache
+          sudo rm -rf /opt/hostedtoolcache
+          sudo rm -rf /opt/hostedtoolcache
+          sudo rm -rf /opt/hostedtoolcache
+          sudo rm -rf /opt/hostedtoolcache
+          sudo rm -rf /opt/hostedtoolcache
+          sudo rm -rf /opt/hostedtoolcache
 
       - name: Prune Docker
         run: docker system prune -af
