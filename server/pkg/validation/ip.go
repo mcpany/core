@@ -5,6 +5,8 @@ package validation
 
 import (
 	"net"
+	"strconv"
+	"strings"
 )
 
 var privateNetworkBlocksIPv6 []*net.IPNet
@@ -211,4 +213,68 @@ func IsPrivateNetworkIPv4(ip net.IP) bool {
 	}
 
 	return false
+}
+
+// ParsePermissiveIP parses a dotted-decimal string OR a single integer/hex/octal string into an IPv4 address.
+// It mimics standard libc/inet_aton behavior used by tools like curl/wget.
+//
+// It returns nil if the string is not a valid IP representation.
+//
+// Parameters:
+//   - s: The string to parse.
+//
+// Returns:
+//   - net.IP: The parsed IPv4 address, or nil.
+func ParsePermissiveIP(s string) net.IP {
+	// Optimization: check if it contains only allowed chars (0-9, a-f, A-F, x, X, .)
+	for _, r := range s {
+		if !((r >= '0' && r <= '9') || (r >= 'a' && r <= 'f') || (r >= 'A' && r <= 'F') || r == '.' || r == 'x' || r == 'X') {
+			return nil
+		}
+	}
+
+	parts := strings.Split(s, ".")
+	if len(parts) > 4 {
+		return nil
+	}
+
+	var nums []uint64
+	for _, p := range parts {
+		if p == "" {
+			return nil
+		}
+		// strconv.ParseUint with base 0 handles 0x prefix (hex) and 0 prefix (octal)
+		n, err := strconv.ParseUint(p, 0, 64)
+		if err != nil {
+			return nil
+		}
+		nums = append(nums, n)
+	}
+
+	var ip uint32
+
+	switch len(nums) {
+	case 1:
+		if nums[0] > 0xFFFFFFFF {
+			return nil
+		}
+		ip = uint32(nums[0])
+	case 2:
+		if nums[0] > 0xFF || nums[1] > 0xFFFFFF {
+			return nil
+		}
+		ip = (uint32(nums[0]) << 24) | uint32(nums[1])
+	case 3:
+		if nums[0] > 0xFF || nums[1] > 0xFF || nums[2] > 0xFFFF {
+			return nil
+		}
+		ip = (uint32(nums[0]) << 24) | (uint32(nums[1]) << 16) | uint32(nums[2])
+	case 4:
+		if nums[0] > 0xFF || nums[1] > 0xFF || nums[2] > 0xFF || nums[3] > 0xFF {
+			return nil
+		}
+		ip = (uint32(nums[0]) << 24) | (uint32(nums[1]) << 16) | (uint32(nums[2]) << 8) | uint32(nums[3])
+	}
+
+	return net.IPv4(byte(ip>>24), byte(ip>>16), byte(ip>>8), byte(ip))
 }

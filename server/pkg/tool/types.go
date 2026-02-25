@@ -3024,6 +3024,19 @@ func checkForArgumentInjection(val string) error {
 	return nil
 }
 
+func isNetworkTool(command string) bool {
+	base := strings.ToLower(filepath.Base(command))
+	tools := []string{
+		"curl", "wget", "nc", "ncat", "netcat", "socat", "telnet", "ssh", "scp", "sftp", "ping", "traceroute", "dig", "nslookup", "host",
+	}
+	for _, tool := range tools {
+		if base == tool {
+			return true
+		}
+	}
+	return false
+}
+
 func isShellCommand(cmd string) bool {
 	return isShell(cmd) || isInterpreter(cmd)
 }
@@ -4337,8 +4350,27 @@ func validateSafePathAndInjection(val string, isDocker bool, commandName string)
 		} else if validation.IsSafeIP != nil {
 			// Check if it's an IP address and validate it against policy
 			// We ignore "invalid IP address" error as it just means it's not an IP
-			if err := validation.IsSafeIP(val); err != nil && err.Error() != "invalid IP address" {
-				return fmt.Errorf("unsafe IP argument: %w", err)
+			if err := validation.IsSafeIP(val); err != nil {
+				if err.Error() != "invalid IP address" {
+					return fmt.Errorf("unsafe IP argument: %w", err)
+				}
+				// If net.ParseIP failed, it might still be a shorthand that tools accept.
+				// We check for permissive IP parsing (Octal, Hex, Integers, Dotted-Shorthand).
+				if ip := validation.ParsePermissiveIP(val); ip != nil {
+					// Logic:
+					// 1. If it contains a dot (e.g. 127.1, 0177.1), it is unambiguously intended as an IP (or version).
+					//    We treat it as IP and validate it.
+					// 2. If it is a single integer/hex (e.g. 0, 2130706433), it is ambiguous (could be sleep 0).
+					//    We only validate it if the command is a known network tool that might abuse it.
+					isDotted := strings.Contains(val, ".")
+					if isDotted || isNetworkTool(commandName) {
+						allowLoopback := os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == trueStr
+						allowPrivate := os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == trueStr
+						if err := validation.ValidateIP(ip, allowLoopback, allowPrivate); err != nil {
+							return fmt.Errorf("unsafe IP argument (permissive): %w", err)
+						}
+					}
+				}
 			}
 		}
 	}
