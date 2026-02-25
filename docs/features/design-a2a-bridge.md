@@ -46,3 +46,9 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-02-27: Update - Agent DID Identity Integration**
+    **Context:** Today's market sync revealed the adoption of DID (Decentralized Identifiers) in the A2A protocol.
+    **Architecture Adjustment:**
+    *   Updating Section 4 (Design & Architecture) to include an "Identity-Aware Gateway" component.
+    *   MCP Any will now verify A2A Agent DIDs before routing any messages.
+    **Security Impact:** Prevents "Identity Spoofing" by ensuring that every agent in a swarm is cryptographically verifiable and belongs to the authorized swarm.

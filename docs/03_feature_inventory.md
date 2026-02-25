@@ -65,3 +65,20 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **Active Context Pruning Middleware**: (P0) Dynamically removes tools from the context window based on relevance and history to maintain LLM performance in long sessions.
+- **Agent DID Gateway**: (P1) Identity management system that verifies Decentralized Identifiers (DIDs) for cross-platform agent authentication.
+- **WASM-MCP Runtime (Sandboxed Tools)**: (P1) A secure, isolated runtime for executing local MCP servers within a WebAssembly sandbox.
+- **Autonomous Capability Broker**: (P1) A middleware that enables agents to negotiate and verify capabilities/permissions before task handoff.
+
+### Priority Shifts
+- **A2A Interop Bridge (Pseudo-MCP)**: Re-affirming **P0** status as Agent DID integration becomes a prerequisite for secure swarms.
+- **On-Demand Discovery Middleware (Lazy-MCP)**: (P0) High priority maintained to support massive federated tool meshes.
+
+### Deprecations / Monitoring
+- **Native Stdio Tool Execution**: Monitoring for deprecation in favor of WASM-sandboxed execution for local tools.
