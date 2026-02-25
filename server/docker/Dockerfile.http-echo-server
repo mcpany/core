@@ -27,10 +27,10 @@ FROM mirror.gcr.io/library/alpine:latest
 RUN apk --no-cache add wget ca-certificates
 
 # Changing WORKDIR to avoid potential OverlayFS invalid argument errors on /app in some CI environments
-WORKDIR /usr/src/mcp
+WORKDIR /tmp/app
 
 # Copy the built binary from the builder stage.
-COPY --from=builder /http-echo-server /usr/src/mcp/http-echo-server
+COPY --from=builder /http-echo-server /tmp/app/http-echo-server
 
 # Expose the port the server will listen on.
 # This is for documentation and can be used by automated systems.
@@ -38,4 +38,4 @@ EXPOSE 8080
 
 # Set the entrypoint for the container.
 # We pass the --port flag to ensure the server listens on a consistent port.
-ENTRYPOINT ["/usr/src/mcp/http-echo-server", "--port=8080"]
+ENTRYPOINT ["/tmp/app/http-echo-server", "--port=8080"]
