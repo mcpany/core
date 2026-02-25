@@ -1163,7 +1163,7 @@ jobs:
                echo "$HOME/.local/bin" >> $GITHUB_PATH
             fi
 
-            rm -rf /tmp/gh-install
+            sudo rm -rf /tmp/gh-install
             echo "gh installed successfully."
           else
             echo "gh is already installed."
