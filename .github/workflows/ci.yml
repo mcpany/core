@@ -105,7 +105,7 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Install dependencies
-        run: chmod +x scripts/install-ci-deps.sh && ./scripts/install-ci-deps.sh make xz-utils curl unzip ca-certificates
+        run: chmod +x scripts/install-ci-deps.sh && ./scripts/install-ci-deps.sh make xz-utils curl unzip ca-certificates sudo
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -214,13 +214,6 @@ jobs:
 
       - name: Install Python dependencies
         run: pip install -r server/requirements.txt
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: "24"
-          cache: "npm"
-          cache-dependency-path: server/tests/integration/upstream/package-lock.json
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3

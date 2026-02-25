@@ -14,6 +14,7 @@ for arg in "$@"; do
     case "$arg" in
         xz-utils) CMD="xz" ;;
         build-essential) CMD="make" ;;
+        sudo) CMD="sudo" ;;
         ca-certificates) CMD="update-ca-certificates" ;; # Rough check, or check file existence?
         *) CMD="$arg" ;;
     esac
