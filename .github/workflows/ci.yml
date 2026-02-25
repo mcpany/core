@@ -527,7 +527,7 @@ jobs:
         run: |
           PLATFORM="${{ matrix.platform }}"
           SLUG="${{ matrix.slug }}"
-          make -C server build-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=server-$SLUG CACHE_FROM=type=gha,scope=server-$SLUG
+          make -C server build-docker PLATFORMS=$PLATFORM
           docker save -o server.tar mcpany/server:latest
       - uses: actions/upload-artifact@v4
         with:
@@ -542,7 +542,7 @@ jobs:
         run: |
           PLATFORM="${{ matrix.platform }}"
           SLUG="${{ matrix.slug }}"
-          make -C server build-http-echo-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=http-echo-$SLUG CACHE_FROM=type=gha,scope=http-echo-$SLUG
+          make -C server build-http-echo-docker PLATFORMS=$PLATFORM
           docker save -o http-echo.tar mcpany/http-echo-server:latest
       - uses: actions/upload-artifact@v4
         with:
@@ -557,7 +557,7 @@ jobs:
         run: |
           PLATFORM="${{ matrix.platform }}"
           SLUG="${{ matrix.slug }}"
-          make -C server build-e2e-timeserver-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=time-server-$SLUG CACHE_FROM=type=gha,scope=time-server-$SLUG
+          make -C server build-e2e-timeserver-docker PLATFORMS=$PLATFORM
           docker save -o time-server.tar mcpany-e2e-time-server
       - uses: actions/upload-artifact@v4
         with:
@@ -572,7 +572,7 @@ jobs:
         run: |
           PLATFORM="${{ matrix.platform }}"
           SLUG="${{ matrix.slug }}"
-          make -C server build-cowsay-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=cowsay-$SLUG CACHE_FROM=type=gha,scope=cowsay-$SLUG
+          make -C server build-cowsay-docker PLATFORMS=$PLATFORM
           docker save -o cowsay.tar mcpany/e2e-cowsay-server:latest
       - uses: actions/upload-artifact@v4
         with:
@@ -587,7 +587,7 @@ jobs:
         run: |
           PLATFORM="${{ matrix.platform }}"
           SLUG="${{ matrix.slug }}"
-          make -C server build-everything-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=everything-$SLUG CACHE_FROM=type=gha,scope=everything-$SLUG
+          make -C server build-everything-docker PLATFORMS=$PLATFORM
           docker save -o everything.tar mcpany/everything:latest
       - uses: actions/upload-artifact@v4
         with:
@@ -602,7 +602,7 @@ jobs:
         run: |
           PLATFORM="${{ matrix.platform }}"
           SLUG="${{ matrix.slug }}"
-          make -C server docker-build-ui PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=ui-$SLUG CACHE_FROM=type=gha,scope=ui-$SLUG
+          make -C server docker-build-ui PLATFORMS=$PLATFORM
           docker save -o ui.tar mcpany/ui:latest
       - uses: actions/upload-artifact@v4
         with:
@@ -617,7 +617,7 @@ jobs:
         run: |
           PLATFORM="${{ matrix.platform }}"
           SLUG="${{ matrix.slug }}"
-          make -C server docker-build-operator PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=operator-$SLUG CACHE_FROM=type=gha,scope=operator-$SLUG
+          make -C server docker-build-operator PLATFORMS=$PLATFORM
           docker save -o operator.tar mcpany/operator:latest
       - uses: actions/upload-artifact@v4
         with:
@@ -632,7 +632,7 @@ jobs:
         run: |
           PLATFORM="${{ matrix.platform }}"
           SLUG="${{ matrix.slug }}"
-          make -C ui build-test-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=ui-test-$SLUG CACHE_FROM=type=gha,scope=ui-test-$SLUG
+          make -C ui build-test-docker PLATFORMS=$PLATFORM
           docker save -o ui-test-image.tar mcpany-ui-e2e:latest
       - uses: actions/upload-artifact@v4
         with:
