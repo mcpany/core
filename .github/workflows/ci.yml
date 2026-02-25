@@ -143,24 +143,7 @@ jobs:
             ${{ runner.os }}-lint-cache-
 
       - name: Install dependencies
-        run: |
-          SUDO=""
-          if command -v sudo >/dev/null; then
-            SUDO="sudo"
-          fi
-
-          if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update || true
-            $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils curl unzip ca-certificates
-          elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz curl unzip ca-certificates
-          elif command -v dnf &> /dev/null; then
-             $SUDO dnf install -y make xz curl unzip ca-certificates
-          elif command -v yum &> /dev/null; then
-             $SUDO yum install -y make xz curl unzip ca-certificates
-          elif command -v microdnf &> /dev/null; then
-             $SUDO microdnf install -y make xz curl unzip ca-certificates
-          fi
+        run: ./scripts/install-ci-deps.sh make xz-utils curl unzip ca-certificates
 
       - name: Prepare environment
         run: make prepare
@@ -191,24 +174,7 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Install dependencies
-        run: |
-          SUDO=""
-          if command -v sudo >/dev/null; then
-            SUDO="sudo"
-          fi
-
-          if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update || true
-            $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils curl unzip ca-certificates
-          elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz curl unzip ca-certificates
-          elif command -v dnf &> /dev/null; then
-             $SUDO dnf install -y make xz curl unzip ca-certificates
-          elif command -v yum &> /dev/null; then
-             $SUDO yum install -y make xz curl unzip ca-certificates
-          elif command -v microdnf &> /dev/null; then
-             $SUDO microdnf install -y make xz curl unzip ca-certificates
-          fi
+        run: ./scripts/install-ci-deps.sh make xz-utils curl unzip ca-certificates
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -342,24 +308,7 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Install dependencies
-        run: |
-          SUDO=""
-          if command -v sudo >/dev/null; then
-            SUDO="sudo"
-          fi
-
-          if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update || true
-            $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils curl unzip ca-certificates
-          elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz curl unzip ca-certificates
-          elif command -v dnf &> /dev/null; then
-             $SUDO dnf install -y make xz curl unzip ca-certificates
-          elif command -v yum &> /dev/null; then
-             $SUDO yum install -y make xz curl unzip ca-certificates
-          elif command -v microdnf &> /dev/null; then
-             $SUDO microdnf install -y make xz curl unzip ca-certificates
-          fi
+        run: ./scripts/install-ci-deps.sh make xz-utils curl unzip ca-certificates
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -534,24 +483,7 @@ jobs:
           cache-dependency-path: server/tests/integration/upstream/package-lock.json
 
       - name: Install dependencies
-        run: |
-          SUDO=""
-          if command -v sudo >/dev/null; then
-            SUDO="sudo"
-          fi
-
-          if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update || true
-            $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils curl unzip ca-certificates
-          elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz curl unzip ca-certificates
-          elif command -v dnf &> /dev/null; then
-             $SUDO dnf install -y make xz curl unzip ca-certificates
-          elif command -v yum &> /dev/null; then
-             $SUDO yum install -y make xz curl unzip ca-certificates
-          elif command -v microdnf &> /dev/null; then
-             $SUDO microdnf install -y make xz curl unzip ca-certificates
-          fi
+        run: ./scripts/install-ci-deps.sh make xz-utils curl unzip ca-certificates
 
       - name: Generate Protobufs
         run: |
@@ -681,24 +613,7 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Install dependencies
-        run: |
-          SUDO=""
-          if command -v sudo >/dev/null; then
-            SUDO="sudo"
-          fi
-
-          if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update || true
-            $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils curl unzip ca-certificates
-          elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz curl unzip ca-certificates
-          elif command -v dnf &> /dev/null; then
-             $SUDO dnf install -y make xz curl unzip ca-certificates
-          elif command -v yum &> /dev/null; then
-             $SUDO yum install -y make xz curl unzip ca-certificates
-          elif command -v microdnf &> /dev/null; then
-             $SUDO microdnf install -y make xz curl unzip ca-certificates
-          fi
+        run: ./scripts/install-ci-deps.sh make xz-utils curl unzip ca-certificates
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -832,24 +747,7 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Install dependencies
-        run: |
-          SUDO=""
-          if command -v sudo >/dev/null; then
-            SUDO="sudo"
-          fi
-
-          if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update || true
-            $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils curl unzip ca-certificates
-          elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz curl unzip ca-certificates
-          elif command -v dnf &> /dev/null; then
-             $SUDO dnf install -y make xz curl unzip ca-certificates
-          elif command -v yum &> /dev/null; then
-             $SUDO yum install -y make xz curl unzip ca-certificates
-          elif command -v microdnf &> /dev/null; then
-             $SUDO microdnf install -y make xz curl unzip ca-certificates
-          fi
+        run: ./scripts/install-ci-deps.sh make xz-utils curl unzip ca-certificates
 
       - name: Configure Docker Registry Mirrors
         run: |
