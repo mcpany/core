@@ -216,11 +216,12 @@ jobs:
              fi
 
              if command -v apt-get &> /dev/null; then
-                # Clear apt lists to avoid hash sum mismatch
-                $SUDO rm -rf /var/lib/apt/lists/*
-                $SUDO apt-get clean
-                # Update with retries - Force IPv4 to avoid IPv6 timeouts
-                ($SUDO apt-get -o Acquire::ForceIPv4=true update -y) || (sleep 10 && $SUDO apt-get -o Acquire::ForceIPv4=true update -y) || (sleep 20 && $SUDO apt-get -o Acquire::ForceIPv4=true update -y) || exit 1
+                # Tiered retry logic for apt-get update
+                ($SUDO apt-get update -y) || \
+                (echo "Standard update failed. Retrying with cleanup..." && $SUDO apt-get clean && $SUDO rm -rf /var/lib/apt/lists/* && $SUDO apt-get update -y) || \
+                (echo "Cleanup update failed. Retrying with IPv4..." && $SUDO apt-get -o Acquire::ForceIPv4=true update -y) || \
+                exit 1
+
                 $SUDO apt-get install -y --no-install-recommends $PKGS
              elif command -v apk &> /dev/null; then
                 $SUDO apk add --no-cache $PKGS
@@ -416,11 +417,12 @@ jobs:
              fi
 
              if command -v apt-get &> /dev/null; then
-                # Clear apt lists to avoid hash sum mismatch
-                $SUDO rm -rf /var/lib/apt/lists/*
-                $SUDO apt-get clean
-                # Update with retries - Force IPv4 to avoid IPv6 timeouts
-                ($SUDO apt-get -o Acquire::ForceIPv4=true update -y) || (sleep 10 && $SUDO apt-get -o Acquire::ForceIPv4=true update -y) || (sleep 20 && $SUDO apt-get -o Acquire::ForceIPv4=true update -y) || exit 1
+                # Tiered retry logic for apt-get update
+                ($SUDO apt-get update -y) || \
+                (echo "Standard update failed. Retrying with cleanup..." && $SUDO apt-get clean && $SUDO rm -rf /var/lib/apt/lists/* && $SUDO apt-get update -y) || \
+                (echo "Cleanup update failed. Retrying with IPv4..." && $SUDO apt-get -o Acquire::ForceIPv4=true update -y) || \
+                exit 1
+
                 $SUDO apt-get install -y --no-install-recommends $PKGS
              elif command -v apk &> /dev/null; then
                 $SUDO apk add --no-cache $PKGS
@@ -640,12 +642,14 @@ jobs:
             cat /etc/os-release
           fi
 
-          # Clear apt lists to avoid hash sum mismatch
-          rm -rf /var/lib/apt/lists/*
-          apt-get clean
-
-          # Retry update to handle transient network issues - Force IPv4 to avoid IPv6 timeouts
-          (apt-get -o Acquire::ForceIPv4=true update -y) || (sleep 10 && apt-get -o Acquire::ForceIPv4=true update -y) || (sleep 20 && apt-get -o Acquire::ForceIPv4=true update -y) || exit 1
+          # Tiered retry logic for apt-get update
+          # 1. Standard update
+          # 2. Clean cache and update (fixes hash mismatches)
+          # 3. Force IPv4 (fixes IPv6 timeouts)
+          (apt-get update -y) || \
+          (echo "Standard update failed. Retrying with cleanup..." && apt-get clean && rm -rf /var/lib/apt/lists/* && apt-get update -y) || \
+          (echo "Cleanup update failed. Retrying with IPv4..." && apt-get -o Acquire::ForceIPv4=true update -y) || \
+          exit 1
 
           # Install dependencies
           apt-get install -y --no-install-recommends make git curl unzip build-essential
@@ -806,11 +810,12 @@ jobs:
              fi
 
              if command -v apt-get &> /dev/null; then
-                # Clear apt lists to avoid hash sum mismatch
-                $SUDO rm -rf /var/lib/apt/lists/*
-                $SUDO apt-get clean
-                # Update with retries - Force IPv4 to avoid IPv6 timeouts
-                ($SUDO apt-get -o Acquire::ForceIPv4=true update -y) || (sleep 10 && $SUDO apt-get -o Acquire::ForceIPv4=true update -y) || (sleep 20 && $SUDO apt-get -o Acquire::ForceIPv4=true update -y) || exit 1
+                # Tiered retry logic for apt-get update
+                ($SUDO apt-get update -y) || \
+                (echo "Standard update failed. Retrying with cleanup..." && $SUDO apt-get clean && $SUDO rm -rf /var/lib/apt/lists/* && $SUDO apt-get update -y) || \
+                (echo "Cleanup update failed. Retrying with IPv4..." && $SUDO apt-get -o Acquire::ForceIPv4=true update -y) || \
+                exit 1
+
                 $SUDO apt-get install -y --no-install-recommends $PKGS
              elif command -v apk &> /dev/null; then
                 $SUDO apk add --no-cache $PKGS
@@ -999,11 +1004,12 @@ jobs:
              fi
 
              if command -v apt-get &> /dev/null; then
-                # Clear apt lists to avoid hash sum mismatch
-                $SUDO rm -rf /var/lib/apt/lists/*
-                $SUDO apt-get clean
-                # Update with retries - Force IPv4 to avoid IPv6 timeouts
-                ($SUDO apt-get -o Acquire::ForceIPv4=true update -y) || (sleep 10 && $SUDO apt-get -o Acquire::ForceIPv4=true update -y) || (sleep 20 && $SUDO apt-get -o Acquire::ForceIPv4=true update -y) || exit 1
+                # Tiered retry logic for apt-get update
+                ($SUDO apt-get update -y) || \
+                (echo "Standard update failed. Retrying with cleanup..." && $SUDO apt-get clean && $SUDO rm -rf /var/lib/apt/lists/* && $SUDO apt-get update -y) || \
+                (echo "Cleanup update failed. Retrying with IPv4..." && $SUDO apt-get -o Acquire::ForceIPv4=true update -y) || \
+                exit 1
+
                 $SUDO apt-get install -y --no-install-recommends $PKGS
              elif command -v apk &> /dev/null; then
                 $SUDO apk add --no-cache $PKGS
