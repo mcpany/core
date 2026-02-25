@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **JIT Permission Broker**: (P0) A protocol-level middleware that handles Just-In-Time permission elevation requests from agents, including risk-scoring and automated HITL triggers.
+- **Self-Healing Tool Staging Gateway**: (P1) A secure environment for staging and testing agent-generated tool modifications before they are promoted to the active registry.
+- **A2A Semantic Versioning Negotiator**: (P1) Middleware that ensures agents in a swarm are using compatible task/message protocols during handoffs.
+
+### Priority Shifts
+- **Policy Firewall**: (Re-affirming P0) Essential for governing JIT permission requests and self-healing tool promotions.
+- **Supply Chain Integrity Guard**: (P0) Prerequisite for ensuring that agent-generated tool code hasn't been tampered with or "poisoned" by a malicious subagent.
+
+### Deprecations / Monitoring
+- **Static Permission Scopes**: Moving towards time-bound, session-bound dynamic scopes.

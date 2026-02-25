@@ -46,3 +46,7 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+* **2026-02-27:** Integrating JIT Permission Support and Semantic Versioning.
+    * **Context**: Agents communicating via A2A often encounter permission gaps when handing off tasks.
+    * **Adjustment**: Added `capability_request` field to A2A handoff schemas. MCP Any will now automatically proxy JIT requests from remote A2A agents to the local JIT Permission Broker.
+    * **Versioning**: Added mandatory `min_a2a_version` field to discovery metadata to prevent protocol mismatch.
