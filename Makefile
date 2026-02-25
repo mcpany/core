@@ -100,8 +100,7 @@ prepare-proto:
 			if command -v sudo >/dev/null 2>&1; then SUDO="sudo"; fi; \
 			if command -v apt-get >/dev/null 2>&1; then \
 				$$SUDO apt-get update || true; \
-				export DEBIAN_FRONTEND=noninteractive; \
-				$$SUDO apt-get install -y curl unzip; \
+				$$SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y curl unzip; \
 			elif command -v apk >/dev/null 2>&1; then \
 				$$SUDO apk add --no-cache curl unzip; \
 			elif command -v dnf >/dev/null 2>&1; then \
