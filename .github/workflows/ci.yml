@@ -432,6 +432,7 @@ jobs:
           for f in *.tar; do
             docker load -i "$f"
           done
+          rm *.tar
 
       - name: Prepare environment
         run: make prepare
@@ -705,6 +706,7 @@ jobs:
           for f in *.tar; do
             docker load -i "$f"
           done
+          rm *.tar
 
       - name: Cache Tools
         uses: actions/cache@v4
@@ -962,6 +964,7 @@ jobs:
           for f in *.tar; do
             docker load -i "$f"
           done
+          rm *.tar
 
       - name: Test UI
         run: |
@@ -1038,6 +1041,11 @@ jobs:
         with:
           name: image-ui-${{ steps.detect-arch.outputs.slug }}
 
+      - name: Download HTTP Echo Image
+        uses: actions/download-artifact@v4
+        with:
+          name: image-http-echo-${{ steps.detect-arch.outputs.slug }}
+
       - name: Load Docker Images into Kind
         run: |
           # Load all tarballs into docker daemon first?
@@ -1046,6 +1054,7 @@ jobs:
           for f in *.tar; do
             docker load -i "$f"
           done
+          rm *.tar
 
           # Now load specific images into Kind
           kind load docker-image mcpany/server:latest --name mcp-e2e
