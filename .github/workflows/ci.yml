@@ -227,6 +227,10 @@ jobs:
                 $SUDO dnf install -y $PKGS
              elif command -v yum &> /dev/null; then
                 $SUDO yum install -y $PKGS
+             elif command -v microdnf &> /dev/null; then
+                $SUDO microdnf install -y $PKGS
+             elif command -v zypper &> /dev/null; then
+                $SUDO zypper install -y $PKGS
              fi
           }
 
@@ -235,8 +239,10 @@ jobs:
              install_pkg "make xz-utils gcc build-essential git"
           elif command -v apk &> /dev/null; then
              install_pkg "make xz build-base git"
-          elif command -v dnf &> /dev/null || command -v yum &> /dev/null; then
-             install_pkg "make git gcc"
+          elif command -v dnf &> /dev/null || command -v yum &> /dev/null || command -v microdnf &> /dev/null; then
+             install_pkg "make git gcc glibc-devel"
+          elif command -v zypper &> /dev/null; then
+             install_pkg "make git gcc glibc-devel"
           fi
 
           # Verify gcc
@@ -420,6 +426,10 @@ jobs:
                 $SUDO dnf install -y $PKGS
              elif command -v yum &> /dev/null; then
                 $SUDO yum install -y $PKGS
+             elif command -v microdnf &> /dev/null; then
+                $SUDO microdnf install -y $PKGS
+             elif command -v zypper &> /dev/null; then
+                $SUDO zypper install -y $PKGS
              fi
           }
 
@@ -428,8 +438,10 @@ jobs:
              install_pkg "make xz-utils gcc build-essential git"
           elif command -v apk &> /dev/null; then
              install_pkg "make xz build-base git"
-          elif command -v dnf &> /dev/null || command -v yum &> /dev/null; then
-             install_pkg "make git gcc"
+          elif command -v dnf &> /dev/null || command -v yum &> /dev/null || command -v microdnf &> /dev/null; then
+             install_pkg "make git gcc glibc-devel"
+          elif command -v zypper &> /dev/null; then
+             install_pkg "make git gcc glibc-devel"
           fi
 
           # Verify gcc
@@ -624,13 +636,13 @@ jobs:
 
           # Retry update to handle transient network issues
           UPDATE_SUCCESS=0
-          for i in 1 2 3; do
+          for i in 1 2 3 4 5; do
             if apt-get update -y; then
               UPDATE_SUCCESS=1
               break
             fi
-            echo "apt-get update failed, retrying in 10s..."
-            sleep 10
+            echo "apt-get update failed, retrying in 20s..."
+            sleep 20
           done
 
           if [ "$UPDATE_SUCCESS" -ne 1 ]; then
@@ -807,6 +819,10 @@ jobs:
                 $SUDO dnf install -y $PKGS
              elif command -v yum &> /dev/null; then
                 $SUDO yum install -y $PKGS
+             elif command -v microdnf &> /dev/null; then
+                $SUDO microdnf install -y $PKGS
+             elif command -v zypper &> /dev/null; then
+                $SUDO zypper install -y $PKGS
              fi
           }
 
@@ -815,8 +831,10 @@ jobs:
              install_pkg "make xz-utils gcc build-essential git"
           elif command -v apk &> /dev/null; then
              install_pkg "make xz build-base git"
-          elif command -v dnf &> /dev/null || command -v yum &> /dev/null; then
-             install_pkg "make git gcc"
+          elif command -v dnf &> /dev/null || command -v yum &> /dev/null || command -v microdnf &> /dev/null; then
+             install_pkg "make git gcc glibc-devel"
+          elif command -v zypper &> /dev/null; then
+             install_pkg "make git gcc glibc-devel"
           fi
 
           # Verify gcc
@@ -993,6 +1011,10 @@ jobs:
                 $SUDO dnf install -y $PKGS
              elif command -v yum &> /dev/null; then
                 $SUDO yum install -y $PKGS
+             elif command -v microdnf &> /dev/null; then
+                $SUDO microdnf install -y $PKGS
+             elif command -v zypper &> /dev/null; then
+                $SUDO zypper install -y $PKGS
              fi
           }
 
@@ -1001,8 +1023,10 @@ jobs:
              install_pkg "make xz-utils gcc build-essential git"
           elif command -v apk &> /dev/null; then
              install_pkg "make xz build-base git"
-          elif command -v dnf &> /dev/null || command -v yum &> /dev/null; then
-             install_pkg "make git gcc"
+          elif command -v dnf &> /dev/null || command -v yum &> /dev/null || command -v microdnf &> /dev/null; then
+             install_pkg "make git gcc glibc-devel"
+          elif command -v zypper &> /dev/null; then
+             install_pkg "make git gcc glibc-devel"
           fi
 
           # Verify gcc
