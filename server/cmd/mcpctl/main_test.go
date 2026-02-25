@@ -12,6 +12,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -29,8 +30,11 @@ func TestDoctorCmd_Offline(t *testing.T) {
 	cmd := newRootCmd()
 	b := bytes.NewBufferString("")
 	cmd.SetOut(b)
-	// Use a random port that is likely closed
-	cmd.SetArgs([]string{"doctor", "--mcp-listen-address", ":54321"})
+
+	viper.Set("mcp-listen-address", ":54321")
+	defer viper.Set("mcp-listen-address", nil)
+
+	cmd.SetArgs([]string{"doctor"})
 
 	// Depending on implementation, it might error or just print failure
 	// For this test, we just want to ensure it doesn't panic and tries to run
@@ -59,10 +63,13 @@ func TestDoctorCmd_Online(t *testing.T) {
 	_, port, err := net.SplitHostPort(strings.TrimPrefix(ts.URL, "http://"))
 	assert.NoError(t, err)
 
+	viper.Set("mcp-listen-address", "127.0.0.1:"+port)
+	defer viper.Set("mcp-listen-address", nil)
+
 	cmd := newRootCmd()
 	b := bytes.NewBufferString("")
 	cmd.SetOut(b)
-	cmd.SetArgs([]string{"doctor", "--mcp-listen-address", "127.0.0.1:" + port})
+	cmd.SetArgs([]string{"doctor"})
 
 	err = cmd.ExecuteContext(context.Background())
 	assert.NoError(t, err)
@@ -106,10 +113,13 @@ func TestDoctorCmd_ServerErrors(t *testing.T) {
 		defer ts.Close()
 		_, port, _ := net.SplitHostPort(strings.TrimPrefix(ts.URL, "http://"))
 
+		viper.Set("mcp-listen-address", "127.0.0.1:"+port)
+		defer viper.Set("mcp-listen-address", nil)
+
 		cmd := newRootCmd()
 		b := bytes.NewBufferString("")
 		cmd.SetOut(b)
-		cmd.SetArgs([]string{"doctor", "--mcp-listen-address", "127.0.0.1:" + port})
+		cmd.SetArgs([]string{"doctor"})
 		_ = cmd.Execute()
 		assert.Contains(t, b.String(), "Server returned status: 500 Internal Server Error")
 	})
@@ -126,10 +136,13 @@ func TestDoctorCmd_ServerErrors(t *testing.T) {
 		defer ts.Close()
 		_, port, _ := net.SplitHostPort(strings.TrimPrefix(ts.URL, "http://"))
 
+		viper.Set("mcp-listen-address", "127.0.0.1:"+port)
+		defer viper.Set("mcp-listen-address", nil)
+
 		cmd := newRootCmd()
 		b := bytes.NewBufferString("")
 		cmd.SetOut(b)
-		cmd.SetArgs([]string{"doctor", "--mcp-listen-address", "127.0.0.1:" + port})
+		cmd.SetArgs([]string{"doctor"})
 		_ = cmd.Execute()
 		assert.Contains(t, b.String(), "Doctor endpoint returned status: 500")
 	})
@@ -147,35 +160,41 @@ func TestDoctorCmd_ServerErrors(t *testing.T) {
 		defer ts.Close()
 		_, port, _ := net.SplitHostPort(strings.TrimPrefix(ts.URL, "http://"))
 
+		viper.Set("mcp-listen-address", "127.0.0.1:"+port)
+		defer viper.Set("mcp-listen-address", nil)
+
 		cmd := newRootCmd()
 		b := bytes.NewBufferString("")
 		cmd.SetOut(b)
-		cmd.SetArgs([]string{"doctor", "--mcp-listen-address", "127.0.0.1:" + port})
+		cmd.SetArgs([]string{"doctor"})
 		_ = cmd.Execute()
 		assert.Contains(t, b.String(), "Failed to decode doctor report")
 	})
 
-    // 4. Doctor returns degraded status
+	// 4. Doctor returns degraded status
 	t.Run("Doctor Degraded", func(t *testing.T) {
 		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if r.URL.Path == "/health" {
 				w.WriteHeader(http.StatusOK)
 			} else {
-                w.Header().Set("Content-Type", "application/json")
+				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
-                w.Write([]byte(`{"status":"degraded","checks":{"db":{"status":"failed","message":"connection lost"}}}`))
+				w.Write([]byte(`{"status":"degraded","checks":{"db":{"status":"failed","message":"connection lost"}}}`))
 			}
 		}))
 		defer ts.Close()
 		_, port, _ := net.SplitHostPort(strings.TrimPrefix(ts.URL, "http://"))
 
+		viper.Set("mcp-listen-address", "127.0.0.1:"+port)
+		defer viper.Set("mcp-listen-address", nil)
+
 		cmd := newRootCmd()
 		b := bytes.NewBufferString("")
 		cmd.SetOut(b)
-		cmd.SetArgs([]string{"doctor", "--mcp-listen-address", "127.0.0.1:" + port})
+		cmd.SetArgs([]string{"doctor"})
 		_ = cmd.Execute()
 		assert.Contains(t, b.String(), "DEGRADED")
 		assert.Contains(t, b.String(), "db: FAIL")
-        assert.Contains(t, b.String(), "connection lost")
+		assert.Contains(t, b.String(), "connection lost")
 	})
 }
