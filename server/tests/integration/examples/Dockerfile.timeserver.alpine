@@ -1,0 +1,5 @@
+FROM mirror.gcr.io/library/python:3.11-alpine
+COPY timeserver_patch/requirements.txt /requirements.txt
+RUN pip install -r /requirements.txt
+COPY timeserver_patch/main.py /main.py
+CMD ["python", "-u", "/main.py", "--mcp-stdio"]

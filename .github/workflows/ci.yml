@@ -188,7 +188,7 @@ jobs:
         run: make lint
 
   unit-test:
-    runs-on: oci-runner
+    runs-on: ubuntu-latest
     # container: public.ecr.aws/docker/library/ubuntu:24.04
     timeout-minutes: 30
     needs: [changes]
@@ -906,7 +906,7 @@ jobs:
           verbose: true
 
   e2e-public-api:
-    runs-on: oci-runner
+    runs-on: ubuntu-latest
     # container: public.ecr.aws/docker/library/ubuntu:24.04
     timeout-minutes: 30
     needs: [changes]
