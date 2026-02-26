@@ -467,9 +467,6 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: ${{ matrix.runner }}
-    container:
-      image: public.ecr.aws/docker/library/ubuntu:24.04
-      options: --user 0
     strategy:
       fail-fast: false
       matrix:
