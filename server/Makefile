@@ -560,31 +560,24 @@ ifdef HAS_DOCKER
 			PLATFORMS=$$(echo "$$PLATFORMS" | tr ' ' ','); \
 		fi; \
 		echo "Building server Docker image with tags ($(SERVER_IMAGE_TAGS)) for platforms: $${PLATFORMS}"; \
-		CACHE_ARGS=""; \
-		if [ -n "$(CACHE_TO)" ]; then \
-			CACHE_ARGS="--cache-to=$(CACHE_TO)"; \
-		fi; \
-		if [ -n "$(CACHE_FROM)" ]; then \
-			CACHE_ARGS="$${CACHE_ARGS} --cache-from=$(CACHE_FROM)"; \
-		fi; \
 		TAG_ARGS=$$(echo "$(SERVER_IMAGE_TAGS)" | sed -e 's/ / -t /g' -e 's/^/-t /'); \
 		if [ "$(PUSH)" = "true" ]; then \
 			echo "Building and pushing image..."; \
 			CMD_ARGS="--platform $${PLATFORMS} $${TAG_ARGS} -f docker/Dockerfile.server"; \
-			$(DOCKER_BUILDX_CMD) build $${CMD_ARGS} $${CACHE_ARGS} --push .; \
+			DOCKER_BUILDKIT=0 $(DOCKER_BUILDX_CMD) build $${CMD_ARGS} --push .; \
 		else \
 			if [ "$(HAS_BUILDX)" = "1" ]; then \
 				CMD_ARGS="--platform $${PLATFORMS} $${TAG_ARGS} -f docker/Dockerfile.server"; \
 				if echo "$${PLATFORMS}" | grep -q ','; then \
 					echo "Building multi-platform image locally (will not be loaded to docker images)..."; \
-					$(DOCKER_BUILDX_CMD) build $${CMD_ARGS} $${CACHE_ARGS} .; \
+					DOCKER_BUILDKIT=0 $(DOCKER_BUILDX_CMD) build $${CMD_ARGS} .; \
 				else \
 					echo "Building single-platform image locally and loading to docker images..."; \
-					$(DOCKER_BUILD_CMD) $${CMD_ARGS} $${CACHE_ARGS} .; \
+					DOCKER_BUILDKIT=0 $(DOCKER_BUILD_CMD) $${CMD_ARGS} .; \
 				fi; \
 			else \
 				echo "Building image using legacy docker build..."; \
-				$(DOCKER_BUILD_CMD) $${TAG_ARGS} -f docker/Dockerfile.server .; \
+				DOCKER_BUILDKIT=0 $(DOCKER_BUILD_CMD) $${TAG_ARGS} -f docker/Dockerfile.server .; \
 			fi; \
 		fi; \
 	}
@@ -599,7 +592,7 @@ endif
 build-http-echo-docker: docker/Dockerfile.http-echo-server prepare-docker-context
 ifdef HAS_DOCKER
 	@echo "Building http-echo-server Docker image (mcpany/http-echo-server:latest)..."
-	@$(DOCKER_BUILD_CMD) -t mcpany/http-echo-server:latest -f docker/Dockerfile.http-echo-server $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) .
+	@DOCKER_BUILDKIT=0 $(DOCKER_BUILD_CMD) -t mcpany/http-echo-server:latest -f docker/Dockerfile.http-echo-server .
 
 else
 	@echo "Docker not found. Cannot build http-echo-server image."
@@ -610,7 +603,7 @@ endif
 build-cowsay-docker: tests/integration/cmd/mocks/python_cowsay_server/Dockerfile
 ifdef HAS_DOCKER
 	@echo "Building cowsay Docker image (mcpany/e2e-cowsay-server:latest)..."
-	@$(DOCKER_BUILD_CMD) -t mcpany/e2e-cowsay-server:latest -f tests/integration/cmd/mocks/python_cowsay_server/Dockerfile $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) tests/integration/cmd/mocks/python_cowsay_server
+	@DOCKER_BUILDKIT=0 $(DOCKER_BUILD_CMD) -t mcpany/e2e-cowsay-server:latest -f tests/integration/cmd/mocks/python_cowsay_server/Dockerfile tests/integration/cmd/mocks/python_cowsay_server
 else
 	@echo "Docker not found. Cannot build cowsay image."
 	@exit 1
@@ -620,7 +613,7 @@ endif
 docker-build-operator: prepare-docker-context
 ifdef HAS_DOCKER
 	@echo "Building operator Docker image (mcpany/operator:latest)..."
-	@$(DOCKER_BUILD_CMD) -t mcpany/operator:latest -f ../k8s/operator/Dockerfile $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) ..
+	@DOCKER_BUILDKIT=0 $(DOCKER_BUILD_CMD) -t mcpany/operator:latest -f ../k8s/operator/Dockerfile ..
 else
 	@echo "Docker not found. Cannot build operator image."
 	@exit 1
@@ -634,7 +627,7 @@ docker-build-http-echo: build-http-echo-docker
 docker-build-dev: docker/Dockerfile.dev
 ifdef HAS_DOCKER
 	@echo "Building dev Docker image (mcpany/dev:latest)..."
-	@$(DOCKER_BUILD_CMD) -t mcpany/dev:latest -f docker/Dockerfile.dev $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) ..
+	@DOCKER_BUILDKIT=0 $(DOCKER_BUILD_CMD) -t mcpany/dev:latest -f docker/Dockerfile.dev ..
 else
 	@echo "Docker not found. Cannot build dev image."
 	@exit 1
@@ -644,18 +637,18 @@ endif
 docker-build-ci-runner: docker/Dockerfile.ci
 	@echo "Building CI builder Docker image (iowoi/mcpany-runner-ci:latest)..."
 	@if [ "$(PUSH)" = "true" ]; then \
-		$(DOCKER_BUILD_CMD) --push -t iowoi/mcpany-runner-ci:latest -f docker/Dockerfile.ci $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) ..; \
+		DOCKER_BUILDKIT=0 $(DOCKER_BUILD_CMD) --push -t iowoi/mcpany-runner-ci:latest -f docker/Dockerfile.ci ..; \
 	else \
-		$(DOCKER_BUILD_CMD) -t iowoi/mcpany-runner-ci:latest -f docker/Dockerfile.ci $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) ..; \
+		DOCKER_BUILDKIT=0 $(DOCKER_BUILD_CMD) -t iowoi/mcpany-runner-ci:latest -f docker/Dockerfile.ci ..; \
 	fi
 
 docker-build-ci: docker-build-ci-runner
 ifdef HAS_DOCKER
 	@echo "Building CI builder Docker image (iowoi/mcpany-runner-ci:latest)..."
 	@if [ "$(PUSH)" = "true" ]; then \
-		$(DOCKER_BUILD_CMD) --push -t iowoi/mcpany-runner-ci:latest -f docker/Dockerfile.ci $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) ..; \
+		DOCKER_BUILDKIT=0 $(DOCKER_BUILD_CMD) --push -t iowoi/mcpany-runner-ci:latest -f docker/Dockerfile.ci ..; \
 	else \
-		$(DOCKER_BUILD_CMD) -t iowoi/mcpany-runner-ci:latest -f docker/Dockerfile.ci $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) ..; \
+		DOCKER_BUILDKIT=0 $(DOCKER_BUILD_CMD) -t iowoi/mcpany-runner-ci:latest -f docker/Dockerfile.ci ..; \
 	fi
 else
 	@echo "Docker not found. Cannot build CI image."
@@ -667,9 +660,9 @@ docker-build-bot: docker/Dockerfile.bot
 ifdef HAS_DOCKER
 	@echo "Building Bot runner Docker image (iowoi/mcpany-runner-bot:latest)..."
 	@if [ "$(PUSH)" = "true" ]; then \
-		$(DOCKER_BUILD_CMD) --push -t iowoi/mcpany-runner-bot:latest -f docker/Dockerfile.bot $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) ..; \
+		DOCKER_BUILDKIT=0 $(DOCKER_BUILD_CMD) --push -t iowoi/mcpany-runner-bot:latest -f docker/Dockerfile.bot ..; \
 	else \
-		$(DOCKER_BUILD_CMD) -t iowoi/mcpany-runner-bot:latest -f docker/Dockerfile.bot $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) ..; \
+		DOCKER_BUILDKIT=0 $(DOCKER_BUILD_CMD) -t iowoi/mcpany-runner-bot:latest -f docker/Dockerfile.bot ..; \
 	fi
 else
 	@echo "Docker not found. Cannot build Bot image."
@@ -704,7 +697,7 @@ docker-build-ui:
 docker-smoke-test-ui:
 ifdef HAS_DOCKER
 	@echo "Building UI Docker image..."
-	@$(DOCKER_BUILD_CMD) -t mcpany-ui -f ../ui/Dockerfile ../ui
+	@DOCKER_BUILDKIT=0 $(DOCKER_BUILD_CMD) -t mcpany-ui -f ../ui/Dockerfile ../ui
 	@echo "Running UI smoke test..."
 	@chmod +x tests/smoke_test_ui.sh
 	@./tests/smoke_test_ui.sh mcpany-ui 3333
@@ -719,7 +712,7 @@ endif
 build-everything-docker: docker/Dockerfile.everything
 ifdef HAS_DOCKER
 	@echo "Building everything server Docker image ($(EVERYTHING_IMAGE_TAG))..."
-	@$(DOCKER_BUILD_CMD) -t $(EVERYTHING_IMAGE_TAG) -f docker/Dockerfile.everything $(if $(CACHE_TO),--cache-to=$(CACHE_TO)) $(if $(CACHE_FROM),--cache-from=$(CACHE_FROM)) .
+	@DOCKER_BUILDKIT=0 $(DOCKER_BUILD_CMD) -t $(EVERYTHING_IMAGE_TAG) -f docker/Dockerfile.everything .
 	@echo "Everything server Docker image build complete."
 else
 	@echo "Docker not found. Cannot build everything server image."
