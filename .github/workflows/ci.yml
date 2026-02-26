@@ -470,10 +470,10 @@ jobs:
             slug: arm64
             runner: ubuntu-24.04-arm
     steps:
+      - uses: actions/checkout@v6
+
       - name: Install dependencies
         run: apt-get update && apt-get install -y make git
-
-      - uses: actions/checkout@v6
 
       - name: Set up Go
         uses: actions/setup-go@v6
