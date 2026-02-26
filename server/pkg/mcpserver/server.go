@@ -734,9 +734,13 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 
 	metrics.IncrCounterWithLabels(metricToolsCallTotal, 1, labels)
 	startTime := time.Now()
-	defer metrics.MeasureSinceWithLabels(metricToolsCallLatency, startTime, labels)
 
 	result, err := s.toolManager.ExecuteTool(ctx, req)
+
+	// ⚡ Bolt Optimization: Record latency immediately after execution to avoid defer overhead.
+	// This captures the core tool execution time.
+	metrics.MeasureSinceWithLabels(metricToolsCallLatency, startTime, labels)
+
 	if err != nil {
 		metrics.IncrCounterWithLabels(metricToolsCallErrors, 1, labels)
 	}
