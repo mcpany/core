@@ -532,39 +532,48 @@ jobs:
 
       - name: Build and Save Images
         run: |
+          set -o pipefail
           PLATFORM="${{ matrix.platform }}"
           SLUG="${{ matrix.slug }}"
 
           # Server
           make -C server build-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=server-$SLUG CACHE_FROM=type=gha,scope=server-$SLUG
+          docker image inspect mcpany/server:latest > /dev/null
           docker save mcpany/server:latest | gzip > server.tar.gz
 
           # HTTP Echo
           make -C server build-http-echo-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=http-echo-$SLUG CACHE_FROM=type=gha,scope=http-echo-$SLUG
+          docker image inspect mcpany/http-echo-server:latest > /dev/null
           docker save mcpany/http-echo-server:latest | gzip > http-echo.tar.gz
 
           # Time Server
           make -C server build-e2e-timeserver-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=time-server-$SLUG CACHE_FROM=type=gha,scope=time-server-$SLUG
+          docker image inspect mcpany-e2e-time-server > /dev/null
           docker save mcpany-e2e-time-server | gzip > time-server.tar.gz
 
           # Cowsay
           make -C server build-cowsay-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=cowsay-$SLUG CACHE_FROM=type=gha,scope=cowsay-$SLUG
+          docker image inspect mcpany/e2e-cowsay-server:latest > /dev/null
           docker save mcpany/e2e-cowsay-server:latest | gzip > cowsay.tar.gz
 
           # Everything
           make -C server build-everything-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=everything-$SLUG CACHE_FROM=type=gha,scope=everything-$SLUG
+          docker image inspect mcpany/everything:latest > /dev/null
           docker save mcpany/everything:latest | gzip > everything.tar.gz
 
           # UI
           make -C server docker-build-ui PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=ui-$SLUG CACHE_FROM=type=gha,scope=ui-$SLUG
+          docker image inspect mcpany/ui:latest > /dev/null
           docker save mcpany/ui:latest | gzip > ui.tar.gz
 
           # Operator
           make -C server docker-build-operator PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=operator-$SLUG CACHE_FROM=type=gha,scope=operator-$SLUG
+          docker image inspect mcpany/operator:latest > /dev/null
           docker save mcpany/operator:latest | gzip > operator.tar.gz
 
           # UI Test Image
           make -C ui build-test-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=ui-test-$SLUG CACHE_FROM=type=gha,scope=ui-test-$SLUG
+          docker image inspect mcpany-ui-e2e:latest > /dev/null
           docker save mcpany-ui-e2e:latest | gzip > ui-test-image.tar.gz
 
       - name: Upload Server Image
