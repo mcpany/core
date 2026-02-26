@@ -238,7 +238,8 @@ func ParsePermissiveIP(s string) net.IP {
 		return nil
 	}
 
-	var nums []uint64
+	// Pre-allocate to avoid linter warning
+	var nums = make([]uint64, 0, len(parts))
 	for _, p := range parts {
 		if p == "" {
 			return nil
@@ -258,21 +259,25 @@ func ParsePermissiveIP(s string) net.IP {
 		if nums[0] > 0xFFFFFFFF {
 			return nil
 		}
+		//nolint:gosec // G115: Bounds checked above
 		ip = uint32(nums[0])
 	case 2:
 		if nums[0] > 0xFF || nums[1] > 0xFFFFFF {
 			return nil
 		}
+		//nolint:gosec // G115: Bounds checked above
 		ip = (uint32(nums[0]) << 24) | uint32(nums[1])
 	case 3:
 		if nums[0] > 0xFF || nums[1] > 0xFF || nums[2] > 0xFFFF {
 			return nil
 		}
+		//nolint:gosec // G115: Bounds checked above
 		ip = (uint32(nums[0]) << 24) | (uint32(nums[1]) << 16) | uint32(nums[2])
 	case 4:
 		if nums[0] > 0xFF || nums[1] > 0xFF || nums[2] > 0xFF || nums[3] > 0xFF {
 			return nil
 		}
+		//nolint:gosec // G115: Bounds checked above
 		ip = (uint32(nums[0]) << 24) | (uint32(nums[1]) << 16) | (uint32(nums[2]) << 8) | uint32(nums[3])
 	}
 
