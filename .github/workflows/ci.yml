@@ -451,35 +451,35 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: image-server-${{ steps.detect-arch.outputs.slug }}
-          path: .
+          path: downloads
 
       - name: Download HTTP Echo Image
         uses: actions/download-artifact@v4
         with:
           name: image-http-echo-${{ steps.detect-arch.outputs.slug }}
-          path: .
+          path: downloads
 
       - name: Download Time Server Image
         uses: actions/download-artifact@v4
         with:
           name: image-time-server-${{ steps.detect-arch.outputs.slug }}
-          path: .
+          path: downloads
 
       - name: Download Cowsay Image
         uses: actions/download-artifact@v4
         with:
           name: image-cowsay-${{ steps.detect-arch.outputs.slug }}
-          path: .
+          path: downloads
 
       - name: Download Everything Image
         uses: actions/download-artifact@v4
         with:
           name: image-everything-${{ steps.detect-arch.outputs.slug }}
-          path: .
+          path: downloads
 
       - name: Load Docker Images
         run: |
-          for f in *.tar.gz; do
+          for f in downloads/*.tar.gz; do
             docker load -i "$f"
             rm "$f"
           done
@@ -744,35 +744,35 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: image-server-${{ steps.detect-arch.outputs.slug }}
-          path: .
+          path: downloads
 
       - name: Download HTTP Echo Image
         uses: actions/download-artifact@v4
         with:
           name: image-http-echo-${{ steps.detect-arch.outputs.slug }}
-          path: .
+          path: downloads
 
       - name: Download Time Server Image
         uses: actions/download-artifact@v4
         with:
           name: image-time-server-${{ steps.detect-arch.outputs.slug }}
-          path: .
+          path: downloads
 
       - name: Download Cowsay Image
         uses: actions/download-artifact@v4
         with:
           name: image-cowsay-${{ steps.detect-arch.outputs.slug }}
-          path: .
+          path: downloads
 
       - name: Download Everything Image
         uses: actions/download-artifact@v4
         with:
           name: image-everything-${{ steps.detect-arch.outputs.slug }}
-          path: .
+          path: downloads
 
       - name: Load Docker Images
         run: |
-          for f in *.tar.gz; do
+          for f in downloads/*.tar.gz; do
             docker load -i "$f"
             rm "$f"
           done
@@ -949,12 +949,12 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: image-server-${{ steps.detect-arch.outputs.slug }}
-          path: .
+          path: downloads
 
       - name: Load Docker Image
         run: |
-          docker load -i server.tar.gz
-          rm server.tar.gz
+          docker load -i downloads/server.tar.gz
+          rm downloads/server.tar.gz
 
       - name: Smoke Test
         run: |
@@ -997,23 +997,23 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: image-server-${{ steps.detect-arch.outputs.slug }}
-          path: .
+          path: downloads
 
       - name: Download UI Test Image
         uses: actions/download-artifact@v4
         with:
           name: image-ui-test-${{ steps.detect-arch.outputs.slug }}
-          path: .
+          path: downloads
 
       - name: Download HTTP Echo Image
         uses: actions/download-artifact@v4
         with:
           name: image-http-echo-${{ steps.detect-arch.outputs.slug }}
-          path: .
+          path: downloads
 
       - name: Load Docker Images
         run: |
-          for f in *.tar.gz; do
+          for f in downloads/*.tar.gz; do
             docker load -i "$f"
             rm "$f"
           done
@@ -1082,26 +1082,26 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: image-server-${{ steps.detect-arch.outputs.slug }}
-          path: .
+          path: downloads
 
       - name: Download Operator Image
         uses: actions/download-artifact@v4
         with:
           name: image-operator-${{ steps.detect-arch.outputs.slug }}
-          path: .
+          path: downloads
 
       - name: Download UI Image
         uses: actions/download-artifact@v4
         with:
           name: image-ui-${{ steps.detect-arch.outputs.slug }}
-          path: .
+          path: downloads
 
       - name: Load Docker Images into Kind
         run: |
           # Load all tarballs into docker daemon first?
           # kind load docker-image requires image in docker daemon or archive.
           # kind load image-archive might be better but let's stick to docker daemon for consistency
-          for f in *.tar.gz; do
+          for f in downloads/*.tar.gz; do
             docker load -i "$f"
             rm "$f"
           done
