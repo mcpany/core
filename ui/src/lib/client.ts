@@ -545,6 +545,15 @@ export const apiClient = {
             tags: config.tags,
         };
 
+        if (config.provenance) {
+            payload.provenance = {
+                verified: config.provenance.verified,
+                signer_identity: config.provenance.signerIdentity,
+                attestation_time: config.provenance.attestationTime,
+                signature_algorithm: config.provenance.signatureAlgorithm
+            };
+        }
+
         if (config.httpService) {
             payload.http_service = HttpUpstreamService.toJSON(config.httpService);
         }
@@ -655,6 +664,16 @@ export const apiClient = {
             load_balancing_strategy: config.loadBalancingStrategy,
             tags: config.tags,
         };
+
+        if (config.provenance) {
+            payload.provenance = {
+                verified: config.provenance.verified,
+                signer_identity: config.provenance.signerIdentity,
+                attestation_time: config.provenance.attestationTime,
+                signature_algorithm: config.provenance.signatureAlgorithm
+            };
+        }
+
         // Reuse mapping logic or duplicate for now safely
          if (config.httpService) {
             payload.http_service = HttpUpstreamService.toJSON(config.httpService);

@@ -7,6 +7,7 @@ import { UpstreamServiceConfig } from "@/lib/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ShieldCheck, ShieldAlert, Fingerprint, Calendar, Users, AlertTriangle, Lock } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { useEffect, useState } from "react";
 
 /**
  * ServiceProvenance displays the supply chain attestation details for a service.
@@ -19,6 +20,13 @@ import { Separator } from "@/components/ui/separator";
 export function ServiceProvenance({ service }: { service: UpstreamServiceConfig }) {
     const verified = service.provenance?.verified;
     const provenance = service.provenance;
+    const [formattedDate, setFormattedDate] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (provenance?.attestationTime) {
+            setFormattedDate(new Date(provenance.attestationTime).toLocaleString());
+        }
+    }, [provenance?.attestationTime]);
 
     if (!verified || !provenance) {
         return (
@@ -69,7 +77,7 @@ export function ServiceProvenance({ service }: { service: UpstreamServiceConfig 
                             <div>
                                 <p className="text-sm font-medium">Attestation Time</p>
                                 <p className="text-sm text-muted-foreground font-mono">
-                                    {provenance.attestationTime ? new Date(provenance.attestationTime).toLocaleString() : "Unknown"}
+                                    {formattedDate || "Loading..."}
                                 </p>
                             </div>
                         </div>
