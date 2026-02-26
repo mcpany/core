@@ -14,6 +14,9 @@
 
 FROM mirror.gcr.io/library/python:3.11-slim
 
+# Create the directory first to ensure it exists with correct permissions
+RUN mkdir -p /service
+
 # Changing WORKDIR to avoid potential OverlayFS invalid argument errors on /app in some CI environments
 WORKDIR /service
 
