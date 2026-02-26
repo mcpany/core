@@ -473,6 +473,9 @@ jobs:
           rm -rf /usr/local/share/boost
       - uses: actions/checkout@v6
 
+      - name: Install dependencies
+        run: apt-get update && apt-get install -y make git
+
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
