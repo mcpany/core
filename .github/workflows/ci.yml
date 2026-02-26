@@ -148,7 +148,7 @@ jobs:
   unit-test:
     runs-on: oci-runner
     # container: public.ecr.aws/docker/library/ubuntu:24.04
-    timeout-minutes: 30
+    timeout-minutes: 60
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
     env:
@@ -488,9 +488,14 @@ jobs:
 
       - name: Generate Protobufs
         run: |
+          set -x
           export DEBIAN_FRONTEND=noninteractive
-          apt-get update
+          apt-get update -y
           apt-get install -y make build-essential
+          echo "PATH=$PATH"
+          ls -l /usr/bin/make || echo "make not found in /usr/bin"
+          which make || echo "make not found in PATH"
+          make --version
           make gen
 
       - name: Set up QEMU
@@ -848,7 +853,11 @@ jobs:
       - name: test public api
         env:
           CGO_ENABLED: 1
+          CC: gcc
         run: |
+          set -x
+          which gcc || echo "gcc not found in PATH"
+          gcc --version || echo "gcc execution failed"
           make test-public-api CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-public-api.out
 
       - name: Upload coverage to Codecov
