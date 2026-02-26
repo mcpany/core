@@ -29,7 +29,7 @@ permissions:
 jobs:
   changes:
     runs-on: oci-runner
-    # container: public.ecr.aws/docker/library/ubuntu:24.04
+    # container: public.ecr.aws/docker/library/ubuntu:22.04
     outputs:
       src: ${{ steps.filter.outputs.src }}
     steps:
@@ -82,7 +82,7 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: oci-runner
-    # container: public.ecr.aws/docker/library/ubuntu:24.04
+    # container: public.ecr.aws/docker/library/ubuntu:22.04
     steps:
       - name: Free Disk Space (Fast)
         run: |
@@ -104,14 +104,18 @@ jobs:
 
           if command -v apt-get >/dev/null; then
             export DEBIAN_FRONTEND=noninteractive
+            # Nuke apt state
             $SUDO rm -rf /var/lib/apt/lists/*
+            $SUDO rm -f /var/lib/dpkg/lock-frontend /var/lib/dpkg/lock
+            # Force IPv4 and retry loop
             for i in 1 2 3 4 5; do
-              ($SUDO apt-get update) && break || {
+              ($SUDO apt-get -o Acquire::ForceIPv4=true update) && break || {
                 echo "apt-get update failed, retrying ($i/5)..."
                 sleep 5
               }
             done
-            $SUDO apt-get install -y --no-install-recommends git make curl unzip ca-certificates build-essential
+            $SUDO dpkg --configure -a || true
+            $SUDO apt-get -o Acquire::ForceIPv4=true install -y --no-install-recommends git make curl unzip ca-certificates build-essential
           elif command -v apk >/dev/null; then
              $SUDO apk add --no-cache git make curl unzip ca-certificates build-base
           elif command -v yum >/dev/null; then
@@ -171,13 +175,15 @@ jobs:
           if command -v apt-get >/dev/null; then
             export DEBIAN_FRONTEND=noninteractive
             $SUDO rm -rf /var/lib/apt/lists/*
+            $SUDO rm -f /var/lib/dpkg/lock-frontend /var/lib/dpkg/lock
             for i in 1 2 3 4 5; do
-              ($SUDO apt-get update) && break || {
+              ($SUDO apt-get -o Acquire::ForceIPv4=true update) && break || {
                 echo "apt-get update failed, retrying ($i/5)..."
                 sleep 5
               }
             done
-            $SUDO apt-get install -y --no-install-recommends make xz-utils build-essential curl unzip ca-certificates
+            $SUDO dpkg --configure -a || true
+            $SUDO apt-get -o Acquire::ForceIPv4=true install -y --no-install-recommends make xz-utils build-essential curl unzip ca-certificates
           elif command -v apk >/dev/null; then
              $SUDO apk add --no-cache make xz build-base curl
           fi
@@ -190,7 +196,7 @@ jobs:
 
   unit-test:
     runs-on: oci-runner
-    # container: public.ecr.aws/docker/library/ubuntu:24.04
+    # container: public.ecr.aws/docker/library/ubuntu:22.04
     timeout-minutes: 45
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -220,13 +226,15 @@ jobs:
           if command -v apt-get >/dev/null; then
             export DEBIAN_FRONTEND=noninteractive
             $SUDO rm -rf /var/lib/apt/lists/*
+            $SUDO rm -f /var/lib/dpkg/lock-frontend /var/lib/dpkg/lock
             for i in 1 2 3 4 5; do
-              ($SUDO apt-get update) && break || {
+              ($SUDO apt-get -o Acquire::ForceIPv4=true update) && break || {
                 echo "apt-get update failed, retrying ($i/5)..."
                 sleep 5
               }
             done
-            $SUDO apt-get install -y --no-install-recommends git make curl unzip ca-certificates build-essential
+            $SUDO dpkg --configure -a || true
+            $SUDO apt-get -o Acquire::ForceIPv4=true install -y --no-install-recommends git make curl unzip ca-certificates build-essential
           elif command -v apk >/dev/null; then
             $SUDO apk add --no-cache git make curl unzip ca-certificates build-base
           elif command -v yum >/dev/null; then
@@ -248,13 +256,15 @@ jobs:
           if command -v apt-get >/dev/null; then
             export DEBIAN_FRONTEND=noninteractive
             $SUDO rm -rf /var/lib/apt/lists/*
+            $SUDO rm -f /var/lib/dpkg/lock-frontend /var/lib/dpkg/lock
             for i in 1 2 3 4 5; do
-              ($SUDO apt-get update) && break || {
+              ($SUDO apt-get -o Acquire::ForceIPv4=true update) && break || {
                 echo "apt-get update failed, retrying ($i/5)..."
                 sleep 5
               }
             done
-            $SUDO apt-get install -y --no-install-recommends make xz-utils build-essential curl unzip ca-certificates
+            $SUDO dpkg --configure -a || true
+            $SUDO apt-get -o Acquire::ForceIPv4=true install -y --no-install-recommends make xz-utils build-essential curl unzip ca-certificates
           elif command -v apk >/dev/null; then
              $SUDO apk add --no-cache make xz build-base curl unzip ca-certificates
           elif command -v yum >/dev/null; then
@@ -375,7 +385,7 @@ jobs:
 
   e2e-parallel:
     runs-on: oci-runner
-    # container: public.ecr.aws/docker/library/ubuntu:24.04
+    # container: public.ecr.aws/docker/library/ubuntu:22.04
     timeout-minutes: 30
     needs: [build-images]
     strategy:
@@ -407,13 +417,15 @@ jobs:
           if command -v apt-get >/dev/null; then
             export DEBIAN_FRONTEND=noninteractive
             $SUDO rm -rf /var/lib/apt/lists/*
+            $SUDO rm -f /var/lib/dpkg/lock-frontend /var/lib/dpkg/lock
             for i in 1 2 3 4 5; do
-              ($SUDO apt-get update) && break || {
+              ($SUDO apt-get -o Acquire::ForceIPv4=true update) && break || {
                 echo "apt-get update failed, retrying ($i/5)..."
                 sleep 5
               }
             done
-            $SUDO apt-get install -y --no-install-recommends git make curl unzip ca-certificates build-essential
+            $SUDO dpkg --configure -a || true
+            $SUDO apt-get -o Acquire::ForceIPv4=true install -y --no-install-recommends git make curl unzip ca-certificates build-essential
           elif command -v apk >/dev/null; then
             $SUDO apk add --no-cache git make curl unzip ca-certificates build-base
           elif command -v yum >/dev/null; then
@@ -433,13 +445,15 @@ jobs:
           if command -v apt-get >/dev/null; then
             export DEBIAN_FRONTEND=noninteractive
             $SUDO rm -rf /var/lib/apt/lists/*
+            $SUDO rm -f /var/lib/dpkg/lock-frontend /var/lib/dpkg/lock
             for i in 1 2 3 4 5; do
-              ($SUDO apt-get update) && break || {
+              ($SUDO apt-get -o Acquire::ForceIPv4=true update) && break || {
                 echo "apt-get update failed, retrying ($i/5)..."
                 sleep 5
               }
             done
-            $SUDO apt-get install -y --no-install-recommends make xz-utils build-essential curl unzip ca-certificates
+            $SUDO dpkg --configure -a || true
+            $SUDO apt-get -o Acquire::ForceIPv4=true install -y --no-install-recommends make xz-utils build-essential curl unzip ca-certificates
           elif command -v apk >/dev/null; then
              $SUDO apk add --no-cache make xz build-base curl unzip ca-certificates
           elif command -v yum >/dev/null; then
@@ -591,7 +605,7 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: ${{ matrix.runner }}
-    container: public.ecr.aws/docker/library/ubuntu:24.04
+    container: public.ecr.aws/docker/library/ubuntu:22.04
     strategy:
       fail-fast: false
       matrix:
@@ -621,13 +635,15 @@ jobs:
           if command -v apt-get >/dev/null; then
             export DEBIAN_FRONTEND=noninteractive
             $SUDO rm -rf /var/lib/apt/lists/*
+            $SUDO rm -f /var/lib/dpkg/lock-frontend /var/lib/dpkg/lock
             for i in 1 2 3 4 5; do
-              ($SUDO apt-get update) && break || {
+              ($SUDO apt-get -o Acquire::ForceIPv4=true update) && break || {
                 echo "apt-get update failed, retrying ($i/5)..."
                 sleep 5
               }
             done
-            $SUDO apt-get install -y --no-install-recommends git make curl unzip ca-certificates build-essential
+            $SUDO dpkg --configure -a || true
+            $SUDO apt-get -o Acquire::ForceIPv4=true install -y --no-install-recommends git make curl unzip ca-certificates build-essential
           elif command -v apk >/dev/null; then
             $SUDO apk add --no-cache git make curl unzip ca-certificates build-base
           elif command -v yum >/dev/null; then
@@ -759,7 +775,7 @@ jobs:
 
   e2e-sequential:
     runs-on: oci-runner
-    # container: public.ecr.aws/docker/library/ubuntu:24.04
+    # container: public.ecr.aws/docker/library/ubuntu:22.04
     timeout-minutes: 60
     needs: [build-images]
     env:
@@ -787,13 +803,15 @@ jobs:
           if command -v apt-get >/dev/null; then
             export DEBIAN_FRONTEND=noninteractive
             $SUDO rm -rf /var/lib/apt/lists/*
+            $SUDO rm -f /var/lib/dpkg/lock-frontend /var/lib/dpkg/lock
             for i in 1 2 3 4 5; do
-              ($SUDO apt-get update) && break || {
+              ($SUDO apt-get -o Acquire::ForceIPv4=true update) && break || {
                 echo "apt-get update failed, retrying ($i/5)..."
                 sleep 5
               }
             done
-            $SUDO apt-get install -y --no-install-recommends git make curl unzip ca-certificates build-essential
+            $SUDO dpkg --configure -a || true
+            $SUDO apt-get -o Acquire::ForceIPv4=true install -y --no-install-recommends git make curl unzip ca-certificates build-essential
           elif command -v apk >/dev/null; then
             $SUDO apk add --no-cache git make curl unzip ca-certificates build-base
           elif command -v yum >/dev/null; then
@@ -813,13 +831,15 @@ jobs:
           if command -v apt-get >/dev/null; then
             export DEBIAN_FRONTEND=noninteractive
             $SUDO rm -rf /var/lib/apt/lists/*
+            $SUDO rm -f /var/lib/dpkg/lock-frontend /var/lib/dpkg/lock
             for i in 1 2 3 4 5; do
-              ($SUDO apt-get update) && break || {
+              ($SUDO apt-get -o Acquire::ForceIPv4=true update) && break || {
                 echo "apt-get update failed, retrying ($i/5)..."
                 sleep 5
               }
             done
-            $SUDO apt-get install -y --no-install-recommends make xz-utils build-essential curl unzip ca-certificates
+            $SUDO dpkg --configure -a || true
+            $SUDO apt-get -o Acquire::ForceIPv4=true install -y --no-install-recommends make xz-utils build-essential curl unzip ca-certificates
           elif command -v apk >/dev/null; then
              $SUDO apk add --no-cache make xz build-base curl unzip ca-certificates
           elif command -v yum >/dev/null; then
@@ -941,7 +961,7 @@ jobs:
 
   e2e-public-api:
     runs-on: oci-runner
-    # container: public.ecr.aws/docker/library/ubuntu:24.04
+    # container: public.ecr.aws/docker/library/ubuntu:22.04
     timeout-minutes: 60
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -970,13 +990,15 @@ jobs:
           if command -v apt-get >/dev/null; then
             export DEBIAN_FRONTEND=noninteractive
             $SUDO rm -rf /var/lib/apt/lists/*
+            $SUDO rm -f /var/lib/dpkg/lock-frontend /var/lib/dpkg/lock
             for i in 1 2 3 4 5; do
-              ($SUDO apt-get update) && break || {
+              ($SUDO apt-get -o Acquire::ForceIPv4=true update) && break || {
                 echo "apt-get update failed, retrying ($i/5)..."
                 sleep 5
               }
             done
-            $SUDO apt-get install -y --no-install-recommends git make curl unzip ca-certificates build-essential
+            $SUDO dpkg --configure -a || true
+            $SUDO apt-get -o Acquire::ForceIPv4=true install -y --no-install-recommends git make curl unzip ca-certificates build-essential
           elif command -v apk >/dev/null; then
             $SUDO apk add --no-cache git make curl unzip ca-certificates build-base
           elif command -v yum >/dev/null; then
@@ -996,13 +1018,15 @@ jobs:
           if command -v apt-get >/dev/null; then
             export DEBIAN_FRONTEND=noninteractive
             $SUDO rm -rf /var/lib/apt/lists/*
+            $SUDO rm -f /var/lib/dpkg/lock-frontend /var/lib/dpkg/lock
             for i in 1 2 3 4 5; do
-              ($SUDO apt-get update) && break || {
+              ($SUDO apt-get -o Acquire::ForceIPv4=true update) && break || {
                 echo "apt-get update failed, retrying ($i/5)..."
                 sleep 5
               }
             done
-            $SUDO apt-get install -y --no-install-recommends make xz-utils build-essential curl unzip ca-certificates
+            $SUDO dpkg --configure -a || true
+            $SUDO apt-get -o Acquire::ForceIPv4=true install -y --no-install-recommends make xz-utils build-essential curl unzip ca-certificates
           elif command -v apk >/dev/null; then
              $SUDO apk add --no-cache make xz build-base curl unzip ca-certificates
           elif command -v yum >/dev/null; then
@@ -1121,13 +1145,15 @@ jobs:
           if command -v apt-get >/dev/null; then
             export DEBIAN_FRONTEND=noninteractive
             $SUDO rm -rf /var/lib/apt/lists/*
+            $SUDO rm -f /var/lib/dpkg/lock-frontend /var/lib/dpkg/lock
             for i in 1 2 3 4 5; do
-              ($SUDO apt-get update) && break || {
+              ($SUDO apt-get -o Acquire::ForceIPv4=true update) && break || {
                 echo "apt-get update failed, retrying ($i/5)..."
                 sleep 5
               }
             done
-            $SUDO apt-get install -y --no-install-recommends git make curl unzip ca-certificates build-essential
+            $SUDO dpkg --configure -a || true
+            $SUDO apt-get -o Acquire::ForceIPv4=true install -y --no-install-recommends git make curl unzip ca-certificates build-essential
           elif command -v apk >/dev/null; then
             $SUDO apk add --no-cache git make curl unzip ca-certificates build-base
           elif command -v yum >/dev/null; then
@@ -1217,13 +1243,15 @@ jobs:
           if command -v apt-get >/dev/null; then
             export DEBIAN_FRONTEND=noninteractive
             $SUDO rm -rf /var/lib/apt/lists/*
+            $SUDO rm -f /var/lib/dpkg/lock-frontend /var/lib/dpkg/lock
             for i in 1 2 3 4 5; do
-              ($SUDO apt-get update) && break || {
+              ($SUDO apt-get -o Acquire::ForceIPv4=true update) && break || {
                 echo "apt-get update failed, retrying ($i/5)..."
                 sleep 5
               }
             done
-            $SUDO apt-get install -y --no-install-recommends git make curl unzip ca-certificates build-essential
+            $SUDO dpkg --configure -a || true
+            $SUDO apt-get -o Acquire::ForceIPv4=true install -y --no-install-recommends git make curl unzip ca-certificates build-essential
           elif command -v apk >/dev/null; then
             $SUDO apk add --no-cache git make curl unzip ca-certificates build-base
           elif command -v yum >/dev/null; then
@@ -1373,7 +1401,7 @@ jobs:
 
   ci-success:
     runs-on: oci-runner
-    # container: public.ecr.aws/docker/library/ubuntu:24.04
+    # container: public.ecr.aws/docker/library/ubuntu:22.04
     needs:
       [
         changes,
