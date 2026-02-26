@@ -488,7 +488,9 @@ jobs:
 
       - name: Generate Protobufs
         run: |
-          apt-get update && apt-get install -y make build-essential
+          export DEBIAN_FRONTEND=noninteractive
+          apt-get update
+          apt-get install -y make build-essential
           make gen
 
       - name: Set up QEMU
@@ -617,7 +619,9 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential gcc
+            which gcc || echo "gcc not found in path"
+            gcc --version || echo "gcc version check failed"
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz
           fi
