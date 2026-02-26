@@ -27,30 +27,46 @@ endif
 endif
 
 HAS_DOCKER := $(shell command -v docker 2> /dev/null)
+HAS_SUDO := $(shell command -v sudo 2> /dev/null)
+
 # Check if docker can be run without sudo
 ifeq ($(shell docker info >/dev/null 2>&1; echo $$?), 0)
 	DOCKER_CMD := docker
 	DOCKER_BUILDX_CMD := docker buildx
 	ifeq ($(shell docker buildx version >/dev/null 2>&1 && echo 1 || echo 0), 1)
-	DOCKER_BUILD_CMD := DOCKER_API_VERSION=1.44 docker buildx build --load
-	HAS_BUILDX := 1
-else
-	DOCKER_BUILD_CMD := docker build
-	HAS_BUILDX := 0
-endif
+		DOCKER_BUILD_CMD := DOCKER_API_VERSION=1.44 docker buildx build --load
+		HAS_BUILDX := 1
+	else
+		DOCKER_BUILD_CMD := docker build
+		HAS_BUILDX := 0
+	endif
 	SUDO_MSG := " (no sudo)"
 	NEEDS_SUDO_FOR_DOCKER := 0
 else
-	DOCKER_CMD := sudo docker
-	DOCKER_BUILDX_CMD := sudo docker buildx
-	ifeq ($(shell sudo docker buildx version >/dev/null 2>&1 && echo 1 || echo 0), 1)
-		DOCKER_BUILD_CMD := sudo docker buildx build --load
-		HAS_BUILDX := 1
+	# If sudo is available, use it. Otherwise fall back to docker and hope for the best (or fail later).
+	ifneq ($(HAS_SUDO),)
+		DOCKER_CMD := sudo docker
+		DOCKER_BUILDX_CMD := sudo docker buildx
+		ifeq ($(shell sudo docker buildx version >/dev/null 2>&1 && echo 1 || echo 0), 1)
+			DOCKER_BUILD_CMD := sudo docker buildx build --load
+			HAS_BUILDX := 1
+		else
+			DOCKER_BUILD_CMD := sudo docker build
+			HAS_BUILDX := 0
+		endif
+		NEEDS_SUDO_FOR_DOCKER := 1
 	else
-		DOCKER_BUILD_CMD := sudo docker build
-		HAS_BUILDX := 0
+		DOCKER_CMD := docker
+		DOCKER_BUILDX_CMD := docker buildx
+		ifeq ($(shell docker buildx version >/dev/null 2>&1 && echo 1 || echo 0), 1)
+			DOCKER_BUILD_CMD := DOCKER_API_VERSION=1.44 docker buildx build --load
+			HAS_BUILDX := 1
+		else
+			DOCKER_BUILD_CMD := docker build
+			HAS_BUILDX := 0
+		endif
+		NEEDS_SUDO_FOR_DOCKER := 0
 	endif
-	NEEDS_SUDO_FOR_DOCKER := 1
 endif
 
 # Variables for protoc installation
