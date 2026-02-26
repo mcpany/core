@@ -485,6 +485,10 @@ jobs:
           cache: "npm"
           cache-dependency-path: server/tests/integration/upstream/package-lock.json
 
+      - name: Install Build Tools
+        run: |
+          sudo apt-get update && sudo apt-get install -y make build-essential
+
       - name: Generate Protobufs
         run: |
           make gen
