@@ -5,6 +5,7 @@ package validation
 
 import (
 	"net"
+	"strings"
 )
 
 var privateNetworkBlocksIPv6 []*net.IPNet
@@ -211,4 +212,22 @@ func IsPrivateNetworkIPv4(ip net.IP) bool {
 	}
 
 	return false
+}
+
+// IsLoopbackShorthand checks if the string is a shorthand representation of a loopback address (127.x.x.x).
+// Standard libraries like net.ParseIP may not parse these formats (e.g. 127.1), but tools like curl/wget accept them.
+// This prevents SSRF bypasses using abbreviated loopback addresses.
+func IsLoopbackShorthand(val string) bool {
+	if !strings.HasPrefix(val, "127.") {
+		return false
+	}
+	// Check if the rest contains only digits and dots
+	// We start at index 4 ("127." is 4 chars)
+	for i := 4; i < len(val); i++ {
+		c := val[i]
+		if (c < '0' || c > '9') && c != '.' {
+			return false
+		}
+	}
+	return true
 }

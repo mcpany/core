@@ -4337,8 +4337,17 @@ func validateSafePathAndInjection(val string, isDocker bool, commandName string)
 		} else if validation.IsSafeIP != nil {
 			// Check if it's an IP address and validate it against policy
 			// We ignore "invalid IP address" error as it just means it's not an IP
-			if err := validation.IsSafeIP(val); err != nil && err.Error() != "invalid IP address" {
-				return fmt.Errorf("unsafe IP argument: %w", err)
+			if err := validation.IsSafeIP(val); err != nil {
+				if err.Error() != "invalid IP address" {
+					return fmt.Errorf("unsafe IP argument: %w", err)
+				}
+				// If net.ParseIP failed, check for shorthand formats that libraries might accept but net.ParseIP rejects
+				if validation.IsLoopbackShorthand(val) {
+					allowLoopback := os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == trueStr
+					if !allowLoopback {
+						return fmt.Errorf("unsafe argument: loopback shorthand address is not allowed")
+					}
+				}
 			}
 		}
 	}
