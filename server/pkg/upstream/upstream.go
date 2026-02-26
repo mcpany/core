@@ -15,11 +15,15 @@ import (
 
 // Upstream defines the standard interface for all backend service integrations.
 //
+// Summary: Interface for upstream service integration.
+//
 // Each implementation of this interface is responsible for discovering and
 // registering its capabilities, such as tools, prompts, and resources, with the
 // appropriate managers.
 type Upstream interface {
 	// Shutdown gracefully terminates the upstream service.
+	//
+	// Summary: Terminates the upstream service.
 	//
 	// Parameters:
 	//   - ctx (context.Context): The context for the request.
@@ -36,6 +40,8 @@ type Upstream interface {
 
 	// Register inspects the upstream service defined by the serviceConfig,
 	// discovers its capabilities, and registers them.
+	//
+	// Summary: Registers service capabilities.
 	//
 	// Parameters:
 	//   - ctx (context.Context): The context for the registration process.
@@ -69,8 +75,12 @@ type Upstream interface {
 
 // HealthChecker is an optional interface that Upstreams can implement to provide
 // runtime health status.
+//
+// Summary: Interface for health checking.
 type HealthChecker interface {
 	// CheckHealth performs a health check on the upstream service.
+	//
+	// Summary: Checks service health.
 	//
 	// Parameters:
 	//   - ctx (context.Context): The check context.

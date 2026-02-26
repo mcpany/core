@@ -19,12 +19,6 @@ import (
 //
 // It watches the parent directory of specified files to handle atomic saves (rename/move)
 // commonly used by text editors.
-//
-// Fields:
-//   - watcher (*fsnotify.Watcher): The underlying fsnotify watcher.
-//   - done (chan bool): Channel to signal shutdown.
-//   - mu (sync.Mutex): Mutex to protect concurrent access.
-//   - timer (*time.Timer): Timer for debouncing reload events.
 type Watcher struct {
 	watcher *fsnotify.Watcher
 	done    chan bool
@@ -34,6 +28,14 @@ type Watcher struct {
 
 // NewWatcher creates a new file watcher.
 //
+// Summary: Initializes a new file system watcher.
+//
+// Returns:
+//   - *Watcher: A new instance of Watcher.
+//   - error: An error if the watcher cannot be initialized.
+//
+// Side Effects:
+//   - Allocates system resources for file watching.
 func NewWatcher() (*Watcher, error) {
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
@@ -177,8 +179,11 @@ func (w *Watcher) Watch(paths []string, reloadFunc func()) error {
 
 // Close stops the file watcher and releases resources.
 //
-// Parameters:
-//   - None.
+// Summary: Stops the watcher and closes the done channel.
+//
+// Side Effects:
+//   - Closes the fsnotify watcher.
+//   - Closes the done channel.
 func (w *Watcher) Close() {
 	close(w.done)
 	_ = w.watcher.Close()
