@@ -450,7 +450,7 @@ jobs:
     name: Build Docker Image (${{ matrix.image }}, ${{ matrix.platform_slug }})
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
-    runs-on: ${{ matrix.runner }}
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -459,10 +459,8 @@ jobs:
         include:
           - platform_slug: amd64
             platform: linux/amd64
-            runner: ubuntu-latest
           - platform_slug: arm64
             platform: linux/arm64
-            runner: ubuntu-24.04-arm
     steps:
       - name: Free Disk Space (Fast)
         run: |
