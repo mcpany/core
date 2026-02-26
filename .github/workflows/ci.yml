@@ -910,6 +910,8 @@ jobs:
           docker load -i server.tar
 
       - name: Smoke Test
+        env:
+          MCPANY_DANGEROUS_ALLOW_LOCAL_IPS: "true"
         run: |
           chmod +x server/tests/smoke_test.sh
           ./server/tests/smoke_test.sh mcpany/server:latest
@@ -922,6 +924,8 @@ jobs:
       fail-fast: false
       matrix:
         shard: [1/2, 2/2]
+    env:
+      MCPANY_DANGEROUS_ALLOW_LOCAL_IPS: "true"
     steps:
       - name: Free Disk Space (Fast)
         run: |
@@ -975,6 +979,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     needs: [build-images]
+    env:
+      MCPANY_DANGEROUS_ALLOW_LOCAL_IPS: "true"
     steps:
       - name: Free Disk Space (Fast)
         run: |
