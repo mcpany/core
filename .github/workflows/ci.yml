@@ -127,7 +127,7 @@ jobs:
           $SUDO rm -rf /usr/share/miniconda
 
       - name: Prune Docker
-        run: docker system prune -af
+        run: docker system prune -af --volumes
 
       - uses: actions/checkout@v6
 
@@ -213,7 +213,7 @@ jobs:
           $SUDO rm -rf /usr/local/share/boost
 
       - name: Prune Docker
-        run: docker system prune -af
+        run: docker system prune -af --volumes
 
       - uses: actions/checkout@v6
 
@@ -362,7 +362,7 @@ jobs:
           $SUDO rm -rf /usr/local/share/boost
 
       - name: Prune Docker
-        run: docker system prune -af
+        run: docker system prune -af --volumes
 
       - uses: actions/checkout@v6
 
@@ -495,7 +495,7 @@ jobs:
 
       - name: Load Docker Images
         run: |
-          for f in *.tar; do
+          for f in *.tar.gz; do
             docker load -i "$f"
           done
 
@@ -590,90 +590,90 @@ jobs:
 
           # Server
           make -C server build-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=server-$SLUG CACHE_FROM=type=gha,scope=server-$SLUG
-          docker save -o server.tar mcpany/server:latest
+          docker save mcpany/server:latest | gzip > server.tar.gz
 
           # HTTP Echo
           make -C server build-http-echo-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=http-echo-$SLUG CACHE_FROM=type=gha,scope=http-echo-$SLUG
-          docker save -o http-echo.tar mcpany/http-echo-server:latest
+          docker save mcpany/http-echo-server:latest | gzip > http-echo.tar.gz
 
           # Time Server
           make -C server build-e2e-timeserver-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=time-server-$SLUG CACHE_FROM=type=gha,scope=time-server-$SLUG
-          docker save -o time-server.tar mcpany-e2e-time-server
+          docker save mcpany-e2e-time-server | gzip > time-server.tar.gz
 
           # Cowsay
           make -C server build-cowsay-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=cowsay-$SLUG CACHE_FROM=type=gha,scope=cowsay-$SLUG
-          docker save -o cowsay.tar mcpany/e2e-cowsay-server:latest
+          docker save mcpany/e2e-cowsay-server:latest | gzip > cowsay.tar.gz
 
           # Everything
           make -C server build-everything-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=everything-$SLUG CACHE_FROM=type=gha,scope=everything-$SLUG
-          docker save -o everything.tar mcpany/everything:latest
+          docker save mcpany/everything:latest | gzip > everything.tar.gz
 
           # UI
           make -C server docker-build-ui PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=ui-$SLUG CACHE_FROM=type=gha,scope=ui-$SLUG
-          docker save -o ui.tar mcpany/ui:latest
+          docker save mcpany/ui:latest | gzip > ui.tar.gz
 
           # Operator
           make -C server docker-build-operator PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=operator-$SLUG CACHE_FROM=type=gha,scope=operator-$SLUG
-          docker save -o operator.tar mcpany/operator:latest
+          docker save mcpany/operator:latest | gzip > operator.tar.gz
 
           # UI Test Image
           make -C ui build-test-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=ui-test-$SLUG CACHE_FROM=type=gha,scope=ui-test-$SLUG
-          docker save -o ui-test-image.tar mcpany-ui-e2e:latest
+          docker save mcpany-ui-e2e:latest | gzip > ui-test-image.tar.gz
 
       - name: Upload Server Image
         uses: actions/upload-artifact@v4
         with:
           name: image-server-${{ matrix.slug }}
-          path: server.tar
+          path: server.tar.gz
           retention-days: 1
 
       - name: Upload HTTP Echo Image
         uses: actions/upload-artifact@v4
         with:
           name: image-http-echo-${{ matrix.slug }}
-          path: http-echo.tar
+          path: http-echo.tar.gz
           retention-days: 1
 
       - name: Upload Time Server Image
         uses: actions/upload-artifact@v4
         with:
           name: image-time-server-${{ matrix.slug }}
-          path: time-server.tar
+          path: time-server.tar.gz
           retention-days: 1
 
       - name: Upload Cowsay Image
         uses: actions/upload-artifact@v4
         with:
           name: image-cowsay-${{ matrix.slug }}
-          path: cowsay.tar
+          path: cowsay.tar.gz
           retention-days: 1
 
       - name: Upload Everything Image
         uses: actions/upload-artifact@v4
         with:
           name: image-everything-${{ matrix.slug }}
-          path: everything.tar
+          path: everything.tar.gz
           retention-days: 1
 
       - name: Upload UI Image
         uses: actions/upload-artifact@v4
         with:
           name: image-ui-${{ matrix.slug }}
-          path: ui.tar
+          path: ui.tar.gz
           retention-days: 1
 
       - name: Upload Operator Image
         uses: actions/upload-artifact@v4
         with:
           name: image-operator-${{ matrix.slug }}
-          path: operator.tar
+          path: operator.tar.gz
           retention-days: 1
 
       - name: Upload UI Test Image
         uses: actions/upload-artifact@v4
         with:
           name: image-ui-test-${{ matrix.slug }}
-          path: ui-test-image.tar
+          path: ui-test-image.tar.gz
           retention-days: 1
 
   e2e-sequential:
@@ -796,7 +796,7 @@ jobs:
 
       - name: Load Docker Images
         run: |
-          for f in *.tar; do
+          for f in *.tar.gz; do
             docker load -i "$f"
           done
 
@@ -1007,7 +1007,7 @@ jobs:
 
       - name: Load Docker Image
         run: |
-          docker load -i server.tar
+          docker load -i server.tar.gz
 
       - name: Smoke Test
         run: |
@@ -1063,7 +1063,7 @@ jobs:
 
       - name: Load Docker Images
         run: |
-          for f in *.tar; do
+          for f in *.tar.gz; do
             docker load -i "$f"
           done
 
@@ -1147,7 +1147,7 @@ jobs:
           # Load all tarballs into docker daemon first?
           # kind load docker-image requires image in docker daemon or archive.
           # kind load image-archive might be better but let's stick to docker daemon for consistency
-          for f in *.tar; do
+          for f in *.tar.gz; do
             docker load -i "$f"
           done
 
