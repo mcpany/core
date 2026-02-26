@@ -87,10 +87,10 @@ jobs:
             sudo rm -rf /opt/ghc
             sudo rm -rf /usr/local/share/boost
           else
-            rm -rf /usr/local/lib/android
-            rm -rf /usr/share/dotnet
-            rm -rf /opt/ghc
-            rm -rf /usr/local/share/boost
+            rm -rf /usr/local/lib/android || true
+            rm -rf /usr/share/dotnet || true
+            rm -rf /opt/ghc || true
+            rm -rf /usr/local/share/boost || true
           fi
 
       - name: Prune Docker
@@ -175,10 +175,10 @@ jobs:
             sudo rm -rf /opt/ghc
             sudo rm -rf /usr/local/share/boost
           else
-            rm -rf /usr/local/lib/android
-            rm -rf /usr/share/dotnet
-            rm -rf /opt/ghc
-            rm -rf /usr/local/share/boost
+            rm -rf /usr/local/lib/android || true
+            rm -rf /usr/share/dotnet || true
+            rm -rf /opt/ghc || true
+            rm -rf /usr/local/share/boost || true
           fi
 
       - name: Prune Docker
@@ -325,10 +325,10 @@ jobs:
             sudo rm -rf /opt/ghc
             sudo rm -rf /usr/local/share/boost
           else
-            rm -rf /usr/local/lib/android
-            rm -rf /usr/share/dotnet
-            rm -rf /opt/ghc
-            rm -rf /usr/local/share/boost
+            rm -rf /usr/local/lib/android || true
+            rm -rf /usr/share/dotnet || true
+            rm -rf /opt/ghc || true
+            rm -rf /usr/local/share/boost || true
           fi
 
       - name: Prune Docker
@@ -507,10 +507,10 @@ jobs:
             sudo rm -rf /opt/ghc
             sudo rm -rf /usr/local/share/boost
           else
-            rm -rf /usr/local/lib/android
-            rm -rf /usr/share/dotnet
-            rm -rf /opt/ghc
-            rm -rf /usr/local/share/boost
+            rm -rf /usr/local/lib/android || true
+            rm -rf /usr/share/dotnet || true
+            rm -rf /opt/ghc || true
+            rm -rf /usr/local/share/boost || true
           fi
       - uses: actions/checkout@v6
 
@@ -650,10 +650,10 @@ jobs:
             sudo rm -rf /opt/ghc
             sudo rm -rf /usr/local/share/boost
           else
-            rm -rf /usr/local/lib/android
-            rm -rf /usr/share/dotnet
-            rm -rf /opt/ghc
-            rm -rf /usr/local/share/boost
+            rm -rf /usr/local/lib/android || true
+            rm -rf /usr/share/dotnet || true
+            rm -rf /opt/ghc || true
+            rm -rf /usr/local/share/boost || true
           fi
 
       - name: Prune Docker
@@ -800,10 +800,10 @@ jobs:
             sudo rm -rf /opt/ghc
             sudo rm -rf /usr/local/share/boost
           else
-            rm -rf /usr/local/lib/android
-            rm -rf /usr/share/dotnet
-            rm -rf /opt/ghc
-            rm -rf /usr/local/share/boost
+            rm -rf /usr/local/lib/android || true
+            rm -rf /usr/share/dotnet || true
+            rm -rf /opt/ghc || true
+            rm -rf /usr/local/share/boost || true
           fi
 
       - name: Prune Docker
@@ -990,10 +990,10 @@ jobs:
             sudo rm -rf /opt/ghc
             sudo rm -rf /usr/local/share/boost
           else
-            rm -rf /usr/local/lib/android
-            rm -rf /usr/share/dotnet
-            rm -rf /opt/ghc
-            rm -rf /usr/local/share/boost
+            rm -rf /usr/local/lib/android || true
+            rm -rf /usr/share/dotnet || true
+            rm -rf /opt/ghc || true
+            rm -rf /usr/local/share/boost || true
           fi
 
       - name: Prune Docker
@@ -1050,10 +1050,10 @@ jobs:
             sudo rm -rf /opt/ghc
             sudo rm -rf /usr/local/share/boost
           else
-            rm -rf /usr/local/lib/android
-            rm -rf /usr/share/dotnet
-            rm -rf /opt/ghc
-            rm -rf /usr/local/share/boost
+            rm -rf /usr/local/lib/android || true
+            rm -rf /usr/share/dotnet || true
+            rm -rf /opt/ghc || true
+            rm -rf /usr/local/share/boost || true
           fi
 
       - name: Prune Docker
