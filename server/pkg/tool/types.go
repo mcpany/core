@@ -4329,10 +4329,14 @@ func validateSafePathAndInjection(val string, isDocker bool, commandName string)
 		// Sentinel Security Update: Also block schema-less IPs and localhost to prevent SSRF
 		// via tools like curl/wget that accept them.
 		// Check for "localhost" (case-insensitive)
+		allowLoopback := os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == trueStr
 		if strings.EqualFold(val, "localhost") {
-			allowLoopback := os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == trueStr
 			if !allowLoopback {
 				return fmt.Errorf("unsafe argument: localhost is not allowed")
+			}
+		} else if validation.IsLoopbackShorthand(val) {
+			if !allowLoopback {
+				return fmt.Errorf("unsafe argument: loopback shorthand is not allowed")
 			}
 		} else if validation.IsSafeIP != nil {
 			// Check if it's an IP address and validate it against policy

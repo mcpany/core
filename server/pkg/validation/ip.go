@@ -212,3 +212,28 @@ func IsPrivateNetworkIPv4(ip net.IP) bool {
 
 	return false
 }
+
+// IsLoopbackShorthand checks if the string is a shorthand representation of a loopback address.
+// This is used to block SSRF attempts using formats like "127.1" which net.ParseIP rejects
+// but many tools (curl, ping) accept.
+//
+// Parameters:
+//   - val: The string to check.
+//
+// Returns:
+//   - bool: True if the string is a loopback shorthand, false otherwise.
+func IsLoopbackShorthand(val string) bool {
+	// Check for IPv4 loopback (127.0.0.0/8)
+	// We check if it starts with "127."
+	if len(val) >= 4 && val[0] == '1' && val[1] == '2' && val[2] == '7' && val[3] == '.' {
+		// Ensure the rest contains only digits and dots
+		for i := 4; i < len(val); i++ {
+			c := val[i]
+			if (c < '0' || c > '9') && c != '.' {
+				return false
+			}
+		}
+		return true
+	}
+	return false
+}
