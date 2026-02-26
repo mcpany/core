@@ -105,3 +105,6 @@
 - [ ] **Log Source Color Coding**: Assign distinct colors to different log sources automatically for better visual separation.
 - [ ] **Context Usage History**: Track total context usage over time to identify growth trends (requires backend metrics persistence).
 - [ ] **Tool Schema Optimizer**: Analyze tool schemas and suggest removing unused properties or compacting descriptions to save context tokens.
+- [ ] **[P0] Agent Identity Manager**: UI for issuing and revoking A2A Identity Tokens. (Added: 2026-02-27)
+- [ ] **[P0] Federated Mesh Topology View**: Visual graph of peered nodes and cross-node traffic. (Added: 2026-02-27)
+- [ ] **[P1] Context Inheritance Guardrails**: UI for configuring selective inheritance policies for subagents. (Added: 2026-02-27)

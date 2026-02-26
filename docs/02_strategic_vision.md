@@ -47,3 +47,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **A2A Gateway Protocol**: MCP Any will implement a protocol-neutral bridge for A2A communication, allowing disparate agent frameworks (e.g., OpenClaw, AutoGen) to exchange state and tasks via a unified MCP-like interface.
 - **Federated Tool Mesh**: Moving from a standalone server to a "Mesh" architecture where multiple MCP Any instances can peer and share resources across network boundaries, governed by global Zero-Trust policies.
 - **Resource-Aware Intelligence**: Integrating cost and latency telemetry into the tool discovery process, allowing LLMs to perform "Economical Reasoning" when selecting tools.
+
+---
+
+## Strategic Evolution: [2026-02-27]
+### Focus: Standardized Identity & Adaptive Routing
+**Context**: As agent swarms cross framework boundaries (A2A) and geographic boundaries (Federation), "Identity Smuggling" and "Federation Latency" have emerged as critical blockers. MCP Any must provide a secure identity anchor and a performance-aware routing layer.
+**Strategic Pivot**:
+- **A2A Identity Provider (IdP)**: MCP Any will act as the authoritative Identity Provider for inter-agent communication, issuing short-lived, verifiable "Agent Identity Tokens" that prevent impersonation during framework handoffs.
+- **Latency-Aware Adaptive Discovery**: Transitioning from static discovery to "Dynamic Routing" where tool schemas are augmented with real-time latency telemetry, allowing agents to choose tools based on a "performance budget."
+- **Selective Context Inheritance**: Implementing the "Guardrail Protocol" to mirror Claude Code's selective inheritance, ensuring subagents only inherit context explicitly shared by the parent.

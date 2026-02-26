@@ -184,3 +184,9 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Core Middleware Pipeline**: The middleware architecture is robust and extensible.
 - **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates protocol details from business logic.
 - **Documentation**: The project has excellent documentation coverage for most features.
+
+#### Upcoming (2026-02-27 Evolution)
+*   **[P0] A2A Identity Provider (IdP)**: Authoritative identity issuer for secure inter-agent handoffs. (Added: 2026-02-27)
+*   **[P0] Federated Tool Mesh (v1)**: Secure peering and proxying across distributed MCP Any nodes. (Promoted to P0: 2026-02-27)
+*   **[P1] Adaptive Discovery Router**: Real-time latency-aware tool selection middleware. (Added: 2026-02-27)
+*   **[P1] Guardrail Protocol**: Implementation of Selective Context Inheritance for subagents. (Added: 2026-02-27)

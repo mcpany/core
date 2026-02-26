@@ -46,3 +46,10 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+
+### Update: 2026-02-27 - Mitigating Identity Smuggling
+**Context**: Recent market research identified a vulnerability where subagents use shared session tokens to escalate privileges across different agent frameworks (A2A Identity Smuggling).
+**Architecture Adjustment**:
+* **A2A IdP Integration**: The bridge now requires an "Agent Identity Token" issued by the MCP Any IdP middleware for all cross-framework handoffs.
+* **Token Scoping**: Tokens are now scope-limited to the specific task and peer agent, preventing reuse for unauthorized actions.
+**Security Impact**: Eliminates the risk of a compromised subagent in one framework impersonating a high-privilege agent in another.

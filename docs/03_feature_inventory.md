@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **A2A Identity Provider (IdP) Middleware**: (P0) Issues and verifies Agent Identity Tokens for cross-framework communication. Prevents "Identity Smuggling."
+- **Latency-Aware Tool Router**: (P1) Augments tool schemas with real-time performance telemetry and routes calls to the optimal federated node.
+- **Selective Context Inheritance Guard**: (P1) Middleware to enforce fine-grained context inheritance boundaries (inspired by Claude Code).
+
+### Priority Shifts
+- **Federated MCP Node Peering**: Promoted to **P0**. Critical for scaling tools across distributed teams and avoiding centralized bottlenecks.
+- **Shared KV Store**: Evolving into **Shared Vector Blackboard** (P0) to support semantic synchronization in multi-agent swarms.
+
+### Deprecations / Monitoring
+- **Unauthenticated A2A Handoffs**: Scheduled for deprecation in favor of IdP-backed tokens.
