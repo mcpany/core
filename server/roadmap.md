@@ -24,6 +24,11 @@
 *   **[P0] Supply Chain Integrity Guard**: Cryptographic provenance verification for MCP servers to prevent unauthorized tool injection. (Added: 2026-02-25)
 *   **[P1] FastMCP Metadata Support**: Support for Pythonic FastMCP decorators and native Gemini CLI slash command mapping. (Added: 2026-02-25)
 
+#### Upcoming (2026-02-27 Evolution)
+*   **[P0] Ephemeral Container Middleware**: Docker/Podman isolation for untrusted MCP servers. (Added: 2026-02-27)
+*   **[P1] A2A Identity Attestation**: Cryptographic handshake for secure agent-to-agent delegation. (Added: 2026-02-27)
+*   **[P1] Recursive Call Guard**: Depth and cost limiting for nested agent tool calls. (Added: 2026-02-27)
+
 #### Upcoming (2026-02-26 Evolution)
 *   **[P0] A2A Interop Bridge**: Implement Pseudo-MCP wrapper for A2A-compliant agents. (Added: 2026-02-26)
 *   **[P1] Federated MCP Peering**: Distributed node discovery and tool proxying. (Added: 2026-02-26)

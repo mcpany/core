@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **Ephemeral Container Middleware**: (P0) Launches MCP servers in isolated Docker/Podman containers per session or per tool-call. Essential for executing untrusted tools from the marketplace.
+- **A2A Identity Attestation**: (P1) A cryptographic handshake protocol for agent-to-agent delegation, ensuring that subagents can verify the identity and permission scope of the parent agent.
+- **Recursive Call Guard**: (P1) Middleware that monitors agent-to-agent call depth and prevents infinite recursion loops through configurable depth limits and cost caps.
+
+### Priority Shifts
+- **A2A Interop Bridge (Pseudo-MCP)**: Promoted to **P0**. With the rise of "Agent-as-a-Server" (Claude Code `mcp serve`), multi-agent orchestration is now the primary bottleneck for advanced users.
+- **Shared KV Store (Blackboard)**: Re-affirming **P0**. Critical for maintaining state across recursive AaaS calls.
+
+### Deprecations / Monitoring
+- **Bare-Host Tool Execution**: Monitoring for deprecation in favor of containerized execution as the default security posture.

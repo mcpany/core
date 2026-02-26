@@ -8,6 +8,9 @@
 - [ ] **[P1] Unified Discovery Manager**: UI for managing and auto-discovering MCP servers across transports. (Added: 2026-02-24)
 - [ ] **[P0] Lazy-MCP Tool Search Dashboard**: UI for managing the on-demand tool index and monitoring search hits/misses. (Added: 2026-02-25)
 - [ ] **[P0] Supply Chain Attestation Viewer**: Security dashboard for verifying the provenance and cryptographic signatures of connected MCP servers. (Added: 2026-02-25)
+- [ ] **[P0] Sandboxed Tool Manager**: UI for configuring container images and monitoring ephemeral tool health. (Added: 2026-02-27)
+- [ ] **[P1] Agent Delegation Graph**: Visual representation of recursive AaaS call chains and depth limits. (Added: 2026-02-27)
+
 - [ ] **[P0] Agent Chain Tracer (A2A)**: Visual timeline of multi-agent handoffs and message passing. (Added: 2026-02-26)
 - [ ] **[P1] Federated Node Manager**: UI for peering with remote MCP Any instances and managing shared tool access. (Added: 2026-02-26)
 - [ ] **[P1] Resource Cost/Latency Overlay**: Real-time performance metrics displayed directly on tool cards. (Added: 2026-02-26)

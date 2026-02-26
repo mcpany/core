@@ -46,3 +46,10 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+
+    ### Update: 2026-02-27 - Addressing Agent-as-a-Server (AaaS)
+    **Context:** Today's research on Claude Code `mcp serve` confirms that agents are increasingly acting as MCP servers. This shifts the A2A bridge from an "optional interop" to a "core recursive orchestration" requirement.
+    **Architecture Adjustment:**
+    *   **Recursive Call Guard**: Introduced a mechanism to track "Delegation Depth" to prevent infinite agent loops.
+    *   **Context Transparency**: Updated the bridge to support passing full `Recursive Context Protocol` headers into A2A messages, ensuring sub-agents have the same "Intent-Scope" as the parent.
+    **Security Impact:** Mitigates "Agent Token Exhaustion" attacks where a rogue sub-agent calls multiple other agents to drain the user's budget.
