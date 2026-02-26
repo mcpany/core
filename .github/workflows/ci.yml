@@ -525,6 +525,7 @@ jobs:
         run: |
           rm server.tar
           docker rmi mcpany/server:latest || true
+          docker buildx prune -f || true
           docker system prune -f || true
 
       - name: Build and Save HTTP Echo Image
@@ -545,6 +546,7 @@ jobs:
         run: |
           rm http-echo.tar
           docker rmi mcpany/http-echo-server:latest || true
+          docker buildx prune -f || true
           docker system prune -f || true
 
       - name: Build and Save Time Server Image
@@ -565,6 +567,7 @@ jobs:
         run: |
           rm time-server.tar
           docker rmi mcpany-e2e-time-server || true
+          docker buildx prune -f || true
           docker system prune -f || true
 
       - name: Build and Save Cowsay Image
@@ -585,6 +588,7 @@ jobs:
         run: |
           rm cowsay.tar
           docker rmi mcpany/e2e-cowsay-server:latest || true
+          docker buildx prune -f || true
           docker system prune -f || true
 
       - name: Build and Save Everything Image
@@ -605,6 +609,7 @@ jobs:
         run: |
           rm everything.tar
           docker rmi mcpany/everything:latest || true
+          docker buildx prune -f || true
           docker system prune -f || true
 
       - name: Build and Save UI Image
@@ -625,6 +630,7 @@ jobs:
         run: |
           rm ui.tar
           docker rmi mcpany/ui:latest || true
+          docker buildx prune -f || true
           docker system prune -f || true
 
       - name: Build and Save Operator Image
@@ -645,6 +651,7 @@ jobs:
         run: |
           rm operator.tar
           docker rmi mcpany/operator:latest || true
+          docker buildx prune -f || true
           docker system prune -f || true
 
       - name: Build and Save UI Test Image
@@ -665,6 +672,7 @@ jobs:
         run: |
           rm ui-test-image.tar
           docker rmi mcpany-ui-e2e:latest || true
+          docker buildx prune -f || true
           docker system prune -f || true
 
   e2e-sequential:
