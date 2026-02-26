@@ -28,6 +28,8 @@
 *   **[P0] A2A Interop Bridge**: Implement Pseudo-MCP wrapper for A2A-compliant agents. (Added: 2026-02-26)
 *   **[P1] Federated MCP Peering**: Distributed node discovery and tool proxying. (Added: 2026-02-26)
 *   **[P1] Resource Telemetry Middleware**: Inject latency/cost metrics into tool schemas. (Added: 2026-02-26)
+*   **[P1] Git-State Provider Middleware**: Automatically extract and inject Git context into tool calls. (Added: 2026-02-26 Supplemental)
+*   **[P1] Git-Agent State Synchronization**: Implement handoff protocol for Git-pinned agent sessions. (Added: 2026-02-26 Supplemental)
 
 ## 2. Top 10 Recommended Features
 

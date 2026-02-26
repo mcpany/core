@@ -65,3 +65,18 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-26] Supplemental Updates
+
+### Proposed Additions
+- **Git-State Provider Middleware**: (P1) Automatically extracts and injects Git branch, commit, and diff state into tool execution context.
+- **Universal Agent-Git Handoff Protocol**: (P1) A standardized schema for passing Git-pinned state between different agent frameworks (e.g., Aider to Claude Code).
+- **Hybrid Model Router**: (P2) Middleware that analyzes tool calls and suggests the optimal local vs. cloud model based on complexity and cost.
+
+### Priority Shifts
+- **A2A Interop Bridge**: (Already P0, but elevating urgency) Critical for integrating the 15+ competing CLI agents discovered today.
+
+### Deprecations / Monitoring
+- **Stateless Tool Calls**: Monitoring for deprecation in favor of "Repository-Aware" sessions.

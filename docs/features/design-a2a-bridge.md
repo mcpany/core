@@ -46,3 +46,7 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-02-26 (Supplemental):** Identity-Aware Git Handoffs.
+    *   **Context**: Today's research shows Git is the primary source of truth for CLI agents.
+    *   **Architecture Adjustment**: The bridge now supports "Git-pinned sessions" where A2A handoff tokens include the current Git commit SHA and a pointer to the local diff.
+    *   **Security Impact**: Prevents "Intent Drift" during agent handoffs by ensuring both agents are operating on the exact same codebase state.

@@ -47,3 +47,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **A2A Gateway Protocol**: MCP Any will implement a protocol-neutral bridge for A2A communication, allowing disparate agent frameworks (e.g., OpenClaw, AutoGen) to exchange state and tasks via a unified MCP-like interface.
 - **Federated Tool Mesh**: Moving from a standalone server to a "Mesh" architecture where multiple MCP Any instances can peer and share resources across network boundaries, governed by global Zero-Trust policies.
 - **Resource-Aware Intelligence**: Integrating cost and latency telemetry into the tool discovery process, allowing LLMs to perform "Economical Reasoning" when selecting tools.
+
+---
+
+## Strategic Evolution: [2026-02-26] (Supplemental)
+### Focus: Git-Agent State Synchronization & Hybrid Model Orchestration
+**Context**: As CLI agents like Claude Code and Aider dominate, Git has become the "OS" for agentic work. Furthermore, the shift toward local/cloud hybrid setups requires MCP Any to intelligently route tasks based on model capability and cost.
+**Strategic Pivot**:
+- **Git-Native Integration**: MCP Any will pivot to become "Git-aware," automatically identifying the current repository state and providing it as a first-class context to all tools and subagents.
+- **Unified Hybrid Orchestrator**: Moving beyond simple proxying to a system that can suggest or automatically switch between local and cloud models based on the intent and historical performance of a tool.
+- **Cross-Agent State Sync**: Implementing a "Universal Handoff" standard that allows different agent frameworks to share Git-pinned state, ensuring continuity when switching between specialized swarms.

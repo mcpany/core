@@ -57,3 +57,7 @@ As the number of available MCP tools grows, agents face "context pollution"—wh
 
 ## 7. Evolutionary Changelog
 *   **2026-02-25:** Initial Document Creation.
+*   **2026-02-26 (Supplemental):** Repository-Bound Tool Scoping.
+    *   **Context**: Large monorepos with hundreds of tools cause search noise.
+    *   **Architecture Adjustment**: Introducing "Repository Scopes" to the discovery middleware. Tools can now be tagged with specific Git repo paths or patterns. The `mcpany_search_tools` tool will prioritize tools matching the current Git context.
+    *   **Usability Impact**: Significant reduction in false-positive tool matches in complex development environments.
