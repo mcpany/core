@@ -68,7 +68,7 @@ func TestSSRFArgumentProtection(t *testing.T) {
 			command:     "curl",
 			input:       "127.0.0.1",
 			expectError: true,
-			errorContains: "loopback address is not allowed",
+			errorContains: "loopback shorthand address is not allowed",
 		},
 		{
 			name:        "Block private IP",
