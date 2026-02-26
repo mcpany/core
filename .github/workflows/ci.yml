@@ -521,6 +521,7 @@ jobs:
         run: |
           for f in *.tar.gz; do
             docker load -i "$f"
+            rm "$f"
           done
 
       - name: Prepare environment
@@ -833,6 +834,7 @@ jobs:
         run: |
           for f in *.tar.gz; do
             docker load -i "$f"
+            rm "$f"
           done
 
       - name: Cache Tools
@@ -1052,6 +1054,7 @@ jobs:
       - name: Load Docker Image
         run: |
           docker load -i server.tar.gz
+          rm server.tar.gz
 
       - name: Smoke Test
         run: |
@@ -1112,6 +1115,7 @@ jobs:
         run: |
           for f in *.tar.gz; do
             docker load -i "$f"
+            rm "$f"
           done
 
       - name: Test UI
@@ -1199,6 +1203,7 @@ jobs:
           # kind load image-archive might be better but let's stick to docker daemon for consistency
           for f in *.tar.gz; do
             docker load -i "$f"
+            rm "$f"
           done
 
           # Now load specific images into Kind
