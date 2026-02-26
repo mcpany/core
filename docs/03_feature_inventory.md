@@ -65,3 +65,21 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **mcp-mesh Transport Adapter**: (P0) Native support for the OpenClaw Agent Mesh protocol.
+- **Unified Tool Signing Service**: (P0) Automatic cryptographic signing of MCP tool schemas to meet Gemini/Claude provenance requirements.
+- **FastMCP Protocol Bridge**: (P1) High-performance binary transport for low-latency tool discovery and execution.
+- **Cross-Agent Prompt Injection (XAPI) Filter**: (P1) Middleware that scans A2A/Mesh communications for malicious patterns.
+
+### Priority Shifts
+- **A2A Interop Bridge**: (P0) Already P0, but re-prioritizing as the foundational layer for `mcp-mesh` support.
+- **MCP Provenance Attestation**: (P0) Promoted to critical importance due to Gemini's mandatory signing policy.
+
+### Deprecations / Monitoring
+- **Unsigned Upstream Tools**: Monitoring for strict blocking in production environments.
+- **JSON-RPC discovery over high-latency links**: Moving towards FastMCP for these use cases.

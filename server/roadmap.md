@@ -29,6 +29,12 @@
 *   **[P1] Federated MCP Peering**: Distributed node discovery and tool proxying. (Added: 2026-02-26)
 *   **[P1] Resource Telemetry Middleware**: Inject latency/cost metrics into tool schemas. (Added: 2026-02-26)
 
+#### Upcoming (2026-02-27 Evolution)
+*   **[P0] mcp-mesh Transport Adapter**: Native support for OpenClaw's Agent Mesh protocol. (Added: 2026-02-27)
+*   **[P0] Unified Tool Signing Service**: Automatic cryptographic signing of MCP tool schemas for Gemini/Claude provenance. (Added: 2026-02-27)
+*   **[P1] FastMCP Protocol Bridge**: High-performance binary transport for low-latency tool discovery. (Added: 2026-02-27)
+*   **[P1] Cross-Agent Prompt Injection (XAPI) Filter**: Security middleware for Mesh/A2A communications. (Added: 2026-02-27)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

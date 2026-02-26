@@ -46,3 +46,9 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-02-27:** Evolution to Agent Mesh Support.
+    *   **Context:** OpenClaw's release of the "Agent Mesh" and its `mcp-mesh://` protocol requires the A2A Bridge to support more than just simple message passing; it must now support full "Mesh Service" discovery and routing.
+    *   **Architecture Adjustment:**
+        - **Protocol Expansion**: Adding native support for `mcp-mesh` as a primary transport in the A2A Bridge.
+        - **Mesh Discovery**: Implementing "Mesh Polling" where MCP Any automatically discovers other nodes in the `mcp-mesh` network and registers their subagents as local MCP tools.
+        - **Gateway Mode**: MCP Any can now act as a "Mesh Gateway," allowing non-mesh agents (like standard Claude Desktop) to interact with `mcp-mesh` subagents.

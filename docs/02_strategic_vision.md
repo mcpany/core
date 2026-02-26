@@ -47,3 +47,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **A2A Gateway Protocol**: MCP Any will implement a protocol-neutral bridge for A2A communication, allowing disparate agent frameworks (e.g., OpenClaw, AutoGen) to exchange state and tasks via a unified MCP-like interface.
 - **Federated Tool Mesh**: Moving from a standalone server to a "Mesh" architecture where multiple MCP Any instances can peer and share resources across network boundaries, governed by global Zero-Trust policies.
 - **Resource-Aware Intelligence**: Integrating cost and latency telemetry into the tool discovery process, allowing LLMs to perform "Economical Reasoning" when selecting tools.
+
+---
+
+## Strategic Evolution: [2026-02-27]
+### Focus: Agent-as-a-Service (AaaS) & Mesh Sovereignty
+**Context**: The release of OpenClaw's "Agent Mesh" and mandatory Tool Provenance in Gemini CLI signify a shift towards autonomous agent nodes that require a secure, high-speed, and verifiable communication plane.
+**Strategic Pivot**:
+- **Agent Mesh Gateway**: MCP Any will pivot to become the "Istio of Agents," implementing support for `mcp-mesh` and other A2A protocols as first-class transport layers.
+- **Unified Signing & Provenance**: Acting as a centralized "Identity & Signing Authority" for MCP tools, allowing legacy tools to meet the new provenance requirements of Claude and Gemini.
+- **FastMCP Protocol Bridge**: Integrating a high-performance binary transport layer to eliminate the latency bottlenecks of traditional JSON-RPC MCP in high-frequency thinking loops.
