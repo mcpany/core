@@ -145,9 +145,9 @@ jobs:
             SUDO="sudo"
           fi
           if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential gcc
           elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz build-base
+             $SUDO apk add --no-cache make xz build-base gcc
           fi
 
       - name: Prepare environment
@@ -189,9 +189,9 @@ jobs:
             SUDO="sudo"
           fi
           if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential gcc
           elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz build-base
+             $SUDO apk add --no-cache make xz build-base gcc
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -336,9 +336,9 @@ jobs:
             SUDO="sudo"
           fi
           if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential gcc
           elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz build-base
+             $SUDO apk add --no-cache make xz build-base gcc
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -492,16 +492,6 @@ jobs:
             slug: arm64
             runner: ubuntu-24.04-arm
     steps:
-      - name: Free Disk Space (Fast)
-        run: |
-          SUDO=""
-          if command -v sudo >/dev/null; then
-            SUDO="sudo"
-          fi
-          $SUDO rm -rf /usr/local/lib/android
-          $SUDO rm -rf /usr/share/dotnet
-          $SUDO rm -rf /opt/ghc
-          $SUDO rm -rf /usr/local/share/boost
       - uses: actions/checkout@v6
 
       - name: Set up Go
@@ -655,9 +645,9 @@ jobs:
             SUDO="sudo"
           fi
           if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential gcc
           elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz build-base
+             $SUDO apk add --no-cache make xz build-base gcc
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -802,9 +792,9 @@ jobs:
             SUDO="sudo"
           fi
           if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential gcc
           elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz build-base
+             $SUDO apk add --no-cache make xz build-base gcc
           fi
 
       - name: Configure Docker Registry Mirrors
