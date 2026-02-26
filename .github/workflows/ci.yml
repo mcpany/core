@@ -34,7 +34,14 @@ jobs:
       src: ${{ steps.filter.outputs.src }}
     steps:
       - name: Install dependencies
-        run: apt-get update && apt-get install -y git
+        run: |
+          if command -v sudo &> /dev/null; then
+            sudo apt-get update && sudo apt-get install -y git
+          elif command -v apt-get &> /dev/null; then
+            apt-get update && apt-get install -y git
+          else
+            echo "Assuming git is installed or not needed"
+          fi
 
       - uses: actions/checkout@v6
         with:
