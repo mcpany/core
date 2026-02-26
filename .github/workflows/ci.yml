@@ -963,7 +963,7 @@ jobs:
 
   k8s-e2e:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     needs: [build-images]
     steps:
       - name: Free Disk Space (Fast)

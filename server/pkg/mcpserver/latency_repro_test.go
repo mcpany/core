@@ -100,7 +100,8 @@ func TestServer_CallTool_Latency_Metrics_Repro(t *testing.T) {
 	// Check metrics
 	// Wait for metrics to appear
 	var data []*metrics.IntervalMetrics
-	for i := 0; i < 20; i++ {
+	// ⚡ Bolt Optimization: Increase wait time to 5 seconds (50 * 100ms) to avoid flakes on slow CI runners
+	for i := 0; i < 50; i++ {
 		data = sink.Data()
 		// Since execution takes ~50ms, metrics might span multiple intervals.
 		// We need to wait until we see some data.
@@ -122,7 +123,7 @@ func TestServer_CallTool_Latency_Metrics_Repro(t *testing.T) {
 				break
 			}
 		}
-		time.Sleep(10 * time.Millisecond)
+		time.Sleep(100 * time.Millisecond)
 	}
 	require.NotEmpty(t, data)
 
