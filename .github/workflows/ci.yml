@@ -495,7 +495,15 @@ jobs:
         with:
           node-version: "24"
           cache: "npm"
-          cache-dependency-path: server/tests/integration/upstream/package-lock.json
+          cache-dependency-path: |
+            server/tests/integration/upstream/package-lock.json
+            ui/package-lock.json
+
+      - name: Install UI Dependencies
+        if: matrix.image == 'ui' || matrix.image == 'ui-test'
+        run: |
+          cd ui
+          npm ci
 
       - name: Generate Protobufs
         run: |
