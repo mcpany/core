@@ -453,7 +453,6 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: ${{ matrix.runner }}
-    container: public.ecr.aws/docker/library/ubuntu:24.04
     strategy:
       fail-fast: false
       matrix:
@@ -485,10 +484,6 @@ jobs:
           node-version: "24"
           cache: "npm"
           cache-dependency-path: server/tests/integration/upstream/package-lock.json
-
-      - name: Install Build Tools
-        run: |
-          apt-get update && apt-get install -y make build-essential
 
       - name: Generate Protobufs
         run: |
