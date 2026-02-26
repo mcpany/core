@@ -65,3 +65,20 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **Context Delta Middleware**: (P0) Implements delta-based state synchronization for agent swarms to mitigate token bloat and "Context Storms."
+- **Behavioral Sentinel (Anomaly Detection)**: (P1) A security middleware that uses heuristic analysis to detect "Context Poisoning" and unusual tool call patterns.
+- **Micro-MCP Discovery & Lockdown**: (P0) Detects rogue "Shadow" MCP servers running on local ports and forces them under MCP Any's policy control.
+- **IDE Buffer Synchronization Bridge**: (P1) Integration for real-time synchronization of unsaved editor buffers with MCP tool environments.
+
+### Priority Shifts
+- **A2A Interop Bridge**: Promoted to **P0**. Rapid adoption of A2A protocol in swarms makes this a critical path.
+- **Federated MCP Node Peering**: Promoted to **P0**. Essential for scaling tools across enterprise network boundaries.
+
+### Deprecations / Monitoring
+- **Full-State RCP Inheritance**: Monitoring for deprecation in favor of Context Delta Protocol.

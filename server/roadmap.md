@@ -184,3 +184,8 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Core Middleware Pipeline**: The middleware architecture is robust and extensible.
 - **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates protocol details from business logic.
 - **Documentation**: The project has excellent documentation coverage for most features.
+
+#### Upcoming (2026-02-27 Evolution)
+*   **[P0] Context Delta Middleware**: Implement JSON-Patch based state synchronization for high-density swarms. (Added: 2026-02-27)
+*   **[P1] Behavioral Sentinel**: Heuristic-based anomaly detection for tool call sequences. (Added: 2026-02-27)
+*   **[P0] Micro-MCP Lockdown**: Automated detection and policy enforcement for rogue local MCP servers. (Added: 2026-02-27)

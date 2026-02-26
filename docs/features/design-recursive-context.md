@@ -53,3 +53,10 @@ As agentic workflows evolve from single-agent tasks to multi-agent swarms (e.g.,
 
 ## 7. Evolutionary Changelog
 * **2026-02-23:** Initial Document Creation. Standardizing Recursive Context Protocol for multi-agent swarm orchestration.
+
+### Update: 2026-02-27 - Transition to Delta-Based Sync
+**Context**: "Context Storms" in large swarms have proven that full-state inheritance is non-scalable.
+**Architecture Adjustment**:
+* Deprecating full-state `X-MCP-Parent-Context-ID` injection.
+* Moving towards `Context Delta Middleware` as the primary synchronization mechanism.
+* Integrated with `design-context-delta.md`.
