@@ -28,7 +28,7 @@ permissions:
 
 jobs:
   changes:
-    runs-on: oci-runner
+    runs-on: ubuntu-latest
     # container: public.ecr.aws/docker/library/ubuntu:24.04
     outputs:
       src: ${{ steps.filter.outputs.src }}
