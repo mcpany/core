@@ -60,7 +60,7 @@ func (s *Seeder) SeedUser(t *testing.T, id string, profileIDs []string) *configv
 // SeedService registers a service.
 func (s *Seeder) SeedService(ctx context.Context, t *testing.T, serviceConfig *configv1.UpstreamServiceConfig) {
 	t.Helper()
-	_, _, _, err := s.ServiceRegistry.RegisterService(ctx, serviceConfig)
+	_, _, _, err := s.ServiceRegistry.RegisterService(ctx, serviceConfig) //nolint:dogsled // Ignoring return values intentionally
 	require.NoError(t, err)
 }
 
@@ -69,7 +69,7 @@ type MockUpstreamFactory struct {
 	Upstream upstream.Upstream
 }
 
-func (m *MockUpstreamFactory) NewUpstream(config *configv1.UpstreamServiceConfig) (upstream.Upstream, error) {
+func (m *MockUpstreamFactory) NewUpstream(_ *configv1.UpstreamServiceConfig) (upstream.Upstream, error) {
 	return m.Upstream, nil
 }
 
