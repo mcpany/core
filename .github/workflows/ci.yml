@@ -41,8 +41,12 @@ jobs:
           fi
 
           SUDO=""
-          if command -v sudo >/dev/null; then
-            SUDO="sudo"
+          if [ "$(id -u)" -ne 0 ]; then
+            if command -v sudo >/dev/null; then
+              SUDO="sudo"
+            else
+              echo "WARNING: Not root and sudo not found. Attempting installation without sudo."
+            fi
           fi
 
           if command -v apt-get >/dev/null; then
@@ -99,9 +103,12 @@ jobs:
       - name: Free Disk Space (Fast)
         run: |
           SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
-          if [ -z "$SUDO" ]; then
-            echo "No sudo, skipping disk cleanup."
+          if [ "$(id -u)" -eq 0 ]; then
+            SUDO=""
+          elif command -v sudo >/dev/null; then
+            SUDO="sudo"
+          else
+            echo "No sudo and not root, skipping disk cleanup."
             exit 0
           fi
           $SUDO rm -rf /usr/local/lib/android
@@ -112,7 +119,9 @@ jobs:
       - name: Prune Docker
         run: |
           SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null; then
+            SUDO="sudo"
+          fi
           if command -v docker >/dev/null; then
             $SUDO docker system prune -af || true
           fi
@@ -162,7 +171,14 @@ jobs:
       - name: Install dependencies
         run: |
           SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if [ "$(id -u)" -ne 0 ]; then
+            if command -v sudo >/dev/null; then
+              SUDO="sudo"
+            else
+               echo "WARNING: Not root and sudo not found."
+            fi
+          fi
+
           if command -v apt-get >/dev/null; then
             $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential
           elif command -v apk >/dev/null; then
@@ -194,9 +210,12 @@ jobs:
       - name: Free Disk Space (Fast)
         run: |
           SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
-          if [ -z "$SUDO" ]; then
-            echo "No sudo, skipping disk cleanup."
+          if [ "$(id -u)" -eq 0 ]; then
+            SUDO=""
+          elif command -v sudo >/dev/null; then
+            SUDO="sudo"
+          else
+            echo "No sudo and not root, skipping disk cleanup."
             exit 0
           fi
           $SUDO rm -rf /usr/local/lib/android
@@ -207,7 +226,9 @@ jobs:
       - name: Prune Docker
         run: |
           SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null; then
+            SUDO="sudo"
+          fi
           if command -v docker >/dev/null; then
             $SUDO docker system prune -af || true
           fi
@@ -225,8 +246,16 @@ jobs:
                exit 0
             fi
           fi
+
           SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if [ "$(id -u)" -ne 0 ]; then
+            if command -v sudo >/dev/null; then
+              SUDO="sudo"
+            else
+               echo "WARNING: Not root and sudo not found."
+            fi
+          fi
+
           if command -v apt-get >/dev/null; then
             $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential
           elif command -v apk >/dev/null; then
@@ -242,10 +271,12 @@ jobs:
       - name: Configure Docker Registry Mirrors
         run: |
           SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
-
-          if [ -z "$SUDO" ]; then
-            echo "No sudo access, skipping Docker registry mirror configuration."
+          if [ "$(id -u)" -eq 0 ]; then
+            SUDO=""
+          elif command -v sudo >/dev/null; then
+            SUDO="sudo"
+          else
+            echo "No sudo access and not root, skipping Docker registry mirror configuration."
             exit 0
           fi
 
@@ -368,9 +399,12 @@ jobs:
       - name: Free Disk Space (Fast)
         run: |
           SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
-          if [ -z "$SUDO" ]; then
-            echo "No sudo, skipping disk cleanup."
+          if [ "$(id -u)" -eq 0 ]; then
+            SUDO=""
+          elif command -v sudo >/dev/null; then
+            SUDO="sudo"
+          else
+            echo "No sudo and not root, skipping disk cleanup."
             exit 0
           fi
           $SUDO rm -rf /usr/local/lib/android
@@ -381,7 +415,9 @@ jobs:
       - name: Prune Docker
         run: |
           SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null; then
+            SUDO="sudo"
+          fi
           if command -v docker >/dev/null; then
             $SUDO docker system prune -af || true
           fi
@@ -399,8 +435,16 @@ jobs:
                exit 0
             fi
           fi
+
           SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if [ "$(id -u)" -ne 0 ]; then
+            if command -v sudo >/dev/null; then
+              SUDO="sudo"
+            else
+               echo "WARNING: Not root and sudo not found."
+            fi
+          fi
+
           if command -v apt-get >/dev/null; then
             $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential
           elif command -v apk >/dev/null; then
@@ -416,10 +460,12 @@ jobs:
       - name: Configure Docker Registry Mirrors
         run: |
           SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
-
-          if [ -z "$SUDO" ]; then
-            echo "No sudo access, skipping Docker registry mirror configuration."
+          if [ "$(id -u)" -eq 0 ]; then
+            SUDO=""
+          elif command -v sudo >/dev/null; then
+            SUDO="sudo"
+          else
+            echo "No sudo access and not root, skipping Docker registry mirror configuration."
             exit 0
           fi
 
@@ -704,9 +750,12 @@ jobs:
       - name: Free Disk Space (Fast)
         run: |
           SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
-          if [ -z "$SUDO" ]; then
-            echo "No sudo, skipping disk cleanup."
+          if [ "$(id -u)" -eq 0 ]; then
+            SUDO=""
+          elif command -v sudo >/dev/null; then
+            SUDO="sudo"
+          else
+            echo "No sudo and not root, skipping disk cleanup."
             exit 0
           fi
           $SUDO rm -rf /usr/local/lib/android
@@ -717,7 +766,9 @@ jobs:
       - name: Prune Docker
         run: |
           SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null; then
+            SUDO="sudo"
+          fi
           if command -v docker >/dev/null; then
             $SUDO docker system prune -af || true
           fi
@@ -735,8 +786,16 @@ jobs:
                exit 0
             fi
           fi
+
           SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if [ "$(id -u)" -ne 0 ]; then
+            if command -v sudo >/dev/null; then
+              SUDO="sudo"
+            else
+               echo "WARNING: Not root and sudo not found."
+            fi
+          fi
+
           if command -v apt-get >/dev/null; then
             $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential
           elif command -v apk >/dev/null; then
@@ -752,10 +811,12 @@ jobs:
       - name: Configure Docker Registry Mirrors
         run: |
           SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
-
-          if [ -z "$SUDO" ]; then
-            echo "No sudo access, skipping Docker registry mirror configuration."
+          if [ "$(id -u)" -eq 0 ]; then
+            SUDO=""
+          elif command -v sudo >/dev/null; then
+            SUDO="sudo"
+          else
+            echo "No sudo access and not root, skipping Docker registry mirror configuration."
             exit 0
           fi
 
@@ -880,9 +941,12 @@ jobs:
       - name: Free Disk Space (Fast)
         run: |
           SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
-          if [ -z "$SUDO" ]; then
-            echo "No sudo, skipping disk cleanup."
+          if [ "$(id -u)" -eq 0 ]; then
+            SUDO=""
+          elif command -v sudo >/dev/null; then
+            SUDO="sudo"
+          else
+            echo "No sudo and not root, skipping disk cleanup."
             exit 0
           fi
           $SUDO rm -rf /usr/local/lib/android
@@ -893,7 +957,9 @@ jobs:
       - name: Prune Docker
         run: |
           SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null; then
+            SUDO="sudo"
+          fi
           if command -v docker >/dev/null; then
             $SUDO docker system prune -af || true
           fi
@@ -912,7 +978,14 @@ jobs:
             fi
           fi
           SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if [ "$(id -u)" -ne 0 ]; then
+            if command -v sudo >/dev/null; then
+              SUDO="sudo"
+            else
+               echo "WARNING: Not root and sudo not found."
+            fi
+          fi
+
           if command -v apt-get >/dev/null; then
             $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential
           elif command -v apk >/dev/null; then
@@ -928,10 +1001,12 @@ jobs:
       - name: Configure Docker Registry Mirrors
         run: |
           SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
-
-          if [ -z "$SUDO" ]; then
-            echo "No sudo access, skipping Docker registry mirror configuration."
+          if [ "$(id -u)" -eq 0 ]; then
+            SUDO=""
+          elif command -v sudo >/dev/null; then
+            SUDO="sudo"
+          else
+            echo "No sudo access and not root, skipping Docker registry mirror configuration."
             exit 0
           fi
 
