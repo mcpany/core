@@ -50,7 +50,8 @@ RUN addgroup --system --gid 1001 mcpany && \
     adduser --system --uid 1001 --gid 1001 --no-create-home mcpany
 
 # Install runtime dependencies
-RUN apt-get update && apt-get install -y ca-certificates curl && rm -rf /var/lib/apt/lists/*
+# Node.js is required for npx based MCP servers
+RUN apt-get update && apt-get install -y ca-certificates curl nodejs npm && rm -rf /var/lib/apt/lists/*
 
 # Copy the binary from the builder stage
 # Copy the binary from the builder stage

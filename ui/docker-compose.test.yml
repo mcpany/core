@@ -30,6 +30,22 @@ services:
         aliases:
           - mcpany-server
 
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+      POSTGRES_DB: testdb
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U test"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      default:
+
   ui-tests:
     image: mcpany-ui-e2e:latest
     ipc: host
@@ -60,6 +76,8 @@ services:
       - ${HOST_WORKSPACE_ROOT:-..}/ui/tests:/work/ui/tests
     depends_on:
       server:
+        condition: service_healthy
+      postgres:
         condition: service_healthy
       ui-http-echo-server:
         condition: service_started
