@@ -48,10 +48,6 @@ func (m *mockPrompt) Service() string {
 	return "test_service"
 }
 
-func (m *mockPrompt) Definition() *configv1.PromptDefinition {
-	return nil
-}
-
 func (m *mockPrompt) Get(
 	_ context.Context,
 	_ json.RawMessage,

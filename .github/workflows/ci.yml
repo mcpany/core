@@ -201,6 +201,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
         with:
+          driver: docker-container
           buildkitd-config-inline: |
             [registry."docker.io"]
               mirrors = ["mirror.gcr.io"]
@@ -326,6 +327,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
         with:
+          driver: docker-container
           buildkitd-config-inline: |
             [registry."docker.io"]
               mirrors = ["mirror.gcr.io"]
@@ -462,6 +464,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
         with:
+          driver: docker-container
           buildkitd-config-inline: |
             [registry."docker.io"]
               mirrors = ["mirror.gcr.io"]
@@ -744,6 +747,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
         with:
+          driver: docker-container
           buildkitd-config-inline: |
             [registry."docker.io"]
               mirrors = ["mirror.gcr.io"]
@@ -1039,7 +1043,27 @@ jobs:
 
       - name: Install Dependencies (gh, jq)
         run: |
-          sudo apt-get update && sudo apt-get install -y curl ca-certificates jq
+          SUDO=""
+          if command -v sudo >/dev/null; then
+            SUDO="sudo"
+          fi
+
+          install_dependencies() {
+            if ! command -v curl &> /dev/null || ! command -v jq &> /dev/null; then
+              echo "curl or jq not found. Installing..."
+              if command -v apt-get &> /dev/null; then
+                $SUDO apt-get update && $SUDO apt-get install -y curl ca-certificates jq
+              elif command -v apk &> /dev/null; then
+                $SUDO apk add --no-cache curl ca-certificates jq
+              elif command -v yum &> /dev/null; then
+                $SUDO yum install -y curl ca-certificates jq
+              elif command -v dnf &> /dev/null; then
+                $SUDO dnf install -y curl ca-certificates jq
+              else
+                echo "Could not find package manager. Trying to proceed..."
+              fi
+            fi
+          }
 
           if ! command -v gh &> /dev/null; then
             echo "gh not found. Installing..."

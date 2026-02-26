@@ -58,12 +58,7 @@ func NewDB(path string) (*DB, error) {
 	if _, err := db.ExecContext(context.Background(), "PRAGMA synchronous=NORMAL;"); err != nil {
 		return nil, fmt.Errorf("failed to set synchronous mode: %w", err)
 	}
-
-	timeout := "5000"
-	if t := os.Getenv("MCP_SQLITE_BUSY_TIMEOUT"); t != "" {
-		timeout = t
-	}
-	if _, err := db.ExecContext(context.Background(), fmt.Sprintf("PRAGMA busy_timeout=%s;", timeout)); err != nil {
+	if _, err := db.ExecContext(context.Background(), "PRAGMA busy_timeout=5000;"); err != nil {
 		return nil, fmt.Errorf("failed to set busy_timeout: %w", err)
 	}
 

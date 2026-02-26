@@ -20,7 +20,6 @@ import (
 	"github.com/mcpany/core/server/pkg/serviceregistry"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/upstream/factory"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -36,10 +35,6 @@ func (p *testPrompt) Prompt() *mcp.Prompt {
 
 func (p *testPrompt) Service() string {
 	return "test-service"
-}
-
-func (p *testPrompt) Definition() *configv1.PromptDefinition {
-	return nil
 }
 
 func (p *testPrompt) Get(_ context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {
