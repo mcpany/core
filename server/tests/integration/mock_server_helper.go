@@ -27,7 +27,19 @@ func DefaultMockHandler(t *testing.T, responses map[string]string) http.Handler 
 		t.Logf("Mock server received request: %s %s Body: %s", r.Method, r.URL.Path, string(bodyBytes))
 
 		// Check exact path match
-		if body, ok := responses[r.URL.Path]; ok {
+		// First try with query parameters if present
+		key := r.URL.Path
+		if r.URL.RawQuery != "" {
+			key += "?" + r.URL.RawQuery
+		}
+
+		body, ok := responses[key]
+		if !ok {
+			// Fallback to just path
+			body, ok = responses[r.URL.Path]
+		}
+
+		if ok {
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
 			_, _ = w.Write([]byte(body))
