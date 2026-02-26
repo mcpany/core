@@ -47,3 +47,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **A2A Gateway Protocol**: MCP Any will implement a protocol-neutral bridge for A2A communication, allowing disparate agent frameworks (e.g., OpenClaw, AutoGen) to exchange state and tasks via a unified MCP-like interface.
 - **Federated Tool Mesh**: Moving from a standalone server to a "Mesh" architecture where multiple MCP Any instances can peer and share resources across network boundaries, governed by global Zero-Trust policies.
 - **Resource-Aware Intelligence**: Integrating cost and latency telemetry into the tool discovery process, allowing LLMs to perform "Economical Reasoning" when selecting tools.
+
+---
+
+## Strategic Evolution: [2026-02-27]
+### Focus: Identity-First Agency & Federated Zero-Trust Mesh
+**Context**: Today's research on OpenClaw's security vulnerabilities and the rise of A2A/Federated MCP confirms that "Capabilities" alone are no longer enough. We must move to an "Identity-First" security model where every tool call and agent handoff is cryptographically tied to a verified agent identity.
+**Strategic Pivot**:
+- **Identity-First Security**: MCP Any will transition from simple capability tokens to "Agent Attestation" tokens. Every tool execution will require a signature from the calling agent, preventing spoofing in multi-agent swarms.
+- **Federated Zero-Trust Mesh**: Moving beyond standalone server peering to a decentralized "Trust Graph." MCP Any nodes will form a mesh where tool discovery and execution are governed by global identity policies rather than local configuration.
+- **Containment-as-a-Service**: Actively positioning MCP Any as a security "sidecar" for high-risk autonomous agents like OpenClaw, providing a hard-sandboxed interface for all external interactions.

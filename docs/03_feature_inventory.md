@@ -63,5 +63,18 @@
 - **MCP Provenance Attestation**: Promoted to **P0** as it is a prerequisite for secure Federated MCP peering.
 - **Lazy-MCP Middleware**: Promoted to **P0** (Already P0, but re-affirming importance for Federated Tool Mesh).
 
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **A2A Identity Attestation Middleware**: (P0) Cryptographic verification of agent identities during handoffs. Prevents spoofing and unauthorized task delegation.
+- **Federated Discovery Mesh**: (P1) Distributed, P2P discovery protocol for MCP Any instances to share tool registries without a central coordinator.
+- **OpenClaw Containment Profile**: (P0) A pre-configured set of "Strict Isolation" policies specifically designed to secure OpenClaw deployments.
+
+### Priority Shifts
+- **Resource Telemetry Middleware**: Promoted from **P1** to **P0**. Critical for making "Economical Reasoning" decisions in federated tool meshes.
+- **Federated MCP Node Peering**: Promoted from **P1** to **P0** due to increasing enterprise demand for distributed tool access.
+
 ### Deprecations / Monitoring
-- **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+- **Global Capability Tokens**: Monitoring for deprecation in favor of per-agent Identity-Bound Attestations.

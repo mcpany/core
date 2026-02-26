@@ -46,3 +46,7 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-02-27:** **Update: Mitigating Identity Spoofing**.
+    - **Context**: Market research highlighted a lack of standardized identity in A2A handoffs, allowing for agent impersonation.
+    - **Architecture Adjustment**: Introducing `Agent-Attestation-Token` (AAT) support in `Section 4`. Every A2A handoff must now be accompanied by a JWT signed by the originating agent's private key, verified by MCP Any's internal Identity Manager.
+    - **Security Impact**: Prevents "Privilege Escalation" where a low-privilege subagent attempts to call restricted tools by spoofing its parent's session ID.

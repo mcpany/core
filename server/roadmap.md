@@ -29,6 +29,12 @@
 *   **[P1] Federated MCP Peering**: Distributed node discovery and tool proxying. (Added: 2026-02-26)
 *   **[P1] Resource Telemetry Middleware**: Inject latency/cost metrics into tool schemas. (Added: 2026-02-26)
 
+#### Upcoming (2026-02-27 Evolution)
+*   **[P0] A2A Identity Attestation**: Implement JWT-based agent identity verification for A2A handoffs. (Added: 2026-02-27)
+*   **[P0] Federated MCP Node Peering**: Promoted to P0. Implement mTLS-based node peering and gRPC proxying. (Added: 2026-02-27)
+*   **[P0] Resource Telemetry Middleware**: Promoted to P0. Critical for federated tool selection. (Added: 2026-02-27)
+*   **[P0] OpenClaw Containment Profile**: Strict isolation policy preset for OpenClaw agents. (Added: 2026-02-27)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
