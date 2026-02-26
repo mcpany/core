@@ -156,13 +156,13 @@ jobs:
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
 
           if command -v apt-get &> /dev/null; then
-             $SUDO DEBIAN_FRONTEND=noninteractive apt-get update && $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y make git build-essential xz-utils
+             $SUDO DEBIAN_FRONTEND=noninteractive apt-get update && $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y make git build-essential xz-utils curl unzip
           elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make git build-base xz
+             $SUDO apk add --no-cache make git build-base xz curl unzip
           elif command -v yum &> /dev/null; then
-             $SUDO yum install -y make git gcc gcc-c++ xz
+             $SUDO yum install -y make git gcc gcc-c++ xz curl unzip
           elif command -v dnf &> /dev/null; then
-             $SUDO dnf install -y make git gcc gcc-c++ xz
+             $SUDO dnf install -y make git gcc gcc-c++ xz curl unzip
           fi
 
       - name: Prepare environment
@@ -201,13 +201,13 @@ jobs:
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
 
           if command -v apt-get &> /dev/null; then
-             $SUDO DEBIAN_FRONTEND=noninteractive apt-get update && $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y make git build-essential xz-utils
+             $SUDO DEBIAN_FRONTEND=noninteractive apt-get update && $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y make git build-essential xz-utils curl unzip
           elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make git build-base xz
+             $SUDO apk add --no-cache make git build-base xz curl unzip
           elif command -v yum &> /dev/null; then
-             $SUDO yum install -y make git gcc gcc-c++ xz
+             $SUDO yum install -y make git gcc gcc-c++ xz curl unzip
           elif command -v dnf &> /dev/null; then
-             $SUDO dnf install -y make git gcc gcc-c++ xz
+             $SUDO dnf install -y make git gcc gcc-c++ xz curl unzip
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -349,13 +349,13 @@ jobs:
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
 
           if command -v apt-get &> /dev/null; then
-             $SUDO DEBIAN_FRONTEND=noninteractive apt-get update && $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y make git build-essential xz-utils
+             $SUDO DEBIAN_FRONTEND=noninteractive apt-get update && $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y make git build-essential xz-utils curl unzip
           elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make git build-base xz
+             $SUDO apk add --no-cache make git build-base xz curl unzip
           elif command -v yum &> /dev/null; then
-             $SUDO yum install -y make git gcc gcc-c++ xz
+             $SUDO yum install -y make git gcc gcc-c++ xz curl unzip
           elif command -v dnf &> /dev/null; then
-             $SUDO dnf install -y make git gcc gcc-c++ xz
+             $SUDO dnf install -y make git gcc gcc-c++ xz curl unzip
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -517,13 +517,13 @@ jobs:
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
 
           if command -v apt-get &> /dev/null; then
-             $SUDO DEBIAN_FRONTEND=noninteractive apt-get update && $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y make git build-essential xz-utils
+             $SUDO DEBIAN_FRONTEND=noninteractive apt-get update && $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y make git build-essential curl unzip
           elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make git build-base xz
+             $SUDO apk add --no-cache make git build-base curl unzip
           elif command -v yum &> /dev/null; then
-             $SUDO yum install -y make git gcc gcc-c++ xz
+             $SUDO yum install -y make git gcc gcc-c++ curl unzip
           elif command -v dnf &> /dev/null; then
-             $SUDO dnf install -y make git gcc gcc-c++ xz
+             $SUDO dnf install -y make git gcc gcc-c++ curl unzip
           fi
 
       - name: Set up Go
@@ -674,13 +674,13 @@ jobs:
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
 
           if command -v apt-get &> /dev/null; then
-             $SUDO DEBIAN_FRONTEND=noninteractive apt-get update && $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y make git build-essential xz-utils
+             $SUDO DEBIAN_FRONTEND=noninteractive apt-get update && $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y make git build-essential xz-utils curl unzip
           elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make git build-base xz
+             $SUDO apk add --no-cache make git build-base xz curl unzip
           elif command -v yum &> /dev/null; then
-             $SUDO yum install -y make git gcc gcc-c++ xz
+             $SUDO yum install -y make git gcc gcc-c++ xz curl unzip
           elif command -v dnf &> /dev/null; then
-             $SUDO dnf install -y make git gcc gcc-c++ xz
+             $SUDO dnf install -y make git gcc gcc-c++ xz curl unzip
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -822,13 +822,13 @@ jobs:
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
 
           if command -v apt-get &> /dev/null; then
-             $SUDO DEBIAN_FRONTEND=noninteractive apt-get update && $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y make git build-essential xz-utils
+             $SUDO DEBIAN_FRONTEND=noninteractive apt-get update && $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y make git build-essential xz-utils curl unzip
           elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make git build-base xz
+             $SUDO apk add --no-cache make git build-base xz curl unzip
           elif command -v yum &> /dev/null; then
-             $SUDO yum install -y make git gcc gcc-c++ xz
+             $SUDO yum install -y make git gcc gcc-c++ xz curl unzip
           elif command -v dnf &> /dev/null; then
-             $SUDO dnf install -y make git gcc gcc-c++ xz
+             $SUDO dnf install -y make git gcc gcc-c++ xz curl unzip
           fi
 
       - name: Configure Docker Registry Mirrors
