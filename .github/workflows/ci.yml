@@ -89,7 +89,7 @@ jobs:
           $SUDO rm -rf /usr/local/share/boost
 
       - name: Prune Docker
-        run: docker system prune -af
+        run: docker system prune -af || true
 
       - uses: actions/checkout@v6
 
@@ -167,7 +167,7 @@ jobs:
           $SUDO rm -rf /usr/local/share/boost
 
       - name: Prune Docker
-        run: docker system prune -af
+        run: docker system prune -af || true
 
       - uses: actions/checkout@v6
 
@@ -187,18 +187,26 @@ jobs:
           # Docker will try mirror.gcr.io first.
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
-          $SUDO mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json
 
-          if $SUDO systemctl restart docker 2>/dev/null; then
-            echo "Docker restarted via systemctl"
-          elif $SUDO service docker restart 2>/dev/null; then
-            echo "Docker restarted via service"
-          else
-            echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
-            $SUDO pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
-          fi
-          docker info # Verify the mirrors are listed
+          # Attempt to configure mirrors, but don't fail the job if it fails (e.g. read-only filesystem or missing tools)
+          {
+            $SUDO mkdir -p /etc/docker
+            echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json
+
+            if command -v systemctl >/dev/null && $SUDO systemctl restart docker 2>/dev/null; then
+              echo "Docker restarted via systemctl"
+            elif command -v service >/dev/null && $SUDO service docker restart 2>/dev/null; then
+              echo "Docker restarted via service"
+            else
+              echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
+              if command -v pkill >/dev/null; then
+                 $SUDO pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
+              else
+                 echo "pkill not found, skipping SIGHUP."
+              fi
+            fi
+            docker info || true
+          } || echo "Failed to configure Docker mirrors, proceeding anyway..."
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -312,7 +320,7 @@ jobs:
           $SUDO rm -rf /usr/local/share/boost
 
       - name: Prune Docker
-        run: docker system prune -af
+        run: docker system prune -af || true
 
       - uses: actions/checkout@v6
 
@@ -332,18 +340,26 @@ jobs:
           # Docker will try mirror.gcr.io first.
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
-          $SUDO mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json
 
-          if $SUDO systemctl restart docker 2>/dev/null; then
-            echo "Docker restarted via systemctl"
-          elif $SUDO service docker restart 2>/dev/null; then
-            echo "Docker restarted via service"
-          else
-            echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
-            $SUDO pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
-          fi
-          docker info # Verify the mirrors are listed
+          # Attempt to configure mirrors, but don't fail the job if it fails
+          {
+            $SUDO mkdir -p /etc/docker
+            echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json
+
+            if command -v systemctl >/dev/null && $SUDO systemctl restart docker 2>/dev/null; then
+              echo "Docker restarted via systemctl"
+            elif command -v service >/dev/null && $SUDO service docker restart 2>/dev/null; then
+              echo "Docker restarted via service"
+            else
+              echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
+              if command -v pkill >/dev/null; then
+                 $SUDO pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
+              else
+                 echo "pkill not found, skipping SIGHUP."
+              fi
+            fi
+            docker info || true
+          } || echo "Failed to configure Docker mirrors, proceeding anyway..."
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -624,7 +640,7 @@ jobs:
           $SUDO rm -rf /usr/local/share/boost
 
       - name: Prune Docker
-        run: docker system prune -af
+        run: docker system prune -af || true
 
       - uses: actions/checkout@v6
 
@@ -638,18 +654,28 @@ jobs:
 
       - name: Configure Docker Registry Mirrors
         run: |
-          sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          SUDO=""
+          if command -v sudo >/dev/null; then SUDO="sudo"; fi
 
-          if sudo systemctl restart docker 2>/dev/null; then
-            echo "Docker restarted via systemctl"
-          elif sudo service docker restart 2>/dev/null; then
-            echo "Docker restarted via service"
-          else
-            echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
-            sudo pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
-          fi
-          docker info
+          # Attempt to configure mirrors, but don't fail the job if it fails
+          {
+            $SUDO mkdir -p /etc/docker
+            echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json
+
+            if command -v systemctl >/dev/null && $SUDO systemctl restart docker 2>/dev/null; then
+              echo "Docker restarted via systemctl"
+            elif command -v service >/dev/null && $SUDO service docker restart 2>/dev/null; then
+              echo "Docker restarted via service"
+            else
+              echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
+              if command -v pkill >/dev/null; then
+                 $SUDO pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
+              else
+                 echo "pkill not found, skipping SIGHUP."
+              fi
+            fi
+            docker info || true
+          } || echo "Failed to configure Docker mirrors, proceeding anyway..."
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -765,7 +791,7 @@ jobs:
           $SUDO rm -rf /usr/local/share/boost
 
       - name: Prune Docker
-        run: docker system prune -af
+        run: docker system prune -af || true
 
       - uses: actions/checkout@v6
 
@@ -785,18 +811,26 @@ jobs:
           # Docker will try mirror.gcr.io first.
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
-          $SUDO mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json
 
-          if $SUDO systemctl restart docker 2>/dev/null; then
-            echo "Docker restarted via systemctl"
-          elif $SUDO service docker restart 2>/dev/null; then
-            echo "Docker restarted via service"
-          else
-            echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
-            $SUDO pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
-          fi
-          docker info # Verify the mirrors are listed
+          # Attempt to configure mirrors, but don't fail the job if it fails
+          {
+            $SUDO mkdir -p /etc/docker
+            echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json
+
+            if command -v systemctl >/dev/null && $SUDO systemctl restart docker 2>/dev/null; then
+              echo "Docker restarted via systemctl"
+            elif command -v service >/dev/null && $SUDO service docker restart 2>/dev/null; then
+              echo "Docker restarted via service"
+            else
+              echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
+              if command -v pkill >/dev/null; then
+                 $SUDO pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
+              else
+                 echo "pkill not found, skipping SIGHUP."
+              fi
+            fi
+            docker info || true
+          } || echo "Failed to configure Docker mirrors, proceeding anyway..."
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -950,7 +984,7 @@ jobs:
           $SUDO rm -rf /usr/local/share/boost
 
       - name: Prune Docker
-        run: docker system prune -af
+        run: docker system prune -af || true
 
       - uses: actions/checkout@v6
 
@@ -1005,7 +1039,7 @@ jobs:
           $SUDO rm -rf /usr/local/share/boost
 
       - name: Prune Docker
-        run: docker system prune -af
+        run: docker system prune -af || true
 
       - uses: actions/checkout@v6
 
