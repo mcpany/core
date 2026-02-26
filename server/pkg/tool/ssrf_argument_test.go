@@ -5,30 +5,23 @@ package tool
 
 import (
 	"context"
-	"fmt"
-	"net"
 	"os"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
-	"github.com/mcpany/core/server/pkg/validation"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
 )
 
 func TestSSRFArgumentProtection(t *testing.T) {
-	// Mock IsSafeURL to fail for loopback/private IPs for this test
-	// TestMain mocks it to always pass, which breaks our "existing check" test case.
-	originalIsSafeURL := validation.IsSafeURL
-	validation.IsSafeURL = func(urlStr string) error {
-		// Simple mock logic for test purposes
-		if urlStr == "http://127.0.0.1" {
-			return assert.AnError
-		}
-		return nil
-	}
-	defer func() { validation.IsSafeURL = originalIsSafeURL }()
+	// Note: We avoid mocking validation.IsSafeURL or validation.IsSafeIP here to prevent
+	// DATA RACE with parallel tests (e.g. TestCommandTool_Execute) that might read
+	// those global function variables.
+	// Instead, we rely on the real implementation which uses net.LookupIP and environment variables.
+	// We must ensure environment variables are managed safely (though os.Setenv is also risky in parallel tests).
+	// Ideally, this test should run sequentially (no t.Parallel()), which is the case.
+	// We hope other tests don't read these env vars concurrently.
 
 	// Setup helper to create tool
 	createTool := func(cmd string) Tool {
@@ -57,31 +50,31 @@ func TestSSRFArgumentProtection(t *testing.T) {
 		errorContains string
 	}{
 		{
-			name:        "Block localhost",
-			command:     "curl",
-			input:       "localhost",
-			expectError: true,
+			name:          "Block localhost",
+			command:       "curl",
+			input:         "localhost",
+			expectError:   true,
 			errorContains: "localhost is not allowed",
 		},
 		{
-			name:        "Block loopback IP",
-			command:     "curl",
-			input:       "127.0.0.1",
-			expectError: true,
+			name:          "Block loopback IP",
+			command:       "curl",
+			input:         "127.0.0.1",
+			expectError:   true,
 			errorContains: "loopback address is not allowed",
 		},
 		{
-			name:        "Block private IP",
-			command:     "wget",
-			input:       "192.168.1.1",
-			expectError: true,
+			name:          "Block private IP",
+			command:       "wget",
+			input:         "192.168.1.1",
+			expectError:   true,
 			errorContains: "private network address is not allowed",
 		},
 		{
-			name:        "Block metadata service IP",
-			command:     "fetch",
-			input:       "169.254.169.254",
-			expectError: true,
+			name:          "Block metadata service IP",
+			command:       "fetch",
+			input:         "169.254.169.254",
+			expectError:   true,
 			errorContains: "link-local address is not allowed",
 		},
 		{
@@ -91,25 +84,25 @@ func TestSSRFArgumentProtection(t *testing.T) {
 			expectError: false,
 		},
 		{
-			name:        "Allow localhost if enabled",
-			command:     "curl",
-			input:       "localhost",
+			name:          "Allow localhost if enabled",
+			command:       "curl",
+			input:         "localhost",
 			allowLoopback: true,
-			expectError: false,
+			expectError:   false,
 		},
 		{
-			name:        "Allow loopback IP if enabled",
-			command:     "curl",
-			input:       "127.0.0.1",
+			name:          "Allow loopback IP if enabled",
+			command:       "curl",
+			input:         "127.0.0.1",
 			allowLoopback: true,
-			expectError: false,
+			expectError:   false,
 		},
 		{
-			name:        "Allow private IP if enabled",
-			command:     "curl",
-			input:       "10.0.0.1",
+			name:         "Allow private IP if enabled",
+			command:      "curl",
+			input:        "10.0.0.1",
 			allowPrivate: true,
-			expectError: false,
+			expectError:  false,
 		},
 		{
 			name:        "Allow normal filename",
@@ -118,40 +111,35 @@ func TestSSRFArgumentProtection(t *testing.T) {
 			expectError: false,
 		},
 		{
-			name:        "Block unsafe URL with scheme (existing check)",
-			command:     "curl",
-			input:       "http://127.0.0.1",
-			expectError: true,
+			name:          "Block unsafe URL with scheme (existing check)",
+			command:       "curl",
+			input:         "http://127.0.0.1",
+			expectError:   true,
 			errorContains: "unsafe url",
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			// Mock IsSafeIP to respect test case flags instead of global env vars
-			// This avoids modifying global env vars (MCPANY_DANGEROUS_ALLOW_LOCAL_IPS) which could affect parallel tests.
-			originalIsSafeIP := validation.IsSafeIP
-			validation.IsSafeIP = func(ipStr string) error {
-				ip := net.ParseIP(ipStr)
-				if ip == nil {
-					return fmt.Errorf("invalid IP address")
-				}
-				return validation.ValidateIP(ip, tt.allowLoopback, tt.allowPrivate)
-			}
-			defer func() { validation.IsSafeIP = originalIsSafeIP }()
-
-			// We also need to set env vars for the "localhost" check in types.go which reads them directly
+			// Set environment variables for the test case
 			if tt.allowLoopback {
 				os.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 			} else {
 				os.Unsetenv("MCPANY_ALLOW_LOOPBACK_RESOURCES")
 			}
+			if tt.allowPrivate {
+				os.Setenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES", "true")
+			} else {
+				os.Unsetenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES")
+			}
 			// Ensure DANGEROUS flag is unset for this test to verify blocking logic
 			os.Unsetenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS")
 
-			// We don't strictly need to unset it after if other tests don't depend on it,
-			// but good practice.
-			defer os.Unsetenv("MCPANY_ALLOW_LOOPBACK_RESOURCES")
+			defer func() {
+				// Cleanup
+				os.Unsetenv("MCPANY_ALLOW_LOOPBACK_RESOURCES")
+				os.Unsetenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES")
+			}()
 
 			tool := createTool(tt.command)
 			req := &ExecutionRequest{
