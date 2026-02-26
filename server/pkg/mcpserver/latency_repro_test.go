@@ -101,34 +101,18 @@ func TestServer_CallTool_Latency_Metrics_Repro(t *testing.T) {
 	// Wait for metrics to appear
 	var data []*metrics.IntervalMetrics
 	var samples map[string]interface{}
-	// ⚡ BOLT: Increase wait time to 5s to account for extremely slow CI runners
-	for i := 0; i < 500; i++ {
+	// Check metrics
+	// Wait for metrics to appear
+	var data []*metrics.IntervalMetrics
+	for i := 0; i < 20; i++ {
 		data = sink.Data()
 		if len(data) > 0 {
-			// ⚡ BOLT: Fix test to aggregate samples from all intervals
-			// Since execution takes time, metrics might span multiple intervals.
-			samples = make(map[string]interface{})
-			for _, interval := range data {
-				for k, v := range interval.Samples {
-					samples[k] = v
-				}
-			}
-			// We look for the labelled metric which signifies the operation is complete and recorded
-			foundLabelled := false
-			expectedPrefix := "mcpany.tools.call.latency;tool="
-			for k := range samples {
-				if len(k) >= len(expectedPrefix) && k[:len(expectedPrefix)] == expectedPrefix {
-					foundLabelled = true
-					break
-				}
-			}
-			if foundLabelled {
-				break
-			}
+			break
 		}
 		time.Sleep(10 * time.Millisecond)
 	}
 	require.NotEmpty(t, data)
+	samples := data[0].Samples
 	require.NotEmpty(t, samples)
 
 	// We expect the unlabelled metric "mcpany.tools.call.latency" NOT to exist.

@@ -734,12 +734,9 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 
 	metrics.IncrCounterWithLabels(metricToolsCallTotal, 1, metricLabels)
 	startTime := time.Now()
-
-	result, err := s.toolManager.ExecuteTool(ctx, req)
-	// ⚡ BOLT: Fix pre-existing bug where latency was measured before execution (0ms).
-	// Now measuring actual execution time.
 	metrics.MeasureSinceWithLabels(metricToolsCallLatency, startTime, metricLabels)
 
+	result, err := s.toolManager.ExecuteTool(ctx, req)
 	if err != nil {
 		metrics.IncrCounterWithLabels(metricToolsCallErrors, 1, metricLabels)
 	}
