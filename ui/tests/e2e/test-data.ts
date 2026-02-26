@@ -258,3 +258,19 @@ export const seedCollection = async (requestContext?: APIRequestContext) => {
 export const cleanupCollection = async (requestContext?: APIRequestContext) => {
     // No-op
 };
+
+export const seedWebhooks = async (requestContext?: APIRequestContext) => {
+    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    const url = "http://example.com/webhook";
+    try {
+        const res = await context.post('/api/v1/alerts/webhook', {
+            data: { url },
+            headers: HEADERS
+        });
+        if (!res.ok()) {
+            console.log(`Failed to seed webhooks: ${res.status()}`);
+        }
+    } catch (e) {
+        console.log(`Error seeding webhooks: ${e}`);
+    }
+};

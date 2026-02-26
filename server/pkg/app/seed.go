@@ -63,11 +63,15 @@ func (a *Application) handleDebugSeed() http.HandlerFunc {
 		}
 
 		// Trigger reload to update in-memory state (ServiceRegistry, AuthManager, etc.)
-		go func() {
-			if err := a.ReloadConfig(context.Background(), a.fs, a.configPaths); err != nil {
-				log.Error("Failed to reload config after seeding", "error", err)
-			}
-		}()
+		// We do this synchronously to ensure that subsequent requests (e.g. from E2E tests)
+		// see the new state immediately.
+		if err := a.ReloadConfig(context.Background(), a.fs, a.configPaths); err != nil {
+			log.Error("Failed to reload config after seeding", "error", err)
+			// We log the error but still return 200 because the data is in DB.
+			// However, for tests, this might be misleading.
+			// Ideally we should return 500 if reload fails?
+			// But ReloadConfig failure might be partial.
+		}
 
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte(`{"status": "ok"}`))

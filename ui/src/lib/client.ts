@@ -2108,6 +2108,29 @@ export const apiClient = {
     },
 
     /**
+     * Seeds the database with initial data.
+     *
+     * Summary: Seeds the database.
+     *
+     * @param data - The seed data object (services, users, etc.).
+     * @throws {Error} If seeding fails.
+     *
+     * Side Effects: Makes a POST request to /api/v1/debug/seed.
+     */
+    seedData: async (data: any) => {
+        const res = await fetchWithAuth('/api/v1/debug/seed', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        if (!res.ok) {
+            const text = await res.text();
+            throw new Error(`Failed to seed data: ${text}`);
+        }
+        return res.json();
+    },
+
+    /**
      * Updates an alert status.
      *
      * Summary: Updates alert status.

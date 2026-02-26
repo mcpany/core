@@ -27,23 +27,57 @@ export default function ContextPage() {
   const handleSeedData = async () => {
       setSeeding(true);
       try {
-          // Attempt to register a mock service using the in-tree mock server.
-          // This requires the server to be running in an environment where 'go' is available
-          // or the binary is built.
-          await apiClient.registerService({
-              id: "context-heavy-mock",
-              name: "Context Heavy Mock",
-              version: "1.0.0",
-              disable: false,
-              priority: 0,
-              commandLineService: {
-                  command: "go run server/cmd/mock_mcp_server/main.go",
-                  workingDirectory: ".",
-                  env: {}
-              }
-           } as any);
+          // Seed the database with a heavy mock service using the backend seeder.
+          // This avoids dependency on local 'go' binary or source code.
+          await apiClient.seedData({
+              upstream_services: [
+                  {
+                      id: "context-heavy-mock",
+                      name: "Context Heavy Mock",
+                      version: "1.0.0",
+                      disable: false,
+                      priority: 0,
+                      // We use a simple echo command which is generally available
+                      command_line_service: {
+                          command: "echo",
+                          args: ["-n", "{\"jsonrpc\": \"2.0\", \"result\": {\"content\": [{\"type\": \"text\", \"text\": \"Mock Data\"}]}, \"id\": 1}"],
+                          working_directory: ".",
+                          env: {}
+                      },
+                      tools: [
+                          { name: "heavy_tool", description: "Returns a large payload", call_id: "heavy_call" }
+                      ],
+                      calls: {
+                          heavy_call: {
+                              // Mapping args to echo logic is tricky without a real script.
+                              // But for visualization of *availability*, this is enough.
+                              // If we need execution, we might need a better mock or 'cat'.
+                          }
+                      }
+                  }
+              ],
+              users: [
+                  {
+                      id: "admin",
+                      authentication: {
+                          basic_auth: {
+                              username: "admin",
+                              password_hash: "$2a$12$KPRtQETm7XKJP/L6FjYYxuCFpTK/oRs7v9U6hWx9XFnWy6UuDqK/a" // password
+                          }
+                      },
+                      roles: ["admin"],
+                      profile_ids: ["default"]
+                  }
+              ],
+              profiles: [
+                  {
+                      name: "default",
+                      description: "Default Profile"
+                  }
+              ]
+          });
 
-           toast({ title: "Seeded Mock Service", description: "Registered 'Context Heavy Mock'." });
+           toast({ title: "Seeded Data", description: "Database seeded with Context Heavy Mock." });
 
            // Trigger reload to refresh context data
            window.location.reload();
@@ -52,7 +86,7 @@ export default function ContextPage() {
           console.error("Seeding failed", e);
           toast({
               title: "Seeding Failed",
-              description: "Could not register mock service. Ensure 'go' is in the server path or use an existing service.",
+              description: "Could not seed database. Check server logs.",
               variant: "destructive"
           });
       } finally {

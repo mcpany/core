@@ -232,6 +232,9 @@ func createE2EBundle(t *testing.T, dir string) string {
 }
 
 func TestE2E_Bundle_Filesystem(t *testing.T) {
+	// Allow local IPs for testing
+	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "true")
+
 	// If Docker is not available or disabled, fallback to local execution.
 	useLocal := false
 	if os.Getenv("SKIP_DOCKER_TESTS") == "true" {
