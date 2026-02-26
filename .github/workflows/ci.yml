@@ -352,7 +352,7 @@ jobs:
           verbose: true
 
   e2e-parallel:
-    runs-on: oci-runner
+    runs-on: ubuntu-latest
     # container: public.ecr.aws/docker/library/ubuntu:24.04
     timeout-minutes: 30
     needs: [build-images]
@@ -740,7 +740,7 @@ jobs:
           retention-days: 1
 
   e2e-sequential:
-    runs-on: oci-runner
+    runs-on: ubuntu-latest
     # container: public.ecr.aws/docker/library/ubuntu:24.04
     timeout-minutes: 60
     needs: [build-images]
