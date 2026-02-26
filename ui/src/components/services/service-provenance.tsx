@@ -1,3 +1,8 @@
+/**
+ * Copyright 2025 Author(s) of MCP Any
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 "use client";
 
 import { UpstreamServiceConfig } from "@/lib/client";
@@ -10,6 +15,12 @@ interface ServiceProvenanceProps {
   service: UpstreamServiceConfig;
 }
 
+/**
+ * ServiceProvenance component displays the cryptographic verification status of a service.
+ * @param props - The component props.
+ * @param props.service - The service configuration to verify.
+ * @returns The rendered component.
+ */
 export function ServiceProvenance({ service }: ServiceProvenanceProps) {
   const verified = service.provenance?.verified;
   const signer = service.provenance?.signerIdentity;
