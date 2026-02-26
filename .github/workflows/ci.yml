@@ -98,44 +98,6 @@ jobs:
           $SUDO rm -rf ~/.cache
           $SUDO rm -rf "$AGENT_TOOLSDIRECTORY"
           $SUDO rm -rf /tmp/*
-          $SUDO rm -rf ~/.cache
-          $SUDO rm -rf "$AGENT_TOOLSDIRECTORY"
-          $SUDO rm -rf ~/.cache
-          $SUDO rm -rf "$AGENT_TOOLSDIRECTORY"
-          $SUDO rm -rf ~/.cache
-          $SUDO rm -rf "$AGENT_TOOLSDIRECTORY"
-          $SUDO rm -rf ~/.cache
-          $SUDO rm -rf "$AGENT_TOOLSDIRECTORY"
-          $SUDO rm -rf /usr/share/swift
-          $SUDO rm -rf /usr/local/graalvm
-          $SUDO rm -rf /usr/local/.ghcup
-          $SUDO rm -rf /usr/lib/jvm
-          $SUDO rm -rf /usr/local/share/powershell
-          $SUDO rm -rf /usr/share/miniconda
-          $SUDO rm -rf /usr/share/swift
-          $SUDO rm -rf /usr/local/graalvm
-          $SUDO rm -rf /usr/local/.ghcup
-          $SUDO rm -rf /usr/lib/jvm
-          $SUDO rm -rf /usr/local/share/powershell
-          $SUDO rm -rf /usr/share/miniconda
-          $SUDO rm -rf /usr/share/swift
-          $SUDO rm -rf /usr/local/graalvm
-          $SUDO rm -rf /usr/local/.ghcup
-          $SUDO rm -rf /usr/lib/jvm
-          $SUDO rm -rf /usr/local/share/powershell
-          $SUDO rm -rf /usr/share/miniconda
-          $SUDO rm -rf /usr/share/swift
-          $SUDO rm -rf /usr/local/graalvm
-          $SUDO rm -rf /usr/local/.ghcup
-          $SUDO rm -rf /usr/lib/jvm
-          $SUDO rm -rf /usr/local/share/powershell
-          $SUDO rm -rf /usr/share/miniconda
-          $SUDO rm -rf /usr/share/swift
-          $SUDO rm -rf /usr/local/graalvm
-          $SUDO rm -rf /usr/local/.ghcup
-          $SUDO rm -rf /usr/lib/jvm
-          $SUDO rm -rf /usr/local/share/powershell
-          $SUDO rm -rf /usr/share/miniconda
 
       - name: Prune Docker
         run: docker system prune -af --volumes
@@ -145,7 +107,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
-          go-version: "1.24"
+          go-version: "1.23"
           cache: true
 
       - name: Set up Python
@@ -246,7 +208,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
-          go-version: "1.24"
+          go-version: "1.23"
           cache: true
 
       - name: Set up Python
@@ -379,7 +341,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
-          go-version: "1.24"
+          go-version: "1.23"
           cache: true
 
       - name: Set up Python
@@ -531,7 +493,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
-          go-version: "1.24"
+          go-version: "1.23"
           cache: true
 
       - name: Set up Node.js
@@ -704,7 +666,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
-          go-version: "1.24"
+          go-version: "1.23"
           cache: true
 
       - name: Set up Python
@@ -845,7 +807,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
-          go-version: "1.24"
+          go-version: "1.23"
           cache: true
 
       - name: Set up Python
@@ -928,7 +890,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
-          go-version: "1.24"
+          go-version: "1.23"
           cache: true
 
       - name: Set up Docker Buildx
@@ -1042,7 +1004,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
-          go-version: "1.24"
+          go-version: "1.23"
           cache: true
 
       - name: Set up Node.js
