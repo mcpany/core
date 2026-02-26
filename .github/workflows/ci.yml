@@ -458,7 +458,7 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: ${{ matrix.runner }}
-    container: public.ecr.aws/docker/library/ubuntu:24.04
+    # container: public.ecr.aws/docker/library/ubuntu:24.04
     strategy:
       fail-fast: false
       matrix:
@@ -471,9 +471,6 @@ jobs:
             runner: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v6
-
-      - name: Install dependencies
-        run: apt-get update && apt-get install -y make git
 
       - name: Set up Go
         uses: actions/setup-go@v6
