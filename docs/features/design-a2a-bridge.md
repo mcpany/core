@@ -46,3 +46,11 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+
+### Update: [2026-02-26] - Mitigating A2A Identity Smuggling
+**Context:** Recent findings revealed a vulnerability where rogue agents can reuse session tokens across frameworks.
+**Architecture Adjustment:**
+* Integrating with the new **A2A Identity Provider (IdP) Middleware**.
+* Every A2A handoff now requires a signed attestation token from MCP Any.
+* Deprecating simple token-based auth in favor of short-lived, intent-scoped JWTs.
+**Security Impact:** Prevents cross-framework identity spoofing and ensures that handoffs are only performed between authorized agent peers.

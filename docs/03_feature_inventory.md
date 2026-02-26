@@ -65,3 +65,16 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-26] (Phase 2) Updates
+
+### Proposed Additions
+- **A2A Identity Provider (IdP) Middleware**: (P0) Issues and verifies cross-framework attestation tokens to prevent identity smuggling.
+- **Latency-Aware Tool Router**: (P1) Real-time routing engine that selects MCP nodes based on telemetry data (latency/cost).
+- **Selective Context Inheritance Guard**: (P1) Middleware to filter which environment variables and context are inherited by subagents.
+
+### Priority Shifts
+- **Federated MCP Node Peering**: Promoted to **P0**. Essential for scaling the tool mesh across distributed environments.
+- **Cost & Latency Telemetry Middleware**: Promoted to **P0**. Prerequisite for Latency-Aware Routing.

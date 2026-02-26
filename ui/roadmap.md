@@ -105,3 +105,8 @@
 - [ ] **Log Source Color Coding**: Assign distinct colors to different log sources automatically for better visual separation.
 - [ ] **Context Usage History**: Track total context usage over time to identify growth trends (requires backend metrics persistence).
 - [ ] **Tool Schema Optimizer**: Analyze tool schemas and suggest removing unused properties or compacting descriptions to save context tokens.
+
+### Universal Agent Bus (Phase 2 Evolution)
+- [ ] **[P0] Agent Identity Dashboard**: Manage and audit cross-framework attestation tokens and agent identities. (Added: 2026-02-26)
+- [ ] **[P1] Tool Mesh Heatmap**: Visual map of federated MCP nodes with real-time latency and cost overlays. (Added: 2026-02-26)
+- [ ] **[P1] Inheritance Filter Builder**: UI for configuring selective context inheritance rules for swarms. (Added: 2026-02-26)

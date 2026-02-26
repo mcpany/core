@@ -25,3 +25,22 @@
 ## Security Vulnerabilities
 - **A2A Spoofing**: Lack of standardized identity in A2A handoffs allows rogue agents to impersonate authorized peers.
 - **Federation Leakage**: Misconfigured peering in federated MCP setups can expose local tools to the public internet.
+
+---
+
+## Supplemental Findings: [2026-02-26] (Phase 2)
+
+### Claude Code: Selective Context Inheritance
+- **Insight**: Anthropic released a technical preview for "Selective Inheritance" in Claude Code. Agents can now choose to inherit only specific environment variables and file handles from parents, reducing the risk of accidental credential leakage to subagents.
+- **Impact**: MCP Any's Recursive Context Protocol should be updated to support "Inheritance Filters."
+
+### Gemini CLI: Native MCP-over-WebSockets
+- **Insight**: Google's Gemini CLI now natively supports WebSockets for MCP transport. This significantly reduces latency compared to HTTP for long-running agent sessions in cloud-hosted sandboxes.
+- **Impact**: Accelerates the need for MCP Any to support robust WebSocket proxying and connection pooling.
+
+### OpenClaw Swarm-Sync
+- **Insight**: OpenClaw 2.0 introduced "Swarm-Sync," a real-time state synchronization protocol. It allows agents in a swarm to share a live-updated vector blackboard for task coordination.
+- **Impact**: Confirms our "Shared KV Store" strategy but suggests we should add vector search capabilities to it.
+
+## New Security Vulnerabilities
+- **A2A Identity Smuggling**: A new attack vector where an agent from one framework (e.g., CrewAI) impersonates an agent from another (e.g., AutoGen) by reusing session-bound A2A tokens that lack cross-framework attestation.

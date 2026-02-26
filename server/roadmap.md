@@ -184,3 +184,8 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Core Middleware Pipeline**: The middleware architecture is robust and extensible.
 - **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates protocol details from business logic.
 - **Documentation**: The project has excellent documentation coverage for most features.
+
+#### Upcoming (2026-02-26 Evolution - Phase 2)
+*   **[P0] A2A Identity Provider (IdP)**: Issues cross-framework attestation tokens for secure agent handoffs. (Added: 2026-02-26)
+*   **[P1] Latency-Aware Tool Router**: Intelligent tool call routing based on real-time node telemetry. (Added: 2026-02-26)
+*   **[P1] Selective Inheritance Guard**: Filter-based context inheritance for Recursive Context Protocol. (Added: 2026-02-26)
