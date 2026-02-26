@@ -154,12 +154,16 @@ jobs:
         run: |
           if command -v apt-get &> /dev/null; then
             if command -v sudo &> /dev/null; then
-              sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
+              sudo DEBIAN_FRONTEND=noninteractive apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y make git build-essential xz-utils
             else
-              apt-get update && apt-get install -y make xz-utils build-essential
+              DEBIAN_FRONTEND=noninteractive apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y make git build-essential xz-utils
             fi
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz build-base
+             sudo apk add --no-cache make git build-base xz
+          elif command -v yum &> /dev/null; then
+             sudo yum install -y make git gcc gcc-c++ xz
+          elif command -v dnf &> /dev/null; then
+             sudo dnf install -y make git gcc gcc-c++ xz
           fi
 
       - name: Prepare environment
@@ -196,12 +200,16 @@ jobs:
         run: |
           if command -v apt-get &> /dev/null; then
             if command -v sudo &> /dev/null; then
-              sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
+              sudo DEBIAN_FRONTEND=noninteractive apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y make git build-essential xz-utils
             else
-              apt-get update && apt-get install -y make xz-utils build-essential
+              DEBIAN_FRONTEND=noninteractive apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y make git build-essential xz-utils
             fi
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz build-base
+             sudo apk add --no-cache make git build-base xz
+          elif command -v yum &> /dev/null; then
+             sudo yum install -y make git gcc gcc-c++ xz
+          elif command -v dnf &> /dev/null; then
+             sudo dnf install -y make git gcc gcc-c++ xz
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -341,12 +349,16 @@ jobs:
         run: |
           if command -v apt-get &> /dev/null; then
             if command -v sudo &> /dev/null; then
-              sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
+              sudo DEBIAN_FRONTEND=noninteractive apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y make git build-essential xz-utils
             else
-              apt-get update && apt-get install -y make xz-utils build-essential
+              DEBIAN_FRONTEND=noninteractive apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y make git build-essential xz-utils
             fi
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz build-base
+             sudo apk add --no-cache make git build-base xz
+          elif command -v yum &> /dev/null; then
+             sudo yum install -y make git gcc gcc-c++ xz
+          elif command -v dnf &> /dev/null; then
+             sudo dnf install -y make git gcc gcc-c++ xz
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -502,6 +514,14 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - name: Install dependencies
+        run: |
+          if command -v apt-get &> /dev/null; then
+             DEBIAN_FRONTEND=noninteractive apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y make git build-essential
+          elif command -v apk &> /dev/null; then
+             sudo apk add --no-cache make git build-base
+          fi
+
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
@@ -648,12 +668,16 @@ jobs:
         run: |
           if command -v apt-get &> /dev/null; then
             if command -v sudo &> /dev/null; then
-              sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
+              sudo DEBIAN_FRONTEND=noninteractive apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y make git build-essential xz-utils
             else
-              apt-get update && apt-get install -y make xz-utils build-essential
+              DEBIAN_FRONTEND=noninteractive apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y make git build-essential xz-utils
             fi
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz build-base
+             sudo apk add --no-cache make git build-base xz
+          elif command -v yum &> /dev/null; then
+             sudo yum install -y make git gcc gcc-c++ xz
+          elif command -v dnf &> /dev/null; then
+             sudo dnf install -y make git gcc gcc-c++ xz
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -793,12 +817,16 @@ jobs:
         run: |
           if command -v apt-get &> /dev/null; then
             if command -v sudo &> /dev/null; then
-              sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
+              sudo DEBIAN_FRONTEND=noninteractive apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y make git build-essential xz-utils
             else
-              apt-get update && apt-get install -y make xz-utils build-essential
+              DEBIAN_FRONTEND=noninteractive apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y make git build-essential xz-utils
             fi
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz build-base
+             sudo apk add --no-cache make git build-base xz
+          elif command -v yum &> /dev/null; then
+             sudo yum install -y make git gcc gcc-c++ xz
+          elif command -v dnf &> /dev/null; then
+             sudo dnf install -y make git gcc gcc-c++ xz
           fi
 
       - name: Configure Docker Registry Mirrors
