@@ -309,9 +309,9 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             sudo apk add --no-cache make xz build-base
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -486,12 +486,9 @@ jobs:
           cache: "npm"
           cache-dependency-path: server/tests/integration/upstream/package-lock.json
 
-      - name: Install dependencies
-        run: |
-          apt-get update && apt-get install -y make
-
       - name: Generate Protobufs
         run: |
+          apt-get update && apt-get install -y make build-essential
           make gen
 
       - name: Set up QEMU
@@ -845,6 +842,8 @@ jobs:
         run: make prepare
 
       - name: test public api
+        env:
+          CGO_ENABLED: 1
         run: |
           make test-public-api CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-public-api.out
 
