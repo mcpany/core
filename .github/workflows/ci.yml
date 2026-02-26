@@ -167,7 +167,7 @@ jobs:
     runs-on: ubuntu-latest
     # container: public.ecr.aws/docker/library/ubuntu:24.04
     timeout-minutes: 30
-    needs: [changes]
+    needs: [changes, build-images]
     if: ${{ needs.changes.outputs.src == 'true' }}
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
@@ -533,6 +533,7 @@ jobs:
       - name: Build and Save Images
         run: |
           set -o pipefail
+          set -x
           PLATFORM="${{ matrix.platform }}"
           SLUG="${{ matrix.slug }}"
 
