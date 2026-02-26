@@ -28,16 +28,12 @@ permissions:
 
 jobs:
   changes:
-    runs-on: oci-runner
-    container: public.ecr.aws/docker/library/ubuntu:24.04
+    runs-on: ubuntu-latest
     outputs:
       src: ${{ steps.filter.outputs.src }}
     steps:
       - name: Install dependencies
-        run: |
-          SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
-          $SUDO apt-get update && $SUDO apt-get install -y git
+        run: sudo apt-get update && sudo apt-get install -y git
 
       - uses: actions/checkout@v6
         with:
@@ -79,20 +75,17 @@ jobs:
   lint:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
-    runs-on: oci-runner
-    container: public.ecr.aws/docker/library/ubuntu:24.04
+    runs-on: ubuntu-latest
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
-          $SUDO rm -rf /usr/local/lib/android || true
-          $SUDO rm -rf /usr/share/dotnet || true
-          $SUDO rm -rf /opt/ghc || true
-          $SUDO rm -rf /usr/local/share/boost || true
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/share/boost
 
       - name: Prune Docker
-        run: docker system prune -af || true
+        run: docker system prune -af
 
       - uses: actions/checkout@v6
 
@@ -138,13 +131,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
-          if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils
-          elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz
-          fi
+          sudo apt-get update && sudo apt-get install -y make xz-utils
 
       - name: Prepare environment
         run: make prepare
@@ -153,8 +140,7 @@ jobs:
         run: make lint
 
   unit-test:
-    runs-on: oci-runner
-    container: public.ecr.aws/docker/library/ubuntu:24.04
+    runs-on: ubuntu-latest
     timeout-minutes: 30
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -165,47 +151,27 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
-          $SUDO rm -rf /usr/local/lib/android || true
-          $SUDO rm -rf /usr/share/dotnet || true
-          $SUDO rm -rf /opt/ghc || true
-          $SUDO rm -rf /usr/local/share/boost || true
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/share/boost
 
       - name: Prune Docker
-        run: docker system prune -af || true
+        run: docker system prune -af
 
       - uses: actions/checkout@v6
 
       - name: Install dependencies
         run: |
-          SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
-          if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils
-          elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz
-          fi
+          sudo apt-get update && sudo apt-get install -y make xz-utils
 
       - name: Configure Docker Registry Mirrors
         run: |
-          SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
           # Configure multiple mirrors in array format
-          # Docker will try mirror.gcr.io first.
-
-          if [ -d /etc/docker ] || $SUDO mkdir -p /etc/docker; then
-             echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json || true
-
-             if command -v systemctl >/dev/null; then
-                $SUDO systemctl restart docker 2>/dev/null || true
-             elif command -v service >/dev/null; then
-                $SUDO service docker restart 2>/dev/null || true
-             else
-                $SUDO pkill -SIGHUP dockerd || true
-             fi
-          fi
-          docker info || true
+          sudo mkdir -p /etc/docker
+          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          sudo systemctl restart docker
+          docker info
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -297,8 +263,7 @@ jobs:
           verbose: true
 
   e2e-parallel:
-    runs-on: oci-runner
-    container: public.ecr.aws/docker/library/ubuntu:24.04
+    runs-on: ubuntu-latest
     timeout-minutes: 30
     needs: [build-images]
     strategy:
@@ -312,47 +277,26 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
-          $SUDO rm -rf /usr/local/lib/android || true
-          $SUDO rm -rf /usr/share/dotnet || true
-          $SUDO rm -rf /opt/ghc || true
-          $SUDO rm -rf /usr/local/share/boost || true
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/share/boost
 
       - name: Prune Docker
-        run: docker system prune -af || true
+        run: docker system prune -af
 
       - uses: actions/checkout@v6
 
       - name: Install dependencies
         run: |
-          SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
-          if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils
-          elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz
-          fi
+          sudo apt-get update && sudo apt-get install -y make xz-utils
 
       - name: Configure Docker Registry Mirrors
         run: |
-          SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
-          # Configure multiple mirrors in array format
-          # Docker will try mirror.gcr.io first.
-
-          if [ -d /etc/docker ] || $SUDO mkdir -p /etc/docker; then
-             echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json || true
-
-             if command -v systemctl >/dev/null; then
-                $SUDO systemctl restart docker 2>/dev/null || true
-             elif command -v service >/dev/null; then
-                $SUDO service docker restart 2>/dev/null || true
-             else
-                $SUDO pkill -SIGHUP dockerd || true
-             fi
-          fi
-          docker info || true
+          sudo mkdir -p /etc/docker
+          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          sudo systemctl restart docker
+          docker info
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -490,12 +434,10 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
-          $SUDO rm -rf /usr/local/lib/android || true
-          $SUDO rm -rf /usr/share/dotnet || true
-          $SUDO rm -rf /opt/ghc || true
-          $SUDO rm -rf /usr/local/share/boost || true
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/share/boost
       - uses: actions/checkout@v6
 
       - name: Set up Go
@@ -618,8 +560,7 @@ jobs:
           retention-days: 1
 
   e2e-sequential:
-    runs-on: oci-runner
-    container: public.ecr.aws/docker/library/ubuntu:24.04
+    runs-on: ubuntu-latest
     timeout-minutes: 60
     needs: [build-images]
     env:
@@ -628,45 +569,26 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
-          $SUDO rm -rf /usr/local/lib/android || true
-          $SUDO rm -rf /usr/share/dotnet || true
-          $SUDO rm -rf /opt/ghc || true
-          $SUDO rm -rf /usr/local/share/boost || true
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/share/boost
 
       - name: Prune Docker
-        run: docker system prune -af || true
+        run: docker system prune -af
 
       - uses: actions/checkout@v6
 
       - name: Install dependencies
         run: |
-          SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
-          if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils
-          elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz
-          fi
+          sudo apt-get update && sudo apt-get install -y make xz-utils
 
       - name: Configure Docker Registry Mirrors
         run: |
-          SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
-
-          if [ -d /etc/docker ] || $SUDO mkdir -p /etc/docker; then
-             echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json || true
-
-             if command -v systemctl >/dev/null; then
-                $SUDO systemctl restart docker 2>/dev/null || true
-             elif command -v service >/dev/null; then
-                $SUDO service docker restart 2>/dev/null || true
-             else
-                $SUDO pkill -SIGHUP dockerd || true
-             fi
-          fi
-          docker info || true
+          sudo mkdir -p /etc/docker
+          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          sudo systemctl restart docker
+          docker info
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -763,8 +685,7 @@ jobs:
           verbose: true
 
   e2e-public-api:
-    runs-on: oci-runner
-    container: public.ecr.aws/docker/library/ubuntu:24.04
+    runs-on: ubuntu-latest
     timeout-minutes: 30
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -774,45 +695,26 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
-          $SUDO rm -rf /usr/local/lib/android || true
-          $SUDO rm -rf /usr/share/dotnet || true
-          $SUDO rm -rf /opt/ghc || true
-          $SUDO rm -rf /usr/local/share/boost || true
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/share/boost
 
       - name: Prune Docker
-        run: docker system prune -af || true
+        run: docker system prune -af
 
       - uses: actions/checkout@v6
 
       - name: Install dependencies
         run: |
-          SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
-          if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils
-          elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz
-          fi
+          sudo apt-get update && sudo apt-get install -y make xz-utils
 
       - name: Configure Docker Registry Mirrors
         run: |
-          SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
-
-          if [ -d /etc/docker ] || $SUDO mkdir -p /etc/docker; then
-             echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json || true
-
-             if command -v systemctl >/dev/null; then
-                $SUDO systemctl restart docker 2>/dev/null || true
-             elif command -v service >/dev/null; then
-                $SUDO service docker restart 2>/dev/null || true
-             else
-                $SUDO pkill -SIGHUP dockerd || true
-             fi
-          fi
-          docker info || true
+          sudo mkdir -p /etc/docker
+          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          sudo systemctl restart docker
+          docker info
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -899,19 +801,10 @@ jobs:
       - name: Configure Docker Registry Mirrors
         run: |
           # Configure multiple mirrors in array format
-          # Docker will try mirror.gcr.io first.
           sudo mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
-
-          if sudo systemctl restart docker 2>/dev/null; then
-            echo "Docker restarted via systemctl"
-          elif sudo service docker restart 2>/dev/null; then
-            echo "Docker restarted via service"
-          else
-            echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
-            sudo pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
-          fi
-          docker info # Verify the mirrors are listed
+          sudo systemctl restart docker
+          docker info
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -1123,8 +1016,7 @@ jobs:
           make k8s-e2e SKIP_IMAGE_BUILD=true IMAGE_TAG=latest
 
   ci-success:
-    runs-on: oci-runner
-    # container: public.ecr.aws/docker/library/ubuntu:24.04
+    runs-on: ubuntu-latest
     needs:
       [
         changes,
@@ -1147,27 +1039,7 @@ jobs:
 
       - name: Install Dependencies (gh, jq)
         run: |
-          SUDO=""
-          if command -v sudo >/dev/null; then
-            SUDO="sudo"
-          fi
-
-          install_dependencies() {
-            if ! command -v curl &> /dev/null || ! command -v jq &> /dev/null; then
-              echo "curl or jq not found. Installing..."
-              if command -v apt-get &> /dev/null; then
-                $SUDO apt-get update && $SUDO apt-get install -y curl ca-certificates jq
-              elif command -v apk &> /dev/null; then
-                $SUDO apk add --no-cache curl ca-certificates jq
-              elif command -v yum &> /dev/null; then
-                $SUDO yum install -y curl ca-certificates jq
-              elif command -v dnf &> /dev/null; then
-                $SUDO dnf install -y curl ca-certificates jq
-              else
-                echo "Could not find package manager. Trying to proceed..."
-              fi
-            fi
-          }
+          sudo apt-get update && sudo apt-get install -y curl ca-certificates jq
 
           if ! command -v gh &> /dev/null; then
             echo "gh not found. Installing..."
