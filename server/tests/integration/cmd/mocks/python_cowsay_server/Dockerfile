@@ -2,6 +2,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
 FROM mirror.gcr.io/library/python:3.11-slim
-WORKDIR /app
+WORKDIR /usr/src/app
 COPY main.py .
 RUN pip install --no-cache-dir cowsay
