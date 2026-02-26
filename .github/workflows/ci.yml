@@ -96,47 +96,56 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         run: |
           set -x
-          if command -v apt-get &> /dev/null; then
-            # Ignore update errors
-            if command -v sudo &> /dev/null; then
-              sudo -E apt-get update || true
-              sudo -E apt-get install --reinstall -y make build-essential xz-utils || sudo -E apt-get install -y make
+          echo "Detecting OS..."
+          cat /etc/os-release || true
+
+          install_pkg() {
+            if [ -f /etc/debian_version ]; then
+              if command -v sudo &> /dev/null; then
+                sudo -E apt-get update || true
+                sudo -E apt-get install -y --no-install-recommends make build-essential xz-utils
+              else
+                apt-get update || true
+                apt-get install -y --no-install-recommends make build-essential xz-utils
+              fi
+            elif [ -f /etc/alpine-release ]; then
+              if command -v sudo &> /dev/null; then
+                sudo apk add --no-cache make xz build-base
+              else
+                apk add --no-cache make xz build-base
+              fi
+            elif [ -f /etc/redhat-release ] || [ -f /etc/fedora-release ] || grep -q "ID_LIKE=.*rhel" /etc/os-release; then
+               if command -v dnf &> /dev/null; then
+                 PKG_MGR="dnf"
+               else
+                 PKG_MGR="yum"
+               fi
+
+               if command -v sudo &> /dev/null; then
+                 sudo $PKG_MGR install -y make xz diffutils
+                 sudo $PKG_MGR groupinstall -y "Development Tools" || sudo $PKG_MGR install -y gcc gcc-c++
+               else
+                 $PKG_MGR install -y make xz diffutils
+                 $PKG_MGR groupinstall -y "Development Tools" || $PKG_MGR install -y gcc gcc-c++
+               fi
             else
-              apt-get update || true
-              apt-get install --reinstall -y make build-essential xz-utils || apt-get install -y make
+               echo "Unsupported OS or package manager not found."
+               # Try fallback to apt-get if it exists (e.g. some minimal images)
+               if command -v apt-get &> /dev/null; then
+                  apt-get update || true
+                  apt-get install -y make build-essential
+               else
+                  echo "Cannot install dependencies."
+                  exit 1
+               fi
             fi
-          elif command -v apk &> /dev/null; then
-             if command -v sudo &> /dev/null; then
-               sudo apk add --no-cache make xz build-base
-             else
-               apk add --no-cache make xz build-base
-             fi
-          elif command -v dnf &> /dev/null; then
-             if command -v sudo &> /dev/null; then
-               sudo dnf install -y make xz diffutils
-               sudo dnf groupinstall -y "Development Tools" || sudo dnf install -y gcc gcc-c++
-             else
-               dnf install -y make xz diffutils
-               dnf groupinstall -y "Development Tools" || dnf install -y gcc gcc-c++
-             fi
-          elif command -v yum &> /dev/null; then
-             if command -v sudo &> /dev/null; then
-               sudo yum install -y make xz diffutils
-               sudo yum groupinstall -y "Development Tools" || sudo yum install -y gcc gcc-c++
-             else
-               yum install -y make xz diffutils
-               yum groupinstall -y "Development Tools" || yum install -y gcc gcc-c++
-             fi
-          else
-             echo "No supported package manager found."
-             exit 1
-          fi
+          }
+
+          install_pkg
 
           # Verify installation
           which make || echo "make not found in PATH"
-          ls -l /usr/bin/make || echo "/usr/bin/make not found"
-          echo "PATH=$PATH"
-
+          make --version || echo "make execution failed"
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
@@ -182,47 +191,56 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         run: |
           set -x
-          if command -v apt-get &> /dev/null; then
-            # Ignore update errors
-            if command -v sudo &> /dev/null; then
-              sudo -E apt-get update || true
-              sudo -E apt-get install --reinstall -y make build-essential xz-utils || sudo -E apt-get install -y make
+          echo "Detecting OS..."
+          cat /etc/os-release || true
+
+          install_pkg() {
+            if [ -f /etc/debian_version ]; then
+              if command -v sudo &> /dev/null; then
+                sudo -E apt-get update || true
+                sudo -E apt-get install -y --no-install-recommends make build-essential xz-utils
+              else
+                apt-get update || true
+                apt-get install -y --no-install-recommends make build-essential xz-utils
+              fi
+            elif [ -f /etc/alpine-release ]; then
+              if command -v sudo &> /dev/null; then
+                sudo apk add --no-cache make xz build-base
+              else
+                apk add --no-cache make xz build-base
+              fi
+            elif [ -f /etc/redhat-release ] || [ -f /etc/fedora-release ] || grep -q "ID_LIKE=.*rhel" /etc/os-release; then
+               if command -v dnf &> /dev/null; then
+                 PKG_MGR="dnf"
+               else
+                 PKG_MGR="yum"
+               fi
+
+               if command -v sudo &> /dev/null; then
+                 sudo $PKG_MGR install -y make xz diffutils
+                 sudo $PKG_MGR groupinstall -y "Development Tools" || sudo $PKG_MGR install -y gcc gcc-c++
+               else
+                 $PKG_MGR install -y make xz diffutils
+                 $PKG_MGR groupinstall -y "Development Tools" || $PKG_MGR install -y gcc gcc-c++
+               fi
             else
-              apt-get update || true
-              apt-get install --reinstall -y make build-essential xz-utils || apt-get install -y make
+               echo "Unsupported OS or package manager not found."
+               # Try fallback to apt-get if it exists (e.g. some minimal images)
+               if command -v apt-get &> /dev/null; then
+                  apt-get update || true
+                  apt-get install -y make build-essential
+               else
+                  echo "Cannot install dependencies."
+                  exit 1
+               fi
             fi
-          elif command -v apk &> /dev/null; then
-             if command -v sudo &> /dev/null; then
-               sudo apk add --no-cache make xz build-base
-             else
-               apk add --no-cache make xz build-base
-             fi
-          elif command -v dnf &> /dev/null; then
-             if command -v sudo &> /dev/null; then
-               sudo dnf install -y make xz diffutils
-               sudo dnf groupinstall -y "Development Tools" || sudo dnf install -y gcc gcc-c++
-             else
-               dnf install -y make xz diffutils
-               dnf groupinstall -y "Development Tools" || dnf install -y gcc gcc-c++
-             fi
-          elif command -v yum &> /dev/null; then
-             if command -v sudo &> /dev/null; then
-               sudo yum install -y make xz diffutils
-               sudo yum groupinstall -y "Development Tools" || sudo yum install -y gcc gcc-c++
-             else
-               yum install -y make xz diffutils
-               yum groupinstall -y "Development Tools" || yum install -y gcc gcc-c++
-             fi
-          else
-             echo "No supported package manager found."
-             exit 1
-          fi
+          }
+
+          install_pkg
 
           # Verify installation
           which make || echo "make not found in PATH"
-          ls -l /usr/bin/make || echo "/usr/bin/make not found"
-          echo "PATH=$PATH"
-
+          make --version || echo "make execution failed"
       - name: Prepare environment
         run: make prepare
 
@@ -256,47 +274,56 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         run: |
           set -x
-          if command -v apt-get &> /dev/null; then
-            # Ignore update errors
-            if command -v sudo &> /dev/null; then
-              sudo -E apt-get update || true
-              sudo -E apt-get install --reinstall -y make build-essential xz-utils || sudo -E apt-get install -y make
+          echo "Detecting OS..."
+          cat /etc/os-release || true
+
+          install_pkg() {
+            if [ -f /etc/debian_version ]; then
+              if command -v sudo &> /dev/null; then
+                sudo -E apt-get update || true
+                sudo -E apt-get install -y --no-install-recommends make build-essential xz-utils
+              else
+                apt-get update || true
+                apt-get install -y --no-install-recommends make build-essential xz-utils
+              fi
+            elif [ -f /etc/alpine-release ]; then
+              if command -v sudo &> /dev/null; then
+                sudo apk add --no-cache make xz build-base
+              else
+                apk add --no-cache make xz build-base
+              fi
+            elif [ -f /etc/redhat-release ] || [ -f /etc/fedora-release ] || grep -q "ID_LIKE=.*rhel" /etc/os-release; then
+               if command -v dnf &> /dev/null; then
+                 PKG_MGR="dnf"
+               else
+                 PKG_MGR="yum"
+               fi
+
+               if command -v sudo &> /dev/null; then
+                 sudo $PKG_MGR install -y make xz diffutils
+                 sudo $PKG_MGR groupinstall -y "Development Tools" || sudo $PKG_MGR install -y gcc gcc-c++
+               else
+                 $PKG_MGR install -y make xz diffutils
+                 $PKG_MGR groupinstall -y "Development Tools" || $PKG_MGR install -y gcc gcc-c++
+               fi
             else
-              apt-get update || true
-              apt-get install --reinstall -y make build-essential xz-utils || apt-get install -y make
+               echo "Unsupported OS or package manager not found."
+               # Try fallback to apt-get if it exists (e.g. some minimal images)
+               if command -v apt-get &> /dev/null; then
+                  apt-get update || true
+                  apt-get install -y make build-essential
+               else
+                  echo "Cannot install dependencies."
+                  exit 1
+               fi
             fi
-          elif command -v apk &> /dev/null; then
-             if command -v sudo &> /dev/null; then
-               sudo apk add --no-cache make xz build-base
-             else
-               apk add --no-cache make xz build-base
-             fi
-          elif command -v dnf &> /dev/null; then
-             if command -v sudo &> /dev/null; then
-               sudo dnf install -y make xz diffutils
-               sudo dnf groupinstall -y "Development Tools" || sudo dnf install -y gcc gcc-c++
-             else
-               dnf install -y make xz diffutils
-               dnf groupinstall -y "Development Tools" || dnf install -y gcc gcc-c++
-             fi
-          elif command -v yum &> /dev/null; then
-             if command -v sudo &> /dev/null; then
-               sudo yum install -y make xz diffutils
-               sudo yum groupinstall -y "Development Tools" || sudo yum install -y gcc gcc-c++
-             else
-               yum install -y make xz diffutils
-               yum groupinstall -y "Development Tools" || yum install -y gcc gcc-c++
-             fi
-          else
-             echo "No supported package manager found."
-             exit 1
-          fi
+          }
+
+          install_pkg
 
           # Verify installation
           which make || echo "make not found in PATH"
-          ls -l /usr/bin/make || echo "/usr/bin/make not found"
-          echo "PATH=$PATH"
-
+          make --version || echo "make execution failed"
       - name: Configure Docker Registry Mirrors
         run: |
           # Configure multiple mirrors in array format
@@ -433,47 +460,56 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         run: |
           set -x
-          if command -v apt-get &> /dev/null; then
-            # Ignore update errors
-            if command -v sudo &> /dev/null; then
-              sudo -E apt-get update || true
-              sudo -E apt-get install --reinstall -y make build-essential xz-utils || sudo -E apt-get install -y make
+          echo "Detecting OS..."
+          cat /etc/os-release || true
+
+          install_pkg() {
+            if [ -f /etc/debian_version ]; then
+              if command -v sudo &> /dev/null; then
+                sudo -E apt-get update || true
+                sudo -E apt-get install -y --no-install-recommends make build-essential xz-utils
+              else
+                apt-get update || true
+                apt-get install -y --no-install-recommends make build-essential xz-utils
+              fi
+            elif [ -f /etc/alpine-release ]; then
+              if command -v sudo &> /dev/null; then
+                sudo apk add --no-cache make xz build-base
+              else
+                apk add --no-cache make xz build-base
+              fi
+            elif [ -f /etc/redhat-release ] || [ -f /etc/fedora-release ] || grep -q "ID_LIKE=.*rhel" /etc/os-release; then
+               if command -v dnf &> /dev/null; then
+                 PKG_MGR="dnf"
+               else
+                 PKG_MGR="yum"
+               fi
+
+               if command -v sudo &> /dev/null; then
+                 sudo $PKG_MGR install -y make xz diffutils
+                 sudo $PKG_MGR groupinstall -y "Development Tools" || sudo $PKG_MGR install -y gcc gcc-c++
+               else
+                 $PKG_MGR install -y make xz diffutils
+                 $PKG_MGR groupinstall -y "Development Tools" || $PKG_MGR install -y gcc gcc-c++
+               fi
             else
-              apt-get update || true
-              apt-get install --reinstall -y make build-essential xz-utils || apt-get install -y make
+               echo "Unsupported OS or package manager not found."
+               # Try fallback to apt-get if it exists (e.g. some minimal images)
+               if command -v apt-get &> /dev/null; then
+                  apt-get update || true
+                  apt-get install -y make build-essential
+               else
+                  echo "Cannot install dependencies."
+                  exit 1
+               fi
             fi
-          elif command -v apk &> /dev/null; then
-             if command -v sudo &> /dev/null; then
-               sudo apk add --no-cache make xz build-base
-             else
-               apk add --no-cache make xz build-base
-             fi
-          elif command -v dnf &> /dev/null; then
-             if command -v sudo &> /dev/null; then
-               sudo dnf install -y make xz diffutils
-               sudo dnf groupinstall -y "Development Tools" || sudo dnf install -y gcc gcc-c++
-             else
-               dnf install -y make xz diffutils
-               dnf groupinstall -y "Development Tools" || dnf install -y gcc gcc-c++
-             fi
-          elif command -v yum &> /dev/null; then
-             if command -v sudo &> /dev/null; then
-               sudo yum install -y make xz diffutils
-               sudo yum groupinstall -y "Development Tools" || sudo yum install -y gcc gcc-c++
-             else
-               yum install -y make xz diffutils
-               yum groupinstall -y "Development Tools" || yum install -y gcc gcc-c++
-             fi
-          else
-             echo "No supported package manager found."
-             exit 1
-          fi
+          }
+
+          install_pkg
 
           # Verify installation
           which make || echo "make not found in PATH"
-          ls -l /usr/bin/make || echo "/usr/bin/make not found"
-          echo "PATH=$PATH"
-
+          make --version || echo "make execution failed"
       - name: Configure Docker Registry Mirrors
         run: |
           # Configure multiple mirrors in array format
@@ -631,47 +667,56 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         run: |
           set -x
-          if command -v apt-get &> /dev/null; then
-            # Ignore update errors
-            if command -v sudo &> /dev/null; then
-              sudo -E apt-get update || true
-              sudo -E apt-get install --reinstall -y make build-essential xz-utils || sudo -E apt-get install -y make
+          echo "Detecting OS..."
+          cat /etc/os-release || true
+
+          install_pkg() {
+            if [ -f /etc/debian_version ]; then
+              if command -v sudo &> /dev/null; then
+                sudo -E apt-get update || true
+                sudo -E apt-get install -y --no-install-recommends make build-essential xz-utils
+              else
+                apt-get update || true
+                apt-get install -y --no-install-recommends make build-essential xz-utils
+              fi
+            elif [ -f /etc/alpine-release ]; then
+              if command -v sudo &> /dev/null; then
+                sudo apk add --no-cache make xz build-base
+              else
+                apk add --no-cache make xz build-base
+              fi
+            elif [ -f /etc/redhat-release ] || [ -f /etc/fedora-release ] || grep -q "ID_LIKE=.*rhel" /etc/os-release; then
+               if command -v dnf &> /dev/null; then
+                 PKG_MGR="dnf"
+               else
+                 PKG_MGR="yum"
+               fi
+
+               if command -v sudo &> /dev/null; then
+                 sudo $PKG_MGR install -y make xz diffutils
+                 sudo $PKG_MGR groupinstall -y "Development Tools" || sudo $PKG_MGR install -y gcc gcc-c++
+               else
+                 $PKG_MGR install -y make xz diffutils
+                 $PKG_MGR groupinstall -y "Development Tools" || $PKG_MGR install -y gcc gcc-c++
+               fi
             else
-              apt-get update || true
-              apt-get install --reinstall -y make build-essential xz-utils || apt-get install -y make
+               echo "Unsupported OS or package manager not found."
+               # Try fallback to apt-get if it exists (e.g. some minimal images)
+               if command -v apt-get &> /dev/null; then
+                  apt-get update || true
+                  apt-get install -y make build-essential
+               else
+                  echo "Cannot install dependencies."
+                  exit 1
+               fi
             fi
-          elif command -v apk &> /dev/null; then
-             if command -v sudo &> /dev/null; then
-               sudo apk add --no-cache make xz build-base
-             else
-               apk add --no-cache make xz build-base
-             fi
-          elif command -v dnf &> /dev/null; then
-             if command -v sudo &> /dev/null; then
-               sudo dnf install -y make xz diffutils
-               sudo dnf groupinstall -y "Development Tools" || sudo dnf install -y gcc gcc-c++
-             else
-               dnf install -y make xz diffutils
-               dnf groupinstall -y "Development Tools" || dnf install -y gcc gcc-c++
-             fi
-          elif command -v yum &> /dev/null; then
-             if command -v sudo &> /dev/null; then
-               sudo yum install -y make xz diffutils
-               sudo yum groupinstall -y "Development Tools" || sudo yum install -y gcc gcc-c++
-             else
-               yum install -y make xz diffutils
-               yum groupinstall -y "Development Tools" || yum install -y gcc gcc-c++
-             fi
-          else
-             echo "No supported package manager found."
-             exit 1
-          fi
+          }
+
+          install_pkg
 
           # Verify installation
           which make || echo "make not found in PATH"
-          ls -l /usr/bin/make || echo "/usr/bin/make not found"
-          echo "PATH=$PATH"
-
+          make --version || echo "make execution failed"
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
@@ -689,20 +734,57 @@ jobs:
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
-          # Robust install for make and build-essential
-          # Force re-install to ensure it is in the PATH correctly
-          if command -v sudo &> /dev/null; then
-            sudo -E apt-get update && sudo -E apt-get install --reinstall -y make build-essential
-          else
-            apt-get update && apt-get install --reinstall -y make build-essential
-          fi
+          set -x
+          echo "Detecting OS..."
+          cat /etc/os-release || true
 
-          echo "Debugging Make Installation:"
+          install_pkg() {
+            if [ -f /etc/debian_version ]; then
+              if command -v sudo &> /dev/null; then
+                sudo -E apt-get update || true
+                sudo -E apt-get install -y --no-install-recommends make build-essential xz-utils
+              else
+                apt-get update || true
+                apt-get install -y --no-install-recommends make build-essential xz-utils
+              fi
+            elif [ -f /etc/alpine-release ]; then
+              if command -v sudo &> /dev/null; then
+                sudo apk add --no-cache make xz build-base
+              else
+                apk add --no-cache make xz build-base
+              fi
+            elif [ -f /etc/redhat-release ] || [ -f /etc/fedora-release ] || grep -q "ID_LIKE=.*rhel" /etc/os-release; then
+               if command -v dnf &> /dev/null; then
+                 PKG_MGR="dnf"
+               else
+                 PKG_MGR="yum"
+               fi
+
+               if command -v sudo &> /dev/null; then
+                 sudo $PKG_MGR install -y make xz diffutils
+                 sudo $PKG_MGR groupinstall -y "Development Tools" || sudo $PKG_MGR install -y gcc gcc-c++
+               else
+                 $PKG_MGR install -y make xz diffutils
+                 $PKG_MGR groupinstall -y "Development Tools" || $PKG_MGR install -y gcc gcc-c++
+               fi
+            else
+               echo "Unsupported OS or package manager not found."
+               # Try fallback to apt-get if it exists (e.g. some minimal images)
+               if command -v apt-get &> /dev/null; then
+                  apt-get update || true
+                  apt-get install -y make build-essential
+               else
+                  echo "Cannot install dependencies."
+                  exit 1
+               fi
+            fi
+          }
+
+          install_pkg
+
+          # Verify installation
           which make || echo "make not found in PATH"
-          ls -l /usr/bin/make || echo "/usr/bin/make not found"
-          echo "PATH=$PATH"
-          make --version
-
+          make --version || echo "make execution failed"
       - name: Generate Protobufs
         run: |
           # Explicitly use /usr/bin/make if available to avoid alias/function shadowing
@@ -841,47 +923,56 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         run: |
           set -x
-          if command -v apt-get &> /dev/null; then
-            # Ignore update errors
-            if command -v sudo &> /dev/null; then
-              sudo -E apt-get update || true
-              sudo -E apt-get install --reinstall -y make build-essential xz-utils || sudo -E apt-get install -y make
+          echo "Detecting OS..."
+          cat /etc/os-release || true
+
+          install_pkg() {
+            if [ -f /etc/debian_version ]; then
+              if command -v sudo &> /dev/null; then
+                sudo -E apt-get update || true
+                sudo -E apt-get install -y --no-install-recommends make build-essential xz-utils
+              else
+                apt-get update || true
+                apt-get install -y --no-install-recommends make build-essential xz-utils
+              fi
+            elif [ -f /etc/alpine-release ]; then
+              if command -v sudo &> /dev/null; then
+                sudo apk add --no-cache make xz build-base
+              else
+                apk add --no-cache make xz build-base
+              fi
+            elif [ -f /etc/redhat-release ] || [ -f /etc/fedora-release ] || grep -q "ID_LIKE=.*rhel" /etc/os-release; then
+               if command -v dnf &> /dev/null; then
+                 PKG_MGR="dnf"
+               else
+                 PKG_MGR="yum"
+               fi
+
+               if command -v sudo &> /dev/null; then
+                 sudo $PKG_MGR install -y make xz diffutils
+                 sudo $PKG_MGR groupinstall -y "Development Tools" || sudo $PKG_MGR install -y gcc gcc-c++
+               else
+                 $PKG_MGR install -y make xz diffutils
+                 $PKG_MGR groupinstall -y "Development Tools" || $PKG_MGR install -y gcc gcc-c++
+               fi
             else
-              apt-get update || true
-              apt-get install --reinstall -y make build-essential xz-utils || apt-get install -y make
+               echo "Unsupported OS or package manager not found."
+               # Try fallback to apt-get if it exists (e.g. some minimal images)
+               if command -v apt-get &> /dev/null; then
+                  apt-get update || true
+                  apt-get install -y make build-essential
+               else
+                  echo "Cannot install dependencies."
+                  exit 1
+               fi
             fi
-          elif command -v apk &> /dev/null; then
-             if command -v sudo &> /dev/null; then
-               sudo apk add --no-cache make xz build-base
-             else
-               apk add --no-cache make xz build-base
-             fi
-          elif command -v dnf &> /dev/null; then
-             if command -v sudo &> /dev/null; then
-               sudo dnf install -y make xz diffutils
-               sudo dnf groupinstall -y "Development Tools" || sudo dnf install -y gcc gcc-c++
-             else
-               dnf install -y make xz diffutils
-               dnf groupinstall -y "Development Tools" || dnf install -y gcc gcc-c++
-             fi
-          elif command -v yum &> /dev/null; then
-             if command -v sudo &> /dev/null; then
-               sudo yum install -y make xz diffutils
-               sudo yum groupinstall -y "Development Tools" || sudo yum install -y gcc gcc-c++
-             else
-               yum install -y make xz diffutils
-               yum groupinstall -y "Development Tools" || yum install -y gcc gcc-c++
-             fi
-          else
-             echo "No supported package manager found."
-             exit 1
-          fi
+          }
+
+          install_pkg
 
           # Verify installation
           which make || echo "make not found in PATH"
-          ls -l /usr/bin/make || echo "/usr/bin/make not found"
-          echo "PATH=$PATH"
-
+          make --version || echo "make execution failed"
       - name: Configure Docker Registry Mirrors
         run: |
           sudo mkdir -p /etc/docker
@@ -1018,47 +1109,56 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         run: |
           set -x
-          if command -v apt-get &> /dev/null; then
-            # Ignore update errors
-            if command -v sudo &> /dev/null; then
-              sudo -E apt-get update || true
-              sudo -E apt-get install --reinstall -y make build-essential xz-utils || sudo -E apt-get install -y make
+          echo "Detecting OS..."
+          cat /etc/os-release || true
+
+          install_pkg() {
+            if [ -f /etc/debian_version ]; then
+              if command -v sudo &> /dev/null; then
+                sudo -E apt-get update || true
+                sudo -E apt-get install -y --no-install-recommends make build-essential xz-utils
+              else
+                apt-get update || true
+                apt-get install -y --no-install-recommends make build-essential xz-utils
+              fi
+            elif [ -f /etc/alpine-release ]; then
+              if command -v sudo &> /dev/null; then
+                sudo apk add --no-cache make xz build-base
+              else
+                apk add --no-cache make xz build-base
+              fi
+            elif [ -f /etc/redhat-release ] || [ -f /etc/fedora-release ] || grep -q "ID_LIKE=.*rhel" /etc/os-release; then
+               if command -v dnf &> /dev/null; then
+                 PKG_MGR="dnf"
+               else
+                 PKG_MGR="yum"
+               fi
+
+               if command -v sudo &> /dev/null; then
+                 sudo $PKG_MGR install -y make xz diffutils
+                 sudo $PKG_MGR groupinstall -y "Development Tools" || sudo $PKG_MGR install -y gcc gcc-c++
+               else
+                 $PKG_MGR install -y make xz diffutils
+                 $PKG_MGR groupinstall -y "Development Tools" || $PKG_MGR install -y gcc gcc-c++
+               fi
             else
-              apt-get update || true
-              apt-get install --reinstall -y make build-essential xz-utils || apt-get install -y make
+               echo "Unsupported OS or package manager not found."
+               # Try fallback to apt-get if it exists (e.g. some minimal images)
+               if command -v apt-get &> /dev/null; then
+                  apt-get update || true
+                  apt-get install -y make build-essential
+               else
+                  echo "Cannot install dependencies."
+                  exit 1
+               fi
             fi
-          elif command -v apk &> /dev/null; then
-             if command -v sudo &> /dev/null; then
-               sudo apk add --no-cache make xz build-base
-             else
-               apk add --no-cache make xz build-base
-             fi
-          elif command -v dnf &> /dev/null; then
-             if command -v sudo &> /dev/null; then
-               sudo dnf install -y make xz diffutils
-               sudo dnf groupinstall -y "Development Tools" || sudo dnf install -y gcc gcc-c++
-             else
-               dnf install -y make xz diffutils
-               dnf groupinstall -y "Development Tools" || dnf install -y gcc gcc-c++
-             fi
-          elif command -v yum &> /dev/null; then
-             if command -v sudo &> /dev/null; then
-               sudo yum install -y make xz diffutils
-               sudo yum groupinstall -y "Development Tools" || sudo yum install -y gcc gcc-c++
-             else
-               yum install -y make xz diffutils
-               yum groupinstall -y "Development Tools" || yum install -y gcc gcc-c++
-             fi
-          else
-             echo "No supported package manager found."
-             exit 1
-          fi
+          }
+
+          install_pkg
 
           # Verify installation
           which make || echo "make not found in PATH"
-          ls -l /usr/bin/make || echo "/usr/bin/make not found"
-          echo "PATH=$PATH"
-
+          make --version || echo "make execution failed"
       - name: Configure Docker Registry Mirrors
         run: |
           # Configure multiple mirrors in array format
@@ -1163,47 +1263,56 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         run: |
           set -x
-          if command -v apt-get &> /dev/null; then
-            # Ignore update errors
-            if command -v sudo &> /dev/null; then
-              sudo -E apt-get update || true
-              sudo -E apt-get install --reinstall -y make build-essential xz-utils || sudo -E apt-get install -y make
+          echo "Detecting OS..."
+          cat /etc/os-release || true
+
+          install_pkg() {
+            if [ -f /etc/debian_version ]; then
+              if command -v sudo &> /dev/null; then
+                sudo -E apt-get update || true
+                sudo -E apt-get install -y --no-install-recommends make build-essential xz-utils
+              else
+                apt-get update || true
+                apt-get install -y --no-install-recommends make build-essential xz-utils
+              fi
+            elif [ -f /etc/alpine-release ]; then
+              if command -v sudo &> /dev/null; then
+                sudo apk add --no-cache make xz build-base
+              else
+                apk add --no-cache make xz build-base
+              fi
+            elif [ -f /etc/redhat-release ] || [ -f /etc/fedora-release ] || grep -q "ID_LIKE=.*rhel" /etc/os-release; then
+               if command -v dnf &> /dev/null; then
+                 PKG_MGR="dnf"
+               else
+                 PKG_MGR="yum"
+               fi
+
+               if command -v sudo &> /dev/null; then
+                 sudo $PKG_MGR install -y make xz diffutils
+                 sudo $PKG_MGR groupinstall -y "Development Tools" || sudo $PKG_MGR install -y gcc gcc-c++
+               else
+                 $PKG_MGR install -y make xz diffutils
+                 $PKG_MGR groupinstall -y "Development Tools" || $PKG_MGR install -y gcc gcc-c++
+               fi
             else
-              apt-get update || true
-              apt-get install --reinstall -y make build-essential xz-utils || apt-get install -y make
+               echo "Unsupported OS or package manager not found."
+               # Try fallback to apt-get if it exists (e.g. some minimal images)
+               if command -v apt-get &> /dev/null; then
+                  apt-get update || true
+                  apt-get install -y make build-essential
+               else
+                  echo "Cannot install dependencies."
+                  exit 1
+               fi
             fi
-          elif command -v apk &> /dev/null; then
-             if command -v sudo &> /dev/null; then
-               sudo apk add --no-cache make xz build-base
-             else
-               apk add --no-cache make xz build-base
-             fi
-          elif command -v dnf &> /dev/null; then
-             if command -v sudo &> /dev/null; then
-               sudo dnf install -y make xz diffutils
-               sudo dnf groupinstall -y "Development Tools" || sudo dnf install -y gcc gcc-c++
-             else
-               dnf install -y make xz diffutils
-               dnf groupinstall -y "Development Tools" || dnf install -y gcc gcc-c++
-             fi
-          elif command -v yum &> /dev/null; then
-             if command -v sudo &> /dev/null; then
-               sudo yum install -y make xz diffutils
-               sudo yum groupinstall -y "Development Tools" || sudo yum install -y gcc gcc-c++
-             else
-               yum install -y make xz diffutils
-               yum groupinstall -y "Development Tools" || yum install -y gcc gcc-c++
-             fi
-          else
-             echo "No supported package manager found."
-             exit 1
-          fi
+          }
+
+          install_pkg
 
           # Verify installation
           which make || echo "make not found in PATH"
-          ls -l /usr/bin/make || echo "/usr/bin/make not found"
-          echo "PATH=$PATH"
-
+          make --version || echo "make execution failed"
       - name: Configure Docker Registry Mirrors
         run: |
           # Configure multiple mirrors in array format
@@ -1281,30 +1390,56 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         run: |
           set -x
-          if command -v apt-get &> /dev/null; then
-            if command -v sudo &> /dev/null; then
-              sudo -E apt-get update && sudo -E apt-get install --reinstall -y make build-essential xz-utils
+          echo "Detecting OS..."
+          cat /etc/os-release || true
+
+          install_pkg() {
+            if [ -f /etc/debian_version ]; then
+              if command -v sudo &> /dev/null; then
+                sudo -E apt-get update || true
+                sudo -E apt-get install -y --no-install-recommends make build-essential xz-utils
+              else
+                apt-get update || true
+                apt-get install -y --no-install-recommends make build-essential xz-utils
+              fi
+            elif [ -f /etc/alpine-release ]; then
+              if command -v sudo &> /dev/null; then
+                sudo apk add --no-cache make xz build-base
+              else
+                apk add --no-cache make xz build-base
+              fi
+            elif [ -f /etc/redhat-release ] || [ -f /etc/fedora-release ] || grep -q "ID_LIKE=.*rhel" /etc/os-release; then
+               if command -v dnf &> /dev/null; then
+                 PKG_MGR="dnf"
+               else
+                 PKG_MGR="yum"
+               fi
+
+               if command -v sudo &> /dev/null; then
+                 sudo $PKG_MGR install -y make xz diffutils
+                 sudo $PKG_MGR groupinstall -y "Development Tools" || sudo $PKG_MGR install -y gcc gcc-c++
+               else
+                 $PKG_MGR install -y make xz diffutils
+                 $PKG_MGR groupinstall -y "Development Tools" || $PKG_MGR install -y gcc gcc-c++
+               fi
             else
-              apt-get update && apt-get install --reinstall -y make build-essential xz-utils
+               echo "Unsupported OS or package manager not found."
+               # Try fallback to apt-get if it exists (e.g. some minimal images)
+               if command -v apt-get &> /dev/null; then
+                  apt-get update || true
+                  apt-get install -y make build-essential
+               else
+                  echo "Cannot install dependencies."
+                  exit 1
+               fi
             fi
-          elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz build-base
-          elif command -v dnf &> /dev/null; then
-             sudo dnf install -y make xz diffutils
-             sudo dnf groupinstall -y "Development Tools" || sudo dnf install -y gcc gcc-c++
-          elif command -v yum &> /dev/null; then
-             sudo yum install -y make xz diffutils
-             sudo yum groupinstall -y "Development Tools" || sudo yum install -y gcc gcc-c++
-          else
-             echo "No supported package manager found."
-             exit 1
-          fi
+          }
+
+          install_pkg
 
           # Verify installation
           which make || echo "make not found in PATH"
-          ls -l /usr/bin/make || echo "/usr/bin/make not found"
-          echo "PATH=$PATH"
-
+          make --version || echo "make execution failed"
       - name: Detect Architecture
         id: detect-arch
         run: |
@@ -1359,15 +1494,60 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Install dependencies
+        env:
+          DEBIAN_FRONTEND: noninteractive
         run: |
-          if command -v apt-get &> /dev/null; then
-            if command -v sudo &> /dev/null; then
-              sudo apt-get update && sudo apt-get install -y make build-essential
-            else
-              apt-get update && apt-get install -y make build-essential
-            fi
-          fi
+          set -x
+          echo "Detecting OS..."
+          cat /etc/os-release || true
 
+          install_pkg() {
+            if [ -f /etc/debian_version ]; then
+              if command -v sudo &> /dev/null; then
+                sudo -E apt-get update || true
+                sudo -E apt-get install -y --no-install-recommends make build-essential xz-utils
+              else
+                apt-get update || true
+                apt-get install -y --no-install-recommends make build-essential xz-utils
+              fi
+            elif [ -f /etc/alpine-release ]; then
+              if command -v sudo &> /dev/null; then
+                sudo apk add --no-cache make xz build-base
+              else
+                apk add --no-cache make xz build-base
+              fi
+            elif [ -f /etc/redhat-release ] || [ -f /etc/fedora-release ] || grep -q "ID_LIKE=.*rhel" /etc/os-release; then
+               if command -v dnf &> /dev/null; then
+                 PKG_MGR="dnf"
+               else
+                 PKG_MGR="yum"
+               fi
+
+               if command -v sudo &> /dev/null; then
+                 sudo $PKG_MGR install -y make xz diffutils
+                 sudo $PKG_MGR groupinstall -y "Development Tools" || sudo $PKG_MGR install -y gcc gcc-c++
+               else
+                 $PKG_MGR install -y make xz diffutils
+                 $PKG_MGR groupinstall -y "Development Tools" || $PKG_MGR install -y gcc gcc-c++
+               fi
+            else
+               echo "Unsupported OS or package manager not found."
+               # Try fallback to apt-get if it exists (e.g. some minimal images)
+               if command -v apt-get &> /dev/null; then
+                  apt-get update || true
+                  apt-get install -y make build-essential
+               else
+                  echo "Cannot install dependencies."
+                  exit 1
+               fi
+            fi
+          }
+
+          install_pkg
+
+          # Verify installation
+          which make || echo "make not found in PATH"
+          make --version || echo "make execution failed"
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
