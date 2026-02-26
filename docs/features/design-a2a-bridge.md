@@ -46,3 +46,10 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+
+### Update: 2026-02-26 - Mitigating A2A Identity Spoofing
+**Context**: Supplemental research into OpenClaw's multi-agent refinement reveals a lack of standardized identity in A2A handoffs, allowing subagents to impersonate authorized peers.
+**Architecture Adjustment**:
+*   Implementing **A2A Attestation Tokens**: Every A2A message routed through MCP Any must now include a JWT-based attestation signed by the MCP Any Gateway.
+*   **Lineage Verification**: The `Recursive Context Protocol` is extended to track the cryptographic lineage of a session, ensuring that only the direct child of an authorized agent can access its shared state.
+**Security Impact**: Prevents "Sideways Escalation" where a rogue subagent intercepts state meant for a different peer in the same swarm.

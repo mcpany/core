@@ -105,3 +105,8 @@
 - [ ] **Log Source Color Coding**: Assign distinct colors to different log sources automatically for better visual separation.
 - [ ] **Context Usage History**: Track total context usage over time to identify growth trends (requires backend metrics persistence).
 - [ ] **Tool Schema Optimizer**: Analyze tool schemas and suggest removing unused properties or compacting descriptions to save context tokens.
+
+#### 2026-02-26 Supplemental Evolution
+- [ ] **[P0] Sandbox Isolation Monitor**: Real-time view of sandboxed tool resource usage and security violations.
+- [ ] **[P0] Registry Provenance Dashboard**: Verification status of all tool origins and cryptographic signatures.
+- [ ] **[P1] Remote Brain Connection Wizard**: UI for securely connecting remote LLMs to local MCP Any gateways.

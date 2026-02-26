@@ -65,3 +65,16 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-26] Supplemental Updates
+
+### Proposed Additions
+- **Isolated Gateway Middleware (P0)**: (P0) Implements process-level sandboxing for tool execution to prevent LFI and root access exploits.
+- **Cryptographic Registry Attestation (P0)**: (P0) End-to-end verification of tool provenance from remote registries (ClawHub) to local execution.
+- **Brain-Gateway Protocol Bridge**: (P1) High-security interface for remote LLM "Brains" connecting to local MCP Any gateways.
+
+### Priority Shifts
+- **MCP Provenance Attestation**: (Re-affirming P0) Critical for mitigating current supply chain attacks in the OpenClaw ecosystem.
+- **Policy Firewall**: (P0) Expanding scope to include "Internal Tool Shadowing" protection.

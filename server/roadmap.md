@@ -184,3 +184,8 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Core Middleware Pipeline**: The middleware architecture is robust and extensible.
 - **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates protocol details from business logic.
 - **Documentation**: The project has excellent documentation coverage for most features.
+
+#### Upcoming (2026-02-26 Supplemental Evolution)
+*   **[P0] Isolated Gateway Middleware**: Process-level sandboxing for tool execution to prevent LFI/root access.
+*   **[P0] Cryptographic Registry Attestation**: End-to-end provenance verification for tools from remote registries.
+*   **[P1] Brain-Gateway Protocol Bridge**: Hardened interface for remote LLM "Brains" to securely call local tools.
