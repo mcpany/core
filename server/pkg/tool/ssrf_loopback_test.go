@@ -28,6 +28,10 @@ func TestSSRFLoopbackShorthand(t *testing.T) {
 	os.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "false")
 	defer os.Unsetenv("MCPANY_ALLOW_LOOPBACK_RESOURCES")
 
+	// Disable dangerous allow bypass to test strict validation
+	os.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "false")
+	defer os.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "true") // Restore for other tests
+
 	tests := []struct {
 		input       string
 		shouldBlock bool
