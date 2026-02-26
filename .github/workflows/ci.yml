@@ -512,18 +512,32 @@ jobs:
           cache-dependency-path: server/tests/integration/upstream/package-lock.json
 
       - name: Install Build Tools
+        env:
+          DEBIAN_FRONTEND: noninteractive
         run: |
           # Robust install for make and build-essential
+          # Force re-install to ensure it is in the PATH correctly
           if command -v sudo &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make build-essential
+            sudo -E apt-get update && sudo -E apt-get install --reinstall -y make build-essential
           else
-            apt-get update && apt-get install -y make build-essential
+            apt-get update && apt-get install --reinstall -y make build-essential
           fi
+
+          echo "Debugging Make Installation:"
+          which make || echo "make not found in PATH"
+          ls -l /usr/bin/make || echo "/usr/bin/make not found"
+          echo "PATH=$PATH"
           make --version
 
       - name: Generate Protobufs
         run: |
-          make gen
+          # Explicitly use /usr/bin/make if available to avoid alias/function shadowing
+          if [ -x /usr/bin/make ]; then
+            MAKE_CMD="/usr/bin/make"
+          else
+            MAKE_CMD="make"
+          fi
+          $MAKE_CMD gen
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
