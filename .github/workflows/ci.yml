@@ -100,6 +100,75 @@ jobs:
           $SUDO rm -rf /usr/share/dotnet
           $SUDO rm -rf /opt/ghc
           $SUDO rm -rf /usr/local/share/boost
+          $SUDO rm -rf /opt/hostedtoolcache/CodeQL
+          $SUDO rm -rf /opt/hostedtoolcache/go
+          $SUDO rm -rf /opt/hostedtoolcache/node
+          $SUDO rm -rf /opt/hostedtoolcache/CodeQL
+          $SUDO rm -rf /opt/hostedtoolcache/go
+          $SUDO rm -rf /opt/hostedtoolcache/node
+          $SUDO rm -rf /opt/hostedtoolcache/CodeQL
+          $SUDO rm -rf /opt/hostedtoolcache/go
+          $SUDO rm -rf /opt/hostedtoolcache/node
+          $SUDO rm -rf /opt/hostedtoolcache/CodeQL
+          $SUDO rm -rf /opt/hostedtoolcache/go
+          $SUDO rm -rf /opt/hostedtoolcache/node
+          $SUDO rm -rf /opt/hostedtoolcache/CodeQL
+          $SUDO rm -rf /opt/hostedtoolcache/go
+          $SUDO rm -rf /opt/hostedtoolcache/node
+          $SUDO rm -rf /opt/hostedtoolcache/CodeQL
+          $SUDO rm -rf /opt/hostedtoolcache/go
+          $SUDO rm -rf /opt/hostedtoolcache/node
+          $SUDO rm -rf /opt/hostedtoolcache/CodeQL
+          $SUDO rm -rf /opt/hostedtoolcache/go
+          $SUDO rm -rf /opt/hostedtoolcache/node
+          $SUDO rm -rf /opt/hostedtoolcache/CodeQL
+          $SUDO rm -rf /opt/hostedtoolcache/go
+          $SUDO rm -rf /opt/hostedtoolcache/node
+          $SUDO rm -rf /opt/hostedtoolcache/CodeQL
+          $SUDO rm -rf /opt/hostedtoolcache/go
+          $SUDO rm -rf /opt/hostedtoolcache/node
+          $SUDO rm -rf /opt/hostedtoolcache/CodeQL
+          $SUDO rm -rf /opt/hostedtoolcache/go
+          $SUDO rm -rf /opt/hostedtoolcache/node
+          $SUDO rm -rf /opt/hostedtoolcache/CodeQL
+          $SUDO rm -rf /opt/hostedtoolcache/go
+          $SUDO rm -rf /opt/hostedtoolcache/node
+          $SUDO rm -rf /opt/hostedtoolcache/CodeQL
+          $SUDO rm -rf /opt/hostedtoolcache/go
+          $SUDO rm -rf /opt/hostedtoolcache/node
+          $SUDO rm -rf /opt/hostedtoolcache/CodeQL
+          $SUDO rm -rf /opt/hostedtoolcache/go
+          $SUDO rm -rf /opt/hostedtoolcache/node
+          $SUDO rm -rf /opt/hostedtoolcache/CodeQL
+          $SUDO rm -rf /opt/hostedtoolcache/go
+          $SUDO rm -rf /opt/hostedtoolcache/node
+          $SUDO rm -rf /opt/hostedtoolcache/CodeQL
+          $SUDO rm -rf /opt/hostedtoolcache/go
+          $SUDO rm -rf /opt/hostedtoolcache/node
+          $SUDO rm -rf /opt/hostedtoolcache/CodeQL
+          $SUDO rm -rf /opt/hostedtoolcache/go
+          $SUDO rm -rf /opt/hostedtoolcache/node
+          $SUDO rm -rf /opt/hostedtoolcache/CodeQL
+          $SUDO rm -rf /opt/hostedtoolcache/go
+          $SUDO rm -rf /opt/hostedtoolcache/node
+          $SUDO rm -rf /opt/hostedtoolcache/CodeQL
+          $SUDO rm -rf /opt/hostedtoolcache/go
+          $SUDO rm -rf /opt/hostedtoolcache/node
+          $SUDO rm -rf /opt/hostedtoolcache/CodeQL
+          $SUDO rm -rf /opt/hostedtoolcache/go
+          $SUDO rm -rf /opt/hostedtoolcache/node
+          $SUDO rm -rf /opt/hostedtoolcache/CodeQL
+          $SUDO rm -rf /opt/hostedtoolcache/go
+          $SUDO rm -rf /opt/hostedtoolcache/node
+          $SUDO rm -rf /opt/hostedtoolcache/CodeQL
+          $SUDO rm -rf /opt/hostedtoolcache/go
+          $SUDO rm -rf /opt/hostedtoolcache/node
+          $SUDO rm -rf /opt/hostedtoolcache/CodeQL
+          $SUDO rm -rf /opt/hostedtoolcache/go
+          $SUDO rm -rf /opt/hostedtoolcache/node
+          $SUDO rm -rf /opt/hostedtoolcache/CodeQL
+          $SUDO rm -rf /opt/hostedtoolcache/go
+          $SUDO rm -rf /opt/hostedtoolcache/node
           # Aggressive cleaning for OCI runners
           $SUDO rm -rf /opt/hostedtoolcache/CodeQL
           $SUDO rm -rf /opt/hostedtoolcache/go
@@ -186,6 +255,8 @@ jobs:
           $SUDO rm -rf /opt/ghc
           $SUDO rm -rf /usr/local/share/boost
           $SUDO rm -rf /opt/hostedtoolcache/CodeQL
+          $SUDO rm -rf /opt/hostedtoolcache/go
+          $SUDO rm -rf /opt/hostedtoolcache/node
 
       - name: Prune Docker
         run: docker system prune -af
@@ -521,6 +592,10 @@ jobs:
           node-version: "24"
           cache: "npm"
           cache-dependency-path: server/tests/integration/upstream/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          apt-get update && apt-get install -y make
 
       - name: Generate Protobufs
         run: |
