@@ -132,10 +132,28 @@ func mapGraphQLTypeToJSONSchemaType(typeName string) string {
 	}
 }
 
+type graphQLField struct {
+	Name string `json:"name"`
+}
+
 type graphQLType struct {
-	Kind   string       `json:"kind"`
-	Name   *string      `json:"name"`
-	OfType *graphQLType `json:"ofType"`
+	Kind   string         `json:"kind"`
+	Name   *string        `json:"name"`
+	OfType *graphQLType   `json:"ofType"`
+	Fields []graphQLField `json:"fields"`
+}
+
+func getFields(t *graphQLType) []graphQLField {
+	if t == nil {
+		return nil
+	}
+	if len(t.Fields) > 0 {
+		return t.Fields
+	}
+	if t.OfType != nil {
+		return getFields(t.OfType)
+	}
+	return nil
 }
 
 func convertGraphQLTypeToJSONSchema(t *graphQLType) *structpb.Value {
@@ -291,13 +309,7 @@ func (g *Upstream) Register(
 						Name string
 						Type graphQLType `json:"type"`
 					} `json:"args"`
-					Type struct {
-						Kind   string
-						Name   string
-						Fields []struct {
-							Name string
-						} `json:"fields"`
-					} `json:"type"`
+					Type graphQLType `json:"type"`
 				} `json:"fields"`
 			} `json:"types"`
 		} `json:"__schema"`
@@ -378,15 +390,18 @@ func (g *Upstream) Register(
 
 				if selectionSet != "" {
 					sb.WriteString(selectionSet)
-				} else if len(field.Type.Fields) > 0 {
-					sb.WriteString("{ ")
-					for i, f := range field.Type.Fields {
-						sb.WriteString(f.Name)
-						if i < len(field.Type.Fields)-1 {
-							sb.WriteString(" ")
+				} else {
+					fields := getFields(&field.Type)
+					if len(fields) > 0 {
+						sb.WriteString("{ ")
+						for i, f := range fields {
+							sb.WriteString(f.Name)
+							if i < len(fields)-1 {
+								sb.WriteString(" ")
+							}
 						}
+						sb.WriteString(" }")
 					}
-					sb.WriteString(" }")
 				}
 
 				sb.WriteString(" }")
