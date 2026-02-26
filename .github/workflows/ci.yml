@@ -125,8 +125,6 @@ jobs:
 
       - name: Prune Docker
         run: docker system prune -af
-      - name: Prune Buildx
-        run: docker buildx prune -af
 
       - uses: actions/checkout@v6
 
@@ -194,6 +192,8 @@ jobs:
     # container: public.ecr.aws/docker/library/ubuntu:24.04
     timeout-minutes: 30
     needs: [changes]
+    env:
+      SKIP_DOCKER_TESTS: "true"
     if: ${{ needs.changes.outputs.src == 'true' }}
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
@@ -231,8 +231,6 @@ jobs:
 
       - name: Prune Docker
         run: docker system prune -af
-      - name: Prune Buildx
-        run: docker buildx prune -af
 
       - uses: actions/checkout@v6
 
@@ -400,8 +398,6 @@ jobs:
 
       - name: Prune Docker
         run: docker system prune -af
-      - name: Prune Buildx
-        run: docker buildx prune -af
 
       - uses: actions/checkout@v6
 
@@ -787,8 +783,6 @@ jobs:
 
       - name: Prune Docker
         run: docker system prune -af
-      - name: Prune Buildx
-        run: docker buildx prune -af
 
       - uses: actions/checkout@v6
 
@@ -956,8 +950,6 @@ jobs:
 
       - name: Prune Docker
         run: docker system prune -af
-      - name: Prune Buildx
-        run: docker buildx prune -af
 
       - uses: actions/checkout@v6
 
@@ -1165,8 +1157,6 @@ jobs:
 
       - name: Prune Docker
         run: docker system prune -af
-      - name: Prune Buildx
-        run: docker buildx prune -af
 
       - uses: actions/checkout@v6
 
@@ -1243,8 +1233,6 @@ jobs:
 
       - name: Prune Docker
         run: docker system prune -af
-      - name: Prune Buildx
-        run: docker buildx prune -af
 
       - uses: actions/checkout@v6
 

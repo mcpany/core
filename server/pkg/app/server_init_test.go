@@ -310,6 +310,13 @@ func TestInitializeDatabase_AlreadyInitialized(t *testing.T) {
 	app := &Application{}
 
 	mockStore.On("ListServices", mock.Anything).Return([]*configv1.UpstreamServiceConfig{{}}, nil)
+	// Even if initialized, we now expect seeding calls
+	mockStore.On("ListServiceTemplates", mock.Anything).Return(([]*configv1.ServiceTemplate)(nil), nil)
+	mockStore.On("SaveServiceTemplate", mock.Anything, mock.Anything).Return(nil)
+	mockStore.On("ListServiceCollections", mock.Anything).Return(([]*configv1.Collection)(nil), nil)
+	mockStore.On("SaveServiceCollection", mock.Anything, mock.Anything).Return(nil)
+	mockStore.On("ListUsers", mock.Anything).Return(([]*configv1.User)(nil), nil)
+	mockStore.On("CreateUser", mock.Anything, mock.Anything).Return(nil)
 
 	err := app.initializeDatabase(context.Background(), mockStore)
 	assert.NoError(t, err)
