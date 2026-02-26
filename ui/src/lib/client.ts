@@ -236,6 +236,18 @@ export interface DoctorReport {
 }
 
 /**
+ * Request payload for seeding the database.
+ */
+export interface SeedRequest {
+    upstream_services?: any[];
+    credentials?: any[];
+    secrets?: any[];
+    profiles?: any[];
+    users?: any[];
+    service_templates?: any[];
+}
+
+/**
  * Tool failure statistics.
  */
 export interface ToolFailureStats {
@@ -2084,6 +2096,25 @@ export const apiClient = {
             body: JSON.stringify(points)
         });
         if (!res.ok) throw new Error('Failed to seed traffic data');
+    },
+
+    /**
+     * Seeds the database with global state (services, users, etc.).
+     *
+     * Summary: Seeds database.
+     *
+     * @param data - The seed data object.
+     * @throws {Error} If seeding fails.
+     *
+     * Side Effects: Makes a POST request to /api/v1/debug/seed.
+     */
+    seedDB: async (data: SeedRequest) => {
+        const res = await fetchWithAuth('/api/v1/debug/seed', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        if (!res.ok) throw new Error('Failed to seed database');
     },
 
     /**
