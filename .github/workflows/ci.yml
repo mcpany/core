@@ -28,7 +28,7 @@ permissions:
 
 env:
   GOMAXPROCS: 1
-  GOGC: 10 # Aggressive GC to reduce memory usage on constrained runners
+  GOGC: 20 # Aggressive GC to reduce memory usage on constrained runners
   GO_RACE: "" # Disable race detector in CI due to OOM on constrained runners
 
 jobs:
@@ -265,7 +265,7 @@ jobs:
 
       - name: Load Time Server Image
         run: |
-          docker load -i time-server.tar || true
+          docker load -i time-server.tar
           rm -f time-server.tar
 
       - name: Prepare environment
@@ -398,7 +398,7 @@ jobs:
 
       - name: Load HTTP Echo Image
         run: |
-          docker load -i http-echo.tar || true
+          docker load -i http-echo.tar
           rm -f http-echo.tar
 
       - name: Download Time Server Image
@@ -408,7 +408,7 @@ jobs:
 
       - name: Load Time Server Image
         run: |
-          docker load -i time-server.tar || true
+          docker load -i time-server.tar
           rm -f time-server.tar
 
       - name: Download Cowsay Image
@@ -418,7 +418,7 @@ jobs:
 
       - name: Load Cowsay Image
         run: |
-          docker load -i cowsay.tar || true
+          docker load -i cowsay.tar
           rm -f cowsay.tar
 
       - name: Download Everything Image
@@ -428,7 +428,7 @@ jobs:
 
       - name: Load Everything Image
         run: |
-          docker load -i everything.tar || true
+          docker load -i everything.tar
           rm -f everything.tar
 
       - name: Prepare environment
@@ -753,7 +753,7 @@ jobs:
 
       - name: Load Server Image
         run: |
-          docker load -i server.tar || true
+          docker load -i server.tar
           rm -f server.tar
 
       - name: Download HTTP Echo Image
@@ -763,7 +763,7 @@ jobs:
 
       - name: Load HTTP Echo Image
         run: |
-          docker load -i http-echo.tar || true
+          docker load -i http-echo.tar
           rm -f http-echo.tar
 
       - name: Download Time Server Image
@@ -773,7 +773,7 @@ jobs:
 
       - name: Load Time Server Image
         run: |
-          docker load -i time-server.tar || true
+          docker load -i time-server.tar
           rm -f time-server.tar
 
       - name: Download Cowsay Image
@@ -783,7 +783,7 @@ jobs:
 
       - name: Load Cowsay Image
         run: |
-          docker load -i cowsay.tar || true
+          docker load -i cowsay.tar
           rm -f cowsay.tar
 
       - name: Download Everything Image
@@ -793,7 +793,7 @@ jobs:
 
       - name: Load Everything Image
         run: |
-          docker load -i everything.tar || true
+          docker load -i everything.tar
           rm -f everything.tar
 
       - name: Prepare environment
@@ -1033,7 +1033,7 @@ jobs:
 
       - name: Load Server Image
         run: |
-          docker load -i server.tar || true
+          docker load -i server.tar
           rm -f server.tar
 
       - name: Download UI Test Image
@@ -1043,7 +1043,7 @@ jobs:
 
       - name: Load UI Test Image
         run: |
-          docker load -i ui-test-image.tar || true
+          docker load -i ui-test-image.tar
           rm -f ui-test-image.tar
 
       - name: Download HTTP Echo Image
@@ -1053,7 +1053,7 @@ jobs:
 
       - name: Load HTTP Echo Image
         run: |
-          docker load -i http-echo.tar || true
+          docker load -i http-echo.tar
           rm -f http-echo.tar
 
       - name: Test UI
