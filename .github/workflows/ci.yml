@@ -139,11 +139,24 @@ jobs:
             SUDO="sudo"
           fi
 
+          echo "Debug: OS Info"
+          cat /etc/os-release || true
+          echo "Debug: User Info"
+          id || true
+
           if command -v apt-get &> /dev/null; then
+            echo "Apt detected. Waiting for locks..."
+            # Simple wait loop for apt locks
+            for i in {1..5}; do
+               if ! $SUDO lsof /var/lib/dpkg/lock-frontend >/dev/null 2>&1; then break; fi
+               echo "Waiting for apt lock... ($i)"
+               sleep 5
+            done
+
             $SUDO apt-get update || true
-            $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils build-essential gcc
+            $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils build-essential gcc || echo "Apt install failed"
           elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz build-base
+             $SUDO apk add --no-cache make xz build-base || echo "Apk install failed"
           fi
 
       - name: Prepare environment
@@ -181,11 +194,20 @@ jobs:
             SUDO="sudo"
           fi
 
+          echo "Debug: OS Info"
+          cat /etc/os-release || true
+
           if command -v apt-get &> /dev/null; then
+            echo "Apt detected. Waiting for locks..."
+            for i in {1..5}; do
+               if ! $SUDO lsof /var/lib/dpkg/lock-frontend >/dev/null 2>&1; then break; fi
+               echo "Waiting for apt lock... ($i)"
+               sleep 5
+            done
             $SUDO apt-get update || true
-            $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils build-essential gcc
+            $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils build-essential gcc || echo "Apt install failed"
           elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz build-base
+             $SUDO apk add --no-cache make xz build-base || echo "Apk install failed"
           fi
 
       - name: Debug GCC
@@ -333,11 +355,20 @@ jobs:
             SUDO="sudo"
           fi
 
+          echo "Debug: OS Info"
+          cat /etc/os-release || true
+
           if command -v apt-get &> /dev/null; then
+            echo "Apt detected. Waiting for locks..."
+            for i in {1..5}; do
+               if ! $SUDO lsof /var/lib/dpkg/lock-frontend >/dev/null 2>&1; then break; fi
+               echo "Waiting for apt lock... ($i)"
+               sleep 5
+            done
             $SUDO apt-get update || true
-            $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils build-essential gcc
+            $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils build-essential gcc || echo "Apt install failed"
           elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz build-base
+             $SUDO apk add --no-cache make xz build-base || echo "Apk install failed"
           fi
 
       - name: Debug GCC
@@ -646,11 +677,20 @@ jobs:
             SUDO="sudo"
           fi
 
+          echo "Debug: OS Info"
+          cat /etc/os-release || true
+
           if command -v apt-get &> /dev/null; then
+            echo "Apt detected. Waiting for locks..."
+            for i in {1..5}; do
+               if ! $SUDO lsof /var/lib/dpkg/lock-frontend >/dev/null 2>&1; then break; fi
+               echo "Waiting for apt lock... ($i)"
+               sleep 5
+            done
             $SUDO apt-get update || true
-            $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils build-essential gcc
+            $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils build-essential gcc || echo "Apt install failed"
           elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz build-base
+             $SUDO apk add --no-cache make xz build-base || echo "Apk install failed"
           fi
 
       - name: Debug GCC
@@ -798,11 +838,20 @@ jobs:
             SUDO="sudo"
           fi
 
+          echo "Debug: OS Info"
+          cat /etc/os-release || true
+
           if command -v apt-get &> /dev/null; then
+            echo "Apt detected. Waiting for locks..."
+            for i in {1..5}; do
+               if ! $SUDO lsof /var/lib/dpkg/lock-frontend >/dev/null 2>&1; then break; fi
+               echo "Waiting for apt lock... ($i)"
+               sleep 5
+            done
             $SUDO apt-get update || true
-            $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils build-essential gcc
+            $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils build-essential gcc || echo "Apt install failed"
           elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz build-base
+             $SUDO apk add --no-cache make xz build-base || echo "Apk install failed"
           fi
 
       - name: Debug GCC
