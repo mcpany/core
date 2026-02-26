@@ -6,7 +6,6 @@ package main
 import (
 	"bytes"
 	"context"
-	"net"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -65,21 +64,19 @@ func TestDoctorCmd_Online(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	// Extract port from ts.URL
-	_, port, err := net.SplitHostPort(strings.TrimPrefix(ts.URL, "http://"))
-	assert.NoError(t, err)
+	// Extract address from ts.URL (handles IPv4 127.0.0.1 and IPv6 [::1])
+	address := strings.TrimPrefix(ts.URL, "http://")
 
 	cmd := newRootCmd()
 	b := bytes.NewBufferString("")
 	cmd.SetOut(b)
-	address := "127.0.0.1:" + port
 	cmd.SetArgs([]string{"doctor", "--mcp-listen-address", address})
 
 	// Force viper set to ensure it picks up the address (bypass potential flag binding race/issue)
 	viper.Set("mcp-listen-address", address)
 	defer viper.Set("mcp-listen-address", "")
 
-	err = cmd.ExecuteContext(context.Background())
+	err := cmd.ExecuteContext(context.Background())
 	assert.NoError(t, err)
 	assert.Contains(t, b.String(), "Checking Server Connectivity")
 	assert.Contains(t, b.String(), "OK")
@@ -132,12 +129,11 @@ func TestDoctorCmd_ServerErrors(t *testing.T) {
 			w.WriteHeader(http.StatusInternalServerError)
 		}))
 		defer ts.Close()
-		_, port, _ := net.SplitHostPort(strings.TrimPrefix(ts.URL, "http://"))
+		address := strings.TrimPrefix(ts.URL, "http://")
 
 		cmd := newRootCmd()
 		b := bytes.NewBufferString("")
 		cmd.SetOut(b)
-		address := "127.0.0.1:" + port
 		cmd.SetArgs([]string{"doctor", "--mcp-listen-address", address})
 
 		viper.Set("mcp-listen-address", address)
@@ -157,12 +153,11 @@ func TestDoctorCmd_ServerErrors(t *testing.T) {
 			}
 		}))
 		defer ts.Close()
-		_, port, _ := net.SplitHostPort(strings.TrimPrefix(ts.URL, "http://"))
+		address := strings.TrimPrefix(ts.URL, "http://")
 
 		cmd := newRootCmd()
 		b := bytes.NewBufferString("")
 		cmd.SetOut(b)
-		address := "127.0.0.1:" + port
 		cmd.SetArgs([]string{"doctor", "--mcp-listen-address", address})
 
 		viper.Set("mcp-listen-address", address)
@@ -183,12 +178,11 @@ func TestDoctorCmd_ServerErrors(t *testing.T) {
 			}
 		}))
 		defer ts.Close()
-		_, port, _ := net.SplitHostPort(strings.TrimPrefix(ts.URL, "http://"))
+		address := strings.TrimPrefix(ts.URL, "http://")
 
 		cmd := newRootCmd()
 		b := bytes.NewBufferString("")
 		cmd.SetOut(b)
-		address := "127.0.0.1:" + port
 		cmd.SetArgs([]string{"doctor", "--mcp-listen-address", address})
 
 		viper.Set("mcp-listen-address", address)
@@ -210,12 +204,11 @@ func TestDoctorCmd_ServerErrors(t *testing.T) {
 			}
 		}))
 		defer ts.Close()
-		_, port, _ := net.SplitHostPort(strings.TrimPrefix(ts.URL, "http://"))
+		address := strings.TrimPrefix(ts.URL, "http://")
 
 		cmd := newRootCmd()
 		b := bytes.NewBufferString("")
 		cmd.SetOut(b)
-		address := "127.0.0.1:" + port
 		cmd.SetArgs([]string{"doctor", "--mcp-listen-address", address})
 
 		viper.Set("mcp-listen-address", address)
