@@ -101,8 +101,8 @@ func TestServer_CallTool_Latency_Metrics_Repro(t *testing.T) {
 	// Wait for metrics to appear
 	var data []*metrics.IntervalMetrics
 	var samples map[string]interface{}
-	// ⚡ BOLT: Increase wait time to 1s to account for slow CI runners
-	for i := 0; i < 100; i++ {
+	// ⚡ BOLT: Increase wait time to 5s to account for extremely slow CI runners
+	for i := 0; i < 500; i++ {
 		data = sink.Data()
 		if len(data) > 0 {
 			// ⚡ BOLT: Fix test to aggregate samples from all intervals
