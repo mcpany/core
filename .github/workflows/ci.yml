@@ -97,7 +97,6 @@ jobs:
           $SUDO rm -rf /usr/share/miniconda
           $SUDO rm -rf ~/.cache
           $SUDO rm -rf "$AGENT_TOOLSDIRECTORY"
-          $SUDO rm -rf /tmp/*
 
       - name: Prune Docker
         run: docker system prune -af --volumes
@@ -284,7 +283,7 @@ jobs:
 
       - name: Test (Short)
         run: |
-          make test-fast CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache COVERAGE_FILE=coverage-fast.out
+          go test -count=1 -timeout 600s -cover -coverprofile=coverage-fast.out $(go list ./... | grep -v /tests/e2e | grep -v /tests/integration | grep -v /tests/public_api)
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
