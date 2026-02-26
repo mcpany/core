@@ -10,6 +10,7 @@ import (
 	"net"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/mcpany/core/server/pkg/health"
@@ -21,6 +22,10 @@ import (
 )
 
 func TestDoctorRunner_Run_HappyPath(t *testing.T) {
+	// Allow loopback for this test as it uses localhost
+	os.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
+	defer os.Unsetenv("MCPANY_ALLOW_LOOPBACK_RESOURCES")
+
 	// 1. Setup Mock Server
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/health" {
@@ -98,6 +103,10 @@ spec:
 }
 
 func TestDoctorRunner_Run_ServerDown(t *testing.T) {
+	// Allow loopback for this test as it uses localhost
+	os.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
+	defer os.Unsetenv("MCPANY_ALLOW_LOOPBACK_RESOURCES")
+
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
 	server.Close() // Close immediately
 
@@ -123,6 +132,10 @@ func TestDoctorRunner_Run_ServerDown(t *testing.T) {
 }
 
 func TestDoctorRunner_Run_DoctorEndpointFail(t *testing.T) {
+	// Allow loopback for this test as it uses localhost
+	os.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
+	defer os.Unsetenv("MCPANY_ALLOW_LOOPBACK_RESOURCES")
+
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/health" {
 			w.WriteHeader(http.StatusOK)
@@ -159,6 +172,10 @@ func TestDoctorRunner_Run_DoctorEndpointFail(t *testing.T) {
 }
 
 func TestDoctorRunner_Run_DoctorDegraded(t *testing.T) {
+	// Allow loopback for this test as it uses localhost
+	os.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
+	defer os.Unsetenv("MCPANY_ALLOW_LOOPBACK_RESOURCES")
+
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/health" {
 			w.WriteHeader(http.StatusOK)

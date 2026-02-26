@@ -9,9 +9,11 @@ import (
 	"net"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strings"
 	"testing"
 
+	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -26,6 +28,10 @@ func TestRootCmd(t *testing.T) {
 }
 
 func TestDoctorCmd_Offline(t *testing.T) {
+	// Allow loopback for this test as it uses localhost
+	os.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
+	defer os.Unsetenv("MCPANY_ALLOW_LOOPBACK_RESOURCES")
+
 	cmd := newRootCmd()
 	b := bytes.NewBufferString("")
 	cmd.SetOut(b)
@@ -42,6 +48,10 @@ func TestDoctorCmd_Offline(t *testing.T) {
 }
 
 func TestDoctorCmd_Online(t *testing.T) {
+	// Allow loopback for this test as it uses localhost
+	os.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
+	defer os.Unsetenv("MCPANY_ALLOW_LOOPBACK_RESOURCES")
+
 	// Mock server
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/health" {
@@ -62,7 +72,12 @@ func TestDoctorCmd_Online(t *testing.T) {
 	cmd := newRootCmd()
 	b := bytes.NewBufferString("")
 	cmd.SetOut(b)
-	cmd.SetArgs([]string{"doctor", "--mcp-listen-address", "127.0.0.1:" + port})
+	address := "127.0.0.1:" + port
+	cmd.SetArgs([]string{"doctor", "--mcp-listen-address", address})
+
+	// Force viper set to ensure it picks up the address (bypass potential flag binding race/issue)
+	viper.Set("mcp-listen-address", address)
+	defer viper.Set("mcp-listen-address", "")
 
 	err = cmd.ExecuteContext(context.Background())
 	assert.NoError(t, err)
@@ -73,6 +88,10 @@ func TestDoctorCmd_Online(t *testing.T) {
 }
 
 func TestDoctorCmd_AddressParsing(t *testing.T) {
+	// Allow loopback for this test as it uses localhost
+	os.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
+	defer os.Unsetenv("MCPANY_ALLOW_LOOPBACK_RESOURCES")
+
 	tests := []struct {
 		name string
 		arg  string
@@ -90,6 +109,11 @@ func TestDoctorCmd_AddressParsing(t *testing.T) {
 			cmd.SetOut(b)
 			// We expect connection failure, but we want to make sure it parses correctly and attempts connection
 			cmd.SetArgs([]string{"doctor", "--mcp-listen-address", tt.arg})
+
+			// Force viper
+			viper.Set("mcp-listen-address", tt.arg)
+			defer viper.Set("mcp-listen-address", "")
+
 			_ = cmd.Execute()
 			// It should fail connectivity but not crash
 			assert.Contains(t, b.String(), "Checking Server Connectivity")
@@ -98,6 +122,10 @@ func TestDoctorCmd_AddressParsing(t *testing.T) {
 }
 
 func TestDoctorCmd_ServerErrors(t *testing.T) {
+	// Allow loopback for this test as it uses localhost
+	os.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
+	defer os.Unsetenv("MCPANY_ALLOW_LOOPBACK_RESOURCES")
+
 	// 1. Server returns 500 on health
 	t.Run("Health 500", func(t *testing.T) {
 		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -109,7 +137,12 @@ func TestDoctorCmd_ServerErrors(t *testing.T) {
 		cmd := newRootCmd()
 		b := bytes.NewBufferString("")
 		cmd.SetOut(b)
-		cmd.SetArgs([]string{"doctor", "--mcp-listen-address", "127.0.0.1:" + port})
+		address := "127.0.0.1:" + port
+		cmd.SetArgs([]string{"doctor", "--mcp-listen-address", address})
+
+		viper.Set("mcp-listen-address", address)
+		defer viper.Set("mcp-listen-address", "")
+
 		_ = cmd.Execute()
 		assert.Contains(t, b.String(), "Server returned status: 500 Internal Server Error")
 	})
@@ -129,7 +162,12 @@ func TestDoctorCmd_ServerErrors(t *testing.T) {
 		cmd := newRootCmd()
 		b := bytes.NewBufferString("")
 		cmd.SetOut(b)
-		cmd.SetArgs([]string{"doctor", "--mcp-listen-address", "127.0.0.1:" + port})
+		address := "127.0.0.1:" + port
+		cmd.SetArgs([]string{"doctor", "--mcp-listen-address", address})
+
+		viper.Set("mcp-listen-address", address)
+		defer viper.Set("mcp-listen-address", "")
+
 		_ = cmd.Execute()
 		assert.Contains(t, b.String(), "Doctor endpoint returned status: 500")
 	})
@@ -150,7 +188,12 @@ func TestDoctorCmd_ServerErrors(t *testing.T) {
 		cmd := newRootCmd()
 		b := bytes.NewBufferString("")
 		cmd.SetOut(b)
-		cmd.SetArgs([]string{"doctor", "--mcp-listen-address", "127.0.0.1:" + port})
+		address := "127.0.0.1:" + port
+		cmd.SetArgs([]string{"doctor", "--mcp-listen-address", address})
+
+		viper.Set("mcp-listen-address", address)
+		defer viper.Set("mcp-listen-address", "")
+
 		_ = cmd.Execute()
 		assert.Contains(t, b.String(), "Failed to decode doctor report")
 	})
@@ -172,7 +215,12 @@ func TestDoctorCmd_ServerErrors(t *testing.T) {
 		cmd := newRootCmd()
 		b := bytes.NewBufferString("")
 		cmd.SetOut(b)
-		cmd.SetArgs([]string{"doctor", "--mcp-listen-address", "127.0.0.1:" + port})
+		address := "127.0.0.1:" + port
+		cmd.SetArgs([]string{"doctor", "--mcp-listen-address", address})
+
+		viper.Set("mcp-listen-address", address)
+		defer viper.Set("mcp-listen-address", "")
+
 		_ = cmd.Execute()
 		assert.Contains(t, b.String(), "DEGRADED")
 		assert.Contains(t, b.String(), "db: FAIL")
