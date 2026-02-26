@@ -35,6 +35,11 @@ jobs:
     steps:
       - name: Install dependencies
         run: |
+          if command -v git >/dev/null; then
+            echo "git is already installed."
+            exit 0
+          fi
+
           SUDO=""
           if command -v sudo >/dev/null; then
             SUDO="sudo"
@@ -95,6 +100,10 @@ jobs:
         run: |
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if [ -z "$SUDO" ]; then
+            echo "No sudo, skipping disk cleanup."
+            exit 0
+          fi
           $SUDO rm -rf /usr/local/lib/android
           $SUDO rm -rf /usr/share/dotnet
           $SUDO rm -rf /opt/ghc
@@ -152,6 +161,10 @@ jobs:
 
       - name: Install dependencies
         run: |
+          if command -v make >/dev/null; then
+            echo "make is already installed."
+            exit 0
+          fi
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
           if command -v apt-get >/dev/null; then
@@ -180,6 +193,10 @@ jobs:
         run: |
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if [ -z "$SUDO" ]; then
+            echo "No sudo, skipping disk cleanup."
+            exit 0
+          fi
           $SUDO rm -rf /usr/local/lib/android
           $SUDO rm -rf /usr/share/dotnet
           $SUDO rm -rf /opt/ghc
@@ -197,6 +214,10 @@ jobs:
 
       - name: Install dependencies
         run: |
+          if command -v make >/dev/null; then
+            echo "make is already installed."
+            exit 0
+          fi
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
           if command -v apt-get >/dev/null; then
@@ -209,6 +230,11 @@ jobs:
         run: |
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
+
+          if [ -z "$SUDO" ]; then
+            echo "No sudo access, skipping Docker registry mirror configuration."
+            exit 0
+          fi
 
           # Configure multiple mirrors in array format
           $SUDO mkdir -p /etc/docker
@@ -330,6 +356,10 @@ jobs:
         run: |
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if [ -z "$SUDO" ]; then
+            echo "No sudo, skipping disk cleanup."
+            exit 0
+          fi
           $SUDO rm -rf /usr/local/lib/android
           $SUDO rm -rf /usr/share/dotnet
           $SUDO rm -rf /opt/ghc
@@ -347,6 +377,10 @@ jobs:
 
       - name: Install dependencies
         run: |
+          if command -v make >/dev/null; then
+            echo "make is already installed."
+            exit 0
+          fi
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
           if command -v apt-get >/dev/null; then
@@ -359,6 +393,11 @@ jobs:
         run: |
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
+
+          if [ -z "$SUDO" ]; then
+            echo "No sudo access, skipping Docker registry mirror configuration."
+            exit 0
+          fi
 
           # Configure multiple mirrors in array format
           $SUDO mkdir -p /etc/docker
@@ -496,7 +535,7 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: ${{ matrix.runner }}
-    container: public.ecr.aws/docker/library/ubuntu:24.04
+    # Container removed to allow access to docker daemon on the runner
     strategy:
       fail-fast: false
       matrix:
@@ -508,6 +547,13 @@ jobs:
             slug: arm64
             runner: ubuntu-24.04-arm
     steps:
+      - name: Free Disk Space (Fast)
+        run: |
+          # We can assume sudo is available on standard runners (ubuntu-latest)
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/share/boost
       - uses: actions/checkout@v6
 
       - name: Set up Go
@@ -642,6 +688,10 @@ jobs:
         run: |
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if [ -z "$SUDO" ]; then
+            echo "No sudo, skipping disk cleanup."
+            exit 0
+          fi
           $SUDO rm -rf /usr/local/lib/android
           $SUDO rm -rf /usr/share/dotnet
           $SUDO rm -rf /opt/ghc
@@ -659,6 +709,10 @@ jobs:
 
       - name: Install dependencies
         run: |
+          if command -v make >/dev/null; then
+            echo "make is already installed."
+            exit 0
+          fi
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
           if command -v apt-get >/dev/null; then
@@ -671,6 +725,11 @@ jobs:
         run: |
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
+
+          if [ -z "$SUDO" ]; then
+            echo "No sudo access, skipping Docker registry mirror configuration."
+            exit 0
+          fi
 
           # Configure multiple mirrors in array format
           $SUDO mkdir -p /etc/docker
@@ -794,6 +853,10 @@ jobs:
         run: |
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if [ -z "$SUDO" ]; then
+            echo "No sudo, skipping disk cleanup."
+            exit 0
+          fi
           $SUDO rm -rf /usr/local/lib/android
           $SUDO rm -rf /usr/share/dotnet
           $SUDO rm -rf /opt/ghc
@@ -811,6 +874,10 @@ jobs:
 
       - name: Install dependencies
         run: |
+          if command -v make >/dev/null; then
+            echo "make is already installed."
+            exit 0
+          fi
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
           if command -v apt-get >/dev/null; then
@@ -823,6 +890,11 @@ jobs:
         run: |
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
+
+          if [ -z "$SUDO" ]; then
+            echo "No sudo access, skipping Docker registry mirror configuration."
+            exit 0
+          fi
 
           # Configure multiple mirrors in array format
           $SUDO mkdir -p /etc/docker
@@ -984,6 +1056,10 @@ jobs:
         run: |
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if [ -z "$SUDO" ]; then
+            echo "No sudo, skipping disk cleanup."
+            exit 0
+          fi
           $SUDO rm -rf /usr/local/lib/android
           $SUDO rm -rf /usr/share/dotnet
           $SUDO rm -rf /opt/ghc
@@ -1044,6 +1120,10 @@ jobs:
         run: |
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if [ -z "$SUDO" ]; then
+            echo "No sudo, skipping disk cleanup."
+            exit 0
+          fi
           $SUDO rm -rf /usr/local/lib/android
           $SUDO rm -rf /usr/share/dotnet
           $SUDO rm -rf /opt/ghc
