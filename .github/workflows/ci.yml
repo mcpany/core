@@ -178,6 +178,11 @@ jobs:
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz build-base
           fi
+          # Debug environment
+          echo "Debug Info:"
+          go version || echo "Go missing"
+          gcc --version || echo "GCC missing"
+          docker info || echo "Docker failed"
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -457,7 +462,6 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: ${{ matrix.runner }}
-    container: public.ecr.aws/docker/library/ubuntu:24.04
     strategy:
       fail-fast: false
       matrix:
@@ -488,7 +492,10 @@ jobs:
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
-          apt-get update && apt-get install -y make xz-utils protobuf-compiler docker.io
+          sudo apt-get update && sudo apt-get install -y make xz-utils protobuf-compiler
+          if ! command -v docker &> /dev/null; then
+             sudo apt-get install -y docker.io
+          fi
 
       - name: Generate Protobufs
         run: |
