@@ -34,12 +34,7 @@ jobs:
       src: ${{ steps.filter.outputs.src }}
     steps:
       - name: Install dependencies
-        run: |
-          SUDO=""
-          if command -v sudo >/dev/null; then
-            SUDO="sudo"
-          fi
-          $SUDO apt-get update && $SUDO apt-get install -y git
+        run: sudo apt-get update && sudo apt-get install -y git
 
       - uses: actions/checkout@v6
         with:
