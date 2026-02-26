@@ -489,11 +489,18 @@ jobs:
         run: |
           if ! command -v make &> /dev/null; then
             echo "Make not found, installing..."
-            sudo apt-get update && sudo apt-get install -y make build-essential
+            if command -v sudo &> /dev/null; then
+              sudo apt-get update && sudo apt-get install -y make build-essential
+            else
+              apt-get update && apt-get install -y make build-essential
+            fi
           else
             echo "Make already installed."
           fi
-          make --version
+          # Debug
+          ls -l /usr/bin/make || echo "Make binary not in /usr/bin"
+          echo "PATH=$PATH"
+          make --version || echo "Failed to get make version"
 
       - name: Generate Protobufs
         run: |
