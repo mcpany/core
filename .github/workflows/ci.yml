@@ -98,6 +98,18 @@ jobs:
 
       - uses: actions/checkout@v6
 
+      - name: Install dependencies
+        run: |
+          if command -v apt-get &> /dev/null; then
+            if command -v sudo &> /dev/null; then
+              sudo apt-get update && sudo apt-get install -y make git build-essential
+            else
+              apt-get update && apt-get install -y make git build-essential
+            fi
+          elif command -v apk &> /dev/null; then
+             sudo apk add --no-cache make git build-base
+          fi
+
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
@@ -142,12 +154,12 @@ jobs:
         run: |
           if command -v apt-get &> /dev/null; then
             if command -v sudo &> /dev/null; then
-              sudo apt-get update && sudo apt-get install -y make xz-utils
+              sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
             else
-              apt-get update && apt-get install -y make xz-utils
+              apt-get update && apt-get install -y make xz-utils build-essential
             fi
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             sudo apk add --no-cache make xz build-base
           fi
 
       - name: Prepare environment
@@ -184,12 +196,12 @@ jobs:
         run: |
           if command -v apt-get &> /dev/null; then
             if command -v sudo &> /dev/null; then
-              sudo apt-get update && sudo apt-get install -y make xz-utils
+              sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
             else
-              apt-get update && apt-get install -y make xz-utils
+              apt-get update && apt-get install -y make xz-utils build-essential
             fi
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             sudo apk add --no-cache make xz build-base
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -329,12 +341,12 @@ jobs:
         run: |
           if command -v apt-get &> /dev/null; then
             if command -v sudo &> /dev/null; then
-              sudo apt-get update && sudo apt-get install -y make xz-utils
+              sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
             else
-              apt-get update && apt-get install -y make xz-utils
+              apt-get update && apt-get install -y make xz-utils build-essential
             fi
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             sudo apk add --no-cache make xz build-base
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -636,12 +648,12 @@ jobs:
         run: |
           if command -v apt-get &> /dev/null; then
             if command -v sudo &> /dev/null; then
-              sudo apt-get update && sudo apt-get install -y make xz-utils
+              sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
             else
-              apt-get update && apt-get install -y make xz-utils
+              apt-get update && apt-get install -y make xz-utils build-essential
             fi
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             sudo apk add --no-cache make xz build-base
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -781,12 +793,12 @@ jobs:
         run: |
           if command -v apt-get &> /dev/null; then
             if command -v sudo &> /dev/null; then
-              sudo apt-get update && sudo apt-get install -y make xz-utils
+              sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
             else
-              apt-get update && apt-get install -y make xz-utils
+              apt-get update && apt-get install -y make xz-utils build-essential
             fi
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             sudo apk add --no-cache make xz build-base
           fi
 
       - name: Configure Docker Registry Mirrors
