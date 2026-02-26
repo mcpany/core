@@ -148,7 +148,7 @@ jobs:
   unit-test:
     runs-on: oci-runner
     # container: public.ecr.aws/docker/library/ubuntu:24.04
-    timeout-minutes: 30
+    timeout-minutes: 60
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
     env:
@@ -482,6 +482,9 @@ jobs:
       - name: Install build dependencies
         run: |
           sudo apt-get update && sudo apt-get install -y make xz-utils protobuf-compiler
+          if ! command -v docker &> /dev/null; then
+            sudo apt-get install -y docker.io
+          fi
 
       - name: Generate Protobufs
         run: |
