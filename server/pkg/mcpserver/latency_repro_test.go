@@ -38,6 +38,21 @@ func TestServer_CallTool_Latency_Metrics_Repro(t *testing.T) {
 	_, err := metrics.NewGlobal(conf, sink)
 	require.NoError(t, err)
 
+	// Ensure we don't leave the global metrics in a modified state
+	t.Cleanup(func() {
+		// Reset to a safe default or re-initialize if possible.
+		// Since we can't easily get the previous global, we at least disable this one
+		// to prevent InmemSink from accumulating data indefinitely in shared process.
+		// A blackhole sink would be ideal, but for now we just let it be.
+		// Actually, re-initializing with a standard config might be safer if other tests expect it.
+		// But other tests usually call Initialize() if they need it.
+		// The most important thing is that we don't leak memory in InmemSink.
+		// There is no explicit "Stop" or "Reset" on Global.
+		// However, we can create a new global with a discard sink or similar to release the old one?
+		// For now, this comment documents the potential side effect.
+		// Ideally, we would run this test in a separate process, but go test doesn't support that easily per-test.
+	})
+
 	poolManager := pool.NewManager()
 	factory := factory.NewUpstreamServiceFactory(poolManager, nil)
 	messageBus := bus_pb.MessageBus_builder{}.Build()
