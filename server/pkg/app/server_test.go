@@ -655,6 +655,10 @@ func TestRun_EmptyConfig(t *testing.T) {
 	err := afero.WriteFile(fs, "/config.yaml", []byte(""), 0o644)
 	require.NoError(t, err)
 
+	// Use in-memory DB to avoid SQLITE_BUSY errors during parallel tests
+	viper.Set("db-path", ":memory:")
+	defer viper.Set("db-path", "")
+
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
 	defer cancel()
 
@@ -1590,6 +1594,10 @@ func TestRun_InMemoryBus(t *testing.T) {
 	// An empty config will result in an in-memory bus.
 	err := afero.WriteFile(fs, "/config.yaml", []byte(""), 0o644)
 	require.NoError(t, err)
+
+	// Use in-memory DB to avoid SQLITE_BUSY errors during parallel tests
+	viper.Set("db-path", ":memory:")
+	defer viper.Set("db-path", "")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
 	defer cancel()

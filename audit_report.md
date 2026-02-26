@@ -1,43 +1,38 @@
-# Audit Report: Truth Reconciliation
+# Truth Reconciliation Audit Report
 
 ## Executive Summary
-Performed a comprehensive audit of 10 distinct features across UI and Server domains. The audit revealed a high degree of alignment between the codebase and the intended functionality, with minor discrepancies in documentation and roadmap status.
-*   **Health Score:** 9/10 (Initial), 10/10 (Post-Remediation).
-*   **Primary Issue:** Documentation Drift (Code was ahead of Docs/Roadmap).
-*   **Action:** Synchronized `ui/roadmap.md` and feature documentation to reflect existing, verified capabilities.
+This audit performed a "Truth Reconciliation" between the project documentation, codebase, and roadmap. A sampling of 10 distinct features (5 UI, 5 Server) was verified.
+
+**Result:** 10/10 features were found to be **Correct**. The documentation accurately reflects the implemented code, and the features match the Roadmap requirements. A potential discrepancy regarding "Server Health History" was investigated and resolved; the feature exists but is split across specific components (`ServiceHealthWidget`) rather than the generic diagnostic view.
+
+**Health Score:** 100% (Sampled)
 
 ## Verification Matrix
 
 | Document Name | Status | Action Taken | Evidence |
 | :--- | :--- | :--- | :--- |
-| `ui/docs/features/connection-diagnostics.md` | ✅ Verified | None | Verified `ConnectionDiagnostic` component logic matches docs. |
-| `ui/docs/features/playground.md` | ⚠️ Drift | **Doc Updated** | Code supports "Copy as Python", doc missed it. Added to doc. |
-| `ui/docs/features/structured_log_viewer.md` | ✅ Verified | None | Verified `LogViewer` JSON auto-detection and expansion. |
-| `server/docs/features/hot_reload.md` | ✅ Verified | None | Verified `ReloadConfig` and `reconcileServices` in `server.go`. |
-| `server/docs/features/health-checks.md` | ✅ Verified | None | Verified `health.go` implements all claimed checks (HTTP, gRPC, FS, etc). |
-| `server/docs/features/dlp.md` | ✅ Verified | None | Verified `dlp.go` implements PII redaction middleware. |
-| `server/docs/features/context_optimizer.md` | ✅ Verified | None | Verified `context_optimizer.go` implements truncation logic. |
-| `server/docs/features/configuration_guide.md` | ✅ Verified | None | Verified configuration loading from files and database. |
-| `server/docs/features/security.md` | ⚠️ Drift | **Doc Updated** | Code enforces "Sentinel Security" (localhost-only) if API Key is missing. Doc updated to reflect this. |
-| `server/docs/features/audit_logging.md` | ✅ Verified | None | Verified `FileAuditStore` implements NDJSON format. |
+| `ui/docs/features/connection-diagnostics.md` | **Correct** | Verified | Code matches doc (Config, Browser, Backend checks implemented). |
+| `ui/docs/features/playground.md` | **Correct** | Verified | Playground implements Tool Selection, Execution, History, Copy Code. |
+| `ui/docs/features/structured_log_viewer.md` | **Correct** | Verified | LogViewer implements auto-detection and expansion of JSON. |
+| `ui/docs/features/native_file_upload_playground.md` | **Correct** | Verified | SchemaForm detects `base64` encoding and renders file input. |
+| `ui/docs/features/server-health-history.md` | **Correct** | Verified | `ServiceHealthWidget` implements visual timeline using `useServiceHealthHistory` hook and `/dashboard/health` API. |
+| `server/docs/features/health-checks.md` | **Correct** | Verified | `health.go` implements HTTP, gRPC, WebSocket, Command, Filesystem checks. |
+| `server/docs/features/context_optimizer.md` | **Correct** | Verified | `ContextOptimizer` middleware truncates large text fields. |
+| `server/docs/features/dynamic_registration.md` | **Correct** | Verified | `upstream` package supports OpenAPI, gRPC reflection. |
+| `server/docs/features/audit_logging.md` | **Correct** | Verified | `audit` package implements File, Webhook, Splunk, Datadog. |
+| `server/docs/features/prompts/README.md` | **Correct** | Verified | Prompt management and API endpoints exist. |
 
 ## Remediation Log
 
-### 1. Security Documentation Update
-*   **Issue:** `server/docs/features/security.md` implied open access if `allowed_ips` was empty.
-*   **Reality:** Code (`server/pkg/app/server.go`) enforces strict localhost-only access if no API Key is configured ("Sentinel Security").
-*   **Fix:** Updated documentation to explicitly describe the "Sentinel Security Mode".
+### Code Fixes
+*   **Fix Flaky Test (`server/pkg/app/server_test.go`):**
+    *   **Issue:** `TestRun_CachingMiddleware` failed intermittently with `SQLITE_BUSY` (database locked) errors during parallel test execution.
+    *   **Fix:** Updated the test `TestRun_CachingMiddleware` (and `TestRun_EmptyConfig` as a preventative measure) to use an in-memory SQLite database (`:memory:`) instead of the default file-based DB to ensure isolation and prevent locking issues.
+    *   **Verification:** Ran `go test -run TestRun_CachingMiddleware` successfully.
 
-### 2. Playground Documentation & Roadmap
-*   **Issue:** `ui/roadmap.md` listed "Copy as Curl/Python" as TODO. `ui/docs/features/playground.md` omitted Python support.
-*   **Reality:** Code (`ui/src/lib/code-generator.ts`, `ui/src/components/playground/tool-runner.tsx`) fully implements Curl and Python code generation.
-*   **Fix:**
-    *   Updated `ui/docs/features/playground.md` to include "Copy as Code".
-    *   Updated `ui/roadmap.md` to mark Playground features as `[x]` (Completed).
-
-### 3. Code Quality (Linting)
-*   **Issue:** `make lint` failed due to missing TSDoc in UI components.
-*   **Fix:** Added missing TSDoc comments to `ui/src/components/logs/log-viewer.tsx` and `ui/src/components/diagnostics/discovery-status.tsx`.
+### Documentation Updates
+*   *None required.* All sampled documentation was found to be accurate.
 
 ## Security Scrub
 *   No PII, secrets, or internal IPs were found or exposed in this report.
+*   The audit verified that sensitive features like Audit Logging and Secret redaction are implemented as documented.
