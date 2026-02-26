@@ -4330,15 +4330,16 @@ func validateSafePathAndInjection(val string, isDocker bool, commandName string)
 		// via tools like curl/wget that accept them.
 		// Check for "localhost" (case-insensitive)
 		allowLoopback := os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == trueStr
-		if strings.EqualFold(val, "localhost") {
+		switch {
+		case strings.EqualFold(val, "localhost"):
 			if !allowLoopback {
 				return fmt.Errorf("unsafe argument: localhost is not allowed")
 			}
-		} else if validation.IsLoopbackShorthand(val) {
+		case validation.IsLoopbackShorthand(val):
 			if !allowLoopback {
 				return fmt.Errorf("unsafe argument: loopback shorthand is not allowed")
 			}
-		} else if validation.IsSafeIP != nil {
+		case validation.IsSafeIP != nil:
 			// Check if it's an IP address and validate it against policy
 			// We ignore "invalid IP address" error as it just means it's not an IP
 			if err := validation.IsSafeIP(val); err != nil && err.Error() != "invalid IP address" {
