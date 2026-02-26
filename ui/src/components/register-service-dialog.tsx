@@ -26,6 +26,7 @@ import { SERVICE_TEMPLATES, ServiceTemplate } from "@/lib/templates";
 import { ServiceTemplateSelector } from "./services/service-template-selector";
 import { ServiceConfigDiff } from "./services/service-config-diff";
 import { ServiceInspector } from "@/components/services/editor/service-inspector";
+import { EnvVarEditor, EnvVar } from "./shared/env-var-editor";
 import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
@@ -36,6 +37,7 @@ const formSchema = z.object({
   configJson: z.string().optional(), // For advanced mode
   upstreamAuth: z.any().optional(), // Store auth config object
   tags: z.string().optional(),
+  envVars: z.array(z.object({ key: z.string(), value: z.string() })).optional(),
 });
 
 interface RegisterServiceDialogProps {
@@ -101,6 +103,9 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
       configJson: JSON.stringify(serviceToEdit, null, 2),
       upstreamAuth: serviceToEdit.upstreamAuth,
       tags: serviceToEdit.tags?.join(", ") || "",
+      envVars: serviceToEdit.commandLineService?.env
+        ? Object.entries(serviceToEdit.commandLineService.env).map(([key, value]) => ({ key, value }))
+        : [],
   } : {
       name: "",
       type: "http" as const,
@@ -109,6 +114,7 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
       configJson: "{\n  \"name\": \"my-service\",\n  \"httpService\": {\n    \"address\": \"https://api.example.com\"\n  }\n}",
       upstreamAuth: undefined,
       tags: "",
+      envVars: [] as EnvVar[],
   };
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -260,16 +266,33 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
       } else if (values.type === 'http') {
           config.httpService = { address: values.address || "", tools: [], calls: {}, resources: [], prompts: [], healthCheck: undefined, tlsConfig: undefined };
       } else if (values.type === 'command_line') {
-          config.commandLineService = { command: values.command || "", workingDirectory: "", local: false, env: {}, tools: [], resources: [], prompts: [], communicationProtocol: 0, calls: {}, healthCheck: undefined, cache: undefined, containerEnvironment: undefined, timeout: undefined };
+          const env: Record<string, string> = {};
+          if (values.envVars) {
+              values.envVars.forEach(v => {
+                  if (v.key) env[v.key] = v.value;
+              });
+          }
+
+          config.commandLineService = { command: values.command || "", workingDirectory: "", local: false, env: env, tools: [], resources: [], prompts: [], communicationProtocol: 0, calls: {}, healthCheck: undefined, cache: undefined, containerEnvironment: undefined, timeout: undefined };
 
           // Try to preserve environment variables from configJson if available.
           // This allows users to use the "Advanced (JSON)" tab to set env vars (like keys)
           // while still using the "Basic" tab for command editing.
+          // Note: The UI EnvVarEditor takes precedence if modified, but we respect JSON if EnvVars array is empty?
+          // Actually, if we are in Basic mode, we should trust the form values (envVars).
+          // If the user switches to Advanced, they edit JSON directly.
+          // If we want bi-directional sync, we would need to parse JSON back to form on tab switch.
+          // For now, let's allow JSON to override only if envVars is empty/default, OR merge?
+          // Merging is safer:
           if (values.configJson) {
               try {
                   const jsonConfig = JSON.parse(values.configJson);
                   if (jsonConfig.commandLineService?.env) {
-                      config.commandLineService.env = jsonConfig.commandLineService.env;
+                      // Merge JSON envs into our constructed envs, prioritizing form inputs if conflict?
+                      // Or prioritizing JSON?
+                      // If user edited form, they expect form to win.
+                      // So we use JSON as base, and overwrite with form.
+                      config.commandLineService.env = { ...jsonConfig.commandLineService.env, ...env };
                   }
               } catch (e) {
                   // Ignore JSON parse errors here
@@ -527,22 +550,42 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
                     />
 
                     {selectedType === 'command_line' && (
-                        <FormField
-                        control={form.control}
-                        name="command"
-                        render={({ field }) => (
-                            <FormItem>
-                            <FormLabel>Command</FormLabel>
-                            <FormControl>
-                                <Input placeholder="python script.py" {...field} />
-                            </FormControl>
-                            <FormDescription>
-                                The command to run the MCP server. Ensure all dependencies are installed.
-                            </FormDescription>
-                            <FormMessage />
-                            </FormItem>
-                        )}
-                        />
+                        <>
+                            <FormField
+                            control={form.control}
+                            name="command"
+                            render={({ field }) => (
+                                <FormItem>
+                                <FormLabel>Command</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="python script.py" {...field} />
+                                </FormControl>
+                                <FormDescription>
+                                    The command to run the MCP server. Ensure all dependencies are installed.
+                                </FormDescription>
+                                <FormMessage />
+                                </FormItem>
+                            )}
+                            />
+
+                            <div className="pt-2">
+                                <FormField
+                                    control={form.control}
+                                    name="envVars"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormControl>
+                                                <EnvVarEditor
+                                                    value={field.value || []}
+                                                    onChange={field.onChange}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+                        </>
                     )}
                     {selectedType === 'other' && (
                         <div className="text-sm text-muted-foreground">
