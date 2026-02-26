@@ -4329,8 +4329,10 @@ func validateSafePathAndInjection(val string, isDocker bool, commandName string)
 	decodedVal := val
 	for i := 0; i < 3; i++ {
 		newDecoded, err := url.QueryUnescape(decodedVal)
-		if err != nil { //nolint:nilerr
+		if err != nil {
 			// If decoding fails, we stop. The original value was already checked.
+			// Explicitly ignore error to satisfy linter (nilerr)
+			_ = err
 			break
 		}
 		if newDecoded == decodedVal {
