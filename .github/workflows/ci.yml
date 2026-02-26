@@ -632,7 +632,7 @@ jobs:
   e2e-public-api:
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    needs: [changes, build-server-images]
+    needs: [changes, build-server-images, build-test-images]
     if: ${{ needs.changes.outputs.src == 'true' }}
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
@@ -779,7 +779,10 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /usr/local/share/boost
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/share/boost
           sudo docker system prune -af --volumes || true
 
       - uses: actions/checkout@v6
