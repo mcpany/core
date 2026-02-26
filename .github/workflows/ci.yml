@@ -96,6 +96,14 @@ jobs:
       - name: Prune Docker
         run: docker system prune -af
 
+      - name: Ensure Git
+        run: |
+          SUDO=""
+          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if ! command -v git &> /dev/null; then
+            $SUDO apt-get update && $SUDO apt-get install -y git
+          fi
+
       - uses: actions/checkout@v6
 
       - name: Set up Go
@@ -175,6 +183,14 @@ jobs:
 
       - name: Prune Docker
         run: docker system prune -af
+
+      - name: Ensure Git
+        run: |
+          SUDO=""
+          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if ! command -v git &> /dev/null; then
+            $SUDO apt-get update && $SUDO apt-get install -y git
+          fi
 
       - uses: actions/checkout@v6
 
@@ -320,6 +336,14 @@ jobs:
 
       - name: Prune Docker
         run: docker system prune -af
+
+      - name: Ensure Git
+        run: |
+          SUDO=""
+          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if ! command -v git &> /dev/null; then
+            $SUDO apt-get update && $SUDO apt-get install -y git
+          fi
 
       - uses: actions/checkout@v6
 
@@ -494,6 +518,15 @@ jobs:
           $SUDO rm -rf /usr/share/dotnet
           $SUDO rm -rf /opt/ghc
           $SUDO rm -rf /usr/local/share/boost
+
+      - name: Ensure Git
+        run: |
+          SUDO=""
+          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if ! command -v git &> /dev/null; then
+            $SUDO apt-get update && $SUDO apt-get install -y git
+          fi
+
       - uses: actions/checkout@v6
 
       - name: Set up Go
@@ -636,6 +669,14 @@ jobs:
       - name: Prune Docker
         run: docker system prune -af
 
+      - name: Ensure Git
+        run: |
+          SUDO=""
+          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if ! command -v git &> /dev/null; then
+            $SUDO apt-get update && $SUDO apt-get install -y git
+          fi
+
       - uses: actions/checkout@v6
 
       - name: Install dependencies
@@ -650,18 +691,16 @@ jobs:
 
       - name: Configure Docker Registry Mirrors
         run: |
-          SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
-          $SUDO mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json
+          sudo mkdir -p /etc/docker
+          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          if $SUDO systemctl restart docker 2>/dev/null; then
+          if sudo systemctl restart docker 2>/dev/null; then
             echo "Docker restarted via systemctl"
-          elif $SUDO service docker restart 2>/dev/null; then
+          elif sudo service docker restart 2>/dev/null; then
             echo "Docker restarted via service"
           else
             echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
-            $SUDO pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
+            sudo pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
           fi
           docker info
 
@@ -781,6 +820,14 @@ jobs:
       - name: Prune Docker
         run: docker system prune -af
 
+      - name: Ensure Git
+        run: |
+          SUDO=""
+          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if ! command -v git &> /dev/null; then
+            $SUDO apt-get update && $SUDO apt-get install -y git
+          fi
+
       - uses: actions/checkout@v6
 
       - name: Install dependencies
@@ -892,6 +939,14 @@ jobs:
     timeout-minutes: 15
     needs: [build-images]
     steps:
+      - name: Ensure Git
+        run: |
+          SUDO=""
+          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if ! command -v git &> /dev/null; then
+            $SUDO apt-get update && $SUDO apt-get install -y git
+          fi
+
       - uses: actions/checkout@v6
 
       - name: Configure Docker Registry Mirrors
@@ -964,6 +1019,14 @@ jobs:
       - name: Prune Docker
         run: docker system prune -af
 
+      - name: Ensure Git
+        run: |
+          SUDO=""
+          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if ! command -v git &> /dev/null; then
+            $SUDO apt-get update && $SUDO apt-get install -y git
+          fi
+
       - uses: actions/checkout@v6
 
       - name: Detect Architecture
@@ -1016,6 +1079,14 @@ jobs:
 
       - name: Prune Docker
         run: docker system prune -af
+
+      - name: Ensure Git
+        run: |
+          SUDO=""
+          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if ! command -v git &> /dev/null; then
+            $SUDO apt-get update && $SUDO apt-get install -y git
+          fi
 
       - uses: actions/checkout@v6
 
