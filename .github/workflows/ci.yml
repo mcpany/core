@@ -476,7 +476,7 @@ jobs:
             runner: ubuntu-latest
           - platform: linux/arm64
             slug: arm64
-            runner: ubuntu-24.04-arm
+            runner: ubuntu-latest
     steps:
       - name: Free Disk Space (Fast)
         run: |
