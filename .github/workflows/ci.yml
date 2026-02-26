@@ -94,12 +94,6 @@ jobs:
       - name: Prune Docker
         run: docker system prune -af
 
-      - name: Install dependencies
-        run: apt-get update && apt-get install -y make git
-
-      - name: Install dependencies
-        run: apt-get update && apt-get install -y make git
-
       - uses: actions/checkout@v6
 
       - name: Set up Go
@@ -476,6 +470,9 @@ jobs:
             slug: arm64
             runner: ubuntu-24.04-arm
     steps:
+      - name: Install dependencies
+        run: apt-get update && apt-get install -y make git
+
       - uses: actions/checkout@v6
 
       - name: Set up Go
