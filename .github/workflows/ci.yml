@@ -88,10 +88,17 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          if command -v sudo &> /dev/null; then
+            sudo rm -rf /usr/local/lib/android
+            sudo rm -rf /usr/share/dotnet
+            sudo rm -rf /opt/ghc
+            sudo rm -rf /usr/local/share/boost
+          else
+            rm -rf /usr/local/lib/android
+            rm -rf /usr/share/dotnet
+            rm -rf /opt/ghc
+            rm -rf /usr/local/share/boost
+          fi
 
       - name: Prune Docker
         run: docker system prune -af
@@ -140,10 +147,16 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if command -v apt-get &> /dev/null; then
+          if command -v sudo &> /dev/null && command -v apt-get &> /dev/null; then
             sudo apt-get update && sudo apt-get install -y make xz-utils
+          elif command -v apt-get &> /dev/null; then
+            apt-get update && apt-get install -y make xz-utils
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             if command -v sudo &> /dev/null; then
+               sudo apk add --no-cache make xz
+             else
+               apk add --no-cache make xz
+             fi
           fi
 
       - name: Prepare environment
@@ -164,10 +177,17 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          if command -v sudo &> /dev/null; then
+            sudo rm -rf /usr/local/lib/android
+            sudo rm -rf /usr/share/dotnet
+            sudo rm -rf /opt/ghc
+            sudo rm -rf /usr/local/share/boost
+          else
+            rm -rf /usr/local/lib/android
+            rm -rf /usr/share/dotnet
+            rm -rf /opt/ghc
+            rm -rf /usr/local/share/boost
+          fi
 
       - name: Prune Docker
         run: docker system prune -af
@@ -176,26 +196,47 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if command -v apt-get &> /dev/null; then
+          if command -v sudo &> /dev/null && command -v apt-get &> /dev/null; then
             sudo apt-get update && sudo apt-get install -y make xz-utils
+          elif command -v apt-get &> /dev/null; then
+            apt-get update && apt-get install -y make xz-utils
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             if command -v sudo &> /dev/null; then
+               sudo apk add --no-cache make xz
+             else
+               apk add --no-cache make xz
+             fi
           fi
 
       - name: Configure Docker Registry Mirrors
         run: |
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
-          sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          if command -v sudo &> /dev/null; then
+            sudo mkdir -p /etc/docker
+            echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          if sudo systemctl restart docker 2>/dev/null; then
-            echo "Docker restarted via systemctl"
-          elif sudo service docker restart 2>/dev/null; then
-            echo "Docker restarted via service"
+            if sudo systemctl restart docker 2>/dev/null; then
+              echo "Docker restarted via systemctl"
+            elif sudo service docker restart 2>/dev/null; then
+              echo "Docker restarted via service"
+            else
+              echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
+              sudo pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
+            fi
           else
-            echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
-            sudo pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
+             # Assume root if no sudo, but be careful
+             if [ "$(id -u)" -eq 0 ]; then
+                mkdir -p /etc/docker
+                echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | tee /etc/docker/daemon.json
+                # Restarting docker in a container is usually not possible/needed if checking `docker info`
+                # But if this script runs on host, it might need restart.
+                # Inside a container (like build-images), docker socket is mounted, we cannot restart the daemon.
+                # So we just skip configuration if we can't restart, or just log.
+                echo "Skipping Docker restart (no sudo, likely inside container)"
+             else
+                echo "Cannot configure Docker mirrors (not root and no sudo)"
+             fi
           fi
           docker info # Verify the mirrors are listed
 
@@ -303,10 +344,17 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          if command -v sudo &> /dev/null; then
+            sudo rm -rf /usr/local/lib/android
+            sudo rm -rf /usr/share/dotnet
+            sudo rm -rf /opt/ghc
+            sudo rm -rf /usr/local/share/boost
+          else
+            rm -rf /usr/local/lib/android
+            rm -rf /usr/share/dotnet
+            rm -rf /opt/ghc
+            rm -rf /usr/local/share/boost
+          fi
 
       - name: Prune Docker
         run: docker system prune -af
@@ -315,26 +363,43 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if command -v apt-get &> /dev/null; then
+          if command -v sudo &> /dev/null && command -v apt-get &> /dev/null; then
             sudo apt-get update && sudo apt-get install -y make xz-utils
+          elif command -v apt-get &> /dev/null; then
+            apt-get update && apt-get install -y make xz-utils
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             if command -v sudo &> /dev/null; then
+               sudo apk add --no-cache make xz
+             else
+               apk add --no-cache make xz
+             fi
           fi
 
       - name: Configure Docker Registry Mirrors
         run: |
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
-          sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          if command -v sudo &> /dev/null; then
+            sudo mkdir -p /etc/docker
+            echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          if sudo systemctl restart docker 2>/dev/null; then
-            echo "Docker restarted via systemctl"
-          elif sudo service docker restart 2>/dev/null; then
-            echo "Docker restarted via service"
+            if sudo systemctl restart docker 2>/dev/null; then
+              echo "Docker restarted via systemctl"
+            elif sudo service docker restart 2>/dev/null; then
+              echo "Docker restarted via service"
+            else
+              echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
+              sudo pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
+            fi
           else
-            echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
-            sudo pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
+             # Assume root if no sudo
+             if [ "$(id -u)" -eq 0 ]; then
+                mkdir -p /etc/docker
+                echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | tee /etc/docker/daemon.json
+                echo "Skipping Docker restart (no sudo, likely inside container)"
+             else
+                echo "Cannot configure Docker mirrors (not root and no sudo)"
+             fi
           fi
           docker info # Verify the mirrors are listed
 
@@ -474,10 +539,17 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          if command -v sudo &> /dev/null; then
+            sudo rm -rf /usr/local/lib/android
+            sudo rm -rf /usr/share/dotnet
+            sudo rm -rf /opt/ghc
+            sudo rm -rf /usr/local/share/boost
+          else
+            rm -rf /usr/local/lib/android
+            rm -rf /usr/share/dotnet
+            rm -rf /opt/ghc
+            rm -rf /usr/local/share/boost
+          fi
       - uses: actions/checkout@v6
 
       - name: Set up Go
@@ -610,10 +682,17 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          if command -v sudo &> /dev/null; then
+            sudo rm -rf /usr/local/lib/android
+            sudo rm -rf /usr/share/dotnet
+            sudo rm -rf /opt/ghc
+            sudo rm -rf /usr/local/share/boost
+          else
+            rm -rf /usr/local/lib/android
+            rm -rf /usr/share/dotnet
+            rm -rf /opt/ghc
+            rm -rf /usr/local/share/boost
+          fi
 
       - name: Prune Docker
         run: docker system prune -af
@@ -622,24 +701,40 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if command -v apt-get &> /dev/null; then
+          if command -v sudo &> /dev/null && command -v apt-get &> /dev/null; then
             sudo apt-get update && sudo apt-get install -y make xz-utils
+          elif command -v apt-get &> /dev/null; then
+            apt-get update && apt-get install -y make xz-utils
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             if command -v sudo &> /dev/null; then
+               sudo apk add --no-cache make xz
+             else
+               apk add --no-cache make xz
+             fi
           fi
 
       - name: Configure Docker Registry Mirrors
         run: |
-          sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          if command -v sudo &> /dev/null; then
+            sudo mkdir -p /etc/docker
+            echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          if sudo systemctl restart docker 2>/dev/null; then
-            echo "Docker restarted via systemctl"
-          elif sudo service docker restart 2>/dev/null; then
-            echo "Docker restarted via service"
+            if sudo systemctl restart docker 2>/dev/null; then
+              echo "Docker restarted via systemctl"
+            elif sudo service docker restart 2>/dev/null; then
+              echo "Docker restarted via service"
+            else
+              echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
+              sudo pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
+            fi
           else
-            echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
-            sudo pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
+             if [ "$(id -u)" -eq 0 ]; then
+                mkdir -p /etc/docker
+                echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | tee /etc/docker/daemon.json
+                echo "Skipping Docker restart (no sudo)"
+             else
+                echo "Cannot configure Docker mirrors (not root and no sudo)"
+             fi
           fi
           docker info
 
@@ -749,10 +844,17 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          if command -v sudo &> /dev/null; then
+            sudo rm -rf /usr/local/lib/android
+            sudo rm -rf /usr/share/dotnet
+            sudo rm -rf /opt/ghc
+            sudo rm -rf /usr/local/share/boost
+          else
+            rm -rf /usr/local/lib/android
+            rm -rf /usr/share/dotnet
+            rm -rf /opt/ghc
+            rm -rf /usr/local/share/boost
+          fi
 
       - name: Prune Docker
         run: docker system prune -af
@@ -761,26 +863,42 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if command -v apt-get &> /dev/null; then
+          if command -v sudo &> /dev/null && command -v apt-get &> /dev/null; then
             sudo apt-get update && sudo apt-get install -y make xz-utils
+          elif command -v apt-get &> /dev/null; then
+            apt-get update && apt-get install -y make xz-utils
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             if command -v sudo &> /dev/null; then
+               sudo apk add --no-cache make xz
+             else
+               apk add --no-cache make xz
+             fi
           fi
 
       - name: Configure Docker Registry Mirrors
         run: |
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
-          sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          if command -v sudo &> /dev/null; then
+            sudo mkdir -p /etc/docker
+            echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          if sudo systemctl restart docker 2>/dev/null; then
-            echo "Docker restarted via systemctl"
-          elif sudo service docker restart 2>/dev/null; then
-            echo "Docker restarted via service"
+            if sudo systemctl restart docker 2>/dev/null; then
+              echo "Docker restarted via systemctl"
+            elif sudo service docker restart 2>/dev/null; then
+              echo "Docker restarted via service"
+            else
+              echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
+              sudo pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
+            fi
           else
-            echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
-            sudo pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
+             if [ "$(id -u)" -eq 0 ]; then
+                mkdir -p /etc/docker
+                echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | tee /etc/docker/daemon.json
+                echo "Skipping Docker restart (no sudo)"
+             else
+                echo "Cannot configure Docker mirrors (not root and no sudo)"
+             fi
           fi
           docker info # Verify the mirrors are listed
 
@@ -870,16 +988,26 @@ jobs:
         run: |
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
-          sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          if command -v sudo &> /dev/null; then
+            sudo mkdir -p /etc/docker
+            echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-          if sudo systemctl restart docker 2>/dev/null; then
-            echo "Docker restarted via systemctl"
-          elif sudo service docker restart 2>/dev/null; then
-            echo "Docker restarted via service"
+            if sudo systemctl restart docker 2>/dev/null; then
+              echo "Docker restarted via systemctl"
+            elif sudo service docker restart 2>/dev/null; then
+              echo "Docker restarted via service"
+            else
+              echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
+              sudo pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
+            fi
           else
-            echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
-            sudo pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
+             if [ "$(id -u)" -eq 0 ]; then
+                mkdir -p /etc/docker
+                echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | tee /etc/docker/daemon.json
+                echo "Skipping Docker restart (no sudo)"
+             else
+                echo "Cannot configure Docker mirrors (not root and no sudo)"
+             fi
           fi
           docker info # Verify the mirrors are listed
 
@@ -928,10 +1056,17 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          if command -v sudo &> /dev/null; then
+            sudo rm -rf /usr/local/lib/android
+            sudo rm -rf /usr/share/dotnet
+            sudo rm -rf /opt/ghc
+            sudo rm -rf /usr/local/share/boost
+          else
+            rm -rf /usr/local/lib/android
+            rm -rf /usr/share/dotnet
+            rm -rf /opt/ghc
+            rm -rf /usr/local/share/boost
+          fi
 
       - name: Prune Docker
         run: docker system prune -af
@@ -981,10 +1116,17 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          if command -v sudo &> /dev/null; then
+            sudo rm -rf /usr/local/lib/android
+            sudo rm -rf /usr/share/dotnet
+            sudo rm -rf /opt/ghc
+            sudo rm -rf /usr/local/share/boost
+          else
+            rm -rf /usr/local/lib/android
+            rm -rf /usr/share/dotnet
+            rm -rf /opt/ghc
+            rm -rf /usr/local/share/boost
+          fi
 
       - name: Prune Docker
         run: docker system prune -af
