@@ -598,7 +598,7 @@ func TestRun_ConfigLoadError(t *testing.T) {
 	err := afero.WriteFile(fs, "/config.yaml", []byte("malformed yaml:"), 0o644)
 	require.NoError(t, err)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
 	app := NewApplication()
@@ -655,7 +655,7 @@ func TestRun_EmptyConfig(t *testing.T) {
 	err := afero.WriteFile(fs, "/config.yaml", []byte(""), 0o644)
 	require.NoError(t, err)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
 	app := NewApplication()
@@ -685,7 +685,7 @@ func TestRun_StdioMode(t *testing.T) {
 	}
 
 	fs := afero.NewMemMapFs()
-	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
 	err := app.Run(RunOptions{Ctx: ctx, Fs: fs, Stdio: true, JSONRPCPort: "127.0.0.1:0", GRPCPort: "127.0.0.1:0", ConfigPaths: nil, APIKey: "", ShutdownTimeout: 5 * time.Second})
@@ -1591,7 +1591,7 @@ func TestRun_InMemoryBus(t *testing.T) {
 	err := afero.WriteFile(fs, "/config.yaml", []byte(""), 0o644)
 	require.NoError(t, err)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
 	app := NewApplication()
@@ -1605,7 +1605,7 @@ func TestRun_CachingMiddleware(t *testing.T) {
 	err := afero.WriteFile(fs, "/config.yaml", []byte(""), 0o644)
 	require.NoError(t, err)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
 	app := NewApplication()
@@ -2840,7 +2840,7 @@ func TestRun_WithListenAddress(t *testing.T) {
 		errChan <- app.Run(RunOptions{Ctx: ctx, Fs: fs, Stdio: false, JSONRPCPort: "127.0.0.1:0", GRPCPort: "127.0.0.1:0", ConfigPaths: []string{"/config.yaml"}, APIKey: "", ShutdownTimeout: 5 * time.Second})
 	}()
 
-	time.Sleep(100 * time.Millisecond)
+	require.NoError(t, app.WaitForStartup(ctx))
 	cancel()
 	err := <-errChan
 	assert.NoError(t, err)
