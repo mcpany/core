@@ -491,35 +491,35 @@ jobs:
           SLUG="${{ matrix.slug }}"
 
           # Server
-          make -C server build-docker PLATFORMS=$PLATFORM
+          make -C server build-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=server-$SLUG CACHE_FROM=type=gha,scope=server-$SLUG
           docker save -o server.tar mcpany/server:latest
 
           # HTTP Echo
-          make -C server build-http-echo-docker PLATFORMS=$PLATFORM
+          make -C server build-http-echo-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=http-echo-$SLUG CACHE_FROM=type=gha,scope=http-echo-$SLUG
           docker save -o http-echo.tar mcpany/http-echo-server:latest
 
           # Time Server
-          make -C server build-e2e-timeserver-docker PLATFORMS=$PLATFORM
+          make -C server build-e2e-timeserver-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=time-server-$SLUG CACHE_FROM=type=gha,scope=time-server-$SLUG
           docker save -o time-server.tar mcpany-e2e-time-server
 
           # Cowsay
-          make -C server build-cowsay-docker PLATFORMS=$PLATFORM
+          make -C server build-cowsay-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=cowsay-$SLUG CACHE_FROM=type=gha,scope=cowsay-$SLUG
           docker save -o cowsay.tar mcpany/e2e-cowsay-server:latest
 
           # Everything
-          make -C server build-everything-docker PLATFORMS=$PLATFORM
+          make -C server build-everything-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=everything-$SLUG CACHE_FROM=type=gha,scope=everything-$SLUG
           docker save -o everything.tar mcpany/everything:latest
 
           # UI
-          make -C server docker-build-ui PLATFORMS=$PLATFORM
+          make -C server docker-build-ui PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=ui-$SLUG CACHE_FROM=type=gha,scope=ui-$SLUG
           docker save -o ui.tar mcpany/ui:latest
 
           # Operator
-          make -C server docker-build-operator PLATFORMS=$PLATFORM
+          make -C server docker-build-operator PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=operator-$SLUG CACHE_FROM=type=gha,scope=operator-$SLUG
           docker save -o operator.tar mcpany/operator:latest
 
           # UI Test Image
-          make -C ui build-test-docker PLATFORMS=$PLATFORM
+          make -C ui build-test-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=ui-test-$SLUG CACHE_FROM=type=gha,scope=ui-test-$SLUG
           docker save -o ui-test-image.tar mcpany-ui-e2e:latest
 
       - name: Upload Server Image
