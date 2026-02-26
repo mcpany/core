@@ -101,7 +101,8 @@ func TestServer_CallTool_Latency_Metrics_Repro(t *testing.T) {
 	// Wait for metrics to appear
 	var data []*metrics.IntervalMetrics
 	var samples map[string]interface{}
-	for i := 0; i < 20; i++ {
+	// ⚡ BOLT: Increase wait time to 1s to account for slow CI runners
+	for i := 0; i < 100; i++ {
 		data = sink.Data()
 		if len(data) > 0 {
 			// ⚡ BOLT: Fix test to aggregate samples from all intervals
@@ -112,7 +113,16 @@ func TestServer_CallTool_Latency_Metrics_Repro(t *testing.T) {
 					samples[k] = v
 				}
 			}
-			if len(samples) > 0 {
+			// We look for the labelled metric which signifies the operation is complete and recorded
+			foundLabelled := false
+			expectedPrefix := "mcpany.tools.call.latency;tool="
+			for k := range samples {
+				if len(k) >= len(expectedPrefix) && k[:len(expectedPrefix)] == expectedPrefix {
+					foundLabelled = true
+					break
+				}
+			}
+			if foundLabelled {
 				break
 			}
 		}
