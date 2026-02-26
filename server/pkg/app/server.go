@@ -171,6 +171,12 @@ type Runner interface {
 	//
 	// Returns:
 	//   - error: An error if startup or execution fails.
+	//
+	// Errors:
+	//   - Returns error if server startup fails.
+	//
+	// Side Effects:
+	//   - Starts the application servers and blocks until shutdown.
 	Run(opts RunOptions) error
 
 	// ReloadConfig reloads the application configuration.
@@ -184,6 +190,12 @@ type Runner interface {
 	//
 	// Returns:
 	//   - error: An error if reload fails.
+	//
+	// Errors:
+	//   - Returns error if config files cannot be read or parsed.
+	//
+	// Side Effects:
+	//   - Updates the application configuration state.
 	ReloadConfig(ctx context.Context, fs afero.Fs, configPaths []string) error
 }
 
@@ -317,6 +329,9 @@ type statsCacheEntry struct {
 //
 // Returns:
 //   - (*Application): The initialized application.
+//
+// Side Effects:
+//   - Allocates memory for the application struct and its dependencies.
 func NewApplication() *Application {
 	busProvider, _ := bus.NewProvider(nil)
 	return &Application{
@@ -346,6 +361,10 @@ func NewApplication() *Application {
 //
 // Returns:
 //   - (error): An error if execution fails.
+//
+// Errors:
+//   - Returns error if configuration fails to load.
+//   - Returns error if servers fail to bind to ports.
 //
 // Side Effects:
 //   - Starts HTTP and gRPC servers.
@@ -909,6 +928,9 @@ func (a *Application) Run(opts RunOptions) error {
 // Returns:
 //   - (error): An error if the configuration reload fails.
 //
+// Errors:
+//   - Returns error if config loading fails.
+//
 // Side Effects:
 //   - Reads configuration files.
 //   - Updates global settings, user auth, profiles, and service registry.
@@ -1343,6 +1365,12 @@ func (a *Application) generateConfigDiff(oldConfig, newConfig map[string]string)
 //
 // Returns:
 //   - (error): nil if startup completes successfully, or a context error if canceled.
+//
+// Errors:
+//   - Returns context error if the context is canceled/timed out.
+//
+// Side Effects:
+//   - Blocks execution until startup is complete.
 func (a *Application) WaitForStartup(ctx context.Context) error {
 	select {
 	case <-a.startupCh:
@@ -1473,6 +1501,13 @@ func (a *Application) filesystemHealthCheck(_ context.Context) health.CheckResul
 //
 // Returns:
 //   - (error): nil if healthy, or an error if the health check fails.
+//
+// Errors:
+//   - Returns error if the network request fails or status code is not 200.
+//
+// Side Effects:
+//   - Makes an HTTP request to the server.
+//   - Writes to the output writer.
 func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
@@ -1494,6 +1529,13 @@ func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 //
 // Returns:
 //   - (error): nil if healthy, or an error if the health check fails.
+//
+// Errors:
+//   - Returns error if the network request fails or status code is not 200.
+//
+// Side Effects:
+//   - Makes an HTTP request to the server.
+//   - Writes to the output writer.
 func HealthCheckWithContext(
 	ctx context.Context,
 	out io.Writer,
@@ -2509,6 +2551,9 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 //
 // Returns:
 //   - (http.Handler): The wrapped handler.
+//
+// Side Effects:
+//   - Modifies the request context.
 func (a *Application) HTTPRequestContextMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := context.WithValue(r.Context(), middleware.HTTPRequestContextKey, r)

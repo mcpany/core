@@ -40,14 +40,21 @@ type Server struct {
 
 // NewServer creates a new Admin Server.
 //
-// cache manages the caching layer.
-// toolManager is the toolManager.
-// serviceRegistry is the registry of upstream services.
-// storage provides the persistence layer.
-// discoveryManager manages auto-discovery.
-// auditMiddleware provides access to audit logs.
+// Summary: Creates a new Admin Server instance.
 //
-// Returns the result.
+// Parameters:
+//   - cache (*middleware.CachingMiddleware): Manages the caching layer.
+//   - toolManager (tool.ManagerInterface): The tool manager.
+//   - serviceRegistry (serviceregistry.ServiceRegistryInterface): The registry of upstream services.
+//   - storage (storage.Storage): Provides the persistence layer.
+//   - discoveryManager (*discovery.Manager): Manages auto-discovery.
+//   - auditMiddleware (*middleware.AuditMiddleware): Provides access to audit logs.
+//
+// Returns:
+//   - *Server: The initialized Admin Server.
+//
+// Side Effects:
+//   - None.
 func NewServer(
 	cache *middleware.CachingMiddleware,
 	toolManager tool.ManagerInterface,
@@ -68,11 +75,22 @@ func NewServer(
 
 // ClearCache clears the cache.
 //
-// ctx is the context for the request.
-// _ is an unused parameter.
+// Summary: Clears the system cache.
 //
-// Returns the response.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - _ (*pb.ClearCacheRequest): The request object (unused).
+//
+// Returns:
+//   - *pb.ClearCacheResponse: The empty response.
+//   - error: An error if the cache is not enabled or fails to clear.
+//
+// Errors:
+//   - Returns FailedPrecondition if caching is not enabled.
+//   - Returns internal error if cache clearing fails.
+//
+// Side Effects:
+//   - Clears the underlying cache storage.
 func (s *Server) ClearCache(ctx context.Context, _ *pb.ClearCacheRequest) (*pb.ClearCacheResponse, error) {
 	if s.cache == nil {
 		return nil, status.Error(codes.FailedPrecondition, "caching is not enabled")
@@ -85,11 +103,21 @@ func (s *Server) ClearCache(ctx context.Context, _ *pb.ClearCacheRequest) (*pb.C
 
 // ListServices returns all registered services.
 //
-// _ is an unused parameter.
-// _ is an unused parameter.
+// Summary: Retrieves a list of all registered upstream services.
 //
-// Returns the response.
-// Returns an error if the operation fails.
+// Parameters:
+//   - _ (context.Context): The context for the request (unused).
+//   - _ (*pb.ListServicesRequest): The request object (unused).
+//
+// Returns:
+//   - *pb.ListServicesResponse: The list of services.
+//   - error: An error if retrieving services fails.
+//
+// Errors:
+//   - Returns internal error if service registry fails.
+//
+// Side Effects:
+//   - Reads from service registry or tool manager.
 func (s *Server) ListServices(_ context.Context, _ *pb.ListServicesRequest) (*pb.ListServicesResponse, error) {
 	var services []*configv1.UpstreamServiceConfig
 	var serviceStates []*pb.ServiceState
@@ -138,11 +166,22 @@ func (s *Server) ListServices(_ context.Context, _ *pb.ListServicesRequest) (*pb
 
 // GetService returns a specific service by ID.
 //
-// _ is an unused parameter.
-// req is the request object.
+// Summary: Retrieves details for a specific service.
 //
-// Returns the response.
-// Returns an error if the operation fails.
+// Parameters:
+//   - _ (context.Context): The context for the request (unused).
+//   - req (*pb.GetServiceRequest): The request object containing the service ID.
+//
+// Returns:
+//   - *pb.GetServiceResponse: The service details.
+//   - error: An error if the service is not found.
+//
+// Errors:
+//   - Returns NotFound if the service ID does not exist.
+//   - Returns Internal if the service configuration is missing.
+//
+// Side Effects:
+//   - Reads from service registry or tool manager.
 func (s *Server) GetService(_ context.Context, req *pb.GetServiceRequest) (*pb.GetServiceResponse, error) {
 	if s.serviceRegistry != nil {
 		cfg, ok := s.serviceRegistry.GetServiceConfig(req.GetServiceId())
@@ -187,11 +226,21 @@ func (s *Server) GetService(_ context.Context, req *pb.GetServiceRequest) (*pb.G
 
 // ListTools returns all registered tools.
 //
-// _ is an unused parameter.
-// _ is an unused parameter.
+// Summary: Retrieves a list of all registered tools.
 //
-// Returns the response.
-// Returns an error if the operation fails.
+// Parameters:
+//   - _ (context.Context): The context for the request (unused).
+//   - _ (*pb.ListToolsRequest): The request object (unused).
+//
+// Returns:
+//   - *pb.ListToolsResponse: The list of tools.
+//   - error: An error if operation fails (currently always nil).
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Reads from tool manager.
 func (s *Server) ListTools(_ context.Context, _ *pb.ListToolsRequest) (*pb.ListToolsResponse, error) {
 	tools := s.toolManager.ListTools()
 	responseTools := make([]*mcprouterv1.Tool, 0, len(tools))
@@ -203,11 +252,21 @@ func (s *Server) ListTools(_ context.Context, _ *pb.ListToolsRequest) (*pb.ListT
 
 // GetTool returns a specific tool by name.
 //
-// _ is an unused parameter.
-// req is the request object.
+// Summary: Retrieves details for a specific tool.
 //
-// Returns the response.
-// Returns an error if the operation fails.
+// Parameters:
+//   - _ (context.Context): The context for the request (unused).
+//   - req (*pb.GetToolRequest): The request object containing the tool name.
+//
+// Returns:
+//   - *pb.GetToolResponse: The tool details.
+//   - error: An error if the tool is not found.
+//
+// Errors:
+//   - Returns NotFound if the tool name does not exist.
+//
+// Side Effects:
+//   - Reads from tool manager.
 func (s *Server) GetTool(_ context.Context, req *pb.GetToolRequest) (*pb.GetToolResponse, error) {
 	t, ok := s.toolManager.GetTool(req.GetToolName())
 	if !ok {
@@ -218,11 +277,22 @@ func (s *Server) GetTool(_ context.Context, req *pb.GetToolRequest) (*pb.GetTool
 
 // CreateUser creates a new user.
 //
-// ctx is the context for the request.
-// req is the request object.
+// Summary: Creates a new user in the system.
 //
-// Returns the response.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - req (*pb.CreateUserRequest): The request object containing user details.
+//
+// Returns:
+//   - *pb.CreateUserResponse: The created user.
+//   - error: An error if creation fails.
+//
+// Errors:
+//   - Returns InvalidArgument if user data is missing.
+//   - Returns Internal if password hashing or storage fails.
+//
+// Side Effects:
+//   - Writes to the storage backend.
 func (s *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
 	if !req.HasUser() {
 		return nil, status.Error(codes.InvalidArgument, "user is required")
@@ -250,11 +320,22 @@ func (s *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb
 
 // GetUser retrieves a user by ID.
 //
-// ctx is the context for the request.
-// req is the request object.
+// Summary: Retrieves user details by ID.
 //
-// Returns the response.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - req (*pb.GetUserRequest): The request object containing the user ID.
+//
+// Returns:
+//   - *pb.GetUserResponse: The user details.
+//   - error: An error if the user is not found.
+//
+// Errors:
+//   - Returns Internal if storage lookup fails.
+//   - Returns NotFound if user does not exist.
+//
+// Side Effects:
+//   - Reads from storage.
 func (s *Server) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.GetUserResponse, error) {
 	user, err := s.storage.GetUser(ctx, req.GetUserId())
 	if err != nil {
@@ -271,11 +352,21 @@ func (s *Server) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.GetUs
 
 // ListUsers lists all users.
 //
-// ctx is the context for the request.
-// _ is an unused parameter.
+// Summary: Retrieves a list of all users.
 //
-// Returns the response.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - _ (*pb.ListUsersRequest): The request object (unused).
+//
+// Returns:
+//   - *pb.ListUsersResponse: The list of users.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns Internal if storage lookup fails.
+//
+// Side Effects:
+//   - Reads from storage.
 func (s *Server) ListUsers(ctx context.Context, _ *pb.ListUsersRequest) (*pb.ListUsersResponse, error) {
 	users, err := s.storage.ListUsers(ctx)
 	if err != nil {
@@ -294,11 +385,22 @@ func (s *Server) ListUsers(ctx context.Context, _ *pb.ListUsersRequest) (*pb.Lis
 
 // UpdateUser updates an existing user.
 //
-// ctx is the context for the request.
-// req is the request object.
+// Summary: Updates an existing user's details.
 //
-// Returns the response.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - req (*pb.UpdateUserRequest): The request object containing updated user details.
+//
+// Returns:
+//   - *pb.UpdateUserResponse: The updated user.
+//   - error: An error if update fails.
+//
+// Errors:
+//   - Returns InvalidArgument if user data is missing.
+//   - Returns Internal if password hashing or storage update fails.
+//
+// Side Effects:
+//   - Writes to storage.
 func (s *Server) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb.UpdateUserResponse, error) {
 	if !req.HasUser() {
 		return nil, status.Error(codes.InvalidArgument, "user is required")
@@ -326,11 +428,21 @@ func (s *Server) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb
 
 // DeleteUser deletes a user by ID.
 //
-// ctx is the context for the request.
-// req is the request object.
+// Summary: Deletes a user from the system.
 //
-// Returns the response.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - req (*pb.DeleteUserRequest): The request object containing the user ID.
+//
+// Returns:
+//   - *pb.DeleteUserResponse: The empty response.
+//   - error: An error if deletion fails.
+//
+// Errors:
+//   - Returns Internal if storage deletion fails.
+//
+// Side Effects:
+//   - Deletes from storage.
 func (s *Server) DeleteUser(ctx context.Context, req *pb.DeleteUserRequest) (*pb.DeleteUserResponse, error) {
 	if err := s.storage.DeleteUser(ctx, req.GetUserId()); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to delete user: %v", err)
@@ -339,6 +451,22 @@ func (s *Server) DeleteUser(ctx context.Context, req *pb.DeleteUserRequest) (*pb
 }
 
 // GetDiscoveryStatus returns the status of auto-discovery providers.
+//
+// Summary: Retrieves the status of all auto-discovery providers.
+//
+// Parameters:
+//   - _ (context.Context): The context (unused).
+//   - _ (*pb.GetDiscoveryStatusRequest): The request (unused).
+//
+// Returns:
+//   - *pb.GetDiscoveryStatusResponse: The status list.
+//   - error: Always nil.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Reads from discovery manager.
 func (s *Server) GetDiscoveryStatus(_ context.Context, _ *pb.GetDiscoveryStatusRequest) (*pb.GetDiscoveryStatusResponse, error) {
 	if s.discoveryManager == nil {
 		return &pb.GetDiscoveryStatusResponse{}, nil
@@ -362,6 +490,24 @@ func (s *Server) GetDiscoveryStatus(_ context.Context, _ *pb.GetDiscoveryStatusR
 }
 
 // ListAuditLogs returns audit logs matching the filter.
+//
+// Summary: Retrieves audit logs based on provided filters.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - req (*pb.ListAuditLogsRequest): The request containing filters (start/end time, tool, user, etc.).
+//
+// Returns:
+//   - *pb.ListAuditLogsResponse: The list of audit logs.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns FailedPrecondition if audit logging is disabled.
+//   - Returns InvalidArgument if timestamps are invalid.
+//   - Returns Internal if reading logs fails.
+//
+// Side Effects:
+//   - Reads from audit middleware storage.
 func (s *Server) ListAuditLogs(ctx context.Context, req *pb.ListAuditLogsRequest) (*pb.ListAuditLogsResponse, error) {
 	if s.auditMiddleware == nil {
 		return nil, status.Error(codes.FailedPrecondition, "audit logging is not enabled")
