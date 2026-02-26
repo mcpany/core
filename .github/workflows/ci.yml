@@ -446,19 +446,8 @@ jobs:
             slug: arm64
             runner: ubuntu-24.04-arm
     steps:
-      - name: Free Disk Space (Fast)
-        run: |
-          sudo rm -rf /usr/local/lib/android || true
-          sudo rm -rf /usr/share/dotnet || true
-          sudo rm -rf /opt/ghc || true
-          sudo rm -rf /usr/local/share/boost || true
-          sudo rm -rf /usr/local/graalvm || true
-          sudo rm -rf /usr/local/.ghcup || true
-          sudo rm -rf /usr/local/share/powershell || true
-          sudo rm -rf /usr/share/swift || true
-          # sudo rm -rf /usr/lib/jvm || true # Keep Java for make gen
-          sudo rm -rf /var/lib/apt/lists/* || true
-          sudo apt-get clean || true
+      - name: Prune Docker
+        run: docker system prune -af
 
       - uses: actions/checkout@v6
 
@@ -591,20 +580,6 @@ jobs:
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
       MCPANY_ALLOW_LOOPBACK_RESOURCES: "true"
     steps:
-      - name: Free Disk Space (Fast)
-        run: |
-          sudo rm -rf /usr/local/lib/android || true
-          sudo rm -rf /usr/share/dotnet || true
-          sudo rm -rf /opt/ghc || true
-          sudo rm -rf /usr/local/share/boost || true
-          sudo rm -rf /usr/local/graalvm || true
-          sudo rm -rf /usr/local/.ghcup || true
-          sudo rm -rf /usr/local/share/powershell || true
-          sudo rm -rf /usr/share/swift || true
-          sudo rm -rf /usr/lib/jvm || true
-          sudo rm -rf /var/lib/apt/lists/* || true
-          sudo apt-get clean || true
-
       - name: Prune Docker
         run: docker system prune -af
 
@@ -738,20 +713,6 @@ jobs:
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
       MCPANY_ALLOW_LOOPBACK_RESOURCES: "true"
     steps:
-      - name: Free Disk Space (Fast)
-        run: |
-          sudo rm -rf /usr/local/lib/android || true
-          sudo rm -rf /usr/share/dotnet || true
-          sudo rm -rf /opt/ghc || true
-          sudo rm -rf /usr/local/share/boost || true
-          sudo rm -rf /usr/local/graalvm || true
-          sudo rm -rf /usr/local/.ghcup || true
-          sudo rm -rf /usr/local/share/powershell || true
-          sudo rm -rf /usr/share/swift || true
-          sudo rm -rf /usr/lib/jvm || true
-          sudo rm -rf /var/lib/apt/lists/* || true
-          sudo apt-get clean || true
-
       - name: Prune Docker
         run: docker system prune -af
 
@@ -928,20 +889,6 @@ jobs:
     env:
       MCPANY_ALLOW_LOOPBACK_RESOURCES: "true"
     steps:
-      - name: Free Disk Space (Fast)
-        run: |
-          sudo rm -rf /usr/local/lib/android || true
-          sudo rm -rf /usr/share/dotnet || true
-          sudo rm -rf /opt/ghc || true
-          sudo rm -rf /usr/local/share/boost || true
-          sudo rm -rf /usr/local/graalvm || true
-          sudo rm -rf /usr/local/.ghcup || true
-          sudo rm -rf /usr/local/share/powershell || true
-          sudo rm -rf /usr/share/swift || true
-          sudo rm -rf /usr/lib/jvm || true
-          sudo rm -rf /var/lib/apt/lists/* || true
-          sudo apt-get clean || true
-
       - name: Prune Docker
         run: docker system prune -af
 
