@@ -38,7 +38,16 @@ type Doctor struct {
 
 // NewDoctor creates a new Doctor.
 //
-// Returns the result.
+// Summary: Creates a new Doctor instance for managing health checks.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *Doctor: A pointer to the newly created Doctor instance.
+//
+// Side Effects:
+//   - Initializes internal maps and the HTTP client.
 func NewDoctor() *Doctor {
 	return &Doctor{
 		checks:     make(map[string]CheckFunc),
@@ -48,8 +57,17 @@ func NewDoctor() *Doctor {
 
 // AddCheck adds a named health check.
 //
-// name is the name of the resource.
-// check is the check.
+// Summary: Registers a new health check function with a given name.
+//
+// Parameters:
+//   - name (string): The unique name of the health check.
+//   - check (CheckFunc): The function to execute for the health check.
+//
+// Returns:
+//   - None.
+//
+// Side Effects:
+//   - Updates the internal map of health checks.
 func (d *Doctor) AddCheck(name string, check CheckFunc) {
 	d.mu.Lock()
 	defer d.mu.Unlock()
@@ -58,7 +76,18 @@ func (d *Doctor) AddCheck(name string, check CheckFunc) {
 
 // Handler returns the http handler.
 //
-// Returns the result.
+// Summary: Returns an HTTP handler function that executes all registered health checks.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - http.HandlerFunc: The HTTP handler function serving the doctor report.
+//
+// Side Effects:
+//   - Executes all registered health checks.
+//   - Makes an HTTP request to google.com to check internet connectivity.
+//   - Writes a JSON response to the HTTP response writer.
 func (d *Doctor) Handler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		report := DoctorReport{

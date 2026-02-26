@@ -49,23 +49,21 @@ export interface ButtonProps
 
 /**
  * Button component.
+ *
+ * Summary: A customizable button component.
+ *
  * @param props - The component props.
  * @param props.className - The name of the class.
  * @param props.variant - The variant property.
  * @param props.size - The size property.
  * @param props.asChild - The asChild property.
  * @returns The rendered component.
+ *
+ * Side Effects:
+ * - None.
  */
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, ...props }, ref) => {
-/**
- * Comp component.
- * @param props - The component props.
- * @param props.variant - The variant property.
- * @param props.size - The size property.
- * @param props.className - The name of the class.
- * @returns The rendered component.
- */
     const Comp = asChild ? Slot : "button"
     return (
       <Comp

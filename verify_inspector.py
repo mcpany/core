@@ -1,10 +1,33 @@
 # Copyright 2026 Author(s) of MCP Any
 # SPDX-License-Identifier: Apache-2.0
 
+"""
+Verification script for the Inspector UI using Playwright.
+
+This script automates the verification of the Inspector page by navigating to it,
+checking for key elements, and taking a screenshot.
+"""
+
 from playwright.sync_api import Page, expect, sync_playwright
 import time
 
 def verify_inspector(page: Page):
+    """
+    Verifies the functionality and appearance of the Inspector page.
+
+    Args:
+        page (Page): The Playwright Page object to interact with.
+
+    Returns:
+        None.
+
+    Raises:
+        AssertionError: If any expected element is not found or visible.
+
+    Side Effects:
+        - Navigates the browser page to the Inspector URL.
+        - Takes a screenshot and saves it to disk.
+    """
     # Navigate to Inspector
     page.goto("http://localhost:9002/inspector")
 

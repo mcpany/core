@@ -23,10 +23,17 @@ type FileAuditStore struct {
 
 // NewFileAuditStore creates a new FileAuditStore.
 //
-// path is the path.
+// Summary: Creates a new FileAuditStore.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - path (string): The path to the log file. If empty, logs to stdout.
+//
+// Returns:
+//   - *FileAuditStore: The initialized store.
+//   - error: An error if the file cannot be opened.
+//
+// Side Effects:
+//   - Opens the specified file for appending.
 func NewFileAuditStore(path string) (*FileAuditStore, error) {
 	var f *os.File
 	var err error
@@ -47,10 +54,17 @@ func NewFileAuditStore(path string) (*FileAuditStore, error) {
 
 // Write writes an audit entry to the file.
 //
-// _ is an unused parameter.
-// entry is the entry.
+// Summary: Writes an audit log entry to the file or stdout.
 //
-// Returns an error if the operation fails.
+// Parameters:
+//   - _ (context.Context): The context (unused).
+//   - entry (Entry): The audit entry.
+//
+// Returns:
+//   - error: An error if the write operation fails.
+//
+// Side Effects:
+//   - Writes JSON data to the file/stdout.
 func (s *FileAuditStore) Write(_ context.Context, entry Entry) error {
 	// ⚡ BOLT: Serialize JSON outside the lock to reduce critical section duration.
 	// Randomized Selection from Top 5 High-Impact Targets
@@ -76,13 +90,35 @@ func (s *FileAuditStore) Write(_ context.Context, entry Entry) error {
 }
 
 // Read implements the Store interface.
+//
+// Summary: Reads audit logs (Not implemented).
+//
+// Parameters:
+//   - _ (context.Context): The context.
+//   - _ (Filter): The filter criteria.
+//
+// Returns:
+//   - []Entry: The list of entries (nil).
+//   - error: An error indicating this method is not implemented.
+//
+// Side Effects:
+//   - None.
 func (s *FileAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for file audit store")
 }
 
 // Close closes the file.
 //
-// Returns an error if the operation fails.
+// Summary: Closes the underlying file.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - error: An error if closing fails.
+//
+// Side Effects:
+//   - Closes the file descriptor.
 func (s *FileAuditStore) Close() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

@@ -36,9 +36,16 @@ type PolicyHook struct {
 
 // NewPolicyHook creates a new PolicyHook with the given call policy.
 //
-// policy is the policy.
+// Summary: Creates a new PolicyHook for enforcing call policies.
 //
-// Returns the result.
+// Parameters:
+//   - policy (*configv1.CallPolicy): The call policy configuration.
+//
+// Returns:
+//   - *PolicyHook: The initialized PolicyHook.
+//
+// Side Effects:
+//   - Compiles regex patterns defined in the policy rules.
 func NewPolicyHook(policy *configv1.CallPolicy) *PolicyHook {
 	compiledRules := make([]compiledRule, len(policy.GetRules()))
 	for i, rule := range policy.GetRules() {
@@ -76,12 +83,19 @@ func NewPolicyHook(policy *configv1.CallPolicy) *PolicyHook {
 
 // ExecutePre executes the policy check before a tool is called.
 //
-// _ is an unused parameter.
-// req is the request object.
+// Summary: Enforces policy rules before tool execution.
 //
-// Returns the result.
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - _ (context.Context): The context for the request (unused).
+//   - req (*ExecutionRequest): The tool execution request.
+//
+// Returns:
+//   - Action: The action to take (Allow, Deny, etc.).
+//   - *ExecutionRequest: The (potentially modified) request.
+//   - error: An error if the request is denied or an error occurs.
+//
+// Side Effects:
+//   - Logs policy violations.
 func (h *PolicyHook) ExecutePre(
 	_ context.Context,
 	req *ExecutionRequest,
@@ -143,9 +157,16 @@ type WebhookClient struct {
 
 // NewWebhookClient creates a new WebhookClient.
 //
-// config holds the configuration settings.
+// Summary: Creates a new client for interacting with webhooks.
 //
-// Returns the result.
+// Parameters:
+//   - config (*configv1.WebhookConfig): The webhook configuration.
+//
+// Returns:
+//   - *WebhookClient: The initialized WebhookClient.
+//
+// Side Effects:
+//   - Initializes an HTTP client and potentially a webhook signer.
 func NewWebhookClient(config *configv1.WebhookConfig) *WebhookClient {
 	timeout := 5 * time.Second
 	if t := config.GetTimeout(); t != nil {
@@ -179,12 +200,19 @@ func NewWebhookClient(config *configv1.WebhookConfig) *WebhookClient {
 
 // Call sends a cloud event to the webhook and returns the response event.
 //
-// ctx is the context for the request.
-// eventType is the eventType.
-// data is the data.
+// Summary: Sends a CloudEvent to the configured webhook URL.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - eventType (string): The type of the CloudEvent.
+//   - data (any): The data payload for the event.
+//
+// Returns:
+//   - *cloudevents.Event: The response event from the webhook.
+//   - error: An error if the webhook call fails.
+//
+// Side Effects:
+//   - Makes an HTTP POST request to the webhook URL.
 func (c *WebhookClient) Call(ctx context.Context, eventType string, data any) (*cloudevents.Event, error) {
 	event := cloudevents.NewEvent()
 	event.SetID(uuid.New().String())
@@ -229,9 +257,16 @@ type WebhookHook struct {
 
 // NewWebhookHook creates a new WebhookHook.
 //
-// config holds the configuration settings.
+// Summary: Creates a new WebhookHook for request/response modification.
 //
-// Returns the result.
+// Parameters:
+//   - config (*configv1.WebhookConfig): The webhook configuration.
+//
+// Returns:
+//   - *WebhookHook: The initialized WebhookHook.
+//
+// Side Effects:
+//   - Initializes a WebhookClient.
 func NewWebhookHook(config *configv1.WebhookConfig) *WebhookHook {
 	return &WebhookHook{
 		client: NewWebhookClient(config),
@@ -240,12 +275,19 @@ func NewWebhookHook(config *configv1.WebhookConfig) *WebhookHook {
 
 // ExecutePre executes the webhook notification before a tool is called.
 //
-// ctx is the context for the request.
-// req is the request object.
+// Summary: Sends a pre-call webhook notification and processes the response.
 //
-// Returns the result.
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - req (*ExecutionRequest): The tool execution request.
+//
+// Returns:
+//   - Action: The action to take (Allow, Deny).
+//   - *ExecutionRequest: The (potentially modified) request.
+//   - error: An error if the webhook call fails or denies execution.
+//
+// Side Effects:
+//   - Makes a synchronous webhook call.
 func (h *WebhookHook) ExecutePre(
 	ctx context.Context,
 	req *ExecutionRequest,
@@ -308,12 +350,19 @@ func (h *WebhookHook) ExecutePre(
 
 // ExecutePost executes the webhook notification after a tool is called.
 //
-// ctx is the context for the request.
-// req is the request object.
-// result is the result.
+// Summary: Sends a post-call webhook notification and processes the response.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - req (*ExecutionRequest): The tool execution request.
+//   - result (any): The result of the tool execution.
+//
+// Returns:
+//   - any: The (potentially modified) result.
+//   - error: An error if the webhook call fails.
+//
+// Side Effects:
+//   - Makes a synchronous webhook call.
 func (h *WebhookHook) ExecutePost(
 	ctx context.Context,
 	req *ExecutionRequest,
@@ -379,10 +428,18 @@ type SigningRoundTripper struct {
 
 // RoundTrip executes the HTTP request with a signature.
 //
-// req is the request object.
+// Summary: Adds webhook signatures to outgoing HTTP requests.
 //
-// Returns the response.
-// Returns an error if the operation fails.
+// Parameters:
+//   - req (*http.Request): The HTTP request.
+//
+// Returns:
+//   - *http.Response: The HTTP response.
+//   - error: An error if signing or the request fails.
+//
+// Side Effects:
+//   - Reads and potentially modifies the request body (for signing).
+//   - Adds Webhook-Id, Webhook-Timestamp, and Webhook-Signature headers.
 func (s *SigningRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
 	if s.signer != nil {
 		payload := []byte{} // Signing requires payload, but request body might be stream.

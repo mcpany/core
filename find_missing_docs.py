@@ -1,10 +1,29 @@
 # Copyright 2026 Author(s) of MCP Any
 # SPDX-License-Identifier: Apache-2.0
 
+"""
+Script to identify missing documentation in Go source files.
+
+This script scans the codebase for exported functions, types, variables, and constants
+that lack comprehensive docstrings according to the project's documentation standards.
+"""
+
 import os
 import re
 
 def check_file(filepath):
+    """
+    Checks a single Go file for missing or non-compliant documentation.
+
+    Args:
+        filepath (str): The path to the Go file to check.
+
+    Returns:
+        list: A list of tuples containing (line_number, symbol_name, reason) for each issue found.
+
+    Side Effects:
+        - Reads the file content from disk.
+    """
     with open(filepath, 'r') as f:
         lines = f.readlines()
 
@@ -59,6 +78,19 @@ def check_file(filepath):
     return missing
 
 def scan_dir(root_dir):
+    """
+    Recursively scans a directory for Go files and checks them for documentation compliance.
+
+    Args:
+        root_dir (str): The root directory to start the scan from.
+
+    Returns:
+        None: Prints the results to stdout.
+
+    Side Effects:
+        - Traverses the directory tree.
+        - Prints to standard output.
+    """
     for root, dirs, files in os.walk(root_dir):
         for file in files:
             if file.endswith('.go') and not file.endswith('_test.go') and 'vendor' not in root:

@@ -25,10 +25,19 @@ type SQLiteAuditStore struct {
 
 // NewSQLiteAuditStore creates a new SQLiteAuditStore.
 //
-// path is the path.
+// Summary: Creates a new SQLiteAuditStore.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - path (string): The path to the SQLite database file.
+//
+// Returns:
+//   - *SQLiteAuditStore: The initialized store.
+//   - error: An error if the database cannot be opened or initialized.
+//
+// Side Effects:
+//   - Opens/creates the database file.
+//   - Creates tables and ensures schema.
+//   - Sets WAL mode PRAGMA.
 func NewSQLiteAuditStore(path string) (*SQLiteAuditStore, error) {
 	if path == "" {
 		return nil, fmt.Errorf("sqlite path is required")
@@ -143,10 +152,18 @@ func ensureColumn(db *sql.DB, colName string) error {
 
 // Write writes an audit entry to the database.
 //
-// ctx is the context for the request.
-// entry is the entry.
+// Summary: Writes an audit log entry to the SQLite database.
 //
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - entry (Entry): The audit entry.
+//
+// Returns:
+//   - error: An error if the write operation fails.
+//
+// Side Effects:
+//   - Writes to the database.
+//   - Computes and stores a cryptographic hash for integrity.
 func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -205,6 +222,19 @@ func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
 }
 
 // Read reads audit entries from the database based on the filter.
+//
+// Summary: Retrieves audit log entries matching the given filter.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - filter (Filter): The search criteria.
+//
+// Returns:
+//   - []Entry: The list of matching entries.
+//   - error: An error if the query fails.
+//
+// Side Effects:
+//   - Executes a database query.
 func (s *SQLiteAuditStore) Read(ctx context.Context, filter Filter) ([]Entry, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -275,8 +305,21 @@ func (s *SQLiteAuditStore) Read(ctx context.Context, filter Filter) ([]Entry, er
 }
 
 // Verify checks the integrity of the audit logs.
+//
+// Summary: Verifies the integrity of the audit log chain.
+//
 // It returns true if the chain is valid, false otherwise.
 // If an error occurs during reading, it returns false and the error.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - bool: True if the chain is intact.
+//   - error: An error if verification fails or an integrity violation is found.
+//
+// Side Effects:
+//   - Reads all rows from the audit_logs table.
 func (s *SQLiteAuditStore) Verify() (bool, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -326,7 +369,16 @@ func (s *SQLiteAuditStore) Verify() (bool, error) {
 
 // Close closes the database connection.
 //
-// Returns an error if the operation fails.
+// Summary: Closes the SQLite database.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - error: An error if closing fails.
+//
+// Side Effects:
+//   - Closes the DB connection.
 func (s *SQLiteAuditStore) Close() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

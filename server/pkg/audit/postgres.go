@@ -22,10 +22,18 @@ type PostgresAuditStore struct {
 
 // NewPostgresAuditStore creates a new PostgresAuditStore.
 //
-// dsn is the dsn.
+// Summary: Creates a new PostgresAuditStore.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - dsn (string): The data source name for the Postgres connection.
+//
+// Returns:
+//   - *PostgresAuditStore: The initialized audit store.
+//   - error: An error if connection or initialization fails.
+//
+// Side Effects:
+//   - Opens a database connection.
+//   - Creates the audit_logs table if it doesn't exist.
 func NewPostgresAuditStore(dsn string) (*PostgresAuditStore, error) {
 	if dsn == "" {
 		return nil, fmt.Errorf("postgres dsn is required")
@@ -79,10 +87,18 @@ func NewPostgresAuditStore(dsn string) (*PostgresAuditStore, error) {
 
 // Write writes an audit entry to the database.
 //
-// ctx is the context for the request.
-// entry is the entry.
+// Summary: Writes an audit log entry to the Postgres database.
 //
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - entry (Entry): The audit entry to write.
+//
+// Returns:
+//   - error: An error if the write operation fails.
+//
+// Side Effects:
+//   - Writes to the database.
+//   - Acquires an exclusive lock on the table to ensure chain integrity.
 func (s *PostgresAuditStore) Write(ctx context.Context, entry Entry) error {
 	// We don't need mutex here because we use database transaction for concurrency control.
 	// s.mu.Lock() // removed
@@ -164,14 +180,36 @@ func (s *PostgresAuditStore) Write(ctx context.Context, entry Entry) error {
 }
 
 // Read implements the Store interface.
+//
+// Summary: Reads audit logs (Not implemented).
+//
+// Parameters:
+//   - _ (context.Context): The context.
+//   - _ (Filter): The filter criteria.
+//
+// Returns:
+//   - []Entry: The list of entries (nil).
+//   - error: An error indicating this method is not implemented.
+//
+// Side Effects:
+//   - None.
 func (s *PostgresAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for postgres audit store")
 }
 
 // Verify checks the integrity of the audit logs.
 //
-// Returns true if successful.
-// Returns an error if the operation fails.
+// Summary: Verifies the cryptographic integrity of the audit log chain.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - bool: True if the chain is valid, false otherwise.
+//   - error: An error if verification fails or an integrity violation is found.
+//
+// Side Effects:
+//   - Reads all rows from the audit_logs table.
 func (s *PostgresAuditStore) Verify() (bool, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -237,7 +275,16 @@ func (s *PostgresAuditStore) Verify() (bool, error) {
 
 // Close closes the database connection.
 //
-// Returns an error if the operation fails.
+// Summary: Closes the underlying database connection.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - error: An error if closing fails.
+//
+// Side Effects:
+//   - Closes the DB connection.
 func (s *PostgresAuditStore) Close() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
