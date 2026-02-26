@@ -99,8 +99,10 @@ prepare-proto:
 			SUDO=""; \
 			if command -v sudo >/dev/null; then SUDO="sudo"; fi; \
 			if command -v apt-get >/dev/null; then \
+				echo "Installing via apt-get with SUDO=$$SUDO"; \
 				$$SUDO apt-get update && $$SUDO apt-get install -y curl unzip; \
 			elif command -v apk >/dev/null; then \
+				echo "Installing via apk with SUDO=$$SUDO"; \
 				$$SUDO apk add --no-cache curl unzip; \
 			else \
 				echo "Could not find package manager to install curl/unzip. Please install them manually."; \
@@ -171,7 +173,7 @@ gen: clean-protos prepare-proto
 	@echo "Generating protobuf files (TypeScript)..."
 	@if ! [ -f "./ui/node_modules/.bin/protoc-gen-ts_proto" ]; then \
 		echo "protoc-gen-ts_proto not found. Installing UI dependencies..."; \
-		cd ui && npm install; \
+			cd ui && npm ci --prefer-offline --no-audit; \
 	fi
 	@if [ -f "./ui/node_modules/.bin/protoc-gen-ts_proto" ]; then \
 		export PATH=$(TOOL_INSTALL_DIR):$$PATH; \
