@@ -18,6 +18,9 @@ import (
 )
 
 func TestSSRFArgumentProtection(t *testing.T) {
+	// Ensure protections are ENABLED for this test, even if CI sets them to disabled.
+	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "false")
+
 	// Mock IsSafeURL to fail for loopback/private IPs for this test
 	// TestMain mocks it to always pass, which breaks our "existing check" test case.
 	originalIsSafeURL := validation.IsSafeURL
