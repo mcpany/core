@@ -38,6 +38,14 @@ export interface UpstreamServiceConfig extends Omit<BaseUpstreamServiceConfig, '
      * Optional template ID if this config was loaded from a template.
      */
     templateId?: string;
+    /**
+     * Tools registered for this service.
+     */
+    tools?: ToolDefinition[];
+    /**
+     * Resources registered for this service.
+     */
+    resources?: ResourceDefinition[];
 }
 
 // Re-export generated types
@@ -141,7 +149,44 @@ const fetchWithAuth = async (input: RequestInfo | URL, init?: RequestInit) => {
             headers.set('X-API-Key', apiKey);
         }
     }
-    return fetch(input, { ...init, headers });
+
+    const MAX_RETRIES = 3;
+    const INITIAL_BACKOFF = 300;
+
+    let lastError: any;
+    for (let i = 0; i < MAX_RETRIES; i++) {
+        try {
+            const res = await fetch(input, {
+                ...init,
+                headers: {
+                    ...Object.fromEntries(headers.entries()),
+                    'Pragma': 'no-cache',
+                    'Cache-Control': 'no-store, no-cache, must-revalidate',
+                },
+                cache: 'no-store',
+            });
+            // If 500/502/503/504, we might want to retry?
+            if (input.toString().includes('skills') || input.toString().includes('prompts')) {
+                const clone = res.clone();
+                const text = await clone.text();
+                console.log(`[DEBUG] fetchWithAuth ${input}: status=${res.status} body=${text}`);
+            }
+            // But usually we only retry on network error (throw).
+            // However, 502/504 from Gateway/Nginx/Middleware might be transient.
+            if (res.status >= 502 && res.status <= 504) {
+                throw new Error(`Transient HTTP Status: ${res.status}`);
+            }
+            return res;
+        } catch (err) {
+            lastError = err;
+            console.warn(`Fetch attempt ${i + 1} failed:`, err);
+            if (i < MAX_RETRIES - 1) {
+                const delay = INITIAL_BACKOFF * Math.pow(2, i);
+                await new Promise(resolve => setTimeout(resolve, delay));
+            }
+        }
+    }
+    throw lastError;
 };
 
 // ⚡ BOLT: Request deduplication map to prevent thundering herd on concurrent mounts.
@@ -556,7 +601,12 @@ export const apiClient = {
                 command: config.commandLineService.command,
                 working_directory: config.commandLineService.workingDirectory,
                 environment: config.commandLineService.env,
-                env: config.commandLineService.env
+                env: config.commandLineService.env,
+                // Pass through other fields including prompts
+                prompts: config.commandLineService.prompts || (config.prompts as any),
+                tools: config.commandLineService.tools || (config.tools as any),
+                resources: config.commandLineService.resources || (config.resources as any),
+                communication_protocol: config.commandLineService.communicationProtocol
             };
         }
         if (config.mcpService) {
@@ -666,6 +716,11 @@ export const apiClient = {
             payload.command_line_service = {
                 command: config.commandLineService.command,
                 working_directory: config.commandLineService.workingDirectory,
+                // Pass through other fields including prompts
+                prompts: config.commandLineService.prompts || (config.prompts as any),
+                tools: config.commandLineService.tools || (config.tools as any),
+                resources: config.commandLineService.resources || (config.resources as any),
+                communication_protocol: config.commandLineService.communicationProtocol
             };
         }
         if (config.mcpService) {
@@ -700,6 +755,38 @@ export const apiClient = {
                     url_regex: r.urlRegex,
                     call_id_regex: r.callIdRegex
                 }))
+            }));
+        }
+        if (config.tools) {
+            payload.tools = config.tools;
+        }
+        if (config.resources) {
+            payload.resources = config.resources;
+        }
+        if (config.prompts) {
+            payload.prompts = config.prompts.map((p: any) => ({
+                name: p.name,
+                description: p.description,
+                input_schema: p.inputSchema,
+                messages: p.messages?.map((m: any) => {
+                    const base = { role: m.role };
+                    if (m.content?.text) {
+                        return { ...base, text: m.content.text };
+                    }
+                    if (m.content?.image) {
+                        return { ...base, image: m.content.image };
+                    }
+                    if (m.content?.audio) {
+                        return { ...base, audio: m.content.audio };
+                    }
+                    if (m.content?.resource) {
+                        return { ...base, resource: m.content.resource };
+                    }
+                    return base;
+                }),
+                disable: p.disable,
+                profiles: p.profiles,
+                title: p.title
             }));
         }
         if (config.toolExportPolicy) {
@@ -1468,7 +1555,7 @@ export const apiClient = {
         const res = await fetchWithAuth('/api/v1/skills');
         if (!res.ok) throw new Error('Failed to fetch skills');
         const data = await res.json();
-        return data.skills || [];
+        return Array.isArray(data) ? data : (data.skills || []);
     },
 
     /**

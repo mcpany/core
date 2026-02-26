@@ -43,6 +43,8 @@ export default function SkillDetail() {
   if (loading) return <div>Loading skill...</div>;
   if (!skill) return <div>Skill not found</div>;
 
+  console.log('SkillDetail: Rendering skill', skill?.name);
+
   return (
     <div className="container mx-auto py-8 max-w-4xl">
       <div className="mb-6">

@@ -22,6 +22,7 @@ import (
 	"github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/middleware"
+	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/storage"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/util"
@@ -819,10 +820,44 @@ func (a *Application) handlePrompts() http.HandlerFunc {
 			}
 
 			_ = json.NewEncoder(w).Encode(jsonPrompts)
+		case http.MethodPost:
+			a.handleCreatePrompt(w, r)
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
 	}
+}
+
+func (a *Application) handleCreatePrompt(w http.ResponseWriter, r *http.Request) {
+	var def configv1.PromptDefinition
+	body, err := readBodyWithLimit(w, r, 1048576)
+	if err != nil {
+		return
+	}
+	if err := protojson.Unmarshal(body, &def); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	if def.GetName() == "" {
+		http.Error(w, "name is required", http.StatusBadRequest)
+		return
+	}
+
+	// Use "user" as service ID for API-created prompts
+	p, err := prompt.NewPromptFromConfig(&def, "user")
+	if err != nil {
+		logging.GetLogger().Error("failed to create prompt from config", "error", err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	a.PromptManager.AddPrompt(p)
+
+	w.WriteHeader(http.StatusCreated)
+	w.Header().Set("Content-Type", "application/json")
+	opts := protojson.MarshalOptions{UseProtoNames: false, EmitUnpopulated: false}
+	b, _ := opts.Marshal(&def)
+	_, _ = w.Write(b)
 }
 
 func (a *Application) handleResources() http.HandlerFunc {

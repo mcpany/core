@@ -356,6 +356,25 @@ func init() {
 				}.Build(),
 			}.Build(),
 		}.Build(),
+		configv1.ServiceTemplate_builder{
+			Id:          proto.String("postgres"),
+			Name:        proto.String("PostgreSQL"),
+			Description: proto.String("Advanced open source relational database."),
+			Icon:        proto.String("postgres"),
+			Tags:        []string{"database"},
+			ServiceConfig: configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("postgres-db"),
+				CommandLineService: configv1.CommandLineUpstreamService_builder{
+					Command: proto.String("npx -y @modelcontextprotocol/server-postgres ${POSTGRES_URL}"),
+					Env: map[string]*configv1.SecretValue{
+						"POSTGRES_URL": configv1.SecretValue_builder{
+							PlainText: proto.String("postgresql://postgres:postgres@localhost:5432/postgres"),
+						}.Build(),
+					},
+				}.Build(),
+				AutoDiscoverTool: proto.Bool(true),
+			}.Build(),
+		}.Build(),
 	}
 }
 

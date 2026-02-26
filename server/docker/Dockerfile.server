@@ -64,6 +64,10 @@ COPY --from=builder --chown=mcpany:mcpany /app/proto /app/proto
 # Ensure /app is owned by the non-root user
 RUN chown mcpany:mcpany /app
 
+# Copy marketplace catalog
+COPY .build-context/marketplace /app/marketplace
+RUN chown -R mcpany:mcpany /app/marketplace
+
 # Expose the ports the server listens on
 EXPOSE 50050
 EXPOSE 50051

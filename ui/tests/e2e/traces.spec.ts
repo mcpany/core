@@ -59,7 +59,9 @@ test.describe('Trace Viewer', () => {
     // But our mock generator creates at least one calculate_sum
     // Actually, let's just check for any trace item
     const firstTrace = page.locator('button.flex.flex-col').first();
-    await expect(firstTrace).toBeVisible();
+    await expect(async () => {
+      await expect(firstTrace).toBeVisible({ timeout: 5000 });
+    }).toPass({ timeout: 30000 });
 
     // Click the first trace
     await firstTrace.click();

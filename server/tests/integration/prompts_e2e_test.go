@@ -62,6 +62,10 @@ func (m *mockPrompt) Get(
 	}, nil
 }
 
+func (m *mockPrompt) Definition() *configv1.PromptDefinition {
+	return nil
+}
+
 func TestPromptsEndToEnd(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()

@@ -220,6 +220,7 @@ func (w *smartResponseWriter) rewriteError() {
 	// We prevent leaking stack traces or sensitive upstream errors in the Data field.
 	var data any = bodyStr
 	if w.statusCode >= 500 {
+		logging.GetLogger().Error("Internal error intercepted by JSONRPCComplianceMiddleware", "original_body", bodyStr, "status", w.statusCode)
 		message = "Internal error"
 		data = nil
 	}

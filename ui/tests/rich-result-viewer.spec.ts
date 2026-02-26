@@ -92,8 +92,15 @@ test.describe('Rich Result Viewer', () => {
     const viewerTabs = page.locator('[role="tablist"]', { hasText: 'Raw Output' });
     await viewerTabs.getByRole('tab', { name: 'JSON' }).click();
 
-    // Check for JSON content - look for specific value in pre/code
-    await expect(page.getByText('"name": "Alice"')).toBeVisible();
+    // Check for JSON content
+    await viewerTabs.getByRole('tab', { name: 'JSON' }).click();
+    const jsonTabPanel = page.locator('[role="tabpanel"][data-state="active"]');
+
+    // Switch to Raw view to ensure we see the pre tag (JsonView defaults to Tree/Table)
+    await jsonTabPanel.getByRole('button', { name: 'Raw' }).click();
+
+    await expect(jsonTabPanel.locator('pre:has-text("Alice")')).toBeVisible({ timeout: 10000 });
+    await expect(jsonTabPanel.locator('pre:has-text("name")')).toBeVisible();
 
     // Switch to Raw Output tab
     await viewerTabs.getByRole('tab', { name: 'Raw Output' }).click();

@@ -99,6 +99,9 @@ func (pm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 //   - Updates the internal prompt registry.
 //   - Invalidates the list cache.
 func (pm *Manager) AddPrompt(prompt Prompt) {
+	pm.mu.Lock()
+	defer pm.mu.Unlock()
+
 	promptName := prompt.Prompt().Name
 	if existingPrompt, loaded := pm.prompts.LoadAndStore(promptName, prompt); loaded {
 		logging.GetLogger().Warn(fmt.Sprintf("Prompt with the same name already exists. Overwriting. promptName=%s, newPromptService=%s, existingPromptService=%s",
@@ -107,9 +110,8 @@ func (pm *Manager) AddPrompt(prompt Prompt) {
 			existingPrompt.Service(),
 		))
 	}
-	pm.mu.Lock()
+	logging.GetLogger().Info(fmt.Sprintf("AddPrompt called for prompt: %s service: %s", promptName, prompt.Service()))
 	pm.cachedPrompts = nil
-	pm.mu.Unlock()
 }
 
 // UpdatePrompt updates an existing prompt in the manager.
@@ -123,10 +125,11 @@ func (pm *Manager) AddPrompt(prompt Prompt) {
 //   - Updates the internal prompt registry.
 //   - Invalidates the list cache.
 func (pm *Manager) UpdatePrompt(prompt Prompt) {
-	pm.prompts.Store(prompt.Prompt().Name, prompt)
 	pm.mu.Lock()
+	defer pm.mu.Unlock()
+
+	pm.prompts.Store(prompt.Prompt().Name, prompt)
 	pm.cachedPrompts = nil
-	pm.mu.Unlock()
 }
 
 // GetPrompt retrieves a prompt from the manager by its name.
@@ -183,6 +186,7 @@ func (pm *Manager) ListPrompts() []Prompt {
 	// Return a copy to ensure thread safety
 	result := make([]Prompt, len(prompts))
 	copy(result, prompts)
+	logging.GetLogger().Info(fmt.Sprintf("ListPrompts returning %d prompts", len(result)))
 	return result
 }
 
@@ -195,6 +199,9 @@ func (pm *Manager) ListPrompts() []Prompt {
 //   - Removes matching prompts from the registry.
 //   - Invalidates the list cache.
 func (pm *Manager) ClearPromptsForService(serviceID string) {
+	pm.mu.Lock()
+	defer pm.mu.Unlock()
+
 	changed := false
 	pm.prompts.Range(func(key string, value Prompt) bool {
 		if value.Service() == serviceID {
@@ -205,8 +212,6 @@ func (pm *Manager) ClearPromptsForService(serviceID string) {
 	})
 
 	if changed {
-		pm.mu.Lock()
 		pm.cachedPrompts = nil
-		pm.mu.Unlock()
 	}
 }

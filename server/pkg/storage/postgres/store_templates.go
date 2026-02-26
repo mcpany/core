@@ -103,3 +103,18 @@ func (s *Store) SaveServiceTemplate(ctx context.Context, template *configv1.Serv
 	}
 	return nil
 }
+
+// DeleteServiceTemplate deletes a service template by ID.
+//
+// ctx is the context for the request.
+// id is the unique identifier.
+//
+// Returns an error if the operation fails.
+func (s *Store) DeleteServiceTemplate(ctx context.Context, id string) error {
+	query := "DELETE FROM service_templates WHERE id = $1"
+	_, err := s.db.ExecContext(ctx, query, id)
+	if err != nil {
+		return fmt.Errorf("failed to delete service_template: %w", err)
+	}
+	return nil
+}

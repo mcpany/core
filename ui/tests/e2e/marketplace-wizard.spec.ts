@@ -39,7 +39,22 @@ test.describe('Marketplace Wizard and Service Lifecycle', () => {
     });
 
     // Mock Templates API
-    const templates: any[] = [];
+    const templates: any[] = [
+      {
+        id: 'postgres',
+        name: 'PostgreSQL Database',
+        description: 'Connect to a Postgres DB',
+        icon: 'database',
+        service_config: {
+          command_line_service: {
+            command: 'python3 -m mcp_server_postgres',
+            env: {
+              POSTGRES_URL: 'postgresql://user:password@localhost:5432/dbname'
+            }
+          }
+        }
+      }
+    ];
     await page.route('/api/v1/templates', async route => {
         if (route.request().method() === 'GET') {
             await route.fulfill({ json: templates });

@@ -82,6 +82,87 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
                     echo_call: {
                         args: ["echoed_output"]
                     }
+                },
+                prompts: [
+                    {
+                        name: "echo_prompt",
+                        description: "Echoes back input via prompt",
+                        input_schema: {
+                            type: "object",
+                            properties: {
+                                text: { type: "string", description: "Text to echo" }
+                            },
+                            required: ["text"]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            id: "rich-result-test-service",
+            name: "rich-result-test-service",
+            command_line_service: {
+                command: "echo",
+                communication_protocol: "COMMUNICATION_PROTOCOL_JSON", // Use JSON protocol to return structured data
+                tools: [
+                    {
+                        name: "get_complex_data",
+                        description: "Returns complex data for UI testing",
+                        call_id: "get_complex_data",
+
+                    },
+                    {
+                        name: "get_rich_content",
+                        description: "Returns rich markdown and image content",
+                        call_id: "get_rich_content",
+
+                    }
+                ],
+                calls: {
+                    get_complex_data: {
+                        args: ['{"content": [{"type": "text", "text": "[{\\"id\\": 1, \\"name\\": \\"Alice\\", \\"role\\": \\"Admin\\", \\"details\\": {\\"active\\": true}}, {\\"id\\": 2, \\"name\\": \\"Bob\\", \\"role\\": \\"User\\", \\"details\\": {\\"active\\": false}}]"}]}']
+                    },
+                    get_rich_content: {
+                        args: ['{"content": [{"type": "text", "text": "# Rich Content Test\\n\\nThis is a **markdown** test with a list:\\n- Item 1\\n- Item 2\\n\\nAnd an image below:"}, {"type": "image", "data": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==", "mimeType": "image/png"}], "isError": false}']
+                    }
+                }
+            }
+        },
+        {
+            id: "mcp-verified-service",
+            name: "mcp-verified-service",
+            command_line_service: {
+                command: "echo",
+                tools: [
+                    {
+                        name: "verified_tool",
+                        description: "A tool from a verified service",
+                        call_id: "verified_tool"
+                    }
+                ],
+                calls: {
+                    verified_tool: {
+                        args: ['{"status": "verified"}']
+                    }
+                }
+            }
+        },
+        {
+            id: "weather-service",
+            name: "weather-service",
+            command_line_service: {
+                command: "echo",
+                tools: [
+                    {
+                        name: "get_weather",
+                        description: "Get current weather",
+                        call_id: "get_weather"
+                    }
+                ],
+                calls: {
+                    get_weather: {
+                        args: ['{"weather": "sunny"}']
+                    }
                 }
             }
         }
@@ -139,6 +220,20 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
                 },
                 openapi_service: {
                     spec_url: "https://raw.githubusercontent.com/linear/linear/master/api/openapi.yaml"
+                }
+            }
+        },
+        {
+            id: "postgresql",
+            name: "PostgreSQL",
+            description: "Connect to a PostgreSQL database.",
+            icon: "database",
+            tags: ["database", "sql"],
+            service_config: {
+                name: "postgres-db",
+                sql_service: {
+                    driver: "postgres",
+                    dsn: "postgres://user:password@localhost:5432/dbname"
                 }
             }
         }
@@ -231,7 +326,7 @@ export const cleanupServices = async (requestContext?: APIRequestContext) => {
     // No-op
 };
 
-export const cleanupUser = async (requestContext?: APIRequestContext, username: string) => {
+export const cleanupUser = async (requestContext?: APIRequestContext, username?: string) => {
     // No-op
 };
 
@@ -251,10 +346,59 @@ export const cleanupPrompts = async (requestContext?: APIRequestContext) => {
     // No-op
 };
 
-export const seedCollection = async (requestContext?: APIRequestContext) => {
-    // No-op
+export const seedCollection = async (stackName: string, requestContext?: APIRequestContext) => {
+    // Seed a collection (stack)
+    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+
+    // We include weather-service in the stack since stack-editor test expects it.
+    // We can reuse the weather-service definition from services array if we extracted it,
+    // but explicit definition here is safer.
+    const serviceConfig = {
+        id: "weather-service",
+        name: "weather-service",
+        command_line_service: {
+            command: "echo",
+            tools: [
+                {
+                    name: "get_weather",
+                    description: "Get current weather",
+                    call_id: "get_weather"
+                }
+            ],
+            calls: {
+                get_weather: {
+                    args: ['{"weather": "sunny"}']
+                }
+            }
+        }
+    };
+
+    const collection = {
+        name: stackName,
+        services: [serviceConfig]
+    };
+
+    try {
+        // Use the ID in the path per api_stacks.go logic (path ID is authoritative)
+        const res = await context.post(`/api/v1/stacks/${stackName}/config`, { data: collection, headers: HEADERS });
+        if (!res.ok()) {
+            const text = await res.text();
+            throw new Error(`Failed to seed collection ${stackName}: ${res.status()} ${text}`);
+        }
+        console.log(`Collection ${stackName} seeded successfully.`);
+    } catch (e) {
+        console.log(`Failed to seed collection ${stackName}: ${e}`);
+        throw e;
+    }
 };
 
-export const cleanupCollection = async (requestContext?: APIRequestContext) => {
-    // No-op
+export const cleanupCollection = async (stackName: string, requestContext?: APIRequestContext) => {
+    // No API to delete stack config yet? api_stacks.go only has GET and POST.
+    // So we can't cleanup easily via API.
+    // But tests might not care if we use unique names.
+    // For mcpany-system, we might want to keep it.
+};
+export const seedWebhooks = async (requestContext?: APIRequestContext) => {
+// No-op for now, or implement actual seeding if needed.
+// The test expects it to exist.
 };

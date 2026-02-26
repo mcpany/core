@@ -190,24 +190,32 @@ func (u *Upstream) createAndRegisterCommandTools(
 
 		command := definition.GetName()
 
-		// ConfigSchemaToProtoProperties currently never returns an error, but we check it for correctness.
-		// However, to satisfy coverage requirements for unreachable code, we are simplifying this.
-		// If schemaconv implementation changes to return errors, this should be updated.
-		inputProperties, required, _ := schemaconv.ConfigSchemaToProtoProperties(callDef.GetParameters())
-
-		inputSchema := &structpb.Struct{
-			Fields: map[string]*structpb.Value{
-				"type":       structpb.NewStringValue("object"),
-				"properties": structpb.NewStructValue(inputProperties),
-			},
-		}
-
-		if len(required) > 0 {
-			requiredVals := make([]*structpb.Value, len(required))
-			for i, v := range required {
-				requiredVals[i] = structpb.NewStringValue(v)
+		var inputSchema *structpb.Struct
+		if definition.GetInputSchema() != nil {
+			inputSchema = definition.GetInputSchema()
+			if definition.GetName() == "get_complex_data" {
+				log.Info("Debug input_schema", "tool", definition.GetName(), "schema", inputSchema)
 			}
-			inputSchema.Fields["required"] = structpb.NewListValue(&structpb.ListValue{Values: requiredVals})
+		} else {
+			// ConfigSchemaToProtoProperties currently never returns an error, but we check it for correctness.
+			// However, to satisfy coverage requirements for unreachable code, we are simplifying this.
+			// If schemaconv implementation changes to return errors, this should be updated.
+			inputProperties, required, _ := schemaconv.ConfigSchemaToProtoProperties(callDef.GetParameters())
+
+			inputSchema = &structpb.Struct{
+				Fields: map[string]*structpb.Value{
+					"type":       structpb.NewStringValue("object"),
+					"properties": structpb.NewStructValue(inputProperties),
+				},
+			}
+
+			if len(required) > 0 {
+				requiredVals := make([]*structpb.Value, len(required))
+				for i, v := range required {
+					requiredVals[i] = structpb.NewStringValue(v)
+				}
+				inputSchema.Fields["required"] = structpb.NewListValue(&structpb.ListValue{Values: requiredVals})
+			}
 		}
 
 		outputProperties, _ := structpb.NewStruct(map[string]interface{}{

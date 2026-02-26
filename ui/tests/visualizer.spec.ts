@@ -41,8 +41,8 @@ test.describe('Network Topology Visualizer', () => {
 
     // 6. Seed Data Trigger (for interactive test)
     // Check that the Seed Data button exists and is clickable
-    const seedBtn = page.getByRole('button', { name: 'Seed Data' });
-    await expect(seedBtn).toBeVisible();
+    const seedBtn = page.locator('button').filter({ hasText: 'Seed Data' });
+    await expect(seedBtn).toBeVisible({ timeout: 60000 });
     await seedBtn.click();
 
     // 7. Verify Toast

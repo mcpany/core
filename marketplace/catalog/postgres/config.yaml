@@ -1,0 +1,14 @@
+apiVersion: config.mcpany.com/v1alpha1
+kind: UpstreamServiceConfig
+metadata:
+  name: postgres-db
+  labels:
+    component: database
+spec:
+  name: postgres-db
+  commandLineService:
+    command: npx -y @modelcontextprotocol/server-postgres ${POSTGRES_URL}
+    env:
+      POSTGRES_URL:
+        plainText: postgresql://postgres:postgres@localhost:5432/postgres
+  autoDiscoverTool: true

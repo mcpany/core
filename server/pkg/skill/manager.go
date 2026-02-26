@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"runtime/debug"
 	"strings"
 	"sync"
 
@@ -47,7 +48,14 @@ func NewManager(rootDir string) (*Manager, error) {
 
 // ListSkills returns all available skills.
 // It scans the root directory for subdirectories containing SKILL.md.
-func (m *Manager) ListSkills() ([]*Skill, error) {
+func (m *Manager) ListSkills() (skills []*Skill, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			logging.GetLogger().Error("ListSkills: PANIC RECOVERED", "panic", r, "stack", string(debug.Stack()))
+			err = fmt.Errorf("panic in ListSkills: %v", r)
+		}
+	}()
+
 	// ⚡ BOLT: Optimization - Cached skill listing to avoid redundant I/O.
 	// Randomized Selection from Top 5 High-Impact Targets
 	m.mu.RLock()
@@ -67,11 +75,14 @@ func (m *Manager) ListSkills() ([]*Skill, error) {
 
 	entries, err := os.ReadDir(m.rootDir)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read skill root directory: %w", err)
+		return nil, fmt.Errorf("failed to read skill root directory %q: %w", m.rootDir, err)
 	}
 
-	skills := make([]*Skill, 0, len(entries))
+	logging.GetLogger().Info("ListSkills: Scanning directory", "rootDir", m.rootDir, "entries", len(entries))
+
+	skills = make([]*Skill, 0, len(entries))
 	for _, entry := range entries {
+		logging.GetLogger().Info("ListSkills: Found entry", "name", entry.Name(), "isDir", entry.IsDir())
 		if !entry.IsDir() {
 			continue
 		}
@@ -84,7 +95,16 @@ func (m *Manager) ListSkills() ([]*Skill, error) {
 	}
 
 	m.cache = skills
+	logging.GetLogger().Info("ListSkills: Loaded skills from disk", "count", len(skills), "names", getSkillNames(skills))
 	return skills, nil
+}
+
+func getSkillNames(skills []*Skill) []string {
+	names := make([]string, len(skills))
+	for i, s := range skills {
+		names[i] = s.Name
+	}
+	return names
 }
 
 // GetSkill retrieves a specific skill by name.
@@ -126,7 +146,16 @@ func (m *Manager) CreateSkill(skill *Skill) error {
 		_ = os.Mkdir(filepath.Join(skillDir, dir), 0755)
 	}
 
-	return m.writeSkillFile(skillDir, skill)
+	if err := m.writeSkillFile(skillDir, skill); err != nil {
+		return err
+	}
+
+	// Update cache if it's populated
+	if m.cache != nil {
+		m.cache = append(m.cache, skill)
+	}
+	logging.GetLogger().Info("CreateSkill: Created skill", "name", skill.Name, "path", skillDir)
+	return nil
 }
 
 // UpdateSkill updates an existing skill.
@@ -159,7 +188,26 @@ func (m *Manager) UpdateSkill(originalName string, skill *Skill) error {
 		}
 	}
 
-	return m.writeSkillFile(newDir, skill)
+	if err := m.writeSkillFile(newDir, skill); err != nil {
+		return err
+	}
+
+	// Update cache
+	if m.cache != nil {
+		// Find and update or append
+		found := false
+		for i, s := range m.cache {
+			if s.Name == originalName {
+				m.cache[i] = skill
+				found = true
+				break
+			}
+		}
+		if !found {
+			m.cache = append(m.cache, skill)
+		}
+	}
+	return nil
 }
 
 // DeleteSkill deletes a skill.
@@ -171,16 +219,27 @@ func (m *Manager) DeleteSkill(name string) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
-	// Invalidate cache
-	m.cache = nil
-
 	skillDir := filepath.Join(m.rootDir, name)
 	if _, err := os.Stat(skillDir); os.IsNotExist(err) {
 		return fmt.Errorf("skill not found: %s", name)
 	}
 
 	// Remove the entire directory
-	return os.RemoveAll(skillDir)
+	if err := os.RemoveAll(skillDir); err != nil {
+		return err
+	}
+
+	// Invalidate cache by removing the item to avoid full reload
+	if m.cache != nil {
+		newCache := make([]*Skill, 0, len(m.cache))
+		for _, s := range m.cache {
+			if s.Name != name {
+				newCache = append(newCache, s)
+			}
+		}
+		m.cache = newCache
+	}
+	return nil
 }
 
 // SaveAsset saves an asset file (script, reference, etc.) for a skill.

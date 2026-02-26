@@ -145,9 +145,11 @@ nodes:
 		"--set", "env.MCPANY_ADMIN_INIT_PASSWORD=password",
 		"--set", "env.MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true",
 		"--set", "env.MCPANY_ALLOW_LOOPBACK_RESOURCES=true",
+		"--set", "env.MCPANY_DB_DRIVER=postgres",
+		"--set", "env.MCPANY_DB_DSN=postgres://mcpany:CHANGE_ME_IN_PRODUCTION@mcpany-database:5432/mcpany?sslmode=disable",
 		"--set-file", "config=server/config.minimal.yaml",
 		"--wait",
-		"--timeout", "10m",
+		"--timeout", "20m",
 	); err != nil {
 		t.Fatalf("Failed to install helm chart: %v", err)
 	}
@@ -181,9 +183,9 @@ nodes:
 	}
 
 	// Run Playwright tests
-	// We assume 'npx' is available and we are in the root or can find ui dir
+	// We assume 'npx' is available locally, or fall back to docker
 	uiDir := filepath.Join(rootDir, "ui")
-	workers := "4"
+	workers := "1"
 	if w := os.Getenv("PLAYWRIGHT_WORKERS"); w != "" {
 		workers = w
 	}
@@ -195,17 +197,56 @@ nodes:
 		playwrightArgs = append(playwrightArgs, "--grep-invert", grepInvert)
 	}
 	args := append([]string{"playwright"}, playwrightArgs...)
-	playwrightCmd := exec.CommandContext(ctx, "npx", args...)
-	playwrightCmd.Dir = uiDir
-	playwrightCmd.Env = append(os.Environ(), fmt.Sprintf("PLAYWRIGHT_BASE_URL=http://127.0.0.1:%d", hostPort), "SKIP_WEBSERVER=true")
+
+	var playwrightCmd *exec.Cmd
+	if _, err := exec.LookPath("npx"); err == nil {
+		playwrightCmd = exec.CommandContext(ctx, "npx", args...)
+		playwrightCmd.Dir = uiDir
+		playwrightCmd.Env = append(os.Environ(), fmt.Sprintf("PLAYWRIGHT_BASE_URL=http://127.0.0.1:%d", hostPort), "SKIP_WEBSERVER=true")
+	} else {
+		t.Log("npx not found, running Playwright in Docker...")
+		// Use a specific image that matches package.json playwright version if possible
+		// package.json says 1.58.0
+		dockerImage := "mcr.microsoft.com/playwright:v1.58.0-jammy"
+
+		dockerArgs := []string{
+			"run", "--rm",
+			"--network=host",
+			"-v", fmt.Sprintf("%s:/ui", uiDir),
+			"-w", "/ui",
+			"-e", fmt.Sprintf("PLAYWRIGHT_BASE_URL=http://127.0.0.1:%d", hostPort),
+			"-e", "SKIP_WEBSERVER=true",
+			// Verify if node_modules exists, if not install
+			dockerImage,
+			"/bin/bash", "-c", "if [ ! -d node_modules ]; then npm install; fi && npx " + strings.Join(args, " "),
+		}
+		playwrightCmd = exec.CommandContext(ctx, "docker", dockerArgs...)
+		// Docker command runs in current dir but we map uiDir
+		playwrightCmd.Dir = rootDir
+	}
+
 	playwrightCmd.Stdout = os.Stdout
 	playwrightCmd.Stderr = os.Stderr
 
-	t.Log("Executing npx playwright test in", uiDir)
+	t.Log("Executing UI tests...")
 	if err := playwrightCmd.Run(); err != nil {
-						cmd := exec.Command("sh", "-c", "kubectl get pods -n mcp-system; kubectl logs -n mcp-system -l app.kubernetes.io/name=server --all-containers=true --tail=1000")
-						out, _ := cmd.CombinedOutput()
-						t.Logf("Server Logs:\n%s", out)
+	// Dump current logs
+		fmt.Println("---------------- SERVER LOGS START ----------------")
+		cmd := exec.Command("sh", "-c", "kubectl get pods -n mcp-system; kubectl logs -n mcp-system -l app.kubernetes.io/name=mcpany --all-containers=true --tail=1000")
+		out, errLogs := cmd.CombinedOutput()
+		if errLogs != nil {
+			fmt.Printf("Error getting logs: %v\n", errLogs)
+		}
+		fmt.Printf("%s\n", out)
+		fmt.Println("---------------- SERVER LOGS END ----------------")
+
+		// Dump describe to see OOM
+		fmt.Println("---------------- POD DESCRIBE START ----------------")
+		cmdDesc := exec.Command("sh", "-c", "kubectl describe pod -n mcp-system -l app.kubernetes.io/name=mcpany")
+		outDesc, _ := cmdDesc.CombinedOutput()
+		fmt.Printf("%s\n", outDesc)
+		fmt.Println("---------------- POD DESCRIBE END ----------------")
+
 		t.Fatalf("UI Tests failed: %v", err)
 	}
 }

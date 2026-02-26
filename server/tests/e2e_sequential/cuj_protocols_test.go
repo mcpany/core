@@ -71,8 +71,8 @@ upstream_services:
 		"--network", networkName,
 		"--network-alias", "upstream",
 		"-p", "25010:50050",
-		"-v", fmt.Sprintf("%s:/mcp_config", upstreamConfigDir),
-		"-v", fmt.Sprintf("%s:/data", upstreamConfigDir),
+		"-v", fmt.Sprintf("%s:/mcp_config", toHostPath(upstreamConfigDir)),
+		"-v", fmt.Sprintf("%s:/data", toHostPath(upstreamConfigDir)),
 		"mcpany/server:latest",
 		"run", "--config-path", "/mcp_config/config.yaml", "--mcp-listen-address", ":50050", "--debug", "--api-key", "test-key",
 	)
@@ -110,7 +110,7 @@ upstream_services:
 	gatewayCmd := exec.Command("docker", "run", "-d", "--name", gatewayName,
 		"--network", networkName,
 		"-p", "25011:50050",
-		"-v", fmt.Sprintf("%s:/mcp_config", gatewayConfigDir),
+		"-v", fmt.Sprintf("%s:/mcp_config", toHostPath(gatewayConfigDir)),
 		"mcpany/server:latest",
 		"run", "--config-path", "/mcp_config/config.yaml", "--mcp-listen-address", ":50050", "--debug", "--api-key", "test-key",
 	)

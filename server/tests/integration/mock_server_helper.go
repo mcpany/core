@@ -34,6 +34,14 @@ func DefaultMockHandler(t *testing.T, responses map[string]string) http.Handler 
 			return
 		}
 
+		// Check full RequestURI (for query params)
+		if body, ok := responses[r.URL.RequestURI()]; ok {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte(body))
+			return
+		}
+
 		t.Logf("Mock server: no response found for %s", r.URL.Path)
 		http.NotFound(w, r)
 	})

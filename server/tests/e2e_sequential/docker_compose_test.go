@@ -25,6 +25,22 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func toHostPath(path string) string {
+	hostRoot := os.Getenv("HOST_WORKSPACE_ROOT")
+	if hostRoot == "" {
+		return path
+	}
+	abs, err := filepath.Abs(path)
+	if err != nil {
+		return path
+	}
+	// We assume /workspace is the container root.
+	if strings.HasPrefix(abs, "/workspace") {
+		return filepath.Join(hostRoot, strings.TrimPrefix(abs, "/workspace"))
+	}
+	return path
+}
+
 func TestDockerComposeE2E(t *testing.T) {
 	if os.Getenv("E2E_DOCKER") != "true" {
 		// Auto-detect if we can run it, or just set it to true if we are confident.
@@ -141,7 +157,7 @@ func TestDockerComposeE2E(t *testing.T) {
 
 		// We must pass --project-directory because the dynamic file is in build/
 		// We explicitly start only mcpany-server (and dependencies) and prometheus to avoid requiring the UI image
-		runCommand(t, rootDir, "docker", "compose", "-f", dynamicCompose, "--project-directory", rootDir, "up", "-d", "--wait", "mcpany-server", "prometheus")
+		runCommand(t, rootDir, "docker", "compose", "-f", dynamicCompose, "--project-directory", toHostPath(rootDir), "up", "-d", "--wait", "mcpany-server", "prometheus")
 
 		// Discover ports
 		serverPort := getServicePort(dynamicCompose, rootDir, "mcpany-server", "50050")
@@ -149,7 +165,7 @@ func TestDockerComposeE2E(t *testing.T) {
 		t.Logf("Root mcpany-server running on port %s", serverPort)
 		verifyEndpoint(t, fmt.Sprintf("http://127.0.0.1:%s/healthz", serverPort), 200, 30*time.Second)
 
-		runCommand(t, rootDir, "docker", "compose", "-f", dynamicCompose, "--project-directory", rootDir, "down")
+		runCommand(t, rootDir, "docker", "compose", "-f", dynamicCompose, "--project-directory", toHostPath(rootDir), "down")
 	} else {
 		t.Log("Skipping root docker-compose test (docker-compose.yml not found)")
 	}
@@ -162,7 +178,7 @@ func TestDockerComposeE2E(t *testing.T) {
 	currentComposeFile = dynamicCompose
 	defer os.Remove(dynamicCompose)
 
-	runCommand(t, rootDir, "docker", "compose", "-f", dynamicCompose, "--project-directory", exampleDir, "up", "-d", "--wait")
+	runCommand(t, rootDir, "docker", "compose", "-f", dynamicCompose, "--project-directory", toHostPath(exampleDir), "up", "-d", "--wait")
 
 	// 6. Verify Example Health
 	serverPort := getServicePort(dynamicCompose, exampleDir, "mcpany-server", "50050")
@@ -203,7 +219,7 @@ func testFunctionalWeather(t *testing.T, rootDir string) {
 	cmd := exec.Command("docker", "run", "-d", "--name", containerName,
 		"-p", "0:50050", // Dynamic port
 		"--env", "MCPANY_ENABLE_FILE_CONFIG=true",
-		"-v", fmt.Sprintf("%s:/config.yaml", configPath),
+		"-v", fmt.Sprintf("%s:/config.yaml", toHostPath(configPath)),
 		"-e", "MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES=true",
 		"-e", "MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true",
 		"mcpany/server:latest",

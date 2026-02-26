@@ -25,9 +25,12 @@ export default function SkillList() {
 
   const loadSkills = async () => {
     try {
+      console.log('SkillList: loadSkills started');
       const list = await SkillService.list();
+      console.log('SkillList: Loaded skills', list);
       setSkills(list);
     } catch (err: any) {
+      console.error('SkillList: Failed to load skills', err);
       toast.error('Failed to load skills: ' + err.message);
     } finally {
       setLoading(false);
@@ -48,6 +51,9 @@ export default function SkillList() {
   if (loading) {
     return <div className="p-4">Loading skills...</div>;
   }
+
+  console.log('SkillList: Rendering', skills.length, 'skills');
+
 
   return (
     <div className="container mx-auto py-8">

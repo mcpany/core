@@ -55,7 +55,12 @@ test.describe('Stack Editor', () => {
 
       // Verify new node appears in graph
       const postgresNode = visualizer.locator('.react-flow__node').filter({ hasText: /^postgres-db$/ }).first();
-      await expect(postgresNode).toBeVisible({ timeout: 60000 });
+      try {
+        await expect(postgresNode).toBeVisible({ timeout: 60000 });
+      } catch (e) {
+        console.log('Nodes found:', await visualizer.locator('.react-flow__node').allInnerTexts());
+        throw e;
+      }
     } finally {
       await cleanupCollection(stackName, page.request);
     }

@@ -2,6 +2,9 @@
 # SPDX-License-Identifier: Apache-2.0
 
 global_settings:
+  message_bus:
+    redis:
+      address: "mcpany-redis:6379"
   allowed_origins:
     - "*"
   profile_definitions:
@@ -44,17 +47,11 @@ upstream_services:
         - name: "get_complex_data"
           description: "Returns complex data for UI testing"
           call_id: "get_complex_data"
-          input_schema:
-            fields:
-              dummy:
-                string_value: "val"
+
         - name: "get_rich_content"
           description: "Returns rich markdown and image content"
           call_id: "get_rich_content"
-          input_schema:
-            fields:
-              dummy:
-                string_value: "val"
+
       calls:
         get_complex_data:
           args: ['[{"id": 1, "name": "Alice", "role": "Admin", "details": {"active": true}}, {"id": 2, "name": "Bob", "role": "User", "details": {"active": false}}]']

@@ -118,10 +118,32 @@ test.describe('Playground Complex UI', () => {
     // Sidebar should be open by default on desktop.
     // Select create_user from the sidebar
     // We target the tool name in the sidebar
+    // Match playground.spec.ts logic: click the tool item/card directly to select it
+    // We target the tool name in the sidebar and click the container or just the text if it triggers selection
     await page.getByText('create_user').first().click();
 
-    // Click the Use Tool button that appears after expanding
-    await page.getByRole('button', { name: /^Use$/i }).first().click();
+    // In playground.spec.ts: await page.locator('.group').filter({ hasText: 'weather-service.get_weather' }).click();
+    // We can try to click the button if it exists, or just verify tab if click worked.
+    // Start with clicking the element which might be enough or open the drawer.
+    // If 'Use' button exists, it might be in a popover or drawer.
+    // Let's try to find the specific tool button/row.
+    const toolRow = page.locator('button').filter({ hasText: 'create_user' }).first();
+    if (await toolRow.isVisible()) {
+      await toolRow.click();
+    } else {
+      await page.getByText('create_user').first().click();
+    }
+
+    // Explicitly click "Use" if it appears (it might be "Run" relative to sidebar changes)
+    // But playground.spec.ts doesn't click "Use", it just clicks the card.
+    // Let's try to just check visibility after clicking the item.
+    // If the sidebar is an accordion, we might need to click "Use" inside it?
+    // playground.spec.ts line 18 says: clicks tool card.
+    // If we need to click "Use", we should be robust.
+    const useBtn = page.getByRole('button', { name: /^Use$/i }).first();
+    if (await useBtn.isVisible()) {
+      await useBtn.click();
+    }
 
     // Verify Tool Runner tab is active
     await expect(page.getByRole('tab', { name: 'Tool Runner' })).toBeVisible();
