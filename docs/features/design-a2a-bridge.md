@@ -46,3 +46,7 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-02-27: Identity-Aware Handoffs & Reflective Interception**
+    *   **Context**: OpenClaw's reflective loops require tool calls to be "held" while a critic agent reviews them.
+    *   **Architecture Adjustment**: Introducing `InterceptionStack` in Section 4 to allow A2A messages to be routed through a "Critic" agent before final dispatch.
+    *   **Security Impact**: Mitigates "Shadow Agent" risks by ensuring all delegated tasks are reviewed by a trusted identity.

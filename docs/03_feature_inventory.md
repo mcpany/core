@@ -63,5 +63,18 @@
 - **MCP Provenance Attestation**: Promoted to **P0** as it is a prerequisite for secure Federated MCP peering.
 - **Lazy-MCP Middleware**: Promoted to **P0** (Already P0, but re-affirming importance for Federated Tool Mesh).
 
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **Agent-in-the-Loop Validation Middleware**: (P0) Allows routing tool calls to a specialized "Critic" agent for review before execution.
+- **MCP State Bundle Orchestrator**: (P1) Standardized format for exporting/importing agent session state across cloud and local boundaries.
+- **Speculative Tool Hinting Provider**: (P1) Integration with local SLMs (Small Language Models) to provide pre-flight tool suggestions.
+
+### Priority Shifts
+- **A2A Interop Bridge**: Promoted to **P0** (Already P0, but emphasizing urgency due to "Shadow Agent" risks).
+- **Federated MCP Node Peering**: Promoted from **P1** to **P0**. Cross-border tool sharing is becoming a critical enterprise requirement.
+
 ### Deprecations / Monitoring
-- **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+- **Unvalidated Subagent Spawning**: Monitoring for deprecation. All subagent creation should soon require an explicit "Capability Grant."

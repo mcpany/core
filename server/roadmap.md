@@ -26,8 +26,13 @@
 
 #### Upcoming (2026-02-26 Evolution)
 *   **[P0] A2A Interop Bridge**: Implement Pseudo-MCP wrapper for A2A-compliant agents. (Added: 2026-02-26)
-*   **[P1] Federated MCP Peering**: Distributed node discovery and tool proxying. (Added: 2026-02-26)
+*   **[P0] Federated MCP Peering**: Distributed node discovery and tool proxying. (Promoted: 2026-02-27)
 *   **[P1] Resource Telemetry Middleware**: Inject latency/cost metrics into tool schemas. (Added: 2026-02-26)
+
+#### Upcoming (2026-02-27 Evolution)
+*   **[P0] Agent-in-the-Loop Validation Middleware**: Interception stack for "Critic" agent reviews. (Added: 2026-02-27)
+*   **[P1] MCP State Bundle Orchestrator**: Session portability between cloud sandboxes and local. (Added: 2026-02-27)
+*   **[P1] Speculative Hinting Provider**: Integration with local SLMs for pre-flight discovery. (Added: 2026-02-27)
 
 ## 2. Top 10 Recommended Features
 
