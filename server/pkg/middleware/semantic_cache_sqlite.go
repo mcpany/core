@@ -64,7 +64,7 @@ func NewSQLiteVectorStore(path string) (*SQLiteVectorStore, error) {
 		_ = db.Close()
 		return nil, fmt.Errorf("failed to set synchronous mode: %w", err)
 	}
-	if _, err := db.ExecContext(ctx, "PRAGMA busy_timeout=5000;"); err != nil {
+	if _, err := db.ExecContext(ctx, "PRAGMA busy_timeout=30000;"); err != nil {
 		_ = db.Close()
 		return nil, fmt.Errorf("failed to set busy_timeout: %w", err)
 	}
