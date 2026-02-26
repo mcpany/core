@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ConfigEditor } from "./config-editor";
 import { StackVisualizer } from "./stack-visualizer";
 import { ServicePalette } from "./service-palette";
@@ -31,9 +31,22 @@ interface StackEditorProps {
  */
 export function StackEditor({ initialValue, onSave, onCancel }: StackEditorProps) {
   const [value, setValue] = useState(initialValue);
+  const [debouncedValue, setDebouncedValue] = useState(initialValue);
   const [saving, setSaving] = useState(false);
   const [showPalette, setShowPalette] = useState(true);
   const [showVisualizer, setShowVisualizer] = useState(true);
+
+  // ⚡ BOLT: Debounce StackVisualizer updates to prevent expensive re-rendering and parsing on every keystroke.
+  // Randomized Selection from Top 5 High-Impact Targets
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, 500);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value]);
 
   const handleSave = async () => {
     setSaving(true);
@@ -119,7 +132,7 @@ export function StackEditor({ initialValue, onSave, onCancel }: StackEditorProps
                   <>
                     <ResizableHandle />
                     <ResizablePanel defaultSize={30} minSize={20}>
-                        <StackVisualizer yamlContent={value} />
+                        <StackVisualizer yamlContent={debouncedValue} />
                     </ResizablePanel>
                   </>
               )}
