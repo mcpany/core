@@ -19,6 +19,8 @@ import { ServiceResources } from "@/components/services/service-resources";
 import { ServiceEditor } from "@/components/services/editor/service-editor";
 import { LogStream } from "@/components/logs/log-stream";
 import { ServiceInspector } from "@/components/services/editor/service-inspector";
+import { ServiceProvenanceView } from "@/components/services/service-provenance";
+import { ShieldCheck } from "lucide-react";
 
 /**
  * UpstreamServiceDetailPage renders the detailed view for a specific upstream service.
@@ -171,6 +173,9 @@ export default function UpstreamServiceDetailPage() {
                         <TabsTrigger value="inspector" className="data-[state=active]:bg-primary/10 data-[state=active]:text-primary">
                             <Eye className="mr-2 h-4 w-4" /> Inspector
                         </TabsTrigger>
+                        <TabsTrigger value="supply-chain" className="data-[state=active]:bg-primary/10 data-[state=active]:text-primary">
+                            <ShieldCheck className="mr-2 h-4 w-4" /> Supply Chain
+                        </TabsTrigger>
                          <TabsTrigger value="settings" className="data-[state=active]:bg-primary/10 data-[state=active]:text-primary">
                             <Settings className="mr-2 h-4 w-4" /> Settings
                         </TabsTrigger>
@@ -198,6 +203,10 @@ export default function UpstreamServiceDetailPage() {
 
                     <TabsContent value="inspector" className="h-full p-6 overflow-y-auto m-0">
                         <ServiceInspector service={service} />
+                    </TabsContent>
+
+                    <TabsContent value="supply-chain" className="h-full p-6 overflow-y-auto m-0">
+                        <ServiceProvenanceView provenance={service.provenance} serviceName={service.name} />
                     </TabsContent>
 
                     <TabsContent value="settings" className="h-full overflow-hidden m-0">
