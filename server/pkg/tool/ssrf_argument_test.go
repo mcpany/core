@@ -139,6 +139,7 @@ func TestSSRFArgumentProtection(t *testing.T) {
 				// Cleanup
 				os.Unsetenv("MCPANY_ALLOW_LOOPBACK_RESOURCES")
 				os.Unsetenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES")
+				os.Unsetenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS")
 			}()
 
 			tool := createTool(tt.command)
