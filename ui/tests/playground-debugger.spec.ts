@@ -8,6 +8,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Playground Debugger & Presets', () => {
   // Use real backend data (weather-service.get_weather tool from config.minimal.yaml)
   test('should allow saving presets and intercepting execution', async ({ page }) => {
+    test.slow(); // Mark test as slow for CI environments
     await page.goto('/playground');
 
     // Wait for sidebar to load tools
