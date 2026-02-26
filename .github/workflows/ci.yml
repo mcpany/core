@@ -33,9 +33,6 @@ jobs:
     outputs:
       src: ${{ steps.filter.outputs.src }}
     steps:
-      - name: Install dependencies
-        run: apt-get update && apt-get install -y git
-
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
