@@ -510,19 +510,36 @@ jobs:
           esac
           echo "slug=$SLUG" >> $GITHUB_OUTPUT
 
-      # Download specific artifacts
-      - name: Download Artifacts
+      # Explicit Downloads to avoid disk exhaustion
+      - name: Download Server Image
         uses: actions/download-artifact@v4
         with:
+          name: image-server-${{ steps.detect-arch.outputs.slug }}
           path: downloads
-          # Explicitly download only what is needed for sequential tests
-          pattern: image-*
-          merge-multiple: true
 
-      - name: Prune Unused Images
-        run: |
-          # Remove UI and Operator images if they were accidentally downloaded by pattern
-          rm -f downloads/ui.tar.gz downloads/operator.tar.gz downloads/ui-test-image.tar.gz || true
+      - name: Download HTTP Echo
+        uses: actions/download-artifact@v4
+        with:
+          name: image-http-echo-${{ steps.detect-arch.outputs.slug }}
+          path: downloads
+
+      - name: Download Time Server
+        uses: actions/download-artifact@v4
+        with:
+          name: image-time-server-${{ steps.detect-arch.outputs.slug }}
+          path: downloads
+
+      - name: Download Cowsay
+        uses: actions/download-artifact@v4
+        with:
+          name: image-cowsay-${{ steps.detect-arch.outputs.slug }}
+          path: downloads
+
+      - name: Download Everything
+        uses: actions/download-artifact@v4
+        with:
+          name: image-everything-${{ steps.detect-arch.outputs.slug }}
+          path: downloads
 
       - name: Load Docker Images
         run: |
@@ -608,17 +625,35 @@ jobs:
           esac
           echo "slug=$SLUG" >> $GITHUB_OUTPUT
 
-      - name: Download Artifacts
+      - name: Download Server Image
         uses: actions/download-artifact@v4
         with:
+          name: image-server-${{ steps.detect-arch.outputs.slug }}
           path: downloads
-          pattern: image-*
-          merge-multiple: true
 
-      - name: Prune Unused Images
-        run: |
-          # Remove UI and Operator images
-          rm -f downloads/ui.tar.gz downloads/operator.tar.gz downloads/ui-test-image.tar.gz || true
+      - name: Download HTTP Echo
+        uses: actions/download-artifact@v4
+        with:
+          name: image-http-echo-${{ steps.detect-arch.outputs.slug }}
+          path: downloads
+
+      - name: Download Time Server
+        uses: actions/download-artifact@v4
+        with:
+          name: image-time-server-${{ steps.detect-arch.outputs.slug }}
+          path: downloads
+
+      - name: Download Cowsay
+        uses: actions/download-artifact@v4
+        with:
+          name: image-cowsay-${{ steps.detect-arch.outputs.slug }}
+          path: downloads
+
+      - name: Download Everything
+        uses: actions/download-artifact@v4
+        with:
+          name: image-everything-${{ steps.detect-arch.outputs.slug }}
+          path: downloads
 
       - name: Load Docker Images
         run: |
@@ -725,17 +760,46 @@ jobs:
       - name: Prepare environment
         run: make prepare
 
-      - name: Download Artifacts
+      - name: Detect Architecture
+        id: detect-arch
+        run: |
+          ARCH=$(uname -m)
+          case $ARCH in
+            x86_64) SLUG="amd64" ;;
+            aarch64) SLUG="arm64" ;;
+            *) echo "Unsupported arch: $ARCH"; exit 1 ;;
+          esac
+          echo "slug=$SLUG" >> $GITHUB_OUTPUT
+
+      - name: Download Server Image
         uses: actions/download-artifact@v4
         with:
+          name: image-server-${{ steps.detect-arch.outputs.slug }}
           path: downloads
-          pattern: image-*
-          merge-multiple: true
 
-      - name: Prune Unused Images
-        run: |
-          # Remove UI and Operator images
-          rm -f downloads/ui.tar.gz downloads/operator.tar.gz downloads/ui-test-image.tar.gz || true
+      - name: Download HTTP Echo
+        uses: actions/download-artifact@v4
+        with:
+          name: image-http-echo-${{ steps.detect-arch.outputs.slug }}
+          path: downloads
+
+      - name: Download Time Server
+        uses: actions/download-artifact@v4
+        with:
+          name: image-time-server-${{ steps.detect-arch.outputs.slug }}
+          path: downloads
+
+      - name: Download Cowsay
+        uses: actions/download-artifact@v4
+        with:
+          name: image-cowsay-${{ steps.detect-arch.outputs.slug }}
+          path: downloads
+
+      - name: Download Everything
+        uses: actions/download-artifact@v4
+        with:
+          name: image-everything-${{ steps.detect-arch.outputs.slug }}
+          path: downloads
 
       - name: Load Docker Images
         run: |
@@ -823,18 +887,29 @@ jobs:
           esac
           echo "slug=$SLUG" >> $GITHUB_OUTPUT
 
-      - name: Download Artifacts
+      - name: Download Server Image
         uses: actions/download-artifact@v4
         with:
+          name: image-server-${{ steps.detect-arch.outputs.slug }}
           path: downloads
-          pattern: image-*
-          merge-multiple: true
 
-      - name: Prune Unused Images
-        run: |
-          # UI tests need server, ui, ui-test, http-echo
-          # Remove time-server, cowsay, everything, operator
-          rm -f downloads/time-server.tar.gz downloads/cowsay.tar.gz downloads/everything.tar.gz downloads/operator.tar.gz || true
+      - name: Download UI Image
+        uses: actions/download-artifact@v4
+        with:
+          name: image-ui-${{ steps.detect-arch.outputs.slug }}
+          path: downloads
+
+      - name: Download UI Test Image
+        uses: actions/download-artifact@v4
+        with:
+          name: image-ui-test-${{ steps.detect-arch.outputs.slug }}
+          path: downloads
+
+      - name: Download HTTP Echo
+        uses: actions/download-artifact@v4
+        with:
+          name: image-http-echo-${{ steps.detect-arch.outputs.slug }}
+          path: downloads
 
       - name: Load Docker Images
         run: |
@@ -899,18 +974,23 @@ jobs:
           esac
           echo "slug=$SLUG" >> $GITHUB_OUTPUT
 
-      - name: Download Artifacts
+      - name: Download Server Image
         uses: actions/download-artifact@v4
         with:
+          name: image-server-${{ steps.detect-arch.outputs.slug }}
           path: downloads
-          pattern: image-*
-          merge-multiple: true
 
-      - name: Prune Unused Images
-        run: |
-          # k8s tests need server, ui, operator
-          # Remove time-server, cowsay, everything, http-echo, ui-test-image
-          rm -f downloads/time-server.tar.gz downloads/cowsay.tar.gz downloads/everything.tar.gz downloads/http-echo.tar.gz downloads/ui-test-image.tar.gz || true
+      - name: Download Operator Image
+        uses: actions/download-artifact@v4
+        with:
+          name: image-operator-${{ steps.detect-arch.outputs.slug }}
+          path: downloads
+
+      - name: Download UI Image
+        uses: actions/download-artifact@v4
+        with:
+          name: image-ui-${{ steps.detect-arch.outputs.slug }}
+          path: downloads
 
       - name: Load Docker Images into Kind
         run: |
