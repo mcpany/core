@@ -16,7 +16,13 @@ import (
 )
 
 func TestCommandTool_SSRF_LoopbackShorthand(t *testing.T) {
-	t.Parallel()
+	// We cannot run parallel here because we are modifying environment variables
+	// t.Parallel()
+
+	// Ensure protections are ENABLED for this test, even if CI sets them to disabled.
+	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "false")
+	// Also ensure explicit loopback allow is false (default), just in case
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "false")
 
 	tests := []struct {
 		name      string
