@@ -35,14 +35,14 @@ jobs:
     steps:
       - name: Install dependencies
         run: |
-          if command -v apt-get &> /dev/null; then
-            if command -v sudo &> /dev/null; then
+          if command -v apt-get > /dev/null 2>&1; then
+            if command -v sudo > /dev/null 2>&1; then
               sudo apt-get update && sudo apt-get install -y git
             else
               apt-get update && apt-get install -y git
             fi
-          elif command -v apk &> /dev/null; then
-             if command -v sudo &> /dev/null; then
+          elif command -v apk > /dev/null 2>&1; then
+             if command -v sudo > /dev/null 2>&1; then
                sudo apk add --no-cache git
              else
                apk add --no-cache git
@@ -94,7 +94,7 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          if command -v sudo &> /dev/null; then
+          if command -v sudo > /dev/null 2>&1; then
             sudo rm -rf /usr/local/lib/android
             sudo rm -rf /usr/share/dotnet
             sudo rm -rf /opt/ghc
