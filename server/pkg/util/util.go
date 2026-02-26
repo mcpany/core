@@ -52,6 +52,9 @@ import (
 //   - string: A single string representing the sanitized and joined identifier.
 //   - error: An error if the sanitization fails (e.g., if ids is empty).
 //
+// Errors:
+//   - Returns error if ids slice is empty.
+//
 // Side Effects:
 //   - None.
 func SanitizeID(ids []string, alwaysAppendHash bool, maxSanitizedPrefixLength, reqHashLength int) (string, error) {
@@ -220,6 +223,9 @@ func isValidChar(c byte) bool {
 //   - string: The sanitized service name.
 //   - error: An error if sanitization fails.
 //
+// Errors:
+//   - Returns error if name is empty.
+//
 // Side Effects:
 //   - None.
 func SanitizeServiceName(name string) (string, error) {
@@ -239,6 +245,9 @@ func SanitizeServiceName(name string) (string, error) {
 // Returns:
 //   - string: The sanitized tool name.
 //   - error: An error if sanitization fails.
+//
+// Errors:
+//   - Returns error if name is empty.
 //
 // Side Effects:
 //   - None.
@@ -315,6 +324,9 @@ func GenerateUUID() string {
 //   - service (string): The service key part.
 //   - bareToolName (string): The tool name part.
 //   - err (error): An error if parsing fails.
+//
+// Errors:
+//   - Returns error if parsing fails (currently always nil).
 //
 // Side Effects:
 //   - None.

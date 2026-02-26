@@ -81,6 +81,9 @@ type ValidationError struct {
 
 // Error returns the formatted error message.
 //
+// Returns:
+//   - string: The error message.
+//
 // Side Effects:
 //   - None.
 func (e *ValidationError) Error() string {
@@ -98,6 +101,9 @@ func (e *ValidationError) Error() string {
 //
 // Returns:
 //   - ([]ValidationError): A slice of ValidationErrors, which will be empty if the configuration is valid.
+//
+// Side Effects:
+//   - Reads file stats if validation requires checking file existence.
 func Validate(ctx context.Context, config *configv1.McpAnyServerConfig, binaryType BinaryType) []ValidationError {
 	var validationErrors []ValidationError
 	serviceNames := make(map[string]bool)
@@ -479,6 +485,12 @@ func validateGlobalSettings(ctx context.Context, gs *configv1.GlobalSettings, bi
 //
 // Returns:
 //   - (error): An error if validation fails.
+//
+// Errors:
+//   - Returns error if the service configuration is invalid.
+//
+// Side Effects:
+//   - Checks file existence and resolves secrets.
 func ValidateOrError(ctx context.Context, service *configv1.UpstreamServiceConfig) error {
 	return validateUpstreamService(ctx, service)
 }
