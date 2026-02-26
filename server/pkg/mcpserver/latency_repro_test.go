@@ -99,16 +99,29 @@ func TestServer_CallTool_Latency_Metrics_Repro(t *testing.T) {
 
 	// Check metrics
 	// Wait for metrics to appear
-	var data []*metrics.IntervalMetrics
+	var samples map[string]interface{}
 	for i := 0; i < 20; i++ {
-		data = sink.Data()
+		data := sink.Data()
 		if len(data) > 0 {
-			break
+			allSamples := make(map[string]interface{})
+			hasLatency := false
+			for _, d := range data {
+				for k, v := range d.Samples {
+					allSamples[k] = v
+					// Check if we have any latency metric (labelled or unlabelled)
+					// The key starts with "mcpany.tools.call.latency"
+					if len(k) >= 25 && k[:25] == "mcpany.tools.call.latency" {
+						hasLatency = true
+					}
+				}
+			}
+			if hasLatency {
+				samples = allSamples
+				break
+			}
 		}
 		time.Sleep(10 * time.Millisecond)
 	}
-	require.NotEmpty(t, data)
-	samples := data[0].Samples
 	require.NotEmpty(t, samples)
 
 	// We expect the unlabelled metric "mcpany.tools.call.latency" NOT to exist.
