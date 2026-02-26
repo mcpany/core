@@ -4330,9 +4330,12 @@ func validateSafePathAndInjection(val string, isDocker bool, commandName string)
 		// via tools like curl/wget that accept them.
 		// Check for "localhost" (case-insensitive)
 		if strings.EqualFold(val, "localhost") {
-			allowLoopback := os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == trueStr
-			if !allowLoopback {
-				return fmt.Errorf("unsafe argument: localhost is not allowed")
+			// Respect the global dangerous bypass setting (used in tests)
+			if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") != trueStr {
+				allowLoopback := os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == trueStr
+				if !allowLoopback {
+					return fmt.Errorf("unsafe argument: localhost is not allowed")
+				}
 			}
 		} else if validation.IsSafeIP != nil {
 			// Check if it's an IP address and validate it against policy
@@ -4343,9 +4346,12 @@ func validateSafePathAndInjection(val string, isDocker bool, commandName string)
 				}
 				// If net.ParseIP failed, check for shorthand formats that libraries might accept but net.ParseIP rejects
 				if validation.IsLoopbackShorthand(val) {
-					allowLoopback := os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == trueStr
-					if !allowLoopback {
-						return fmt.Errorf("unsafe argument: loopback shorthand address is not allowed")
+					// Respect the global dangerous bypass setting (used in tests)
+					if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") != trueStr {
+						allowLoopback := os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == trueStr
+						if !allowLoopback {
+							return fmt.Errorf("unsafe argument: loopback shorthand address is not allowed")
+						}
 					}
 				}
 			}
