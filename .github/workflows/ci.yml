@@ -488,7 +488,7 @@ jobs:
 
       - name: Install Build Tools
         run: |
-          apt-get update && apt-get install -y make
+          apt-get update && apt-get install -y make build-essential
 
       - name: Generate Protobufs
         run: |
