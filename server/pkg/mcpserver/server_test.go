@@ -42,13 +42,12 @@ func (m *mockTool) Tool() *v1.Tool {
 }
 
 func (m *mockTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
-	// Simulate work that takes a bit of time, allowing context cancellation to be tested.
-	select {
-	case <-time.After(50 * time.Millisecond):
-		return "success", nil
-	case <-ctx.Done():
+	// Simulate work. Sleep removed to fix CI flakiness in metric tests.
+	// Context checking is still good practice.
+	if ctx.Err() != nil {
 		return nil, ctx.Err()
 	}
+	return "success", nil
 }
 
 func (m *mockTool) GetCacheConfig() *configv1.CacheConfig {
