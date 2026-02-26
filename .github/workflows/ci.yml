@@ -104,14 +104,14 @@ jobs:
 
           if command -v apt-get >/dev/null; then
             export DEBIAN_FRONTEND=noninteractive
-            # Retry loop for apt-get update
-            for i in {1..5}; do
-              ($SUDO apt-get clean && $SUDO apt-get update) && break || {
+            $SUDO rm -rf /var/lib/apt/lists/*
+            for i in 1 2 3 4 5; do
+              ($SUDO apt-get update) && break || {
                 echo "apt-get update failed, retrying ($i/5)..."
                 sleep 5
               }
             done
-            $SUDO apt-get install -y git make curl unzip ca-certificates build-essential
+            $SUDO apt-get install -y --no-install-recommends git make curl unzip ca-certificates build-essential
           elif command -v apk >/dev/null; then
              $SUDO apk add --no-cache git make curl unzip ca-certificates build-base
           elif command -v yum >/dev/null; then
@@ -170,13 +170,14 @@ jobs:
 
           if command -v apt-get >/dev/null; then
             export DEBIAN_FRONTEND=noninteractive
-            for i in {1..5}; do
-              ($SUDO apt-get clean && $SUDO apt-get update) && break || {
+            $SUDO rm -rf /var/lib/apt/lists/*
+            for i in 1 2 3 4 5; do
+              ($SUDO apt-get update) && break || {
                 echo "apt-get update failed, retrying ($i/5)..."
                 sleep 5
               }
             done
-            $SUDO apt-get install -y make xz-utils build-essential curl unzip ca-certificates
+            $SUDO apt-get install -y --no-install-recommends make xz-utils build-essential curl unzip ca-certificates
           elif command -v apk >/dev/null; then
              $SUDO apk add --no-cache make xz build-base curl
           fi
@@ -218,13 +219,14 @@ jobs:
           # Detect package manager
           if command -v apt-get >/dev/null; then
             export DEBIAN_FRONTEND=noninteractive
-            for i in {1..5}; do
-              ($SUDO apt-get clean && $SUDO apt-get update) && break || {
+            $SUDO rm -rf /var/lib/apt/lists/*
+            for i in 1 2 3 4 5; do
+              ($SUDO apt-get update) && break || {
                 echo "apt-get update failed, retrying ($i/5)..."
                 sleep 5
               }
             done
-            $SUDO apt-get install -y git make curl unzip ca-certificates build-essential
+            $SUDO apt-get install -y --no-install-recommends git make curl unzip ca-certificates build-essential
           elif command -v apk >/dev/null; then
             $SUDO apk add --no-cache git make curl unzip ca-certificates build-base
           elif command -v yum >/dev/null; then
@@ -245,13 +247,14 @@ jobs:
 
           if command -v apt-get >/dev/null; then
             export DEBIAN_FRONTEND=noninteractive
-            for i in {1..5}; do
-              ($SUDO apt-get clean && $SUDO apt-get update) && break || {
+            $SUDO rm -rf /var/lib/apt/lists/*
+            for i in 1 2 3 4 5; do
+              ($SUDO apt-get update) && break || {
                 echo "apt-get update failed, retrying ($i/5)..."
                 sleep 5
               }
             done
-            $SUDO apt-get install -y make xz-utils build-essential curl unzip ca-certificates
+            $SUDO apt-get install -y --no-install-recommends make xz-utils build-essential curl unzip ca-certificates
           elif command -v apk >/dev/null; then
              $SUDO apk add --no-cache make xz build-base curl unzip ca-certificates
           elif command -v yum >/dev/null; then
@@ -403,13 +406,14 @@ jobs:
 
           if command -v apt-get >/dev/null; then
             export DEBIAN_FRONTEND=noninteractive
-            for i in {1..5}; do
-              ($SUDO apt-get clean && $SUDO apt-get update) && break || {
+            $SUDO rm -rf /var/lib/apt/lists/*
+            for i in 1 2 3 4 5; do
+              ($SUDO apt-get update) && break || {
                 echo "apt-get update failed, retrying ($i/5)..."
                 sleep 5
               }
             done
-            $SUDO apt-get install -y git make curl unzip ca-certificates build-essential
+            $SUDO apt-get install -y --no-install-recommends git make curl unzip ca-certificates build-essential
           elif command -v apk >/dev/null; then
             $SUDO apk add --no-cache git make curl unzip ca-certificates build-base
           elif command -v yum >/dev/null; then
@@ -428,13 +432,14 @@ jobs:
 
           if command -v apt-get >/dev/null; then
             export DEBIAN_FRONTEND=noninteractive
-            for i in {1..5}; do
-              ($SUDO apt-get clean && $SUDO apt-get update) && break || {
+            $SUDO rm -rf /var/lib/apt/lists/*
+            for i in 1 2 3 4 5; do
+              ($SUDO apt-get update) && break || {
                 echo "apt-get update failed, retrying ($i/5)..."
                 sleep 5
               }
             done
-            $SUDO apt-get install -y make xz-utils build-essential curl unzip ca-certificates
+            $SUDO apt-get install -y --no-install-recommends make xz-utils build-essential curl unzip ca-certificates
           elif command -v apk >/dev/null; then
              $SUDO apk add --no-cache make xz build-base curl unzip ca-certificates
           elif command -v yum >/dev/null; then
@@ -615,13 +620,14 @@ jobs:
 
           if command -v apt-get >/dev/null; then
             export DEBIAN_FRONTEND=noninteractive
-            for i in {1..5}; do
-              ($SUDO apt-get clean && $SUDO apt-get update) && break || {
+            $SUDO rm -rf /var/lib/apt/lists/*
+            for i in 1 2 3 4 5; do
+              ($SUDO apt-get update) && break || {
                 echo "apt-get update failed, retrying ($i/5)..."
                 sleep 5
               }
             done
-            $SUDO apt-get install -y git make curl unzip ca-certificates build-essential
+            $SUDO apt-get install -y --no-install-recommends git make curl unzip ca-certificates build-essential
           elif command -v apk >/dev/null; then
             $SUDO apk add --no-cache git make curl unzip ca-certificates build-base
           elif command -v yum >/dev/null; then
@@ -780,13 +786,14 @@ jobs:
 
           if command -v apt-get >/dev/null; then
             export DEBIAN_FRONTEND=noninteractive
-            for i in {1..5}; do
-              ($SUDO apt-get clean && $SUDO apt-get update) && break || {
+            $SUDO rm -rf /var/lib/apt/lists/*
+            for i in 1 2 3 4 5; do
+              ($SUDO apt-get update) && break || {
                 echo "apt-get update failed, retrying ($i/5)..."
                 sleep 5
               }
             done
-            $SUDO apt-get install -y git make curl unzip ca-certificates build-essential
+            $SUDO apt-get install -y --no-install-recommends git make curl unzip ca-certificates build-essential
           elif command -v apk >/dev/null; then
             $SUDO apk add --no-cache git make curl unzip ca-certificates build-base
           elif command -v yum >/dev/null; then
@@ -805,13 +812,14 @@ jobs:
 
           if command -v apt-get >/dev/null; then
             export DEBIAN_FRONTEND=noninteractive
-            for i in {1..5}; do
-              ($SUDO apt-get clean && $SUDO apt-get update) && break || {
+            $SUDO rm -rf /var/lib/apt/lists/*
+            for i in 1 2 3 4 5; do
+              ($SUDO apt-get update) && break || {
                 echo "apt-get update failed, retrying ($i/5)..."
                 sleep 5
               }
             done
-            $SUDO apt-get install -y make xz-utils build-essential curl unzip ca-certificates
+            $SUDO apt-get install -y --no-install-recommends make xz-utils build-essential curl unzip ca-certificates
           elif command -v apk >/dev/null; then
              $SUDO apk add --no-cache make xz build-base curl unzip ca-certificates
           elif command -v yum >/dev/null; then
@@ -961,13 +969,14 @@ jobs:
 
           if command -v apt-get >/dev/null; then
             export DEBIAN_FRONTEND=noninteractive
-            for i in {1..5}; do
-              ($SUDO apt-get clean && $SUDO apt-get update) && break || {
+            $SUDO rm -rf /var/lib/apt/lists/*
+            for i in 1 2 3 4 5; do
+              ($SUDO apt-get update) && break || {
                 echo "apt-get update failed, retrying ($i/5)..."
                 sleep 5
               }
             done
-            $SUDO apt-get install -y git make curl unzip ca-certificates build-essential
+            $SUDO apt-get install -y --no-install-recommends git make curl unzip ca-certificates build-essential
           elif command -v apk >/dev/null; then
             $SUDO apk add --no-cache git make curl unzip ca-certificates build-base
           elif command -v yum >/dev/null; then
@@ -986,13 +995,14 @@ jobs:
 
           if command -v apt-get >/dev/null; then
             export DEBIAN_FRONTEND=noninteractive
-            for i in {1..5}; do
-              ($SUDO apt-get clean && $SUDO apt-get update) && break || {
+            $SUDO rm -rf /var/lib/apt/lists/*
+            for i in 1 2 3 4 5; do
+              ($SUDO apt-get update) && break || {
                 echo "apt-get update failed, retrying ($i/5)..."
                 sleep 5
               }
             done
-            $SUDO apt-get install -y make xz-utils build-essential curl unzip ca-certificates
+            $SUDO apt-get install -y --no-install-recommends make xz-utils build-essential curl unzip ca-certificates
           elif command -v apk >/dev/null; then
              $SUDO apk add --no-cache make xz build-base curl unzip ca-certificates
           elif command -v yum >/dev/null; then
@@ -1110,13 +1120,14 @@ jobs:
 
           if command -v apt-get >/dev/null; then
             export DEBIAN_FRONTEND=noninteractive
-            for i in {1..5}; do
-              ($SUDO apt-get clean && $SUDO apt-get update) && break || {
+            $SUDO rm -rf /var/lib/apt/lists/*
+            for i in 1 2 3 4 5; do
+              ($SUDO apt-get update) && break || {
                 echo "apt-get update failed, retrying ($i/5)..."
                 sleep 5
               }
             done
-            $SUDO apt-get install -y git make curl unzip ca-certificates build-essential
+            $SUDO apt-get install -y --no-install-recommends git make curl unzip ca-certificates build-essential
           elif command -v apk >/dev/null; then
             $SUDO apk add --no-cache git make curl unzip ca-certificates build-base
           elif command -v yum >/dev/null; then
@@ -1205,13 +1216,14 @@ jobs:
 
           if command -v apt-get >/dev/null; then
             export DEBIAN_FRONTEND=noninteractive
-            for i in {1..5}; do
-              ($SUDO apt-get clean && $SUDO apt-get update) && break || {
+            $SUDO rm -rf /var/lib/apt/lists/*
+            for i in 1 2 3 4 5; do
+              ($SUDO apt-get update) && break || {
                 echo "apt-get update failed, retrying ($i/5)..."
                 sleep 5
               }
             done
-            $SUDO apt-get install -y git make curl unzip ca-certificates build-essential
+            $SUDO apt-get install -y --no-install-recommends git make curl unzip ca-certificates build-essential
           elif command -v apk >/dev/null; then
             $SUDO apk add --no-cache git make curl unzip ca-certificates build-base
           elif command -v yum >/dev/null; then
