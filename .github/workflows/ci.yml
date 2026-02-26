@@ -167,6 +167,10 @@ jobs:
             $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential
           elif command -v apk >/dev/null; then
              $SUDO apk add --no-cache make xz build-base
+          elif command -v yum >/dev/null; then
+             $SUDO yum install -y make gcc xz
+          elif command -v dnf >/dev/null; then
+             $SUDO dnf install -y make gcc xz
           fi
 
       - name: Prepare environment
@@ -225,6 +229,10 @@ jobs:
             $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential
           elif command -v apk >/dev/null; then
              $SUDO apk add --no-cache make xz build-base
+          elif command -v yum >/dev/null; then
+             $SUDO yum install -y make gcc xz
+          elif command -v dnf >/dev/null; then
+             $SUDO dnf install -y make gcc xz
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -393,6 +401,10 @@ jobs:
             $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential
           elif command -v apk >/dev/null; then
              $SUDO apk add --no-cache make xz build-base
+          elif command -v yum >/dev/null; then
+             $SUDO yum install -y make gcc xz
+          elif command -v dnf >/dev/null; then
+             $SUDO dnf install -y make gcc xz
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -687,7 +699,7 @@ jobs:
         run: |
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
-          if [ -z "$SUDO" ]; then
+          if [ -z "SUDO" ]; then
             echo "No sudo, skipping disk cleanup."
             exit 0
           fi
@@ -723,6 +735,10 @@ jobs:
             $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential
           elif command -v apk >/dev/null; then
              $SUDO apk add --no-cache make xz build-base
+          elif command -v yum >/dev/null; then
+             $SUDO yum install -y make gcc xz
+          elif command -v dnf >/dev/null; then
+             $SUDO dnf install -y make gcc xz
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -893,6 +909,10 @@ jobs:
             $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential
           elif command -v apk >/dev/null; then
              $SUDO apk add --no-cache make xz build-base
+          elif command -v yum >/dev/null; then
+             $SUDO yum install -y make gcc xz
+          elif command -v dnf >/dev/null; then
+             $SUDO dnf install -y make gcc xz
           fi
 
       - name: Configure Docker Registry Mirrors
