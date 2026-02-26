@@ -80,6 +80,7 @@ clean:
 prepare-proto:
 	@echo "Preparing protobuf environment..."
 	@mkdir -p $(TOOL_INSTALL_DIR)
+ifneq ($(SKIP_PROTO_INSTALL),true)
 	@# Check if protoc is installed
 	@export PATH=$(TOOL_INSTALL_DIR):$$PATH; \
 	PROTOC_TAG=$(PROTOC_VERSION); \

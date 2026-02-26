@@ -142,6 +142,8 @@ jobs:
           fi
 
       - name: Prepare environment
+        env:
+          SKIP_PROTO_INSTALL: true
         run: make prepare
 
       - name: Lint
@@ -208,6 +210,12 @@ jobs:
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
+
+      - name: Install Protoc
+        uses: arduino/setup-protoc@v3
+        with:
+          version: "25.1"
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -339,6 +347,12 @@ jobs:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
+      - name: Install Protoc
+        uses: arduino/setup-protoc@v3
+        with:
+          version: "25.1"
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
         with:
@@ -412,6 +426,8 @@ jobs:
           done
 
       - name: Prepare environment
+        env:
+          SKIP_PROTO_INSTALL: true
         run: make prepare
 
       - name: run parallel e2e
@@ -463,6 +479,8 @@ jobs:
           # cache-dependency-path: server/tests/integration/upstream/package-lock.json
 
       - name: Generate Protobufs
+        env:
+          SKIP_PROTO_INSTALL: true
         run: |
           make gen
 
@@ -689,6 +707,8 @@ jobs:
             ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-
 
       - name: Prepare environment
+        env:
+          SKIP_PROTO_INSTALL: true
         run: make prepare
 
       - name: run sequential e2e
@@ -765,6 +785,12 @@ jobs:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
+      - name: Install Protoc
+        uses: arduino/setup-protoc@v3
+        with:
+          version: "25.1"
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
         with:
@@ -801,6 +827,8 @@ jobs:
             ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-
 
       - name: Prepare environment
+        env:
+          SKIP_PROTO_INSTALL: true
         run: make prepare
 
       - name: test public api
