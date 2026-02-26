@@ -86,10 +86,12 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          if command -v sudo &> /dev/null; then
+            sudo rm -rf /usr/local/lib/android
+            sudo rm -rf /usr/share/dotnet
+            sudo rm -rf /opt/ghc
+            sudo rm -rf /usr/local/share/boost
+          fi
 
       - name: Prune Docker
         run: docker system prune -af
@@ -139,7 +141,11 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            if command -v sudo &> /dev/null; then
+              sudo apt-get update && sudo apt-get install -y make xz-utils
+            else
+              apt-get update && apt-get install -y make xz-utils
+            fi
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz
           fi
@@ -153,7 +159,7 @@ jobs:
   unit-test:
     runs-on: oci-runner
     # container: public.ecr.aws/docker/library/ubuntu:24.04
-    timeout-minutes: 30
+    timeout-minutes: 60
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
     env:
@@ -162,10 +168,12 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          if command -v sudo &> /dev/null; then
+            sudo rm -rf /usr/local/lib/android
+            sudo rm -rf /usr/share/dotnet
+            sudo rm -rf /opt/ghc
+            sudo rm -rf /usr/local/share/boost
+          fi
 
       - name: Prune Docker
         run: docker system prune -af
@@ -175,7 +183,11 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            if command -v sudo &> /dev/null; then
+              sudo apt-get update && sudo apt-get install -y make xz-utils
+            else
+              apt-get update && apt-get install -y make xz-utils
+            fi
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz
           fi
@@ -301,10 +313,12 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          if command -v sudo &> /dev/null; then
+            sudo rm -rf /usr/local/lib/android
+            sudo rm -rf /usr/share/dotnet
+            sudo rm -rf /opt/ghc
+            sudo rm -rf /usr/local/share/boost
+          fi
 
       - name: Prune Docker
         run: docker system prune -af
@@ -314,7 +328,11 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            if command -v sudo &> /dev/null; then
+              sudo apt-get update && sudo apt-get install -y make xz-utils
+            else
+              apt-get update && apt-get install -y make xz-utils
+            fi
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz
           fi
@@ -602,10 +620,12 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          if command -v sudo &> /dev/null; then
+            sudo rm -rf /usr/local/lib/android
+            sudo rm -rf /usr/share/dotnet
+            sudo rm -rf /opt/ghc
+            sudo rm -rf /usr/local/share/boost
+          fi
 
       - name: Prune Docker
         run: docker system prune -af
@@ -615,7 +635,11 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            if command -v sudo &> /dev/null; then
+              sudo apt-get update && sudo apt-get install -y make xz-utils
+            else
+              apt-get update && apt-get install -y make xz-utils
+            fi
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz
           fi
@@ -732,7 +756,7 @@ jobs:
   e2e-public-api:
     runs-on: oci-runner
     # container: public.ecr.aws/docker/library/ubuntu:24.04
-    timeout-minutes: 30
+    timeout-minutes: 60
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
     env:
@@ -741,10 +765,12 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          if command -v sudo &> /dev/null; then
+            sudo rm -rf /usr/local/lib/android
+            sudo rm -rf /usr/share/dotnet
+            sudo rm -rf /opt/ghc
+            sudo rm -rf /usr/local/share/boost
+          fi
 
       - name: Prune Docker
         run: docker system prune -af
@@ -754,7 +780,11 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            if command -v sudo &> /dev/null; then
+              sudo apt-get update && sudo apt-get install -y make xz-utils
+            else
+              apt-get update && apt-get install -y make xz-utils
+            fi
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz
           fi
@@ -920,10 +950,12 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          if command -v sudo &> /dev/null; then
+            sudo rm -rf /usr/local/lib/android
+            sudo rm -rf /usr/share/dotnet
+            sudo rm -rf /opt/ghc
+            sudo rm -rf /usr/local/share/boost
+          fi
 
       - name: Prune Docker
         run: docker system prune -af
