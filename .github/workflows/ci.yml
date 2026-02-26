@@ -90,17 +90,20 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          if command -v sudo >/dev/null 2>&1; then
-            sudo rm -rf /usr/local/lib/android
-            sudo rm -rf /usr/share/dotnet
-            sudo rm -rf /opt/ghc
-            sudo rm -rf /usr/local/share/boost
-          else
-            rm -rf /usr/local/lib/android || true
-            rm -rf /usr/share/dotnet || true
-            rm -rf /opt/ghc || true
-            rm -rf /usr/local/share/boost || true
-          fi
+          # Safe deletion function that tries sudo if available, else rm
+          delete_safe() {
+            if [ "$(id -u)" -eq 0 ]; then
+              rm -rf "$1" || true
+            elif command -v sudo >/dev/null 2>&1; then
+              sudo rm -rf "$1" || true
+            else
+              rm -rf "$1" || true
+            fi
+          }
+          delete_safe "/usr/local/lib/android"
+          delete_safe "/usr/share/dotnet"
+          delete_safe "/opt/ghc"
+          delete_safe "/usr/local/share/boost"
 
       - name: Prune Docker
         run: docker system prune -af
@@ -173,17 +176,19 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          if command -v sudo >/dev/null 2>&1; then
-            sudo rm -rf /usr/local/lib/android
-            sudo rm -rf /usr/share/dotnet
-            sudo rm -rf /opt/ghc
-            sudo rm -rf /usr/local/share/boost
-          else
-            rm -rf /usr/local/lib/android || true
-            rm -rf /usr/share/dotnet || true
-            rm -rf /opt/ghc || true
-            rm -rf /usr/local/share/boost || true
-          fi
+          delete_safe() {
+            if [ "$(id -u)" -eq 0 ]; then
+              rm -rf "$1" || true
+            elif command -v sudo >/dev/null 2>&1; then
+              sudo rm -rf "$1" || true
+            else
+              rm -rf "$1" || true
+            fi
+          }
+          delete_safe "/usr/local/lib/android"
+          delete_safe "/usr/share/dotnet"
+          delete_safe "/opt/ghc"
+          delete_safe "/usr/local/share/boost"
 
       - name: Prune Docker
         run: docker system prune -af
@@ -319,17 +324,19 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          if command -v sudo >/dev/null 2>&1; then
-            sudo rm -rf /usr/local/lib/android
-            sudo rm -rf /usr/share/dotnet
-            sudo rm -rf /opt/ghc
-            sudo rm -rf /usr/local/share/boost
-          else
-            rm -rf /usr/local/lib/android || true
-            rm -rf /usr/share/dotnet || true
-            rm -rf /opt/ghc || true
-            rm -rf /usr/local/share/boost || true
-          fi
+          delete_safe() {
+            if [ "$(id -u)" -eq 0 ]; then
+              rm -rf "$1" || true
+            elif command -v sudo >/dev/null 2>&1; then
+              sudo rm -rf "$1" || true
+            else
+              rm -rf "$1" || true
+            fi
+          }
+          delete_safe "/usr/local/lib/android"
+          delete_safe "/usr/share/dotnet"
+          delete_safe "/opt/ghc"
+          delete_safe "/usr/local/share/boost"
 
       - name: Prune Docker
         run: docker system prune -af
@@ -497,17 +504,19 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          if command -v sudo >/dev/null 2>&1; then
-            sudo rm -rf /usr/local/lib/android
-            sudo rm -rf /usr/share/dotnet
-            sudo rm -rf /opt/ghc
-            sudo rm -rf /usr/local/share/boost
-          else
-            rm -rf /usr/local/lib/android || true
-            rm -rf /usr/share/dotnet || true
-            rm -rf /opt/ghc || true
-            rm -rf /usr/local/share/boost || true
-          fi
+          delete_safe() {
+            if [ "$(id -u)" -eq 0 ]; then
+              rm -rf "$1" || true
+            elif command -v sudo >/dev/null 2>&1; then
+              sudo rm -rf "$1" || true
+            else
+              rm -rf "$1" || true
+            fi
+          }
+          delete_safe "/usr/local/lib/android"
+          delete_safe "/usr/share/dotnet"
+          delete_safe "/opt/ghc"
+          delete_safe "/usr/local/share/boost"
       - uses: actions/checkout@v6
 
       - name: Set up Go
@@ -640,17 +649,19 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          if command -v sudo >/dev/null 2>&1; then
-            sudo rm -rf /usr/local/lib/android
-            sudo rm -rf /usr/share/dotnet
-            sudo rm -rf /opt/ghc
-            sudo rm -rf /usr/local/share/boost
-          else
-            rm -rf /usr/local/lib/android || true
-            rm -rf /usr/share/dotnet || true
-            rm -rf /opt/ghc || true
-            rm -rf /usr/local/share/boost || true
-          fi
+          delete_safe() {
+            if [ "$(id -u)" -eq 0 ]; then
+              rm -rf "$1" || true
+            elif command -v sudo >/dev/null 2>&1; then
+              sudo rm -rf "$1" || true
+            else
+              rm -rf "$1" || true
+            fi
+          }
+          delete_safe "/usr/local/lib/android"
+          delete_safe "/usr/share/dotnet"
+          delete_safe "/opt/ghc"
+          delete_safe "/usr/local/share/boost"
 
       - name: Prune Docker
         run: docker system prune -af
@@ -786,17 +797,19 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          if command -v sudo >/dev/null 2>&1; then
-            sudo rm -rf /usr/local/lib/android
-            sudo rm -rf /usr/share/dotnet
-            sudo rm -rf /opt/ghc
-            sudo rm -rf /usr/local/share/boost
-          else
-            rm -rf /usr/local/lib/android || true
-            rm -rf /usr/share/dotnet || true
-            rm -rf /opt/ghc || true
-            rm -rf /usr/local/share/boost || true
-          fi
+          delete_safe() {
+            if [ "$(id -u)" -eq 0 ]; then
+              rm -rf "$1" || true
+            elif command -v sudo >/dev/null 2>&1; then
+              sudo rm -rf "$1" || true
+            else
+              rm -rf "$1" || true
+            fi
+          }
+          delete_safe "/usr/local/lib/android"
+          delete_safe "/usr/share/dotnet"
+          delete_safe "/opt/ghc"
+          delete_safe "/usr/local/share/boost"
 
       - name: Prune Docker
         run: docker system prune -af
