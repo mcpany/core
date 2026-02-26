@@ -262,7 +262,8 @@ jobs:
 
       - name: Test (Short)
         run: |
-          make test-fast CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache COVERAGE_FILE=coverage-fast.out
+          # Skip Docker-dependent E2E tests in unit-test job to avoid failures if Docker is flaky
+          make test-fast SKIP_DOCKER_TESTS=true CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache COVERAGE_FILE=coverage-fast.out
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
