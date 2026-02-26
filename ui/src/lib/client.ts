@@ -38,11 +38,25 @@ export interface UpstreamServiceConfig extends Omit<BaseUpstreamServiceConfig, '
      * Optional template ID if this config was loaded from a template.
      */
     templateId?: string;
+    /**
+     * Optional provenance attestation for the service.
+     */
+    provenance?: ServiceProvenance;
 }
 
 // Re-export generated types
-export type { ToolDefinition, ResourceDefinition, PromptDefinition, Credential, Authentication, ProfileDefinition, ServiceProvenance };
+export type { ToolDefinition, ResourceDefinition, PromptDefinition, Credential, Authentication, ProfileDefinition };
 export type { ListServicesResponse, GetServiceResponse, GetServiceStatusResponse, ValidateServiceResponse } from '../../../proto/api/v1/registration';
+
+/**
+ * ServiceProvenance defines the security attestation for a service.
+ */
+export interface ServiceProvenance {
+    verified: boolean;
+    signerIdentity: string;
+    attestationTime: string;
+    signatureAlgorithm: string;
+}
 
 /**
  * ServiceTemplate defines a template for an upstream service.
