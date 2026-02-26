@@ -87,10 +87,11 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
+          $SUDO rm -rf /usr/local/lib/android
+          $SUDO rm -rf /usr/share/dotnet
+          $SUDO rm -rf /opt/ghc
+          $SUDO rm -rf /usr/local/share/boost
 
       - name: Prune Docker
         run: docker system prune -af
@@ -164,10 +165,11 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
+          $SUDO rm -rf /usr/local/lib/android
+          $SUDO rm -rf /usr/share/dotnet
+          $SUDO rm -rf /opt/ghc
+          $SUDO rm -rf /usr/local/share/boost
 
       - name: Prune Docker
         run: docker system prune -af
@@ -304,10 +306,11 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
+          $SUDO rm -rf /usr/local/lib/android
+          $SUDO rm -rf /usr/share/dotnet
+          $SUDO rm -rf /opt/ghc
+          $SUDO rm -rf /usr/local/share/boost
 
       - name: Prune Docker
         run: docker system prune -af
@@ -476,10 +479,11 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
+          $SUDO rm -rf /usr/local/lib/android
+          $SUDO rm -rf /usr/share/dotnet
+          $SUDO rm -rf /opt/ghc
+          $SUDO rm -rf /usr/local/share/boost
       - uses: actions/checkout@v6
 
       - name: Set up Go
@@ -612,10 +616,11 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
+          $SUDO rm -rf /usr/local/lib/android
+          $SUDO rm -rf /usr/share/dotnet
+          $SUDO rm -rf /opt/ghc
+          $SUDO rm -rf /usr/local/share/boost
 
       - name: Prune Docker
         run: docker system prune -af
@@ -752,10 +757,11 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
+          $SUDO rm -rf /usr/local/lib/android
+          $SUDO rm -rf /usr/share/dotnet
+          $SUDO rm -rf /opt/ghc
+          $SUDO rm -rf /usr/local/share/boost
 
       - name: Prune Docker
         run: docker system prune -af
@@ -931,10 +937,11 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
+          $SUDO rm -rf /usr/local/lib/android
+          $SUDO rm -rf /usr/share/dotnet
+          $SUDO rm -rf /opt/ghc
+          $SUDO rm -rf /usr/local/share/boost
 
       - name: Prune Docker
         run: docker system prune -af
@@ -984,10 +991,11 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
+          $SUDO rm -rf /usr/local/lib/android
+          $SUDO rm -rf /usr/share/dotnet
+          $SUDO rm -rf /opt/ghc
+          $SUDO rm -rf /usr/local/share/boost
 
       - name: Prune Docker
         run: docker system prune -af
