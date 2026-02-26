@@ -968,17 +968,6 @@ jobs:
       matrix:
         shard: [1/2, 2/2]
     steps:
-      - name: Free Disk Space (Fast)
-        run: |
-          SUDO=""
-          if command -v sudo >/dev/null; then
-            SUDO="sudo"
-          fi
-          $SUDO rm -rf /usr/local/lib/android
-          $SUDO rm -rf /usr/local/lib/android || true
-          $SUDO rm -rf /usr/share/dotnet || true
-          $SUDO rm -rf /opt/ghc || true
-          $SUDO rm -rf /usr/local/share/boost || true
 
       - name: Prune Docker
         run: docker system prune -af
