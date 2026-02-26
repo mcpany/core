@@ -293,6 +293,7 @@ jobs:
         env:
           CGO_ENABLED: 1
         run: |
+          go env
           make test-fast CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache COVERAGE_FILE=coverage-fast.out
 
       - name: Upload coverage to Codecov
@@ -466,7 +467,10 @@ jobs:
         run: make prepare
 
       - name: run parallel e2e
+        env:
+          CGO_ENABLED: 1
         run: |
+          go env
           make e2e-parallel SHARD=${{ matrix.shard }} SKIP_DOCKER_REBUILD=true CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-e2e-parallel.out
 
       - name: Upload coverage to Codecov
@@ -754,7 +758,10 @@ jobs:
         run: make prepare
 
       - name: run sequential e2e
+        env:
+          CGO_ENABLED: 1
         run: |
+          go env
           make e2e-sequential SKIP_DOCKER_REBUILD=true CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-e2e-sequential.out
 
       - name: Upload coverage to Codecov
@@ -885,6 +892,7 @@ jobs:
         env:
           CGO_ENABLED: 1
         run: |
+          go env
           make test-public-api CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-public-api.out
 
       - name: Upload coverage to Codecov
@@ -1007,6 +1015,8 @@ jobs:
           done
 
       - name: Test UI
+        env:
+          CGO_ENABLED: 1
         run: |
           SERVER_IMAGE=mcpany/server:latest make -C ui test-ci PLAYWRIGHT_ARGS="--shard=${{ matrix.shard }}"
 
@@ -1106,6 +1116,8 @@ jobs:
           echo "Images already loaded in previous step."
 
       - name: Run K8s E2E Tests
+        env:
+          CGO_ENABLED: 1
         run: |
           make k8s-e2e SKIP_IMAGE_BUILD=true IMAGE_TAG=latest
 
