@@ -146,6 +146,9 @@ func TestSSRFArgumentProtection(t *testing.T) {
 			} else {
 				os.Unsetenv("MCPANY_ALLOW_LOOPBACK_RESOURCES")
 			}
+			// Ensure DANGEROUS flag is unset for this test to verify blocking logic
+			os.Unsetenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS")
+
 			// We don't strictly need to unset it after if other tests don't depend on it,
 			// but good practice.
 			defer os.Unsetenv("MCPANY_ALLOW_LOOPBACK_RESOURCES")

@@ -4364,7 +4364,8 @@ func checkValueSafety(val string, isDocker bool, commandName string) error {
 		// Check for "localhost" (case-insensitive)
 		if strings.EqualFold(val, "localhost") {
 			allowLoopback := os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == trueStr
-			if !allowLoopback {
+			allowDangerous := os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == trueStr
+			if !allowLoopback && !allowDangerous {
 				return fmt.Errorf("unsafe argument: localhost is not allowed")
 			}
 		} else if validation.IsSafeIP != nil {
