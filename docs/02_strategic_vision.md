@@ -47,3 +47,12 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **A2A Gateway Protocol**: MCP Any will implement a protocol-neutral bridge for A2A communication, allowing disparate agent frameworks (e.g., OpenClaw, AutoGen) to exchange state and tasks via a unified MCP-like interface.
 - **Federated Tool Mesh**: Moving from a standalone server to a "Mesh" architecture where multiple MCP Any instances can peer and share resources across network boundaries, governed by global Zero-Trust policies.
 - **Resource-Aware Intelligence**: Integrating cost and latency telemetry into the tool discovery process, allowing LLMs to perform "Economical Reasoning" when selecting tools.
+
+---
+
+## Strategic Evolution: [2026-02-26] (Addendum: Decentralized Mesh)
+### Focus: High-Scale Federated Discovery & Inter-Framework State Continuity
+**Context**: Supplemental research into Federated MCP reveals that centralized configuration is a scalability bottleneck. Additionally, inter-framework A2A handoffs (e.g., CrewAI to AutoGen) suffer from state loss due to incompatible schemas.
+**Strategic Pivot**:
+- **Decentralized Discovery Protocol**: Transitioning Federated MCP from a Hub-and-Spoke model to a decentralized "Mesh" where nodes discover each other dynamically.
+- **Universal Handoff Translator**: MCP Any will act as a "Rosetta Stone" for agent state, mapping disparate framework schemas into a unified, MCP-compliant context bridge.

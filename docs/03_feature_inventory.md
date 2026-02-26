@@ -65,3 +65,15 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-26] (Addendum) Updates
+
+### Proposed Additions
+- **Dynamic Peer Discovery (mDNS/DHT)**: (P0) Decentralized discovery mechanism for Federated MCP nodes to eliminate centralized configuration bottlenecks.
+- **Universal Handoff Schema (Rosetta Stone)**: (P1) A mapping layer that translates framework-specific agent state (CrewAI, AutoGen) into a standardized context format.
+- **Cross-Framework State Sync Middleware**: (P1) Ensures reasoning chain continuity when an A2A tool call bridges different agent ecosystems.
+
+### Priority Shifts
+- **Federated MCP Node Peering**: Promoted to **P0** to support High-Scale Decentralized Discovery.

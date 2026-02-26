@@ -46,3 +46,7 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **Update: 2026-02-26 (Addendum)** - **Cross-Framework State Mapping**
+    - **Context**: Supplemental research identified inter-framework friction where CrewAI and AutoGen agents lose reasoning context during handoffs.
+    - **Architecture Adjustment**: Introducing the **Universal Handoff Translator** in Section 4. This middleware maps framework-specific state (e.g., `TaskOutput`) into a standardized MCP-compliant context bridge.
+    - **Impact**: Ensures "State Continuity" and prevents redundant re-reasoning when tasks are delegated across different agent ecosystems.

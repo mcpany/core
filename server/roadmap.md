@@ -26,6 +26,8 @@
 
 #### Upcoming (2026-02-26 Evolution)
 *   **[P0] A2A Interop Bridge**: Implement Pseudo-MCP wrapper for A2A-compliant agents. (Added: 2026-02-26)
+*   **[P0] Federated Peering Protocol**: Decentralized mDNS/DHT discovery to resolve configuration bottlenecks. (Added: 2026-02-26)
+*   **[P1] Cross-Framework State Sync**: Universal Handoff Translator for CrewAI/AutoGen interoperability. (Added: 2026-02-26)
 *   **[P1] Federated MCP Peering**: Distributed node discovery and tool proxying. (Added: 2026-02-26)
 *   **[P1] Resource Telemetry Middleware**: Inject latency/cost metrics into tool schemas. (Added: 2026-02-26)
 
