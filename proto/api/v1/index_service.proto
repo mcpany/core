@@ -1,0 +1,84 @@
+// Copyright 2026 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+edition = "2023";
+
+package mcpany.api.v1;
+
+import "google/api/annotations.proto";
+
+option go_package = "github.com/mcpany/core/proto/api/v1";
+option java_outer_classname = "IndexServiceProto";
+
+// IndexService provides access to the lazy tool index.
+service IndexService {
+  // Search searches the index for tools matching the query.
+  rpc Search(SearchIndexRequest) returns (SearchIndexResponse) {
+    option (google.api.http) = {
+      get: "/v1/index/search"
+    };
+  }
+
+  // Seed seeds the index with tool definitions (for testing/demo).
+  rpc Seed(SeedIndexRequest) returns (SeedIndexResponse) {
+    option (google.api.http) = {
+      post: "/v1/index/seed"
+      body: "*"
+    };
+  }
+
+  // GetStats returns statistics about the index usage.
+  rpc GetStats(GetIndexStatsRequest) returns (GetIndexStatsResponse) {
+    option (google.api.http) = {
+      get: "/v1/index/stats"
+    };
+  }
+}
+
+message SearchIndexRequest {
+  // The search query string.
+  string query = 1;
+  // Optional: Page number (1-based).
+  int32 page = 2;
+  // Optional: Page size (default 20).
+  int32 limit = 3;
+}
+
+message IndexedTool {
+  string name = 1;
+  string description = 2;
+  string category = 3;
+  // Whether the tool is currently installed/loaded in the catalog.
+  bool installed = 4;
+  // The URL or source to install/enable this tool from.
+  string source_url = 5;
+  // Tags associated with the tool.
+  repeated string tags = 6;
+}
+
+message SearchIndexResponse {
+  repeated IndexedTool tools = 1;
+  int32 total = 2;
+}
+
+message SeedIndexRequest {
+  repeated IndexedTool tools = 1;
+  // If true, clear existing index before seeding.
+  bool clear = 2;
+}
+
+message SeedIndexResponse {
+  // Number of tools seeded.
+  int32 count = 1;
+}
+
+message GetIndexStatsRequest {}
+
+message GetIndexStatsResponse {
+  int32 total_tools = 1;
+  int32 total_searches = 2;
+  // Cache hits (user found what they looked for)
+  int32 hits = 3;
+  // Cache misses (user searched but found nothing useful)
+  int32 misses = 4;
+}

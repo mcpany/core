@@ -35,6 +35,7 @@ import (
 	"github.com/mcpany/core/server/pkg/catalog"
 	"github.com/mcpany/core/server/pkg/config"
 	"github.com/mcpany/core/server/pkg/discovery"
+	"github.com/mcpany/core/server/pkg/index"
 	"github.com/mcpany/core/server/pkg/gc"
 	"github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/logging"
@@ -241,6 +242,9 @@ type Application struct {
 	// CatalogManager manages dynamic service catalog
 	CatalogManager *catalog.Manager
 
+	// IndexManager manages the lazy tool index
+	IndexManager *index.Manager
+
 	// lastReloadErr stores the error from the last configuration reload.
 	standardMiddlewares *middleware.StandardMiddlewares
 	// Settings Manager for global settings (dynamic updates)
@@ -326,6 +330,7 @@ func NewApplication() *Application {
 		AlertsManager:    alerts.NewManager(),
 		WebhooksManager:  webhooks.NewManager(),
 		CatalogManager:   catalog.NewManager(afero.NewOsFs(), "marketplace/catalog"), // Default path, can be overridden
+		IndexManager:     index.NewManager(),
 
 		ResourceManager: resource.NewManager(),
 		UpstreamFactory: factory.NewUpstreamServiceFactory(pool.NewManager(), nil),
@@ -1708,6 +1713,56 @@ func (a *Application) runServerMode(
 		if err != nil {
 			logging.GetLogger().Error("Failed to list catalog services", "error", err)
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(resp)
+	})))
+
+	// Index API (Lazy-MCP Tool Search)
+	indexServer := rest.NewIndexServer(a.IndexManager)
+	mux.Handle("/api/v1/index/search", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+		query := r.URL.Query().Get("query")
+		resp, err := indexServer.Search(r.Context(), &v1.SearchIndexRequest{Query: proto.String(query)})
+		if err != nil {
+			http.Error(w, "Search failed", http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(resp)
+	})))
+
+	mux.Handle("/api/v1/index/seed", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+		var req v1.SeedIndexRequest
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			http.Error(w, "Invalid request", http.StatusBadRequest)
+			return
+		}
+		resp, err := indexServer.Seed(r.Context(), &req)
+		if err != nil {
+			http.Error(w, "Seed failed", http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(resp)
+	})))
+
+	mux.Handle("/api/v1/index/stats", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+		resp, err := indexServer.GetStats(r.Context(), &v1.GetIndexStatsRequest{})
+		if err != nil {
+			http.Error(w, "Stats failed", http.StatusInternalServerError)
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")

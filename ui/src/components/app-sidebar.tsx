@@ -110,6 +110,11 @@ const platformItems = [
     icon: Brain,
   },
   {
+    title: "Tool Index",
+    url: "/index",
+    icon: Search,
+  },
+  {
     title: "Marketplace",
     url: "/marketplace",
     icon: ShoppingBag,
