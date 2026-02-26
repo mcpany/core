@@ -14,7 +14,7 @@ import (
 
 // LocalLimiter is an in-memory implementation of Limiter.
 //
-// Summary: is an in-memory implementation of Limiter.
+// Summary: Is an in-memory implementation of Limiter.
 type LocalLimiter struct {
 	*rate.Limiter
 }
@@ -26,7 +26,7 @@ type LocalLimiter struct {
 // Returns true if successful.
 // Returns an error if the operation fails.
 //
-// Summary: checks if the request is allowed (cost 1).
+// Summary: Checks if the request is allowed (cost 1).
 //
 // Parameters:
 //   - _ (context.Context): Ignored.
@@ -49,11 +49,11 @@ func (l *LocalLimiter) Allow(_ context.Context) (bool, error) {
 // Returns true if successful.
 // Returns an error if the operation fails.
 //
-// Summary: checks if the request is allowed with a specific cost.
+// Summary: Checks if the request is allowed with a specific cost.
 //
 // Parameters:
 //   - _ (context.Context): Ignored.
-//   - n (int): The n.
+//   - n (int): The count or number.
 //
 // Returns:
 //   - bool: The result.
@@ -70,7 +70,7 @@ func (l *LocalLimiter) AllowN(_ context.Context, n int) (bool, error) {
 // rps is the rps.
 // burst is the burst.
 //
-// Summary: updates the limiter configuration.
+// Summary: Updates the limiter configuration.
 //
 // Parameters:
 //   - rps (float64): The rps.
@@ -90,14 +90,14 @@ func (l *LocalLimiter) Update(rps float64, burst int) {
 
 // LocalStrategy implements RateLimitStrategy for local in-memory rate limiting.
 //
-// Summary: implements RateLimitStrategy for local in-memory rate limiting.
+// Summary: Implements RateLimitStrategy for local in-memory rate limiting.
 type LocalStrategy struct{}
 
 // NewLocalStrategy creates a new LocalStrategy.
 //
 // Returns the result.
 //
-// Summary: creates a new LocalStrategy.
+// Summary: Creates a new LocalStrategy.
 //
 // Returns:
 //   - *LocalStrategy: The result.
@@ -119,14 +119,14 @@ func NewLocalStrategy() *LocalStrategy {
 // Returns the result.
 // Returns an error if the operation fails.
 //
-// Summary: creates a new LocalLimiter.
+// Summary: Creates a new LocalLimiter.
 //
 // Parameters:
 //   - _ (context.Context): Ignored.
 //   - _ (_): Ignored.
 //   - _ (_): Ignored.
 //   - _ (string): Ignored.
-//   - config (*configv1.RateLimitConfig): The config.
+//   - config (*configv1.RateLimitConfig): Configuration settings.
 //
 // Returns:
 //   - Limiter: The result.

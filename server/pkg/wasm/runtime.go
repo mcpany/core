@@ -11,7 +11,7 @@ import (
 
 // Runtime defines the interface for a WASM plugin runtime.
 //
-// Summary: defines the interface for a WASM plugin runtime.
+// Summary: Defines the interface for a WASM plugin runtime.
 type Runtime interface {
 	// LoadPlugin loads a WASM plugin from bytecode.
 	//
@@ -33,7 +33,7 @@ type Runtime interface {
 
 // Plugin defines an instantiated WASM plugin.
 //
-// Summary: defines an instantiated WASM plugin.
+// Summary: Defines an instantiated WASM plugin.
 type Plugin interface {
 	// Execute runs a function exported by the WASM module
 	//
@@ -56,13 +56,13 @@ type Plugin interface {
 
 // MockRuntime is a placeholder implementation.
 //
-// Summary: is a placeholder implementation.
+// Summary: Is a placeholder implementation.
 type MockRuntime struct{}
 
 // NewMockRuntime creates a new MockRuntime.
 //
 //
-// Summary: creates a new MockRuntime.
+// Summary: Creates a new MockRuntime.
 //
 // Returns:
 // - *MockRuntime: A new mock runtime instance.
@@ -76,7 +76,7 @@ func NewMockRuntime() *MockRuntime {
 // LoadPlugin loads a plugin.
 //
 //
-// Summary: loads a plugin.
+// Summary: Loads a plugin.
 //
 // Parameters:
 // - _ : The context (unused).
@@ -98,7 +98,7 @@ func (m *MockRuntime) LoadPlugin(_ context.Context, bytecode []byte) (Plugin, er
 // Close closes the runtime.
 //
 //
-// Summary: closes the runtime.
+// Summary: Closes the runtime.
 //
 // Returns:
 // - error: Always returns nil.
@@ -111,13 +111,13 @@ func (m *MockRuntime) Close() error {
 
 // MockPlugin is a mock plugin.
 //
-// Summary: is a mock plugin.
+// Summary: Is a mock plugin.
 type MockPlugin struct{}
 
 // Execute executes a function.
 //
 //
-// Summary: executes a function.
+// Summary: Executes a function.
 //
 // Parameters:
 // - _ : The context (unused).
@@ -140,7 +140,7 @@ func (p *MockPlugin) Execute(_ context.Context, function string, _ ...[]byte) ([
 // Close closes the plugin.
 //
 //
-// Summary: closes the plugin.
+// Summary: Closes the plugin.
 //
 // Returns:
 // - error: Always returns nil.

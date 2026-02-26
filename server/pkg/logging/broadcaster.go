@@ -9,7 +9,7 @@ import (
 
 // Broadcaster manages a set of subscribers and broadcasts messages to them.
 //
-// Summary: manages a set of subscribers and broadcasts messages to them.
+// Summary: Manages a set of subscribers and broadcasts messages to them.
 type Broadcaster struct {
 	mu          sync.RWMutex
 	subscribers map[chan any]struct{}
@@ -28,7 +28,7 @@ var (
 //
 // Returns the result.
 //
-// Summary: creates a new Broadcaster.
+// Summary: Creates a new Broadcaster.
 //
 // Returns:
 //   - *Broadcaster: The result.
@@ -46,7 +46,7 @@ func NewBroadcaster() *Broadcaster {
 // Reset clears the broadcaster history and subscribers.
 // This is primarily for testing to ensure a clean state.
 //
-// Summary: clears the broadcaster history and subscribers.
+// Summary: Clears the broadcaster history and subscribers.
 //
 // Side Effects:
 //   - None.
@@ -63,7 +63,7 @@ func (b *Broadcaster) Reset() {
 // The channel has a small buffer to prevent slow consumers from blocking the broadcaster.
 // It is the caller's responsibility to read from the channel promptly.
 //
-// Summary: returns a channel that will receive broadcast messages.
+// Summary: Returns a channel that will receive broadcast messages.
 //
 // Returns:
 //   - chan: The result.
@@ -78,10 +78,10 @@ func (b *Broadcaster) Subscribe() chan any {
 // The channel has a buffer to prevent slow consumers from blocking the broadcaster.
 // It is the caller's responsibility to read from the channel promptly.
 //
-// Summary: returns a channel that will receive broadcast messages with a custom buffer size.
+// Summary: Returns a channel that will receive broadcast messages with a custom buffer size.
 //
 // Parameters:
-//   - size (int): The size.
+//   - size (int): The size in bytes.
 //
 // Returns:
 //   - chan: The result.
@@ -99,7 +99,7 @@ func (b *Broadcaster) SubscribeBuffered(size int) chan any {
 // SubscribeWithHistory returns a channel that will receive broadcast messages,
 // and the current history of messages. This is atomic to ensure no messages are missed or duplicated.
 //
-// Summary: returns a channel that will receive broadcast messages,.
+// Summary: Returns a channel that will receive broadcast messages,.
 //
 // Returns:
 //   - chan (any): The result.
@@ -114,10 +114,10 @@ func (b *Broadcaster) SubscribeWithHistory() (chan any, []any) {
 // SubscribeWithHistoryBuffered returns a channel that will receive broadcast messages with a custom buffer size,
 // and the current history of messages. This is atomic to ensure no messages are missed or duplicated.
 //
-// Summary: returns a channel that will receive broadcast messages with a custom buffer size,.
+// Summary: Returns a channel that will receive broadcast messages with a custom buffer size,.
 //
 // Parameters:
-//   - size (int): The size.
+//   - size (int): The size in bytes.
 //
 // Returns:
 //   - chan (any): The result.
@@ -162,7 +162,7 @@ func (b *Broadcaster) SubscribeWithHistoryBuffered(size int) (chan any, []any) {
 //
 // ch is the ch.
 //
-// Summary: removes a subscriber channel.
+// Summary: Removes a subscriber channel.
 //
 // Parameters:
 //   - ch chan (any): The ch chan.
@@ -181,10 +181,10 @@ func (b *Broadcaster) Unsubscribe(ch chan any) {
 // Broadcast sends a message to all subscribers.
 // This method is non-blocking; if a subscriber's channel is full, the message is dropped for that subscriber.
 //
-// Summary: sends a message to all subscribers.
+// Summary: Sends a message to all subscribers.
 //
 // Parameters:
-//   - msg (any): The msg.
+//   - msg (any): The message string.
 //
 // Side Effects:
 //   - None.
@@ -217,7 +217,7 @@ func (b *Broadcaster) Broadcast(msg any) {
 
 // GetHistory returns the current log history.
 //
-// Summary: returns the current log history.
+// Summary: Returns the current log history.
 //
 // Returns:
 //   - []any: The result.
@@ -255,7 +255,7 @@ func (b *Broadcaster) GetHistory() []any {
 // It is intended to be called at startup. Messages are NOT broadcasted to subscribers,
 // as subscribers shouldn't exist yet, or shouldn't receive old history as "new" events.
 //
-// Summary: populates the history buffer with messages.
+// Summary: Populates the history buffer with messages.
 //
 // Parameters:
 //   - messages ([]any): The messages.

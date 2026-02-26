@@ -15,7 +15,7 @@ import (
 // CallPolicyMiddleware is a middleware that enforces call policies (allow/deny)
 // based on tool name and arguments.
 //
-// Summary: is a middleware that enforces call policies (allow/deny).
+// Summary: Is a middleware that enforces call policies (allow/deny).
 type CallPolicyMiddleware struct {
 	toolManager tool.ManagerInterface
 }
@@ -26,7 +26,7 @@ type CallPolicyMiddleware struct {
 //
 // Returns the result.
 //
-// Summary: creates a new CallPolicyMiddleware.
+// Summary: Creates a new CallPolicyMiddleware.
 //
 // Parameters:
 //   - toolManager (tool.ManagerInterface): The tool manager.
@@ -51,12 +51,12 @@ func NewCallPolicyMiddleware(toolManager tool.ManagerInterface) *CallPolicyMiddl
 // Returns the result.
 // Returns an error if the operation fails.
 //
-// Summary: enforces call policies before proceeding to the next handler.
+// Summary: Enforces call policies before proceeding to the next handler.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
-//   - req (*tool.ExecutionRequest): The req.
-//   - next (tool.ExecutionFunc): The next.
+//   - req (*tool.ExecutionRequest): The RPC request message.
+//   - next (tool.ExecutionFunc): The function.
 //
 // Returns:
 //   - any: The result.

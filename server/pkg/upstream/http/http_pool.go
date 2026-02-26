@@ -29,7 +29,7 @@ type httpPool struct {
 // Close closes the connection pool and the idle connections.
 //
 //
-// Summary: closes the connection pool and the idle connections.
+// Summary: Closes the connection pool and the idle connections.
 //
 // Returns:
 // - error: An error if the pool cannot be closed.
@@ -49,7 +49,7 @@ func (p *httpPool) Close() error {
 // It is defined as a variable to allow for easy mocking in tests.
 //
 //
-// Summary: creates a new connection pool for HTTP clients.
+// Summary: Creates a new connection pool for HTTP clients.
 //
 // Errors:
 // - Returns error if TLS configuration is invalid (e.g., certificate files missing).

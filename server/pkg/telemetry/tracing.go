@@ -33,14 +33,14 @@ const (
 // It writes traces/metrics to the provided writer (e.g., os.Stderr) if stdout exporter is selected.
 // It returns a shutdown function that should be called when the application exits.
 //
-// Summary: initializes OpenTelemetry tracing and metrics.
+// Summary: Initializes OpenTelemetry tracing and metrics.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
 //   - serviceName (string): The service name.
-//   - version (string): The version.
-//   - cfg (*config_v1.TelemetryConfig): The cfg.
-//   - writer (io.Writer): The writer.
+//   - version (string): The version string.
+//   - cfg (*config_v1.TelemetryConfig): Configuration settings.
+//   - writer (io.Writer): The writer interface.
 //
 // Returns:
 //   - func(context.Context) error: The result.

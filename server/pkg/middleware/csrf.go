@@ -15,7 +15,7 @@ import (
 
 // CSRFMiddleware protects against Cross-Site Request Forgery attacks.
 //
-// Summary: protects against Cross-Site Request Forgery attacks.
+// Summary: Protects against Cross-Site Request Forgery attacks.
 type CSRFMiddleware struct {
 	allowedOrigins map[string]bool
 	mu             sync.RWMutex
@@ -23,7 +23,7 @@ type CSRFMiddleware struct {
 
 // NewCSRFMiddleware creates a new CSRFMiddleware.
 //
-// Summary: creates a new CSRFMiddleware.
+// Summary: Creates a new CSRFMiddleware.
 //
 // Parameters:
 //   - allowedOrigins ([]string): The allowed origins.
@@ -43,7 +43,7 @@ func NewCSRFMiddleware(allowedOrigins []string) *CSRFMiddleware {
 
 // Update updates the allowed origins.
 //
-// Summary: updates the allowed origins.
+// Summary: Updates the allowed origins.
 //
 // Parameters:
 //   - origins ([]string): The origins.
@@ -61,10 +61,10 @@ func (m *CSRFMiddleware) Update(origins []string) {
 
 // Handler returns the HTTP handler.
 //
-// Summary: returns the HTTP handler.
+// Summary: Returns the HTTP handler.
 //
 // Parameters:
-//   - next (http.Handler): The next.
+//   - next (http.Handler): The handler instance.
 //
 // Returns:
 //   - http.Handler: The result.

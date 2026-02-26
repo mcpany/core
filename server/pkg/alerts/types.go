@@ -7,12 +7,12 @@ import "time"
 
 // Severity represents the severity level of an alert.
 //
-// Summary: represents the severity level of an alert.
+// Summary: Represents the severity level of an alert.
 type Severity string
 
 // Status represents the status of an alert.
 //
-// Summary: represents the status of an alert.
+// Summary: Represents the status of an alert.
 type Status string
 
 const (
@@ -33,7 +33,7 @@ const (
 
 // Alert represents a system alert.
 //
-// Summary: represents a system alert.
+// Summary: Represents a system alert.
 type Alert struct {
 	ID        string    `json:"id"`
 	Title     string    `json:"title"`
@@ -47,7 +47,7 @@ type Alert struct {
 
 // AlertRule defines a condition for triggering an alert.
 //
-// Summary: defines a condition for triggering an alert.
+// Summary: Defines a condition for triggering an alert.
 type AlertRule struct {
 	ID          string    `json:"id"`
 	Name        string    `json:"name"`

@@ -16,7 +16,7 @@ import (
 // response of each MCP method call. This is useful for debugging and
 // understanding the flow of data through the server.
 //
-// Summary: returns a middleware function that logs the full request and.
+// Summary: Returns a middleware function that logs the full request and.
 //
 // Returns:
 //   - mcp.Middleware: The result.

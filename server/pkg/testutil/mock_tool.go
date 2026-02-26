@@ -22,7 +22,7 @@ type MockTool struct {
 
 // Tool returns a basic tool definition for the mock tool.
 //
-// Summary: returns a basic tool definition for the mock tool.
+// Summary: Returns a basic tool definition for the mock tool.
 //
 // Returns:
 //   - *v1.Tool: The result.
@@ -37,7 +37,7 @@ func (m *MockTool) Tool() *v1.Tool {
 
 // Execute calls the mock ExecuteFunc if set, otherwise returns nil.
 //
-// Summary: calls the mock ExecuteFunc if set, otherwise returns nil.
+// Summary: Calls the mock ExecuteFunc if set, otherwise returns nil.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
@@ -58,7 +58,7 @@ func (m *MockTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any
 
 // GetCacheConfig returns nil for the mock tool.
 //
-// Summary: returns nil for the mock tool.
+// Summary: Returns nil for the mock tool.
 //
 // Returns:
 //   - *configv1.CacheConfig: The result.

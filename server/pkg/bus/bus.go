@@ -70,7 +70,7 @@ type Bus[T any] interface {
 // message type and topic without needing to manage the lifecycle of the bus
 // instances themselves.
 //
-// Summary: is a thread-safe container for managing multiple, type-safe bus.
+// Summary: Is a thread-safe container for managing multiple, type-safe bus.
 type Provider struct {
 	buses  *xsync.Map[string, any]
 	config *bus.MessageBus
@@ -78,14 +78,14 @@ type Provider struct {
 
 // NewProviderHook is a test hook for overriding the NewProvider logic.
 //
-// Summary: is a test hook for overriding the NewProvider logic.
+// Summary: Is a test hook for overriding the NewProvider logic.
 var NewProviderHook func(*bus.MessageBus) (*Provider, error)
 
 // NewProvider creates and returns a new Provider, which is used to manage
 // multiple topic-based bus instances.
 //
 //
-// Summary: creates and returns a new Provider, which is used to manage.
+// Summary: Creates and returns a new Provider, which is used to manage.
 //
 // Parameters:
 // messageBus: The configuration for the message bus.
@@ -131,7 +131,7 @@ func NewProvider(messageBus *bus.MessageBus) (*Provider, error) {
 
 // GetBusHook is a test hook for overriding the bus retrieval logic.
 //
-// Summary: is a test hook for overriding the bus retrieval logic.
+// Summary: Is a test hook for overriding the bus retrieval logic.
 var GetBusHook func(p *Provider, topic string) (any, error)
 
 // GetBus retrieves a bus for the given topic. If a bus for the given topic

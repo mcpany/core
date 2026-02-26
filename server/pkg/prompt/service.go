@@ -15,7 +15,7 @@ import (
 // methods for listing available prompts and retrieving a specific prompt by
 // name.
 //
-// Summary: handles the business logic for the prompts feature.
+// Summary: Handles the business logic for the prompts feature.
 type Service struct {
 	promptManager ManagerInterface
 	mcpServer     *mcp.Server

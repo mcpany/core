@@ -12,7 +12,7 @@ import (
 
 // BundleLocalTransport implements mcp.Transport for running a bundle locally via exec.
 //
-// Summary: implements mcp.
+// Summary: Implements mcp.
 type BundleLocalTransport struct {
 	Command    string
 	Args       []string
@@ -23,7 +23,7 @@ type BundleLocalTransport struct {
 // Connect establishes a connection to the local process.
 //
 //
-// Summary: establishes a connection to the local process.
+// Summary: Establishes a connection to the local process.
 //
 // Parameters:
 // - ctx (context.Context): The context for the request.

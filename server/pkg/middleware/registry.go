@@ -17,7 +17,7 @@ import (
 
 // Registry manages available middlewares.
 //
-// Summary: manages available middlewares.
+// Summary: Manages available middlewares.
 type Registry struct {
 	mu           sync.RWMutex
 	factories    map[string]Factory
@@ -26,12 +26,12 @@ type Registry struct {
 
 // Factory is a function that creates a HTTP middleware from configuration.
 //
-// Summary: is a function that creates a HTTP middleware from configuration.
+// Summary: Is a function that creates a HTTP middleware from configuration.
 type Factory func(config *configv1.Middleware) func(http.Handler) http.Handler
 
 // MCPFactory is a function that creates an MCP middleware from configuration.
 //
-// Summary: is a function that creates an MCP middleware from configuration.
+// Summary: Is a function that creates an MCP middleware from configuration.
 type MCPFactory func(config *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler
 
 var (
@@ -44,11 +44,11 @@ var (
 // Register registers a HTTP middleware factory.
 //
 //
-// Summary: registers a HTTP middleware factory.
+// Summary: Registers a HTTP middleware factory.
 //
 // Parameters:
 // - name (string): The name of the resource.
-// - factory (Factory): The factory.
+// - factory (Factory): The factory responsible for creating instances.
 //
 // Side Effects:
 //   - None.
@@ -61,11 +61,11 @@ func Register(name string, factory Factory) {
 // RegisterMCP registers an MCP middleware factory.
 //
 //
-// Summary: registers an MCP middleware factory.
+// Summary: Registers an MCP middleware factory.
 //
 // Parameters:
 // - name (string): The name of the resource.
-// - factory (MCPFactory): The factory.
+// - factory (MCPFactory): The factory responsible for creating instances.
 //
 // Side Effects:
 //   - None.
@@ -78,10 +78,10 @@ func RegisterMCP(name string, factory MCPFactory) {
 // GetHTTPMiddlewares returns a sorted list of HTTP middlewares based on configuration.
 //
 //
-// Summary: returns a sorted list of HTTP middlewares based on configuration.
+// Summary: Returns a sorted list of HTTP middlewares based on configuration.
 //
 // Parameters:
-// - configs ([]*configv1.Middleware): The configs.
+// - configs ([]*configv1.Middleware): Configuration settings.
 //
 // Returns:
 // - ([]func(http.Handler) http.Handler): The result.
@@ -114,10 +114,10 @@ func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) htt
 // GetMCPMiddlewares returns a sorted list of MCP middlewares based on configuration.
 //
 //
-// Summary: returns a sorted list of MCP middlewares based on configuration.
+// Summary: Returns a sorted list of MCP middlewares based on configuration.
 //
 // Parameters:
-// - configs ([]*configv1.Middleware): The configs.
+// - configs ([]*configv1.Middleware): Configuration settings.
 //
 // Returns:
 // - ([]func(mcp.MethodHandler) mcp.MethodHandler): The result.
@@ -149,7 +149,7 @@ func GetMCPMiddlewares(configs []*configv1.Middleware) []func(mcp.MethodHandler)
 
 // StandardMiddlewares holds the standard middlewares that might need to be updated.
 //
-// Summary: holds the standard middlewares that might need to be updated.
+// Summary: Holds the standard middlewares that might need to be updated.
 type StandardMiddlewares struct {
 	Audit            *AuditMiddleware
 	GlobalRateLimit  *GlobalRateLimitMiddleware
@@ -162,15 +162,15 @@ type StandardMiddlewares struct {
 // InitStandardMiddlewares registers standard middlewares.
 //
 // Parameters:
-//   - authManager (*auth.Manager): The authManager.
-//   - toolManager (tool.ManagerInterface): The toolManager.
-//   - auditConfig (*configv1.AuditConfig): The auditConfig.
-//   - cachingMiddleware (*CachingMiddleware): The cachingMiddleware.
-//   - globalRateLimitConfig (*configv1.RateLimitConfig): The globalRateLimitConfig.
-//   - dlpConfig (*configv1.DLPConfig): The dlpConfig.
-//   - contextOptimizerConfig (*configv1.ContextOptimizerConfig): The contextOptimizerConfig.
-//   - debuggerConfig (*configv1.DebuggerConfig): The debuggerConfig.
-//   - smartRecoveryConfig (*configv1.SmartRecoveryConfig): The smartRecoveryConfig.
+//   - authManager (*auth.Manager): The auth manager.
+//   - toolManager (tool.ManagerInterface): The tool manager.
+//   - auditConfig (*configv1.AuditConfig): The audit config.
+//   - cachingMiddleware (*CachingMiddleware): The caching middleware.
+//   - globalRateLimitConfig (*configv1.RateLimitConfig): The global rate limit config.
+//   - dlpConfig (*configv1.DLPConfig): The dlp config.
+//   - contextOptimizerConfig (*configv1.ContextOptimizerConfig): The context optimizer config.
+//   - debuggerConfig (*configv1.DebuggerConfig): The debugger config.
+//   - smartRecoveryConfig (*configv1.SmartRecoveryConfig): The smart recovery config.
 //
 // Returns:
 //   - (*StandardMiddlewares): The result.

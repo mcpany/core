@@ -15,10 +15,10 @@ import (
 // parses them (assuming JSON format), and populates the global broadcaster's history.
 // This allows the UI to show historical logs upon connection, even after a server restart.
 //
-// Summary: reads the last N lines from the given log file,.
+// Summary: Reads the last N lines from the given log file,.
 //
 // Parameters:
-//   - path (string): The path.
+//   - path (string): The file system path.
 //
 // Returns:
 //   - error: An error if the operation fails.

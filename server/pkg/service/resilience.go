@@ -23,7 +23,7 @@ import (
 //
 // Returns the result.
 //
-// Summary: returns a new unary client interceptor that retries calls.
+// Summary: Returns a new unary client interceptor that retries calls.
 //
 // Parameters:
 //   - retryConfig (*configv1.RetryConfig): The retry config.

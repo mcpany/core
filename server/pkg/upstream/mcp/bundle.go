@@ -25,7 +25,7 @@ import (
 
 // Manifest represents the structure of the manifest.json file in an MCP bundle.
 //
-// Summary: represents the structure of the manifest.
+// Summary: Represents the structure of the manifest.
 type Manifest struct {
 	// ManifestVersion is the version of the manifest format.
 	ManifestVersion string `json:"manifest_version"`
@@ -43,7 +43,7 @@ type Manifest struct {
 
 // ManifestServer represents the server configuration in the manifest.
 //
-// Summary: represents the server configuration in the manifest.
+// Summary: Represents the server configuration in the manifest.
 type ManifestServer struct {
 	// Type is the type of the server (e.g., "node", "python").
 	Type string `json:"type"`
@@ -55,7 +55,7 @@ type ManifestServer struct {
 
 // ManifestMcpConfig represents the MCP configuration in the manifest.
 //
-// Summary: represents the MCP configuration in the manifest.
+// Summary: Represents the MCP configuration in the manifest.
 type ManifestMcpConfig struct {
 	// Command is the command to run the server.
 	Command string `json:"command"`

@@ -20,7 +20,7 @@ import (
 // StdioTransport implements mcp.Transport for a local command,
 // capturing stderr to provide better error messages on failure.
 //
-// Summary: implements mcp.
+// Summary: Implements mcp.
 type StdioTransport struct {
 	Command *exec.Cmd
 }
@@ -28,10 +28,10 @@ type StdioTransport struct {
 // Connect starts the command and returns a connection.
 //
 //
-// Summary: starts the command and returns a connection.
+// Summary: Starts the command and returns a connection.
 //
 // Parameters:
-// - _ (context.Context): The parameter.
+// - _ (context.Context): Context for the operation.
 //
 // Returns:
 // - mcp.Connection: The result.
@@ -107,10 +107,10 @@ type stdioConn struct {
 // Read reads a JSON-RPC message from the standard output of the command.
 //
 //
-// Summary: reads a JSON-RPC message from the standard output of the command.
+// Summary: Reads a JSON-RPC message from the standard output of the command.
 //
 // Parameters:
-// - _ (context.Context): The parameter.
+// - _ (context.Context): Context for the operation.
 //
 // Returns:
 // - jsonrpc.Message: The result.
@@ -210,11 +210,11 @@ func (c *stdioConn) Read(_ context.Context) (jsonrpc.Message, error) {
 // Write writes a JSON-RPC message to the standard input of the command.
 //
 //
-// Summary: writes a JSON-RPC message to the standard input of the command.
+// Summary: Writes a JSON-RPC message to the standard input of the command.
 //
 // Parameters:
-// - _ (context.Context): The parameter.
-// - msg (jsonrpc.Message): The parameter.
+// - _ (context.Context): Context for the operation.
+// - msg (jsonrpc.Message): The message string.
 //
 // Returns:
 // - error: An error if the operation fails.
@@ -266,7 +266,7 @@ func (c *stdioConn) Write(_ context.Context, msg jsonrpc.Message) error {
 // Close terminates the command and closes the streams.
 //
 //
-// Summary: terminates the command and closes the streams.
+// Summary: Terminates the command and closes the streams.
 //
 // Returns:
 // - error: An error if the operation fails.
@@ -294,7 +294,7 @@ func (c *stdioConn) Close() error {
 // SessionID returns a static session ID for the stdio connection.
 //
 //
-// Summary: returns a static session ID for the stdio connection.
+// Summary: Returns a static session ID for the stdio connection.
 //
 // Returns:
 // - string: The result.

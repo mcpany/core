@@ -59,7 +59,7 @@ func NewWithClient[T any](client *redis.Client) *Bus[T] {
 // The message is marshaled to JSON before being published.
 //
 //
-// Summary: publishes a message to a Redis channel.
+// Summary: Publishes a message to a Redis channel.
 //
 // Parameters:
 // - ctx: context.Context. The context for the request.
@@ -85,7 +85,7 @@ func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
 // and invokes the provided handler.
 //
 //
-// Summary: subscribes to a Redis channel.
+// Summary: Subscribes to a Redis channel.
 //
 // Parameters:
 // - ctx: context.Context. The context for the subscription.
@@ -151,7 +151,7 @@ func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (
 // It ensures that the handler is called only once for the next message received.
 //
 //
-// Summary: subscribes to a topic for a single message.
+// Summary: Subscribes to a topic for a single message.
 //
 // Parameters:
 // - ctx: context.Context. The context for the subscription.

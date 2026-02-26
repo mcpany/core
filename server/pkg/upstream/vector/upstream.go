@@ -22,12 +22,12 @@ import (
 
 // ClientFactory is a function that creates a VectorClient.
 //
-// Summary: is a function that creates a VectorClient.
+// Summary: Is a function that creates a VectorClient.
 type ClientFactory func(config *configv1.VectorUpstreamService) (Client, error)
 
 // Upstream implements the upstream.Upstream interface for vector database services.
 //
-// Summary: implements the upstream.
+// Summary: Implements the upstream.
 type Upstream struct {
 	clientFactory ClientFactory
 }
@@ -35,7 +35,7 @@ type Upstream struct {
 // NewUpstream creates a new instance of VectorUpstream.
 //
 //
-// Summary: creates a new instance of VectorUpstream.
+// Summary: Creates a new instance of VectorUpstream.
 //
 // Returns:
 // - upstream.Upstream: The result.
@@ -61,10 +61,10 @@ func defaultClientFactory(config *configv1.VectorUpstreamService) (Client, error
 // Shutdown implements the upstream.Upstream interface.
 //
 //
-// Summary: implements the upstream.
+// Summary: Implements the upstream.
 //
 // Parameters:
-// - _ (context.Context): The parameter.
+// - _ (context.Context): Context for the operation.
 //
 // Returns:
 // - error: An error if the operation fails.
@@ -193,11 +193,11 @@ type vectorCallable struct {
 // and returns the result of the tool execution or an error.
 //
 //
-// Summary: executes the vector tool with the given arguments.
+// Summary: Executes the vector tool with the given arguments.
 //
 // Parameters:
 // - ctx (context.Context): The context for the request.
-// - req (*tool.ExecutionRequest): The parameter.
+// - req (*tool.ExecutionRequest): The RPC request message.
 //
 // Returns:
 // - any: The result.
@@ -222,7 +222,7 @@ type vectorToolDef struct {
 
 // Client interface for different vector DB implementations.
 //
-// Summary: interface for different vector DB implementations.
+// Summary: Interface for different vector DB implementations.
 type Client interface {
 	// Query searches for the nearest vectors in the database.
 	// It accepts a context, a query vector, the number of results to return (topK),

@@ -10,7 +10,7 @@ import (
 
 // EmbeddingProvider defines the interface for fetching text embeddings.
 //
-// Summary: defines the interface for fetching text embeddings.
+// Summary: Defines the interface for fetching text embeddings.
 type EmbeddingProvider interface {
 	// Embed generates an embedding vector for the given text.
 	// It returns the embedding as a slice of float32 and any error encountered.
@@ -19,7 +19,7 @@ type EmbeddingProvider interface {
 
 // VectorStore defines the interface for storing and searching vectors.
 //
-// Summary: defines the interface for storing and searching vectors.
+// Summary: Defines the interface for storing and searching vectors.
 type VectorStore interface {
 	// Add adds a new entry to the vector store.
 	//
@@ -50,7 +50,7 @@ type VectorStore interface {
 
 // SemanticCache implements a semantic cache using embeddings and cosine similarity.
 //
-// Summary: implements a semantic cache using embeddings and cosine similarity.
+// Summary: Implements a semantic cache using embeddings and cosine similarity.
 type SemanticCache struct {
 	provider  EmbeddingProvider
 	store     VectorStore
@@ -65,11 +65,11 @@ type SemanticCache struct {
 //
 // Returns the result.
 //
-// Summary: creates a new SemanticCache.
+// Summary: Creates a new SemanticCache.
 //
 // Parameters:
-//   - provider (EmbeddingProvider): The provider.
-//   - store (VectorStore): The store.
+//   - provider (EmbeddingProvider): The provider instance.
+//   - store (VectorStore): The storage backend.
 //   - threshold (float32): The threshold.
 //
 // Returns:
@@ -94,11 +94,11 @@ func NewSemanticCache(provider EmbeddingProvider, store VectorStore, threshold f
 // Get attempts to find a semantically similar cached result.
 // It returns the result, the computed embedding, a boolean indicating a hit, and an error.
 //
-// Summary: attempts to find a semantically similar cached result.
+// Summary: Attempts to find a semantically similar cached result.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
-//   - key (string): The key.
+//   - key (string): The key used for lookup or authentication.
 //   - input (string): The input.
 //
 // Returns:
@@ -132,13 +132,13 @@ func (c *SemanticCache) Get(ctx context.Context, key string, input string) (any,
 //
 // Returns an error if the operation fails.
 //
-// Summary: adds a result to the cache using the provided embedding.
+// Summary: Adds a result to the cache using the provided embedding.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
-//   - key (string): The key.
+//   - key (string): The key used for lookup or authentication.
 //   - embedding ([]float32): The embedding.
-//   - result (any): The result.
+//   - result (any): The operation result.
 //   - ttl (time.Duration): The ttl.
 //
 // Returns:

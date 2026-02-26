@@ -21,7 +21,7 @@ import (
 // server.
 //
 //
-// Summary: creates an MCP middleware that logs information about each.
+// Summary: Creates an MCP middleware that logs information about each.
 //
 // Parameters:
 // - log (*slog.Logger): The logger to be used. If `nil`, the default global logger will be used.

@@ -16,7 +16,7 @@ import (
 
 // Client is the interface for an LLM client.
 //
-// Summary: is the interface for an LLM client.
+// Summary: Is the interface for an LLM client.
 type Client interface {
 	// ChatCompletion sends a chat request to the LLM and returns the response.
 	//
@@ -41,7 +41,7 @@ type Client interface {
 
 // ChatRequest represents a chat completion request.
 //
-// Summary: represents a chat completion request.
+// Summary: Represents a chat completion request.
 type ChatRequest struct {
 	Model    string    `json:"model"`
 	Messages []Message `json:"messages"`
@@ -49,7 +49,7 @@ type ChatRequest struct {
 
 // Message represents a chat message.
 //
-// Summary: represents a chat message.
+// Summary: Represents a chat message.
 type Message struct {
 	Role    string `json:"role"`
 	Content string `json:"content"`
@@ -57,14 +57,14 @@ type Message struct {
 
 // ChatResponse represents a chat completion response.
 //
-// Summary: represents a chat completion response.
+// Summary: Represents a chat completion response.
 type ChatResponse struct {
 	Content string `json:"content"`
 }
 
 // OpenAIClient implements Client for OpenAI.
 //
-// Summary: implements Client for OpenAI.
+// Summary: Implements Client for OpenAI.
 type OpenAIClient struct {
 	apiKey  string
 	baseURL string
@@ -73,7 +73,7 @@ type OpenAIClient struct {
 
 // NewOpenAIClient creates a new OpenAIClient.
 //
-// Summary: creates a new OpenAIClient.
+// Summary: Creates a new OpenAIClient.
 //
 // Parameters:
 //   - apiKey (string): The api key.
@@ -113,11 +113,11 @@ type openAIChatResponse struct {
 
 // ChatCompletion performs a chat completion request.
 //
-// Summary: performs a chat completion request.
+// Summary: Performs a chat completion request.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
-//   - req (ChatRequest): The req.
+//   - req (ChatRequest): The RPC request message.
 //
 // Returns:
 //   - *ChatResponse: The result.

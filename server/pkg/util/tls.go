@@ -22,7 +22,7 @@ import (
 // cloud metadata services (LinkLocal addresses) and optionally private networks.
 //
 //
-// Summary: creates a new *http.
+// Summary: Creates a new *http.
 //
 // Parameters:
 // - tlsConfig: The TLS settings to apply to the HTTP client's transport.

@@ -16,7 +16,7 @@ import (
 // authentication using OpenID Connect (OIDC). It validates JWTs (JSON Web
 // Tokens) presented in the HTTP Authorization header.
 //
-// Summary: implements the Authenticator interface for OAuth2-based.
+// Summary: Implements the Authenticator interface for OAuth2-based.
 type OAuth2Authenticator struct {
 	verifier  *oidc.IDTokenVerifier
 	audiences []string
@@ -27,7 +27,7 @@ type OAuth2Authenticator struct {
 // validating ID tokens.
 //
 //
-// Summary: creates a new OAuth2Authenticator with the provided.
+// Summary: Creates a new OAuth2Authenticator with the provided.
 //
 // Parameters:
 // - ctx: The context for the OIDC provider initialization.
@@ -72,7 +72,7 @@ func NewOAuth2Authenticator(ctx context.Context, config *OAuth2Config) (*OAuth2A
 // claims against the OIDC provider.
 //
 //
-// Summary: validates the JWT from the Authorization header of the request.
+// Summary: Validates the JWT from the Authorization header of the request.
 //
 // Parameters:
 // - ctx: The request context.

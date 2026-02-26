@@ -34,7 +34,7 @@ type poolWithChecker[T pool.ClosableClient] struct {
 // Close stops the health checker and closes the underlying pool.
 //
 //
-// Summary: stops the health checker and closes the underlying pool.
+// Summary: Stops the health checker and closes the underlying pool.
 //
 // Returns:
 // - error: An error if the operation fails.

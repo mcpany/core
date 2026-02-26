@@ -78,7 +78,7 @@ var (
 
 // ToolMetricsMiddleware provides detailed metrics for tool executions.
 //
-// Summary: provides detailed metrics for tool executions.
+// Summary: Provides detailed metrics for tool executions.
 type ToolMetricsMiddleware struct {
 	tokenizer tokenizer.Tokenizer
 }
@@ -86,7 +86,7 @@ type ToolMetricsMiddleware struct {
 // NewToolMetricsMiddleware creates a new ToolMetricsMiddleware.
 //
 //
-// Summary: creates a new ToolMetricsMiddleware.
+// Summary: Creates a new ToolMetricsMiddleware.
 //
 // Parameters:
 // - t: tokenizer.Tokenizer. The tokenizer used to count tokens in tool inputs and outputs.
@@ -124,12 +124,12 @@ func NewToolMetricsMiddleware(t tokenizer.Tokenizer) *ToolMetricsMiddleware {
 // Returns the result.
 // Returns an error if the operation fails.
 //
-// Summary: executes the tool metrics middleware.
+// Summary: Executes the tool metrics middleware.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
-//   - req (*tool.ExecutionRequest): The req.
-//   - next (tool.ExecutionFunc): The next.
+//   - req (*tool.ExecutionRequest): The RPC request message.
+//   - next (tool.ExecutionFunc): The function.
 //
 // Returns:
 //   - any: The result.

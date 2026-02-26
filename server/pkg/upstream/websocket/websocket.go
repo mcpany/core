@@ -34,7 +34,7 @@ import (
 // are exposed via a WebSocket connection. It manages a connection pool and
 // registers tools based on the service configuration.
 //
-// Summary: implements the upstream.
+// Summary: Implements the upstream.
 type Upstream struct {
 	poolManager *pool.Manager
 	serviceID   string
@@ -45,7 +45,7 @@ type Upstream struct {
 // CheckHealth performs a health check on the upstream service.
 //
 //
-// Summary: performs a health check on the upstream service.
+// Summary: Performs a health check on the upstream service.
 //
 // Parameters:
 // - ctx (context.Context): The context for the request.
@@ -77,7 +77,7 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 // the associated connection pool.
 //
 //
-// Summary: gracefully terminates the WebSocket upstream service by shutting down.
+// Summary: Gracefully terminates the WebSocket upstream service by shutting down.
 //
 // Parameters:
 // - ctx: The context for the shutdown operation.
@@ -104,7 +104,7 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 // NewUpstream creates a new instance of WebsocketUpstream.
 //
 //
-// Summary: creates a new instance of WebsocketUpstream.
+// Summary: Creates a new instance of WebsocketUpstream.
 //
 // Parameters:
 // - poolManager: The connection pool manager to be used for managing WebSocket connections.

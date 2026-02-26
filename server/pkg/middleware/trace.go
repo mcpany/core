@@ -17,7 +17,7 @@ const (
 
 // WithTraceContext returns a new context with trace information.
 //
-// Summary: returns a new context with trace information.
+// Summary: Returns a new context with trace information.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
@@ -41,7 +41,7 @@ func WithTraceContext(ctx context.Context, traceID, spanID, parentID string) con
 
 // GetTraceID returns the trace ID from the context.
 //
-// Summary: returns the trace ID from the context.
+// Summary: Returns the trace ID from the context.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
@@ -60,7 +60,7 @@ func GetTraceID(ctx context.Context) string {
 
 // GetSpanID returns the span ID from the context.
 //
-// Summary: returns the span ID from the context.
+// Summary: Returns the span ID from the context.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
@@ -79,7 +79,7 @@ func GetSpanID(ctx context.Context) string {
 
 // GetParentID returns the parent span ID from the context.
 //
-// Summary: returns the parent span ID from the context.
+// Summary: Returns the parent span ID from the context.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.

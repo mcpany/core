@@ -31,7 +31,7 @@ const (
 
 // MaxRecursionDepth limits the depth of nested messages to prevent infinite recursion.
 //
-// Summary: limits the depth of nested messages to prevent infinite recursion.
+// Summary: Limits the depth of nested messages to prevent infinite recursion.
 const MaxRecursionDepth = 10
 
 // MethodDescriptorToProtoProperties converts the fields of a method's input
@@ -39,7 +39,7 @@ const MaxRecursionDepth = 10
 // input schema.
 //
 //
-// Summary: converts the fields of a method's input.
+// Summary: Converts the fields of a method's input.
 //
 // Parameters:
 // - methodDesc: The method descriptor to convert.
@@ -59,7 +59,7 @@ func MethodDescriptorToProtoProperties(methodDesc protoreflect.MethodDescriptor)
 // a tool output schema.
 //
 //
-// Summary: converts the fields of a method's.
+// Summary: Converts the fields of a method's.
 //
 // Parameters:
 // - methodDesc: The method descriptor to convert.
@@ -166,7 +166,7 @@ func fieldToSchema(field protoreflect.FieldDescriptor, depth int) (map[string]in
 
 // ConfigParameter an interface for config parameter schemas.
 //
-// Summary: an interface for config parameter schemas.
+// Summary: An interface for config parameter schemas.
 type ConfigParameter interface {
 	// GetSchema returns the parameter schema.
 	//
@@ -177,7 +177,7 @@ type ConfigParameter interface {
 
 // McpFieldParameter an interface for McpField parameter schemas.
 //
-// Summary: an interface for McpField parameter schemas.
+// Summary: An interface for McpField parameter schemas.
 type McpFieldParameter interface {
 	// GetName returns the name of the parameter.
 	//

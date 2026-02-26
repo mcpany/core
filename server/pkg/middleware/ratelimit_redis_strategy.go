@@ -16,7 +16,7 @@ import (
 
 // RedisStrategy implements RateLimitStrategy for Redis-based rate limiting.
 //
-// Summary: implements RateLimitStrategy for Redis-based rate limiting.
+// Summary: Implements RateLimitStrategy for Redis-based rate limiting.
 type RedisStrategy struct {
 	// redisClients caches Redis clients per config. Key is configHash.
 	redisClients sync.Map
@@ -26,7 +26,7 @@ type RedisStrategy struct {
 //
 // Returns the result.
 //
-// Summary: creates a new RedisStrategy.
+// Summary: Creates a new RedisStrategy.
 //
 // Returns:
 //   - *RedisStrategy: The result.
@@ -48,14 +48,14 @@ func NewRedisStrategy() *RedisStrategy {
 // Returns the result.
 // Returns an error if the operation fails.
 //
-// Summary: creates a new RedisLimiter.
+// Summary: Creates a new RedisLimiter.
 //
 // Parameters:
 //   - _ (context.Context): Ignored.
 //   - _ (serviceID): Ignored.
 //   - _ (limitScopeKey): Ignored.
 //   - partitionKey (string): The partition key.
-//   - config (*configv1.RateLimitConfig): The config.
+//   - config (*configv1.RateLimitConfig): Configuration settings.
 //
 // Returns:
 //   - Limiter: The result.

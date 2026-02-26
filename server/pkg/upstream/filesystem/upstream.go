@@ -34,7 +34,7 @@ import (
 // It provides tools for interacting with various filesystem backends (local,
 // S3, GCS, etc.) as defined in the service configuration.
 //
-// Summary: implements the upstream.
+// Summary: Implements the upstream.
 type Upstream struct {
 	mu      sync.Mutex
 	closers []io.Closer
@@ -44,7 +44,7 @@ type Upstream struct {
 // NewUpstream creates a new instance of FilesystemUpstream.
 //
 //
-// Summary: creates a new instance of FilesystemUpstream.
+// Summary: Creates a new instance of FilesystemUpstream.
 //
 // Returns:
 // - upstream.Upstream: A new instance of the filesystem upstream.
@@ -60,7 +60,7 @@ func NewUpstream() upstream.Upstream {
 // Shutdown implements the upstream.Upstream interface.
 //
 //
-// Summary: implements the upstream.
+// Summary: Implements the upstream.
 //
 // Parameters:
 // - ctx (context.Context): The context for the shutdown operation (currently unused).

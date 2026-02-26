@@ -16,7 +16,7 @@ import (
 // It is intended for use in ValidateService where we need to store service info
 // and discovered tools for the duration of the validation request but discard them afterwards.
 //
-// Summary: is a tool manager that stores service info and tools temporarily.
+// Summary: Is a tool manager that stores service info and tools temporarily.
 type TemporaryToolManager struct {
 	NoOpToolManager
 	mu          sync.RWMutex
@@ -27,7 +27,7 @@ type TemporaryToolManager struct {
 // NewTemporaryToolManager creates a new TemporaryToolManager.
 //
 //
-// Summary: creates a new TemporaryToolManager.
+// Summary: Creates a new TemporaryToolManager.
 //
 // Returns:
 // - *TemporaryToolManager: A new instance of TemporaryToolManager.
@@ -44,7 +44,7 @@ func NewTemporaryToolManager() *TemporaryToolManager {
 // AddServiceInfo implements tool.ManagerInterface.
 //
 //
-// Summary: implements tool.
+// Summary: Implements tool.
 //
 // Parameters:
 // - serviceID (string): The ID of the service.
@@ -64,7 +64,7 @@ func (m *TemporaryToolManager) AddServiceInfo(serviceID string, info *tool.Servi
 // GetServiceInfo implements tool.ManagerInterface.
 //
 //
-// Summary: implements tool.
+// Summary: Implements tool.
 //
 // Parameters:
 // - serviceID (string): The ID of the service.
@@ -88,7 +88,7 @@ func (m *TemporaryToolManager) GetServiceInfo(serviceID string) (*tool.ServiceIn
 // AddTool implements tool.ManagerInterface.
 //
 //
-// Summary: implements tool.
+// Summary: Implements tool.
 //
 // Parameters:
 // - t (tool.Tool): The tool to add.
@@ -123,7 +123,7 @@ func (m *TemporaryToolManager) AddTool(t tool.Tool) error {
 // GetTool implements tool.ManagerInterface.
 //
 //
-// Summary: implements tool.
+// Summary: Implements tool.
 //
 // Parameters:
 // - toolName (string): The name of the tool.
@@ -147,7 +147,7 @@ func (m *TemporaryToolManager) GetTool(toolName string) (tool.Tool, bool) {
 // ListTools implements tool.ManagerInterface.
 //
 //
-// Summary: implements tool.
+// Summary: Implements tool.
 //
 // Returns:
 // - []tool.Tool: A list of all tools.
@@ -170,7 +170,7 @@ func (m *TemporaryToolManager) ListTools() []tool.Tool {
 // GetToolCountForService implements tool.ManagerInterface.
 //
 //
-// Summary: implements tool.
+// Summary: Implements tool.
 //
 // Parameters:
 // - serviceID (string): The ID of the service.

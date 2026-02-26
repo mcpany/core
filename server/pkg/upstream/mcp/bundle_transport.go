@@ -33,7 +33,7 @@ type transportError struct {
 // Error returns the error message.
 //
 //
-// Summary: returns the error message.
+// Summary: Returns the error message.
 //
 // Returns:
 // - string: The result.
@@ -47,7 +47,7 @@ func (e *transportError) Error() string {
 // BundleDockerTransport implements the mcp.Transport interface to connect to a service
 // running inside a Docker container from a bundle. It supports mounts and environment variables.
 //
-// Summary: implements the mcp.
+// Summary: Implements the mcp.
 type BundleDockerTransport struct {
 	Image      string
 	Command    string
@@ -64,7 +64,7 @@ type BundleDockerTransport struct {
 // Connect establishes a connection to the service within the Docker container.
 //
 //
-// Summary: establishes a connection to the service within the Docker container.
+// Summary: Establishes a connection to the service within the Docker container.
 //
 // Parameters:
 // - ctx (context.Context): The context for the request.
@@ -191,10 +191,10 @@ type bundleDockerConn struct {
 // Read reads a JSON-RPC message from the connection.
 //
 //
-// Summary: reads a JSON-RPC message from the connection.
+// Summary: Reads a JSON-RPC message from the connection.
 //
 // Parameters:
-// - _ (context.Context): The parameter.
+// - _ (context.Context): Context for the operation.
 //
 // Returns:
 // - jsonrpc.Message: The result.
@@ -336,11 +336,11 @@ func setUnexportedID(idPtr interface{}, val interface{}) error {
 // Write writes a JSON-RPC message to the connection.
 //
 //
-// Summary: writes a JSON-RPC message to the connection.
+// Summary: Writes a JSON-RPC message to the connection.
 //
 // Parameters:
-// - _ (context.Context): The parameter.
-// - msg (jsonrpc.Message): The parameter.
+// - _ (context.Context): Context for the operation.
+// - msg (jsonrpc.Message): The message string.
 //
 // Returns:
 // - error: An error if the operation fails.
@@ -472,7 +472,7 @@ func fixIDExtracted(val interface{}) interface{} {
 // Close closes the connection.
 //
 //
-// Summary: closes the connection.
+// Summary: Closes the connection.
 //
 // Returns:
 // - error: An error if the operation fails.
@@ -489,7 +489,7 @@ func (c *bundleDockerConn) Close() error {
 // SessionID returns the session ID of the connection.
 //
 //
-// Summary: returns the session ID of the connection.
+// Summary: Returns the session ID of the connection.
 //
 // Returns:
 // - string: The result.
@@ -509,13 +509,13 @@ type bundleSlogWriter struct {
 // Write writes the log message to the logger.
 //
 //
-// Summary: writes the log message to the logger.
+// Summary: Writes the log message to the logger.
 //
 // Parameters:
-// - p ([]byte): The parameter.
+// - p ([]byte): The parameter or provider.
 //
 // Returns:
-// - n (int): The result.
+// - n (int): The integer value.
 // - err (error): An error if the operation fails.
 //
 // Errors:

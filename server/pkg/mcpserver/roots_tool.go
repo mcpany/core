@@ -20,7 +20,7 @@ import (
 // It provides a built-in tool ("mcp:list_roots") that allows the server to query the client
 // for available filesystem roots.
 //
-// Summary: implements the Tool interface for listing roots.
+// Summary: Implements the Tool interface for listing roots.
 type RootsTool struct {
 	tool    *v1.Tool
 	mcpTool *mcp.Tool
@@ -29,7 +29,7 @@ type RootsTool struct {
 // NewRootsTool creates a new instance of the RootsTool.
 //
 //
-// Summary: creates a new instance of the RootsTool.
+// Summary: Creates a new instance of the RootsTool.
 //
 // Returns:
 // - *RootsTool: A new instance of RootsTool.
@@ -60,7 +60,7 @@ func NewRootsTool() *RootsTool {
 // Tool returns the protobuf definition of the tool.
 //
 //
-// Summary: returns the protobuf definition of the tool.
+// Summary: Returns the protobuf definition of the tool.
 //
 // Returns:
 // - *v1.Tool: The protobuf tool definition.
@@ -74,7 +74,7 @@ func (t *RootsTool) Tool() *v1.Tool {
 // MCPTool returns the MCP-compliant tool definition.
 //
 //
-// Summary: returns the MCP-compliant tool definition.
+// Summary: Returns the MCP-compliant tool definition.
 //
 // Returns:
 // - *mcp.Tool: The MCP tool definition.
@@ -91,7 +91,7 @@ func (t *RootsTool) MCPTool() *mcp.Tool {
 // to list its roots.
 //
 //
-// Summary: executes the "mcp:list_roots" tool.
+// Summary: Executes the "mcp:list_roots" tool.
 //
 // Parameters:
 // - ctx (context.Context): The request context, must contain an active MCP session.
@@ -120,7 +120,7 @@ func (t *RootsTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any,
 // GetCacheConfig returns the caching configuration for this tool.
 //
 //
-// Summary: returns the caching configuration for this tool.
+// Summary: Returns the caching configuration for this tool.
 //
 // Returns:
 // - *configv1.CacheConfig: Always nil (caching disabled).

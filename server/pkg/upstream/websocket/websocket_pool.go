@@ -16,7 +16,7 @@ import (
 // Pool is a type alias for a pool of WebSocket client connections.
 // It simplifies the type signature for WebSocket connection pools.
 //
-// Summary: is a type alias for a pool of WebSocket client connections.
+// Summary: Is a type alias for a pool of WebSocket client connections.
 type Pool = pool.Pool[*client.WebsocketClientWrapper]
 
 // NewPool creates a new connection pool for WebSocket clients. It
@@ -24,7 +24,7 @@ type Pool = pool.Pool[*client.WebsocketClientWrapper]
 // connections to the specified address.
 //
 //
-// Summary: creates a new connection pool for WebSocket clients.
+// Summary: Creates a new connection pool for WebSocket clients.
 //
 // Parameters:
 // - maxSize: The maximum number of connections the pool can hold.

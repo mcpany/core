@@ -20,7 +20,7 @@ import (
 // tool manager to execute the requested tool, and then publishes the outcome as
 // a ToolExecutionResult message.
 //
-// Summary: is a background worker that handles tool execution requests.
+// Summary: Is a background worker that handles tool execution requests.
 type UpstreamWorker struct {
 	bus         *bus.Provider
 	toolManager tool.ManagerInterface
@@ -30,7 +30,7 @@ type UpstreamWorker struct {
 // NewUpstreamWorker creates a new UpstreamWorker.
 //
 //
-// Summary: creates a new UpstreamWorker.
+// Summary: Creates a new UpstreamWorker.
 //
 // Parameters:
 // - bus: The event bus used for receiving requests and publishing results.
@@ -53,7 +53,7 @@ func NewUpstreamWorker(bus *bus.Provider, toolManager tool.ManagerInterface) *Up
 // provided context is canceled.
 //
 //
-// Summary: launches the worker in a new goroutine.
+// Summary: Launches the worker in a new goroutine.
 //
 // Parameters:
 // - ctx: The context that controls the lifecycle of the worker.
@@ -113,7 +113,7 @@ func (w *UpstreamWorker) Start(ctx context.Context) {
 
 // Stop waits for the worker to stop.
 //
-// Summary: waits for the worker to stop.
+// Summary: Waits for the worker to stop.
 //
 // Side Effects:
 //   - None.

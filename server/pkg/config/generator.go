@@ -27,7 +27,7 @@ type Generator struct {
 // NewGenerator creates a new Generator instance that reads from standard input.
 //
 //
-// Summary: creates a new Generator instance that reads from standard input.
+// Summary: Creates a new Generator instance that reads from standard input.
 //
 // Returns:
 //   - *Generator: The result.
@@ -44,7 +44,7 @@ func NewGenerator() *Generator {
 // configuration as a byte slice.
 //
 //
-// Summary: prompts the user for service details and returns the generated.
+// Summary: Prompts the user for service details and returns the generated.
 //
 // Returns:
 //   - []byte: The result.

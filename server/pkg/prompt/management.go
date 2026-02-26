@@ -16,7 +16,7 @@ import (
 //
 // It manages the lifecycle, registration, and retrieval of prompts within the system.
 //
-// Summary: defines the interface for a prompt manager.
+// Summary: Defines the interface for a prompt manager.
 type ManagerInterface interface {
 	// AddPrompt registers a new prompt.
 	//
@@ -63,7 +63,7 @@ type ManagerInterface interface {
 //
 // It supports concurrent access and uses caching for efficient list operations.
 //
-// Summary: is a thread-safe manager for registering and retrieving prompts.
+// Summary: Is a thread-safe manager for registering and retrieving prompts.
 type Manager struct {
 	prompts       *xsync.Map[string, Prompt]
 	mcpServer     MCPServerProvider
@@ -74,7 +74,7 @@ type Manager struct {
 // NewManager creates and returns a new, empty Manager.
 //
 //
-// Summary: creates and returns a new, empty Manager.
+// Summary: Creates and returns a new, empty Manager.
 //
 // Returns:
 // - *Manager: A pointer to the newly created Manager.
@@ -90,7 +90,7 @@ func NewManager() *Manager {
 // SetMCPServer provides the Manager with a reference to the MCP server.
 //
 //
-// Summary: provides the Manager with a reference to the MCP server.
+// Summary: Provides the Manager with a reference to the MCP server.
 //
 // Parameters:
 // - mcpServer: MCPServerProvider. The MCP server provider.
@@ -109,7 +109,7 @@ func (pm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 // will be logged.
 //
 //
-// Summary: registers a new prompt with the manager.
+// Summary: Registers a new prompt with the manager.
 //
 // Parameters:
 // - prompt: Prompt. The prompt to add.
@@ -136,7 +136,7 @@ func (pm *Manager) AddPrompt(prompt Prompt) {
 // If the prompt does not exist, it will be added.
 //
 //
-// Summary: updates an existing prompt in the manager.
+// Summary: Updates an existing prompt in the manager.
 //
 // Parameters:
 // - prompt: Prompt. The prompt definition to update.
@@ -154,7 +154,7 @@ func (pm *Manager) UpdatePrompt(prompt Prompt) {
 // GetPrompt retrieves a prompt from the manager by its name.
 //
 //
-// Summary: retrieves a prompt from the manager by its name.
+// Summary: Retrieves a prompt from the manager by its name.
 //
 // Parameters:
 // - name: string. The name of the prompt.
@@ -175,7 +175,7 @@ func (pm *Manager) GetPrompt(name string) (Prompt, bool) {
 // It uses a read-through cache to improve performance.
 //
 //
-// Summary: returns a slice containing all the prompts currently registered.
+// Summary: Returns a slice containing all the prompts currently registered.
 //
 // Returns:
 // - []Prompt: A slice of currently registered prompts.
@@ -223,7 +223,7 @@ func (pm *Manager) ListPrompts() []Prompt {
 // ClearPromptsForService removes all prompts associated with a given service.
 //
 //
-// Summary: removes all prompts associated with a given service.
+// Summary: Removes all prompts associated with a given service.
 //
 // Parameters:
 // - serviceID: string. The unique identifier of the service.

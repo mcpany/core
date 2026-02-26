@@ -22,7 +22,7 @@ import (
 
 // GcsProvider provides access to files in a Google Cloud Storage bucket.
 //
-// Summary: provides access to files in a Google Cloud Storage bucket.
+// Summary: Provides access to files in a Google Cloud Storage bucket.
 type GcsProvider struct {
 	fs     afero.Fs
 	client *storage.Client
@@ -33,11 +33,11 @@ var newStorageClient = storage.NewClient
 // NewGcsProvider creates a new GcsProvider from the given configuration.
 //
 //
-// Summary: creates a new GcsProvider from the given configuration.
+// Summary: Creates a new GcsProvider from the given configuration.
 //
 // Parameters:
-// - _ (context.Context): The parameter.
-// - config (*configv1.GcsFs): The parameter.
+// - _ (context.Context): Context for the operation.
+// - config (*configv1.GcsFs): Configuration settings.
 //
 // Returns:
 // - *GcsProvider: The result.
@@ -67,7 +67,7 @@ func NewGcsProvider(_ context.Context, config *configv1.GcsFs) (*GcsProvider, er
 // GetFs returns the underlying filesystem.
 //
 //
-// Summary: returns the underlying filesystem.
+// Summary: Returns the underlying filesystem.
 //
 // Returns:
 // - afero.Fs: The result.
@@ -81,10 +81,10 @@ func (p *GcsProvider) GetFs() afero.Fs {
 // ResolvePath resolves the virtual path to a real path in the bucket.
 //
 //
-// Summary: resolves the virtual path to a real path in the bucket.
+// Summary: Resolves the virtual path to a real path in the bucket.
 //
 // Parameters:
-// - virtualPath (string): The parameter.
+// - virtualPath (string): The string value.
 //
 // Returns:
 // - string: The result.
@@ -109,7 +109,7 @@ func (p *GcsProvider) ResolvePath(virtualPath string) (string, error) {
 // Close closes the GCS client.
 //
 //
-// Summary: closes the GCS client.
+// Summary: Closes the GCS client.
 //
 // Returns:
 // - error: An error if the operation fails.
@@ -137,10 +137,10 @@ type gcsFs struct {
 // Create creates a file in the filesystem, returning the file and an error, if any happens.
 //
 //
-// Summary: creates a file in the filesystem, returning the file and an error, if any happens.
+// Summary: Creates a file in the filesystem, returning the file and an error, if any happens.
 //
 // Parameters:
-// - name (string): The parameter.
+// - name (string): The name of the resource.
 //
 // Returns:
 // - afero.File: The result.
@@ -158,11 +158,11 @@ func (fs *gcsFs) Create(name string) (afero.File, error) {
 // Mkdir creates a directory in the filesystem, returning an error, if any happens.
 //
 //
-// Summary: creates a directory in the filesystem, returning an error, if any happens.
+// Summary: Creates a directory in the filesystem, returning an error, if any happens.
 //
 // Parameters:
-// - _ (string): The parameter.
-// - _ (os.FileMode): The parameter.
+// - _ (string): The string value.
+// - _ (os.FileMode): The _.
 //
 // Returns:
 // - error: An error if the operation fails.
@@ -179,11 +179,11 @@ func (fs *gcsFs) Mkdir(_ string, _ os.FileMode) error {
 // MkdirAll creates a directory path and all parents that does not exist for a given name.
 //
 //
-// Summary: creates a directory path and all parents that does not exist for a given name.
+// Summary: Creates a directory path and all parents that does not exist for a given name.
 //
 // Parameters:
-// - _ (string): The parameter.
-// - _ (os.FileMode): The parameter.
+// - _ (string): The string value.
+// - _ (os.FileMode): The _.
 //
 // Returns:
 // - error: An error if the operation fails.
@@ -200,10 +200,10 @@ func (fs *gcsFs) MkdirAll(_ string, _ os.FileMode) error {
 // Open opens a file, returning it or an error, if any happens.
 //
 //
-// Summary: opens a file, returning it or an error, if any happens.
+// Summary: Opens a file, returning it or an error, if any happens.
 //
 // Parameters:
-// - name (string): The parameter.
+// - name (string): The name of the resource.
 //
 // Returns:
 // - afero.File: The result.
@@ -221,12 +221,12 @@ func (fs *gcsFs) Open(name string) (afero.File, error) {
 // OpenFile opens a file using the given flags and the given mode.
 //
 //
-// Summary: opens a file using the given flags and the given mode.
+// Summary: Opens a file using the given flags and the given mode.
 //
 // Parameters:
-// - name (string): The parameter.
-// - flag (int): The parameter.
-// - _ (os.FileMode): The parameter.
+// - name (string): The name of the resource.
+// - flag (int): The integer value.
+// - _ (os.FileMode): The _.
 //
 // Returns:
 // - afero.File: The result.
@@ -265,10 +265,10 @@ func (fs *gcsFs) OpenFile(name string, flag int, _ os.FileMode) (afero.File, err
 // Remove removes a file identified by name, returning an error, if any happens.
 //
 //
-// Summary: removes a file identified by name, returning an error, if any happens.
+// Summary: Removes a file identified by name, returning an error, if any happens.
 //
 // Parameters:
-// - name (string): The parameter.
+// - name (string): The name of the resource.
 //
 // Returns:
 // - error: An error if the operation fails.
@@ -285,10 +285,10 @@ func (fs *gcsFs) Remove(name string) error {
 // RemoveAll removes a directory path and any children it contains.
 //
 //
-// Summary: removes a directory path and any children it contains.
+// Summary: Removes a directory path and any children it contains.
 //
 // Parameters:
-// - path (string): The parameter.
+// - path (string): The file system path.
 //
 // Returns:
 // - error: An error if the operation fails.
@@ -319,11 +319,11 @@ func (fs *gcsFs) RemoveAll(path string) error {
 // Rename renames a file.
 //
 //
-// Summary: renames a file.
+// Summary: Renames a file.
 //
 // Parameters:
-// -  (oldname): The parameter.
-// - newname (string): The parameter.
+// - oldname: The .
+// - newname (string): The string value.
 //
 // Returns:
 // - error: An error if the operation fails.
@@ -346,10 +346,10 @@ func (fs *gcsFs) Rename(oldname, newname string) error {
 // Stat returns a FileInfo describing the named file, or an error, if any happens.
 //
 //
-// Summary: returns a FileInfo describing the named file, or an error, if any happens.
+// Summary: Returns a FileInfo describing the named file, or an error, if any happens.
 //
 // Parameters:
-// - name (string): The parameter.
+// - name (string): The name of the resource.
 //
 // Returns:
 // - os.FileInfo: The result.
@@ -379,7 +379,7 @@ func (fs *gcsFs) Stat(name string) (os.FileInfo, error) {
 // Name returns the name of this file system.
 //
 //
-// Summary: returns the name of this file system.
+// Summary: Returns the name of this file system.
 //
 // Returns:
 // - string: The result.
@@ -393,11 +393,11 @@ func (fs *gcsFs) Name() string {
 // Chmod changes the mode of the named file to mode.
 //
 //
-// Summary: changes the mode of the named file to mode.
+// Summary: Changes the mode of the named file to mode.
 //
 // Parameters:
-// - _ (string): The parameter.
-// - _ (os.FileMode): The parameter.
+// - _ (string): The string value.
+// - _ (os.FileMode): The _.
 //
 // Returns:
 // - error: An error if the operation fails.
@@ -414,12 +414,12 @@ func (fs *gcsFs) Chmod(_ string, _ os.FileMode) error {
 // Chown changes the uid and gid of the named file.
 //
 //
-// Summary: changes the uid and gid of the named file.
+// Summary: Changes the uid and gid of the named file.
 //
 // Parameters:
-// - _ (string): The parameter.
-// -  (_): The parameter.
-// - _ (int): The parameter.
+// - _ (string): The string value.
+// - _: The .
+// - _ (int): The integer value.
 //
 // Returns:
 // - error: An error if the operation fails.
@@ -436,12 +436,12 @@ func (fs *gcsFs) Chown(_ string, _, _ int) error {
 // Chtimes changes the access and modification times of the named file.
 //
 //
-// Summary: changes the access and modification times of the named file.
+// Summary: Changes the access and modification times of the named file.
 //
 // Parameters:
-// - _ (string): The parameter.
-// -  (_): The parameter.
-// - _ (time.Time): The parameter.
+// - _ (string): The string value.
+// - _: The .
+// - _ (time.Time): The _.
 //
 // Returns:
 // - error: An error if the operation fails.
@@ -465,7 +465,7 @@ type gcsFile struct {
 // Close closes the file.
 //
 //
-// Summary: closes the file.
+// Summary: Closes the file.
 //
 // Returns:
 // - error: An error if the operation fails.
@@ -488,13 +488,13 @@ func (f *gcsFile) Close() error {
 // Read reads up to len(b) bytes from the File.
 //
 //
-// Summary: reads up to len(b) bytes from the File.
+// Summary: Reads up to len(b) bytes from the File.
 //
 // Parameters:
-// - p ([]byte): The parameter.
+// - p ([]byte): The parameter or provider.
 //
 // Returns:
-// - n (int): The result.
+// - n (int): The integer value.
 // - err (error): An error if the operation fails.
 //
 // Errors:
@@ -512,14 +512,14 @@ func (f *gcsFile) Read(p []byte) (n int, err error) {
 // ReadAt reads len(b) bytes from the File starting at byte offset off.
 //
 //
-// Summary: reads len(b) bytes from the File starting at byte offset off.
+// Summary: Reads len(b) bytes from the File starting at byte offset off.
 //
 // Parameters:
-// - p ([]byte): The parameter.
-// - off (int64): The parameter.
+// - p ([]byte): The parameter or provider.
+// - off (int64): The off.
 //
 // Returns:
-// - n (int): The result.
+// - n (int): The integer value.
 // - err (error): An error if the operation fails.
 //
 // Errors:
@@ -542,11 +542,11 @@ func (f *gcsFile) ReadAt(p []byte, off int64) (n int, err error) {
 // Seek sets the offset for the next Read or Write to offset, interpreted according to whence.
 //
 //
-// Summary: sets the offset for the next Read or Write to offset, interpreted according to whence.
+// Summary: Sets the offset for the next Read or Write to offset, interpreted according to whence.
 //
 // Parameters:
-// - _ (int64): The parameter.
-// - _ (int): The parameter.
+// - _ (int64): The _.
+// - _ (int): The integer value.
 //
 // Returns:
 // - int64: The result.
@@ -564,13 +564,13 @@ func (f *gcsFile) Seek(_ int64, _ int) (int64, error) {
 // Write writes len(b) bytes to the File.
 //
 //
-// Summary: writes len(b) bytes to the File.
+// Summary: Writes len(b) bytes to the File.
 //
 // Parameters:
-// - p ([]byte): The parameter.
+// - p ([]byte): The parameter or provider.
 //
 // Returns:
-// - n (int): The result.
+// - n (int): The integer value.
 // - err (error): An error if the operation fails.
 //
 // Errors:
@@ -588,14 +588,14 @@ func (f *gcsFile) Write(p []byte) (n int, err error) {
 // WriteAt writes len(b) bytes to the File starting at byte offset off.
 //
 //
-// Summary: writes len(b) bytes to the File starting at byte offset off.
+// Summary: Writes len(b) bytes to the File starting at byte offset off.
 //
 // Parameters:
-// - _ ([]byte): The parameter.
-// - _ (int64): The parameter.
+// - _ ([]byte): The _.
+// - _ (int64): The _.
 //
 // Returns:
-// - n (int): The result.
+// - n (int): The integer value.
 // - err (error): An error if the operation fails.
 //
 // Errors:
@@ -610,7 +610,7 @@ func (f *gcsFile) WriteAt(_ []byte, _ int64) (n int, err error) {
 // Name returns the name of the file as presented to Open.
 //
 //
-// Summary: returns the name of the file as presented to Open.
+// Summary: Returns the name of the file as presented to Open.
 //
 // Returns:
 // - string: The result.
@@ -625,10 +625,10 @@ func (f *gcsFile) Name() string {
 // a slice of up to n FileInfo values, as would be returned by Lstat, in directory order.
 //
 //
-// Summary: reads the contents of the directory associated with file and returns.
+// Summary: Reads the contents of the directory associated with file and returns.
 //
 // Parameters:
-// - _ (int): The parameter.
+// - _ (int): The integer value.
 //
 // Returns:
 // - []os.FileInfo: The result.
@@ -685,10 +685,10 @@ func (f *gcsFile) Readdir(_ int) ([]os.FileInfo, error) {
 // Readdirnames reads and returns a slice of names from the directory f.
 //
 //
-// Summary: reads and returns a slice of names from the directory f.
+// Summary: Reads and returns a slice of names from the directory f.
 //
 // Parameters:
-// - n (int): The parameter.
+// - n (int): The integer value.
 //
 // Returns:
 // - []string: The result.
@@ -714,7 +714,7 @@ func (f *gcsFile) Readdirnames(n int) ([]string, error) {
 // Stat returns the FileInfo structure describing file.
 //
 //
-// Summary: returns the FileInfo structure describing file.
+// Summary: Returns the FileInfo structure describing file.
 //
 // Returns:
 // - os.FileInfo: The result.
@@ -749,7 +749,7 @@ func (f *gcsFile) Stat() (os.FileInfo, error) {
 // Sync commits the current contents of the file to stable storage.
 //
 //
-// Summary: commits the current contents of the file to stable storage.
+// Summary: Commits the current contents of the file to stable storage.
 //
 // Returns:
 // - error: An error if the operation fails.
@@ -766,10 +766,10 @@ func (f *gcsFile) Sync() error {
 // Truncate changes the size of the file.
 //
 //
-// Summary: changes the size of the file.
+// Summary: Changes the size of the file.
 //
 // Parameters:
-// - _ (int64): The parameter.
+// - _ (int64): The _.
 //
 // Returns:
 // - error: An error if the operation fails.
@@ -786,13 +786,13 @@ func (f *gcsFile) Truncate(_ int64) error {
 // WriteString is like Write, but writes the contents of string s rather than a slice of bytes.
 //
 //
-// Summary: is like Write, but writes the contents of string s rather than a slice of bytes.
+// Summary: Is like Write, but writes the contents of string s rather than a slice of bytes.
 //
 // Parameters:
-// - s (string): The parameter.
+// - s (string): The string value.
 //
 // Returns:
-// - ret (int): The result.
+// - ret (int): The integer value.
 // - err (error): An error if the operation fails.
 //
 // Errors:
@@ -814,7 +814,7 @@ type gcsFileInfo struct {
 // Name returns the base name of the file.
 //
 //
-// Summary: returns the base name of the file.
+// Summary: Returns the base name of the file.
 //
 // Returns:
 // - string: The result.
@@ -828,7 +828,7 @@ func (fi *gcsFileInfo) Name() string {
 // Size returns the length in bytes for regular files; system-dependent for others.
 //
 //
-// Summary: returns the length in bytes for regular files; system-dependent for others.
+// Summary: Returns the length in bytes for regular files; system-dependent for others.
 //
 // Returns:
 // - int64: The result.
@@ -842,7 +842,7 @@ func (fi *gcsFileInfo) Size() int64 {
 // Mode returns file mode bits.
 //
 //
-// Summary: returns file mode bits.
+// Summary: Returns file mode bits.
 //
 // Returns:
 // - os.FileMode: The result.
@@ -859,7 +859,7 @@ func (fi *gcsFileInfo) Mode() os.FileMode {
 // ModTime returns the modification time.
 //
 //
-// Summary: returns the modification time.
+// Summary: Returns the modification time.
 //
 // Returns:
 // - time.Time: The result.
@@ -873,7 +873,7 @@ func (fi *gcsFileInfo) ModTime() time.Time {
 // IsDir returns true if the file is a directory.
 //
 //
-// Summary: returns true if the file is a directory.
+// Summary: Returns true if the file is a directory.
 //
 // Returns:
 // - bool: The result.
@@ -887,7 +887,7 @@ func (fi *gcsFileInfo) IsDir() bool {
 // Sys returns underlying data source (can return nil).
 //
 //
-// Summary: returns underlying data source (can return nil).
+// Summary: Returns underlying data source (can return nil).
 //
 // Returns:
 // - interface: The result.

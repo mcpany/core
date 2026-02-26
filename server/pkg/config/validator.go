@@ -85,7 +85,7 @@ type ValidationError struct {
 // Error returns the formatted error message.
 //
 //
-// Summary: returns the formatted error message.
+// Summary: Returns the formatted error message.
 //
 // Returns:
 //   - string: The result.

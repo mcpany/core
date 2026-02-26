@@ -19,7 +19,7 @@ import (
 
 // ManagerInterface defines the interface for managing alerts.
 //
-// Summary: defines the interface for managing alerts.
+// Summary: Defines the interface for managing alerts.
 type ManagerInterface interface {
 	// ListAlerts returns a list of all alerts.
 	ListAlerts() []*Alert
@@ -53,7 +53,7 @@ type ManagerInterface interface {
 
 // Manager implements ManagerInterface using in-memory storage.
 //
-// Summary: implements ManagerInterface using in-memory storage.
+// Summary: Implements ManagerInterface using in-memory storage.
 type Manager struct {
 	mu         sync.RWMutex
 	alerts     map[string]*Alert
@@ -63,7 +63,7 @@ type Manager struct {
 
 // NewManager creates a new Manager and seeds it with initial data.
 //
-// Summary: creates a new Manager and seeds it with initial data.
+// Summary: Creates a new Manager and seeds it with initial data.
 //
 // Returns:
 //   - *Manager: The result.
@@ -95,7 +95,7 @@ func (m *Manager) seedData() {
 
 // ListAlerts returns all alerts sorted by timestamp descending.
 //
-// Summary: returns all alerts sorted by timestamp descending.
+// Summary: Returns all alerts sorted by timestamp descending.
 //
 // Returns:
 //   - []*Alert: The result.
@@ -118,10 +118,10 @@ func (m *Manager) ListAlerts() []*Alert {
 
 // GetAlert returns an alert by ID, or nil if not found.
 //
-// Summary: returns an alert by ID, or nil if not found.
+// Summary: Returns an alert by ID, or nil if not found.
 //
 // Parameters:
-//   - id (string): The id.
+//   - id (string): The unique identifier.
 //
 // Returns:
 //   - *Alert: The result.
@@ -136,7 +136,7 @@ func (m *Manager) GetAlert(id string) *Alert {
 
 // CreateAlert creates a new alert.
 //
-// Summary: creates a new alert.
+// Summary: Creates a new alert.
 //
 // Parameters:
 //   - alert (*Alert): The alert.
@@ -189,10 +189,10 @@ func (m *Manager) CreateAlert(alert *Alert) *Alert {
 
 // UpdateAlert updates an existing alert.
 //
-// Summary: updates an existing alert.
+// Summary: Updates an existing alert.
 //
 // Parameters:
-//   - id (string): The id.
+//   - id (string): The unique identifier.
 //   - alert (*Alert): The alert.
 //
 // Returns:
@@ -247,7 +247,7 @@ func (m *Manager) UpdateAlert(id string, alert *Alert) *Alert {
 
 // GetWebhookURL returns the configured global webhook URL.
 //
-// Summary: returns the configured global webhook URL.
+// Summary: Returns the configured global webhook URL.
 //
 // Returns:
 //   - string: The result.
@@ -262,10 +262,10 @@ func (m *Manager) GetWebhookURL() string {
 
 // SetWebhookURL sets the configured global webhook URL.
 //
-// Summary: sets the configured global webhook URL.
+// Summary: Sets the configured global webhook URL.
 //
 // Parameters:
-//   - url (string): The url.
+//   - url (string): The URL.
 //
 // Side Effects:
 //   - None.
@@ -277,7 +277,7 @@ func (m *Manager) SetWebhookURL(url string) {
 
 // ListRules returns all rules.
 //
-// Summary: returns all rules.
+// Summary: Returns all rules.
 //
 // Returns:
 //   - []*AlertRule: The result.
@@ -299,10 +299,10 @@ func (m *Manager) ListRules() []*AlertRule {
 
 // GetRule returns a rule by ID.
 //
-// Summary: returns a rule by ID.
+// Summary: Returns a rule by ID.
 //
 // Parameters:
-//   - id (string): The id.
+//   - id (string): The unique identifier.
 //
 // Returns:
 //   - *AlertRule: The result.
@@ -317,7 +317,7 @@ func (m *Manager) GetRule(id string) *AlertRule {
 
 // CreateRule creates a new rule.
 //
-// Summary: creates a new rule.
+// Summary: Creates a new rule.
 //
 // Parameters:
 //   - rule (*AlertRule): The rule.
@@ -340,10 +340,10 @@ func (m *Manager) CreateRule(rule *AlertRule) *AlertRule {
 
 // UpdateRule updates a rule.
 //
-// Summary: updates a rule.
+// Summary: Updates a rule.
 //
 // Parameters:
-//   - id (string): The id.
+//   - id (string): The unique identifier.
 //   - rule (*AlertRule): The rule.
 //
 // Returns:
@@ -371,10 +371,10 @@ func (m *Manager) UpdateRule(id string, rule *AlertRule) *AlertRule {
 
 // DeleteRule deletes a rule.
 //
-// Summary: deletes a rule.
+// Summary: Deletes a rule.
 //
 // Parameters:
-//   - id (string): The id.
+//   - id (string): The unique identifier.
 //
 // Returns:
 //   - error: An error if the operation fails.

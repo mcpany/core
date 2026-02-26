@@ -27,7 +27,7 @@ import (
 
 // ProviderFactory is a function that creates an EmbeddingProvider.
 //
-// Summary: is a function that creates an EmbeddingProvider.
+// Summary: Is a function that creates an EmbeddingProvider.
 type ProviderFactory func(config *configv1.SemanticCacheConfig, apiKey string) (EmbeddingProvider, error)
 
 // CachingMiddleware is a tool execution middleware that provides caching
@@ -41,7 +41,7 @@ var (
 
 // CachingMiddleware handles caching of tool execution results.
 //
-// Summary: handles caching of tool execution results.
+// Summary: Handles caching of tool execution results.
 type CachingMiddleware struct {
 	cache           *cache.Cache[any]
 	toolManager     tool.ManagerInterface
@@ -57,7 +57,7 @@ type CachingMiddleware struct {
 //
 // Returns the result.
 //
-// Summary: creates a new CachingMiddleware.
+// Summary: Creates a new CachingMiddleware.
 //
 // Parameters:
 //   - toolManager (tool.ManagerInterface): The tool manager.
@@ -129,10 +129,10 @@ func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware 
 //
 // factory is the factory.
 //
-// Summary: allows overriding the default provider factory for testing.
+// Summary: Allows overriding the default provider factory for testing.
 //
 // Parameters:
-//   - factory (ProviderFactory): The factory.
+//   - factory (ProviderFactory): The factory instance.
 //
 // Side Effects:
 //   - None.
@@ -149,12 +149,12 @@ func (m *CachingMiddleware) SetProviderFactory(factory ProviderFactory) {
 // Returns the result.
 // Returns an error if the operation fails.
 //
-// Summary: executes the caching middleware.
+// Summary: Executes the caching middleware.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
-//   - req (*tool.ExecutionRequest): The req.
-//   - next (tool.ExecutionFunc): The next.
+//   - req (*tool.ExecutionRequest): The RPC request message.
+//   - next (tool.ExecutionFunc): The function.
 //
 // Returns:
 //   - any: The result.
@@ -460,7 +460,7 @@ func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
 //
 // Returns an error if the operation fails.
 //
-// Summary: clears the cache.
+// Summary: Clears the cache.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.

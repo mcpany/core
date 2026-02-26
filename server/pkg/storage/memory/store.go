@@ -71,7 +71,7 @@ func NewStore() *Store {
 //
 // Parameters:
 //   - _ (context.Context): Ignored.
-//   - entry (*logging.LogEntry): The entry.
+//   - entry (*logging.LogEntry): The log entry.
 //
 // Returns:
 //   - error: An error if the operation fails.
@@ -92,7 +92,7 @@ func (s *Store) SaveLog(_ context.Context, entry *logging.LogEntry) error {
 //
 // Parameters:
 //   - _ (context.Context): Ignored.
-//   - limit (int): The limit.
+//   - limit (int): The maximum number of results.
 //
 // Returns:
 //   - []*logging.LogEntry: The result.

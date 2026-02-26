@@ -7,7 +7,7 @@ package terraform
 // ResourceMCPServer represents the configuration schema for an MCP Server resource
 // This would map to hashicorp/terraform-plugin-sdk in a real provider.
 //
-// Summary: represents the configuration schema for an MCP Server resource.
+// Summary: Represents the configuration schema for an MCP Server resource.
 type ResourceMCPServer struct {
 	Name    string
 	Port    int
@@ -18,7 +18,7 @@ type ResourceMCPServer struct {
 //
 // Returns the result.
 //
-// Summary: returns the Terraform schema definition (Mock).
+// Summary: Returns the Terraform schema definition (Mock).
 //
 // Returns:
 //   - map[string]interface: The result.
@@ -53,7 +53,7 @@ func Schema() map[string]interface{} {
 //
 // Returns an error if the operation fails.
 //
-// Summary: mimics the Create operation of a Terraform resource.
+// Summary: Mimics the Create operation of a Terraform resource.
 //
 // Parameters:
 //   - _ (*ResourceMCPServer): Ignored.
@@ -75,10 +75,10 @@ func Create(_ *ResourceMCPServer) error {
 // Returns the result.
 // Returns an error if the operation fails.
 //
-// Summary: mimics the Read operation.
+// Summary: Mimics the Read operation.
 //
 // Parameters:
-//   - name (string): The name.
+//   - name (string): The name of the resource.
 //
 // Returns:
 //   - *ResourceMCPServer: The result.

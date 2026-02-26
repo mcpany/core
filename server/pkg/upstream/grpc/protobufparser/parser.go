@@ -29,7 +29,7 @@ import (
 // ParsedMcpAnnotations holds the structured data extracted from MCP
 // (Model Context Protocol) annotations within a set of protobuf files.
 //
-// Summary: holds the structured data extracted from MCP.
+// Summary: Holds the structured data extracted from MCP.
 type ParsedMcpAnnotations struct {
 	Tools     []McpTool
 	Prompts   []McpPrompt
@@ -39,7 +39,7 @@ type ParsedMcpAnnotations struct {
 // McpTool represents the information extracted from a gRPC method that has been
 // annotated as an MCP tool.
 //
-// Summary: represents the information extracted from a gRPC method that has been.
+// Summary: Represents the information extracted from a gRPC method that has been.
 type McpTool struct {
 	Name            string
 	Description     string
@@ -59,7 +59,7 @@ type McpTool struct {
 // McpField represents a field within a protobuf message, including its name,
 // description, type, and whether it is repeated.
 //
-// Summary: represents a field within a protobuf message, including its name,.
+// Summary: Represents a field within a protobuf message, including its name,.
 type McpField struct {
 	Name        string
 	Description string
@@ -70,7 +70,7 @@ type McpField struct {
 // GetName returns the name of the McpField.
 //
 //
-// Summary: returns the name of the McpField.
+// Summary: Returns the name of the McpField.
 //
 // Returns:
 // - string: The result.
@@ -84,7 +84,7 @@ func (f *McpField) GetName() string {
 // GetDescription returns the description of the McpField.
 //
 //
-// Summary: returns the description of the McpField.
+// Summary: Returns the description of the McpField.
 //
 // Returns:
 // - string: The result.
@@ -98,7 +98,7 @@ func (f *McpField) GetDescription() string {
 // GetType returns the type of the McpField.
 //
 //
-// Summary: returns the type of the McpField.
+// Summary: Returns the type of the McpField.
 //
 // Returns:
 // - string: The result.
@@ -112,7 +112,7 @@ func (f *McpField) GetType() string {
 // GetIsRepeated returns true if the McpField is a repeated field.
 //
 //
-// Summary: returns true if the McpField is a repeated field.
+// Summary: Returns true if the McpField is a repeated field.
 //
 // Returns:
 // - bool: The result.
@@ -340,7 +340,7 @@ func writeProtoFile(protoFile *configv1.ProtoFile, tempDir string) (string, erro
 // McpPrompt represents the information extracted from a gRPC method that has
 // been annotated as an MCP prompt.
 //
-// Summary: represents the information extracted from a gRPC method that has.
+// Summary: Represents the information extracted from a gRPC method that has.
 type McpPrompt struct {
 	Name           string
 	Description    string
@@ -355,7 +355,7 @@ type McpPrompt struct {
 // McpResource represents a protobuf message that has been annotated as an MCP
 // resource.
 //
-// Summary: represents a protobuf message that has been annotated as an MCP.
+// Summary: Represents a protobuf message that has been annotated as an MCP.
 type McpResource struct {
 	Name        string
 	Description string
@@ -367,11 +367,11 @@ type McpResource struct {
 // dependencies, and returns them as a complete FileDescriptorSet.
 //
 //
-// Summary: connects to a gRPC service that has server reflection.
+// Summary: Connects to a gRPC service that has server reflection.
 //
 // Parameters:
 // - ctx (context.Context): The context for the request.
-// - target (string): The parameter.
+// - target (string): The string value.
 //
 // Returns:
 // - *descriptorpb.FileDescriptorSet: The result.
@@ -569,10 +569,10 @@ func getFileDescriptorByFilename(stream reflectpb.ServerReflection_ServerReflect
 // extracts definitions for tools, prompts, and resources.
 //
 //
-// Summary: iterates through a FileDescriptorSet, parsing any MCP.
+// Summary: Iterates through a FileDescriptorSet, parsing any MCP.
 //
 // Parameters:
-// - fds (*descriptorpb.FileDescriptorSet): The parameter.
+// - fds (*descriptorpb.FileDescriptorSet): The fds.
 //
 // Returns:
 // - *ParsedMcpAnnotations: The result.

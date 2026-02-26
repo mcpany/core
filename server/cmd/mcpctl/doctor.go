@@ -21,7 +21,7 @@ import (
 
 // DoctorRunner runs the doctor command checks.
 //
-// Summary: runs the doctor command checks.
+// Summary: Runs the doctor command checks.
 type DoctorRunner struct {
 	Out        io.Writer
 	Fs         afero.Fs
@@ -30,10 +30,10 @@ type DoctorRunner struct {
 
 // Run executes the doctor checks.
 //
-// Summary: executes the doctor checks.
+// Summary: Executes the doctor checks.
 //
 // Parameters:
-//   - cmd (*cobra.Command): The cmd.
+//   - cmd (*cobra.Command): The cobra command to execute.
 //   - _ ([]string): Ignored.
 //
 // Returns:

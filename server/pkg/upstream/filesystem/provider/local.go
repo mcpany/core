@@ -15,7 +15,7 @@ import (
 
 // LocalProvider provides access to the local filesystem.
 //
-// Summary: provides access to the local filesystem.
+// Summary: Provides access to the local filesystem.
 type LocalProvider struct {
 	fs           afero.Fs
 	rootPaths    map[string]string
@@ -27,14 +27,14 @@ type LocalProvider struct {
 // NewLocalProvider creates a new LocalProvider from the given configuration.
 //
 //
-// Summary: creates a new LocalProvider from the given configuration.
+// Summary: Creates a new LocalProvider from the given configuration.
 //
 // Parameters:
-// - _ (*configv1.OsFs): The parameter.
-// - rootPaths (map[string]string): The parameter.
-// -  (allowedPaths): The parameter.
-// - deniedPaths ([]string): The parameter.
-// - symlinkMode (configv1.FilesystemUpstreamService_SymlinkMode): The parameter.
+// - _ (*configv1.OsFs): The _.
+// - rootPaths (map[string]string): The root paths.
+// - allowedPaths: The .
+// - deniedPaths ([]string): A list of strings.
+// - symlinkMode (configv1.FilesystemUpstreamService_SymlinkMode): The symlink mode.
 //
 // Returns:
 // - *LocalProvider: The result.
@@ -54,7 +54,7 @@ func NewLocalProvider(_ *configv1.OsFs, rootPaths map[string]string, allowedPath
 // GetFs returns the underlying filesystem.
 //
 //
-// Summary: returns the underlying filesystem.
+// Summary: Returns the underlying filesystem.
 //
 // Returns:
 // - afero.Fs: The result.
@@ -68,10 +68,10 @@ func (p *LocalProvider) GetFs() afero.Fs {
 // ResolvePath resolves the virtual path to a real path in the local filesystem.
 //
 //
-// Summary: resolves the virtual path to a real path in the local filesystem.
+// Summary: Resolves the virtual path to a real path in the local filesystem.
 //
 // Parameters:
-// - virtualPath (string): The parameter.
+// - virtualPath (string): The string value.
 //
 // Returns:
 // - string: The result.
@@ -334,7 +334,7 @@ func (p *LocalProvider) containsSymlink(virtualPath, bestMatchVirtual, bestMatch
 // Close closes the provider.
 //
 //
-// Summary: closes the provider.
+// Summary: Closes the provider.
 //
 // Returns:
 // - error: An error if the operation fails.

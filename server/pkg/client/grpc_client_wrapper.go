@@ -16,7 +16,7 @@ import (
 // Conn is an interface that represents a gRPC client connection.
 // It is used to allow for mocking of the gRPC client in tests.
 //
-// Summary: is an interface that represents a gRPC client connection.
+// Summary: Is an interface that represents a gRPC client connection.
 type Conn interface {
 	grpc.ClientConnInterface
 	// Close closes the connection to the server.
@@ -33,7 +33,7 @@ type Conn interface {
 // `pool.ClosableClient` interface. This allows gRPC clients to be managed by a
 // connection pool, which can improve performance by reusing connections.
 //
-// Summary: wraps a `Conn` to adapt it to the.
+// Summary: Wraps a `Conn` to adapt it to the.
 type GrpcClientWrapper struct {
 	Conn
 	config *configv1.UpstreamServiceConfig
@@ -44,11 +44,11 @@ type GrpcClientWrapper struct {
 // NewGrpcClientWrapper creates a new GrpcClientWrapper.
 // It accepts a shared health checker to avoid creating a new one for every client.
 //
-// Summary: creates a new GrpcClientWrapper.
+// Summary: Creates a new GrpcClientWrapper.
 //
 // Parameters:
-//   - conn (Conn): The conn.
-//   - config (*configv1.UpstreamServiceConfig): The config.
+//   - conn (Conn): The network connection.
+//   - config (*configv1.UpstreamServiceConfig): Configuration settings.
 //   - checker (health.Checker): The checker.
 //
 // Returns:
@@ -73,7 +73,7 @@ func NewGrpcClientWrapper(conn Conn, config *configv1.UpstreamServiceConfig, che
 // It returns `true` if the connection's state is not `connectivity.Shutdown`,
 // indicating that it is still active and can be used for new RPCs.
 //
-// Summary: checks if the underlying gRPC connection is in a usable state.
+// Summary: Checks if the underlying gRPC connection is in a usable state.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
@@ -99,7 +99,7 @@ func (w *GrpcClientWrapper) IsHealthy(ctx context.Context) bool {
 // Close terminates the underlying gRPC connection, releasing any associated
 // resources.
 //
-// Summary: terminates the underlying gRPC connection, releasing any associated.
+// Summary: Terminates the underlying gRPC connection, releasing any associated.
 //
 // Returns:
 //   - error: An error if the operation fails.

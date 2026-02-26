@@ -405,7 +405,7 @@ func NewGRPCTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, met
 // Tool returns the protobuf definition of the gRPC tool.
 //
 //
-// Summary: returns the protobuf definition of the gRPC tool.
+// Summary: Returns the protobuf definition of the gRPC tool.
 //
 // Returns:
 // - *v1.Tool: The underlying protobuf definition.
@@ -421,7 +421,7 @@ func (t *GRPCTool) Tool() *v1.Tool {
 // It lazily converts the internal protobuf definition to the MCP format on first access.
 //
 //
-// Summary: returns the MCP-compliant tool definition.
+// Summary: Returns the MCP-compliant tool definition.
 //
 // Returns:
 // - *mcp.Tool: The MCP tool definition.
@@ -442,7 +442,7 @@ func (t *GRPCTool) MCPTool() *mcp.Tool {
 // GetCacheConfig returns the cache configuration for the gRPC tool.
 //
 //
-// Summary: returns the cache configuration for the gRPC tool.
+// Summary: Returns the cache configuration for the gRPC tool.
 //
 // Returns:
 // - *configv1.CacheConfig: The cache configuration, if any.
@@ -700,7 +700,7 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 // Tool returns the protobuf definition of the HTTP tool.
 //
 //
-// Summary: returns the protobuf definition of the HTTP tool.
+// Summary: Returns the protobuf definition of the HTTP tool.
 //
 // Returns:
 // - *v1.Tool: The underlying protobuf definition.
@@ -716,7 +716,7 @@ func (t *HTTPTool) Tool() *v1.Tool {
 // It lazily converts the internal protobuf definition to the MCP format on first access.
 //
 //
-// Summary: returns the MCP-compliant tool definition.
+// Summary: Returns the MCP-compliant tool definition.
 //
 // Returns:
 // - *mcp.Tool: The MCP tool definition.
@@ -737,7 +737,7 @@ func (t *HTTPTool) MCPTool() *mcp.Tool {
 // GetCacheConfig returns the cache configuration for the HTTP tool.
 //
 //
-// Summary: returns the cache configuration for the HTTP tool.
+// Summary: Returns the cache configuration for the HTTP tool.
 //
 // Returns:
 // - *configv1.CacheConfig: The cache configuration, if any.
@@ -1424,7 +1424,7 @@ func NewMCPTool(tool *v1.Tool, client client.MCPClient, callDefinition *configv1
 // Tool returns the protobuf definition of the MCP tool.
 //
 //
-// Summary: returns the protobuf definition of the MCP tool.
+// Summary: Returns the protobuf definition of the MCP tool.
 //
 // Returns:
 // - *v1.Tool: The underlying protobuf definition.
@@ -1440,7 +1440,7 @@ func (t *MCPTool) Tool() *v1.Tool {
 // It lazily converts the internal protobuf definition to the MCP format on first access.
 //
 //
-// Summary: returns the MCP-compliant tool definition.
+// Summary: Returns the MCP-compliant tool definition.
 //
 // Returns:
 // - *mcp.Tool: The MCP tool definition.
@@ -1461,7 +1461,7 @@ func (t *MCPTool) MCPTool() *mcp.Tool {
 // GetCacheConfig returns the cache configuration for the MCP tool.
 //
 //
-// Summary: returns the cache configuration for the MCP tool.
+// Summary: Returns the cache configuration for the MCP tool.
 //
 // Returns:
 // - *configv1.CacheConfig: The cache configuration, if any.
@@ -1688,7 +1688,7 @@ func NewOpenAPITool(tool *v1.Tool, client client.HTTPClient, parameterDefs map[s
 // Tool returns the protobuf definition of the OpenAPI tool.
 //
 //
-// Summary: returns the protobuf definition of the OpenAPI tool.
+// Summary: Returns the protobuf definition of the OpenAPI tool.
 //
 // Returns:
 // - *v1.Tool: The underlying protobuf definition.
@@ -1704,7 +1704,7 @@ func (t *OpenAPITool) Tool() *v1.Tool {
 // It lazily converts the internal protobuf definition to the MCP format on first access.
 //
 //
-// Summary: returns the MCP-compliant tool definition.
+// Summary: Returns the MCP-compliant tool definition.
 //
 // Returns:
 // - *mcp.Tool: The MCP tool definition.
@@ -1725,7 +1725,7 @@ func (t *OpenAPITool) MCPTool() *mcp.Tool {
 // GetCacheConfig returns the cache configuration for the OpenAPI tool.
 //
 //
-// Summary: returns the cache configuration for the OpenAPI tool.
+// Summary: Returns the cache configuration for the OpenAPI tool.
 //
 // Returns:
 // - *configv1.CacheConfig: The cache configuration, if any.
@@ -2040,7 +2040,7 @@ func NewLocalCommandTool(
 // Tool returns the protobuf definition of the command-line tool.
 //
 //
-// Summary: returns the protobuf definition of the command-line tool.
+// Summary: Returns the protobuf definition of the command-line tool.
 //
 // Returns:
 // - *v1.Tool: The underlying protobuf definition.
@@ -2056,7 +2056,7 @@ func (t *LocalCommandTool) Tool() *v1.Tool {
 // It lazily converts the internal protobuf definition to the MCP format on first access.
 //
 //
-// Summary: returns the MCP-compliant tool definition.
+// Summary: Returns the MCP-compliant tool definition.
 //
 // Returns:
 // - *mcp.Tool: The MCP tool definition.
@@ -2077,7 +2077,7 @@ func (t *LocalCommandTool) MCPTool() *mcp.Tool {
 // GetCacheConfig returns the cache configuration for the command-line tool.
 //
 //
-// Summary: returns the cache configuration for the command-line tool.
+// Summary: Returns the cache configuration for the command-line tool.
 //
 // Returns:
 // - *configv1.CacheConfig: The cache configuration, if any.
@@ -2418,7 +2418,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 // Tool returns the protobuf definition of the command-line tool.
 //
 //
-// Summary: returns the protobuf definition of the command-line tool.
+// Summary: Returns the protobuf definition of the command-line tool.
 //
 // Returns:
 // - *v1.Tool: The underlying protobuf definition.
@@ -2434,7 +2434,7 @@ func (t *CommandTool) Tool() *v1.Tool {
 // It lazily converts the internal protobuf definition to the MCP format on first access.
 //
 //
-// Summary: returns the MCP-compliant tool definition.
+// Summary: Returns the MCP-compliant tool definition.
 //
 // Returns:
 // - *mcp.Tool: The MCP tool definition.
@@ -2455,7 +2455,7 @@ func (t *CommandTool) MCPTool() *mcp.Tool {
 // GetCacheConfig returns the cache configuration for the command-line tool.
 //
 //
-// Summary: returns the cache configuration for the command-line tool.
+// Summary: Returns the cache configuration for the command-line tool.
 //
 // Returns:
 // - *configv1.CacheConfig: The cache configuration, if any.
@@ -2815,7 +2815,7 @@ type threadSafeBuffer struct {
 // Write writes bytes to the buffer in a thread-safe manner.
 //
 //
-// Summary: writes bytes to the buffer in a thread-safe manner.
+// Summary: Writes bytes to the buffer in a thread-safe manner.
 //
 // Parameters:
 // - p: The slice of bytes to write.
@@ -2835,7 +2835,7 @@ func (tsb *threadSafeBuffer) Write(p []byte) (n int, err error) {
 // String returns the contents of the buffer as a string in a thread-safe manner.
 //
 //
-// Summary: returns the contents of the buffer as a string in a thread-safe manner.
+// Summary: Returns the contents of the buffer as a string in a thread-safe manner.
 //
 // Returns:
 // - string: The contents of the buffer.

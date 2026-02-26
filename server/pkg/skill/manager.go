@@ -29,7 +29,7 @@ var (
 
 // Manager handles the storage and retrieval of skills.
 //
-// Summary: handles the storage and retrieval of skills.
+// Summary: Handles the storage and retrieval of skills.
 type Manager struct {
 	rootDir string
 	mu      sync.RWMutex
@@ -39,7 +39,7 @@ type Manager struct {
 // NewManager creates a new Skill Manager.
 // rootDir is the directory where skills are stored.
 //
-// Summary: creates a new Skill Manager.
+// Summary: Creates a new Skill Manager.
 //
 // Parameters:
 //   - rootDir (string): The root dir.
@@ -62,7 +62,7 @@ func NewManager(rootDir string) (*Manager, error) {
 // ListSkills returns all available skills.
 // It scans the root directory for subdirectories containing SKILL.md.
 //
-// Summary: returns all available skills.
+// Summary: Returns all available skills.
 //
 // Returns:
 //   - []*Skill: The result.
@@ -117,10 +117,10 @@ func (m *Manager) ListSkills() ([]*Skill, error) {
 // Returns the result.
 // Returns an error if the operation fails.
 //
-// Summary: retrieves a specific skill by name.
+// Summary: Retrieves a specific skill by name.
 //
 // Parameters:
-//   - name (string): The name.
+//   - name (string): The name of the resource.
 //
 // Returns:
 //   - *Skill: The result.
@@ -137,7 +137,7 @@ func (m *Manager) GetSkill(name string) (*Skill, error) {
 // CreateSkill creates a new skill.
 // It ensures the name is valid and the directory doesn't already exist.
 //
-// Summary: creates a new skill.
+// Summary: Creates a new skill.
 //
 // Parameters:
 //   - skill (*Skill): The skill.
@@ -178,7 +178,7 @@ func (m *Manager) CreateSkill(skill *Skill) error {
 // UpdateSkill updates an existing skill.
 // If the name has changed, it renames the directory.
 //
-// Summary: updates an existing skill.
+// Summary: Updates an existing skill.
 //
 // Parameters:
 //   - originalName (string): The original name.
@@ -226,10 +226,10 @@ func (m *Manager) UpdateSkill(originalName string, skill *Skill) error {
 //
 // Returns an error if the operation fails.
 //
-// Summary: deletes a skill.
+// Summary: Deletes a skill.
 //
 // Parameters:
-//   - name (string): The name.
+//   - name (string): The name of the resource.
 //
 // Returns:
 //   - error: An error if the operation fails.
@@ -255,7 +255,7 @@ func (m *Manager) DeleteSkill(name string) error {
 // SaveAsset saves an asset file (script, reference, etc.) for a skill.
 // path is relative to the skill root (e.g. "scripts/myscript.py").
 //
-// Summary: saves an asset file (script, reference, etc.
+// Summary: Saves an asset file (script, reference, etc.
 //
 // Parameters:
 //   - skillName (string): The skill name.

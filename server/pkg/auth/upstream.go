@@ -23,7 +23,7 @@ import (
 // for modifying the HTTP request to include the necessary authentication
 // credentials.
 //
-// Summary: defines the interface for authentication methods used.
+// Summary: Defines the interface for authentication methods used.
 type UpstreamAuthenticator interface {
 	// Authenticate modifies the given HTTP request to add authentication
 	// information, such as headers or basic auth credentials.
@@ -40,7 +40,7 @@ type UpstreamAuthenticator interface {
 // fields), an error is returned.
 //
 //
-// Summary: creates an `UpstreamAuthenticator` based on the.
+// Summary: Creates an `UpstreamAuthenticator` based on the.
 //
 // Parameters:
 // - authConfig: The configuration that specifies the authentication method
@@ -131,7 +131,7 @@ func NewUpstreamAuthenticator(authConfig *configv1.Authentication) (UpstreamAuth
 // APIKeyAuth implements UpstreamAuthenticator for API key-based authentication.
 // It adds a specified header with a static API key value to the request.
 //
-// Summary: implements UpstreamAuthenticator for API key-based authentication.
+// Summary: Implements UpstreamAuthenticator for API key-based authentication.
 type APIKeyAuth struct {
 	ParamName string
 	Value     *configv1.SecretValue
@@ -141,7 +141,7 @@ type APIKeyAuth struct {
 // Authenticate adds the configured API key to the request's header, query, or cookie.
 //
 //
-// Summary: adds the configured API key to the request's header, query, or cookie.
+// Summary: Adds the configured API key to the request's header, query, or cookie.
 //
 // Parameters:
 // - req: The HTTP request to be modified.
@@ -181,7 +181,7 @@ func (a *APIKeyAuth) Authenticate(req *http.Request) error {
 // BearerTokenAuth implements UpstreamAuthenticator for bearer token-based
 // authentication. It adds an "Authorization" header with a bearer token.
 //
-// Summary: implements UpstreamAuthenticator for bearer token-based.
+// Summary: Implements UpstreamAuthenticator for bearer token-based.
 type BearerTokenAuth struct {
 	Token *configv1.SecretValue
 }
@@ -189,7 +189,7 @@ type BearerTokenAuth struct {
 // Authenticate adds the bearer token to the request's "Authorization" header.
 //
 //
-// Summary: adds the bearer token to the request's "Authorization" header.
+// Summary: Adds the bearer token to the request's "Authorization" header.
 //
 // Parameters:
 // - req: The HTTP request to be modified.
@@ -214,7 +214,7 @@ func (b *BearerTokenAuth) Authenticate(req *http.Request) error {
 // BasicAuth implements UpstreamAuthenticator for basic HTTP authentication.
 // It adds an "Authorization" header with the username and password.
 //
-// Summary: implements UpstreamAuthenticator for basic HTTP authentication.
+// Summary: Implements UpstreamAuthenticator for basic HTTP authentication.
 type BasicAuth struct {
 	Username string
 	Password *configv1.SecretValue
@@ -223,7 +223,7 @@ type BasicAuth struct {
 // Authenticate sets the request's basic authentication credentials.
 //
 //
-// Summary: sets the request's basic authentication credentials.
+// Summary: Sets the request's basic authentication credentials.
 //
 // Parameters:
 // - req: The HTTP request to be modified.
@@ -247,7 +247,7 @@ func (b *BasicAuth) Authenticate(req *http.Request) error {
 
 // OAuth2Auth implements UpstreamAuthenticator for OAuth2 client credentials flow.
 //
-// Summary: implements UpstreamAuthenticator for OAuth2 client credentials flow.
+// Summary: Implements UpstreamAuthenticator for OAuth2 client credentials flow.
 type OAuth2Auth struct {
 	ClientID     *configv1.SecretValue
 	ClientSecret *configv1.SecretValue
@@ -283,7 +283,7 @@ func (o *OAuth2Auth) getTokenURL(ctx context.Context) (string, error) {
 // Authenticate fetches a token and adds it to the request's "Authorization" header.
 //
 //
-// Summary: fetches a token and adds it to the request's "Authorization" header.
+// Summary: Fetches a token and adds it to the request's "Authorization" header.
 //
 // Parameters:
 // - req: The HTTP request to be modified.

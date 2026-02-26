@@ -44,7 +44,7 @@ var (
 // mcp.ClientSession. This is used primarily for testing, allowing mock sessions
 // to be injected.
 //
-// Summary: defines an interface that abstracts the capabilities of an.
+// Summary: Defines an interface that abstracts the capabilities of an.
 type ClientSession interface {
 	// ListTools lists the tools available in the session.
 	//
@@ -104,13 +104,13 @@ type ClientSession interface {
 // implementation during tests. This should only be used for testing purposes.
 //
 //
-// Summary: provides a hook for injecting a mock MCP client.
+// Summary: Provides a hook for injecting a mock MCP client.
 //
 // Parameters:
-// - f func(client *mcp.Client (*http.Client): The parameter.
-// - stdioConfig *configv1.McpStdioConnection (*http.Client): The parameter.
-// - httpAddress string (*http.Client): The parameter.
-// - httpClient (*http.Client): The parameter.
+// - f func(client *mcp.Client (*http.Client): The client used to communicate with the upstream service.
+// - stdioConfig *configv1.McpStdioConnection (*http.Client): Configuration settings.
+// - httpAddress string (*http.Client): The client used to communicate with the upstream service.
+// - httpClient (*http.Client): The client used to communicate with the upstream service.
 //
 // Returns:
 // - client.MCPClient): The result.
@@ -125,10 +125,10 @@ func SetNewClientImplForTesting(f func(client *mcp.Client, stdioConfig *configv1
 // during tests. This should only be used for testing purposes.
 //
 //
-// Summary: provides a hook for injecting a mock mcp.
+// Summary: Provides a hook for injecting a mock mcp.
 //
 // Parameters:
-// - f func(impl (*mcp.Implementation): The parameter.
+// - f func(impl (*mcp.Implementation): The f func impl.
 //
 // Returns:
 // - *mcp.Client): The result.
@@ -143,13 +143,13 @@ func SetNewClientForTesting(f func(impl *mcp.Implementation) *mcp.Client) {
 // function during tests. This should only be used for testing purposes.
 //
 //
-// Summary: provides a hook for injecting a mock mcp.
+// Summary: Provides a hook for injecting a mock mcp.
 //
 // Parameters:
-// - f func(client *mcp.Client ([]mcp.Root): The parameter.
-// - ctx context.Context ([]mcp.Root): The parameter.
-// - transport mcp.Transport ([]mcp.Root): The parameter.
-// - roots ([]mcp.Root): The parameter.
+// - f func(client *mcp.Client ([]mcp.Root): The client used to communicate with the upstream service.
+// - ctx context.Context ([]mcp.Root): Context controls the request lifetime and cancellation.
+// - transport mcp.Transport ([]mcp.Root): The transport mcp transport.
+// - roots ([]mcp.Root): The roots.
 //
 // Returns:
 // - ClientSession: The result.
@@ -166,7 +166,7 @@ func SetConnectForTesting(f func(client *mcp.Client, ctx context.Context, transp
 // its tools, prompts, and resources, and registers them with the current server,
 // effectively acting as a proxy or aggregator.
 //
-// Summary: implements the upstream.
+// Summary: Implements the upstream.
 type Upstream struct {
 	sessionRegistry *SessionRegistry
 	// BundleBaseDir is the directory where bundles are extracted.
@@ -181,7 +181,7 @@ type Upstream struct {
 // CheckHealth performs a health check on the upstream service.
 //
 //
-// Summary: performs a health check on the upstream service.
+// Summary: Performs a health check on the upstream service.
 //
 // Parameters:
 // - ctx (context.Context): The context for the request.
@@ -213,10 +213,10 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 // as extracted bundle directories.
 //
 //
-// Summary: cleans up any temporary resources associated with the upstream, such.
+// Summary: Cleans up any temporary resources associated with the upstream, such.
 //
 // Parameters:
-// - _ (context.Context): The parameter.
+// - _ (context.Context): Context for the operation.
 //
 // Returns:
 // - error: An error if the operation fails.
@@ -254,10 +254,10 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 // NewUpstream creates a new instance of Upstream.
 //
 //
-// Summary: creates a new instance of Upstream.
+// Summary: Creates a new instance of Upstream.
 //
 // Parameters:
-// - globalSettings (*configv1.GlobalSettings): The parameter.
+// - globalSettings (*configv1.GlobalSettings): The global settings.
 //
 // Returns:
 // - upstream.Upstream: The result.
@@ -283,7 +283,7 @@ type mcpPrompt struct {
 // Prompt returns the underlying *mcp.Prompt definition.
 //
 //
-// Summary: returns the underlying *mcp.
+// Summary: Returns the underlying *mcp.
 //
 // Returns:
 // - *mcp.Prompt: The result.
@@ -297,7 +297,7 @@ func (p *mcpPrompt) Prompt() *mcp.Prompt {
 // Service returns the ID of the service that this prompt belongs to.
 //
 //
-// Summary: returns the ID of the service that this prompt belongs to.
+// Summary: Returns the ID of the service that this prompt belongs to.
 //
 // Returns:
 // - string: The result.
@@ -310,7 +310,7 @@ func (p *mcpPrompt) Service() string {
 
 // Definition returns the raw configuration definition of the prompt.
 //
-// Summary: returns the raw configuration definition of the prompt.
+// Summary: Returns the raw configuration definition of the prompt.
 //
 // Returns:
 //   - *configv1.PromptDefinition: The result.
@@ -357,11 +357,11 @@ func (p *mcpPrompt) Definition() *configv1.PromptDefinition {
 // service and calling its GetPrompt method.
 //
 //
-// Summary: executes the prompt by establishing a session with the downstream MCP.
+// Summary: Executes the prompt by establishing a session with the downstream MCP.
 //
 // Parameters:
 // - ctx (context.Context): The context for the request.
-// - args (json.RawMessage): The parameter.
+// - args (json.RawMessage): Command line arguments.
 //
 // Returns:
 // - *mcp.GetPromptResult: The result.
@@ -413,7 +413,7 @@ type mcpResource struct {
 // Resource returns the underlying *mcp.Resource definition.
 //
 //
-// Summary: returns the underlying *mcp.
+// Summary: Returns the underlying *mcp.
 //
 // Returns:
 // - *mcp.Resource: The result.
@@ -427,7 +427,7 @@ func (r *mcpResource) Resource() *mcp.Resource {
 // Service returns the ID of the service that this resource belongs to.
 //
 //
-// Summary: returns the ID of the service that this resource belongs to.
+// Summary: Returns the ID of the service that this resource belongs to.
 //
 // Returns:
 // - string: The result.
@@ -442,7 +442,7 @@ func (r *mcpResource) Service() string {
 // downstream MCP service and calling its ReadResource method.
 //
 //
-// Summary: retrieves the content of the resource by establishing a session with the.
+// Summary: Retrieves the content of the resource by establishing a session with the.
 //
 // Parameters:
 // - ctx (context.Context): The context for the request.
@@ -472,10 +472,10 @@ func (r *mcpResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error)
 // indicating that this functionality is not available.
 //
 //
-// Summary: is not yet implemented for MCP resources.
+// Summary: Is not yet implemented for MCP resources.
 //
 // Parameters:
-// - _ (context.Context): The parameter.
+// - _ (context.Context): Context for the operation.
 //
 // Returns:
 // - error: An error if the operation fails.
@@ -656,11 +656,11 @@ func (c *mcpConnection) withMCPClientSession(ctx context.Context, f func(cs Clie
 // session and forwarding the tool call.
 //
 //
-// Summary: executes a tool on the downstream MCP service by establishing a.
+// Summary: Executes a tool on the downstream MCP service by establishing a.
 //
 // Parameters:
 // - ctx (context.Context): The context for the request.
-// - params (*mcp.CallToolParams): The parameter.
+// - params (*mcp.CallToolParams): The function parameters.
 //
 // Returns:
 // - *mcp.CallToolResult: The result.
@@ -1322,10 +1322,10 @@ type authenticatedRoundTripper struct {
 // it to the base RoundTripper.
 //
 //
-// Summary: applies the configured authenticator to the request and then passes.
+// Summary: Applies the configured authenticator to the request and then passes.
 //
 // Parameters:
-// - req (*http.Request): The parameter.
+// - req (*http.Request): The RPC request message.
 //
 // Returns:
 // - *http.Response: The result.
@@ -1351,7 +1351,7 @@ func (rt *authenticatedRoundTripper) RoundTrip(req *http.Request) (*http.Respons
 
 // StreamableHTTP implements the mcp.Transport interface for HTTP connections.
 //
-// Summary: implements the mcp.
+// Summary: Implements the mcp.
 type StreamableHTTP struct {
 	// Address is the HTTP address of the MCP service.
 	Address string
@@ -1362,10 +1362,10 @@ type StreamableHTTP struct {
 // RoundTrip executes an HTTP request and returns the response.
 //
 //
-// Summary: executes an HTTP request and returns the response.
+// Summary: Executes an HTTP request and returns the response.
 //
 // Parameters:
-// - req (*http.Request): The parameter.
+// - req (*http.Request): The RPC request message.
 //
 // Returns:
 // - *http.Response: The result.

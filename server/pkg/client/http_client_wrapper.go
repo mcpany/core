@@ -17,7 +17,7 @@ import (
 // connection pool, which can help control the number of concurrent connections
 // and reuse them where appropriate.
 //
-// Summary: wraps an `*http.
+// Summary: Wraps an `*http.
 type HTTPClientWrapper struct {
 	*http.Client
 	config *configv1.UpstreamServiceConfig
@@ -28,11 +28,11 @@ type HTTPClientWrapper struct {
 // NewHTTPClientWrapper creates a new HTTPClientWrapper.
 // It accepts a shared health checker to avoid creating a new one for every client.
 //
-// Summary: creates a new HTTPClientWrapper.
+// Summary: Creates a new HTTPClientWrapper.
 //
 // Parameters:
-//   - client (*http.Client): The client.
-//   - config (*configv1.UpstreamServiceConfig): The config.
+//   - client (*http.Client): The client used to communicate with the upstream service.
+//   - config (*configv1.UpstreamServiceConfig): Configuration settings.
 //   - checker (health.Checker): The checker.
 //
 // Returns:
@@ -58,7 +58,7 @@ func NewHTTPClientWrapper(client *http.Client, config *configv1.UpstreamServiceC
 //
 // Returns true if successful.
 //
-// Summary: checks the health of the upstream service by making a request to the configured health check endpoint.
+// Summary: Checks the health of the upstream service by making a request to the configured health check endpoint.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
@@ -82,7 +82,7 @@ func (w *HTTPClientWrapper) IsHealthy(ctx context.Context) bool {
 // Previously, this called CloseIdleConnections on the shared transport, which would negatively
 // impact other concurrent requests sharing the same Transport.
 //
-// Summary: is a no-op for the wrapper as it does not own the http.
+// Summary: Is a no-op for the wrapper as it does not own the http.
 //
 // Returns:
 //   - error: An error if the operation fails.

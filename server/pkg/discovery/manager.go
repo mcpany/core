@@ -14,7 +14,7 @@ import (
 
 // ProviderStatus represents the status of a discovery provider.
 //
-// Summary: represents the status of a discovery provider.
+// Summary: Represents the status of a discovery provider.
 type ProviderStatus struct {
 	Name            string
 	Status          string // "OK", "ERROR"
@@ -25,7 +25,7 @@ type ProviderStatus struct {
 
 // Manager manages auto-discovery providers.
 //
-// Summary: manages auto-discovery providers.
+// Summary: Manages auto-discovery providers.
 type Manager struct {
 	providers []Provider
 	mu        sync.RWMutex
@@ -34,7 +34,7 @@ type Manager struct {
 
 // NewManager creates a new discovery manager.
 //
-// Summary: creates a new discovery manager.
+// Summary: Creates a new discovery manager.
 //
 // Returns:
 //   - *Manager: The result.
@@ -49,10 +49,10 @@ func NewManager() *Manager {
 
 // RegisterProvider registers a new provider.
 //
-// Summary: registers a new provider.
+// Summary: Registers a new provider.
 //
 // Parameters:
-//   - p (Provider): The p.
+//   - p (Provider): The parameter or provider.
 //
 // Side Effects:
 //   - None.
@@ -69,7 +69,7 @@ func (m *Manager) RegisterProvider(p Provider) {
 // Run runs all registered providers and returns the aggregated discovered services.
 // It also updates the internal status of each provider.
 //
-// Summary: runs all registered providers and returns the aggregated discovered services.
+// Summary: Runs all registered providers and returns the aggregated discovered services.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
@@ -128,7 +128,7 @@ func (m *Manager) Run(ctx context.Context) []*configv1.UpstreamServiceConfig {
 
 // GetStatuses returns the current status of all providers.
 //
-// Summary: returns the current status of all providers.
+// Summary: Returns the current status of all providers.
 //
 // Returns:
 //   - []*ProviderStatus: The result.
@@ -152,10 +152,10 @@ func (m *Manager) GetStatuses() []*ProviderStatus {
 
 // GetProviderStatus returns the status of a specific provider.
 //
-// Summary: returns the status of a specific provider.
+// Summary: Returns the status of a specific provider.
 //
 // Parameters:
-//   - name (string): The name.
+//   - name (string): The name of the resource.
 //
 // Returns:
 //   - *ProviderStatus: The result.

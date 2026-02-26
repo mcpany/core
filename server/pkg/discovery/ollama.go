@@ -19,7 +19,7 @@ import (
 
 // Provider defines the interface for auto-discovering local services.
 //
-// Summary: defines the interface for auto-discovering local services.
+// Summary: Defines the interface for auto-discovering local services.
 type Provider interface {
 	// Name returns the name of the discovery provider.
 	Name() string
@@ -30,7 +30,7 @@ type Provider interface {
 // OllamaProvider discovers local Ollama instances.
 // OllamaProvider is a provider that discovers local Ollama instances.
 //
-// Summary: discovers local Ollama instances.
+// Summary: Discovers local Ollama instances.
 type OllamaProvider struct {
 	Endpoint   string // e.g., "http://localhost:11434"
 	client     *http.Client
@@ -39,7 +39,7 @@ type OllamaProvider struct {
 
 // Name returns the name of the provider.
 //
-// Summary: returns the name of the provider.
+// Summary: Returns the name of the provider.
 //
 // Returns:
 //   - string: The result.
@@ -52,7 +52,7 @@ func (p *OllamaProvider) Name() string {
 
 // Discover attempts to find local Ollama instances and return them as tools.
 //
-// Summary: attempts to find local Ollama instances and return them as tools.
+// Summary: Attempts to find local Ollama instances and return them as tools.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.

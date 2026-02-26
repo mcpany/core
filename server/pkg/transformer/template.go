@@ -15,7 +15,7 @@ import (
 // TextTemplate provides a simple wrapper around Go's standard text/template
 // for rendering strings with dynamic data.
 //
-// Summary: provides a simple wrapper around Go's standard text/template.
+// Summary: Provides a simple wrapper around Go's standard text/template.
 type TextTemplate struct {
 	template *fasttemplate.Template
 	raw      string
@@ -29,7 +29,7 @@ type TextTemplate struct {
 // templateString is the template content to be parsed.
 // It returns a new TextTemplate or an error if the template string is invalid.
 //
-// Summary: parses a template string and creates a new TextTemplate.
+// Summary: Parses a template string and creates a new TextTemplate.
 //
 // Parameters:
 //   - _ (templateString): Ignored.
@@ -73,10 +73,10 @@ func NewTemplate(templateString, startTag, endTag string) (*TextTemplate, error)
 // template.
 // It returns the rendered string or an error if the template execution fails.
 //
-// Summary: executes the template with the provided parameters and returns the.
+// Summary: Executes the template with the provided parameters and returns the.
 //
 // Parameters:
-//   - params (map[string]any): The params.
+//   - params (map[string]any): The function parameters.
 //
 // Returns:
 //   - string: The result.

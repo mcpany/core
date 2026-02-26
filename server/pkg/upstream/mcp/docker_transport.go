@@ -48,7 +48,7 @@ var newDockerClient = func(ops ...client.Opt) (dockerClient, error) {
 // DockerTransport implements the mcp.Transport interface to connect to a service
 // running inside a Docker container. It manages the container lifecycle.
 //
-// Summary: implements the mcp.
+// Summary: Implements the mcp.
 type DockerTransport struct {
 	StdioConfig *configv1.McpStdioConnection
 }
@@ -56,7 +56,7 @@ type DockerTransport struct {
 // Connect establishes a connection to the service within the Docker container.
 //
 //
-// Summary: establishes a connection to the service within the Docker container.
+// Summary: Establishes a connection to the service within the Docker container.
 //
 // Parameters:
 // - ctx (context.Context): The context for the request.
@@ -212,10 +212,10 @@ type dockerConn struct {
 // Read decodes a single JSON-RPC message from the container's output stream.
 //
 //
-// Summary: decodes a single JSON-RPC message from the container's output stream.
+// Summary: Decodes a single JSON-RPC message from the container's output stream.
 //
 // Parameters:
-// - _ (context.Context): The parameter.
+// - _ (context.Context): Context for the operation.
 //
 // Returns:
 // - jsonrpc.Message: The result.
@@ -308,11 +308,11 @@ func (c *dockerConn) Read(_ context.Context) (jsonrpc.Message, error) {
 // Write encodes and sends a JSON-RPC message to the container's input stream.
 //
 //
-// Summary: encodes and sends a JSON-RPC message to the container's input stream.
+// Summary: Encodes and sends a JSON-RPC message to the container's input stream.
 //
 // Parameters:
-// - _ (context.Context): The parameter.
-// - msg (jsonrpc.Message): The parameter.
+// - _ (context.Context): Context for the operation.
+// - msg (jsonrpc.Message): The message string.
 //
 // Returns:
 // - error: An error if the operation fails.
@@ -364,7 +364,7 @@ func (c *dockerConn) Write(_ context.Context, msg jsonrpc.Message) error {
 // Close terminates the connection by closing the underlying ReadWriteCloser.
 //
 //
-// Summary: terminates the connection by closing the underlying ReadWriteCloser.
+// Summary: Terminates the connection by closing the underlying ReadWriteCloser.
 //
 // Returns:
 // - error: An error if the operation fails.
@@ -381,7 +381,7 @@ func (c *dockerConn) Close() error {
 // SessionID returns a static identifier for the Docker transport session.
 //
 //
-// Summary: returns a static identifier for the Docker transport session.
+// Summary: Returns a static identifier for the Docker transport session.
 //
 // Returns:
 // - string: The result.
@@ -403,7 +403,7 @@ type dockerReadWriteCloser struct {
 // Close closes the underlying connection and removes the associated Docker container.
 //
 //
-// Summary: closes the underlying connection and removes the associated Docker container.
+// Summary: Closes the underlying connection and removes the associated Docker container.
 //
 // Returns:
 // - error: An error if the operation fails.
@@ -445,13 +445,13 @@ type slogWriter struct {
 // individually using the configured slog.Logger and level.
 //
 //
-// Summary: takes a byte slice, scans it for lines, and logs each line.
+// Summary: Takes a byte slice, scans it for lines, and logs each line.
 //
 // Parameters:
-// - p ([]byte): The parameter.
+// - p ([]byte): The parameter or provider.
 //
 // Returns:
-// - n (int): The result.
+// - n (int): The integer value.
 // - err (error): An error if the operation fails.
 //
 // Errors:
@@ -477,13 +477,13 @@ type tailBuffer struct {
 // Write writes data to the buffer, maintaining the size limit.
 //
 //
-// Summary: writes data to the buffer, maintaining the size limit.
+// Summary: Writes data to the buffer, maintaining the size limit.
 //
 // Parameters:
-// - p ([]byte): The parameter.
+// - p ([]byte): The parameter or provider.
 //
 // Returns:
-// - n (int): The result.
+// - n (int): The integer value.
 // - err (error): An error if the operation fails.
 //
 // Errors:
@@ -506,7 +506,7 @@ func (b *tailBuffer) Write(p []byte) (n int, err error) {
 // String returns the buffered data as a string.
 //
 //
-// Summary: returns the buffered data as a string.
+// Summary: Returns the buffered data as a string.
 //
 // Returns:
 // - string: The result.

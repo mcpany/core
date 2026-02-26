@@ -16,7 +16,7 @@ import (
 
 // Config defines the configuration for the GC Worker.
 //
-// Summary: defines the configuration for the GC Worker.
+// Summary: Defines the configuration for the GC Worker.
 type Config struct {
 	Enabled  bool
 	Interval time.Duration
@@ -26,7 +26,7 @@ type Config struct {
 
 // Worker implements a background worker for garbage collection.
 //
-// Summary: implements a background worker for garbage collection.
+// Summary: Implements a background worker for garbage collection.
 type Worker struct {
 	config Config
 }
@@ -37,10 +37,10 @@ type Worker struct {
 //
 // Returns the result.
 //
-// Summary: creates a new GC Worker.
+// Summary: Creates a new GC Worker.
 //
 // Parameters:
-//   - config (Config): The config.
+//   - config (Config): Configuration settings.
 //
 // Returns:
 //   - *Worker: The result.
@@ -62,7 +62,7 @@ func New(config Config) *Worker {
 // Start runs the GC worker in the background.
 // It returns immediately and runs cleanup periodically until the context is canceled.
 //
-// Summary: runs the GC worker in the background.
+// Summary: Runs the GC worker in the background.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.

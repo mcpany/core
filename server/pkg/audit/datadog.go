@@ -26,7 +26,7 @@ const (
 
 // DatadogAuditStore sends audit logs to Datadog.
 //
-// Summary: sends audit logs to Datadog.
+// Summary: Sends audit logs to Datadog.
 type DatadogAuditStore struct {
 	config *configv1.DatadogConfig
 	client *http.Client
@@ -38,10 +38,10 @@ type DatadogAuditStore struct {
 
 // NewDatadogAuditStore creates a new DatadogAuditStore.
 //
-// Summary: creates a new DatadogAuditStore.
+// Summary: Creates a new DatadogAuditStore.
 //
 // Parameters:
-//   - config (*configv1.DatadogConfig): The config.
+//   - config (*configv1.DatadogConfig): Configuration settings.
 //
 // Returns:
 //   - *DatadogAuditStore: The result.
@@ -116,11 +116,11 @@ func (e *DatadogAuditStore) worker() {
 
 // Write implements the Store interface.
 //
-// Summary: implements the Store interface.
+// Summary: Implements the Store interface.
 //
 // Parameters:
 //   - _ (context.Context): Ignored.
-//   - entry (Entry): The entry.
+//   - entry (Entry): The log entry.
 //
 // Returns:
 //   - error: An error if the operation fails.
@@ -184,7 +184,7 @@ func (e *DatadogAuditStore) sendBatch(batch []Entry) {
 
 // Read implements the Store interface.
 //
-// Summary: implements the Store interface.
+// Summary: Implements the Store interface.
 //
 // Parameters:
 //   - _ (context.Context): Ignored.
@@ -202,7 +202,7 @@ func (e *DatadogAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 
 // Close closes the queue and waits for workers to finish.
 //
-// Summary: closes the queue and waits for workers to finish.
+// Summary: Closes the queue and waits for workers to finish.
 //
 // Returns:
 //   - error: An error if the operation fails.

@@ -15,7 +15,7 @@ import (
 // It formats the check results with status icons and alignment for readability.
 //
 //
-// Summary: prints the doctor check results in a structured table to the provided writer.
+// Summary: Prints the doctor check results in a structured table to the provided writer.
 //
 // Parameters:
 // - w: io.Writer. The writer to output the results to (e.g., os.Stdout). If nil, defaults to os.Stdout.

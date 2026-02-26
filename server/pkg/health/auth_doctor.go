@@ -11,7 +11,7 @@ import (
 //
 // Returns the result.
 //
-// Summary: performs health checks for authentication configuration.
+// Summary: Performs health checks for authentication configuration.
 //
 // Returns:
 //   - map[string]CheckResult: The result.

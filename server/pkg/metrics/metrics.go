@@ -19,7 +19,7 @@ import (
 
 // Label is an alias for metrics.Label. It represents a key-value pair for labeling metrics.
 //
-// Summary: is an alias for metrics.
+// Summary: Is an alias for metrics.
 type Label = metrics.Label
 
 // NewPrometheusSink creates a new Prometheus sink for metrics collection.

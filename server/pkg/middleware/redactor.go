@@ -26,7 +26,7 @@ var (
 
 // Redactor handles redaction of sensitive data based on configuration.
 //
-// Summary: handles redaction of sensitive data based on configuration.
+// Summary: Handles redaction of sensitive data based on configuration.
 type Redactor struct {
 	customPattern  *regexp.Regexp
 	customPatterns []*regexp.Regexp
@@ -39,10 +39,10 @@ type Redactor struct {
 //
 // Returns the result.
 //
-// Summary: creates a new Redactor from the given DLP config.
+// Summary: Creates a new Redactor from the given DLP config.
 //
 // Parameters:
-//   - config (*configv1.DLPConfig): The config.
+//   - config (*configv1.DLPConfig): Configuration settings.
 //   - log (*slog.Logger): The log.
 //
 // Returns:
@@ -98,10 +98,10 @@ func NewRedactor(config *configv1.DLPConfig, log *slog.Logger) *Redactor {
 // Returns the result.
 // Returns an error if the operation fails.
 //
-// Summary: redacts sensitive information from a JSON byte slice.
+// Summary: Redacts sensitive information from a JSON byte slice.
 //
 // Parameters:
-//   - data ([]byte): The data.
+//   - data ([]byte): The data payload.
 //
 // Returns:
 //   - []byte: The result.
@@ -169,10 +169,10 @@ func (r *Redactor) RedactJSON(data []byte) ([]byte, error) {
 //
 // Returns the result.
 //
-// Summary: redacts sensitive information from a string.
+// Summary: Redacts sensitive information from a string.
 //
 // Parameters:
-//   - s (string): The s.
+//   - s (string): The server instance.
 //
 // Returns:
 //   - string: The result.
@@ -242,10 +242,10 @@ func (r *Redactor) RedactString(s string) string {
 //
 // v is the v.
 //
-// Summary: redacts sensitive information from a map.
+// Summary: Redacts sensitive information from a map.
 //
 // Parameters:
-//   - v (map[string]interface{}): The v.
+//   - v (map[string]interface{}): The value.
 //
 // Side Effects:
 //   - None.
@@ -264,10 +264,10 @@ func (r *Redactor) RedactStruct(v map[string]interface{}) {
 //
 // Returns the result.
 //
-// Summary: redacts sensitive information from a value.
+// Summary: Redacts sensitive information from a value.
 //
 // Parameters:
-//   - val (interface{}): The val.
+//   - val (interface{}): The value.
 //
 // Returns:
 //   - interface: The result.

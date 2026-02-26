@@ -16,7 +16,7 @@ import (
 // LogEntry is the structure for logs sent over WebSocket.
 // It matches the frontend expectation.
 //
-// Summary: is the structure for logs sent over WebSocket.
+// Summary: Is the structure for logs sent over WebSocket.
 type LogEntry struct {
 	ID        string         `json:"id"`
 	Timestamp string         `json:"timestamp"`
@@ -28,7 +28,7 @@ type LogEntry struct {
 
 // BroadcastHandler implements slog.Handler and sends logs to the Broadcaster.
 //
-// Summary: implements slog.
+// Summary: Implements slog.
 type BroadcastHandler struct {
 	broadcaster *Broadcaster
 	attrs       []slog.Attr
@@ -44,11 +44,11 @@ type BroadcastHandler struct {
 //
 // Returns the result.
 //
-// Summary: creates a new BroadcastHandler.
+// Summary: Creates a new BroadcastHandler.
 //
 // Parameters:
 //   - broadcaster (*Broadcaster): The broadcaster.
-//   - level (slog.Leveler): The level.
+//   - level (slog.Leveler): The log level.
 //
 // Returns:
 //   - *BroadcastHandler: The result.
@@ -69,11 +69,11 @@ func NewBroadcastHandler(broadcaster *Broadcaster, level slog.Leveler) *Broadcas
 //
 // Returns true if successful.
 //
-// Summary: returns true if the level is greater than or equal to the handler's level.
+// Summary: Returns true if the level is greater than or equal to the handler's level.
 //
 // Parameters:
 //   - _ (context.Context): Ignored.
-//   - level (slog.Level): The level.
+//   - level (slog.Level): The log level.
 //
 // Returns:
 //   - bool: The result.
@@ -91,11 +91,11 @@ func (h *BroadcastHandler) Enabled(_ context.Context, level slog.Level) bool {
 //
 // Returns an error if the operation fails.
 //
-// Summary: handles the log record by converting it to LogEntry and broadcasting it.
+// Summary: Handles the log record by converting it to LogEntry and broadcasting it.
 //
 // Parameters:
 //   - _ (context.Context): Ignored.
-//   - r (slog.Record): The r.
+//   - r (slog.Record): The HTTP request.
 //
 // Returns:
 //   - error: An error if the operation fails.
@@ -181,7 +181,7 @@ func (h *BroadcastHandler) Handle(_ context.Context, r slog.Record) error {
 //
 // Returns the result.
 //
-// Summary: returns a new handler with the given attributes.
+// Summary: Returns a new handler with the given attributes.
 //
 // Parameters:
 //   - attrs ([]slog.Attr): The attrs.
@@ -213,10 +213,10 @@ func (h *BroadcastHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 //
 // Returns the result.
 //
-// Summary: returns a new handler with the given group.
+// Summary: Returns a new handler with the given group.
 //
 // Parameters:
-//   - name (string): The name.
+//   - name (string): The name of the resource.
 //
 // Returns:
 //   - slog.Handler: The result.
@@ -241,7 +241,7 @@ func (h *BroadcastHandler) WithGroup(name string) slog.Handler {
 
 // TeeHandler is a slog.Handler that writes to multiple handlers.
 //
-// Summary: is a slog.
+// Summary: Is a slog.
 type TeeHandler struct {
 	handlers []slog.Handler
 }
@@ -252,10 +252,10 @@ type TeeHandler struct {
 //
 // Returns the result.
 //
-// Summary: creates a new TeeHandler.
+// Summary: Creates a new TeeHandler.
 //
 // Parameters:
-//   - handlers (...slog.Handler): The handlers.
+//   - handlers (...slog.Handler): The handler instance.
 //
 // Returns:
 //   - *TeeHandler: The result.
@@ -273,11 +273,11 @@ func NewTeeHandler(handlers ...slog.Handler) *TeeHandler {
 //
 // Returns true if successful.
 //
-// Summary: returns true if any of the handlers are enabled.
+// Summary: Returns true if any of the handlers are enabled.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
-//   - level (slog.Level): The level.
+//   - level (slog.Level): The log level.
 //
 // Returns:
 //   - bool: The result.
@@ -300,11 +300,11 @@ func (h *TeeHandler) Enabled(ctx context.Context, level slog.Level) bool {
 //
 // Returns an error if the operation fails.
 //
-// Summary: forwards the record to all enabled handlers.
+// Summary: Forwards the record to all enabled handlers.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
-//   - r (slog.Record): The r.
+//   - r (slog.Record): The HTTP request.
 //
 // Returns:
 //   - error: An error if the operation fails.
@@ -329,7 +329,7 @@ func (h *TeeHandler) Handle(ctx context.Context, r slog.Record) error {
 //
 // Returns the result.
 //
-// Summary: returns a new TeeHandler with the attributes applied to all handlers.
+// Summary: Returns a new TeeHandler with the attributes applied to all handlers.
 //
 // Parameters:
 //   - attrs ([]slog.Attr): The attrs.
@@ -353,10 +353,10 @@ func (h *TeeHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 //
 // Returns the result.
 //
-// Summary: returns a new TeeHandler with the group applied to all handlers.
+// Summary: Returns a new TeeHandler with the group applied to all handlers.
 //
 // Parameters:
-//   - name (string): The name.
+//   - name (string): The name of the resource.
 //
 // Returns:
 //   - slog.Handler: The result.

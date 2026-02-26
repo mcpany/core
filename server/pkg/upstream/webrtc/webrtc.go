@@ -34,7 +34,7 @@ type sanitizer func(string) (string, error)
 // Upstream implements the upstream.Upstream interface for services that
 // communicate over WebRTC data channels.
 //
-// Summary: implements the upstream.
+// Summary: Implements the upstream.
 type Upstream struct {
 	poolManager       *pool.Manager
 	toolNameSanitizer sanitizer
@@ -45,7 +45,7 @@ type Upstream struct {
 // CheckHealth performs a health check on the upstream service.
 //
 //
-// Summary: performs a health check on the upstream service.
+// Summary: Performs a health check on the upstream service.
 //
 // Parameters:
 // - ctx (context.Context): The context for the request.
@@ -77,10 +77,10 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 // and not managed by a persistent pool.
 //
 //
-// Summary: is a no-op for the WebRTC upstream, as connections are transient.
+// Summary: Is a no-op for the WebRTC upstream, as connections are transient.
 //
 // Parameters:
-// - _ (context.Context): The parameter.
+// - _ (context.Context): Context for the operation.
 //
 // Returns:
 // - error: An error if the operation fails.
@@ -104,10 +104,10 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 // NewUpstream creates a new instance of WebrtcUpstream.
 //
 //
-// Summary: creates a new instance of WebrtcUpstream.
+// Summary: Creates a new instance of WebrtcUpstream.
 //
 // Parameters:
-// - poolManager (*pool.Manager): The parameter.
+// - poolManager (*pool.Manager): The manager instance.
 //
 // Returns:
 // - upstream.Upstream: The result.

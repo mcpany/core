@@ -25,7 +25,7 @@ const (
 
 // SplunkAuditStore sends audit logs to Splunk HTTP Event Collector.
 //
-// Summary: sends audit logs to Splunk HTTP Event Collector.
+// Summary: Sends audit logs to Splunk HTTP Event Collector.
 type SplunkAuditStore struct {
 	config *configv1.SplunkConfig
 	client *http.Client
@@ -36,10 +36,10 @@ type SplunkAuditStore struct {
 
 // NewSplunkAuditStore creates a new SplunkAuditStore.
 //
-// Summary: creates a new SplunkAuditStore.
+// Summary: Creates a new SplunkAuditStore.
 //
 // Parameters:
-//   - config (*configv1.SplunkConfig): The config.
+//   - config (*configv1.SplunkConfig): Configuration settings.
 //
 // Returns:
 //   - *SplunkAuditStore: The result.
@@ -107,11 +107,11 @@ func (e *SplunkAuditStore) worker() {
 
 // Write implements the Store interface.
 //
-// Summary: implements the Store interface.
+// Summary: Implements the Store interface.
 //
 // Parameters:
 //   - _ (context.Context): Ignored.
-//   - entry (Entry): The entry.
+//   - entry (Entry): The log entry.
 //
 // Returns:
 //   - error: An error if the operation fails.
@@ -176,7 +176,7 @@ func (e *SplunkAuditStore) sendBatch(batch []Entry) {
 
 // Read implements the Store interface.
 //
-// Summary: implements the Store interface.
+// Summary: Implements the Store interface.
 //
 // Parameters:
 //   - _ (context.Context): Ignored.
@@ -194,7 +194,7 @@ func (e *SplunkAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 
 // Close closes the queue and waits for workers to finish.
 //
-// Summary: closes the queue and waits for workers to finish.
+// Summary: Closes the queue and waits for workers to finish.
 //
 // Returns:
 //   - error: An error if the operation fails.

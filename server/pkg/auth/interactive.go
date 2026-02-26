@@ -20,7 +20,7 @@ import (
 // InitiateOAuth starts the OAuth2 flow for a given service or credential.
 // It returns the authorization URL and the state parameter.
 //
-// Summary: starts the OAuth2 flow for a given service or credential.
+// Summary: Starts the OAuth2 flow for a given service or credential.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
@@ -136,7 +136,7 @@ func (am *Manager) InitiateOAuth(ctx context.Context, userID, serviceID, credent
 
 // HandleOAuthCallback handles the OAuth2 callback code exchange.
 //
-// Summary: handles the OAuth2 callback code exchange.
+// Summary: Handles the OAuth2 callback code exchange.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.

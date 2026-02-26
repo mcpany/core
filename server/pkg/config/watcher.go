@@ -34,7 +34,7 @@ type Watcher struct {
 // NewWatcher creates a new file watcher.
 //
 //
-// Summary: creates a new file watcher.
+// Summary: Creates a new file watcher.
 //
 // Returns:
 //   - *Watcher: The result.
@@ -187,7 +187,7 @@ func (w *Watcher) Watch(paths []string, reloadFunc func()) error {
 // Close stops the file watcher and releases resources.
 //
 //
-// Summary: stops the file watcher and releases resources.
+// Summary: Stops the file watcher and releases resources.
 //
 // Parameters:
 // - None.

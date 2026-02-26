@@ -22,10 +22,10 @@ var jsonSizeVisitedPool = sync.Pool{
 // It avoids allocating the full JSON string by traversing the structure recursively.
 // It supports standard Go types and respects basic JSON encoding rules.
 //
-// Summary: estimates the size of the JSON representation of a value.
+// Summary: Estimates the size of the JSON representation of a value.
 //
 // Parameters:
-//   - v (interface{}): The v.
+//   - v (interface{}): The value.
 //
 // Returns:
 //   - int: The result.

@@ -18,10 +18,10 @@ import (
 //
 // Returns the result.
 //
-// Summary: returns a middleware function to track session activity.
+// Summary: Returns a middleware function to track session activity.
 //
 // Parameters:
-//   - next (mcp.MethodHandler): The next.
+//   - next (mcp.MethodHandler): The handler instance.
 //
 // Returns:
 //   - mcp.MethodHandler: The result.

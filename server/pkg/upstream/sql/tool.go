@@ -24,7 +24,7 @@ import (
 
 // Tool implements the Tool interface for a tool that executes a SQL query.
 //
-// Summary: implements the Tool interface for a tool that executes a SQL query.
+// Summary: Implements the Tool interface for a tool that executes a SQL query.
 type Tool struct {
 	tool        *v1.Tool
 	mcpTool     *mcp.Tool
@@ -39,14 +39,14 @@ type Tool struct {
 // NewTool creates a new SQL Tool.
 //
 //
-// Summary: creates a new SQL Tool.
+// Summary: Creates a new SQL Tool.
 //
 // Parameters:
-// - t (*v1.Tool): The parameter.
-// - db (*sql.DB): The parameter.
-// - callDef (*configv1.SqlCallDefinition): The parameter.
-// - policies ([]*configv1.CallPolicy): The parameter.
-// - callID (string): The parameter.
+// - t (*v1.Tool): The testing instance.
+// - db (*sql.DB): The database connection.
+// - callDef (*configv1.SqlCallDefinition): The call def.
+// - policies ([]*configv1.CallPolicy): The policies.
+// - callID (string): The string value.
 //
 // Returns:
 // - *Tool: The result.
@@ -71,7 +71,7 @@ func NewTool(t *v1.Tool, db *sql.DB, callDef *configv1.SqlCallDefinition, polici
 // Tool returns the protobuf definition of the tool.
 //
 //
-// Summary: returns the protobuf definition of the tool.
+// Summary: Returns the protobuf definition of the tool.
 //
 // Returns:
 // - *v1.Tool: The result.
@@ -85,7 +85,7 @@ func (t *Tool) Tool() *v1.Tool {
 // MCPTool returns the MCP tool definition.
 //
 //
-// Summary: returns the MCP tool definition.
+// Summary: Returns the MCP tool definition.
 //
 // Returns:
 // - *mcp.Tool: The result.
@@ -106,7 +106,7 @@ func (t *Tool) MCPTool() *mcp.Tool {
 // GetCacheConfig returns the cache configuration for the tool.
 //
 //
-// Summary: returns the cache configuration for the tool.
+// Summary: Returns the cache configuration for the tool.
 //
 // Returns:
 // - *configv1.CacheConfig: The result.
@@ -123,11 +123,11 @@ func (t *Tool) GetCacheConfig() *configv1.CacheConfig {
 // Execute runs the SQL query with the provided inputs.
 //
 //
-// Summary: runs the SQL query with the provided inputs.
+// Summary: Runs the SQL query with the provided inputs.
 //
 // Parameters:
 // - ctx (context.Context): The context for the request.
-// - req (*tool.ExecutionRequest): The parameter.
+// - req (*tool.ExecutionRequest): The RPC request message.
 //
 // Returns:
 // - any: The result.

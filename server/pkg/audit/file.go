@@ -16,7 +16,7 @@ import (
 
 // FileAuditStore writes audit logs to a file or stdout.
 //
-// Summary: writes audit logs to a file or stdout.
+// Summary: Writes audit logs to a file or stdout.
 type FileAuditStore struct {
 	mu   sync.Mutex
 	file *os.File
@@ -30,10 +30,10 @@ type FileAuditStore struct {
 // Returns the result.
 // Returns an error if the operation fails.
 //
-// Summary: creates a new FileAuditStore.
+// Summary: Creates a new FileAuditStore.
 //
 // Parameters:
-//   - path (string): The path.
+//   - path (string): The file system path.
 //
 // Returns:
 //   - *FileAuditStore: The result.
@@ -66,11 +66,11 @@ func NewFileAuditStore(path string) (*FileAuditStore, error) {
 //
 // Returns an error if the operation fails.
 //
-// Summary: writes an audit entry to the file.
+// Summary: Writes an audit entry to the file.
 //
 // Parameters:
 //   - _ (context.Context): Ignored.
-//   - entry (Entry): The entry.
+//   - entry (Entry): The log entry.
 //
 // Returns:
 //   - error: An error if the operation fails.
@@ -103,7 +103,7 @@ func (s *FileAuditStore) Write(_ context.Context, entry Entry) error {
 
 // Read implements the Store interface.
 //
-// Summary: implements the Store interface.
+// Summary: Implements the Store interface.
 //
 // Parameters:
 //   - _ (context.Context): Ignored.
@@ -123,7 +123,7 @@ func (s *FileAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 //
 // Returns an error if the operation fails.
 //
-// Summary: closes the file.
+// Summary: Closes the file.
 //
 // Returns:
 //   - error: An error if the operation fails.

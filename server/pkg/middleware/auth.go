@@ -21,7 +21,7 @@ import (
 // verify credentials before passing the request to the next handler.
 //
 //
-// Summary: creates an MCP middleware for handling authentication.
+// Summary: Creates an MCP middleware for handling authentication.
 //
 // Parameters:
 // - authManager (*auth.Manager): The authentication manager.

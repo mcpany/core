@@ -13,5 +13,5 @@ const (
 // set at build time using ldflags. The default value is "dev", which is used
 // for local development builds.
 //
-// Summary: is the version of the MCP Any server.
+// Summary: Is the version of the MCP Any server.
 var Version = "dev"

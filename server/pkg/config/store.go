@@ -128,10 +128,10 @@ type yamlEngine struct {
 // SetSkipValidation sets whether to skip schema validation.
 //
 //
-// Summary: sets whether to skip schema validation.
+// Summary: Sets whether to skip schema validation.
 //
 // Parameters:
-// - skip (bool): The parameter.
+// - skip (bool): The boolean flag.
 //
 // Returns:
 // - None.
@@ -145,10 +145,10 @@ func (e *yamlEngine) SetSkipValidation(skip bool) {
 // SetIgnoreEnv sets whether to ignore environment variables.
 //
 //
-// Summary: sets whether to ignore environment variables.
+// Summary: Sets whether to ignore environment variables.
 //
 // Parameters:
-// - ignore (bool): The parameter.
+// - ignore (bool): The boolean flag.
 //
 // Returns:
 // - None.
@@ -162,11 +162,11 @@ func (e *yamlEngine) SetIgnoreEnv(ignore bool) {
 // Unmarshal parses a YAML byte slice into a `proto.Message`.
 //
 //
-// Summary: parses a YAML byte slice into a `proto.
+// Summary: Parses a YAML byte slice into a `proto.
 //
 // Parameters:
-// - b ([]byte): The parameter.
-// - v (proto.Message): The parameter.
+// - b ([]byte): The b.
+// - v (proto.Message): The value.
 //
 // Returns:
 // - error: An error if the operation fails.
@@ -197,12 +197,12 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 // UnmarshalFromMap populates the provided proto.Message from a raw map.
 //
 //
-// Summary: populates the provided proto.
+// Summary: Populates the provided proto.
 //
 // Parameters:
-// - yamlMap (map[string]interface{}): The parameter.
-// - v (proto.Message): The parameter.
-// - originalBytes ([]byte): The parameter.
+// - yamlMap (map[string]interface{}): The yaml map.
+// - v (proto.Message): The value.
+// - originalBytes ([]byte): The original bytes.
 //
 // Returns:
 // - error: An error if the operation fails.
@@ -319,11 +319,11 @@ type textprotoEngine struct{}
 // Unmarshal parses a textproto byte slice into a `proto.Message`.
 //
 //
-// Summary: parses a textproto byte slice into a `proto.
+// Summary: Parses a textproto byte slice into a `proto.
 //
 // Parameters:
-// - b ([]byte): The parameter.
-// - v (proto.Message): The parameter.
+// - b ([]byte): The b.
+// - v (proto.Message): The value.
 //
 // Returns:
 // - error: An error if the operation fails.
@@ -343,11 +343,11 @@ type jsonEngine struct{}
 // Unmarshal parses a JSON byte slice into a `proto.Message`.
 //
 //
-// Summary: parses a JSON byte slice into a `proto.
+// Summary: Parses a JSON byte slice into a `proto.
 //
 // Parameters:
-// - b ([]byte): The parameter.
-// - v (proto.Message): The parameter.
+// - b ([]byte): The b.
+// - v (proto.Message): The value.
 //
 // Returns:
 // - error: An error if the operation fails.
@@ -687,7 +687,7 @@ type FileStore struct {
 // SetSkipValidation configures whether to skip schema validation during loading.
 //
 //
-// Summary: configures whether to skip schema validation during loading.
+// Summary: Configures whether to skip schema validation during loading.
 //
 // Parameters:
 //   - skip (bool): The skip.
@@ -704,7 +704,7 @@ func (s *FileStore) SetSkipValidation(skip bool) {
 // SetIgnoreMissingEnv configures whether to ignore missing environment variables during loading.
 //
 //
-// Summary: configures whether to ignore missing environment variables during loading.
+// Summary: Configures whether to ignore missing environment variables during loading.
 //
 // Parameters:
 //   - ignore (bool): The ignore.
@@ -757,7 +757,7 @@ func NewFileStoreWithSkipErrors(fs afero.Fs, paths []string) *FileStore {
 // HasConfigSources returns true if the store has configuration paths configured.
 //
 //
-// Summary: returns true if the store has configuration paths configured.
+// Summary: Returns true if the store has configuration paths configured.
 //
 // Returns:
 //   - bool: The result.
@@ -1394,7 +1394,7 @@ func collectFieldNames(md protoreflect.MessageDescriptor, candidates map[string]
 // HasConfigSources returns true if any of the underlying stores have configuration sources.
 //
 //
-// Summary: returns true if any of the underlying stores have configuration sources.
+// Summary: Returns true if any of the underlying stores have configuration sources.
 //
 // Returns:
 //   - bool: The result.

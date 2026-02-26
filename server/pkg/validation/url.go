@@ -19,7 +19,7 @@ const trueVal = "true"
 //
 // IsSafeIP is a variable to allow mocking in tests.
 //
-// Summary: checks if the IP address string is safe to connect to,.
+// Summary: Checks if the IP address string is safe to connect to,.
 var IsSafeIP = func(ipStr string) error {
 	// Bypass if explicitly allowed (for testing/development)
 	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == trueVal {
@@ -60,7 +60,7 @@ var lookupIPFunc = func(ctx context.Context, network, host string) ([]net.IP, er
 //
 // IsSafeURL is a variable to allow mocking in tests.
 //
-// Summary: checks if the URL is safe to connect to.
+// Summary: Checks if the URL is safe to connect to.
 var IsSafeURL = func(urlStr string) error {
 	// Bypass if explicitly allowed (for testing/development)
 	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == trueVal {
@@ -117,7 +117,7 @@ var IsSafeURL = func(urlStr string) error {
 
 // ValidateIP checks if the IP address is allowed based on the policy.
 //
-// Summary: checks if the IP address is allowed based on the policy.
+// Summary: Checks if the IP address is allowed based on the policy.
 //
 // Parameters:
 //   - ip (net.IP): The ip.

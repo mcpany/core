@@ -20,7 +20,7 @@ var (
 // GrpcStatsHandler is a gRPC stats handler that records metrics for RPCs and connections.
 // It can optionally wrap another stats.Handler (e.g., OpenTelemetry).
 //
-// Summary: is a gRPC stats handler that records metrics for RPCs and connections.
+// Summary: Is a gRPC stats handler that records metrics for RPCs and connections.
 type GrpcStatsHandler struct {
 	Wrapped stats.Handler
 }
@@ -28,7 +28,7 @@ type GrpcStatsHandler struct {
 // TagRPC can be used to tag RPCs with custom information.
 //
 //
-// Summary: can be used to tag RPCs with custom information.
+// Summary: Can be used to tag RPCs with custom information.
 //
 // Parameters:
 // - ctx: The context of the RPC.
@@ -49,7 +49,7 @@ func (h *GrpcStatsHandler) TagRPC(ctx context.Context, info *stats.RPCTagInfo) c
 // HandleRPC processes RPC stats and increments counters for started and finished RPCs.
 //
 //
-// Summary: processes RPC stats and increments counters for started and finished RPCs.
+// Summary: Processes RPC stats and increments counters for started and finished RPCs.
 //
 // Parameters:
 // - ctx: The context of the RPC.
@@ -72,7 +72,7 @@ func (h *GrpcStatsHandler) HandleRPC(ctx context.Context, s stats.RPCStats) {
 // TagConn can be used to tag connections with custom information.
 //
 //
-// Summary: can be used to tag connections with custom information.
+// Summary: Can be used to tag connections with custom information.
 //
 // Parameters:
 // - ctx: The context of the connection.
@@ -93,7 +93,7 @@ func (h *GrpcStatsHandler) TagConn(ctx context.Context, info *stats.ConnTagInfo)
 // HandleConn processes connection stats and increments counters for opened and closed connections.
 //
 //
-// Summary: processes connection stats and increments counters for opened and closed connections.
+// Summary: Processes connection stats and increments counters for opened and closed connections.
 //
 // Parameters:
 // - ctx: The context of the connection.

@@ -17,7 +17,7 @@ import (
 // SQLiteVectorStore implements VectorStore using SQLite for persistence
 // and an in-memory cache for fast search.
 //
-// Summary: implements VectorStore using SQLite for persistence.
+// Summary: Implements VectorStore using SQLite for persistence.
 type SQLiteVectorStore struct {
 	memoryStore *SimpleVectorStore
 	db          *sql.DB
@@ -26,10 +26,10 @@ type SQLiteVectorStore struct {
 // NewSQLiteVectorStore creates a new SQLiteVectorStore.
 // It loads existing entries from the database into memory.
 //
-// Summary: creates a new SQLiteVectorStore.
+// Summary: Creates a new SQLiteVectorStore.
 //
 // Parameters:
-//   - path (string): The path.
+//   - path (string): The file system path.
 //
 // Returns:
 //   - *SQLiteVectorStore: The result.
@@ -179,13 +179,13 @@ func (s *SQLiteVectorStore) loadFromDB(ctx context.Context) error {
 //
 // Returns an error if the operation fails.
 //
-// Summary: adds a new entry to both memory and DB.
+// Summary: Adds a new entry to both memory and DB.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
-//   - key (string): The key.
+//   - key (string): The key used for lookup or authentication.
 //   - vector ([]float32): The vector.
-//   - result (any): The result.
+//   - result (any): The operation result.
 //   - ttl (time.Duration): The ttl.
 //
 // Returns:
@@ -243,12 +243,12 @@ func (s *SQLiteVectorStore) Add(ctx context.Context, key string, vector []float3
 // Returns the result.
 // Returns true if successful.
 //
-// Summary: searches in memory.
+// Summary: Searches in memory.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
-//   - key (string): The key.
-//   - query ([]float32): The query.
+//   - key (string): The key used for lookup or authentication.
+//   - query ([]float32): The query string or object.
 //
 // Returns:
 //   - any: The result.
@@ -266,11 +266,11 @@ func (s *SQLiteVectorStore) Search(ctx context.Context, key string, query []floa
 // ctx is the context for the request.
 // key is the key.
 //
-// Summary: removes expired entries from both memory and DB.
+// Summary: Removes expired entries from both memory and DB.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
-//   - key (string): The key.
+//   - key (string): The key used for lookup or authentication.
 //
 // Side Effects:
 //   - None.
@@ -285,7 +285,7 @@ func (s *SQLiteVectorStore) Prune(ctx context.Context, key string) {
 //
 // Returns an error if the operation fails.
 //
-// Summary: closes the database connection.
+// Summary: Closes the database connection.
 //
 // Returns:
 //   - error: An error if the operation fails.

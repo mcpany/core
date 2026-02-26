@@ -35,7 +35,7 @@ import (
 // are defined by an OpenAPI specification. It parses the spec, discovers the
 // available operations, and registers them as tools.
 //
-// Summary: implements the upstream.
+// Summary: Implements the upstream.
 type OpenAPIUpstream struct { //nolint:revive
 	openapiCache *ttlcache.Cache[string, *openapi3.T]
 	httpClients  map[string]*http.Client
@@ -47,10 +47,10 @@ type OpenAPIUpstream struct { //nolint:revive
 // services, this typically means closing any persistent connections.
 //
 //
-// Summary: gracefully terminates the OpenAPI upstream service.
+// Summary: Gracefully terminates the OpenAPI upstream service.
 //
 // Parameters:
-// - _ (context.Context): The parameter.
+// - _ (context.Context): Context for the operation.
 //
 // Returns:
 // - error: An error if the operation fails.
@@ -75,7 +75,7 @@ func (u *OpenAPIUpstream) Shutdown(_ context.Context) error {
 // cache for storing parsed OpenAPI documents to avoid redundant parsing.
 //
 //
-// Summary: creates a new instance of OpenAPIUpstream.
+// Summary: Creates a new instance of OpenAPIUpstream.
 //
 // Returns:
 // - upstream.Upstream: The result.
@@ -281,10 +281,10 @@ type httpClientImpl struct {
 // client.HTTPClient interface.
 //
 //
-// Summary: sends an HTTP request and returns an HTTP response, fulfilling the.
+// Summary: Sends an HTTP request and returns an HTTP response, fulfilling the.
 //
 // Parameters:
-// - req (*http.Request): The parameter.
+// - req (*http.Request): The RPC request message.
 //
 // Returns:
 // - *http.Response: The result.

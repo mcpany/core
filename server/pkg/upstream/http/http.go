@@ -59,7 +59,7 @@ func httpMethodToString(method configv1.HttpCallDefinition_HttpMethod) (string, 
 // It handles the registration of tools defined in the service configuration
 // and manages connection pooling for HTTP requests.
 //
-// Summary: implements the upstream.
+// Summary: Implements the upstream.
 type Upstream struct {
 	poolManager *pool.Manager
 	serviceID   string
@@ -74,7 +74,7 @@ type Upstream struct {
 // TCP connection check to the service address.
 //
 //
-// Summary: performs a health check on the upstream service.
+// Summary: Performs a health check on the upstream service.
 //
 // Parameters:
 // - ctx (context.Context): The context for the health check.
@@ -110,7 +110,7 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 // associated connection pool.
 //
 //
-// Summary: gracefully terminates the HTTP upstream service by shutting down the.
+// Summary: Gracefully terminates the HTTP upstream service by shutting down the.
 //
 // Parameters:
 // - ctx (context.Context): The context for the shutdown operation (currently unused).
@@ -138,7 +138,7 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 // NewUpstream creates a new instance of Upstream.
 //
 //
-// Summary: creates a new instance of Upstream.
+// Summary: Creates a new instance of Upstream.
 //
 // Parameters:
 // - poolManager (*pool.Manager): The connection pool manager to be used for managing HTTP connections.

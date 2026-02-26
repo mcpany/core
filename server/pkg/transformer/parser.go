@@ -30,7 +30,7 @@ var (
 // map to define the extraction rules for each format, such as JSONPath for
 // JSON, XPath for XML, and regex for plain text.
 //
-// Summary: provides functionality to parse various text formats (JSON, XML,.
+// Summary: Provides functionality to parse various text formats (JSON, XML,.
 type TextParser struct {
 	transformer *Transformer
 }
@@ -44,7 +44,7 @@ var (
 //
 // Returns the result.
 //
-// Summary: returns a shared instance of TextParser.
+// Summary: Returns a shared instance of TextParser.
 //
 // Returns:
 //   - *TextParser: The result.
@@ -68,11 +68,11 @@ func NewTextParser() *TextParser {
 // It returns the transformed data as a byte slice or an error if the
 // transformation fails.
 //
-// Summary: takes a map of data and a Go template string and returns a byte.
+// Summary: Takes a map of data and a Go template string and returns a byte.
 //
 // Parameters:
 //   - templateStr (string): The template str.
-//   - data (any): The data.
+//   - data (any): The data payload.
 //
 // Returns:
 //   - []byte: The result.
@@ -94,12 +94,12 @@ func (p *TextParser) Transform(templateStr string, data any) ([]byte, error) {
 // jqQuery is the JQ query string (only used when inputType is "jq").
 // It returns the extracted data (as a map or any for JQ) or an error if parsing fails.
 //
-// Summary: extracts data from an input byte slice based on the specified input.
+// Summary: Extracts data from an input byte slice based on the specified input.
 //
 // Parameters:
 //   - inputType (string): The input type.
 //   - input ([]byte): The input.
-//   - config (map[string]string): The config.
+//   - config (map[string]string): Configuration settings.
 //   - jqQuery (string): The jq query.
 //
 // Returns:

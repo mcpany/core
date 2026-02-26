@@ -24,7 +24,7 @@ import (
 // messages on the event bus, processes them using the service registry, and
 // publishes the results as ServiceRegistrationResult messages.
 //
-// Summary: is a background worker responsible for handling.
+// Summary: Is a background worker responsible for handling.
 type ServiceRegistrationWorker struct {
 	bus             *bus.Provider
 	serviceRegistry serviceregistry.ServiceRegistryInterface
@@ -35,7 +35,7 @@ type ServiceRegistrationWorker struct {
 // NewServiceRegistrationWorker creates a new ServiceRegistrationWorker.
 //
 //
-// Summary: creates a new ServiceRegistrationWorker.
+// Summary: Creates a new ServiceRegistrationWorker.
 //
 // Parameters:
 // - bus: The event bus used for receiving requests and publishing results.
@@ -57,7 +57,7 @@ func NewServiceRegistrationWorker(bus *bus.Provider, serviceRegistry serviceregi
 // SetRetryDelay sets the retry delay for failed registrations.
 //
 //
-// Summary: sets the retry delay for failed registrations.
+// Summary: Sets the retry delay for failed registrations.
 //
 // Parameters:
 // - d: The duration to wait before retrying.
@@ -73,7 +73,7 @@ func (w *ServiceRegistrationWorker) SetRetryDelay(d time.Duration) {
 // until the provided context is canceled.
 //
 //
-// Summary: launches the worker in a new goroutine.
+// Summary: Launches the worker in a new goroutine.
 //
 // Parameters:
 // - ctx: The context that controls the lifecycle of the worker.
@@ -303,7 +303,7 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 
 // Stop waits for the worker to stop.
 //
-// Summary: waits for the worker to stop.
+// Summary: Waits for the worker to stop.
 //
 // Side Effects:
 //   - None.

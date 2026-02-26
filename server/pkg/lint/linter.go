@@ -18,7 +18,7 @@ import (
 //
 // It is used to categorize findings based on their impact and urgency.
 //
-// Summary: indicates the importance of a linting result.
+// Summary: Indicates the importance of a linting result.
 type Severity int
 
 const (
@@ -35,7 +35,7 @@ const (
 // It converts the Severity enum to its string counterpart (ERROR, WARNING, INFO).
 //
 //
-// Summary: returns the string representation of the severity.
+// Summary: Returns the string representation of the severity.
 //
 // Returns:
 // - string: The string representation of the severity.
@@ -59,7 +59,7 @@ func (s Severity) String() string {
 //
 // It encapsulates all details about a detected issue, including its severity, location, and description.
 //
-// Summary: represents a single linting finding.
+// Summary: Represents a single linting finding.
 type Result struct {
 	// Severity indicates how critical the finding is (Error, Warning, Info).
 	Severity Severity
@@ -76,7 +76,7 @@ type Result struct {
 // It formats the result into a human-readable string suitable for CLI output.
 //
 //
-// Summary: returns the string representation of the result.
+// Summary: Returns the string representation of the result.
 //
 // Returns:
 // - string: A formatted string containing severity, service, path, and message.
@@ -99,7 +99,7 @@ func (r Result) String() string {
 //
 // It holds the configuration to be analyzed and provides methods to execute various checks.
 //
-// Summary: performs static analysis on the configuration.
+// Summary: Performs static analysis on the configuration.
 type Linter struct {
 	cfg *configv1.McpAnyServerConfig
 }
@@ -107,7 +107,7 @@ type Linter struct {
 // NewLinter creates a new Linter instance.
 //
 //
-// Summary: creates a new Linter instance.
+// Summary: Creates a new Linter instance.
 //
 // Parameters:
 // - cfg: *configv1.McpAnyServerConfig. The server configuration to be linted.
@@ -127,7 +127,7 @@ func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 // secret usage, shell injection risks, insecure HTTP, and cache settings.
 //
 //
-// Summary: executes all linting checks.
+// Summary: Executes all linting checks.
 //
 // Parameters:
 // - ctx: context.Context. The context for the request (currently unused but reserved for future async checks).

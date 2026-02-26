@@ -24,7 +24,7 @@ import (
 
 // Upstream implements the upstream.Upstream interface for SQL databases.
 //
-// Summary: implements the upstream.
+// Summary: Implements the upstream.
 type Upstream struct {
 	db *sql.DB
 	mu sync.Mutex
@@ -33,7 +33,7 @@ type Upstream struct {
 // NewUpstream creates a new SQL upstream.
 //
 //
-// Summary: creates a new SQL upstream.
+// Summary: Creates a new SQL upstream.
 //
 // Returns:
 // - *Upstream: The result.
@@ -47,10 +47,10 @@ func NewUpstream() *Upstream {
 // Shutdown closes the database connection.
 //
 //
-// Summary: closes the database connection.
+// Summary: Closes the database connection.
 //
 // Parameters:
-// - _ (context.Context): The parameter.
+// - _ (context.Context): Context for the operation.
 //
 // Returns:
 // - error: An error if the operation fails.

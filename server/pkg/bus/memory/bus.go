@@ -50,7 +50,7 @@ func New[T any]() *DefaultBus[T] {
 // warning is logged.
 //
 //
-// Summary: sends a message to all handlers subscribed to the specified topic.
+// Summary: Sends a message to all handlers subscribed to the specified topic.
 //
 // Parameters:
 // - topic: The topic to publish the message to.
@@ -101,7 +101,7 @@ func (b *DefaultBus[T]) Publish(_ context.Context, topic string, msg T) error {
 // of subscribers for the given topic.
 //
 //
-// Summary: registers a handler function for a given topic.
+// Summary: Registers a handler function for a given topic.
 //
 // Parameters:
 // - topic: The topic to subscribe to.
@@ -162,7 +162,7 @@ func (b *DefaultBus[T]) Subscribe(_ context.Context, topic string, handler func(
 // event to occur once and then stop listening.
 //
 //
-// Summary: registers a handler for a topic that will be executed only.
+// Summary: Registers a handler for a topic that will be executed only.
 //
 // Parameters:
 // - topic: The topic to subscribe to.

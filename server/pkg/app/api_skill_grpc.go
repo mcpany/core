@@ -16,7 +16,7 @@ import (
 
 // SkillServiceServer implements the SkillService gRPC interface.
 //
-// Summary: implements the SkillService gRPC interface.
+// Summary: Implements the SkillService gRPC interface.
 type SkillServiceServer struct {
 	pb.UnimplementedSkillServiceServer
 	manager *skill.Manager

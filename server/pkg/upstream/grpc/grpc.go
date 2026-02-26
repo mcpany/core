@@ -41,7 +41,7 @@ import (
 // It uses gRPC reflection to discover services and methods, and creates tools
 // for them. It also manages a connection pool and a cache for reflection data.
 //
-// Summary: implements the upstream.
+// Summary: Implements the upstream.
 type Upstream struct {
 	poolManager     *pool.Manager
 	reflectionCache *ttlcache.Cache[string, *descriptorpb.FileDescriptorSet]
@@ -54,7 +54,7 @@ type Upstream struct {
 // CheckHealth performs a health check on the upstream service.
 //
 //
-// Summary: performs a health check on the upstream service.
+// Summary: Performs a health check on the upstream service.
 //
 // Parameters:
 // - ctx (context.Context): The context for the health check.
@@ -82,7 +82,7 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 // NewUpstream creates a new instance of Upstream.
 //
 //
-// Summary: creates a new instance of Upstream.
+// Summary: Creates a new instance of Upstream.
 //
 // Parameters:
 // - poolManager (*pool.Manager): The connection pool manager to be used for managing gRPC connections.
@@ -108,7 +108,7 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 // associated connection pool.
 //
 //
-// Summary: gracefully terminates the gRPC upstream service by shutting down the.
+// Summary: Gracefully terminates the gRPC upstream service by shutting down the.
 //
 // Parameters:
 // - ctx (context.Context): The context for the shutdown operation (currently unused).

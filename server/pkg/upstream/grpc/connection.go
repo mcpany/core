@@ -18,7 +18,7 @@ import (
 // It can be configured with a custom dialer for testing or special connection
 // scenarios.
 //
-// Summary: is responsible for creating new gRPC client connections.
+// Summary: Is responsible for creating new gRPC client connections.
 type ConnectionFactory struct {
 	dialer func(context.Context, string) (net.Conn, error)
 }
@@ -27,7 +27,7 @@ type ConnectionFactory struct {
 // settings.
 //
 //
-// Summary: creates and returns a new ConnectionFactory with default.
+// Summary: Creates and returns a new ConnectionFactory with default.
 //
 // Returns:
 // - *ConnectionFactory: The result.
@@ -42,11 +42,11 @@ func NewConnectionFactory() *ConnectionFactory {
 // useful for tests that need to mock the network connection.
 //
 //
-// Summary: sets a custom dialer function for the ConnectionFactory.
+// Summary: Sets a custom dialer function for the ConnectionFactory.
 //
 // Parameters:
-// - dialer func(context.Context (string): The parameter.
-// -  (string): The parameter.
+// - dialer func(context.Context (string): Context controls the request lifetime and cancellation.
+// - string: The string value.
 //
 // Returns:
 // - net.Conn: The result.
@@ -63,11 +63,11 @@ func (f *ConnectionFactory) WithDialer(dialer func(context.Context, string) (net
 // has been set, it will be used for the connection.
 //
 //
-// Summary: establishes a new gRPC client connection to the specified.
+// Summary: Establishes a new gRPC client connection to the specified.
 //
 // Parameters:
-// - _ (context.Context): The parameter.
-// - targetAddress (string): The parameter.
+// - _ (context.Context): Context for the operation.
+// - targetAddress (string): The string value.
 //
 // Returns:
 // - *grpc.ClientConn: The result.

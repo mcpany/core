@@ -26,7 +26,7 @@ var (
 // SetLevel updates the global log level dynamically.
 //
 //
-// Summary: updates the global log level dynamically.
+// Summary: Updates the global log level dynamically.
 //
 // Parameters:
 // - level (slog.Level): The new log level.
@@ -41,7 +41,7 @@ func SetLevel(level slog.Level) {
 // mechanism. This allows the global logger to be re-initialized in different
 // test cases. This function should not be used in production code.
 //
-// Summary: is for use in tests to reset the `sync.
+// Summary: Is for use in tests to reset the `sync.
 //
 // Side Effects:
 //   - None.
@@ -60,7 +60,7 @@ func ForTestsOnlyResetLogger() {
 // to ensure a consistent logging setup.
 //
 //
-// Summary: initializes the application's global logger with a specific log level.
+// Summary: Initializes the application's global logger with a specific log level.
 //
 // Parameters:
 // - level (slog.Level): The minimum log level to be recorded.
@@ -143,7 +143,7 @@ func Init(level slog.Level, output io.Writer, logFilePath string, format ...stri
 // initialize it with default settings: logging to `os.Stderr` at `slog.LevelInfo`.
 //
 //
-// Summary: returns the shared global logger instance.
+// Summary: Returns the shared global logger instance.
 //
 // Returns:
 // - *slog.Logger: The global `*slog.Logger` instance.
@@ -172,7 +172,7 @@ func GetLogger() *slog.Logger {
 // ToSlogLevel converts a string log level to a slog.Level.
 //
 //
-// Summary: converts a string log level to a slog.
+// Summary: Converts a string log level to a slog.
 //
 // Parameters:
 // - level (configv1.GlobalSettings_LogLevel): The log level from the configuration.

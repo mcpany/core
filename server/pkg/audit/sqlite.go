@@ -19,7 +19,7 @@ import (
 
 // SQLiteAuditStore writes audit logs to a SQLite database.
 //
-// Summary: writes audit logs to a SQLite database.
+// Summary: Writes audit logs to a SQLite database.
 type SQLiteAuditStore struct {
 	db *sql.DB
 	mu sync.Mutex
@@ -32,10 +32,10 @@ type SQLiteAuditStore struct {
 // Returns the result.
 // Returns an error if the operation fails.
 //
-// Summary: creates a new SQLiteAuditStore.
+// Summary: Creates a new SQLiteAuditStore.
 //
 // Parameters:
-//   - path (string): The path.
+//   - path (string): The file system path.
 //
 // Returns:
 //   - *SQLiteAuditStore: The result.
@@ -162,11 +162,11 @@ func ensureColumn(db *sql.DB, colName string) error {
 //
 // Returns an error if the operation fails.
 //
-// Summary: writes an audit entry to the database.
+// Summary: Writes an audit entry to the database.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
-//   - entry (Entry): The entry.
+//   - entry (Entry): The log entry.
 //
 // Returns:
 //   - error: An error if the operation fails.
@@ -232,11 +232,11 @@ func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
 
 // Read reads audit entries from the database based on the filter.
 //
-// Summary: reads audit entries from the database based on the filter.
+// Summary: Reads audit entries from the database based on the filter.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
-//   - filter (Filter): The filter.
+//   - filter (Filter): The filter criteria.
 //
 // Returns:
 //   - []Entry: The result.
@@ -317,7 +317,7 @@ func (s *SQLiteAuditStore) Read(ctx context.Context, filter Filter) ([]Entry, er
 // It returns true if the chain is valid, false otherwise.
 // If an error occurs during reading, it returns false and the error.
 //
-// Summary: checks the integrity of the audit logs.
+// Summary: Checks the integrity of the audit logs.
 //
 // Returns:
 //   - bool: The result.
@@ -376,7 +376,7 @@ func (s *SQLiteAuditStore) Verify() (bool, error) {
 //
 // Returns an error if the operation fails.
 //
-// Summary: closes the database connection.
+// Summary: Closes the database connection.
 //
 // Returns:
 //   - error: An error if the operation fails.

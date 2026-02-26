@@ -44,7 +44,7 @@ var (
 // It updates the thread-safe global configuration used for sending alerts on health status changes.
 //
 //
-// Summary: sets the global alert configuration.
+// Summary: Sets the global alert configuration.
 //
 // Parameters:
 // - cfg: *configv1.AlertConfig. The new alert configuration.
@@ -62,7 +62,7 @@ func SetGlobalAlertConfig(cfg *configv1.AlertConfig) {
 
 // HTTPServiceWithHealthCheck is an interface for services that have an address and an HTTP health check.
 //
-// Summary: is an interface for services that have an address and an HTTP health check.
+// Summary: Is an interface for services that have an address and an HTTP health check.
 type HTTPServiceWithHealthCheck interface {
 	// GetAddress returns the address of the service.
 	//
@@ -82,7 +82,7 @@ type HTTPServiceWithHealthCheck interface {
 // health check strategy wrapped with latency metrics and status change listeners.
 //
 //
-// Summary: creates a new health checker for the given upstream service.
+// Summary: Creates a new health checker for the given upstream service.
 //
 // Parameters:
 // - uc: *configv1.UpstreamServiceConfig. The configuration of the upstream service to check.

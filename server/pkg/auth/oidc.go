@@ -16,7 +16,7 @@ import (
 
 // OIDCConfig holds the configuration for the OIDC provider.
 //
-// Summary: holds the configuration for the OIDC provider.
+// Summary: Holds the configuration for the OIDC provider.
 type OIDCConfig struct {
 	Issuer       string
 	ClientID     string
@@ -26,7 +26,7 @@ type OIDCConfig struct {
 
 // OIDCProvider handles OIDC authentication flow.
 //
-// Summary: handles OIDC authentication flow.
+// Summary: Handles OIDC authentication flow.
 type OIDCProvider struct {
 	config       OIDCConfig
 	provider     *oidc.Provider
@@ -42,11 +42,11 @@ type OIDCProvider struct {
 // Returns the result.
 // Returns an error if the operation fails.
 //
-// Summary: creates a new OIDCProvider.
+// Summary: Creates a new OIDCProvider.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
-//   - config (OIDCConfig): The config.
+//   - config (OIDCConfig): Configuration settings.
 //
 // Returns:
 //   - *OIDCProvider: The result.
@@ -83,11 +83,11 @@ func NewOIDCProvider(ctx context.Context, config OIDCConfig) (*OIDCProvider, err
 // w is the HTTP response writer.
 // r is the HTTP request.
 //
-// Summary: initiates the OIDC login flow.
+// Summary: Initiates the OIDC login flow.
 //
 // Parameters:
-//   - w (http.ResponseWriter): The w.
-//   - r (*http.Request): The r.
+//   - w (http.ResponseWriter): The HTTP response writer.
+//   - r (*http.Request): The HTTP request.
 //
 // Side Effects:
 //   - None.
@@ -118,11 +118,11 @@ func (p *OIDCProvider) HandleLogin(w http.ResponseWriter, r *http.Request) {
 // w is the HTTP response writer.
 // r is the HTTP request.
 //
-// Summary: handles the OIDC provider callback.
+// Summary: Handles the OIDC provider callback.
 //
 // Parameters:
-//   - w (http.ResponseWriter): The w.
-//   - r (*http.Request): The r.
+//   - w (http.ResponseWriter): The HTTP response writer.
+//   - r (*http.Request): The HTTP request.
 //
 // Side Effects:
 //   - None.

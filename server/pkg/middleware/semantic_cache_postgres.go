@@ -16,7 +16,7 @@ import (
 
 // PostgresVectorStore implements VectorStore using PostgreSQL and pgvector.
 //
-// Summary: implements VectorStore using PostgreSQL and pgvector.
+// Summary: Implements VectorStore using PostgreSQL and pgvector.
 type PostgresVectorStore struct {
 	db *sql.DB
 }
@@ -24,7 +24,7 @@ type PostgresVectorStore struct {
 // NewPostgresVectorStore creates a new PostgresVectorStore.
 // It connects to the database and ensures the schema exists.
 //
-// Summary: creates a new PostgresVectorStore.
+// Summary: Creates a new PostgresVectorStore.
 //
 // Parameters:
 //   - dsn (string): The dsn.
@@ -57,10 +57,10 @@ func NewPostgresVectorStore(dsn string) (*PostgresVectorStore, error) {
 // NewPostgresVectorStoreWithDB creates a new PostgresVectorStore using an existing database connection.
 // It ensures the schema exists.
 //
-// Summary: creates a new PostgresVectorStore using an existing database connection.
+// Summary: Creates a new PostgresVectorStore using an existing database connection.
 //
 // Parameters:
-//   - db (*sql.DB): The db.
+//   - db (*sql.DB): The database connection.
 //
 // Returns:
 //   - *PostgresVectorStore: The result.
@@ -119,13 +119,13 @@ func NewPostgresVectorStoreWithDB(db *sql.DB) (*PostgresVectorStore, error) {
 //
 // Returns an error if the operation fails.
 //
-// Summary: adds a new entry to the vector store.
+// Summary: Adds a new entry to the vector store.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
-//   - key (string): The key.
+//   - key (string): The key used for lookup or authentication.
 //   - vector ([]float32): The vector.
-//   - result (any): The result.
+//   - result (any): The operation result.
 //   - ttl (time.Duration): The ttl.
 //
 // Returns:
@@ -170,12 +170,12 @@ func (s *PostgresVectorStore) Add(ctx context.Context, key string, vector []floa
 // Returns the result.
 // Returns true if successful.
 //
-// Summary: searches for the most similar entry in the vector store.
+// Summary: Searches for the most similar entry in the vector store.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
-//   - key (string): The key.
-//   - query ([]float32): The query.
+//   - key (string): The key used for lookup or authentication.
+//   - query ([]float32): The query string or object.
 //
 // Returns:
 //   - any: The result.
@@ -231,11 +231,11 @@ func (s *PostgresVectorStore) Search(ctx context.Context, key string, query []fl
 // ctx is the context for the request.
 // key is the key.
 //
-// Summary: removes expired entries.
+// Summary: Removes expired entries.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
-//   - key (string): The key.
+//   - key (string): The key used for lookup or authentication.
 //
 // Side Effects:
 //   - None.
@@ -255,7 +255,7 @@ func (s *PostgresVectorStore) Prune(ctx context.Context, key string) {
 //
 // Returns an error if the operation fails.
 //
-// Summary: closes the database connection.
+// Summary: Closes the database connection.
 //
 // Returns:
 //   - error: An error if the operation fails.

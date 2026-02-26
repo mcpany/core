@@ -72,7 +72,7 @@ func New[T any](config *bus.KafkaBus) (*Bus[T], error) {
 // The message is marshaled to JSON and sent to the configured topic prefix + topic.
 //
 //
-// Summary: sends a message to a Kafka topic.
+// Summary: Sends a message to a Kafka topic.
 //
 // Parameters:
 // - ctx: context.Context. The context for the request.
@@ -106,7 +106,7 @@ func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
 // the provided handler.
 //
 //
-// Summary: subscribes to a Kafka topic.
+// Summary: Subscribes to a Kafka topic.
 //
 // Parameters:
 // - ctx: context.Context. The context for the subscription.
@@ -197,7 +197,7 @@ func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (
 // It ensures that the handler is called only once for the next message received.
 //
 //
-// Summary: subscribes to a topic for a single message.
+// Summary: Subscribes to a topic for a single message.
 //
 // Parameters:
 // - ctx: context.Context. The context for the subscription.

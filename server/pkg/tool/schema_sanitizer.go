@@ -18,10 +18,10 @@ const maxRecursionDepth = 100
 // It takes a raw map[string]interface{} (or compatible) and returns a *structpb.Struct.
 // This function does NOT modify the input schema.
 //
-// Summary: attempts to fix common schema issues that cause strict MCP clients to fail.
+// Summary: Attempts to fix common schema issues that cause strict MCP clients to fail.
 //
 // Parameters:
-//   - schema (any): The schema.
+//   - schema (any): The schema definition.
 //
 // Returns:
 //   - *structpb.Struct: The result.

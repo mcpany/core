@@ -16,7 +16,7 @@ import (
 
 // MilvusClient implements VectorClient for Milvus.
 //
-// Summary: implements VectorClient for Milvus.
+// Summary: Implements VectorClient for Milvus.
 type MilvusClient struct {
 	config *configv1.MilvusVectorDB
 	client client.Client
@@ -25,10 +25,10 @@ type MilvusClient struct {
 // NewMilvusClient creates a new Milvus client.
 //
 //
-// Summary: creates a new Milvus client.
+// Summary: Creates a new Milvus client.
 //
 // Parameters:
-// - config (*configv1.MilvusVectorDB): The parameter.
+// - config (*configv1.MilvusVectorDB): Configuration settings.
 //
 // Returns:
 // - *MilvusClient: The result.
@@ -82,14 +82,14 @@ func NewMilvusClient(config *configv1.MilvusVectorDB) (*MilvusClient, error) {
 // Query searches for similar vectors.
 //
 //
-// Summary: searches for similar vectors.
+// Summary: Searches for similar vectors.
 //
 // Parameters:
 // - ctx (context.Context): The context for the request.
-// - vector ([]float32): The parameter.
-// - topK (int64): The parameter.
-// - filter (map[string]interface{}): The parameter.
-// - namespace (string): The parameter.
+// - vector ([]float32): The vector.
+// - topK (int64): The top k.
+// - filter (map[string]interface{}): The filter criteria.
+// - namespace (string): The string value.
 //
 // Returns:
 // - (map[string]interface: The result.
@@ -210,12 +210,12 @@ func (c *MilvusClient) Query(ctx context.Context, vector []float32, topK int64, 
 // Upsert inserts or updates vectors.
 //
 //
-// Summary: inserts or updates vectors.
+// Summary: Inserts or updates vectors.
 //
 // Parameters:
 // - ctx (context.Context): The context for the request.
-// - vectors ([]map[string]interface{}): The parameter.
-// - namespace (string): The parameter.
+// - vectors ([]map[string]interface{}): The vectors.
+// - namespace (string): The string value.
 //
 // Returns:
 // - (map[string]interface: The result.
@@ -428,13 +428,13 @@ func fillMetadataColumn(col entity.Column, i int, val interface{}) {
 // Delete removes vectors.
 //
 //
-// Summary: removes vectors.
+// Summary: Removes vectors.
 //
 // Parameters:
 // - ctx (context.Context): The context for the request.
-// - ids ([]string): The parameter.
-// - namespace (string): The parameter.
-// - filter (map[string]interface{}): The parameter.
+// - ids ([]string): A list of strings.
+// - namespace (string): The string value.
+// - filter (map[string]interface{}): The filter criteria.
 //
 // Returns:
 // - (map[string]interface: The result.
@@ -502,11 +502,11 @@ func (c *MilvusClient) Delete(ctx context.Context, ids []string, namespace strin
 // DescribeIndexStats returns statistics about the index.
 //
 //
-// Summary: returns statistics about the index.
+// Summary: Returns statistics about the index.
 //
 // Parameters:
 // - ctx (context.Context): The context for the request.
-// - _ (map[string]interface{}): The parameter.
+// - _ (map[string]interface{}): The _.
 //
 // Returns:
 // - (map[string]interface: The result.

@@ -19,7 +19,7 @@ import (
 
 // SmartRecoveryMiddleware handles automatic error recovery using LLM.
 //
-// Summary: handles automatic error recovery using LLM.
+// Summary: Handles automatic error recovery using LLM.
 type SmartRecoveryMiddleware struct {
 	config      *configv1.SmartRecoveryConfig
 	llmClient   llm.Client
@@ -29,10 +29,10 @@ type SmartRecoveryMiddleware struct {
 
 // NewSmartRecoveryMiddleware creates a new SmartRecoveryMiddleware.
 //
-// Summary: creates a new SmartRecoveryMiddleware.
+// Summary: Creates a new SmartRecoveryMiddleware.
 //
 // Parameters:
-//   - config (*configv1.SmartRecoveryConfig): The config.
+//   - config (*configv1.SmartRecoveryConfig): Configuration settings.
 //   - toolManager (tool.ManagerInterface): The tool manager.
 //
 // Returns:
@@ -49,12 +49,12 @@ func NewSmartRecoveryMiddleware(config *configv1.SmartRecoveryConfig, toolManage
 
 // Execute executes the middleware logic.
 //
-// Summary: executes the middleware logic.
+// Summary: Executes the middleware logic.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
-//   - req (*tool.ExecutionRequest): The req.
-//   - next (tool.ExecutionFunc): The next.
+//   - req (*tool.ExecutionRequest): The RPC request message.
+//   - next (tool.ExecutionFunc): The function.
 //
 // Returns:
 //   - any: The result.

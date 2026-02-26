@@ -17,7 +17,7 @@ import (
 
 // ErrPromptNotFound is returned when a requested prompt is not found.
 //
-// Summary: is returned when a requested prompt is not found.
+// Summary: Is returned when a requested prompt is not found.
 var ErrPromptNotFound = errors.New("prompt not found")
 
 // Prompt is the fundamental interface for any executable prompt in the system.
@@ -193,7 +193,7 @@ func (p *TemplatedPrompt) Service() string {
 
 // Definition returns the raw configuration definition of the prompt.
 //
-// Summary: returns the raw configuration definition of the prompt.
+// Summary: Returns the raw configuration definition of the prompt.
 //
 // Returns:
 //   - *configv1.PromptDefinition: The result.

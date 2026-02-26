@@ -21,7 +21,7 @@ import (
 // Returns the result.
 // Returns an error if the operation fails.
 //
-// Summary: retrieves all service templates.
+// Summary: Retrieves all service templates.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
@@ -66,11 +66,11 @@ func (s *Store) ListServiceTemplates(ctx context.Context) ([]*configv1.ServiceTe
 // Returns the result.
 // Returns an error if the operation fails.
 //
-// Summary: retrieves a service template by ID.
+// Summary: Retrieves a service template by ID.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
-//   - id (string): The id.
+//   - id (string): The unique identifier.
 //
 // Returns:
 //   - *configv1.ServiceTemplate: The result.
@@ -104,11 +104,11 @@ func (s *Store) GetServiceTemplate(ctx context.Context, id string) (*configv1.Se
 //
 // Returns an error if the operation fails.
 //
-// Summary: saves a service template.
+// Summary: Saves a service template.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
-//   - template (*configv1.ServiceTemplate): The template.
+//   - template (*configv1.ServiceTemplate): The service instance.
 //
 // Returns:
 //   - error: An error if the operation fails.
@@ -148,11 +148,11 @@ func (s *Store) SaveServiceTemplate(ctx context.Context, template *configv1.Serv
 //
 // Returns an error if the operation fails.
 //
-// Summary: deletes a service template by ID.
+// Summary: Deletes a service template by ID.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
-//   - id (string): The id.
+//   - id (string): The unique identifier.
 //
 // Returns:
 //   - error: An error if the operation fails.

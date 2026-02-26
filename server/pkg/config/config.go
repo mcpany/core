@@ -20,7 +20,7 @@ import (
 // enabling flag parsing and environment variable overrides (using the "MCPANY_" prefix).
 //
 //
-// Summary: binds the global and persistent command-line flags to the Viper configuration registry.
+// Summary: Binds the global and persistent command-line flags to the Viper configuration registry.
 //
 // Parameters:
 // - cmd (*cobra.Command): The command instance to which the persistent flags will be attached.
@@ -86,7 +86,7 @@ func BindRootFlags(cmd *cobra.Command) {
 // authentication keys, and runtime modes (e.g., stdio).
 //
 //
-// Summary: binds server-specific command-line flags to the Viper configuration registry.
+// Summary: Binds server-specific command-line flags to the Viper configuration registry.
 //
 // Parameters:
 // - cmd (*cobra.Command): The command instance to which the server flags will be attached.
@@ -138,7 +138,7 @@ func BindServerFlags(cmd *cobra.Command) {
 // to BindRootFlags and BindServerFlags.
 //
 //
-// Summary: binds both root and server-specific command line flags to the Viper configuration registry.
+// Summary: Binds both root and server-specific command line flags to the Viper configuration registry.
 //
 // Parameters:
 // - cmd (*cobra.Command): The command instance to which the flags will be attached.

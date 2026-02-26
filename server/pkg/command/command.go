@@ -26,7 +26,7 @@ import (
 
 // Executor is an interface for executing commands.
 //
-// Summary: is an interface for executing commands.
+// Summary: Is an interface for executing commands.
 type Executor interface {
 	// Execute executes a command and returns the stdout and stderr as streams.
 	//

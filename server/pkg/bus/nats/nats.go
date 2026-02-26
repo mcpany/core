@@ -83,7 +83,7 @@ func (b *Bus[T]) Close() {
 // The message is marshaled to JSON before being published.
 //
 //
-// Summary: sends a message to a NATS topic.
+// Summary: Sends a message to a NATS topic.
 //
 // Parameters:
 // - _: context.Context. The context (unused in NATS publish).
@@ -108,7 +108,7 @@ func (b *Bus[T]) Publish(_ context.Context, topic string, msg T) error {
 // The handler will be invoked for each message received on the topic.
 //
 //
-// Summary: registers a handler for a NATS topic.
+// Summary: Registers a handler for a NATS topic.
 //
 // Parameters:
 // - _: context.Context. The context (unused in NATS subscribe).
@@ -138,7 +138,7 @@ func (b *Bus[T]) Subscribe(_ context.Context, topic string, handler func(T)) (un
 // The subscription is automatically removed after one message.
 //
 //
-// Summary: registers a one-time handler for a NATS topic.
+// Summary: Registers a one-time handler for a NATS topic.
 //
 // Parameters:
 // - _: context.Context. The context (unused in NATS subscribe).

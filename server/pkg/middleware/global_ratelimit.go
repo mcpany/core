@@ -86,13 +86,13 @@ func (m *GlobalRateLimitMiddleware) UpdateConfig(config *configv1.RateLimitConfi
 // Returns the result.
 // Returns an error if the operation fails.
 //
-// Summary: executes the rate limiting middleware.
+// Summary: Executes the rate limiting middleware.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
-//   - method (string): The method.
-//   - req (mcp.Request): The req.
-//   - next (mcp.MethodHandler): The next.
+//   - method (string): The HTTP method.
+//   - req (mcp.Request): The RPC request message.
+//   - next (mcp.MethodHandler): The handler instance.
 //
 // Returns:
 //   - mcp.Result: The result.

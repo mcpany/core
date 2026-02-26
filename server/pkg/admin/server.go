@@ -29,7 +29,7 @@ import (
 
 // Server implements the AdminServiceServer interface.
 //
-// Summary: implements the AdminServiceServer interface.
+// Summary: Implements the AdminServiceServer interface.
 type Server struct {
 	pb.UnimplementedAdminServiceServer
 	cache            *middleware.CachingMiddleware
@@ -76,7 +76,7 @@ func NewServer(
 // Returns the response.
 // Returns an error if the operation fails.
 //
-// Summary: clears the cache.
+// Summary: Clears the cache.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
@@ -106,7 +106,7 @@ func (s *Server) ClearCache(ctx context.Context, _ *pb.ClearCacheRequest) (*pb.C
 // Returns the response.
 // Returns an error if the operation fails.
 //
-// Summary: returns all registered services.
+// Summary: Returns all registered services.
 //
 // Parameters:
 //   - _ (context.Context): Ignored.
@@ -172,11 +172,11 @@ func (s *Server) ListServices(_ context.Context, _ *pb.ListServicesRequest) (*pb
 // Returns the response.
 // Returns an error if the operation fails.
 //
-// Summary: returns a specific service by ID.
+// Summary: Returns a specific service by ID.
 //
 // Parameters:
 //   - _ (context.Context): Ignored.
-//   - req (*pb.GetServiceRequest): The req.
+//   - req (*pb.GetServiceRequest): The RPC request message.
 //
 // Returns:
 //   - *pb.GetServiceResponse: The result.
@@ -234,7 +234,7 @@ func (s *Server) GetService(_ context.Context, req *pb.GetServiceRequest) (*pb.G
 // Returns the response.
 // Returns an error if the operation fails.
 //
-// Summary: returns all registered tools.
+// Summary: Returns all registered tools.
 //
 // Parameters:
 //   - _ (context.Context): Ignored.
@@ -263,11 +263,11 @@ func (s *Server) ListTools(_ context.Context, _ *pb.ListToolsRequest) (*pb.ListT
 // Returns the response.
 // Returns an error if the operation fails.
 //
-// Summary: returns a specific tool by name.
+// Summary: Returns a specific tool by name.
 //
 // Parameters:
 //   - _ (context.Context): Ignored.
-//   - req (*pb.GetToolRequest): The req.
+//   - req (*pb.GetToolRequest): The RPC request message.
 //
 // Returns:
 //   - *pb.GetToolResponse: The result.
@@ -291,11 +291,11 @@ func (s *Server) GetTool(_ context.Context, req *pb.GetToolRequest) (*pb.GetTool
 // Returns the response.
 // Returns an error if the operation fails.
 //
-// Summary: creates a new user.
+// Summary: Creates a new user.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
-//   - req (*pb.CreateUserRequest): The req.
+//   - req (*pb.CreateUserRequest): The RPC request message.
 //
 // Returns:
 //   - *pb.CreateUserResponse: The result.
@@ -336,11 +336,11 @@ func (s *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb
 // Returns the response.
 // Returns an error if the operation fails.
 //
-// Summary: retrieves a user by ID.
+// Summary: Retrieves a user by ID.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
-//   - req (*pb.GetUserRequest): The req.
+//   - req (*pb.GetUserRequest): The RPC request message.
 //
 // Returns:
 //   - *pb.GetUserResponse: The result.
@@ -370,7 +370,7 @@ func (s *Server) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.GetUs
 // Returns the response.
 // Returns an error if the operation fails.
 //
-// Summary: lists all users.
+// Summary: Lists all users.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
@@ -406,11 +406,11 @@ func (s *Server) ListUsers(ctx context.Context, _ *pb.ListUsersRequest) (*pb.Lis
 // Returns the response.
 // Returns an error if the operation fails.
 //
-// Summary: updates an existing user.
+// Summary: Updates an existing user.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
-//   - req (*pb.UpdateUserRequest): The req.
+//   - req (*pb.UpdateUserRequest): The RPC request message.
 //
 // Returns:
 //   - *pb.UpdateUserResponse: The result.
@@ -451,11 +451,11 @@ func (s *Server) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb
 // Returns the response.
 // Returns an error if the operation fails.
 //
-// Summary: deletes a user by ID.
+// Summary: Deletes a user by ID.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
-//   - req (*pb.DeleteUserRequest): The req.
+//   - req (*pb.DeleteUserRequest): The RPC request message.
 //
 // Returns:
 //   - *pb.DeleteUserResponse: The result.
@@ -472,7 +472,7 @@ func (s *Server) DeleteUser(ctx context.Context, req *pb.DeleteUserRequest) (*pb
 
 // GetDiscoveryStatus returns the status of auto-discovery providers.
 //
-// Summary: returns the status of auto-discovery providers.
+// Summary: Returns the status of auto-discovery providers.
 //
 // Parameters:
 //   - _ (context.Context): Ignored.
@@ -508,11 +508,11 @@ func (s *Server) GetDiscoveryStatus(_ context.Context, _ *pb.GetDiscoveryStatusR
 
 // ListAuditLogs returns audit logs matching the filter.
 //
-// Summary: returns audit logs matching the filter.
+// Summary: Returns audit logs matching the filter.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
-//   - req (*pb.ListAuditLogsRequest): The req.
+//   - req (*pb.ListAuditLogsRequest): The RPC request message.
 //
 // Returns:
 //   - *pb.ListAuditLogsResponse: The result.

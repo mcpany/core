@@ -23,7 +23,7 @@ type ActionableError struct {
 // Error implements the error interface.
 //
 //
-// Summary: implements the error interface.
+// Summary: Implements the error interface.
 //
 // Returns:
 //   - string: The result.
@@ -37,7 +37,7 @@ func (e *ActionableError) Error() string {
 // Unwrap returns the underlying error.
 //
 //
-// Summary: returns the underlying error.
+// Summary: Returns the underlying error.
 //
 // Returns:
 //   - error: An error if the operation fails.

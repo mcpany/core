@@ -13,7 +13,7 @@ import (
 // CallableTool implements the Tool interface for a tool that is executed by a
 // Callable.
 //
-// Summary: implements the Tool interface for a tool that is executed by a.
+// Summary: Implements the Tool interface for a tool that is executed by a.
 type CallableTool struct {
 	*baseTool
 }

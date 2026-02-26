@@ -19,7 +19,7 @@ import (
 
 // PineconeClient implements VectorClient for Pinecone.
 //
-// Summary: implements VectorClient for Pinecone.
+// Summary: Implements VectorClient for Pinecone.
 type PineconeClient struct {
 	config  *configv1.PineconeVectorDB
 	client  *http.Client
@@ -29,10 +29,10 @@ type PineconeClient struct {
 // NewPineconeClient creates a new Pinecone client.
 //
 //
-// Summary: creates a new Pinecone client.
+// Summary: Creates a new Pinecone client.
 //
 // Parameters:
-// - config (*configv1.PineconeVectorDB): The parameter.
+// - config (*configv1.PineconeVectorDB): Configuration settings.
 //
 // Returns:
 // - *PineconeClient: The result.
@@ -126,14 +126,14 @@ func (c *PineconeClient) doRequest(ctx context.Context, method, path string, bod
 // Query searches for similar vectors.
 //
 //
-// Summary: searches for similar vectors.
+// Summary: Searches for similar vectors.
 //
 // Parameters:
 // - ctx (context.Context): The context for the request.
-// - vector ([]float32): The parameter.
-// - topK (int64): The parameter.
-// - filter (map[string]interface{}): The parameter.
-// - namespace (string): The parameter.
+// - vector ([]float32): The vector.
+// - topK (int64): The top k.
+// - filter (map[string]interface{}): The filter criteria.
+// - namespace (string): The string value.
 //
 // Returns:
 // - (map[string]interface: The result.
@@ -160,12 +160,12 @@ func (c *PineconeClient) Query(ctx context.Context, vector []float32, topK int64
 // Upsert inserts or updates vectors.
 //
 //
-// Summary: inserts or updates vectors.
+// Summary: Inserts or updates vectors.
 //
 // Parameters:
 // - ctx (context.Context): The context for the request.
-// - vectors ([]map[string]interface{}): The parameter.
-// - namespace (string): The parameter.
+// - vectors ([]map[string]interface{}): The vectors.
+// - namespace (string): The string value.
 //
 // Returns:
 // - (map[string]interface: The result.
@@ -186,13 +186,13 @@ func (c *PineconeClient) Upsert(ctx context.Context, vectors []map[string]interf
 // Delete removes vectors.
 //
 //
-// Summary: removes vectors.
+// Summary: Removes vectors.
 //
 // Parameters:
 // - ctx (context.Context): The context for the request.
-// - ids ([]string): The parameter.
-// - namespace (string): The parameter.
-// - filter (map[string]interface{}): The parameter.
+// - ids ([]string): A list of strings.
+// - namespace (string): The string value.
+// - filter (map[string]interface{}): The filter criteria.
 //
 // Returns:
 // - (map[string]interface: The result.
@@ -221,11 +221,11 @@ func (c *PineconeClient) Delete(ctx context.Context, ids []string, namespace str
 // DescribeIndexStats returns statistics about the index.
 //
 //
-// Summary: returns statistics about the index.
+// Summary: Returns statistics about the index.
 //
 // Parameters:
 // - ctx (context.Context): The context for the request.
-// - filter (map[string]interface{}): The parameter.
+// - filter (map[string]interface{}): The filter criteria.
 //
 // Returns:
 // - (map[string]interface: The result.

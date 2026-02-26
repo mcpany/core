@@ -13,7 +13,7 @@ import (
 
 // MockClientConn is a mock implementation of grpc.ClientConnInterface for testing.
 //
-// Summary: is a mock implementation of grpc.
+// Summary: Is a mock implementation of grpc.
 type MockClientConn struct {
 	grpc.ClientConnInterface
 	t       *testing.T
@@ -23,7 +23,7 @@ type MockClientConn struct {
 // NewMockClientConn creates a new mock client connection.
 //
 //
-// Summary: creates a new mock client connection.
+// Summary: Creates a new mock client connection.
 //
 // Parameters:
 // - t: The testing instance.
@@ -43,7 +43,7 @@ func NewMockClientConn(t *testing.T) *MockClientConn {
 // SetClient sets a mock client for a given type.
 //
 //
-// Summary: sets a mock client for a given type.
+// Summary: Sets a mock client for a given type.
 //
 // Parameters:
 // - method: The method to mock.
@@ -58,7 +58,7 @@ func (m *MockClientConn) SetClient(method string, client interface{}) {
 // Invoke is a mock implementation of the Invoke method.
 //
 //
-// Summary: is a mock implementation of the Invoke method.
+// Summary: Is a mock implementation of the Invoke method.
 //
 // Parameters:
 // - ctx: The context for the call.
@@ -80,7 +80,7 @@ func (m *MockClientConn) Invoke(_ context.Context, _ string, _ interface{}, _ in
 // NewStream is a mock implementation of the NewStream method.
 //
 //
-// Summary: is a mock implementation of the NewStream method.
+// Summary: Is a mock implementation of the NewStream method.
 //
 // Parameters:
 // - ctx: The context for the stream.
