@@ -483,15 +483,13 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: ${{ matrix.runner }}
+    timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
         include:
           - platform: linux/amd64
             slug: amd64
-            runner: ubuntu-latest
-          - platform: linux/arm64
-            slug: arm64
             runner: ubuntu-latest
     steps:
       - name: Free Disk Space (Fast)
