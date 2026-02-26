@@ -23,23 +23,17 @@ func TestUpstreamService_DeckOfCards(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 
-	t.Log("INFO: Starting E2E Test Scenario for Deck of Cards Server...")
+	t.Log("INFO: Starting E2E Test Scenario for Deck of Cards Server (Real Data)...")
 	t.Parallel()
 
-	// --- 1. Start Mock Server ---
-	mockResponse := `{"success": true, "deck_id": "mockdeck", "shuffled": true, "remaining": 52}`
-	mockServer := integration.CreateMockServerWithResponses(t, map[string]string{
-		"/api/deck/new/shuffle/?deck_count=1": mockResponse,
-	})
-	defer mockServer.Close()
-
-	// --- 2. Start MCPANY Server ---
+	// --- 1. Start MCPANY Server ---
 	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2EDeckOfCardsServerTest")
 	defer mcpAnyTestServerInfo.CleanupFunc()
 
-	// --- 3. Register Deck of Cards Server with MCPANY ---
+	// --- 2. Register Deck of Cards Server with MCPANY ---
 	const deckOfCardsServiceID = "e2e_deckofcards"
-	deckOfCardsServiceEndpoint := mockServer.URL
+	// Use Real API
+	deckOfCardsServiceEndpoint := "https://deckofcardsapi.com"
 	t.Logf("INFO: Registering '%s' with MCPANY at endpoint %s...", deckOfCardsServiceID, deckOfCardsServiceEndpoint)
 	registrationGRPCClient := mcpAnyTestServerInfo.RegistrationClient
 

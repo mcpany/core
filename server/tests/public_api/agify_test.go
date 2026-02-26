@@ -24,23 +24,17 @@ func TestUpstreamService_Agify(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 
-	t.Log("INFO: Starting E2E Test Scenario for Agify Server...")
+	t.Log("INFO: Starting E2E Test Scenario for Agify Server (Real Data)...")
 	t.Parallel()
 
-	// --- 1. Start Mock Server ---
-	mockResponse := `{"name": "michael", "age": 50, "count": 100}`
-	mockServer := integration.CreateMockServerWithResponses(t, map[string]string{
-		"/?name=michael": mockResponse,
-	})
-	defer mockServer.Close()
-
-	// --- 2. Start MCPANY Server ---
+	// --- 1. Start MCPANY Server ---
 	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2EAgifyServerTest")
 	defer mcpAnyTestServerInfo.CleanupFunc()
 
-	// --- 3. Register Agify Server with MCPANY ---
+	// --- 2. Register Agify Server with MCPANY ---
 	const agifyServiceID = "e2e_agify"
-	agifyServiceEndpoint := mockServer.URL
+	// Use Real API
+	agifyServiceEndpoint := "https://api.agify.io"
 	t.Logf("INFO: Registering '%s' with MCPANY at endpoint %s...", agifyServiceID, agifyServiceEndpoint)
 	registrationGRPCClient := mcpAnyTestServerInfo.RegistrationClient
 

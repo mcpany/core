@@ -40,11 +40,27 @@ func (a *Application) initializeDatabase(ctx context.Context, store config.Store
 			return err
 		}
 		if len(services) > 0 {
+			// Even if services exist, we must ensure templates/collections are seeded.
+			// The seed functions have their own checks.
+			if err := a.seedTemplates(ctx, store); err != nil {
+				log.Error("Failed to seed service templates (post-check)", "error", err)
+			}
+			if err := a.seedCollections(ctx, store); err != nil {
+				log.Error("Failed to seed service collections (post-check)", "error", err)
+			}
+			// Admin user check is also safe to run
+			if err := a.initializeAdminUser(ctx, store); err != nil {
+				log.Error("Failed to initialize admin user (post-check)", "error", err)
+			}
 			return nil
 		}
 		// Also check global settings?
 		gs, err := s.GetGlobalSettings(ctx)
 		if err == nil && gs != nil {
+			// Check seeds here too?
+			if err := a.seedTemplates(ctx, store); err != nil {
+				log.Error("Failed to seed service templates (post-check-gs)", "error", err)
+			}
 			return nil
 		}
 	}
