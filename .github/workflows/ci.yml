@@ -140,6 +140,10 @@ jobs:
           $SUDO chmod +x /usr/local/bin/protoc
           protoc --version
 
+          # Symlink to expected Makefile location to prevent re-download attempt
+          mkdir -p build/env/bin
+          ln -sf /usr/local/bin/protoc build/env/bin/protoc
+
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
@@ -576,6 +580,10 @@ jobs:
           $SUDO unzip -o "protoc-${PROTOC_VERSION}-linux-${PROTOC_ARCH}.zip" -d /usr/local
           $SUDO chmod +x /usr/local/bin/protoc
           protoc --version
+
+          # Symlink to expected Makefile location to prevent re-download attempt
+          mkdir -p build/env/bin
+          ln -sf /usr/local/bin/protoc build/env/bin/protoc
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -1136,6 +1144,10 @@ jobs:
           $SUDO unzip -o "protoc-${PROTOC_VERSION}-linux-${PROTOC_ARCH}.zip" -d /usr/local
           $SUDO chmod +x /usr/local/bin/protoc
           protoc --version
+
+          # Symlink to expected Makefile location to prevent re-download attempt
+          mkdir -p build/env/bin
+          ln -sf /usr/local/bin/protoc build/env/bin/protoc
 
       - name: Set up Go
         uses: actions/setup-go@v6
