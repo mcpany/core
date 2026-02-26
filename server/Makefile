@@ -53,13 +53,6 @@ else
 	NEEDS_SUDO_FOR_DOCKER := 1
 endif
 
-# Check for sudo availability for general commands (like apt-get)
-ifeq ($(shell id -u), 0)
-	SUDO_CMD :=
-else
-	SUDO_CMD := sudo
-endif
-
 # Variables for protoc installation
 PROTOC_VERSION_URL := https://api.github.com/repos/protocolbuffers/protobuf/releases/latest
 PROTOC_DOWNLOAD_URL_BASE := https://github.com/protocolbuffers/protobuf/releases/download
@@ -153,7 +146,8 @@ prepare:
 		echo "protoc not found, attempting to install version $${PROTOC_TAG}..."; \
 		if ! command -v curl >/dev/null 2>&1 || ! command -v unzip >/dev/null 2>&1; then \
 			echo "curl and unzip are not installed. Installing..."; \
-			$(SUDO_CMD) apt-get update && $(SUDO_CMD) apt-get install -y curl unzip; \
+			if [ "$$(id -u)" -eq 0 ]; then SUDO=""; else SUDO="sudo"; fi; \
+			$${SUDO} apt-get update && $${SUDO} apt-get install -y curl unzip; \
 		fi; \
 		PROTOC_VERSION_NO_V=$$(echo "$${PROTOC_TAG}" | sed 's/v//'); \
 		PROTOC_DOWNLOAD_URL_NO_V="$(PROTOC_DOWNLOAD_URL_BASE)/$${PROTOC_TAG}/protoc-$${PROTOC_VERSION_NO_V}-linux-$(PROTOC_ARCH).zip"; \
