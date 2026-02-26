@@ -4329,22 +4329,26 @@ func validateSafePathAndInjection(val string, isDocker bool, commandName string)
 		// Sentinel Security Update: Also block schema-less IPs and localhost to prevent SSRF
 		// via tools like curl/wget that accept them.
 		// Check for "localhost" (case-insensitive)
-		if strings.EqualFold(val, "localhost") {
-			allowLoopback := os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == trueStr
-			if !allowLoopback {
-				return fmt.Errorf("unsafe argument: localhost is not allowed")
-			}
-		} else {
-			allowLoopback := os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == trueStr
-			if !allowLoopback && validation.IsLoopbackShorthand(val) {
-				return fmt.Errorf("unsafe IP argument: loopback shorthand is not allowed")
-			}
+		// Sentinel Security Update: Respect MCPANY_DANGEROUS_ALLOW_LOCAL_IPS for testing/dev environments
+		bypass := os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == trueStr
+		if !bypass {
+			if strings.EqualFold(val, "localhost") {
+				allowLoopback := os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == trueStr
+				if !allowLoopback {
+					return fmt.Errorf("unsafe argument: localhost is not allowed")
+				}
+			} else {
+				allowLoopback := os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == trueStr
+				if !allowLoopback && validation.IsLoopbackShorthand(val) {
+					return fmt.Errorf("unsafe IP argument: loopback shorthand is not allowed")
+				}
 
-			if validation.IsSafeIP != nil {
-				// Check if it's an IP address and validate it against policy
-				// We ignore "invalid IP address" error as it just means it's not an IP
-				if err := validation.IsSafeIP(val); err != nil && err.Error() != "invalid IP address" {
-					return fmt.Errorf("unsafe IP argument: %w", err)
+				if validation.IsSafeIP != nil {
+					// Check if it's an IP address and validate it against policy
+					// We ignore "invalid IP address" error as it just means it's not an IP
+					if err := validation.IsSafeIP(val); err != nil && err.Error() != "invalid IP address" {
+						return fmt.Errorf("unsafe IP argument: %w", err)
+					}
 				}
 			}
 		}
