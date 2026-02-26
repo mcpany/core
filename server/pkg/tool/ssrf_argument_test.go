@@ -5,23 +5,78 @@ package tool
 
 import (
 	"context"
+	"fmt"
+	"net"
+	"net/url"
 	"os"
 	"testing"
+	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/mcpany/core/server/pkg/validation"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
 )
 
 func TestSSRFArgumentProtection(t *testing.T) {
-	// Note: We avoid mocking validation.IsSafeURL or validation.IsSafeIP here to prevent
-	// DATA RACE with parallel tests (e.g. TestCommandTool_Execute) that might read
-	// those global function variables.
-	// Instead, we rely on the real implementation which uses net.LookupIP and environment variables.
-	// We must ensure environment variables are managed safely (though os.Setenv is also risky in parallel tests).
-	// Ideally, this test should run sequentially (no t.Parallel()), which is the case.
-	// We hope other tests don't read these env vars concurrently.
+	// Restore real IsSafeURL logic for this test because TestMain mocks it to always return nil.
+	// Since we are running with -p 1, this is safe from race conditions with other tests in this package.
+	originalMock := validation.IsSafeURL
+	validation.IsSafeURL = func(urlStr string) error {
+		// Bypass if explicitly allowed
+		if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == "true" {
+			return nil
+		}
+
+		allowLoopback := os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == "true"
+		allowPrivate := os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == "true"
+
+		u, err := url.Parse(urlStr)
+		if err != nil {
+			return fmt.Errorf("invalid URL: %w", err)
+		}
+
+		// 1. Check Scheme
+		if u.Scheme != "http" && u.Scheme != "https" {
+			return fmt.Errorf("unsupported scheme: %s (only http and https are allowed)", u.Scheme)
+		}
+
+		// 2. Resolve Host
+		host := u.Hostname()
+		if host == "" {
+			return fmt.Errorf("URL is missing host")
+		}
+
+		// Check if host is an IP literal
+		if ip := net.ParseIP(host); ip != nil {
+			return validation.ValidateIP(ip, allowLoopback, allowPrivate)
+		}
+
+		// Resolve Domain
+		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		defer cancel()
+
+		ips, err := net.DefaultResolver.LookupIP(ctx, "ip", host)
+		if err != nil {
+			return fmt.Errorf("failed to resolve host %q: %w", host, err)
+		}
+
+		if len(ips) == 0 {
+			return fmt.Errorf("no IP addresses found for host %q", host)
+		}
+
+		for _, ip := range ips {
+			if err := validation.ValidateIP(ip, allowLoopback, allowPrivate); err != nil {
+				return fmt.Errorf("host %q resolves to unsafe IP %s: %w", host, ip.String(), err)
+			}
+		}
+
+		return nil
+	}
+	defer func() {
+		validation.IsSafeURL = originalMock
+	}()
 
 	// Setup helper to create tool
 	createTool := func(cmd string) Tool {
@@ -151,9 +206,10 @@ func TestSSRFArgumentProtection(t *testing.T) {
 
 			_, err := tool.Execute(context.Background(), req)
 			if tt.expectError {
-				assert.Error(t, err)
-				if tt.errorContains != "" {
-					assert.Contains(t, err.Error(), tt.errorContains)
+				if assert.Error(t, err) {
+					if tt.errorContains != "" {
+						assert.Contains(t, err.Error(), tt.errorContains)
+					}
 				}
 			} else {
 				assert.NoError(t, err)
