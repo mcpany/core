@@ -138,6 +138,31 @@ type graphQLType struct {
 	OfType *graphQLType `json:"ofType"`
 }
 
+type graphQLField struct {
+	Name string      `json:"name"`
+	Args []graphQLArg `json:"args"`
+	Type graphQLType `json:"type"`
+}
+
+type graphQLArg struct {
+	Name string      `json:"name"`
+	Type graphQLType `json:"type"`
+}
+
+type graphQLTypeDefinition struct {
+	Kind   string          `json:"kind"`
+	Name   string          `json:"name"`
+	Fields []graphQLField  `json:"fields"`
+}
+
+type introspectionResponse struct {
+	Schema struct {
+		QueryType    struct{ Name string } `json:"queryType"`
+		MutationType struct{ Name string } `json:"mutationType"`
+		Types        []graphQLTypeDefinition `json:"types"`
+	} `json:"__schema"`
+}
+
 func convertGraphQLTypeToJSONSchema(t *graphQLType) *structpb.Value {
 	if t == nil {
 		return &structpb.Value{Kind: &structpb.Value_StructValue{StructValue: &structpb.Struct{Fields: map[string]*structpb.Value{"type": {Kind: &structpb.Value_StringValue{StringValue: "object"}}}}}}
@@ -278,33 +303,16 @@ func (g *Upstream) Register(
 		req.Header = dummyReq.Header
 	}
 
-	var respData struct {
-		Schema struct {
-			QueryType    struct{ Name string } `json:"queryType"`
-			MutationType struct{ Name string } `json:"mutationType"`
-			Types        []struct {
-				Kind   string
-				Name   string
-				Fields []struct {
-					Name string
-					Args []struct {
-						Name string
-						Type graphQLType `json:"type"`
-					} `json:"args"`
-					Type struct {
-						Kind   string
-						Name   string
-						Fields []struct {
-							Name string
-						} `json:"fields"`
-					} `json:"type"`
-				} `json:"fields"`
-			} `json:"types"`
-		} `json:"__schema"`
-	}
+	var respData introspectionResponse
 
 	if err := client.Run(ctx, req, &respData); err != nil {
 		return "", nil, nil, fmt.Errorf("failed to run introspection query: %w", err)
+	}
+
+	// Index types by name for quick lookup
+	typesByName := make(map[string]graphQLTypeDefinition)
+	for _, t := range respData.Schema.Types {
+		typesByName[t.Name] = t
 	}
 
 	var toolDefs []*configv1.ToolDefinition
@@ -345,14 +353,6 @@ func (g *Upstream) Register(
 				sb.WriteString(" (")
 				i := 0
 				for _, arg := range field.Args {
-					// We need to reconstruct the GraphQL type string for the query variable definition
-					// This part also needs to be recursive or handled better if we want full support,
-					// but for now let's stick to what was there or slightly improve it.
-					// The previous code had a loop/recursion implicit via checks.
-					// But wait, constructing the query string requires the Type Name.
-					// If it is a LIST, the name is wrapped in [].
-					// I need a helper for this too.
-
 					sb.WriteString(fmt.Sprintf("$%s: %s", arg.Name, formatGraphQLType(&arg.Type)))
 					if i < len(field.Args)-1 {
 						sb.WriteString(", ")
@@ -378,15 +378,21 @@ func (g *Upstream) Register(
 
 				if selectionSet != "" {
 					sb.WriteString(selectionSet)
-				} else if len(field.Type.Fields) > 0 {
-					sb.WriteString("{ ")
-					for i, f := range field.Type.Fields {
-						sb.WriteString(f.Name)
-						if i < len(field.Type.Fields)-1 {
-							sb.WriteString(" ")
+				} else {
+					// Auto-generate selection set for default fields if return type is an OBJECT
+					baseTypeName := unwrapType(&field.Type)
+					if typeDef, ok := typesByName[baseTypeName]; ok {
+						if len(typeDef.Fields) > 0 {
+							sb.WriteString("{ ")
+							for i, f := range typeDef.Fields {
+								sb.WriteString(f.Name)
+								if i < len(typeDef.Fields)-1 {
+									sb.WriteString(" ")
+								}
+							}
+							sb.WriteString(" }")
 						}
 					}
-					sb.WriteString(" }")
 				}
 
 				sb.WriteString(" }")
@@ -422,4 +428,17 @@ func formatGraphQLType(t *graphQLType) string {
 		}
 		return ""
 	}
+}
+
+func unwrapType(t *graphQLType) string {
+	if t == nil {
+		return ""
+	}
+	if t.OfType != nil {
+		return unwrapType(t.OfType)
+	}
+	if t.Name != nil {
+		return *t.Name
+	}
+	return ""
 }

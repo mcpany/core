@@ -58,9 +58,11 @@ func TestGraphQLUpstream_Register(t *testing.T) {
 										"fields": []map[string]interface{}{
 											{
 												"name": "id",
+									"type": map[string]interface{}{"kind": "SCALAR", "name": "ID"},
 											},
 											{
 												"name": "name",
+									"type": map[string]interface{}{"kind": "SCALAR", "name": "String"},
 											},
 										},
 									},
@@ -95,6 +97,20 @@ func TestGraphQLUpstream_Register(t *testing.T) {
 											},
 										},
 									},
+								},
+							},
+						},
+						{
+							"name": "User",
+							"kind": "OBJECT",
+							"fields": []map[string]interface{}{
+								{
+									"name": "id",
+									"type": map[string]interface{}{"kind": "SCALAR", "name": "ID"},
+								},
+								{
+									"name": "name",
+									"type": map[string]interface{}{"kind": "SCALAR", "name": "String"},
 								},
 							},
 						},
