@@ -181,32 +181,7 @@ jobs:
              $SUDO apk add --no-cache make xz
           fi
 
-      - name: Configure Docker Registry Mirrors
-        run: |
-          # Configure multiple mirrors in array format
-          # Docker will try mirror.gcr.io first.
-          SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
-
-          # Attempt to configure mirrors, but don't fail the job if it fails (e.g. read-only filesystem or missing tools)
-          {
-            $SUDO mkdir -p /etc/docker
-            echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json
-
-            if command -v systemctl >/dev/null && $SUDO systemctl restart docker 2>/dev/null; then
-              echo "Docker restarted via systemctl"
-            elif command -v service >/dev/null && $SUDO service docker restart 2>/dev/null; then
-              echo "Docker restarted via service"
-            else
-              echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
-              if command -v pkill >/dev/null; then
-                 $SUDO pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
-              else
-                 echo "pkill not found, skipping SIGHUP."
-              fi
-            fi
-            docker info || true
-          } || echo "Failed to configure Docker mirrors, proceeding anyway..."
+      # Docker Registry Mirrors configuration removed for stability
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -334,32 +309,7 @@ jobs:
              $SUDO apk add --no-cache make xz
           fi
 
-      - name: Configure Docker Registry Mirrors
-        run: |
-          # Configure multiple mirrors in array format
-          # Docker will try mirror.gcr.io first.
-          SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
-
-          # Attempt to configure mirrors, but don't fail the job if it fails
-          {
-            $SUDO mkdir -p /etc/docker
-            echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json
-
-            if command -v systemctl >/dev/null && $SUDO systemctl restart docker 2>/dev/null; then
-              echo "Docker restarted via systemctl"
-            elif command -v service >/dev/null && $SUDO service docker restart 2>/dev/null; then
-              echo "Docker restarted via service"
-            else
-              echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
-              if command -v pkill >/dev/null; then
-                 $SUDO pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
-              else
-                 echo "pkill not found, skipping SIGHUP."
-              fi
-            fi
-            docker info || true
-          } || echo "Failed to configure Docker mirrors, proceeding anyway..."
+      # Docker Registry Mirrors configuration removed for stability
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -452,11 +402,6 @@ jobs:
         with:
           name: image-cowsay-${{ steps.detect-arch.outputs.slug }}
 
-      - name: Download Everything Image
-        uses: actions/download-artifact@v4
-        with:
-          name: image-everything-${{ steps.detect-arch.outputs.slug }}
-
       - name: Load Docker Images
         run: |
           for f in *.tar; do
@@ -547,10 +492,6 @@ jobs:
           make -C server build-cowsay-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=cowsay-$SLUG CACHE_FROM=type=gha,scope=cowsay-$SLUG
           docker save -o cowsay.tar mcpany/e2e-cowsay-server:latest
 
-          # Everything
-          make -C server build-everything-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=everything-$SLUG CACHE_FROM=type=gha,scope=everything-$SLUG
-          docker save -o everything.tar mcpany/everything:latest
-
           # UI
           make -C server docker-build-ui PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=ui-$SLUG CACHE_FROM=type=gha,scope=ui-$SLUG
           docker save -o ui.tar mcpany/ui:latest
@@ -589,13 +530,6 @@ jobs:
         with:
           name: image-cowsay-${{ matrix.slug }}
           path: cowsay.tar
-          retention-days: 1
-
-      - name: Upload Everything Image
-        uses: actions/upload-artifact@v4
-        with:
-          name: image-everything-${{ matrix.slug }}
-          path: everything.tar
           retention-days: 1
 
       - name: Upload UI Image
@@ -734,11 +668,6 @@ jobs:
         with:
           name: image-cowsay-${{ steps.detect-arch.outputs.slug }}
 
-      - name: Download Everything Image
-        uses: actions/download-artifact@v4
-        with:
-          name: image-everything-${{ steps.detect-arch.outputs.slug }}
-
       - name: Load Docker Images
         run: |
           for f in *.tar; do
@@ -803,32 +732,7 @@ jobs:
              $SUDO apk add --no-cache make xz
           fi
 
-      - name: Configure Docker Registry Mirrors
-        run: |
-          # Configure multiple mirrors in array format
-          # Docker will try mirror.gcr.io first.
-          SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
-
-          # Attempt to configure mirrors, but don't fail the job if it fails
-          {
-            $SUDO mkdir -p /etc/docker
-            echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json
-
-            if command -v systemctl >/dev/null && $SUDO systemctl restart docker 2>/dev/null; then
-              echo "Docker restarted via systemctl"
-            elif command -v service >/dev/null && $SUDO service docker restart 2>/dev/null; then
-              echo "Docker restarted via service"
-            else
-              echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
-              if command -v pkill >/dev/null; then
-                 $SUDO pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
-              else
-                 echo "pkill not found, skipping SIGHUP."
-              fi
-            fi
-            docker info || true
-          } || echo "Failed to configure Docker mirrors, proceeding anyway..."
+      # Docker Registry Mirrors configuration removed for stability
 
       - name: Set up Go
         uses: actions/setup-go@v6
