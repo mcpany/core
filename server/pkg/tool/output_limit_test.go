@@ -30,12 +30,12 @@ func TestLocalCommandTool_Execute_LargeOutput(t *testing.T) {
 	}.Build()
 
 	service := configv1.CommandLineUpstreamService_builder{
-		Command: proto.String("python3"),
+		Command: proto.String("head"),
 		Local:   proto.Bool(true),
 	}.Build()
 
 	callDef := configv1.CommandLineCallDefinition_builder{
-		Args: []string{"-c", "print('a' * 10 * 1024 * 1024)"},
+		Args: []string{"-c", "10485760", "/dev/zero"},
 	}.Build()
 
 	localTool := NewLocalCommandTool(toolDef, service, callDef, nil, "call-id")
@@ -73,12 +73,12 @@ func TestLocalCommandTool_Execute_LargeOutput_Truncated(t *testing.T) {
 	}.Build()
 
 	service := configv1.CommandLineUpstreamService_builder{
-		Command: proto.String("python3"),
+		Command: proto.String("head"),
 		Local:   proto.Bool(true),
 	}.Build()
 
 	callDef := configv1.CommandLineCallDefinition_builder{
-		Args: []string{"-c", "print('a' * 2048)"},
+		Args: []string{"-c", "2048", "/dev/zero"},
 	}.Build()
 
 	localTool := NewLocalCommandTool(toolDef, service, callDef, nil, "call-id")
