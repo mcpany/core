@@ -441,6 +441,7 @@ jobs:
 
       - name: Load Docker Images
         run: |
+          ls -R downloads || true
           for f in downloads/*.tar.gz; do
             docker load -i "$f"
             rm "$f"
@@ -734,6 +735,7 @@ jobs:
 
       - name: Load Docker Images
         run: |
+          ls -R downloads || true
           for f in downloads/*.tar.gz; do
             docker load -i "$f"
             rm "$f"
@@ -975,6 +977,7 @@ jobs:
 
       - name: Load Docker Images
         run: |
+          ls -R downloads || true
           for f in downloads/*.tar.gz; do
             docker load -i "$f"
             rm "$f"
@@ -1063,6 +1066,7 @@ jobs:
           # Load all tarballs into docker daemon first?
           # kind load docker-image requires image in docker daemon or archive.
           # kind load image-archive might be better but let's stick to docker daemon for consistency
+          ls -R downloads || true
           for f in downloads/*.tar.gz; do
             docker load -i "$f"
             rm "$f"
