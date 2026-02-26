@@ -3,7 +3,7 @@
 import { UpstreamServiceConfig } from "@/lib/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ShieldCheck, ShieldAlert, Fingerprint, Calendar, FileKey, ExternalLink } from "lucide-react";
+import { ShieldCheck, ShieldAlert, Fingerprint, Calendar, FileKey } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
 interface ServiceProvenanceProps {
