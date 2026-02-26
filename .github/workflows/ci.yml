@@ -27,7 +27,7 @@ permissions:
   contents: read
 
 env:
-  # GOMAXPROCS: 1 # Removed to allow default parallelism
+  GOMAXPROCS: 2 # Explicitly limit to 2 cores to avoid starvation on small runners
   GOGC: 50 # Balanced GC to avoid excessive CPU usage while keeping memory in check
   GO_RACE: "" # Disable race detector in CI due to OOM on constrained runners
 
