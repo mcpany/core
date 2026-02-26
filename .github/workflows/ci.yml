@@ -82,7 +82,7 @@ jobs:
       - name: Free Disk Space (Fast)
         run: |
           SUDO=""
-          if command -v sudo >/dev/null; then
+          if [ "$(id -u)" -ne 0 ]; then
             SUDO="sudo"
           fi
           $SUDO rm -rf /usr/local/lib/android
@@ -97,6 +97,7 @@ jobs:
           $SUDO rm -rf /usr/share/miniconda
           $SUDO rm -rf ~/.cache
           $SUDO rm -rf "$AGENT_TOOLSDIRECTORY"
+          $SUDO rm -rf /tmp/*
           $SUDO rm -rf ~/.cache
           $SUDO rm -rf "$AGENT_TOOLSDIRECTORY"
           $SUDO rm -rf ~/.cache
@@ -184,7 +185,7 @@ jobs:
       - name: Install dependencies
         run: |
           SUDO=""
-          if command -v sudo >/dev/null; then
+          if [ "$(id -u)" -ne 0 ]; then
             SUDO="sudo"
           fi
           if command -v apt-get &> /dev/null; then
@@ -214,7 +215,7 @@ jobs:
       - name: Free Disk Space (Fast)
         run: |
           SUDO=""
-          if command -v sudo >/dev/null; then
+          if [ "$(id -u)" -ne 0 ]; then
             SUDO="sudo"
           fi
           $SUDO rm -rf /usr/local/lib/android
@@ -230,7 +231,7 @@ jobs:
       - name: Install dependencies
         run: |
           SUDO=""
-          if command -v sudo >/dev/null; then
+          if [ "$(id -u)" -ne 0 ]; then
             SUDO="sudo"
           fi
           if command -v apt-get &> /dev/null; then
@@ -363,7 +364,7 @@ jobs:
       - name: Free Disk Space (Fast)
         run: |
           SUDO=""
-          if command -v sudo >/dev/null; then
+          if [ "$(id -u)" -ne 0 ]; then
             SUDO="sudo"
           fi
           $SUDO rm -rf /usr/local/lib/android
@@ -379,7 +380,7 @@ jobs:
       - name: Install dependencies
         run: |
           SUDO=""
-          if command -v sudo >/dev/null; then
+          if [ "$(id -u)" -ne 0 ]; then
             SUDO="sudo"
           fi
           if command -v apt-get &> /dev/null; then
@@ -544,7 +545,7 @@ jobs:
       - name: Free Disk Space (Fast)
         run: |
           SUDO=""
-          if command -v sudo >/dev/null; then
+          if [ "$(id -u)" -ne 0 ]; then
             SUDO="sudo"
           fi
           $SUDO rm -rf /usr/local/lib/android
@@ -569,7 +570,7 @@ jobs:
       - name: Install dependencies
         run: |
           SUDO=""
-          if command -v sudo >/dev/null; then
+          if [ "$(id -u)" -ne 0 ]; then
             SUDO="sudo"
           fi
           if command -v apt-get &> /dev/null; then
@@ -698,7 +699,7 @@ jobs:
       - name: Free Disk Space (Fast)
         run: |
           SUDO=""
-          if command -v sudo >/dev/null; then
+          if [ "$(id -u)" -ne 0 ]; then
             SUDO="sudo"
           fi
           $SUDO rm -rf /usr/local/lib/android
@@ -714,7 +715,7 @@ jobs:
       - name: Install dependencies
         run: |
           SUDO=""
-          if command -v sudo >/dev/null; then
+          if [ "$(id -u)" -ne 0 ]; then
             SUDO="sudo"
           fi
           if command -v apt-get &> /dev/null; then
@@ -847,7 +848,7 @@ jobs:
       - name: Free Disk Space (Fast)
         run: |
           SUDO=""
-          if command -v sudo >/dev/null; then
+          if [ "$(id -u)" -ne 0 ]; then
             SUDO="sudo"
           fi
           $SUDO rm -rf /usr/local/lib/android
@@ -863,7 +864,7 @@ jobs:
       - name: Install dependencies
         run: |
           SUDO=""
-          if command -v sudo >/dev/null; then
+          if [ "$(id -u)" -ne 0 ]; then
             SUDO="sudo"
           fi
           if command -v apt-get &> /dev/null; then
