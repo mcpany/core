@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"io"
 	"log/slog"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
@@ -4327,17 +4328,27 @@ func validateSafePathAndInjection(val string, isDocker bool, commandName string)
 		}
 	} else {
 		// Sentinel Security Update: Also block schema-less IPs and localhost to prevent SSRF
-		// via tools like curl/wget that accept them.
-		// Check for "localhost" (case-insensitive)
-		if strings.EqualFold(val, "localhost") {
+		// via tools like curl/wget that accept them. This includes host:port patterns.
+
+		// 1. Check for "localhost" or "localhost:port"
+		host := val
+		if h, _, err := net.SplitHostPort(val); err == nil {
+			host = h
+		}
+
+		if strings.EqualFold(host, "localhost") {
 			allowLoopback := os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == trueStr
 			if !allowLoopback {
 				return fmt.Errorf("unsafe argument: localhost is not allowed")
 			}
-		} else if validation.IsSafeIP != nil {
+		}
+
+		// 2. Check for IP address or IP:port
+		// IsSafeIP handles just the IP, so we use the extracted host if present
+		if validation.IsSafeIP != nil {
 			// Check if it's an IP address and validate it against policy
 			// We ignore "invalid IP address" error as it just means it's not an IP
-			if err := validation.IsSafeIP(val); err != nil && err.Error() != "invalid IP address" {
+			if err := validation.IsSafeIP(host); err != nil && err.Error() != "invalid IP address" {
 				return fmt.Errorf("unsafe IP argument: %w", err)
 			}
 		}
