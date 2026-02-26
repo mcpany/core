@@ -10,6 +10,14 @@ import (
 // CheckAuth performs health checks for authentication configuration.
 //
 // Returns the result.
+//
+// Summary: performs health checks for authentication configuration.
+//
+// Returns:
+//   - map[string]CheckResult: The result.
+//
+// Side Effects:
+//   - None.
 func CheckAuth() map[string]CheckResult {
 	results := make(map[string]CheckResult)
 

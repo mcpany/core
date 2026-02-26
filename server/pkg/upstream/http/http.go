@@ -58,6 +58,8 @@ func httpMethodToString(method configv1.HttpCallDefinition_HttpMethod) (string, 
 //
 // It handles the registration of tools defined in the service configuration
 // and manages connection pooling for HTTP requests.
+//
+// Summary: implements the upstream.
 type Upstream struct {
 	poolManager *pool.Manager
 	serviceID   string
@@ -71,17 +73,20 @@ type Upstream struct {
 // It uses a configured health checker if available, or falls back to a basic
 // TCP connection check to the service address.
 //
+//
+// Summary: performs a health check on the upstream service.
+//
 // Parameters:
-//   - ctx (context.Context): The context for the health check.
+// - ctx (context.Context): The context for the health check.
 //
 // Returns:
-//   - error: An error if the service is unhealthy or unreachable.
+// - error: An error if the service is unhealthy or unreachable.
 //
 // Errors:
-//   - Returns an error if the health check fails or the address is not configured.
+// - Returns an error if the health check fails or the address is not configured.
 //
 // Side Effects:
-//   - May establish a network connection to the service.
+// - May establish a network connection to the service.
 func (u *Upstream) CheckHealth(ctx context.Context) error {
 	u.mu.RLock()
 	checker := u.checker
@@ -104,15 +109,18 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 // Shutdown gracefully terminates the HTTP upstream service by shutting down the
 // associated connection pool.
 //
+//
+// Summary: gracefully terminates the HTTP upstream service by shutting down the.
+//
 // Parameters:
-//   - ctx (context.Context): The context for the shutdown operation (currently unused).
+// - ctx (context.Context): The context for the shutdown operation (currently unused).
 //
 // Returns:
-//   - error: Always returns nil.
+// - error: Always returns nil.
 //
 // Side Effects:
-//   - Stops the health checker.
-//   - Deregisters the connection pool.
+// - Stops the health checker.
+// - Deregisters the connection pool.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	if u.checker != nil {
@@ -129,14 +137,17 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 
 // NewUpstream creates a new instance of Upstream.
 //
+//
+// Summary: creates a new instance of Upstream.
+//
 // Parameters:
-//   - poolManager (*pool.Manager): The connection pool manager to be used for managing HTTP connections.
+// - poolManager (*pool.Manager): The connection pool manager to be used for managing HTTP connections.
 //
 // Returns:
-//   - upstream.Upstream: An implementation of the upstream.Upstream interface.
+// - upstream.Upstream: An implementation of the upstream.Upstream interface.
 //
 // Side Effects:
-//   - Allocates memory for the Upstream struct.
+// - Allocates memory for the Upstream struct.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	return &Upstream{
 		poolManager: poolManager,

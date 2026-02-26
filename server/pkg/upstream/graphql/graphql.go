@@ -89,32 +89,40 @@ const introspectionQuery = `
 `
 
 // Upstream implements the upstream.Upstream interface for GraphQL services.
+//
+// Summary: implements the upstream.
 type Upstream struct{}
 
 // NewGraphQLUpstream creates a new GraphQL upstream.
 //
+//
+// Summary: creates a new GraphQL upstream.
+//
 // Returns:
-//   - upstream.Upstream: The result.
+// - upstream.Upstream: The result.
 //
 // Side Effects:
-//   - None.
+// - None.
 func NewGraphQLUpstream() upstream.Upstream {
 	return &Upstream{}
 }
 
 // Shutdown shuts down the upstream.
 //
+//
+// Summary: shuts down the upstream.
+//
 // Parameters:
-//   - _ (context.Context): The parameter.
+// - _ (context.Context): The parameter.
 //
 // Returns:
-//   - error: An error if the operation fails.
+// - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
+// - Returns an error if ...
 //
 // Side Effects:
-//   - None.
+// - None.
 func (g *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
@@ -177,6 +185,8 @@ func convertGraphQLTypeToJSONSchema(t *graphQLType) *structpb.Value {
 }
 
 // Callable implements the Callable interface for GraphQL queries.
+//
+// Summary: implements the Callable interface for GraphQL queries.
 type Callable struct {
 	client        *graphql.Client
 	query         string
@@ -186,19 +196,22 @@ type Callable struct {
 
 // Call executes the GraphQL query.
 //
+//
+// Summary: executes the GraphQL query.
+//
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - req (*tool.ExecutionRequest): The parameter.
+// - ctx (context.Context): The context for the request.
+// - req (*tool.ExecutionRequest): The parameter.
 //
 // Returns:
-//   - any: The result.
-//   - error: An error if the operation fails.
+// - any: The result.
+// - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
+// - Returns an error if ...
 //
 // Side Effects:
-//   - None.
+// - None.
 func (c *Callable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	graphqlReq := graphql.NewRequest(c.query)
 	for key, value := range req.Arguments {

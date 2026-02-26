@@ -10,6 +10,8 @@ import (
 )
 
 // Provider implements a basic browser automation tool.
+//
+// Summary: implements a basic browser automation tool.
 type Provider struct {
 	// dependencies like chromedp allocator would go here
 }
@@ -17,12 +19,33 @@ type Provider struct {
 // NewProvider creates a new Provider.
 //
 // Returns the result.
+//
+// Summary: creates a new Provider.
+//
+// Returns:
+//   - *Provider: The result.
+//
+// Side Effects:
+//   - None.
 func NewProvider() *Provider {
 	return &Provider{}
 }
 
 // BrowsePage simulates browsing a page
 // In a real implementation, this would use chromedp or playwright-go.
+//
+// Summary: simulates browsing a page.
+//
+// Parameters:
+//   - _ (context.Context): Ignored.
+//   - url (string): The url.
+//
+// Returns:
+//   - string: The result.
+//   - error: An error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (b *Provider) BrowsePage(_ context.Context, url string) (string, error) {
 	if url == "" {
 		return "", fmt.Errorf("url is required")
@@ -34,6 +57,14 @@ func (b *Provider) BrowsePage(_ context.Context, url string) (string, error) {
 // ToolDefinition returns the MCP tool definition.
 //
 // Returns the result.
+//
+// Summary: returns the MCP tool definition.
+//
+// Returns:
+//   - map[string]interface: The result.
+//
+// Side Effects:
+//   - None.
 func (b *Provider) ToolDefinition() map[string]interface{} {
 	return map[string]interface{}{
 		"name":        "browse_page",

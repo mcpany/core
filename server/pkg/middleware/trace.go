@@ -16,6 +16,20 @@ const (
 )
 
 // WithTraceContext returns a new context with trace information.
+//
+// Summary: returns a new context with trace information.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - _ (traceID): Ignored.
+//   - _ (spanID): Ignored.
+//   - parentID (string): The parent id.
+//
+// Returns:
+//   - context.Context: The result.
+//
+// Side Effects:
+//   - None.
 func WithTraceContext(ctx context.Context, traceID, spanID, parentID string) context.Context {
 	ctx = context.WithValue(ctx, traceIDKey, traceID)
 	ctx = context.WithValue(ctx, spanIDKey, spanID)
@@ -26,6 +40,17 @@ func WithTraceContext(ctx context.Context, traceID, spanID, parentID string) con
 }
 
 // GetTraceID returns the trace ID from the context.
+//
+// Summary: returns the trace ID from the context.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//
+// Returns:
+//   - string: The result.
+//
+// Side Effects:
+//   - None.
 func GetTraceID(ctx context.Context) string {
 	if v, ok := ctx.Value(traceIDKey).(string); ok {
 		return v
@@ -34,6 +59,17 @@ func GetTraceID(ctx context.Context) string {
 }
 
 // GetSpanID returns the span ID from the context.
+//
+// Summary: returns the span ID from the context.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//
+// Returns:
+//   - string: The result.
+//
+// Side Effects:
+//   - None.
 func GetSpanID(ctx context.Context) string {
 	if v, ok := ctx.Value(spanIDKey).(string); ok {
 		return v
@@ -42,6 +78,17 @@ func GetSpanID(ctx context.Context) string {
 }
 
 // GetParentID returns the parent span ID from the context.
+//
+// Summary: returns the parent span ID from the context.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//
+// Returns:
+//   - string: The result.
+//
+// Side Effects:
+//   - None.
 func GetParentID(ctx context.Context) string {
 	if v, ok := ctx.Value(parentIDKey).(string); ok {
 		return v

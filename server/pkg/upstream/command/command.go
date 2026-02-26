@@ -31,6 +31,8 @@ import (
 //
 // It discovers and registers tools based on a list of commands defined in the
 // service configuration.
+//
+// Summary: implements the upstream.
 type Upstream struct {
 	mu      sync.Mutex
 	checker health.Checker
@@ -38,14 +40,17 @@ type Upstream struct {
 
 // Shutdown implements the upstream.Upstream interface.
 //
+//
+// Summary: implements the upstream.
+//
 // Parameters:
-//   - ctx (context.Context): The context for the shutdown operation (currently unused).
+// - ctx (context.Context): The context for the shutdown operation (currently unused).
 //
 // Returns:
-//   - error: Always returns nil.
+// - error: Always returns nil.
 //
 // Side Effects:
-//   - Stops the health checker.
+// - Stops the health checker.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -58,11 +63,14 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 
 // NewUpstream creates a new instance of CommandUpstream.
 //
+//
+// Summary: creates a new instance of CommandUpstream.
+//
 // Returns:
-//   - upstream.Upstream: A new instance of the command upstream.
+// - upstream.Upstream: A new instance of the command upstream.
 //
 // Side Effects:
-//   - None.
+// - None.
 func NewUpstream() upstream.Upstream {
 	return &Upstream{}
 }

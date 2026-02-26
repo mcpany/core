@@ -16,6 +16,8 @@ import (
 )
 
 // Registry manages available middlewares.
+//
+// Summary: manages available middlewares.
 type Registry struct {
 	mu           sync.RWMutex
 	factories    map[string]Factory
@@ -23,9 +25,13 @@ type Registry struct {
 }
 
 // Factory is a function that creates a HTTP middleware from configuration.
+//
+// Summary: is a function that creates a HTTP middleware from configuration.
 type Factory func(config *configv1.Middleware) func(http.Handler) http.Handler
 
 // MCPFactory is a function that creates an MCP middleware from configuration.
+//
+// Summary: is a function that creates an MCP middleware from configuration.
 type MCPFactory func(config *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler
 
 var (
@@ -37,9 +43,15 @@ var (
 
 // Register registers a HTTP middleware factory.
 //
+//
+// Summary: registers a HTTP middleware factory.
+//
 // Parameters:
-//   - name (string): The name of the resource.
-//   - factory (Factory): The factory.
+// - name (string): The name of the resource.
+// - factory (Factory): The factory.
+//
+// Side Effects:
+//   - None.
 func Register(name string, factory Factory) {
 	globalRegistry.mu.Lock()
 	defer globalRegistry.mu.Unlock()
@@ -48,9 +60,15 @@ func Register(name string, factory Factory) {
 
 // RegisterMCP registers an MCP middleware factory.
 //
+//
+// Summary: registers an MCP middleware factory.
+//
 // Parameters:
-//   - name (string): The name of the resource.
-//   - factory (MCPFactory): The factory.
+// - name (string): The name of the resource.
+// - factory (MCPFactory): The factory.
+//
+// Side Effects:
+//   - None.
 func RegisterMCP(name string, factory MCPFactory) {
 	globalRegistry.mu.Lock()
 	defer globalRegistry.mu.Unlock()
@@ -59,11 +77,17 @@ func RegisterMCP(name string, factory MCPFactory) {
 
 // GetHTTPMiddlewares returns a sorted list of HTTP middlewares based on configuration.
 //
+//
+// Summary: returns a sorted list of HTTP middlewares based on configuration.
+//
 // Parameters:
-//   - configs ([]*configv1.Middleware): The configs.
+// - configs ([]*configv1.Middleware): The configs.
 //
 // Returns:
-//   - ([]func(http.Handler) http.Handler): The result.
+// - ([]func(http.Handler) http.Handler): The result.
+//
+// Side Effects:
+//   - None.
 func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) http.Handler {
 	globalRegistry.mu.RLock()
 	defer globalRegistry.mu.RUnlock()
@@ -89,11 +113,17 @@ func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) htt
 
 // GetMCPMiddlewares returns a sorted list of MCP middlewares based on configuration.
 //
+//
+// Summary: returns a sorted list of MCP middlewares based on configuration.
+//
 // Parameters:
-//   - configs ([]*configv1.Middleware): The configs.
+// - configs ([]*configv1.Middleware): The configs.
 //
 // Returns:
-//   - ([]func(mcp.MethodHandler) mcp.MethodHandler): The result.
+// - ([]func(mcp.MethodHandler) mcp.MethodHandler): The result.
+//
+// Side Effects:
+//   - None.
 func GetMCPMiddlewares(configs []*configv1.Middleware) []func(mcp.MethodHandler) mcp.MethodHandler {
 	globalRegistry.mu.RLock()
 	defer globalRegistry.mu.RUnlock()
@@ -118,6 +148,8 @@ func GetMCPMiddlewares(configs []*configv1.Middleware) []func(mcp.MethodHandler)
 }
 
 // StandardMiddlewares holds the standard middlewares that might need to be updated.
+//
+// Summary: holds the standard middlewares that might need to be updated.
 type StandardMiddlewares struct {
 	Audit            *AuditMiddleware
 	GlobalRateLimit  *GlobalRateLimitMiddleware

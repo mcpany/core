@@ -34,6 +34,8 @@ import (
 // OpenAPIUpstream implements the upstream.Upstream interface for services that
 // are defined by an OpenAPI specification. It parses the spec, discovers the
 // available operations, and registers them as tools.
+//
+// Summary: implements the upstream.
 type OpenAPIUpstream struct { //nolint:revive
 	openapiCache *ttlcache.Cache[string, *openapi3.T]
 	httpClients  map[string]*http.Client
@@ -44,17 +46,20 @@ type OpenAPIUpstream struct { //nolint:revive
 // Shutdown gracefully terminates the OpenAPI upstream service. For HTTP-based
 // services, this typically means closing any persistent connections.
 //
+//
+// Summary: gracefully terminates the OpenAPI upstream service.
+//
 // Parameters:
-//   - _ (context.Context): The parameter.
+// - _ (context.Context): The parameter.
 //
 // Returns:
-//   - error: An error if the operation fails.
+// - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
+// - Returns an error if ...
 //
 // Side Effects:
-//   - None.
+// - None.
 func (u *OpenAPIUpstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -69,11 +74,14 @@ func (u *OpenAPIUpstream) Shutdown(_ context.Context) error {
 // NewOpenAPIUpstream creates a new instance of OpenAPIUpstream. It initializes a
 // cache for storing parsed OpenAPI documents to avoid redundant parsing.
 //
+//
+// Summary: creates a new instance of OpenAPIUpstream.
+//
 // Returns:
-//   - upstream.Upstream: The result.
+// - upstream.Upstream: The result.
 //
 // Side Effects:
-//   - None.
+// - None.
 func NewOpenAPIUpstream() upstream.Upstream {
 	cache := ttlcache.New[string, *openapi3.T](
 		ttlcache.WithTTL[string, *openapi3.T](5 * time.Minute),
@@ -272,18 +280,21 @@ type httpClientImpl struct {
 // Do sends an HTTP request and returns an HTTP response, fulfilling the
 // client.HTTPClient interface.
 //
+//
+// Summary: sends an HTTP request and returns an HTTP response, fulfilling the.
+//
 // Parameters:
-//   - req (*http.Request): The parameter.
+// - req (*http.Request): The parameter.
 //
 // Returns:
-//   - *http.Response: The result.
-//   - error: An error if the operation fails.
+// - *http.Response: The result.
+// - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
+// - Returns an error if ...
 //
 // Side Effects:
-//   - None.
+// - None.
 func (c *httpClientImpl) Do(req *http.Request) (*http.Response, error) {
 	return c.client.Do(req)
 }

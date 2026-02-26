@@ -26,6 +26,7 @@ import (
 
 // GlobalRateLimitMiddleware provides rate limiting functionality for all MCP requests.
 //
+//
 // Summary: Middleware that enforces global rate limits on MCP requests.
 type GlobalRateLimitMiddleware struct {
 	mu     sync.RWMutex
@@ -38,13 +39,17 @@ type GlobalRateLimitMiddleware struct {
 
 // NewGlobalRateLimitMiddleware creates a new GlobalRateLimitMiddleware.
 //
+//
 // Summary: Initializes the global rate limit middleware.
 //
 // Parameters:
-//   - config: *configv1.RateLimitConfig. The rate limit configuration.
+// - config: *configv1.RateLimitConfig. The rate limit configuration.
 //
 // Returns:
-//   - *GlobalRateLimitMiddleware: The initialized middleware.
+// - *GlobalRateLimitMiddleware: The initialized middleware.
+//
+// Side Effects:
+//   - None.
 func NewGlobalRateLimitMiddleware(config *configv1.RateLimitConfig) *GlobalRateLimitMiddleware {
 	return &GlobalRateLimitMiddleware{
 		config:   config,
@@ -54,10 +59,14 @@ func NewGlobalRateLimitMiddleware(config *configv1.RateLimitConfig) *GlobalRateL
 
 // UpdateConfig updates the rate limit configuration safely.
 //
+//
 // Summary: Updates the rate limit configuration.
 //
 // Parameters:
-//   - config: *configv1.RateLimitConfig. The new configuration.
+// - config: *configv1.RateLimitConfig. The new configuration.
+//
+// Side Effects:
+//   - None.
 func (m *GlobalRateLimitMiddleware) UpdateConfig(config *configv1.RateLimitConfig) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -76,6 +85,21 @@ func (m *GlobalRateLimitMiddleware) UpdateConfig(config *configv1.RateLimitConfi
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Summary: executes the rate limiting middleware.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - method (string): The method.
+//   - req (mcp.Request): The req.
+//   - next (mcp.MethodHandler): The next.
+//
+// Returns:
+//   - mcp.Result: The result.
+//   - error: An error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (m *GlobalRateLimitMiddleware) Execute(ctx context.Context, method string, req mcp.Request, next mcp.MethodHandler) (mcp.Result, error) {
 	m.mu.RLock()
 	config := m.config

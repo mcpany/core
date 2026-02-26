@@ -17,6 +17,18 @@ const maxRecursionDepth = 100
 // SanitizeJSONSchema attempts to fix common schema issues that cause strict MCP clients to fail.
 // It takes a raw map[string]interface{} (or compatible) and returns a *structpb.Struct.
 // This function does NOT modify the input schema.
+//
+// Summary: attempts to fix common schema issues that cause strict MCP clients to fail.
+//
+// Parameters:
+//   - schema (any): The schema.
+//
+// Returns:
+//   - *structpb.Struct: The result.
+//   - error: An error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func SanitizeJSONSchema(schema any) (*structpb.Struct, error) {
 	if schema == nil {
 		return nil, nil

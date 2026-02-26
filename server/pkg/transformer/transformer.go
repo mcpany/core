@@ -17,6 +17,8 @@ import (
 // Transformer provides functionality to transform a map of data into a
 // structured string using a Go template. It supports multiple output formats
 // specified by the template, such as JSON, XML, or plain text.
+//
+// Summary: provides functionality to transform a map of data into a.
 type Transformer struct {
 	cache sync.Map
 	pool  sync.Pool
@@ -25,6 +27,14 @@ type Transformer struct {
 // NewTransformer creates and returns a new instance of Transformer.
 //
 // Returns the result.
+//
+// Summary: creates and returns a new instance of Transformer.
+//
+// Returns:
+//   - *Transformer: The result.
+//
+// Side Effects:
+//   - None.
 func NewTransformer() *Transformer {
 	return &Transformer{
 		pool: sync.Pool{
@@ -42,6 +52,19 @@ func NewTransformer() *Transformer {
 // data is the data to be used in the template.
 // It returns the transformed data as a byte slice or an error if the
 // transformation fails.
+//
+// Summary: takes a map of data and a Go template string and returns a byte.
+//
+// Parameters:
+//   - templateStr (string): The template str.
+//   - data (any): The data.
+//
+// Returns:
+//   - []byte: The result.
+//   - error: An error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (t *Transformer) Transform(templateStr string, data any) ([]byte, error) {
 	var tmpl *template.Template
 	var err error

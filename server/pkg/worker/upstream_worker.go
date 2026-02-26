@@ -19,6 +19,8 @@ import (
 // listens for ToolExecutionRequest messages on the event bus, uses the
 // tool manager to execute the requested tool, and then publishes the outcome as
 // a ToolExecutionResult message.
+//
+// Summary: is a background worker that handles tool execution requests.
 type UpstreamWorker struct {
 	bus         *bus.Provider
 	toolManager tool.ManagerInterface
@@ -27,12 +29,18 @@ type UpstreamWorker struct {
 
 // NewUpstreamWorker creates a new UpstreamWorker.
 //
+//
+// Summary: creates a new UpstreamWorker.
+//
 // Parameters:
-//   - bus: The event bus used for receiving requests and publishing results.
-//   - toolManager: The tool manager that will handle the actual tool execution.
+// - bus: The event bus used for receiving requests and publishing results.
+// - toolManager: The tool manager that will handle the actual tool execution.
 //
 // Returns:
-//   - *UpstreamWorker: A new upstream worker.
+// - *UpstreamWorker: A new upstream worker.
+//
+// Side Effects:
+//   - None.
 func NewUpstreamWorker(bus *bus.Provider, toolManager tool.ManagerInterface) *UpstreamWorker {
 	return &UpstreamWorker{
 		bus:         bus,
@@ -44,8 +52,14 @@ func NewUpstreamWorker(bus *bus.Provider, toolManager tool.ManagerInterface) *Up
 // requests on the event bus and will continue to process them until the
 // provided context is canceled.
 //
+//
+// Summary: launches the worker in a new goroutine.
+//
 // Parameters:
-//   - ctx: The context that controls the lifecycle of the worker.
+// - ctx: The context that controls the lifecycle of the worker.
+//
+// Side Effects:
+//   - None.
 func (w *UpstreamWorker) Start(ctx context.Context) {
 	w.wg.Add(1)
 	log := logging.GetLogger().With("component", "UpstreamWorker")
@@ -98,6 +112,11 @@ func (w *UpstreamWorker) Start(ctx context.Context) {
 }
 
 // Stop waits for the worker to stop.
+//
+// Summary: waits for the worker to stop.
+//
+// Side Effects:
+//   - None.
 func (w *UpstreamWorker) Stop() {
 	w.wg.Wait()
 }

@@ -29,6 +29,8 @@ type compiledRule struct {
 }
 
 // PolicyHook implements PreCallHook using CallPolicy.
+//
+// Summary: implements PreCallHook using CallPolicy.
 type PolicyHook struct {
 	policy        *configv1.CallPolicy
 	compiledRules []compiledRule
@@ -39,6 +41,17 @@ type PolicyHook struct {
 // policy is the policy.
 //
 // Returns the result.
+//
+// Summary: creates a new PolicyHook with the given call policy.
+//
+// Parameters:
+//   - policy (*configv1.CallPolicy): The policy.
+//
+// Returns:
+//   - *PolicyHook: The result.
+//
+// Side Effects:
+//   - None.
 func NewPolicyHook(policy *configv1.CallPolicy) *PolicyHook {
 	compiledRules := make([]compiledRule, len(policy.GetRules()))
 	for i, rule := range policy.GetRules() {
@@ -134,6 +147,8 @@ func (h *PolicyHook) ExecutePre(
 // (Deprecated hooks removed)
 
 // WebhookClient handles the communication with an external webhook.
+//
+// Summary: handles the communication with an external webhook.
 type WebhookClient struct {
 	url     string
 	timeout time.Duration
@@ -146,6 +161,17 @@ type WebhookClient struct {
 // config holds the configuration settings.
 //
 // Returns the result.
+//
+// Summary: creates a new WebhookClient.
+//
+// Parameters:
+//   - config (*configv1.WebhookConfig): The config.
+//
+// Returns:
+//   - *WebhookClient: The result.
+//
+// Side Effects:
+//   - None.
 func NewWebhookClient(config *configv1.WebhookConfig) *WebhookClient {
 	timeout := 5 * time.Second
 	if t := config.GetTimeout(); t != nil {
@@ -185,6 +211,20 @@ func NewWebhookClient(config *configv1.WebhookConfig) *WebhookClient {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Summary: sends a cloud event to the webhook and returns the response event.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - eventType (string): The event type.
+//   - data (any): The data.
+//
+// Returns:
+//   - *cloudevents.Event: The result.
+//   - error: An error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (c *WebhookClient) Call(ctx context.Context, eventType string, data any) (*cloudevents.Event, error) {
 	event := cloudevents.NewEvent()
 	event.SetID(uuid.New().String())
@@ -223,6 +263,8 @@ func (c *WebhookClient) Call(ctx context.Context, eventType string, data any) (*
 }
 
 // WebhookHook supports modification of requests and responses via external webhook using CloudEvents.
+//
+// Summary: supports modification of requests and responses via external webhook using CloudEvents.
 type WebhookHook struct {
 	client *WebhookClient
 }
@@ -232,6 +274,17 @@ type WebhookHook struct {
 // config holds the configuration settings.
 //
 // Returns the result.
+//
+// Summary: creates a new WebhookHook.
+//
+// Parameters:
+//   - config (*configv1.WebhookConfig): The config.
+//
+// Returns:
+//   - *WebhookHook: The result.
+//
+// Side Effects:
+//   - None.
 func NewWebhookHook(config *configv1.WebhookConfig) *WebhookHook {
 	return &WebhookHook{
 		client: NewWebhookClient(config),
@@ -364,6 +417,8 @@ func (h *WebhookHook) ExecutePost(
 }
 
 // WebhookStatus represents the status returned by the webhook.
+//
+// Summary: represents the status returned by the webhook.
 type WebhookStatus struct {
 	// Code is the status code returned by the webhook.
 	Code    int    `json:"code"`
@@ -372,6 +427,8 @@ type WebhookStatus struct {
 }
 
 // SigningRoundTripper signs the request using the webhook signer.
+//
+// Summary: signs the request using the webhook signer.
 type SigningRoundTripper struct {
 	signer *webhook.Webhook
 	base   http.RoundTripper
@@ -383,6 +440,18 @@ type SigningRoundTripper struct {
 //
 // Returns the response.
 // Returns an error if the operation fails.
+//
+// Summary: executes the HTTP request with a signature.
+//
+// Parameters:
+//   - req (*http.Request): The req.
+//
+// Returns:
+//   - *http.Response: The result.
+//   - error: An error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (s *SigningRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
 	if s.signer != nil {
 		payload := []byte{} // Signing requires payload, but request body might be stream.

@@ -15,6 +15,8 @@ import (
 )
 
 // ContextOptimizer optimises the context size of responses.
+//
+// Summary: optimises the context size of responses.
 type ContextOptimizer struct {
 	MaxChars int
 }
@@ -24,6 +26,17 @@ type ContextOptimizer struct {
 // maxChars is the maxChars.
 //
 // Returns the result.
+//
+// Summary: creates a new ContextOptimizer.
+//
+// Parameters:
+//   - maxChars (int): The max chars.
+//
+// Returns:
+//   - *ContextOptimizer: The result.
+//
+// Side Effects:
+//   - None.
 func NewContextOptimizer(maxChars int) *ContextOptimizer {
 	return &ContextOptimizer{
 		MaxChars: maxChars,
@@ -43,6 +56,17 @@ var bufferPool = sync.Pool{
 // next is the next.
 //
 // Returns the result.
+//
+// Summary: returns the middleware handler.
+//
+// Parameters:
+//   - next (http.Handler): The next.
+//
+// Returns:
+//   - http.Handler: The result.
+//
+// Side Effects:
+//   - None.
 func (co *ContextOptimizer) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		wb := bufferPool.Get().(*responseBuffer)
@@ -180,6 +204,18 @@ func (w *responseBuffer) checkBuffer() {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Summary: writes the data to the buffer or the underlying ResponseWriter.
+//
+// Parameters:
+//   - b ([]byte): The b.
+//
+// Returns:
+//   - int: The result.
+//   - error: An error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (w *responseBuffer) Write(b []byte) (int, error) {
 	w.checkBuffer()
 
@@ -196,6 +232,14 @@ func (w *responseBuffer) Write(b []byte) (int, error) {
 // WriteHeader captures the status code and decides whether to buffer based on headers.
 //
 // statusCode is the HTTP status code to write.
+//
+// Summary: captures the status code and decides whether to buffer based on headers.
+//
+// Parameters:
+//   - statusCode (int): The status code.
+//
+// Side Effects:
+//   - None.
 func (w *responseBuffer) WriteHeader(statusCode int) {
 	if w.wroteHeader {
 		return

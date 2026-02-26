@@ -33,6 +33,7 @@ var (
 // connection pool. Implementations must provide methods for closing the
 // connection and checking its health.
 //
+//
 // Summary: Interface for poolable clients.
 type ClosableClient interface {
 	// Close terminates the client's connection.
@@ -220,14 +221,18 @@ func (p *poolImpl[T]) release(n int64) {
 
 // Get retrieves a client from the pool.
 //
+//
 // Summary: Acquires a client, creating one if necessary.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the request.
+// - ctx: context.Context. The context for the request.
 //
 // Returns:
-//   - T: The client.
-//   - error: Error if pool closed or creation failed.
+// - T: The client.
+// - error: Error if pool closed or creation failed.
+//
+// Side Effects:
+//   - None.
 func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 	var zero T
 
@@ -397,10 +402,14 @@ func (p *poolImpl[T]) isHealthySafe(ctx context.Context, client T) bool {
 
 // Put returns a client to the pool for reuse.
 //
+//
 // Summary: Returns a client to the pool.
 //
 // Parameters:
-//   - client: T. The client to return.
+// - client: T. The client to return.
+//
+// Side Effects:
+//   - None.
 func (p *poolImpl[T]) Put(client T) {
 	v := reflect.ValueOf(client)
 	if !v.IsValid() || ((v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil()) {
@@ -444,10 +453,14 @@ func (p *poolImpl[T]) Put(client T) {
 
 // Close shuts down the pool, closing all idle clients.
 //
+//
 // Summary: Closes the pool.
 //
 // Returns:
-//   - error: Error if close fails (usually nil).
+// - error: Error if close fails (usually nil).
+//
+// Side Effects:
+//   - None.
 func (p *poolImpl[T]) Close() error {
 	// We use the mutex here to ensure that we don't close the channel multiple times
 	// or have races with other Close calls. Get/Put check p.closed via atomic which is fast.
@@ -480,15 +493,20 @@ func (p *poolImpl[T]) Close() error {
 
 // Len returns the current number of idle clients in the pool.
 //
+//
 // Summary: Returns idle client count.
 //
 // Returns:
-//   - int: Idle count.
+// - int: Idle count.
+//
+// Side Effects:
+//   - None.
 func (p *poolImpl[T]) Len() int {
 	return len(p.clients)
 }
 
 // UntypedPool defines a non-generic interface for a pool.
+//
 //
 // Summary: Interface for untyped pool management.
 type UntypedPool interface {
@@ -504,6 +522,7 @@ type UntypedPool interface {
 
 // Manager provides a way to manage multiple named connection pools.
 //
+//
 // Summary: Manages a collection of pools.
 type Manager struct {
 	pools map[string]any
@@ -512,10 +531,14 @@ type Manager struct {
 
 // NewManager creates and returns a new pool Manager.
 //
+//
 // Summary: Initializes a new Pool Manager.
 //
 // Returns:
-//   - *Manager: The initialized manager.
+// - *Manager: The initialized manager.
+//
+// Side Effects:
+//   - None.
 func NewManager() *Manager {
 	return &Manager{
 		pools: make(map[string]any),
@@ -524,11 +547,15 @@ func NewManager() *Manager {
 
 // Register adds a new pool to the manager under a given name.
 //
+//
 // Summary: Registers a pool by name.
 //
 // Parameters:
-//   - name: string. The pool name.
-//   - pool: any. The pool instance.
+// - name: string. The pool name.
+// - pool: any. The pool instance.
+//
+// Side Effects:
+//   - None.
 func (m *Manager) Register(name string, pool any) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -546,10 +573,14 @@ func (m *Manager) Register(name string, pool any) {
 
 // Deregister closes and removes a pool from the manager.
 //
+//
 // Summary: Removes a pool by name.
 //
 // Parameters:
-//   - name: string. The pool name.
+// - name: string. The pool name.
+//
+// Side Effects:
+//   - None.
 func (m *Manager) Deregister(name string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -589,7 +620,11 @@ func Get[T ClosableClient](m *Manager, name string) (Pool[T], bool) {
 
 // CloseAll iterates through all registered pools in the manager and closes them.
 //
+//
 // Summary: Closes all managed pools.
+//
+// Side Effects:
+//   - None.
 func (m *Manager) CloseAll() {
 	m.mu.Lock()
 	defer m.mu.Unlock()

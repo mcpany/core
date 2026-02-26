@@ -10,6 +10,8 @@ import (
 )
 
 // Runtime defines the interface for a WASM plugin runtime.
+//
+// Summary: defines the interface for a WASM plugin runtime.
 type Runtime interface {
 	// LoadPlugin loads a WASM plugin from bytecode.
 	//
@@ -30,6 +32,8 @@ type Runtime interface {
 }
 
 // Plugin defines an instantiated WASM plugin.
+//
+// Summary: defines an instantiated WASM plugin.
 type Plugin interface {
 	// Execute runs a function exported by the WASM module
 	//
@@ -51,25 +55,39 @@ type Plugin interface {
 }
 
 // MockRuntime is a placeholder implementation.
+//
+// Summary: is a placeholder implementation.
 type MockRuntime struct{}
 
 // NewMockRuntime creates a new MockRuntime.
 //
+//
+// Summary: creates a new MockRuntime.
+//
 // Returns:
-//   - *MockRuntime: A new mock runtime instance.
+// - *MockRuntime: A new mock runtime instance.
+//
+// Side Effects:
+//   - None.
 func NewMockRuntime() *MockRuntime {
 	return &MockRuntime{}
 }
 
 // LoadPlugin loads a plugin.
 //
+//
+// Summary: loads a plugin.
+//
 // Parameters:
-//   - _ : The context (unused).
-//   - bytecode: The bytecode to load.
+// - _ : The context (unused).
+// - bytecode: The bytecode to load.
 //
 // Returns:
-//   - Plugin: A mock plugin.
-//   - error: An error if the bytecode is empty.
+// - Plugin: A mock plugin.
+// - error: An error if the bytecode is empty.
+//
+// Side Effects:
+//   - None.
 func (m *MockRuntime) LoadPlugin(_ context.Context, bytecode []byte) (Plugin, error) {
 	if len(bytecode) == 0 {
 		return nil, fmt.Errorf("btyecode cannot be empty")
@@ -79,25 +97,39 @@ func (m *MockRuntime) LoadPlugin(_ context.Context, bytecode []byte) (Plugin, er
 
 // Close closes the runtime.
 //
+//
+// Summary: closes the runtime.
+//
 // Returns:
-//   - error: Always returns nil.
+// - error: Always returns nil.
+//
+// Side Effects:
+//   - None.
 func (m *MockRuntime) Close() error {
 	return nil
 }
 
 // MockPlugin is a mock plugin.
+//
+// Summary: is a mock plugin.
 type MockPlugin struct{}
 
 // Execute executes a function.
 //
+//
+// Summary: executes a function.
+//
 // Parameters:
-//   - _ : The context (unused).
-//   - function: The function name to execute.
-//   - _ : The arguments (unused).
+// - _ : The context (unused).
+// - function: The function name to execute.
+// - _ : The arguments (unused).
 //
 // Returns:
-//   - []byte: The result ("success").
-//   - error: An error if the function name is "error".
+// - []byte: The result ("success").
+// - error: An error if the function name is "error".
+//
+// Side Effects:
+//   - None.
 func (p *MockPlugin) Execute(_ context.Context, function string, _ ...[]byte) ([]byte, error) {
 	if function == "error" {
 		return nil, fmt.Errorf("simulated error")
@@ -107,8 +139,14 @@ func (p *MockPlugin) Execute(_ context.Context, function string, _ ...[]byte) ([
 
 // Close closes the plugin.
 //
+//
+// Summary: closes the plugin.
+//
 // Returns:
-//   - error: Always returns nil.
+// - error: Always returns nil.
+//
+// Side Effects:
+//   - None.
 func (p *MockPlugin) Close() error {
 	return nil
 }

@@ -14,6 +14,8 @@ import (
 // Service handles the business logic for the prompts feature. It provides
 // methods for listing available prompts and retrieving a specific prompt by
 // name.
+//
+// Summary: handles the business logic for the prompts feature.
 type Service struct {
 	promptManager ManagerInterface
 	mcpServer     *mcp.Server
@@ -21,13 +23,17 @@ type Service struct {
 
 // NewService creates and returns a new Service instance.
 //
+//
 // Summary: Initializes a new Prompt Service.
 //
 // Parameters:
-//   - promptManager: ManagerInterface. The manager handling prompt lifecycle.
+// - promptManager: ManagerInterface. The manager handling prompt lifecycle.
 //
 // Returns:
-//   - *Service: The initialized service.
+// - *Service: The initialized service.
+//
+// Side Effects:
+//   - None.
 func NewService(promptManager ManagerInterface) *Service {
 	s := &Service{
 		promptManager: promptManager,
@@ -38,13 +44,17 @@ func NewService(promptManager ManagerInterface) *Service {
 
 // SetMCPServer sets the MCP server instance for the service.
 //
+//
 // Summary: Configures the underlying MCP server.
 //
 // Parameters:
-//   - mcpServer: *mcp.Server. The MCP server instance.
+// - mcpServer: *mcp.Server. The MCP server instance.
 //
 // Returns:
-//   None.
+// None.
+//
+// Side Effects:
+//   - None.
 func (s *Service) SetMCPServer(mcpServer *mcp.Server) {
 	s.mcpServer = mcpServer
 	s.promptManager.SetMCPServer(NewMCPServerProvider(mcpServer))

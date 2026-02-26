@@ -33,6 +33,8 @@ import (
 // Upstream implements the upstream.Upstream interface for services that
 // are exposed via a WebSocket connection. It manages a connection pool and
 // registers tools based on the service configuration.
+//
+// Summary: implements the upstream.
 type Upstream struct {
 	poolManager *pool.Manager
 	serviceID   string
@@ -42,17 +44,20 @@ type Upstream struct {
 
 // CheckHealth performs a health check on the upstream service.
 //
+//
+// Summary: performs a health check on the upstream service.
+//
 // Parameters:
-//   - ctx (context.Context): The context for the request.
+// - ctx (context.Context): The context for the request.
 //
 // Returns:
-//   - error: An error if the operation fails.
+// - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
+// - Returns an error if ...
 //
 // Side Effects:
-//   - None.
+// - None.
 func (u *Upstream) CheckHealth(ctx context.Context) error {
 	u.mu.RLock()
 	checker := u.checker
@@ -71,11 +76,17 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 // Shutdown gracefully terminates the WebSocket upstream service by shutting down
 // the associated connection pool.
 //
+//
+// Summary: gracefully terminates the WebSocket upstream service by shutting down.
+//
 // Parameters:
-//   - ctx: The context for the shutdown operation.
+// - ctx: The context for the shutdown operation.
 //
 // Returns:
-//   - error: An error if the shutdown operation fails, or nil on success.
+// - error: An error if the shutdown operation fails, or nil on success.
+//
+// Side Effects:
+//   - None.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	if u.checker != nil {
@@ -92,11 +103,17 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 
 // NewUpstream creates a new instance of WebsocketUpstream.
 //
+//
+// Summary: creates a new instance of WebsocketUpstream.
+//
 // Parameters:
-//   - poolManager: The connection pool manager to be used for managing WebSocket connections.
+// - poolManager: The connection pool manager to be used for managing WebSocket connections.
 //
 // Returns:
-//   - upstream.Upstream: A new Upstream instance for WebSocket services.
+// - upstream.Upstream: A new Upstream instance for WebSocket services.
+//
+// Side Effects:
+//   - None.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	return &Upstream{
 		poolManager: poolManager,

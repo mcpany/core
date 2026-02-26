@@ -18,6 +18,8 @@ import (
 // Each implementation of this interface is responsible for discovering and
 // registering its capabilities, such as tools, prompts, and resources, with the
 // appropriate managers.
+//
+// Summary: defines the standard interface for all backend service integrations.
 type Upstream interface {
 	// Shutdown gracefully terminates the upstream service.
 	//
@@ -69,6 +71,8 @@ type Upstream interface {
 
 // HealthChecker is an optional interface that Upstreams can implement to provide
 // runtime health status.
+//
+// Summary: is an optional interface that Upstreams can implement to provide.
 type HealthChecker interface {
 	// CheckHealth performs a health check on the upstream service.
 	//

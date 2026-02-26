@@ -15,6 +15,8 @@ import (
 // ManagerInterface defines the interface for a prompt manager.
 //
 // It manages the lifecycle, registration, and retrieval of prompts within the system.
+//
+// Summary: defines the interface for a prompt manager.
 type ManagerInterface interface {
 	// AddPrompt registers a new prompt.
 	//
@@ -60,6 +62,8 @@ type ManagerInterface interface {
 // Manager is a thread-safe manager for registering and retrieving prompts.
 //
 // It supports concurrent access and uses caching for efficient list operations.
+//
+// Summary: is a thread-safe manager for registering and retrieving prompts.
 type Manager struct {
 	prompts       *xsync.Map[string, Prompt]
 	mcpServer     MCPServerProvider
@@ -69,8 +73,14 @@ type Manager struct {
 
 // NewManager creates and returns a new, empty Manager.
 //
+//
+// Summary: creates and returns a new, empty Manager.
+//
 // Returns:
-//   - *Manager: A pointer to the newly created Manager.
+// - *Manager: A pointer to the newly created Manager.
+//
+// Side Effects:
+//   - None.
 func NewManager() *Manager {
 	return &Manager{
 		prompts: xsync.NewMap[string, Prompt](),
@@ -79,8 +89,14 @@ func NewManager() *Manager {
 
 // SetMCPServer provides the Manager with a reference to the MCP server.
 //
+//
+// Summary: provides the Manager with a reference to the MCP server.
+//
 // Parameters:
-//   - mcpServer: MCPServerProvider. The MCP server provider.
+// - mcpServer: MCPServerProvider. The MCP server provider.
+//
+// Side Effects:
+//   - None.
 func (pm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 	pm.mu.Lock()
 	defer pm.mu.Unlock()
@@ -92,12 +108,15 @@ func (pm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 // If a prompt with the same name already exists, it will be overwritten, and a warning
 // will be logged.
 //
+//
+// Summary: registers a new prompt with the manager.
+//
 // Parameters:
-//   - prompt: Prompt. The prompt to add.
+// - prompt: Prompt. The prompt to add.
 //
 // Side Effects:
-//   - Updates the internal prompt registry.
-//   - Invalidates the list cache.
+// - Updates the internal prompt registry.
+// - Invalidates the list cache.
 func (pm *Manager) AddPrompt(prompt Prompt) {
 	promptName := prompt.Prompt().Name
 	if existingPrompt, loaded := pm.prompts.LoadAndStore(promptName, prompt); loaded {
@@ -116,12 +135,15 @@ func (pm *Manager) AddPrompt(prompt Prompt) {
 //
 // If the prompt does not exist, it will be added.
 //
+//
+// Summary: updates an existing prompt in the manager.
+//
 // Parameters:
-//   - prompt: Prompt. The prompt definition to update.
+// - prompt: Prompt. The prompt definition to update.
 //
 // Side Effects:
-//   - Updates the internal prompt registry.
-//   - Invalidates the list cache.
+// - Updates the internal prompt registry.
+// - Invalidates the list cache.
 func (pm *Manager) UpdatePrompt(prompt Prompt) {
 	pm.prompts.Store(prompt.Prompt().Name, prompt)
 	pm.mu.Lock()
@@ -131,12 +153,18 @@ func (pm *Manager) UpdatePrompt(prompt Prompt) {
 
 // GetPrompt retrieves a prompt from the manager by its name.
 //
+//
+// Summary: retrieves a prompt from the manager by its name.
+//
 // Parameters:
-//   - name: string. The name of the prompt.
+// - name: string. The name of the prompt.
 //
 // Returns:
-//   - Prompt: The prompt instance.
-//   - bool: True if found, false otherwise.
+// - Prompt: The prompt instance.
+// - bool: True if found, false otherwise.
+//
+// Side Effects:
+//   - None.
 func (pm *Manager) GetPrompt(name string) (Prompt, bool) {
 	prompt, ok := pm.prompts.Load(name)
 	return prompt, ok
@@ -146,8 +174,14 @@ func (pm *Manager) GetPrompt(name string) (Prompt, bool) {
 //
 // It uses a read-through cache to improve performance.
 //
+//
+// Summary: returns a slice containing all the prompts currently registered.
+//
 // Returns:
-//   - []Prompt: A slice of currently registered prompts.
+// - []Prompt: A slice of currently registered prompts.
+//
+// Side Effects:
+//   - None.
 func (pm *Manager) ListPrompts() []Prompt {
 	// ⚡ Bolt: Use a read-through cache to avoid repeated map iteration and slice allocation.
 	// The cache is invalidated on any write operation (Add/Update/Clear).
@@ -188,12 +222,15 @@ func (pm *Manager) ListPrompts() []Prompt {
 
 // ClearPromptsForService removes all prompts associated with a given service.
 //
+//
+// Summary: removes all prompts associated with a given service.
+//
 // Parameters:
-//   - serviceID: string. The unique identifier of the service.
+// - serviceID: string. The unique identifier of the service.
 //
 // Side Effects:
-//   - Removes matching prompts from the registry.
-//   - Invalidates the list cache.
+// - Removes matching prompts from the registry.
+// - Invalidates the list cache.
 func (pm *Manager) ClearPromptsForService(serviceID string) {
 	changed := false
 	pm.prompts.Range(func(key string, value Prompt) bool {

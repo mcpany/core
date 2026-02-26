@@ -15,6 +15,8 @@ import (
 // OAuth2Authenticator implements the Authenticator interface for OAuth2-based
 // authentication using OpenID Connect (OIDC). It validates JWTs (JSON Web
 // Tokens) presented in the HTTP Authorization header.
+//
+// Summary: implements the Authenticator interface for OAuth2-based.
 type OAuth2Authenticator struct {
 	verifier  *oidc.IDTokenVerifier
 	audiences []string
@@ -24,13 +26,19 @@ type OAuth2Authenticator struct {
 // configuration. It initializes the OIDC provider and creates a verifier for
 // validating ID tokens.
 //
+//
+// Summary: creates a new OAuth2Authenticator with the provided.
+//
 // Parameters:
-//   - ctx: The context for the OIDC provider initialization.
-//   - config: The OAuth2 configuration, including the issuer URL and client ID.
+// - ctx: The context for the OIDC provider initialization.
+// - config: The OAuth2 configuration, including the issuer URL and client ID.
 //
 // Returns:
-//   - A new OAuth2Authenticator.
-//   - An error if the OIDC provider cannot be initialized.
+// - A new OAuth2Authenticator.
+// - An error if the OIDC provider cannot be initialized.
+//
+// Side Effects:
+//   - None.
 func NewOAuth2Authenticator(ctx context.Context, config *OAuth2Config) (*OAuth2Authenticator, error) {
 	provider, err := oidc.NewProvider(ctx, config.IssuerURL)
 	if err != nil {
@@ -63,13 +71,19 @@ func NewOAuth2Authenticator(ctx context.Context, config *OAuth2Config) (*OAuth2A
 // It checks for a "Bearer" token and verifies its signature, expiration, and
 // claims against the OIDC provider.
 //
+//
+// Summary: validates the JWT from the Authorization header of the request.
+//
 // Parameters:
-//   - ctx: The request context.
-//   - r: The HTTP request to authenticate.
+// - ctx: The request context.
+// - r: The HTTP request to authenticate.
 //
 // Returns:
-//   - The context with the user's identity (email) on success.
-//   - An error if authentication fails.
+// - The context with the user's identity (email) on success.
+// - An error if authentication fails.
+//
+// Side Effects:
+//   - None.
 func (a *OAuth2Authenticator) Authenticate(ctx context.Context, r *http.Request) (context.Context, error) {
 	authHeader := r.Header.Get("Authorization")
 	if authHeader == "" {

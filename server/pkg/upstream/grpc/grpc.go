@@ -40,6 +40,8 @@ import (
 //
 // It uses gRPC reflection to discover services and methods, and creates tools
 // for them. It also manages a connection pool and a cache for reflection data.
+//
+// Summary: implements the upstream.
 type Upstream struct {
 	poolManager     *pool.Manager
 	reflectionCache *ttlcache.Cache[string, *descriptorpb.FileDescriptorSet]
@@ -51,14 +53,17 @@ type Upstream struct {
 
 // CheckHealth performs a health check on the upstream service.
 //
+//
+// Summary: performs a health check on the upstream service.
+//
 // Parameters:
-//   - ctx (context.Context): The context for the health check.
+// - ctx (context.Context): The context for the health check.
 //
 // Returns:
-//   - error: An error if the service is unhealthy.
+// - error: An error if the service is unhealthy.
 //
 // Side Effects:
-//   - Performs a health check RPC.
+// - Performs a health check RPC.
 func (u *Upstream) CheckHealth(ctx context.Context) error {
 	u.mu.RLock()
 	checker := u.checker
@@ -76,14 +81,17 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 
 // NewUpstream creates a new instance of Upstream.
 //
+//
+// Summary: creates a new instance of Upstream.
+//
 // Parameters:
-//   - poolManager (*pool.Manager): The connection pool manager to be used for managing gRPC connections.
+// - poolManager (*pool.Manager): The connection pool manager to be used for managing gRPC connections.
 //
 // Returns:
-//   - upstream.Upstream: An implementation of the upstream.Upstream interface.
+// - upstream.Upstream: An implementation of the upstream.Upstream interface.
 //
 // Side Effects:
-//   - Starts a background cache cleaner.
+// - Starts a background cache cleaner.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	cache := ttlcache.New[string, *descriptorpb.FileDescriptorSet](
 		ttlcache.WithTTL[string, *descriptorpb.FileDescriptorSet](5 * time.Minute),
@@ -99,16 +107,19 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 // Shutdown gracefully terminates the gRPC upstream service by shutting down the
 // associated connection pool.
 //
+//
+// Summary: gracefully terminates the gRPC upstream service by shutting down the.
+//
 // Parameters:
-//   - ctx (context.Context): The context for the shutdown operation (currently unused).
+// - ctx (context.Context): The context for the shutdown operation (currently unused).
 //
 // Returns:
-//   - error: Always returns nil.
+// - error: Always returns nil.
 //
 // Side Effects:
-//   - Stops the health checker.
-//   - Stops the reflection cache.
-//   - Deregisters the connection pool.
+// - Stops the health checker.
+// - Stops the reflection cache.
+// - Deregisters the connection pool.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	if u.checker != nil {

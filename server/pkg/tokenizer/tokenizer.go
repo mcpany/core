@@ -14,6 +14,8 @@ import (
 )
 
 // Tokenizer defines the interface for counting tokens in a given text.
+//
+// Summary: defines the interface for counting tokens in a given text.
 type Tokenizer interface {
 	// CountTokens estimates or calculates the number of tokens in the input text.
 	//
@@ -26,11 +28,21 @@ type Tokenizer interface {
 
 // SimpleTokenizer implements a character-based heuristic.
 // Logic: ~4 characters per token.
+//
+// Summary: implements a character-based heuristic.
 type SimpleTokenizer struct{}
 
 // NewSimpleTokenizer creates a new SimpleTokenizer.
 //
 // Returns the result.
+//
+// Summary: creates a new SimpleTokenizer.
+//
+// Returns:
+//   - *SimpleTokenizer: The result.
+//
+// Side Effects:
+//   - None.
 func NewSimpleTokenizer() *SimpleTokenizer {
 	return &SimpleTokenizer{}
 }
@@ -41,6 +53,18 @@ func NewSimpleTokenizer() *SimpleTokenizer {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Summary: counts tokens in text using the simple heuristic.
+//
+// Parameters:
+//   - text (string): The text.
+//
+// Returns:
+//   - int: The result.
+//   - error: An error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (t *SimpleTokenizer) CountTokens(text string) (int, error) {
 	if len(text) == 0 {
 		return 0, nil
@@ -54,6 +78,8 @@ func (t *SimpleTokenizer) CountTokens(text string) (int, error) {
 
 // WordTokenizer implements a word-based heuristic.
 // Logic: Count words (split by space) and multiply by a factor (e.g. 1.3) to account for subwords/punctuation.
+//
+// Summary: implements a word-based heuristic.
 type WordTokenizer struct {
 	Factor float64
 }
@@ -61,6 +87,14 @@ type WordTokenizer struct {
 // NewWordTokenizer creates a new WordTokenizer with a default factor of 1.3.
 //
 // Returns the result.
+//
+// Summary: creates a new WordTokenizer with a default factor of 1.
+//
+// Returns:
+//   - *WordTokenizer: The result.
+//
+// Side Effects:
+//   - None.
 func NewWordTokenizer() *WordTokenizer {
 	return &WordTokenizer{Factor: 1.3}
 }
@@ -71,6 +105,18 @@ func NewWordTokenizer() *WordTokenizer {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Summary: counts tokens in text using the word-based heuristic.
+//
+// Parameters:
+//   - text (string): The text.
+//
+// Returns:
+//   - int: The result.
+//   - error: An error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (t *WordTokenizer) CountTokens(text string) (int, error) {
 	if len(text) == 0 {
 		return 0, nil
@@ -156,6 +202,19 @@ func countWords(text string) int {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Summary: recursively counts tokens in arbitrary structures.
+//
+// Parameters:
+//   - t (Tokenizer): The t.
+//   - v (interface{}): The v.
+//
+// Returns:
+//   - int: The result.
+//   - error: An error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func CountTokensInValue(t Tokenizer, v interface{}) (int, error) {
 	// OPTIMIZATION: Handle common primitive types and simple collections
 	// without allocating the 'visited' map. This significantly improves performance
@@ -192,12 +251,18 @@ type rawWordCounter struct{}
 
 // CountTokens counts the number of words in the text.
 //
+//
+// Summary: counts the number of words in the text.
+//
 // Parameters:
-//   - text: The input text.
+// - text: The input text.
 //
 // Returns:
-//   - int: The word count.
-//   - error: Always nil.
+// - int: The word count.
+// - error: Always nil.
+//
+// Side Effects:
+//   - None.
 func (r *rawWordCounter) CountTokens(text string) (int, error) {
 	return countWords(text), nil
 }

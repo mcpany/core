@@ -17,6 +17,8 @@ import (
 
 // SeedRequest defines the payload for seeding the database.
 // We use json.RawMessage to manually unmarshal using protojson, ensuring correct Protobuf handling.
+//
+// Summary: defines the payload for seeding the database.
 type SeedRequest struct {
 	ServicesRaw    []json.RawMessage `json:"upstream_services"`
 	CredentialsRaw []json.RawMessage `json:"credentials"`

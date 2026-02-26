@@ -21,20 +21,27 @@ import (
 )
 
 // ClientFactory is a function that creates a VectorClient.
+//
+// Summary: is a function that creates a VectorClient.
 type ClientFactory func(config *configv1.VectorUpstreamService) (Client, error)
 
 // Upstream implements the upstream.Upstream interface for vector database services.
+//
+// Summary: implements the upstream.
 type Upstream struct {
 	clientFactory ClientFactory
 }
 
 // NewUpstream creates a new instance of VectorUpstream.
 //
+//
+// Summary: creates a new instance of VectorUpstream.
+//
 // Returns:
-//   - upstream.Upstream: The result.
+// - upstream.Upstream: The result.
 //
 // Side Effects:
-//   - None.
+// - None.
 func NewUpstream() upstream.Upstream {
 	return &Upstream{
 		clientFactory: defaultClientFactory,
@@ -53,17 +60,20 @@ func defaultClientFactory(config *configv1.VectorUpstreamService) (Client, error
 
 // Shutdown implements the upstream.Upstream interface.
 //
+//
+// Summary: implements the upstream.
+//
 // Parameters:
-//   - _ (context.Context): The parameter.
+// - _ (context.Context): The parameter.
 //
 // Returns:
-//   - error: An error if the operation fails.
+// - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
+// - Returns an error if ...
 //
 // Side Effects:
-//   - None.
+// - None.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
@@ -182,19 +192,22 @@ type vectorCallable struct {
 // It accepts a context and an execution request containing arguments,
 // and returns the result of the tool execution or an error.
 //
+//
+// Summary: executes the vector tool with the given arguments.
+//
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - req (*tool.ExecutionRequest): The parameter.
+// - ctx (context.Context): The context for the request.
+// - req (*tool.ExecutionRequest): The parameter.
 //
 // Returns:
-//   - any: The result.
-//   - error: An error if the operation fails.
+// - any: The result.
+// - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
+// - Returns an error if ...
 //
 // Side Effects:
-//   - None.
+// - None.
 func (c *vectorCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	return c.handler(ctx, req.Arguments)
 }
@@ -208,6 +221,8 @@ type vectorToolDef struct {
 }
 
 // Client interface for different vector DB implementations.
+//
+// Summary: interface for different vector DB implementations.
 type Client interface {
 	// Query searches for the nearest vectors in the database.
 	// It accepts a context, a query vector, the number of results to return (topK),

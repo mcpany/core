@@ -13,6 +13,8 @@ import (
 // Message defines the interface that all messages exchanged on the event bus must
 // implement. It provides a standard way to manage correlation IDs for tracking
 // requests and their corresponding responses.
+//
+// Summary: defines the interface that all messages exchanged on the event bus must.
 type Message interface {
 	// CorrelationID returns the unique identifier used to correlate messages.
 	//
@@ -27,6 +29,8 @@ type Message interface {
 // BaseMessage provides a default implementation of the Message interface. It
 // includes a correlation ID field (`CID`) and can be embedded in other message
 // structs to provide a common mechanism for message tracking.
+//
+// Summary: provides a default implementation of the Message interface.
 type BaseMessage struct {
 	CID string `json:"cid"`
 }
@@ -34,12 +38,28 @@ type BaseMessage struct {
 // CorrelationID returns the correlation ID of the message. This ID is used to
 // associate requests with their corresponding responses in asynchronous
 // workflows.
+//
+// Summary: returns the correlation ID of the message.
+//
+// Returns:
+//   - string: The result.
+//
+// Side Effects:
+//   - None.
 func (m *BaseMessage) CorrelationID() string {
 	return m.CID
 }
 
 // SetCorrelationID sets the correlation ID for the message. This is typically
 // called by the message publisher to assign a unique ID to a request.
+//
+// Summary: sets the correlation ID for the message.
+//
+// Parameters:
+//   - id (string): The id.
+//
+// Side Effects:
+//   - None.
 func (m *BaseMessage) SetCorrelationID(id string) {
 	m.CID = id
 }
@@ -47,6 +67,8 @@ func (m *BaseMessage) SetCorrelationID(id string) {
 // ServiceRegistrationRequest is a message sent to the bus to request the
 // registration of a new upstream service. It contains the service's
 // configuration and the context for the request.
+//
+// Summary: is a message sent to the bus to request the.
 type ServiceRegistrationRequest struct {
 	BaseMessage
 	Context context.Context
@@ -57,6 +79,8 @@ type ServiceRegistrationRequest struct {
 // ServiceRegistrationRequest. It contains the outcome of the registration
 // process, including the generated service key, a list of any tools that were
 // discovered, or an error if the registration failed.
+//
+// Summary: is a message published in response to a.
 type ServiceRegistrationResult struct {
 	BaseMessage
 	ServiceKey          string
@@ -68,6 +92,8 @@ type ServiceRegistrationResult struct {
 // ToolExecutionRequest is a message sent to the bus to request the execution of
 // a specific tool on an upstream service. It includes the name of the tool and
 // its inputs in raw JSON format.
+//
+// Summary: is a message sent to the bus to request the execution of.
 type ToolExecutionRequest struct {
 	BaseMessage
 	Context    context.Context
@@ -78,6 +104,8 @@ type ToolExecutionRequest struct {
 // ToolExecutionResult is a message published in response to a
 // ToolExecutionRequest. It contains the result of the tool execution, in raw
 // JSON format, or an error if the execution failed.
+//
+// Summary: is a message published in response to a.
 type ToolExecutionResult struct {
 	BaseMessage
 	Result json.RawMessage
@@ -86,12 +114,16 @@ type ToolExecutionResult struct {
 
 // ServiceListRequest is a message sent to the bus to request a list of all
 // registered services.
+//
+// Summary: is a message sent to the bus to request a list of all.
 type ServiceListRequest struct {
 	BaseMessage
 }
 
 // ServiceListResult is a message published in response to a
 // ServiceListRequest. It contains a list of all registered services.
+//
+// Summary: is a message published in response to a.
 type ServiceListResult struct {
 	BaseMessage
 	Services []*configv1.UpstreamServiceConfig
@@ -99,12 +131,16 @@ type ServiceListResult struct {
 }
 
 // ServiceGetRequest is a message sent to the bus to request a specific service.
+//
+// Summary: is a message sent to the bus to request a specific service.
 type ServiceGetRequest struct {
 	BaseMessage
 	ServiceName string
 }
 
 // ServiceGetResult is a message published in response to a ServiceGetRequest.
+//
+// Summary: is a message published in response to a ServiceGetRequest.
 type ServiceGetResult struct {
 	BaseMessage
 	Service *configv1.UpstreamServiceConfig

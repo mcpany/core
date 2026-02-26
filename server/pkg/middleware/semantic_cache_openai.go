@@ -14,6 +14,8 @@ import (
 )
 
 // OpenAIEmbeddingProvider implements EmbeddingProvider for OpenAI.
+//
+// Summary: implements EmbeddingProvider for OpenAI.
 type OpenAIEmbeddingProvider struct {
 	apiKey  string
 	model   string
@@ -23,6 +25,18 @@ type OpenAIEmbeddingProvider struct {
 
 // NewOpenAIEmbeddingProvider creates a new OpenAIEmbeddingProvider.
 // It accepts an API key and a model name (defaults to "text-embedding-3-small" if empty).
+//
+// Summary: creates a new OpenAIEmbeddingProvider.
+//
+// Parameters:
+//   - _ (apiKey): Ignored.
+//   - model (string): The model.
+//
+// Returns:
+//   - *OpenAIEmbeddingProvider: The result.
+//
+// Side Effects:
+//   - None.
 func NewOpenAIEmbeddingProvider(apiKey, model string) *OpenAIEmbeddingProvider {
 	if model == "" {
 		model = "text-embedding-3-small"
@@ -52,6 +66,19 @@ type openAIEmbeddingResponse struct {
 
 // Embed generates an embedding vector for the given text using the OpenAI API.
 // It returns the embedding as a slice of float32 and any error encountered.
+//
+// Summary: generates an embedding vector for the given text using the OpenAI API.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - text (string): The text.
+//
+// Returns:
+//   - []float32: The result.
+//   - error: An error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (p *OpenAIEmbeddingProvider) Embed(ctx context.Context, text string) ([]float32, error) {
 	reqBody := openAIEmbeddingRequest{
 		Input:          text,

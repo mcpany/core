@@ -10,10 +10,22 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// _ is an unused parameter.
+// ListServiceTemplates _ is an unused parameter.
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Summary: _ is an unused parameter.
+//
+// Parameters:
+//   - _ (context.Context): Ignored.
+//
+// Returns:
+//   - []*configv1.ServiceTemplate: The result.
+//   - error: An error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (s *Store) ListServiceTemplates(_ context.Context) ([]*configv1.ServiceTemplate, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -31,6 +43,19 @@ func (s *Store) ListServiceTemplates(_ context.Context) ([]*configv1.ServiceTemp
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Summary: retrieves a service template by ID.
+//
+// Parameters:
+//   - _ (context.Context): Ignored.
+//   - id (string): The id.
+//
+// Returns:
+//   - *configv1.ServiceTemplate: The result.
+//   - error: An error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (s *Store) GetServiceTemplate(_ context.Context, id string) (*configv1.ServiceTemplate, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -46,6 +71,18 @@ func (s *Store) GetServiceTemplate(_ context.Context, id string) (*configv1.Serv
 // template is the template.
 //
 // Returns an error if the operation fails.
+//
+// Summary: saves a service template.
+//
+// Parameters:
+//   - _ (context.Context): Ignored.
+//   - template (*configv1.ServiceTemplate): The template.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (s *Store) SaveServiceTemplate(_ context.Context, template *configv1.ServiceTemplate) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -54,6 +91,18 @@ func (s *Store) SaveServiceTemplate(_ context.Context, template *configv1.Servic
 }
 
 // DeleteServiceTemplate deletes a service template by ID.
+//
+// Summary: deletes a service template by ID.
+//
+// Parameters:
+//   - _ (context.Context): Ignored.
+//   - id (string): The id.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (s *Store) DeleteServiceTemplate(_ context.Context, id string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

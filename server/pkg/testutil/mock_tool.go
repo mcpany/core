@@ -14,13 +14,21 @@ import (
 )
 
 // MockTool is a mock implementation of the tool.Tool interface for testing.
+//
+// Summary: MockTool is a mock implementation of the tool.Tool interface for testing.
 type MockTool struct {
 	ExecuteFunc func(ctx context.Context, req *tool.ExecutionRequest) (any, error)
 }
 
 // Tool returns a basic tool definition for the mock tool.
 //
-// Returns the result.
+// Summary: returns a basic tool definition for the mock tool.
+//
+// Returns:
+//   - *v1.Tool: The result.
+//
+// Side Effects:
+//   - None.
 func (m *MockTool) Tool() *v1.Tool {
 	return v1.Tool_builder{
 		Name: proto.String("mock-tool"),
@@ -29,11 +37,18 @@ func (m *MockTool) Tool() *v1.Tool {
 
 // Execute calls the mock ExecuteFunc if set, otherwise returns nil.
 //
-// ctx is the context for the request.
-// req is the request object.
+// Summary: calls the mock ExecuteFunc if set, otherwise returns nil.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - req (*tool.ExecutionRequest): The request object.
+//
+// Returns:
+//   - any: The result.
+//   - error: An error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (m *MockTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	if m.ExecuteFunc != nil {
 		return m.ExecuteFunc(ctx, req)
@@ -43,7 +58,13 @@ func (m *MockTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any
 
 // GetCacheConfig returns nil for the mock tool.
 //
-// Returns the result.
+// Summary: returns nil for the mock tool.
+//
+// Returns:
+//   - *configv1.CacheConfig: The result.
+//
+// Side Effects:
+//   - None.
 func (m *MockTool) GetCacheConfig() *configv1.CacheConfig {
 	return nil
 }

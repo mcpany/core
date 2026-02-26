@@ -18,6 +18,8 @@ import (
 )
 
 // SmartRecoveryMiddleware handles automatic error recovery using LLM.
+//
+// Summary: handles automatic error recovery using LLM.
 type SmartRecoveryMiddleware struct {
 	config      *configv1.SmartRecoveryConfig
 	llmClient   llm.Client
@@ -26,6 +28,18 @@ type SmartRecoveryMiddleware struct {
 }
 
 // NewSmartRecoveryMiddleware creates a new SmartRecoveryMiddleware.
+//
+// Summary: creates a new SmartRecoveryMiddleware.
+//
+// Parameters:
+//   - config (*configv1.SmartRecoveryConfig): The config.
+//   - toolManager (tool.ManagerInterface): The tool manager.
+//
+// Returns:
+//   - *SmartRecoveryMiddleware: The result.
+//
+// Side Effects:
+//   - None.
 func NewSmartRecoveryMiddleware(config *configv1.SmartRecoveryConfig, toolManager tool.ManagerInterface) *SmartRecoveryMiddleware {
 	return &SmartRecoveryMiddleware{
 		config:      config,
@@ -34,6 +48,20 @@ func NewSmartRecoveryMiddleware(config *configv1.SmartRecoveryConfig, toolManage
 }
 
 // Execute executes the middleware logic.
+//
+// Summary: executes the middleware logic.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - req (*tool.ExecutionRequest): The req.
+//   - next (tool.ExecutionFunc): The next.
+//
+// Returns:
+//   - any: The result.
+//   - error: An error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (m *SmartRecoveryMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	if m.config == nil || !m.config.GetEnabled() {
 		return next(ctx, req)

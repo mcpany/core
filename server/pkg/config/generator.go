@@ -14,19 +14,26 @@ import (
 
 // Generator handles the interactive generation of configuration files.
 //
-// Summary: Interactive configuration generator.
 //
+// Summary: Interactive configuration generator.
 // It prompts the user for input and uses templates to generate YAML configuration
 // for different types of services (HTTP, gRPC, OpenAPI, GraphQL).
-//
 // Fields:
-//   - Reader (*bufio.Reader): The reader to use for user input.
+// - Reader (*bufio.Reader): The reader to use for user input.
 type Generator struct {
 	Reader *bufio.Reader
 }
 
 // NewGenerator creates a new Generator instance that reads from standard input.
 //
+//
+// Summary: creates a new Generator instance that reads from standard input.
+//
+// Returns:
+//   - *Generator: The result.
+//
+// Side Effects:
+//   - None.
 func NewGenerator() *Generator {
 	return &Generator{
 		Reader: bufio.NewReader(os.Stdin),
@@ -36,6 +43,15 @@ func NewGenerator() *Generator {
 // Generate prompts the user for service details and returns the generated
 // configuration as a byte slice.
 //
+//
+// Summary: prompts the user for service details and returns the generated.
+//
+// Returns:
+//   - []byte: The result.
+//   - error: An error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (g *Generator) Generate() ([]byte, error) {
 	serviceType, err := g.prompt("🤖 Enter service type (http, grpc, openapi, graphql): ")
 	if err != nil {
@@ -112,15 +128,15 @@ const httpServiceTemplate = `upstreamServices:
 // HTTPServiceData holds the data required to generate an HTTP service configuration.
 // It is used as the data context for the httpServiceTemplate.
 //
-// Summary: Data context for generating HTTP service configuration.
 //
+// Summary: Data context for generating HTTP service configuration.
 // Fields:
-//   - Name (string): The name of the service.
-//   - Address (string): The base URL/address of the service.
-//   - OperationID (string): The unique identifier for the operation.
-//   - Description (string): A human-readable description of the service operation.
-//   - Method (string): The HTTP method to use (e.g., "GET", "POST").
-//   - EndpointPath (string): The path of the endpoint (e.g., "/api/v1/users").
+// - Name (string): The name of the service.
+// - Address (string): The base URL/address of the service.
+// - OperationID (string): The unique identifier for the operation.
+// - Description (string): A human-readable description of the service operation.
+// - Method (string): The HTTP method to use (e.g., "GET", "POST").
+// - EndpointPath (string): The path of the endpoint (e.g., "/api/v1/users").
 type HTTPServiceData struct {
 	Name         string
 	Address      string
@@ -189,12 +205,12 @@ const grpcServiceTemplate = `upstreamServices:
 // GRPCServiceData holds the data required to generate a gRPC service configuration.
 // It is used as the data context for the grpcServiceTemplate.
 //
-// Summary: Data context for generating gRPC service configuration.
 //
+// Summary: Data context for generating gRPC service configuration.
 // Fields:
-//   - Name (string): The name of the service.
-//   - Address (string): The address of the gRPC service (host:port).
-//   - ReflectionEnabled (bool): Indicates whether gRPC reflection should be enabled.
+// - Name (string): The name of the service.
+// - Address (string): The address of the gRPC service (host:port).
+// - ReflectionEnabled (bool): Indicates whether gRPC reflection should be enabled.
 type GRPCServiceData struct {
 	Name              string
 	Address           string
@@ -243,11 +259,11 @@ const openapiServiceTemplate = `upstreamServices:
 // OpenAPIServiceData holds the data required to generate an OpenAPI service configuration.
 // It is used as the data context for the openapiServiceTemplate.
 //
-// Summary: Data context for generating OpenAPI service configuration.
 //
+// Summary: Data context for generating OpenAPI service configuration.
 // Fields:
-//   - Name (string): The name of the service.
-//   - SpecPath (string): The path or URL to the OpenAPI specification file.
+// - Name (string): The name of the service.
+// - SpecPath (string): The path or URL to the OpenAPI specification file.
 type OpenAPIServiceData struct {
 	Name     string
 	SpecPath string
@@ -292,13 +308,13 @@ const graphqlServiceTemplate = `upstreamServices:
 // GraphQLServiceData holds the data required to generate a GraphQL service configuration.
 // It is used as the data context for the graphqlServiceTemplate.
 //
-// Summary: Data context for generating GraphQL service configuration.
 //
+// Summary: Data context for generating GraphQL service configuration.
 // Fields:
-//   - Name (string): The name of the service.
-//   - Address (string): The URL of the GraphQL endpoint.
-//   - CallName (string): The name of the GraphQL query or mutation to expose.
-//   - SelectionSet (string): The GraphQL selection set for the operation.
+// - Name (string): The name of the service.
+// - Address (string): The URL of the GraphQL endpoint.
+// - CallName (string): The name of the GraphQL query or mutation to expose.
+// - SelectionSet (string): The GraphQL selection set for the operation.
 type GraphQLServiceData struct {
 	Name         string
 	Address      string

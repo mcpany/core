@@ -10,11 +10,11 @@ import (
 
 // ActionableError is an error that includes a suggestion for fixing the issue.
 //
-// Summary: An error type that pairs an underlying error with a user-facing suggestion.
 //
+// Summary: An error type that pairs an underlying error with a user-facing suggestion.
 // Fields:
-//   - Err: error. The original error that occurred.
-//   - Suggestion: string. A human-readable suggestion on how to resolve the error.
+// - Err: error. The original error that occurred.
+// - Suggestion: string. A human-readable suggestion on how to resolve the error.
 type ActionableError struct {
 	Err        error
 	Suggestion string
@@ -22,36 +22,48 @@ type ActionableError struct {
 
 // Error implements the error interface.
 //
+//
+// Summary: implements the error interface.
+//
+// Returns:
+//   - string: The result.
+//
 // Side Effects:
-//   - None.
+// - None.
 func (e *ActionableError) Error() string {
 	return fmt.Sprintf("%v\n\t-> Fix: %s", e.Err, e.Suggestion)
 }
 
 // Unwrap returns the underlying error.
 //
+//
+// Summary: returns the underlying error.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
 // Side Effects:
-//   - None.
+// - None.
 func (e *ActionableError) Unwrap() error {
 	return e.Err
 }
 
 // WrapActionableError wraps an error with context, preserving ActionableError semantics if present.
 //
-// Summary: Wraps an error with context, preserving ActionableError semantics.
 //
+// Summary: Wraps an error with context, preserving ActionableError semantics.
 // If the cause is an ActionableError, it returns a new ActionableError with the context added to the error message.
 // Otherwise, it returns a standard wrapped error.
 //
 // Parameters:
-//   - context (string): The context message to prefix to the error.
-//   - err (error): The error to wrap.
+// - context (string): The context message to prefix to the error.
+// - err (error): The error to wrap.
 //
 // Returns:
-//   - error: The wrapped error.
+// - error: The wrapped error.
 //
 // Side Effects:
-//   - None.
+// - None.
 func WrapActionableError(context string, err error) error {
 	if err == nil {
 		return nil

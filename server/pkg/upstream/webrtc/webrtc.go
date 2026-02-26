@@ -33,6 +33,8 @@ type sanitizer func(string) (string, error)
 
 // Upstream implements the upstream.Upstream interface for services that
 // communicate over WebRTC data channels.
+//
+// Summary: implements the upstream.
 type Upstream struct {
 	poolManager       *pool.Manager
 	toolNameSanitizer sanitizer
@@ -42,17 +44,20 @@ type Upstream struct {
 
 // CheckHealth performs a health check on the upstream service.
 //
+//
+// Summary: performs a health check on the upstream service.
+//
 // Parameters:
-//   - ctx (context.Context): The context for the request.
+// - ctx (context.Context): The context for the request.
 //
 // Returns:
-//   - error: An error if the operation fails.
+// - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
+// - Returns an error if ...
 //
 // Side Effects:
-//   - None.
+// - None.
 func (u *Upstream) CheckHealth(ctx context.Context) error {
 	u.mu.RLock()
 	checker := u.checker
@@ -71,17 +76,20 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 // Shutdown is a no-op for the WebRTC upstream, as connections are transient
 // and not managed by a persistent pool.
 //
+//
+// Summary: is a no-op for the WebRTC upstream, as connections are transient.
+//
 // Parameters:
-//   - _ (context.Context): The parameter.
+// - _ (context.Context): The parameter.
 //
 // Returns:
-//   - error: An error if the operation fails.
+// - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if ...
+// - Returns an error if ...
 //
 // Side Effects:
-//   - None.
+// - None.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	if u.checker != nil {
@@ -95,14 +103,17 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 
 // NewUpstream creates a new instance of WebrtcUpstream.
 //
+//
+// Summary: creates a new instance of WebrtcUpstream.
+//
 // Parameters:
-//   - poolManager (*pool.Manager): The parameter.
+// - poolManager (*pool.Manager): The parameter.
 //
 // Returns:
-//   - upstream.Upstream: The result.
+// - upstream.Upstream: The result.
 //
 // Side Effects:
-//   - None.
+// - None.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	return &Upstream{
 		poolManager:       poolManager,

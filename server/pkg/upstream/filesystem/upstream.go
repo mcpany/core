@@ -33,6 +33,8 @@ import (
 //
 // It provides tools for interacting with various filesystem backends (local,
 // S3, GCS, etc.) as defined in the service configuration.
+//
+// Summary: implements the upstream.
 type Upstream struct {
 	mu      sync.Mutex
 	closers []io.Closer
@@ -41,11 +43,14 @@ type Upstream struct {
 
 // NewUpstream creates a new instance of FilesystemUpstream.
 //
+//
+// Summary: creates a new instance of FilesystemUpstream.
+//
 // Returns:
-//   - upstream.Upstream: A new instance of the filesystem upstream.
+// - upstream.Upstream: A new instance of the filesystem upstream.
 //
 // Side Effects:
-//   - None.
+// - None.
 func NewUpstream() upstream.Upstream {
 	return &Upstream{
 		closers: make([]io.Closer, 0),
@@ -54,15 +59,18 @@ func NewUpstream() upstream.Upstream {
 
 // Shutdown implements the upstream.Upstream interface.
 //
+//
+// Summary: implements the upstream.
+//
 // Parameters:
-//   - ctx (context.Context): The context for the shutdown operation (currently unused).
+// - ctx (context.Context): The context for the shutdown operation (currently unused).
 //
 // Returns:
-//   - error: Always returns nil.
+// - error: Always returns nil.
 //
 // Side Effects:
-//   - Stops the health checker.
-//   - Closes all registered filesystem providers.
+// - Stops the health checker.
+// - Closes all registered filesystem providers.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -213,15 +221,19 @@ type fsCallable struct {
 
 // Call executes the filesystem tool with the provided request arguments.
 //
+//
 // Summary: Executes a filesystem tool.
 //
 // Parameters:
-//   - ctx: context.Context. The execution context.
-//   - req: *tool.ExecutionRequest. The request containing arguments.
+// - ctx: context.Context. The execution context.
+// - req: *tool.ExecutionRequest. The request containing arguments.
 //
 // Returns:
-//   - any: The result of the execution.
-//   - error: An error if execution fails.
+// - any: The result of the execution.
+// - error: An error if execution fails.
+//
+// Side Effects:
+//   - None.
 func (c *fsCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	args := req.Arguments
 	if args == nil && len(req.ToolInputs) > 0 {

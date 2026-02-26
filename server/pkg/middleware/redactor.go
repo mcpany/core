@@ -25,6 +25,8 @@ var (
 )
 
 // Redactor handles redaction of sensitive data based on configuration.
+//
+// Summary: handles redaction of sensitive data based on configuration.
 type Redactor struct {
 	customPattern  *regexp.Regexp
 	customPatterns []*regexp.Regexp
@@ -36,6 +38,18 @@ type Redactor struct {
 // log is the log.
 //
 // Returns the result.
+//
+// Summary: creates a new Redactor from the given DLP config.
+//
+// Parameters:
+//   - config (*configv1.DLPConfig): The config.
+//   - log (*slog.Logger): The log.
+//
+// Returns:
+//   - *Redactor: The result.
+//
+// Side Effects:
+//   - None.
 func NewRedactor(config *configv1.DLPConfig, log *slog.Logger) *Redactor {
 	if config == nil || !config.GetEnabled() {
 		return nil
@@ -83,6 +97,18 @@ func NewRedactor(config *configv1.DLPConfig, log *slog.Logger) *Redactor {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Summary: redacts sensitive information from a JSON byte slice.
+//
+// Parameters:
+//   - data ([]byte): The data.
+//
+// Returns:
+//   - []byte: The result.
+//   - error: An error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (r *Redactor) RedactJSON(data []byte) ([]byte, error) {
 	if r == nil || len(data) == 0 {
 		return data, nil
@@ -142,6 +168,17 @@ func (r *Redactor) RedactJSON(data []byte) ([]byte, error) {
 // s is the s.
 //
 // Returns the result.
+//
+// Summary: redacts sensitive information from a string.
+//
+// Parameters:
+//   - s (string): The s.
+//
+// Returns:
+//   - string: The result.
+//
+// Side Effects:
+//   - None.
 func (r *Redactor) RedactString(s string) string {
 	if r == nil {
 		return s
@@ -204,6 +241,14 @@ func (r *Redactor) RedactString(s string) string {
 // RedactStruct redacts sensitive information from a map.
 //
 // v is the v.
+//
+// Summary: redacts sensitive information from a map.
+//
+// Parameters:
+//   - v (map[string]interface{}): The v.
+//
+// Side Effects:
+//   - None.
 func (r *Redactor) RedactStruct(v map[string]interface{}) {
 	if r == nil {
 		return
@@ -218,6 +263,17 @@ func (r *Redactor) RedactStruct(v map[string]interface{}) {
 // val is the val.
 //
 // Returns the result.
+//
+// Summary: redacts sensitive information from a value.
+//
+// Parameters:
+//   - val (interface{}): The val.
+//
+// Returns:
+//   - interface: The result.
+//
+// Side Effects:
+//   - None.
 func (r *Redactor) RedactValue(val interface{}) interface{} {
 	if r == nil {
 		return val

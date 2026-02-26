@@ -15,6 +15,8 @@ import (
 )
 
 // FileAuditStore writes audit logs to a file or stdout.
+//
+// Summary: writes audit logs to a file or stdout.
 type FileAuditStore struct {
 	mu   sync.Mutex
 	file *os.File
@@ -27,6 +29,18 @@ type FileAuditStore struct {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Summary: creates a new FileAuditStore.
+//
+// Parameters:
+//   - path (string): The path.
+//
+// Returns:
+//   - *FileAuditStore: The result.
+//   - error: An error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func NewFileAuditStore(path string) (*FileAuditStore, error) {
 	var f *os.File
 	var err error
@@ -51,6 +65,18 @@ func NewFileAuditStore(path string) (*FileAuditStore, error) {
 // entry is the entry.
 //
 // Returns an error if the operation fails.
+//
+// Summary: writes an audit entry to the file.
+//
+// Parameters:
+//   - _ (context.Context): Ignored.
+//   - entry (Entry): The entry.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (s *FileAuditStore) Write(_ context.Context, entry Entry) error {
 	// ⚡ BOLT: Serialize JSON outside the lock to reduce critical section duration.
 	// Randomized Selection from Top 5 High-Impact Targets
@@ -76,6 +102,19 @@ func (s *FileAuditStore) Write(_ context.Context, entry Entry) error {
 }
 
 // Read implements the Store interface.
+//
+// Summary: implements the Store interface.
+//
+// Parameters:
+//   - _ (context.Context): Ignored.
+//   - _ (Filter): Ignored.
+//
+// Returns:
+//   - []Entry: The result.
+//   - error: An error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (s *FileAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for file audit store")
 }
@@ -83,6 +122,14 @@ func (s *FileAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 // Close closes the file.
 //
 // Returns an error if the operation fails.
+//
+// Summary: closes the file.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Side Effects:
+//   - None.
 func (s *FileAuditStore) Close() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
