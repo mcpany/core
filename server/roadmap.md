@@ -29,6 +29,11 @@
 *   **[P1] Federated MCP Peering**: Distributed node discovery and tool proxying. (Added: 2026-02-26)
 *   **[P1] Resource Telemetry Middleware**: Inject latency/cost metrics into tool schemas. (Added: 2026-02-26)
 
+#### Upcoming (2026-02-27 Evolution)
+*   **[P0] Trace-Injection Middleware**: Automatically inject and propagate Trace/Parent IDs across MCP calls to solve cascading failure observability. (Added: 2026-02-27)
+*   **[P0] Secure Config Sandbox**: Implement a hardened loader for tool-specific configuration files to prevent shell injection (CVE-2025-59536). (Added: 2026-02-27)
+*   **[P1] Dynamic Policy Adapter**: Bridge for Gemini-style `--policy` definitions. (Added: 2026-02-27)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

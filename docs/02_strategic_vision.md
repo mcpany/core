@@ -47,3 +47,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **A2A Gateway Protocol**: MCP Any will implement a protocol-neutral bridge for A2A communication, allowing disparate agent frameworks (e.g., OpenClaw, AutoGen) to exchange state and tasks via a unified MCP-like interface.
 - **Federated Tool Mesh**: Moving from a standalone server to a "Mesh" architecture where multiple MCP Any instances can peer and share resources across network boundaries, governed by global Zero-Trust policies.
 - **Resource-Aware Intelligence**: Integrating cost and latency telemetry into the tool discovery process, allowing LLMs to perform "Economical Reasoning" when selecting tools.
+
+---
+
+## Strategic Evolution: [2026-02-27]
+### Focus: Infrastructure-Level Safety & Observability
+**Context**: Recent high-profile vulnerabilities in Claude Code and the rise of complex agent cascades necessitate a shift from "Functional Infrastructure" to "Fortified Infrastructure."
+**Strategic Pivot**:
+- **Zero-Trust Tool Configuration**: Moving beyond securing tool execution to securing tool *initialization*. MCP Any will enforce strict schema validation and sandboxing for all tool-specific configuration files (e.g., `.mcp.json`, `.claudecode.json`).
+- **Trace-First Coordination**: Implementing mandatory Trace ID propagation across all agent-to-tool and agent-to-agent interactions to eliminate the "Observability Gap" in autonomous swarms.
+- **Policy-as-Code Integration**: Aligning with the industry shift (Gemini CLI) towards decentralized, user-defined policy engines, making MCP Any the enforcement point for global AI safety guardrails.

@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **Trace-Injection Middleware**: (P0) Automatically injects and propagates trace/parent IDs across MCP calls. Essential for debugging cascading failures in swarms.
+- **Secure Config Sandbox**: (P0) A hardened loader for tool-specific configuration files that prevents arbitrary command execution (Mitigation for CVE-2025-59536).
+- **Dynamic Policy Adapter**: (P1) Bridging layer for Gemini-style `--policy` definitions, allowing users to bring their own security contracts.
+
+### Priority Shifts
+- **Policy Firewall**: Re-affirming **P0**. Now includes "Policy-as-Code" interoperability.
+- **Supply Chain Integrity Guard**: Remained **P0**. Escalated urgency due to recent Claude Code exploits.
+
+### Deprecations / Monitoring
+- **Unvalidated Configuration Parsing**: Immediate deprecation of any tool-loading logic that reads local `.json` or `.yaml` without a pre-defined schema.

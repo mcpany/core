@@ -53,3 +53,4 @@ As agentic workflows evolve from single-agent tasks to multi-agent swarms (e.g.,
 
 ## 7. Evolutionary Changelog
 * **2026-02-23:** Initial Document Creation. Standardizing Recursive Context Protocol for multi-agent swarm orchestration.
+* **2026-02-27:** Added mandatory Trace ID propagation to the context header to resolve observability gaps in cascading subagent failures. Updated design to include "Zero-Knowledge" context pruning to further enforce least privilege.
