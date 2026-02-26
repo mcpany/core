@@ -54,10 +54,10 @@ else
 endif
 
 # Check for sudo availability for general commands (like apt-get)
-ifeq ($(shell command -v sudo >/dev/null 2>&1 && echo 1 || echo 0), 1)
-	SUDO_CMD := sudo
-else
+ifeq ($(shell id -u), 0)
 	SUDO_CMD :=
+else
+	SUDO_CMD := sudo
 endif
 
 # Variables for protoc installation
