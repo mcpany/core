@@ -147,7 +147,7 @@ jobs:
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
-      MCPANY_ALLOW_LOOPBACK_RESOURCES: "true"
+      # MCPANY_ALLOW_LOOPBACK_RESOURCES: "true" # Removed for unit-test to verify security policies
     steps:
       - name: Prune Docker
         run: docker system prune -af
@@ -254,7 +254,7 @@ jobs:
             ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-
 
       - name: Prepare environment
-        run: make prepare CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache
+        run: make prepare
 
       - name: Test (Short)
         run: |
@@ -446,8 +446,19 @@ jobs:
             slug: arm64
             runner: ubuntu-24.04-arm
     steps:
-      - name: Prune Docker
-        run: docker system prune -af
+      - name: Free Disk Space (Fast)
+        run: |
+          sudo rm -rf /usr/local/lib/android || true
+          sudo rm -rf /usr/share/dotnet || true
+          sudo rm -rf /opt/ghc || true
+          sudo rm -rf /usr/local/share/boost || true
+          sudo rm -rf /usr/local/graalvm || true
+          sudo rm -rf /usr/local/.ghcup || true
+          sudo rm -rf /usr/local/share/powershell || true
+          sudo rm -rf /usr/share/swift || true
+          # sudo rm -rf /usr/lib/jvm || true # Keep Java for make gen
+          sudo rm -rf /var/lib/apt/lists/* || true
+          sudo apt-get clean || true
 
       - uses: actions/checkout@v6
 
@@ -580,6 +591,20 @@ jobs:
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
       MCPANY_ALLOW_LOOPBACK_RESOURCES: "true"
     steps:
+      - name: Free Disk Space (Fast)
+        run: |
+          sudo rm -rf /usr/local/lib/android || true
+          sudo rm -rf /usr/share/dotnet || true
+          sudo rm -rf /opt/ghc || true
+          sudo rm -rf /usr/local/share/boost || true
+          sudo rm -rf /usr/local/graalvm || true
+          sudo rm -rf /usr/local/.ghcup || true
+          sudo rm -rf /usr/local/share/powershell || true
+          sudo rm -rf /usr/share/swift || true
+          sudo rm -rf /usr/lib/jvm || true
+          sudo rm -rf /var/lib/apt/lists/* || true
+          sudo apt-get clean || true
+
       - name: Prune Docker
         run: docker system prune -af
 
@@ -713,6 +738,20 @@ jobs:
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
       MCPANY_ALLOW_LOOPBACK_RESOURCES: "true"
     steps:
+      - name: Free Disk Space (Fast)
+        run: |
+          sudo rm -rf /usr/local/lib/android || true
+          sudo rm -rf /usr/share/dotnet || true
+          sudo rm -rf /opt/ghc || true
+          sudo rm -rf /usr/local/share/boost || true
+          sudo rm -rf /usr/local/graalvm || true
+          sudo rm -rf /usr/local/.ghcup || true
+          sudo rm -rf /usr/local/share/powershell || true
+          sudo rm -rf /usr/share/swift || true
+          sudo rm -rf /usr/lib/jvm || true
+          sudo rm -rf /var/lib/apt/lists/* || true
+          sudo apt-get clean || true
+
       - name: Prune Docker
         run: docker system prune -af
 
@@ -889,6 +928,20 @@ jobs:
     env:
       MCPANY_ALLOW_LOOPBACK_RESOURCES: "true"
     steps:
+      - name: Free Disk Space (Fast)
+        run: |
+          sudo rm -rf /usr/local/lib/android || true
+          sudo rm -rf /usr/share/dotnet || true
+          sudo rm -rf /opt/ghc || true
+          sudo rm -rf /usr/local/share/boost || true
+          sudo rm -rf /usr/local/graalvm || true
+          sudo rm -rf /usr/local/.ghcup || true
+          sudo rm -rf /usr/local/share/powershell || true
+          sudo rm -rf /usr/share/swift || true
+          sudo rm -rf /usr/lib/jvm || true
+          sudo rm -rf /var/lib/apt/lists/* || true
+          sudo apt-get clean || true
+
       - name: Prune Docker
         run: docker system prune -af
 

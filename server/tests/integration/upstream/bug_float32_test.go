@@ -18,6 +18,10 @@ import (
 )
 
 func TestUpstreamService_Float32Bug(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping E2E test in short mode")
+	}
+
 	// 1. Start a mock upstream server
 	var receivedPath string
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
