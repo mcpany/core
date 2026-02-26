@@ -96,12 +96,12 @@ jobs:
       - name: Prune Docker
         run: docker system prune -af
 
-      - name: Ensure Git
+      - name: Ensure Build Tools
         run: |
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
-          if ! command -v git &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y git
+          if ! command -v git &> /dev/null || ! command -v make &> /dev/null; then
+            $SUDO apt-get update && $SUDO apt-get install -y git make
           fi
 
       - uses: actions/checkout@v6
@@ -151,9 +151,9 @@ jobs:
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
           if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential
           elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz
+             $SUDO apk add --no-cache make xz build-base
           fi
 
       - name: Prepare environment
@@ -184,12 +184,12 @@ jobs:
       - name: Prune Docker
         run: docker system prune -af
 
-      - name: Ensure Git
+      - name: Ensure Build Tools
         run: |
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
-          if ! command -v git &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y git
+          if ! command -v git &> /dev/null || ! command -v make &> /dev/null; then
+            $SUDO apt-get update && $SUDO apt-get install -y git make
           fi
 
       - uses: actions/checkout@v6
@@ -199,9 +199,9 @@ jobs:
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
           if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential
           elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz
+             $SUDO apk add --no-cache make xz build-base
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -298,7 +298,9 @@ jobs:
             ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-
 
       - name: Prepare environment
-        run: make prepare CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache
+        run: |
+          make prepare CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache
+          echo "$(pwd)/build/env/bin" >> $GITHUB_PATH
 
       - name: Test (Short)
         run: |
@@ -337,12 +339,12 @@ jobs:
       - name: Prune Docker
         run: docker system prune -af
 
-      - name: Ensure Git
+      - name: Ensure Build Tools
         run: |
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
-          if ! command -v git &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y git
+          if ! command -v git &> /dev/null || ! command -v make &> /dev/null; then
+            $SUDO apt-get update && $SUDO apt-get install -y git make
           fi
 
       - uses: actions/checkout@v6
@@ -352,9 +354,9 @@ jobs:
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
           if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential
           elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz
+             $SUDO apk add --no-cache make xz build-base
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -479,7 +481,9 @@ jobs:
           done
 
       - name: Prepare environment
-        run: make prepare
+        run: |
+          make prepare
+          echo "$(pwd)/build/env/bin" >> $GITHUB_PATH
 
       - name: run parallel e2e
         run: |
@@ -519,12 +523,12 @@ jobs:
           $SUDO rm -rf /opt/ghc
           $SUDO rm -rf /usr/local/share/boost
 
-      - name: Ensure Git
+      - name: Ensure Build Tools
         run: |
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
-          if ! command -v git &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y git
+          if ! command -v git &> /dev/null || ! command -v make &> /dev/null; then
+            $SUDO apt-get update && $SUDO apt-get install -y git make
           fi
 
       - uses: actions/checkout@v6
@@ -669,12 +673,12 @@ jobs:
       - name: Prune Docker
         run: docker system prune -af
 
-      - name: Ensure Git
+      - name: Ensure Build Tools
         run: |
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
-          if ! command -v git &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y git
+          if ! command -v git &> /dev/null || ! command -v make &> /dev/null; then
+            $SUDO apt-get update && $SUDO apt-get install -y git make
           fi
 
       - uses: actions/checkout@v6
@@ -684,9 +688,9 @@ jobs:
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
           if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential
           elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz
+             $SUDO apk add --no-cache make xz build-base
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -784,7 +788,9 @@ jobs:
             ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-
 
       - name: Prepare environment
-        run: make prepare
+        run: |
+          make prepare
+          echo "$(pwd)/build/env/bin" >> $GITHUB_PATH
 
       - name: run sequential e2e
         run: |
@@ -820,12 +826,12 @@ jobs:
       - name: Prune Docker
         run: docker system prune -af
 
-      - name: Ensure Git
+      - name: Ensure Build Tools
         run: |
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
-          if ! command -v git &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y git
+          if ! command -v git &> /dev/null || ! command -v make &> /dev/null; then
+            $SUDO apt-get update && $SUDO apt-get install -y git make
           fi
 
       - uses: actions/checkout@v6
@@ -835,9 +841,9 @@ jobs:
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
           if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential
           elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz
+             $SUDO apk add --no-cache make xz build-base
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -920,7 +926,9 @@ jobs:
             ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-
 
       - name: Prepare environment
-        run: make prepare
+        run: |
+          make prepare
+          echo "$(pwd)/build/env/bin" >> $GITHUB_PATH
 
       - name: test public api
         run: |
@@ -939,12 +947,12 @@ jobs:
     timeout-minutes: 15
     needs: [build-images]
     steps:
-      - name: Ensure Git
+      - name: Ensure Build Tools
         run: |
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
-          if ! command -v git &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y git
+          if ! command -v git &> /dev/null || ! command -v make &> /dev/null; then
+            $SUDO apt-get update && $SUDO apt-get install -y git make
           fi
 
       - uses: actions/checkout@v6
@@ -1019,12 +1027,12 @@ jobs:
       - name: Prune Docker
         run: docker system prune -af
 
-      - name: Ensure Git
+      - name: Ensure Build Tools
         run: |
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
-          if ! command -v git &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y git
+          if ! command -v git &> /dev/null || ! command -v make &> /dev/null; then
+            $SUDO apt-get update && $SUDO apt-get install -y git make
           fi
 
       - uses: actions/checkout@v6
