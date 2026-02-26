@@ -35,10 +35,17 @@ jobs:
     steps:
       - name: Install dependencies
         run: |
-          if command -v sudo &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y git
-          else
-            apt-get update && apt-get install -y git
+          SUDO=""
+          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+
+          if command -v apt-get &> /dev/null; then
+             $SUDO DEBIAN_FRONTEND=noninteractive apt-get update && $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y git
+          elif command -v apk &> /dev/null; then
+             $SUDO apk add --no-cache git
+          elif command -v yum &> /dev/null; then
+             $SUDO yum install -y git
+          elif command -v dnf &> /dev/null; then
+             $SUDO dnf install -y git
           fi
 
       - uses: actions/checkout@v6
