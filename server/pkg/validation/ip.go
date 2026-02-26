@@ -5,6 +5,8 @@ package validation
 
 import (
 	"net"
+	"strings"
+	"unicode"
 )
 
 var privateNetworkBlocksIPv6 []*net.IPNet
@@ -211,4 +213,29 @@ func IsPrivateNetworkIPv4(ip net.IP) bool {
 	}
 
 	return false
+}
+
+// IsLoopbackShorthand checks if a string is a shorthand for loopback IP (127.*)
+// that is not parsed by net.ParseIP but might be accepted by tools like curl.
+//
+// Parameters:
+//   - val: The string to check.
+//
+// Returns:
+//   - bool: True if it is a loopback shorthand.
+func IsLoopbackShorthand(val string) bool {
+	if !strings.HasPrefix(val, "127.") {
+		return false
+	}
+	// Check if rest contains only digits and dots
+	for i := 4; i < len(val); i++ {
+		r := rune(val[i])
+		if !unicode.IsDigit(r) && r != '.' {
+			return false
+		}
+	}
+	// It starts with 127. and contains only digits/dots.
+	// It is almost certainly intended as an IP or version string.
+	// Given 127.0.0.0/8 is reserved for loopback, we treat it as loopback.
+	return true
 }
