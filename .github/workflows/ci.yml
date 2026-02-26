@@ -34,7 +34,16 @@ jobs:
       src: ${{ steps.filter.outputs.src }}
     steps:
       - name: Install dependencies
-        run: apt-get update && apt-get install -y git
+        run: |
+          if command -v apt-get &> /dev/null; then
+            if command -v sudo &> /dev/null; then
+              sudo apt-get update && sudo apt-get install -y git
+            else
+              apt-get update && apt-get install -y git
+            fi
+          elif command -v apk &> /dev/null; then
+             sudo apk add --no-cache git || apk add --no-cache git
+          fi
 
       - uses: actions/checkout@v6
         with:
