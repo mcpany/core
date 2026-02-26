@@ -27,8 +27,8 @@ permissions:
   contents: read
 
 env:
-  GOMAXPROCS: 1
-  GOGC: 20 # Aggressive GC to reduce memory usage on constrained runners
+  # GOMAXPROCS: 1 # Removed to allow default parallelism
+  GOGC: 50 # Balanced GC to avoid excessive CPU usage while keeping memory in check
   GO_RACE: "" # Disable race detector in CI due to OOM on constrained runners
 
 jobs:
