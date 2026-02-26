@@ -125,7 +125,17 @@ func TestServer_CallTool_Latency_Metrics_Repro(t *testing.T) {
 		}
 		time.Sleep(100 * time.Millisecond)
 	}
-	require.NotEmpty(t, data)
+
+	// Debug logging for CI failure diagnosis
+	if len(data) == 0 {
+		t.Logf("No metrics data received after %d attempts", 50)
+	} else {
+		for i, interval := range data {
+			t.Logf("Interval %d samples: %v", i, interval.Samples)
+		}
+	}
+
+	require.NotEmpty(t, data, "Metrics data should not be empty")
 
 	unlabelledExists := false
 	foundLabelled := false
