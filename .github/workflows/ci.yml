@@ -145,7 +145,8 @@ jobs:
             SUDO="sudo"
           fi
           if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update && DEBIAN_FRONTEND=noninteractive $SUDO apt-get install -y make xz-utils build-essential gcc
+            $SUDO apt-get update || true
+            DEBIAN_FRONTEND=noninteractive $SUDO apt-get install -y make xz-utils build-essential gcc
           elif command -v apk &> /dev/null; then
              $SUDO apk add --no-cache make xz build-base gcc
           fi
@@ -165,6 +166,7 @@ jobs:
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
+      CGO_ENABLED: 1
     steps:
       - name: Free Disk Space (Fast)
         run: |
@@ -189,7 +191,8 @@ jobs:
             SUDO="sudo"
           fi
           if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update && DEBIAN_FRONTEND=noninteractive $SUDO apt-get install -y make xz-utils build-essential gcc
+            $SUDO apt-get update || true
+            DEBIAN_FRONTEND=noninteractive $SUDO apt-get install -y make xz-utils build-essential gcc
           elif command -v apk &> /dev/null; then
              $SUDO apk add --no-cache make xz build-base gcc
           fi
@@ -342,7 +345,8 @@ jobs:
             SUDO="sudo"
           fi
           if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update && DEBIAN_FRONTEND=noninteractive $SUDO apt-get install -y make xz-utils build-essential gcc
+            $SUDO apt-get update || true
+            DEBIAN_FRONTEND=noninteractive $SUDO apt-get install -y make xz-utils build-essential gcc
           elif command -v apk &> /dev/null; then
              $SUDO apk add --no-cache make xz build-base gcc
           fi
@@ -486,7 +490,7 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: ${{ matrix.runner }}
-    container: public.ecr.aws/docker/library/ubuntu:24.04
+    # container: public.ecr.aws/docker/library/ubuntu:24.04
     strategy:
       fail-fast: false
       matrix:
@@ -499,11 +503,6 @@ jobs:
             runner: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v6
-
-      - name: Install build dependencies
-        run: |
-          apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y make curl unzip git ca-certificates
-          git config --global --add safe.directory "*"
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -656,7 +655,8 @@ jobs:
             SUDO="sudo"
           fi
           if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update && DEBIAN_FRONTEND=noninteractive $SUDO apt-get install -y make xz-utils build-essential gcc
+            $SUDO apt-get update || true
+            DEBIAN_FRONTEND=noninteractive $SUDO apt-get install -y make xz-utils build-essential gcc
           elif command -v apk &> /dev/null; then
              $SUDO apk add --no-cache make xz build-base gcc
           fi
@@ -803,7 +803,8 @@ jobs:
             SUDO="sudo"
           fi
           if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update && DEBIAN_FRONTEND=noninteractive $SUDO apt-get install -y make xz-utils build-essential gcc
+            $SUDO apt-get update || true
+            DEBIAN_FRONTEND=noninteractive $SUDO apt-get install -y make xz-utils build-essential gcc
           elif command -v apk &> /dev/null; then
              $SUDO apk add --no-cache make xz build-base gcc
           fi
