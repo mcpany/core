@@ -134,9 +134,9 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
+            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential python3
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz build-base
+             sudo apk add --no-cache make xz build-base python3
           fi
 
       - name: Prepare environment
@@ -170,9 +170,9 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
+            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential python3
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz build-base
+             sudo apk add --no-cache make xz build-base python3
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -309,9 +309,9 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
+            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential python3
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz build-base
+             sudo apk add --no-cache make xz build-base python3
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -474,7 +474,7 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Install dependencies
-        run: apt-get update && apt-get install -y make git
+        run: apt-get update && apt-get install -y make git docker.io
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -619,9 +619,9 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
+            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential python3
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz build-base
+             sudo apk add --no-cache make xz build-base python3
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -758,9 +758,9 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
+            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential python3
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz build-base
+             sudo apk add --no-cache make xz build-base python3
           fi
 
       - name: Configure Docker Registry Mirrors
