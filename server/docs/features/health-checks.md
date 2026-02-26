@@ -115,3 +115,12 @@ upstream_services:
 ## Monitoring
 
 Health check status is logged and can be monitored via the metrics exported by the server. When a service fails its health check (performed on-demand, e.g., via diagnostics or at startup), it is marked as unhealthy, and requests may fail or be routed to other instances (if load balancing is configured).
+
+### Metrics
+
+The following metrics are exported for health checks:
+
+-   `mcpany_health_check_status`: A gauge indicating the current health status of a service (1 = Healthy, 0 = Unhealthy).
+    -   Labels: `service`
+-   `mcpany_health_check_latency_seconds`: A histogram/summary of the latency of health check execution.
+    -   Labels: `service`, `status` (success/failure)

@@ -15,6 +15,7 @@ The audit log captures:
 - **Arguments**: The input arguments provided to the tool (optional).
 - **Result**: The result returned by the tool (optional).
 - **Error**: Any error that occurred during execution.
+- **Trace Context**: Fields for distributed tracing (Recursive Context Protocol).
 
 ## Configuration
 
@@ -108,6 +109,9 @@ Audit logs are written as newline-delimited JSON (NDJSON). Each line represents 
   "profile_id": "prod",
   "duration": "150ms",
   "duration_ms": 150,
+  "trace_id": "1234567890abcdef",
+  "span_id": "abcdef1234567890",
+  "parent_id": "0000000000000000",
   "arguments": {
     "city": "London"
   },
@@ -117,6 +121,13 @@ Audit logs are written as newline-delimited JSON (NDJSON). Each line represents 
   }
 }
 ```
+
+### Recursive Context Protocol
+
+The `trace_id`, `span_id`, and `parent_id` fields are part of the Recursive Context Protocol. They allow you to trace the execution flow across distributed agents and services.
+- **trace_id**: Unique identifier for the entire trace (a single user request or conversation).
+- **span_id**: Unique identifier for the current unit of work (this specific tool execution).
+- **parent_id**: The `span_id` of the caller (e.g., the agent that called this tool).
 
 ## Security Considerations
 

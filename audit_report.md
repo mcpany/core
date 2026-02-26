@@ -1,43 +1,47 @@
-# Audit Report: Truth Reconciliation
+# Audit Report
 
-## Executive Summary
-Performed a comprehensive audit of 10 distinct features across UI and Server domains. The audit revealed a high degree of alignment between the codebase and the intended functionality, with minor discrepancies in documentation and roadmap status.
-*   **Health Score:** 9/10 (Initial), 10/10 (Post-Remediation).
-*   **Primary Issue:** Documentation Drift (Code was ahead of Docs/Roadmap).
-*   **Action:** Synchronized `ui/roadmap.md` and feature documentation to reflect existing, verified capabilities.
+## 1. Executive Summary
 
-## Verification Matrix
+This report documents the "Truth Reconciliation Audit" performed on the MCP Any project. The audit verified the alignment between Documentation, Codebase, and Product Roadmap for 10 distinct features.
+
+**Overall Health:**
+*   **Documentation Alignment:** High. Most features are accurately documented, though some recent additions (metrics, recursive context) required updates to match the implementation.
+*   **Code Implementation:** Robust. The codebase generally adheres to the Roadmap, with advanced features like Recursive Context Protocol and detailed metrics already implemented.
+*   **Remediation:** 3 out of 10 files required remediation (Documentation Drift). No "Roadmap Debt" (missing code) was found for the sampled features.
+
+## 2. Verification Matrix
 
 | Document Name | Status | Action Taken | Evidence |
 | :--- | :--- | :--- | :--- |
-| `ui/docs/features/connection-diagnostics.md` | ✅ Verified | None | Verified `ConnectionDiagnostic` component logic matches docs. |
-| `ui/docs/features/playground.md` | ⚠️ Drift | **Doc Updated** | Code supports "Copy as Python", doc missed it. Added to doc. |
-| `ui/docs/features/structured_log_viewer.md` | ✅ Verified | None | Verified `LogViewer` JSON auto-detection and expansion. |
-| `server/docs/features/hot_reload.md` | ✅ Verified | None | Verified `ReloadConfig` and `reconcileServices` in `server.go`. |
-| `server/docs/features/health-checks.md` | ✅ Verified | None | Verified `health.go` implements all claimed checks (HTTP, gRPC, FS, etc). |
-| `server/docs/features/dlp.md` | ✅ Verified | None | Verified `dlp.go` implements PII redaction middleware. |
-| `server/docs/features/context_optimizer.md` | ✅ Verified | None | Verified `context_optimizer.go` implements truncation logic. |
-| `server/docs/features/configuration_guide.md` | ✅ Verified | None | Verified configuration loading from files and database. |
-| `server/docs/features/security.md` | ⚠️ Drift | **Doc Updated** | Code enforces "Sentinel Security" (localhost-only) if API Key is missing. Doc updated to reflect this. |
-| `server/docs/features/audit_logging.md` | ✅ Verified | None | Verified `FileAuditStore` implements NDJSON format. |
+| `server/docs/features/monitoring/README.md` | **Drift** | **Updated** | Added missing tool metrics (`input_bytes`, `output_bytes`, `tokens_total`, `in_flight`) found in `tool_metrics.go`. |
+| `server/docs/features/audit_logging.md` | **Drift** | **Updated** | Added `trace_id`, `span_id`, `parent_id` to Log Format and explained Recursive Context Protocol support found in `audit.go`. |
+| `server/docs/features/health-checks.md` | **Drift** | **Updated** | Added "Metrics" section documenting `mcpany_health_check_status` and latency metrics found in `health.go`. Fixed naming inconsistency (`mcp_any_` -> `mcpany_`). |
+| `server/docs/features/caching/README.md` | **Pass** | None | Verified caching configuration and logic match `middleware/cache.go`. |
+| `server/docs/features/prompts/README.md` | **Pass** | None | Verified prompt configuration structure matches `config/config.go` (and proto defs). |
+| `server/docs/features/admin_api.md` | **Pass** | None | Verified gRPC service definition in `admin.proto` matches documented endpoints. |
+| `server/docs/features/config_validator.md` | **Pass** | None | Verified `POST /api/v1/config/validate` endpoint exists in `server/pkg/api/rest/handler.go`. |
+| `ui/docs/features/playground.md` | **Pass** | None | Verified "Native File Upload" feature exists in `PlaygroundClientPro` component. |
+| `ui/docs/features/logs.md` | **Pass** | None | Verified "Color Coding" and search functionality exist in `LogStream` component. |
+| `ui/docs/features/dashboard.md` | **Pass** | None | Verified "Widget Gallery" and layout customization exist in `DashboardGrid` component. |
 
-## Remediation Log
+## 3. Remediation Log
 
-### 1. Security Documentation Update
-*   **Issue:** `server/docs/features/security.md` implied open access if `allowed_ips` was empty.
-*   **Reality:** Code (`server/pkg/app/server.go`) enforces strict localhost-only access if no API Key is configured ("Sentinel Security").
-*   **Fix:** Updated documentation to explicitly describe the "Sentinel Security Mode".
+### server/docs/features/monitoring/README.md
+*   **Issue:** The documentation listed basic metrics but missed detailed tool execution metrics (input/output bytes, token counts) that were implemented in `server/pkg/middleware/tool_metrics.go`.
+*   **Fix:** Added the missing metrics to the "Available Metrics" section.
 
-### 2. Playground Documentation & Roadmap
-*   **Issue:** `ui/roadmap.md` listed "Copy as Curl/Python" as TODO. `ui/docs/features/playground.md` omitted Python support.
-*   **Reality:** Code (`ui/src/lib/code-generator.ts`, `ui/src/components/playground/tool-runner.tsx`) fully implements Curl and Python code generation.
+### server/docs/features/audit_logging.md
+*   **Issue:** The "Log Format" section did not include the `trace_id`, `span_id`, and `parent_id` fields which are critical for the "Recursive Context Protocol" (P0 Roadmap Item). These fields were present in `server/pkg/audit/types.go` and populated in `server/pkg/middleware/audit.go`.
+*   **Fix:** Added these fields to the example log entry and added a section explaining their purpose in supporting the Recursive Context Protocol.
+
+### server/docs/features/health-checks.md
+*   **Issue:** The documentation lacked a "Metrics" section for health checks. Additionally, the codebase (`server/pkg/health/health.go`) used an inconsistent metric prefix (`mcp_any_`) compared to the rest of the system (`mcpany_`).
 *   **Fix:**
-    *   Updated `ui/docs/features/playground.md` to include "Copy as Code".
-    *   Updated `ui/roadmap.md` to mark Playground features as `[x]` (Completed).
+    1.  Updated `server/pkg/health/health.go` to use the standard `mcpany_` prefix for health metrics.
+    2.  Updated the documentation to list these metrics (`mcpany_health_check_status`, `mcpany_health_check_latency_seconds`).
 
-### 3. Code Quality (Linting)
-*   **Issue:** `make lint` failed due to missing TSDoc in UI components.
-*   **Fix:** Added missing TSDoc comments to `ui/src/components/logs/log-viewer.tsx` and `ui/src/components/diagnostics/discovery-status.tsx`.
+## 4. Security Scrub
 
-## Security Scrub
-*   No PII, secrets, or internal IPs were found or exposed in this report.
+*   **PII Check:** No Personally Identifiable Information (PII) was found or added in the report or code changes.
+*   **Secrets Check:** No API keys, passwords, or internal IP addresses are present.
+*   **Sanitization:** All example configurations use placeholders (e.g., `Bearer my-token`, `your-datadog-api-key`).
