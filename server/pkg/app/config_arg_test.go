@@ -15,6 +15,10 @@ import (
 )
 
 func TestConfigLoadingWithArg(t *testing.T) {
+	// Allow loopback for this test as it uses localhost
+	os.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
+	defer os.Unsetenv("MCPANY_ALLOW_LOOPBACK_RESOURCES")
+
 	// Create a temporary config file
 	configContent := `
 upstream_services:
