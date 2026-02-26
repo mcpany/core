@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **Universal Policy-as-Code Engine (Rego/CEL)**: (P0) A unified middleware for enforcing complex, context-aware security policies across all connected agents.
+- **Background Tool Execution Middleware**: (P0) Standards for long-running tool calls, including status polling, asynchronous callbacks, and state persistence.
+- **Skill-Based Capability Tokens**: (P1) A system for grouping tools into "Skills" that can be dynamically granted or revoked based on agent identity and intent.
+
+### Priority Shifts
+- **HITL Middleware**: Promoted from **P1** to **P0**. Essential for managing the high-risk actions of autonomous background agents.
+- **Policy Firewall**: Evolving from a simple hook to the full **Universal Policy-as-Code Engine**.
+
+### Deprecations / Monitoring
+- **Fixed Tool Allow-lists**: Monitoring for deprecation in favor of dynamic, policy-driven authorization.

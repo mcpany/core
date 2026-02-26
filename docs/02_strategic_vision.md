@@ -47,3 +47,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **A2A Gateway Protocol**: MCP Any will implement a protocol-neutral bridge for A2A communication, allowing disparate agent frameworks (e.g., OpenClaw, AutoGen) to exchange state and tasks via a unified MCP-like interface.
 - **Federated Tool Mesh**: Moving from a standalone server to a "Mesh" architecture where multiple MCP Any instances can peer and share resources across network boundaries, governed by global Zero-Trust policies.
 - **Resource-Aware Intelligence**: Integrating cost and latency telemetry into the tool discovery process, allowing LLMs to perform "Economical Reasoning" when selecting tools.
+
+---
+
+## Strategic Evolution: [2026-02-27]
+### Focus: Policy-Driven Autonomous Agency & Background Execution
+**Context**: The rapid adoption of autonomous agents like OpenClaw, coupled with new background execution capabilities in Claude Code and advanced Policy Engines in Gemini CLI, has redefined the security perimeter. "Zero Trust" is no longer enough; we need "Intent-Aware Governance."
+**Strategic Pivot**:
+- **Universal Policy-as-Code**: MCP Any will integrate a native Rego/CEL engine to provide a unified policy layer across all agent frameworks, moving beyond simple tool allow-lists to complex, context-sensitive rules.
+- **Asynchronous Tool Lifecycle**: Implementing a standardized "Background Execution" middleware that handles long-running tasks, status polling, and state synchronization for autonomous subagents.
+- **Autonomous Safety Rails**: Deep integration of Human-in-the-Loop (HITL) triggers for background tasks that exceed predefined risk scores (e.g., recursive file deletions or large-scale data exfiltration).
