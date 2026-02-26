@@ -499,6 +499,14 @@ jobs:
           cache: "npm"
           cache-dependency-path: server/tests/integration/upstream/package-lock.json
 
+      - name: Install Build Tools
+        run: |
+          if command -v apt-get >/dev/null; then
+            apt-get update && apt-get install -y make xz-utils
+          elif command -v apk >/dev/null; then
+            apk add --no-cache make xz
+          fi
+
       - name: Generate Protobufs
         run: |
           make gen
@@ -748,7 +756,7 @@ jobs:
   e2e-public-api:
     runs-on: oci-runner
     # container: public.ecr.aws/docker/library/ubuntu:24.04
-    timeout-minutes: 30
+    timeout-minutes: 45
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
     env:
