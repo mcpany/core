@@ -5,6 +5,7 @@ package validation
 
 import (
 	"net"
+	"strings"
 )
 
 var privateNetworkBlocksIPv6 []*net.IPNet
@@ -211,4 +212,35 @@ func IsPrivateNetworkIPv4(ip net.IP) bool {
 	}
 
 	return false
+}
+
+// IsLoopbackShorthand checks if the string appears to be a shorthand IPv4 loopback address (e.g. 127.1).
+// Many tools (curl, ping) interpret "127.*" as 127.0.0.x (or variations).
+// Standard net.ParseIP does not handle these shorthands, leading to SSRF bypasses.
+// It also handles cases with ports (e.g. 127.1:80).
+//
+// Parameters:
+//   - val: The string to check.
+//
+// Returns:
+//   - bool: True if the string is likely a loopback shorthand, false otherwise.
+func IsLoopbackShorthand(val string) bool {
+	host := val
+	// Strip port if present (IPv4 only)
+	if idx := strings.IndexByte(val, ':'); idx != -1 {
+		host = val[:idx]
+	}
+
+	// Check for "127." prefix
+	if len(host) < 4 || host[:4] != "127." {
+		return false
+	}
+	// Verify remaining characters are only digits or dots
+	for i := 4; i < len(host); i++ {
+		c := host[i]
+		if (c < '0' || c > '9') && c != '.' {
+			return false
+		}
+	}
+	return true
 }
