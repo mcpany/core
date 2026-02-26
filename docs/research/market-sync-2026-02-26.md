@@ -1,27 +1,28 @@
 # Market Sync: 2026-02-26
 
-## Ecosystem Updates
+## Ecosystem Shift: Federated Agency & Safe Execution
+Today's research highlights a dual-track evolution: the move towards multi-agent interoperability (A2A) and a simultaneous crisis in host-level security for autonomous agents.
 
-### The Rise of A2A (Agent-to-Agent) Protocol
-- **Insight**: While MCP standardizes the Model-to-Tool interface, the A2A protocol is gaining traction for the Agent-to-Agent interface. Multi-agent frameworks (CrewAI, AutoGen) are adopting A2A for standardized handoffs and message passing.
-- **Impact**: MCP Any needs to evolve from a Model-Tool bridge to an Agent-Agent-Tool bridge.
-- **MCP Any Opportunity**: Implement an "A2A Adapter" that allows MCP-native agents to communicate with A2A-native agents seamlessly, treating A2A endpoints as "Pseudo-MCP Servers."
+### 1. The Rise of Agent-to-Agent (A2A) Protocols
+- **Trend**: Agent frameworks like OpenClaw and AutoGen are beginning to adopt standardized A2A handoff protocols.
+- **Problem**: Lack of a "Universal Bus" means agents are often siloed within their own framework's transport layer.
+- **Opportunity**: MCP Any can serve as the neutral bridge (Pseudo-MCP) that allows cross-framework discovery and execution.
 
-### Federated MCP Nodes
-- **Insight**: Large-scale agent deployments are hitting limits with single-host MCP servers. Companies are starting to deploy "Federated MCP" where tools are distributed across global nodes.
-- **Impact**: Centralized configuration is becoming a bottleneck.
-- **MCP Any Opportunity**: Pivot towards a distributed discovery model where MCP Any nodes can "peer" with each other to share tool registries while maintaining Zero-Trust boundaries.
+### 2. Federated MCP & Node Peering
+- **Discovery**: New patterns in decentralized agent swarms are moving away from centralized tool registries towards "Federated Tool Meshes."
+- **Mechanism**: Agents can now "peer" with other MCP Any nodes to share tool capabilities across network boundaries, governed by global Zero-Trust policies.
 
-### Resource-Aware Tool Execution
-- **Insight**: Modern LLMs (like Gemini 2.0 Ultra and Claude 4) are being trained to consider "computational budget." They are asking for tool metadata that includes estimated latency and cost.
-- **Impact**: Simple "available/unavailable" status is no longer enough.
-- **MCP Any Opportunity**: Enhance the Tool Registry to track and report historical performance metrics (P95 latency, average token cost) as part of the tool schema.
+### 3. Claude Code Security Breach (CVE-2025-59536 / CVE-2026-21852)
+- **Problem**: Critical RCE vulnerabilities found in Claude Code allowed malicious repository configurations to execute arbitrary shell commands via "Hooks."
+- **Impact**: Reaffirms that "Config-as-Code" for agents is a high-risk supply chain attack vector.
+- **Mitigation**: Requires explicit user approval for hooks and move towards "Signed Configurations."
 
-## Autonomous Agent Pain Points
-- **Inter-Framework Friction**: Swarms built on different frameworks (e.g., a LangGraph agent talking to a CrewAI agent) struggle with state synchronization.
-- **Network Latency in Tool Calls**: As tools move to the edge/federated nodes, latency-blind agents make poor planning decisions.
-- **Resource Exhaustion**: Rogue agents calling high-cost tools without a budget awareness.
+### 4. Gemini CLI v0.30.0: Policy Engine & Seatbelts
+- **Update**: Google introduced a comprehensive Policy Engine with "Seatbelt Profiles" (Strict, Standard, Permissive).
+- **Trend**: Moving away from simple allow-lists towards declarative, capability-based security policies.
 
-## Security Vulnerabilities
-- **A2A Spoofing**: Lack of standardized identity in A2A handoffs allows rogue agents to impersonate authorized peers.
-- **Federation Leakage**: Misconfigured peering in federated MCP setups can expose local tools to the public internet.
+## Strategic Implications for MCP Any
+- **A2A Interop**: We must implement the A2A Bridge to capture the market for multi-framework agent coordination.
+- **Policy First**: Accelerate the "Policy Firewall" and "Secure Hooking" to prevent the configuration-based exploits seen in the ecosystem.
+- **Seatbelt Defaults**: MCP Any should adopt "Safe-by-Default" profiles that restrict high-risk tool calls unless explicitly authorized.
+- **Resource Intelligence**: With the growth of federated meshes, injecting cost and latency telemetry into tool discovery is now a P1 requirement for "Economical Reasoning."

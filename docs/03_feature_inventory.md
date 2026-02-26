@@ -58,10 +58,14 @@
 - **A2A Interop Bridge (Pseudo-MCP)**: (P0) Allows agents to interact with other agent frameworks using the A2A protocol, exposed as standard MCP tools.
 - **Federated MCP Node Peering**: (P1) Secure discovery and proxying of tools across distributed MCP Any instances.
 - **Cost & Latency Telemetry Middleware**: (P1) Automatically injects performance metadata into tool schemas to enable resource-aware agent reasoning.
+- **Secure Hooking Middleware**: (P0) Implements mandatory user-approval for all agentic "Hooks" and prevents arbitrary command execution from repository-controlled configurations.
+- **Policy Seatbelt Profiles**: (P1) Pre-defined, tiered security profiles (Strict, Standard, Permissive) that can be applied to agent sessions to govern capability access.
 
 ### Priority Shifts
-- **MCP Provenance Attestation**: Promoted to **P0** as it is a prerequisite for secure Federated MCP peering.
+- **MCP Provenance Attestation**: Promoted to **P0** as it is a prerequisite for secure Federated MCP peering and protecting against configuration poisoning.
 - **Lazy-MCP Middleware**: Promoted to **P0** (Already P0, but re-affirming importance for Federated Tool Mesh).
+- **Policy Firewall**: Re-affirming **P0** priority following the Gemini CLI v0.30.0 release.
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+- **Unvalidated Configuration Hooks**: Monitoring for deprecation in favor of Secure Hooking Middleware.

@@ -26,6 +26,8 @@
 
 #### Upcoming (2026-02-26 Evolution)
 *   **[P0] A2A Interop Bridge**: Implement Pseudo-MCP wrapper for A2A-compliant agents. (Added: 2026-02-26)
+*   **[P0] Secure Hooking Middleware**: Mandatory user-approval for repository-defined hooks to prevent RCE. (Added: 2026-02-26)
+*   **[P1] Policy Seatbelt Profiles**: Tiered security profiles (Strict/Standard/Permissive) for session governance. (Added: 2026-02-26)
 *   **[P1] Federated MCP Peering**: Distributed node discovery and tool proxying. (Added: 2026-02-26)
 *   **[P1] Resource Telemetry Middleware**: Inject latency/cost metrics into tool schemas. (Added: 2026-02-26)
 

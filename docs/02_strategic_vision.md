@@ -41,9 +41,11 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 ---
 
 ## Strategic Evolution: [2026-02-26]
-### Focus: Federated Agency & A2A Interoperability
-**Context**: As agent ecosystems mature, the bottleneck is no longer "Model-to-Tool" (MCP) but "Agent-to-Agent" (A2A) and "Node-to-Node" (Federation). MCP Any must expand its scope to become the universal bus for all agentic communications.
+### Focus: Federated Agency, A2A Interoperability & Supply Chain Resilience
+**Context**: As agent ecosystems mature, the bottleneck shifts to "Agent-to-Agent" (A2A) and "Node-to-Node" (Federation). Simultaneously, critical RCE vulnerabilities in Claude Code and the introduction of Policy Seatbelts in Gemini CLI v0.30.0 have redefined the security baseline.
 **Strategic Pivot**:
 - **A2A Gateway Protocol**: MCP Any will implement a protocol-neutral bridge for A2A communication, allowing disparate agent frameworks (e.g., OpenClaw, AutoGen) to exchange state and tasks via a unified MCP-like interface.
 - **Federated Tool Mesh**: Moving from a standalone server to a "Mesh" architecture where multiple MCP Any instances can peer and share resources across network boundaries, governed by global Zero-Trust policies.
-- **Resource-Aware Intelligence**: Integrating cost and latency telemetry into the tool discovery process, allowing LLMs to perform "Economical Reasoning" when selecting tools.
+- **Policy Seatbelt Profiles**: Implementing a "Default-Strict" policy posture that restricts high-risk operations (shell, fs, network) unless explicitly granted by a verified user session.
+- **Secure Hooking & Provenance**: Standardizing on mandatory user-approval for all agentic "Hooks" and ensuring all agentic configurations come from an attested, signed source.
+- **Resource-Aware Intelligence**: Integrating cost and latency telemetry into the tool discovery process to enable "Economical Reasoning" when selecting tools in a federated mesh.
