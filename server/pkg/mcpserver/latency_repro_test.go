@@ -102,32 +102,54 @@ func TestServer_CallTool_Latency_Metrics_Repro(t *testing.T) {
 	var data []*metrics.IntervalMetrics
 	for i := 0; i < 20; i++ {
 		data = sink.Data()
+		// Since execution takes ~50ms, metrics might span multiple intervals.
+		// We need to wait until we see some data.
 		if len(data) > 0 {
-			break
+			// Check if we have the latency metric in any interval
+			found := false
+			for _, interval := range data {
+				for k := range interval.Samples {
+					if len(k) >= len("mcpany.tools.call.latency") && k[:len("mcpany.tools.call.latency")] == "mcpany.tools.call.latency" {
+						found = true
+						break
+					}
+				}
+				if found {
+					break
+				}
+			}
+			if found {
+				break
+			}
 		}
 		time.Sleep(10 * time.Millisecond)
 	}
 	require.NotEmpty(t, data)
-	samples := data[0].Samples
-	require.NotEmpty(t, samples)
 
-	// We expect the unlabelled metric "mcpany.tools.call.latency" NOT to exist.
-	// But in the buggy version, it DOES exist.
+	unlabelledExists := false
+	foundLabelled := false
+	expectedPrefix := "mcpany.tools.call.latency;tool="
 
-	// Check for unlabelled metric
-	_, unlabelledExists := samples["mcpany.tools.call.latency"]
+	for _, interval := range data {
+		samples := interval.Samples
+		if samples == nil {
+			continue
+		}
+
+		// Check for unlabelled metric
+		if _, exists := samples["mcpany.tools.call.latency"]; exists {
+			unlabelledExists = true
+		}
+
+		// Check for labelled metric
+		for k := range samples {
+			if len(k) >= len(expectedPrefix) && k[:len(expectedPrefix)] == expectedPrefix {
+				foundLabelled = true
+			}
+		}
+	}
 
 	// This assertion should FAIL currently, demonstrating the bug.
 	assert.False(t, unlabelledExists, "Unlabelled metric 'mcpany.tools.call.latency' should not exist")
-
-	// Check for labelled metric (should exist)
-	foundLabelled := false
-	expectedPrefix := "mcpany.tools.call.latency;tool="
-	for k := range samples {
-		if len(k) >= len(expectedPrefix) && k[:len(expectedPrefix)] == expectedPrefix {
-			foundLabelled = true
-			break
-		}
-	}
 	assert.True(t, foundLabelled, "Labelled metric should exist")
 }
