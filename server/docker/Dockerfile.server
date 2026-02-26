@@ -41,17 +41,16 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
     CGO_ENABLED=1 GOOS=${TARGETOS} GOARCH=${TARGETARCH} \
     go build -o /server cmd/server/main.go
 
-# Stage 2: Create the small runtime image
-FROM mirror.gcr.io/library/debian:bookworm-slim
+# Stage 2: Create the small runtime image with Node.js
+FROM mirror.gcr.io/library/node:22-bookworm-slim
 WORKDIR /app
 
-# Create a non-root user
+# Create a non-root user (node image already has 'node' user, but we'll stick to mcpany for consistency or use existing)
 RUN addgroup --system --gid 1001 mcpany && \
     adduser --system --uid 1001 --gid 1001 --no-create-home mcpany
 
-# Install runtime dependencies
-# Node.js is required for npx based MCP servers
-RUN apt-get update && apt-get install -y ca-certificates curl nodejs npm && rm -rf /var/lib/apt/lists/*
+# Install runtime dependencies (curl, ca-certificates are usually in slim, but ensuring)
+RUN apt-get update && apt-get install -y ca-certificates curl && rm -rf /var/lib/apt/lists/*
 
 # Copy the binary from the builder stage
 # Copy the binary from the builder stage
