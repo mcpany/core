@@ -441,10 +441,7 @@ jobs:
       - name: Load Docker Images
         run: |
           ls -R downloads || true
-          for f in downloads/*.tar.gz; do
-            docker load -i "$f"
-            rm "$f"
-          done
+          find downloads -name "*.tar.gz" -exec docker load -i {} \; -exec rm {} \;
 
       - name: Prepare environment
         run: make prepare
@@ -745,10 +742,7 @@ jobs:
       - name: Load Docker Images
         run: |
           ls -R downloads || true
-          for f in downloads/*.tar.gz; do
-            docker load -i "$f"
-            rm "$f"
-          done
+          find downloads -name "*.tar.gz" -exec docker load -i {} \; -exec rm {} \;
 
       - name: Cache Tools
         uses: actions/cache@v4
@@ -926,8 +920,7 @@ jobs:
 
       - name: Load Docker Image
         run: |
-          docker load -i downloads/server.tar.gz
-          rm downloads/server.tar.gz
+          find downloads -name "server.tar.gz" -exec docker load -i {} \; -exec rm {} \;
 
       - name: Smoke Test
         run: |
@@ -987,10 +980,7 @@ jobs:
       - name: Load Docker Images
         run: |
           ls -R downloads || true
-          for f in downloads/*.tar.gz; do
-            docker load -i "$f"
-            rm "$f"
-          done
+          find downloads -name "*.tar.gz" -exec docker load -i {} \; -exec rm {} \;
 
       - name: Test UI
         run: |
@@ -1076,10 +1066,7 @@ jobs:
           # kind load docker-image requires image in docker daemon or archive.
           # kind load image-archive might be better but let's stick to docker daemon for consistency
           ls -R downloads || true
-          for f in downloads/*.tar.gz; do
-            docker load -i "$f"
-            rm "$f"
-          done
+          find downloads -name "*.tar.gz" -exec docker load -i {} \; -exec rm {} \;
 
           # Now load specific images into Kind
           kind load docker-image mcpany/server:latest --name mcp-e2e
