@@ -141,10 +141,17 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential gcc
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             sudo apk add --no-cache make xz build-base gcc
+          elif command -v yum &> /dev/null; then
+             sudo yum install -y make xz gcc
+          elif command -v dnf &> /dev/null; then
+             sudo dnf install -y make xz gcc
+          else
+             echo "No package manager found. Assuming dependencies are met."
           fi
+          gcc --version || echo "GCC not found"
 
       - name: Prepare environment
         run: make prepare
@@ -176,10 +183,17 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
+            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential gcc
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz build-base
+             sudo apk add --no-cache make xz build-base gcc
+          elif command -v yum &> /dev/null; then
+             sudo yum install -y make xz gcc
+          elif command -v dnf &> /dev/null; then
+             sudo dnf install -y make xz gcc
+          else
+             echo "No package manager found. Assuming dependencies are met."
           fi
+          gcc --version || echo "GCC not found"
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -315,10 +329,17 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
+            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential gcc
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz build-base
+             sudo apk add --no-cache make xz build-base gcc
+          elif command -v yum &> /dev/null; then
+             sudo yum install -y make xz gcc
+          elif command -v dnf &> /dev/null; then
+             sudo dnf install -y make xz gcc
+          else
+             echo "No package manager found. Assuming dependencies are met."
           fi
+          gcc --version || echo "GCC not found"
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -621,10 +642,17 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
+            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential gcc
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz build-base
+             sudo apk add --no-cache make xz build-base gcc
+          elif command -v yum &> /dev/null; then
+             sudo yum install -y make xz gcc
+          elif command -v dnf &> /dev/null; then
+             sudo dnf install -y make xz gcc
+          else
+             echo "No package manager found. Assuming dependencies are met."
           fi
+          gcc --version || echo "GCC not found"
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -759,10 +787,17 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
+            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential gcc
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz build-base
+             sudo apk add --no-cache make xz build-base gcc
+          elif command -v yum &> /dev/null; then
+             sudo yum install -y make xz gcc
+          elif command -v dnf &> /dev/null; then
+             sudo dnf install -y make xz gcc
+          else
+             echo "No package manager found. Assuming dependencies are met."
           fi
+          gcc --version || echo "GCC not found"
 
       - name: Configure Docker Registry Mirrors
         run: |
