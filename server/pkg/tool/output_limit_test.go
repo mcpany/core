@@ -30,12 +30,12 @@ func TestLocalCommandTool_Execute_LargeOutput(t *testing.T) {
 	}.Build()
 
 	service := configv1.CommandLineUpstreamService_builder{
-		Command: proto.String("head"),
+		Command: proto.String("dd"),
 		Local:   proto.Bool(true),
 	}.Build()
 
 	callDef := configv1.CommandLineCallDefinition_builder{
-		Args: []string{"-c", "10485760", "/dev/zero"},
+		Args: []string{"if=/dev/zero", "bs=10485760", "count=1", "status=none"},
 	}.Build()
 
 	localTool := NewLocalCommandTool(toolDef, service, callDef, nil, "call-id")
@@ -48,14 +48,21 @@ func TestLocalCommandTool_Execute_LargeOutput(t *testing.T) {
 
 	start := time.Now()
 	result, err := localTool.Execute(context.Background(), req)
-	assert.NoError(t, err)
+	if !assert.NoError(t, err) {
+		t.Logf("Execute failed: %v", err)
+	}
 
 	resultMap, ok := result.(map[string]interface{})
-	assert.True(t, ok)
-	stdout := resultMap["stdout"].(string)
+	if assert.True(t, ok, "result should be a map") {
+		stdout, _ := resultMap["stdout"].(string)
+		stderr, _ := resultMap["stderr"].(string)
+		exitCode, _ := resultMap["return_code"].(int)
 
-	assert.Equal(t, consts.DefaultMaxCommandOutputBytes, len(stdout))
-	t.Logf("Execution took %v, output size: %d", time.Since(start), len(stdout))
+		if !assert.Equal(t, consts.DefaultMaxCommandOutputBytes, len(stdout)) {
+			t.Logf("Stdout length mismatch. ExitCode: %d, Stderr: %s", exitCode, stderr)
+		}
+		t.Logf("Execution took %v, output size: %d", time.Since(start), len(stdout))
+	}
 }
 
 func TestLocalCommandTool_Execute_LargeOutput_Truncated(t *testing.T) {
@@ -73,12 +80,12 @@ func TestLocalCommandTool_Execute_LargeOutput_Truncated(t *testing.T) {
 	}.Build()
 
 	service := configv1.CommandLineUpstreamService_builder{
-		Command: proto.String("head"),
+		Command: proto.String("dd"),
 		Local:   proto.Bool(true),
 	}.Build()
 
 	callDef := configv1.CommandLineCallDefinition_builder{
-		Args: []string{"-c", "2048", "/dev/zero"},
+		Args: []string{"if=/dev/zero", "bs=2048", "count=1", "status=none"},
 	}.Build()
 
 	localTool := NewLocalCommandTool(toolDef, service, callDef, nil, "call-id")
@@ -90,11 +97,18 @@ func TestLocalCommandTool_Execute_LargeOutput_Truncated(t *testing.T) {
 	req.ToolInputs, _ = json.Marshal(req.Arguments)
 
 	result, err := localTool.Execute(context.Background(), req)
-	assert.NoError(t, err)
+	if !assert.NoError(t, err) {
+		t.Logf("Execute failed: %v", err)
+	}
 
 	resultMap, ok := result.(map[string]interface{})
-	assert.True(t, ok)
-	stdout := resultMap["stdout"].(string)
+	if assert.True(t, ok, "result should be a map") {
+		stdout, _ := resultMap["stdout"].(string)
+		stderr, _ := resultMap["stderr"].(string)
+		exitCode, _ := resultMap["return_code"].(int)
 
-	assert.Equal(t, 1024, len(stdout))
+		if !assert.Equal(t, 1024, len(stdout)) {
+			t.Logf("Stdout length mismatch. ExitCode: %d, Stderr: %s", exitCode, stderr)
+		}
+	}
 }
