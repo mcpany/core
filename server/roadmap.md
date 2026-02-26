@@ -29,6 +29,11 @@
 *   **[P1] Federated MCP Peering**: Distributed node discovery and tool proxying. (Added: 2026-02-26)
 *   **[P1] Resource Telemetry Middleware**: Inject latency/cost metrics into tool schemas. (Added: 2026-02-26)
 
+#### Upcoming (2026-02-27 Evolution)
+*   **[P0] Policy Firewall Implementation**: Rego/CEL based tool interception. (Added: 2026-02-27)
+*   **[P1] AST-Aware Metadata Support**: Deep code-context for tool discovery. (Added: 2026-02-27)
+*   **[P1] Interactive Session Middleware**: Swarm-style handoffs and multi-turn state. (Added: 2026-02-27)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

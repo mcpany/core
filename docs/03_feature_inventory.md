@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **AST-Aware Discovery Metadata**: (P1) Enhances tool schemas with AST pointers for deep code-context discovery.
+- **Interactive Session Middleware**: (P1) Supports multi-turn tool interactions and "Swarm-style" agent switching logic.
+- **Enterprise Context Bridge (Elastic)**: (P1) Dedicated adapter for native Elastic Agent Builder MCP servers.
+
+### Priority Shifts
+- **Policy Firewall**: Re-affirming **P0** status. Essential for managing "Context-Rich" but potentially dangerous deep-code tools.
+- **A2A Interop Bridge**: Re-affirming **P0**. Critical for the new "Managed Handoff" strategic pivot.
+
+### Deprecations / Monitoring
+- **Atomic-Only Tool Calls**: Monitoring for deprecation in favor of session-aware interactive calls.
