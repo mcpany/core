@@ -41,9 +41,10 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 ---
 
 ## Strategic Evolution: [2026-02-26]
-### Focus: Federated Agency & A2A Interoperability
-**Context**: As agent ecosystems mature, the bottleneck is no longer "Model-to-Tool" (MCP) but "Agent-to-Agent" (A2A) and "Node-to-Node" (Federation). MCP Any must expand its scope to become the universal bus for all agentic communications.
+### Focus: Federated Agency, A2A Interoperability & Swarm Defense
+**Context**: Today's research confirms the shift from single-agent workflows to complex, multi-framework swarms (OpenClaw + Claude Code + Gemini). The primary threats have evolved from simple prompt injection to "Hivenet" swarm attacks and MCP supply chain compromises. MCP Any must become the "Traffic Control & Defense" layer for these federated swarms.
 **Strategic Pivot**:
 - **A2A Gateway Protocol**: MCP Any will implement a protocol-neutral bridge for A2A communication, allowing disparate agent frameworks (e.g., OpenClaw, AutoGen) to exchange state and tasks via a unified MCP-like interface.
 - **Federated Tool Mesh**: Moving from a standalone server to a "Mesh" architecture where multiple MCP Any instances can peer and share resources across network boundaries, governed by global Zero-Trust policies.
+- **Swarm Anomaly Detection**: Integrating real-time monitoring across agent sessions to detect coordinated "Hivenet" patterns (e.g., multiple subagents probing different ports of the same internal host).
 - **Resource-Aware Intelligence**: Integrating cost and latency telemetry into the tool discovery process, allowing LLMs to perform "Economical Reasoning" when selecting tools.

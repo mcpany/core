@@ -46,3 +46,9 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+* **Update: 2026-02-26 - Hardening A2A Identity & Attestation**
+    **Context:** Today's market sync highlighted "A2A Identity Spoofing" as a rising threat in federated swarms.
+    **Architecture Adjustment:**
+    - Integration of **A2A Attestation Tokens** into the `A2ABridgeMiddleware`.
+    - Every agent handoff now requires a cryptographic signature verified against the MCP Any Identity Provider.
+    - **Security Impact:** Prevents rogue subagents from intercepting or spoofing task delegations in multi-framework (OpenClaw/Claude) environments.

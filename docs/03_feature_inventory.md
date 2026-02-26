@@ -56,12 +56,17 @@
 
 ### Proposed Additions
 - **A2A Interop Bridge (Pseudo-MCP)**: (P0) Allows agents to interact with other agent frameworks using the A2A protocol, exposed as standard MCP tools.
+- **Swarm Anomaly Detection Engine**: (P0) Real-time pattern matching to detect "Hivenet" swarm attacks across multiple agent sessions.
+- **A2A Attestation & Identity**: (P0) Cryptographic identity for agents in A2A handoffs to prevent spoofing.
 - **Federated MCP Node Peering**: (P1) Secure discovery and proxying of tools across distributed MCP Any instances.
 - **Cost & Latency Telemetry Middleware**: (P1) Automatically injects performance metadata into tool schemas to enable resource-aware agent reasoning.
+- **Resource Performance Metadata**: (P1) Augmenting MCP schemas with historical P95 latency and average token cost.
 
 ### Priority Shifts
+- **A2A Interop Bridge**: Promoted to **P0** as multi-framework swarms (OpenClaw + Claude) become the standard.
 - **MCP Provenance Attestation**: Promoted to **P0** as it is a prerequisite for secure Federated MCP peering.
 - **Lazy-MCP Middleware**: Promoted to **P0** (Already P0, but re-affirming importance for Federated Tool Mesh).
+- **Supply Chain Integrity Guard**: Confirmed **P0** due to recent Claude Code and Clinejection vulnerabilities.
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
