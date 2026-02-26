@@ -634,49 +634,50 @@ jobs:
           SLUG="${{ matrix.slug }}"
 
           # Clean up previous builds to save space
-          docker system prune -f
+          docker system prune -af
+          docker buildx prune -af
 
           # Server
           make -C server build-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=server-$SLUG CACHE_FROM=type=gha,scope=server-$SLUG
           docker save -o server.tar mcpany/server:latest
           docker rmi mcpany/server:latest
+          docker system prune -f
 
           # HTTP Echo
           make -C server build-http-echo-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=http-echo-$SLUG CACHE_FROM=type=gha,scope=http-echo-$SLUG
           docker save -o http-echo.tar mcpany/http-echo-server:latest
           docker rmi mcpany/http-echo-server:latest
-
-          # Clean up intermediate build layers aggressively
           docker system prune -f
 
           # Time Server
           make -C server build-e2e-timeserver-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=time-server-$SLUG CACHE_FROM=type=gha,scope=time-server-$SLUG
           docker save -o time-server.tar mcpany-e2e-time-server
           docker rmi mcpany-e2e-time-server
+          docker system prune -f
 
           # Cowsay
           make -C server build-cowsay-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=cowsay-$SLUG CACHE_FROM=type=gha,scope=cowsay-$SLUG
           docker save -o cowsay.tar mcpany/e2e-cowsay-server:latest
           docker rmi mcpany/e2e-cowsay-server:latest
-
           docker system prune -f
 
           # Everything
           make -C server build-everything-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=everything-$SLUG CACHE_FROM=type=gha,scope=everything-$SLUG
           docker save -o everything.tar mcpany/everything:latest
           docker rmi mcpany/everything:latest
+          docker system prune -f
 
           # UI
           make -C server docker-build-ui PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=ui-$SLUG CACHE_FROM=type=gha,scope=ui-$SLUG
           docker save -o ui.tar mcpany/ui:latest
           docker rmi mcpany/ui:latest
-
           docker system prune -f
 
           # Operator
           make -C server docker-build-operator PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=operator-$SLUG CACHE_FROM=type=gha,scope=operator-$SLUG
           docker save -o operator.tar mcpany/operator:latest
           docker rmi mcpany/operator:latest
+          docker system prune -f
 
           # UI Test Image
           make -C ui build-test-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=ui-test-$SLUG CACHE_FROM=type=gha,scope=ui-test-$SLUG
