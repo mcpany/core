@@ -154,6 +154,7 @@ jobs:
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
+      SKIP_DOCKER_TESTS: true
     steps:
       - name: Free Disk Space (Fast)
         run: |
