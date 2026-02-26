@@ -28,7 +28,7 @@ permissions:
 
 jobs:
   changes:
-    runs-on: oci-runner
+    runs-on: ubuntu-latest
     # container: public.ecr.aws/docker/library/ubuntu:24.04
     outputs:
       src: ${{ steps.filter.outputs.src }}
@@ -73,7 +73,7 @@ jobs:
   lint:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
-    runs-on: oci-runner
+    runs-on: ubuntu-latest
     # container: public.ecr.aws/docker/library/ubuntu:24.04
     steps:
       - name: Free Disk Space (Fast)
@@ -134,29 +134,10 @@ jobs:
 
       - name: Install dependencies
         run: |
-          SUDO=""
-          if command -v sudo >/dev/null; then
-            SUDO="sudo"
-          fi
-
-          echo "Debug: OS Info"
-          cat /etc/os-release || true
-          echo "Debug: User Info"
-          id || true
-
           if command -v apt-get &> /dev/null; then
-            echo "Apt detected. Waiting for locks..."
-            # Simple wait loop for apt locks
-            for i in {1..5}; do
-               if ! $SUDO lsof /var/lib/dpkg/lock-frontend >/dev/null 2>&1; then break; fi
-               echo "Waiting for apt lock... ($i)"
-               sleep 5
-            done
-
-            $SUDO apt-get update || true
-            $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils build-essential gcc || echo "Apt install failed"
+            sudo apt-get update && sudo apt-get install -y make xz-utils
           elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz build-base || echo "Apk install failed"
+             sudo apk add --no-cache make xz
           fi
 
       - name: Prepare environment
@@ -166,7 +147,7 @@ jobs:
         run: make lint
 
   unit-test:
-    runs-on: oci-runner
+    runs-on: ubuntu-latest
     # container: public.ecr.aws/docker/library/ubuntu:24.04
     timeout-minutes: 60
     needs: [changes]
@@ -189,33 +170,11 @@ jobs:
 
       - name: Install dependencies
         run: |
-          SUDO=""
-          if command -v sudo >/dev/null; then
-            SUDO="sudo"
-          fi
-
-          echo "Debug: OS Info"
-          cat /etc/os-release || true
-
           if command -v apt-get &> /dev/null; then
-            echo "Apt detected. Waiting for locks..."
-            for i in {1..5}; do
-               if ! $SUDO lsof /var/lib/dpkg/lock-frontend >/dev/null 2>&1; then break; fi
-               echo "Waiting for apt lock... ($i)"
-               sleep 5
-            done
-            $SUDO apt-get update || true
-            $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils build-essential gcc || echo "Apt install failed"
+            sudo apt-get update && sudo apt-get install -y make xz-utils
           elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz build-base || echo "Apk install failed"
+             sudo apk add --no-cache make xz
           fi
-
-      - name: Debug GCC
-        run: |
-          echo "Checking GCC..."
-          which gcc || echo "gcc not found in PATH"
-          gcc --version || echo "gcc version failed"
-          ls -l /usr/bin/gcc* || echo "ls /usr/bin/gcc* failed"
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -324,7 +283,7 @@ jobs:
           verbose: true
 
   e2e-parallel:
-    runs-on: oci-runner
+    runs-on: ubuntu-latest
     # container: public.ecr.aws/docker/library/ubuntu:24.04
     timeout-minutes: 30
     needs: [build-images]
@@ -350,33 +309,11 @@ jobs:
 
       - name: Install dependencies
         run: |
-          SUDO=""
-          if command -v sudo >/dev/null; then
-            SUDO="sudo"
-          fi
-
-          echo "Debug: OS Info"
-          cat /etc/os-release || true
-
           if command -v apt-get &> /dev/null; then
-            echo "Apt detected. Waiting for locks..."
-            for i in {1..5}; do
-               if ! $SUDO lsof /var/lib/dpkg/lock-frontend >/dev/null 2>&1; then break; fi
-               echo "Waiting for apt lock... ($i)"
-               sleep 5
-            done
-            $SUDO apt-get update || true
-            $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils build-essential gcc || echo "Apt install failed"
+            sudo apt-get update && sudo apt-get install -y make xz-utils
           elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz build-base || echo "Apk install failed"
+             sudo apk add --no-cache make xz
           fi
-
-      - name: Debug GCC
-        run: |
-          echo "Checking GCC..."
-          which gcc || echo "gcc not found in PATH"
-          gcc --version || echo "gcc version failed"
-          ls -l /usr/bin/gcc* || echo "ls /usr/bin/gcc* failed"
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -650,7 +587,7 @@ jobs:
           retention-days: 1
 
   e2e-sequential:
-    runs-on: oci-runner
+    runs-on: ubuntu-latest
     # container: public.ecr.aws/docker/library/ubuntu:24.04
     timeout-minutes: 60
     needs: [build-images]
@@ -672,33 +609,11 @@ jobs:
 
       - name: Install dependencies
         run: |
-          SUDO=""
-          if command -v sudo >/dev/null; then
-            SUDO="sudo"
-          fi
-
-          echo "Debug: OS Info"
-          cat /etc/os-release || true
-
           if command -v apt-get &> /dev/null; then
-            echo "Apt detected. Waiting for locks..."
-            for i in {1..5}; do
-               if ! $SUDO lsof /var/lib/dpkg/lock-frontend >/dev/null 2>&1; then break; fi
-               echo "Waiting for apt lock... ($i)"
-               sleep 5
-            done
-            $SUDO apt-get update || true
-            $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils build-essential gcc || echo "Apt install failed"
+            sudo apt-get update && sudo apt-get install -y make xz-utils
           elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz build-base || echo "Apk install failed"
+             sudo apk add --no-cache make xz
           fi
-
-      - name: Debug GCC
-        run: |
-          echo "Checking GCC..."
-          which gcc || echo "gcc not found in PATH"
-          gcc --version || echo "gcc version failed"
-          ls -l /usr/bin/gcc* || echo "ls /usr/bin/gcc* failed"
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -810,7 +725,7 @@ jobs:
           verbose: true
 
   e2e-public-api:
-    runs-on: oci-runner
+    runs-on: ubuntu-latest
     # container: public.ecr.aws/docker/library/ubuntu:24.04
     timeout-minutes: 60
     needs: [changes]
@@ -833,33 +748,11 @@ jobs:
 
       - name: Install dependencies
         run: |
-          SUDO=""
-          if command -v sudo >/dev/null; then
-            SUDO="sudo"
-          fi
-
-          echo "Debug: OS Info"
-          cat /etc/os-release || true
-
           if command -v apt-get &> /dev/null; then
-            echo "Apt detected. Waiting for locks..."
-            for i in {1..5}; do
-               if ! $SUDO lsof /var/lib/dpkg/lock-frontend >/dev/null 2>&1; then break; fi
-               echo "Waiting for apt lock... ($i)"
-               sleep 5
-            done
-            $SUDO apt-get update || true
-            $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils build-essential gcc || echo "Apt install failed"
+            sudo apt-get update && sudo apt-get install -y make xz-utils
           elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz build-base || echo "Apk install failed"
+             sudo apk add --no-cache make xz
           fi
-
-      - name: Debug GCC
-        run: |
-          echo "Checking GCC..."
-          which gcc || echo "gcc not found in PATH"
-          gcc --version || echo "gcc version failed"
-          ls -l /usr/bin/gcc* || echo "ls /usr/bin/gcc* failed"
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -1070,7 +963,7 @@ jobs:
 
   k8s-e2e:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     needs: [build-images]
     steps:
       - name: Free Disk Space (Fast)
@@ -1162,7 +1055,7 @@ jobs:
           make k8s-e2e SKIP_IMAGE_BUILD=true IMAGE_TAG=latest
 
   ci-success:
-    runs-on: oci-runner
+    runs-on: ubuntu-latest
     # container: public.ecr.aws/docker/library/ubuntu:24.04
     needs:
       [
