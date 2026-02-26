@@ -29,6 +29,11 @@
 *   **[P1] Federated MCP Peering**: Distributed node discovery and tool proxying. (Added: 2026-02-26)
 *   **[P1] Resource Telemetry Middleware**: Inject latency/cost metrics into tool schemas. (Added: 2026-02-26)
 
+#### Upcoming (2026-02-27 Evolution)
+*   **[P0] PITTO Shield (Output-Scanning)**: Implement middleware to sanitize tool outputs for prompt injection. (Added: 2026-02-27)
+*   **[P1] Session Pinning Controller**: Gateway logic for persistent stateful tool sessions. (Added: 2026-02-27)
+*   **[P1] Hierarchical Policy Attestation**: Cryptographic verification of nested sub-policies for delegation. (Added: 2026-02-27)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

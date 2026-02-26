@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **Output-Scanning Middleware (PITTO Shield)**: (P0) Scans tool results for prompt injection patterns before they reach the agent context.
+- **Session Pinning Controller**: (P1) Gateway logic to pin agents to specific stateful tool instances (e.g., persistent shell or sandbox).
+- **Hierarchical Policy Attestation**: (P1) Cryptographic verification of nested sub-policies for subagent delegation.
+
+### Priority Shifts
+- **A2A Interop Bridge**: (Already P0) Re-confirm priority as it is required for A2A state handoffs.
+- **Policy Firewall**: Promoted from **P0** to **Core Infrastructure** status to emphasize its role in enforcing nested policy envelopes.
+
+### Deprecations / Monitoring
+- **Stateless Tooling (Monitoring)**: While not deprecated, we are monitoring the need for stateful tool sessions and may pivot to stateful-by-default for certain tool categories.
