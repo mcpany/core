@@ -91,6 +91,9 @@ jobs:
 
       - uses: actions/checkout@v6
 
+      - name: Install dependencies
+        run: apt-get update && apt-get install -y make git
+
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
@@ -174,6 +177,13 @@ jobs:
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz build-base
           fi
+
+      - name: Debug GCC
+        run: |
+          echo "Checking GCC..."
+          which gcc || echo "gcc not found in PATH"
+          gcc --version || echo "gcc version failed"
+          ls -l /usr/bin/gcc* || echo "ls /usr/bin/gcc* failed"
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -313,6 +323,13 @@ jobs:
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz build-base
           fi
+
+      - name: Debug GCC
+        run: |
+          echo "Checking GCC..."
+          which gcc || echo "gcc not found in PATH"
+          gcc --version || echo "gcc version failed"
+          ls -l /usr/bin/gcc* || echo "ls /usr/bin/gcc* failed"
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -618,6 +635,13 @@ jobs:
              sudo apk add --no-cache make xz build-base
           fi
 
+      - name: Debug GCC
+        run: |
+          echo "Checking GCC..."
+          which gcc || echo "gcc not found in PATH"
+          gcc --version || echo "gcc version failed"
+          ls -l /usr/bin/gcc* || echo "ls /usr/bin/gcc* failed"
+
       - name: Configure Docker Registry Mirrors
         run: |
           sudo mkdir -p /etc/docker
@@ -756,6 +780,13 @@ jobs:
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz build-base
           fi
+
+      - name: Debug GCC
+        run: |
+          echo "Checking GCC..."
+          which gcc || echo "gcc not found in PATH"
+          gcc --version || echo "gcc version failed"
+          ls -l /usr/bin/gcc* || echo "ls /usr/bin/gcc* failed"
 
       - name: Configure Docker Registry Mirrors
         run: |
