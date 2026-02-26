@@ -725,21 +725,29 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 		}
 	}
 
-	// ⚡ Bolt Optimization: Reuse metrics labels slice to avoid redundant allocations
-	// Randomized Selection from Top 5 High-Impact Targets
-	labels := []metrics.Label{
+	// Randomized Selection from Top 5 High-Impact Targets (Memory/Algorithmic)
+	// We reverted the slice reuse optimization here to avoid potential race conditions in E2E tests,
+	// but we KEEP the latency measurement fix which is critical.
+	metrics.IncrCounterWithLabels(metricToolsCallTotal, 1, []metrics.Label{
 		{Name: "tool", Value: req.ToolName},
 		{Name: "service_id", Value: serviceID},
-	}
-
-	metrics.IncrCounterWithLabels(metricToolsCallTotal, 1, labels)
+	})
 	startTime := time.Now()
 	// ⚡ Bolt Fix: Defer latency measurement to capture actual execution duration
-	defer metrics.MeasureSinceWithLabels(metricToolsCallLatency, startTime, labels)
+	// This captures the time until the function returns.
+	defer func() {
+		metrics.MeasureSinceWithLabels(metricToolsCallLatency, startTime, []metrics.Label{
+			{Name: "tool", Value: req.ToolName},
+			{Name: "service_id", Value: serviceID},
+		})
+	}()
 
 	result, err := s.toolManager.ExecuteTool(ctx, req)
 	if err != nil {
-		metrics.IncrCounterWithLabels(metricToolsCallErrors, 1, labels)
+		metrics.IncrCounterWithLabels(metricToolsCallErrors, 1, []metrics.Label{
+			{Name: "tool", Value: req.ToolName},
+			{Name: "service_id", Value: serviceID},
+		})
 	}
 
 	// ⚡ Bolt Optimization: Defer logging until AFTER we have processed the result.
