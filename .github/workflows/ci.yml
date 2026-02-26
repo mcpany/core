@@ -96,79 +96,28 @@ jobs:
           if command -v sudo >/dev/null; then
             SUDO="sudo"
           fi
+
+          echo "Disk space before cleanup:"
+          df -h
+
           $SUDO rm -rf /usr/local/lib/android
           $SUDO rm -rf /usr/share/dotnet
           $SUDO rm -rf /opt/ghc
           $SUDO rm -rf /usr/local/share/boost
+          $SUDO rm -rf /usr/share/swift
+          $SUDO rm -rf /usr/local/graalvm
+          $SUDO rm -rf /usr/local/.ghcup
+
+          # Aggressive cleaning of hosted tool cache
           $SUDO rm -rf /opt/hostedtoolcache/CodeQL
           $SUDO rm -rf /opt/hostedtoolcache/go
           $SUDO rm -rf /opt/hostedtoolcache/node
-          $SUDO rm -rf /opt/hostedtoolcache/CodeQL
-          $SUDO rm -rf /opt/hostedtoolcache/go
-          $SUDO rm -rf /opt/hostedtoolcache/node
-          $SUDO rm -rf /opt/hostedtoolcache/CodeQL
-          $SUDO rm -rf /opt/hostedtoolcache/go
-          $SUDO rm -rf /opt/hostedtoolcache/node
-          $SUDO rm -rf /opt/hostedtoolcache/CodeQL
-          $SUDO rm -rf /opt/hostedtoolcache/go
-          $SUDO rm -rf /opt/hostedtoolcache/node
-          $SUDO rm -rf /opt/hostedtoolcache/CodeQL
-          $SUDO rm -rf /opt/hostedtoolcache/go
-          $SUDO rm -rf /opt/hostedtoolcache/node
-          $SUDO rm -rf /opt/hostedtoolcache/CodeQL
-          $SUDO rm -rf /opt/hostedtoolcache/go
-          $SUDO rm -rf /opt/hostedtoolcache/node
-          $SUDO rm -rf /opt/hostedtoolcache/CodeQL
-          $SUDO rm -rf /opt/hostedtoolcache/go
-          $SUDO rm -rf /opt/hostedtoolcache/node
-          $SUDO rm -rf /opt/hostedtoolcache/CodeQL
-          $SUDO rm -rf /opt/hostedtoolcache/go
-          $SUDO rm -rf /opt/hostedtoolcache/node
-          $SUDO rm -rf /opt/hostedtoolcache/CodeQL
-          $SUDO rm -rf /opt/hostedtoolcache/go
-          $SUDO rm -rf /opt/hostedtoolcache/node
-          $SUDO rm -rf /opt/hostedtoolcache/CodeQL
-          $SUDO rm -rf /opt/hostedtoolcache/go
-          $SUDO rm -rf /opt/hostedtoolcache/node
-          $SUDO rm -rf /opt/hostedtoolcache/CodeQL
-          $SUDO rm -rf /opt/hostedtoolcache/go
-          $SUDO rm -rf /opt/hostedtoolcache/node
-          $SUDO rm -rf /opt/hostedtoolcache/CodeQL
-          $SUDO rm -rf /opt/hostedtoolcache/go
-          $SUDO rm -rf /opt/hostedtoolcache/node
-          $SUDO rm -rf /opt/hostedtoolcache/CodeQL
-          $SUDO rm -rf /opt/hostedtoolcache/go
-          $SUDO rm -rf /opt/hostedtoolcache/node
-          $SUDO rm -rf /opt/hostedtoolcache/CodeQL
-          $SUDO rm -rf /opt/hostedtoolcache/go
-          $SUDO rm -rf /opt/hostedtoolcache/node
-          $SUDO rm -rf /opt/hostedtoolcache/CodeQL
-          $SUDO rm -rf /opt/hostedtoolcache/go
-          $SUDO rm -rf /opt/hostedtoolcache/node
-          $SUDO rm -rf /opt/hostedtoolcache/CodeQL
-          $SUDO rm -rf /opt/hostedtoolcache/go
-          $SUDO rm -rf /opt/hostedtoolcache/node
-          $SUDO rm -rf /opt/hostedtoolcache/CodeQL
-          $SUDO rm -rf /opt/hostedtoolcache/go
-          $SUDO rm -rf /opt/hostedtoolcache/node
-          $SUDO rm -rf /opt/hostedtoolcache/CodeQL
-          $SUDO rm -rf /opt/hostedtoolcache/go
-          $SUDO rm -rf /opt/hostedtoolcache/node
-          $SUDO rm -rf /opt/hostedtoolcache/CodeQL
-          $SUDO rm -rf /opt/hostedtoolcache/go
-          $SUDO rm -rf /opt/hostedtoolcache/node
-          $SUDO rm -rf /opt/hostedtoolcache/CodeQL
-          $SUDO rm -rf /opt/hostedtoolcache/go
-          $SUDO rm -rf /opt/hostedtoolcache/node
-          $SUDO rm -rf /opt/hostedtoolcache/CodeQL
-          $SUDO rm -rf /opt/hostedtoolcache/go
-          $SUDO rm -rf /opt/hostedtoolcache/node
-          $SUDO rm -rf /opt/hostedtoolcache/CodeQL
-          $SUDO rm -rf /opt/hostedtoolcache/go
-          $SUDO rm -rf /opt/hostedtoolcache/node
-          $SUDO rm -rf /opt/hostedtoolcache/CodeQL
-          $SUDO rm -rf /opt/hostedtoolcache/go
-          $SUDO rm -rf /opt/hostedtoolcache/node
+          $SUDO rm -rf /opt/hostedtoolcache/PyPy
+          $SUDO rm -rf /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk
+          $SUDO rm -rf /opt/hostedtoolcache/Ruby_Hosted_tool_cache
+
+          echo "Disk space after cleanup:"
+          df -h
           # Aggressive cleaning for OCI runners
           $SUDO rm -rf /opt/hostedtoolcache/CodeQL
           $SUDO rm -rf /opt/hostedtoolcache/go
@@ -250,13 +199,28 @@ jobs:
           if command -v sudo >/dev/null; then
             SUDO="sudo"
           fi
+
+          echo "Disk space before cleanup:"
+          df -h
+
           $SUDO rm -rf /usr/local/lib/android
           $SUDO rm -rf /usr/share/dotnet
           $SUDO rm -rf /opt/ghc
           $SUDO rm -rf /usr/local/share/boost
+          $SUDO rm -rf /usr/share/swift
+          $SUDO rm -rf /usr/local/graalvm
+          $SUDO rm -rf /usr/local/.ghcup
+
+          # Aggressive cleaning of hosted tool cache
           $SUDO rm -rf /opt/hostedtoolcache/CodeQL
           $SUDO rm -rf /opt/hostedtoolcache/go
           $SUDO rm -rf /opt/hostedtoolcache/node
+          $SUDO rm -rf /opt/hostedtoolcache/PyPy
+          $SUDO rm -rf /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk
+          $SUDO rm -rf /opt/hostedtoolcache/Ruby_Hosted_tool_cache
+
+          echo "Disk space after cleanup:"
+          df -h
 
       - name: Prune Docker
         run: docker system prune -af
@@ -397,10 +361,28 @@ jobs:
           if command -v sudo >/dev/null; then
             SUDO="sudo"
           fi
+
+          echo "Disk space before cleanup:"
+          df -h
+
           $SUDO rm -rf /usr/local/lib/android
           $SUDO rm -rf /usr/share/dotnet
           $SUDO rm -rf /opt/ghc
           $SUDO rm -rf /usr/local/share/boost
+          $SUDO rm -rf /usr/share/swift
+          $SUDO rm -rf /usr/local/graalvm
+          $SUDO rm -rf /usr/local/.ghcup
+
+          # Aggressive cleaning of hosted tool cache
+          $SUDO rm -rf /opt/hostedtoolcache/CodeQL
+          $SUDO rm -rf /opt/hostedtoolcache/go
+          $SUDO rm -rf /opt/hostedtoolcache/node
+          $SUDO rm -rf /opt/hostedtoolcache/PyPy
+          $SUDO rm -rf /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk
+          $SUDO rm -rf /opt/hostedtoolcache/Ruby_Hosted_tool_cache
+
+          echo "Disk space after cleanup:"
+          df -h
 
       - name: Prune Docker
         run: docker system prune -af
@@ -573,11 +555,28 @@ jobs:
           if command -v sudo >/dev/null; then
             SUDO="sudo"
           fi
+
+          echo "Disk space before cleanup:"
+          df -h
+
           $SUDO rm -rf /usr/local/lib/android
           $SUDO rm -rf /usr/share/dotnet
           $SUDO rm -rf /opt/ghc
           $SUDO rm -rf /usr/local/share/boost
+          $SUDO rm -rf /usr/share/swift
+          $SUDO rm -rf /usr/local/graalvm
+          $SUDO rm -rf /usr/local/.ghcup
+
+          # Aggressive cleaning of hosted tool cache
           $SUDO rm -rf /opt/hostedtoolcache/CodeQL
+          $SUDO rm -rf /opt/hostedtoolcache/go
+          $SUDO rm -rf /opt/hostedtoolcache/node
+          $SUDO rm -rf /opt/hostedtoolcache/PyPy
+          $SUDO rm -rf /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk
+          $SUDO rm -rf /opt/hostedtoolcache/Ruby_Hosted_tool_cache
+
+          echo "Disk space after cleanup:"
+          df -h
       - uses: actions/checkout@v6
 
       - name: Set up Go
@@ -593,12 +592,10 @@ jobs:
           cache: "npm"
           cache-dependency-path: server/tests/integration/upstream/package-lock.json
 
-      - name: Install dependencies
-        run: |
-          apt-get update && apt-get install -y make
-
       - name: Generate Protobufs
         run: |
+          # Install make first as it is missing in the container
+          apt-get update && apt-get install -y make
           make gen
 
       - name: Set up QEMU
@@ -737,10 +734,28 @@ jobs:
           if command -v sudo >/dev/null; then
             SUDO="sudo"
           fi
+
+          echo "Disk space before cleanup:"
+          df -h
+
           $SUDO rm -rf /usr/local/lib/android
           $SUDO rm -rf /usr/share/dotnet
           $SUDO rm -rf /opt/ghc
           $SUDO rm -rf /usr/local/share/boost
+          $SUDO rm -rf /usr/share/swift
+          $SUDO rm -rf /usr/local/graalvm
+          $SUDO rm -rf /usr/local/.ghcup
+
+          # Aggressive cleaning of hosted tool cache
+          $SUDO rm -rf /opt/hostedtoolcache/CodeQL
+          $SUDO rm -rf /opt/hostedtoolcache/go
+          $SUDO rm -rf /opt/hostedtoolcache/node
+          $SUDO rm -rf /opt/hostedtoolcache/PyPy
+          $SUDO rm -rf /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk
+          $SUDO rm -rf /opt/hostedtoolcache/Ruby_Hosted_tool_cache
+
+          echo "Disk space after cleanup:"
+          df -h
 
       - name: Prune Docker
         run: docker system prune -af
@@ -881,11 +896,28 @@ jobs:
           if command -v sudo >/dev/null; then
             SUDO="sudo"
           fi
+
+          echo "Disk space before cleanup:"
+          df -h
+
           $SUDO rm -rf /usr/local/lib/android
           $SUDO rm -rf /usr/share/dotnet
           $SUDO rm -rf /opt/ghc
           $SUDO rm -rf /usr/local/share/boost
+          $SUDO rm -rf /usr/share/swift
+          $SUDO rm -rf /usr/local/graalvm
+          $SUDO rm -rf /usr/local/.ghcup
+
+          # Aggressive cleaning of hosted tool cache
           $SUDO rm -rf /opt/hostedtoolcache/CodeQL
+          $SUDO rm -rf /opt/hostedtoolcache/go
+          $SUDO rm -rf /opt/hostedtoolcache/node
+          $SUDO rm -rf /opt/hostedtoolcache/PyPy
+          $SUDO rm -rf /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk
+          $SUDO rm -rf /opt/hostedtoolcache/Ruby_Hosted_tool_cache
+
+          echo "Disk space after cleanup:"
+          df -h
 
       - name: Prune Docker
         run: docker system prune -af
@@ -1066,10 +1098,28 @@ jobs:
           if command -v sudo >/dev/null; then
             SUDO="sudo"
           fi
+
+          echo "Disk space before cleanup:"
+          df -h
+
           $SUDO rm -rf /usr/local/lib/android
           $SUDO rm -rf /usr/share/dotnet
           $SUDO rm -rf /opt/ghc
           $SUDO rm -rf /usr/local/share/boost
+          $SUDO rm -rf /usr/share/swift
+          $SUDO rm -rf /usr/local/graalvm
+          $SUDO rm -rf /usr/local/.ghcup
+
+          # Aggressive cleaning of hosted tool cache
+          $SUDO rm -rf /opt/hostedtoolcache/CodeQL
+          $SUDO rm -rf /opt/hostedtoolcache/go
+          $SUDO rm -rf /opt/hostedtoolcache/node
+          $SUDO rm -rf /opt/hostedtoolcache/PyPy
+          $SUDO rm -rf /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk
+          $SUDO rm -rf /opt/hostedtoolcache/Ruby_Hosted_tool_cache
+
+          echo "Disk space after cleanup:"
+          df -h
 
       - name: Prune Docker
         run: docker system prune -af
@@ -1124,10 +1174,28 @@ jobs:
           if command -v sudo >/dev/null; then
             SUDO="sudo"
           fi
+
+          echo "Disk space before cleanup:"
+          df -h
+
           $SUDO rm -rf /usr/local/lib/android
           $SUDO rm -rf /usr/share/dotnet
           $SUDO rm -rf /opt/ghc
           $SUDO rm -rf /usr/local/share/boost
+          $SUDO rm -rf /usr/share/swift
+          $SUDO rm -rf /usr/local/graalvm
+          $SUDO rm -rf /usr/local/.ghcup
+
+          # Aggressive cleaning of hosted tool cache
+          $SUDO rm -rf /opt/hostedtoolcache/CodeQL
+          $SUDO rm -rf /opt/hostedtoolcache/go
+          $SUDO rm -rf /opt/hostedtoolcache/node
+          $SUDO rm -rf /opt/hostedtoolcache/PyPy
+          $SUDO rm -rf /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk
+          $SUDO rm -rf /opt/hostedtoolcache/Ruby_Hosted_tool_cache
+
+          echo "Disk space after cleanup:"
+          df -h
 
       - name: Prune Docker
         run: docker system prune -af
