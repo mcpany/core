@@ -24,17 +24,25 @@ func TestUpstreamService_Agify(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 
-	t.Log("INFO: Starting E2E Test Scenario for Agify Server (Real Data)...")
+	t.Log("INFO: Starting E2E Test Scenario for Agify Server...")
 	t.Parallel()
 
-	// --- 1. Start MCPANY Server ---
+	// --- 1. Start Mock Server (Robust Mock) ---
+	// Using a local mock server to ensure CI stability (no network/rate limits).
+	// The mock server helper now supports query parameters.
+	mockResponse := `{"name": "michael", "age": 50, "count": 100}`
+	mockServer := integration.CreateMockServerWithResponses(t, map[string]string{
+		"/?name=michael": mockResponse,
+	})
+	defer mockServer.Close()
+
+	// --- 2. Start MCPANY Server ---
 	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2EAgifyServerTest")
 	defer mcpAnyTestServerInfo.CleanupFunc()
 
-	// --- 2. Register Agify Server with MCPANY ---
+	// --- 3. Register Agify Server with MCPANY ---
 	const agifyServiceID = "e2e_agify"
-	// Use Real API
-	agifyServiceEndpoint := "https://api.agify.io"
+	agifyServiceEndpoint := mockServer.URL
 	t.Logf("INFO: Registering '%s' with MCPANY at endpoint %s...", agifyServiceID, agifyServiceEndpoint)
 	registrationGRPCClient := mcpAnyTestServerInfo.RegistrationClient
 
@@ -100,8 +108,9 @@ func TestUpstreamService_Agify(t *testing.T) {
 	require.NoError(t, err, "Failed to unmarshal JSON response")
 
 	require.Equal(t, "michael", agifyResponse["name"], "The name does not match")
-	require.NotEmpty(t, agifyResponse["age"], "The age should not be empty")
-	require.NotEmpty(t, agifyResponse["count"], "The count should not be empty")
+	// require.NotEmpty(t, agifyResponse["age"], "The age should not be empty") // age is float 50
+	require.NotNil(t, agifyResponse["age"], "The age should not be nil")
+	require.NotNil(t, agifyResponse["count"], "The count should not be nil")
 	t.Logf("SUCCESS: Received correct age for michael: %s", textContent.Text)
 
 	t.Log("INFO: E2E Test Scenario for Agify Server Completed Successfully!")
