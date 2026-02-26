@@ -146,7 +146,7 @@ jobs:
         run: make lint
 
   unit-test:
-    runs-on: oci-runner
+    runs-on: ubuntu-latest
     # container: public.ecr.aws/docker/library/ubuntu:24.04
     timeout-minutes: 60
     needs: [changes]
@@ -466,6 +466,14 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - name: Debug Environment
+        run: |
+          uname -a
+          whoami
+          cat /etc/os-release
+          command -v make || echo "make not found"
+          command -v sudo || echo "sudo not found"
+
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
@@ -724,7 +732,7 @@ jobs:
           verbose: true
 
   e2e-public-api:
-    runs-on: oci-runner
+    runs-on: ubuntu-latest
     # container: public.ecr.aws/docker/library/ubuntu:24.04
     timeout-minutes: 60
     needs: [changes]
