@@ -14,11 +14,12 @@
 
 FROM mirror.gcr.io/library/python:3.11-slim
 
-# Avoid WORKDIR to prevent OverlayFS issues in some CI environments
+# Avoid WORKDIR and use shell commands to move files to avoid OverlayFS issues
+# in specific DinD/runner environments.
 # WORKDIR /usr/src/app
 
-COPY timeserver_patch/requirements.txt /usr/src/app/requirements.txt
-RUN pip install -r /usr/src/app/requirements.txt
+COPY timeserver_patch/requirements.txt /tmp/requirements.txt
+RUN pip install -r /tmp/requirements.txt && rm /tmp/requirements.txt
 
 COPY timeserver_patch/main.py /usr/src/app/main.py
 

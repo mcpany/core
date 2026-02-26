@@ -290,6 +290,8 @@ jobs:
         run: make prepare CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache
 
       - name: Test (Short)
+        env:
+          CGO_ENABLED: 1
         run: |
           make test-fast CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache COVERAGE_FILE=coverage-fast.out
 
@@ -880,6 +882,8 @@ jobs:
         run: make prepare
 
       - name: test public api
+        env:
+          CGO_ENABLED: 1
         run: |
           make test-public-api CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-public-api.out
 
