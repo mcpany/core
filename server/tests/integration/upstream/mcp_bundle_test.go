@@ -242,6 +242,12 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 	}
 	if err := exec.Command("docker", "info").Run(); err != nil {
 		useLocal = true
+	} else {
+		// Check if we can actually run containers (handle overlayfs issues in dind)
+		if err := exec.Command("docker", "run", "--rm", "hello-world").Run(); err != nil {
+			useLocal = true
+			t.Logf("Docker run failed (%v), falling back to local bundle execution.", err)
+		}
 	}
 
 	if useLocal {

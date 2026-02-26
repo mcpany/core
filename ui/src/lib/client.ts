@@ -2461,5 +2461,29 @@ export const apiClient = {
         });
         if (!res.ok) throw new Error('Failed to trigger discovery');
         return {};
+    },
+
+    /**
+     * Seeds the database with the provided data.
+     *
+     * Summary: Seeds the database.
+     *
+     * @param data - The data to seed.
+     * @returns A promise that resolves when the seeding is complete.
+     * @throws {Error} If seeding fails.
+     *
+     * Side Effects: Makes a POST request to /api/v1/debug/seed.
+     */
+    seedDB: async (data: any) => {
+        const res = await fetchWithAuth('/api/v1/debug/seed', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        if (!res.ok) {
+            const txt = await res.text();
+            throw new Error(`Failed to seed DB: ${txt}`);
+        }
+        return res.json();
     }
 };

@@ -27,23 +27,28 @@ export default function ContextPage() {
   const handleSeedData = async () => {
       setSeeding(true);
       try {
-          // Attempt to register a mock service using the in-tree mock server.
-          // This requires the server to be running in an environment where 'go' is available
-          // or the binary is built.
-          await apiClient.registerService({
-              id: "context-heavy-mock",
-              name: "Context Heavy Mock",
-              version: "1.0.0",
-              disable: false,
-              priority: 0,
-              commandLineService: {
-                  command: "go run server/cmd/mock_mcp_server/main.go",
-                  workingDirectory: ".",
-                  env: {}
-              }
-           } as any);
+          // Use the backend seeder to populate a rich context scenario
+          await apiClient.seedDB({
+              upstream_services: [
+                  {
+                      id: "context-heavy-mock",
+                      name: "Context Heavy Mock",
+                      version: "1.0.0",
+                      disable: false,
+                      priority: 0,
+                      http_service: {
+                          address: "http://localhost:9999", // Dummy address, purely for visualization structure
+                          tools: [
+                              { name: "read_file", description: "Reads a file" },
+                              { name: "list_files", description: "Lists files" },
+                              { name: "search", description: "Semantic search" }
+                          ]
+                      }
+                  }
+              ]
+          });
 
-           toast({ title: "Seeded Mock Service", description: "Registered 'Context Heavy Mock'." });
+           toast({ title: "Seeded Mock Data", description: "Database populated with context simulation data." });
 
            // Trigger reload to refresh context data
            window.location.reload();
@@ -52,7 +57,7 @@ export default function ContextPage() {
           console.error("Seeding failed", e);
           toast({
               title: "Seeding Failed",
-              description: "Could not register mock service. Ensure 'go' is in the server path or use an existing service.",
+              description: "Could not seed database.",
               variant: "destructive"
           });
       } finally {
