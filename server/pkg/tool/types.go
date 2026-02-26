@@ -4337,7 +4337,8 @@ func validateSafePathAndInjection(val string, isDocker bool, commandName string)
 		} else {
 			// Check for IPv4 loopback shorthands (e.g. 127.1)
 			// net.ParseIP does not handle these, but tools like curl do.
-			if validation.IsLoopbackShorthand(val) {
+			// We skip this check if dangerous local IPs are explicitly allowed (e.g. for testing).
+			if validation.IsLoopbackShorthand(val) && os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") != trueStr {
 				allowLoopback := os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == trueStr
 				if !allowLoopback {
 					return fmt.Errorf("unsafe IP argument: loopback shorthand address is not allowed")
