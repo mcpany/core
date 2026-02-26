@@ -487,7 +487,13 @@ jobs:
 
       - name: Install Build Tools
         run: |
-          sudo apt-get update && sudo apt-get install -y make build-essential
+          if ! command -v make &> /dev/null; then
+            echo "Make not found, installing..."
+            sudo apt-get update && sudo apt-get install -y make build-essential
+          else
+            echo "Make already installed."
+          fi
+          make --version
 
       - name: Generate Protobufs
         run: |
