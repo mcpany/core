@@ -202,8 +202,9 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: "24"
-          cache: "npm"
-          cache-dependency-path: server/tests/integration/upstream/package-lock.json
+          # Disable cache to avoid potential conflicts with npm ci in Makefile
+          # cache: "npm"
+          # cache-dependency-path: server/tests/integration/upstream/package-lock.json
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -331,8 +332,9 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: "24"
-          cache: "npm"
-          cache-dependency-path: server/tests/integration/upstream/package-lock.json
+          # Disable cache to avoid potential conflicts
+          # cache: "npm"
+          # cache-dependency-path: server/tests/integration/upstream/package-lock.json
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -456,8 +458,9 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: "24"
-          cache: "npm"
-          cache-dependency-path: server/tests/integration/upstream/package-lock.json
+          # Disable cache to avoid potential conflicts
+          # cache: "npm"
+          # cache-dependency-path: server/tests/integration/upstream/package-lock.json
 
       - name: Generate Protobufs
         run: |
@@ -629,8 +632,9 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: "24"
-          cache: "npm"
-          cache-dependency-path: server/tests/integration/upstream/package-lock.json
+          # Disable cache to avoid potential conflicts
+          # cache: "npm"
+          # cache-dependency-path: server/tests/integration/upstream/package-lock.json
 
       - name: Get Date
         id: get-date
@@ -754,8 +758,9 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: "24"
-          cache: "npm"
-          cache-dependency-path: server/tests/integration/upstream/package-lock.json
+          # Disable cache to avoid potential conflicts
+          # cache: "npm"
+          # cache-dependency-path: server/tests/integration/upstream/package-lock.json
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
