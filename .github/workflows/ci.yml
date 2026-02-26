@@ -154,7 +154,6 @@ jobs:
 
   unit-test:
     runs-on: oci-runner
-    # container: public.ecr.aws/docker/library/ubuntu:24.04
     timeout-minutes: 30
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -460,7 +459,6 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: ${{ matrix.runner }}
-    container: public.ecr.aws/docker/library/ubuntu:24.04
     strategy:
       fail-fast: false
       matrix:
@@ -739,7 +737,6 @@ jobs:
 
   e2e-public-api:
     runs-on: oci-runner
-    # container: public.ecr.aws/docker/library/ubuntu:24.04
     timeout-minutes: 30
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
