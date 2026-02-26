@@ -23,6 +23,13 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
+const (
+	kindScalar  = "SCALAR"
+	kindNonNull = "NON_NULL"
+	kindList    = "LIST"
+	kindObject  = "OBJECT"
+)
+
 const introspectionQuery = `
   query IntrospectionQuery {
     __schema {
@@ -138,15 +145,32 @@ type graphQLType struct {
 	OfType *graphQLType `json:"ofType"`
 }
 
+type graphQLTypeWithFields struct {
+	Kind   string                 `json:"kind"`
+	Name   *string                `json:"name"`
+	Fields []struct{ Name string } `json:"fields"`
+	OfType *graphQLTypeWithFields `json:"ofType"`
+}
+
+func getUnderlyingTypeWithFields(t *graphQLTypeWithFields) *graphQLTypeWithFields {
+	if t == nil {
+		return nil
+	}
+	if t.Kind == kindNonNull || t.Kind == kindList {
+		return getUnderlyingTypeWithFields(t.OfType)
+	}
+	return t
+}
+
 func convertGraphQLTypeToJSONSchema(t *graphQLType) *structpb.Value {
 	if t == nil {
 		return &structpb.Value{Kind: &structpb.Value_StructValue{StructValue: &structpb.Struct{Fields: map[string]*structpb.Value{"type": {Kind: &structpb.Value_StringValue{StringValue: "object"}}}}}}
 	}
 
 	switch t.Kind {
-	case "NON_NULL":
+	case kindNonNull:
 		return convertGraphQLTypeToJSONSchema(t.OfType)
-	case "LIST":
+	case kindList:
 		itemsSchema := convertGraphQLTypeToJSONSchema(t.OfType)
 		return &structpb.Value{
 			Kind: &structpb.Value_StructValue{
@@ -291,13 +315,7 @@ func (g *Upstream) Register(
 						Name string
 						Type graphQLType `json:"type"`
 					} `json:"args"`
-					Type struct {
-						Kind   string
-						Name   string
-						Fields []struct {
-							Name string
-						} `json:"fields"`
-					} `json:"type"`
+					Type graphQLTypeWithFields `json:"type"`
 				} `json:"fields"`
 			} `json:"types"`
 		} `json:"__schema"`
@@ -378,15 +396,18 @@ func (g *Upstream) Register(
 
 				if selectionSet != "" {
 					sb.WriteString(selectionSet)
-				} else if len(field.Type.Fields) > 0 {
-					sb.WriteString("{ ")
-					for i, f := range field.Type.Fields {
-						sb.WriteString(f.Name)
-						if i < len(field.Type.Fields)-1 {
-							sb.WriteString(" ")
+				} else {
+					underlyingType := getUnderlyingTypeWithFields(&field.Type)
+					if underlyingType != nil && len(underlyingType.Fields) > 0 {
+						sb.WriteString("{ ")
+						for i, f := range underlyingType.Fields {
+							sb.WriteString(f.Name)
+							if i < len(underlyingType.Fields)-1 {
+								sb.WriteString(" ")
+							}
 						}
+						sb.WriteString(" }")
 					}
-					sb.WriteString(" }")
 				}
 
 				sb.WriteString(" }")
@@ -412,9 +433,9 @@ func formatGraphQLType(t *graphQLType) string {
 		return ""
 	}
 	switch t.Kind {
-	case "NON_NULL":
+	case kindNonNull:
 		return formatGraphQLType(t.OfType) + "!"
-	case "LIST":
+	case kindList:
 		return "[" + formatGraphQLType(t.OfType) + "]"
 	default:
 		if t.Name != nil {
