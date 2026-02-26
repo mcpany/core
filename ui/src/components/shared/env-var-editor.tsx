@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
+/** Represents a single environment variable key-value pair. */
 export interface EnvVar {
     key: string;
     value: string;
