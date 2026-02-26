@@ -132,6 +132,12 @@ func TestMetricLatencyConsistency(t *testing.T) {
 	// This assertion verifies the presence of the labeled metric
 	assert.Contains(t, allSamples, expectedIdealKey, "Should have labeled latency metric")
 
+	// ⚡ BOLT: Verify latency is > 0 (checking that MeasureSince is called correctly)
+	// We rely on Sum because Mean might be 0 for single samples depending on metrics library version/config.
+	if val, ok := allSamples[expectedIdealKey]; ok {
+		assert.Greater(t, val.Sum, 0.0, "Latency sum should be > 0")
+	}
+
 	// Ensure we don't have the old format with embedded tool name
 	currentBadKey := "mcpany.tool." + successID + ".call.latency"
 	assert.NotContains(t, allSamples, currentBadKey, "Should NOT have embedded tool name in metric key")
