@@ -35,9 +35,9 @@ jobs:
     steps:
       - name: Install dependencies
         run: |
-          if command -v sudo &> /dev/null; then
+          if command -v sudo >/dev/null 2>&1 && command -v apt-get >/dev/null 2>&1; then
             sudo apt-get update && sudo apt-get install -y git
-          elif command -v apt-get &> /dev/null; then
+          elif command -v apt-get >/dev/null 2>&1; then
             apt-get update && apt-get install -y git
           else
             echo "Assuming git is installed or not needed"
@@ -88,7 +88,7 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          if command -v sudo &> /dev/null; then
+          if command -v sudo >/dev/null 2>&1; then
             sudo rm -rf /usr/local/lib/android
             sudo rm -rf /usr/share/dotnet
             sudo rm -rf /opt/ghc
@@ -147,15 +147,15 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if command -v sudo &> /dev/null && command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
-          elif command -v apt-get &> /dev/null; then
-            apt-get update && apt-get install -y make xz-utils
-          elif command -v apk &> /dev/null; then
-             if command -v sudo &> /dev/null; then
-               sudo apk add --no-cache make xz
+          if command -v sudo >/dev/null 2>&1 && command -v apt-get >/dev/null 2>&1; then
+            sudo apt-get update && sudo apt-get install -y make xz-utils gcc
+          elif command -v apt-get >/dev/null 2>&1; then
+            apt-get update && apt-get install -y make xz-utils gcc
+          elif command -v apk >/dev/null 2>&1; then
+             if command -v sudo >/dev/null 2>&1; then
+               sudo apk add --no-cache make xz build-base
              else
-               apk add --no-cache make xz
+               apk add --no-cache make xz build-base
              fi
           fi
 
@@ -177,7 +177,7 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          if command -v sudo &> /dev/null; then
+          if command -v sudo >/dev/null 2>&1; then
             sudo rm -rf /usr/local/lib/android
             sudo rm -rf /usr/share/dotnet
             sudo rm -rf /opt/ghc
@@ -196,15 +196,15 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if command -v sudo &> /dev/null && command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
-          elif command -v apt-get &> /dev/null; then
-            apt-get update && apt-get install -y make xz-utils
-          elif command -v apk &> /dev/null; then
-             if command -v sudo &> /dev/null; then
-               sudo apk add --no-cache make xz
+          if command -v sudo >/dev/null 2>&1 && command -v apt-get >/dev/null 2>&1; then
+            sudo apt-get update && sudo apt-get install -y make xz-utils gcc
+          elif command -v apt-get >/dev/null 2>&1; then
+            apt-get update && apt-get install -y make xz-utils gcc
+          elif command -v apk >/dev/null 2>&1; then
+             if command -v sudo >/dev/null 2>&1; then
+               sudo apk add --no-cache make xz build-base
              else
-               apk add --no-cache make xz
+               apk add --no-cache make xz build-base
              fi
           fi
 
@@ -212,7 +212,7 @@ jobs:
         run: |
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
-          if command -v sudo &> /dev/null; then
+          if command -v sudo >/dev/null 2>&1; then
             sudo mkdir -p /etc/docker
             echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
@@ -344,7 +344,7 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          if command -v sudo &> /dev/null; then
+          if command -v sudo >/dev/null 2>&1; then
             sudo rm -rf /usr/local/lib/android
             sudo rm -rf /usr/share/dotnet
             sudo rm -rf /opt/ghc
@@ -363,15 +363,15 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if command -v sudo &> /dev/null && command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
-          elif command -v apt-get &> /dev/null; then
-            apt-get update && apt-get install -y make xz-utils
-          elif command -v apk &> /dev/null; then
-             if command -v sudo &> /dev/null; then
-               sudo apk add --no-cache make xz
+          if command -v sudo >/dev/null 2>&1 && command -v apt-get >/dev/null 2>&1; then
+            sudo apt-get update && sudo apt-get install -y make xz-utils gcc
+          elif command -v apt-get >/dev/null 2>&1; then
+            apt-get update && apt-get install -y make xz-utils gcc
+          elif command -v apk >/dev/null 2>&1; then
+             if command -v sudo >/dev/null 2>&1; then
+               sudo apk add --no-cache make xz build-base
              else
-               apk add --no-cache make xz
+               apk add --no-cache make xz build-base
              fi
           fi
 
@@ -379,7 +379,7 @@ jobs:
         run: |
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
-          if command -v sudo &> /dev/null; then
+          if command -v sudo >/dev/null 2>&1; then
             sudo mkdir -p /etc/docker
             echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
@@ -539,7 +539,7 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          if command -v sudo &> /dev/null; then
+          if command -v sudo >/dev/null 2>&1; then
             sudo rm -rf /usr/local/lib/android
             sudo rm -rf /usr/share/dotnet
             sudo rm -rf /opt/ghc
@@ -682,7 +682,7 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          if command -v sudo &> /dev/null; then
+          if command -v sudo >/dev/null 2>&1; then
             sudo rm -rf /usr/local/lib/android
             sudo rm -rf /usr/share/dotnet
             sudo rm -rf /opt/ghc
@@ -701,15 +701,15 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if command -v sudo &> /dev/null && command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
-          elif command -v apt-get &> /dev/null; then
-            apt-get update && apt-get install -y make xz-utils
-          elif command -v apk &> /dev/null; then
-             if command -v sudo &> /dev/null; then
-               sudo apk add --no-cache make xz
+          if command -v sudo >/dev/null 2>&1 && command -v apt-get >/dev/null 2>&1; then
+            sudo apt-get update && sudo apt-get install -y make xz-utils gcc
+          elif command -v apt-get >/dev/null 2>&1; then
+            apt-get update && apt-get install -y make xz-utils gcc
+          elif command -v apk >/dev/null 2>&1; then
+             if command -v sudo >/dev/null 2>&1; then
+               sudo apk add --no-cache make xz build-base
              else
-               apk add --no-cache make xz
+               apk add --no-cache make xz build-base
              fi
           fi
 
@@ -844,7 +844,7 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          if command -v sudo &> /dev/null; then
+          if command -v sudo >/dev/null 2>&1; then
             sudo rm -rf /usr/local/lib/android
             sudo rm -rf /usr/share/dotnet
             sudo rm -rf /opt/ghc
@@ -863,15 +863,15 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if command -v sudo &> /dev/null && command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
-          elif command -v apt-get &> /dev/null; then
-            apt-get update && apt-get install -y make xz-utils
-          elif command -v apk &> /dev/null; then
-             if command -v sudo &> /dev/null; then
-               sudo apk add --no-cache make xz
+          if command -v sudo >/dev/null 2>&1 && command -v apt-get >/dev/null 2>&1; then
+            sudo apt-get update && sudo apt-get install -y make xz-utils gcc
+          elif command -v apt-get >/dev/null 2>&1; then
+            apt-get update && apt-get install -y make xz-utils gcc
+          elif command -v apk >/dev/null 2>&1; then
+             if command -v sudo >/dev/null 2>&1; then
+               sudo apk add --no-cache make xz build-base
              else
-               apk add --no-cache make xz
+               apk add --no-cache make xz build-base
              fi
           fi
 
@@ -879,7 +879,7 @@ jobs:
         run: |
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
-          if command -v sudo &> /dev/null; then
+          if command -v sudo >/dev/null 2>&1; then
             sudo mkdir -p /etc/docker
             echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
@@ -988,7 +988,7 @@ jobs:
         run: |
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
-          if command -v sudo &> /dev/null; then
+          if command -v sudo >/dev/null 2>&1; then
             sudo mkdir -p /etc/docker
             echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
@@ -1056,7 +1056,7 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          if command -v sudo &> /dev/null; then
+          if command -v sudo >/dev/null 2>&1; then
             sudo rm -rf /usr/local/lib/android
             sudo rm -rf /usr/share/dotnet
             sudo rm -rf /opt/ghc
@@ -1116,7 +1116,7 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          if command -v sudo &> /dev/null; then
+          if command -v sudo >/dev/null 2>&1; then
             sudo rm -rf /usr/local/lib/android
             sudo rm -rf /usr/share/dotnet
             sudo rm -rf /opt/ghc
