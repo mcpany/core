@@ -161,16 +161,12 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if command -v make >/dev/null; then
-            echo "make is already installed."
-            exit 0
-          fi
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
           if command -v apt-get >/dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential
           elif command -v apk >/dev/null; then
-             $SUDO apk add --no-cache make xz
+             $SUDO apk add --no-cache make xz build-base
           fi
 
       - name: Prepare environment
@@ -216,14 +212,19 @@ jobs:
         run: |
           if command -v make >/dev/null; then
             echo "make is already installed."
-            exit 0
+            # Check if gcc is available, if not try to install build-essential
+            if ! command -v gcc >/dev/null; then
+               echo "gcc not found, attempting install..."
+            else
+               exit 0
+            fi
           fi
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
           if command -v apt-get >/dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential
           elif command -v apk >/dev/null; then
-             $SUDO apk add --no-cache make xz
+             $SUDO apk add --no-cache make xz build-base
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -379,14 +380,19 @@ jobs:
         run: |
           if command -v make >/dev/null; then
             echo "make is already installed."
-            exit 0
+            # Check if gcc is available, if not try to install build-essential
+            if ! command -v gcc >/dev/null; then
+               echo "gcc not found, attempting install..."
+            else
+               exit 0
+            fi
           fi
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
           if command -v apt-get >/dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential
           elif command -v apk >/dev/null; then
-             $SUDO apk add --no-cache make xz
+             $SUDO apk add --no-cache make xz build-base
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -547,13 +553,6 @@ jobs:
             slug: arm64
             runner: ubuntu-24.04-arm
     steps:
-      - name: Free Disk Space (Fast)
-        run: |
-          # We can assume sudo is available on standard runners (ubuntu-latest)
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
       - uses: actions/checkout@v6
 
       - name: Set up Go
@@ -711,14 +710,19 @@ jobs:
         run: |
           if command -v make >/dev/null; then
             echo "make is already installed."
-            exit 0
+            # Check if gcc is available, if not try to install build-essential
+            if ! command -v gcc >/dev/null; then
+               echo "gcc not found, attempting install..."
+            else
+               exit 0
+            fi
           fi
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
           if command -v apt-get >/dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential
           elif command -v apk >/dev/null; then
-             $SUDO apk add --no-cache make xz
+             $SUDO apk add --no-cache make xz build-base
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -876,14 +880,19 @@ jobs:
         run: |
           if command -v make >/dev/null; then
             echo "make is already installed."
-            exit 0
+            # Check if gcc is available, if not try to install build-essential
+            if ! command -v gcc >/dev/null; then
+               echo "gcc not found, attempting install..."
+            else
+               exit 0
+            fi
           fi
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
           if command -v apt-get >/dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential
           elif command -v apk >/dev/null; then
-             $SUDO apk add --no-cache make xz
+             $SUDO apk add --no-cache make xz build-base
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -1054,24 +1063,13 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
-          if [ -z "$SUDO" ]; then
-            echo "No sudo, skipping disk cleanup."
-            exit 0
-          fi
-          $SUDO rm -rf /usr/local/lib/android
-          $SUDO rm -rf /usr/share/dotnet
-          $SUDO rm -rf /opt/ghc
-          $SUDO rm -rf /usr/local/share/boost
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/share/boost
 
       - name: Prune Docker
-        run: |
-          SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
-          if command -v docker >/dev/null; then
-            $SUDO docker system prune -af || true
-          fi
+        run: docker system prune -af
 
       - uses: actions/checkout@v6
 
@@ -1118,24 +1116,13 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
-          if [ -z "$SUDO" ]; then
-            echo "No sudo, skipping disk cleanup."
-            exit 0
-          fi
-          $SUDO rm -rf /usr/local/lib/android
-          $SUDO rm -rf /usr/share/dotnet
-          $SUDO rm -rf /opt/ghc
-          $SUDO rm -rf /usr/local/share/boost
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/share/boost
 
       - name: Prune Docker
-        run: |
-          SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
-          if command -v docker >/dev/null; then
-            $SUDO docker system prune -af || true
-          fi
+        run: docker system prune -af
 
       - uses: actions/checkout@v6
 
@@ -1193,6 +1180,11 @@ jobs:
         with:
           name: image-ui-${{ steps.detect-arch.outputs.slug }}
 
+      - name: Download HTTP Echo Image
+        uses: actions/download-artifact@v4
+        with:
+          name: image-http-echo-${{ steps.detect-arch.outputs.slug }}
+
       - name: Load Docker Images into Kind
         run: |
           # Load all tarballs into docker daemon first?
@@ -1206,6 +1198,7 @@ jobs:
           kind load docker-image mcpany/server:latest --name mcp-e2e
           kind load docker-image mcpany/operator:latest --name mcp-e2e
           kind load docker-image mcpany/ui:latest --name mcp-e2e
+          kind load docker-image mcpany/http-echo-server:latest --name mcp-e2e
 
       - name: Load Docker Images already loaded above
         run: |
