@@ -227,6 +227,11 @@ prepare:
 	else \
 		PYTHON_CMD=""; \
 	fi; \
+	if [ -n "$$PYTHON_CMD" ]; then \
+		echo "Python found: $$PYTHON_CMD"; \
+	else \
+		echo "Python not found"; \
+	fi; \
 	if test -z "$(CI)"; then \
 		if test -n "$$PYTHON_CMD"; then \
 			echo "Python found. Installing/updating pre-commit and fastmcp locally..."; \
