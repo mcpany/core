@@ -171,6 +171,8 @@ jobs:
              $SUDO yum install -y make gcc xz
           elif command -v dnf >/dev/null; then
              $SUDO dnf install -y make gcc xz
+          elif command -v microdnf >/dev/null; then
+             $SUDO microdnf install -y make gcc xz
           fi
 
       - name: Prepare environment
@@ -233,6 +235,8 @@ jobs:
              $SUDO yum install -y make gcc xz
           elif command -v dnf >/dev/null; then
              $SUDO dnf install -y make gcc xz
+          elif command -v microdnf >/dev/null; then
+             $SUDO microdnf install -y make gcc xz
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -405,6 +409,8 @@ jobs:
              $SUDO yum install -y make gcc xz
           elif command -v dnf >/dev/null; then
              $SUDO dnf install -y make gcc xz
+          elif command -v microdnf >/dev/null; then
+             $SUDO microdnf install -y make gcc xz
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -699,7 +705,7 @@ jobs:
         run: |
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
-          if [ -z "SUDO" ]; then
+          if [ -z "$SUDO" ]; then
             echo "No sudo, skipping disk cleanup."
             exit 0
           fi
@@ -739,6 +745,8 @@ jobs:
              $SUDO yum install -y make gcc xz
           elif command -v dnf >/dev/null; then
              $SUDO dnf install -y make gcc xz
+          elif command -v microdnf >/dev/null; then
+             $SUDO microdnf install -y make gcc xz
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -913,6 +921,8 @@ jobs:
              $SUDO yum install -y make gcc xz
           elif command -v dnf >/dev/null; then
              $SUDO dnf install -y make gcc xz
+          elif command -v microdnf >/dev/null; then
+             $SUDO microdnf install -y make gcc xz
           fi
 
       - name: Configure Docker Registry Mirrors
