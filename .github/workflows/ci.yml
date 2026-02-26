@@ -145,7 +145,7 @@ jobs:
             SUDO="sudo"
           fi
           if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential gcc
+            $SUDO apt-get update && DEBIAN_FRONTEND=noninteractive $SUDO apt-get install -y make xz-utils build-essential gcc
           elif command -v apk &> /dev/null; then
              $SUDO apk add --no-cache make xz build-base gcc
           fi
@@ -189,7 +189,7 @@ jobs:
             SUDO="sudo"
           fi
           if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential gcc
+            $SUDO apt-get update && DEBIAN_FRONTEND=noninteractive $SUDO apt-get install -y make xz-utils build-essential gcc
           elif command -v apk &> /dev/null; then
              $SUDO apk add --no-cache make xz build-base gcc
           fi
@@ -342,7 +342,7 @@ jobs:
             SUDO="sudo"
           fi
           if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential gcc
+            $SUDO apt-get update && DEBIAN_FRONTEND=noninteractive $SUDO apt-get install -y make xz-utils build-essential gcc
           elif command -v apk &> /dev/null; then
              $SUDO apk add --no-cache make xz build-base gcc
           fi
@@ -501,7 +501,9 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Install build dependencies
-        run: apt-get update && apt-get install -y make curl unzip git ca-certificates
+        run: |
+          apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y make curl unzip git ca-certificates
+          git config --global --add safe.directory "*"
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -654,7 +656,7 @@ jobs:
             SUDO="sudo"
           fi
           if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential gcc
+            $SUDO apt-get update && DEBIAN_FRONTEND=noninteractive $SUDO apt-get install -y make xz-utils build-essential gcc
           elif command -v apk &> /dev/null; then
              $SUDO apk add --no-cache make xz build-base gcc
           fi
@@ -801,7 +803,7 @@ jobs:
             SUDO="sudo"
           fi
           if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential gcc
+            $SUDO apt-get update && DEBIAN_FRONTEND=noninteractive $SUDO apt-get install -y make xz-utils build-essential gcc
           elif command -v apk &> /dev/null; then
              $SUDO apk add --no-cache make xz build-base gcc
           fi
