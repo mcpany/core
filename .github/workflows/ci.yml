@@ -147,7 +147,7 @@ jobs:
 
   unit-test:
     runs-on: oci-runner
-    # container: public.ecr.aws/docker/library/ubuntu:24.04
+    container: golang:1.24
     timeout-minutes: 60
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -157,23 +157,18 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
-
-      - name: Prune Docker
-        run: docker system prune -af
+          rm -rf /usr/local/lib/android || true
+          rm -rf /usr/share/dotnet || true
+          rm -rf /opt/ghc || true
+          rm -rf /usr/local/share/boost || true
 
       - uses: actions/checkout@v6
+        with:
+          set-safe-directory: true
 
       - name: Install dependencies
         run: |
-          if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
-          elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz build-base
-          fi
+          apt-get update && apt-get install -y make xz-utils build-essential git
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -489,20 +484,12 @@ jobs:
       - name: Generate Protobufs
         run: |
           set -x
-          export DEBIAN_FRONTEND=noninteractive
-          apt-get update -y || echo "apt-get update failed but continuing"
-          apt-get install -y make build-essential || echo "apt-get install failed"
-
-          # Force link make if not in path but installed
-          if [ -f /usr/bin/make ]; then
-             echo "Make exists at /usr/bin/make"
-          else
-             echo "Make DOES NOT exist at /usr/bin/make"
+          # Ensure make is available on host runner
+          if ! command -v make &> /dev/null; then
+             sudo apt-get update
+             sudo apt-get install -y make build-essential
           fi
-
-          export PATH=$PATH:/usr/bin
-          make --version || echo "make command failed"
-
+          make --version
           make gen
 
       - name: Set up QEMU
@@ -750,7 +737,7 @@ jobs:
 
   e2e-public-api:
     runs-on: oci-runner
-    # container: public.ecr.aws/docker/library/ubuntu:24.04
+    container: golang:1.24
     timeout-minutes: 30
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
