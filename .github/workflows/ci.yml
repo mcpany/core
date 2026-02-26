@@ -134,11 +134,18 @@ jobs:
 
       - name: Install dependencies
         run: |
+          SUDO=""
+          if command -v sudo >/dev/null; then
+            SUDO="sudo"
+          fi
+
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update --fix-missing
-            sudo DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils build-essential gcc
+            # Clean up potential stale lists
+            $SUDO rm -rf /var/lib/apt/lists/*
+            $SUDO apt-get update
+            $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils build-essential gcc
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz build-base
+             $SUDO apk add --no-cache make xz build-base
           fi
 
       - name: Prepare environment
@@ -171,11 +178,17 @@ jobs:
 
       - name: Install dependencies
         run: |
+          SUDO=""
+          if command -v sudo >/dev/null; then
+            SUDO="sudo"
+          fi
+
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update --fix-missing
-            sudo DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils build-essential gcc
+            $SUDO rm -rf /var/lib/apt/lists/*
+            $SUDO apt-get update
+            $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils build-essential gcc
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz build-base
+             $SUDO apk add --no-cache make xz build-base
           fi
 
       - name: Debug GCC
@@ -318,11 +331,17 @@ jobs:
 
       - name: Install dependencies
         run: |
+          SUDO=""
+          if command -v sudo >/dev/null; then
+            SUDO="sudo"
+          fi
+
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update --fix-missing
-            sudo DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils build-essential gcc
+            $SUDO rm -rf /var/lib/apt/lists/*
+            $SUDO apt-get update
+            $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils build-essential gcc
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz build-base
+             $SUDO apk add --no-cache make xz build-base
           fi
 
       - name: Debug GCC
@@ -626,11 +645,17 @@ jobs:
 
       - name: Install dependencies
         run: |
+          SUDO=""
+          if command -v sudo >/dev/null; then
+            SUDO="sudo"
+          fi
+
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update --fix-missing
-            sudo DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils build-essential gcc
+            $SUDO rm -rf /var/lib/apt/lists/*
+            $SUDO apt-get update
+            $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils build-essential gcc
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz build-base
+             $SUDO apk add --no-cache make xz build-base
           fi
 
       - name: Debug GCC
@@ -773,11 +798,17 @@ jobs:
 
       - name: Install dependencies
         run: |
+          SUDO=""
+          if command -v sudo >/dev/null; then
+            SUDO="sudo"
+          fi
+
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update --fix-missing
-            sudo DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils build-essential gcc
+            $SUDO rm -rf /var/lib/apt/lists/*
+            $SUDO apt-get update
+            $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils build-essential gcc
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz build-base
+             $SUDO apk add --no-cache make xz build-base
           fi
 
       - name: Debug GCC
