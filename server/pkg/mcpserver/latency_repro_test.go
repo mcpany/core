@@ -32,7 +32,7 @@ import (
 func TestServer_CallTool_Latency_Metrics_Repro(t *testing.T) {
 	// Initialize metrics with an in-memory sink
 	// Use a short interval to ensure data is flushed quickly for the test
-	sink := metrics.NewInmemSink(10*time.Millisecond, 10*time.Second)
+	sink := metrics.NewInmemSink(100*time.Millisecond, 10*time.Second)
 	conf := metrics.DefaultConfig("mcpany")
 	conf.EnableHostname = false
 	_, err := metrics.NewGlobal(conf, sink)
