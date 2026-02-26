@@ -4392,7 +4392,12 @@ func validateSafePathAndInjection(val string, isDocker bool, commandName string)
 
 		// Decode for next iteration
 		next, err := url.QueryUnescape(current)
-		if err != nil || next == current {
+		if err != nil {
+			// If decoding fails, we stop. The current iteration was safe.
+			// Return nil because the *current* state (which is the last valid one) passed checks.
+			return nil //nolint:nilerr
+		}
+		if next == current {
 			break
 		}
 		current = next
