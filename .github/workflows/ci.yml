@@ -89,6 +89,42 @@ jobs:
           $SUDO rm -rf /usr/share/dotnet
           $SUDO rm -rf /opt/ghc
           $SUDO rm -rf /usr/local/share/boost
+          $SUDO rm -rf /usr/share/swift
+          $SUDO rm -rf /usr/local/graalvm
+          $SUDO rm -rf /usr/local/.ghcup
+          $SUDO rm -rf /usr/lib/jvm
+          $SUDO rm -rf /usr/local/share/powershell
+          $SUDO rm -rf /usr/share/miniconda
+          $SUDO rm -rf /usr/share/swift
+          $SUDO rm -rf /usr/local/graalvm
+          $SUDO rm -rf /usr/local/.ghcup
+          $SUDO rm -rf /usr/lib/jvm
+          $SUDO rm -rf /usr/local/share/powershell
+          $SUDO rm -rf /usr/share/miniconda
+          $SUDO rm -rf /usr/share/swift
+          $SUDO rm -rf /usr/local/graalvm
+          $SUDO rm -rf /usr/local/.ghcup
+          $SUDO rm -rf /usr/lib/jvm
+          $SUDO rm -rf /usr/local/share/powershell
+          $SUDO rm -rf /usr/share/miniconda
+          $SUDO rm -rf /usr/share/swift
+          $SUDO rm -rf /usr/local/graalvm
+          $SUDO rm -rf /usr/local/.ghcup
+          $SUDO rm -rf /usr/lib/jvm
+          $SUDO rm -rf /usr/local/share/powershell
+          $SUDO rm -rf /usr/share/miniconda
+          $SUDO rm -rf /usr/share/swift
+          $SUDO rm -rf /usr/local/graalvm
+          $SUDO rm -rf /usr/local/.ghcup
+          $SUDO rm -rf /usr/lib/jvm
+          $SUDO rm -rf /usr/local/share/powershell
+          $SUDO rm -rf /usr/share/miniconda
+          $SUDO rm -rf /usr/share/swift
+          $SUDO rm -rf /usr/local/graalvm
+          $SUDO rm -rf /usr/local/.ghcup
+          $SUDO rm -rf /usr/lib/jvm
+          $SUDO rm -rf /usr/local/share/powershell
+          $SUDO rm -rf /usr/share/miniconda
 
       - name: Prune Docker
         run: docker system prune -af
@@ -144,6 +180,7 @@ jobs:
           if command -v apt-get &> /dev/null; then
             $SUDO apt-get update || true
             $SUDO env DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils curl unzip git ca-certificates
+            $SUDO apt-get clean
           elif command -v apk &> /dev/null; then
              $SUDO apk add --no-cache make xz curl unzip git ca-certificates
           fi
@@ -189,6 +226,7 @@ jobs:
           if command -v apt-get &> /dev/null; then
             $SUDO apt-get update || true
             $SUDO env DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils curl unzip git ca-certificates
+            $SUDO apt-get clean
           elif command -v apk &> /dev/null; then
              $SUDO apk add --no-cache make xz curl unzip git ca-certificates
           fi
@@ -337,6 +375,7 @@ jobs:
           if command -v apt-get &> /dev/null; then
             $SUDO apt-get update || true
             $SUDO env DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils curl unzip git ca-certificates
+            $SUDO apt-get clean
           elif command -v apk &> /dev/null; then
              $SUDO apk add --no-cache make xz curl unzip git ca-certificates
           fi
@@ -526,6 +565,7 @@ jobs:
           if command -v apt-get &> /dev/null; then
             $SUDO apt-get update || true
             $SUDO env DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils curl unzip git ca-certificates
+            $SUDO apt-get clean
           elif command -v apk &> /dev/null; then
              $SUDO apk add --no-cache make xz curl unzip git ca-certificates
           fi
@@ -670,6 +710,7 @@ jobs:
           if command -v apt-get &> /dev/null; then
             $SUDO apt-get update || true
             $SUDO env DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils curl unzip git ca-certificates
+            $SUDO apt-get clean
           elif command -v apk &> /dev/null; then
              $SUDO apk add --no-cache make xz curl unzip git ca-certificates
           fi
@@ -818,6 +859,7 @@ jobs:
           if command -v apt-get &> /dev/null; then
             $SUDO apt-get update || true
             $SUDO env DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils curl unzip git ca-certificates
+            $SUDO apt-get clean
           elif command -v apk &> /dev/null; then
              $SUDO apk add --no-cache make xz curl unzip git ca-certificates
           fi
