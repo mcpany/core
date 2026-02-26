@@ -107,7 +107,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
-          go-version: "1.23"
+          go-version: "1.24"
           cache: true
 
       - name: Set up Python
@@ -208,7 +208,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
-          go-version: "1.23"
+          go-version: "1.24"
           cache: true
 
       - name: Set up Python
@@ -341,7 +341,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
-          go-version: "1.23"
+          go-version: "1.24"
           cache: true
 
       - name: Set up Python
@@ -493,7 +493,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
-          go-version: "1.23"
+          go-version: "1.24"
           cache: true
 
       - name: Set up Node.js
@@ -666,7 +666,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
-          go-version: "1.23"
+          go-version: "1.24"
           cache: true
 
       - name: Set up Python
@@ -807,7 +807,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
-          go-version: "1.23"
+          go-version: "1.24"
           cache: true
 
       - name: Set up Python
@@ -890,7 +890,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
-          go-version: "1.23"
+          go-version: "1.24"
           cache: true
 
       - name: Set up Docker Buildx
@@ -1004,7 +1004,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
-          go-version: "1.23"
+          go-version: "1.24"
           cache: true
 
       - name: Set up Node.js
