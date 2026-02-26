@@ -480,6 +480,9 @@ jobs:
           cache: "npm"
           cache-dependency-path: server/tests/integration/upstream/package-lock.json
 
+      - name: Install dependencies
+        run: apt-get update && apt-get install -y make curl unzip
+
       - name: Generate Protobufs
         run: |
           make gen
