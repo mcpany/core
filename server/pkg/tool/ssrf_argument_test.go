@@ -7,7 +7,6 @@ import (
 	"context"
 	"fmt"
 	"net"
-	"os"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -130,19 +129,17 @@ func TestSSRFArgumentProtection(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			// Ensure strict environment for testing to allow "localhost" check to run
 			// types.go: validateSafePathAndInjection skips checks if MCPANY_DANGEROUS_ALLOW_LOCAL_IPS is true.
-			// We must unset it to test protection.
-			originalDangerous := os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS")
-			os.Unsetenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS")
-			defer func() {
-				if originalDangerous != "" {
-					os.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", originalDangerous)
-				} else {
-					os.Unsetenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS")
-				}
-			}()
+			// We must unset it to test protection. Use t.Setenv for thread-safety and cleanup.
+			t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "")
 
-			// Mock IsSafeIP to respect test case flags instead of global env vars
-			// This avoids modifying global env vars (MCPANY_DANGEROUS_ALLOW_LOCAL_IPS) which could affect parallel tests.
+			// Configure loopback allowance using env var (read by types.go)
+			if tt.allowLoopback {
+				t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
+			} else {
+				t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "")
+			}
+
+			// Mock IsSafeIP to respect test case flags
 			originalIsSafeIP := validation.IsSafeIP
 			validation.IsSafeIP = func(ipStr string) error {
 				ip := net.ParseIP(ipStr)
@@ -153,16 +150,6 @@ func TestSSRFArgumentProtection(t *testing.T) {
 			}
 			defer func() { validation.IsSafeIP = originalIsSafeIP }()
 
-			// We also need to set env vars for the "localhost" check in types.go which reads them directly
-			if tt.allowLoopback {
-				os.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
-			} else {
-				os.Unsetenv("MCPANY_ALLOW_LOOPBACK_RESOURCES")
-			}
-			// We don't strictly need to unset it after if other tests don't depend on it,
-			// but good practice.
-			defer os.Unsetenv("MCPANY_ALLOW_LOOPBACK_RESOURCES")
-
 			tool := createTool(tt.command)
 			req := &ExecutionRequest{
 				ToolName:   "test",
@@ -172,9 +159,10 @@ func TestSSRFArgumentProtection(t *testing.T) {
 
 			_, err := tool.Execute(context.Background(), req)
 			if tt.expectError {
-				assert.Error(t, err)
-				if tt.errorContains != "" {
-					assert.Contains(t, err.Error(), tt.errorContains)
+				if assert.Error(t, err) {
+					if tt.errorContains != "" {
+						assert.Contains(t, err.Error(), tt.errorContains)
+					}
 				}
 			} else {
 				assert.NoError(t, err)
