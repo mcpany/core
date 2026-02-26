@@ -4,12 +4,27 @@
 package tool
 
 import (
+	"fmt"
+	"strings"
 	"testing"
 
+	"github.com/mcpany/core/server/pkg/validation"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestValidateSafePathAndInjection_Bypass(t *testing.T) {
+	// Restore IsSafeURL after test
+	originalIsSafeURL := validation.IsSafeURL
+	defer func() { validation.IsSafeURL = originalIsSafeURL }()
+
+	// Set strict IsSafeURL that mimics real behavior for testing SSRF
+	validation.IsSafeURL = func(urlStr string) error {
+		if strings.Contains(urlStr, "localhost") || strings.Contains(urlStr, "127.0.0.1") {
+			return fmt.Errorf("unsafe URL: localhost/loopback not allowed")
+		}
+		return nil
+	}
+
 	// These inputs should be BLOCKED.
 	tests := []struct {
 		name     string
@@ -29,6 +44,21 @@ func TestValidateSafePathAndInjection_Bypass(t *testing.T) {
 		{
 			name:     "Local File Access with Leading Space",
 			input:    " /etc/passwd", // Absolute path check
+			isDocker: false,
+		},
+		{
+			name:     "Double Encoded Hyphen (Argument Injection)",
+			input:    "%252d",
+			isDocker: false,
+		},
+		{
+			name:     "Triple Encoded Hyphen (Argument Injection)",
+			input:    "%25252d",
+			isDocker: false,
+		},
+		{
+			name:     "Encoded URL Scheme (SSRF)",
+			input:    "http%3a%2f%2flocalhost",
 			isDocker: false,
 		},
 	}
