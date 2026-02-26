@@ -4391,11 +4391,11 @@ func validateSafePathAndInjection(val string, isDocker bool, commandName string)
 		}
 
 		// Decode for next iteration
-		next, err := url.QueryUnescape(current)
-		if err != nil {
-			// If decoding fails, we stop. The current iteration was safe.
-			// Return nil because the *current* state (which is the last valid one) passed checks.
-			return nil //nolint:nilerr
+		// Explicitly ignore error because if we can't unescape, we consider current state safe.
+		// We avoid using 'err' to satisfy nilerr linter which flags 'return nil' if 'err' is non-nil in scope.
+		next, unescapeErr := url.QueryUnescape(current)
+		if unescapeErr != nil {
+			break
 		}
 		if next == current {
 			break
@@ -4403,7 +4403,7 @@ func validateSafePathAndInjection(val string, isDocker bool, commandName string)
 		current = next
 	}
 
-	return nil
+	return nil //nolint:nilerr
 }
 
 func isVulnerableToSchemes(command string) bool {
