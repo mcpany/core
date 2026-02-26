@@ -177,13 +177,5 @@ func TestGraphQLUpstream_Register_ListHandling(t *testing.T) {
 	// Expected: mutation ($tags: [String]) { addTags(tags: $tags) }
 	assert.Contains(t, addTagsQuery.query, "mutation ($tags: [String])")
 	assert.Contains(t, addTagsQuery.query, "addTags(tags: $tags)")
-	// Boolean scalar doesn't have sub-selection
-	// But the code currently generates "{ }" if no fields? Or simply nothing?
-	// If it's a SCALAR return type, `field.Type.Fields` is empty.
-	// `selectionSet` is empty.
-	// Let's see what the code generates.
-	// If type is SCALAR, `field.Type.Fields` is empty.
-	// The code:
-	// if len(field.Type.Fields) > 0 { sb.WriteString("{ ") ... }
-	// So for Boolean, it should NOT generate braces.
+	// Boolean scalar doesn't have sub-selection so it should not generate braces
 }
