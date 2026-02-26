@@ -257,7 +257,7 @@ jobs:
 
       - name: Test (Short)
         run: |
-          make test-fast COVERAGE_FILE=coverage-fast.out
+          DOCKER_BUILDKIT=0 make test-fast DOCKER_BUILD_CMD="docker build" COVERAGE_FILE=coverage-fast.out
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
