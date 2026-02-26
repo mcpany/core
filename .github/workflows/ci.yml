@@ -87,14 +87,14 @@ jobs:
       - name: Free Disk Space (Fast)
         run: |
           if command -v sudo &> /dev/null; then
-            sudo rm -rf /usr/local/lib/android
-            sudo rm -rf /usr/share/dotnet
-            sudo rm -rf /opt/ghc
-            sudo rm -rf /usr/local/share/boost
+            sudo rm -rf /usr/local/lib/android || true
+            sudo rm -rf /usr/share/dotnet || true
+            sudo rm -rf /opt/ghc || true
+            sudo rm -rf /usr/local/share/boost || true
           fi
 
       - name: Prune Docker
-        run: docker system prune -af
+        run: docker system prune -af || true
 
       - uses: actions/checkout@v6
 
@@ -173,14 +173,14 @@ jobs:
       - name: Free Disk Space (Fast)
         run: |
           if command -v sudo &> /dev/null; then
-            sudo rm -rf /usr/local/lib/android
-            sudo rm -rf /usr/share/dotnet
-            sudo rm -rf /opt/ghc
-            sudo rm -rf /usr/local/share/boost
+            sudo rm -rf /usr/local/lib/android || true
+            sudo rm -rf /usr/share/dotnet || true
+            sudo rm -rf /opt/ghc || true
+            sudo rm -rf /usr/local/share/boost || true
           fi
 
       - name: Prune Docker
-        run: docker system prune -af
+        run: docker system prune -af || true
 
       - uses: actions/checkout@v6
 
@@ -205,8 +205,8 @@ jobs:
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
           if command -v sudo &> /dev/null; then
-            sudo mkdir -p /etc/docker
-            echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+            sudo mkdir -p /etc/docker || true
+            echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json || true
 
             if sudo systemctl restart docker 2>/dev/null; then
               echo "Docker restarted via systemctl"
@@ -219,7 +219,7 @@ jobs:
           else
             echo "Sudo not found. Skipping Docker registry mirror configuration."
           fi
-          docker info # Verify the mirrors are listed
+          docker info || true # Verify the mirrors are listed
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -326,14 +326,14 @@ jobs:
       - name: Free Disk Space (Fast)
         run: |
           if command -v sudo &> /dev/null; then
-            sudo rm -rf /usr/local/lib/android
-            sudo rm -rf /usr/share/dotnet
-            sudo rm -rf /opt/ghc
-            sudo rm -rf /usr/local/share/boost
+            sudo rm -rf /usr/local/lib/android || true
+            sudo rm -rf /usr/share/dotnet || true
+            sudo rm -rf /opt/ghc || true
+            sudo rm -rf /usr/local/share/boost || true
           fi
 
       - name: Prune Docker
-        run: docker system prune -af
+        run: docker system prune -af || true
 
       - uses: actions/checkout@v6
 
@@ -358,8 +358,8 @@ jobs:
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
           if command -v sudo &> /dev/null; then
-            sudo mkdir -p /etc/docker
-            echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+            sudo mkdir -p /etc/docker || true
+            echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json || true
 
             if sudo systemctl restart docker 2>/dev/null; then
               echo "Docker restarted via systemctl"
@@ -372,7 +372,7 @@ jobs:
           else
             echo "Sudo not found. Skipping Docker registry mirror configuration."
           fi
-          docker info # Verify the mirrors are listed
+          docker info || true # Verify the mirrors are listed
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -641,14 +641,14 @@ jobs:
       - name: Free Disk Space (Fast)
         run: |
           if command -v sudo &> /dev/null; then
-            sudo rm -rf /usr/local/lib/android
-            sudo rm -rf /usr/share/dotnet
-            sudo rm -rf /opt/ghc
-            sudo rm -rf /usr/local/share/boost
+            sudo rm -rf /usr/local/lib/android || true
+            sudo rm -rf /usr/share/dotnet || true
+            sudo rm -rf /opt/ghc || true
+            sudo rm -rf /usr/local/share/boost || true
           fi
 
       - name: Prune Docker
-        run: docker system prune -af
+        run: docker system prune -af || true
 
       - uses: actions/checkout@v6
 
@@ -671,8 +671,8 @@ jobs:
       - name: Configure Docker Registry Mirrors
         run: |
           if command -v sudo &> /dev/null; then
-            sudo mkdir -p /etc/docker
-            echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+            sudo mkdir -p /etc/docker || true
+            echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json || true
 
             if sudo systemctl restart docker 2>/dev/null; then
               echo "Docker restarted via systemctl"
@@ -685,7 +685,7 @@ jobs:
           else
             echo "Sudo not found. Skipping Docker registry mirror configuration."
           fi
-          docker info
+          docker info || true
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -794,14 +794,14 @@ jobs:
       - name: Free Disk Space (Fast)
         run: |
           if command -v sudo &> /dev/null; then
-            sudo rm -rf /usr/local/lib/android
-            sudo rm -rf /usr/share/dotnet
-            sudo rm -rf /opt/ghc
-            sudo rm -rf /usr/local/share/boost
+            sudo rm -rf /usr/local/lib/android || true
+            sudo rm -rf /usr/share/dotnet || true
+            sudo rm -rf /opt/ghc || true
+            sudo rm -rf /usr/local/share/boost || true
           fi
 
       - name: Prune Docker
-        run: docker system prune -af
+        run: docker system prune -af || true
 
       - uses: actions/checkout@v6
 
@@ -826,8 +826,8 @@ jobs:
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
           if command -v sudo &> /dev/null; then
-            sudo mkdir -p /etc/docker
-            echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+            sudo mkdir -p /etc/docker || true
+            echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json || true
 
             if sudo systemctl restart docker 2>/dev/null; then
               echo "Docker restarted via systemctl"
@@ -840,7 +840,7 @@ jobs:
           else
             echo "Sudo not found. Skipping Docker registry mirror configuration."
           fi
-          docker info # Verify the mirrors are listed
+          docker info || true # Verify the mirrors are listed
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -929,8 +929,8 @@ jobs:
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
           if command -v sudo &> /dev/null; then
-            sudo mkdir -p /etc/docker
-            echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+            sudo mkdir -p /etc/docker || true
+            echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json || true
 
             if sudo systemctl restart docker 2>/dev/null; then
               echo "Docker restarted via systemctl"
@@ -943,7 +943,7 @@ jobs:
           else
             echo "Sudo not found. Skipping Docker registry mirror configuration."
           fi
-          docker info # Verify the mirrors are listed
+          docker info || true # Verify the mirrors are listed
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -991,14 +991,14 @@ jobs:
       - name: Free Disk Space (Fast)
         run: |
           if command -v sudo &> /dev/null; then
-            sudo rm -rf /usr/local/lib/android
-            sudo rm -rf /usr/share/dotnet
-            sudo rm -rf /opt/ghc
-            sudo rm -rf /usr/local/share/boost
+            sudo rm -rf /usr/local/lib/android || true
+            sudo rm -rf /usr/share/dotnet || true
+            sudo rm -rf /opt/ghc || true
+            sudo rm -rf /usr/local/share/boost || true
           fi
 
       - name: Prune Docker
-        run: docker system prune -af
+        run: docker system prune -af || true
 
       - uses: actions/checkout@v6
 
@@ -1046,14 +1046,14 @@ jobs:
       - name: Free Disk Space (Fast)
         run: |
           if command -v sudo &> /dev/null; then
-            sudo rm -rf /usr/local/lib/android
-            sudo rm -rf /usr/share/dotnet
-            sudo rm -rf /opt/ghc
-            sudo rm -rf /usr/local/share/boost
+            sudo rm -rf /usr/local/lib/android || true
+            sudo rm -rf /usr/share/dotnet || true
+            sudo rm -rf /opt/ghc || true
+            sudo rm -rf /usr/local/share/boost || true
           fi
 
       - name: Prune Docker
-        run: docker system prune -af
+        run: docker system prune -af || true
 
       - uses: actions/checkout@v6
 
