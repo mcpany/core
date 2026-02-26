@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **Subagent Recursion Limiter Middleware**: (P0) Prevents context exhaustion and infinite agent loops by enforcing depth limits and intent-based pruning.
+- **Stateful Policy Engine (Guardrail API)**: (P1) Adjusts tool permissions in real-time based on conversation context and safety feedback scores.
+- **Ephemeral WASM Tool Executor**: (P1) Safe runtime for agent-generated tools, providing isolation and Zero-Trust enforcement.
+- **Native Context-Injection Bridge**: (P1) Standardizes proprietary sidecar injectors (like Gemini's) as MCP resources.
+
+### Priority Shifts
+- **A2A Interop Bridge (Pseudo-MCP)**: Re-affirming **P0**. Essential for cross-framework (OpenClaw -> AutoGen) collaboration.
+
+### Deprecations / Monitoring
+- **Stateless Policies**: Transitioning towards stateful, context-aware guardrails.
