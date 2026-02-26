@@ -136,7 +136,12 @@ jobs:
           if command -v apt-get &> /dev/null; then
             sudo apt-get update && sudo apt-get install -y make xz-utils
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             # Alpine usually runs as root, but if not, sudo might be needed or not available
+             if command -v sudo &> /dev/null; then
+               sudo apk add --no-cache make xz
+             else
+               apk add --no-cache make xz
+             fi
           fi
 
       - name: Prepare environment
@@ -172,7 +177,11 @@ jobs:
           if command -v apt-get &> /dev/null; then
             sudo apt-get update && sudo apt-get install -y make xz-utils
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             if command -v sudo &> /dev/null; then
+               sudo apk add --no-cache make xz
+             else
+               apk add --no-cache make xz
+             fi
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -311,7 +320,11 @@ jobs:
           if command -v apt-get &> /dev/null; then
             sudo apt-get update && sudo apt-get install -y make xz-utils
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             if command -v sudo &> /dev/null; then
+               sudo apk add --no-cache make xz
+             else
+               apk add --no-cache make xz
+             fi
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -618,7 +631,11 @@ jobs:
           if command -v apt-get &> /dev/null; then
             sudo apt-get update && sudo apt-get install -y make xz-utils
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             if command -v sudo &> /dev/null; then
+               sudo apk add --no-cache make xz
+             else
+               apk add --no-cache make xz
+             fi
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -757,7 +774,11 @@ jobs:
           if command -v apt-get &> /dev/null; then
             sudo apt-get update && sudo apt-get install -y make xz-utils
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             if command -v sudo &> /dev/null; then
+               sudo apk add --no-cache make xz
+             else
+               apk add --no-cache make xz
+             fi
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -1096,7 +1117,11 @@ jobs:
               if command -v apt-get &> /dev/null; then
                 $SUDO apt-get update && $SUDO apt-get install -y curl ca-certificates jq
               elif command -v apk &> /dev/null; then
-                $SUDO apk add --no-cache curl ca-certificates jq
+                if [ -n "$SUDO" ]; then
+                  $SUDO apk add --no-cache curl ca-certificates jq
+                else
+                  apk add --no-cache curl ca-certificates jq
+                fi
               elif command -v yum &> /dev/null; then
                 $SUDO yum install -y curl ca-certificates jq
               elif command -v dnf &> /dev/null; then
@@ -1156,7 +1181,15 @@ jobs:
             if [ -w /usr/local/bin ]; then
                cp "$BIN_PATH" /usr/local/bin/
             elif command -v sudo &> /dev/null; then
-               sudo cp "$BIN_PATH" /usr/local/bin/
+               # Check if sudo requires password
+               if sudo -n true 2>/dev/null; then
+                  sudo cp "$BIN_PATH" /usr/local/bin/
+               else
+                  echo "Sudo requires password, installing to local bin"
+                  mkdir -p "$HOME/.local/bin"
+                  cp "$BIN_PATH" "$HOME/.local/bin/"
+                  echo "$HOME/.local/bin" >> $GITHUB_PATH
+               fi
             else
                mkdir -p "$HOME/.local/bin"
                cp "$BIN_PATH" "$HOME/.local/bin/"
