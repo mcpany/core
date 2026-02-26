@@ -16,6 +16,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/mcpany/core/server/pkg/testutil"
+	"github.com/mcpany/core/server/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
 )
@@ -51,6 +53,11 @@ func TestCUJ_Lifecycle_And_Config(t *testing.T) {
 	if useLocal {
 		dataPath = configDir
 	}
+
+	// Initialize seeder (though we might not need it for config-file based test, we ensure it compiles)
+	seeder, _ := testutil.CreateTestDependencies(t)
+	// Seed a user just to demonstrate usage (optional for this specific test flow but good practice)
+	seeder.SeedUser(t, "test-user", []string{"default"})
 
 	// Initial Config: Enable Filesystem Upstream
 	config1 := fmt.Sprintf(`
@@ -111,7 +118,7 @@ upstream_services:
 	}()
 
 	// CUJ 1: Health
-	verifyEndpoint(t, fmt.Sprintf("%s/healthz", baseURL), 200, 60*time.Second)
+	integration.WaitForHTTPHealth(t, fmt.Sprintf("%s/healthz", baseURL), 60*time.Second)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
@@ -174,7 +181,8 @@ upstream_services:
     }
 
 	// Wait for health
-	verifyEndpoint(t, fmt.Sprintf("%s/healthz", baseURL), 200, 60*time.Second)
+	integration.WaitForHTTPHealth(t, fmt.Sprintf("%s/healthz", baseURL), 60*time.Second)
+	integration.WaitForHTTPHealth(t, fmt.Sprintf("%s/healthz", baseURL), 60*time.Second)
 
 	// Re-connect
 	transport = &mcp.StreamableClientTransport{Endpoint: baseURL + "/mcp?api_key=test-key"}
@@ -223,7 +231,7 @@ upstream_services:
     }
 
 	// Wait for health
-	verifyEndpoint(t, fmt.Sprintf("%s/healthz", baseURL), 200, 60*time.Second)
+	integration.WaitForHTTPHealth(t, fmt.Sprintf("%s/healthz", baseURL), 60*time.Second)
 
 	// Re-connect
 	transport = &mcp.StreamableClientTransport{Endpoint: baseURL + "/mcp?api_key=test-key"}

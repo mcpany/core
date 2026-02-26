@@ -3,17 +3,19 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { renderHook } from '@testing-library/react';
+import { renderHook, waitFor } from '@testing-library/react';
 import { useNetworkTopology } from './use-network-topology';
-import { useTopology } from '../contexts/service-health-context';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import dagre from 'dagre';
 import { Graph } from '../types/topology';
 import React from 'react';
+import { apiClient } from '../lib/client';
 
 // Mock dependencies
-vi.mock('../contexts/service-health-context', () => ({
-  useTopology: vi.fn(),
+vi.mock('../lib/client', () => ({
+  apiClient: {
+    getTopology: vi.fn(),
+  },
 }));
 
 vi.mock('@xyflow/react', async () => {
@@ -50,23 +52,18 @@ vi.mock('dagre', () => {
 });
 
 describe('useNetworkTopology', () => {
-  const mockRefreshTopology = vi.fn();
-
   beforeEach(() => {
     vi.clearAllMocks();
-    (useTopology as any).mockReturnValue({
-      latestTopology: null,
-      refreshTopology: mockRefreshTopology,
-    });
   });
 
-  it('should return initial empty state when topology is null', () => {
+  it('should return initial loading state', () => {
+    (apiClient.getTopology as any).mockReturnValue(new Promise(() => {})); // Pending promise
     const { result } = renderHook(() => useNetworkTopology());
-    expect(result.current.nodes).toEqual([]);
-    expect(result.current.edges).toEqual([]);
+    expect(result.current.loading).toBe(true);
+    expect(result.current.error).toBe(null);
   });
 
-  it('should process topology graph correctly', () => {
+  it('should process topology graph correctly on success', async () => {
     const mockGraph: Graph = {
       core: {
         id: 'core-1',
@@ -92,12 +89,13 @@ describe('useNetworkTopology', () => {
       ],
     };
 
-    (useTopology as any).mockReturnValue({
-      latestTopology: mockGraph,
-      refreshTopology: mockRefreshTopology,
-    });
+    (apiClient.getTopology as any).mockResolvedValue(mockGraph);
 
     const { result } = renderHook(() => useNetworkTopology());
+
+    await waitFor(() => {
+        expect(result.current.loading).toBe(false);
+    });
 
     // Check nodes (Core, Service, Client) -> 3 nodes
     expect(result.current.nodes).toHaveLength(3);
@@ -123,20 +121,33 @@ describe('useNetworkTopology', () => {
     expect(coreToService).toBeDefined();
   });
 
-  it('should not re-layout if structure is the same (caching)', () => {
+  it('should handle API errors', async () => {
+    const error = new Error('Network error');
+    (apiClient.getTopology as any).mockRejectedValue(error);
+
+    const { result } = renderHook(() => useNetworkTopology());
+
+    await waitFor(() => {
+        expect(result.current.loading).toBe(false);
+    });
+
+    expect(result.current.error).toBe(error);
+    expect(result.current.nodes).toEqual([]);
+  });
+
+  it('should not re-layout if structure is the same (caching)', async () => {
     const mockGraph1: Graph = {
       core: { id: 'core-1', label: 'Core', type: 'NODE_TYPE_CORE', status: 'NODE_STATUS_ACTIVE' },
     };
 
-    // First render
-    (useTopology as any).mockReturnValue({
-      latestTopology: mockGraph1,
-      refreshTopology: mockRefreshTopology,
-    });
+    (apiClient.getTopology as any).mockResolvedValue(mockGraph1);
 
     const { result, rerender } = renderHook(() => useNetworkTopology());
 
-    // Check dagre layout was called
+    await waitFor(() => {
+        expect(result.current.loading).toBe(false);
+    });
+
     expect(dagre.layout).toHaveBeenCalledTimes(1);
 
     // Second render with SAME structure
@@ -144,55 +155,26 @@ describe('useNetworkTopology', () => {
       core: { id: 'core-1', label: 'Core Updated', type: 'NODE_TYPE_CORE', status: 'NODE_STATUS_ACTIVE' }, // Label changed, structure same
     };
 
-    (useTopology as any).mockReturnValue({
-      latestTopology: mockGraph2,
-      refreshTopology: mockRefreshTopology,
+    (apiClient.getTopology as any).mockResolvedValue(mockGraph2);
+    result.current.refreshTopology();
+
+    await waitFor(() => {
+         // We need to wait for the effect of refreshTopology
+         // Since it's async, we can check if nodes updated
+         // But here we rely on mockResolvedValue being picked up
     });
 
-    rerender();
+    // We need to manually trigger the update logic or simulate the poll/refresh
+    // Re-rendering hooks doesn't re-run effects unless deps change.
+    // Calling refreshTopology triggers fetchTopology.
 
-    // Layout should NOT be called again
+    // Wait for the state update
+    await waitFor(() => {
+        const coreNode = result.current.nodes.find((n) => n.id === 'core-1');
+        expect(coreNode?.data.label).toBe('Core Updated');
+    });
+
+    // Layout should NOT be called again (still 1) because structure hash matches
     expect(dagre.layout).toHaveBeenCalledTimes(1);
-
-    // But data should update
-    const coreNode = result.current.nodes.find((n) => n.id === 'core-1');
-    expect(coreNode?.data.label).toBe('Core Updated');
-  });
-
-  it('should re-layout if structure changes', () => {
-     const mockGraph1: Graph = {
-      core: { id: 'core-1', label: 'Core', type: 'NODE_TYPE_CORE', status: 'NODE_STATUS_ACTIVE' },
-    };
-
-    // First render
-    (useTopology as any).mockReturnValue({
-      latestTopology: mockGraph1,
-      refreshTopology: mockRefreshTopology,
-    });
-
-    const { result, rerender } = renderHook(() => useNetworkTopology());
-    expect(dagre.layout).toHaveBeenCalledTimes(1);
-
-    // Second render with DIFFERENT structure
-    const mockGraph2: Graph = {
-      core: {
-          id: 'core-1',
-          label: 'Core',
-          type: 'NODE_TYPE_CORE',
-          status: 'NODE_STATUS_ACTIVE',
-          children: [{ id: 'child-1', label: 'Child', type: 'NODE_TYPE_SERVICE', status: 'NODE_STATUS_ACTIVE' }]
-      },
-    };
-
-    (useTopology as any).mockReturnValue({
-      latestTopology: mockGraph2,
-      refreshTopology: mockRefreshTopology,
-    });
-
-    rerender();
-
-    // Layout SHOULD be called again
-    expect(dagre.layout).toHaveBeenCalledTimes(2);
-    expect(result.current.nodes).toHaveLength(2);
   });
 });

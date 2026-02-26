@@ -3,11 +3,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Node, Edge, useNodesState, useEdgesState, addEdge, Connection, MarkerType, Position } from '@xyflow/react';
 import dagre from 'dagre';
 import { Graph, Node as TopologyNode } from '../types/topology';
-import { useTopology } from '../contexts/service-health-context';
+import { apiClient } from '../lib/client';
 
 /**
  * State and actions for the network graph visualization.
@@ -27,6 +27,10 @@ export interface NetworkGraphState {
     refreshTopology: () => void;
     /** Triggers an auto-layout of the graph. */
     autoLayout: () => void;
+    /** Loading state */
+    loading: boolean;
+    /** Error state */
+    error: Error | null;
 }
 
 const nodeWidth = 220;
@@ -77,9 +81,9 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => 
 export function useNetworkTopology() {
     const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
-
-    // ⚡ Bolt Optimization: Use global topology data from context to avoid redundant polling
-    const { latestTopology, refreshTopology: refreshContextTopology } = useTopology();
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<Error | null>(null);
+    const [topology, setTopology] = useState<Graph | null>(null);
 
     // ⚡ Bolt Optimization: Refs to track current state without adding dependencies to fetchData
     const nodesRef = useRef(nodes);
@@ -97,13 +101,6 @@ export function useNetworkTopology() {
 
             // Helper to add node
             const addNode = (tNode: TopologyNode, parentId?: string) => {
-                // isGroup removed as unused
-                // We flatten the graph for Dagre but visually we might use Groups?
-                // For now, let's just make them all top-level nodes connected by edges
-                // to simplify the 5-layer layout request.
-                // Groups in React Flow are for containment.
-                // "Unifi Topology" usually connects them with lines, not boxes inside boxes.
-
                 const flowNode: Node = {
                     id: tNode.id,
                     data: {
@@ -213,12 +210,26 @@ export function useNetworkTopology() {
         }
     }, [setNodes, setEdges]);
 
-    // Update graph when latestTopology from context changes
-    useEffect(() => {
-        if (latestTopology) {
-            processGraph(latestTopology);
+    const fetchTopology = useCallback(async () => {
+        try {
+            setLoading(true);
+            const data = await apiClient.getTopology();
+            setTopology(data);
+            processGraph(data);
+            setError(null);
+        } catch (e: any) {
+            setError(e);
+            console.error("Failed to fetch topology:", e);
+        } finally {
+            setLoading(false);
         }
-    }, [latestTopology, processGraph]);
+    }, [processGraph]);
+
+    useEffect(() => {
+        fetchTopology();
+        const interval = setInterval(fetchTopology, 5000);
+        return () => clearInterval(interval);
+    }, [fetchTopology]);
 
     const onConnect = useCallback(
         (params: Connection) => setEdges((eds) => addEdge(params, eds)),
@@ -226,15 +237,15 @@ export function useNetworkTopology() {
     );
 
     const refreshTopology = useCallback(() => {
-        refreshContextTopology();
-    }, [refreshContextTopology]);
+        fetchTopology();
+    }, [fetchTopology]);
 
     const autoLayout = useCallback(() => {
          lastStructureHash.current = ''; // Force layout recalculation
-         if (latestTopology) {
-             processGraph(latestTopology);
+         if (topology) {
+             processGraph(topology);
          }
-    }, [latestTopology, processGraph]);
+    }, [topology, processGraph]);
 
     return {
         nodes,
@@ -243,7 +254,9 @@ export function useNetworkTopology() {
         onEdgesChange,
         onConnect,
         refreshTopology,
-        autoLayout
+        autoLayout,
+        loading,
+        error
     };
 }
 

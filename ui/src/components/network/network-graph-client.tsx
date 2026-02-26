@@ -127,7 +127,7 @@ export interface NetworkGraphFlowProps {
  */
 export function NetworkGraphFlow({ widgetMode = false }: NetworkGraphFlowProps) {
   const router = useRouter();
-  const { nodes, edges, onNodesChange, onEdgesChange, onConnect, refreshTopology, autoLayout } = useNetworkTopology();
+  const { nodes, edges, onNodesChange, onEdgesChange, onConnect, refreshTopology, autoLayout, loading, error } = useNetworkTopology();
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const isMobile = useIsMobile();
@@ -182,6 +182,29 @@ export function NetworkGraphFlow({ widgetMode = false }: NetworkGraphFlowProps) 
           default: return 'outline';
       }
   };
+
+  if (loading && nodes.length === 0) {
+      return (
+          <div className="flex h-full w-full items-center justify-center bg-muted/5">
+              <div className="flex flex-col items-center gap-2">
+                  <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+                  <p className="text-sm text-muted-foreground">Loading topology...</p>
+              </div>
+          </div>
+      );
+  }
+
+  if (error && nodes.length === 0) {
+      return (
+          <div className="flex h-full w-full items-center justify-center bg-muted/5">
+              <div className="flex flex-col items-center gap-2 text-destructive">
+                  <AlertTriangle className="h-8 w-8" />
+                  <p className="text-sm font-medium">Failed to load topology</p>
+                  <Button variant="outline" size="sm" onClick={refreshTopology}>Retry</Button>
+              </div>
+          </div>
+      );
+  }
 
   return (
     <div className={cn("h-full w-full relative bg-muted/5 group", widgetMode && "rounded-lg overflow-hidden")}>
