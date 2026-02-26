@@ -43,3 +43,10 @@ As AI agent ecosystems evolve from single-agent monoliths to multi-agent swarms 
 
 ## 7. Evolutionary Changelog
 * **2026-02-24**: Initial Document Creation.
+
+### Update: 2026-02-27 - Inter-Framework State Sync
+**Context:** Today's market sync highlighted "Inter-Framework Friction" where state loss occurs during handoffs between frameworks like LangGraph and CrewAI.
+**Architecture Adjustment:**
+* Introducing a **State Translation Layer** in the Session Manager (Section 4).
+* Standardizing a canonical "MCP State Schema" in the Blackboard for cross-framework context preservation.
+**Security Impact:** Ensures consistent security policy enforcement across framework boundaries by maintaining the original session's identity and permissions.

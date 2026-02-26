@@ -26,8 +26,13 @@
 
 #### Upcoming (2026-02-26 Evolution)
 *   **[P0] A2A Interop Bridge**: Implement Pseudo-MCP wrapper for A2A-compliant agents. (Added: 2026-02-26)
-*   **[P1] Federated MCP Peering**: Distributed node discovery and tool proxying. (Added: 2026-02-26)
+*   **[P0] Federated MCP Node Peering**: Distributed node discovery and tool proxying. (Added: 2026-02-26, Promoted: 2026-02-27)
 *   **[P1] Resource Telemetry Middleware**: Inject latency/cost metrics into tool schemas. (Added: 2026-02-26)
+
+#### Upcoming (2026-02-27 Evolution)
+*   **[P0] Gossip Discovery Middleware**: Implement SWIM-based decentralized peer discovery for Federated MCP. (Added: 2026-02-27)
+*   **[P1] Inter-Framework State Synchronizer**: Multi-framework state translation layer (LangGraph/CrewAI/AutoGen). (Added: 2026-02-27)
+*   **[P1] CLI-Native Sidecar Adapter**: Optimized low-latency proxy for terminal agents (Claude Code/Gemini CLI). (Added: 2026-02-27)
 
 ## 2. Top 10 Recommended Features
 

@@ -63,5 +63,18 @@
 - **MCP Provenance Attestation**: Promoted to **P0** as it is a prerequisite for secure Federated MCP peering.
 - **Lazy-MCP Middleware**: Promoted to **P0** (Already P0, but re-affirming importance for Federated Tool Mesh).
 
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **Gossip-based Peer Discovery Middleware**: (P0) Implements a decentralized discovery protocol for federated nodes to solve the centralized configuration bottleneck.
+- **Inter-Framework State Synchronizer**: (P1) A translation layer that maps task and session state between major agent frameworks (LangGraph, CrewAI, AutoGen).
+- **CLI-Native Sidecar Adapter**: (P1) Optimized low-latency proxy specifically for terminal-based agents like Claude Code and Gemini CLI.
+
+### Priority Shifts
+- **Federated MCP Node Peering**: Promoted to **P0**. Essential for scaling distributed tool meshes beyond the pilot phase.
+- **A2A Interop Bridge**: Promoted to **P0** to support the surge in multi-agent swarm deployments.
+
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
