@@ -46,3 +46,7 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-02-27: Integration of Agent Attestation Tokens (AAT)**
+    *   **Context:** Market sync revealed a high risk of identity spoofing in multi-agent swarms.
+    *   **Architecture Adjustment:** The `A2ABridgeMiddleware` will now require and validate **Agent Attestation Tokens (AAT)** for all incoming and outgoing A2A messages.
+    *   **Trust Delegation:** MCP Any will act as a trust anchor, allowing parents to delegate specific "Capability Tokens" to subagents via AAT metadata.

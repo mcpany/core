@@ -47,3 +47,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **A2A Gateway Protocol**: MCP Any will implement a protocol-neutral bridge for A2A communication, allowing disparate agent frameworks (e.g., OpenClaw, AutoGen) to exchange state and tasks via a unified MCP-like interface.
 - **Federated Tool Mesh**: Moving from a standalone server to a "Mesh" architecture where multiple MCP Any instances can peer and share resources across network boundaries, governed by global Zero-Trust policies.
 - **Resource-Aware Intelligence**: Integrating cost and latency telemetry into the tool discovery process, allowing LLMs to perform "Economical Reasoning" when selecting tools.
+
+---
+
+## Strategic Evolution: [2026-02-27]
+### Focus: Verifiable Agency & A2A Identity delegation
+**Context**: Today's findings from Gemini CLI v0.30.0 and the A2A protocol evolution highlight a shift from simple tool access to "Identity-Bound Agency." As agents delegate to other agents, the chain of trust must be verifiable and session-aware.
+**Strategic Pivot**:
+- **Identity-First Agency**: MCP Any will implement support for **Agent Attestation Tokens (AAT)**, ensuring that every tool call or agent handoff is cryptographically linked to a verified identity.
+- **Session-Aware Bridging**: Integrating with native session containers (like Gemini's `SessionContext`) to ensure that agent state isn't lost when moving between different model environments and the MCP gateway.
+- **Verifiable Execution Loops**: Moving beyond binary success/failure for tool calls. MCP Any will support "Verification Metadata" that allows agents to autonomously verify the integrity of tool outputs without manual re-checking.

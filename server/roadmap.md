@@ -29,6 +29,11 @@
 *   **[P1] Federated MCP Peering**: Distributed node discovery and tool proxying. (Added: 2026-02-26)
 *   **[P1] Resource Telemetry Middleware**: Inject latency/cost metrics into tool schemas. (Added: 2026-02-26)
 
+#### Upcoming (2026-02-27 Evolution)
+*   **[P0] Agent Attestation Token (AAT) Support**: Cryptographic identity for A2A communication. (Added: 2026-02-27)
+*   **[P1] Verifiable Tool Execution**: Return "Proof of Work" metadata in tool responses. (Added: 2026-02-27)
+*   **[P1] Gemini SessionContext Bridge**: Sync Gemini SDK session state with MCP Any. (Added: 2026-02-27)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **Agent Attestation Token (AAT) Support**: (P0) Cryptographic identity and trust delegation for A2A communication. Ensures that agent-to-agent requests are authenticated and authorized.
+- **Verifiable Tool Execution Middleware**: (P1) Allows tools to return verifiable "Proof of Work" metadata, enabling agents to skip costly verification steps in agentic loops.
+- **Gemini SessionContext Bridge**: (P1) Bidirectional synchronization of Gemini CLI's `SessionContext` with MCP Any's internal state to prevent session drift during tool calls.
+
+### Priority Shifts
+- **A2A Interop Bridge (Pseudo-MCP)**: (P0) Re-affirming P0 status with added requirement for AAT support.
+- **Policy Firewall**: (P0) Now includes enforcement for SDK/Middleware level policies to prevent bypasses identified in the market sync.
+
+### Deprecations / Monitoring
+- **Simple `--allowed-tools` Flags**: Deprecating in favor of the structured Policy Engine (matching Gemini CLI's evolution).
