@@ -502,9 +502,12 @@ jobs:
       - name: Install Build Tools
         run: |
           if command -v apt-get >/dev/null; then
-            apt-get update && apt-get install -y make xz-utils
+            apt-get update && apt-get install -y make xz-utils curl
+            # Install Docker CLI
+            curl -fsSL https://get.docker.com -o get-docker.sh
+            sh get-docker.sh
           elif command -v apk >/dev/null; then
-            apk add --no-cache make xz
+            apk add --no-cache make xz docker-cli
           fi
 
       - name: Generate Protobufs
