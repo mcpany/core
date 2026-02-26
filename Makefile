@@ -116,6 +116,7 @@ prepare-proto:
 			echo "Unzipping to $(TOOL_INSTALL_DIR)..."; \
 			unzip -o "$(PROTOC_ZIP)" -d "$(TOOL_INSTALL_DIR)"; \
 			mv "$(TOOL_INSTALL_DIR)/bin/protoc" "$(PROTOC_BIN)"; \
+			chmod +x "$(PROTOC_BIN)"; \
 			rm -f "$(PROTOC_ZIP)"; \
 		fi; \
 	fi

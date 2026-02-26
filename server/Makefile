@@ -167,6 +167,10 @@ prepare:
 			rm -f "$(PROTOC_ZIP)"; \
 		fi; \
 	fi
+	@# Force correct path for protoc in CI
+	@export PATH=$(TOOL_INSTALL_DIR):$$PATH
+	@echo "Using protoc from: $$(which protoc)"
+	@protoc --version
 	@# Install Go protobuf plugins
 	@echo "Installing Go protobuf plugins..."
 	@if test -f "$(PROTOC_GEN_GO)"; then \
