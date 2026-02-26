@@ -115,7 +115,7 @@ func TestSSRFArgumentProtection(t *testing.T) {
 			command:       "curl",
 			input:         "http://127.0.0.1",
 			expectError:   true,
-			errorContains: "unsafe url",
+			errorContains: "unsafe url argument",
 		},
 	}
 
