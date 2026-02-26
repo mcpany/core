@@ -34,7 +34,7 @@ jobs:
       src: ${{ steps.filter.outputs.src }}
     steps:
       - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y git
+        run: sudo apt-get update && sudo apt-get install -y make xz-utils git curl
 
       - uses: actions/checkout@v6
         with:
@@ -92,12 +92,7 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Install dependencies
-        run: |
-          SUDO=""
-          if command -v sudo >/dev/null; then
-            SUDO="sudo"
-          fi
-          $SUDO apt-get update && $SUDO apt-get install -y make xz-utils git curl
+        run: sudo apt-get update && sudo apt-get install -y make xz-utils git curl
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -140,17 +135,7 @@ jobs:
             ${{ runner.os }}-lint-cache-
 
       - name: Install dependencies
-        run: |
-          SUDO=""
-          if command -v sudo >/dev/null; then
-            SUDO="sudo"
-          fi
-
-          if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils git curl
-          elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz git curl
-          fi
+        run: sudo apt-get update && sudo apt-get install -y make xz-utils git curl
 
       - name: Prepare environment
         run: make prepare
@@ -181,17 +166,7 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Install dependencies
-        run: |
-          SUDO=""
-          if command -v sudo >/dev/null; then
-            SUDO="sudo"
-          fi
-
-          if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils git curl
-          elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz git curl
-          fi
+        run: sudo apt-get update && sudo apt-get install -y make xz-utils git curl
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -325,17 +300,7 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Install dependencies
-        run: |
-          SUDO=""
-          if command -v sudo >/dev/null; then
-            SUDO="sudo"
-          fi
-
-          if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils git curl
-          elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz git curl
-          fi
+        run: sudo apt-get update && sudo apt-get install -y make xz-utils git curl
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -476,7 +441,7 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: ${{ matrix.runner }}
-    container: public.ecr.aws/docker/library/ubuntu:24.04
+    # container: public.ecr.aws/docker/library/ubuntu:24.04
     strategy:
       fail-fast: false
       matrix:
@@ -488,26 +453,20 @@ jobs:
             slug: arm64
             runner: ubuntu-24.04-arm
     steps:
-      - name: Install dependencies
+      - name: Free Disk Space (Fast)
         run: |
-          echo "Installing build dependencies..."
-          set -x
-          whoami
-          id
-          env
-          SUDO=""
-          if command -v sudo >/dev/null; then
-            SUDO="sudo"
-          fi
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/share/boost
 
-          # Unconditional install for ubuntu container
-          $SUDO apt-get update
-          $SUDO apt-get install -y make git curl xz-utils
-
-          echo "Dependencies installed."
-          make --version || echo "Make not found after install"
+      - name: Prune Docker
+        run: docker system prune -af
 
       - uses: actions/checkout@v6
+
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y make xz-utils git curl
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -523,15 +482,7 @@ jobs:
           cache-dependency-path: server/tests/integration/upstream/package-lock.json
 
       - name: Generate Protobufs
-        run: |
-          # Ensure make is available even if previous step failed/skipped
-          if ! command -v make >/dev/null; then
-            echo "Make not found, installing..."
-            SUDO=""
-            if command -v sudo >/dev/null; then SUDO="sudo"; fi
-            $SUDO apt-get update && $SUDO apt-get install -y make build-essential git curl xz-utils
-          fi
-          make gen
+        run: make gen
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -657,17 +608,7 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Install dependencies
-        run: |
-          SUDO=""
-          if command -v sudo >/dev/null; then
-            SUDO="sudo"
-          fi
-
-          if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils git curl
-          elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz git curl
-          fi
+        run: sudo apt-get update && sudo apt-get install -y make xz-utils git curl
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -798,15 +739,8 @@ jobs:
       - name: Prune Docker
         run: docker system prune -af
 
-      - uses: actions/checkout@v6
-
-      - name: Install dependencies
-        run: |
-          if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
-          elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
-          fi
+      - uses: actions/checkout@v6      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y make xz-utils git curl
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -1033,14 +967,7 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Install dependencies
-        run: |
-          SUDO=""
-          if command -v sudo >/dev/null; then
-            SUDO="sudo"
-          fi
-          if command -v apt-get >/dev/null; then
-             $SUDO apt-get update && $SUDO apt-get install -y make git curl xz-utils
-          fi
+        run: sudo apt-get update && sudo apt-get install -y make xz-utils git curl
 
       - name: Set up Go
         uses: actions/setup-go@v6
