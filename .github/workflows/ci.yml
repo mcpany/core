@@ -98,6 +98,18 @@ jobs:
 
       - uses: actions/checkout@v6
 
+      - name: Install Dependencies
+        run: |
+          SUDO=""
+          if command -v sudo >/dev/null; then
+            SUDO="sudo"
+          fi
+          if command -v apt-get &> /dev/null; then
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential curl unzip
+          elif command -v apk &> /dev/null; then
+             $SUDO apk add --no-cache make xz build-base curl unzip
+          fi
+
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
@@ -494,6 +506,18 @@ jobs:
           sudo rm -rf /opt/ghc
           sudo rm -rf /usr/local/share/boost
       - uses: actions/checkout@v6
+
+      - name: Install Dependencies
+        run: |
+          SUDO=""
+          if command -v sudo >/dev/null; then
+            SUDO="sudo"
+          fi
+          if command -v apt-get &> /dev/null; then
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential curl unzip
+          elif command -v apk &> /dev/null; then
+             $SUDO apk add --no-cache make xz build-base curl unzip
+          fi
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -1014,6 +1038,18 @@ jobs:
         run: docker system prune -af
 
       - uses: actions/checkout@v6
+
+      - name: Install Dependencies
+        run: |
+          SUDO=""
+          if command -v sudo >/dev/null; then
+            SUDO="sudo"
+          fi
+          if command -v apt-get &> /dev/null; then
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential curl unzip
+          elif command -v apk &> /dev/null; then
+             $SUDO apk add --no-cache make xz build-base curl unzip
+          fi
 
       - name: Set up Go
         uses: actions/setup-go@v6
