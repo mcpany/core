@@ -101,7 +101,7 @@ prepare-proto:
 		PROTOC_VERSION_NO_V=$$(echo "$${PROTOC_TAG}" | sed 's/v//'); \
 		PROTOC_DOWNLOAD_URL_NO_V="$(PROTOC_DOWNLOAD_URL_BASE)/$${PROTOC_TAG}/protoc-$${PROTOC_VERSION_NO_V}-linux-$(PROTOC_ARCH).zip"; \
 		echo "Downloading protoc from $${PROTOC_DOWNLOAD_URL_NO_V}..."; \
-		if curl -sSL "$${PROTOC_DOWNLOAD_URL_NO_V}" -o "$(PROTOC_ZIP)"; then \
+		if curl -sSL --retry 5 --retry-connrefused "$${PROTOC_DOWNLOAD_URL_NO_V}" -o "$(PROTOC_ZIP)"; then \
 			echo "Unzipping to $(TOOL_INSTALL_DIR)..."; \
 			unzip -o "$(PROTOC_ZIP)" -d "$(TOOL_INSTALL_DIR)"; \
 			mv "$(TOOL_INSTALL_DIR)/bin/protoc" "$(PROTOC_BIN)"; \
@@ -117,7 +117,7 @@ prepare-proto:
 	@# Download grpc-gateway source for protos
 	@if ! test -d "$(BUILD_DIR)/grpc-gateway"; then \
 		echo "Downloading grpc-gateway protos..."; \
-		curl -sSL -o grpc-gateway.zip https://github.com/grpc-ecosystem/grpc-gateway/archive/refs/tags/$(GRPC_GATEWAY_VERSION).zip; \
+		curl -sSL --retry 5 --retry-connrefused -o grpc-gateway.zip https://github.com/grpc-ecosystem/grpc-gateway/archive/refs/tags/$(GRPC_GATEWAY_VERSION).zip; \
 		unzip -q grpc-gateway.zip -d $(BUILD_DIR); \
 		GRPC_GATEWAY_VER_NO_V=$$(echo "$(GRPC_GATEWAY_VERSION)" | sed 's/v//'); \
 		mv $(BUILD_DIR)/grpc-gateway-$$GRPC_GATEWAY_VER_NO_V $(BUILD_DIR)/grpc-gateway; \
@@ -126,7 +126,7 @@ prepare-proto:
 	@# Download googleapis
 	@if ! test -d "$(BUILD_DIR)/googleapis"; then \
 		echo "Downloading googleapis..."; \
-		curl -sSL -o googleapis.zip https://github.com/googleapis/googleapis/archive/refs/heads/master.zip; \
+		curl -sSL --retry 5 --retry-connrefused -o googleapis.zip https://github.com/googleapis/googleapis/archive/refs/heads/master.zip; \
 		unzip -q googleapis.zip -d $(BUILD_DIR); \
 		mv $(BUILD_DIR)/googleapis-master $(BUILD_DIR)/googleapis; \
 		rm googleapis.zip; \

@@ -101,7 +101,9 @@ jobs:
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
           if ! command -v git &> /dev/null || ! command -v make &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y git make
+            # Retry update to handle transient network issues
+            ($SUDO apt-get update || $SUDO apt-get update) && \
+            $SUDO apt-get install -y git build-essential
           fi
 
       - uses: actions/checkout@v6
@@ -151,7 +153,8 @@ jobs:
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
           if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential
+            ($SUDO apt-get update || $SUDO apt-get update) && \
+            $SUDO apt-get install -y make xz-utils build-essential
           elif command -v apk &> /dev/null; then
              $SUDO apk add --no-cache make xz build-base
           fi
@@ -189,7 +192,8 @@ jobs:
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
           if ! command -v git &> /dev/null || ! command -v make &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y git make
+            ($SUDO apt-get update || $SUDO apt-get update) && \
+            $SUDO apt-get install -y git build-essential
           fi
 
       - uses: actions/checkout@v6
@@ -199,7 +203,8 @@ jobs:
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
           if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential
+            ($SUDO apt-get update || $SUDO apt-get update) && \
+            $SUDO apt-get install -y make xz-utils build-essential
           elif command -v apk &> /dev/null; then
              $SUDO apk add --no-cache make xz build-base
           fi
@@ -344,7 +349,8 @@ jobs:
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
           if ! command -v git &> /dev/null || ! command -v make &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y git make
+            ($SUDO apt-get update || $SUDO apt-get update) && \
+            $SUDO apt-get install -y git build-essential
           fi
 
       - uses: actions/checkout@v6
@@ -354,7 +360,8 @@ jobs:
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
           if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential
+            ($SUDO apt-get update || $SUDO apt-get update) && \
+            $SUDO apt-get install -y make xz-utils build-essential
           elif command -v apk &> /dev/null; then
              $SUDO apk add --no-cache make xz build-base
           fi
@@ -528,7 +535,8 @@ jobs:
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
           if ! command -v git &> /dev/null || ! command -v make &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y git make
+            ($SUDO apt-get update || $SUDO apt-get update) && \
+            $SUDO apt-get install -y git build-essential
           fi
 
       - uses: actions/checkout@v6
@@ -678,7 +686,8 @@ jobs:
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
           if ! command -v git &> /dev/null || ! command -v make &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y git make
+            ($SUDO apt-get update || $SUDO apt-get update) && \
+            $SUDO apt-get install -y git build-essential
           fi
 
       - uses: actions/checkout@v6
@@ -688,7 +697,8 @@ jobs:
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
           if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential
+            ($SUDO apt-get update || $SUDO apt-get update) && \
+            $SUDO apt-get install -y make xz-utils build-essential
           elif command -v apk &> /dev/null; then
              $SUDO apk add --no-cache make xz build-base
           fi
@@ -831,7 +841,8 @@ jobs:
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
           if ! command -v git &> /dev/null || ! command -v make &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y git make
+            ($SUDO apt-get update || $SUDO apt-get update) && \
+            $SUDO apt-get install -y git build-essential
           fi
 
       - uses: actions/checkout@v6
@@ -841,7 +852,8 @@ jobs:
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
           if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential
+            ($SUDO apt-get update || $SUDO apt-get update) && \
+            $SUDO apt-get install -y make xz-utils build-essential
           elif command -v apk &> /dev/null; then
              $SUDO apk add --no-cache make xz build-base
           fi
@@ -952,7 +964,8 @@ jobs:
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
           if ! command -v git &> /dev/null || ! command -v make &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y git make
+            ($SUDO apt-get update || $SUDO apt-get update) && \
+            $SUDO apt-get install -y git build-essential
           fi
 
       - uses: actions/checkout@v6
