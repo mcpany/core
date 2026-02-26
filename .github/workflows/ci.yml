@@ -189,24 +189,43 @@ jobs:
 
       - name: Ensure Build Tools
         run: |
+          set -e
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
-          if ! command -v git &> /dev/null || ! command -v make &> /dev/null || ! command -v curl &> /dev/null || ! command -v unzip &> /dev/null; then
-            ($SUDO apt-get update || $SUDO apt-get update) && \
-            $SUDO apt-get install -y git make curl unzip
+
+          # Detect package manager
+          if command -v apt-get >/dev/null; then
+            export DEBIAN_FRONTEND=noninteractive
+            ($SUDO apt-get update || $SUDO apt-get update)
+            $SUDO apt-get install -y git make curl unzip ca-certificates build-essential
+          elif command -v apk >/dev/null; then
+            $SUDO apk add --no-cache git make curl unzip ca-certificates build-base
+          elif command -v yum >/dev/null; then
+            $SUDO yum install -y git make curl unzip ca-certificates gcc gcc-c++ make
+          elif command -v dnf >/dev/null; then
+            $SUDO dnf install -y git make curl unzip ca-certificates gcc gcc-c++ make
+          else
+             echo "Unknown package manager, trying to continue..."
           fi
 
       - uses: actions/checkout@v6
 
       - name: Install dependencies
         run: |
+          set -e
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
-          if command -v apt-get &> /dev/null; then
-            ($SUDO apt-get update || $SUDO apt-get update) && \
-            $SUDO apt-get install -y make xz-utils build-essential curl unzip
-          elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz build-base curl
+
+          if command -v apt-get >/dev/null; then
+            export DEBIAN_FRONTEND=noninteractive
+            ($SUDO apt-get update || $SUDO apt-get update)
+            $SUDO apt-get install -y make xz-utils build-essential curl unzip ca-certificates
+          elif command -v apk >/dev/null; then
+             $SUDO apk add --no-cache make xz build-base curl unzip ca-certificates
+          elif command -v yum >/dev/null; then
+             $SUDO yum install -y make xz build-essential curl unzip ca-certificates
+          elif command -v dnf >/dev/null; then
+             $SUDO dnf install -y make xz build-essential curl unzip ca-certificates
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -346,24 +365,40 @@ jobs:
 
       - name: Ensure Build Tools
         run: |
+          set -e
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
-          if ! command -v git &> /dev/null || ! command -v make &> /dev/null || ! command -v curl &> /dev/null || ! command -v unzip &> /dev/null; then
-            ($SUDO apt-get update || $SUDO apt-get update) && \
-            $SUDO apt-get install -y git make curl unzip
+
+          if command -v apt-get >/dev/null; then
+            export DEBIAN_FRONTEND=noninteractive
+            ($SUDO apt-get update || $SUDO apt-get update)
+            $SUDO apt-get install -y git make curl unzip ca-certificates build-essential
+          elif command -v apk >/dev/null; then
+            $SUDO apk add --no-cache git make curl unzip ca-certificates build-base
+          elif command -v yum >/dev/null; then
+            $SUDO yum install -y git make curl unzip ca-certificates gcc gcc-c++ make
+          elif command -v dnf >/dev/null; then
+            $SUDO dnf install -y git make curl unzip ca-certificates gcc gcc-c++ make
           fi
 
       - uses: actions/checkout@v6
 
       - name: Install dependencies
         run: |
+          set -e
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
-          if command -v apt-get &> /dev/null; then
-            ($SUDO apt-get update || $SUDO apt-get update) && \
-            $SUDO apt-get install -y make xz-utils build-essential curl unzip
-          elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz build-base curl
+
+          if command -v apt-get >/dev/null; then
+            export DEBIAN_FRONTEND=noninteractive
+            ($SUDO apt-get update || $SUDO apt-get update)
+            $SUDO apt-get install -y make xz-utils build-essential curl unzip ca-certificates
+          elif command -v apk >/dev/null; then
+             $SUDO apk add --no-cache make xz build-base curl unzip ca-certificates
+          elif command -v yum >/dev/null; then
+             $SUDO yum install -y make xz build-essential curl unzip ca-certificates
+          elif command -v dnf >/dev/null; then
+             $SUDO dnf install -y make xz build-essential curl unzip ca-certificates
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -532,11 +567,20 @@ jobs:
 
       - name: Ensure Build Tools
         run: |
+          set -e
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
-          if ! command -v git &> /dev/null || ! command -v make &> /dev/null || ! command -v curl &> /dev/null || ! command -v unzip &> /dev/null; then
-            ($SUDO apt-get update || $SUDO apt-get update) && \
-            $SUDO apt-get install -y git make curl unzip
+
+          if command -v apt-get >/dev/null; then
+            export DEBIAN_FRONTEND=noninteractive
+            ($SUDO apt-get update || $SUDO apt-get update)
+            $SUDO apt-get install -y git make curl unzip ca-certificates build-essential
+          elif command -v apk >/dev/null; then
+            $SUDO apk add --no-cache git make curl unzip ca-certificates build-base
+          elif command -v yum >/dev/null; then
+            $SUDO yum install -y git make curl unzip ca-certificates gcc gcc-c++ make
+          elif command -v dnf >/dev/null; then
+            $SUDO dnf install -y git make curl unzip ca-certificates gcc gcc-c++ make
           fi
 
       - uses: actions/checkout@v6
@@ -683,24 +727,40 @@ jobs:
 
       - name: Ensure Build Tools
         run: |
+          set -e
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
-          if ! command -v git &> /dev/null || ! command -v make &> /dev/null || ! command -v curl &> /dev/null || ! command -v unzip &> /dev/null; then
-            ($SUDO apt-get update || $SUDO apt-get update) && \
-            $SUDO apt-get install -y git make curl unzip
+
+          if command -v apt-get >/dev/null; then
+            export DEBIAN_FRONTEND=noninteractive
+            ($SUDO apt-get update || $SUDO apt-get update)
+            $SUDO apt-get install -y git make curl unzip ca-certificates build-essential
+          elif command -v apk >/dev/null; then
+            $SUDO apk add --no-cache git make curl unzip ca-certificates build-base
+          elif command -v yum >/dev/null; then
+            $SUDO yum install -y git make curl unzip ca-certificates gcc gcc-c++ make
+          elif command -v dnf >/dev/null; then
+            $SUDO dnf install -y git make curl unzip ca-certificates gcc gcc-c++ make
           fi
 
       - uses: actions/checkout@v6
 
       - name: Install dependencies
         run: |
+          set -e
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
-          if command -v apt-get &> /dev/null; then
-            ($SUDO apt-get update || $SUDO apt-get update) && \
-            $SUDO apt-get install -y make xz-utils build-essential curl unzip
-          elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz build-base curl
+
+          if command -v apt-get >/dev/null; then
+            export DEBIAN_FRONTEND=noninteractive
+            ($SUDO apt-get update || $SUDO apt-get update)
+            $SUDO apt-get install -y make xz-utils build-essential curl unzip ca-certificates
+          elif command -v apk >/dev/null; then
+             $SUDO apk add --no-cache make xz build-base curl unzip ca-certificates
+          elif command -v yum >/dev/null; then
+             $SUDO yum install -y make xz build-essential curl unzip ca-certificates
+          elif command -v dnf >/dev/null; then
+             $SUDO dnf install -y make xz build-essential curl unzip ca-certificates
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -838,24 +898,40 @@ jobs:
 
       - name: Ensure Build Tools
         run: |
+          set -e
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
-          if ! command -v git &> /dev/null || ! command -v make &> /dev/null || ! command -v curl &> /dev/null || ! command -v unzip &> /dev/null; then
-            ($SUDO apt-get update || $SUDO apt-get update) && \
-            $SUDO apt-get install -y git make curl unzip
+
+          if command -v apt-get >/dev/null; then
+            export DEBIAN_FRONTEND=noninteractive
+            ($SUDO apt-get update || $SUDO apt-get update)
+            $SUDO apt-get install -y git make curl unzip ca-certificates build-essential
+          elif command -v apk >/dev/null; then
+            $SUDO apk add --no-cache git make curl unzip ca-certificates build-base
+          elif command -v yum >/dev/null; then
+            $SUDO yum install -y git make curl unzip ca-certificates gcc gcc-c++ make
+          elif command -v dnf >/dev/null; then
+            $SUDO dnf install -y git make curl unzip ca-certificates gcc gcc-c++ make
           fi
 
       - uses: actions/checkout@v6
 
       - name: Install dependencies
         run: |
+          set -e
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
-          if command -v apt-get &> /dev/null; then
-            ($SUDO apt-get update || $SUDO apt-get update) && \
-            $SUDO apt-get install -y make xz-utils build-essential curl unzip
-          elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz build-base curl
+
+          if command -v apt-get >/dev/null; then
+            export DEBIAN_FRONTEND=noninteractive
+            ($SUDO apt-get update || $SUDO apt-get update)
+            $SUDO apt-get install -y make xz-utils build-essential curl unzip ca-certificates
+          elif command -v apk >/dev/null; then
+             $SUDO apk add --no-cache make xz build-base curl unzip ca-certificates
+          elif command -v yum >/dev/null; then
+             $SUDO yum install -y make xz build-essential curl unzip ca-certificates
+          elif command -v dnf >/dev/null; then
+             $SUDO dnf install -y make xz build-essential curl unzip ca-certificates
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -961,11 +1037,20 @@ jobs:
     steps:
       - name: Ensure Build Tools
         run: |
+          set -e
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
-          if ! command -v git &> /dev/null || ! command -v make &> /dev/null || ! command -v curl &> /dev/null || ! command -v unzip &> /dev/null; then
-            ($SUDO apt-get update || $SUDO apt-get update) && \
-            $SUDO apt-get install -y git make curl unzip
+
+          if command -v apt-get >/dev/null; then
+            export DEBIAN_FRONTEND=noninteractive
+            ($SUDO apt-get update || $SUDO apt-get update)
+            $SUDO apt-get install -y git make curl unzip ca-certificates build-essential
+          elif command -v apk >/dev/null; then
+            $SUDO apk add --no-cache git make curl unzip ca-certificates build-base
+          elif command -v yum >/dev/null; then
+            $SUDO yum install -y git make curl unzip ca-certificates gcc gcc-c++ make
+          elif command -v dnf >/dev/null; then
+            $SUDO dnf install -y git make curl unzip ca-certificates gcc gcc-c++ make
           fi
 
       - uses: actions/checkout@v6
@@ -1042,10 +1127,20 @@ jobs:
 
       - name: Ensure Build Tools
         run: |
+          set -e
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
-          if ! command -v git &> /dev/null || ! command -v make &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y git make
+
+          if command -v apt-get >/dev/null; then
+            export DEBIAN_FRONTEND=noninteractive
+            ($SUDO apt-get update || $SUDO apt-get update)
+            $SUDO apt-get install -y git make curl unzip ca-certificates build-essential
+          elif command -v apk >/dev/null; then
+            $SUDO apk add --no-cache git make curl unzip ca-certificates build-base
+          elif command -v yum >/dev/null; then
+            $SUDO yum install -y git make curl unzip ca-certificates gcc gcc-c++ make
+          elif command -v dnf >/dev/null; then
+            $SUDO dnf install -y git make curl unzip ca-certificates gcc gcc-c++ make
           fi
 
       - uses: actions/checkout@v6
