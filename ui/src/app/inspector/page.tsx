@@ -6,6 +6,7 @@
 "use client";
 
 import { InspectorTable } from "@/components/inspector/inspector-table";
+import { LiveSignal } from "@/components/inspector/live-signal";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -199,6 +200,8 @@ export default function InspectorPage() {
             </Button>
         </div>
       </div>
+
+      <LiveSignal traces={traces} isConnected={isConnected} />
 
       {/* Filtering Toolbar */}
       <div className="flex flex-col md:flex-row gap-4 items-center bg-muted/20 p-2 rounded-lg border border-muted/50">

@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Clock, ChevronDown, ChevronRight, Activity, Terminal, Code, Cpu, Database, Globe, Play, Download, Copy, Lightbulb, AlertTriangle, Coins, RefreshCcw } from "lucide-react";
+import { Clock, Activity, Terminal, Code, Coins, RefreshCcw, Play, Copy, Download, Lightbulb, AlertTriangle, Cpu, Globe, Database } from "lucide-react";
 import { Trace, Span } from "@/types/trace";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -26,123 +26,18 @@ import { SequenceDiagram } from "@/components/traces/sequence-diagram";
 import { estimateTokens, calculateCost, formatCost } from "@/lib/tokens";
 import { LogStream } from "@/components/logs/log-stream";
 import { ReplayDiffDialog } from "@/components/traces/replay-diff-dialog";
+import { InteractiveWaterfall } from "@/components/traces/interactive-waterfall";
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 
-/**
- * SpanIcon component.
- * @param props - The component props.
- * @param props.type - The type definition.
- * @returns The rendered component.
- */
 function SpanIcon({ type }: { type: Span['type'] }) {
     switch (type) {
-        case 'tool': return <Terminal className="h-3 w-3 text-amber-500" />;
-        case 'service': return <Globe className="h-3 w-3 text-indigo-500" />;
-        case 'resource': return <Database className="h-3 w-3 text-cyan-500" />;
-        case 'core': return <Cpu className="h-3 w-3 text-blue-500" />;
-        default: return <Activity className="h-3 w-3 text-muted-foreground" />;
+        case 'tool': return <Terminal className="h-4 w-4 text-amber-500" />;
+        case 'service': return <Globe className="h-4 w-4 text-indigo-500" />;
+        case 'resource': return <Database className="h-4 w-4 text-cyan-500" />;
+        case 'core': return <Cpu className="h-4 w-4 text-blue-500" />;
+        default: return <Activity className="h-4 w-4 text-muted-foreground" />;
     }
 }
-
-/**
- * WaterfallItem component.
- * @param props - The component props.
- * @param props.span - The span property.
- * @param props.depth - The nesting depth.
- * @param props.traceStart - The traceStart property.
- * @param props.traceDuration - The traceDuration property.
- * @returns The rendered component.
- */
-function WaterfallItem({
-    span,
-    depth = 0,
-    traceStart,
-    traceDuration
-}: {
-    span: Span,
-    depth?: number,
-    traceStart: number,
-    traceDuration: number
-}) {
-    const [expanded, setExpanded] = useState(true);
-
-    const relativeStart = span.startTime - traceStart;
-    const duration = span.endTime - span.startTime;
-
-    // Calculate percentage width and margin for the timeline bar
-    const leftPct = (relativeStart / traceDuration) * 100;
-    const widthPct = Math.max((duration / traceDuration) * 100, 0.5); // Min 0.5% width to be visible
-
-    return (
-        <div className="group">
-            <div className={cn(
-                "flex items-center py-2 px-2 hover:bg-muted/30 rounded text-sm group-hover:bg-muted/50 transition-colors border-b border-border/40",
-            )}>
-                {/* Tree Column */}
-                <div className="flex-1 flex items-center gap-2 min-w-[200px] overflow-hidden" style={{ paddingLeft: `${depth * 16}px` }}>
-                     <button
-                        onClick={(e) => { e.stopPropagation(); setExpanded(!expanded); }}
-                        className={cn("p-0.5 rounded-sm hover:bg-muted", !span.children?.length && "invisible")}
-                    >
-                        {expanded ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
-                    </button>
-                    <SpanIcon type={span.type} />
-                    <span className="font-medium truncate" title={span.name}>{span.name}</span>
-                    {span.status === 'error' && <Badge variant="destructive" className="h-4 px-1 text-[10px]">ERR</Badge>}
-                </div>
-
-                {/* Timeline Column */}
-                <div className="w-[40%] md:w-[50%] h-8 relative flex items-center px-4 border-l border-border/30 bg-black/5 dark:bg-black/20">
-                    <div
-                        className={cn(
-                            "h-5 rounded-sm min-w-[2px] opacity-80 shadow-sm relative group/bar transition-all hover:h-6 hover:-mt-1 hover:z-10",
-                            span.status === 'error' ? "bg-red-500 dark:bg-red-600" :
-                            span.type === 'tool' ? "bg-amber-400 dark:bg-amber-600" :
-                            "bg-blue-400 dark:bg-blue-600"
-                        )}
-                        style={{
-                            marginLeft: `${leftPct}%`,
-                            width: `${widthPct}%`
-                        }}
-                    >
-                         {/* Tooltip on hover */}
-                         <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-popover text-popover-foreground text-[10px] px-2 py-1 rounded shadow-lg border hidden group-hover/bar:block whitespace-nowrap z-50">
-                             {duration}ms
-                         </div>
-                    </div>
-                    <span className="ml-2 text-[10px] text-muted-foreground absolute right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        {duration}ms
-                    </span>
-                </div>
-            </div>
-
-            {/* Details (Input/Output) - Only for leaf nodes or if interesting? Or maybe separate detail pane?
-                Let's put it inline if selected? Or just simple key-values for now.
-            */}
-            {expanded && (
-                <div className="text-xs pl-8">
-                    {/* Children */}
-                    {span.children?.map(child => (
-                         <WaterfallItem
-                            key={child.id}
-                            span={child}
-                            depth={depth + 1}
-                            traceStart={traceStart}
-                            traceDuration={traceDuration}
-                        />
-                    ))}
-
-                    {/* Error Message */}
-                    {span.errorMessage && (
-                         <div className="ml-6 mt-1 mb-2 p-2 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900 rounded text-xs font-mono">
-                            Error: {span.errorMessage}
-                        </div>
-                    )}
-                </div>
-            )}
-        </div>
-    );
-}
-
 
 /**
  * TraceDetail.
@@ -153,6 +48,10 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
     const router = useRouter();
     const { toast } = useToast();
     const [isReplayOpen, setIsReplayOpen] = useState(false);
+    const [selectedSpan, setSelectedSpan] = useState<Span | null>(null);
+
+    // Default to root span if nothing selected
+    const activeSpan = selectedSpan || trace?.rootSpan || null;
 
     if (!trace) {
         return (
@@ -199,20 +98,17 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
 
     return (
         <div className="h-full flex flex-col bg-background">
-            <div className="p-6 border-b flex items-start justify-between bg-muted/10">
+            <div className="p-4 border-b flex items-start justify-between bg-muted/10 shrink-0">
                 <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                        <h2 className="text-2xl font-bold tracking-tight font-mono">{trace.rootSpan.name}</h2>
+                        <h2 className="text-xl font-bold tracking-tight font-mono">{trace.rootSpan.name}</h2>
                         <Badge variant={trace.status === 'success' ? 'default' : 'destructive'}>
                             {trace.status.toUpperCase()}
                         </Badge>
                     </div>
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
                         <div className="flex items-center gap-1"><Clock className="h-3 w-3" /> {trace.totalDuration}ms</div>
-                        <div className="flex items-center gap-1"><Activity className="h-3 w-3" /> {new Date(trace.timestamp).toLocaleString()}</div>
-
-                        <Separator orientation="vertical" className="h-4" />
-
+                        <Separator orientation="vertical" className="h-3" />
                         <div className="flex items-center gap-1" title={`Input: ${rootInputTokens} | Output: ${rootOutputTokens}`}>
                             <span className="font-semibold text-[10px] uppercase tracking-wider text-muted-foreground">Tokens</span>
                             <span className="font-mono">{totalTokens}</span>
@@ -221,10 +117,8 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
                             <Coins className="h-3 w-3 text-amber-500" />
                             <span className="font-mono">{formatCost(estimatedCost)}</span>
                         </div>
-
-                        <Separator orientation="vertical" className="h-4" />
-
-                        <div className="flex items-center gap-1 font-mono text-xs bg-muted px-1 rounded">{trace.id}</div>
+                         <Separator orientation="vertical" className="h-3" />
+                        <div className="flex items-center gap-1 font-mono text-[10px] bg-muted px-1 rounded">{trace.id}</div>
                     </div>
                 </div>
                 <div className="flex gap-2">
@@ -234,118 +128,98 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
                                 variant="default"
                                 size="sm"
                                 onClick={() => setIsReplayOpen(true)}
-                                className="gap-2"
+                                className="gap-2 h-8 text-xs"
                             >
                                 <RefreshCcw className="h-3 w-3" /> Replay & Diff
                             </Button>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleReplay(trace.rootSpan.name, trace.rootSpan.input)}
-                                className="gap-2"
-                            >
-                                <Play className="h-3 w-3" /> Replay in Playground
-                            </Button>
                         </>
                     )}
-                    <Button variant="outline" size="sm" onClick={handleCopyJSON} className="gap-2">
-                        <Copy className="h-3 w-3" /> Copy
-                    </Button>
-                    <Button variant="outline" size="sm" onClick={handleExportJSON} className="gap-2">
-                        <Download className="h-3 w-3" /> Export JSON
+                    <Button variant="outline" size="sm" onClick={handleExportJSON} className="h-8 w-8 p-0">
+                        <Download className="h-4 w-4" />
                     </Button>
                 </div>
             </div>
 
-            <Tabs defaultValue="overview" className="flex-1 flex flex-col overflow-hidden">
-                <div className="px-6 border-b">
-                   <TabsList className="bg-transparent border-b-0 p-0 h-auto">
-                       <TabsTrigger value="overview" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-2">Overview</TabsTrigger>
-                       <TabsTrigger value="logs" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-2">Logs</TabsTrigger>
-                       <TabsTrigger value="payload" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-2">Payload</TabsTrigger>
+            <Tabs defaultValue="waterfall" className="flex-1 flex flex-col overflow-hidden">
+                <div className="px-4 border-b bg-background z-10">
+                   <TabsList className="bg-transparent border-b-0 p-0 h-auto w-full justify-start">
+                       <TabsTrigger value="waterfall" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-2 text-xs">Waterfall & Span Details</TabsTrigger>
+                       <TabsTrigger value="logs" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-2 text-xs">Full Logs</TabsTrigger>
+                       <TabsTrigger value="raw" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-2 text-xs">Raw JSON</TabsTrigger>
                    </TabsList>
                 </div>
-                <TabsContent value="overview" className="flex-1 p-0 overflow-hidden m-0">
-                    <ScrollArea className="h-full p-6">
-                        {diagnostics.length > 0 && (
-                            <Card className="mb-6 border-l-4 border-l-destructive">
-                                <CardHeader className="pb-3">
-                                    <CardTitle className="text-sm font-medium flex items-center gap-2">
-                                        <Lightbulb className="h-4 w-4 text-amber-500" />
-                                        Diagnostics & Suggestions
-                                    </CardTitle>
-                                    <CardDescription>
-                                        Intelligent analysis of the error.
-                                    </CardDescription>
-                                </CardHeader>
-                                <CardContent className="space-y-4">
-                                    {diagnostics.map((diag, i) => (
-                                        <Alert key={i} variant={diag.type === 'error' ? 'destructive' : 'default'}>
-                                            <AlertTriangle className="h-4 w-4" />
-                                            <AlertTitle>{diag.title}</AlertTitle>
-                                            <AlertDescription className="mt-2">
-                                                <p className="font-medium">{diag.message}</p>
-                                                {diag.suggestion && (
-                                                    <p className="mt-1 text-muted-foreground opacity-90">
-                                                        <span className="font-semibold">Suggestion:</span> {diag.suggestion}
-                                                    </p>
-                                                )}
-                                            </AlertDescription>
-                                        </Alert>
-                                    ))}
-                                </CardContent>
-                            </Card>
-                        )}
 
-                        <Card className="mb-6">
-                            <CardHeader className="pb-3">
-                                <CardTitle className="text-sm font-medium">Sequence Diagram</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <SequenceDiagram trace={trace} />
-                            </CardContent>
-                        </Card>
+                <TabsContent value="waterfall" className="flex-1 p-0 overflow-hidden m-0 relative">
+                     <ResizablePanelGroup direction="vertical">
+                        <ResizablePanel defaultSize={50} minSize={25}>
+                            <div className="h-full overflow-hidden flex flex-col">
+                                <InteractiveWaterfall
+                                    trace={trace}
+                                    selectedSpanId={activeSpan?.id || null}
+                                    onSpanSelect={setSelectedSpan}
+                                />
+                            </div>
+                        </ResizablePanel>
 
-                        <Card className="mb-6">
-                             <CardHeader className="pb-3">
-                                <CardTitle className="text-sm font-medium">Execution Waterfall</CardTitle>
-                            </CardHeader>
-                            <CardContent className="pl-2 pr-6">
-                                 <div className="w-full border rounded-md bg-background/50 overflow-hidden">
-                                     {/* Header Row */}
-                                     <div className="flex text-xs font-medium text-muted-foreground border-b p-2 bg-muted/20">
-                                         <div className="flex-1 pl-2">Span Name</div>
-                                         <div className="w-[40%] md:w-[50%] pl-4 border-l">Timeline</div>
+                        <ResizableHandle withHandle />
+
+                        <ResizablePanel defaultSize={50} minSize={25}>
+                             <div className="h-full overflow-y-auto bg-muted/5 border-t">
+                                 {activeSpan ? (
+                                     <div className="p-4 space-y-6">
+                                         <div className="flex items-center justify-between">
+                                             <div className="flex items-center gap-2">
+                                                 <SpanIcon type={activeSpan.type} />
+                                                 <h3 className="text-lg font-semibold">{activeSpan.name}</h3>
+                                             </div>
+                                             <div className="text-xs font-mono text-muted-foreground">
+                                                 {activeSpan.endTime - activeSpan.startTime}ms
+                                             </div>
+                                         </div>
+
+                                         {activeSpan.errorMessage && (
+                                              <Alert variant="destructive">
+                                                <AlertTriangle className="h-4 w-4" />
+                                                <AlertTitle>Error</AlertTitle>
+                                                <AlertDescription className="font-mono text-xs mt-1">
+                                                    {activeSpan.errorMessage}
+                                                </AlertDescription>
+                                            </Alert>
+                                         )}
+
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <Card>
+                                                <CardHeader className="py-2 px-4 border-b bg-muted/20">
+                                                    <CardTitle className="text-xs font-medium flex items-center gap-2"><Code className="h-3 w-3"/> Input</CardTitle>
+                                                </CardHeader>
+                                                <CardContent className="p-0">
+                                                    <div className="max-h-[300px] overflow-auto p-2">
+                                                        <RichResultViewer result={activeSpan.input} />
+                                                    </div>
+                                                </CardContent>
+                                            </Card>
+                                            <Card>
+                                                <CardHeader className="py-2 px-4 border-b bg-muted/20">
+                                                    <CardTitle className="text-xs font-medium flex items-center gap-2"><Terminal className="h-3 w-3"/> Output</CardTitle>
+                                                </CardHeader>
+                                                <CardContent className="p-0">
+                                                    <div className="max-h-[300px] overflow-auto p-2">
+                                                         <RichResultViewer result={activeSpan.output} />
+                                                    </div>
+                                                </CardContent>
+                                            </Card>
+                                        </div>
                                      </div>
-                                     <WaterfallItem
-                                        span={trace.rootSpan}
-                                        traceStart={trace.rootSpan.startTime}
-                                        traceDuration={trace.totalDuration}
-                                    />
-                                 </div>
-                            </CardContent>
-                        </Card>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <Card>
-                                <CardHeader className="pb-3">
-                                    <CardTitle className="text-sm font-medium flex items-center gap-2"><Code className="h-4 w-4"/> Root Input</CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <RichResultViewer result={trace.rootSpan.input} />
-                                </CardContent>
-                            </Card>
-                            <Card>
-                                <CardHeader className="pb-3">
-                                    <CardTitle className="text-sm font-medium flex items-center gap-2"><Terminal className="h-4 w-4"/> Root Output</CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                     <RichResultViewer result={trace.rootSpan.output} />
-                                </CardContent>
-                            </Card>
-                        </div>
-                    </ScrollArea>
+                                 ) : (
+                                     <div className="h-full flex items-center justify-center text-muted-foreground text-sm">
+                                         Select a span to view details
+                                     </div>
+                                 )}
+                             </div>
+                        </ResizablePanel>
+                     </ResizablePanelGroup>
                 </TabsContent>
+
                 <TabsContent value="logs" className="flex-1 p-0 overflow-hidden m-0">
                     <LogStream
                         traceId={trace.id}
@@ -353,22 +227,10 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
                         traceEndTime={trace.rootSpan.endTime}
                     />
                 </TabsContent>
-                <TabsContent value="payload" className="flex-1 p-0 overflow-hidden m-0">
+
+                <TabsContent value="raw" className="flex-1 p-0 overflow-hidden m-0">
                      <ScrollArea className="h-full p-6">
-                        <div className="grid grid-cols-1 gap-6">
-                            <div className="space-y-2">
-                                <h3 className="text-sm font-medium flex items-center gap-2 text-primary">
-                                    <Code className="h-4 w-4" /> Request Payload
-                                </h3>
-                                <JsonView data={trace.rootSpan.input} maxHeight={400} />
-                            </div>
-                            <div className="space-y-2">
-                                <h3 className="text-sm font-medium flex items-center gap-2 text-primary">
-                                    <Terminal className="h-4 w-4" /> Response Payload
-                                </h3>
-                                <JsonView data={trace.rootSpan.output} maxHeight={400} />
-                            </div>
-                        </div>
+                        <JsonView data={trace} />
                      </ScrollArea>
                 </TabsContent>
             </Tabs>

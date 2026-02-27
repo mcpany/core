@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { Trace } from "@/types/trace";
 
 interface UseTracesOptions {
@@ -177,6 +177,10 @@ export function useTraces(options: UseTracesOptions = {}) {
         connect();
     };
 
+    const addTrace = useCallback((trace: Trace) => {
+        bufferRef.current.push(trace);
+    }, []);
+
     return {
         traces,
         loading,
@@ -184,6 +188,7 @@ export function useTraces(options: UseTracesOptions = {}) {
         isPaused,
         setIsPaused,
         clearTraces,
-        refresh
+        refresh,
+        addTrace
     };
 }
