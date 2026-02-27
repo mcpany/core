@@ -35,8 +35,7 @@ jobs:
     steps:
       - name: Install dependencies
         run: |
-          SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
           if ! command -v git &> /dev/null; then
             $SUDO apt-get update && $SUDO apt-get install -y git
           fi
@@ -86,8 +85,7 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
           $SUDO rm -rf /usr/local/lib/android
           $SUDO rm -rf /usr/share/dotnet
           $SUDO rm -rf /opt/ghc
@@ -95,8 +93,6 @@ jobs:
 
       - name: Prune Docker
         run: docker system prune -af
-
-      # Removed redundant Ensure Build Tools (Install dependencies handles it)
 
       - uses: actions/checkout@v6
 
@@ -143,12 +139,11 @@ jobs:
       - name: Install dependencies
         run: |
           set -e
-          SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
 
           if command -v apt-get >/dev/null; then
             export DEBIAN_FRONTEND=noninteractive
-            ($SUDO apt-get update || $SUDO apt-get update)
+            $SUDO apt-get update
             $SUDO apt-get install -y make xz-utils build-essential curl unzip ca-certificates
           elif command -v apk >/dev/null; then
              $SUDO apk add --no-cache make xz build-base curl
@@ -172,8 +167,7 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
           $SUDO rm -rf /usr/local/lib/android
           $SUDO rm -rf /usr/share/dotnet
           $SUDO rm -rf /opt/ghc
@@ -182,19 +176,16 @@ jobs:
       - name: Prune Docker
         run: docker system prune -af
 
-      # Removed redundant Ensure Build Tools
-
       - uses: actions/checkout@v6
 
       - name: Install dependencies
         run: |
           set -e
-          SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
 
           if command -v apt-get >/dev/null; then
             export DEBIAN_FRONTEND=noninteractive
-            ($SUDO apt-get update || $SUDO apt-get update)
+            $SUDO apt-get update
             $SUDO apt-get install -y make xz-utils build-essential curl unzip ca-certificates
           elif command -v apk >/dev/null; then
              $SUDO apk add --no-cache make xz build-base curl unzip ca-certificates
@@ -208,8 +199,7 @@ jobs:
         run: |
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
-          SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
           $SUDO mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json
 
@@ -329,8 +319,7 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
           $SUDO rm -rf /usr/local/lib/android
           $SUDO rm -rf /usr/share/dotnet
           $SUDO rm -rf /opt/ghc
@@ -339,19 +328,16 @@ jobs:
       - name: Prune Docker
         run: docker system prune -af
 
-      # Removed redundant Ensure Build Tools
-
       - uses: actions/checkout@v6
 
       - name: Install dependencies
         run: |
           set -e
-          SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
 
           if command -v apt-get >/dev/null; then
             export DEBIAN_FRONTEND=noninteractive
-            ($SUDO apt-get update || $SUDO apt-get update)
+            $SUDO apt-get update
             $SUDO apt-get install -y make xz-utils build-essential curl unzip ca-certificates
           elif command -v apk >/dev/null; then
              $SUDO apk add --no-cache make xz build-base curl unzip ca-certificates
@@ -365,8 +351,7 @@ jobs:
         run: |
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
-          SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
           $SUDO mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json
 
@@ -518,8 +503,7 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
           $SUDO rm -rf /usr/local/lib/android
           $SUDO rm -rf /usr/share/dotnet
           $SUDO rm -rf /opt/ghc
@@ -528,12 +512,11 @@ jobs:
       - name: Ensure Build Tools
         run: |
           set -e
-          SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
 
           if command -v apt-get >/dev/null; then
             export DEBIAN_FRONTEND=noninteractive
-            ($SUDO apt-get update || $SUDO apt-get update)
+            $SUDO apt-get update
             $SUDO apt-get install -y git make curl unzip ca-certificates build-essential
           elif command -v apk >/dev/null; then
             $SUDO apk add --no-cache git make curl unzip ca-certificates build-base
@@ -675,8 +658,7 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
           $SUDO rm -rf /usr/local/lib/android
           $SUDO rm -rf /usr/share/dotnet
           $SUDO rm -rf /opt/ghc
@@ -685,19 +667,16 @@ jobs:
       - name: Prune Docker
         run: docker system prune -af
 
-      # Removed redundant Ensure Build Tools
-
       - uses: actions/checkout@v6
 
       - name: Install dependencies
         run: |
           set -e
-          SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
 
           if command -v apt-get >/dev/null; then
             export DEBIAN_FRONTEND=noninteractive
-            ($SUDO apt-get update || $SUDO apt-get update)
+            $SUDO apt-get update
             $SUDO apt-get install -y make xz-utils build-essential curl unzip ca-certificates
           elif command -v apk >/dev/null; then
              $SUDO apk add --no-cache make xz build-base curl unzip ca-certificates
@@ -830,8 +809,7 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
           $SUDO rm -rf /usr/local/lib/android
           $SUDO rm -rf /usr/share/dotnet
           $SUDO rm -rf /opt/ghc
@@ -840,19 +818,16 @@ jobs:
       - name: Prune Docker
         run: docker system prune -af
 
-      # Removed redundant Ensure Build Tools
-
       - uses: actions/checkout@v6
 
       - name: Install dependencies
         run: |
           set -e
-          SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
 
           if command -v apt-get >/dev/null; then
             export DEBIAN_FRONTEND=noninteractive
-            ($SUDO apt-get update || $SUDO apt-get update)
+            $SUDO apt-get update
             $SUDO apt-get install -y make xz-utils build-essential curl unzip ca-certificates
           elif command -v apk >/dev/null; then
              $SUDO apk add --no-cache make xz build-base curl unzip ca-certificates
@@ -866,8 +841,7 @@ jobs:
         run: |
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
-          SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
           $SUDO mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json
 
@@ -966,12 +940,11 @@ jobs:
       - name: Ensure Build Tools
         run: |
           set -e
-          SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
 
           if command -v apt-get >/dev/null; then
             export DEBIAN_FRONTEND=noninteractive
-            ($SUDO apt-get update || $SUDO apt-get update)
+            $SUDO apt-get update
             $SUDO apt-get install -y git make curl unzip ca-certificates build-essential
           elif command -v apk >/dev/null; then
             $SUDO apk add --no-cache git make curl unzip ca-certificates build-base
@@ -987,16 +960,17 @@ jobs:
         run: |
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
-          sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
+          $SUDO mkdir -p /etc/docker
+          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json
 
-          if sudo systemctl restart docker 2>/dev/null; then
+          if $SUDO systemctl restart docker 2>/dev/null; then
             echo "Docker restarted via systemctl"
-          elif sudo service docker restart 2>/dev/null; then
+          elif $SUDO service docker restart 2>/dev/null; then
             echo "Docker restarted via service"
           else
             echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
-            sudo pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
+            $SUDO pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
           fi
           docker info # Verify the mirrors are listed
 
@@ -1045,10 +1019,11 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
+          $SUDO rm -rf /usr/local/lib/android
+          $SUDO rm -rf /usr/share/dotnet
+          $SUDO rm -rf /opt/ghc
+          $SUDO rm -rf /usr/local/share/boost
 
       - name: Prune Docker
         run: docker system prune -af
@@ -1056,12 +1031,11 @@ jobs:
       - name: Ensure Build Tools
         run: |
           set -e
-          SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
 
           if command -v apt-get >/dev/null; then
             export DEBIAN_FRONTEND=noninteractive
-            ($SUDO apt-get update || $SUDO apt-get update)
+            $SUDO apt-get update
             $SUDO apt-get install -y git make curl unzip ca-certificates build-essential
           elif command -v apk >/dev/null; then
             $SUDO apk add --no-cache git make curl unzip ca-certificates build-base
@@ -1116,18 +1090,18 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
+          $SUDO rm -rf /usr/local/lib/android
+          $SUDO rm -rf /usr/share/dotnet
+          $SUDO rm -rf /opt/ghc
+          $SUDO rm -rf /usr/local/share/boost
 
       - name: Prune Docker
         run: docker system prune -af
 
       - name: Ensure Git
         run: |
-          SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
           if ! command -v git &> /dev/null; then
             $SUDO apt-get update && $SUDO apt-get install -y git
           fi
@@ -1235,10 +1209,7 @@ jobs:
 
       - name: Install Dependencies (gh, jq)
         run: |
-          SUDO=""
-          if command -v sudo >/dev/null; then
-            SUDO="sudo"
-          fi
+          if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
 
           install_dependencies() {
             if ! command -v curl &> /dev/null || ! command -v jq &> /dev/null; then
