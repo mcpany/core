@@ -65,3 +65,20 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **Agent Identity Attestation (AIA)**: (P0) A cryptographic handshake protocol for agents to prove their identity to MCP Any before receiving tool access.
+- **Inter-Agent Policy Engine (IAPE)**: (P0) An extension to the Policy Firewall that enforces delegation rules (e.g., "Agent A can only delegate 'fs:read' to Agent B if both are in the same 'Security Group'").
+- **Isolated Remote Proxy (Secure Tunnel)**: (P1) Provides Docker-bound named pipes or restricted tunnels for remote agents, preventing direct host filesystem access (Mitigates ASI05).
+- **Goal Hijacking Detection Middleware**: (P1) Heuristic/LLM-based monitoring of tool calls to detect if an agent's current task deviates from its verified high-level intent (Mitigates ASI01).
+
+### Priority Shifts
+- **Policy Firewall**: Re-affirming **P0**. Essential for Gemini CLI parity and OWASP compliance.
+- **A2A Interop Bridge**: Re-affirming **P0**. Must be implemented with the new AIA/IAPE security standards.
+
+### Deprecations / Monitoring
+- **Session-Only Permissions**: Monitoring for deprecation in favor of Agent-Bound Identity (AIA).

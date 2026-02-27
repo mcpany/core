@@ -46,3 +46,10 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+
+### Update: 2026-02-27 - Hardening Against Inter-Agent Exploits
+**Context:** Market sync revealed OWASP ASI07 (Insecure Inter-Agent Comms) and ASI01 (Goal Hijacking) as critical risks for A2A bridges.
+**Architecture Adjustment:**
+*   **AIA Integration**: Requiring `Agent Identity Attestation` (AIA) for all A2A handoffs. No agent can call the bridge without a valid Agent Identity Token (AIT).
+*   **Semantic Validation**: Introducing a "Goal Alignment" check in the `A2ABridgeMiddleware`. It cross-references the task description in the A2A message with the parent agent's original "High-Level Intent" stored in the session context.
+*   **Isolated Handoffs**: Replacing shared memory handoffs with isolated, encrypted message queues to prevent "Memory & Context Poisoning" (ASI06).

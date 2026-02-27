@@ -47,3 +47,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **A2A Gateway Protocol**: MCP Any will implement a protocol-neutral bridge for A2A communication, allowing disparate agent frameworks (e.g., OpenClaw, AutoGen) to exchange state and tasks via a unified MCP-like interface.
 - **Federated Tool Mesh**: Moving from a standalone server to a "Mesh" architecture where multiple MCP Any instances can peer and share resources across network boundaries, governed by global Zero-Trust policies.
 - **Resource-Aware Intelligence**: Integrating cost and latency telemetry into the tool discovery process, allowing LLMs to perform "Economical Reasoning" when selecting tools.
+
+---
+
+## Strategic Evolution: [2026-02-27]
+### Focus: Policy-Driven Agency & Verified Identity
+**Context**: Gemini CLI's pivot to a mandatory Policy Engine and the OWASP Agentic Top 10 release (ASI07: Insecure Inter-Agent Comms) confirm that "Security by Obscurity" is dead. Agents are now enterprise insiders, and their identities must be attested and their actions governed by expressive policies.
+**Strategic Pivot**:
+- **Agent Identity Attestation (AIA)**: Every agent or subagent interacting with MCP Any must provide a verifiable cryptographic identity. Tool permissions will be bound to the *Agent ID*, not just the user session.
+- **Inter-Agent Policy Enforcement (IAPE)**: Expanding the Policy Firewall to evaluate not just "Can the user use this tool?" but "Can Agent A delegate this specific tool call to Agent B?".
+- **Host-Isolated Remote Proxying**: Inspired by Claude Code's "Remote Control," MCP Any will evolve its bridging capabilities to support "Secure Named Pipes" and "Isolated Tunnels" that prevent remote agents from accessing the host filesystem unless explicitly permitted by a verified policy.

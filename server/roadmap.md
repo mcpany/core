@@ -29,6 +29,12 @@
 *   **[P1] Federated MCP Peering**: Distributed node discovery and tool proxying. (Added: 2026-02-26)
 *   **[P1] Resource Telemetry Middleware**: Inject latency/cost metrics into tool schemas. (Added: 2026-02-26)
 
+#### Upcoming (2026-02-27 Evolution)
+*   **[P0] Agent Identity Attestation (AIA)**: Cryptographic handshake and AIT issuance for agent identification. (Added: 2026-02-27)
+*   **[P0] Inter-Agent Policy Engine (IAPE)**: Rego-based delegation rules for multi-agent tool access. (Added: 2026-02-27)
+*   **[P1] Isolated Remote Proxy**: Secure tunneling/named pipes for host-isolated remote agent access. (Added: 2026-02-27)
+*   **[P1] Goal Hijacking Detection**: intent-aware monitoring middleware to detect rogue agent behavior. (Added: 2026-02-27)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
