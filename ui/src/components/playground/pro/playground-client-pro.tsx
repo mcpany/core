@@ -210,7 +210,7 @@ export function PlaygroundClientPro() {
       }]);
 
       try {
-          const result = await apiClient.executeTool({
+          const { result } = await apiClient.executeTool({
               name: toolName,
               arguments: toolArgs
           }, isDryRun);

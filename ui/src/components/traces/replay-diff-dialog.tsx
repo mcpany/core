@@ -50,7 +50,7 @@ export function ReplayDiffDialog({ open, onOpenChange, trace }: ReplayDiffDialog
             const toolName = trace.rootSpan.name;
             const args = trace.rootSpan.input || {};
 
-            const result = await apiClient.executeTool({
+            const { result } = await apiClient.executeTool({
                 name: toolName,
                 arguments: args
             });

@@ -945,12 +945,8 @@ export const apiClient = {
             // Extract X-Trace-ID header if available
             const traceId = res.headers.get("X-Trace-ID");
 
-            // Return both result and traceId
-            if (traceId) {
-                return { ...result, traceId };
-            }
-
-            return result;
+            // Return { result, traceId } wrapper to handle non-object results safely
+            return { result, traceId };
         } catch (e) {
             console.warn("DEBUG: fetch failed:", e);
             throw e;

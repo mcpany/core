@@ -58,7 +58,7 @@ export function HttpToolEditor({ tool, call, serviceName, onChange }: HttpToolEd
         try {
             // Construct the fully qualified tool name as registered in the backend
             const toolName = `${serviceName}.${localTool.name}`;
-            const result = await apiClient.executeTool({
+            const { result } = await apiClient.executeTool({
                 name: toolName,
                 arguments: args
             });

@@ -11,7 +11,7 @@ import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 vi.mock('@/lib/client', () => ({
   apiClient: {
     listTools: vi.fn().mockResolvedValue({ tools: [] }),
-    executeTool: vi.fn(),
+    executeTool: vi.fn().mockResolvedValue({ result: {}, traceId: "test-trace" }),
   },
 }));
 

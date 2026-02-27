@@ -147,24 +147,19 @@ export function ToolRunner({ tool, onClose }: ToolRunnerProps) {
       // Calculate Input Tokens
       const inputTokens = estimateTokens(input);
 
-      const res = await apiClient.executeTool({
+      const { result, traceId } = await apiClient.executeTool({
           name: tool.name,
           arguments: args
       }, isDryRun);
 
       // Extract traceId if present
-      if (res && res.traceId) {
-          setTraceId(res.traceId);
-          // Remove traceId from the output shown to user
-          const cleanOutput = { ...res };
-          delete cleanOutput.traceId;
-          setOutput(cleanOutput);
-      } else {
-          setOutput(res);
+      if (traceId) {
+          setTraceId(traceId);
       }
+      setOutput(result);
 
       // Calculate Output Tokens
-      const outputTokens = estimateTokens(res);
+      const outputTokens = estimateTokens(result);
       const totalTokens = inputTokens + outputTokens;
       const cost = calculateCost(totalTokens);
 
