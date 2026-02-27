@@ -19,6 +19,7 @@ import (
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/util"
+	"github.com/mcpany/core/server/pkg/vector"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	xsync "github.com/puzpuzpuz/xsync/v4"
 	"google.golang.org/protobuf/proto"
@@ -218,6 +219,29 @@ type ManagerInterface interface {
 	// Returns:
 	//   - int: The count of registered tools.
 	GetToolCountForService(serviceID string) int
+
+	// SetEmbeddingProvider sets the embedding provider for semantic search.
+	//
+	// Summary: Sets the embedding provider.
+	//
+	// Parameters:
+	//   - provider (vector.EmbeddingProvider): The provider to use.
+	SetEmbeddingProvider(provider vector.EmbeddingProvider)
+
+	// SearchTools performs a semantic search for tools.
+	//
+	// Summary: Searches for tools semantically.
+	//
+	// Parameters:
+	//   - ctx (context.Context): The context for the search.
+	//   - query (string): The search query.
+	//   - limit (int): The maximum number of results to return.
+	//
+	// Returns:
+	//   - []Tool: A list of matching tools.
+	//   - []float32: A list of similarity scores corresponding to the tools.
+	//   - error: An error if search fails.
+	SearchTools(ctx context.Context, query string, limit int) ([]Tool, []float32, error)
 }
 
 // ExecutionMiddleware defines the interface for middleware that intercepts tool execution.
@@ -266,6 +290,10 @@ type Manager struct {
 	enabledProfiles      []string
 	profileDefs          map[string]*configv1.ProfileDefinition
 	allowedServicesCache map[string]map[string]bool
+
+	// Semantic Search
+	embeddingProvider vector.EmbeddingProvider
+	toolIndex         vector.VectorStore
 }
 
 // NewManager creates and initializes a new Tool Manager.
@@ -290,7 +318,15 @@ func NewManager(bus *bus.Provider) *Manager {
 		serviceToolNames:     make(map[string]map[string]struct{}),
 		profileDefs:          make(map[string]*configv1.ProfileDefinition),
 		allowedServicesCache: make(map[string]map[string]bool),
+		toolIndex:            vector.NewSimpleVectorStore(), // Default in-memory store
 	}
+}
+
+// SetEmbeddingProvider sets the embedding provider for the manager.
+func (tm *Manager) SetEmbeddingProvider(provider vector.EmbeddingProvider) {
+	tm.mu.Lock()
+	defer tm.mu.Unlock()
+	tm.embeddingProvider = provider
 }
 
 // SetProfiles sets the enabled profiles and their definitions for filtering.
@@ -958,6 +994,25 @@ func (tm *Manager) AddTool(tool Tool) error {
 	}
 	tm.serviceToolNames[serviceID][nameKey] = struct{}{}
 
+	// Index for semantic search
+	if tm.embeddingProvider != nil {
+		// Index name + description
+		text := fmt.Sprintf("%s: %s", nameKey, tool.Tool().GetDescription())
+		// Run indexing in background to not block startup
+		go func() {
+			ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+			defer cancel()
+			embedding, err := tm.embeddingProvider.Embed(ctx, text)
+			if err != nil {
+				log.Warn("Failed to embed tool for search", "tool", nameKey, "error", err)
+				return
+			}
+			if err := tm.toolIndex.Add(ctx, "tools", embedding, toolID, 24*time.Hour); err != nil {
+				log.Warn("Failed to add tool to index", "tool", nameKey, "error", err)
+			}
+		}()
+	}
+
 	tm.toolsMutex.Lock()
 	tm.cachedTools = nil
 	tm.cachedMCPTools = nil
@@ -1190,6 +1245,41 @@ func (tm *Manager) ListMCPTools() []*mcp.Tool {
 
 	tm.cachedMCPTools = mcpTools
 	return mcpTools
+}
+
+// SearchTools performs a semantic search for tools.
+func (tm *Manager) SearchTools(ctx context.Context, query string, limit int) ([]Tool, []float32, error) {
+	if tm.embeddingProvider == nil {
+		return nil, nil, fmt.Errorf("semantic search not enabled (no embedding provider)")
+	}
+
+	embedding, err := tm.embeddingProvider.Embed(ctx, query)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	resultIDs, scores, err := tm.toolIndex.SearchTopK(ctx, "tools", embedding, limit)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var results []Tool
+	var finalScores []float32
+
+	for i, resultID := range resultIDs {
+		toolID, ok := resultID.(string)
+		if !ok {
+			continue
+		}
+
+		tool, ok := tm.GetTool(toolID)
+		if ok {
+			results = append(results, tool)
+			finalScores = append(finalScores, scores[i])
+		}
+	}
+
+	return results, finalScores, nil
 }
 
 // ClearToolsForService removes all tools associated with a given service ID.

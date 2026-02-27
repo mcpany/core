@@ -1,11 +1,12 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-package middleware
+package vector
 
 import (
 	"context"
 	"math"
+	"sort"
 	"sync"
 	"time"
 )
@@ -122,6 +123,52 @@ func (s *SimpleVectorStore) Search(_ context.Context, key string, query []float3
 	}
 
 	return bestResult, bestScore, true
+}
+
+// SearchTopK searches for the top k most similar entries.
+func (s *SimpleVectorStore) SearchTopK(_ context.Context, key string, query []float32, k int) ([]any, []float32, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	entries, ok := s.items[key]
+	if !ok {
+		return []any{}, []float32{}, nil
+	}
+
+	now := time.Now()
+	normalizedQuery, _ := normalize(query)
+
+	type match struct {
+		result any
+		score  float32
+	}
+	var matches []match
+
+	for _, entry := range entries {
+		if now.After(entry.ExpiresAt) {
+			continue
+		}
+		score := dotProduct(normalizedQuery, entry.Vector)
+		matches = append(matches, match{result: entry.Result, score: score})
+	}
+
+	// Sort descending by score
+	sort.Slice(matches, func(i, j int) bool {
+		return matches[i].score > matches[j].score
+	})
+
+	if len(matches) > k {
+		matches = matches[:k]
+	}
+
+	results := make([]any, len(matches))
+	scores := make([]float32, len(matches))
+	for i, m := range matches {
+		results[i] = m.result
+		scores[i] = m.score
+	}
+
+	return results, scores, nil
 }
 
 // Prune removes expired entries from the vector store for the given key.

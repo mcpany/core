@@ -31,6 +31,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { useToast } from "@/hooks/use-toast";
+import { LazySearchDialog } from "@/components/tools/lazy-search-dialog";
 
 /**
  * ToolsPage component.
@@ -218,6 +219,14 @@ export default function ToolsPage() {
       <div className="flex items-center justify-between">
         <h2 className="text-3xl font-bold tracking-tight">Tools</h2>
         <div className="flex items-center space-x-4">
+            <LazySearchDialog
+                onSelect={(toolName) => {
+                    setSearchQuery(toolName);
+                    // Optionally open inspector directly if needed
+                    const tool = tools.find(t => t.name === toolName);
+                    if (tool) openInspector(tool);
+                }}
+            />
             <SmartToolSearch
                 tools={tools}
                 searchQuery={searchQuery}

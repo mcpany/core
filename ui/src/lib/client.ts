@@ -2461,5 +2461,30 @@ export const apiClient = {
         });
         if (!res.ok) throw new Error('Failed to trigger discovery');
         return {};
+    },
+
+    /**
+     * Searches for tools semantically.
+     *
+     * Summary: Searches tools.
+     *
+     * @param query - The search query.
+     * @param limit - The maximum number of results (default 10).
+     * @returns A promise that resolves to the search results.
+     * @throws {Error} If the search fails.
+     *
+     * Side Effects: Makes a POST request to /api/v1/tools/search.
+     */
+    searchTools: async (query: string, limit: number = 10): Promise<{ tool: ToolDefinition; score: number }[]> => {
+        const res = await fetchWithAuth('/api/v1/tools/search', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query, limit })
+        });
+        if (!res.ok) {
+            const txt = await res.text();
+            throw new Error(`Failed to search tools: ${txt}`);
+        }
+        return res.json();
     }
 };

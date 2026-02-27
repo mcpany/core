@@ -86,6 +86,7 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux.HandleFunc("/debug/auth-test", a.handleAuthTest())
 
 	mux.HandleFunc("/tools", a.handleTools())
+	mux.HandleFunc("/tools/search", a.handleToolSearch())
 	mux.HandleFunc("/execute", a.handleExecute())
 
 	mux.HandleFunc("/prompts", a.handlePrompts())
@@ -750,6 +751,51 @@ func (a *Application) handleTools() http.HandlerFunc {
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
+	}
+}
+
+func (a *Application) handleToolSearch() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		var req struct {
+			Query string `json:"query"`
+			Limit int    `json:"limit"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		if req.Limit <= 0 {
+			req.Limit = 10
+		}
+
+		tools, scores, err := a.ToolManager.SearchTools(r.Context(), req.Query, req.Limit)
+		if err != nil {
+			logging.GetLogger().Error("Tool search failed", "error", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		type SearchResult struct {
+			Tool  *mcp.Tool `json:"tool"`
+			Score float32   `json:"score"`
+		}
+
+		var results []SearchResult
+		for i, t := range tools {
+			results = append(results, SearchResult{
+				Tool:  t.MCPTool(),
+				Score: scores[i],
+			})
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(results)
 	}
 }
 

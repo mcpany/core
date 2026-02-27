@@ -21,12 +21,13 @@ import (
 	"github.com/mcpany/core/server/pkg/metrics"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/util"
+	"github.com/mcpany/core/server/pkg/vector"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	go_cache "github.com/patrickmn/go-cache"
 )
 
 // ProviderFactory is a function that creates an EmbeddingProvider.
-type ProviderFactory func(config *configv1.SemanticCacheConfig, apiKey string) (EmbeddingProvider, error)
+type ProviderFactory func(config *configv1.SemanticCacheConfig, apiKey string) (vector.EmbeddingProvider, error)
 
 // CachingMiddleware is a tool execution middleware that provides caching
 // functionality.
@@ -63,7 +64,7 @@ func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware 
 				return fnv.New128a()
 			},
 		},
-		providerFactory: func(conf *configv1.SemanticCacheConfig, apiKey string) (EmbeddingProvider, error) {
+		providerFactory: func(conf *configv1.SemanticCacheConfig, apiKey string) (vector.EmbeddingProvider, error) {
 			// Check OneOf provider_config first
 			if conf.GetOpenai() != nil {
 				openaiConf := conf.GetOpenai()
