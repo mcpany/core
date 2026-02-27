@@ -147,7 +147,7 @@ jobs:
         run: make lint
 
   unit-test:
-    runs-on: ubuntu-latest
+    runs-on: oci-runner
     # container: public.ecr.aws/docker/library/ubuntu:24.04
     timeout-minutes: 60
     needs: [changes]
@@ -159,40 +159,61 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          # Only run if sudo exists (oci-runner might not have it)
+          if command -v sudo >/dev/null; then
+             sudo rm -rf /usr/local/lib/android
+             sudo rm -rf /usr/share/dotnet
+             sudo rm -rf /opt/ghc
+             sudo rm -rf /usr/local/share/boost
+          fi
 
       - name: Prune Docker
-        run: docker system prune -af
+        run: docker system prune -af || true
 
       - uses: actions/checkout@v6
 
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+             if command -v sudo >/dev/null; then
+                sudo apt-get update && sudo apt-get install -y make git curl unzip xz-utils
+             else
+                apt-get update && apt-get install -y make git curl unzip xz-utils
+             fi
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             if command -v sudo >/dev/null; then
+                sudo apk add --no-cache make git curl unzip xz
+             else
+                apk add --no-cache make git curl unzip xz
+             fi
+          elif command -v yum &> /dev/null; then
+             if command -v sudo >/dev/null; then
+                sudo yum install -y make git curl unzip xz
+             else
+                yum install -y make git curl unzip xz
+             fi
+          else
+             echo "No package manager found. Assuming tools are present or build will fail."
           fi
 
       - name: Configure Docker Registry Mirrors
         run: |
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
-          sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
-
-          if sudo systemctl restart docker 2>/dev/null; then
-            echo "Docker restarted via systemctl"
-          elif sudo service docker restart 2>/dev/null; then
-            echo "Docker restarted via service"
+          if command -v sudo >/dev/null; then
+             sudo mkdir -p /etc/docker
+             echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+             if sudo systemctl restart docker 2>/dev/null; then
+                echo "Docker restarted via systemctl"
+             elif sudo service docker restart 2>/dev/null; then
+                echo "Docker restarted via service"
+             else
+                echo "Could not restart docker. Mirrors might not be applied."
+             fi
           else
-            echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
-            sudo pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
+             echo "No sudo, skipping docker daemon config."
           fi
-          docker info # Verify the mirrors are listed
+          docker info || true
 
       - name: Set up Go
         uses: actions/setup-go@v6
