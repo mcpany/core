@@ -172,7 +172,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: build/env/bin
-          key: ${{ runner.os }}-build-env-bin-${{ hashFiles('Makefile', 'server/Makefile') }}
+          key: ${{ runner.os }}-build-env-bin-v2-${{ hashFiles('Makefile', 'server/Makefile') }}
           restore-keys: |
             ${{ runner.os }}-build-env-bin-
 
@@ -181,7 +181,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: build/.cache
-          key: ${{ runner.os }}-lint-cache-${{ hashFiles('server/go.sum', 'server/.pre-commit-config.yaml') }}
+          key: ${{ runner.os }}-lint-cache-v2-${{ hashFiles('server/go.sum', 'server/.pre-commit-config.yaml') }}
           restore-keys: |
             ${{ runner.os }}-lint-cache-
 
@@ -371,7 +371,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: build/buildx-cache
-          key: ${{ runner.os }}-buildx-${{ steps.get-date.outputs.week }}-${{ hashFiles('tests/integration/examples/Dockerfile.timeserver', 'tests/integration/examples/timeserver_patch/**') }}
+          key: ${{ runner.os }}-buildx-v2-${{ steps.get-date.outputs.week }}-${{ hashFiles('tests/integration/examples/Dockerfile.timeserver', 'tests/integration/examples/timeserver_patch/**') }}
           restore-keys: |
             ${{ runner.os }}-buildx-${{ steps.get-date.outputs.week }}-${{ hashFiles('tests/integration/examples/Dockerfile.timeserver', 'tests/integration/examples/timeserver_patch/**') }}-
             ${{ runner.os }}-buildx-${{ steps.get-date.outputs.week }}-
@@ -379,13 +379,13 @@ jobs:
       - name: Cache Docker images
         uses: ScribeMD/docker-cache@0.5.0
         with:
-          key: docker-images-${{ runner.os }}-${{ steps.get-date.outputs.week }}
+          key: docker-images-v2-${{ runner.os }}-${{ steps.get-date.outputs.week }}
 
       - name: Cache Tools
         uses: actions/cache@v4
         with:
           path: build/env/bin
-          key: ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}
+          key: ${{ runner.os }}-build-env-bin-v2-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}
           restore-keys: |
             ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
             ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-
@@ -547,7 +547,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: build/env/bin
-          key: ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}
+          key: ${{ runner.os }}-build-env-bin-v2-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}
           restore-keys: |
             ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
             ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-
@@ -582,6 +582,8 @@ jobs:
           for f in *.tar; do
             docker load -i "$f"
           done
+          echo "Loaded images:"
+          docker images
 
       - name: Prepare environment
         run: make prepare
@@ -1000,12 +1002,14 @@ jobs:
           for f in *.tar; do
             docker load -i "$f"
           done
+          echo "Loaded images:"
+          docker images
 
       - name: Cache Tools
         uses: actions/cache@v4
         with:
           path: build/env/bin
-          key: ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}
+          key: ${{ runner.os }}-build-env-bin-v2-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}
           restore-keys: |
             ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
             ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-
@@ -1153,7 +1157,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: build/env/bin
-          key: ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}
+          key: ${{ runner.os }}-build-env-bin-v2-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}
           restore-keys: |
             ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
             ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-
@@ -1373,6 +1377,8 @@ jobs:
           for f in *.tar; do
             docker load -i "$f"
           done
+          echo "Loaded images:"
+          docker images
 
       - name: Test UI
         run: |

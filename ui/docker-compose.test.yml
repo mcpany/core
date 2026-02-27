@@ -4,6 +4,7 @@
 services:
   server:
     image: ${SERVER_IMAGE}
+    pull_policy: never
 
     command:
       [
@@ -32,6 +33,7 @@ services:
 
   ui-tests:
     image: mcpany-ui-e2e:latest
+    pull_policy: never
     ipc: host
     user: "${TEST_UID}:${TEST_GID}"
     environment:
@@ -68,6 +70,7 @@ services:
 
   ui-http-echo-server:
     image: mcpany/http-echo-server:latest
+    pull_policy: never
     ports:
       - "5678:5678"
     command:
