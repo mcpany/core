@@ -134,12 +134,17 @@ jobs:
       - name: Install dependencies
         run: |
           set -x
+          cat /etc/os-release || true
           if command -v apt-get &> /dev/null; then
             # Retry update if it fails, and ignore errors to proceed to install
             (sudo apt-get update || echo "apt-get update failed, continuing...")
-            sudo DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils build-essential
+            sudo DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils build-essential gcc g++
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz build-base
+          elif command -v yum &> /dev/null; then
+             sudo yum install -y make xz gcc gcc-c++
+          elif command -v dnf &> /dev/null; then
+             sudo dnf install -y make xz gcc gcc-c++
           fi
           # Verify gcc installation
           if command -v gcc &> /dev/null; then
@@ -180,11 +185,16 @@ jobs:
       - name: Install dependencies
         run: |
           set -x
+          cat /etc/os-release || true
           if command -v apt-get &> /dev/null; then
             (sudo apt-get update || echo "apt-get update failed, continuing...")
-            sudo DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils build-essential
+            sudo DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils build-essential gcc g++
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz build-base
+          elif command -v yum &> /dev/null; then
+             sudo yum install -y make xz gcc gcc-c++
+          elif command -v dnf &> /dev/null; then
+             sudo dnf install -y make xz gcc gcc-c++
           fi
           if command -v gcc &> /dev/null; then
              echo "gcc found: $(gcc --version)"
@@ -324,11 +334,16 @@ jobs:
       - name: Install dependencies
         run: |
           set -x
+          cat /etc/os-release || true
           if command -v apt-get &> /dev/null; then
             (sudo apt-get update || echo "apt-get update failed, continuing...")
-            sudo DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils build-essential
+            sudo DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils build-essential gcc g++
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz build-base
+          elif command -v yum &> /dev/null; then
+             sudo yum install -y make xz gcc gcc-c++
+          elif command -v dnf &> /dev/null; then
+             sudo dnf install -y make xz gcc gcc-c++
           fi
           if command -v gcc &> /dev/null; then
              echo "gcc found: $(gcc --version)"
@@ -385,12 +400,6 @@ jobs:
           buildkitd-config-inline: |
             [registry."docker.io"]
               mirrors = ["mirror.gcr.io"]
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
@@ -506,6 +515,12 @@ jobs:
       - name: Generate Protobufs
         run: |
           make gen
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -633,11 +648,16 @@ jobs:
       - name: Install dependencies
         run: |
           set -x
+          cat /etc/os-release || true
           if command -v apt-get &> /dev/null; then
             (sudo apt-get update || echo "apt-get update failed, continuing...")
-            sudo DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils build-essential
+            sudo DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils build-essential gcc g++
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz build-base
+          elif command -v yum &> /dev/null; then
+             sudo yum install -y make xz gcc gcc-c++
+          elif command -v dnf &> /dev/null; then
+             sudo dnf install -y make xz gcc gcc-c++
           fi
           if command -v gcc &> /dev/null; then
              echo "gcc found: $(gcc --version)"
