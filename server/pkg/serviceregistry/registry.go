@@ -217,17 +217,25 @@ func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *co
 		// Safety Check: Duplicate Tool Detection
 		// Although we enforce namespacing, we warn if multiple services expose the same tool name
 		// to avoid user confusion or potential shadowing if namespacing is bypassed or ambiguous.
+
+		// ⚡ BOLT: Optimized duplicate tool detection from O(N*M) to O(N+M) using a map.
+		// Randomized Selection from Top 5 High-Impact Targets
 		existingTools := r.toolManager.ListTools()
+		existingToolsMap := make(map[string]string, len(existingTools))
+		for _, et := range existingTools {
+			existingToolsMap[et.Tool().GetName()] = et.Tool().GetServiceId()
+		}
+
 		for _, dt := range discoveredTools {
-			for _, et := range existingTools {
+			if existingServiceID, exists := existingToolsMap[dt.GetName()]; exists {
 				// Check if names match and they are from DIFFERENT services
-				// et.Tool().GetServiceId() might be empty for internal tools, or the service ID we just generated.
+				// existingServiceID might be empty for internal tools, or the service ID we just generated.
 				// We care if it's NOT the current serviceID.
-				if dt.GetName() == et.Tool().GetName() && et.Tool().GetServiceId() != serviceID {
+				if existingServiceID != serviceID {
 					logging.GetLogger().Warn("Duplicate tool name detected across services",
 						"tool", dt.GetName(),
 						"service_new", serviceConfig.GetName(),
-						"service_existing", et.Tool().GetServiceId(),
+						"service_existing", existingServiceID,
 						"warning", "Potential confusion or shadowing")
 				}
 			}
