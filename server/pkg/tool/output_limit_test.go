@@ -71,9 +71,22 @@ func TestLocalCommandTool_Execute_LargeOutput(t *testing.T) {
 		InputSchema: inputSchema,
 	}.Build()
 
+	// Pass necessary environment variables for go run
+	envVars := map[string]string{
+		"PATH": os.Getenv("PATH"),
+		"HOME": os.Getenv("HOME"),
+	}
+	// Pass GOCACHE if set, otherwise go run might fail in restricted env
+	if cache := os.Getenv("GOCACHE"); cache != "" {
+		envVars["GOCACHE"] = cache
+	} else {
+		envVars["GOCACHE"] = filepath.Join(t.TempDir(), "gocache")
+	}
+
 	service := configv1.CommandLineUpstreamService_builder{
 		Command: proto.String("go"),
 		Local:   proto.Bool(true),
+		Env:     envVars,
 	}.Build()
 
 	callDef := configv1.CommandLineCallDefinition_builder{
@@ -124,9 +137,21 @@ func TestLocalCommandTool_Execute_LargeOutput_Truncated(t *testing.T) {
 		InputSchema: inputSchema,
 	}.Build()
 
+	// Pass necessary environment variables for go run
+	envVars := map[string]string{
+		"PATH": os.Getenv("PATH"),
+		"HOME": os.Getenv("HOME"),
+	}
+	if cache := os.Getenv("GOCACHE"); cache != "" {
+		envVars["GOCACHE"] = cache
+	} else {
+		envVars["GOCACHE"] = filepath.Join(t.TempDir(), "gocache")
+	}
+
 	service := configv1.CommandLineUpstreamService_builder{
 		Command: proto.String("go"),
 		Local:   proto.Bool(true),
+		Env:     envVars,
 	}.Build()
 
 	callDef := configv1.CommandLineCallDefinition_builder{
