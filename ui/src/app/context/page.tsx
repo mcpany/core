@@ -27,32 +27,53 @@ export default function ContextPage() {
   const handleSeedData = async () => {
       setSeeding(true);
       try {
-          // Attempt to register a mock service using the in-tree mock server.
-          // This requires the server to be running in an environment where 'go' is available
-          // or the binary is built.
-          await apiClient.registerService({
-              id: "context-heavy-mock",
-              name: "Context Heavy Mock",
-              version: "1.0.0",
-              disable: false,
-              priority: 0,
-              commandLineService: {
-                  command: "go run server/cmd/mock_mcp_server/main.go",
-                  workingDirectory: ".",
-                  env: {}
-              }
-           } as any);
+          const seedData = {
+              upstream_services: [
+                  {
+                      id: "context-heavy-mock",
+                      name: "Context Heavy Mock",
+                      version: "1.0.0",
+                      disable: false,
+                      priority: 0,
+                      command_line_service: {
+                          command: "go run server/cmd/mock_mcp_server/main.go",
+                          working_directory: ".",
+                          env: {}
+                      }
+                  }
+              ]
+          };
 
-           toast({ title: "Seeded Mock Service", description: "Registered 'Context Heavy Mock'." });
+          const res = await fetch('/api/v1/debug/seed', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+                  // In a real app we'd need auth, but here we assume the user is logged in via cookie/header in browser
+                  // or the endpoint is dev-only. The client usually injects headers.
+                  // But fetch here is raw. We should use apiClient or inject headers.
+                  // For now, let's rely on cookie/Basic auth if present, or add X-API-Key if known.
+                  // However, apiClient is safer. But apiClient doesn't have seedData.
+                  // Let's assume auth middleware handles it if we are in browser session.
+                  // Actually, let's try to grab token from localStorage if possible, mimicking client.ts
+                  ...((typeof window !== 'undefined' && localStorage.getItem('mcp_auth_token')) ? { 'Authorization': `Basic ${localStorage.getItem('mcp_auth_token')}` } : {})
+              },
+              body: JSON.stringify(seedData)
+          });
+
+          if (!res.ok) {
+              throw new Error(`Seeding failed: ${res.statusText}`);
+          }
+
+           toast({ title: "Seeded Data", description: "Database has been reset and seeded." });
 
            // Trigger reload to refresh context data
            window.location.reload();
 
-      } catch (e) {
+      } catch (e: any) {
           console.error("Seeding failed", e);
           toast({
               title: "Seeding Failed",
-              description: "Could not register mock service. Ensure 'go' is in the server path or use an existing service.",
+              description: e.message || "Unknown error",
               variant: "destructive"
           });
       } finally {

@@ -44,6 +44,8 @@ func (w *muWriter) Write(p []byte) (int, error) {
 	return w.w.Write(p)
 }
 
+// MockDockerClient moved to mock_docker_client_test.go
+
 func canConnectToDocker(t *testing.T) bool {
 	if os.Getenv("SKIP_DOCKER_TESTS") == "true" {
 		return false
@@ -232,17 +234,56 @@ func TestLocalExecutor(t *testing.T) {
 }
 
 func TestDockerExecutor(t *testing.T) {
-	if !canConnectToDocker(t) {
-		t.Skip("Cannot connect to Docker daemon, skipping Docker tests")
-	}
+	// If no real Docker, use a mock client factory for the first test
+	useMock := !canConnectToDocker(t)
+
 	t.Run("WithoutVolumeMount", func(t *testing.T) {
 		containerEnv := &configv1.ContainerEnvironment{}
 		containerEnv.SetImage("alpine:latest")
-		executor := NewExecutor(containerEnv)
+
+		var executor Executor
+		if useMock {
+			dExec := newDockerExecutor(containerEnv).(*dockerExecutor)
+			// Inject mock client factory
+			dExec.clientFactory = func() (dockerClient, error) {
+				return &mockDockerClient{
+					ContainerCreateFunc: func(ctx context.Context, config *container.Config, hostConfig *container.HostConfig, networkingConfig *network.NetworkingConfig, platform *v1.Platform, containerName string) (container.CreateResponse, error) {
+						return container.CreateResponse{ID: "mock-id"}, nil
+					},
+					ContainerStartFunc: func(ctx context.Context, containerID string, options container.StartOptions) error {
+						return nil
+					},
+					ContainerLogsFunc: func(ctx context.Context, container string, options container.LogsOptions) (io.ReadCloser, error) {
+						var buf bytes.Buffer
+						// Stdout header: 1 (stdout), 0, 0, 0, size (big endian uint32)
+						buf.Write([]byte{1, 0, 0, 0})
+						binary.Write(&buf, binary.BigEndian, uint32(6))
+						buf.WriteString("hello\n")
+						return io.NopCloser(&buf), nil
+					},
+					ContainerWaitFunc: func(ctx context.Context, containerID string, condition container.WaitCondition) (<-chan container.WaitResponse, <-chan error) {
+						statusCh := make(chan container.WaitResponse, 1)
+						statusCh <- container.WaitResponse{StatusCode: 0}
+						return statusCh, nil
+					},
+					ContainerRemoveFunc: func(ctx context.Context, containerID string, options container.RemoveOptions) error {
+						return nil
+					},
+					ImagePullFunc: func(ctx context.Context, ref string, options image.PullOptions) (io.ReadCloser, error) {
+						return io.NopCloser(strings.NewReader("")), nil
+					},
+				}, nil
+			}
+			executor = dExec
+		} else {
+			executor = NewExecutor(containerEnv)
+		}
+
 		stdout, stderr, exitCodeChan, err := executor.Execute(context.Background(), "echo", []string{"hello"}, "", nil)
 		require.NoError(t, err)
 
 		var stdoutBytes []byte
+		// Retry loop is mainly for real docker latency
 		for i := 0; i < 5; i++ {
 			stdoutBytes, err = io.ReadAll(stdout)
 			require.NoError(t, err)
@@ -332,7 +373,37 @@ func TestDockerExecutor(t *testing.T) {
 	t.Run("CommandFailsInContainer", func(t *testing.T) {
 		containerEnv := &configv1.ContainerEnvironment{}
 		containerEnv.SetImage("alpine:latest")
-		executor := NewExecutor(containerEnv)
+		var executor Executor
+		if useMock {
+			dExec := newDockerExecutor(containerEnv).(*dockerExecutor)
+			dExec.clientFactory = func() (dockerClient, error) {
+				return &mockDockerClient{
+					ContainerCreateFunc: func(ctx context.Context, config *container.Config, hostConfig *container.HostConfig, networkingConfig *network.NetworkingConfig, platform *v1.Platform, containerName string) (container.CreateResponse, error) {
+						return container.CreateResponse{ID: "mock-id"}, nil
+					},
+					ContainerStartFunc: func(ctx context.Context, containerID string, options container.StartOptions) error {
+						return nil
+					},
+					ContainerLogsFunc: func(ctx context.Context, container string, options container.LogsOptions) (io.ReadCloser, error) {
+						return io.NopCloser(strings.NewReader("")), nil
+					},
+					ContainerWaitFunc: func(ctx context.Context, containerID string, condition container.WaitCondition) (<-chan container.WaitResponse, <-chan error) {
+						statusCh := make(chan container.WaitResponse, 1)
+						statusCh <- container.WaitResponse{StatusCode: 1} // Fail exit code
+						return statusCh, nil
+					},
+					ContainerRemoveFunc: func(ctx context.Context, containerID string, options container.RemoveOptions) error {
+						return nil
+					},
+					ImagePullFunc: func(ctx context.Context, ref string, options image.PullOptions) (io.ReadCloser, error) {
+						return io.NopCloser(strings.NewReader("")), nil
+					},
+				}, nil
+			}
+			executor = dExec
+		} else {
+			executor = NewExecutor(containerEnv)
+		}
 		_, _, exitCodeChan, err := executor.Execute(context.Background(), "sh", []string{"-c", "exit 1"}, "", nil)
 		require.NoError(t, err)
 
@@ -343,7 +414,45 @@ func TestDockerExecutor(t *testing.T) {
 	t.Run("ContextCancellation", func(t *testing.T) {
 		containerEnv := &configv1.ContainerEnvironment{}
 		containerEnv.SetImage("alpine:latest")
-		executor := NewExecutor(containerEnv)
+		var executor Executor
+		if useMock {
+			dExec := newDockerExecutor(containerEnv).(*dockerExecutor)
+			dExec.clientFactory = func() (dockerClient, error) {
+				return &mockDockerClient{
+					ContainerCreateFunc: func(ctx context.Context, config *container.Config, hostConfig *container.HostConfig, networkingConfig *network.NetworkingConfig, platform *v1.Platform, containerName string) (container.CreateResponse, error) {
+						return container.CreateResponse{ID: "mock-id"}, nil
+					},
+					ContainerStartFunc: func(ctx context.Context, containerID string, options container.StartOptions) error {
+						return nil
+					},
+					ContainerLogsFunc: func(ctx context.Context, container string, options container.LogsOptions) (io.ReadCloser, error) {
+						// Block or return immediately, context cancel should handle it
+						return io.NopCloser(strings.NewReader("")), nil
+					},
+					ContainerWaitFunc: func(ctx context.Context, containerID string, condition container.WaitCondition) (<-chan container.WaitResponse, <-chan error) {
+						// Simulate wait blocking until context cancel or timeout
+						statusCh := make(chan container.WaitResponse)
+						errCh := make(chan error, 1)
+						// We need to listen to context done to return error?
+						// In real implementation, wait returns channels that close/send when done.
+						// Mock just needs to return valid channels.
+						// But here we want to test cancellation logic in Executor.
+						// The executor selects on these channels AND context.
+						// So if we return hanging channels, executor should cancel.
+						return statusCh, errCh
+					},
+					ContainerRemoveFunc: func(ctx context.Context, containerID string, options container.RemoveOptions) error {
+						return nil
+					},
+					ImagePullFunc: func(ctx context.Context, ref string, options image.PullOptions) (io.ReadCloser, error) {
+						return io.NopCloser(strings.NewReader("")), nil
+					},
+				}, nil
+			}
+			executor = dExec
+		} else {
+			executor = NewExecutor(containerEnv)
+		}
 		ctx, cancel := context.WithCancel(context.Background())
 		defer cancel()
 
@@ -397,12 +506,51 @@ func TestDockerExecutor(t *testing.T) {
 }
 
 func TestCombinedOutput(t *testing.T) {
-	if !canConnectToDocker(t) {
-		t.Skip("Cannot connect to Docker daemon, skipping Docker tests")
-	}
+	useMock := !canConnectToDocker(t)
 	containerEnv := &configv1.ContainerEnvironment{}
 	containerEnv.SetImage("alpine:latest")
-	executor := NewExecutor(containerEnv)
+
+	var executor Executor
+	if useMock {
+		dExec := newDockerExecutor(containerEnv).(*dockerExecutor)
+		dExec.clientFactory = func() (dockerClient, error) {
+			return &mockDockerClient{
+				ContainerCreateFunc: func(ctx context.Context, config *container.Config, hostConfig *container.HostConfig, networkingConfig *network.NetworkingConfig, platform *v1.Platform, containerName string) (container.CreateResponse, error) {
+					return container.CreateResponse{ID: "mock-id"}, nil
+				},
+				ContainerStartFunc: func(ctx context.Context, containerID string, options container.StartOptions) error {
+					return nil
+				},
+				ContainerLogsFunc: func(ctx context.Context, container string, options container.LogsOptions) (io.ReadCloser, error) {
+					var buf bytes.Buffer
+					// Stdout: "hello stdout"
+					buf.Write([]byte{1, 0, 0, 0})
+					binary.Write(&buf, binary.BigEndian, uint32(12))
+					buf.WriteString("hello stdout")
+					// Stderr: "hello stderr"
+					buf.Write([]byte{2, 0, 0, 0})
+					binary.Write(&buf, binary.BigEndian, uint32(12))
+					buf.WriteString("hello stderr")
+					return io.NopCloser(&buf), nil
+				},
+				ContainerWaitFunc: func(ctx context.Context, containerID string, condition container.WaitCondition) (<-chan container.WaitResponse, <-chan error) {
+					statusCh := make(chan container.WaitResponse, 1)
+					statusCh <- container.WaitResponse{StatusCode: 0}
+					return statusCh, nil
+				},
+				ContainerRemoveFunc: func(ctx context.Context, containerID string, options container.RemoveOptions) error {
+					return nil
+				},
+				ImagePullFunc: func(ctx context.Context, ref string, options image.PullOptions) (io.ReadCloser, error) {
+					return io.NopCloser(strings.NewReader("")), nil
+				},
+			}, nil
+		}
+			executor = dExec
+	} else {
+		executor = NewExecutor(containerEnv)
+	}
+
 	stdout, stderr, _, err := executor.Execute(context.Background(), "sh", []string{"-c", "echo 'hello stdout' && echo 'hello stderr' >&2"}, "", nil)
 	require.NoError(t, err)
 
@@ -438,9 +586,7 @@ func TestCombinedOutput(t *testing.T) {
 }
 
 func TestNewDockerExecutorSuccess(t *testing.T) {
-	if !canConnectToDocker(t) {
-		t.Skip("Cannot connect to Docker daemon, skipping Docker tests")
-	}
+	// No need to check connection for just creating the struct
 	containerEnv := &configv1.ContainerEnvironment{}
 	containerEnv.SetImage("alpine:latest")
 	executor := newDockerExecutor(containerEnv)
@@ -553,7 +699,7 @@ func TestLocalExecutorWithStdIO(t *testing.T) {
 		containerEnv.SetImage("alpine:latest")
 		executor := newDockerExecutor(containerEnv).(*dockerExecutor)
 
-		executor.clientFactory = func() (DockerClient, error) {
+		executor.clientFactory = func() (dockerClient, error) {
 			return nil, errors.New("client factory error")
 		}
 
@@ -638,11 +784,11 @@ func TestLocalExecutorWithStdIO(t *testing.T) {
 		containerEnv.SetImage("alpine:latest")
 		executor := newDockerExecutor(containerEnv).(*dockerExecutor)
 
-		mockClient := &MockDockerClient{}
+		mockClient := &mockDockerClient{}
 		mockClient.ContainerCreateFunc = func(ctx context.Context, config *container.Config, hostConfig *container.HostConfig, networkingConfig *network.NetworkingConfig, platform *v1.Platform, containerName string) (container.CreateResponse, error) {
 			return container.CreateResponse{}, errors.New("create error")
 		}
-		executor.clientFactory = func() (DockerClient, error) {
+		executor.clientFactory = func() (dockerClient, error) {
 			return mockClient, nil
 		}
 
@@ -654,14 +800,19 @@ func TestLocalExecutorWithStdIO(t *testing.T) {
 
 func TestDockerExecutorWithStdIO(t *testing.T) {
 	t.Skip("Skipping flaky test: TestDockerExecutorWithStdIO (hangs on stream read)")
-	if !canConnectToDocker(t) {
-		t.Skip("Cannot connect to Docker daemon, skipping Docker tests")
-	}
+	useMock := !canConnectToDocker(t)
 
 	t.Run("Success", func(t *testing.T) {
 		containerEnv := &configv1.ContainerEnvironment{}
 		containerEnv.SetImage("alpine:latest")
-		executor := NewExecutor(containerEnv)
+		var executor Executor
+		if useMock {
+			dExec := newDockerExecutor(containerEnv).(*dockerExecutor)
+			// Mock injection here if we unskip
+			executor = dExec
+		} else {
+			executor = NewExecutor(containerEnv)
+		}
 		stdin, stdout, stderr, exitCodeChan, err := executor.ExecuteWithStdIO(context.Background(), "cat", nil, "", nil)
 		require.NoError(t, err)
 
@@ -764,7 +915,7 @@ func TestDockerExecutor_Mocked(t *testing.T) {
 		containerEnv.SetImage("alpine:latest")
 		executor := newDockerExecutor(containerEnv).(*dockerExecutor)
 
-		mockClient := &MockDockerClient{}
+		mockClient := &mockDockerClient{}
 		mockClient.ContainerLogsFunc = func(ctx context.Context, container string, options container.LogsOptions) (io.ReadCloser, error) {
 			var buf bytes.Buffer
 			// Stdout header: 1 (stdout), 0, 0, 0, size (big endian uint32)
@@ -776,7 +927,7 @@ func TestDockerExecutor_Mocked(t *testing.T) {
 			return io.NopCloser(&buf), nil
 		}
 
-		executor.clientFactory = func() (DockerClient, error) {
+		executor.clientFactory = func() (dockerClient, error) {
 			return mockClient, nil
 		}
 
@@ -800,12 +951,12 @@ func TestDockerExecutor_Mocked(t *testing.T) {
 		containerEnv.SetImage("alpine:latest")
 		executor := newDockerExecutor(containerEnv).(*dockerExecutor)
 
-		mockClient := &MockDockerClient{}
+		mockClient := &mockDockerClient{}
 		mockClient.ContainerCreateFunc = func(ctx context.Context, config *container.Config, hostConfig *container.HostConfig, networkingConfig *network.NetworkingConfig, platform *v1.Platform, containerName string) (container.CreateResponse, error) {
 			return container.CreateResponse{}, errors.New("create error")
 		}
 
-		executor.clientFactory = func() (DockerClient, error) {
+		executor.clientFactory = func() (dockerClient, error) {
 			return mockClient, nil
 		}
 
@@ -819,7 +970,7 @@ func TestDockerExecutor_Mocked(t *testing.T) {
 		containerEnv.SetImage("alpine:latest")
 		executor := newDockerExecutor(containerEnv).(*dockerExecutor)
 
-		mockClient := &MockDockerClient{}
+		mockClient := &mockDockerClient{}
 		mockClient.ContainerAttachFunc = func(ctx context.Context, container string, options container.AttachOptions) (types.HijackedResponse, error) {
 			server, client := net.Pipe()
 
@@ -838,7 +989,7 @@ func TestDockerExecutor_Mocked(t *testing.T) {
 			}, nil
 		}
 
-		executor.clientFactory = func() (DockerClient, error) {
+		executor.clientFactory = func() (dockerClient, error) {
 			return mockClient, nil
 		}
 
@@ -863,7 +1014,7 @@ func TestDockerExecutor_Mocked(t *testing.T) {
 		containerEnv.SetImage("alpine:latest")
 		executor := newDockerExecutor(containerEnv).(*dockerExecutor)
 
-		mockClient := &MockDockerClient{}
+		mockClient := &mockDockerClient{}
 		mockClient.ContainerAttachFunc = func(ctx context.Context, container string, options container.AttachOptions) (types.HijackedResponse, error) {
 			server, client := net.Pipe()
 
@@ -888,7 +1039,7 @@ func TestDockerExecutor_Mocked(t *testing.T) {
 			}, nil
 		}
 
-		executor.clientFactory = func() (DockerClient, error) {
+		executor.clientFactory = func() (dockerClient, error) {
 			return mockClient, nil
 		}
 
@@ -927,14 +1078,14 @@ func TestDockerExecutor_Mocked(t *testing.T) {
 		})
 		executor := newDockerExecutor(containerEnv).(*dockerExecutor)
 
-		mockClient := &MockDockerClient{}
+		mockClient := &mockDockerClient{}
 		var capturedHostConfig *container.HostConfig
 		mockClient.ContainerCreateFunc = func(ctx context.Context, config *container.Config, hostConfig *container.HostConfig, networkingConfig *network.NetworkingConfig, platform *v1.Platform, containerName string) (container.CreateResponse, error) {
 			capturedHostConfig = hostConfig
 			return container.CreateResponse{ID: "test-id"}, nil
 		}
 
-		executor.clientFactory = func() (DockerClient, error) {
+		executor.clientFactory = func() (dockerClient, error) {
 			return mockClient, nil
 		}
 
