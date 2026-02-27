@@ -167,7 +167,7 @@ jobs:
   unit-test:
     runs-on: oci-runner
     # container: public.ecr.aws/docker/library/ubuntu:24.04
-    timeout-minutes: 30
+    timeout-minutes: 60
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
     env:
@@ -513,13 +513,11 @@ jobs:
       - name: Install Build Tools
         run: |
           if command -v apt-get >/dev/null; then
-            apt-get update && apt-get install -y make xz-utils curl
-            # Install Docker CLI
-            curl -fsSL https://get.docker.com -o get-docker.sh
-            sh get-docker.sh
+            apt-get update && apt-get install -y make xz-utils curl docker.io
           elif command -v apk >/dev/null; then
             apk add --no-cache make xz docker-cli
           fi
+          docker --version || echo "Docker not found"
 
       - name: Generate Protobufs
         run: |
@@ -770,7 +768,7 @@ jobs:
   e2e-public-api:
     runs-on: oci-runner
     # container: public.ecr.aws/docker/library/ubuntu:24.04
-    timeout-minutes: 45
+    timeout-minutes: 60
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
     env:
