@@ -18,10 +18,80 @@ var jsonSizeVisitedPool = sync.Pool{
 	},
 }
 
+// ⚡ Bolt: Struct field cache to avoid repetitive reflection calls.
+// Randomized Selection from Top 5 High-Impact Targets
+var structFieldCache sync.Map // map[reflect.Type][]cachedField
+
+type cachedField struct {
+	Index       int
+	Name        string
+	OmitEmpty   bool
+	IsUnexported bool
+}
+
+func getCachedFields(typ reflect.Type) []cachedField {
+	if v, ok := structFieldCache.Load(typ); ok {
+		return v.([]cachedField)
+	}
+
+	var fields []cachedField
+	for i := 0; i < typ.NumField(); i++ {
+		field := typ.Field(i)
+		cf := cachedField{
+			Index: i,
+			Name:  field.Name,
+		}
+
+		if field.PkgPath != "" {
+			cf.IsUnexported = true
+		}
+
+		jsonTag := field.Tag.Get("json")
+		if jsonTag == "-" {
+			continue
+		}
+		if jsonTag != "" {
+			parts := strings.Split(jsonTag, ",")
+			if parts[0] != "" {
+				cf.Name = parts[0]
+			}
+			if len(parts) > 1 && parts[1] == "omitempty" {
+				cf.OmitEmpty = true
+			}
+		}
+		fields = append(fields, cf)
+	}
+	structFieldCache.Store(typ, fields)
+	return fields
+}
+
 // EstimateJSONSize estimates the size of the JSON representation of a value.
 // It avoids allocating the full JSON string by traversing the structure recursively.
 // It supports standard Go types and respects basic JSON encoding rules.
 func EstimateJSONSize(v interface{}) int {
+	// Optimization: Handle simple types without map allocation
+	switch val := v.(type) {
+	case nil:
+		return 4
+	case string:
+		return len(val) + 2
+	case int:
+		return estimateIntSize(int64(val))
+	case int64:
+		return estimateIntSize(val)
+	case bool:
+		if val {
+			return 4
+		}
+		return 5
+	case []byte:
+		n := len(val)
+		if n == 0 {
+			return 2 // ""
+		}
+		return ((n+2)/3)*4 + 2
+	}
+
 	visited := jsonSizeVisitedPool.Get().(map[uintptr]bool)
 	size := estimateJSONSizeRecursive(v, visited)
 
@@ -62,6 +132,7 @@ func estimateJSONSizeRecursive(v interface{}, visited map[uintptr]bool) int {
 	case uint64:
 		return estimateUintSize(val)
 	case float32:
+		// ⚡ Bolt: Use strconv with scratch buffer to avoid allocations
 		var buf [32]byte
 		b := strconv.AppendFloat(buf[:0], float64(val), 'g', -1, 32)
 		return len(b)
@@ -79,6 +150,8 @@ func estimateJSONSizeRecursive(v interface{}, visited map[uintptr]bool) int {
 		if n == 0 {
 			return 2 // ""
 		}
+		// Base64 estimation: 4 * ceil(n/3)
+		// n+2 / 3 implements ceil(n/3) using integer division
 		return ((n+2)/3)*4 + 2
 	case map[string]interface{}:
 		return estimateMapSize(val, visited)
@@ -86,6 +159,9 @@ func estimateJSONSizeRecursive(v interface{}, visited map[uintptr]bool) int {
 		return estimateSliceSize(val, visited)
 	// Fast paths for common types to avoid reflection
 	case []string:
+		if len(val) == 0 {
+			return 2
+		}
 		size := 1 // [
 		for i, s := range val {
 			if i > 0 {
@@ -96,6 +172,9 @@ func estimateJSONSizeRecursive(v interface{}, visited map[uintptr]bool) int {
 		size++ // ]
 		return size
 	case map[string]string:
+		if len(val) == 0 {
+			return 2
+		}
 		size := 1 // {
 		count := 0
 		for k, s := range val {
@@ -106,6 +185,47 @@ func estimateJSONSizeRecursive(v interface{}, visited map[uintptr]bool) int {
 			count++
 		}
 		size++ // }
+		return size
+	case []int:
+		if len(val) == 0 {
+			return 2
+		}
+		size := 1
+		for i, n := range val {
+			if i > 0 {
+				size++
+			}
+			size += estimateIntSize(int64(n))
+		}
+		size++
+		return size
+	case []int64:
+		if len(val) == 0 {
+			return 2
+		}
+		size := 1
+		for i, n := range val {
+			if i > 0 {
+				size++
+			}
+			size += estimateIntSize(n)
+		}
+		size++
+		return size
+	case []float64:
+		if len(val) == 0 {
+			return 2
+		}
+		size := 1
+		var buf [32]byte
+		for i, n := range val {
+			if i > 0 {
+				size++
+			}
+			b := strconv.AppendFloat(buf[:0], n, 'g', -1, 64)
+			size += len(b)
+		}
+		size++
 		return size
 	default:
 		return estimateReflect(val, visited)
@@ -127,6 +247,9 @@ func estimateIntSize(n int64) int {
 			return 3
 		}
 	}
+	// ⚡ Bolt: Use math to calculate digits instead of conversion
+	// but strictly speaking strconv is optimized.
+	// Let's stick to strconv.AppendInt with stack buffer for generic case.
 	var buf [24]byte
 	return len(strconv.AppendInt(buf[:0], n, 10))
 }
@@ -220,6 +343,7 @@ func estimateReflect(v interface{}, visited map[uintptr]bool) int {
 		return estimateJSONSizeRecursive(val.Elem().Interface(), visited)
 
 	default:
+		// Fallback to fmt.Sprintf only for truly unknown types
 		return len(fmt.Sprintf("%v", v)) + 2
 	}
 }
@@ -229,46 +353,37 @@ func estimateStruct(val reflect.Value, visited map[uintptr]bool) int {
 	size := 1 // {
 	count := 0
 
-	for i := 0; i < val.NumField(); i++ {
-		field := val.Field(i)
-		fieldType := typ.Field(i)
+	// ⚡ Bolt: Use cached fields
+	fields := getCachedFields(typ)
 
-		if fieldType.PkgPath != "" {
-			continue // unexported
-		}
-
-		jsonTag := fieldType.Tag.Get("json")
-		if jsonTag == "-" {
+	for _, fieldMeta := range fields {
+		if fieldMeta.IsUnexported {
 			continue
 		}
-		name := fieldType.Name
-		if jsonTag != "" {
-			parts := strings.Split(jsonTag, ",")
-			if parts[0] != "" {
-				name = parts[0]
-			}
-			if len(parts) > 1 && parts[1] == "omitempty" && isEmptyValue(field) {
-				continue
-			}
+
+		fieldVal := val.Field(fieldMeta.Index)
+
+		if fieldMeta.OmitEmpty && isEmptyValue(fieldVal) {
+			continue
 		}
 
 		if count > 0 {
 			size++ // ,
 		}
 
-		size += len(name) + 2 // "key"
+		size += len(fieldMeta.Name) + 2 // "key"
 		size++ // :
 
-		if field.Kind() == reflect.Ptr || field.Kind() == reflect.Interface {
-			if field.IsNil() {
+		if fieldVal.Kind() == reflect.Ptr || fieldVal.Kind() == reflect.Interface {
+			if fieldVal.IsNil() {
 				size += 4
 			} else {
-				size += estimateJSONSizeRecursive(field.Interface(), visited)
+				size += estimateJSONSizeRecursive(fieldVal.Interface(), visited)
 			}
 		} else {
 			// Optimization: specialized calls for common types to avoid Interface() allocation if possible
-			// But Interface() is cleaner.
-			size += estimateJSONSizeRecursive(field.Interface(), visited)
+			// For now, recursive call handles fast paths for primitives well enough.
+			size += estimateJSONSizeRecursive(fieldVal.Interface(), visited)
 		}
 		count++
 	}

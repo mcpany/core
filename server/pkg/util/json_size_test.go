@@ -36,14 +36,12 @@ func TestEstimateJSONSize(t *testing.T) {
 			b, _ := json.Marshal(tt.v)
 			want := len(b)
 
-			// Allow some margin of error for whitespace or float formatting differences
-			// But for simple types it should be exact or very close
 			diff := got - want
 			if diff < 0 { diff = -diff }
 
 			// We accept up to 10% difference or 5 bytes (for small objects)
 			if diff > 5 && float64(diff)/float64(want) > 0.1 {
-				t.Errorf("EstimateJSONSize() = %v, want %v (json: %s)", got, want, string(b))
+				t.Errorf("EstimateJSONSize(%v) = %v, want %v (json: %s)", tt.v, got, want, string(b))
 			}
 		})
 	}
@@ -69,6 +67,40 @@ func BenchmarkEstimateJSONSize(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		EstimateJSONSize(v)
+	}
+}
+
+func BenchmarkEstimateJSONSizeStruct(b *testing.B) {
+	type Complex struct {
+		Name    string
+		Value   int
+		Active  bool
+		Tags    []string
+		Meta    map[string]interface{}
+		Nested  *Complex
+		Pointer *int
+	}
+
+	ptrVal := 123
+	c := &Complex{
+		Name:   "test",
+		Value:  42,
+		Active: true,
+		Tags:   []string{"a", "b", "c"},
+		Meta: map[string]interface{}{
+			"foo": "bar",
+			"baz": 123,
+			"qux": true,
+		},
+		Nested: &Complex{
+			Name: "nested",
+		},
+		Pointer: &ptrVal,
+	}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		EstimateJSONSize(c)
 	}
 }
 
