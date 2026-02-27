@@ -138,10 +138,14 @@ jobs:
 
       - name: Install dependencies
         run: |
+          SUDO=""
+          if command -v sudo >/dev/null; then
+            SUDO="sudo"
+          fi
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz build-base
+             $SUDO apk add --no-cache make xz build-base
           fi
 
       - name: Prepare environment
@@ -174,10 +178,14 @@ jobs:
 
       - name: Install dependencies
         run: |
+          SUDO=""
+          if command -v sudo >/dev/null; then
+            SUDO="sudo"
+          fi
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz build-base
+             $SUDO apk add --no-cache make xz build-base
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -313,10 +321,14 @@ jobs:
 
       - name: Install dependencies
         run: |
+          SUDO=""
+          if command -v sudo >/dev/null; then
+            SUDO="sudo"
+          fi
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz build-base
+             $SUDO apk add --no-cache make xz build-base
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -470,6 +482,10 @@ jobs:
             slug: arm64
             runner: ubuntu-24.04-arm
     steps:
+      - name: Install dependencies
+        run: |
+          apt-get update && apt-get install -y make git
+
       - name: Free Disk Space (Fast)
         run: |
           rm -rf /usr/local/lib/android
@@ -620,10 +636,14 @@ jobs:
 
       - name: Install dependencies
         run: |
+          SUDO=""
+          if command -v sudo >/dev/null; then
+            SUDO="sudo"
+          fi
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz build-base
+             $SUDO apk add --no-cache make xz build-base
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -759,10 +779,14 @@ jobs:
 
       - name: Install dependencies
         run: |
+          SUDO=""
+          if command -v sudo >/dev/null; then
+            SUDO="sudo"
+          fi
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz build-base
+             $SUDO apk add --no-cache make xz build-base
           fi
 
       - name: Configure Docker Registry Mirrors
