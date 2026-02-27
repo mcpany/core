@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { ToolDefinition, apiClient, ToolAnalytics } from "@/lib/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { PlayCircle, Loader2, Zap, Activity, History as HistoryIcon, RefreshCw, Code, Terminal, Coins, ArrowRightLeft } from "lucide-react";
+import { PlayCircle, Loader2, Zap, Activity, History as HistoryIcon, RefreshCw, Code, Terminal, Coins, ArrowRightLeft, RotateCcw } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer, Tooltip as ChartTooltip, XAxis, YAxis, CartesianGrid } from "recharts";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -63,6 +63,7 @@ export function ToolRunner({ tool, onClose }: ToolRunnerProps) {
   const [isDryRun, setIsDryRun] = useState(false);
   const [lastRunStats, setLastRunStats] = useState<{ inputTokens: number, outputTokens: number, cost: number } | null>(null);
   const { toast } = useToast();
+  const [activeTab, setActiveTab] = useState("builder");
 
   // Real data state
   const [historicalStats, setHistoricalStats] = useState<ToolAnalytics | null>(null);
@@ -76,6 +77,7 @@ export function ToolRunner({ tool, onClose }: ToolRunnerProps) {
       setLastRunStats(null);
       setHistoricalStats(null);
       setAuditLogs([]);
+      setActiveTab("builder");
       fetchMetrics();
   }, [tool.name]);
 
@@ -172,6 +174,25 @@ export function ToolRunner({ tool, onClose }: ToolRunnerProps) {
         toast({ title: "Copied to clipboard", description: `${type === 'curl' ? 'Curl command' : 'Python code'} copied.` });
     };
 
+    const handleRestoreHistory = (entry: AuditLogEntry) => {
+        try {
+            // Re-format JSON for better readability
+            const parsedArgs = JSON.parse(entry.arguments);
+            setInput(JSON.stringify(parsedArgs, null, 2));
+            setActiveTab("builder");
+            toast({
+                title: "Restored from history",
+                description: "Arguments have been loaded into the builder."
+            });
+        } catch (e) {
+             toast({
+                title: "Failed to restore",
+                description: "Could not parse arguments from history.",
+                variant: "destructive"
+            });
+        }
+    };
+
   return (
     <div className="flex flex-col h-full bg-background">
         <div className="px-6 py-4 border-b flex items-center justify-between sticky top-0 bg-background z-10">
@@ -224,7 +245,7 @@ export function ToolRunner({ tool, onClose }: ToolRunnerProps) {
              </div>
         </div>
 
-        <Tabs defaultValue="builder" className="flex-1 flex flex-col overflow-hidden">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
              <div className="border-b px-6 bg-muted/5">
                 <TabsList className="h-10 bg-transparent p-0">
                     <TabsTrigger value="builder" className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:shadow-none rounded-none h-10 px-4">
@@ -371,19 +392,29 @@ export function ToolRunner({ tool, onClose }: ToolRunnerProps) {
                             <HistoryIcon className="h-4 w-4" /> Recent Timeline
                         </Label>
                         <div className="rounded-md border divide-y">
-                            {recentStats.chartData.length === 0 && (
+                            {auditLogs.length === 0 && (
                                 <div className="text-xs text-muted-foreground p-4 text-center">
                                     No recent executions.
                                 </div>
                             )}
-                            {[...recentStats.chartData].reverse().slice(0, 10).map((h, i) => (
-                                <div key={i} className="flex items-center justify-between text-sm p-3 hover:bg-muted/50 transition-colors">
+                            {[...auditLogs].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()).reverse().slice(0, 10).map((h, i) => (
+                                <Button
+                                    key={i}
+                                    variant="ghost"
+                                    className="w-full flex items-center justify-between text-sm p-3 h-auto hover:bg-muted/50 transition-colors group"
+                                    onClick={() => handleRestoreHistory(h)}
+                                >
                                     <div className="flex items-center gap-3">
-                                        <div className={cn("h-2.5 w-2.5 rounded-full", h.status === "success" ? "bg-green-500" : "bg-destructive")} />
-                                        <span className="font-medium">{h.time}</span>
+                                        <div className={cn("h-2.5 w-2.5 rounded-full", !h.error ? "bg-green-500" : "bg-destructive")} />
+                                        <span className="font-medium text-xs">
+                                            {new Date(h.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                                        </span>
                                     </div>
-                                    <span className="text-muted-foreground font-mono text-xs">{h.latency}ms</span>
-                                </div>
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-muted-foreground font-mono text-xs">{h.durationMs}ms</span>
+                                        <RotateCcw className="h-3 w-3 text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+                                    </div>
+                                </Button>
                             ))}
                         </div>
                     </div>
