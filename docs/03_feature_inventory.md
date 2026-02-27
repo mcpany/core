@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **Intent-Alignment Middleware**: (P0) A security layer that verifies tool calls against the session's high-level goal using lightweight reasoning models.
+- **Unified Agent Identity (UAI) Registry**: (P0) A system to assign and track cryptographically verifiable identities for all agents and subagents.
+- **Trust Domain Validator**: (P1) A middleware that enforces "Allowed Origins" for MCP server configurations, preventing malicious tool injection from untrusted repositories.
+
+### Priority Shifts
+- **A2A Interop Bridge**: Re-affirmed as **P0**. Urgent need for cross-framework standardization.
+- **Supply Chain Integrity Guard**: Re-affirmed as **P0**. Critical due to recent Claude Code and OpenClaw exploits.
+
+### Deprecations / Monitoring
+- **Global Tool Permissions**: Monitoring for deprecation in favor of more granular, session-bound "Intent-Aware" scopes.

@@ -47,3 +47,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **A2A Gateway Protocol**: MCP Any will implement a protocol-neutral bridge for A2A communication, allowing disparate agent frameworks (e.g., OpenClaw, AutoGen) to exchange state and tasks via a unified MCP-like interface.
 - **Federated Tool Mesh**: Moving from a standalone server to a "Mesh" architecture where multiple MCP Any instances can peer and share resources across network boundaries, governed by global Zero-Trust policies.
 - **Resource-Aware Intelligence**: Integrating cost and latency telemetry into the tool discovery process, allowing LLMs to perform "Economical Reasoning" when selecting tools.
+
+---
+
+## Strategic Evolution: [2026-02-27]
+### Focus: Intent-Aware Authorization & Unified Agent Identity
+**Context**: Today's research into OpenClaw's security crisis and A2A standardization reveals that "capabilities" are no longer enough. We must move towards "Intent-Aware" systems that can verify if an agent's actions align with the user's original goal, while providing a unified identity for every agent in the swarm.
+**Strategic Pivot**:
+- **Intent-Alignment Middleware**: Implementing a real-time verification layer that uses fast-inference "Guardian" models to cross-reference tool calls against the session's high-level intent, preventing prompt-injection-driven redirects.
+- **Unified Agent Identity (UAI)**: Every agent, subagent, and tool in the MCP Any ecosystem will now be assigned a unique, verifiable identity. This enables per-agent audit trails and eliminates the "Identity Crisis" in multi-agent swarms.
+- **Trust Domain Enforcement**: Strengthening the supply chain by enforcing strict "Trust Domains" for MCP servers, ensuring that agents only interact with verified, non-malicious tool providers.

@@ -46,3 +46,4 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-02-27:** **Unified Identity Alignment.** Updated Section 4 and 6 to incorporate the **Unified Agent Identity (UAI)** standard. Every A2A handoff now requires a UAI token for provenance tracking. This mitigates "Identity Spoofing" where an A2A specialist might pretend to be the user or another trusted agent.

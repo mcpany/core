@@ -29,6 +29,11 @@
 *   **[P1] Federated MCP Peering**: Distributed node discovery and tool proxying. (Added: 2026-02-26)
 *   **[P1] Resource Telemetry Middleware**: Inject latency/cost metrics into tool schemas. (Added: 2026-02-26)
 
+#### Upcoming (2026-02-27 Evolution)
+*   **[P0] Intent-Alignment Middleware**: Real-time "Guardian" model verification of tool calls against session intent. (Added: 2026-02-27)
+*   **[P0] Unified Agent Identity (UAI) Registry**: Cryptographically verifiable IDs for all agents/subagents. (Added: 2026-02-27)
+*   **[P1] Trust Domain Validator**: Middleware to enforce allowed origins for MCP server configurations. (Added: 2026-02-27)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
