@@ -189,25 +189,30 @@ jobs:
           fi
 
       - name: Configure Docker Registry Mirrors
+        continue-on-error: true
         run: |
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
+          # We use continue-on-error because on some runners (e.g. containers) we cannot/should not restart docker.
           SUDO=""
           if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null 2>&1; then
             SUDO="sudo"
           fi
-          $SUDO mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json
 
-          if $SUDO systemctl restart docker 2>/dev/null; then
-            echo "Docker restarted via systemctl"
-          elif $SUDO service docker restart 2>/dev/null; then
-            echo "Docker restarted via service"
+          echo "Attempting to configure Docker mirrors..."
+          if $SUDO mkdir -p /etc/docker 2>/dev/null && echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json >/dev/null; then
+            echo "Successfully wrote daemon.json"
+            if $SUDO systemctl restart docker 2>/dev/null; then
+              echo "Docker restarted via systemctl"
+            elif $SUDO service docker restart 2>/dev/null; then
+              echo "Docker restarted via service"
+            else
+              echo "Could not restart docker via systemctl or service. Skipping restart (mirrors may not apply)."
+            fi
           else
-            echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
-            $SUDO pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
+             echo "Could not write to /etc/docker/daemon.json. Skipping mirror configuration."
           fi
-          docker info # Verify the mirrors are listed
+          docker info # Verify functionality
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -336,25 +341,30 @@ jobs:
           fi
 
       - name: Configure Docker Registry Mirrors
+        continue-on-error: true
         run: |
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
+          # We use continue-on-error because on some runners (e.g. containers) we cannot/should not restart docker.
           SUDO=""
           if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null 2>&1; then
             SUDO="sudo"
           fi
-          $SUDO mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json
 
-          if $SUDO systemctl restart docker 2>/dev/null; then
-            echo "Docker restarted via systemctl"
-          elif $SUDO service docker restart 2>/dev/null; then
-            echo "Docker restarted via service"
+          echo "Attempting to configure Docker mirrors..."
+          if $SUDO mkdir -p /etc/docker 2>/dev/null && echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json >/dev/null; then
+            echo "Successfully wrote daemon.json"
+            if $SUDO systemctl restart docker 2>/dev/null; then
+              echo "Docker restarted via systemctl"
+            elif $SUDO service docker restart 2>/dev/null; then
+              echo "Docker restarted via service"
+            else
+              echo "Could not restart docker via systemctl or service. Skipping restart (mirrors may not apply)."
+            fi
           else
-            echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
-            $SUDO pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
+             echo "Could not write to /etc/docker/daemon.json. Skipping mirror configuration."
           fi
-          docker info # Verify the mirrors are listed
+          docker info # Verify functionality
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -651,23 +661,30 @@ jobs:
           fi
 
       - name: Configure Docker Registry Mirrors
+        continue-on-error: true
         run: |
+          # Configure multiple mirrors in array format
+          # Docker will try mirror.gcr.io first.
+          # We use continue-on-error because on some runners (e.g. containers) we cannot/should not restart docker.
           SUDO=""
           if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null 2>&1; then
             SUDO="sudo"
           fi
-          $SUDO mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json
 
-          if $SUDO systemctl restart docker 2>/dev/null; then
-            echo "Docker restarted via systemctl"
-          elif $SUDO service docker restart 2>/dev/null; then
-            echo "Docker restarted via service"
+          echo "Attempting to configure Docker mirrors..."
+          if $SUDO mkdir -p /etc/docker 2>/dev/null && echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json >/dev/null; then
+            echo "Successfully wrote daemon.json"
+            if $SUDO systemctl restart docker 2>/dev/null; then
+              echo "Docker restarted via systemctl"
+            elif $SUDO service docker restart 2>/dev/null; then
+              echo "Docker restarted via service"
+            else
+              echo "Could not restart docker via systemctl or service. Skipping restart (mirrors may not apply)."
+            fi
           else
-            echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
-            $SUDO pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
+             echo "Could not write to /etc/docker/daemon.json. Skipping mirror configuration."
           fi
-          docker info
+          docker info # Verify functionality
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -798,25 +815,30 @@ jobs:
           fi
 
       - name: Configure Docker Registry Mirrors
+        continue-on-error: true
         run: |
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
+          # We use continue-on-error because on some runners (e.g. containers) we cannot/should not restart docker.
           SUDO=""
           if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null 2>&1; then
             SUDO="sudo"
           fi
-          $SUDO mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json
 
-          if $SUDO systemctl restart docker 2>/dev/null; then
-            echo "Docker restarted via systemctl"
-          elif $SUDO service docker restart 2>/dev/null; then
-            echo "Docker restarted via service"
+          echo "Attempting to configure Docker mirrors..."
+          if $SUDO mkdir -p /etc/docker 2>/dev/null && echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json >/dev/null; then
+            echo "Successfully wrote daemon.json"
+            if $SUDO systemctl restart docker 2>/dev/null; then
+              echo "Docker restarted via systemctl"
+            elif $SUDO service docker restart 2>/dev/null; then
+              echo "Docker restarted via service"
+            else
+              echo "Could not restart docker via systemctl or service. Skipping restart (mirrors may not apply)."
+            fi
           else
-            echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
-            $SUDO pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
+             echo "Could not write to /etc/docker/daemon.json. Skipping mirror configuration."
           fi
-          docker info # Verify the mirrors are listed
+          docker info # Verify functionality
 
       - name: Set up Go
         uses: actions/setup-go@v6
