@@ -1,5 +1,5 @@
 # Shim Makefile to forward commands to server/Makefile and ui/Makefile
-.PHONY: all test lint build run clean gen prepare-proto clean-protos
+.PHONY: all test lint build run clean gen prepare-proto clean-protos gen-go gen-ts
 
 # Variables
 GO = go
@@ -162,7 +162,7 @@ gen-ts:
 	@echo "Generating protobuf files (TypeScript)..."
 	@if ! [ -f "./ui/node_modules/.bin/protoc-gen-ts_proto" ]; then \
 		echo "protoc-gen-ts_proto not found. Installing UI dependencies..."; \
-		cd ui && npm install; \
+		cd ui && npm ci --prefer-offline --no-audit; \
 	fi
 	@if [ -f "./ui/node_modules/.bin/protoc-gen-ts_proto" ]; then \
 		export PATH=$(TOOL_INSTALL_DIR):$$PATH; \

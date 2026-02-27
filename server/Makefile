@@ -363,9 +363,9 @@ prepare:
 
 
 
-# Delegate gen to root Makefile
+# Delegate gen to root Makefile (server only needs Go protos)
 gen: prepare
-	$(MAKE) -C .. gen
+	$(MAKE) -C .. gen-go
 
 build: gen
 	@echo "Building Go project locally..."
