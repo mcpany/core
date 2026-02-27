@@ -465,12 +465,21 @@ jobs:
             slug: arm64
             runner: ubuntu-24.04-arm
     steps:
+      - name: Install dependencies
+        run: |
+          if command -v sudo >/dev/null; then
+            SUDO="sudo"
+          else
+            SUDO=""
+          fi
+          $SUDO apt-get update && $SUDO apt-get install -y make git xz-utils gcc build-essential sudo
+
       - name: Free Disk Space (Fast)
         run: |
-          rm -rf /usr/local/lib/android
-          rm -rf /usr/share/dotnet
-          rm -rf /opt/ghc
-          rm -rf /usr/local/share/boost
+          sudo rm -rf /usr/local/lib/android || true
+          sudo rm -rf /usr/share/dotnet || true
+          sudo rm -rf /opt/ghc || true
+          sudo rm -rf /usr/local/share/boost || true
       - uses: actions/checkout@v6
 
       - name: Set up Go

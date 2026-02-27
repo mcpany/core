@@ -223,21 +223,21 @@ func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *co
 		existingTools := r.toolManager.ListTools()
 		existingToolsMap := make(map[string]string, len(existingTools))
 		for _, et := range existingTools {
-			existingToolsMap[et.Tool().GetName()] = et.Tool().GetServiceId()
+			if et.Tool().GetServiceId() != serviceID {
+				// We only care if the tool exists in a *different* service.
+				// By storing it here, we ensure we don't overwrite with our own service ID,
+				// and any match against this map is guaranteed to be a collision.
+				existingToolsMap[et.Tool().GetName()] = et.Tool().GetServiceId()
+			}
 		}
 
 		for _, dt := range discoveredTools {
 			if existingServiceID, exists := existingToolsMap[dt.GetName()]; exists {
-				// Check if names match and they are from DIFFERENT services
-				// existingServiceID might be empty for internal tools, or the service ID we just generated.
-				// We care if it's NOT the current serviceID.
-				if existingServiceID != serviceID {
-					logging.GetLogger().Warn("Duplicate tool name detected across services",
-						"tool", dt.GetName(),
-						"service_new", serviceConfig.GetName(),
-						"service_existing", existingServiceID,
-						"warning", "Potential confusion or shadowing")
-				}
+				logging.GetLogger().Warn("Duplicate tool name detected across services",
+					"tool", dt.GetName(),
+					"service_new", serviceConfig.GetName(),
+					"service_existing", existingServiceID,
+					"warning", "Potential confusion or shadowing")
 			}
 		}
 	}
