@@ -12,6 +12,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -26,11 +27,12 @@ func TestRootCmd(t *testing.T) {
 }
 
 func TestDoctorCmd_Offline(t *testing.T) {
+	viper.Set("mcp-listen-address", ":54321")
 	cmd := newRootCmd()
 	b := bytes.NewBufferString("")
 	cmd.SetOut(b)
 	// Use a random port that is likely closed
-	cmd.SetArgs([]string{"doctor", "--mcp-listen-address", ":54321"})
+	cmd.SetArgs([]string{"doctor"})
 
 	// Depending on implementation, it might error or just print failure
 	// For this test, we just want to ensure it doesn't panic and tries to run
@@ -59,10 +61,11 @@ func TestDoctorCmd_Online(t *testing.T) {
 	_, port, err := net.SplitHostPort(strings.TrimPrefix(ts.URL, "http://"))
 	assert.NoError(t, err)
 
+	viper.Set("mcp-listen-address", "127.0.0.1:"+port)
 	cmd := newRootCmd()
 	b := bytes.NewBufferString("")
 	cmd.SetOut(b)
-	cmd.SetArgs([]string{"doctor", "--mcp-listen-address", "127.0.0.1:" + port})
+	cmd.SetArgs([]string{"doctor"})
 
 	err = cmd.ExecuteContext(context.Background())
 	assert.NoError(t, err)
@@ -85,11 +88,12 @@ func TestDoctorCmd_AddressParsing(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			viper.Set("mcp-listen-address", tt.arg)
 			cmd := newRootCmd()
 			b := bytes.NewBufferString("")
 			cmd.SetOut(b)
 			// We expect connection failure, but we want to make sure it parses correctly and attempts connection
-			cmd.SetArgs([]string{"doctor", "--mcp-listen-address", tt.arg})
+			cmd.SetArgs([]string{"doctor"})
 			_ = cmd.Execute()
 			// It should fail connectivity but not crash
 			assert.Contains(t, b.String(), "Checking Server Connectivity")
@@ -106,6 +110,7 @@ func TestDoctorCmd_ServerErrors(t *testing.T) {
 		defer ts.Close()
 		_, port, _ := net.SplitHostPort(strings.TrimPrefix(ts.URL, "http://"))
 
+		viper.Set("mcp-listen-address", "127.0.0.1:"+port)
 		cmd := newRootCmd()
 		b := bytes.NewBufferString("")
 		cmd.SetOut(b)
@@ -126,6 +131,7 @@ func TestDoctorCmd_ServerErrors(t *testing.T) {
 		defer ts.Close()
 		_, port, _ := net.SplitHostPort(strings.TrimPrefix(ts.URL, "http://"))
 
+		viper.Set("mcp-listen-address", "127.0.0.1:"+port)
 		cmd := newRootCmd()
 		b := bytes.NewBufferString("")
 		cmd.SetOut(b)
@@ -147,6 +153,7 @@ func TestDoctorCmd_ServerErrors(t *testing.T) {
 		defer ts.Close()
 		_, port, _ := net.SplitHostPort(strings.TrimPrefix(ts.URL, "http://"))
 
+		viper.Set("mcp-listen-address", "127.0.0.1:"+port)
 		cmd := newRootCmd()
 		b := bytes.NewBufferString("")
 		cmd.SetOut(b)
@@ -169,6 +176,7 @@ func TestDoctorCmd_ServerErrors(t *testing.T) {
 		defer ts.Close()
 		_, port, _ := net.SplitHostPort(strings.TrimPrefix(ts.URL, "http://"))
 
+		viper.Set("mcp-listen-address", "127.0.0.1:"+port)
 		cmd := newRootCmd()
 		b := bytes.NewBufferString("")
 		cmd.SetOut(b)
