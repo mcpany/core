@@ -93,7 +93,7 @@ jobs:
         uses: actions/setup-go@v6
         with:
           go-version: "1.24"
-          cache: true
+          cache: false
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -188,7 +188,7 @@ jobs:
         uses: actions/setup-go@v6
         with:
           go-version: "1.24"
-          cache: true
+          cache: false
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -325,7 +325,7 @@ jobs:
         uses: actions/setup-go@v6
         with:
           go-version: "1.24"
-          cache: true
+          cache: false
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -463,7 +463,7 @@ jobs:
         uses: actions/setup-go@v6
         with:
           go-version: "1.24"
-          cache: true
+          cache: false
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -625,7 +625,7 @@ jobs:
         uses: actions/setup-go@v6
         with:
           go-version: "1.24"
-          cache: true
+          cache: false
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -771,7 +771,7 @@ jobs:
         uses: actions/setup-go@v6
         with:
           go-version: "1.24"
-          cache: true
+          cache: false
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -967,6 +967,10 @@ jobs:
             docker load -i "$f"
           done
           docker images
+
+      - name: Install UI Dependencies (Host)
+        run: |
+          cd ui && npm install
 
       - name: Test UI
         run: |
