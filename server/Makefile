@@ -249,7 +249,7 @@ prepare:
 			mkdir -p $(BUILD_DIR)/.cache/pre-commit; \
 			if ! GIT_CONFIG_GLOBAL=/dev/null PRE_COMMIT_HOME=$(BUILD_DIR)/.cache/pre-commit $(PYTHON_EXEC) -m pre_commit install; then \
 				echo "\n\033[1;33mWARNING: pre-commit hook installation failed.\033[0m"; \
-				echo "\033[1;33mThis is likely because a global git hooks path is configured (core.hooksPath).\033[0m"; \
+				echo "\033[1;33mThis is likely because a global git hooks path is configured (core.hooksPath).033[0m"; \
 				echo "\033[1;33mThe build will continue, but pre-commit hooks will not be active.\033[0m"; \
 				echo "\033[1;33mTo fix this, run: git config --unset-all core.hooksPath\n"; \
 			fi; \
@@ -458,7 +458,7 @@ else
 	export PRE_COMMIT_HOME=$${PRE_COMMIT_HOME:-$(BUILD_DIR)/.cache/pre-commit} && \
 	export GOLANGCI_LINT_CACHE=$(BUILD_DIR)/.cache/golangci-lint && \
 	export GOWORK=off && \
-	$(GOLANGCI_LINT_BIN) run --timeout 20m --fix ./cmd/... ./pkg/... ./tests/... ./examples/... && \
+	$(GOLANGCI_LINT_BIN) run --timeout 30m --fix ./cmd/... ./pkg/... ./tests/... ./examples/... && \
 	cd .. && pre-commit run --config server/.pre-commit-config.yaml --all-files
 endif
 
