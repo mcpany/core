@@ -128,8 +128,10 @@ jobs:
           ARCH=$(uname -m)
           if [ "$ARCH" = "x86_64" ]; then
             PROTOC_ARCH="x86_64"
+            GO_ARCH="amd64"
           elif [ "$ARCH" = "aarch64" ]; then
             PROTOC_ARCH="aarch_64"
+            GO_ARCH="arm64"
           else
             echo "Unsupported arch: $ARCH"
             exit 1
@@ -149,8 +151,6 @@ jobs:
           echo "PATH=$PATH"
           go env
 
-          # Verify Makefile prepare works here
-
           echo "Pre-installing Go plugins to avoid network issues in make..."
           export GOBIN=$(pwd)/build/env/bin
           mkdir -p $GOBIN
@@ -167,21 +167,21 @@ jobs:
           echo "Pre-installing Helm, ShellCheck, GolangCI-Lint..."
           # Helm
           HELM_VERSION="v3.19.0"
-          curl -sSL "https://get.helm.sh/helm-${HELM_VERSION}-linux-${PROTOC_ARCH}.tar.gz" -o helm.tar.gz
+          curl -sSL "https://get.helm.sh/helm-${HELM_VERSION}-linux-${GO_ARCH}.tar.gz" -o helm.tar.gz
           tar -zxvf helm.tar.gz
-          mv linux-${PROTOC_ARCH}/helm $GOBIN/helm
-          rm -rf linux-${PROTOC_ARCH} helm.tar.gz
+          mv linux-${GO_ARCH}/helm $GOBIN/helm
+          rm -rf linux-${GO_ARCH} helm.tar.gz
 
           # ShellCheck
           SC_VERSION="stable"
-          curl -sSL "https://github.com/koalaman/shellcheck/releases/download/${SC_VERSION}/shellcheck-${SC_VERSION}.linux.x86_64.tar.xz" | tar -xJv
+          curl -sSL "https://github.com/koalaman/shellcheck/releases/download/${SC_VERSION}/shellcheck-${SC_VERSION}.linux.${PROTOC_ARCH}.tar.xz" | tar -xJv
           mv shellcheck-${SC_VERSION}/shellcheck $GOBIN/shellcheck
           rm -rf shellcheck-${SC_VERSION}
 
           # GolangCI-Lint
           curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $GOBIN v1.64.5
 
-          # Gofumpt & Goimports (used by make lint/fmt, maybe not prepare, but good to have)
+          # Gofumpt & Goimports
           go install mvdan.cc/gofumpt@latest
           go install golang.org/x/tools/cmd/goimports@latest
 
@@ -613,8 +613,10 @@ jobs:
           ARCH=$(uname -m)
           if [ "$ARCH" = "x86_64" ]; then
             PROTOC_ARCH="x86_64"
+            GO_ARCH="amd64"
           elif [ "$ARCH" = "aarch64" ]; then
             PROTOC_ARCH="aarch_64"
+            GO_ARCH="arm64"
           else
             echo "Unsupported arch: $ARCH"
             exit 1
@@ -634,8 +636,6 @@ jobs:
           echo "PATH=$PATH"
           go env
 
-          # Verify Makefile prepare works here
-
           echo "Pre-installing Go plugins to avoid network issues in make..."
           export GOBIN=$(pwd)/build/env/bin
           mkdir -p $GOBIN
@@ -652,21 +652,21 @@ jobs:
           echo "Pre-installing Helm, ShellCheck, GolangCI-Lint..."
           # Helm
           HELM_VERSION="v3.19.0"
-          curl -sSL "https://get.helm.sh/helm-${HELM_VERSION}-linux-${PROTOC_ARCH}.tar.gz" -o helm.tar.gz
+          curl -sSL "https://get.helm.sh/helm-${HELM_VERSION}-linux-${GO_ARCH}.tar.gz" -o helm.tar.gz
           tar -zxvf helm.tar.gz
-          mv linux-${PROTOC_ARCH}/helm $GOBIN/helm
-          rm -rf linux-${PROTOC_ARCH} helm.tar.gz
+          mv linux-${GO_ARCH}/helm $GOBIN/helm
+          rm -rf linux-${GO_ARCH} helm.tar.gz
 
           # ShellCheck
           SC_VERSION="stable"
-          curl -sSL "https://github.com/koalaman/shellcheck/releases/download/${SC_VERSION}/shellcheck-${SC_VERSION}.linux.x86_64.tar.xz" | tar -xJv
+          curl -sSL "https://github.com/koalaman/shellcheck/releases/download/${SC_VERSION}/shellcheck-${SC_VERSION}.linux.${PROTOC_ARCH}.tar.xz" | tar -xJv
           mv shellcheck-${SC_VERSION}/shellcheck $GOBIN/shellcheck
           rm -rf shellcheck-${SC_VERSION}
 
           # GolangCI-Lint
           curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $GOBIN v1.64.5
 
-          # Gofumpt & Goimports (used by make lint/fmt, maybe not prepare, but good to have)
+          # Gofumpt & Goimports
           go install mvdan.cc/gofumpt@latest
           go install golang.org/x/tools/cmd/goimports@latest
 
@@ -1221,8 +1221,10 @@ jobs:
           ARCH=$(uname -m)
           if [ "$ARCH" = "x86_64" ]; then
             PROTOC_ARCH="x86_64"
+            GO_ARCH="amd64"
           elif [ "$ARCH" = "aarch64" ]; then
             PROTOC_ARCH="aarch_64"
+            GO_ARCH="arm64"
           else
             echo "Unsupported arch: $ARCH"
             exit 1
@@ -1242,8 +1244,6 @@ jobs:
           echo "PATH=$PATH"
           go env
 
-          # Verify Makefile prepare works here
-
           echo "Pre-installing Go plugins to avoid network issues in make..."
           export GOBIN=$(pwd)/build/env/bin
           mkdir -p $GOBIN
@@ -1260,21 +1260,21 @@ jobs:
           echo "Pre-installing Helm, ShellCheck, GolangCI-Lint..."
           # Helm
           HELM_VERSION="v3.19.0"
-          curl -sSL "https://get.helm.sh/helm-${HELM_VERSION}-linux-${PROTOC_ARCH}.tar.gz" -o helm.tar.gz
+          curl -sSL "https://get.helm.sh/helm-${HELM_VERSION}-linux-${GO_ARCH}.tar.gz" -o helm.tar.gz
           tar -zxvf helm.tar.gz
-          mv linux-${PROTOC_ARCH}/helm $GOBIN/helm
-          rm -rf linux-${PROTOC_ARCH} helm.tar.gz
+          mv linux-${GO_ARCH}/helm $GOBIN/helm
+          rm -rf linux-${GO_ARCH} helm.tar.gz
 
           # ShellCheck
           SC_VERSION="stable"
-          curl -sSL "https://github.com/koalaman/shellcheck/releases/download/${SC_VERSION}/shellcheck-${SC_VERSION}.linux.x86_64.tar.xz" | tar -xJv
+          curl -sSL "https://github.com/koalaman/shellcheck/releases/download/${SC_VERSION}/shellcheck-${SC_VERSION}.linux.${PROTOC_ARCH}.tar.xz" | tar -xJv
           mv shellcheck-${SC_VERSION}/shellcheck $GOBIN/shellcheck
           rm -rf shellcheck-${SC_VERSION}
 
           # GolangCI-Lint
           curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $GOBIN v1.64.5
 
-          # Gofumpt & Goimports (used by make lint/fmt, maybe not prepare, but good to have)
+          # Gofumpt & Goimports
           go install mvdan.cc/gofumpt@latest
           go install golang.org/x/tools/cmd/goimports@latest
 
