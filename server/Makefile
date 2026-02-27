@@ -418,7 +418,7 @@ test-fast: build build-examples build-e2e-mocks build-e2e-timeserver-docker
 .PHONY: test-public-api
 test-public-api: build build-mock-server
 	@echo "Running public API E2E Go tests with a 1800s timeout..."
-	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -parallel 4 $(GO_RACE) -count=1 -timeout 1800s -tags=e2e_public_api -cover -coverprofile=$(COVERAGE_FILE) ./tests/public_api/...
+	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -parallel 1 $(GO_RACE) -count=1 -timeout 1800s -tags=e2e_public_api -cover -coverprofile=$(COVERAGE_FILE) ./tests/public_api/...
 
 # ==============================================================================
 # Example Binaries Build
