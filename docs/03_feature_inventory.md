@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **Config Origin Guard (Immutable Base)**: (P0) Prevents environment-level configuration overrides (e.g., API base URLs) from untrusted project-local files.
+- **Automatic PII/Secret Redactor Middleware**: (P0) A security layer that identifies and masks sensitive data (keys, PII) in tool outputs before they reach the LLM.
+- **Hardware-Bound HITL (Quick-Approval)**: (P1) Dedicated protocol/UI for secure, out-of-band action approvals via mobile or wearable devices (OpenClaw-inspired).
+
+### Priority Shifts
+- **Lazy-MCP Middleware**: (P0) Refocused on "Active Context Sculpting" to achieve 95%+ token savings via JIT schema injection.
+- **A2A Interop Bridge**: (P0) Increasing priority as cross-vendor agent delegation becomes a standard production pattern.
+
+### Deprecations / Monitoring
+- **Loose Local Config Overrides**: Monitoring for deprecation in favor of the "Immutable Base" security model.

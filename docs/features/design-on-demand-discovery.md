@@ -57,3 +57,7 @@ As the number of available MCP tools grows, agents face "context pollution"—wh
 
 ## 7. Evolutionary Changelog
 *   **2026-02-25:** Initial Document Creation.
+*   **2026-02-27:** **Update: Shift to Active Context Sculpting.**
+    *   **Context:** Community feedback on `mcp-cli` shows that even similarity search can be too noisy for complex tasks.
+    *   **Adjustment:** Introducing "Active Context Sculpting." Instead of just searching, MCP Any will use a lightweight local model to "predict" which tools are needed based on the agent's scratchpad/thought process before the agent even issues a search.
+    *   **Performance:** Expected to push token reduction from 80% to 95%+.

@@ -47,3 +47,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **A2A Gateway Protocol**: MCP Any will implement a protocol-neutral bridge for A2A communication, allowing disparate agent frameworks (e.g., OpenClaw, AutoGen) to exchange state and tasks via a unified MCP-like interface.
 - **Federated Tool Mesh**: Moving from a standalone server to a "Mesh" architecture where multiple MCP Any instances can peer and share resources across network boundaries, governed by global Zero-Trust policies.
 - **Resource-Aware Intelligence**: Integrating cost and latency telemetry into the tool discovery process, allowing LLMs to perform "Economical Reasoning" when selecting tools.
+
+---
+
+## Strategic Evolution: [2026-02-27]
+### Focus: Hardened Configuration & Just-In-Time (JIT) Context
+**Context**: Today's findings reveal critical vulnerabilities in agent configuration (Claude Code exfiltration) and a growing consensus on "Just-In-Time" tool discovery to combat context bloat (mcp-cli). The edge-ward shift (OpenClaw) also demands more granular device-level identity.
+**Strategic Pivot**:
+- **Configuration Lockdown**: MCP Any will implement a "Immutable Base" architecture for core settings, preventing malicious repositories from overriding sensitive parameters like API base URLs or credential paths.
+- **JIT Schema Injection**: Moving beyond similarity search to "Active Context Sculpting," where MCP Any only injects tool schemas into the LLM window when the agent's current "Thought" explicitly requires it, achieving >90% token reduction.
+- **Device-Centric Zero Trust**: Expanding the identity model to include hardware-bound attestation (e.g., Apple Watch, Mobile), allowing for secure out-of-band HITL approvals.
+- **Automatic Context Redaction**: Standardizing a middleware that proactively redacts sensitive environment variables and PII from tool responses and outgoing agent messages.
