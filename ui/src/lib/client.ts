@@ -2461,5 +2461,26 @@ export const apiClient = {
         });
         if (!res.ok) throw new Error('Failed to trigger discovery');
         return {};
+    },
+
+    /**
+     * Tests a webhook transformation payload.
+     *
+     * Summary: Tests transformation.
+     *
+     * @param request - The test payload (config, input).
+     * @returns A promise that resolves to the transformation result.
+     * @throws {Error} If the request fails.
+     *
+     * Side Effects: Makes a POST request to /api/v1/debug/webhook-test.
+     */
+    testWebhookTransformation: async (request: any) => {
+        const res = await fetchWithAuth('/api/v1/debug/webhook-test', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(request)
+        });
+        if (!res.ok) throw new Error('Failed to test webhook transformation');
+        return res.json();
     }
 };

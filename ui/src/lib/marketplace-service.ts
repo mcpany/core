@@ -118,50 +118,19 @@ export const marketplaceService = {
    * @returns A promise that resolves to a list of external servers.
    */
   fetchExternalServers: async (marketplaceId: string): Promise<ExternalServer[]> => {
-    // Mock fetching from external source
-    // Real implementation would scrape or use API of the target marketplace
-    if (marketplaceId === 'mcpmarket') {
-        return [
-            {
-                id: 'linear',
-                name: 'Linear',
-                description: 'Linear issue tracking integration',
-                author: 'Figma',
-                config: {
-                    id: 'linear',
-                    name: 'Linear',
-                    version: '1.0.0',
-                    commandLineService: {
-                        command: 'npx -y @modelcontextprotocol/server-linear',
-                        env: { "LINEAR_API_KEY": { plainText: "", validationRegex: "" } },
-                        workingDirectory: "",
-                        tools: [],
-                        resources: [],
-                        prompts: [],
-                        calls: {},
-                        communicationProtocol: 0,
-                        local: false
-                    },
-                    disable: false,
-                    sanitizedName: "linear",
-                    priority: 0,
-                    loadBalancingStrategy: 0,
-                    callPolicies: [],
-                    preCallHooks: [],
-                    postCallHooks: [],
-                    prompts: [],
-
-                    autoDiscoverTool: false,
-                    configError: "",
-                    configurationSchema: "",
-                    readOnly: false,
-                    tags: []
-                }
-
-            }
-        ];
+    try {
+        const response = await fetch(`https://api.mcp.market/v1/servers?source=${marketplaceId}`);
+        if (!response.ok) {
+            // Fallback for demo/dev if external API is down or not reachable
+            console.warn(`Failed to fetch from external marketplace ${marketplaceId}, using empty list.`);
+            return [];
+        }
+        const data = await response.json();
+        return data.servers || [];
+    } catch (e) {
+        console.error(`Error fetching external servers from ${marketplaceId}:`, e);
+        return [];
     }
-    return [];
   },
 
   /**
@@ -233,15 +202,16 @@ export const marketplaceService = {
    * @returns A promise that resolves to the imported collection.
    */
   importCollection: async (url: string): Promise<ServiceCollection> => {
-     // Fetch from URL, validate, return
-     // Mock for now
-     return {
-         name: "Imported Collection",
-         description: `Imported from ${url}`,
-         author: "Unknown",
-         version: "0.0.1",
-         services: []
-     };
+      try {
+          const response = await fetch(url);
+          if (!response.ok) throw new Error(`Failed to fetch collection from ${url}`);
+          const data = await response.json();
+          // Basic validation could go here
+          return data as ServiceCollection;
+      } catch (e) {
+          console.error("Failed to import collection", e);
+          throw e;
+      }
   },
 
   // Local Storage Logic

@@ -19,13 +19,11 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
-      '@proto/api/v1/registration': path.resolve(__dirname, './src/mocks/proto/mock-proto.ts'),
-      '@proto/config/v1/upstream_service': path.resolve(__dirname, './src/mocks/proto/mock-proto.ts'),
-      '@proto/config/v1/tool': path.resolve(__dirname, './src/mocks/proto/mock-proto.ts'),
-      '@proto/config/v1/resource': path.resolve(__dirname, './src/mocks/proto/mock-proto.ts'),
-      '@proto/config/v1/prompt': path.resolve(__dirname, './src/mocks/proto/mock-proto.ts'),
-      '@proto/config/v1/call': path.resolve(__dirname, './src/mocks/proto/mock-proto.ts'),
-      '@proto/admin/v1/admin': path.resolve(__dirname, './src/mocks/proto/mock-proto.ts'),
+      '@proto': path.resolve(__dirname, '../proto'),
+      '@bufbuild/protobuf/wire': path.resolve(__dirname, './node_modules/@bufbuild/protobuf/dist/esm/wire/index.js'),
+      '@improbable-eng/grpc-web': path.resolve(__dirname, './node_modules/@improbable-eng/grpc-web'),
+      'browser-headers': path.resolve(__dirname, './node_modules/browser-headers'),
+      'long': path.resolve(__dirname, './node_modules/long'),
     },
   },
 })

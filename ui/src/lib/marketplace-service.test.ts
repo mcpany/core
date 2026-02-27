@@ -105,15 +105,27 @@ describe('marketplaceService', () => {
   });
 
   describe('fetchExternalServers', () => {
-    it('should return linear server for mcpmarket', async () => {
+    it('should return servers from mcpmarket API', async () => {
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          servers: [
+            { id: 'linear', name: 'Linear', description: 'Linear integration', config: {} }
+          ]
+        })
+      });
+
       const servers = await marketplaceService.fetchExternalServers('mcpmarket');
       expect(servers).toHaveLength(1);
       expect(servers[0].id).toBe('linear');
-      expect(servers[0].name).toBe('Linear');
+      expect(global.fetch).toHaveBeenCalledWith('https://api.mcp.market/v1/servers?source=mcpmarket');
     });
 
-    it('should return empty array for unknown marketplace', async () => {
-      const servers = await marketplaceService.fetchExternalServers('unknown');
+    it('should return empty array on API failure', async () => {
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: false
+      });
+      const servers = await marketplaceService.fetchExternalServers('mcpmarket');
       expect(servers).toEqual([]);
     });
   });
@@ -187,10 +199,20 @@ describe('marketplaceService', () => {
   });
 
   describe('importCollection', () => {
-    it('should return a mock collection', async () => {
+    it('should return a collection from URL', async () => {
+       const mockCollection = {
+           name: "Imported Collection",
+           description: "Test",
+           services: []
+       };
+       global.fetch = vi.fn().mockResolvedValue({
+           ok: true,
+           json: async () => mockCollection
+       });
+
       const collection = await marketplaceService.importCollection('http://example.com/collection.json');
-      expect(collection.name).toBe('Imported Collection');
-      expect(collection.description).toContain('http://example.com/collection.json');
+      expect(collection).toEqual(mockCollection);
+      expect(global.fetch).toHaveBeenCalledWith('http://example.com/collection.json');
     });
   });
 });

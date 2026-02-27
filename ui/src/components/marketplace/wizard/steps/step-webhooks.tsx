@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Plus, Trash2, Webhook } from "lucide-react";
+import { apiClient } from "@/lib/client";
 
 /**
  * StepWebhooks component.
@@ -211,18 +212,32 @@ export function StepWebhooks() {
                           </div>
                       </div>
                   </div>
-                  <Button onClick={() => {
+                  <Button onClick={async () => {
                       const inputEl = document.getElementById('playground-input') as HTMLTextAreaElement;
                       const outputEl = document.getElementById('playground-output');
+                      if (outputEl) outputEl.textContent = "Processing...";
                       try {
                           const val = JSON.parse(inputEl.value);
-                          // Mock transformation: add timestamp and processed flag
-                          val._processed_at = new Date().toISOString();
-                          val._transformed = true;
-                          if (config.preCallHooks?.length) {
-                              val._hooks_applied = config.preCallHooks.map((h: any) => h.name);
+
+                          try {
+                              const result = await apiClient.testWebhookTransformation({
+                                  input: val,
+                                  preCallHooks: config.preCallHooks || [],
+                                  postCallHooks: config.postCallHooks || []
+                              });
+                              if (outputEl) outputEl.textContent = JSON.stringify(result, null, 2);
+                          } catch (apiError) {
+                              // Fallback for demo if API fails/not implemented yet
+                              console.warn("API transformation failed, falling back to local simulation", apiError);
+                              val._processed_at = new Date().toISOString();
+                              val._transformed = true;
+                              val._backend_error = String(apiError);
+                              if (config.preCallHooks?.length) {
+                                  val._hooks_applied = config.preCallHooks.map((h: any) => h.name);
+                              }
+                              if (outputEl) outputEl.textContent = JSON.stringify(val, null, 2);
                           }
-                          if (outputEl) outputEl.textContent = JSON.stringify(val, null, 2);
+
                       } catch (e) {
                            if (outputEl) outputEl.textContent = "Error: Invalid JSON input";
                       }

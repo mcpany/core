@@ -25,7 +25,8 @@ test.describe('Marketplace Tests', () => {
     // Implementation: "const [selected, setSelected] = React.useState<Set<string>>(new Set())" -> Empty initially.
 
     // Wait for services to load (table should be populated)
-    // We mocked the data, so it should be fast.
+    // Real data might take a moment, especially if fetching from external sources.
+    await expect(page.locator('table tbody tr')).not.toHaveCount(0, { timeout: 10000 });
 
     // Select a service (checkbox)
     // We assume there's at least one service row

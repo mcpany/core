@@ -17,22 +17,19 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/durationpb"
 )
 
 func TestUpstreamService_CatFacts(t *testing.T) {
-	// t.Skip("Skipping flaky cat facts test due to rate limiting issues")
-	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
+	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeLong)
 	defer cancel()
 
 	t.Log("INFO: Starting E2E Test Scenario for Cat Facts Server...")
 	t.Parallel()
 
-	// --- 1. Start Mock Server ---
-	mockResponse := `{"fact":"Cats are cool","length":13}`
-	mockServer := integration.CreateMockServerWithResponses(t, map[string]string{
-		"/fact": mockResponse,
-	})
-	defer mockServer.Close()
+	// --- 1. Use Real Server (No Mock) ---
+	// Using "https://catfact.ninja" as required by Real Data Policy
+	catFactsServiceEndpoint := "https://catfact.ninja"
 
 	// --- 2. Start MCPANY Server ---
 	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2ECatFactsServerTest")
@@ -40,7 +37,6 @@ func TestUpstreamService_CatFacts(t *testing.T) {
 
 	// --- 3. Register Cat Facts Server with MCPANY ---
 	const catFactsServiceID = "e2e_catfacts"
-	catFactsServiceEndpoint := mockServer.URL
 	t.Logf("INFO: Registering '%s' with MCPANY at endpoint %s...", catFactsServiceID, catFactsServiceEndpoint)
 	registrationGRPCClient := mcpAnyTestServerInfo.RegistrationClient
 
@@ -62,9 +58,22 @@ func TestUpstreamService_CatFacts(t *testing.T) {
 		Calls:   map[string]*configv1.HttpCallDefinition{callID: httpCall},
 	}.Build()
 
+	// Add resilience to handle rate limits or flakes
+	retryPolicy := configv1.RetryConfig_builder{
+		NumberOfRetries: proto.Int32(3),
+		BaseBackoff:     &durationpb.Duration{Seconds: 1},
+		MaxBackoff:      &durationpb.Duration{Seconds: 5},
+	}.Build()
+
+	resilience := configv1.ResilienceConfig_builder{
+		RetryPolicy: retryPolicy,
+		Timeout:     &durationpb.Duration{Seconds: 10},
+	}.Build()
+
 	config := configv1.UpstreamServiceConfig_builder{
 		Name:        proto.String(catFactsServiceID),
 		HttpService: httpService,
+		Resilience:  resilience,
 	}.Build()
 
 	req := apiv1.RegisterServiceRequest_builder{
