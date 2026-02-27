@@ -470,6 +470,10 @@ jobs:
             slug: arm64
             runner: ubuntu-24.04-arm
     steps:
+      - name: Install dependencies
+        run: |
+          apt-get update && apt-get install -y make xz-utils
+
       - name: Free Disk Space (Fast)
         run: |
           # Container runs as root, sudo not needed/available
