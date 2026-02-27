@@ -167,8 +167,9 @@ prepare:
 		echo "Downloading protoc from $${PROTOC_DOWNLOAD_URL_NO_V}..."; \
 		if curl -sSL "$${PROTOC_DOWNLOAD_URL_NO_V}" -o "$(PROTOC_ZIP)"; then \
 			echo "Unzipping to $(TOOL_INSTALL_DIR)..."; \
-			unzip -o "$(PROTOC_ZIP)" -d "$(TOOL_INSTALL_DIR)"; \
-			mv "$(TOOL_INSTALL_DIR)/bin/protoc" "$(PROTOC_BIN)"; \
+			SUDO_FS=""; if [ ! -w "$(TOOL_INSTALL_DIR)" ] && [ "$$(id -u)" -ne 0 ]; then SUDO_FS="sudo"; fi; \
+			$$SUDO_FS unzip -o "$(PROTOC_ZIP)" -d "$(TOOL_INSTALL_DIR)"; \
+			$$SUDO_FS mv "$(TOOL_INSTALL_DIR)/bin/protoc" "$(PROTOC_BIN)"; \
 			if test -f "$(PROTOC_BIN)"; then \
 				export PATH=$(TOOL_INSTALL_DIR):$$PATH; \
 				echo "protoc installed successfully to $(TOOL_INSTALL_DIR). This directory has been added to PATH for this session."; \
@@ -178,7 +179,7 @@ prepare:
 				echo "Error: protoc binary not found in $(TOOL_INSTALL_DIR) after unzip. The downloaded archive may not have the expected structure."; \
 				exit 1; \
 			fi; \
-			rm -f "$(PROTOC_ZIP)"; \
+			$$SUDO_FS rm -f "$(PROTOC_ZIP)"; \
 		fi; \
 	fi
 	@# Install Go protobuf plugins
