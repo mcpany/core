@@ -51,6 +51,12 @@ jobs:
             $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends git || echo "Package install failed, but continuing..."
           elif command -v apk &> /dev/null; then
              $SUDO apk add --no-cache git
+          elif command -v dnf &> /dev/null; then
+             $SUDO dnf install -y git
+          elif command -v yum &> /dev/null; then
+             $SUDO yum install -y git
+          else
+             echo "WARNING: No known package manager found (apt-get, apk, dnf, yum)."
           fi
 
       - uses: actions/checkout@v6
@@ -159,6 +165,12 @@ jobs:
             $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends make xz-utils build-essential || echo "Package install failed, but continuing..."
           elif command -v apk &> /dev/null; then
              $SUDO apk add --no-cache make xz build-base
+          elif command -v dnf &> /dev/null; then
+             $SUDO dnf install -y make xz gcc gcc-c++ || echo "dnf install failed"
+          elif command -v yum &> /dev/null; then
+             $SUDO yum install -y make xz gcc gcc-c++ || echo "yum install failed"
+          else
+             echo "WARNING: No known package manager found."
           fi
 
       - name: Prepare environment
@@ -203,6 +215,12 @@ jobs:
             $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends make xz-utils build-essential || echo "Package install failed, but continuing..."
           elif command -v apk &> /dev/null; then
              $SUDO apk add --no-cache make xz build-base
+          elif command -v dnf &> /dev/null; then
+             $SUDO dnf install -y make xz gcc gcc-c++ || echo "dnf install failed"
+          elif command -v yum &> /dev/null; then
+             $SUDO yum install -y make xz gcc gcc-c++ || echo "yum install failed"
+          else
+             echo "WARNING: No known package manager found."
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -534,6 +552,12 @@ jobs:
             $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends make xz-utils curl unzip || echo "Package install failed, but continuing..."
           elif command -v apk &> /dev/null; then
              $SUDO apk add --no-cache make xz curl unzip
+          elif command -v dnf &> /dev/null; then
+             $SUDO dnf install -y make xz curl unzip || echo "dnf install failed"
+          elif command -v yum &> /dev/null; then
+             $SUDO yum install -y make xz curl unzip || echo "yum install failed"
+          else
+             echo "WARNING: No known package manager found."
           fi
 
       - name: Generate Protobufs
@@ -674,6 +698,12 @@ jobs:
             $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends make xz-utils build-essential || echo "Package install failed, but continuing..."
           elif command -v apk &> /dev/null; then
              $SUDO apk add --no-cache make xz build-base
+          elif command -v dnf &> /dev/null; then
+             $SUDO dnf install -y make xz gcc gcc-c++ || echo "dnf install failed"
+          elif command -v yum &> /dev/null; then
+             $SUDO yum install -y make xz gcc gcc-c++ || echo "yum install failed"
+          else
+             echo "WARNING: No known package manager found."
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -818,6 +848,12 @@ jobs:
             $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends make xz-utils build-essential || echo "Package install failed, but continuing..."
           elif command -v apk &> /dev/null; then
              $SUDO apk add --no-cache make xz build-base
+          elif command -v dnf &> /dev/null; then
+             $SUDO dnf install -y make xz gcc gcc-c++ || echo "dnf install failed"
+          elif command -v yum &> /dev/null; then
+             $SUDO yum install -y make xz gcc gcc-c++ || echo "yum install failed"
+          else
+             echo "WARNING: No known package manager found."
           fi
 
       - name: Configure Docker Registry Mirrors
