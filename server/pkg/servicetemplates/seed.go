@@ -149,17 +149,26 @@ func (s *Seeder) getBuiltInTemplates() []*configv1.ServiceTemplate {
 			Tags:        []string{"development", "git"},
 			ServiceConfig: configv1.UpstreamServiceConfig_builder{
 				Name: proto.String("github"),
-				McpService: configv1.McpUpstreamService_builder{
-					HttpConnection: configv1.McpStreamableHttpConnection_builder{
-						HttpAddress: proto.String("https://api.github.com"),
-					}.Build(),
-					ToolAutoDiscovery: proto.Bool(true),
+				CommandLineService: configv1.CommandLineUpstreamService_builder{
+					Command: proto.String("npx -y @modelcontextprotocol/server-github"),
+					Env: map[string]*configv1.SecretValue{
+						"GITHUB_PERSONAL_ACCESS_TOKEN": configv1.SecretValue_builder{
+							PlainText: proto.String(""),
+						}.Build(),
+					},
 				}.Build(),
-				UpstreamAuth: configv1.Authentication_builder{
-					Oauth2: configv1.OAuth2Auth_builder{
-						Scopes: proto.String("repo,user"),
-					}.Build(),
-				}.Build(),
+				ConfigurationSchema: proto.String(`{
+					"type": "object",
+					"properties": {
+						"GITHUB_PERSONAL_ACCESS_TOKEN": {
+							"type": "string",
+							"title": "GitHub Personal Access Token",
+							"description": "Your GitHub Personal Access Token (classic or fine-grained) with repo scope.",
+							"minLength": 1
+						}
+					},
+					"required": ["GITHUB_PERSONAL_ACCESS_TOKEN"]
+				}`),
 			}.Build(),
 		}.Build(),
 		configv1.ServiceTemplate_builder{

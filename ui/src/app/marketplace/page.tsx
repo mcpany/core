@@ -21,7 +21,7 @@ import { ShareCollectionDialog } from "@/components/share-collection-dialog";
 import { CreateConfigWizard } from "@/components/marketplace/wizard/create-config-wizard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, Trash2 } from "lucide-react";
-import { InstantiateDialog } from "@/components/marketplace/instantiate-dialog";
+import { ServiceInstaller } from "@/components/marketplace/service-installer";
 import { CollectionDetailsDialog } from "@/components/marketplace/collection-details-dialog";
 import { apiClient, UpstreamServiceConfig, ServiceTemplate } from "@/lib/client";
 import { Badge } from "@/components/ui/badge";
@@ -529,11 +529,11 @@ export default function MarketplacePage() {
         onComplete={handleWizardComplete}
       />
 
-      <InstantiateDialog
+      <ServiceInstaller
         open={isInstantiateOpen}
         onOpenChange={setIsInstantiateOpen}
         templateConfig={selectedTemplate}
-        onComplete={() => {}}
+        onComplete={() => loadData()}
       />
 
       <CollectionDetailsDialog
