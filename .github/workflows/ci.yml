@@ -35,12 +35,15 @@ jobs:
     steps:
       - name: Install dependencies
         run: |
-          if command -v sudo >/dev/null 2>&1 && command -v apt-get >/dev/null 2>&1; then
-            sudo apt-get update && sudo apt-get install -y git
-          elif command -v apt-get >/dev/null 2>&1; then
-            apt-get update && apt-get install -y git
+          SUDO=""
+          if command -v sudo >/dev/null 2>&1; then
+            SUDO="sudo"
+          fi
+
+          if command -v apt-get >/dev/null 2>&1; then
+            $SUDO apt-get update && $SUDO apt-get install -y git
           else
-            echo "Assuming git is installed or not needed"
+            echo "Package manager not found or git assumption. Skipping."
           fi
 
       - uses: actions/checkout@v6
@@ -88,17 +91,14 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
+          SUDO=""
           if command -v sudo >/dev/null 2>&1; then
-            sudo rm -rf /usr/local/lib/android
-            sudo rm -rf /usr/share/dotnet
-            sudo rm -rf /opt/ghc
-            sudo rm -rf /usr/local/share/boost
-          else
-            rm -rf /usr/local/lib/android
-            rm -rf /usr/share/dotnet
-            rm -rf /opt/ghc
-            rm -rf /usr/local/share/boost
+            SUDO="sudo"
           fi
+          $SUDO rm -rf /usr/local/lib/android
+          $SUDO rm -rf /usr/share/dotnet
+          $SUDO rm -rf /opt/ghc
+          $SUDO rm -rf /usr/local/share/boost
 
       - name: Prune Docker
         run: docker system prune -af
@@ -147,16 +147,15 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if command -v sudo >/dev/null 2>&1 && command -v apt-get >/dev/null 2>&1; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils gcc
-          elif command -v apt-get >/dev/null 2>&1; then
-            apt-get update && apt-get install -y make xz-utils gcc
+          SUDO=""
+          if command -v sudo >/dev/null 2>&1; then
+            SUDO="sudo"
+          fi
+
+          if command -v apt-get >/dev/null 2>&1; then
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils gcc
           elif command -v apk >/dev/null 2>&1; then
-             if command -v sudo >/dev/null 2>&1; then
-               sudo apk add --no-cache make xz build-base
-             else
-               apk add --no-cache make xz build-base
-             fi
+            $SUDO apk add --no-cache make xz build-base
           fi
 
       - name: Prepare environment
@@ -177,17 +176,14 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
+          SUDO=""
           if command -v sudo >/dev/null 2>&1; then
-            sudo rm -rf /usr/local/lib/android
-            sudo rm -rf /usr/share/dotnet
-            sudo rm -rf /opt/ghc
-            sudo rm -rf /usr/local/share/boost
-          else
-            rm -rf /usr/local/lib/android
-            rm -rf /usr/share/dotnet
-            rm -rf /opt/ghc
-            rm -rf /usr/local/share/boost
+            SUDO="sudo"
           fi
+          $SUDO rm -rf /usr/local/lib/android
+          $SUDO rm -rf /usr/share/dotnet
+          $SUDO rm -rf /opt/ghc
+          $SUDO rm -rf /usr/local/share/boost
 
       - name: Prune Docker
         run: docker system prune -af
@@ -196,16 +192,15 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if command -v sudo >/dev/null 2>&1 && command -v apt-get >/dev/null 2>&1; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils gcc
-          elif command -v apt-get >/dev/null 2>&1; then
-            apt-get update && apt-get install -y make xz-utils gcc
+          SUDO=""
+          if command -v sudo >/dev/null 2>&1; then
+            SUDO="sudo"
+          fi
+
+          if command -v apt-get >/dev/null 2>&1; then
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils gcc
           elif command -v apk >/dev/null 2>&1; then
-             if command -v sudo >/dev/null 2>&1; then
-               sudo apk add --no-cache make xz build-base
-             else
-               apk add --no-cache make xz build-base
-             fi
+            $SUDO apk add --no-cache make xz build-base
           fi
 
 
@@ -316,17 +311,14 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
+          SUDO=""
           if command -v sudo >/dev/null 2>&1; then
-            sudo rm -rf /usr/local/lib/android
-            sudo rm -rf /usr/share/dotnet
-            sudo rm -rf /opt/ghc
-            sudo rm -rf /usr/local/share/boost
-          else
-            rm -rf /usr/local/lib/android
-            rm -rf /usr/share/dotnet
-            rm -rf /opt/ghc
-            rm -rf /usr/local/share/boost
+            SUDO="sudo"
           fi
+          $SUDO rm -rf /usr/local/lib/android
+          $SUDO rm -rf /usr/share/dotnet
+          $SUDO rm -rf /opt/ghc
+          $SUDO rm -rf /usr/local/share/boost
 
       - name: Prune Docker
         run: docker system prune -af
@@ -335,16 +327,15 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if command -v sudo >/dev/null 2>&1 && command -v apt-get >/dev/null 2>&1; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils gcc
-          elif command -v apt-get >/dev/null 2>&1; then
-            apt-get update && apt-get install -y make xz-utils gcc
+          SUDO=""
+          if command -v sudo >/dev/null 2>&1; then
+            SUDO="sudo"
+          fi
+
+          if command -v apt-get >/dev/null 2>&1; then
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils gcc
           elif command -v apk >/dev/null 2>&1; then
-             if command -v sudo >/dev/null 2>&1; then
-               sudo apk add --no-cache make xz build-base
-             else
-               apk add --no-cache make xz build-base
-             fi
+            $SUDO apk add --no-cache make xz build-base
           fi
 
 
@@ -486,17 +477,14 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
+          SUDO=""
           if command -v sudo >/dev/null 2>&1; then
-            sudo rm -rf /usr/local/lib/android
-            sudo rm -rf /usr/share/dotnet
-            sudo rm -rf /opt/ghc
-            sudo rm -rf /usr/local/share/boost
-          else
-            rm -rf /usr/local/lib/android
-            rm -rf /usr/share/dotnet
-            rm -rf /opt/ghc
-            rm -rf /usr/local/share/boost
+            SUDO="sudo"
           fi
+          $SUDO rm -rf /usr/local/lib/android
+          $SUDO rm -rf /usr/share/dotnet
+          $SUDO rm -rf /opt/ghc
+          $SUDO rm -rf /usr/local/share/boost
       - uses: actions/checkout@v6
 
       - name: Set up Go
@@ -629,17 +617,14 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
+          SUDO=""
           if command -v sudo >/dev/null 2>&1; then
-            sudo rm -rf /usr/local/lib/android
-            sudo rm -rf /usr/share/dotnet
-            sudo rm -rf /opt/ghc
-            sudo rm -rf /usr/local/share/boost
-          else
-            rm -rf /usr/local/lib/android
-            rm -rf /usr/share/dotnet
-            rm -rf /opt/ghc
-            rm -rf /usr/local/share/boost
+            SUDO="sudo"
           fi
+          $SUDO rm -rf /usr/local/lib/android
+          $SUDO rm -rf /usr/share/dotnet
+          $SUDO rm -rf /opt/ghc
+          $SUDO rm -rf /usr/local/share/boost
 
       - name: Prune Docker
         run: docker system prune -af
@@ -648,16 +633,15 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if command -v sudo >/dev/null 2>&1 && command -v apt-get >/dev/null 2>&1; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils gcc
-          elif command -v apt-get >/dev/null 2>&1; then
-            apt-get update && apt-get install -y make xz-utils gcc
+          SUDO=""
+          if command -v sudo >/dev/null 2>&1; then
+            SUDO="sudo"
+          fi
+
+          if command -v apt-get >/dev/null 2>&1; then
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils gcc
           elif command -v apk >/dev/null 2>&1; then
-             if command -v sudo >/dev/null 2>&1; then
-               sudo apk add --no-cache make xz build-base
-             else
-               apk add --no-cache make xz build-base
-             fi
+            $SUDO apk add --no-cache make xz build-base
           fi
 
       - name: Set up Go
@@ -766,17 +750,14 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
+          SUDO=""
           if command -v sudo >/dev/null 2>&1; then
-            sudo rm -rf /usr/local/lib/android
-            sudo rm -rf /usr/share/dotnet
-            sudo rm -rf /opt/ghc
-            sudo rm -rf /usr/local/share/boost
-          else
-            rm -rf /usr/local/lib/android
-            rm -rf /usr/share/dotnet
-            rm -rf /opt/ghc
-            rm -rf /usr/local/share/boost
+            SUDO="sudo"
           fi
+          $SUDO rm -rf /usr/local/lib/android
+          $SUDO rm -rf /usr/share/dotnet
+          $SUDO rm -rf /opt/ghc
+          $SUDO rm -rf /usr/local/share/boost
 
       - name: Prune Docker
         run: docker system prune -af
@@ -785,16 +766,15 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if command -v sudo >/dev/null 2>&1 && command -v apt-get >/dev/null 2>&1; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils gcc
-          elif command -v apt-get >/dev/null 2>&1; then
-            apt-get update && apt-get install -y make xz-utils gcc
+          SUDO=""
+          if command -v sudo >/dev/null 2>&1; then
+            SUDO="sudo"
+          fi
+
+          if command -v apt-get >/dev/null 2>&1; then
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils gcc
           elif command -v apk >/dev/null 2>&1; then
-             if command -v sudo >/dev/null 2>&1; then
-               sudo apk add --no-cache make xz build-base
-             else
-               apk add --no-cache make xz build-base
-             fi
+            $SUDO apk add --no-cache make xz build-base
           fi
 
 
@@ -929,17 +909,14 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
+          SUDO=""
           if command -v sudo >/dev/null 2>&1; then
-            sudo rm -rf /usr/local/lib/android
-            sudo rm -rf /usr/share/dotnet
-            sudo rm -rf /opt/ghc
-            sudo rm -rf /usr/local/share/boost
-          else
-            rm -rf /usr/local/lib/android
-            rm -rf /usr/share/dotnet
-            rm -rf /opt/ghc
-            rm -rf /usr/local/share/boost
+            SUDO="sudo"
           fi
+          $SUDO rm -rf /usr/local/lib/android
+          $SUDO rm -rf /usr/share/dotnet
+          $SUDO rm -rf /opt/ghc
+          $SUDO rm -rf /usr/local/share/boost
 
       - name: Prune Docker
         run: docker system prune -af
@@ -989,17 +966,14 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
+          SUDO=""
           if command -v sudo >/dev/null 2>&1; then
-            sudo rm -rf /usr/local/lib/android
-            sudo rm -rf /usr/share/dotnet
-            sudo rm -rf /opt/ghc
-            sudo rm -rf /usr/local/share/boost
-          else
-            rm -rf /usr/local/lib/android
-            rm -rf /usr/share/dotnet
-            rm -rf /opt/ghc
-            rm -rf /usr/local/share/boost
+            SUDO="sudo"
           fi
+          $SUDO rm -rf /usr/local/lib/android
+          $SUDO rm -rf /usr/share/dotnet
+          $SUDO rm -rf /opt/ghc
+          $SUDO rm -rf /usr/local/share/boost
 
       - name: Prune Docker
         run: docker system prune -af
