@@ -34,7 +34,18 @@ jobs:
       src: ${{ steps.filter.outputs.src }}
     steps:
       - name: Install dependencies
-        run: apt-get update && apt-get install -y git
+        run: |
+          if ! command -v git &> /dev/null; then
+            if command -v sudo &> /dev/null && command -v apt-get &> /dev/null; then
+              sudo apt-get update && sudo apt-get install -y git
+            elif command -v apt-get &> /dev/null; then
+              apt-get update && apt-get install -y git
+            elif command -v apk &> /dev/null; then
+              sudo apk add --no-cache git || apk add --no-cache git
+            else
+              echo "Git not found and cannot install. Proceeding in hope."
+            fi
+          fi
 
       - uses: actions/checkout@v6
         with:
