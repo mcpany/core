@@ -174,6 +174,10 @@ func TestSSRFArgumentProtection(t *testing.T) {
 		},
 	}
 
+	// Preserve original dangerous flag state to restore it after each subtest.
+	// TestMain typically sets this to "true".
+	originalDangerous := os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS")
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Set environment variables for the test case
@@ -194,7 +198,11 @@ func TestSSRFArgumentProtection(t *testing.T) {
 				// Cleanup
 				os.Unsetenv("MCPANY_ALLOW_LOOPBACK_RESOURCES")
 				os.Unsetenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES")
-				os.Unsetenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS")
+				if originalDangerous != "" {
+					os.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", originalDangerous)
+				} else {
+					os.Unsetenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS")
+				}
 			}()
 
 			tool := createTool(tt.command)
