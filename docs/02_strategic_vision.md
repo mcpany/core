@@ -47,3 +47,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **A2A Gateway Protocol**: MCP Any will implement a protocol-neutral bridge for A2A communication, allowing disparate agent frameworks (e.g., OpenClaw, AutoGen) to exchange state and tasks via a unified MCP-like interface.
 - **Federated Tool Mesh**: Moving from a standalone server to a "Mesh" architecture where multiple MCP Any instances can peer and share resources across network boundaries, governed by global Zero-Trust policies.
 - **Resource-Aware Intelligence**: Integrating cost and latency telemetry into the tool discovery process, allowing LLMs to perform "Economical Reasoning" when selecting tools.
+
+---
+
+## Strategic Evolution: [2026-02-27]
+### Focus: Deterministic Delegation & Attested Multi-Agent Sessions
+**Context**: Recent updates in OpenClaw (session messaging) and Gemini CLI (policy-first) indicate that the market is moving from "probabilistic delegation" to "deterministic orchestration." Agents need a reliable bus not just for tools, but for *inter-agent signals*.
+**Strategic Pivot**:
+- **Attested Session Messaging**: MCP Any will evolve to support authenticated, low-latency messaging between agents, ensuring that a sub-agent's identity and intent are cryptographically linked to the parent's session.
+- **Dynamic Policy-Bound Discovery**: Merging "Lazy-MCP" with the Policy Firewall. Tool discovery won't just be similarity-based; it will be restricted at the *discovery layer* by the agent's current capability token.
+- **Micro-Agent Lifecycle Management**: Support for transient, short-lived "Micro-Agents" that can be spawned to execute a single tool call and then destroyed, minimizing the attack surface.

@@ -46,3 +46,9 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-02-27:** **Update: Integration with Deterministic Delegation & Session Messaging**
+    - **Context:** Market shifts in OpenClaw 2026.2.17 highlight a move toward "Session Messaging" and slash-command driven deterministic delegation.
+    - **Architecture Adjustment:**
+        - Expanding `A2ABridgeMiddleware` to support "Direct Session Messaging," allowing parent agents to send control signals to sub-agents without re-invoking a tool call.
+        - Implementing "Deterministic Routing" for A2A handoffs to ensure sub-agent spawning is predictable and observable.
+    - **Strategic Alignment:** This ensures MCP Any remains the compatible bus for "MicroClaw" and other lightweight, deterministic agent architectures.

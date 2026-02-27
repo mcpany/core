@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **Attested Session Messaging (ASM)**: (P0) Authenticated, low-latency inter-agent messaging bus. Essential for deterministic delegation in swarms like OpenClaw.
+- **Policy-Enforced Discovery (Scoped Search)**: (P0) Integrates the Policy Firewall with Lazy-MCP. Prevents agents from even *discovering* tools they don't have capability tokens for.
+- **Ephemeral Micro-Agent Runtime**: (P1) Lifecycle management for "just-in-time" agent nodes that execute a single task and vanish, reducing long-term session vulnerability.
+
+### Priority Shifts
+- **A2A Interop Bridge**: Promoted to **P0** (Already P0, but increased urgency). Integration with OpenClaw's "Session Messaging" is now a top requirement.
+- **Lazy-MCP Middleware**: Re-prioritized to include **Policy-Enforcement** as a hard dependency for P0 completion.
+
+### Deprecations / Monitoring
+- **Global Tool Search**: Monitoring for deprecation in favor of **Scoped Search** to prevent information leakage during the discovery phase.

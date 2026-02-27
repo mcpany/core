@@ -57,3 +57,9 @@ As the number of available MCP tools grows, agents face "context pollution"—wh
 
 ## 7. Evolutionary Changelog
 *   **2026-02-25:** Initial Document Creation.
+*   **2026-02-27:** **Update: Policy-Enforced Search & Dynamic Tool Notifications**
+    - **Context:** Claude Code's beta tool search and Gemini CLI's shift to dynamic `list_changed` notifications necessitate a more reactive and secure discovery layer.
+    - **Architecture Adjustment:**
+        - **Scoped Discovery**: Integrating `Policy Firewall` directly into the search index. Search queries will now implicitly filter results based on the caller's capability tokens.
+        - **Reactive Indexing**: Implementing support for `notifications/tools/list_changed`. When an upstream MCP server signals a change, MCP Any will partially re-index only that server's tools, ensuring the "Lazy Search" index is always current without a full restart.
+    - **Security Impact:** Prevents "Discovery-based Reconnaissance" where a sub-agent might use the search tool to find sensitive tools it shouldn't know exist.
