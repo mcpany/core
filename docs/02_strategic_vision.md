@@ -47,3 +47,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **A2A Gateway Protocol**: MCP Any will implement a protocol-neutral bridge for A2A communication, allowing disparate agent frameworks (e.g., OpenClaw, AutoGen) to exchange state and tasks via a unified MCP-like interface.
 - **Federated Tool Mesh**: Moving from a standalone server to a "Mesh" architecture where multiple MCP Any instances can peer and share resources across network boundaries, governed by global Zero-Trust policies.
 - **Resource-Aware Intelligence**: Integrating cost and latency telemetry into the tool discovery process, allowing LLMs to perform "Economical Reasoning" when selecting tools.
+
+---
+
+## Strategic Evolution: [2026-02-27]
+### Focus: Deep Security Auditing & Session-Bound Seatbelts
+**Context**: Today's research highlights a critical shift towards treating agents as server infrastructure (OpenClaw) and the stabilization of core agentic tools (Claude Code GA). Security is moving from "Allowlists" to deep auditing and "Strict Seatbelt" session policies (Gemini CLI).
+**Strategic Pivot**:
+- **Infrastructure-Grade Auditing**: MCP Any will pivot to a "Verify-First" model where all connected MCP servers undergo a deep security audit (inspired by OpenClaw) before being exposed to LLMs.
+- **Unified SessionContext Propagation**: Implementing a standardized header protocol for `SessionContext` to ensure that context isolation and policy enforcement are consistent across multi-agent swarms.
+- **Strict Seatbelt Middleware**: Transitioning from global static policies to dynamic "Seatbelt Profiles" that can be hardened per session or per task phase, preventing unauthorized system access by specialized subagents.
+- **Auto-Compaction Discovery**: Evolving the On-Demand Discovery middleware to include "Context Compaction" triggers, ensuring that tool-heavy sessions maintain high reasoning density without token overflow.

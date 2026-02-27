@@ -65,3 +65,20 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **Automated Security Audit Middleware**: (P0) Deep auditing of MCP upstreams for unauthorized file/secret access, inspired by `openclaw security audit`.
+- **SessionContext Propagation Protocol**: (P0) Standardized propagation of `SessionContext` (per Gemini CLI) to ensure isolated policy enforcement.
+- **Strict Seatbelt Profiles**: (P0) Session-bound security profiles that harden tool access based on task phase or agent identity.
+- **Context Compaction Middleware**: (P1) Automatic truncation and summarization of tool-heavy contexts, triggered at 50k tokens (matching Claude Code).
+- **Subagent Identity Anchoring**: (P1) Ensuring `SessionContext` persists across recursive subagent calls without identity leakage.
+
+### Priority Shifts
+- **Environment Bridging Middleware**: Re-affirmed as **P0**. Critical for bridging local audited tools to cloud-based GA agent environments.
+
+### Deprecations / Monitoring
+- **Static Allow-lists**: Monitoring for deprecation in favor of dynamic Policy Engines with "Seatbelt" profiles.

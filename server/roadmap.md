@@ -29,6 +29,13 @@
 *   **[P1] Federated MCP Peering**: Distributed node discovery and tool proxying. (Added: 2026-02-26)
 *   **[P1] Resource Telemetry Middleware**: Inject latency/cost metrics into tool schemas. (Added: 2026-02-26)
 
+#### Upcoming (2026-02-27 Evolution)
+*   **[P0] Automated Security Audit Middleware**: Deep auditing of MCP upstreams for unauthorized access (inspired by OpenClaw). (Added: 2026-02-27)
+*   **[P0] SessionContext Propagation Protocol**: Standardized header-based context isolation (per Gemini CLI). (Added: 2026-02-27)
+*   **[P0] Strict Seatbelt Profiles**: Session-bound safety hardening profiles. (Added: 2026-02-27)
+*   **[P1] Context Compaction Middleware**: Automatic token-based context reduction (matching Claude Code). (Added: 2026-02-27)
+*   **[P1] Subagent Identity Anchoring**: Ensure `SessionContext` persistence in recursive calls. (Added: 2026-02-27)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

@@ -57,3 +57,11 @@ As the number of available MCP tools grows, agents face "context pollution"—wh
 
 ## 7. Evolutionary Changelog
 *   **2026-02-25:** Initial Document Creation.
+
+### Update: 2026-02-27 - GA Tool Search Alignment & Auto-Compaction
+**Context:** Today's research confirms the General Availability of Claude Code's Tool Search and the implementation of "Context Compaction" at 50k tokens.
+**Architecture Adjustment:**
+*   **GA-Standard Performance**: Benchmarking similarity search to meet GA latency requirements (< 200ms for 1k tools).
+*   **Auto-Compaction Trigger**: Integrating a middleware hook that monitors session token counts. When > 50k tokens, the discovery engine automatically triggers "Context Compaction," replacing full schemas with minimal summaries for non-pinned tools.
+*   **Pinning & Retention**: Implementing a "Pinning" mechanism where agents can explicitly mark tools to be excluded from auto-compaction.
+**Security Impact:** Reduces "Reasoning Distraction" and prevents token overflow in long-running sessions.
