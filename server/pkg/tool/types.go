@@ -4337,7 +4337,8 @@ func validateSafePathAndInjection(val string, isDocker bool, commandName string)
 		} else {
 			if validation.IsLoopbackShorthand(val) {
 				allowLoopback := os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == trueStr
-				if !allowLoopback {
+				allowDangerous := os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == trueStr
+				if !allowLoopback && !allowDangerous {
 					return fmt.Errorf("unsafe argument: loopback shorthand address is not allowed")
 				}
 			}

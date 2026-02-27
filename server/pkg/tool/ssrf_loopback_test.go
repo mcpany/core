@@ -13,7 +13,9 @@ import (
 func TestValidateSafePathAndInjection_LoopbackShorthand(t *testing.T) {
 	// Ensure loopback is blocked by default
 	os.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "false")
+	os.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "false")
 	defer os.Unsetenv("MCPANY_ALLOW_LOOPBACK_RESOURCES")
+	defer os.Unsetenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS")
 
 	tests := []struct {
 		name      string
