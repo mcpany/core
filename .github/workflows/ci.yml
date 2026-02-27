@@ -154,6 +154,7 @@ jobs:
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
+      MCPANY_MCP_LISTEN_ADDRESS: :0
     steps:
       - name: Free Disk Space (Fast)
         run: |

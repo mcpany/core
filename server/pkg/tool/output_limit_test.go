@@ -6,7 +6,9 @@ package tool
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"os"
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -18,7 +20,47 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
+// createHelperProgram creates a Go program that prints 'a' n times to stdout.
+func createHelperProgram(t *testing.T) string {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "printer.go")
+	content := `package main
+import (
+	"fmt"
+	"os"
+	"strconv"
+	"strings"
+)
+
+func main() {
+	if len(os.Args) < 2 {
+		return
+	}
+	n, _ := strconv.Atoi(os.Args[1])
+	// Print in chunks to avoid memory issues with huge strings
+	chunkSize := 1024 * 1024
+	chunk := strings.Repeat("a", chunkSize)
+
+	for n > 0 {
+		if n >= chunkSize {
+			fmt.Print(chunk)
+			n -= chunkSize
+		} else {
+			fmt.Print(strings.Repeat("a", n))
+			n = 0
+		}
+	}
+}
+`
+	err := os.WriteFile(path, []byte(content), 0600)
+	assert.NoError(t, err)
+	return path
+}
+
 func TestLocalCommandTool_Execute_LargeOutput(t *testing.T) {
+	helperPath := createHelperProgram(t)
+	size := consts.DefaultMaxCommandOutputBytes
+
 	inputSchema, _ := structpb.NewStruct(map[string]interface{}{
 		"properties": map[string]interface{}{
 			"args": map[string]interface{}{},
@@ -30,13 +72,12 @@ func TestLocalCommandTool_Execute_LargeOutput(t *testing.T) {
 	}.Build()
 
 	service := configv1.CommandLineUpstreamService_builder{
-		Command: proto.String("sh"),
+		Command: proto.String("go"),
 		Local:   proto.Bool(true),
 	}.Build()
 
-	// Use printf to generate output without relying on /dev/zero or external binaries like head/dd which might fail in minimal containers
 	callDef := configv1.CommandLineCallDefinition_builder{
-		Args: []string{"-c", "printf '%10485760s' ' '"},
+		Args: []string{"run", helperPath, fmt.Sprintf("%d", size)},
 	}.Build()
 
 	localTool := NewLocalCommandTool(toolDef, service, callDef, nil, "call-id")
@@ -59,8 +100,8 @@ func TestLocalCommandTool_Execute_LargeOutput(t *testing.T) {
 		stderr, _ := resultMap["stderr"].(string)
 		exitCode, _ := resultMap["return_code"].(int)
 
-		if !assert.Equal(t, consts.DefaultMaxCommandOutputBytes, len(stdout)) {
-			t.Logf("Stdout length mismatch. ExitCode: %d, Stderr: %s", exitCode, stderr)
+		if !assert.Equal(t, size, len(stdout)) {
+			t.Logf("Stdout length mismatch. Expected: %d, Actual: %d. ExitCode: %d, Stderr: %s", size, len(stdout), exitCode, stderr)
 		}
 		t.Logf("Execution took %v, output size: %d", time.Since(start), len(stdout))
 	}
@@ -69,6 +110,9 @@ func TestLocalCommandTool_Execute_LargeOutput(t *testing.T) {
 func TestLocalCommandTool_Execute_LargeOutput_Truncated(t *testing.T) {
 	os.Setenv("MCPANY_MAX_COMMAND_OUTPUT_SIZE", "1024")
 	defer os.Unsetenv("MCPANY_MAX_COMMAND_OUTPUT_SIZE")
+
+	helperPath := createHelperProgram(t)
+	targetSize := 2048
 
 	inputSchema, _ := structpb.NewStruct(map[string]interface{}{
 		"properties": map[string]interface{}{
@@ -81,12 +125,12 @@ func TestLocalCommandTool_Execute_LargeOutput_Truncated(t *testing.T) {
 	}.Build()
 
 	service := configv1.CommandLineUpstreamService_builder{
-		Command: proto.String("sh"),
+		Command: proto.String("go"),
 		Local:   proto.Bool(true),
 	}.Build()
 
 	callDef := configv1.CommandLineCallDefinition_builder{
-		Args: []string{"-c", "printf '%2048s' ' '"},
+		Args: []string{"run", helperPath, fmt.Sprintf("%d", targetSize)},
 	}.Build()
 
 	localTool := NewLocalCommandTool(toolDef, service, callDef, nil, "call-id")
