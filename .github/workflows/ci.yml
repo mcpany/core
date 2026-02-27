@@ -295,36 +295,36 @@ jobs:
       - name: Build Server
         run: |
           make -C server build-docker PLATFORMS=linux/amd64 CACHE_TO=type=gha,mode=max,scope=server-amd64 CACHE_FROM=type=gha,scope=server-amd64
-          docker save mcpany/server:latest | gzip > server.tar.gz
+          docker save mcpany/server:latest -o server.tar
       - name: Upload Server
         uses: actions/upload-artifact@v4
         with:
           name: image-server-amd64
-          path: server.tar.gz
+          path: server.tar
           retention-days: 1
 
       - name: Build Everything
         run: |
           docker system prune -f
           make -C server build-everything-docker PLATFORMS=linux/amd64 CACHE_TO=type=gha,mode=max,scope=everything-amd64 CACHE_FROM=type=gha,scope=everything-amd64
-          docker save mcpany/everything:latest | gzip > everything.tar.gz
+          docker save mcpany/everything:latest -o everything.tar
       - name: Upload Everything
         uses: actions/upload-artifact@v4
         with:
           name: image-everything-amd64
-          path: everything.tar.gz
+          path: everything.tar
           retention-days: 1
 
       - name: Build Operator
         run: |
           docker system prune -f
           make -C server docker-build-operator PLATFORMS=linux/amd64 CACHE_TO=type=gha,mode=max,scope=operator-amd64 CACHE_FROM=type=gha,scope=operator-amd64
-          docker save mcpany/operator:latest | gzip > operator.tar.gz
+          docker save mcpany/operator:latest -o operator.tar
       - name: Upload Operator
         uses: actions/upload-artifact@v4
         with:
           name: image-operator-amd64
-          path: operator.tar.gz
+          path: operator.tar
           retention-days: 1
 
   build-test-images:
@@ -357,36 +357,36 @@ jobs:
       - name: Build HTTP Echo
         run: |
           make -C server build-http-echo-docker PLATFORMS=linux/amd64 CACHE_TO=type=gha,mode=max,scope=http-echo-amd64 CACHE_FROM=type=gha,scope=http-echo-amd64
-          docker save mcpany/http-echo-server:latest | gzip > http-echo.tar.gz
+          docker save mcpany/http-echo-server:latest -o http-echo.tar
       - name: Upload HTTP Echo
         uses: actions/upload-artifact@v4
         with:
           name: image-http-echo-amd64
-          path: http-echo.tar.gz
+          path: http-echo.tar
           retention-days: 1
 
       - name: Build Time Server
         run: |
           docker system prune -f
           make -C server build-e2e-timeserver-docker PLATFORMS=linux/amd64 CACHE_TO=type=gha,mode=max,scope=time-server-amd64 CACHE_FROM=type=gha,scope=time-server-amd64
-          docker save mcpany-e2e-time-server | gzip > time-server.tar.gz
+          docker save mcpany-e2e-time-server -o time-server.tar
       - name: Upload Time Server
         uses: actions/upload-artifact@v4
         with:
           name: image-time-server-amd64
-          path: time-server.tar.gz
+          path: time-server.tar
           retention-days: 1
 
       - name: Build Cowsay
         run: |
           docker system prune -f
           make -C server build-cowsay-docker PLATFORMS=linux/amd64 CACHE_TO=type=gha,mode=max,scope=cowsay-amd64 CACHE_FROM=type=gha,scope=cowsay-amd64
-          docker save mcpany/e2e-cowsay-server:latest | gzip > cowsay.tar.gz
+          docker save mcpany/e2e-cowsay-server:latest -o cowsay.tar
       - name: Upload Cowsay
         uses: actions/upload-artifact@v4
         with:
           name: image-cowsay-amd64
-          path: cowsay.tar.gz
+          path: cowsay.tar
           retention-days: 1
 
   build-ui-images:
@@ -425,24 +425,24 @@ jobs:
       - name: Build UI
         run: |
           make -C server docker-build-ui PLATFORMS=linux/amd64 CACHE_TO=type=gha,mode=max,scope=ui-amd64 CACHE_FROM=type=gha,scope=ui-amd64
-          docker save mcpany/ui:latest | gzip > ui.tar.gz
+          docker save mcpany/ui:latest -o ui.tar
       - name: Upload UI
         uses: actions/upload-artifact@v4
         with:
           name: image-ui-amd64
-          path: ui.tar.gz
+          path: ui.tar
           retention-days: 1
 
       - name: Build UI Test
         run: |
           docker system prune -f
           make -C ui build-test-docker PLATFORMS=linux/amd64 CACHE_TO=type=gha,mode=max,scope=ui-test-amd64 CACHE_FROM=type=gha,scope=ui-test-amd64
-          docker save mcpany-ui-e2e:latest | gzip > ui-test-image.tar.gz
+          docker save mcpany-ui-e2e:latest -o ui-test-image.tar
       - name: Upload UI Test
         uses: actions/upload-artifact@v4
         with:
           name: image-ui-test-amd64
-          path: ui-test-image.tar.gz
+          path: ui-test-image.tar
           retention-days: 1
 
   # ==========================================
@@ -511,7 +511,7 @@ jobs:
           esac
           echo "slug=$SLUG" >> $GITHUB_OUTPUT
 
-      # Explicit Downloads with Distinct Paths
+      # Explicit Downloads with Distinct Paths (No Gzip)
       - name: Download Server Image
         uses: actions/download-artifact@v4
         with:
@@ -548,9 +548,9 @@ jobs:
           ls -R downloads || echo "Downloads dir empty/missing"
 
           # Manually load files to ensure robust handling and failure on missing files
-          for file in $(find downloads -type f -name "*.tar.gz"); do
+          for file in $(find downloads -type f -name "*.tar"); do
             echo "Loading $file..."
-            gzip -dc "$file" | sudo docker load || exit 1
+            sudo docker load -i "$file" || exit 1
           done
 
           # Verify at least one image loaded (optional, but good for sanity)
@@ -672,9 +672,9 @@ jobs:
       - name: Load Docker Images
         run: |
           ls -R downloads || echo "Downloads missing"
-          for file in $(find downloads -type f -name "*.tar.gz"); do
+          for file in $(find downloads -type f -name "*.tar"); do
             echo "Loading $file..."
-            gzip -dc "$file" | sudo docker load || exit 1
+            sudo docker load -i "$file" || exit 1
           done
 
       - name: Prepare environment
@@ -803,9 +803,9 @@ jobs:
       - name: Load Docker Images
         run: |
           ls -R downloads || echo "Downloads missing"
-          for file in $(find downloads -type f -name "*.tar.gz"); do
+          for file in $(find downloads -type f -name "*.tar"); do
             echo "Loading $file..."
-            gzip -dc "$file" | sudo docker load || exit 1
+            sudo docker load -i "$file" || exit 1
           done
 
       - name: test public api
@@ -855,7 +855,7 @@ jobs:
 
       - name: Load Docker Image
         run: |
-          find downloads -name "server.tar.gz" -print0 | xargs -0 -I {} sh -c 'echo "Loading {}"; gzip -dc "{}" | docker load'
+          find downloads -name "server.tar" -print0 | xargs -0 -I {} sh -c 'echo "Loading {}"; sudo docker load -i "{}"'
 
       - name: Smoke Test
         run: |
@@ -917,9 +917,9 @@ jobs:
       - name: Load Docker Images
         run: |
           ls -R downloads || echo "Downloads missing"
-          for file in $(find downloads -type f -name "*.tar.gz"); do
+          for file in $(find downloads -type f -name "*.tar"); do
             echo "Loading $file..."
-            gzip -dc "$file" | sudo docker load || exit 1
+            sudo docker load -i "$file" || exit 1
           done
 
       - name: Test UI
@@ -1002,9 +1002,9 @@ jobs:
       - name: Load Docker Images into Kind
         run: |
           ls -R downloads || echo "Downloads missing"
-          for file in $(find downloads -type f -name "*.tar.gz"); do
+          for file in $(find downloads -type f -name "*.tar"); do
             echo "Loading $file..."
-            gzip -dc "$file" | sudo docker load || exit 1
+            sudo docker load -i "$file" || exit 1
           done
 
           # Now load specific images into Kind
