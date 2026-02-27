@@ -34,7 +34,9 @@ jobs:
       src: ${{ steps.filter.outputs.src }}
     steps:
       - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y git
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: sudo apt-get update -y && sudo apt-get install -y git
 
       - uses: actions/checkout@v6
         with:
