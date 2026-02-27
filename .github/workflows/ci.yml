@@ -131,11 +131,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
-          elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz gcc musl-dev
-          fi
+          sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
 
       - name: Prepare environment
         run: make prepare
@@ -166,11 +162,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
-          elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz gcc musl-dev
-          fi
+          sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -304,11 +296,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
-          elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz gcc musl-dev
-          fi
+          sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -607,11 +595,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
-          elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz gcc musl-dev
-          fi
+          sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -752,11 +736,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
-          elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz gcc musl-dev
-          fi
+          sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -959,9 +939,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make
-          fi
+          sudo apt-get update && sudo apt-get install -y make
 
       - name: Download HTTP Echo Image
         uses: actions/download-artifact@v4
