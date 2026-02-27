@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **Secure Hook Execution Engine**: (P0) A sandboxed environment and approval middleware for executing tool-defined lifecycle hooks and config-based shell commands. Prevents "Claude Code"-style RCE exploits.
+- **Skill Marketplace Verifier**: (P1) Automated provenance and cryptographic signature verification for third-party MCP servers (e.g., those from Clawhub).
+- **Managed-Local Hybrid Bridge**: (P1) Synchronizes local security telemetry and policy enforcement with a central management plane for enterprise-grade safety.
+
+### Priority Shifts
+- **Supply Chain Integrity Guard**: Re-affirming **P0** status. Essential for preventing malicious "skill" injection.
+- **HITL Middleware**: Promoted to **P0** as it is a critical component for the Secure Hook Execution Engine.
+
+### Deprecations / Monitoring
+- **Implicit Hook Execution**: Deprecating any automatic execution of tool-defined lifecycle hooks without user consent or sandbox containment.
