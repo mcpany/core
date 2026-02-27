@@ -487,7 +487,9 @@ jobs:
           cache-dependency-path: server/tests/integration/upstream/package-lock.json
 
       - name: Install dependencies
-        run: apt-get update && apt-get install -y make curl unzip
+        run: |
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends make curl unzip git build-essential
 
       - name: Generate Protobufs
         run: |
