@@ -267,7 +267,7 @@ jobs:
             ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-
 
       - name: Prepare environment
-        run: make prepare CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache
+        run: make gen
 
       - name: Test (Short)
         run: |
@@ -487,7 +487,7 @@ jobs:
           cache-dependency-path: server/tests/integration/upstream/package-lock.json
 
       - name: Install dependencies
-        run: apt-get update && apt-get install -y make
+        run: apt-get update && apt-get install -y make curl unzip
 
       - name: Generate Protobufs
         run: |
