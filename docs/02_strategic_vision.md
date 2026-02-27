@@ -47,3 +47,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **A2A Gateway Protocol**: MCP Any will implement a protocol-neutral bridge for A2A communication, allowing disparate agent frameworks (e.g., OpenClaw, AutoGen) to exchange state and tasks via a unified MCP-like interface.
 - **Federated Tool Mesh**: Moving from a standalone server to a "Mesh" architecture where multiple MCP Any instances can peer and share resources across network boundaries, governed by global Zero-Trust policies.
 - **Resource-Aware Intelligence**: Integrating cost and latency telemetry into the tool discovery process, allowing LLMs to perform "Economical Reasoning" when selecting tools.
+
+---
+
+## Strategic Evolution: [2026-02-27]
+### Focus: Organizational MCP & Secure Inter-Agent Transport
+**Context**: Today's release of Claude Cowork Connectors and the rising concern over local port exposure in agent swarms necessitate a shift toward enterprise-grade isolation and multi-tenant tool management.
+**Strategic Pivot**:
+- **Enterprise IAM Integration**: MCP Any will evolve to bridge traditional enterprise Identity and Access Management (IAM) with MCP's capability-based security, enabling "Organizational MCP" where tools are shared across teams.
+- **Isolated Transport (Non-IP)**: To mitigate "local network" exploits, MCP Any will support non-TCP transport layers like Docker-bound named pipes or Unix Domain Sockets for inter-agent communication within the same host or cluster.
+- **Cross-Framework Context standard**: Deepening the Recursive Context Protocol to ensure interoperability with Gemini's `GEMINI.md` and Claude's memory features, creating a truly "Universal Memory" for agents.

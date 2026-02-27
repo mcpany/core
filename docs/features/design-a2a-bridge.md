@@ -46,3 +46,7 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-02-27:** **Update: Enhancing Transport Security**.
+    *   Today's research into local port exposure exploits has led to a pivot in transport recommendations.
+    *   **Architecture Adjustment**: The bridge will prioritize Isolated Local Transport (UDS/Named Pipes) over standard TCP loopback for local A2A agents.
+    *   **Security Impact**: Prevents unauthorized cross-process snooping of A2A message traffic on the same host.

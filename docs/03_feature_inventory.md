@@ -59,9 +59,18 @@
 - **Federated MCP Node Peering**: (P1) Secure discovery and proxying of tools across distributed MCP Any instances.
 - **Cost & Latency Telemetry Middleware**: (P1) Automatically injects performance metadata into tool schemas to enable resource-aware agent reasoning.
 
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **Enterprise IAM Bridge (OIDC/SAML to MCP)**: (P1) Map organizational identities to granular MCP tool permissions, supporting the "Claude Cowork" model.
+- **Isolated Local Transport (Named Pipes/UDS)**: (P0) Support for Unix Domain Sockets and Windows Named Pipes to eliminate local port exposure for inter-agent comms.
+- **Universal Memory Adapter**: (P1) Bi-directional mapping between MCP Recursive Context and framework-specific formats (e.g., `GEMINI.md`, Claude Memory).
+
 ### Priority Shifts
-- **MCP Provenance Attestation**: Promoted to **P0** as it is a prerequisite for secure Federated MCP peering.
-- **Lazy-MCP Middleware**: Promoted to **P0** (Already P0, but re-affirming importance for Federated Tool Mesh).
+- **A2A Interop Bridge**: Re-affirming **P0** priority as multi-agent handoffs become the standard in OpenClaw and AutoGen.
+- **Environment Bridging Middleware**: Re-affirming **P0** due to increased use of cloud-sandboxed agents requiring local tool access.
 
 ### Deprecations / Monitoring
-- **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+- **Unencrypted Local HTTP for A2A**: Monitoring for deprecation in favor of Isolated Local Transport.

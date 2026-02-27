@@ -29,6 +29,11 @@
 *   **[P1] Federated MCP Peering**: Distributed node discovery and tool proxying. (Added: 2026-02-26)
 *   **[P1] Resource Telemetry Middleware**: Inject latency/cost metrics into tool schemas. (Added: 2026-02-26)
 
+#### Upcoming (2026-02-27 Evolution)
+*   **[P0] Isolated Local Transport (Named Pipes/UDS)**: Eliminate local port exposure for inter-agent comms. (Added: 2026-02-27)
+*   **[P1] Enterprise IAM Bridge (OIDC/SAML)**: Map organizational identities to MCP tool permissions. (Added: 2026-02-27)
+*   **[P1] Universal Memory Adapter**: Bi-directional mapping between Recursive Context and Gemini/Claude memory formats. (Added: 2026-02-27)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
