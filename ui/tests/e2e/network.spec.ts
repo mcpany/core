@@ -46,20 +46,15 @@ test.describe('Network Topology', () => {
 
     // Use Filter control
     const filterBtn = page.getByRole('button', { name: /Filter|View/i });
+    await expect(filterBtn).toBeVisible();
+    await filterBtn.click();
 
-    if (await filterBtn.isVisible()) {
-        await filterBtn.click();
-        const serviceToggle = page.getByRole('menuitemcheckbox').filter({ hasText: /Services|Nodes/i });
-        if (await serviceToggle.count() > 0) {
-            await serviceToggle.first().click();
-            // Verify nodes disappear or count changes
-             await page.waitForTimeout(500);
-             // Logic depends on actual implementation of filter.
-        } else {
-             console.log('Filter options not found, skipping specific filter interaction');
-        }
-    } else {
-        console.log('Filter button not found in UI');
-    }
+    const serviceToggle = page.getByRole('menuitemcheckbox').filter({ hasText: /Services|Nodes/i });
+    // Assert at least one filter option exists
+    await expect(serviceToggle.first()).toBeVisible();
+
+    await serviceToggle.first().click();
+    // Verify nodes disappear or count changes
+    await page.waitForTimeout(500);
   });
 });

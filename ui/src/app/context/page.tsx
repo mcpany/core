@@ -27,23 +27,35 @@ export default function ContextPage() {
   const handleSeedData = async () => {
       setSeeding(true);
       try {
-          // Attempt to register a mock service using the in-tree mock server.
-          // This requires the server to be running in an environment where 'go' is available
-          // or the binary is built.
-          await apiClient.registerService({
-              id: "context-heavy-mock",
-              name: "Context Heavy Mock",
-              version: "1.0.0",
-              disable: false,
-              priority: 0,
-              commandLineService: {
-                  command: "go run server/cmd/mock_mcp_server/main.go",
-                  workingDirectory: ".",
-                  env: {}
-              }
-           } as any);
+          // Use the real backend seeding API which is reliable and consistent
+          const res = await fetch('/api/v1/debug/seed', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                  upstream_services: [{
+                      id: "context-heavy-mock",
+                      name: "Context Heavy Mock",
+                      version: "1.0.0",
+                      http_service: {
+                          address: "http://example.com/mock", // Placeholder, seed logic handles data
+                          tools: [
+                              { name: "heavy_tool", description: "Generates heavy context", call_id: "heavy" }
+                          ]
+                      }
+                  }],
+                  service_templates: [],
+                  users: [],
+                  credentials: [],
+                  secrets: [],
+                  profiles: []
+              })
+          });
 
-           toast({ title: "Seeded Mock Service", description: "Registered 'Context Heavy Mock'." });
+          if (!res.ok) {
+              throw new Error(`Failed to seed: ${res.statusText}`);
+          }
+
+           toast({ title: "Seeded Data", description: "Successfully seeded context data via API." });
 
            // Trigger reload to refresh context data
            window.location.reload();
@@ -52,7 +64,7 @@ export default function ContextPage() {
           console.error("Seeding failed", e);
           toast({
               title: "Seeding Failed",
-              description: "Could not register mock service. Ensure 'go' is in the server path or use an existing service.",
+              description: "Could not seed data. Check server logs.",
               variant: "destructive"
           });
       } finally {

@@ -12,6 +12,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/alicebob/miniredis/v2"
 	"github.com/go-redis/redismock/v9"
 	bus_pb "github.com/mcpany/core/proto/bus"
 	"github.com/mcpany/core/server/pkg/logging"
@@ -27,17 +28,28 @@ import (
 func setupRedisIntegrationTest(t *testing.T) *redis.Client {
 	t.Helper()
 	redisAddr := os.Getenv("REDIS_ADDR")
+
 	if redisAddr == "" {
-		redisAddr = "127.0.0.1:6379"
+		// Use miniredis if no external address provided
+		mr, err := miniredis.Run()
+		if err != nil {
+			t.Fatalf("failed to start miniredis: %v", err)
+		}
+		redisAddr = mr.Addr()
+		t.Cleanup(mr.Close)
 	}
+
 	client := redis.NewClient(&redis.Options{
 		Addr: redisAddr,
 	})
-	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+
+	// Quick ping check
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
 	if _, err := client.Ping(ctx).Result(); err != nil {
-		t.Skip("Redis is not available")
+		t.Fatalf("Redis is not available at %s: %v", redisAddr, err)
 	}
+
 	t.Cleanup(func() {
 		_ = client.Close()
 	})
@@ -785,7 +797,6 @@ func TestBus_SubscribeOnce_CancelledContext(t *testing.T) {
 // SPDX-License-Identifier: Apache-2.0
 
 func TestBus_Subscribe_ConcurrentSubscribers(t *testing.T) {
-	// t.Skip("Skipping flaky concurrent subscribers test")
 	client := setupRedisIntegrationTest(t)
 	// Explicitly close client to avoid leaks if this test becomes sensitive or other tests run
 	defer client.Close()

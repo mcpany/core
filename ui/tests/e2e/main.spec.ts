@@ -52,14 +52,11 @@ test.describe('MCP Any UI E2E', () => {
       console.log('System Health card not found, adding via Add Widget sheet...');
       // Open add widget sheet
       const addTrigger = page.getByTestId('add-widget-trigger');
-      if (await addTrigger.isVisible()) {
-          await addTrigger.first().click();
-          await page.getByText('Metrics Overview', { exact: true }).first().click();
-          // Wait for it to be added
-          await expect(systemHealthCard).toBeVisible({ timeout: 30000 });
-      } else {
-          console.log('Add widget trigger not found, skipping widget addition');
-      }
+      await expect(addTrigger.first()).toBeVisible({ timeout: 5000 });
+      await addTrigger.first().click();
+      await page.getByText('Metrics Overview', { exact: true }).first().click();
+      // Wait for it to be added
+      await expect(systemHealthCard).toBeVisible({ timeout: 30000 });
     } else {
       console.log('System Health card already visible.');
     }
@@ -108,13 +105,6 @@ test.describe('MCP Any UI E2E', () => {
 
   test('Middleware page drag and drop', async ({ page }) => {
     await page.goto('/middleware');
-
-    // Graceful handling of environment specific 404s
-    const is404 = await page.locator('text=This page could not be found').count() > 0;
-    if (is404) {
-      console.log('Middleware page returned 404, skipping test in this environment');
-      return;
-    }
 
     await expect(page.locator('h1')).toContainText('Middleware Pipeline');
     await expect(page.locator('text=Processing Order')).toBeVisible();
