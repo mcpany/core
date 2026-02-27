@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **Just-in-Time (JIT) Tool Attestation Middleware**: (P0) Verifies the integrity and authorization of a tool schema *immediately before* it is served to an agent. Prevents context-based schema injection.
+- **Adaptive Discovery (Vector Search)**: (P0) Implements semantic search for tool discovery, optimized for Claude Code's discovery patterns. (Evolution of Lazy-MCP).
+- **Skill Signature Verification (SSV)**: (P0) Cryptographic verification of MCP server binaries and "Skill" configs before registration. Prevents supply chain attacks like those seen in OpenClaw.
+
+### Priority Shifts
+- **On-Demand Discovery Middleware (Lazy-MCP)**: Promoted to **P0** (re-affirmed) and merged with **Adaptive Discovery**.
+- **MCP Provenance Attestation**: Promoted to **P0** and expanded into **Skill Signature Verification**.
+
+### Deprecations / Monitoring
+- **Manual "Allowed-Tools" Lists**: Monitoring for deprecation in favor of the **Policy Engine** and **JIT Attestation**.

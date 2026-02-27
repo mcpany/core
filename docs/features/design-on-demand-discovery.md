@@ -57,3 +57,8 @@ As the number of available MCP tools grows, agents face "context pollution"—wh
 
 ## 7. Evolutionary Changelog
 *   **2026-02-25:** Initial Document Creation.
+*   **2026-02-27: Adaptive Discovery Update**
+    *   **Context:** Today's market sync revealed Claude Code's official rollout of "MCP Tool Search."
+    *   **Architecture Adjustment:** Pivoting from simple BM25 to a **Vector-Hybrid Search**.
+    *   **Feature Expansion:** Adding `mcpany_search_tools` support for semantic queries (embedding-based) to better match agent "intent" rather than just keywords.
+    *   **Security Integration:** Ensuring search results are filtered by the newly proposed **JIT Tool Attestation** (SSV).
