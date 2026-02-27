@@ -667,6 +667,13 @@ jobs:
           esac
           echo "slug=$SLUG" >> $GITHUB_OUTPUT
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: "npm"
+          cache-dependency-path: ui/package-lock.json
+
       - name: Download Server Image
         uses: actions/download-artifact@v4
         with:
@@ -887,6 +894,13 @@ jobs:
           esac
           echo "slug=$SLUG" >> $GITHUB_OUTPUT
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: "npm"
+          cache-dependency-path: ui/package-lock.json
+
       - name: Download Server Image
         uses: actions/download-artifact@v4
         with:
@@ -942,6 +956,12 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: image-ui-test-${{ steps.detect-arch.outputs.slug }}
+
+      - name: Install dependencies
+        run: |
+          if command -v apt-get &> /dev/null; then
+            sudo apt-get update && sudo apt-get install -y make
+          fi
 
       - name: Download HTTP Echo Image
         uses: actions/download-artifact@v4
