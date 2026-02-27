@@ -32,8 +32,6 @@ type SeedRequest struct {
 
 // handleDebugSeed creates a handler to seed the database with data.
 // It clears existing data before inserting new data.
-// handleDebugSeed creates a handler to seed the database with data.
-// It clears existing data before inserting new data.
 func (a *Application) handleDebugSeed() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
@@ -159,7 +157,7 @@ func (a *Application) seedData(ctx context.Context, req SeedRequest) error {
 	serviceSources := [][]json.RawMessage{req.ServicesRaw, req.ServicesAltRaw}
 	for _, source := range serviceSources {
 		for _, raw := range source {
-			s := configv1.UpstreamServiceConfig_builder{}.Build()
+			s := &configv1.UpstreamServiceConfig{}
 			if err := protojson.Unmarshal(raw, s); err != nil {
 				return fmt.Errorf("invalid json in service: %w", err)
 			}
@@ -174,45 +172,45 @@ func (a *Application) seedData(ctx context.Context, req SeedRequest) error {
 	}
 
 	for _, raw := range req.CredentialsRaw {
-		c := configv1.Credential_builder{}.Build()
+		c := &configv1.Credential{}
 		if err := protojson.Unmarshal(raw, c); err != nil {
-			return fmt.Errorf("invalid json")
+			return fmt.Errorf("invalid json in credential: %w", err)
 		}
 		if err := a.Storage.SaveCredential(ctx, c); err != nil {
 			return fmt.Errorf("failed to save credential %s: %w", c.GetId(), err)
 		}
 	}
 	for _, raw := range req.SecretsRaw {
-		s := configv1.Secret_builder{}.Build()
+		s := &configv1.Secret{}
 		if err := protojson.Unmarshal(raw, s); err != nil {
-			return fmt.Errorf("invalid json")
+			return fmt.Errorf("invalid json in secret: %w", err)
 		}
 		if err := a.Storage.SaveSecret(ctx, s); err != nil {
 			return fmt.Errorf("failed to save secret %s: %w", s.GetId(), err)
 		}
 	}
 	for _, raw := range req.ProfilesRaw {
-		p := configv1.ProfileDefinition_builder{}.Build()
+		p := &configv1.ProfileDefinition{}
 		if err := protojson.Unmarshal(raw, p); err != nil {
-			return fmt.Errorf("invalid json")
+			return fmt.Errorf("invalid json in profile: %w", err)
 		}
 		if err := a.Storage.SaveProfile(ctx, p); err != nil {
 			return fmt.Errorf("failed to save profile %s: %w", p.GetName(), err)
 		}
 	}
 	for _, raw := range req.UsersRaw {
-		u := configv1.User_builder{}.Build()
+		u := &configv1.User{}
 		if err := protojson.Unmarshal(raw, u); err != nil {
-			return fmt.Errorf("invalid json")
+			return fmt.Errorf("invalid json in user: %w", err)
 		}
 		if err := a.Storage.CreateUser(ctx, u); err != nil {
 			return fmt.Errorf("failed to create user %s: %w", u.GetId(), err)
 		}
 	}
 	for _, raw := range req.TemplatesRaw {
-		t := configv1.ServiceTemplate_builder{}.Build()
+		t := &configv1.ServiceTemplate{}
 		if err := protojson.Unmarshal(raw, t); err != nil {
-			return fmt.Errorf("invalid json")
+			return fmt.Errorf("invalid json in template: %w", err)
 		}
 		if err := a.Storage.SaveServiceTemplate(ctx, t); err != nil {
 			return fmt.Errorf("failed to save service template %s: %w", t.GetId(), err)
@@ -220,12 +218,6 @@ func (a *Application) seedData(ctx context.Context, req SeedRequest) error {
 	}
 
 	// Seed Logs (if supported by storage/app)
-	// We'll use a hack to push them to the logger or storage directly if possible.
-	// Since we don't have a direct "SaveLog" on Storage interface exposed here easily without type assertion,
-	// and logging is async, we might just log them?
-	// But tests expect them to be queryable via /api/v1/audit/logs or similar.
-	// Actually, the test (logs.spec.ts) expects JSON logs to appear in the UI which listens to WebSocket.
-	// So we should broadcast them via the log system.
 	if len(req.LogsRaw) > 0 {
 		logger := logging.GetLogger()
 		for _, raw := range req.LogsRaw {
@@ -235,10 +227,6 @@ func (a *Application) seedData(ctx context.Context, req SeedRequest) error {
 				Source  string `json:"source"`
 			}
 			if err := json.Unmarshal(raw, &logEntry); err == nil {
-				// Re-inject into the application logger
-				// This will go to stdout and be picked up by the log collector if running
-				// OR we can try to push to the websocket hub if accessible.
-				// But simpler: just log it.
 				lvl := slog.LevelInfo
 				switch logEntry.Level {
 				case "ERROR":

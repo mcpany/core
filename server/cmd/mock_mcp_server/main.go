@@ -42,7 +42,12 @@ func main() {
 			return nil, fmt.Errorf("invalid arguments json: %w", err)
 		}
 
-		path, _ := args["path"].(string)
+		path, ok := args["path"].(string)
+		if !ok {
+			// If path is missing, check if it's the only argument without a key? No, JSON-RPC.
+			// Just return dummy content if path is missing or assume empty.
+			path = ""
+		}
 		if path == "error" {
 			return nil, fmt.Errorf("error reading file")
 		}
