@@ -1768,7 +1768,27 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	}
 
 	if resp.StatusCode >= 400 {
-		return nil, fmt.Errorf("upstream OpenAPI request failed with status %d: %s", resp.StatusCode, string(respBody))
+		// Try to redact JSON content to avoid leaking sensitive fields in error messages
+		bodyBytes := util.RedactJSON(respBody)
+		bodyStr := string(bodyBytes)
+
+		// Sentinel Security Update: Log error with redacted URL (using t.url for OpenAPI)
+		logging.GetLogger().DebugContext(ctx, "Upstream OpenAPI error", "status", resp.StatusCode, "body", bodyStr, "url", t.url)
+
+		// Truncate body for the returned error message to prevent leaking large stack traces or extensive details.
+		displayBody := bodyStr
+		const maxErrorBodyLen = 200
+		if len(displayBody) > maxErrorBodyLen {
+			displayBody = displayBody[:maxErrorBodyLen] + "... (truncated)"
+		}
+
+		// Security: Hide the body if it is not JSON (potential stack trace) unless debug is enabled.
+		isDebug := os.Getenv("MCPANY_DEBUG") == trueStr
+		if !isDebug && !stdjson.Valid(bodyBytes) {
+			displayBody = "[Body hidden for security. Enable debug mode to view.]"
+		}
+
+		return nil, fmt.Errorf("upstream OpenAPI request failed with status %d: %s", resp.StatusCode, displayBody)
 	}
 
 	if t.outputTransformer != nil {
