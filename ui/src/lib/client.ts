@@ -107,13 +107,6 @@ const mapUpstreamServiceConfig = (s: any): UpstreamServiceConfig => ({
 });
 
 // Initialize gRPC Web Client
-// Note: In development, we use localhost:8081 (envoy) or the Go server port if configured for gRPC-Web?
-// server.go wraps gRPC-Web on the SAME port as HTTP (8080 usually).
-// So we can point to window.location.origin or relative?
-// GrpcWebImpl needs a full URL host usually.
-// If running in browser, we can use empty string or relative?
-// GrpcWebImpl implementation uses `this.host`. If empty?
-// Let's assume we point to the current origin.
 const getBaseUrl = () => {
     if (typeof window !== 'undefined') {
         return window.location.origin;
@@ -331,17 +324,6 @@ export interface ServiceHealthResponse {
 
 const getMetadata = () => {
     // Metadata for gRPC calls.
-    // Since gRPC-Web calls might bypass Next.js middleware if they go directly to Envoy/Backend,
-    // we need to be careful.
-    // However, if we proxy gRPC via Next.js (not yet fully standard for gRPC-Web), we could use middleware.
-    // For now, if we don't have the key in NEXT_PUBLIC, we can't send it from client.
-    // The gRPC calls should ideally be proxied or use a session token.
-    // Given the current refactor to remove NEXT_PUBLIC_ key, direct gRPC calls from client will fail auth
-    // if they require the static key.
-    // We should rely on the Next.js API routes (REST) which use middleware, OR assume the gRPC endpoint
-    // is also behind the Next.js proxy (rewrites).
-    // ui/next.config.ts has a rewrite for `/mcpany.api.v1.RegistrationService/:path*`.
-    // If we use that, the middleware WILL run and inject the header!
     return undefined;
 };
 
@@ -498,9 +480,9 @@ export const apiClient = {
      * Side Effects: Makes a GET request to /api/v1/services/:name/status.
      */
     getServiceStatus: async (name: string) => {
-        const res = await fetchWithAuth(`/api/v1/services/${name}/status`);
-        if (!res.ok) throw new Error('Failed to fetch service status');
-        return res.json();
+        const response = await fetchWithAuth(`/api/v1/services/${name}/status`);
+        if (!response.ok) throw new Error('Failed to fetch service status');
+        return response.json();
     },
 
     /**

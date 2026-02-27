@@ -8,6 +8,8 @@ import { useState, useEffect, useCallback } from "react";
 /**
  * A hook that manages state synchronized with localStorage.
  *
+ * Summary: Hook for localStorage synchronization.
+ *
  * @template T - The type of the value to store.
  * @param key - The key under which the value is stored in localStorage.
  * @param initialValue - The initial value to use if no value is found in localStorage.

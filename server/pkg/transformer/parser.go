@@ -29,6 +29,8 @@ var (
 // plain text) and extract data into a structured map. It uses a configuration
 // map to define the extraction rules for each format, such as JSONPath for
 // JSON, XPath for XML, and regex for plain text.
+//
+// Summary: Multi-format text parser (JSON, XML, Text, JQ).
 type TextParser struct {
 	transformer *Transformer
 }
@@ -40,7 +42,10 @@ var (
 
 // NewTextParser returns a shared instance of TextParser.
 //
-// Returns the result.
+// Summary: Returns the singleton TextParser instance.
+//
+// Returns:
+//   - (*TextParser): The shared parser instance.
 func NewTextParser() *TextParser {
 	defaultTextParserOnce.Do(func() {
 		defaultTextParser = &TextParser{
@@ -53,10 +58,15 @@ func NewTextParser() *TextParser {
 // Transform takes a map of data and a Go template string and returns a byte
 // slice containing the transformed output.
 //
-// templateStr is the Go template to be executed.
-// data is the map containing the data to be used in the template.
-// It returns the transformed data as a byte slice or an error if the
-// transformation fails.
+// Summary: Transforms data using the underlying transformer.
+//
+// Parameters:
+//   - templateStr (string): The template string.
+//   - data (any): The input data.
+//
+// Returns:
+//   - ([]byte): The transformed output.
+//   - (error): An error if transformation fails.
 func (p *TextParser) Transform(templateStr string, data any) ([]byte, error) {
 	return p.transformer.Transform(templateStr, data)
 }
@@ -64,12 +74,17 @@ func (p *TextParser) Transform(templateStr string, data any) ([]byte, error) {
 // Parse extracts data from an input byte slice based on the specified input
 // type and configuration.
 //
-// inputType specifies the format of the input data ("json", "xml", "text", or "jq").
-// input is the raw byte slice containing the data to be parsed.
-// config is a map where keys are the desired output keys and values are the
-// extraction rules (JSONPath, XPath, or regex) for the corresponding data.
-// jqQuery is the JQ query string (only used when inputType is "jq").
-// It returns the extracted data (as a map or any for JQ) or an error if parsing fails.
+// Summary: Parses input data based on type and config.
+//
+// Parameters:
+//   - inputType (string): The type of input ("json", "xml", "text", "jq").
+//   - input ([]byte): The raw input data.
+//   - config (map[string]string): Extraction rules (key -> path/pattern).
+//   - jqQuery (string): JQ query string (only for inputType "jq").
+//
+// Returns:
+//   - (any): The parsed and extracted data.
+//   - (error): An error if parsing fails.
 func (p *TextParser) Parse(inputType string, input []byte, config map[string]string, jqQuery string) (any, error) {
 	switch strings.ToLower(inputType) {
 	case "json":
