@@ -6,6 +6,12 @@ GO = go
 GO_CMD := $(GO)
 BUILD_DIR := $(abspath ./build)
 TOOL_INSTALL_DIR := $(BUILD_DIR)/env/bin
+
+# Docker command logic
+DOCKER_CMD := docker
+ifeq ($(shell docker info >/dev/null 2>&1 && echo 1 || echo 0), 0)
+	DOCKER_CMD := sudo docker
+endif
 PROTOC_INCLUDE_DIR := $(TOOL_INSTALL_DIR)/include
 GOOGLEAPIS_DIR := $(BUILD_DIR)/googleapis
 
@@ -224,25 +230,25 @@ DOCKER_RUN_OPTS := --rm \
 	mcpany/core-test
 
 docker-test:
-	sg docker -c "docker build -t mcpany/core-test -f server/docker/Dockerfile.dev ."
-	sg docker -c "docker run $(DOCKER_RUN_OPTS) sh -c 'mkdir -p /workspace/build/home && git config --global --add safe.directory /workspace && make test'"
+	$(DOCKER_CMD) build -t mcpany/core-test -f server/docker/Dockerfile.dev .
+	$(DOCKER_CMD) run $(DOCKER_RUN_OPTS) sh -c 'mkdir -p /workspace/build/home && git config --global --add safe.directory /workspace && make test'
 
 docker-lint:
-	sg docker -c "docker build -t mcpany/core-test -f server/docker/Dockerfile.dev ."
-	sg docker -c "docker run $(DOCKER_RUN_OPTS) sh -c 'mkdir -p /workspace/build/home && git config --global --add safe.directory /workspace && make lint'"
+	$(DOCKER_CMD) build -t mcpany/core-test -f server/docker/Dockerfile.dev .
+	$(DOCKER_CMD) run $(DOCKER_RUN_OPTS) sh -c 'mkdir -p /workspace/build/home && git config --global --add safe.directory /workspace && make lint'
 
 docker-test-fast:
-	sg docker -c "docker build -t mcpany/core-test -f server/docker/Dockerfile.dev ."
-	sg docker -c "docker run $(DOCKER_RUN_OPTS) sh -c 'mkdir -p /workspace/build/home && git config --global --add safe.directory /workspace && make test-fast'"
+	$(DOCKER_CMD) build -t mcpany/core-test -f server/docker/Dockerfile.dev .
+	$(DOCKER_CMD) run $(DOCKER_RUN_OPTS) sh -c 'mkdir -p /workspace/build/home && git config --global --add safe.directory /workspace && make test-fast'
 
 docker-test-public-api:
-	sg docker -c "docker build -t mcpany/core-test -f server/docker/Dockerfile.dev ."
-	sg docker -c "docker run $(DOCKER_RUN_OPTS) sh -c 'mkdir -p /workspace/build/home && git config --global --add safe.directory /workspace && make test-public-api'"
+	$(DOCKER_CMD) build -t mcpany/core-test -f server/docker/Dockerfile.dev .
+	$(DOCKER_CMD) run $(DOCKER_RUN_OPTS) sh -c 'mkdir -p /workspace/build/home && git config --global --add safe.directory /workspace && make test-public-api'
 
 docker-e2e-parallel:
-	sg docker -c "docker build -t mcpany/core-test -f server/docker/Dockerfile.dev ."
-	sg docker -c "docker run $(DOCKER_RUN_OPTS) -e SHARD=$(SHARD) sh -c 'mkdir -p /workspace/build/home && git config --global --add safe.directory /workspace && make e2e-parallel'"
+	$(DOCKER_CMD) build -t mcpany/core-test -f server/docker/Dockerfile.dev .
+	$(DOCKER_CMD) run $(DOCKER_RUN_OPTS) -e SHARD=$(SHARD) sh -c 'mkdir -p /workspace/build/home && git config --global --add safe.directory /workspace && make e2e-parallel'
 
 docker-e2e-sequential:
-	sg docker -c "docker build -t mcpany/core-test -f server/docker/Dockerfile.dev ."
-	sg docker -c "docker run $(DOCKER_RUN_OPTS) sh -c 'mkdir -p /workspace/build/home && git config --global --add safe.directory /workspace && make e2e-sequential'"
+	$(DOCKER_CMD) build -t mcpany/core-test -f server/docker/Dockerfile.dev .
+	$(DOCKER_CMD) run $(DOCKER_RUN_OPTS) sh -c 'mkdir -p /workspace/build/home && git config --global --add safe.directory /workspace && make e2e-sequential'
