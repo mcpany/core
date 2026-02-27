@@ -147,7 +147,7 @@ jobs:
 
   unit-test:
     runs-on: oci-runner
-    container: golang:1.24
+    # container: golang:1.24
     timeout-minutes: 60
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -168,7 +168,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          apt-get update && apt-get install -y make xz-utils build-essential git
+          sudo apt-get update && sudo apt-get install -y make xz-utils build-essential git
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -448,7 +448,6 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: ${{ matrix.runner }}
-    container: public.ecr.aws/docker/library/ubuntu:24.04
     strategy:
       fail-fast: false
       matrix:
@@ -483,13 +482,11 @@ jobs:
 
       - name: Generate Protobufs
         run: |
-          set -x
           # Ensure make is available on host runner
           if ! command -v make &> /dev/null; then
              sudo apt-get update
              sudo apt-get install -y make build-essential
           fi
-          make --version
           make gen
 
       - name: Set up QEMU
@@ -737,7 +734,7 @@ jobs:
 
   e2e-public-api:
     runs-on: oci-runner
-    container: golang:1.24
+    # container: golang:1.24
     timeout-minutes: 30
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -760,9 +757,9 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             sudo apk add --no-cache make xz build-base
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -850,9 +847,6 @@ jobs:
           CGO_ENABLED: 1
           CC: gcc
         run: |
-          set -x
-          which gcc || echo "gcc not found in PATH"
-          gcc --version || echo "gcc execution failed"
           make test-public-api CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-public-api.out
 
       - name: Upload coverage to Codecov
