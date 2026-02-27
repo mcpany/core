@@ -6,7 +6,6 @@
 package e2e_sequential
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 	"os"
@@ -16,12 +15,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
 )
 
-// verifyEndpoint checks if a URL returns the expected status code within a timeout
-func verifyEndpoint(t *testing.T, url string, expectedStatus int, timeout time.Duration) {
+// verifyEndpointLifecycle checks if a URL returns the expected status code within a timeout
+func verifyEndpointLifecycle(t *testing.T, url string, expectedStatus int, timeout time.Duration) {
 	deadline := time.Now().Add(timeout)
 	for time.Now().Before(deadline) {
 		resp, err := http.Get(url)
@@ -40,7 +38,7 @@ func verifyEndpoint(t *testing.T, url string, expectedStatus int, timeout time.D
 // Using Filesystem upstream to avoid dependency on external binaries or containers.
 func TestCUJ_Lifecycle_And_Config(t *testing.T) {
 	// Enable running local if Docker is not available
-	useLocal := os.Getenv("E2E_DOCKER") != "true"
+	// useLocal := os.Getenv("E2E_DOCKER") != "true"
 
 	rootDir, err := os.Getwd()
 	require.NoError(t, err)
@@ -64,10 +62,10 @@ func TestCUJ_Lifecycle_And_Config(t *testing.T) {
 	require.NoError(t, err)
 
 	// In local mode, paths must be absolute on the host
-	dataPath := "/config_data"
-	if useLocal {
-		dataPath = configDir
-	}
+	// dataPath := "/config_data"
+	// if useLocal {
+	// 	dataPath = configDir
+	// }
 
 	// Use ports that are likely free
 	port1 := "50055"
@@ -139,28 +137,10 @@ upstream_services:
 	}()
 
 	// CUJ 1: Health
-	verifyEndpoint(t, fmt.Sprintf("%s/healthz", baseURL), 200, 60*time.Second)
-
-	// Connect Client
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-	defer cancel()
-
-	// MCP Client connection
-	// We need to implement a simple client transport or use the SDK's SseClientTransport (if available) or something.
-	// The SDK has StreamableClientTransport? No, that's internal or deprecated maybe?
-	// Checking imports... "github.com/modelcontextprotocol/go-sdk/mcp"
-	// Let's assume there is a client.
-
-	// In the previous file content, it used `mcp.NewClient` and `mcp.StreamableClientTransport`.
-	// If that compiles, great.
-	// Note: We need to point to the SSE endpoint or similar. The server exposes /mcp for WebSocket/SSE?
-	// The server likely exposes /mcp as a websocket endpoint.
-	// Let's try to list tools via HTTP API if client connection is complex,
-	// BUT the test explicitly uses mcp.Client.
-	// Assuming /mcp is the endpoint.
+	verifyEndpointLifecycle(t, fmt.Sprintf("%s/healthz", baseURL), 200, 60*time.Second)
 
 	// Wait for tools to be available via API first to be safe
-	verifyEndpoint(t, fmt.Sprintf("%s/api/v1/tools", baseURL), 200, 30*time.Second)
+	verifyEndpointLifecycle(t, fmt.Sprintf("%s/api/v1/tools", baseURL), 200, 30*time.Second)
 
 	// CUJ 2: Restart with new config
 	// Create Config 2 (Add another service)
@@ -209,8 +189,8 @@ upstream_services:
 	require.NoError(t, err)
 	baseURL = fmt.Sprintf("http://127.0.0.1:%s", port2)
 
-	verifyEndpoint(t, fmt.Sprintf("%s/healthz", baseURL), 200, 60*time.Second)
-	verifyEndpoint(t, fmt.Sprintf("%s/api/v1/tools", baseURL), 200, 30*time.Second)
+	verifyEndpointLifecycle(t, fmt.Sprintf("%s/healthz", baseURL), 200, 60*time.Second)
+	verifyEndpointLifecycle(t, fmt.Sprintf("%s/api/v1/tools", baseURL), 200, 30*time.Second)
 
 	// CUJ 3: Disable Service
 	config3 := fmt.Sprintf(`
@@ -240,7 +220,7 @@ upstream_services:
 	require.NoError(t, err)
 	baseURL = fmt.Sprintf("http://127.0.0.1:%s", port3)
 
-	verifyEndpoint(t, fmt.Sprintf("%s/healthz", baseURL), 200, 60*time.Second)
+	verifyEndpointLifecycle(t, fmt.Sprintf("%s/healthz", baseURL), 200, 60*time.Second)
 
 	// CUJ 4: Validating Topology
 	topoResp, err := http.Get(fmt.Sprintf("%s/api/v1/topology?api_key=test-key", baseURL))

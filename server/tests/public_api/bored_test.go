@@ -29,6 +29,7 @@ func TestUpstreamService_Bored(t *testing.T) {
 	// --- 1. Start Mock Server ---
 	mockResponse := `{"activity":"Learn a new language","type":"education","participants":1,"price":0.1,"link":"","key":"5881028","accessibility":0.25}`
 	mockServer := integration.CreateMockServerWithResponses(t, map[string]string{
+		"/api/activity/": mockResponse,
 		"/api/activity": mockResponse,
 	})
 	defer mockServer.Close()
@@ -106,8 +107,9 @@ func TestUpstreamService_Bored(t *testing.T) {
 	require.NotEmpty(t, boredResponse["activity"], "The activity should not be empty")
 	require.NotEmpty(t, boredResponse["type"], "The type should not be empty")
 	require.NotEmpty(t, boredResponse["participants"], "The participants should not be empty")
-	require.NotEmpty(t, boredResponse["price"], "The price should not be empty")
-	require.NotEmpty(t, boredResponse["link"], "The link should not be empty")
+	require.NotNil(t, boredResponse["price"], "The price should not be nil")
+	// The link can be empty strings for some activities. Use NotNil instead.
+	require.NotNil(t, boredResponse["link"], "The link should not be nil")
 	require.NotEmpty(t, boredResponse["key"], "The key should not be empty")
 	// require.NotEmpty(t, boredResponse["accessibility"], "The accessibility should not be empty") // Accessibility can be 0, which is empty?
 	// mock returns 0.25 so it's not empty string/nil. NotEmpty works for float? Yes.

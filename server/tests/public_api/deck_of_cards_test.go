@@ -30,6 +30,7 @@ func TestUpstreamService_DeckOfCards(t *testing.T) {
 	mockResponse := `{"success": true, "deck_id": "mockdeck", "shuffled": true, "remaining": 52}`
 	mockServer := integration.CreateMockServerWithResponses(t, map[string]string{
 		"/api/deck/new/shuffle/?deck_count=1": mockResponse,
+		"/api/deck/new/shuffle/": mockResponse,
 	})
 	defer mockServer.Close()
 
