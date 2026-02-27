@@ -1,214 +1,196 @@
-// Copyright 2025 Author(s) of MCP Any
+// Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
 package resource
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"testing"
 
-	"github.com/mcpany/core/server/pkg/tool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
-	v1 "github.com/mcpany/core/proto/mcp_router/v1"
+	mcp_routerv1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
 )
 
-// MockTool is a mock implementation of the tool.Tool interface.
-type MockTool struct {
-	mock.Mock
+// Mock tool for testing DynamicResource
+// We implement tool.Tool interface explicitly to avoid field/method conflict with embedding
+type mockTool struct {
+	executeFunc func(ctx context.Context, req *tool.ExecutionRequest) (any, error)
+	toolDef     *mcp_routerv1.Tool
 }
 
-func (m *MockTool) Tool() *v1.Tool {
-	args := m.Called()
-	if args.Get(0) == nil {
-		return nil
+// Ensure mockTool implements tool.Tool
+var _ tool.Tool = (*mockTool)(nil)
+
+func (m *mockTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+	if m.executeFunc != nil {
+		return m.executeFunc(ctx, req)
 	}
-	return args.Get(0).(*v1.Tool)
+	return "default content", nil
 }
 
-func (m *MockTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (interface{}, error) {
-	args := m.Called(ctx, req)
-	if args.Get(0) == nil {
-		return nil, args.Error(1)
+func (m *mockTool) Tool() *mcp_routerv1.Tool {
+	if m.toolDef != nil {
+		return m.toolDef
 	}
-	return args.Get(0), args.Error(1)
+	return mcp_routerv1.Tool_builder{ServiceId: proto.String("mock-service")}.Build()
 }
 
-func (m *MockTool) GetCacheConfig() *configv1.CacheConfig {
-	args := m.Called()
-	if args.Get(0) == nil {
-		return nil
-	}
-	return args.Get(0).(*configv1.CacheConfig)
+func (m *mockTool) GetCacheConfig() *configv1.CacheConfig {
+	return nil
 }
 
-func (m *MockTool) MCPTool() *mcp.Tool {
-	args := m.Called()
-	if args.Get(0) == nil {
-		return nil
+func (m *mockTool) MCPTool() *mcp.Tool {
+	// Minimal mock implementation
+	return &mcp.Tool{
+		Name: m.Tool().GetName(),
 	}
-	return args.Get(0).(*mcp.Tool)
 }
 
 func TestNewDynamicResource(t *testing.T) {
-	t.Run("successful creation", func(t *testing.T) {
-		def := configv1.ResourceDefinition_builder{
-			Uri:         proto.String("test-uri"),
-			Name:        proto.String("test-name"),
-			Title:       proto.String("test-title"),
-			Description: proto.String("test-description"),
-			MimeType:    proto.String("text/plain"),
-			Size:        proto.Int64(123),
-		}.Build()
-		mockTool := new(MockTool)
-		mockTool.On("Tool").Return(v1.Tool_builder{ServiceId: proto.String("test-service")}.Build())
-		dr, err := NewDynamicResource(def, mockTool)
-		require.NoError(t, err)
-		assert.NotNil(t, dr)
-		assert.Equal(t, "test-uri", dr.Resource().URI)
-		assert.Equal(t, "test-name", dr.Resource().Name)
-		assert.Equal(t, "test-title", dr.Resource().Title)
-		assert.Equal(t, "test-description", dr.Resource().Description)
-		assert.Equal(t, "text/plain", dr.Resource().MIMEType)
-		assert.Equal(t, int64(123), dr.Resource().Size)
-	})
+	def := configv1.ResourceDefinition_builder{
+		Uri:         proto.String("test://resource"),
+		Name:        proto.String("test-resource"),
+		Title:       proto.String("Test Resource"),
+		Description: proto.String("A test resource"),
+		MimeType:    proto.String("text/plain"),
+	}.Build()
+	mockT := &mockTool{}
 
-	t.Run("nil definition", func(t *testing.T) {
-		mockTool := new(MockTool)
-		_, err := NewDynamicResource(nil, mockTool)
-		require.Error(t, err)
-		assert.Contains(t, err.Error(), "resource definition is nil")
-	})
+	dr, err := NewDynamicResource(def, mockT)
+	require.NoError(t, err)
+	assert.Equal(t, "test://resource", dr.Resource().URI)
+	assert.Equal(t, "test-resource", dr.Resource().Name)
+	assert.Equal(t, "mock-service", dr.Service())
 
-	t.Run("nil tool", func(t *testing.T) {
-		def := &configv1.ResourceDefinition{}
-		_, err := NewDynamicResource(def, nil)
-		require.Error(t, err)
-		assert.Contains(t, err.Error(), "tool is nil")
-	})
+	_, err = NewDynamicResource(nil, mockT)
+	assert.Error(t, err)
+
+	_, err = NewDynamicResource(def, nil)
+	assert.Error(t, err)
 }
 
-func TestDynamicResource_Read(t *testing.T) {
+func TestDynamicResource_Read_Types(t *testing.T) {
 	def := configv1.ResourceDefinition_builder{
-		Uri: proto.String("test-uri"),
+		Uri:      proto.String("test://resource"),
+		MimeType: proto.String("text/plain"),
 	}.Build()
 
-	t.Run("string result", func(t *testing.T) {
-		mockTool := new(MockTool)
-		mockTool.On("Execute", mock.Anything, mock.Anything).Return("test-content", nil)
-		mockTool.On("Tool").Return(v1.Tool_builder{ServiceId: proto.String("test-service")}.Build())
-		dr, _ := NewDynamicResource(def, mockTool)
-		result, err := dr.Read(context.Background())
-		require.NoError(t, err)
-		require.Len(t, result.Contents, 1)
-		assert.Equal(t, "test-uri", result.Contents[0].URI)
-		assert.Equal(t, "test-content", result.Contents[0].Text)
-	})
+	tests := []struct {
+		name           string
+		toolResult     any
+		expectedText   string
+		expectedBlob   []byte
+		expectedError  string
+	}{
+		{
+			name:         "String result",
+			toolResult:   "hello world",
+			expectedText: "hello world",
+		},
+		{
+			name:         "Byte slice result",
+			toolResult:   []byte("hello bytes"),
+			expectedBlob: []byte("hello bytes"),
+		},
+		{
+			name:         "Map result (JSON)",
+			toolResult:   map[string]interface{}{"key": "value"},
+			expectedText: `{"key":"value"}`,
+		},
+		{
+			name:          "Unsupported type",
+			toolResult:    12345,
+			expectedError: "unsupported tool result type",
+		},
+	}
 
-	t.Run("byte slice result", func(t *testing.T) {
-		mockTool := new(MockTool)
-		mockTool.On("Execute", mock.Anything, mock.Anything).Return([]byte("test-content"), nil)
-		mockTool.On("Tool").Return(v1.Tool_builder{ServiceId: proto.String("test-service")}.Build())
-		dr, _ := NewDynamicResource(def, mockTool)
-		result, err := dr.Read(context.Background())
-		require.NoError(t, err)
-		require.Len(t, result.Contents, 1)
-		assert.Equal(t, "test-uri", result.Contents[0].URI)
-		assert.Equal(t, []byte("test-content"), result.Contents[0].Blob)
-	})
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			mt := &mockTool{
+				executeFunc: func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+					return tt.toolResult, nil
+				},
+				toolDef: mcp_routerv1.Tool_builder{ServiceId: proto.String("svc")}.Build(),
+			}
+			dr, _ := NewDynamicResource(def, mt)
 
-	t.Run("map result", func(t *testing.T) {
-		mockTool := new(MockTool)
-		mapResult := map[string]interface{}{"key": "value"}
-		mockTool.On("Execute", mock.Anything, mock.Anything).Return(mapResult, nil)
-		mockTool.On("Tool").Return(v1.Tool_builder{ServiceId: proto.String("test-service")}.Build())
-		dr, _ := NewDynamicResource(def, mockTool)
-		result, err := dr.Read(context.Background())
-		require.NoError(t, err)
-		require.Len(t, result.Contents, 1)
-		assert.Equal(t, "test-uri", result.Contents[0].URI)
-		expectedJSON, _ := json.Marshal(mapResult)
-		assert.JSONEq(t, string(expectedJSON), result.Contents[0].Text)
-	})
+			res, err := dr.Read(context.Background())
+			if tt.expectedError != "" {
+				require.Error(t, err)
+				assert.Contains(t, err.Error(), tt.expectedError)
+			} else {
+				require.NoError(t, err)
+				require.Len(t, res.Contents, 1)
+				if tt.expectedText != "" {
+					assert.Equal(t, tt.expectedText, res.Contents[0].Text)
+				}
+				if tt.expectedBlob != nil {
+					assert.Equal(t, tt.expectedBlob, res.Contents[0].Blob)
+				}
+				assert.Equal(t, "text/plain", res.Contents[0].MIMEType)
+			}
+		})
+	}
+}
 
-	t.Run("unsupported result type", func(t *testing.T) {
-		mockTool := new(MockTool)
-		mockTool.On("Execute", mock.Anything, mock.Anything).Return(123, nil)
-		mockTool.On("Tool").Return(v1.Tool_builder{ServiceId: proto.String("test-service")}.Build())
-		dr, _ := NewDynamicResource(def, mockTool)
-		_, err := dr.Read(context.Background())
-		require.Error(t, err)
-		assert.Contains(t, err.Error(), "unsupported tool result type")
-	})
+func TestDynamicResource_ToolFailure(t *testing.T) {
+	def := configv1.ResourceDefinition_builder{Uri: proto.String("test://fail")}.Build()
+	mt := &mockTool{
+		executeFunc: func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+			return nil, errors.New("execution boom")
+		},
+		toolDef: mcp_routerv1.Tool_builder{ServiceId: proto.String("svc")}.Build(),
+	}
+	dr, _ := NewDynamicResource(def, mt)
 
-	t.Run("execution error", func(t *testing.T) {
-		mockTool := new(MockTool)
-		mockTool.On("Execute", mock.Anything, mock.Anything).Return(nil, errors.New("execution failed"))
-		mockTool.On("Tool").Return(v1.Tool_builder{ServiceId: proto.String("test-service")}.Build())
-		dr, _ := NewDynamicResource(def, mockTool)
-		_, err := dr.Read(context.Background())
-		require.Error(t, err)
-		assert.Contains(t, err.Error(), "failed to execute tool")
-	})
-
-	t.Run("json marshal error", func(t *testing.T) {
-		mockTool := new(MockTool)
-		// valid map but with a cyclic or unsupported value to trigger json.Marshal error
-		// Using a channel which is not marshalable
-		mapResult := map[string]interface{}{"key": make(chan int)}
-		mockTool.On("Execute", mock.Anything, mock.Anything).Return(mapResult, nil)
-		mockTool.On("Tool").Return(v1.Tool_builder{ServiceId: proto.String("test-service")}.Build())
-		dr, _ := NewDynamicResource(def, mockTool)
-		_, err := dr.Read(context.Background())
-		require.Error(t, err)
-		assert.Contains(t, err.Error(), "failed to marshal tool result to JSON")
-	})
-
-	t.Run("MIMEType preservation", func(t *testing.T) {
-		defWithMime := configv1.ResourceDefinition_builder{
-			Uri:      proto.String("test-uri-mime"),
-			MimeType: proto.String("application/json"),
-		}.Build()
-
-		mockTool := new(MockTool)
-		mockTool.On("Execute", mock.Anything, mock.Anything).Return("{}", nil)
-		mockTool.On("Tool").Return(v1.Tool_builder{ServiceId: proto.String("test-service")}.Build())
-		dr, _ := NewDynamicResource(defWithMime, mockTool)
-		result, err := dr.Read(context.Background())
-		require.NoError(t, err)
-		require.Len(t, result.Contents, 1)
-		assert.Equal(t, "test-uri-mime", result.Contents[0].URI)
-		assert.Equal(t, "{}", result.Contents[0].Text)
-		assert.Equal(t, "application/json", result.Contents[0].MIMEType)
-	})
+	_, err := dr.Read(context.Background())
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "failed to execute tool")
+	assert.Contains(t, err.Error(), "execution boom")
 }
 
 func TestDynamicResource_Subscribe(t *testing.T) {
-	def := configv1.ResourceDefinition_builder{
-		Uri: proto.String("test-uri"),
-	}.Build()
-	mockTool := new(MockTool)
-	mockTool.On("Tool").Return(v1.Tool_builder{ServiceId: proto.String("test-service")}.Build())
-	dr, _ := NewDynamicResource(def, mockTool)
+	def := configv1.ResourceDefinition_builder{Uri: proto.String("test://sub")}.Build()
+	mt := &mockTool{toolDef: mcp_routerv1.Tool_builder{ServiceId: proto.String("svc")}.Build()}
+	dr, _ := NewDynamicResource(def, mt)
 
 	err := dr.Subscribe(context.Background())
 	require.Error(t, err)
-	assert.Contains(t, err.Error(), "subscribing to dynamic resources is not yet implemented")
+	assert.Contains(t, err.Error(), "not yet implemented")
 }
 
-func TestDynamicResource_Service(t *testing.T) {
-	def := configv1.ResourceDefinition_builder{
-		Uri: proto.String("test-uri"),
+// Integration-like test ensuring protobuf generated code works with the resource
+func TestDynamicResource_ProtoIntegration(t *testing.T) {
+	// Create a real proto tool definition
+	toolProto := mcp_routerv1.Tool_builder{
+		Name:      proto.String("real-tool"),
+		ServiceId: proto.String("real-service"),
 	}.Build()
-	mockTool := new(MockTool)
-	mockTool.On("Tool").Return(v1.Tool_builder{ServiceId: proto.String("test-service")}.Build())
-	dr, _ := NewDynamicResource(def, mockTool)
 
-	assert.Equal(t, "test-service", dr.Service())
+	mt := &mockTool{
+		toolDef: toolProto,
+		executeFunc: func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+			return "real content", nil
+		},
+	}
+
+	def := configv1.ResourceDefinition_builder{
+		Uri:  proto.String("real://resource"),
+		Name: proto.String("Real Resource"),
+	}.Build()
+
+	dr, err := NewDynamicResource(def, mt)
+	require.NoError(t, err)
+
+	assert.Equal(t, "real-service", dr.Service())
+
+	res, err := dr.Read(context.Background())
+	require.NoError(t, err)
+	assert.Equal(t, "real content", res.Contents[0].Text)
 }

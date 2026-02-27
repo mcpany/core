@@ -7,8 +7,10 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"sync"
 	"testing"
+	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	mcp_routerv1 "github.com/mcpany/core/proto/mcp_router/v1"
@@ -32,6 +34,7 @@ type mockUpstream struct {
 	upstream.Upstream
 	registerFunc func(serviceName string) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error)
 	shutdownFunc func() error
+	checkHealthFunc func(context.Context) error
 }
 
 func (m *mockUpstream) Shutdown(_ context.Context) error {
@@ -46,6 +49,13 @@ func (m *mockUpstream) Register(_ context.Context, serviceConfig *configv1.Upstr
 		return m.registerFunc(serviceConfig.GetName())
 	}
 	return "mock-service-key", nil, nil, nil
+}
+
+func (m *mockUpstream) CheckHealth(ctx context.Context) error {
+	if m.checkHealthFunc != nil {
+		return m.checkHealthFunc(ctx)
+	}
+	return nil
 }
 
 type mockFactory struct {
@@ -697,4 +707,139 @@ func TestServiceRegistry_RegisterService_RetryFailed(t *testing.T) {
 	// Verify error cleared
 	msg, ok = registry.GetServiceError(serviceID)
 	assert.False(t, ok)
+}
+
+// New tests for Coverage Intervention
+
+func TestRegisterService_ConcurrentDuplicate(t *testing.T) {
+	// Simulate a factory that takes time to create an upstream, encouraging races.
+	f := &mockFactory{
+		newUpstreamFunc: func() (upstream.Upstream, error) {
+			time.Sleep(10 * time.Millisecond) // Artifical delay
+			return &mockUpstream{
+				registerFunc: func(serviceName string) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
+					serviceID, err := util.SanitizeServiceName(serviceName)
+					require.NoError(t, err)
+					return serviceID, nil, nil, nil
+				},
+			}, nil
+		},
+	}
+	tm := newThreadSafeToolManager()
+	registry := New(f, tm, prompt.NewManager(), resource.NewManager(), auth.NewManager())
+
+	serviceConfig := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("concurrent-service"),
+	}.Build()
+
+	concurrency := 10
+	errChan := make(chan error, concurrency)
+	var wg sync.WaitGroup
+
+	for i := 0; i < concurrency; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			_, _, _, err := registry.RegisterService(context.Background(), serviceConfig)
+			errChan <- err
+		}()
+	}
+
+	wg.Wait()
+	close(errChan)
+
+	successCount := 0
+	duplicateCount := 0
+	for err := range errChan {
+		if err == nil {
+			successCount++
+		} else if errors.Is(err, ErrServiceAlreadyRegistered) {
+			duplicateCount++
+		} else {
+			// This branch catches "already active" errors disguised as fmt.Errorf wrapped errors
+			// Check if the error string contains the duplicate message
+			if assert.ErrorContains(t, err, ErrServiceAlreadyRegistered.Error()) {
+				duplicateCount++
+			} else {
+				t.Errorf("Unexpected error: %v", err)
+			}
+		}
+	}
+
+	assert.Equal(t, 1, successCount, "Exactly one registration should succeed")
+	assert.Equal(t, concurrency-1, duplicateCount, "All other registrations should fail as duplicates")
+}
+
+func TestRegisterService_RollbackOnError(t *testing.T) {
+	upstreamErr := errors.New("upstream registration failed")
+	f := &mockFactory{
+		newUpstreamFunc: func() (upstream.Upstream, error) {
+			return &mockUpstream{
+				registerFunc: func(_ string) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
+					return "", nil, nil, upstreamErr
+				},
+			}, nil
+		},
+	}
+	tm := newThreadSafeToolManager()
+	prm := prompt.NewManager()
+	rm := resource.NewManager()
+	am := auth.NewManager()
+	registry := New(f, tm, prm, rm, am)
+
+	serviceConfig := configv1.UpstreamServiceConfig_builder{
+		Name: proto.String("rollback-service"),
+	}.Build()
+
+	_, _, _, err := registry.RegisterService(context.Background(), serviceConfig)
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), upstreamErr.Error())
+
+	// Verify rollback
+	serviceID, _ := util.SanitizeServiceName("rollback-service")
+
+	// Service ID should exist in configs but NOT in upstreams (marked inactive/failed)
+	registry.mu.RLock()
+	_, configExists := registry.serviceConfigs[serviceID]
+	_, upstreamExists := registry.upstreams[serviceID]
+	errorMsg, errorExists := registry.serviceErrors[serviceID]
+	registry.mu.RUnlock()
+
+	assert.True(t, configExists, "Config should be preserved for retry/status")
+	assert.False(t, upstreamExists, "Upstream should be removed on failure")
+	assert.True(t, errorExists, "Error should be recorded")
+	assert.Equal(t, upstreamErr.Error(), errorMsg)
+}
+
+func TestCheckAllHealth_Concurrency(t *testing.T) {
+	// Create multiple services to trigger concurrent health checks
+	serviceCount := 50
+	registry := New(nil, nil, nil, nil, nil)
+
+	// Manually populate upstreams to bypass factory logic for this specific test
+	registry.mu.Lock()
+	for i := 0; i < serviceCount; i++ {
+		name := fmt.Sprintf("svc-%d", i)
+		registry.upstreams[name] = &mockUpstream{
+			checkHealthFunc: func(_ context.Context) error {
+				// Simulate work
+				time.Sleep(time.Millisecond)
+				return nil
+			},
+		}
+	}
+	registry.mu.Unlock()
+
+	// Run CheckHealth
+	// If there's a map read/write race, the race detector will catch it here.
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+
+	registry.checkAllHealth(ctx)
+
+	// No assertions needed other than race detector passing
+	// But we can check that healthErrors is clean
+	registry.mu.RLock()
+	assert.Empty(t, registry.healthErrors)
+	registry.mu.RUnlock()
 }

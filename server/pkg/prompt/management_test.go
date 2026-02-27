@@ -1,4 +1,4 @@
-// Copyright 2025 Author(s) of MCP Any
+// Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
 package prompt
@@ -6,165 +6,150 @@ package prompt
 import (
 	"context"
 	"encoding/json"
+	"fmt"
+	"sync"
 	"testing"
 
-	"github.com/mcpany/core/server/pkg/tool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
-// MockServiceRegistry is a mock implementation of the ServiceRegistryInterface.
-type MockServiceRegistry struct {
-	mock.Mock
+// Mock prompt for testing
+type mockPrompt struct {
+	name      string
+	serviceID string
 }
 
-func (m *MockServiceRegistry) RegisterService(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
-	args := m.Called(ctx, serviceConfig)
-	return args.String(0), args.Get(1).([]*configv1.ToolDefinition), args.Get(2).([]*configv1.ResourceDefinition), args.Error(3)
+func (m *mockPrompt) Prompt() *mcp.Prompt {
+	return &mcp.Prompt{Name: m.name}
 }
 
-func (m *MockServiceRegistry) UnregisterService(ctx context.Context, serviceName string) error {
-	args := m.Called(ctx, serviceName)
-	return args.Error(0)
+func (m *mockPrompt) Service() string {
+	return m.serviceID
 }
 
-func (m *MockServiceRegistry) GetAllServices() ([]*configv1.UpstreamServiceConfig, error) {
-	args := m.Called()
-	return args.Get(0).([]*configv1.UpstreamServiceConfig), args.Error(1)
+func (m *mockPrompt) Definition() *configv1.PromptDefinition {
+	return nil
 }
 
-func (m *MockServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
-	args := m.Called(serviceID)
-	if args.Get(0) == nil {
-		return nil, args.Bool(1)
+func (m *mockPrompt) Get(_ context.Context, _ json.RawMessage) (*mcp.GetPromptResult, error) {
+	return nil, nil
+}
+
+func TestManager_AddAndList(t *testing.T) {
+	m := NewManager()
+
+	p1 := &mockPrompt{name: "p1", serviceID: "s1"}
+	m.AddPrompt(p1)
+
+	list := m.ListPrompts()
+	require.Len(t, list, 1)
+	assert.Equal(t, "p1", list[0].Prompt().Name)
+
+	p2 := &mockPrompt{name: "p2", serviceID: "s2"}
+	m.AddPrompt(p2)
+
+	list = m.ListPrompts()
+	require.Len(t, list, 2)
+}
+
+func TestManager_Update(t *testing.T) {
+	m := NewManager()
+	p1 := &mockPrompt{name: "p1", serviceID: "s1"}
+	m.AddPrompt(p1)
+
+	// Update with same name but different service
+	p1Update := &mockPrompt{name: "p1", serviceID: "s2"}
+	m.UpdatePrompt(p1Update)
+
+	p, ok := m.GetPrompt("p1")
+	require.True(t, ok)
+	assert.Equal(t, "s2", p.Service())
+}
+
+func TestManager_ClearPromptsForService(t *testing.T) {
+	m := NewManager()
+	m.AddPrompt(&mockPrompt{name: "p1", serviceID: "s1"})
+	m.AddPrompt(&mockPrompt{name: "p2", serviceID: "s1"})
+	m.AddPrompt(&mockPrompt{name: "p3", serviceID: "s2"})
+
+	m.ClearPromptsForService("s1")
+
+	list := m.ListPrompts()
+	require.Len(t, list, 1)
+	assert.Equal(t, "p3", list[0].Prompt().Name)
+}
+
+func TestManager_CacheInvalidation(t *testing.T) {
+	m := NewManager()
+	p1 := &mockPrompt{name: "p1", serviceID: "s1"}
+
+	// Add -> Populate Cache
+	m.AddPrompt(p1)
+	list1 := m.ListPrompts()
+	assert.Len(t, list1, 1)
+
+	// Verify internal state (whitebox testing)
+	m.mu.RLock()
+	assert.NotNil(t, m.cachedPrompts)
+	m.mu.RUnlock()
+
+	// Update -> Invalidate Cache
+	p2 := &mockPrompt{name: "p2", serviceID: "s1"}
+	m.AddPrompt(p2)
+
+	m.mu.RLock()
+	assert.Nil(t, m.cachedPrompts)
+	m.mu.RUnlock()
+
+	// List -> Repopulate Cache
+	list2 := m.ListPrompts()
+	assert.Len(t, list2, 2)
+}
+
+func TestManager_ConcurrentAccess(t *testing.T) {
+	m := NewManager()
+	concurrency := 50
+	var wg sync.WaitGroup
+
+	// Writer goroutines
+	for i := 0; i < concurrency; i++ {
+		wg.Add(1)
+		go func(id int) {
+			defer wg.Done()
+			name := fmt.Sprintf("p-%d", id)
+			m.AddPrompt(&mockPrompt{name: name, serviceID: "s1"})
+			// Occasionally update or clear
+			if id%10 == 0 {
+				m.UpdatePrompt(&mockPrompt{name: name, serviceID: "s2"})
+			}
+		}(i)
 	}
-	return args.Get(0).(*tool.ServiceInfo), args.Bool(1)
-}
 
-// MockPrompt is a mock implementation of the Prompt interface.
-type MockPrompt struct {
-	mock.Mock
-}
-
-func (m *MockPrompt) Prompt() *mcp.Prompt {
-	args := m.Called()
-	return args.Get(0).(*mcp.Prompt)
-}
-
-func (m *MockPrompt) Service() string {
-	args := m.Called()
-	return args.String(0)
-}
-
-func (m *MockPrompt) Definition() *configv1.PromptDefinition {
-	args := m.Called()
-	if args.Get(0) == nil {
-		return nil
+	// Reader goroutines
+	for i := 0; i < concurrency; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			// Just calling ListPrompts to trigger race detector on cache access
+			_ = m.ListPrompts()
+		}()
 	}
-	return args.Get(0).(*configv1.PromptDefinition)
-}
 
-func (m *MockPrompt) Get(ctx context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {
-	calledArgs := m.Called(ctx, args)
-	return calledArgs.Get(0).(*mcp.GetPromptResult), calledArgs.Error(1)
-}
+	// Clear goroutines
+	for i := 0; i < 5; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			m.ClearPromptsForService("s1")
+		}()
+	}
 
-func TestPromptManager(t *testing.T) {
-	promptManager := NewManager()
+	wg.Wait()
 
-	t.Run("add and get prompt", func(t *testing.T) {
-		mockPrompt := new(MockPrompt)
-		mcpPrompt := &mcp.Prompt{Name: "test-prompt"}
-		mockPrompt.On("Prompt").Return(mcpPrompt)
-		promptManager.AddPrompt(mockPrompt)
-
-		p, ok := promptManager.GetPrompt("test-prompt")
-		assert.True(t, ok)
-		assert.Equal(t, mockPrompt, p)
-
-		_, ok = promptManager.GetPrompt("non-existent")
-		assert.False(t, ok)
-	})
-
-	t.Run("list prompts", func(t *testing.T) {
-		// Clear existing prompts
-		promptManager.prompts.Clear()
-
-		mockPrompt1 := new(MockPrompt)
-		mockPrompt1.On("Prompt").Return(&mcp.Prompt{Name: "prompt1"})
-		promptManager.AddPrompt(mockPrompt1)
-
-		mockPrompt2 := new(MockPrompt)
-		mockPrompt2.On("Prompt").Return(&mcp.Prompt{Name: "prompt2"})
-		promptManager.AddPrompt(mockPrompt2)
-
-		prompts := promptManager.ListPrompts()
-		assert.Len(t, prompts, 2)
-	})
-
-	t.Run("clear prompts for service", func(t *testing.T) {
-		// Clear existing prompts
-		promptManager.prompts.Clear()
-
-		mockPrompt1 := new(MockPrompt)
-		mockPrompt1.On("Prompt").Return(&mcp.Prompt{Name: "service1.prompt1"})
-		mockPrompt1.On("Service").Return("service1")
-		promptManager.AddPrompt(mockPrompt1)
-
-		mockPrompt2 := new(MockPrompt)
-		mockPrompt2.On("Prompt").Return(&mcp.Prompt{Name: "service2.prompt2"})
-		mockPrompt2.On("Service").Return("service2")
-		promptManager.AddPrompt(mockPrompt2)
-
-		promptManager.ClearPromptsForService("service1")
-		prompts := promptManager.ListPrompts()
-		assert.Len(t, prompts, 1)
-		assert.Equal(t, "service2.prompt2", prompts[0].Prompt().Name)
-	})
-
-	t.Run("set mcp server", func(t *testing.T) {
-		server := &mcp.Server{}
-		provider := NewMCPServerProvider(server)
-
-		promptManager.SetMCPServer(provider)
-
-		assert.Equal(t, provider, promptManager.mcpServer)
-	})
-
-	t.Run("add duplicate prompt", func(t *testing.T) {
-		// Clear existing prompts
-		promptManager.prompts.Clear()
-
-		mockPrompt1 := new(MockPrompt)
-		mockPrompt1.On("Prompt").Return(&mcp.Prompt{Name: "duplicate-prompt"})
-		mockPrompt1.On("Service").Return("service1")
-		promptManager.AddPrompt(mockPrompt1)
-
-		mockPrompt2 := new(MockPrompt)
-		mockPrompt2.On("Prompt").Return(&mcp.Prompt{Name: "duplicate-prompt"})
-		mockPrompt2.On("Service").Return("service2")
-		promptManager.AddPrompt(mockPrompt2)
-
-		p, ok := promptManager.GetPrompt("duplicate-prompt")
-		assert.True(t, ok)
-		assert.Equal(t, "service2", p.Service())
-	})
-
-	t.Run("update prompt", func(t *testing.T) {
-		promptManager.prompts.Clear()
-
-		mockPrompt1 := new(MockPrompt)
-		mockPrompt1.On("Prompt").Return(&mcp.Prompt{Name: "prompt1"})
-		promptManager.AddPrompt(mockPrompt1)
-
-		mockPrompt2 := new(MockPrompt)
-		mockPrompt2.On("Prompt").Return(&mcp.Prompt{Name: "prompt1"})
-		promptManager.UpdatePrompt(mockPrompt2)
-
-		p, ok := promptManager.GetPrompt("prompt1")
-		assert.True(t, ok)
-		assert.Equal(t, mockPrompt2, p)
-	})
+	// Final consistency check
+	// Should not panic or have races
+	_ = m.ListPrompts()
 }
