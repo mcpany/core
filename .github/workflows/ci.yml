@@ -510,14 +510,16 @@ jobs:
 
           # Retry logic for docker build (pulling base images might fail)
           function docker_build_retry() {
-            local retries=5
+            local retries=10
             local count=0
+            local delay=30
             until "$@"; do
               exit_code=$?
               count=$((count + 1))
               if [ $count -lt $retries ]; then
-                echo "Retry $count/$retries exited $exit_code, retrying in 30s..."
-                sleep 30
+                echo "Retry $count/$retries exited $exit_code, retrying in ${delay}s..."
+                sleep $delay
+                delay=$((delay * 2))
               else
                 echo "Retry $count/$retries exited $exit_code, no more retries left."
                 return $exit_code
