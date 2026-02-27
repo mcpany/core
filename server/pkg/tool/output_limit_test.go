@@ -35,7 +35,7 @@ func TestLocalCommandTool_Execute_LargeOutput(t *testing.T) {
 	}.Build()
 
 	callDef := configv1.CommandLineCallDefinition_builder{
-		Args: []string{"if=/dev/zero", "bs=10485760", "count=1", "status=none"},
+		Args: []string{"if=/dev/zero", "bs=10485760", "count=1"},
 	}.Build()
 
 	localTool := NewLocalCommandTool(toolDef, service, callDef, nil, "call-id")
@@ -85,7 +85,7 @@ func TestLocalCommandTool_Execute_LargeOutput_Truncated(t *testing.T) {
 	}.Build()
 
 	callDef := configv1.CommandLineCallDefinition_builder{
-		Args: []string{"if=/dev/zero", "bs=2048", "count=1", "status=none"},
+		Args: []string{"if=/dev/zero", "bs=2048", "count=1"},
 	}.Build()
 
 	localTool := NewLocalCommandTool(toolDef, service, callDef, nil, "call-id")
