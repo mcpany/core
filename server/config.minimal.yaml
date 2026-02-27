@@ -72,3 +72,33 @@ upstream_services:
       calls:
         verified_tool:
           args: ['{"status": "verified"}']
+
+  - id: "mock-fs-service"
+    name: "mock-fs-service"
+    command_line_service:
+      command: "echo"
+      resources:
+        - uri: "file:///app/src/main.go"
+          name: "main.go"
+          mime_type: "text/x-go"
+        - uri: "file:///app/src/utils.go"
+          name: "utils.go"
+          mime_type: "text/x-go"
+        - uri: "file:///app/public/index.html"
+          name: "index.html"
+          mime_type: "text/html"
+        - uri: "file:///app/public/styles/main.css"
+          name: "main.css"
+          mime_type: "text/css"
+        - uri: "file:///app/README.md"
+          name: "README.md"
+          mime_type: "text/markdown"
+        - uri: "postgres://db/users/schema"
+          name: "users_schema"
+          mime_type: "application/sql"
+        - uri: "postgres://db/orders/schema"
+          name: "orders_schema"
+          mime_type: "application/sql"
+        - uri: "postgres://db/config"
+          name: "db_config"
+          mime_type: "application/json"
