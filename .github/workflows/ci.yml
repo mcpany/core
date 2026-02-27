@@ -170,9 +170,9 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             sudo apk add --no-cache make xz build-base
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -309,9 +309,9 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             sudo apk add --no-cache make xz build-base
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -479,6 +479,10 @@ jobs:
           node-version: "24"
           cache: "npm"
           cache-dependency-path: server/tests/integration/upstream/package-lock.json
+
+      - name: Install Build Dependencies
+        run: |
+          apt-get update && apt-get install -y make git curl unzip build-essential
 
       - name: Generate Protobufs
         run: |
