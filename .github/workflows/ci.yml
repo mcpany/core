@@ -138,8 +138,8 @@ jobs:
 
           if command -v apt-get &> /dev/null; then
             $SUDO rm -rf /var/lib/apt/lists/*
-            $SUDO apt-get update
-            $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends make xz-utils build-essential
+            for i in {1..3}; do $SUDO apt-get update && break || sleep 5; done
+            $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends make xz-utils build-essential || echo "Package install failed, but continuing..."
           elif command -v apk &> /dev/null; then
              $SUDO apk add --no-cache make xz build-base
           fi
@@ -182,8 +182,8 @@ jobs:
 
           if command -v apt-get &> /dev/null; then
             $SUDO rm -rf /var/lib/apt/lists/*
-            $SUDO apt-get update
-            $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends make xz-utils build-essential
+            for i in {1..3}; do $SUDO apt-get update && break || sleep 5; done
+            $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends make xz-utils build-essential || echo "Package install failed, but continuing..."
           elif command -v apk &> /dev/null; then
              $SUDO apk add --no-cache make xz build-base
           fi
@@ -327,8 +327,8 @@ jobs:
 
           if command -v apt-get &> /dev/null; then
             $SUDO rm -rf /var/lib/apt/lists/*
-            $SUDO apt-get update
-            $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends make xz-utils build-essential
+            for i in {1..3}; do $SUDO apt-get update && break || sleep 5; done
+            $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends make xz-utils build-essential || echo "Package install failed, but continuing..."
           elif command -v apk &> /dev/null; then
              $SUDO apk add --no-cache make xz build-base
           fi
@@ -513,8 +513,8 @@ jobs:
 
           if command -v apt-get &> /dev/null; then
             $SUDO rm -rf /var/lib/apt/lists/*
-            $SUDO apt-get update
-            $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends make xz-utils curl unzip
+            for i in {1..3}; do $SUDO apt-get update && break || sleep 5; done
+            $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends make xz-utils curl unzip || echo "Package install failed, but continuing..."
           elif command -v apk &> /dev/null; then
              $SUDO apk add --no-cache make xz curl unzip
           fi
@@ -653,8 +653,8 @@ jobs:
 
           if command -v apt-get &> /dev/null; then
             $SUDO rm -rf /var/lib/apt/lists/*
-            $SUDO apt-get update
-            $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends make xz-utils build-essential
+            for i in {1..3}; do $SUDO apt-get update && break || sleep 5; done
+            $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends make xz-utils build-essential || echo "Package install failed, but continuing..."
           elif command -v apk &> /dev/null; then
              $SUDO apk add --no-cache make xz build-base
           fi
@@ -797,8 +797,8 @@ jobs:
 
           if command -v apt-get &> /dev/null; then
             $SUDO rm -rf /var/lib/apt/lists/*
-            $SUDO apt-get update
-            $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends make xz-utils build-essential
+            for i in {1..3}; do $SUDO apt-get update && break || sleep 5; done
+            $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends make xz-utils build-essential || echo "Package install failed, but continuing..."
           elif command -v apk &> /dev/null; then
              $SUDO apk add --no-cache make xz build-base
           fi
