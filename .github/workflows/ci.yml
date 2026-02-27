@@ -149,15 +149,15 @@ jobs:
         run: |
           if command -v apt-get &> /dev/null; then
             if command -v sudo >/dev/null; then
-              sudo apt-get update && sudo apt-get install -y make xz-utils curl unzip
+              sudo apt-get update && sudo apt-get install -y make xz-utils curl unzip build-essential
             else
-              apt-get update && apt-get install -y make xz-utils curl unzip
+              apt-get update && apt-get install -y make xz-utils curl unzip build-essential
             fi
           elif command -v apk &> /dev/null; then
              if command -v sudo >/dev/null; then
-               sudo apk add --no-cache make xz curl unzip
+               sudo apk add --no-cache make xz curl unzip build-base
              else
-               apk add --no-cache make xz curl unzip
+               apk add --no-cache make xz curl unzip build-base
              fi
           fi
 
@@ -202,15 +202,15 @@ jobs:
         run: |
           if command -v apt-get &> /dev/null; then
             if command -v sudo >/dev/null; then
-              sudo apt-get update && sudo apt-get install -y make xz-utils curl unzip
+              sudo apt-get update && sudo apt-get install -y make xz-utils curl unzip build-essential
             else
-              apt-get update && apt-get install -y make xz-utils curl unzip
+              apt-get update && apt-get install -y make xz-utils curl unzip build-essential
             fi
           elif command -v apk &> /dev/null; then
              if command -v sudo >/dev/null; then
-               sudo apk add --no-cache make xz curl unzip
+               sudo apk add --no-cache make xz curl unzip build-base
              else
-               apk add --no-cache make xz curl unzip
+               apk add --no-cache make xz curl unzip build-base
              fi
           fi
 
@@ -362,15 +362,15 @@ jobs:
         run: |
           if command -v apt-get &> /dev/null; then
             if command -v sudo >/dev/null; then
-              sudo apt-get update && sudo apt-get install -y make xz-utils curl unzip
+              sudo apt-get update && sudo apt-get install -y make xz-utils curl unzip build-essential
             else
-              apt-get update && apt-get install -y make xz-utils curl unzip
+              apt-get update && apt-get install -y make xz-utils curl unzip build-essential
             fi
           elif command -v apk &> /dev/null; then
              if command -v sudo >/dev/null; then
-               sudo apk add --no-cache make xz curl unzip
+               sudo apk add --no-cache make xz curl unzip build-base
              else
-               apk add --no-cache make xz curl unzip
+               apk add --no-cache make xz curl unzip build-base
              fi
           fi
 
@@ -531,7 +531,7 @@ jobs:
     steps:
       - name: Install dependencies
         run: |
-          apt-get update && apt-get install -y make git
+          apt-get update && apt-get install -y make git curl unzip
 
       - uses: actions/checkout@v6
 
@@ -552,8 +552,22 @@ jobs:
         run: |
           make gen
 
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
         with:
@@ -688,15 +702,15 @@ jobs:
         run: |
           if command -v apt-get &> /dev/null; then
             if command -v sudo >/dev/null; then
-              sudo apt-get update && sudo apt-get install -y make xz-utils curl unzip
+              sudo apt-get update && sudo apt-get install -y make xz-utils curl unzip build-essential
             else
-              apt-get update && apt-get install -y make xz-utils curl unzip
+              apt-get update && apt-get install -y make xz-utils curl unzip build-essential
             fi
           elif command -v apk &> /dev/null; then
              if command -v sudo >/dev/null; then
-               sudo apk add --no-cache make xz curl unzip
+               sudo apk add --no-cache make xz curl unzip build-base
              else
-               apk add --no-cache make xz curl unzip
+               apk add --no-cache make xz curl unzip build-base
              fi
           fi
 
@@ -844,15 +858,15 @@ jobs:
         run: |
           if command -v apt-get &> /dev/null; then
             if command -v sudo >/dev/null; then
-              sudo apt-get update && sudo apt-get install -y make xz-utils curl unzip
+              sudo apt-get update && sudo apt-get install -y make xz-utils curl unzip build-essential
             else
-              apt-get update && apt-get install -y make xz-utils curl unzip
+              apt-get update && apt-get install -y make xz-utils curl unzip build-essential
             fi
           elif command -v apk &> /dev/null; then
              if command -v sudo >/dev/null; then
-               sudo apk add --no-cache make xz curl unzip
+               sudo apk add --no-cache make xz curl unzip build-base
              else
-               apk add --no-cache make xz curl unzip
+               apk add --no-cache make xz curl unzip build-base
              fi
           fi
 
@@ -1020,14 +1034,16 @@ jobs:
         shard: [1/2, 2/2]
     steps:
       - name: Free Disk Space (Fast)
+        continue-on-error: true
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          sudo rm -rf /usr/local/lib/android || true
+          sudo rm -rf /usr/share/dotnet || true
+          sudo rm -rf /opt/ghc || true
+          sudo rm -rf /usr/local/share/boost || true
 
       - name: Prune Docker
-        run: docker system prune -af
+        continue-on-error: true
+        run: docker system prune -af || true
 
       - uses: actions/checkout@v6
 
@@ -1073,14 +1089,16 @@ jobs:
     needs: [build-images]
     steps:
       - name: Free Disk Space (Fast)
+        continue-on-error: true
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          sudo rm -rf /usr/local/lib/android || true
+          sudo rm -rf /usr/share/dotnet || true
+          sudo rm -rf /opt/ghc || true
+          sudo rm -rf /usr/local/share/boost || true
 
       - name: Prune Docker
-        run: docker system prune -af
+        continue-on-error: true
+        run: docker system prune -af || true
 
       - uses: actions/checkout@v6
 
