@@ -159,8 +159,13 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if command -v make &> /dev/null && command -v xz &> /dev/null; then
-            echo "make and xz are already installed."
+          MISSING="false"
+          for cmd in make xz unzip curl; do
+            if ! command -v $cmd &> /dev/null; then MISSING="true"; fi
+          done
+
+          if [ "$MISSING" = "false" ]; then
+            echo "All dependencies (make, xz, unzip, curl) are already installed."
             exit 0
           fi
 
@@ -171,13 +176,12 @@ jobs:
 
           if [ "$(id -u)" -ne 0 ] && [ -z "$SUDO" ]; then
             echo "Cannot install dependencies (non-root, no sudo). Failing if dependencies are missing."
-            # Proceeding might fail, but checking presence above handles common cases.
           fi
 
           if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils unzip curl
           elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz
+             $SUDO apk add --no-cache make xz unzip curl
           fi
 
       - name: Prepare environment
@@ -214,8 +218,13 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if command -v make &> /dev/null && command -v xz &> /dev/null; then
-            echo "make and xz are already installed."
+          MISSING="false"
+          for cmd in make xz unzip curl; do
+            if ! command -v $cmd &> /dev/null; then MISSING="true"; fi
+          done
+
+          if [ "$MISSING" = "false" ]; then
+            echo "All dependencies (make, xz, unzip, curl) are already installed."
             exit 0
           fi
 
@@ -229,9 +238,9 @@ jobs:
           fi
 
           if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils unzip curl
           elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz
+             $SUDO apk add --no-cache make xz unzip curl
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -383,8 +392,13 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if command -v make &> /dev/null && command -v xz &> /dev/null; then
-            echo "make and xz are already installed."
+          MISSING="false"
+          for cmd in make xz unzip curl; do
+            if ! command -v $cmd &> /dev/null; then MISSING="true"; fi
+          done
+
+          if [ "$MISSING" = "false" ]; then
+            echo "All dependencies (make, xz, unzip, curl) are already installed."
             exit 0
           fi
 
@@ -398,9 +412,9 @@ jobs:
           fi
 
           if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils unzip curl
           elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz
+             $SUDO apk add --no-cache make xz unzip curl
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -580,8 +594,13 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if command -v make &> /dev/null && command -v xz &> /dev/null; then
-            echo "make and xz are already installed."
+          MISSING="false"
+          for cmd in make xz unzip curl; do
+            if ! command -v $cmd &> /dev/null; then MISSING="true"; fi
+          done
+
+          if [ "$MISSING" = "false" ]; then
+            echo "All dependencies (make, xz, unzip, curl) are already installed."
             exit 0
           fi
 
@@ -595,9 +614,9 @@ jobs:
           fi
 
           if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils unzip curl
           elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz
+             $SUDO apk add --no-cache make xz unzip curl
           fi
 
       - name: Set up Go
@@ -746,8 +765,13 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if command -v make &> /dev/null && command -v xz &> /dev/null; then
-            echo "make and xz are already installed."
+          MISSING="false"
+          for cmd in make xz unzip curl; do
+            if ! command -v $cmd &> /dev/null; then MISSING="true"; fi
+          done
+
+          if [ "$MISSING" = "false" ]; then
+            echo "All dependencies (make, xz, unzip, curl) are already installed."
             exit 0
           fi
 
@@ -761,9 +785,9 @@ jobs:
           fi
 
           if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils unzip curl
           elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz
+             $SUDO apk add --no-cache make xz unzip curl
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -1291,25 +1315,33 @@ jobs:
           fi
 
           install_dependencies() {
-            if ! command -v curl &> /dev/null || ! command -v jq &> /dev/null; then
-              echo "curl or jq not found. Installing..."
+            MISSING="false"
+            for cmd in curl jq; do
+              if ! command -v $cmd &> /dev/null; then MISSING="true"; fi
+            done
 
-              if [ "$(id -u)" -ne 0 ] && [ -z "$SUDO" ]; then
-                echo "Cannot install dependencies (non-root, no sudo). Hoping existing tools work."
-                return
-              fi
+            if [ "$MISSING" = "false" ]; then
+              echo "Dependencies (curl, jq) are already installed."
+              return
+            fi
 
-              if command -v apt-get &> /dev/null; then
-                $SUDO apt-get update && $SUDO apt-get install -y curl ca-certificates jq
-              elif command -v apk &> /dev/null; then
-                $SUDO apk add --no-cache curl ca-certificates jq
-              elif command -v yum &> /dev/null; then
-                $SUDO yum install -y curl ca-certificates jq
-              elif command -v dnf &> /dev/null; then
-                $SUDO dnf install -y curl ca-certificates jq
-              else
-                echo "Could not find package manager. Trying to proceed..."
-              fi
+            echo "Dependencies missing. Installing..."
+
+            if [ "$(id -u)" -ne 0 ] && [ -z "$SUDO" ]; then
+              echo "Cannot install dependencies (non-root, no sudo). Hoping existing tools work."
+              return
+            fi
+
+            if command -v apt-get &> /dev/null; then
+              $SUDO apt-get update && $SUDO apt-get install -y curl ca-certificates jq
+            elif command -v apk &> /dev/null; then
+              $SUDO apk add --no-cache curl ca-certificates jq
+            elif command -v yum &> /dev/null; then
+              $SUDO yum install -y curl ca-certificates jq
+            elif command -v dnf &> /dev/null; then
+              $SUDO dnf install -y curl ca-certificates jq
+            else
+              echo "Could not find package manager. Trying to proceed..."
             fi
           }
 
