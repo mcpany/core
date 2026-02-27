@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **Intent-Bound Execution Sandbox**: (P0) A secure middleware that validates tool calls against a cryptographically hashed "Intent Contract" to prevent SSRF and Path Traversal.
+- **Cross-Agent Auth & Handshake (A2A Handshake)**: (P1) A protocol for secure capability delegation during agent-to-agent task handoffs.
+- **Team-Scoped Shared Blackboard**: (P0) A synchronized state store for "Agent Teams" that allows shared context without redundant LLM injections.
+
+### Priority Shifts
+- **Supply Chain Integrity Guard**: Promoted to **P0**. Focus expanded to include real-time vulnerability scanning for connected MCP servers in response to recent OpenClaw exploits.
+- **On-Demand Discovery Middleware (Lazy-MCP)**: Promoted to **P0** (Re-affirming priority) to support "Team-Scoped" tool libraries.
+
+### Deprecations / Monitoring
+- **Broad Capability Tokens**: Moving toward "Intent-Scoped Tokens" to minimize the attack surface of compromised subagents.

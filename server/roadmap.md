@@ -29,6 +29,11 @@
 *   **[P1] Federated MCP Peering**: Distributed node discovery and tool proxying. (Added: 2026-02-26)
 *   **[P1] Resource Telemetry Middleware**: Inject latency/cost metrics into tool schemas. (Added: 2026-02-26)
 
+#### Upcoming (2026-02-27 Evolution)
+*   **[P0] Intent-Bound Execution Sandbox**: Middleware for validating tool parameters against signed intent contracts. (Added: 2026-02-27)
+*   **[P0] Team-Scoped Shared Blackboard**: Synchronized state store for multi-agent teams. (Added: 2026-02-27)
+*   **[P1] Cross-Agent Auth & Handshake**: Protocol for secure capability delegation during A2A handoffs. (Added: 2026-02-27)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
