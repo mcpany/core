@@ -78,7 +78,7 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          if command -v sudo &> /dev/null; then
+          if command -v sudo > /dev/null 2>&1; then
             sudo rm -rf /usr/local/lib/android
             sudo rm -rf /usr/share/dotnet
             sudo rm -rf /opt/ghc
@@ -161,7 +161,7 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          if command -v sudo &> /dev/null; then
+          if command -v sudo > /dev/null 2>&1; then
             sudo rm -rf /usr/local/lib/android
             sudo rm -rf /usr/share/dotnet
             sudo rm -rf /opt/ghc
@@ -307,7 +307,7 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          if command -v sudo &> /dev/null; then
+          if command -v sudo > /dev/null 2>&1; then
             sudo rm -rf /usr/local/lib/android
             sudo rm -rf /usr/share/dotnet
             sudo rm -rf /opt/ghc
@@ -485,7 +485,7 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          if command -v sudo &> /dev/null; then
+          if command -v sudo > /dev/null 2>&1; then
             sudo rm -rf /usr/local/lib/android
             sudo rm -rf /usr/share/dotnet
             sudo rm -rf /opt/ghc
@@ -628,7 +628,7 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          if command -v sudo &> /dev/null; then
+          if command -v sudo > /dev/null 2>&1; then
             sudo rm -rf /usr/local/lib/android
             sudo rm -rf /usr/share/dotnet
             sudo rm -rf /opt/ghc
@@ -774,7 +774,7 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          if command -v sudo &> /dev/null; then
+          if command -v sudo > /dev/null 2>&1; then
             sudo rm -rf /usr/local/lib/android
             sudo rm -rf /usr/share/dotnet
             sudo rm -rf /opt/ghc
@@ -960,7 +960,7 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          if command -v sudo &> /dev/null; then
+          if command -v sudo > /dev/null 2>&1; then
             sudo rm -rf /usr/local/lib/android
             sudo rm -rf /usr/share/dotnet
             sudo rm -rf /opt/ghc
