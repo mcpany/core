@@ -185,10 +185,12 @@ prepare:
 			$$SUDO_FS rm -f "$(PROTOC_GEN_GO_GRPC)"; \
 		fi; \
 	fi; \
-	if ! test -f "$(PROTOC_GEN_GO)"; then $$SUDO_FS env GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install google.golang.org/protobuf/cmd/protoc-gen-go@$(PROTOC_GEN_GO_VERSION); fi; \
-	if ! test -f "$(PROTOC_GEN_GO_GRPC)"; then $$SUDO_FS env GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install google.golang.org/grpc/cmd/protoc-gen-go-grpc@$(PROTOC_GEN_GO_GRPC_VERSION); fi; \
-	if ! test -f "$(PROTOC_GEN_GRPC_GATEWAY)"; then $$SUDO_FS env GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@$(GRPC_GATEWAY_VERSION); fi; \
-	if ! test -f "$(PROTOC_GEN_OPENAPIV2)"; then $$SUDO_FS env GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@$(GRPC_GATEWAY_VERSION); fi
+	TEMP_GOBIN=$$(mktemp -d); \
+	if ! test -f "$(PROTOC_GEN_GO)"; then env GOBIN=$$TEMP_GOBIN $(GO_CMD) install google.golang.org/protobuf/cmd/protoc-gen-go@$(PROTOC_GEN_GO_VERSION) && $$SUDO_FS mv $$TEMP_GOBIN/protoc-gen-go $(TOOL_INSTALL_DIR)/; fi; \
+	if ! test -f "$(PROTOC_GEN_GO_GRPC)"; then env GOBIN=$$TEMP_GOBIN $(GO_CMD) install google.golang.org/grpc/cmd/protoc-gen-go-grpc@$(PROTOC_GEN_GO_GRPC_VERSION) && $$SUDO_FS mv $$TEMP_GOBIN/protoc-gen-go-grpc $(TOOL_INSTALL_DIR)/; fi; \
+	if ! test -f "$(PROTOC_GEN_GRPC_GATEWAY)"; then env GOBIN=$$TEMP_GOBIN $(GO_CMD) install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@$(GRPC_GATEWAY_VERSION) && $$SUDO_FS mv $$TEMP_GOBIN/protoc-gen-grpc-gateway $(TOOL_INSTALL_DIR)/; fi; \
+	if ! test -f "$(PROTOC_GEN_OPENAPIV2)"; then env GOBIN=$$TEMP_GOBIN $(GO_CMD) install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@$(GRPC_GATEWAY_VERSION) && $$SUDO_FS mv $$TEMP_GOBIN/protoc-gen-openapiv2 $(TOOL_INSTALL_DIR)/; fi; \
+	rm -rf $$TEMP_GOBIN
 	@echo "Checking for Go protobuf plugins..."
 	@if ! test -f "$(PROTOC_GEN_GO)"; then \
 		echo "protoc-gen-go not found at $(PROTOC_GEN_GO) after attempting install. Please check your GOPATH/GOBIN setup and PATH."; \
@@ -338,7 +340,10 @@ prepare:
 		echo "nats-server is already installed."; \
 	else \
 		echo "Installing nats-server to $(TOOL_INSTALL_DIR)..."; \
-		$$SUDO_FS env GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install github.com/nats-io/nats-server/v2@latest; \
+		TEMP_GOBIN=$$(mktemp -d); \
+		env GOBIN=$$TEMP_GOBIN $(GO_CMD) install github.com/nats-io/nats-server/v2@latest && \
+		$$SUDO_FS mv $$TEMP_GOBIN/nats-server $(TOOL_INSTALL_DIR)/; \
+		rm -rf $$TEMP_GOBIN; \
 		if test -f "$(NATS_SERVER_BIN)"; then \
 			echo "nats-server installed successfully."; \
 		else \
