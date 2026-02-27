@@ -222,6 +222,7 @@ DOCKER_RUN_OPTS := --rm \
 	-e PRE_COMMIT_HOME=/workspace/build/.cache/docker-pre-commit \
 	-e INSIDE_DOCKER_CONTAINER=1 \
 	-e HOME=/workspace/build/home \
+	-v $(HOME)/.docker:/workspace/build/home/.docker \
 	-e HOST_WORKSPACE_ROOT=$(shell pwd) \
 	-e MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true \
 	--net=host \
