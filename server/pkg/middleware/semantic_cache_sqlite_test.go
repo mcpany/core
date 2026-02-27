@@ -37,6 +37,9 @@ func TestSQLiteVectorStore(t *testing.T) {
 	assert.Equal(t, float32(1.0), score)
 	assert.Equal(t, result, res)
 
+	// ⚡ BOLT: Wait for async persistence to complete before closing
+	time.Sleep(100 * time.Millisecond)
+
 	// Close and reopen to test persistence
 	err = store.Close()
 	assert.NoError(t, err)
@@ -70,6 +73,9 @@ func TestSQLiteVectorStore_Expiry(t *testing.T) {
 
 	err = store.Add(context.Background(), key, vec, result, ttl)
 	assert.NoError(t, err)
+
+	// ⚡ BOLT: Wait for async persistence to complete
+	time.Sleep(100 * time.Millisecond)
 
 	time.Sleep(10 * time.Millisecond)
 

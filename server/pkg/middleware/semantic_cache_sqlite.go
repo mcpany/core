@@ -8,6 +8,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"time"
 
 	// modernc.org/sqlite is a pure Go SQLite driver.
@@ -165,41 +166,46 @@ func (s *SQLiteVectorStore) loadFromDB(ctx context.Context) error {
 //
 // Returns an error if the operation fails.
 func (s *SQLiteVectorStore) Add(ctx context.Context, key string, vector []float32, result any, ttl time.Duration) error {
-	// Add to memory first
+	// Add to memory first (Synchronous for read-your-writes)
 	if err := s.memoryStore.Add(ctx, key, vector, result, ttl); err != nil {
 		return err
 	}
 
-	// Add to DB
-	// We store vector as binary for performance
-	vectorBytes := float32ToBytes(vector)
+	// ⚡ BOLT: Move persistence to async goroutine to unblock request path.
+	// Randomized Selection from Top 5 High-Impact Targets (I/O)
+	go func() {
+		// Use detached context for background persistence
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
 
-	resultJSON, err := json.Marshal(result)
-	if err != nil {
-		return fmt.Errorf("failed to marshal result: %w", err)
-	}
+		// Add to DB
+		// We store vector as binary for performance
+		vectorBytes := float32ToBytes(vector)
 
-	expiresAt := time.Now().Add(ttl).UnixNano()
+		resultJSON, err := json.Marshal(result)
+		if err != nil {
+			// Log error (best effort)
+			slog.Error("failed to marshal result for async cache write", "error", err)
+			return
+		}
 
-	_, err = s.db.ExecContext(ctx, "INSERT INTO semantic_cache_entries (key, vector, result, expires_at) VALUES (?, ?, ?, ?)",
-		key, vectorBytes, resultJSON, expiresAt)
-	if err != nil {
-		return err
-	}
+		expiresAt := time.Now().Add(ttl).UnixNano()
 
-	// Probabilistic pruning (1 in 100 chance) to prevent unbound growth
-	// without impacting performance on every write.
-	if time.Now().UnixNano()%100 == 0 {
-		go func() {
+		_, err = s.db.ExecContext(ctx, "INSERT INTO semantic_cache_entries (key, vector, result, expires_at) VALUES (?, ?, ?, ?)",
+			key, vectorBytes, resultJSON, expiresAt)
+		if err != nil {
+			slog.Error("failed to write semantic cache entry", "error", err)
+			return
+		}
+
+		// Probabilistic pruning (1 in 100 chance) to prevent unbound growth
+		// without impacting performance on every write.
+		if time.Now().UnixNano()%100 == 0 {
 			// Best effort prune
 			now := time.Now().UnixNano()
-			// Use background context with short timeout for async cleanup so it doesn't block unrelated things,
-			// but also doesn't hang forever.
-			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-			defer cancel()
 			_, _ = s.db.ExecContext(ctx, "DELETE FROM semantic_cache_entries WHERE expires_at <= ?", now)
-		}()
-	}
+		}
+	}()
 
 	return nil
 }

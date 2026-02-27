@@ -34,6 +34,9 @@ func TestSQLiteVectorStore_Prune(t *testing.T) {
 	err = store.Add(context.Background(), key1, vector1, result1, ttl1)
 	require.NoError(t, err)
 
+	// ⚡ BOLT: Wait for async persistence to complete
+	time.Sleep(100 * time.Millisecond)
+
 	// Prune shouldn't remove unexpired entries
 	store.Prune(context.Background(), key1)
 	res, _, found := store.Search(context.Background(), key1, vector1)
