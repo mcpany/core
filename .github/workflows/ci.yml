@@ -156,6 +156,7 @@ jobs:
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
+      RACE_FLAG: ""
     steps:
       - name: Free Disk Space (Fast)
         run: |
@@ -302,6 +303,7 @@ jobs:
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
+      RACE_FLAG: ""
     steps:
       - name: Free Disk Space (Fast)
         run: |
@@ -602,6 +604,7 @@ jobs:
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
+      RACE_FLAG: ""
     steps:
       - name: Free Disk Space (Fast)
         run: |
@@ -741,6 +744,7 @@ jobs:
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
+      RACE_FLAG: ""
     steps:
       - name: Free Disk Space (Fast)
         run: |
