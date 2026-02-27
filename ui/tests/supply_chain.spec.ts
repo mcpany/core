@@ -49,7 +49,8 @@ test.describe('Supply Chain Attestation Viewer', () => {
         await page.goto(`/upstream-services/${verifiedServiceName}`);
 
         // Wait for page to be ready
-        await expect(page.getByRole('heading', { name: verifiedServiceName })).toBeVisible();
+        // Use partial match or specific element as heading accessible name includes badges
+        await expect(page.locator('h1').filter({ hasText: verifiedServiceName })).toBeVisible();
 
         // Click Tab
         await page.getByRole('tab', { name: 'Supply Chain' }).click();
@@ -87,7 +88,7 @@ test.describe('Supply Chain Attestation Viewer', () => {
         await page.goto(`/upstream-services/${unverifiedServiceName}`);
 
         // Wait for page to be ready
-        await expect(page.getByRole('heading', { name: unverifiedServiceName })).toBeVisible();
+        await expect(page.locator('h1').filter({ hasText: unverifiedServiceName })).toBeVisible();
 
         // Click Tab
         await page.getByRole('tab', { name: 'Supply Chain' }).click();
