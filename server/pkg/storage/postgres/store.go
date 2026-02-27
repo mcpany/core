@@ -847,9 +847,18 @@ func (s *Store) DeleteSecret(ctx context.Context, id string) error {
 // Side Effects:
 //   - Persists the log entry to the underlying storage.
 func (s *Store) SaveLog(ctx context.Context, entry *logging.LogEntry) error {
-	metadataJSON, err := json.Marshal(entry.Metadata)
-	if err != nil {
-		return fmt.Errorf("failed to marshal metadata: %w", err)
+	var metadataJSON []byte
+	var err error
+
+	// ⚡ BOLT: Avoid unnecessary JSON marshaling for empty metadata.
+	// Randomized Selection from Top 5 High-Impact Targets
+	if len(entry.Metadata) == 0 {
+		metadataJSON = []byte("{}")
+	} else {
+		metadataJSON, err = json.Marshal(entry.Metadata)
+		if err != nil {
+			return fmt.Errorf("failed to marshal metadata: %w", err)
+		}
 	}
 
 	query := `
