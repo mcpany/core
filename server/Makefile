@@ -48,7 +48,8 @@ endif
 
 # Configure build command
 ifeq ($(shell $(DOCKER_CMD) buildx version >/dev/null 2>&1 && echo 1 || echo 0), 1)
-	DOCKER_BUILD_CMD := $(DOCKER_CMD) buildx build --load
+	# Force API version to avoid client version mismatch issues in CI
+	DOCKER_BUILD_CMD := DOCKER_API_VERSION=1.44 $(DOCKER_CMD) buildx build --load
 	HAS_BUILDX := 1
 else
 	DOCKER_BUILD_CMD := $(DOCKER_CMD) build
