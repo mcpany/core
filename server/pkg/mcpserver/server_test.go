@@ -34,8 +34,7 @@ import (
 )
 
 type mockTool struct {
-	tool     *v1.Tool
-	blocking bool
+	tool *v1.Tool
 }
 
 func (m *mockTool) Tool() *v1.Tool {
@@ -43,17 +42,13 @@ func (m *mockTool) Tool() *v1.Tool {
 }
 
 func (m *mockTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
-	// If blocking, wait until context is done.
-	if m.blocking {
-		<-ctx.Done()
+	// Simulate work that takes a bit of time, allowing context cancellation to be tested.
+	select {
+	case <-time.After(50 * time.Millisecond):
+		return "success", nil
+	case <-ctx.Done():
 		return nil, ctx.Err()
 	}
-	// Otherwise return immediately.
-	// We check context just in case it's already done.
-	if ctx.Err() != nil {
-		return nil, ctx.Err()
-	}
-	return "success", nil
 }
 
 func (m *mockTool) GetCacheConfig() *configv1.CacheConfig {
@@ -290,20 +285,6 @@ func TestServer_CallTool(t *testing.T) {
 	}
 	_ = tm.AddTool(successTool)
 
-	// Add blocking tool for timeout testing
-	blockingTool := &mockTool{
-		tool: v1.Tool_builder{
-			Name:      proto.String("blocking-tool"),
-			ServiceId: proto.String("test-service"),
-			InputSchema: inputSchema,
-			Annotations: v1.ToolAnnotations_builder{
-				InputSchema: inputSchema,
-			}.Build(),
-		}.Build(),
-		blocking: true,
-	}
-	_ = tm.AddTool(blockingTool)
-
 	errorTool := &mockErrorTool{
 		tool: v1.Tool_builder{
 			Name:      proto.String("error-tool"),
@@ -362,7 +343,7 @@ func TestServer_CallTool(t *testing.T) {
 		timeoutCtx, cancelTimeout := context.WithTimeout(ctx, 10*time.Millisecond)
 		defer cancelTimeout()
 
-		sanitizedToolName, _ := util.SanitizeToolName("blocking-tool")
+		sanitizedToolName, _ := util.SanitizeToolName("success-tool")
 		toolID := "test-service" + "." + sanitizedToolName
 		_, err := clientSession.CallTool(timeoutCtx, &mcp.CallToolParams{
 			Name: toolID,
