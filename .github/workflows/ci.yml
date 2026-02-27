@@ -134,9 +134,9 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            sudo apt-get update && sudo apt-get install -y make xz-utils gcc
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             sudo apk add --no-cache make xz gcc
           fi
 
       - name: Prepare environment
@@ -170,9 +170,9 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            sudo apt-get update && sudo apt-get install -y make xz-utils gcc
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             sudo apk add --no-cache make xz gcc
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -309,9 +309,9 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            sudo apt-get update && sudo apt-get install -y make xz-utils gcc
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             sudo apk add --no-cache make xz gcc
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -467,6 +467,14 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - name: Install dependencies
+        run: |
+          if command -v apt-get &> /dev/null; then
+            apt-get update && apt-get install -y make xz-utils gcc git
+          elif command -v apk &> /dev/null; then
+             apk add --no-cache make xz gcc git
+          fi
+
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
@@ -610,9 +618,9 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            sudo apt-get update && sudo apt-get install -y make xz-utils gcc
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             sudo apk add --no-cache make xz gcc
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -977,6 +985,14 @@ jobs:
         run: docker system prune -af
 
       - uses: actions/checkout@v6
+
+      - name: Install dependencies
+        run: |
+          if command -v apt-get &> /dev/null; then
+            apt-get update && apt-get install -y make xz-utils gcc
+          elif command -v apk &> /dev/null; then
+             apk add --no-cache make xz gcc
+          fi
 
       - name: Set up Go
         uses: actions/setup-go@v6
