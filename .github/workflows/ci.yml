@@ -492,6 +492,12 @@ jobs:
           sudo apt-get update && sudo apt-get install -y make xz-utils build-essential curl unzip
           git config --global --add safe.directory "*"
 
+      - name: Setup Protoc
+        uses: arduino/setup-protoc@v3
+        with:
+          version: '33.1'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Generate Protobufs
         run: |
           make gen
@@ -720,12 +726,18 @@ jobs:
       - name: Add bin to PATH
         run: echo "$PWD/build/env/bin" >> $GITHUB_PATH
 
+      - name: Fix Docker Permissions
+        run: |
+          mkdir -p /tmp/docker-config
+          cp -r ~/.docker/* /tmp/docker-config/ || true
+          chmod -R 777 /tmp/docker-config
+
       - name: Prepare environment
         run: make prepare
 
       - name: run sequential e2e
         run: |
-          make docker-e2e-sequential SKIP_DOCKER_REBUILD=true CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha
+          make docker-e2e-parallel SHARD=${{ matrix.shard }} SKIP_DOCKER_REBUILD=true CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha DOCKER_CONFIG_DIR=/tmp/docker-config
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
