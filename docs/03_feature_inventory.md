@@ -65,3 +65,16 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **Context Budgeting Middleware**: (P0) Automatically manages the number of active tool schemas in the LLM context based on usage frequency and session depth.
+- **Dynamic Tool Refresh (`list_changed`)**: (P1) Full support for MCP lifecycle notifications, allowing the UI and server to reflect tool additions/removals without a reload.
+- **Local Sandbox Execution Bridge**: (P1) Dedicated isolated environment for high-risk tools (e.g., git/filesystem) with "Environment Air Gap" (stripping non-essential env vars).
+
+### Priority Shifts
+- **Lazy-MCP Middleware**: Promoted to **P0** (Essential foundation for Context Budgeting).
+- **Environment Bridging Middleware**: Re-affirmed as **P0** (Due to OpenClaw's local execution patterns).

@@ -57,3 +57,9 @@ As the number of available MCP tools grows, agents face "context pollution"—wh
 
 ## 7. Evolutionary Changelog
 *   **2026-02-25:** Initial Document Creation.
+### Update: 2026-02-27 - Enabling Dynamic Tool Refresh
+**Context:** Claude Code's release of `notifications/list_changed` introduces a pattern where agents expect tool registries to be fluid without session resets.
+**Architecture Adjustment:**
+*   Added support for `notifications/list_changed` in Section 4 (Indexing).
+*   The search index now supports incremental updates triggered by upstream notifications instead of full re-scans.
+**Security Impact:** Ensures that newly added tools are immediately subject to Policy Firewall indexing before being exposed to search results.

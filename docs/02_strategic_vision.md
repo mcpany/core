@@ -47,3 +47,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **A2A Gateway Protocol**: MCP Any will implement a protocol-neutral bridge for A2A communication, allowing disparate agent frameworks (e.g., OpenClaw, AutoGen) to exchange state and tasks via a unified MCP-like interface.
 - **Federated Tool Mesh**: Moving from a standalone server to a "Mesh" architecture where multiple MCP Any instances can peer and share resources across network boundaries, governed by global Zero-Trust policies.
 - **Resource-Aware Intelligence**: Integrating cost and latency telemetry into the tool discovery process, allowing LLMs to perform "Economical Reasoning" when selecting tools.
+
+---
+
+## Strategic Evolution: [2026-02-27]
+### Focus: Dynamic Tool Lifecycle & Context Budgeting
+**Context**: Emerging patterns in Claude Code (`list_changed`) and OpenClaw indicate that agents require a more fluid relationship with their toolsets. Static discovery is dead; agents now need to manage a "Context Budget" where tools are swapped in and out based on real-time task relevance.
+**Strategic Pivot**:
+- **Dynamic Lifecycle Management**: MCP Any will implement full support for `notifications/list_changed`, enabling the gateway to dynamically update the agent's available toolset without session resets.
+- **Context Budgeting Middleware**: Introducing a "Budget-Aware" middleware that automatically prunes tool schemas from the prompt if they haven't been used, while keeping them available via the Lazy-Discovery search.
+- **Local Sandbox Execution Bridge**: Building a dedicated isolation layer that allows agents to execute high-risk local tools (e.g., repo analysis) while maintaining a strict environment-variable "Air Gap" to prevent sensitive data leakage.
