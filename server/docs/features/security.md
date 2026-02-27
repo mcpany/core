@@ -26,7 +26,7 @@ If no API Key is configured (and no other authentication method succeeds), the s
 -   **HTTP/JSON-RPC**: Incoming HTTP requests are checked against the allowlist. If the client IP is not allowed, the server responds with `403 Forbidden`.
 -   **gRPC**: Incoming gRPC calls are checked. If the client IP is not allowed, the call fails with `PermissionDenied`.
 
-**Note:** This feature checks the immediate remote address of the connection (`RemoteAddr`). If you are running `mcpany` behind a reverse proxy or load balancer, `RemoteAddr` will be the IP of the proxy. Ensure your proxy is configured to restrict access or is trusted.
+**Note:** This feature checks the immediate remote address of the connection (`RemoteAddr`). If you are running `mcpany` behind a reverse proxy or load balancer, ensure `MCPANY_TRUST_PROXY=true` is set so that `X-Forwarded-For` headers are respected.
 
 ## Secrets Management
 

@@ -1,57 +1,35 @@
-# Live Trace Inspector
+# Feature: Traffic Inspector & Replay
 
-**Status:** Implemented
+**Status:** Beta (Connected to Backend)
+**Roadmap Alignment:** Interactive Tool Usage History
 
-## Goal
+## Overview
 
-Debug complex interactions by inspecting the full lifecycle of MCP requests. The Trace Inspector allows you to examine payloads, timing, and errors for every tool call and API request.
+The **Traffic Inspector & Replay** (formerly Request Tracer) is an advanced observability feature that allows users to visualize and interact with the execution path of complex MCP tool chains. It provides a structured "waterfall" view of request traces and enables debugging via replay.
 
-## Usage Guide
+- **Trace List**: A searchable, filterable list of recent requests with status indicators and duration.
+- **Trace Details**: A detailed view of a specific trace, showing the hierarchy of spans (steps), latencies, and input/output payloads.
+- **Waterfall Visualization**: A graphical representation of the timeline of each step in the chain.
+- **Replay**: Ability to replay a specific trace to verify fixes or debug issues.
 
-### 1. Trace List
+## Screenshot
 
-Navigate to `/traces`. This view shows a chronological log of all system activity.
+![Trace View](images/trace_view.png)
 
-![Trace List](../screenshots/traces_list.png)
+## Implementation Details
 
-- **Status Icons**: Green check for success, Red X for failure.
-- **Duration**: Time taken for the request to complete.
+- **Code Location:**
+    -   Backend Source: Audit Logs API (`/api/v1/audit/logs`) (formerly Debugger).
+    -   Frontend BFF: `ui/src/app/api/traces/route.ts` (Fetches and transforms data from Audit Logs).
+    -   UI Components: `ui/src/components/traces/trace-detail.tsx`, `ui/src/components/traces/trace-list.tsx`.
+-   **Frontend**: Built with Next.js, using `ResizablePanel` for a flexible split-pane layout.
+-   **Visualization**: Custom CSS-based timeline visualization for performance and simplicity.
+-   **Backend Integration**: Connected to the `Audit Log` API (`/api/v1/audit/logs`) which provides persistent storage of tool execution traces, replacing the ephemeral `Agent Debugger`.
+-   **Data Transformation**: The frontend API route (`ui/src/app/api/traces/route.ts`) transforms flat audit log entries from the backend into a hierarchical trace view for visualization.
 
-### 2. Inspect Detail
+## Usage
 
-Click on any row in the trace list to open the **Detail View**.
-this view is split into tabs:
-
-- **Request**: The JSON arguments sent to the tool.
-- **Response**: The JSON output returned.
-- **Timeline**: A waterfall view of the operation lifecycle (Request -> Call -> Result -> Response).
-
-![Trace Detail](../screenshots/trace_detail.png)
-
-### 3. Replay Trace
-
-To quickly reproduce a bug or test a tool:
-
-1. Open a trace detail.
-2. Click the **"Replay in Playground"** button.
-3. You will be redirected to the Playground with the tool and arguments pre-filled.
-
-### 4. Export & Share
-
-To share a trace with your team or attach it to a bug report:
-
-- **Copy**: Click the **Copy** button to copy the full trace JSON to your clipboard.
-- **Export JSON**: Click **Export JSON** to download the trace as a `.json` file.
-### 5. Smart Diagnostics
-
-When a trace contains an error (e.g., Schema Validation Error, Connection Refused), the inspector automatically analyzes the failure and provides a **Diagnostics & Suggestions** card.
-
-![Trace Diagnostics](../screenshots/trace_diagnostics.png)
-
-This feature detects common issues like:
-
-- **Schema Validation Errors**: Input arguments mismatching the tool definition.
-- **Permission Errors**: File system access denied.
-- **JSON Errors**: Invalid JSON payloads.
-- **Timeouts**: Operations taking too long.
-- **Connection Failures**: Upstream services being unreachable.
+1.  Navigate to **Traces** in the sidebar.
+2.  Select a trace from the list on the left.
+3.  Inspect the execution waterfall and details on the right.
+4.  Click **Replay in Playground** to open the trace arguments in the Interactive Playground for re-execution.

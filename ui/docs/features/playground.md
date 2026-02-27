@@ -55,7 +55,7 @@ The execution result is displayed in the chat stream.
 
 ### 5. Session History (Import/Export)
 
-You can manage your playground session history using the buttons in the top right corner.
+You can manage your playground session history using the buttons in the top right corner. The history is also persisted locally in your browser storage.
 
 - **Export**: Save your current session to a JSON file (`playground-history-<date>.json`) for sharing or debugging.
 - **Import**: Load a previously exported session file to replay tool executions and results.

@@ -14,7 +14,7 @@ Navigate to `/stacks`. The editor is divided into three panes:
 
 - **Left**: Service Palette (Templates).
 - **Center**: YAML Editor.
-- **Right**: Live Visualizer.
+- **Right**: Live Visualizer (Planned).
 
 ![Stack Composer Overview](screenshots/stack_composer_overview.png)
 
