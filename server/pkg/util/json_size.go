@@ -23,9 +23,9 @@ var jsonSizeVisitedPool = sync.Pool{
 var structFieldCache sync.Map // map[reflect.Type][]cachedField
 
 type cachedField struct {
-	Index       int
-	Name        string
-	OmitEmpty   bool
+	Index        int
+	Name         string
+	OmitEmpty    bool
 	IsUnexported bool
 }
 
@@ -70,26 +70,8 @@ func getCachedFields(typ reflect.Type) []cachedField {
 // It supports standard Go types and respects basic JSON encoding rules.
 func EstimateJSONSize(v interface{}) int {
 	// Optimization: Handle simple types without map allocation
-	switch val := v.(type) {
-	case nil:
-		return 4
-	case string:
-		return len(val) + 2
-	case int:
-		return estimateIntSize(int64(val))
-	case int64:
-		return estimateIntSize(val)
-	case bool:
-		if val {
-			return 4
-		}
-		return 5
-	case []byte:
-		n := len(val)
-		if n == 0 {
-			return 2 // ""
-		}
-		return ((n+2)/3)*4 + 2
+	if size, handled := estimatePrimitiveSize(v); handled {
+		return size
 	}
 
 	visited := jsonSizeVisitedPool.Get().(map[uintptr]bool)
@@ -103,24 +85,47 @@ func EstimateJSONSize(v interface{}) int {
 	return size
 }
 
+// estimatePrimitiveSize checks for primitive types that don't need recursion.
+func estimatePrimitiveSize(v interface{}) (int, bool) {
+	switch val := v.(type) {
+	case nil:
+		return 4, true
+	case string:
+		return len(val) + 2, true
+	case int:
+		return estimateIntSize(int64(val)), true
+	case int64:
+		return estimateIntSize(val), true
+	case bool:
+		if val {
+			return 4, true
+		}
+		return 5, true
+	case []byte:
+		n := len(val)
+		if n == 0 {
+			return 2, true // ""
+		}
+		// Base64 estimation: 4 * ceil(n/3)
+		return ((n+2)/3)*4 + 2, true
+	}
+	return 0, false
+}
+
 func estimateJSONSizeRecursive(v interface{}, visited map[uintptr]bool) int {
-	if v == nil {
-		return 4 // "null"
+	// Try primitive check first (handles nil, string, int, bool, []byte)
+	if size, handled := estimatePrimitiveSize(v); handled {
+		return size
 	}
 
+	// Handle other types
 	switch val := v.(type) {
-	case string:
-		return len(val) + 2
-	case int:
-		return estimateIntSize(int64(val))
 	case int8:
 		return estimateIntSize(int64(val))
 	case int16:
 		return estimateIntSize(int64(val))
 	case int32:
 		return estimateIntSize(int64(val))
-	case int64:
-		return estimateIntSize(val)
 	case uint:
 		return estimateUintSize(uint64(val))
 	case uint8:
@@ -132,7 +137,6 @@ func estimateJSONSizeRecursive(v interface{}, visited map[uintptr]bool) int {
 	case uint64:
 		return estimateUintSize(val)
 	case float32:
-		// ⚡ Bolt: Use strconv with scratch buffer to avoid allocations
 		var buf [32]byte
 		b := strconv.AppendFloat(buf[:0], float64(val), 'g', -1, 32)
 		return len(b)
@@ -140,27 +144,25 @@ func estimateJSONSizeRecursive(v interface{}, visited map[uintptr]bool) int {
 		var buf [32]byte
 		b := strconv.AppendFloat(buf[:0], val, 'g', -1, 64)
 		return len(b)
-	case bool:
-		if val {
-			return 4 // "true"
-		}
-		return 5 // "false"
-	case []byte:
-		n := len(val)
-		if n == 0 {
-			return 2 // ""
-		}
-		// Base64 estimation: 4 * ceil(n/3)
-		// n+2 / 3 implements ceil(n/3) using integer division
-		return ((n+2)/3)*4 + 2
 	case map[string]interface{}:
 		return estimateMapSize(val, visited)
 	case []interface{}:
 		return estimateSliceSize(val, visited)
-	// Fast paths for common types to avoid reflection
+	default:
+		// Separate complex collections to reduce complexity
+		if size, handled := estimateCollectionSize(val); handled {
+			return size
+		}
+		return estimateReflect(val, visited)
+	}
+}
+
+// estimateCollectionSize handles common typed slices/maps to avoid reflection.
+func estimateCollectionSize(v interface{}) (int, bool) {
+	switch val := v.(type) {
 	case []string:
 		if len(val) == 0 {
-			return 2
+			return 2, true
 		}
 		size := 1 // [
 		for i, s := range val {
@@ -170,10 +172,10 @@ func estimateJSONSizeRecursive(v interface{}, visited map[uintptr]bool) int {
 			size += len(s) + 2
 		}
 		size++ // ]
-		return size
+		return size, true
 	case map[string]string:
 		if len(val) == 0 {
-			return 2
+			return 2, true
 		}
 		size := 1 // {
 		count := 0
@@ -185,10 +187,10 @@ func estimateJSONSizeRecursive(v interface{}, visited map[uintptr]bool) int {
 			count++
 		}
 		size++ // }
-		return size
+		return size, true
 	case []int:
 		if len(val) == 0 {
-			return 2
+			return 2, true
 		}
 		size := 1
 		for i, n := range val {
@@ -198,10 +200,10 @@ func estimateJSONSizeRecursive(v interface{}, visited map[uintptr]bool) int {
 			size += estimateIntSize(int64(n))
 		}
 		size++
-		return size
+		return size, true
 	case []int64:
 		if len(val) == 0 {
-			return 2
+			return 2, true
 		}
 		size := 1
 		for i, n := range val {
@@ -211,10 +213,10 @@ func estimateJSONSizeRecursive(v interface{}, visited map[uintptr]bool) int {
 			size += estimateIntSize(n)
 		}
 		size++
-		return size
+		return size, true
 	case []float64:
 		if len(val) == 0 {
-			return 2
+			return 2, true
 		}
 		size := 1
 		var buf [32]byte
@@ -226,10 +228,9 @@ func estimateJSONSizeRecursive(v interface{}, visited map[uintptr]bool) int {
 			size += len(b)
 		}
 		size++
-		return size
-	default:
-		return estimateReflect(val, visited)
+		return size, true
 	}
+	return 0, false
 }
 
 func estimateIntSize(n int64) int {
@@ -247,9 +248,6 @@ func estimateIntSize(n int64) int {
 			return 3
 		}
 	}
-	// ⚡ Bolt: Use math to calculate digits instead of conversion
-	// but strictly speaking strconv is optimized.
-	// Let's stick to strconv.AppendInt with stack buffer for generic case.
 	var buf [24]byte
 	return len(strconv.AppendInt(buf[:0], n, 10))
 }
