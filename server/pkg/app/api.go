@@ -25,6 +25,7 @@ import (
 	"github.com/mcpany/core/server/pkg/storage"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/util"
+	"github.com/mcpany/core/server/pkg/validation"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
@@ -375,6 +376,31 @@ func (a *Application) handleServiceValidate() http.HandlerFunc {
 			return
 		}
 
+	// Sentinel Security: Block unsafe configurations unless admin or explicitly allowed
+	// We apply the same restriction here as in handleCreateService to prevent oracle attacks
+	// where a non-admin user probes the filesystem or command availability.
+	if isUnsafeConfig(&svc) {
+		allow := false
+		if os.Getenv("MCPANY_ALLOW_UNSAFE_CONFIG") == util.TrueStr {
+			allow = true
+		} else if auth.NewRBACEnforcer().HasRoleInContext(r.Context(), "admin") {
+			allow = true
+		}
+
+		if !allow {
+			w.Header().Set("Content-Type", "application/json")
+			// Return 403 Forbidden effectively but wrapped in the validation response structure
+			// to indicate that validation failed due to permissions/policy.
+			// We avoid leaking details about *why* specifically (e.g. existence) by blocking early.
+			_ = json.NewEncoder(w).Encode(map[string]any{
+				"valid":   false,
+				"error":   "Validation of unsafe services (filesystem/sql/stdio/command_line) is restricted to admins.",
+				"details": "Policy violation",
+			})
+			return
+		}
+	}
+
 		// 2. Connectivity / Health Check
 		var checkErr error
 		var checkDetails string
@@ -470,6 +496,12 @@ func checkURLReachability(ctx context.Context, urlStr string) error {
 }
 
 func checkFilesystemAccess(path string) error {
+	// Defense in Depth: Ensure the path is allowed by policy before checking existence.
+	// This prevents using validation as an oracle for arbitrary files on the system.
+	if err := validation.IsAllowedPath(path); err != nil {
+		return fmt.Errorf("path not allowed: %w", err)
+	}
+
 	_, err := os.Stat(path)
 	if err != nil {
 		if os.IsNotExist(err) {
