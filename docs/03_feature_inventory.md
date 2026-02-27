@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **Vulnerability Intelligence Middleware**: (P0) Automatically ingests AI-discovered vulnerability reports (e.g., from Claude Opus 4.6) to enforce dynamic virtual patches on upstream tools.
+- **Opaque Shared State (invocation_state)**: (P1) Implementation of hidden state passing to allow agents to carry context/tokens without polluting the LLM window.
+- **Managed Task Lifecycle Engine**: (P1) Support for long-running autonomous workflows in healthcare/manufacturing, tracking state beyond a single request.
+
+### Priority Shifts
+- **Policy Firewall**: Re-affirming **P0**. Essential for integrating with the Vulnerability Intelligence Middleware.
+- **Recursive Context Protocol**: Re-affirming **P0**. Expanding to include Opaque State support.
+
+### Deprecations / Monitoring
+- **Transparent-Only Context**: Monitoring for shift towards Opaque/Hidden context state to save tokens.

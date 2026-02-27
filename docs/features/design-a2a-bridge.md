@@ -46,3 +46,4 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-02-27:** Added support for `invocation_state` (Opaque Shared State) to align with Strands Agents patterns. This allows passing environment-specific metadata during agent handoffs without bloating the primary LLM context window.
