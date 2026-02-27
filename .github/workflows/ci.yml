@@ -141,12 +141,15 @@ jobs:
           set -e
           if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
 
-          if command -v apt-get >/dev/null; then
-            export DEBIAN_FRONTEND=noninteractive
-            $SUDO apt-get update
-            $SUDO apt-get install -y make xz-utils build-essential curl unzip ca-certificates
-          elif command -v apk >/dev/null; then
-             $SUDO apk add --no-cache make xz build-base curl
+          # Only install if missing
+          if ! command -v make >/dev/null || ! command -v curl >/dev/null; then
+            if command -v apt-get >/dev/null; then
+              export DEBIAN_FRONTEND=noninteractive
+              $SUDO apt-get update
+              $SUDO apt-get install -y make xz-utils build-essential curl unzip ca-certificates
+            elif command -v apk >/dev/null; then
+               $SUDO apk add --no-cache make xz build-base curl
+            fi
           fi
 
       - name: Prepare environment
@@ -183,16 +186,19 @@ jobs:
           set -e
           if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
 
-          if command -v apt-get >/dev/null; then
-            export DEBIAN_FRONTEND=noninteractive
-            $SUDO apt-get update
-            $SUDO apt-get install -y make xz-utils build-essential curl unzip ca-certificates
-          elif command -v apk >/dev/null; then
-             $SUDO apk add --no-cache make xz build-base curl unzip ca-certificates
-          elif command -v yum >/dev/null; then
-             $SUDO yum install -y make xz build-essential curl unzip ca-certificates
-          elif command -v dnf >/dev/null; then
-             $SUDO dnf install -y make xz build-essential curl unzip ca-certificates
+          # Only install if missing
+          if ! command -v make >/dev/null || ! command -v gcc >/dev/null; then
+            if command -v apt-get >/dev/null; then
+              export DEBIAN_FRONTEND=noninteractive
+              $SUDO apt-get update
+              $SUDO apt-get install -y make xz-utils build-essential curl unzip ca-certificates
+            elif command -v apk >/dev/null; then
+               $SUDO apk add --no-cache make xz build-base curl unzip ca-certificates
+            elif command -v yum >/dev/null; then
+               $SUDO yum install -y make xz build-essential curl unzip ca-certificates
+            elif command -v dnf >/dev/null; then
+               $SUDO dnf install -y make xz build-essential curl unzip ca-certificates
+            fi
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -335,16 +341,18 @@ jobs:
           set -e
           if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
 
-          if command -v apt-get >/dev/null; then
-            export DEBIAN_FRONTEND=noninteractive
-            $SUDO apt-get update
-            $SUDO apt-get install -y make xz-utils build-essential curl unzip ca-certificates
-          elif command -v apk >/dev/null; then
-             $SUDO apk add --no-cache make xz build-base curl unzip ca-certificates
-          elif command -v yum >/dev/null; then
-             $SUDO yum install -y make xz build-essential curl unzip ca-certificates
-          elif command -v dnf >/dev/null; then
-             $SUDO dnf install -y make xz build-essential curl unzip ca-certificates
+          if ! command -v make >/dev/null || ! command -v curl >/dev/null; then
+            if command -v apt-get >/dev/null; then
+              export DEBIAN_FRONTEND=noninteractive
+              $SUDO apt-get update
+              $SUDO apt-get install -y make xz-utils build-essential curl unzip ca-certificates
+            elif command -v apk >/dev/null; then
+               $SUDO apk add --no-cache make xz build-base curl unzip ca-certificates
+            elif command -v yum >/dev/null; then
+               $SUDO yum install -y make xz build-essential curl unzip ca-certificates
+            elif command -v dnf >/dev/null; then
+               $SUDO dnf install -y make xz build-essential curl unzip ca-certificates
+            fi
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -489,7 +497,7 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: ${{ matrix.runner }}
-    container: public.ecr.aws/docker/library/ubuntu:22.04
+    container: public.ecr.aws/docker/library/alpine:3.19
     strategy:
       fail-fast: false
       matrix:
@@ -503,28 +511,16 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
-          $SUDO rm -rf /usr/local/lib/android
-          $SUDO rm -rf /usr/share/dotnet
-          $SUDO rm -rf /opt/ghc
-          $SUDO rm -rf /usr/local/share/boost
+          # Alpine has no apt, so standard cleanup scripts fail.
+          # We just skip it or clean what we can.
+          # Alpine is small anyway.
+          echo "Skipping free disk space on Alpine"
 
       - name: Ensure Build Tools
         run: |
           set -e
-          if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
-
-          if command -v apt-get >/dev/null; then
-            export DEBIAN_FRONTEND=noninteractive
-            $SUDO apt-get update
-            $SUDO apt-get install -y git make curl unzip ca-certificates build-essential
-          elif command -v apk >/dev/null; then
-            $SUDO apk add --no-cache git make curl unzip ca-certificates build-base
-          elif command -v yum >/dev/null; then
-            $SUDO yum install -y git make curl unzip ca-certificates gcc gcc-c++ make
-          elif command -v dnf >/dev/null; then
-            $SUDO dnf install -y git make curl unzip ca-certificates gcc gcc-c++ make
-          fi
+          # Alpine uses apk
+          apk add --no-cache make git curl unzip build-base
 
       - uses: actions/checkout@v6
 
@@ -674,16 +670,18 @@ jobs:
           set -e
           if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
 
-          if command -v apt-get >/dev/null; then
-            export DEBIAN_FRONTEND=noninteractive
-            $SUDO apt-get update
-            $SUDO apt-get install -y make xz-utils build-essential curl unzip ca-certificates
-          elif command -v apk >/dev/null; then
-             $SUDO apk add --no-cache make xz build-base curl unzip ca-certificates
-          elif command -v yum >/dev/null; then
-             $SUDO yum install -y make xz build-essential curl unzip ca-certificates
-          elif command -v dnf >/dev/null; then
-             $SUDO dnf install -y make xz build-essential curl unzip ca-certificates
+          if ! command -v make >/dev/null || ! command -v curl >/dev/null; then
+            if command -v apt-get >/dev/null; then
+              export DEBIAN_FRONTEND=noninteractive
+              $SUDO apt-get update
+              $SUDO apt-get install -y make xz-utils build-essential curl unzip ca-certificates
+            elif command -v apk >/dev/null; then
+               $SUDO apk add --no-cache make xz build-base curl unzip ca-certificates
+            elif command -v yum >/dev/null; then
+               $SUDO yum install -y make xz build-essential curl unzip ca-certificates
+            elif command -v dnf >/dev/null; then
+               $SUDO dnf install -y make xz build-essential curl unzip ca-certificates
+            fi
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -825,16 +823,18 @@ jobs:
           set -e
           if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
 
-          if command -v apt-get >/dev/null; then
-            export DEBIAN_FRONTEND=noninteractive
-            $SUDO apt-get update
-            $SUDO apt-get install -y make xz-utils build-essential curl unzip ca-certificates
-          elif command -v apk >/dev/null; then
-             $SUDO apk add --no-cache make xz build-base curl unzip ca-certificates
-          elif command -v yum >/dev/null; then
-             $SUDO yum install -y make xz build-essential curl unzip ca-certificates
-          elif command -v dnf >/dev/null; then
-             $SUDO dnf install -y make xz build-essential curl unzip ca-certificates
+          if ! command -v make >/dev/null || ! command -v curl >/dev/null; then
+            if command -v apt-get >/dev/null; then
+              export DEBIAN_FRONTEND=noninteractive
+              $SUDO apt-get update
+              $SUDO apt-get install -y make xz-utils build-essential curl unzip ca-certificates
+            elif command -v apk >/dev/null; then
+               $SUDO apk add --no-cache make xz build-base curl unzip ca-certificates
+            elif command -v yum >/dev/null; then
+               $SUDO yum install -y make xz build-essential curl unzip ca-certificates
+            elif command -v dnf >/dev/null; then
+               $SUDO dnf install -y make xz build-essential curl unzip ca-certificates
+            fi
           fi
 
       - name: Configure Docker Registry Mirrors
