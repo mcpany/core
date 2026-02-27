@@ -523,19 +523,10 @@ jobs:
             slug: arm64
             runner: ubuntu-24.04-arm
     steps:
-      - name: Free Disk Space (Fast)
+      - name: Install dependencies
         run: |
-          if command -v sudo >/dev/null; then
-            sudo rm -rf /usr/local/lib/android
-            sudo rm -rf /usr/share/dotnet
-            sudo rm -rf /opt/ghc
-            sudo rm -rf /usr/local/share/boost
-          else
-            rm -rf /usr/local/lib/android
-            rm -rf /usr/share/dotnet
-            rm -rf /opt/ghc
-            rm -rf /usr/local/share/boost
-          fi
+          apt-get update && apt-get install -y make git
+
       - uses: actions/checkout@v6
 
       - name: Set up Go
@@ -703,20 +694,16 @@ jobs:
 
       - name: Configure Docker Registry Mirrors
         run: |
-          if command -v sudo >/dev/null; then
-            sudo mkdir -p /etc/docker
-            echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          sudo mkdir -p /etc/docker
+          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
 
-            if sudo systemctl restart docker 2>/dev/null; then
-              echo "Docker restarted via systemctl"
-            elif sudo service docker restart 2>/dev/null; then
-              echo "Docker restarted via service"
-            else
-              echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
-              sudo pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
-            fi
+          if sudo systemctl restart docker 2>/dev/null; then
+            echo "Docker restarted via systemctl"
+          elif sudo service docker restart 2>/dev/null; then
+            echo "Docker restarted via service"
           else
-             echo "Skipping mirror config (no sudo)"
+            echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
+            sudo pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
           fi
           docker info
 
