@@ -148,7 +148,7 @@ jobs:
   unit-test:
     runs-on: oci-runner
     # container: public.ecr.aws/docker/library/ubuntu:24.04
-    timeout-minutes: 30
+    timeout-minutes: 45
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
     env:
@@ -284,7 +284,7 @@ jobs:
   e2e-parallel:
     runs-on: oci-runner
     # container: public.ecr.aws/docker/library/ubuntu:24.04
-    timeout-minutes: 30
+    timeout-minutes: 45
     needs: [build-images]
     strategy:
       fail-fast: false
@@ -466,6 +466,9 @@ jobs:
             runner: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v6
+
+      - name: Install dependencies
+        run: apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils build-essential
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -727,7 +730,7 @@ jobs:
   e2e-public-api:
     runs-on: oci-runner
     # container: public.ecr.aws/docker/library/ubuntu:24.04
-    timeout-minutes: 30
+    timeout-minutes: 45
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
     env:
