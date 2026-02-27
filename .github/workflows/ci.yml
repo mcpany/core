@@ -278,7 +278,7 @@ jobs:
           CGO_ENABLED: 1
         run: |
           go env
-          make test-fast CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache COVERAGE_FILE=coverage-fast.out
+          make test-fast RACE_FLAG="" CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache COVERAGE_FILE=coverage-fast.out
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
@@ -439,7 +439,7 @@ jobs:
           CGO_ENABLED: 1
         run: |
           go env
-          make e2e-parallel SHARD=${{ matrix.shard }} SKIP_DOCKER_REBUILD=true CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-e2e-parallel.out
+          make e2e-parallel RACE_FLAG="" SHARD=${{ matrix.shard }} SKIP_DOCKER_REBUILD=true CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-e2e-parallel.out
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
@@ -714,7 +714,7 @@ jobs:
           CGO_ENABLED: 1
         run: |
           go env
-          make e2e-sequential SKIP_DOCKER_REBUILD=true CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-e2e-sequential.out
+          make e2e-sequential RACE_FLAG="" SKIP_DOCKER_REBUILD=true CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-e2e-sequential.out
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
@@ -830,7 +830,7 @@ jobs:
           CGO_ENABLED: 1
         run: |
           go env
-          make test-public-api CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-public-api.out
+          make test-public-api RACE_FLAG="" CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-public-api.out
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
