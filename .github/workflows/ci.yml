@@ -103,16 +103,16 @@ jobs:
             if [ -f /etc/debian_version ]; then
               if command -v sudo &> /dev/null; then
                 sudo -E apt-get update || true
-                sudo -E apt-get install -y --no-install-recommends make build-essential xz-utils
+                sudo -E apt-get install -y --no-install-recommends make build-essential xz-utils git
               else
                 apt-get update || true
-                apt-get install -y --no-install-recommends make build-essential xz-utils
+                apt-get install -y --no-install-recommends make build-essential xz-utils git
               fi
             elif [ -f /etc/alpine-release ]; then
               if command -v sudo &> /dev/null; then
-                sudo apk add --no-cache make xz build-base
+                sudo apk add --no-cache make xz build-base git
               else
-                apk add --no-cache make xz build-base
+                apk add --no-cache make xz build-base git
               fi
             elif [ -f /etc/redhat-release ] || [ -f /etc/fedora-release ] || grep -q "ID_LIKE=.*rhel" /etc/os-release; then
                if command -v dnf &> /dev/null; then
@@ -122,10 +122,10 @@ jobs:
                fi
 
                if command -v sudo &> /dev/null; then
-                 sudo $PKG_MGR install -y make xz diffutils
+                 sudo $PKG_MGR install -y make xz diffutils git
                  sudo $PKG_MGR groupinstall -y "Development Tools" || sudo $PKG_MGR install -y gcc gcc-c++
                else
-                 $PKG_MGR install -y make xz diffutils
+                 $PKG_MGR install -y make xz diffutils git
                  $PKG_MGR groupinstall -y "Development Tools" || $PKG_MGR install -y gcc gcc-c++
                fi
             else
@@ -198,16 +198,16 @@ jobs:
             if [ -f /etc/debian_version ]; then
               if command -v sudo &> /dev/null; then
                 sudo -E apt-get update || true
-                sudo -E apt-get install -y --no-install-recommends make build-essential xz-utils
+                sudo -E apt-get install -y --no-install-recommends make build-essential xz-utils git
               else
                 apt-get update || true
-                apt-get install -y --no-install-recommends make build-essential xz-utils
+                apt-get install -y --no-install-recommends make build-essential xz-utils git
               fi
             elif [ -f /etc/alpine-release ]; then
               if command -v sudo &> /dev/null; then
-                sudo apk add --no-cache make xz build-base
+                sudo apk add --no-cache make xz build-base git
               else
-                apk add --no-cache make xz build-base
+                apk add --no-cache make xz build-base git
               fi
             elif [ -f /etc/redhat-release ] || [ -f /etc/fedora-release ] || grep -q "ID_LIKE=.*rhel" /etc/os-release; then
                if command -v dnf &> /dev/null; then
@@ -217,10 +217,10 @@ jobs:
                fi
 
                if command -v sudo &> /dev/null; then
-                 sudo $PKG_MGR install -y make xz diffutils
+                 sudo $PKG_MGR install -y make xz diffutils git
                  sudo $PKG_MGR groupinstall -y "Development Tools" || sudo $PKG_MGR install -y gcc gcc-c++
                else
-                 $PKG_MGR install -y make xz diffutils
+                 $PKG_MGR install -y make xz diffutils git
                  $PKG_MGR groupinstall -y "Development Tools" || $PKG_MGR install -y gcc gcc-c++
                fi
             else
@@ -281,16 +281,16 @@ jobs:
             if [ -f /etc/debian_version ]; then
               if command -v sudo &> /dev/null; then
                 sudo -E apt-get update || true
-                sudo -E apt-get install -y --no-install-recommends make build-essential xz-utils
+                sudo -E apt-get install -y --no-install-recommends make build-essential xz-utils git
               else
                 apt-get update || true
-                apt-get install -y --no-install-recommends make build-essential xz-utils
+                apt-get install -y --no-install-recommends make build-essential xz-utils git
               fi
             elif [ -f /etc/alpine-release ]; then
               if command -v sudo &> /dev/null; then
-                sudo apk add --no-cache make xz build-base
+                sudo apk add --no-cache make xz build-base git
               else
-                apk add --no-cache make xz build-base
+                apk add --no-cache make xz build-base git
               fi
             elif [ -f /etc/redhat-release ] || [ -f /etc/fedora-release ] || grep -q "ID_LIKE=.*rhel" /etc/os-release; then
                if command -v dnf &> /dev/null; then
@@ -300,10 +300,10 @@ jobs:
                fi
 
                if command -v sudo &> /dev/null; then
-                 sudo $PKG_MGR install -y make xz diffutils
+                 sudo $PKG_MGR install -y make xz diffutils git
                  sudo $PKG_MGR groupinstall -y "Development Tools" || sudo $PKG_MGR install -y gcc gcc-c++
                else
-                 $PKG_MGR install -y make xz diffutils
+                 $PKG_MGR install -y make xz diffutils git
                  $PKG_MGR groupinstall -y "Development Tools" || $PKG_MGR install -y gcc gcc-c++
                fi
             else
@@ -467,16 +467,16 @@ jobs:
             if [ -f /etc/debian_version ]; then
               if command -v sudo &> /dev/null; then
                 sudo -E apt-get update || true
-                sudo -E apt-get install -y --no-install-recommends make build-essential xz-utils
+                sudo -E apt-get install -y --no-install-recommends make build-essential xz-utils git
               else
                 apt-get update || true
-                apt-get install -y --no-install-recommends make build-essential xz-utils
+                apt-get install -y --no-install-recommends make build-essential xz-utils git
               fi
             elif [ -f /etc/alpine-release ]; then
               if command -v sudo &> /dev/null; then
-                sudo apk add --no-cache make xz build-base
+                sudo apk add --no-cache make xz build-base git
               else
-                apk add --no-cache make xz build-base
+                apk add --no-cache make xz build-base git
               fi
             elif [ -f /etc/redhat-release ] || [ -f /etc/fedora-release ] || grep -q "ID_LIKE=.*rhel" /etc/os-release; then
                if command -v dnf &> /dev/null; then
@@ -486,10 +486,10 @@ jobs:
                fi
 
                if command -v sudo &> /dev/null; then
-                 sudo $PKG_MGR install -y make xz diffutils
+                 sudo $PKG_MGR install -y make xz diffutils git
                  sudo $PKG_MGR groupinstall -y "Development Tools" || sudo $PKG_MGR install -y gcc gcc-c++
                else
-                 $PKG_MGR install -y make xz diffutils
+                 $PKG_MGR install -y make xz diffutils git
                  $PKG_MGR groupinstall -y "Development Tools" || $PKG_MGR install -y gcc gcc-c++
                fi
             else
@@ -674,16 +674,16 @@ jobs:
             if [ -f /etc/debian_version ]; then
               if command -v sudo &> /dev/null; then
                 sudo -E apt-get update || true
-                sudo -E apt-get install -y --no-install-recommends make build-essential xz-utils
+                sudo -E apt-get install -y --no-install-recommends make build-essential xz-utils git
               else
                 apt-get update || true
-                apt-get install -y --no-install-recommends make build-essential xz-utils
+                apt-get install -y --no-install-recommends make build-essential xz-utils git
               fi
             elif [ -f /etc/alpine-release ]; then
               if command -v sudo &> /dev/null; then
-                sudo apk add --no-cache make xz build-base
+                sudo apk add --no-cache make xz build-base git
               else
-                apk add --no-cache make xz build-base
+                apk add --no-cache make xz build-base git
               fi
             elif [ -f /etc/redhat-release ] || [ -f /etc/fedora-release ] || grep -q "ID_LIKE=.*rhel" /etc/os-release; then
                if command -v dnf &> /dev/null; then
@@ -693,10 +693,10 @@ jobs:
                fi
 
                if command -v sudo &> /dev/null; then
-                 sudo $PKG_MGR install -y make xz diffutils
+                 sudo $PKG_MGR install -y make xz diffutils git
                  sudo $PKG_MGR groupinstall -y "Development Tools" || sudo $PKG_MGR install -y gcc gcc-c++
                else
-                 $PKG_MGR install -y make xz diffutils
+                 $PKG_MGR install -y make xz diffutils git
                  $PKG_MGR groupinstall -y "Development Tools" || $PKG_MGR install -y gcc gcc-c++
                fi
             else
@@ -742,16 +742,16 @@ jobs:
             if [ -f /etc/debian_version ]; then
               if command -v sudo &> /dev/null; then
                 sudo -E apt-get update || true
-                sudo -E apt-get install -y --no-install-recommends make build-essential xz-utils
+                sudo -E apt-get install -y --no-install-recommends make build-essential xz-utils git
               else
                 apt-get update || true
-                apt-get install -y --no-install-recommends make build-essential xz-utils
+                apt-get install -y --no-install-recommends make build-essential xz-utils git
               fi
             elif [ -f /etc/alpine-release ]; then
               if command -v sudo &> /dev/null; then
-                sudo apk add --no-cache make xz build-base
+                sudo apk add --no-cache make xz build-base git
               else
-                apk add --no-cache make xz build-base
+                apk add --no-cache make xz build-base git
               fi
             elif [ -f /etc/redhat-release ] || [ -f /etc/fedora-release ] || grep -q "ID_LIKE=.*rhel" /etc/os-release; then
                if command -v dnf &> /dev/null; then
@@ -761,10 +761,10 @@ jobs:
                fi
 
                if command -v sudo &> /dev/null; then
-                 sudo $PKG_MGR install -y make xz diffutils
+                 sudo $PKG_MGR install -y make xz diffutils git
                  sudo $PKG_MGR groupinstall -y "Development Tools" || sudo $PKG_MGR install -y gcc gcc-c++
                else
-                 $PKG_MGR install -y make xz diffutils
+                 $PKG_MGR install -y make xz diffutils git
                  $PKG_MGR groupinstall -y "Development Tools" || $PKG_MGR install -y gcc gcc-c++
                fi
             else
@@ -930,16 +930,16 @@ jobs:
             if [ -f /etc/debian_version ]; then
               if command -v sudo &> /dev/null; then
                 sudo -E apt-get update || true
-                sudo -E apt-get install -y --no-install-recommends make build-essential xz-utils
+                sudo -E apt-get install -y --no-install-recommends make build-essential xz-utils git
               else
                 apt-get update || true
-                apt-get install -y --no-install-recommends make build-essential xz-utils
+                apt-get install -y --no-install-recommends make build-essential xz-utils git
               fi
             elif [ -f /etc/alpine-release ]; then
               if command -v sudo &> /dev/null; then
-                sudo apk add --no-cache make xz build-base
+                sudo apk add --no-cache make xz build-base git
               else
-                apk add --no-cache make xz build-base
+                apk add --no-cache make xz build-base git
               fi
             elif [ -f /etc/redhat-release ] || [ -f /etc/fedora-release ] || grep -q "ID_LIKE=.*rhel" /etc/os-release; then
                if command -v dnf &> /dev/null; then
@@ -949,10 +949,10 @@ jobs:
                fi
 
                if command -v sudo &> /dev/null; then
-                 sudo $PKG_MGR install -y make xz diffutils
+                 sudo $PKG_MGR install -y make xz diffutils git
                  sudo $PKG_MGR groupinstall -y "Development Tools" || sudo $PKG_MGR install -y gcc gcc-c++
                else
-                 $PKG_MGR install -y make xz diffutils
+                 $PKG_MGR install -y make xz diffutils git
                  $PKG_MGR groupinstall -y "Development Tools" || $PKG_MGR install -y gcc gcc-c++
                fi
             else
@@ -1116,16 +1116,16 @@ jobs:
             if [ -f /etc/debian_version ]; then
               if command -v sudo &> /dev/null; then
                 sudo -E apt-get update || true
-                sudo -E apt-get install -y --no-install-recommends make build-essential xz-utils
+                sudo -E apt-get install -y --no-install-recommends make build-essential xz-utils git
               else
                 apt-get update || true
-                apt-get install -y --no-install-recommends make build-essential xz-utils
+                apt-get install -y --no-install-recommends make build-essential xz-utils git
               fi
             elif [ -f /etc/alpine-release ]; then
               if command -v sudo &> /dev/null; then
-                sudo apk add --no-cache make xz build-base
+                sudo apk add --no-cache make xz build-base git
               else
-                apk add --no-cache make xz build-base
+                apk add --no-cache make xz build-base git
               fi
             elif [ -f /etc/redhat-release ] || [ -f /etc/fedora-release ] || grep -q "ID_LIKE=.*rhel" /etc/os-release; then
                if command -v dnf &> /dev/null; then
@@ -1135,10 +1135,10 @@ jobs:
                fi
 
                if command -v sudo &> /dev/null; then
-                 sudo $PKG_MGR install -y make xz diffutils
+                 sudo $PKG_MGR install -y make xz diffutils git
                  sudo $PKG_MGR groupinstall -y "Development Tools" || sudo $PKG_MGR install -y gcc gcc-c++
                else
-                 $PKG_MGR install -y make xz diffutils
+                 $PKG_MGR install -y make xz diffutils git
                  $PKG_MGR groupinstall -y "Development Tools" || $PKG_MGR install -y gcc gcc-c++
                fi
             else
@@ -1270,16 +1270,16 @@ jobs:
             if [ -f /etc/debian_version ]; then
               if command -v sudo &> /dev/null; then
                 sudo -E apt-get update || true
-                sudo -E apt-get install -y --no-install-recommends make build-essential xz-utils
+                sudo -E apt-get install -y --no-install-recommends make build-essential xz-utils git
               else
                 apt-get update || true
-                apt-get install -y --no-install-recommends make build-essential xz-utils
+                apt-get install -y --no-install-recommends make build-essential xz-utils git
               fi
             elif [ -f /etc/alpine-release ]; then
               if command -v sudo &> /dev/null; then
-                sudo apk add --no-cache make xz build-base
+                sudo apk add --no-cache make xz build-base git
               else
-                apk add --no-cache make xz build-base
+                apk add --no-cache make xz build-base git
               fi
             elif [ -f /etc/redhat-release ] || [ -f /etc/fedora-release ] || grep -q "ID_LIKE=.*rhel" /etc/os-release; then
                if command -v dnf &> /dev/null; then
@@ -1289,10 +1289,10 @@ jobs:
                fi
 
                if command -v sudo &> /dev/null; then
-                 sudo $PKG_MGR install -y make xz diffutils
+                 sudo $PKG_MGR install -y make xz diffutils git
                  sudo $PKG_MGR groupinstall -y "Development Tools" || sudo $PKG_MGR install -y gcc gcc-c++
                else
-                 $PKG_MGR install -y make xz diffutils
+                 $PKG_MGR install -y make xz diffutils git
                  $PKG_MGR groupinstall -y "Development Tools" || $PKG_MGR install -y gcc gcc-c++
                fi
             else
