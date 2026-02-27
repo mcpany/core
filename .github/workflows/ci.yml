@@ -191,7 +191,7 @@ jobs:
         run: make lint
 
   unit-test:
-    runs-on: oci-runner
+    runs-on: ubuntu-latest
     # container: public.ecr.aws/docker/library/ubuntu:24.04
     timeout-minutes: 30
     needs: [changes]
@@ -243,34 +243,34 @@ jobs:
              $SUDO apk add --no-cache make xz unzip curl
           fi
 
-      - name: Configure Docker Registry Mirrors
-        run: |
-          # Configure multiple mirrors in array format
-          # Docker will try mirror.gcr.io first.
-
-          if [ "$(id -u)" -ne 0 ] && ! command -v sudo &> /dev/null; then
-            echo "Skipping Docker Registry Mirror configuration: Non-root user and sudo not available."
-            docker info
-            exit 0
-          fi
-
-          SUDO=""
-          if command -v sudo &> /dev/null; then
-            SUDO="sudo"
-          fi
-
-          $SUDO mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json
-
-          if $SUDO systemctl restart docker 2>/dev/null; then
-            echo "Docker restarted via systemctl"
-          elif $SUDO service docker restart 2>/dev/null; then
-            echo "Docker restarted via service"
-          else
-            echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
-            $SUDO pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
-          fi
-          docker info # Verify the mirrors are listed
+      # - name: Configure Docker Registry Mirrors
+      #   run: |
+      #     # Configure multiple mirrors in array format
+      #     # Docker will try mirror.gcr.io first.
+      #
+      #     if [ "$(id -u)" -ne 0 ] && ! command -v sudo &> /dev/null; then
+      #       echo "Skipping Docker Registry Mirror configuration: Non-root user and sudo not available."
+      #       docker info
+      #       exit 0
+      #     fi
+      #
+      #     SUDO=""
+      #     if command -v sudo &> /dev/null; then
+      #       SUDO="sudo"
+      #     fi
+      #
+      #     $SUDO mkdir -p /etc/docker
+      #     echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json
+      #
+      #     if $SUDO systemctl restart docker 2>/dev/null; then
+      #       echo "Docker restarted via systemctl"
+      #     elif $SUDO service docker restart 2>/dev/null; then
+      #       echo "Docker restarted via service"
+      #     else
+      #       echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
+      #       $SUDO pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
+      #     fi
+      #     docker info # Verify the mirrors are listed
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -417,34 +417,34 @@ jobs:
              $SUDO apk add --no-cache make xz unzip curl
           fi
 
-      - name: Configure Docker Registry Mirrors
-        run: |
-          # Configure multiple mirrors in array format
-          # Docker will try mirror.gcr.io first.
-
-          if [ "$(id -u)" -ne 0 ] && ! command -v sudo &> /dev/null; then
-            echo "Skipping Docker Registry Mirror configuration: Non-root user and sudo not available."
-            docker info
-            exit 0
-          fi
-
-          SUDO=""
-          if command -v sudo &> /dev/null; then
-            SUDO="sudo"
-          fi
-
-          $SUDO mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json
-
-          if $SUDO systemctl restart docker 2>/dev/null; then
-            echo "Docker restarted via systemctl"
-          elif $SUDO service docker restart 2>/dev/null; then
-            echo "Docker restarted via service"
-          else
-            echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
-            $SUDO pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
-          fi
-          docker info # Verify the mirrors are listed
+      # - name: Configure Docker Registry Mirrors
+      #   run: |
+      #     # Configure multiple mirrors in array format
+      #     # Docker will try mirror.gcr.io first.
+      #
+      #     if [ "$(id -u)" -ne 0 ] && ! command -v sudo &> /dev/null; then
+      #       echo "Skipping Docker Registry Mirror configuration: Non-root user and sudo not available."
+      #       docker info
+      #       exit 0
+      #     fi
+      #
+      #     SUDO=""
+      #     if command -v sudo &> /dev/null; then
+      #       SUDO="sudo"
+      #     fi
+      #
+      #     $SUDO mkdir -p /etc/docker
+      #     echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json
+      #
+      #     if $SUDO systemctl restart docker 2>/dev/null; then
+      #       echo "Docker restarted via systemctl"
+      #     elif $SUDO service docker restart 2>/dev/null; then
+      #       echo "Docker restarted via service"
+      #     else
+      #       echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
+      #       $SUDO pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
+      #     fi
+      #     docker info # Verify the mirrors are listed
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -790,34 +790,34 @@ jobs:
              $SUDO apk add --no-cache make xz unzip curl
           fi
 
-      - name: Configure Docker Registry Mirrors
-        run: |
-          # Configure multiple mirrors in array format
-          # Docker will try mirror.gcr.io first.
-
-          if [ "$(id -u)" -ne 0 ] && ! command -v sudo &> /dev/null; then
-            echo "Skipping Docker Registry Mirror configuration: Non-root user and sudo not available."
-            docker info
-            exit 0
-          fi
-
-          SUDO=""
-          if command -v sudo &> /dev/null; then
-            SUDO="sudo"
-          fi
-
-          $SUDO mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json
-
-          if $SUDO systemctl restart docker 2>/dev/null; then
-            echo "Docker restarted via systemctl"
-          elif $SUDO service docker restart 2>/dev/null; then
-            echo "Docker restarted via service"
-          else
-            echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
-            $SUDO pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
-          fi
-          docker info # Verify the mirrors are listed
+      # - name: Configure Docker Registry Mirrors
+      #   run: |
+      #     # Configure multiple mirrors in array format
+      #     # Docker will try mirror.gcr.io first.
+      #
+      #     if [ "$(id -u)" -ne 0 ] && ! command -v sudo &> /dev/null; then
+      #       echo "Skipping Docker Registry Mirror configuration: Non-root user and sudo not available."
+      #       docker info
+      #       exit 0
+      #     fi
+      #
+      #     SUDO=""
+      #     if command -v sudo &> /dev/null; then
+      #       SUDO="sudo"
+      #     fi
+      #
+      #     $SUDO mkdir -p /etc/docker
+      #     echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json
+      #
+      #     if $SUDO systemctl restart docker 2>/dev/null; then
+      #       echo "Docker restarted via systemctl"
+      #     elif $SUDO service docker restart 2>/dev/null; then
+      #       echo "Docker restarted via service"
+      #     else
+      #       echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
+      #       $SUDO pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
+      #     fi
+      #     docker info # Verify the mirrors are listed
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -952,34 +952,34 @@ jobs:
              $SUDO apk add --no-cache make xz
           fi
 
-      - name: Configure Docker Registry Mirrors
-        run: |
-          # Configure multiple mirrors in array format
-          # Docker will try mirror.gcr.io first.
-
-          if [ "$(id -u)" -ne 0 ] && ! command -v sudo &> /dev/null; then
-            echo "Skipping Docker Registry Mirror configuration: Non-root user and sudo not available."
-            docker info
-            exit 0
-          fi
-
-          SUDO=""
-          if command -v sudo &> /dev/null; then
-            SUDO="sudo"
-          fi
-
-          $SUDO mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json
-
-          if $SUDO systemctl restart docker 2>/dev/null; then
-            echo "Docker restarted via systemctl"
-          elif $SUDO service docker restart 2>/dev/null; then
-            echo "Docker restarted via service"
-          else
-            echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
-            $SUDO pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
-          fi
-          docker info # Verify the mirrors are listed
+      # - name: Configure Docker Registry Mirrors
+      #   run: |
+      #     # Configure multiple mirrors in array format
+      #     # Docker will try mirror.gcr.io first.
+      #
+      #     if [ "$(id -u)" -ne 0 ] && ! command -v sudo &> /dev/null; then
+      #       echo "Skipping Docker Registry Mirror configuration: Non-root user and sudo not available."
+      #       docker info
+      #       exit 0
+      #     fi
+      #
+      #     SUDO=""
+      #     if command -v sudo &> /dev/null; then
+      #       SUDO="sudo"
+      #     fi
+      #
+      #     $SUDO mkdir -p /etc/docker
+      #     echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json
+      #
+      #     if $SUDO systemctl restart docker 2>/dev/null; then
+      #       echo "Docker restarted via systemctl"
+      #     elif $SUDO service docker restart 2>/dev/null; then
+      #       echo "Docker restarted via service"
+      #     else
+      #       echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
+      #       $SUDO pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
+      #     fi
+      #     docker info # Verify the mirrors are listed
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -1063,34 +1063,34 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Configure Docker Registry Mirrors
-        run: |
-          # Configure multiple mirrors in array format
-          # Docker will try mirror.gcr.io first.
-
-          if [ "$(id -u)" -ne 0 ] && ! command -v sudo &> /dev/null; then
-            echo "Skipping Docker Registry Mirror configuration: Non-root user and sudo not available."
-            docker info
-            exit 0
-          fi
-
-          SUDO=""
-          if command -v sudo &> /dev/null; then
-            SUDO="sudo"
-          fi
-
-          $SUDO mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json
-
-          if $SUDO systemctl restart docker 2>/dev/null; then
-            echo "Docker restarted via systemctl"
-          elif $SUDO service docker restart 2>/dev/null; then
-            echo "Docker restarted via service"
-          else
-            echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
-            $SUDO pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
-          fi
-          docker info # Verify the mirrors are listed
+      # - name: Configure Docker Registry Mirrors
+      #   run: |
+      #     # Configure multiple mirrors in array format
+      #     # Docker will try mirror.gcr.io first.
+      #
+      #     if [ "$(id -u)" -ne 0 ] && ! command -v sudo &> /dev/null; then
+      #       echo "Skipping Docker Registry Mirror configuration: Non-root user and sudo not available."
+      #       docker info
+      #       exit 0
+      #     fi
+      #
+      #     SUDO=""
+      #     if command -v sudo &> /dev/null; then
+      #       SUDO="sudo"
+      #     fi
+      #
+      #     $SUDO mkdir -p /etc/docker
+      #     echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json
+      #
+      #     if $SUDO systemctl restart docker 2>/dev/null; then
+      #       echo "Docker restarted via systemctl"
+      #     elif $SUDO service docker restart 2>/dev/null; then
+      #       echo "Docker restarted via service"
+      #     else
+      #       echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
+      #       $SUDO pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
+      #     fi
+      #     docker info # Verify the mirrors are listed
 
       - name: Set up Go
         uses: actions/setup-go@v6
