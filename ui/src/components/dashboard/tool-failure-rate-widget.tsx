@@ -9,8 +9,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { AlertCircle, ArrowUpRight } from "lucide-react";
-import { apiClient } from "@/lib/client";
+import { AlertCircle } from "lucide-react";
 import { useDashboard } from "@/components/dashboard/dashboard-context";
 
 interface ToolFailureRate {
@@ -33,14 +32,23 @@ export function ToolFailureRateWidget() {
     useEffect(() => {
         const fetchStats = async () => {
             try {
-                const stats = await apiClient.getToolFailures(serviceId);
-                const mapped = stats.map(s => ({
-                    name: s.name,
-                    service: s.serviceId,
-                    failureRate: s.failureRate,
-                    totalCalls: s.totalCalls
-                }));
-                setTools(mapped);
+                let url = '/api/dashboard/tool-failures';
+                if (serviceId) {
+                    url += `?serviceId=${encodeURIComponent(serviceId)}`;
+                }
+                const res = await fetch(url);
+                if (res.ok) {
+                    const stats = await res.json();
+                    const mapped: ToolFailureRate[] = stats.map((s: { name: string; serviceId: string; failureRate: number; totalCalls: number }) => ({
+                        name: s.name,
+                        service: s.serviceId, // Map serviceId from API to service for UI
+                        failureRate: s.failureRate,
+                        totalCalls: s.totalCalls
+                    }));
+                    setTools(mapped);
+                } else {
+                    console.error("Failed to fetch tool failure rates");
+                }
             } catch (error) {
                 console.error("Failed to fetch tool failure rates", error);
             } finally {

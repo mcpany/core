@@ -8,7 +8,6 @@
 import { useEffect, useState } from "react";
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid, Cell } from "recharts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { apiClient } from "@/lib/client";
 import { useDashboard } from "@/components/dashboard/dashboard-context";
 
 interface ToolUsageStats {
@@ -29,8 +28,17 @@ export function TopToolsWidget() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const json = await apiClient.getTopTools(serviceId);
-        setData(json || []);
+        let url = '/api/dashboard/tool-usage';
+        if (serviceId) {
+            url += `?serviceId=${encodeURIComponent(serviceId)}`;
+        }
+        const res = await fetch(url);
+        if (res.ok) {
+            const json = await res.json();
+            setData(json || []);
+        } else {
+            console.error("Failed to fetch tool usage");
+        }
       } catch (error) {
         console.error("Failed to fetch top tools", error);
       } finally {

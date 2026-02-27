@@ -28,8 +28,6 @@ type SeedRequest struct {
 
 // handleDebugSeed creates a handler to seed the database with data.
 // It clears existing data before inserting new data.
-// handleDebugSeed creates a handler to seed the database with data.
-// It clears existing data before inserting new data.
 func (a *Application) handleDebugSeed() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {

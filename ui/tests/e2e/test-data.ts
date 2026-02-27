@@ -184,13 +184,19 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
 export const seedTraffic = async (requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     const points = [
-        { timestamp: new Date().toISOString(), requests: 100, errors: 2 }
+        { time: "10:00", requests: 100, errors: 2, latency: 50 },
+        { time: "10:01", requests: 120, errors: 0, latency: 45 },
+        { time: "10:02", requests: 90, errors: 5, latency: 60 }
     ];
     try {
         await context.post('/api/v1/debug/seed_traffic', { data: points, headers: HEADERS });
     } catch (e) {
         console.log(`Failed to seed traffic: ${e}`);
     }
+};
+
+export const seedWebhooks = async (requestContext?: APIRequestContext) => {
+    // No-op for now unless we add webhook seeding logic backend
 };
 
 // Backward compatibility wrappers to ensure other tests don't break
