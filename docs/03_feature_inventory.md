@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **WebSocket Origin Guard**: (P0) Strict validation of `Origin` headers for all WebSocket connections. Prevents "Localhost Hijacking" via browser-based scripts (Mitigates OpenClaw CVE-2026-XXXX).
+- **Parallel A2A Team Dispatcher**: (P1) Middleware to handle parallel dispatch of tasks to multiple A2A agents and merge results, mirroring Claude's "Agent Teams" architecture.
+- **Declarative "Seatbelt" Policy Profiles**: (P1) Pre-defined, industry-standard security profiles (e.g., "Read-Only", "No-Network") that can be applied to tools via simple configuration, inspired by Gemini CLI v0.30.0.
+
+### Priority Shifts
+- **Policy Firewall**: Re-affirming **P0** status. Must support declarative profiles to match ecosystem expectations.
+- **A2A Interop Bridge**: Promoted from **P1** to **P0** to support the rapid adoption of multi-agent team workflows.
+
+### Deprecations / Monitoring
+- **Unauthenticated Localhost Access**: Actively monitoring for deprecation. All local endpoints should transition to token-based or origin-validated access.

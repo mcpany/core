@@ -29,6 +29,11 @@
 *   **[P1] Federated MCP Peering**: Distributed node discovery and tool proxying. (Added: 2026-02-26)
 *   **[P1] Resource Telemetry Middleware**: Inject latency/cost metrics into tool schemas. (Added: 2026-02-26)
 
+#### Upcoming (2026-02-27) Evolution
+*   **[P0] WebSocket Origin Guard**: Strict Origin header validation and session secrets to prevent localhost hijacking. (Added: 2026-02-27)
+*   **[P0] Parallel A2A Dispatcher**: Support for "Agent Team" parallel execution and result merging in the A2A Bridge. (Added: 2026-02-27)
+*   **[P1] Declarative Policy Profiles**: Standardized "Seatbelt" security profiles for simplified tool access control. (Added: 2026-02-27)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

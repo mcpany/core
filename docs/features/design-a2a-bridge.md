@@ -12,6 +12,7 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
     *   Support standardized handoff and callback mechanisms between different agent frameworks (e.g., CrewAI, AutoGen, OpenClaw).
     *   Maintain session-aware context during multi-agent handoffs.
     *   Provide a "Pseudo-MCP" wrapper for A2A endpoints.
+    *   **Parallel Dispatch**: Support fanning out tasks to multiple teammate agents simultaneously (Claude Code style).
 *   **Non-Goals:**
     *   Replacing the A2A protocol itself.
     *   Implementing agent logic (MCP Any remains the transport/gateway layer).
@@ -30,6 +31,7 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 *   **System Flow:**
     - **Discovery**: MCP Any polls or receives registrations from A2A agents.
     - **Translation**: The `A2ABridgeMiddleware` maps MCP `tools/call` arguments to A2A `message/post` payloads.
+    - **Parallel Dispatcher**: A new component that manages "Agent Teams," handling the parallel execution of tool calls and aggregating results.
     - **Session Management**: MCP Any uses the `Recursive Context Protocol` headers to track the lineage of the call across agent boundaries.
 *   **APIs / Interfaces:**
     - **MCP Side**: Standard `tools/list` and `tools/call`.
@@ -46,3 +48,4 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-02-27:** Added support for Parallel Dispatch and "Agent Team" patterns to align with Claude Code's latest architecture.
