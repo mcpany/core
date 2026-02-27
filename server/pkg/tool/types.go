@@ -1847,22 +1847,26 @@ func NewCommandTool(
 	callID string,
 ) Tool {
 	compiled, err := CompileCallPolicies(policies)
+
+	allowedParams := make(map[string]bool)
+	if callDefinition != nil {
+		for _, param := range callDefinition.GetParameters() {
+			if schema := param.GetSchema(); schema != nil {
+				allowedParams[schema.GetName()] = true
+			}
+		}
+	}
+
 	t := &CommandTool{
 		tool:           tool,
 		service:        service,
 		callDefinition: callDefinition,
 		policies:       compiled,
 		callID:         callID,
-		allowedParams:  make(map[string]bool, len(callDefinition.GetParameters())),
+		allowedParams:  allowedParams,
 	}
 	if err != nil {
 		t.initError = fmt.Errorf("failed to compile call policies: %w", err)
-	}
-
-	for _, param := range callDefinition.GetParameters() {
-		if schema := param.GetSchema(); schema != nil {
-			t.allowedParams[schema.GetName()] = true
-		}
 	}
 
 	return t
@@ -1908,22 +1912,26 @@ func NewLocalCommandTool(
 	callID string,
 ) Tool {
 	compiled, err := CompileCallPolicies(policies)
+
+	allowedParams := make(map[string]bool)
+	if callDefinition != nil {
+		for _, param := range callDefinition.GetParameters() {
+			if schema := param.GetSchema(); schema != nil {
+				allowedParams[schema.GetName()] = true
+			}
+		}
+	}
+
 	t := &LocalCommandTool{
 		tool:           tool,
 		service:        service,
 		callDefinition: callDefinition,
 		policies:       compiled,
 		callID:         callID,
-		allowedParams:  make(map[string]bool, len(callDefinition.GetParameters())),
+		allowedParams:  allowedParams,
 	}
 	if err != nil {
 		t.initError = fmt.Errorf("failed to compile call policies: %w", err)
-	}
-
-	for _, param := range callDefinition.GetParameters() {
-		if schema := param.GetSchema(); schema != nil {
-			t.allowedParams[schema.GetName()] = true
-		}
 	}
 
 	// Check if the command is sed and supports sandbox
