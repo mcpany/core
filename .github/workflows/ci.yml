@@ -35,13 +35,9 @@ jobs:
     steps:
       - name: Install dependencies
         run: |
-          if command -v sudo >/dev/null 2>&1 && command -v apt-get >/dev/null 2>&1; then
-            sudo apt-get update && sudo apt-get install -y git
-          elif command -v apt-get >/dev/null 2>&1; then
-            apt-get update && apt-get install -y git
-          else
-            echo "Assuming git is installed or not needed"
-          fi
+          export DEBIAN_FRONTEND=noninteractive
+          sudo apt-get update -y
+          sudo apt-get install -y git
 
       - uses: actions/checkout@v6
         with:
@@ -88,17 +84,10 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          if command -v sudo >/dev/null 2>&1; then
-            sudo rm -rf /usr/local/lib/android || true
-            sudo rm -rf /usr/share/dotnet || true
-            sudo rm -rf /opt/ghc || true
-            sudo rm -rf /usr/local/share/boost || true
-          else
-            rm -rf /usr/local/lib/android || true
-            rm -rf /usr/share/dotnet || true
-            rm -rf /opt/ghc || true
-            rm -rf /usr/local/share/boost || true
-          fi
+          sudo rm -rf /usr/local/lib/android || true
+          sudo rm -rf /usr/share/dotnet || true
+          sudo rm -rf /opt/ghc || true
+          sudo rm -rf /usr/local/share/boost || true
 
       - name: Prune Docker
         run: docker system prune -af
@@ -147,17 +136,9 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if command -v sudo >/dev/null 2>&1 && command -v apt-get >/dev/null 2>&1; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils gcc
-          elif command -v apt-get >/dev/null 2>&1; then
-            apt-get update && apt-get install -y make xz-utils gcc
-          elif command -v apk >/dev/null 2>&1; then
-             if command -v sudo >/dev/null 2>&1; then
-               sudo apk add --no-cache make xz build-base
-             else
-               apk add --no-cache make xz build-base
-             fi
-          fi
+          export DEBIAN_FRONTEND=noninteractive
+          sudo apt-get update -y
+          sudo apt-get install -y make xz-utils gcc
 
       - name: Prepare environment
         run: make prepare
@@ -177,17 +158,10 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          if command -v sudo >/dev/null 2>&1; then
-            sudo rm -rf /usr/local/lib/android || true
-            sudo rm -rf /usr/share/dotnet || true
-            sudo rm -rf /opt/ghc || true
-            sudo rm -rf /usr/local/share/boost || true
-          else
-            rm -rf /usr/local/lib/android || true
-            rm -rf /usr/share/dotnet || true
-            rm -rf /opt/ghc || true
-            rm -rf /usr/local/share/boost || true
-          fi
+          sudo rm -rf /usr/local/lib/android || true
+          sudo rm -rf /usr/share/dotnet || true
+          sudo rm -rf /opt/ghc || true
+          sudo rm -rf /usr/local/share/boost || true
 
       - name: Prune Docker
         run: docker system prune -af
@@ -196,17 +170,9 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if command -v sudo >/dev/null 2>&1 && command -v apt-get >/dev/null 2>&1; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils gcc
-          elif command -v apt-get >/dev/null 2>&1; then
-            apt-get update && apt-get install -y make xz-utils gcc
-          elif command -v apk >/dev/null 2>&1; then
-             if command -v sudo >/dev/null 2>&1; then
-               sudo apk add --no-cache make xz build-base
-             else
-               apk add --no-cache make xz build-base
-             fi
-          fi
+          export DEBIAN_FRONTEND=noninteractive
+          sudo apt-get update -y
+          sudo apt-get install -y make xz-utils gcc
 
 
       - name: Set up Go
@@ -316,17 +282,10 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          if command -v sudo >/dev/null 2>&1; then
-            sudo rm -rf /usr/local/lib/android || true
-            sudo rm -rf /usr/share/dotnet || true
-            sudo rm -rf /opt/ghc || true
-            sudo rm -rf /usr/local/share/boost || true
-          else
-            rm -rf /usr/local/lib/android || true
-            rm -rf /usr/share/dotnet || true
-            rm -rf /opt/ghc || true
-            rm -rf /usr/local/share/boost || true
-          fi
+          sudo rm -rf /usr/local/lib/android || true
+          sudo rm -rf /usr/share/dotnet || true
+          sudo rm -rf /opt/ghc || true
+          sudo rm -rf /usr/local/share/boost || true
 
       - name: Prune Docker
         run: docker system prune -af
@@ -335,17 +294,9 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if command -v sudo >/dev/null 2>&1 && command -v apt-get >/dev/null 2>&1; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils gcc
-          elif command -v apt-get >/dev/null 2>&1; then
-            apt-get update && apt-get install -y make xz-utils gcc
-          elif command -v apk >/dev/null 2>&1; then
-             if command -v sudo >/dev/null 2>&1; then
-               sudo apk add --no-cache make xz build-base
-             else
-               apk add --no-cache make xz build-base
-             fi
-          fi
+          export DEBIAN_FRONTEND=noninteractive
+          sudo apt-get update -y
+          sudo apt-get install -y make xz-utils gcc
 
 
       - name: Set up Go
@@ -486,17 +437,10 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          if command -v sudo >/dev/null 2>&1; then
-            sudo rm -rf /usr/local/lib/android || true
-            sudo rm -rf /usr/share/dotnet || true
-            sudo rm -rf /opt/ghc || true
-            sudo rm -rf /usr/local/share/boost || true
-          else
-            rm -rf /usr/local/lib/android || true
-            rm -rf /usr/share/dotnet || true
-            rm -rf /opt/ghc || true
-            rm -rf /usr/local/share/boost || true
-          fi
+          sudo rm -rf /usr/local/lib/android || true
+          sudo rm -rf /usr/share/dotnet || true
+          sudo rm -rf /opt/ghc || true
+          sudo rm -rf /usr/local/share/boost || true
       - uses: actions/checkout@v6
 
       - name: Set up Go
@@ -629,17 +573,10 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          if command -v sudo >/dev/null 2>&1; then
-            sudo rm -rf /usr/local/lib/android || true
-            sudo rm -rf /usr/share/dotnet || true
-            sudo rm -rf /opt/ghc || true
-            sudo rm -rf /usr/local/share/boost || true
-          else
-            rm -rf /usr/local/lib/android || true
-            rm -rf /usr/share/dotnet || true
-            rm -rf /opt/ghc || true
-            rm -rf /usr/local/share/boost || true
-          fi
+          sudo rm -rf /usr/local/lib/android || true
+          sudo rm -rf /usr/share/dotnet || true
+          sudo rm -rf /opt/ghc || true
+          sudo rm -rf /usr/local/share/boost || true
 
       - name: Prune Docker
         run: docker system prune -af
@@ -648,17 +585,9 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if command -v sudo >/dev/null 2>&1 && command -v apt-get >/dev/null 2>&1; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils gcc
-          elif command -v apt-get >/dev/null 2>&1; then
-            apt-get update && apt-get install -y make xz-utils gcc
-          elif command -v apk >/dev/null 2>&1; then
-             if command -v sudo >/dev/null 2>&1; then
-               sudo apk add --no-cache make xz build-base
-             else
-               apk add --no-cache make xz build-base
-             fi
-          fi
+          export DEBIAN_FRONTEND=noninteractive
+          sudo apt-get update -y
+          sudo apt-get install -y make xz-utils gcc
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -766,17 +695,10 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          if command -v sudo >/dev/null 2>&1; then
-            sudo rm -rf /usr/local/lib/android || true
-            sudo rm -rf /usr/share/dotnet || true
-            sudo rm -rf /opt/ghc || true
-            sudo rm -rf /usr/local/share/boost || true
-          else
-            rm -rf /usr/local/lib/android || true
-            rm -rf /usr/share/dotnet || true
-            rm -rf /opt/ghc || true
-            rm -rf /usr/local/share/boost || true
-          fi
+          sudo rm -rf /usr/local/lib/android || true
+          sudo rm -rf /usr/share/dotnet || true
+          sudo rm -rf /opt/ghc || true
+          sudo rm -rf /usr/local/share/boost || true
 
       - name: Prune Docker
         run: docker system prune -af
@@ -785,17 +707,9 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if command -v sudo >/dev/null 2>&1 && command -v apt-get >/dev/null 2>&1; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils gcc
-          elif command -v apt-get >/dev/null 2>&1; then
-            apt-get update && apt-get install -y make xz-utils gcc
-          elif command -v apk >/dev/null 2>&1; then
-             if command -v sudo >/dev/null 2>&1; then
-               sudo apk add --no-cache make xz build-base
-             else
-               apk add --no-cache make xz build-base
-             fi
-          fi
+          export DEBIAN_FRONTEND=noninteractive
+          sudo apt-get update -y
+          sudo apt-get install -y make xz-utils gcc
 
 
       - name: Set up Go
@@ -929,17 +843,10 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          if command -v sudo >/dev/null 2>&1; then
-            sudo rm -rf /usr/local/lib/android || true
-            sudo rm -rf /usr/share/dotnet || true
-            sudo rm -rf /opt/ghc || true
-            sudo rm -rf /usr/local/share/boost || true
-          else
-            rm -rf /usr/local/lib/android || true
-            rm -rf /usr/share/dotnet || true
-            rm -rf /opt/ghc || true
-            rm -rf /usr/local/share/boost || true
-          fi
+          sudo rm -rf /usr/local/lib/android || true
+          sudo rm -rf /usr/share/dotnet || true
+          sudo rm -rf /opt/ghc || true
+          sudo rm -rf /usr/local/share/boost || true
 
       - name: Prune Docker
         run: docker system prune -af
@@ -989,17 +896,10 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          if command -v sudo >/dev/null 2>&1; then
-            sudo rm -rf /usr/local/lib/android || true
-            sudo rm -rf /usr/share/dotnet || true
-            sudo rm -rf /opt/ghc || true
-            sudo rm -rf /usr/local/share/boost || true
-          else
-            rm -rf /usr/local/lib/android || true
-            rm -rf /usr/share/dotnet || true
-            rm -rf /opt/ghc || true
-            rm -rf /usr/local/share/boost || true
-          fi
+          sudo rm -rf /usr/local/lib/android || true
+          sudo rm -rf /usr/share/dotnet || true
+          sudo rm -rf /opt/ghc || true
+          sudo rm -rf /usr/local/share/boost || true
 
       - name: Prune Docker
         run: docker system prune -af
