@@ -30,12 +30,13 @@ func TestLocalCommandTool_Execute_LargeOutput(t *testing.T) {
 	}.Build()
 
 	service := configv1.CommandLineUpstreamService_builder{
-		Command: proto.String("dd"),
+		Command: proto.String("sh"),
 		Local:   proto.Bool(true),
 	}.Build()
 
+	// Use printf to generate output without relying on /dev/zero or external binaries like head/dd which might fail in minimal containers
 	callDef := configv1.CommandLineCallDefinition_builder{
-		Args: []string{"if=/dev/zero", "bs=10485760", "count=1"},
+		Args: []string{"-c", "printf '%10485760s' ' '"},
 	}.Build()
 
 	localTool := NewLocalCommandTool(toolDef, service, callDef, nil, "call-id")
@@ -80,12 +81,12 @@ func TestLocalCommandTool_Execute_LargeOutput_Truncated(t *testing.T) {
 	}.Build()
 
 	service := configv1.CommandLineUpstreamService_builder{
-		Command: proto.String("dd"),
+		Command: proto.String("sh"),
 		Local:   proto.Bool(true),
 	}.Build()
 
 	callDef := configv1.CommandLineCallDefinition_builder{
-		Args: []string{"if=/dev/zero", "bs=2048", "count=1"},
+		Args: []string{"-c", "printf '%2048s' ' '"},
 	}.Build()
 
 	localTool := NewLocalCommandTool(toolDef, service, callDef, nil, "call-id")
