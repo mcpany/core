@@ -11,16 +11,27 @@ import (
 )
 
 func TestIsSafeURL(t *testing.T) {
-	// Ensure the bypass env var is not set for this test
-	originalEnv := os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS")
-	os.Unsetenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS")
+	// Ensure the bypass env vars are not set for this test to verify default security posture
+	originalEnvDangerous := os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS")
+	originalEnvLoopback := os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES")
+	originalEnvPrivate := os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES")
 
-	// Restore original lookupIPFunc
+	os.Unsetenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS")
+	os.Unsetenv("MCPANY_ALLOW_LOOPBACK_RESOURCES")
+	os.Unsetenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES")
+
+	// Restore original lookupIPFunc and env vars
 	originalLookupIP := lookupIPFunc
 	defer func() {
 		lookupIPFunc = originalLookupIP
-		if originalEnv != "" {
-			os.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", originalEnv)
+		if originalEnvDangerous != "" {
+			os.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", originalEnvDangerous)
+		}
+		if originalEnvLoopback != "" {
+			os.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", originalEnvLoopback)
+		}
+		if originalEnvPrivate != "" {
+			os.Setenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES", originalEnvPrivate)
 		}
 	}()
 
