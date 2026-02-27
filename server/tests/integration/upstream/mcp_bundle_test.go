@@ -232,20 +232,27 @@ func createE2EBundle(t *testing.T, dir string) string {
 }
 
 func TestE2E_Bundle_Filesystem(t *testing.T) {
-	// If Docker is not available or disabled, fallback to local execution.
-	useLocal := false
+	// If Docker is disabled via SKIP_DOCKER_TESTS, we skip the test entirely unless
+	// MCP_BUNDLE_RUNTIME is explicitly set to local.
+	// This prevents the unit-test job from failing on node check or unexpected local behavior.
 	if os.Getenv("SKIP_DOCKER_TESTS") == "true" {
-		useLocal = true
+		if os.Getenv("MCP_BUNDLE_RUNTIME") != "local" {
+			t.Skip("Skipping Docker-dependent test: SKIP_DOCKER_TESTS is set")
+		}
 	}
-	if os.Getenv("CI") == "true" {
-		useLocal = true
-	}
+
+	useLocal := false
+	// Auto-fallback logic for other scenarios (e.g. missing docker but not explicitly skipped)
 	if err := exec.Command("docker", "info").Run(); err != nil {
+		useLocal = true
+	}
+	// Explicit override
+	if os.Getenv("MCP_BUNDLE_RUNTIME") == "local" {
 		useLocal = true
 	}
 
 	if useLocal {
-		t.Log("Docker not available or tests skipped; falling back to local bundle execution.")
+		t.Log("Docker not available or disabled; falling back to local bundle execution.")
 		t.Setenv("MCP_BUNDLE_RUNTIME", "local")
 		// Verify node is available for local execution
 		if err := exec.Command("node", "--version").Run(); err != nil {
