@@ -47,6 +47,10 @@ jobs:
              $SUDO yum install -y git
           elif command -v dnf &> /dev/null; then
              $SUDO dnf install -y git
+          elif command -v pacman &> /dev/null; then
+             $SUDO pacman -Sy --noconfirm git
+          elif command -v zypper &> /dev/null; then
+             $SUDO zypper install -y git
           fi
 
       - uses: actions/checkout@v6
@@ -118,6 +122,10 @@ jobs:
              $SUDO yum install -y make git
           elif command -v dnf &> /dev/null; then
              $SUDO dnf install -y make git
+          elif command -v pacman &> /dev/null; then
+             $SUDO pacman -Sy --noconfirm make git
+          elif command -v zypper &> /dev/null; then
+             $SUDO zypper install -y make git
           fi
 
       - name: Set up Go
@@ -174,6 +182,10 @@ jobs:
              $SUDO yum install -y make xz gcc gcc-c++
           elif command -v dnf &> /dev/null; then
              $SUDO dnf install -y make xz gcc gcc-c++
+          elif command -v pacman &> /dev/null; then
+             $SUDO pacman -Sy --noconfirm make xz gcc
+          elif command -v zypper &> /dev/null; then
+             $SUDO zypper install -y make xz gcc gcc-c++
           fi
 
       - name: Prepare environment
@@ -218,6 +230,10 @@ jobs:
              $SUDO yum install -y make xz gcc gcc-c++
           elif command -v dnf &> /dev/null; then
              $SUDO dnf install -y make xz gcc gcc-c++
+          elif command -v pacman &> /dev/null; then
+             $SUDO pacman -Sy --noconfirm make xz gcc
+          elif command -v zypper &> /dev/null; then
+             $SUDO zypper install -y make xz gcc gcc-c++
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -365,6 +381,10 @@ jobs:
              $SUDO yum install -y make xz gcc gcc-c++
           elif command -v dnf &> /dev/null; then
              $SUDO dnf install -y make xz gcc gcc-c++
+          elif command -v pacman &> /dev/null; then
+             $SUDO pacman -Sy --noconfirm make xz gcc
+          elif command -v zypper &> /dev/null; then
+             $SUDO zypper install -y make xz gcc gcc-c++
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -696,6 +716,10 @@ jobs:
              $SUDO yum install -y make xz gcc gcc-c++
           elif command -v dnf &> /dev/null; then
              $SUDO dnf install -y make xz gcc gcc-c++
+          elif command -v pacman &> /dev/null; then
+             $SUDO pacman -Sy --noconfirm make xz gcc
+          elif command -v zypper &> /dev/null; then
+             $SUDO zypper install -y make xz gcc gcc-c++
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -843,6 +867,10 @@ jobs:
              $SUDO yum install -y make xz gcc gcc-c++
           elif command -v dnf &> /dev/null; then
              $SUDO dnf install -y make xz gcc gcc-c++
+          elif command -v pacman &> /dev/null; then
+             $SUDO pacman -Sy --noconfirm make xz gcc
+          elif command -v zypper &> /dev/null; then
+             $SUDO zypper install -y make xz gcc gcc-c++
           fi
 
       - name: Configure Docker Registry Mirrors
