@@ -160,39 +160,43 @@ gen: clean-protos prepare-proto
 
 
 	@echo "Generating protobuf files (TypeScript)..."
-	@if ! [ -f "./ui/node_modules/.bin/protoc-gen-ts_proto" ]; then \
-		echo "protoc-gen-ts_proto not found. Installing UI dependencies..."; \
-		cd ui && npm install; \
-	fi
-	@if [ -f "./ui/node_modules/.bin/protoc-gen-ts_proto" ]; then \
-		export PATH=$(TOOL_INSTALL_DIR):$$PATH; \
-		find proto -name "*.proto" -exec protoc \
-			--proto_path=. \
-			--proto_path=$(BUILD_DIR)/grpc-gateway \
-			--proto_path=$(GOOGLEAPIS_DIR) \
-			--plugin=protoc-gen-ts_proto=./ui/node_modules/.bin/protoc-gen-ts_proto \
-			--ts_proto_out=. \
-			--ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web \
-			{} +; \
-		if [ -d "google" ]; then mv google proto/; fi; \
-		if [ -f "proto/google/protobuf/struct.ts" ]; then sed -i 's/map((e) => e)/map((e: any) => e)/g' proto/google/protobuf/struct.ts; fi; \
-		find proto -name "*.ts" -exec sed -i 's|\.\./\.\./\.\./google|\.\./\.\./google|g' {} +; \
-		echo "Local TypeScript Protobuf generation complete."; \
-		echo "Generating standard protobuf files (TypeScript)..."; \
-		STANDARD_PROTOS=$$(find $(PROTOC_INCLUDE_DIR)/google/protobuf $(GOOGLEAPIS_DIR)/google/api -name "*.proto" 2>/dev/null); \
-		if [ -n "$$STANDARD_PROTOS" ]; then \
-			protoc \
-				--proto_path=$(PROTOC_INCLUDE_DIR) \
+	@if [ -z "$(SKIP_TS_GEN)" ]; then \
+		if ! [ -f "./ui/node_modules/.bin/protoc-gen-ts_proto" ]; then \
+			echo "protoc-gen-ts_proto not found. Installing UI dependencies..."; \
+			cd ui && npm install; \
+		fi; \
+		if [ -f "./ui/node_modules/.bin/protoc-gen-ts_proto" ]; then \
+			export PATH=$(TOOL_INSTALL_DIR):$$PATH; \
+			find proto -name "*.proto" -exec protoc \
+				--proto_path=. \
+				--proto_path=$(BUILD_DIR)/grpc-gateway \
 				--proto_path=$(GOOGLEAPIS_DIR) \
 				--plugin=protoc-gen-ts_proto=./ui/node_modules/.bin/protoc-gen-ts_proto \
-				--ts_proto_out=proto \
+				--ts_proto_out=. \
 				--ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web \
-				$$STANDARD_PROTOS; \
+				{} +; \
+			if [ -d "google" ]; then mv google proto/; fi; \
+			if [ -f "proto/google/protobuf/struct.ts" ]; then sed -i 's/map((e) => e)/map((e: any) => e)/g' proto/google/protobuf/struct.ts; fi; \
+			find proto -name "*.ts" -exec sed -i 's|\.\./\.\./\.\./google|\.\./\.\./google|g' {} +; \
+			echo "Local TypeScript Protobuf generation complete."; \
+			echo "Generating standard protobuf files (TypeScript)..."; \
+			STANDARD_PROTOS=$$(find $(PROTOC_INCLUDE_DIR)/google/protobuf $(GOOGLEAPIS_DIR)/google/api -name "*.proto" 2>/dev/null); \
+			if [ -n "$$STANDARD_PROTOS" ]; then \
+				protoc \
+					--proto_path=$(PROTOC_INCLUDE_DIR) \
+					--proto_path=$(GOOGLEAPIS_DIR) \
+					--plugin=protoc-gen-ts_proto=./ui/node_modules/.bin/protoc-gen-ts_proto \
+					--ts_proto_out=proto \
+					--ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web \
+					$$STANDARD_PROTOS; \
+			fi; \
+			echo "Standard TypeScript Protobuf generation complete."; \
+		else \
+			echo "Error: protoc-gen-ts_proto not found in ./ui/node_modules/.bin/. TypeScript generation cannot proceed."; \
+			exit 1; \
 		fi; \
-		echo "Standard TypeScript Protobuf generation complete."; \
 	else \
-		echo "Error: protoc-gen-ts_proto not found in ./ui/node_modules/.bin/. TypeScript generation cannot proceed."; \
-		exit 1; \
+		echo "Skipping TypeScript protobuf generation due to SKIP_TS_GEN."; \
 	fi
 
 update-screenshots:
