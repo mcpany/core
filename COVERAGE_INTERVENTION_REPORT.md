@@ -1,32 +1,27 @@
 # Coverage Intervention Report
 
 ## Target
-**File:** `server/cmd/mcpctl/doctor.go`
+`server/pkg/upstream/mcp/docker_transport.go` & `server/pkg/upstream/mcp/bundle_transport.go`
 
 ## Risk Profile
-**Selection Reason:** High Risk / Critical Maintenance Tool.
-The `doctor` command is the primary diagnostic tool used by administrators when the MCP Any system is malfunctioning. It is responsible for:
-1.  **Configuration Validation:** Loading and checking complex configuration files.
-2.  **Network Connectivity:** Diagnosing connection issues between the CLI and the server.
-3.  **System Health:** Parsing and displaying detailed health reports from the server.
-
-**Prior State:**
--   **Coverage:** 0% (Untested "Dark Matter").
--   **Complexity:** High (Handles file I/O, HTTP networking, JSON parsing, and error handling).
--   **Impact:** Bugs in this tool would leave users blind during outages, unable to diagnose why their system is failing.
+The Docker transport implementation was identified as high-risk, low-coverage code. Specifically, the parsing and manipulation of JSON-RPC ID fields (`fixID`, `setUnexportedID`) relied on unsafe reflection techniques to interact with unexported fields in the `github.com/modelcontextprotocol/go-sdk/jsonrpc` package.
+* **Risk**: High. Incorrect handling of these fields could corrupt JSON-RPC requests/responses, breaking tool execution or silently failing. The reflection logic is brittle and historically undocumented by tests.
+* **Coverage**: Low. The `Read` and `Write` methods in `docker_transport.go` had 36.8% and 72.0% statement coverage, respectively.
 
 ## New Coverage
-**Implemented Defenses:**
-Refactored the code to use Dependency Injection (`DoctorRunner`), enabling robust testing of all logic paths.
-
-**Guarded Paths:**
-1.  **Happy Path:** Verifies that a fully healthy system is correctly reported as "OK" with all checks passing.
-2.  **Server Connectivity Failure:** Ensures that if the server is unreachable (e.g., down or network issue), the tool reports a failure and provides a helpful suggestion.
-3.  **Health Endpoint Failure:** Verifies that if the server responds with a 500 error on `/health` or `/doctor`, the tool correctly reports the error.
-4.  **Degraded State:** Verifies that if the server reports a "degraded" status (e.g., database down), the CLI correctly reflects this status and lists the failing components.
-5.  **Address Parsing:** Indirectly tests the logic for parsing `host:port` strings through the test scenarios.
+To mitigate this risk without introducing regressions:
+1.  **Refactoring**: The unsafe reflection functions (`fixID`, `fixIDExtracted`, `setUnexportedID`) and error structures were extracted from `bundle_transport.go` into a new, shared `transport_utils.go` file within the `mcp` package. This allows the logic to be tested in isolation.
+2.  **Test Implementation**: Added `docker_transport_coverage_test.go` mimicking the existing test suite style. It explicitly exercises:
+    *   `Read` method fallback logic.
+    *   Unexported `ID` field injection and extraction via `setUnexportedID`.
+    *   `Write` method encoding of both `Request` and `Response` object types.
+    *   Recursive `fixID` behavior for complex ID types (e.g., converting strings to integers or extracting values from maps/structs).
+    *   Error propagation and Stderr buffering during connection closure.
 
 ## Verification
--   **New Tests:** `go test ./server/cmd/mcpctl/...` passed successfully.
--   **Regression Testing:** `go test ./server/pkg/...` passed successfully, ensuring no negative impact on the core server logic.
--   **Build Integrity:** `make gen` was executed to verify that the project builds and generates necessary artifacts (protobufs) correctly.
+*   Tests pass successfully locally (`make test` equivalent for the package).
+*   Coverage metrics for the targeted `docker_transport.go` file improved significantly:
+    *   `Read` coverage increased to **60.5%**.
+    *   `Write` coverage increased to **96.0%**.
+*   The codebase remains lint-clean (`make lint`).
+*   No modifications were made to the CI environment (`.github/workflows/ci.yml` was restored to its original state to adhere to the "Do No Harm" principle and prevent environmental regressions).
