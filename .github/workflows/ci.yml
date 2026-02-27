@@ -511,35 +511,35 @@ jobs:
           esac
           echo "slug=$SLUG" >> $GITHUB_OUTPUT
 
-      # Explicit Downloads (No Merge)
+      # Explicit Downloads (Hardcoded for stability)
       - name: Download Server Image
         uses: actions/download-artifact@v4
         with:
-          name: image-server-${{ steps.detect-arch.outputs.slug }}
+          name: image-server-amd64
           path: downloads
 
       - name: Download HTTP Echo
         uses: actions/download-artifact@v4
         with:
-          name: image-http-echo-${{ steps.detect-arch.outputs.slug }}
+          name: image-http-echo-amd64
           path: downloads
 
       - name: Download Time Server
         uses: actions/download-artifact@v4
         with:
-          name: image-time-server-${{ steps.detect-arch.outputs.slug }}
+          name: image-time-server-amd64
           path: downloads
 
       - name: Download Cowsay
         uses: actions/download-artifact@v4
         with:
-          name: image-cowsay-${{ steps.detect-arch.outputs.slug }}
+          name: image-cowsay-amd64
           path: downloads
 
       - name: Download Everything
         uses: actions/download-artifact@v4
         with:
-          name: image-everything-${{ steps.detect-arch.outputs.slug }}
+          name: image-everything-amd64
           path: downloads
 
       - name: Load Docker Images
@@ -630,31 +630,31 @@ jobs:
       - name: Download Server Image
         uses: actions/download-artifact@v4
         with:
-          name: image-server-${{ steps.detect-arch.outputs.slug }}
+          name: image-server-amd64
           path: downloads
 
       - name: Download HTTP Echo
         uses: actions/download-artifact@v4
         with:
-          name: image-http-echo-${{ steps.detect-arch.outputs.slug }}
+          name: image-http-echo-amd64
           path: downloads
 
       - name: Download Time Server
         uses: actions/download-artifact@v4
         with:
-          name: image-time-server-${{ steps.detect-arch.outputs.slug }}
+          name: image-time-server-amd64
           path: downloads
 
       - name: Download Cowsay
         uses: actions/download-artifact@v4
         with:
-          name: image-cowsay-${{ steps.detect-arch.outputs.slug }}
+          name: image-cowsay-amd64
           path: downloads
 
       - name: Download Everything
         uses: actions/download-artifact@v4
         with:
-          name: image-everything-${{ steps.detect-arch.outputs.slug }}
+          name: image-everything-amd64
           path: downloads
 
       - name: Load Docker Images
@@ -776,13 +776,13 @@ jobs:
       - name: Download Server Image
         uses: actions/download-artifact@v4
         with:
-          name: image-server-${{ steps.detect-arch.outputs.slug }}
+          name: image-server-amd64
           path: downloads
 
       - name: Download HTTP Echo
         uses: actions/download-artifact@v4
         with:
-          name: image-http-echo-${{ steps.detect-arch.outputs.slug }}
+          name: image-http-echo-amd64
           path: downloads
 
       - name: Load Docker Images
@@ -833,7 +833,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: downloads
-          name: image-server-${{ steps.detect-arch.outputs.slug }}
+          name: image-server-amd64
 
       - name: Load Docker Image
         run: |
@@ -875,25 +875,25 @@ jobs:
       - name: Download Server Image
         uses: actions/download-artifact@v4
         with:
-          name: image-server-${{ steps.detect-arch.outputs.slug }}
+          name: image-server-amd64
           path: downloads
 
       - name: Download UI Image
         uses: actions/download-artifact@v4
         with:
-          name: image-ui-${{ steps.detect-arch.outputs.slug }}
+          name: image-ui-amd64
           path: downloads
 
       - name: Download UI Test Image
         uses: actions/download-artifact@v4
         with:
-          name: image-ui-test-${{ steps.detect-arch.outputs.slug }}
+          name: image-ui-test-amd64
           path: downloads
 
       - name: Download HTTP Echo
         uses: actions/download-artifact@v4
         with:
-          name: image-http-echo-${{ steps.detect-arch.outputs.slug }}
+          name: image-http-echo-amd64
           path: downloads
 
       - name: Load Docker Images
@@ -963,19 +963,19 @@ jobs:
       - name: Download Server Image
         uses: actions/download-artifact@v4
         with:
-          name: image-server-${{ steps.detect-arch.outputs.slug }}
+          name: image-server-amd64
           path: downloads
 
       - name: Download Operator Image
         uses: actions/download-artifact@v4
         with:
-          name: image-operator-${{ steps.detect-arch.outputs.slug }}
+          name: image-operator-amd64
           path: downloads
 
       - name: Download UI Image
         uses: actions/download-artifact@v4
         with:
-          name: image-ui-${{ steps.detect-arch.outputs.slug }}
+          name: image-ui-amd64
           path: downloads
 
       - name: Load Docker Images into Kind
