@@ -28,7 +28,7 @@ permissions:
 
 jobs:
   changes:
-    runs-on: oci-runner
+    runs-on: ubuntu-latest
     # container: public.ecr.aws/docker/library/ubuntu:24.04
     outputs:
       src: ${{ steps.filter.outputs.src }}
@@ -76,7 +76,7 @@ jobs:
   lint:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
-    runs-on: oci-runner
+    runs-on: ubuntu-latest
     # container: public.ecr.aws/docker/library/ubuntu:24.04
     steps:
       - name: Prune Docker
@@ -230,20 +230,6 @@ jobs:
           echo "week=$(/bin/date -u "+%V")" >> $GITHUB_OUTPUT
         shell: bash
 
-      - name: Docker Cache
-        uses: actions/cache@v4
-        with:
-          path: build/buildx-cache
-          key: ${{ runner.os }}-buildx-${{ steps.get-date.outputs.week }}-${{ hashFiles('tests/integration/examples/Dockerfile.timeserver', 'tests/integration/examples/timeserver_patch/**') }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-${{ steps.get-date.outputs.week }}-${{ hashFiles('tests/integration/examples/Dockerfile.timeserver', 'tests/integration/examples/timeserver_patch/**') }}-
-            ${{ runner.os }}-buildx-${{ steps.get-date.outputs.week }}-
-
-      - name: Cache Docker images
-        uses: ScribeMD/docker-cache@0.5.0
-        with:
-          key: docker-images-${{ runner.os }}-${{ steps.get-date.outputs.week }}
-
       - name: Cache Tools
         uses: actions/cache@v4
         with:
@@ -258,7 +244,7 @@ jobs:
 
       - name: Test (Short)
         run: |
-          make test-fast CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache COVERAGE_FILE=coverage-fast.out
+          make test-fast CACHE_TO=type=gha,mode=max,scope=unit-test CACHE_FROM=type=gha,scope=unit-test COVERAGE_FILE=coverage-fast.out
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
@@ -269,7 +255,7 @@ jobs:
           verbose: true
 
   e2e-parallel:
-    runs-on: oci-runner
+    runs-on: ubuntu-latest
     # container: public.ecr.aws/docker/library/ubuntu:24.04
     timeout-minutes: 60
     needs: [build-images]
@@ -568,7 +554,7 @@ jobs:
           retention-days: 1
 
   e2e-sequential:
-    runs-on: oci-runner
+    runs-on: ubuntu-latest
     # container: public.ecr.aws/docker/library/ubuntu:24.04
     timeout-minutes: 60
     needs: [build-images]
@@ -714,7 +700,7 @@ jobs:
           verbose: true
 
   e2e-public-api:
-    runs-on: oci-runner
+    runs-on: ubuntu-latest
     # container: public.ecr.aws/docker/library/ubuntu:24.04
     timeout-minutes: 60
     needs: [changes]
@@ -1072,7 +1058,7 @@ jobs:
           make k8s-e2e SKIP_IMAGE_BUILD=true IMAGE_TAG=latest
 
   ci-success:
-    runs-on: oci-runner
+    runs-on: ubuntu-latest
     # container: public.ecr.aws/docker/library/ubuntu:24.04
     needs:
       [
