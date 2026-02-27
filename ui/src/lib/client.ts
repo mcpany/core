@@ -129,6 +129,7 @@ const registrationClient = new RegistrationServiceClientImpl(rpc);
 const fetchWithAuth = async (input: RequestInfo | URL, init?: RequestInit) => {
     const headers = new Headers(init?.headers);
     // Inject Authorization header from localStorage if available
+    // We assume the token is obtained via a real login flow or injected in a test environment.
     if (typeof window !== 'undefined') {
         const token = localStorage.getItem('mcp_auth_token');
         if (token) {

@@ -249,7 +249,8 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 		t.Setenv("MCP_BUNDLE_RUNTIME", "local")
 		// Verify node is available for local execution
 		if err := exec.Command("node", "--version").Run(); err != nil {
-			t.Skipf("Skipping bundle tests: node not found for local execution: %v", err)
+			t.Logf("Node not found: %v. Attempting to run anyway (might fail if truly missing)", err)
+			// t.Skipf removed to enforce fixing the env if needed
 		}
 	}
 

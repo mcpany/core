@@ -27,32 +27,20 @@ export default function ContextPage() {
   const handleSeedData = async () => {
       setSeeding(true);
       try {
-          // Attempt to register a mock service using the in-tree mock server.
-          // This requires the server to be running in an environment where 'go' is available
-          // or the binary is built.
-          await apiClient.registerService({
-              id: "context-heavy-mock",
-              name: "Context Heavy Mock",
-              version: "1.0.0",
-              disable: false,
-              priority: 0,
-              commandLineService: {
-                  command: "go run server/cmd/mock_mcp_server/main.go",
-                  workingDirectory: ".",
-                  env: {}
-              }
-           } as any);
-
-           toast({ title: "Seeded Mock Service", description: "Registered 'Context Heavy Mock'." });
-
-           // Trigger reload to refresh context data
-           window.location.reload();
+          // In real data policy, we don't mock servers on the client.
+          // This button should likely trigger a backend seed or reset if in a test env,
+          // or just refresh data. For now, we'll disable the client-side mock registration.
+          toast({
+              title: "Seeding Disabled",
+              description: "Real Data Policy Active: Client-side mocking is disabled. Please ensure the backend is seeded via 'go test' or admin tools.",
+              variant: "default"
+          });
 
       } catch (e) {
           console.error("Seeding failed", e);
           toast({
               title: "Seeding Failed",
-              description: "Could not register mock service. Ensure 'go' is in the server path or use an existing service.",
+              description: "Operation failed.",
               variant: "destructive"
           });
       } finally {
@@ -71,7 +59,7 @@ export default function ContextPage() {
             <div className="flex items-center gap-2">
                  <Button variant="outline" size="sm" onClick={handleSeedData} disabled={seeding}>
                     {seeding ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Zap className="mr-2 h-4 w-4" />}
-                    Seed Data
+                    Seed Data (Test Env)
                 </Button>
             </div>
         </div>
