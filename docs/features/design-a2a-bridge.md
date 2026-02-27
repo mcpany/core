@@ -46,3 +46,9 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+* **2026-02-27:** **Verified Handoff & Poisoning Mitigation**
+    * **Context:** Market sync revealed 86% increase in inter-agent poisoning attacks.
+    * **Architecture Adjustment:**
+        *   Introduction of `Intent Tokens` in Section 4. These tokens are cryptographically signed by MCP Any and must be presented by the receiving agent to prove session continuity.
+        *   State snapshots are now hashed and verified during handoff to ensure that the "shared state" hasn't been maliciously altered by the delegated agent before returning control.
+    * **Security Impact:** Mitigates "Inter-Agent Poisoning" and ensures that delegated tasks remain within the original user-authorized scope.

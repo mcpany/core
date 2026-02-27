@@ -63,5 +63,18 @@
 - **MCP Provenance Attestation**: Promoted to **P0** as it is a prerequisite for secure Federated MCP peering.
 - **Lazy-MCP Middleware**: Promoted to **P0** (Already P0, but re-affirming importance for Federated Tool Mesh).
 
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **Intent-Aware Chain Verification**: (P0) A security middleware that enforces logical sequences in tool calls to prevent "Tool Chain Escalation" attacks.
+- **Multimodal Payload Sanitizer**: (P1) Extends the Policy Firewall to scan images and PDFs for embedded prompt injection or malicious payloads before tool execution.
+- **Verified A2A Handoff (mTLS for Agents)**: (P0) Cryptographic verification of state and intent during agent-to-agent delegation in the A2A Bridge.
+
+### Priority Shifts
+- **A2A Interop Bridge**: Re-affirmed as **P0** with added focus on Verified Handoff to mitigate inter-agent poisoning.
+- **Policy Firewall**: Evolving to include **Multimodal Sanitization** as a required module for high-security environments.
+
 ### Deprecations / Monitoring
-- **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+- **Unverified A2A Handoffs**: Monitoring for deprecation in favor of the Verified Handoff Protocol.

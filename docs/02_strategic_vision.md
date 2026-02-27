@@ -47,3 +47,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **A2A Gateway Protocol**: MCP Any will implement a protocol-neutral bridge for A2A communication, allowing disparate agent frameworks (e.g., OpenClaw, AutoGen) to exchange state and tasks via a unified MCP-like interface.
 - **Federated Tool Mesh**: Moving from a standalone server to a "Mesh" architecture where multiple MCP Any instances can peer and share resources across network boundaries, governed by global Zero-Trust policies.
 - **Resource-Aware Intelligence**: Integrating cost and latency telemetry into the tool discovery process, allowing LLMs to perform "Economical Reasoning" when selecting tools.
+
+---
+
+## Strategic Evolution: [2026-02-27]
+### Focus: Defensive Tool Chaining & Verified A2A Handoffs
+**Context**: Today's market sync identifies "Tool Chain Escalation" as the dominant threat to autonomous agents. Simultaneously, inter-agent poisoning is rising as swarms become more common. MCP Any must transition from a passive gateway to an active defensive layer.
+**Strategic Pivot**:
+- **Intent-Aware Tool Chaining**: Implementing a "Chain-of-Intent" verification where subsequent tool calls must logically follow previous actions within a verified task graph. This prevents "benign read to malicious write" escalations.
+- **Verified Handoff Protocol**: Strengthening the A2A Bridge with cryptographic "Intent Tokens." When Agent A hands off to Agent B, MCP Any verifies that the state being passed has not been tampered with and aligns with the original user-authorized intent.
+- **Multimodal Sanitization**: Expanding the Policy Firewall to inspect non-text payloads (images, PDFs) for embedded prompt injections before they reach the tool execution stage.
