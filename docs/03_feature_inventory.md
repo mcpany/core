@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **Named Pipe Transport (Isolated MCP)**: (P0) High-security transport for local MCP servers using Docker-bound named pipes or Unix domain sockets. Eliminates local TCP port exposure.
+- **MCP Attestation Middleware**: (P0) Middleware that validates cryptographic signatures of MCP server binaries/configs before registration.
+- **Session-Isolated Routing Engine**: (P1) Advanced router that ensures subagents cannot access parent or sibling session tokens unless explicitly delegated.
+
+### Priority Shifts
+- **MCP Provenance Attestation**: Promoted to **P0** (Critical priority re-confirmed after ClawHavoc campaign).
+- **Gateway Security Policy**: (New entry, P0) Unified policy engine to enforce transport-level security (e.g., "Deny all HTTP for local tools").
+
+### Deprecations / Monitoring
+- **Unsigned Remote MCP Registration**: Monitoring for deprecation. All remote tools will eventually require a verified attestation.

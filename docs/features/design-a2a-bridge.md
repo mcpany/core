@@ -46,3 +46,9 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-02-27: Resolving Local Port Exposure**
+    - **Context**: Recent OpenClaw routing exploits have shown that subagents can manipulate HTTP/WebSocket transports to gain unauthorized host access.
+    - **Architecture Adjustment**:
+        - Deprecating local networked transports for inter-agent communication.
+        - Introducing **Docker-bound named pipes** and **Unix Domain Sockets** as the preferred transport for the A2A bridge when running in containerized or local environments.
+    - **Security Impact**: Mitigates "Local Port Exposure" vulnerabilities by ensuring inter-agent traffic never touches the host network stack.

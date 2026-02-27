@@ -29,6 +29,11 @@
 *   **[P1] Federated MCP Peering**: Distributed node discovery and tool proxying. (Added: 2026-02-26)
 *   **[P1] Resource Telemetry Middleware**: Inject latency/cost metrics into tool schemas. (Added: 2026-02-26)
 
+#### Upcoming (2026-02-27 Evolution)
+*   **[P0] Named Pipe Transport**: Implement Docker-bound named pipe support for local MCP/A2A communication to eliminate port exposure. (Added: 2026-02-27)
+*   **[P0] MCP Attestation Middleware**: Cryptographic signature verification for MCP server registration. (Added: 2026-02-27)
+*   **[P1] Session-Isolated Routing**: Hardened agent router with explicit session delegation. (Added: 2026-02-27)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
