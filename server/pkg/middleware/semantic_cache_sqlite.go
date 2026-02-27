@@ -10,6 +10,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/mcpany/core/server/pkg/vector"
+
 	// modernc.org/sqlite is a pure Go SQLite driver.
 	_ "modernc.org/sqlite"
 )
@@ -17,7 +19,7 @@ import (
 // SQLiteVectorStore implements VectorStore using SQLite for persistence
 // and an in-memory cache for fast search.
 type SQLiteVectorStore struct {
-	memoryStore *SimpleVectorStore
+	memoryStore *vector.SimpleVectorStore
 	db          *sql.DB
 }
 
@@ -70,7 +72,7 @@ func NewSQLiteVectorStore(path string) (*SQLiteVectorStore, error) {
 	}
 
 	store := &SQLiteVectorStore{
-		memoryStore: NewSimpleVectorStore(),
+		memoryStore: vector.NewSimpleVectorStore(),
 		db:          db,
 	}
 
@@ -233,4 +235,9 @@ func (s *SQLiteVectorStore) Prune(ctx context.Context, key string) {
 // Returns an error if the operation fails.
 func (s *SQLiteVectorStore) Close() error {
 	return s.db.Close()
+}
+
+// SearchTopK searches in memory.
+func (s *SQLiteVectorStore) SearchTopK(ctx context.Context, key string, query []float32, k int) ([]any, []float32, error) {
+	return s.memoryStore.SearchTopK(ctx, key, query, k)
 }

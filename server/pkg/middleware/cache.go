@@ -244,7 +244,7 @@ func (m *CachingMiddleware) executeSemantic(ctx context.Context, req *tool.Execu
 				return next(ctx, req)
 			}
 
-			var vectorStore VectorStore
+			var vectorStore vector.VectorStore
 			persistencePath := semConfig.GetPersistencePath()
 			if persistencePath != "" {
 				var err error
@@ -253,18 +253,18 @@ func (m *CachingMiddleware) executeSemantic(ctx context.Context, req *tool.Execu
 					if err != nil {
 						logging.GetLogger().Error("Failed to create Postgres vector store", "error", err, "dsn", persistencePath)
 						// Fallback to in-memory
-						vectorStore = NewSimpleVectorStore()
+						vectorStore = vector.NewSimpleVectorStore()
 					}
 				} else {
 					vectorStore, err = NewSQLiteVectorStore(persistencePath)
 					if err != nil {
 						logging.GetLogger().Error("Failed to create SQLite vector store", "error", err, "path", persistencePath)
 						// Fallback to in-memory
-						vectorStore = NewSimpleVectorStore()
+						vectorStore = vector.NewSimpleVectorStore()
 					}
 				}
 			} else {
-				vectorStore = NewSimpleVectorStore()
+				vectorStore = vector.NewSimpleVectorStore()
 			}
 
 			newCache := NewSemanticCache(provider, vectorStore, semConfig.GetSimilarityThreshold())

@@ -10,6 +10,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/mcpany/core/server/pkg/vector"
+
 	// lib/pq is the Postgres driver.
 	_ "github.com/lib/pq"
 )
@@ -194,4 +196,54 @@ func (s *PostgresVectorStore) Close() error {
 }
 
 // Ensure interface compatibility.
-var _ VectorStore = (*PostgresVectorStore)(nil)
+var _ vector.VectorStore = (*PostgresVectorStore)(nil)
+
+// SearchTopK searches for the top k most similar entries.
+func (s *PostgresVectorStore) SearchTopK(ctx context.Context, key string, query []float32, k int) ([]any, []float32, error) {
+	queryJSON, err := json.Marshal(query)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to marshal query: %w", err)
+	}
+
+	// Use Cosine Distance Operator (<=>)
+	sqlQuery := `
+		SELECT result, (vector <=> $1) as distance
+		FROM semantic_cache_entries
+		WHERE key = $2 AND expires_at > $3
+		ORDER BY distance ASC
+		LIMIT $4
+	`
+
+	rows, err := s.db.QueryContext(ctx, sqlQuery, string(queryJSON), key, time.Now(), k)
+	if err != nil {
+		return nil, nil, err
+	}
+	defer rows.Close()
+
+	var results []any
+	var scores []float32
+
+	for rows.Next() {
+		var resultJSON []byte
+		var distance float64
+		if err := rows.Scan(&resultJSON, &distance); err != nil {
+			continue
+		}
+
+		var result any
+		if err := json.Unmarshal(resultJSON, &result); err != nil {
+			continue
+		}
+
+		// Convert distance to similarity
+		similarity := float32(1.0 - distance)
+		results = append(results, result)
+		scores = append(scores, similarity)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, nil, err
+	}
+
+	return results, scores, nil
+}
