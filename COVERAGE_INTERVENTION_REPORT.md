@@ -1,32 +1,20 @@
 # Coverage Intervention Report
 
-## Target
-**File:** `server/cmd/mcpctl/doctor.go`
-
-## Risk Profile
-**Selection Reason:** High Risk / Critical Maintenance Tool.
-The `doctor` command is the primary diagnostic tool used by administrators when the MCP Any system is malfunctioning. It is responsible for:
-1.  **Configuration Validation:** Loading and checking complex configuration files.
-2.  **Network Connectivity:** Diagnosing connection issues between the CLI and the server.
-3.  **System Health:** Parsing and displaying detailed health reports from the server.
-
-**Prior State:**
--   **Coverage:** 0% (Untested "Dark Matter").
--   **Complexity:** High (Handles file I/O, HTTP networking, JSON parsing, and error handling).
--   **Impact:** Bugs in this tool would leave users blind during outages, unable to diagnose why their system is failing.
-
-## New Coverage
-**Implemented Defenses:**
-Refactored the code to use Dependency Injection (`DoctorRunner`), enabling robust testing of all logic paths.
-
-**Guarded Paths:**
-1.  **Happy Path:** Verifies that a fully healthy system is correctly reported as "OK" with all checks passing.
-2.  **Server Connectivity Failure:** Ensures that if the server is unreachable (e.g., down or network issue), the tool reports a failure and provides a helpful suggestion.
-3.  **Health Endpoint Failure:** Verifies that if the server responds with a 500 error on `/health` or `/doctor`, the tool correctly reports the error.
-4.  **Degraded State:** Verifies that if the server reports a "degraded" status (e.g., database down), the CLI correctly reflects this status and lists the failing components.
-5.  **Address Parsing:** Indirectly tests the logic for parsing `host:port` strings through the test scenarios.
-
-## Verification
--   **New Tests:** `go test ./server/cmd/mcpctl/...` passed successfully.
--   **Regression Testing:** `go test ./server/pkg/...` passed successfully, ensuring no negative impact on the core server logic.
--   **Build Integrity:** `make gen` was executed to verify that the project builds and generates necessary artifacts (protobufs) correctly.
+*   **Target:** `server/pkg/tool/types.go` (Security Functions: `validateSafePathAndInjection`, `checkForShellInjection`, `fastJSONNumber`)
+*   **Risk Profile:**
+    *   **High Risk:** This code executes arbitrary commands and interprets user inputs in shell and interpreter contexts (Python, Ruby, Perl, etc.).
+    *   **Criticality:** Vulnerabilities here lead to RCE (Remote Code Execution) or SSRF (Server-Side Request Forgery).
+    *   **Reason for selection:** The file handles complex "Dark Matter" logic for sanitizing inputs against injection attacks across multiple languages and protocols. Existing tests were sparse or relied on happy-path integration tests.
+*   **New Coverage:**
+    *   **SSRF Protection:** Added tests for blocked schemes (`file://`, `gopher://`, `ftp://`), dangerous localhost/metadata access (`127.0.0.1`, `169.254.169.254`), and correct handling of URL parsing edge cases.
+    *   **Command Injection:** Added comprehensive table-driven tests for:
+        *   **Polyglot Injections:** Null bytes, newlines, tabs.
+        *   **Interpreter-Specific Vectors:** Python (`__import__`, `exec`, `f-strings`), Ruby (`system`, backticks, interpolation), Perl (`qx`, `system`).
+        *   **Nested Injection:** Shell wrapping interpreter calls (e.g., `sh -c "python ..."`).
+        *   **Whitespace Bypass:** Leading spaces to evade filters.
+    *   **Argument Injection:** Tests for flag injection (`-rf`, `--option`).
+    *   **Precision Safety:** Verified `fastJSONNumber` correctly handles large integers without precision loss.
+*   **Verification:**
+    *   `make gen` run successfully to ensure protobuf artifacts.
+    *   `go test -v ./server/pkg/tool/...` passed clean.
+    *   Verified that new tests fail if security checks are disabled (demonstrated by initial failures when mock was too permissive).
