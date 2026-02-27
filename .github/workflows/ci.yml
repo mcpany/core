@@ -566,7 +566,7 @@ jobs:
 
       - name: Generate Protobufs
         run: |
-          make gen
+          make gen-go
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3

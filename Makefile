@@ -139,7 +139,7 @@ clean-protos:
 	@-find proto server/pkg server/cmd -name "*.pb.go" -delete
 	@-find proto -name "*.pb.gw.go" -delete
 
-gen: clean-protos prepare-proto
+gen-go: clean-protos prepare-proto
 	@echo "Generating protobuf files (Go)..."
 	@export PATH=$(TOOL_INSTALL_DIR):$$PATH; \
 		mkdir -p $(BUILD_DIR); \
@@ -158,7 +158,7 @@ gen: clean-protos prepare-proto
 			{} +; \
 		rm -rf google
 
-
+gen-ts:
 	@echo "Generating protobuf files (TypeScript)..."
 	@if ! [ -f "./ui/node_modules/.bin/protoc-gen-ts_proto" ]; then \
 		echo "protoc-gen-ts_proto not found. Installing UI dependencies..."; \
@@ -194,6 +194,8 @@ gen: clean-protos prepare-proto
 		echo "Error: protoc-gen-ts_proto not found in ./ui/node_modules/.bin/. TypeScript generation cannot proceed."; \
 		exit 1; \
 	fi
+
+gen: gen-go gen-ts
 
 update-screenshots:
 	$(MAKE) -C ui update-screenshots
