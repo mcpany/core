@@ -93,11 +93,19 @@ jobs:
 
       - name: Install dependencies
         run: |
+          echo "Installing dependencies..."
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y build-essential
+            sudo apt-get update
+            sudo apt-get install -y build-essential gcc g++
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache build-base
+          else
+            echo "No package manager found!"
+            exit 1
           fi
+          echo "Checking gcc..."
+          which gcc || echo "gcc not found in PATH"
+          gcc --version || echo "gcc version check failed"
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -141,11 +149,19 @@ jobs:
 
       - name: Install dependencies
         run: |
+          echo "Installing dependencies..."
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
+            sudo apt-get update
+            sudo apt-get install -y make xz-utils build-essential gcc g++
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz build-base
+          else
+            echo "No package manager found!"
+            exit 1
           fi
+          echo "Checking gcc..."
+          which gcc || echo "gcc not found in PATH"
+          gcc --version || echo "gcc version check failed"
 
       - name: Prepare environment
         run: make prepare
@@ -177,11 +193,19 @@ jobs:
 
       - name: Install dependencies
         run: |
+          echo "Installing dependencies..."
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
+            sudo apt-get update
+            sudo apt-get install -y make xz-utils build-essential gcc g++
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz build-base
+          else
+            echo "No package manager found!"
+            exit 1
           fi
+          echo "Checking gcc..."
+          which gcc || echo "gcc not found in PATH"
+          gcc --version || echo "gcc version check failed"
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -316,11 +340,19 @@ jobs:
 
       - name: Install dependencies
         run: |
+          echo "Installing dependencies..."
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
+            sudo apt-get update
+            sudo apt-get install -y make xz-utils build-essential gcc g++
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz build-base
+          else
+            echo "No package manager found!"
+            exit 1
           fi
+          echo "Checking gcc..."
+          which gcc || echo "gcc not found in PATH"
+          gcc --version || echo "gcc version check failed"
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -623,11 +655,19 @@ jobs:
 
       - name: Install dependencies
         run: |
+          echo "Installing dependencies..."
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
+            sudo apt-get update
+            sudo apt-get install -y make xz-utils build-essential gcc g++
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz build-base
+          else
+            echo "No package manager found!"
+            exit 1
           fi
+          echo "Checking gcc..."
+          which gcc || echo "gcc not found in PATH"
+          gcc --version || echo "gcc version check failed"
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -762,11 +802,19 @@ jobs:
 
       - name: Install dependencies
         run: |
+          echo "Installing dependencies..."
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
+            sudo apt-get update
+            sudo apt-get install -y make xz-utils build-essential gcc g++
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz build-base
+          else
+            echo "No package manager found!"
+            exit 1
           fi
+          echo "Checking gcc..."
+          which gcc || echo "gcc not found in PATH"
+          gcc --version || echo "gcc version check failed"
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -994,11 +1042,19 @@ jobs:
 
       - name: Install dependencies
         run: |
+          echo "Installing dependencies..."
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y build-essential
+            sudo apt-get update
+            sudo apt-get install -y build-essential gcc g++
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache build-base
+          else
+            echo "No package manager found!"
+            exit 1
           fi
+          echo "Checking gcc..."
+          which gcc || echo "gcc not found in PATH"
+          gcc --version || echo "gcc version check failed"
 
       - name: Set up Go
         uses: actions/setup-go@v6
