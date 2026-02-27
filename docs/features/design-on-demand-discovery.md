@@ -57,3 +57,11 @@ As the number of available MCP tools grows, agents face "context pollution"—wh
 
 ## 7. Evolutionary Changelog
 *   **2026-02-25:** Initial Document Creation.
+*   **2026-02-27:** Added Security Guardrails for Discovery Search.
+
+### Update: 2026-02-27 - Security Guardrails for Discovery Search
+**Context**: The OpenClaw crisis revealed how agents can be tricked into searching for and executing malicious tools via prompt injection.
+**Architecture Adjustment**:
+*   **Discovery Sanitization**: Discovery queries are now passed through a "Safety Filter" that strips potential prompt injections.
+*   **Attested Search Results**: Search results now include a `provenance` field, ensuring that the agent only receives tool schemas from cryptographically verified upstreams.
+**Security Impact**: Prevents "Discovery-Phase Injection" where a user/attacker tricks the agent into loading a malicious tool by spoofing its description.

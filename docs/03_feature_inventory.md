@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **Ephemeral Context Vault**: (P0) A secure, short-lived storage for session-bound context that automatically wipes data after task completion.
+- **Sandboxed Tool Runtime (Docker-bound)**: (P0) Automated routing of high-risk MCP tool calls to isolated Docker containers to prevent host-level RCE.
+- **Agent Behavior Analytics (ABA)**: (P1) Middleware that monitors tool call sequences for malicious patterns (e.g., exfiltration sequences) using a local LLM-based auditor.
+
+### Priority Shifts
+- **Policy Firewall**: Re-affirming **P0**. Essential for mitigating RCE/SSRF risks identified in the OpenClaw crisis.
+- **MCP Provenance Attestation**: Re-affirming **P0**. Critical for preventing supply-chain poisoning in tool marketplaces.
+
+### Deprecations / Monitoring
+- **Persistent Tool State**: Monitoring for deprecation in favor of session-bound, ephemeral state for sensitive integrations.

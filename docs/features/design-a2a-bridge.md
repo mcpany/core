@@ -46,3 +46,11 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-02-27:** Secure Handoff & Behavioral Attestation.
+
+### Update: 2026-02-27 - Secure Handoff & Behavioral Attestation
+**Context**: Multi-agent swarms (like OpenClaw) are vulnerable to "Task Spoofing" where a subagent is given a malicious task by an untrusted peer.
+**Architecture Adjustment**:
+*   **Attested Handoff**: Every A2A handoff must be accompanied by a "Handoff Token" signed by MCP Any, verifying the lineage and authorization of the task.
+*   **Behavioral Monitoring**: MCP Any now monitors the *sequence* of tool calls across agent boundaries to detect "Lateral Escalation" (e.g., a subagent trying to access tools its parent didn't use).
+**Security Impact**: Mitigates the risk of a compromised subagent being used to escalate privileges across the agent swarm.
