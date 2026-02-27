@@ -103,7 +103,8 @@ export default function MarketplacePage() {
 
   useEffect(() => {
     loadData();
-  }, [toast]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
