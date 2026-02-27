@@ -9,6 +9,12 @@ test.describe('Supply Chain Attestation Viewer', () => {
     const verifiedServiceName = 'verified-service-test';
     const unverifiedServiceName = 'unverified-service-test';
 
+    test.beforeEach(async ({ request }) => {
+        // Cleanup potential leftovers
+        await request.delete(`/api/v1/services/${verifiedServiceName}`).catch(() => {});
+        await request.delete(`/api/v1/services/${unverifiedServiceName}`).catch(() => {});
+    });
+
     test.afterAll(async ({ request }) => {
         // Cleanup
         await request.delete(`/api/v1/services/${verifiedServiceName}`).catch(() => {});
@@ -41,6 +47,9 @@ test.describe('Supply Chain Attestation Viewer', () => {
 
         // Navigate
         await page.goto(`/upstream-services/${verifiedServiceName}`);
+
+        // Wait for page to be ready
+        await expect(page.getByRole('heading', { name: verifiedServiceName })).toBeVisible();
 
         // Click Tab
         await page.getByRole('tab', { name: 'Supply Chain' }).click();
@@ -76,6 +85,9 @@ test.describe('Supply Chain Attestation Viewer', () => {
 
         // Navigate
         await page.goto(`/upstream-services/${unverifiedServiceName}`);
+
+        // Wait for page to be ready
+        await expect(page.getByRole('heading', { name: unverifiedServiceName })).toBeVisible();
 
         // Click Tab
         await page.getByRole('tab', { name: 'Supply Chain' }).click();
