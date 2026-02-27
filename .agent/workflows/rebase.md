@@ -1,10 +1,6 @@
----
-description: Rebase the mentioned branch and test
----
-
 ## Objective
 
-Rebase the [target branch or current branch] onto the latest main, resolve any conflicts, verify code quality, and push to remote. If you are on main branch already, just make sure all tests pass as described below.
+Rebase the [target branch or current branch] onto the latest main, resolve any conflicts, verify code quality, and push to remote. If the current branch is already "main", continue to make sure all tests pass.
 
 ## Execution Steps
 
@@ -13,16 +9,16 @@ Rebase the [target branch or current branch] onto the latest main, resolve any c
 1. squash the new commits in the target branch into one commit.
 2. git fetch origin main and rebase the target branch onto origin/main.
 
-
 ### Conflict Resolution:
 
 If merge conflicts arise, analyze the code to resolve them logically. If a resolution is ambiguous, stop and ask for clarification.
 
 ### Verification (Quality Gate):
+
 - Run "make docker-lint" and resolve any linting/formatting errors.
 - Run "make docker-test" and ensure all unit tests MUST pass 100%.
 - Run "make k8s-e2e" and make sure all tests MUST pass 100%.
-- Check github actions, all operations there, including building docker images steps, MUST pass 100%.
+- Check github actions, all operations and test in github ci actions, including building docker images steps, MUST pass 100%.
 
 ### CI Alignment:
 
