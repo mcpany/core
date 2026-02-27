@@ -1,67 +1,51 @@
-# Copyright (C) 2025 Author(s) of MCP Any
+# Copyright 2025 Author(s) of MCP Any
 # SPDX-License-Identifier: Apache-2.0
 
-# Generated protobuf files
-# **/*.pb.go
-coverage*.out
-coverage.html
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# Build artifacts
-/build/
+# Dependencies
+node_modules
+.pnp
+.pnp.js
 
-/vendor/
+# Testing
+coverage
+coverage-final.json
 
-# Node
-node_modules/
+# Production
+build
+dist
 
-# Gemini CLI
-.gemini/
+# Misc
+.DS_Store
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
-# Log files
-*.log
-*.log.json
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# Python cache
-__pycache__/
-coverage.html
-.cache/
-build/
+# Vercel
+.next
+.vercel
 
-# Jules Agent
-.[Jj][Uu][Ll][Ee][Ss]/
+# Terraform
+.terraform
+.terraform.lock.hcl
 
-# Database
-*.db
-*.db-shm
-*.db-wal
-data/
-mcpany.db
+# Python
+__pycache__
+*.pyc
 
-.audits/
-.audit/
-*.txt
+# Go
+bin/
+server/bin/
+# Generated protos in Go are committed usually, but if not:
+# *.pb.go
 
-# Lint reports
-lint_report.*
-.last-run
-**/.last-run.json
-
-# Secrets
-ui/secrets-master.key
-ui/secrets-store.json
-.build-context/
-proto/node_modules/
-proto/node_modules
-server/pkg/tool/testdata/jsonecho/jsonecho
-server/examples/demo/stdio/my-tool-bin
-/skills/
-
-# Test binaries
-*.test
-package-lock.json
-proto/**/*.ts
-proto/google
-client_info.json
-oauth_env.sh
-AUDIT_REPORT.md
-package.json
+# Temp
+skipped_tests_manifest.json
+seeder
