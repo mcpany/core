@@ -53,6 +53,12 @@ func (m *mockReadWriteCloser) Close() error {
 	return nil
 }
 
+func (m *mockReadWriteCloser) LocalAddr() net.Addr                { return nil }
+func (m *mockReadWriteCloser) RemoteAddr() net.Addr               { return nil }
+func (m *mockReadWriteCloser) SetDeadline(t time.Time) error      { return nil }
+func (m *mockReadWriteCloser) SetReadDeadline(t time.Time) error  { return nil }
+func (m *mockReadWriteCloser) SetWriteDeadline(t time.Time) error { return nil }
+
 func TestDockerConn_ReadWrite(t *testing.T) {
 	ctx := context.Background()
 	rwc := &mockReadWriteCloser{}
