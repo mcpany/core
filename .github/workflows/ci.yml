@@ -155,9 +155,9 @@ jobs:
             SUDO="sudo"
           fi
           if command -v apt-get >/dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils git
           elif command -v apk >/dev/null; then
-             $SUDO apk add --no-cache make xz
+             $SUDO apk add --no-cache make xz git
           fi
 
       - name: Prepare environment
@@ -202,9 +202,9 @@ jobs:
             SUDO="sudo"
           fi
           if command -v apt-get >/dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils git
           elif command -v apk >/dev/null; then
-             $SUDO apk add --no-cache make xz
+             $SUDO apk add --no-cache make xz git
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -356,9 +356,9 @@ jobs:
             SUDO="sudo"
           fi
           if command -v apt-get >/dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils git
           elif command -v apk >/dev/null; then
-             $SUDO apk add --no-cache make xz
+             $SUDO apk add --no-cache make xz git
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -537,9 +537,9 @@ jobs:
             SUDO="sudo"
           fi
           if command -v apt-get >/dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils git
           elif command -v apk >/dev/null; then
-             $SUDO apk add --no-cache make xz
+             $SUDO apk add --no-cache make xz git
           fi
 
       - uses: actions/checkout@v6
@@ -698,9 +698,9 @@ jobs:
             SUDO="sudo"
           fi
           if command -v apt-get >/dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils git
           elif command -v apk >/dev/null; then
-             $SUDO apk add --no-cache make xz
+             $SUDO apk add --no-cache make xz git
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -852,9 +852,9 @@ jobs:
             SUDO="sudo"
           fi
           if command -v apt-get >/dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils git
           elif command -v apk >/dev/null; then
-             $SUDO apk add --no-cache make xz
+             $SUDO apk add --no-cache make xz git
           fi
 
       - name: Configure Docker Registry Mirrors
