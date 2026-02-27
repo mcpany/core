@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **Sandboxed MCP Runtime (Docker/WASM)**: (P0) Executes MCP servers in isolated environments to prevent host-level exploits.
+- **Config Trust & Admin Allowlisting**: (P0) Restricts execution of sensitive tool types to configurations that have been explicitly trusted or signed.
+- **Agent Session API (Pseudo-MCP)**: (P1) A set of standardized tools (`session_list`, `session_send`) for inter-agent communication, mapping to A2A protocols.
+
+### Priority Shifts
+- **A2A Interop Bridge**: (P0) Re-affirming P0 status as it is now coupled with the standardized Session API.
+- **Policy Firewall**: (P0) Elevated importance to handle "Sandboxed Runtime" orchestration and trust levels.
+
+### Deprecations / Monitoring
+- **Automatic Hook Execution**: Monitoring for removal. All hooks must move to the "Sandboxed Runtime" or require explicit admin approval.

@@ -46,3 +46,7 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-02-27: Standardizing Session Tools.**
+    *   **Context:** Today's market sync revealed OpenClaw's implementation of `sessions_*` tools for inter-agent coordination.
+    *   **Architecture Adjustment:** Integrating `sessions_list`, `sessions_history`, and `sessions_send` as native "Pseudo-MCP" tools within the bridge. This allows any MCP agent to discover and communicate with A2A-capable agents using a familiar tool-calling pattern.
+    *   **Security Impact:** All session-based messages will be routed through the Policy Firewall to ensure cross-agent communication adheres to Zero Trust principles.
