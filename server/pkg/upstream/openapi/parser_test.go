@@ -607,13 +607,13 @@ func TestParseOpenAPISpec_Errors(t *testing.T) {
 func TestConvertOpenAPISchemaToInputSchemaProperties_Errors(t *testing.T) {
 	doc := loadTestSpec(t)
 	t.Run("nil schema ref", func(t *testing.T) {
-		_, err := convertOpenAPISchemaToInputSchemaProperties(nil, nil, doc)
+		_, err := convertOpenAPISchemaToInputSchemaProperties(nil, nil, doc, 0)
 		assert.NoError(t, err, "Nil schema should not cause a panic, just result in empty properties")
 	})
 
 	t.Run("unresolvable ref", func(t *testing.T) {
 		schemaRef := &openapi3.SchemaRef{Ref: "#/components/schemas/NonExistent"}
-		_, err := convertOpenAPISchemaToInputSchemaProperties(schemaRef, nil, doc)
+		_, err := convertOpenAPISchemaToInputSchemaProperties(schemaRef, nil, doc, 0)
 		assert.Error(t, err)
 	})
 }

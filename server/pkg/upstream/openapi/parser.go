@@ -17,9 +17,10 @@ import (
 )
 
 const (
-	typeObject = "object"
-	typeString = "string"
-	methodGet  = "GET"
+	typeObject        = "object"
+	typeString        = "string"
+	methodGet         = "GET"
+	MaxRecursionDepth = 20
 )
 
 // ParsedOpenAPIData holds the high-level information extracted from an OpenAPI
@@ -190,7 +191,7 @@ func convertMcpOperationsToTools(ops []McpOperation, doc *openapi3.T, mcpServerS
 			}
 		}
 
-		properties, err := convertOpenAPISchemaToInputSchemaProperties(bodySchemaRef, op.Parameters, doc)
+		properties, err := convertOpenAPISchemaToInputSchemaProperties(bodySchemaRef, op.Parameters, doc, 0)
 		if err != nil {
 			// Use baseOperationID for the error message as toolID is removed.
 			logging.GetLogger().Warn("Failed to convert OpenAPI schema to InputSchema for tool. Input schema will be empty.", "tool", baseOperationID, "error", err)
@@ -216,7 +217,7 @@ func convertMcpOperationsToTools(ops []McpOperation, doc *openapi3.T, mcpServerS
 			}
 		}
 
-		outputProperties, err := convertOpenAPISchemaToOutputSchemaProperties(outputSchemaRef, doc)
+		outputProperties, err := convertOpenAPISchemaToOutputSchemaProperties(outputSchemaRef, doc, 0)
 		if err != nil {
 			logging.GetLogger().Warn("Failed to convert OpenAPI schema to OutputSchema for tool. Output schema will be empty.", "tool", baseOperationID, "error", err)
 			outputProperties = &structpb.Struct{Fields: make(map[string]*structpb.Value)} // Empty properties
@@ -265,6 +266,7 @@ func isOperationIdempotent(method string) bool {
 func convertOpenAPISchemaToOutputSchemaProperties(
 	bodySchemaRef *openapi3.SchemaRef, // Schema for the response body
 	doc *openapi3.T,
+	depth int,
 ) (*structpb.Struct, error) {
 	props := &structpb.Struct{Fields: make(map[string]*structpb.Value)}
 
@@ -291,7 +293,7 @@ func convertOpenAPISchemaToOutputSchemaProperties(
 					logging.GetLogger().Warn("Failed to merge properties", "error", err)
 				}
 				for propName, propSchemaRef := range mergedProps {
-					val, err := convertSchemaToStructPB(propName, propSchemaRef, "", doc)
+					val, err := convertSchemaToStructPB(propName, propSchemaRef, "", doc, depth+1)
 					if err != nil {
 						logging.GetLogger().Warn("Skipping property from request body", "property", propName, "error", err)
 						continue
@@ -299,7 +301,7 @@ func convertOpenAPISchemaToOutputSchemaProperties(
 					props.Fields[propName] = val
 				}
 			} else {
-				val, err := convertSchemaToStructPB("response_body", bodySchemaRef, bodyActualSchema.Description, doc)
+				val, err := convertSchemaToStructPB("response_body", bodySchemaRef, bodyActualSchema.Description, doc, depth+1)
 				if err != nil {
 					logging.GetLogger().Warn("Failed to convert non-object request body schema", "error", err)
 				} else {
@@ -319,6 +321,7 @@ func convertOpenAPISchemaToInputSchemaProperties(
 	bodySchemaRef *openapi3.SchemaRef, // Schema for the request body
 	opParameters openapi3.Parameters, // Parameters for the operation (query, path, header)
 	doc *openapi3.T,
+	depth int,
 ) (*structpb.Struct, error) {
 	props := &structpb.Struct{Fields: make(map[string]*structpb.Value)}
 
@@ -345,7 +348,7 @@ func convertOpenAPISchemaToInputSchemaProperties(
 					logging.GetLogger().Warn("Failed to merge properties", "error", err)
 				}
 				for propName, propSchemaRef := range mergedProps {
-					val, err := convertSchemaToStructPB(propName, propSchemaRef, "", doc)
+					val, err := convertSchemaToStructPB(propName, propSchemaRef, "", doc, depth+1)
 					if err != nil {
 						logging.GetLogger().Warn("Skipping property from request body", "property", propName, "error", err)
 						continue
@@ -354,7 +357,7 @@ func convertOpenAPISchemaToInputSchemaProperties(
 				}
 			} else {
 				// If the request body is not an object, wrap its schema under "request_body".
-				val, err := convertSchemaToStructPB("request_body", bodySchemaRef, bodyActualSchema.Description, doc)
+				val, err := convertSchemaToStructPB("request_body", bodySchemaRef, bodyActualSchema.Description, doc, depth+1)
 				if err != nil {
 					logging.GetLogger().Warn("Failed to convert non-object request body schema", "error", err)
 				} else {
@@ -380,7 +383,7 @@ func convertOpenAPISchemaToInputSchemaProperties(
 				continue
 			}
 			// Pass param.Description as the explicit description for the parameter's schema
-			val, err := convertSchemaToStructPB(param.Name, param.Schema, param.Description, doc)
+			val, err := convertSchemaToStructPB(param.Name, param.Schema, param.Description, doc, depth+1)
 			if err != nil {
 				logging.GetLogger().Warn("Warning: skipping parameter '%s': %v\n", param.Name, err)
 				continue
@@ -393,7 +396,11 @@ func convertOpenAPISchemaToInputSchemaProperties(
 }
 
 // convertSchemaToStructPB converts a single OpenAPI Schema (or SchemaRef) to a *structpb.Value representing its schema.
-func convertSchemaToStructPB(name string, sr *openapi3.SchemaRef, explicitDescription string, doc *openapi3.T) (*structpb.Value, error) {
+func convertSchemaToStructPB(name string, sr *openapi3.SchemaRef, explicitDescription string, doc *openapi3.T, depth int) (*structpb.Value, error) {
+	if depth > MaxRecursionDepth {
+		return nil, fmt.Errorf("recursion depth limit reached (%d) for %s", MaxRecursionDepth, name)
+	}
+
 	sVal, err := resolveSchemaRef(sr, doc)
 	if err != nil {
 		return nil, fmt.Errorf("schema reference resolution failed for %s: %w", name, err)
@@ -442,7 +449,7 @@ func convertSchemaToStructPB(name string, sr *openapi3.SchemaRef, explicitDescri
 		}
 
 		for propName, propSchemaRef := range mergedProps {
-			nestedVal, err := convertSchemaToStructPB(propName, propSchemaRef, "", doc)
+			nestedVal, err := convertSchemaToStructPB(propName, propSchemaRef, "", doc, depth+1)
 			if err != nil {
 				logging.GetLogger().Warn("Skipping property of object", "property", propName, "object", name, "error", err)
 				continue
@@ -455,7 +462,7 @@ func convertSchemaToStructPB(name string, sr *openapi3.SchemaRef, explicitDescri
 	case openapi3.TypeArray:
 		fieldSchema["type"] = "array"
 		if sVal.Items != nil {
-			itemSchemaVal, err := convertSchemaToStructPB(name+"_items", sVal.Items, "", doc)
+			itemSchemaVal, err := convertSchemaToStructPB(name+"_items", sVal.Items, "", doc, depth+1)
 			if err != nil {
 				logging.GetLogger().Warn("Could not determine item type for array", "array", name, "error", err)
 			} else if itemSchemaVal != nil {
