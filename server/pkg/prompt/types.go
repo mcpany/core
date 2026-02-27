@@ -85,6 +85,12 @@ type TemplatedPrompt struct {
 // Returns:
 //   - *TemplatedPrompt: The initialized TemplatedPrompt.
 //   - error: An error if the prompt templates cannot be compiled.
+//
+// Errors:
+//   - Returns error if template parsing fails.
+//
+// Side Effects:
+//   - Compiles all message templates.
 func NewTemplatedPrompt(definition *configv1.PromptDefinition, serviceID string) (*TemplatedPrompt, error) {
 	// ⚡ BOLT: Pre-compile templates to avoid parsing on every request.
 	// Randomized Selection from Top 5 High-Impact Targets
@@ -176,6 +182,11 @@ func (p *TemplatedPrompt) Service() string {
 }
 
 // Definition returns the raw configuration definition of the prompt.
+//
+// Summary: Retrieves the prompt configuration definition.
+//
+// Returns:
+//   - *configv1.PromptDefinition: The definition proto.
 func (p *TemplatedPrompt) Definition() *configv1.PromptDefinition {
 	return p.definition
 }
@@ -187,16 +198,16 @@ func (p *TemplatedPrompt) Definition() *configv1.PromptDefinition {
 // It renders the prompt template using the provided arguments.
 //
 // Parameters:
-//   - _ : The context (unused in this implementation).
+//   - _: The context (unused in this implementation).
 //   - args: The arguments for the prompt as a raw JSON message.
 //
 // Returns:
 //   - *mcp.GetPromptResult: The result of the prompt execution.
 //   - error: An error if the operation fails (e.g., template rendering error).
 //
-// Throws/Errors:
-//   - json.UnmarshalTypeError: If args cannot be unmarshaled.
-//   - template error: If template rendering fails.
+// Errors:
+//   - Returns error if args cannot be unmarshaled.
+//   - Returns error if template rendering fails.
 func (p *TemplatedPrompt) Get(_ context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {
 	var inputs map[string]any
 	if err := json.Unmarshal(args, &inputs); err != nil {

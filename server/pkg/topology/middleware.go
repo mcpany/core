@@ -14,9 +14,18 @@ import (
 
 // Middleware returns a middleware function to track session activity.
 //
-// next is the next.
+// Summary: Creates an MCP middleware for tracking and recording session activity metrics.
 //
-// Returns the result.
+// Parameters:
+//   - next: mcp.MethodHandler. The next handler in the chain.
+//
+// Returns:
+//   - mcp.MethodHandler: The wrapped handler.
+//
+// Side Effects:
+//   - Extracts session ID from context or request.
+//   - Records duration, success/error status, and response size.
+//   - Calls m.RecordActivity to persist metrics.
 func (m *Manager) Middleware(next mcp.MethodHandler) mcp.MethodHandler {
 	return func(
 		ctx context.Context,

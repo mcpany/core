@@ -14,6 +14,8 @@ import (
 )
 
 // OllamaEmbeddingProvider implements EmbeddingProvider for Ollama.
+//
+// Summary: Provides an interface to generate text embeddings using the Ollama API.
 type OllamaEmbeddingProvider struct {
 	baseURL string
 	model   string
@@ -22,10 +24,17 @@ type OllamaEmbeddingProvider struct {
 
 // NewOllamaEmbeddingProvider creates a new OllamaEmbeddingProvider.
 //
-// baseURL is the baseURL.
-// model is the model.
+// Summary: Initializes a new provider for Ollama embeddings.
 //
-// Returns the result.
+// Parameters:
+//   - baseURL: string. The base URL of the Ollama API (defaults to "http://localhost:11434" if empty).
+//   - model: string. The name of the embedding model to use (defaults to "nomic-embed-text" if empty).
+//
+// Returns:
+//   - *OllamaEmbeddingProvider: The initialized embedding provider.
+//
+// Side Effects:
+//   - Sets default values for baseURL and model if not provided.
 func NewOllamaEmbeddingProvider(baseURL, model string) *OllamaEmbeddingProvider {
 	if baseURL == "" {
 		baseURL = "http://localhost:11434"
@@ -51,11 +60,24 @@ type ollamaEmbeddingResponse struct {
 
 // Embed generates an embedding for the given text using Ollama.
 //
-// ctx is the context for the request.
-// text is the text.
+// Summary: Calls the Ollama API to generate a vector embedding for the input text.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The context for the HTTP request.
+//   - text: string. The input text to be embedded.
+//
+// Returns:
+//   - []float32: The generated embedding vector.
+//   - error: An error if the API call fails or the response is invalid.
+//
+// Errors:
+//   - Returns error if request marshaling or creation fails.
+//   - Returns error if the HTTP request fails.
+//   - Returns error if the API returns a non-200 status code.
+//   - Returns error if response decoding fails or no embedding data is returned.
+//
+// Side Effects:
+//   - Makes an HTTP POST request to the configured Ollama API endpoint.
 func (p *OllamaEmbeddingProvider) Embed(ctx context.Context, text string) ([]float32, error) {
 	reqBody := ollamaEmbeddingRequest{
 		Model:  p.model,

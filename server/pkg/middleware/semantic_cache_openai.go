@@ -14,6 +14,8 @@ import (
 )
 
 // OpenAIEmbeddingProvider implements EmbeddingProvider for OpenAI.
+//
+// Summary: Provides vector embeddings using the OpenAI API.
 type OpenAIEmbeddingProvider struct {
 	apiKey  string
 	model   string
@@ -22,7 +24,19 @@ type OpenAIEmbeddingProvider struct {
 }
 
 // NewOpenAIEmbeddingProvider creates a new OpenAIEmbeddingProvider.
-// It accepts an API key and a model name (defaults to "text-embedding-3-small" if empty).
+//
+// Summary: Initializes a new OpenAIEmbeddingProvider with the given API key and model.
+//
+// Parameters:
+//   - apiKey: string. The OpenAI API key.
+//   - model: string. The model ID (defaults to "text-embedding-3-small" if empty).
+//
+// Returns:
+//   - *OpenAIEmbeddingProvider: The initialized provider.
+//
+// Side Effects:
+//   - Sets a default model and base URL.
+//   - Initializes an HTTP client with a timeout.
 func NewOpenAIEmbeddingProvider(apiKey, model string) *OpenAIEmbeddingProvider {
 	if model == "" {
 		model = "text-embedding-3-small"
@@ -51,7 +65,25 @@ type openAIEmbeddingResponse struct {
 }
 
 // Embed generates an embedding vector for the given text using the OpenAI API.
-// It returns the embedding as a slice of float32 and any error encountered.
+//
+// Summary: Calls the OpenAI API to generate an embedding for the input text.
+//
+// Parameters:
+//   - ctx: context.Context. The request context.
+//   - text: string. The text to embed.
+//
+// Returns:
+//   - []float32: The generated embedding vector.
+//   - error: An error if the API call fails.
+//
+// Errors:
+//   - Returns error if request marshaling or creation fails.
+//   - Returns error if the HTTP request fails.
+//   - Returns error if the API returns a non-200 status code or an error object.
+//   - Returns error if no embedding data is found in the response.
+//
+// Side Effects:
+//   - Makes an external HTTP POST request to the OpenAI API.
 func (p *OpenAIEmbeddingProvider) Embed(ctx context.Context, text string) ([]float32, error) {
 	reqBody := openAIEmbeddingRequest{
 		Input:          text,
