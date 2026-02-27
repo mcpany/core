@@ -332,9 +332,10 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            # gcc and g++ are needed for cgo (e.g. sqlite)
+            sudo apt-get update && sudo apt-get install -y make xz-utils gcc g++
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             sudo apk add --no-cache make xz build-base
           fi
 
       - name: Configure Docker Registry Mirrors
