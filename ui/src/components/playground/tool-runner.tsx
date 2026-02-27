@@ -23,6 +23,7 @@ import { Switch } from "@/components/ui/switch";
 import { generateCurlCommand, generatePythonCode } from "@/lib/code-generator";
 import { useToast } from "@/hooks/use-toast";
 import { estimateTokens, calculateCost, formatCost } from "@/lib/tokens";
+import { useExecutionHistory } from "@/hooks/use-execution-history";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -63,6 +64,7 @@ export function ToolRunner({ tool, onClose }: ToolRunnerProps) {
   const [isDryRun, setIsDryRun] = useState(false);
   const [lastRunStats, setLastRunStats] = useState<{ inputTokens: number, outputTokens: number, cost: number } | null>(null);
   const { toast } = useToast();
+  const { addEntry: addHistoryEntry, history: localHistory } = useExecutionHistory();
 
   // Real data state
   const [historicalStats, setHistoricalStats] = useState<ToolAnalytics | null>(null);
@@ -126,6 +128,7 @@ export function ToolRunner({ tool, onClose }: ToolRunnerProps) {
     setLoading(true);
     setOutput(null);
     setLastRunStats(null);
+    const startTime = Date.now();
     try {
       const args = JSON.parse(input);
       // Calculate Input Tokens
@@ -135,7 +138,18 @@ export function ToolRunner({ tool, onClose }: ToolRunnerProps) {
           name: tool.name,
           arguments: args
       }, isDryRun);
+      const endTime = Date.now();
+      const duration = endTime - startTime;
       setOutput(res);
+
+      // Save to local history
+      addHistoryEntry({
+        toolName: tool.name,
+        args,
+        result: res,
+        duration,
+        status: "success",
+      });
 
       // Calculate Output Tokens
       const outputTokens = estimateTokens(res);
@@ -146,7 +160,24 @@ export function ToolRunner({ tool, onClose }: ToolRunnerProps) {
 
       setTimeout(fetchMetrics, 500);
     } catch (e: any) {
+      const endTime = Date.now();
+      const duration = endTime - startTime;
       setOutput({ error: e.message || String(e) });
+
+      // Save to local history (failed)
+      try {
+        const args = JSON.parse(input);
+        addHistoryEntry({
+            toolName: tool.name,
+            args,
+            result: { error: e.message || String(e) },
+            duration,
+            status: "error",
+        });
+      } catch {
+        // Ignore JSON parse error for history
+      }
+
 
       // Estimate error tokens
       const inputTokens = estimateTokens(input);
@@ -232,6 +263,9 @@ export function ToolRunner({ tool, onClose }: ToolRunnerProps) {
                     </TabsTrigger>
                     <TabsTrigger value="metrics" className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:shadow-none rounded-none h-10 px-4">
                         Metrics & History
+                    </TabsTrigger>
+                    <TabsTrigger value="local-history" className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:shadow-none rounded-none h-10 px-4">
+                        Local History
                     </TabsTrigger>
                      <TabsTrigger value="schema" className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:shadow-none rounded-none h-10 px-4">
                         Schema
@@ -383,6 +417,51 @@ export function ToolRunner({ tool, onClose }: ToolRunnerProps) {
                                         <span className="font-medium">{h.time}</span>
                                     </div>
                                     <span className="text-muted-foreground font-mono text-xs">{h.latency}ms</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+             </TabsContent>
+
+             <TabsContent value="local-history" className="flex-1 overflow-y-auto p-6 m-0">
+                <div className="grid gap-6">
+                    <div className="space-y-2">
+                        <Label className="flex items-center gap-2 font-semibold">
+                            <HistoryIcon className="h-4 w-4" /> Local History
+                        </Label>
+                        <div className="rounded-md border divide-y">
+                            {localHistory.length === 0 && (
+                                <div className="text-xs text-muted-foreground p-4 text-center">
+                                    No local history available.
+                                </div>
+                            )}
+                            {localHistory.map((entry) => (
+                                <div key={entry.id} className="flex flex-col gap-2 p-3 hover:bg-muted/50 transition-colors text-sm">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-2">
+                                            <div className={cn("h-2.5 w-2.5 rounded-full", entry.status === "success" ? "bg-green-500" : "bg-destructive")} />
+                                            <span className="font-medium">{new Date(entry.timestamp).toLocaleString()}</span>
+                                        </div>
+                                        <span className="text-muted-foreground font-mono text-xs">{entry.duration}ms</span>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <div className="flex-1">
+                                            <span className="text-[10px] uppercase text-muted-foreground">Input</span>
+                                            <pre className="text-xs bg-muted/30 p-1 rounded overflow-hidden text-ellipsis">{JSON.stringify(entry.args)}</pre>
+                                        </div>
+                                        <div className="flex-1">
+                                            <span className="text-[10px] uppercase text-muted-foreground">Result</span>
+                                             <pre className="text-xs bg-muted/30 p-1 rounded overflow-hidden text-ellipsis">{JSON.stringify(entry.result).substring(0, 100)}</pre>
+                                        </div>
+                                    </div>
+                                    <div className="flex justify-end">
+                                      <Button variant="ghost" size="sm" className="h-6 text-xs" onClick={() => {
+                                        setInput(JSON.stringify(entry.args, null, 2));
+                                      }}>
+                                        Load Inputs
+                                      </Button>
+                                    </div>
                                 </div>
                             ))}
                         </div>
