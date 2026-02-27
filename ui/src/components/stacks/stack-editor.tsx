@@ -36,6 +36,12 @@ export function StackEditor({ initialValue, onSave, onCancel }: StackEditorProps
   const [showPalette, setShowPalette] = useState(true);
   const [showVisualizer, setShowVisualizer] = useState(true);
 
+  // Sync internal state with prop changes (e.g. async fetch)
+  useEffect(() => {
+    setValue(initialValue);
+    setDebouncedValue(initialValue);
+  }, [initialValue]);
+
   // ⚡ BOLT: Debounce StackVisualizer updates to prevent expensive re-rendering and parsing on every keystroke.
   // Randomized Selection from Top 5 High-Impact Targets
   useEffect(() => {
