@@ -159,9 +159,19 @@ jobs:
 
       - name: Install dependencies
         run: |
+          if command -v make &> /dev/null && command -v xz &> /dev/null; then
+            echo "make and xz are already installed."
+            exit 0
+          fi
+
           SUDO=""
           if command -v sudo &> /dev/null; then
             SUDO="sudo"
+          fi
+
+          if [ "$(id -u)" -ne 0 ] && [ -z "$SUDO" ]; then
+            echo "Cannot install dependencies (non-root, no sudo). Failing if dependencies are missing."
+            # Proceeding might fail, but checking presence above handles common cases.
           fi
 
           if command -v apt-get &> /dev/null; then
@@ -204,9 +214,18 @@ jobs:
 
       - name: Install dependencies
         run: |
+          if command -v make &> /dev/null && command -v xz &> /dev/null; then
+            echo "make and xz are already installed."
+            exit 0
+          fi
+
           SUDO=""
           if command -v sudo &> /dev/null; then
             SUDO="sudo"
+          fi
+
+          if [ "$(id -u)" -ne 0 ] && [ -z "$SUDO" ]; then
+            echo "Cannot install dependencies (non-root, no sudo). Failing if dependencies are missing."
           fi
 
           if command -v apt-get &> /dev/null; then
@@ -364,9 +383,18 @@ jobs:
 
       - name: Install dependencies
         run: |
+          if command -v make &> /dev/null && command -v xz &> /dev/null; then
+            echo "make and xz are already installed."
+            exit 0
+          fi
+
           SUDO=""
           if command -v sudo &> /dev/null; then
             SUDO="sudo"
+          fi
+
+          if [ "$(id -u)" -ne 0 ] && [ -z "$SUDO" ]; then
+            echo "Cannot install dependencies (non-root, no sudo). Failing if dependencies are missing."
           fi
 
           if command -v apt-get &> /dev/null; then
@@ -552,9 +580,18 @@ jobs:
 
       - name: Install dependencies
         run: |
+          if command -v make &> /dev/null && command -v xz &> /dev/null; then
+            echo "make and xz are already installed."
+            exit 0
+          fi
+
           SUDO=""
           if command -v sudo &> /dev/null; then
             SUDO="sudo"
+          fi
+
+          if [ "$(id -u)" -ne 0 ] && [ -z "$SUDO" ]; then
+            echo "Cannot install dependencies (non-root, no sudo). Failing if dependencies are missing."
           fi
 
           if command -v apt-get &> /dev/null; then
@@ -709,9 +746,18 @@ jobs:
 
       - name: Install dependencies
         run: |
+          if command -v make &> /dev/null && command -v xz &> /dev/null; then
+            echo "make and xz are already installed."
+            exit 0
+          fi
+
           SUDO=""
           if command -v sudo &> /dev/null; then
             SUDO="sudo"
+          fi
+
+          if [ "$(id -u)" -ne 0 ] && [ -z "$SUDO" ]; then
+            echo "Cannot install dependencies (non-root, no sudo). Failing if dependencies are missing."
           fi
 
           if command -v apt-get &> /dev/null; then
@@ -1247,6 +1293,12 @@ jobs:
           install_dependencies() {
             if ! command -v curl &> /dev/null || ! command -v jq &> /dev/null; then
               echo "curl or jq not found. Installing..."
+
+              if [ "$(id -u)" -ne 0 ] && [ -z "$SUDO" ]; then
+                echo "Cannot install dependencies (non-root, no sudo). Hoping existing tools work."
+                return
+              fi
+
               if command -v apt-get &> /dev/null; then
                 $SUDO apt-get update && $SUDO apt-get install -y curl ca-certificates jq
               elif command -v apk &> /dev/null; then
