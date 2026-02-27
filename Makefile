@@ -85,7 +85,9 @@ prepare-proto:
 	PROTOC_TAG=$(PROTOC_VERSION); \
 	echo "Checking for protoc version $${PROTOC_TAG}..."; \
 	if test -f "$(PROTOC_BIN)"; then \
+		echo "Found protoc binary at $(PROTOC_BIN)"; \
 		INSTALLED_VERSION=v$$($(PROTOC_BIN) --version | sed 's/libprotoc //'); \
+		echo "Detected version: $${INSTALLED_VERSION}"; \
 		if test "$${INSTALLED_VERSION}" = "$${PROTOC_TAG}"; then \
 			echo "protoc version $${INSTALLED_VERSION} is already installed."; \
 		else \
