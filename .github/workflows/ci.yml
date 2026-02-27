@@ -299,7 +299,7 @@ jobs:
 
       - name: Test (Short)
         run: |
-          make test-fast CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache COVERAGE_FILE=coverage-fast.out PROTOC_BIN=$PROTOC_BIN PROTOC_VERSION=$PROTOC_VERSION
+          make test-fast CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache COVERAGE_FILE=coverage-fast.out
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
@@ -481,7 +481,7 @@ jobs:
 
       - name: run parallel e2e
         run: |
-          make e2e-parallel SHARD=${{ matrix.shard }} SKIP_DOCKER_REBUILD=true CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-e2e-parallel.out PROTOC_BIN=$PROTOC_BIN PROTOC_VERSION=$PROTOC_VERSION
+          make e2e-parallel SHARD=${{ matrix.shard }} SKIP_DOCKER_REBUILD=true CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-e2e-parallel.out
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
@@ -531,7 +531,7 @@ jobs:
 
       - name: Generate Protobufs
         run: |
-          make gen PROTOC_BIN=$PROTOC_BIN PROTOC_VERSION=$PROTOC_VERSION
+          make gen
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -778,7 +778,7 @@ jobs:
 
       - name: run sequential e2e
         run: |
-          make e2e-sequential SKIP_DOCKER_REBUILD=true CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-e2e-sequential.out PROTOC_BIN=$PROTOC_BIN PROTOC_VERSION=$PROTOC_VERSION
+          make e2e-sequential SKIP_DOCKER_REBUILD=true CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-e2e-sequential.out
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
@@ -915,7 +915,7 @@ jobs:
 
       - name: test public api
         run: |
-          make test-public-api CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-public-api.out PROTOC_BIN=$PROTOC_BIN PROTOC_VERSION=$PROTOC_VERSION
+          make test-public-api CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-public-api.out
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5

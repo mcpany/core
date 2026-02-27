@@ -66,7 +66,7 @@ ifdef INSIDE_DOCKER_CONTAINER
 TOOL_INSTALL_DIR := /tools
 endif
 TOOL_INSTALL_DIR ?= $(BUILD_DIR)/env/bin
-PROTOC_VERSION := v33.1
+PROTOC_VERSION ?= v33.1
 
 # Detect architecture for protoc
 UNAME_M := $(shell uname -m)
@@ -80,7 +80,7 @@ PROTOC_GEN_GO := $(TOOL_INSTALL_DIR)/protoc-gen-go
 PROTOC_GEN_GO_GRPC := $(TOOL_INSTALL_DIR)/protoc-gen-go-grpc
 PROTOC_GEN_GRPC_GATEWAY := $(TOOL_INSTALL_DIR)/protoc-gen-grpc-gateway
 PROTOC_GEN_OPENAPIV2 := $(TOOL_INSTALL_DIR)/protoc-gen-openapiv2
-PROTOC_BIN := $(TOOL_INSTALL_DIR)/protoc
+PROTOC_BIN ?= $(TOOL_INSTALL_DIR)/protoc
 GOLANGCI_LINT_BIN := $(TOOL_INSTALL_DIR)/golangci-lint
 GOFUMPT_BIN := $(TOOL_INSTALL_DIR)/gofumpt
 GOIMPORTS_BIN := $(TOOL_INSTALL_DIR)/goimports
