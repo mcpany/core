@@ -134,9 +134,9 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils gcc g++
+            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential libc6-dev
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz gcc g++
+             sudo apk add --no-cache make xz build-base musl-dev
           fi
 
       - name: Prepare environment
@@ -171,9 +171,9 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils gcc g++
+            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential libc6-dev
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz gcc g++
+             sudo apk add --no-cache make xz build-base musl-dev
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -221,10 +221,10 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
         with:
+          provenance: false
           buildkitd-config-inline: |
             [registry."docker.io"]
               mirrors = ["mirror.gcr.io"]
-          provenance: false
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -312,9 +312,9 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils gcc g++
+            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential libc6-dev
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz gcc g++
+             sudo apk add --no-cache make xz build-base musl-dev
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -362,10 +362,10 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
         with:
+          provenance: false
           buildkitd-config-inline: |
             [registry."docker.io"]
               mirrors = ["mirror.gcr.io"]
-          provenance: false
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -501,10 +501,10 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
         with:
+          provenance: false
           buildkitd-config-inline: |
             [registry."docker.io"]
               mirrors = ["mirror.gcr.io"]
-          provenance: false
 
       - name: Build and Save Images
         run: |
@@ -624,9 +624,9 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils gcc g++
+            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential libc6-dev
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz gcc g++
+             sudo apk add --no-cache make xz build-base musl-dev
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -764,9 +764,9 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils gcc g++
+            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential libc6-dev
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz gcc g++
+             sudo apk add --no-cache make xz build-base musl-dev
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -814,10 +814,10 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
         with:
+          provenance: false
           buildkitd-config-inline: |
             [registry."docker.io"]
               mirrors = ["mirror.gcr.io"]
-          provenance: false
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
