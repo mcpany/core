@@ -187,8 +187,6 @@ jobs:
       - name: Prune Docker
         run: docker system prune -af
 
-      - uses: actions/checkout@v6
-
       - name: Install dependencies
         run: |
           SUDO=""
@@ -197,10 +195,12 @@ jobs:
           fi
 
           if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils git
           elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz
+             $SUDO apk add --no-cache make xz git
           fi
+
+      - uses: actions/checkout@v6
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -342,8 +342,6 @@ jobs:
       - name: Prune Docker
         run: docker system prune -af
 
-      - uses: actions/checkout@v6
-
       - name: Install dependencies
         run: |
           SUDO=""
@@ -352,10 +350,12 @@ jobs:
           fi
 
           if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils git
           elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz
+             $SUDO apk add --no-cache make xz git
           fi
+
+      - uses: actions/checkout@v6
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -525,6 +525,20 @@ jobs:
           if [ -d /usr/share/dotnet ]; then $SUDO rm -rf /usr/share/dotnet; fi
           if [ -d /opt/ghc ]; then $SUDO rm -rf /opt/ghc; fi
           if [ -d /usr/local/share/boost ]; then $SUDO rm -rf /usr/local/share/boost; fi
+
+      - name: Install dependencies
+        run: |
+          SUDO=""
+          if command -v sudo >/dev/null; then
+            SUDO="sudo"
+          fi
+
+          if command -v apt-get &> /dev/null; then
+            $SUDO apt-get update && $SUDO apt-get install -y make curl unzip git
+          elif command -v apk &> /dev/null; then
+             $SUDO apk add --no-cache make curl unzip git
+          fi
+
       - uses: actions/checkout@v6
 
       - name: Set up Go
@@ -670,8 +684,6 @@ jobs:
 
       - name: Prune Docker
         run: docker system prune -af
-
-      - uses: actions/checkout@v6
 
       - name: Install dependencies
         run: |
@@ -825,8 +837,6 @@ jobs:
 
       - name: Prune Docker
         run: docker system prune -af
-
-      - uses: actions/checkout@v6
 
       - name: Install dependencies
         run: |
@@ -1088,6 +1098,8 @@ jobs:
           elif command -v apk &> /dev/null; then
              $SUDO apk add --no-cache make curl unzip git
           fi
+
+      - uses: actions/checkout@v6
 
       - name: Set up Go
         uses: actions/setup-go@v6
