@@ -71,4 +71,12 @@ func TestSqlite3Injection(t *testing.T) {
 	if err == nil {
 		t.Fatalf("Expected error for single quote injection in quoted context, got nil")
 	}
+
+	// Case 7: ORDER BY Injection (Sentinel Security Update)
+	// Value: "1 ORDER BY name"
+	val = "1 ORDER BY name"
+	err = checkForShellInjection(val, template, placeholder, command, isShell)
+	if err == nil {
+		t.Fatalf("Expected error for ORDER BY injection, got nil")
+	}
 }

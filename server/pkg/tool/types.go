@@ -3773,6 +3773,7 @@ func checkSQLKeywords(val string) error {
 	keywords := []string{
 		"OR", "AND", "UNION", "SELECT", "FROM", "WHERE", "JOIN",
 		"DROP", "ALTER", "CREATE", "INSERT", "UPDATE", "DELETE",
+		"ORDER", "GROUP", "HAVING", "LIMIT", "OFFSET", "CASE",
 		"--",
 	}
 
