@@ -125,6 +125,10 @@ const nextConfig: NextConfig = {
     const rootProto = path.join(__dirname, '../proto');
     const protoPath = fs.existsSync(localProto) ? localProto : rootProto;
 
+    // IMPORTANT: In Jest/Test environment, this Webpack config might not be used,
+    // causing module resolution issues. Ensure tsconfig.json paths are aligned.
+    // However, Playwright uses Next.js dev server which uses this config.
+
     config.resolve.alias = {
       ...config.resolve.alias,
       '@proto': protoPath,
