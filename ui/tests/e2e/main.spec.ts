@@ -112,8 +112,8 @@ test.describe('MCP Any UI E2E', () => {
     // Graceful handling of environment specific 404s
     const is404 = await page.locator('text=This page could not be found').count() > 0;
     if (is404) {
-      console.log('Middleware page returned 404, skipping test in this environment');
-      return;
+        // Fail the test instead of skipping, as we expect full coverage now
+        throw new Error('Middleware page returned 404. Ensure backend is running and seeded.');
     }
 
     await expect(page.locator('h1')).toContainText('Middleware Pipeline');

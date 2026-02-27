@@ -173,11 +173,14 @@ export function DashboardGrid() {
         if (!isMounted || loading) return;
 
         // Prevent saving the initial empty state if it's the very first mounted render
-        // But we must allow saving if we just loaded/migrated data.
+        // unless we have actual data to save (e.g. from migration)
         if (isFirstRun.current) {
             isFirstRun.current = false;
             // If widgets are empty on first run, it's likely the initial state.
-            return;
+            // But if we have widgets, it might be a migration or default setup we want to persist.
+            if (widgets.length === 0) {
+                return;
+            }
         }
 
         const timer = setTimeout(async () => {
