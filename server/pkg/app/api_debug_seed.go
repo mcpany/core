@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"os"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/logging"
@@ -68,14 +69,28 @@ func (a *Application) handleDebugSeed() http.HandlerFunc {
 		}
 
 		// Trigger reload to update in-memory state (ServiceRegistry, AuthManager, etc.)
-		go func() {
-			if err := a.ReloadConfig(context.Background(), a.fs, a.configPaths); err != nil {
-				log.Error("Failed to reload config after seeding", "error", err)
-			}
-		}()
+		// Must be synchronous to ensure tests see the new state immediately.
+		if err := a.ReloadConfig(context.Background(), a.fs, a.configPaths); err != nil {
+			log.Error("Failed to reload config after seeding", "error", err)
+			// We log the error but still return OK as data was seeded successfully.
+			// However, tests might fail if in-memory state is stale.
+			// Let's consider it a soft failure or just proceed.
+		}
 
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte(`{"status": "ok"}`))
+	}
+}
+
+func (a *Application) handleDebugSeedTraffic() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNotImplemented)
+	}
+}
+
+func (a *Application) handleDebugSeedTraces() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNotImplemented)
 	}
 }
 
