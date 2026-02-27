@@ -482,7 +482,8 @@ jobs:
 
       - name: Install Build Dependencies
         run: |
-          apt-get update && apt-get install -y make
+          export DEBIAN_FRONTEND=noninteractive
+          apt-get update && apt-get install -y make curl git
 
       - name: Generate Protobufs
         run: |
