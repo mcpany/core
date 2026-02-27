@@ -164,6 +164,27 @@ jobs:
           # Add to PATH
           export PATH=$GOBIN:$PATH
 
+          echo "Pre-installing Helm, ShellCheck, GolangCI-Lint..."
+          # Helm
+          HELM_VERSION="v3.19.0"
+          curl -sSL "https://get.helm.sh/helm-${HELM_VERSION}-linux-${PROTOC_ARCH}.tar.gz" -o helm.tar.gz
+          tar -zxvf helm.tar.gz
+          mv linux-${PROTOC_ARCH}/helm $GOBIN/helm
+          rm -rf linux-${PROTOC_ARCH} helm.tar.gz
+
+          # ShellCheck
+          SC_VERSION="stable"
+          curl -sSL "https://github.com/koalaman/shellcheck/releases/download/${SC_VERSION}/shellcheck-${SC_VERSION}.linux.x86_64.tar.xz" | tar -xJv
+          mv shellcheck-${SC_VERSION}/shellcheck $GOBIN/shellcheck
+          rm -rf shellcheck-${SC_VERSION}
+
+          # GolangCI-Lint
+          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $GOBIN v1.64.5
+
+          # Gofumpt & Goimports (used by make lint/fmt, maybe not prepare, but good to have)
+          go install mvdan.cc/gofumpt@latest
+          go install golang.org/x/tools/cmd/goimports@latest
+
           echo "Running make prepare dry-run..."
           make prepare || { echo "Make prepare failed"; exit 1; }
 
@@ -627,6 +648,27 @@ jobs:
 
           # Add to PATH
           export PATH=$GOBIN:$PATH
+
+          echo "Pre-installing Helm, ShellCheck, GolangCI-Lint..."
+          # Helm
+          HELM_VERSION="v3.19.0"
+          curl -sSL "https://get.helm.sh/helm-${HELM_VERSION}-linux-${PROTOC_ARCH}.tar.gz" -o helm.tar.gz
+          tar -zxvf helm.tar.gz
+          mv linux-${PROTOC_ARCH}/helm $GOBIN/helm
+          rm -rf linux-${PROTOC_ARCH} helm.tar.gz
+
+          # ShellCheck
+          SC_VERSION="stable"
+          curl -sSL "https://github.com/koalaman/shellcheck/releases/download/${SC_VERSION}/shellcheck-${SC_VERSION}.linux.x86_64.tar.xz" | tar -xJv
+          mv shellcheck-${SC_VERSION}/shellcheck $GOBIN/shellcheck
+          rm -rf shellcheck-${SC_VERSION}
+
+          # GolangCI-Lint
+          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $GOBIN v1.64.5
+
+          # Gofumpt & Goimports (used by make lint/fmt, maybe not prepare, but good to have)
+          go install mvdan.cc/gofumpt@latest
+          go install golang.org/x/tools/cmd/goimports@latest
 
           echo "Running make prepare dry-run..."
           make prepare || { echo "Make prepare failed"; exit 1; }
@@ -1214,6 +1256,27 @@ jobs:
 
           # Add to PATH
           export PATH=$GOBIN:$PATH
+
+          echo "Pre-installing Helm, ShellCheck, GolangCI-Lint..."
+          # Helm
+          HELM_VERSION="v3.19.0"
+          curl -sSL "https://get.helm.sh/helm-${HELM_VERSION}-linux-${PROTOC_ARCH}.tar.gz" -o helm.tar.gz
+          tar -zxvf helm.tar.gz
+          mv linux-${PROTOC_ARCH}/helm $GOBIN/helm
+          rm -rf linux-${PROTOC_ARCH} helm.tar.gz
+
+          # ShellCheck
+          SC_VERSION="stable"
+          curl -sSL "https://github.com/koalaman/shellcheck/releases/download/${SC_VERSION}/shellcheck-${SC_VERSION}.linux.x86_64.tar.xz" | tar -xJv
+          mv shellcheck-${SC_VERSION}/shellcheck $GOBIN/shellcheck
+          rm -rf shellcheck-${SC_VERSION}
+
+          # GolangCI-Lint
+          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $GOBIN v1.64.5
+
+          # Gofumpt & Goimports (used by make lint/fmt, maybe not prepare, but good to have)
+          go install mvdan.cc/gofumpt@latest
+          go install golang.org/x/tools/cmd/goimports@latest
 
           echo "Running make prepare dry-run..."
           make prepare || { echo "Make prepare failed"; exit 1; }
