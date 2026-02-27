@@ -504,6 +504,15 @@ jobs:
           $SUDO rm -rf /usr/local/share/boost || true
       - uses: actions/checkout@v6
 
+      - name: Install dependencies
+        run: |
+          if command -v sudo >/dev/null; then
+            SUDO="sudo"
+          else
+            SUDO=""
+          fi
+          $SUDO apt-get update && $SUDO apt-get install -y make curl unzip git
+
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
