@@ -2072,6 +2072,13 @@ func (a *Application) runServerMode(
 	mux.Handle("/api/v1/debug/seed", authMiddleware(a.handleDebugSeed()))
 	mux.Handle("/api/v1/debug/traces", authMiddleware(a.handleDebugSeedTraces()))
 
+	// Trace Inspector
+	// GET /api/v1/traces -> List recent traces
+	mux.Handle("/api/v1/traces", authMiddleware(a.handleTraces()))
+	// WS /api/v1/ws/traces -> WebSocket stream
+	// Note: We use authMiddleware here, but WebSockets usually need query param auth (handled inside middleware)
+	mux.Handle("/api/v1/ws/traces", authMiddleware(a.handleTracesWS()))
+
 	// User Preferences
 	mux.Handle("/api/v1/user/preferences", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {

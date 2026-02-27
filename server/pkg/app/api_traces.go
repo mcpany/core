@@ -17,6 +17,12 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
+var traceUpgrader = websocket.Upgrader{
+	CheckOrigin: func(_ *http.Request) bool {
+		return true // Allow all origins for now, should be configurable
+	},
+}
+
 // Span represents a span in a trace.
 type Span struct {
 	ID           string         `json:"id"`
@@ -164,7 +170,7 @@ func (a *Application) handleTraces() http.HandlerFunc {
 
 func (a *Application) handleTracesWS() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		conn, err := upgrader.Upgrade(w, r, nil)
+		conn, err := traceUpgrader.Upgrade(w, r, nil)
 		if err != nil {
 			logging.GetLogger().Error("failed to upgrade to websocket", "error", err)
 			return
