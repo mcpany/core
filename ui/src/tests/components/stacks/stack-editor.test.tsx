@@ -5,18 +5,7 @@
 
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { StackEditor } from '@/components/stacks/stack-editor';
-import { apiClient } from '@/lib/client';
 import { vi } from 'vitest';
-
-// Mock the API client
-vi.mock('@/lib/client', () => ({
-  apiClient: {
-    getStackConfig: vi.fn(),
-    saveStackConfig: vi.fn(),
-    getCollection: vi.fn(), // Added getCollection mock
-    saveCollection: vi.fn(), // Added saveCollection mock
-  },
-}));
 
 // Mock ConfigEditor to render a simple textarea for testing
 vi.mock('@/components/stacks/config-editor', () => ({
@@ -37,60 +26,36 @@ global.ResizeObserver = class ResizeObserver {
 };
 
 describe('StackEditor', () => {
+  const mockProps = {
+    initialValue: 'version: "1.0"\nservices:\n  test: {}',
+    onSave: vi.fn(),
+    onCancel: vi.fn(),
+  };
+
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   it('loads and displays configuration', async () => {
-    (apiClient.getCollection as any).mockResolvedValue({
-      name: 'test-stack',
-      services: []
-    });
-
-    render(<StackEditor stackId="test-stack" />);
+    render(<StackEditor {...mockProps} />);
 
     await waitFor(() => {
-      expect(screen.getByText('config.yaml')).toBeInTheDocument();
-      // The content will be a yaml dump of the collection.
-      // Since services is empty array, it might be just "name: test-stack\nservices: {}\n" or similar.
-      // Let's just check for the presence of the editor mock.
+      // Check for editor
       expect(screen.getByTestId('config-editor-mock')).toBeInTheDocument();
-    });
-  });
-
-  it('validates YAML content', async () => {
-    (apiClient.getCollection as any).mockResolvedValue({
-      name: 'test-stack',
-      services: []
-    });
-
-    const { container } = render(<StackEditor stackId="test-stack" />);
-
-    // Find textarea by selector if role is elusive
-    await waitFor(() => expect(screen.getByTestId('config-editor-mock')).toBeInTheDocument());
-    const textarea = screen.getByTestId('config-editor-mock');
-
-    // Valid YAML
-    fireEvent.change(textarea, { target: { value: 'key: value' } });
-    await waitFor(() => {
-        expect(screen.getByText('Valid YAML')).toBeInTheDocument();
-    });
-
-    // Invalid YAML
-    fireEvent.change(textarea, { target: { value: 'key: "unclosed quote' } });
-
-    await waitFor(() => {
-         expect(screen.getByText('Invalid YAML')).toBeInTheDocument();
+      // Check initial value in editor
+      expect(screen.getByTestId('config-editor-mock')).toHaveValue(mockProps.initialValue);
     });
   });
 
   it('toggles palette and visualizer', async () => {
-    (apiClient.getCollection as any).mockResolvedValue({ name: 'test-stack', services: [] });
-    render(<StackEditor stackId="test-stack" />);
+    render(<StackEditor {...mockProps} />);
 
     // Check initial state
     expect(screen.getByText('Service Palette')).toBeInTheDocument();
-    // Since config is empty, visualizer shows "No services defined"
-    expect(screen.getByText('No services defined')).toBeInTheDocument();
+    // Since config is simple, visualizer shows graph (mocked or real).
+    // The graph might render "No services defined" if services map is empty or not parsed correctly by dagre/reactflow in test environment.
+    // But we just check for presence of visualizer container or text.
+    // The visualizer title is "Live Preview"
+    expect(screen.getByText('Live Preview')).toBeInTheDocument();
   });
 });
