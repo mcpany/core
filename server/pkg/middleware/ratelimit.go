@@ -14,7 +14,6 @@ import (
 	"strings"
 	"time"
 
-	armonmetrics "github.com/armon/go-metrics"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/metrics"
@@ -192,7 +191,7 @@ func (m *RateLimitMiddleware) checkLimit(ctx context.Context, limiter Limiter, c
 }
 
 func (m *RateLimitMiddleware) recordMetrics(serviceID, limitType, status string) {
-	metrics.IncrCounterWithLabels(metricRateLimitRequestsTotal, 1, []armonmetrics.Label{
+	metrics.IncrCounterWithLabels(metricRateLimitRequestsTotal, 1, []metrics.Label{
 		{Name: "service_id", Value: serviceID},
 		{Name: "limit_type", Value: limitType},
 		{Name: "status", Value: status},
