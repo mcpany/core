@@ -18,7 +18,7 @@ func Seed(ctx context.Context, db *sql.DB) error {
 	// 1. Seed Global Settings
 	settings := configv1.GlobalSettings_builder{
 		ApiKey:   proto.String("test-api-key"),
-		LogLevel: configv1.GlobalSettings_LogLevel(configv1.GlobalSettings_LOG_LEVEL_INFO).Enum(),
+		LogLevel: configv1.GlobalSettings_LOG_LEVEL_INFO.Enum(),
 	}.Build()
 
 	if err := saveGlobalSettings(ctx, db, settings); err != nil {
