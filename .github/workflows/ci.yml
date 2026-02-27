@@ -161,7 +161,7 @@ jobs:
   unit-test:
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    needs: [changes]
+    needs: [changes, build-images]
     if: ${{ needs.changes.outputs.src == 'true' }}
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
@@ -247,6 +247,17 @@ jobs:
           echo "week=$(/bin/date -u "+%V")" >> $GITHUB_OUTPUT
         shell: bash
 
+      - name: Detect Architecture
+        id: detect-arch
+        run: |
+          ARCH=$(uname -m)
+          case $ARCH in
+            x86_64) SLUG="amd64" ;;
+            aarch64) SLUG="arm64" ;;
+            *) echo "Unsupported arch: $ARCH"; exit 1 ;;
+          esac
+          echo "slug=$SLUG" >> $GITHUB_OUTPUT
+
       - name: Docker Cache
         uses: actions/cache@v4
         with:
@@ -269,6 +280,37 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
             ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-
+
+      - name: Download Server Image
+        uses: actions/download-artifact@v4
+        with:
+          name: image-server-${{ steps.detect-arch.outputs.slug }}
+
+      - name: Download HTTP Echo Image
+        uses: actions/download-artifact@v4
+        with:
+          name: image-http-echo-${{ steps.detect-arch.outputs.slug }}
+
+      - name: Download Time Server Image
+        uses: actions/download-artifact@v4
+        with:
+          name: image-time-server-${{ steps.detect-arch.outputs.slug }}
+
+      - name: Download Cowsay Image
+        uses: actions/download-artifact@v4
+        with:
+          name: image-cowsay-${{ steps.detect-arch.outputs.slug }}
+
+      - name: Download Everything Image
+        uses: actions/download-artifact@v4
+        with:
+          name: image-everything-${{ steps.detect-arch.outputs.slug }}
+
+      - name: Load Docker Images
+        run: |
+          for f in *.tar; do
+            docker load -i "$f"
+          done
 
       - name: Prepare environment
         run: make prepare CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache
@@ -1033,6 +1075,11 @@ jobs:
         with:
           name: image-ui-${{ steps.detect-arch.outputs.slug }}
 
+      - name: Download Time Server Image
+        uses: actions/download-artifact@v4
+        with:
+          name: image-time-server-${{ steps.detect-arch.outputs.slug }}
+
       - name: Load Docker Images into Kind
         run: |
           # Load all tarballs into docker daemon first?
@@ -1047,6 +1094,7 @@ jobs:
           kind load docker-image mcpany/operator:latest --name mcp-e2e
           kind load docker-image mcpany/ui:latest --name mcp-e2e
           kind load docker-image mcpany/http-echo-server:latest --name mcp-e2e
+          kind load docker-image mcpany-e2e-time-server:latest --name mcp-e2e || echo "time server not found"
 
       - name: Load Docker Images already loaded above
         run: |
