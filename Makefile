@@ -16,7 +16,7 @@ PROTOC_GEN_GO_VERSION ?= v1.36.11
 PROTOC_GEN_GO_GRPC_VERSION ?= v1.5.1
 GRPC_GATEWAY_VERSION ?= v2.27.3
 PROTOC_ZIP := protoc.zip
-PROTOC_VERSION := v33.1
+PROTOC_VERSION ?= v33.1
 
 # Detect architecture for protoc
 UNAME_M := $(shell uname -m)
@@ -29,7 +29,7 @@ PROTOC_GEN_GO := $(TOOL_INSTALL_DIR)/protoc-gen-go
 PROTOC_GEN_GO_GRPC := $(TOOL_INSTALL_DIR)/protoc-gen-go-grpc
 PROTOC_GEN_GRPC_GATEWAY := $(TOOL_INSTALL_DIR)/protoc-gen-grpc-gateway
 PROTOC_GEN_OPENAPIV2 := $(TOOL_INSTALL_DIR)/protoc-gen-openapiv2
-PROTOC_BIN := $(TOOL_INSTALL_DIR)/protoc
+PROTOC_BIN ?= $(TOOL_INSTALL_DIR)/protoc
 
 # Targets that should run on both (or just server generally, but test on both)
 all: gen
