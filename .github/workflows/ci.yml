@@ -96,25 +96,7 @@ jobs:
       - name: Prune Docker
         run: docker system prune -af
 
-      - name: Ensure Build Tools
-        run: |
-          set -e
-          SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
-
-          if command -v apt-get >/dev/null; then
-            export DEBIAN_FRONTEND=noninteractive
-            # Use built-in retries instead of loop
-            ($SUDO apt-get update -o Acquire::Retries=10 || $SUDO apt-get update)
-            $SUDO dpkg --configure -a || true
-            $SUDO apt-get install -y --no-install-recommends -o Acquire::Retries=10 git make curl unzip ca-certificates build-essential
-          elif command -v apk >/dev/null; then
-             $SUDO apk add --no-cache git make curl unzip ca-certificates build-base
-          elif command -v yum >/dev/null; then
-             $SUDO yum install -y git make curl unzip ca-certificates gcc gcc-c++ make
-          elif command -v dnf >/dev/null; then
-             $SUDO dnf install -y git make curl unzip ca-certificates gcc gcc-c++ make
-          fi
+      # Removed redundant Ensure Build Tools (Install dependencies handles it)
 
       - uses: actions/checkout@v6
 
@@ -166,9 +148,8 @@ jobs:
 
           if command -v apt-get >/dev/null; then
             export DEBIAN_FRONTEND=noninteractive
-            ($SUDO apt-get update -o Acquire::Retries=10 || $SUDO apt-get update)
-            $SUDO dpkg --configure -a || true
-            $SUDO apt-get install -y --no-install-recommends -o Acquire::Retries=10 make xz-utils build-essential curl unzip ca-certificates
+            ($SUDO apt-get update || $SUDO apt-get update)
+            $SUDO apt-get install -y make xz-utils build-essential curl unzip ca-certificates
           elif command -v apk >/dev/null; then
              $SUDO apk add --no-cache make xz build-base curl
           fi
@@ -201,27 +182,7 @@ jobs:
       - name: Prune Docker
         run: docker system prune -af
 
-      - name: Ensure Build Tools
-        run: |
-          set -e
-          SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
-
-          # Detect package manager
-          if command -v apt-get >/dev/null; then
-            export DEBIAN_FRONTEND=noninteractive
-            ($SUDO apt-get update -o Acquire::Retries=10 || $SUDO apt-get update)
-            $SUDO dpkg --configure -a || true
-            $SUDO apt-get install -y --no-install-recommends -o Acquire::Retries=10 git make curl unzip ca-certificates build-essential
-          elif command -v apk >/dev/null; then
-            $SUDO apk add --no-cache git make curl unzip ca-certificates build-base
-          elif command -v yum >/dev/null; then
-            $SUDO yum install -y git make curl unzip ca-certificates gcc gcc-c++ make
-          elif command -v dnf >/dev/null; then
-            $SUDO dnf install -y git make curl unzip ca-certificates gcc gcc-c++ make
-          else
-             echo "Unknown package manager, trying to continue..."
-          fi
+      # Removed redundant Ensure Build Tools
 
       - uses: actions/checkout@v6
 
@@ -233,9 +194,8 @@ jobs:
 
           if command -v apt-get >/dev/null; then
             export DEBIAN_FRONTEND=noninteractive
-            ($SUDO apt-get update -o Acquire::Retries=10 || $SUDO apt-get update)
-            $SUDO dpkg --configure -a || true
-            $SUDO apt-get install -y --no-install-recommends -o Acquire::Retries=10 make xz-utils build-essential curl unzip ca-certificates
+            ($SUDO apt-get update || $SUDO apt-get update)
+            $SUDO apt-get install -y make xz-utils build-essential curl unzip ca-certificates
           elif command -v apk >/dev/null; then
              $SUDO apk add --no-cache make xz build-base curl unzip ca-certificates
           elif command -v yum >/dev/null; then
@@ -379,24 +339,7 @@ jobs:
       - name: Prune Docker
         run: docker system prune -af
 
-      - name: Ensure Build Tools
-        run: |
-          set -e
-          SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
-
-          if command -v apt-get >/dev/null; then
-            export DEBIAN_FRONTEND=noninteractive
-            ($SUDO apt-get update -o Acquire::Retries=10 || $SUDO apt-get update)
-            $SUDO dpkg --configure -a || true
-            $SUDO apt-get install -y --no-install-recommends -o Acquire::Retries=10 git make curl unzip ca-certificates build-essential
-          elif command -v apk >/dev/null; then
-            $SUDO apk add --no-cache git make curl unzip ca-certificates build-base
-          elif command -v yum >/dev/null; then
-            $SUDO yum install -y git make curl unzip ca-certificates gcc gcc-c++ make
-          elif command -v dnf >/dev/null; then
-            $SUDO dnf install -y git make curl unzip ca-certificates gcc gcc-c++ make
-          fi
+      # Removed redundant Ensure Build Tools
 
       - uses: actions/checkout@v6
 
@@ -408,9 +351,8 @@ jobs:
 
           if command -v apt-get >/dev/null; then
             export DEBIAN_FRONTEND=noninteractive
-            ($SUDO apt-get update -o Acquire::Retries=10 || $SUDO apt-get update)
-            $SUDO dpkg --configure -a || true
-            $SUDO apt-get install -y --no-install-recommends -o Acquire::Retries=10 make xz-utils build-essential curl unzip ca-certificates
+            ($SUDO apt-get update || $SUDO apt-get update)
+            $SUDO apt-get install -y make xz-utils build-essential curl unzip ca-certificates
           elif command -v apk >/dev/null; then
              $SUDO apk add --no-cache make xz build-base curl unzip ca-certificates
           elif command -v yum >/dev/null; then
@@ -591,9 +533,8 @@ jobs:
 
           if command -v apt-get >/dev/null; then
             export DEBIAN_FRONTEND=noninteractive
-            ($SUDO apt-get update -o Acquire::Retries=10 || $SUDO apt-get update)
-            $SUDO dpkg --configure -a || true
-            $SUDO apt-get install -y --no-install-recommends -o Acquire::Retries=10 git make curl unzip ca-certificates build-essential
+            ($SUDO apt-get update || $SUDO apt-get update)
+            $SUDO apt-get install -y git make curl unzip ca-certificates build-essential
           elif command -v apk >/dev/null; then
             $SUDO apk add --no-cache git make curl unzip ca-certificates build-base
           elif command -v yum >/dev/null; then
@@ -744,24 +685,7 @@ jobs:
       - name: Prune Docker
         run: docker system prune -af
 
-      - name: Ensure Build Tools
-        run: |
-          set -e
-          SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
-
-          if command -v apt-get >/dev/null; then
-            export DEBIAN_FRONTEND=noninteractive
-            ($SUDO apt-get update -o Acquire::Retries=10 || $SUDO apt-get update)
-            $SUDO dpkg --configure -a || true
-            $SUDO apt-get install -y --no-install-recommends -o Acquire::Retries=10 git make curl unzip ca-certificates build-essential
-          elif command -v apk >/dev/null; then
-            $SUDO apk add --no-cache git make curl unzip ca-certificates build-base
-          elif command -v yum >/dev/null; then
-            $SUDO yum install -y git make curl unzip ca-certificates gcc gcc-c++ make
-          elif command -v dnf >/dev/null; then
-            $SUDO dnf install -y git make curl unzip ca-certificates gcc gcc-c++ make
-          fi
+      # Removed redundant Ensure Build Tools
 
       - uses: actions/checkout@v6
 
@@ -773,9 +697,8 @@ jobs:
 
           if command -v apt-get >/dev/null; then
             export DEBIAN_FRONTEND=noninteractive
-            ($SUDO apt-get update -o Acquire::Retries=10 || $SUDO apt-get update)
-            $SUDO dpkg --configure -a || true
-            $SUDO apt-get install -y --no-install-recommends -o Acquire::Retries=10 make xz-utils build-essential curl unzip ca-certificates
+            ($SUDO apt-get update || $SUDO apt-get update)
+            $SUDO apt-get install -y make xz-utils build-essential curl unzip ca-certificates
           elif command -v apk >/dev/null; then
              $SUDO apk add --no-cache make xz build-base curl unzip ca-certificates
           elif command -v yum >/dev/null; then
@@ -917,24 +840,7 @@ jobs:
       - name: Prune Docker
         run: docker system prune -af
 
-      - name: Ensure Build Tools
-        run: |
-          set -e
-          SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
-
-          if command -v apt-get >/dev/null; then
-            export DEBIAN_FRONTEND=noninteractive
-            ($SUDO apt-get update -o Acquire::Retries=10 || $SUDO apt-get update)
-            $SUDO dpkg --configure -a || true
-            $SUDO apt-get install -y --no-install-recommends -o Acquire::Retries=10 git make curl unzip ca-certificates build-essential
-          elif command -v apk >/dev/null; then
-            $SUDO apk add --no-cache git make curl unzip ca-certificates build-base
-          elif command -v yum >/dev/null; then
-            $SUDO yum install -y git make curl unzip ca-certificates gcc gcc-c++ make
-          elif command -v dnf >/dev/null; then
-            $SUDO dnf install -y git make curl unzip ca-certificates gcc gcc-c++ make
-          fi
+      # Removed redundant Ensure Build Tools
 
       - uses: actions/checkout@v6
 
@@ -946,9 +852,8 @@ jobs:
 
           if command -v apt-get >/dev/null; then
             export DEBIAN_FRONTEND=noninteractive
-            ($SUDO apt-get update -o Acquire::Retries=10 || $SUDO apt-get update)
-            $SUDO dpkg --configure -a || true
-            $SUDO apt-get install -y --no-install-recommends -o Acquire::Retries=10 make xz-utils build-essential curl unzip ca-certificates
+            ($SUDO apt-get update || $SUDO apt-get update)
+            $SUDO apt-get install -y make xz-utils build-essential curl unzip ca-certificates
           elif command -v apk >/dev/null; then
              $SUDO apk add --no-cache make xz build-base curl unzip ca-certificates
           elif command -v yum >/dev/null; then
@@ -1066,9 +971,8 @@ jobs:
 
           if command -v apt-get >/dev/null; then
             export DEBIAN_FRONTEND=noninteractive
-            ($SUDO apt-get update -o Acquire::Retries=10 || $SUDO apt-get update)
-            $SUDO dpkg --configure -a || true
-            $SUDO apt-get install -y --no-install-recommends -o Acquire::Retries=10 git make curl unzip ca-certificates build-essential
+            ($SUDO apt-get update || $SUDO apt-get update)
+            $SUDO apt-get install -y git make curl unzip ca-certificates build-essential
           elif command -v apk >/dev/null; then
             $SUDO apk add --no-cache git make curl unzip ca-certificates build-base
           elif command -v yum >/dev/null; then
@@ -1157,9 +1061,8 @@ jobs:
 
           if command -v apt-get >/dev/null; then
             export DEBIAN_FRONTEND=noninteractive
-            ($SUDO apt-get update -o Acquire::Retries=10 || $SUDO apt-get update)
-            $SUDO dpkg --configure -a || true
-            $SUDO apt-get install -y --no-install-recommends -o Acquire::Retries=10 git make curl unzip ca-certificates build-essential
+            ($SUDO apt-get update || $SUDO apt-get update)
+            $SUDO apt-get install -y git make curl unzip ca-certificates build-essential
           elif command -v apk >/dev/null; then
             $SUDO apk add --no-cache git make curl unzip ca-certificates build-base
           elif command -v yum >/dev/null; then
