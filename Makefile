@@ -16,7 +16,7 @@ PROTOC_GEN_GO_VERSION ?= v1.36.11
 PROTOC_GEN_GO_GRPC_VERSION ?= v1.5.1
 GRPC_GATEWAY_VERSION ?= v2.27.3
 PROTOC_ZIP := protoc.zip
-PROTOC_VERSION ?= v33.1
+PROTOC_VERSION ?= v28.3
 
 # Detect architecture for protoc
 UNAME_M := $(shell uname -m)

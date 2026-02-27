@@ -66,7 +66,7 @@ ifdef INSIDE_DOCKER_CONTAINER
 TOOL_INSTALL_DIR := /tools
 endif
 TOOL_INSTALL_DIR ?= $(BUILD_DIR)/env/bin
-PROTOC_VERSION ?= v33.1
+PROTOC_VERSION ?= v28.3
 
 # Detect architecture for protoc
 UNAME_M := $(shell uname -m)
