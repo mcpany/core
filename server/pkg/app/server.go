@@ -448,8 +448,10 @@ func (a *Application) Run(opts RunOptions) error {
 	var cfg *config_v1.McpAnyServerConfig
 	cfg, err = config.LoadServices(opts.Ctx, multiStore, "server")
 	if err != nil {
+		log.Error("DEBUG: LoadServices failed", "error", err)
 		return fmt.Errorf("failed to load services from config: %w", err)
 	}
+	log.Info("DEBUG: LoadServices passed")
 	if cfg == nil {
 		cfg = config_v1.McpAnyServerConfig_builder{}.Build()
 	}
