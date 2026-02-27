@@ -511,7 +511,7 @@ jobs:
           esac
           echo "slug=$SLUG" >> $GITHUB_OUTPUT
 
-      # Explicit Downloads to avoid disk exhaustion
+      # Explicit Downloads with Distinct Paths
       - name: Download Server Image
         uses: actions/download-artifact@v4
         with:
@@ -544,8 +544,8 @@ jobs:
 
       - name: Load Docker Images
         run: |
-          ls -R downloads || true
-          find downloads -name "*.tar.gz" -exec docker load -i {} \; -exec rm {} \;
+          # Use find to locate all tar.gz files recursively and pipe them to docker load via gzip
+          find downloads -name "*.tar.gz" -print0 | xargs -0 -I {} sh -c 'echo "Loading {}"; gzip -dc "{}" | docker load'
 
       - name: Prepare environment
         run: make prepare
@@ -659,8 +659,7 @@ jobs:
 
       - name: Load Docker Images
         run: |
-          ls -R downloads || true
-          find downloads -name "*.tar.gz" -exec docker load -i {} \; -exec rm {} \;
+          find downloads -name "*.tar.gz" -print0 | xargs -0 -I {} sh -c 'echo "Loading {}"; gzip -dc "{}" | docker load'
 
       - name: Prepare environment
         run: make prepare
@@ -787,8 +786,7 @@ jobs:
 
       - name: Load Docker Images
         run: |
-          ls -R downloads || true
-          find downloads -name "*.tar.gz" -exec docker load -i {} \; -exec rm {} \;
+          find downloads -name "*.tar.gz" -print0 | xargs -0 -I {} sh -c 'echo "Loading {}"; gzip -dc "{}" | docker load'
 
       - name: test public api
         run: |
@@ -833,11 +831,11 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: downloads
-          name: image-server-${{ steps.detect-arch.outputs.slug }}
+          name: image-server-amd64
 
       - name: Load Docker Image
         run: |
-          find downloads -name "server.tar.gz" -exec docker load -i {} \; -exec rm {} \;
+          find downloads -name "server.tar.gz" -print0 | xargs -0 -I {} sh -c 'echo "Loading {}"; gzip -dc "{}" | docker load'
 
       - name: Smoke Test
         run: |
@@ -898,8 +896,7 @@ jobs:
 
       - name: Load Docker Images
         run: |
-          ls -R downloads || true
-          find downloads -name "*.tar.gz" -exec docker load -i {} \; -exec rm {} \;
+          find downloads -name "*.tar.gz" -print0 | xargs -0 -I {} sh -c 'echo "Loading {}"; gzip -dc "{}" | docker load'
 
       - name: Test UI
         run: |
@@ -980,11 +977,8 @@ jobs:
 
       - name: Load Docker Images into Kind
         run: |
-          # Load all tarballs into docker daemon first?
-          # kind load docker-image requires image in docker daemon or archive.
-          # kind load image-archive might be better but let's stick to docker daemon for consistency
-          ls -R downloads || true
-          find downloads -name "*.tar.gz" -exec docker load -i {} \; -exec rm {} \;
+          # Use find to locate all tar.gz files recursively and pipe them to docker load via gzip
+          find downloads -name "*.tar.gz" -print0 | xargs -0 -I {} sh -c 'echo "Loading {}"; gzip -dc "{}" | docker load'
 
           # Now load specific images into Kind
           kind load docker-image mcpany/server:latest --name mcp-e2e
