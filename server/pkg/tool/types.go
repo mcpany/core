@@ -4364,6 +4364,11 @@ func validateSafePathAndInjection(val string, isDocker bool, commandName string)
 					//    We only validate it if the command is a known network tool that might abuse it.
 					isDotted := strings.Contains(val, ".")
 					if isDotted || isNetworkTool(commandName) {
+						// Respect dangerous allow flag for permissive IPs too
+						if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == trueStr {
+							return nil
+						}
+
 						allowLoopback := os.Getenv("MCPANY_ALLOW_LOOPBACK_RESOURCES") == trueStr
 						allowPrivate := os.Getenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES") == trueStr
 						if err := validation.ValidateIP(ip, allowLoopback, allowPrivate); err != nil {
