@@ -783,24 +783,6 @@ jobs:
           name: image-http-echo-${{ steps.detect-arch.outputs.slug }}
           path: downloads
 
-      - name: Download Time Server
-        uses: actions/download-artifact@v4
-        with:
-          name: image-time-server-${{ steps.detect-arch.outputs.slug }}
-          path: downloads
-
-      - name: Download Cowsay
-        uses: actions/download-artifact@v4
-        with:
-          name: image-cowsay-${{ steps.detect-arch.outputs.slug }}
-          path: downloads
-
-      - name: Download Everything
-        uses: actions/download-artifact@v4
-        with:
-          name: image-everything-${{ steps.detect-arch.outputs.slug }}
-          path: downloads
-
       - name: Load Docker Images
         run: |
           ls -R downloads || true
