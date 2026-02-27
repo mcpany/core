@@ -468,6 +468,8 @@ jobs:
           - platform: linux/arm64
             slug: arm64
             runner: ubuntu-24.04-arm
+    env:
+      BUILDX_NO_DEFAULT_ATTESTATIONS: "1"
     steps:
       - name: Free Disk Space (Fast)
         run: |
@@ -505,8 +507,6 @@ jobs:
           provenance: false
 
       - name: Build and Save Images
-        env:
-          BUILDX_NO_DEFAULT_ATTESTATIONS: "1"
         run: |
           PLATFORM="${{ matrix.platform }}"
           SLUG="${{ matrix.slug }}"
