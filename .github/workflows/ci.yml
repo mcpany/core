@@ -300,9 +300,8 @@ jobs:
           verbose: true
 
   e2e-parallel:
-    runs-on: oci-runner
-    # container: public.ecr.aws/docker/library/ubuntu:24.04
-    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
     needs: [build-images]
     strategy:
       fail-fast: false
@@ -647,9 +646,8 @@ jobs:
           retention-days: 1
 
   e2e-sequential:
-    runs-on: oci-runner
-    # container: public.ecr.aws/docker/library/ubuntu:24.04
-    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
     needs: [build-images]
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
@@ -928,23 +926,6 @@ jobs:
     needs: [build-images]
     steps:
       - uses: actions/checkout@v6
-
-      - name: Configure Docker Registry Mirrors
-        run: |
-          # Configure multiple mirrors in array format
-          # Docker will try mirror.gcr.io first.
-          sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
-
-          if sudo systemctl restart docker 2>/dev/null; then
-            echo "Docker restarted via systemctl"
-          elif sudo service docker restart 2>/dev/null; then
-            echo "Docker restarted via service"
-          else
-            echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
-            sudo pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
-          fi
-          docker info # Verify the mirrors are listed
 
       - name: Set up Go
         uses: actions/setup-go@v6
