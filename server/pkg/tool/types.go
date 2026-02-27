@@ -3145,6 +3145,21 @@ func checkForShellInjection(val string, template string, placeholder string, com
 
 //nolint:gocyclo
 func stripInterpreterComments(val, language string) string {
+	// ⚡ Bolt Optimization: Fast scan to see if any stripping is needed.
+	// Randomized Selection from Top 5 High-Impact Targets
+	// If no comments, quotes, or backslashes are present, we can return original string immediately.
+	needsProcessing := false
+	for i := 0; i < len(val); i++ {
+		c := val[i]
+		if c == '#' || c == '/' || c == '\\' || c == '\'' || c == '"' || c == '`' {
+			needsProcessing = true
+			break
+		}
+	}
+	if !needsProcessing {
+		return val
+	}
+
 	var b strings.Builder
 	b.Grow(len(val))
 
