@@ -67,19 +67,20 @@ test.describe('Logs Page', () => {
       }).toPass({ timeout: 2000 });
   });
 
-  test('should display and expand JSON logs', async ({ page }) => {
-    // Mock the WebSocket connection
-    await page.routeWebSocket(/\/api\/v1\/ws\/logs/, ws => {
-      // Send a JSON log immediately
-      const jsonMessage = { foo: "bar", nested: { val: 123 } };
-      const logEntry = {
-        id: "json-e2e-1",
-        timestamp: new Date().toISOString(),
-        level: "INFO",
-        message: JSON.stringify(jsonMessage),
-        source: "e2e-test"
-      };
-      ws.send(JSON.stringify(logEntry));
+  test('should display and expand JSON logs', async ({ page, request }) => {
+    // Seed a JSON log entry
+    const jsonMessage = { foo: "bar", nested: { val: 123 } };
+    await request.post('/api/v1/debug/seed', {
+      data: {
+        logs: [
+          {
+            id: "json-e2e-1",
+            level: "INFO",
+            message: JSON.stringify(jsonMessage),
+            source: "e2e-test"
+          }
+        ]
+      }
     });
 
     await page.goto('/logs');

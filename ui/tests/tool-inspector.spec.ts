@@ -6,27 +6,30 @@
 
 import { test, expect } from '@playwright/test';
 
-test('Tools page loads and inspector opens', async ({ page }) => {
-  // Mock tools endpoint
-  await page.route((url) => url.pathname.includes('/api/v1/tools'), async (route) => {
-    await route.fulfill({
-      json: {
-        tools: [
-          {
-            name: 'get_weather',
-            description: 'Get weather for a location',
-            source: 'configured',
-            serviceId: 'weather-service',
-            inputSchema: {
-               type: "object",
-               properties: {
-                 location: { type: "string" }
+test('Tools page loads and inspector opens', async ({ page, request }) => {
+  // SEED DATA: Register a mock tool via the seeder endpoint or service registration
+  // We'll use the debug/seed endpoint to ensure a known state
+  await request.post('/api/v1/debug/seed', {
+    data: {
+      services: [
+        {
+          id: 'weather-service',
+          name: 'weather-service',
+          tools: [
+             {
+               name: 'get_weather',
+               description: 'Get weather for a location',
+               inputSchema: {
+                  type: "object",
+                  properties: {
+                    location: { type: "string" }
+                  }
                }
-            }
-          }
-        ]
-      }
-    });
+             }
+          ]
+        }
+      ]
+    }
   });
 
   await page.goto('/tools');

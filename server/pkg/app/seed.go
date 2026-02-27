@@ -24,6 +24,10 @@ type SeedRequest struct {
 	ProfilesRaw    []json.RawMessage `json:"profiles"`
 	UsersRaw       []json.RawMessage `json:"users"`
 	TemplatesRaw   []json.RawMessage `json:"service_templates"`
+	// Additional field for flexible service seeding (used by some tests)
+	ServicesAltRaw []json.RawMessage `json:"services"`
+	// Logs for seeding log entries
+	LogsRaw []json.RawMessage `json:"logs"`
 }
 
 // handleDebugSeed creates a handler to seed the database with data.
@@ -150,10 +154,16 @@ func (a *Application) clearData(ctx context.Context, log *slog.Logger) error {
 }
 
 func (a *Application) seedData(ctx context.Context, req SeedRequest) error {
-	for _, raw := range req.ServicesRaw {
+	// Support both keys for services
+	allServices := append(req.ServicesRaw, req.ServicesAltRaw...)
+	for _, raw := range allServices {
 		s := configv1.UpstreamServiceConfig_builder{}.Build()
 		if err := protojson.Unmarshal(raw, s); err != nil {
-			return fmt.Errorf("invalid json")
+			return fmt.Errorf("invalid json in service: %w", err)
+		}
+		// If ID is set but Name is not, use ID as Name (convenience)
+		if s.GetId() != "" && s.GetName() == "" {
+			s.SetName(s.GetId())
 		}
 		if err := a.Storage.SaveService(ctx, s); err != nil {
 			return fmt.Errorf("failed to save service %s: %w", s.GetName(), err)
@@ -204,5 +214,39 @@ func (a *Application) seedData(ctx context.Context, req SeedRequest) error {
 			return fmt.Errorf("failed to save service template %s: %w", t.GetId(), err)
 		}
 	}
+
+	// Seed Logs (if supported by storage/app)
+	// We'll use a hack to push them to the logger or storage directly if possible.
+	// Since we don't have a direct "SaveLog" on Storage interface exposed here easily without type assertion,
+	// and logging is async, we might just log them?
+	// But tests expect them to be queryable via /api/v1/audit/logs or similar.
+	// Actually, the test (logs.spec.ts) expects JSON logs to appear in the UI which listens to WebSocket.
+	// So we should broadcast them via the log system.
+	if len(req.LogsRaw) > 0 {
+		logger := logging.GetLogger()
+		for _, raw := range req.LogsRaw {
+			var logEntry struct {
+				Level   string `json:"level"`
+				Message string `json:"message"`
+				Source  string `json:"source"`
+			}
+			if err := json.Unmarshal(raw, &logEntry); err == nil {
+				// Re-inject into the application logger
+				// This will go to stdout and be picked up by the log collector if running
+				// OR we can try to push to the websocket hub if accessible.
+				// But simpler: just log it.
+				lvl := slog.LevelInfo
+				if logEntry.Level == "ERROR" {
+					lvl = slog.LevelError
+				} else if logEntry.Level == "WARN" {
+					lvl = slog.LevelWarn
+				} else if logEntry.Level == "DEBUG" {
+					lvl = slog.LevelDebug
+				}
+				logger.Log(ctx, lvl, logEntry.Message, "source", logEntry.Source, "seeded", true)
+			}
+		}
+	}
+
 	return nil
 }

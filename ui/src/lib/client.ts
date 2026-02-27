@@ -362,15 +362,13 @@ export const apiClient = {
      * Side Effects: Makes a GET request to /api/v1/services.
      */
     listServices: async () => {
-        return dedupeRequests('listServices', async () => {
-            // Fallback to REST for E2E reliability until gRPC-Web is stable
-            const res = await fetchWithAuth('/api/v1/services');
-            if (!res.ok) throw new Error('Failed to fetch services');
-            const data = await res.json();
-            const list = Array.isArray(data) ? data : (data.services || []);
-            // Map snake_case to camelCase for UI compatibility
-            return list.map(mapUpstreamServiceConfig);
-        });
+        // Fallback to REST for E2E reliability until gRPC-Web is stable
+        const res = await fetchWithAuth('/api/v1/services');
+        if (!res.ok) throw new Error('Failed to fetch services');
+        const data = await res.json();
+        const list = Array.isArray(data) ? data : (data.services || []);
+        // Map snake_case to camelCase for UI compatibility
+        return list.map(mapUpstreamServiceConfig);
     },
 
     /**
@@ -1967,11 +1965,9 @@ export const apiClient = {
      * Side Effects: Makes a GET request to /api/v1/system/status.
      */
     getSystemStatus: async (): Promise<SystemStatus> => {
-        return dedupeRequests('getSystemStatus', async () => {
-            const res = await fetchWithAuth('/api/v1/system/status');
-            if (!res.ok) throw new Error('Failed to fetch system status');
-            return res.json();
-        });
+        const res = await fetchWithAuth('/api/v1/system/status');
+        if (!res.ok) throw new Error('Failed to fetch system status');
+        return res.json();
     },
 
     /**
@@ -2019,13 +2015,11 @@ export const apiClient = {
      * Side Effects: Makes a GET request to /api/v1/dashboard/metrics.
      */
     getDashboardMetrics: async (serviceId?: string): Promise<Metric[]> => {
-        return dedupeRequests(`getDashboardMetrics:${serviceId || ''}`, async () => {
-            let url = '/api/v1/dashboard/metrics';
-            if (serviceId) url += `?serviceId=${encodeURIComponent(serviceId)}`;
-            const res = await fetchWithAuth(url);
-            if (!res.ok) throw new Error('Failed to fetch dashboard metrics. Is the server running and authenticated?');
-            return res.json();
-        });
+        let url = '/api/v1/dashboard/metrics';
+        if (serviceId) url += `?serviceId=${encodeURIComponent(serviceId)}`;
+        const res = await fetchWithAuth(url);
+        if (!res.ok) throw new Error('Failed to fetch dashboard metrics. Is the server running and authenticated?');
+        return res.json();
     },
 
     /**
@@ -2060,11 +2054,9 @@ export const apiClient = {
      * Side Effects: Makes a GET request to /api/v1/topology.
      */
     getTopology: async () => {
-        return dedupeRequests('getTopology', async () => {
-            const res = await fetchWithAuth('/api/v1/topology');
-            if (!res.ok) throw new Error('Failed to fetch topology');
-            return res.json();
-        });
+        const res = await fetchWithAuth('/api/v1/topology');
+        if (!res.ok) throw new Error('Failed to fetch topology');
+        return res.json();
     },
 
     /**
