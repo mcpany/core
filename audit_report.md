@@ -1,43 +1,42 @@
 # Audit Report: Truth Reconciliation
 
 ## Executive Summary
-Performed a comprehensive audit of 10 distinct features across UI and Server domains. The audit revealed a high degree of alignment between the codebase and the intended functionality, with minor discrepancies in documentation and roadmap status.
-*   **Health Score:** 9/10 (Initial), 10/10 (Post-Remediation).
-*   **Primary Issue:** Documentation Drift (Code was ahead of Docs/Roadmap).
-*   **Action:** Synchronized `ui/roadmap.md` and feature documentation to reflect existing, verified capabilities.
+
+A "Truth Reconciliation Audit" was performed on the MCP Any codebase to ensure alignment between Documentation, Implementation, and the Product Roadmap.
+
+**Health of Sampled Features:**
+The majority of the sampled features (9/10) showed high alignment between documentation and code. The project adheres well to its stated architecture and feature set. One discrepancy was found in the Monitoring documentation regarding metric names, which has been remediated.
+
+**Key Findings:**
+- **Code Quality:** The codebase demonstrates strong adherence to Go standards, with robust testing and modular design (clean `pkg/` structure).
+- **Documentation Accuracy:** Documentation is generally accurate, but minor drift occurs in specific technical details (e.g., exact metric names).
+- **Feature Completeness:** All sampled features (Rate Limiting, Dynamic Registration, Security, etc.) are implemented as described.
 
 ## Verification Matrix
 
 | Document Name | Status | Action Taken | Evidence |
 | :--- | :--- | :--- | :--- |
-| `ui/docs/features/connection-diagnostics.md` | ✅ Verified | None | Verified `ConnectionDiagnostic` component logic matches docs. |
-| `ui/docs/features/playground.md` | ⚠️ Drift | **Doc Updated** | Code supports "Copy as Python", doc missed it. Added to doc. |
-| `ui/docs/features/structured_log_viewer.md` | ✅ Verified | None | Verified `LogViewer` JSON auto-detection and expansion. |
-| `server/docs/features/hot_reload.md` | ✅ Verified | None | Verified `ReloadConfig` and `reconcileServices` in `server.go`. |
-| `server/docs/features/health-checks.md` | ✅ Verified | None | Verified `health.go` implements all claimed checks (HTTP, gRPC, FS, etc). |
-| `server/docs/features/dlp.md` | ✅ Verified | None | Verified `dlp.go` implements PII redaction middleware. |
-| `server/docs/features/context_optimizer.md` | ✅ Verified | None | Verified `context_optimizer.go` implements truncation logic. |
-| `server/docs/features/configuration_guide.md` | ✅ Verified | None | Verified configuration loading from files and database. |
-| `server/docs/features/security.md` | ⚠️ Drift | **Doc Updated** | Code enforces "Sentinel Security" (localhost-only) if API Key is missing. Doc updated to reflect this. |
-| `server/docs/features/audit_logging.md` | ✅ Verified | None | Verified `FileAuditStore` implements NDJSON format. |
+| `server/docs/features/rate-limiting/README.md` | ✅ Verified | None | Code in `server/pkg/middleware/ratelimit.go` matches docs (Redis/Memory storage, Token buckets). |
+| `server/docs/features/monitoring/README.md` | ⚠️ Drift | **Remediated** | Updated metric name `mcpany_tools_call_latency_seconds` to `mcpany_tools_call_latency` to match `server/pkg/metrics`. |
+| `server/docs/features/dynamic_registration.md` | ✅ Verified | None | Code in `server/pkg/upstream/{openapi,grpc,graphql}` implements discovery logic. |
+| `server/docs/features/security.md` | ✅ Verified | None | Code in `server/pkg/util/secrets.go` (Vault, AWS) and `server/pkg/middleware/ratelimit.go` (IP Allowlist) matches. |
+| `server/docs/features/context_optimizer.md` | ✅ Verified | None | Code in `server/pkg/middleware/context_optimizer.go` implements truncation logic. |
+| `server/docs/features/debugger.md` | ✅ Verified | None | Code in `server/pkg/middleware/debugger.go` implements ring buffer and traffic capture. |
+| `server/docs/features/health-checks.md` | ✅ Verified | None | Code in `server/pkg/health/health.go` implements WebRTC checks. |
+| `ui/docs/features/playground.md` | ✅ Verified | None | UI Code (`ui/src/app/playground`) implements the described interactive features. |
+| `ui/docs/features/stack-composer.md` | ✅ Verified | None | UI Code (`ui/src/app/stacks`) implements the stack editor. |
+| `server/docs/features/tracing/README.md` | ✅ Verified | None | Code supports OpenTelemetry via `OTEL_EXPORTER_OTLP_ENDPOINT`. |
 
 ## Remediation Log
 
-### 1. Security Documentation Update
-*   **Issue:** `server/docs/features/security.md` implied open access if `allowed_ips` was empty.
-*   **Reality:** Code (`server/pkg/app/server.go`) enforces strict localhost-only access if no API Key is configured ("Sentinel Security").
-*   **Fix:** Updated documentation to explicitly describe the "Sentinel Security Mode".
-
-### 2. Playground Documentation & Roadmap
-*   **Issue:** `ui/roadmap.md` listed "Copy as Curl/Python" as TODO. `ui/docs/features/playground.md` omitted Python support.
-*   **Reality:** Code (`ui/src/lib/code-generator.ts`, `ui/src/components/playground/tool-runner.tsx`) fully implements Curl and Python code generation.
-*   **Fix:**
-    *   Updated `ui/docs/features/playground.md` to include "Copy as Code".
-    *   Updated `ui/roadmap.md` to mark Playground features as `[x]` (Completed).
-
-### 3. Code Quality (Linting)
-*   **Issue:** `make lint` failed due to missing TSDoc in UI components.
-*   **Fix:** Added missing TSDoc comments to `ui/src/components/logs/log-viewer.tsx` and `ui/src/components/diagnostics/discovery-status.tsx`.
+### Documentation Drift: Monitoring Metrics
+- **Issue:** The documentation referred to the tool call latency metric as `mcpany_tools_call_latency_seconds`, but the code (`server/pkg/metrics/metrics.go` and `go-metrics` behavior) emits `mcpany_tools_call_latency`.
+- **Action:** Updated `server/docs/features/monitoring/README.md` to reflect the correct metric name.
+- **Rationale:** Documentation must be the Source of Truth for operators setting up alerts/dashboards.
 
 ## Security Scrub
-*   No PII, secrets, or internal IPs were found or exposed in this report.
+- **PII:** No PII found in report or code changes.
+- **Secrets:** No hardcoded secrets found or added.
+- **Internal IPs:** No internal IPs exposed.
+
+**Conclusion:** The project state is healthy. The minor documentation drift has been corrected, restoring 100% alignment for the sampled set.
