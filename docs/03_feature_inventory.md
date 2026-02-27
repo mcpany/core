@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **Local Ingress Guardian**: (P0) Non-HTTP transport options (Named Pipes / Unix Sockets) to mitigate Cross-Site WebSocket Hijacking (OpenClaw vulnerability).
+- **Dynamic Policy Synthesizer**: (P1) AI-assisted policy generation that adapts to agent reputation and session behavior.
+- **Agent Handoff Telemetry**: (P1) Deep tracing of multi-agent state transfers to identify "bottleneck agents" in a swarm.
+
+### Priority Shifts
+- **Policy Firewall**: Re-affirmed as **P0**. More critical than ever given the recent local-access exploits.
+- **A2A Interop Bridge**: Promoted to **P0**. Becoming the standard for multi-agent enterprise deployments.
+
+### Deprecations / Monitoring
+- **Browser-accessible Localhost Gateways**: Monitoring for future deprecation in favor of more secure local IPC methods.
