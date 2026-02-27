@@ -544,8 +544,10 @@ jobs:
 
       - name: Load Docker Images
         run: |
-          # Use find to locate all tar.gz files recursively and pipe them to docker load via gzip
-          find downloads -name "*.tar.gz" -print0 | xargs -0 -I {} sh -c 'echo "Loading {}"; gzip -dc "{}" | docker load'
+          # Verify file presence
+          ls -R downloads
+          # Load images using find -exec
+          find downloads -type f -name "*.tar.gz" -exec sh -c 'echo "Loading {}"; gzip -dc "{}" | docker load' \;
 
       - name: Prepare environment
         run: make prepare
@@ -659,7 +661,10 @@ jobs:
 
       - name: Load Docker Images
         run: |
-          find downloads -name "*.tar.gz" -print0 | xargs -0 -I {} sh -c 'echo "Loading {}"; gzip -dc "{}" | docker load'
+          # Verify file presence
+          ls -R downloads
+          # Load images using find -exec
+          find downloads -type f -name "*.tar.gz" -exec sh -c 'echo "Loading {}"; gzip -dc "{}" | docker load' \;
 
       - name: Prepare environment
         run: make prepare
@@ -786,7 +791,10 @@ jobs:
 
       - name: Load Docker Images
         run: |
-          find downloads -name "*.tar.gz" -print0 | xargs -0 -I {} sh -c 'echo "Loading {}"; gzip -dc "{}" | docker load'
+          # Verify file presence
+          ls -R downloads
+          # Load images using find -exec
+          find downloads -type f -name "*.tar.gz" -exec sh -c 'echo "Loading {}"; gzip -dc "{}" | docker load' \;
 
       - name: test public api
         run: |
@@ -896,7 +904,10 @@ jobs:
 
       - name: Load Docker Images
         run: |
-          find downloads -name "*.tar.gz" -print0 | xargs -0 -I {} sh -c 'echo "Loading {}"; gzip -dc "{}" | docker load'
+          # Verify file presence
+          ls -R downloads
+          # Load images using find -exec
+          find downloads -type f -name "*.tar.gz" -exec sh -c 'echo "Loading {}"; gzip -dc "{}" | docker load' \;
 
       - name: Test UI
         run: |
@@ -977,8 +988,10 @@ jobs:
 
       - name: Load Docker Images into Kind
         run: |
-          # Use find to locate all tar.gz files recursively and pipe them to docker load via gzip
-          find downloads -name "*.tar.gz" -print0 | xargs -0 -I {} sh -c 'echo "Loading {}"; gzip -dc "{}" | docker load'
+          # Verify file presence
+          ls -R downloads
+          # Load images using find -exec
+          find downloads -type f -name "*.tar.gz" -exec sh -c 'echo "Loading {}"; gzip -dc "{}" | docker load' \;
 
           # Now load specific images into Kind
           kind load docker-image mcpany/server:latest --name mcp-e2e
