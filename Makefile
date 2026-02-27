@@ -83,6 +83,7 @@ prepare-proto:
 	@# Check if protoc is installed
 	@export PATH=$(TOOL_INSTALL_DIR):$$PATH; \
 	PROTOC_TAG=$(PROTOC_VERSION); \
+	echo "Checking for protoc version $${PROTOC_TAG}..."; \
 	if test -f "$(PROTOC_BIN)"; then \
 		INSTALLED_VERSION=v$$($(PROTOC_BIN) --version | sed 's/libprotoc //'); \
 		if test "$${INSTALLED_VERSION}" = "$${PROTOC_TAG}"; then \
@@ -93,10 +94,14 @@ prepare-proto:
 			$(MAKE) prepare-proto; \
 		fi; \
 	else \
-		echo "protoc not found, attempting to install version $${PROTOC_TAG}..."; \
+		echo "protoc not found at $(PROTOC_BIN), attempting to install version $${PROTOC_TAG}..."; \
 		if ! command -v curl >/dev/null 2>&1 || ! command -v unzip >/dev/null 2>&1; then \
 			echo "curl and unzip are not installed. Installing..."; \
-			apt-get update && apt-get install -y curl unzip; \
+			if command -v apt-get >/dev/null 2>&1; then \
+				sudo apt-get update && sudo apt-get install -y curl unzip; \
+			elif command -v apk >/dev/null 2>&1; then \
+				sudo apk add --no-cache curl unzip; \
+			fi; \
 		fi; \
 		PROTOC_VERSION_NO_V=$$(echo "$${PROTOC_TAG}" | sed 's/v//'); \
 		PROTOC_DOWNLOAD_URL_NO_V="$(PROTOC_DOWNLOAD_URL_BASE)/$${PROTOC_TAG}/protoc-$${PROTOC_VERSION_NO_V}-linux-$(PROTOC_ARCH).zip"; \
