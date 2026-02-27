@@ -938,7 +938,19 @@ export const apiClient = {
                 if (errorMsg) throw new Error(errorMsg);
                 throw new Error(`Failed to execute tool: ${text || res.statusText}`);
             }
-            return res.json();
+
+            // Parse JSON body
+            const result = await res.json();
+
+            // Extract X-Trace-ID header if available
+            const traceId = res.headers.get("X-Trace-ID");
+
+            // Return both result and traceId
+            if (traceId) {
+                return { ...result, traceId };
+            }
+
+            return result;
         } catch (e) {
             console.warn("DEBUG: fetch failed:", e);
             throw e;

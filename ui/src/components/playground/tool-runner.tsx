@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { ToolDefinition, apiClient, ToolAnalytics } from "@/lib/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { PlayCircle, Loader2, Zap, Activity, History as HistoryIcon, RefreshCw, Code, Terminal, Coins, ArrowRightLeft } from "lucide-react";
+import { PlayCircle, Loader2, Zap, Activity, History as HistoryIcon, RefreshCw, Code, Terminal, Coins, Bug, List } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer, Tooltip as ChartTooltip, XAxis, YAxis, CartesianGrid } from "recharts";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -29,6 +29,9 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { TraceDetail } from "@/components/traces/trace-detail";
+import { LogStream } from "@/components/logs/log-stream";
+import { useTraces } from "@/hooks/use-traces";
 
 interface ToolRunnerProps {
   tool: ToolDefinition;
@@ -62,7 +65,18 @@ export function ToolRunner({ tool, onClose }: ToolRunnerProps) {
   const [loading, setLoading] = useState(false);
   const [isDryRun, setIsDryRun] = useState(false);
   const [lastRunStats, setLastRunStats] = useState<{ inputTokens: number, outputTokens: number, cost: number } | null>(null);
+  const [traceId, setTraceId] = useState<string | null>(null);
   const { toast } = useToast();
+
+  // Use the traces hook to find the matching trace
+  const { traces } = useTraces();
+
+  // Find the trace that corresponds to the last execution ID
+  // Note: Traces arrive asynchronously via WS, so this might be populated a bit after execution finishes
+  const currentTrace = useMemo(() => {
+      if (!traceId) return null;
+      return traces.find(t => t.id === traceId) || null;
+  }, [traces, traceId]);
 
   // Real data state
   const [historicalStats, setHistoricalStats] = useState<ToolAnalytics | null>(null);
@@ -76,6 +90,7 @@ export function ToolRunner({ tool, onClose }: ToolRunnerProps) {
       setLastRunStats(null);
       setHistoricalStats(null);
       setAuditLogs([]);
+      setTraceId(null);
       fetchMetrics();
   }, [tool.name]);
 
@@ -126,6 +141,7 @@ export function ToolRunner({ tool, onClose }: ToolRunnerProps) {
     setLoading(true);
     setOutput(null);
     setLastRunStats(null);
+    setTraceId(null);
     try {
       const args = JSON.parse(input);
       // Calculate Input Tokens
@@ -135,7 +151,17 @@ export function ToolRunner({ tool, onClose }: ToolRunnerProps) {
           name: tool.name,
           arguments: args
       }, isDryRun);
-      setOutput(res);
+
+      // Extract traceId if present
+      if (res && res.traceId) {
+          setTraceId(res.traceId);
+          // Remove traceId from the output shown to user
+          const cleanOutput = { ...res };
+          delete cleanOutput.traceId;
+          setOutput(cleanOutput);
+      } else {
+          setOutput(res);
+      }
 
       // Calculate Output Tokens
       const outputTokens = estimateTokens(res);
@@ -295,22 +321,72 @@ export function ToolRunner({ tool, onClose }: ToolRunnerProps) {
                                   </div>
                               )}
                           </div>
-                          {output && (
-                              <Badge variant={output.isError || output.error ? "destructive" : "outline"} className={cn("text-[10px]", output.isError || output.error ? "" : "text-green-600 border-green-200 bg-green-50")}>
-                                  {output.isError || output.error ? "Failed" : "Success"}
-                              </Badge>
-                          )}
+                          <div className="flex items-center gap-2">
+                              {traceId && (
+                                  <Badge variant="outline" className="text-[10px] font-mono bg-blue-500/10 text-blue-500 border-blue-500/20">
+                                      Trace: {traceId}
+                                  </Badge>
+                              )}
+                              {output && (
+                                  <Badge variant={output.isError || output.error ? "destructive" : "outline"} className={cn("text-[10px]", output.isError || output.error ? "" : "text-green-600 border-green-200 bg-green-50")}>
+                                      {output.isError || output.error ? "Failed" : "Success"}
+                                  </Badge>
+                              )}
+                          </div>
                       </div>
-                      <div className="flex-1 overflow-y-auto p-4">
-                          {output ? (
-                              <RichResultViewer result={output} />
-                          ) : (
-                              <div className="h-full flex flex-col items-center justify-center text-muted-foreground space-y-2 opacity-50">
-                                  <PlayCircle className="h-12 w-12 stroke-[1]" />
-                                  <p className="text-sm">Run the tool to see results here.</p>
-                              </div>
-                          )}
-                      </div>
+
+                      {/* Integrated Debug Tabs */}
+                      <Tabs defaultValue="output" className="flex-1 flex flex-col overflow-hidden">
+                          <div className="px-2 border-b bg-background">
+                              <TabsList className="h-8 bg-transparent p-0">
+                                  <TabsTrigger value="output" className="h-8 px-3 text-xs data-[state=active]:bg-muted/50 rounded-none border-b-2 border-transparent data-[state=active]:border-primary">
+                                      <Terminal className="h-3 w-3 mr-1" /> Output
+                                  </TabsTrigger>
+                                  <TabsTrigger value="trace" className="h-8 px-3 text-xs data-[state=active]:bg-muted/50 rounded-none border-b-2 border-transparent data-[state=active]:border-primary" disabled={!traceId}>
+                                      <Bug className="h-3 w-3 mr-1" /> Trace
+                                  </TabsTrigger>
+                                  <TabsTrigger value="logs" className="h-8 px-3 text-xs data-[state=active]:bg-muted/50 rounded-none border-b-2 border-transparent data-[state=active]:border-primary" disabled={!traceId}>
+                                      <List className="h-3 w-3 mr-1" /> Logs
+                                  </TabsTrigger>
+                              </TabsList>
+                          </div>
+
+                          <TabsContent value="output" className="flex-1 overflow-y-auto p-4 m-0 bg-background">
+                              {output ? (
+                                  <RichResultViewer result={output} />
+                              ) : (
+                                  <div className="h-full flex flex-col items-center justify-center text-muted-foreground space-y-2 opacity-50">
+                                      <PlayCircle className="h-12 w-12 stroke-[1]" />
+                                      <p className="text-sm">Run the tool to see results here.</p>
+                                  </div>
+                              )}
+                          </TabsContent>
+
+                          <TabsContent value="trace" className="flex-1 overflow-hidden m-0 bg-background">
+                              {currentTrace ? (
+                                  <ScrollArea className="h-full w-full">
+                                      <TraceDetail trace={currentTrace} />
+                                  </ScrollArea>
+                              ) : (
+                                  <div className="h-full flex items-center justify-center text-muted-foreground">
+                                      <div className="text-center">
+                                          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-2 opacity-50" />
+                                          <p className="text-xs">Waiting for trace data...</p>
+                                      </div>
+                                  </div>
+                              )}
+                          </TabsContent>
+
+                          <TabsContent value="logs" className="flex-1 overflow-hidden m-0 bg-black/90">
+                              {traceId ? (
+                                  <LogStream traceId={traceId} />
+                              ) : (
+                                  <div className="h-full flex items-center justify-center text-muted-foreground">
+                                      <p className="text-xs">No active execution context.</p>
+                                  </div>
+                              )}
+                          </TabsContent>
+                      </Tabs>
                  </div>
              </TabsContent>
 
