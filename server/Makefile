@@ -148,7 +148,7 @@ prepare:
 			echo "curl or unzip not found. Attempting installation..."; \
 			SUDO=""; if [ "$$(id -u)" -ne 0 ]; then SUDO="sudo"; fi; \
 			if command -v apt-get >/dev/null 2>&1; then \
-				$$SUDO apt-get update && $$SUDO apt-get install -y curl unzip; \
+				$$SUDO apt-get update && $$SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y curl unzip; \
 			elif command -v apk >/dev/null 2>&1; then \
 				$$SUDO apk add --no-cache curl unzip; \
 			elif command -v yum >/dev/null 2>&1; then \
