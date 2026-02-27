@@ -136,7 +136,7 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
+            sudo apt-get update && sudo apt-get install -y make xz-utils gcc g++ build-essential
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz build-base
           fi
@@ -175,7 +175,7 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
+            sudo apt-get update && sudo apt-get install -y make xz-utils gcc g++ build-essential
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz build-base
           fi
@@ -183,6 +183,7 @@ jobs:
           echo "Debug Info:"
           go version || echo "Go missing"
           gcc --version || echo "GCC missing"
+          ls -l /usr/bin/gcc || echo "GCC path check failed"
           docker info || echo "Docker failed"
 
       - name: Configure Docker Registry Mirrors
@@ -320,7 +321,7 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
+            sudo apt-get update && sudo apt-get install -y make xz-utils gcc g++ build-essential
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz build-base
           fi
@@ -621,7 +622,7 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
+            sudo apt-get update && sudo apt-get install -y make xz-utils gcc g++ build-essential
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz build-base
           fi
@@ -761,7 +762,7 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
+            sudo apt-get update && sudo apt-get install -y make xz-utils gcc g++ build-essential
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz build-base
           fi
