@@ -143,6 +143,15 @@ func TestSSRFLoopbackShorthand(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			// Ensure strict mode for the test
+			originalEnvDangerous := os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS")
+			os.Unsetenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS")
+			defer func() {
+				if originalEnvDangerous != "" {
+					os.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", originalEnvDangerous)
+				}
+			}()
+
 			// Mock IsSafeIP to respect test case flags
 			originalIsSafeIP := validation.IsSafeIP
 			validation.IsSafeIP = func(ipStr string) error {
