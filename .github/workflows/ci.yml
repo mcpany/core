@@ -150,6 +150,20 @@ jobs:
           go env
 
           # Verify Makefile prepare works here
+
+          echo "Pre-installing Go plugins to avoid network issues in make..."
+          export GOBIN=$(pwd)/build/env/bin
+          mkdir -p $GOBIN
+          # Versions from Makefile
+          go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.11
+          go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.5.1
+          go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@v2.27.3
+          go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@v2.27.3
+          go install github.com/nats-io/nats-server/v2@latest
+
+          # Add to PATH
+          export PATH=$GOBIN:$PATH
+
           echo "Running make prepare dry-run..."
           make prepare || { echo "Make prepare failed"; exit 1; }
 
@@ -600,6 +614,20 @@ jobs:
           go env
 
           # Verify Makefile prepare works here
+
+          echo "Pre-installing Go plugins to avoid network issues in make..."
+          export GOBIN=$(pwd)/build/env/bin
+          mkdir -p $GOBIN
+          # Versions from Makefile
+          go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.11
+          go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.5.1
+          go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@v2.27.3
+          go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@v2.27.3
+          go install github.com/nats-io/nats-server/v2@latest
+
+          # Add to PATH
+          export PATH=$GOBIN:$PATH
+
           echo "Running make prepare dry-run..."
           make prepare || { echo "Make prepare failed"; exit 1; }
 
@@ -1173,6 +1201,20 @@ jobs:
           go env
 
           # Verify Makefile prepare works here
+
+          echo "Pre-installing Go plugins to avoid network issues in make..."
+          export GOBIN=$(pwd)/build/env/bin
+          mkdir -p $GOBIN
+          # Versions from Makefile
+          go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.11
+          go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.5.1
+          go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@v2.27.3
+          go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@v2.27.3
+          go install github.com/nats-io/nats-server/v2@latest
+
+          # Add to PATH
+          export PATH=$GOBIN:$PATH
+
           echo "Running make prepare dry-run..."
           make prepare || { echo "Make prepare failed"; exit 1; }
 
