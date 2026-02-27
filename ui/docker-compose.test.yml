@@ -18,6 +18,8 @@ services:
       - MCPANY_ALLOW_LOOPBACK_RESOURCES=true
       - MCPANY_ADMIN_INIT_USERNAME=e2e-admin
       - MCPANY_ADMIN_INIT_PASSWORD=password
+      - MCPANY_DB_SQLITE_BUSY_TIMEOUT=5000
+      - MCPANY_DB_SQLITE_JOURNAL_MODE=WAL
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:50050/healthz"]
       interval: 5s

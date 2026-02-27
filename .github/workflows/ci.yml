@@ -309,6 +309,15 @@ jobs:
 
       - name: Test (Short)
         run: |
+          if command -v apt-get &> /dev/null; then
+             sudo apt-get update && sudo apt-get install -y --no-install-recommends build-essential gcc g++
+          elif command -v apk &> /dev/null; then
+             sudo apk add --no-cache build-base
+          fi
+          echo "Debug: GCC info"
+          which gcc || echo "gcc not found"
+          gcc --version || echo "gcc version check failed"
+          export CC=$(which gcc)
           make test-fast CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache COVERAGE_FILE=coverage-fast.out
 
       - name: Upload coverage to Codecov
@@ -486,6 +495,12 @@ jobs:
 
       - name: run parallel e2e
         run: |
+          if command -v apt-get &> /dev/null; then
+             sudo apt-get update && sudo apt-get install -y --no-install-recommends build-essential gcc g++
+          elif command -v apk &> /dev/null; then
+             sudo apk add --no-cache build-base
+          fi
+          export CC=$(which gcc)
           make e2e-parallel SHARD=${{ matrix.shard }} SKIP_DOCKER_REBUILD=true CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-e2e-parallel.out
 
       - name: Upload coverage to Codecov
@@ -778,6 +793,12 @@ jobs:
 
       - name: run sequential e2e
         run: |
+          if command -v apt-get &> /dev/null; then
+             sudo apt-get update && sudo apt-get install -y --no-install-recommends build-essential gcc g++
+          elif command -v apk &> /dev/null; then
+             sudo apk add --no-cache build-base
+          fi
+          export CC=$(which gcc)
           make e2e-sequential SKIP_DOCKER_REBUILD=true CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-e2e-sequential.out
 
       - name: Upload coverage to Codecov
@@ -910,6 +931,12 @@ jobs:
 
       - name: test public api
         run: |
+          if command -v apt-get &> /dev/null; then
+             sudo apt-get update && sudo apt-get install -y --no-install-recommends build-essential gcc g++
+          elif command -v apk &> /dev/null; then
+             sudo apk add --no-cache build-base
+          fi
+          export CC=$(which gcc)
           make test-public-api CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-public-api.out
 
       - name: Upload coverage to Codecov
@@ -1144,6 +1171,12 @@ jobs:
 
       - name: Run K8s E2E Tests
         run: |
+          if command -v apt-get &> /dev/null; then
+             sudo apt-get update && sudo apt-get install -y --no-install-recommends build-essential gcc g++
+          elif command -v apk &> /dev/null; then
+             sudo apk add --no-cache build-base
+          fi
+          export CC=$(which gcc)
           make k8s-e2e SKIP_IMAGE_BUILD=true IMAGE_TAG=latest
 
   ci-success:
