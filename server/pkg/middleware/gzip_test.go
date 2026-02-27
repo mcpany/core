@@ -6,10 +6,12 @@ package middleware
 import (
 	"bytes"
 	"compress/gzip"
+	"context"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"strings"
+	"sync"
 	"testing"
 )
 
@@ -172,6 +174,61 @@ func TestGzipCompressionMiddleware(t *testing.T) {
 				t.Errorf("Expected gzip header in flushed data, got: %x", firstFlush)
 			}
 		}
+	})
+
+	t.Run("Concurrent Pooling", func(t *testing.T) {
+		var wg sync.WaitGroup
+		concurrency := 50
+
+		for i := 0; i < concurrency; i++ {
+			wg.Add(1)
+			go func() {
+				defer wg.Done()
+				req := httptest.NewRequest("GET", "/", nil)
+				req.Header.Set("Accept-Encoding", "gzip")
+				rec := httptest.NewRecorder()
+				gzipHandler.ServeHTTP(rec, req)
+
+				if rec.Header().Get("Content-Encoding") != "gzip" {
+					t.Errorf("Expected gzip encoding in concurrent test")
+				}
+			}()
+		}
+		wg.Wait()
+	})
+
+	t.Run("Upgrade Request", func(t *testing.T) {
+		req := httptest.NewRequest("GET", "/", nil)
+		req.Header.Set("Upgrade", "websocket")
+		req.Header.Set("Accept-Encoding", "gzip")
+		rec := httptest.NewRecorder()
+
+		gzipHandler.ServeHTTP(rec, req)
+
+		if rec.Header().Get("Content-Encoding") == "gzip" {
+			t.Error("Should not compress Upgrade requests")
+		}
+	})
+
+	t.Run("Context Cancel", func(t *testing.T) {
+		// Simulate client disconnect before write completes
+		handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "text/plain")
+			w.Write([]byte(largePayload))
+		})
+		gzipHandler := GzipCompressionMiddleware(handler)
+
+		ctx, cancel := context.WithCancel(context.Background())
+		req := httptest.NewRequest("GET", "/", nil).WithContext(ctx)
+		req.Header.Set("Accept-Encoding", "gzip")
+
+		// This recorder doesn't support CloseNotify/Context cancellation propagation
+		// in a way that http.ResponseWriter write would fail immediately,
+		// but it verifies the middleware doesn't panic.
+		rec := httptest.NewRecorder()
+
+		cancel() // Cancel immediately
+		gzipHandler.ServeHTTP(rec, req)
 	})
 }
 

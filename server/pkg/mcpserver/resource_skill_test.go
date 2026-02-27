@@ -104,6 +104,10 @@ func TestSkillResource_Read(t *testing.T) {
 	err = os.Symlink("data.json", filepath.Join(assetsDir, "good_link.json"))
 	require.NoError(t, err)
 
+	// Create a symlink loop
+	err = os.Symlink("loop", filepath.Join(assetsDir, "loop"))
+	require.NoError(t, err)
+
 	// Prepare Skill struct
 	s := &skill.Skill{
 		Frontmatter: skill.Frontmatter{Name: "test-skill"},
@@ -159,11 +163,32 @@ func TestSkillResource_Read(t *testing.T) {
 		assert.Contains(t, err.Error(), "points outside skill directory")
 	})
 
+	t.Run("Security: Symlink Loop", func(t *testing.T) {
+		r := NewSkillAssetResource(s, "assets/loop")
+		_, err := r.Read(context.Background())
+		assert.Error(t, err)
+		// Error message depends on OS/implementation, but should fail
+	})
+
 	t.Run("Error: File Not Found", func(t *testing.T) {
 		r := NewSkillAssetResource(s, "assets/missing.txt")
 		_, err := r.Read(context.Background())
 		assert.Error(t, err)
 		assert.ErrorIs(t, err, os.ErrNotExist)
+	})
+
+	t.Run("Error: Permission Denied", func(t *testing.T) {
+		// Create file with no permissions
+		noPermFile := filepath.Join(assetsDir, "noperm.txt")
+		err := os.WriteFile(noPermFile, []byte("data"), 0000)
+		require.NoError(t, err)
+
+		r := NewSkillAssetResource(s, "assets/noperm.txt")
+		_, err = r.Read(context.Background())
+		assert.Error(t, err)
+
+		// Cleanup permissions so we can delete temp dir
+		_ = os.Chmod(noPermFile, 0644)
 	})
 }
 

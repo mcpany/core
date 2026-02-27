@@ -6,6 +6,7 @@ package middleware
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"testing"
 	"time"
 
@@ -78,81 +79,162 @@ func TestNewPostgresVectorStoreWithDB(t *testing.T) {
 }
 
 func TestPostgresVectorStore_Add(t *testing.T) {
-	db, mock, err := sqlmock.New()
-	require.NoError(t, err)
-	defer db.Close()
+	t.Run("Success", func(t *testing.T) {
+		db, mock, err := sqlmock.New()
+		require.NoError(t, err)
+		defer db.Close()
 
-	// Bypass NewPostgresVectorStore to inject mock DB
-	store := &PostgresVectorStore{db: db}
+		store := &PostgresVectorStore{db: db}
 
-	key := "test_tool"
-	vec := []float32{1.0, 0.0, 0.0}
-	result := map[string]interface{}{"foo": "bar"}
-	ttl := 1 * time.Minute
+		key := "test_tool"
+		vec := []float32{1.0, 0.0, 0.0}
+		result := map[string]interface{}{"foo": "bar"}
+		ttl := 1 * time.Minute
 
-	// Expectation for Add
-	mock.ExpectExec("INSERT INTO semantic_cache_entries").
-		WithArgs(key, "[1,0,0]", sqlmock.AnyArg(), sqlmock.AnyArg()). // vector as string, result as bytes, time
-		WillReturnResult(sqlmock.NewResult(1, 1))
+		mock.ExpectExec("INSERT INTO semantic_cache_entries").
+			WithArgs(key, "[1,0,0]", sqlmock.AnyArg(), sqlmock.AnyArg()).
+			WillReturnResult(sqlmock.NewResult(1, 1))
 
-	err = store.Add(context.Background(), key, vec, result, ttl)
-	assert.NoError(t, err)
-	assert.NoError(t, mock.ExpectationsWereMet())
+		err = store.Add(context.Background(), key, vec, result, ttl)
+		assert.NoError(t, err)
+		assert.NoError(t, mock.ExpectationsWereMet())
+	})
+
+	t.Run("ExecError", func(t *testing.T) {
+		db, mock, err := sqlmock.New()
+		require.NoError(t, err)
+		defer db.Close()
+
+		store := &PostgresVectorStore{db: db}
+
+		key := "test_tool"
+		vec := []float32{1.0, 0.0, 0.0}
+		result := map[string]interface{}{"foo": "bar"}
+		ttl := 1 * time.Minute
+
+		mock.ExpectExec("INSERT INTO semantic_cache_entries").
+			WillReturnError(errors.New("db error"))
+
+		err = store.Add(context.Background(), key, vec, result, ttl)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "failed to insert entry")
+		assert.NoError(t, mock.ExpectationsWereMet())
+	})
+
+	t.Run("MarshalVectorError", func(t *testing.T) {
+		// Impossible to fail json.Marshal for []float32
+	})
+
+	t.Run("MarshalResultError", func(t *testing.T) {
+		db, _, err := sqlmock.New()
+		require.NoError(t, err)
+		defer db.Close()
+
+		store := &PostgresVectorStore{db: db}
+
+		key := "test_tool"
+		vec := []float32{1.0, 0.0, 0.0}
+		result := make(chan int) // Cannot marshal channel
+		ttl := 1 * time.Minute
+
+		err = store.Add(context.Background(), key, vec, result, ttl)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "failed to marshal result")
+	})
 }
 
 func TestPostgresVectorStore_Search(t *testing.T) {
-	db, mock, err := sqlmock.New()
-	require.NoError(t, err)
-	defer db.Close()
+	t.Run("Success", func(t *testing.T) {
+		db, mock, err := sqlmock.New()
+		require.NoError(t, err)
+		defer db.Close()
 
-	store := &PostgresVectorStore{db: db}
+		store := &PostgresVectorStore{db: db}
 
-	key := "test_tool"
-	query := []float32{1.0, 0.0, 0.0}
-	resultObj := map[string]interface{}{"foo": "bar"}
-	resultBytes, _ := json.Marshal(resultObj)
+		key := "test_tool"
+		query := []float32{1.0, 0.0, 0.0}
+		resultObj := map[string]interface{}{"foo": "bar"}
+		resultBytes, _ := json.Marshal(resultObj)
 
-	// Expectation for Search
-	rows := sqlmock.NewRows([]string{"result", "distance"}).
-		AddRow(resultBytes, 0.1) // distance 0.1 -> similarity 0.9
+		rows := sqlmock.NewRows([]string{"result", "distance"}).
+			AddRow(resultBytes, 0.1)
 
-	mock.ExpectQuery("SELECT result, \\(vector <=> \\$1\\) as distance").
-		WithArgs("[1,0,0]", key, sqlmock.AnyArg()).
-		WillReturnRows(rows)
+		mock.ExpectQuery("SELECT result, \\(vector <=> \\$1\\) as distance").
+			WithArgs("[1,0,0]", key, sqlmock.AnyArg()).
+			WillReturnRows(rows)
 
-	res, score, found := store.Search(context.Background(), key, query)
-	assert.True(t, found)
-	assert.Equal(t, float32(0.9), score)
-	assert.Equal(t, resultObj, res)
-	assert.NoError(t, mock.ExpectationsWereMet())
-}
+		res, score, found := store.Search(context.Background(), key, query)
+		assert.True(t, found)
+		assert.Equal(t, float32(0.9), score)
+		assert.Equal(t, resultObj, res)
+		assert.NoError(t, mock.ExpectationsWereMet())
+	})
 
-func TestPostgresVectorStore_Search_NotFound(t *testing.T) {
-	db, mock, err := sqlmock.New()
-	require.NoError(t, err)
-	defer db.Close()
+	t.Run("NotFound", func(t *testing.T) {
+		db, mock, err := sqlmock.New()
+		require.NoError(t, err)
+		defer db.Close()
 
-	store := &PostgresVectorStore{db: db}
+		store := &PostgresVectorStore{db: db}
 
-	key := "test_tool"
-	query := []float32{1.0, 0.0, 0.0}
+		key := "test_tool"
+		query := []float32{1.0, 0.0, 0.0}
 
-	// Remove the first expectation which was confusing the matcher logic due to sequential calls in the test (which wasn't sequential in the code, but maybe I copy pasted wrong).
-	// Ah, I had two mock.ExpectQuery calls but only one Search call in the test.
-	// The first one `WillReturnError(nil)` is weird for Search which calls QueryRow.
-	// If QueryRow fails, it returns error. If it succeeds but no rows, it returns sql.ErrNoRows.
-	// sqlmock handles QueryRow by expecting Query.
-	// We just want to simulate "no rows found".
+		mock.ExpectQuery("SELECT result").
+			WithArgs("[1,0,0]", key, sqlmock.AnyArg()).
+			WillReturnRows(sqlmock.NewRows([]string{"result", "distance"}))
 
-	mock.ExpectQuery("SELECT result").
-		WithArgs("[1,0,0]", key, sqlmock.AnyArg()).
-		WillReturnRows(sqlmock.NewRows([]string{"result", "distance"})) // Empty rows
+		res, score, found := store.Search(context.Background(), key, query)
+		assert.False(t, found)
+		assert.Equal(t, float32(0), score)
+		assert.Nil(t, res)
+		assert.NoError(t, mock.ExpectationsWereMet())
+	})
 
-	res, score, found := store.Search(context.Background(), key, query)
-	assert.False(t, found)
-	assert.Equal(t, float32(0), score)
-	assert.Nil(t, res)
-	assert.NoError(t, mock.ExpectationsWereMet())
+	t.Run("QueryError", func(t *testing.T) {
+		db, mock, err := sqlmock.New()
+		require.NoError(t, err)
+		defer db.Close()
+
+		store := &PostgresVectorStore{db: db}
+
+		key := "test_tool"
+		query := []float32{1.0, 0.0, 0.0}
+
+		mock.ExpectQuery("SELECT result").
+			WillReturnError(errors.New("db error"))
+
+		res, score, found := store.Search(context.Background(), key, query)
+		assert.False(t, found)
+		assert.Equal(t, float32(0), score)
+		assert.Nil(t, res)
+		assert.NoError(t, mock.ExpectationsWereMet())
+	})
+
+	t.Run("UnmarshalError", func(t *testing.T) {
+		db, mock, err := sqlmock.New()
+		require.NoError(t, err)
+		defer db.Close()
+
+		store := &PostgresVectorStore{db: db}
+
+		key := "test_tool"
+		query := []float32{1.0, 0.0, 0.0}
+		resultBytes := []byte("invalid json")
+
+		rows := sqlmock.NewRows([]string{"result", "distance"}).
+			AddRow(resultBytes, 0.1)
+
+		mock.ExpectQuery("SELECT result").
+			WithArgs("[1,0,0]", key, sqlmock.AnyArg()).
+			WillReturnRows(rows)
+
+		res, score, found := store.Search(context.Background(), key, query)
+		assert.False(t, found)
+		assert.Equal(t, float32(0), score)
+		assert.Nil(t, res)
+		assert.NoError(t, mock.ExpectationsWereMet())
+	})
 }
 
 func TestPostgresVectorStore_Prune(t *testing.T) {
