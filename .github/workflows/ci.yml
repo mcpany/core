@@ -327,22 +327,6 @@ jobs:
           # Verify installation
           which make || echo "make not found in PATH"
           make --version || echo "make execution failed"
-      - name: Configure Docker Registry Mirrors
-        run: |
-          # Configure multiple mirrors in array format
-          # Docker will try mirror.gcr.io first.
-          sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
-
-          if sudo systemctl restart docker 2>/dev/null; then
-            echo "Docker restarted via systemctl"
-          elif sudo service docker restart 2>/dev/null; then
-            echo "Docker restarted via service"
-          else
-            echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
-            sudo pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
-          fi
-          docker info # Verify the mirrors are listed
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -514,22 +498,6 @@ jobs:
           # Verify installation
           which make || echo "make not found in PATH"
           make --version || echo "make execution failed"
-      - name: Configure Docker Registry Mirrors
-        run: |
-          # Configure multiple mirrors in array format
-          # Docker will try mirror.gcr.io first.
-          sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
-
-          if sudo systemctl restart docker 2>/dev/null; then
-            echo "Docker restarted via systemctl"
-          elif sudo service docker restart 2>/dev/null; then
-            echo "Docker restarted via service"
-          else
-            echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
-            sudo pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
-          fi
-          docker info # Verify the mirrors are listed
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -1167,22 +1135,6 @@ jobs:
           # Verify installation
           which make || echo "make not found in PATH"
           make --version || echo "make execution failed"
-      - name: Configure Docker Registry Mirrors
-        run: |
-          # Configure multiple mirrors in array format
-          # Docker will try mirror.gcr.io first.
-          sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
-
-          if sudo systemctl restart docker 2>/dev/null; then
-            echo "Docker restarted via systemctl"
-          elif sudo service docker restart 2>/dev/null; then
-            echo "Docker restarted via service"
-          else
-            echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
-            sudo pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
-          fi
-          docker info # Verify the mirrors are listed
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -1322,22 +1274,6 @@ jobs:
           # Verify installation
           which make || echo "make not found in PATH"
           make --version || echo "make execution failed"
-      - name: Configure Docker Registry Mirrors
-        run: |
-          # Configure multiple mirrors in array format
-          # Docker will try mirror.gcr.io first.
-          sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
-
-          if sudo systemctl restart docker 2>/dev/null; then
-            echo "Docker restarted via systemctl"
-          elif sudo service docker restart 2>/dev/null; then
-            echo "Docker restarted via service"
-          else
-            echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
-            sudo pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
-          fi
-          docker info # Verify the mirrors are listed
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -1399,52 +1335,53 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         run: |
           set -x
-          echo "Detecting OS..."
-          cat /etc/os-release || true
 
-          install_pkg() {
-            if [ -f /etc/debian_version ]; then
-              if command -v sudo &> /dev/null; then
-                sudo -E apt-get update || true
-                sudo -E apt-get install -y --no-install-recommends make build-essential xz-utils
-              else
-                apt-get update || true
-                apt-get install -y --no-install-recommends make build-essential xz-utils
-              fi
-            elif [ -f /etc/alpine-release ]; then
-              if command -v sudo &> /dev/null; then
-                sudo apk add --no-cache make xz build-base
-              else
-                apk add --no-cache make xz build-base
-              fi
-            elif [ -f /etc/redhat-release ] || [ -f /etc/fedora-release ] || grep -q "ID_LIKE=.*rhel" /etc/os-release; then
-               if command -v dnf &> /dev/null; then
-                 PKG_MGR="dnf"
-               else
-                 PKG_MGR="yum"
-               fi
+          # Check if critical tools are already installed
+          MISSING_TOOLS=0
+          for tool in make git tar gzip; do
+            if ! command -v $tool &> /dev/null; then
+              echo "$tool is missing."
+              MISSING_TOOLS=1
+            fi
+          done
 
-               if command -v sudo &> /dev/null; then
-                 sudo $PKG_MGR install -y make xz diffutils
-                 sudo $PKG_MGR groupinstall -y "Development Tools" || sudo $PKG_MGR install -y gcc gcc-c++
-               else
-                 $PKG_MGR install -y make xz diffutils
-                 $PKG_MGR groupinstall -y "Development Tools" || $PKG_MGR install -y gcc gcc-c++
-               fi
+          if [ "$MISSING_TOOLS" -eq 0 ]; then
+             echo "All required tools are already installed. Skipping installation."
+             make --version
+             exit 0
+          fi
+
+          echo "Installing missing build tools..."
+
+          install_with_sudo() {
+            local PKG_MGR=$1
+            shift
+            if command -v sudo &> /dev/null; then
+              sudo $PKG_MGR "$@"
             else
-               echo "Unsupported OS or package manager not found."
-               # Try fallback to apt-get if it exists (e.g. some minimal images)
-               if command -v apt-get &> /dev/null; then
-                  apt-get update || true
-                  apt-get install -y make build-essential
-               else
-                  echo "Cannot install dependencies."
-                  exit 1
-               fi
+              $PKG_MGR "$@"
             fi
           }
 
-          install_pkg
+          if command -v apt-get &> /dev/null; then
+             install_with_sudo apt-get update || true
+             install_with_sudo apt-get install -y --no-install-recommends make build-essential xz-utils git tar gzip
+          elif command -v microdnf &> /dev/null; then
+             install_with_sudo microdnf install -y make xz diffutils git gcc gcc-c++ tar gzip
+          elif command -v dnf &> /dev/null; then
+             install_with_sudo dnf install -y make xz diffutils git tar gzip
+             install_with_sudo dnf groupinstall -y "Development Tools" || install_with_sudo dnf install -y gcc gcc-c++
+          elif command -v yum &> /dev/null; then
+             install_with_sudo yum install -y make xz diffutils git tar gzip
+             install_with_sudo yum groupinstall -y "Development Tools" || install_with_sudo yum install -y gcc gcc-c++
+          elif command -v apk &> /dev/null; then
+             install_with_sudo apk add --no-cache make xz build-base git tar gzip
+          else
+             echo "No supported package manager found."
+             uname -a
+             cat /etc/os-release || true
+             exit 1
+          fi
 
           # Verify installation
           which make || echo "make not found in PATH"
@@ -1507,52 +1444,53 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         run: |
           set -x
-          echo "Detecting OS..."
-          cat /etc/os-release || true
 
-          install_pkg() {
-            if [ -f /etc/debian_version ]; then
-              if command -v sudo &> /dev/null; then
-                sudo -E apt-get update || true
-                sudo -E apt-get install -y --no-install-recommends make build-essential xz-utils
-              else
-                apt-get update || true
-                apt-get install -y --no-install-recommends make build-essential xz-utils
-              fi
-            elif [ -f /etc/alpine-release ]; then
-              if command -v sudo &> /dev/null; then
-                sudo apk add --no-cache make xz build-base
-              else
-                apk add --no-cache make xz build-base
-              fi
-            elif [ -f /etc/redhat-release ] || [ -f /etc/fedora-release ] || grep -q "ID_LIKE=.*rhel" /etc/os-release; then
-               if command -v dnf &> /dev/null; then
-                 PKG_MGR="dnf"
-               else
-                 PKG_MGR="yum"
-               fi
+          # Check if critical tools are already installed
+          MISSING_TOOLS=0
+          for tool in make git tar gzip; do
+            if ! command -v $tool &> /dev/null; then
+              echo "$tool is missing."
+              MISSING_TOOLS=1
+            fi
+          done
 
-               if command -v sudo &> /dev/null; then
-                 sudo $PKG_MGR install -y make xz diffutils
-                 sudo $PKG_MGR groupinstall -y "Development Tools" || sudo $PKG_MGR install -y gcc gcc-c++
-               else
-                 $PKG_MGR install -y make xz diffutils
-                 $PKG_MGR groupinstall -y "Development Tools" || $PKG_MGR install -y gcc gcc-c++
-               fi
+          if [ "$MISSING_TOOLS" -eq 0 ]; then
+             echo "All required tools are already installed. Skipping installation."
+             make --version
+             exit 0
+          fi
+
+          echo "Installing missing build tools..."
+
+          install_with_sudo() {
+            local PKG_MGR=$1
+            shift
+            if command -v sudo &> /dev/null; then
+              sudo $PKG_MGR "$@"
             else
-               echo "Unsupported OS or package manager not found."
-               # Try fallback to apt-get if it exists (e.g. some minimal images)
-               if command -v apt-get &> /dev/null; then
-                  apt-get update || true
-                  apt-get install -y make build-essential
-               else
-                  echo "Cannot install dependencies."
-                  exit 1
-               fi
+              $PKG_MGR "$@"
             fi
           }
 
-          install_pkg
+          if command -v apt-get &> /dev/null; then
+             install_with_sudo apt-get update || true
+             install_with_sudo apt-get install -y --no-install-recommends make build-essential xz-utils git tar gzip
+          elif command -v microdnf &> /dev/null; then
+             install_with_sudo microdnf install -y make xz diffutils git gcc gcc-c++ tar gzip
+          elif command -v dnf &> /dev/null; then
+             install_with_sudo dnf install -y make xz diffutils git tar gzip
+             install_with_sudo dnf groupinstall -y "Development Tools" || install_with_sudo dnf install -y gcc gcc-c++
+          elif command -v yum &> /dev/null; then
+             install_with_sudo yum install -y make xz diffutils git tar gzip
+             install_with_sudo yum groupinstall -y "Development Tools" || install_with_sudo yum install -y gcc gcc-c++
+          elif command -v apk &> /dev/null; then
+             install_with_sudo apk add --no-cache make xz build-base git tar gzip
+          else
+             echo "No supported package manager found."
+             uname -a
+             cat /etc/os-release || true
+             exit 1
+          fi
 
           # Verify installation
           which make || echo "make not found in PATH"
