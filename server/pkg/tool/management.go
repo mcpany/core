@@ -1007,7 +1007,8 @@ func (tm *Manager) AddTool(tool Tool) error {
 				log.Warn("Failed to embed tool for search", "tool", nameKey, "error", err)
 				return
 			}
-			if err := tm.toolIndex.Add(ctx, "tools", embedding, toolID, 24*time.Hour); err != nil {
+			// Use 0 TTL for no expiration (tools persist as long as the server runs)
+			if err := tm.toolIndex.Add(ctx, "tools", embedding, toolID, 0); err != nil {
 				log.Warn("Failed to add tool to index", "tool", nameKey, "error", err)
 			}
 		}()

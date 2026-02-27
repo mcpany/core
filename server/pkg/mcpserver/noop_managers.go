@@ -10,6 +10,7 @@ import (
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
 	"github.com/mcpany/core/server/pkg/tool"
+	"github.com/mcpany/core/server/pkg/vector"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
@@ -230,6 +231,14 @@ func (m *NoOpToolManager) GetAllowedServiceIDs(_ string) (map[string]bool, bool)
 //   - int: Always 0.
 func (m *NoOpToolManager) GetToolCountForService(_ string) int {
 	return 0
+}
+
+// SetEmbeddingProvider implements tool.ManagerInterface.
+func (m *NoOpToolManager) SetEmbeddingProvider(_ vector.EmbeddingProvider) {}
+
+// SearchTools implements tool.ManagerInterface.
+func (m *NoOpToolManager) SearchTools(_ context.Context, _ string, _ int) ([]tool.Tool, []float32, error) {
+	return nil, nil, nil
 }
 
 // NoOpPromptManager is a no-op implementation of prompt.ManagerInterface.

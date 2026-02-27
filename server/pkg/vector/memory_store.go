@@ -69,10 +69,15 @@ func (s *SimpleVectorStore) Add(_ context.Context, key string, vector []float32,
 	// Randomized Selection from Top 5 High-Impact Targets
 	normalizedVector, norm := normalize(vector)
 
+	expiresAt := time.Time{} // Zero time means no expiration
+	if ttl > 0 {
+		expiresAt = time.Now().Add(ttl)
+	}
+
 	entry := &VectorEntry{
 		Vector:    normalizedVector,
 		Result:    result,
-		ExpiresAt: time.Now().Add(ttl),
+		ExpiresAt: expiresAt,
 		Norm:      norm,
 	}
 	s.items[key] = append(entries, entry)
@@ -107,7 +112,7 @@ func (s *SimpleVectorStore) Search(_ context.Context, key string, query []float3
 	normalizedQuery, _ := normalize(query)
 
 	for _, entry := range entries {
-		if now.After(entry.ExpiresAt) {
+		if !entry.ExpiresAt.IsZero() && now.After(entry.ExpiresAt) {
 			continue
 		}
 		// Since both vectors are normalized, dot product == cosine similarity
@@ -145,7 +150,7 @@ func (s *SimpleVectorStore) SearchTopK(_ context.Context, key string, query []fl
 	var matches []match
 
 	for _, entry := range entries {
-		if now.After(entry.ExpiresAt) {
+		if !entry.ExpiresAt.IsZero() && now.After(entry.ExpiresAt) {
 			continue
 		}
 		score := dotProduct(normalizedQuery, entry.Vector)
@@ -190,7 +195,7 @@ func (s *SimpleVectorStore) cleanup(key string) {
 	// Filter in place
 	n := 0
 	for _, e := range entries {
-		if now.Before(e.ExpiresAt) {
+		if e.ExpiresAt.IsZero() || now.Before(e.ExpiresAt) {
 			entries[n] = e
 			n++
 		}

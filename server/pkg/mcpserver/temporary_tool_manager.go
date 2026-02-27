@@ -4,11 +4,13 @@
 package mcpserver
 
 import (
+	"context"
 	"fmt"
 	"sync"
 
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/util"
+	"github.com/mcpany/core/server/pkg/vector"
 )
 
 // TemporaryToolManager is a tool manager that stores service info and tools temporarily.
@@ -170,4 +172,15 @@ func (m *TemporaryToolManager) GetToolCountForService(serviceID string) int {
 		}
 	}
 	return count
+}
+
+// SetEmbeddingProvider implements tool.ManagerInterface.
+func (m *TemporaryToolManager) SetEmbeddingProvider(provider vector.EmbeddingProvider) {
+	// No-op for temporary manager
+}
+
+// SearchTools implements tool.ManagerInterface.
+func (m *TemporaryToolManager) SearchTools(ctx context.Context, query string, limit int) ([]tool.Tool, []float32, error) {
+	// Semantic search is not supported for temporary tools
+	return nil, nil, nil
 }
