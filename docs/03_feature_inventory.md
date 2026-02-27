@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **A2A Mutual Attestation Layer**: (P0) Cryptographic handshake for inter-agent delegation, ensuring tasks only flow between verified actors.
+- **Isolated Skill Sandbox (ISE)**: (P0) Ephemeral, network-isolated containerization for executing MCP tools to mitigate SSRF and token leakage (CVE-2026-25253).
+- **Jules Orchestration Adapter**: (P1) Native compatibility layer for Gemini CLI Jules extension, providing a secure backend for CLI-based agent tasking.
+
+### Priority Shifts
+- **A2A Interop Bridge**: Promoted to **P0** to capitalize on Linux Foundation standardization.
+- **Supply Chain Integrity Guard**: Promoted to **P0** (Already P0, re-emphasized due to OpenClaw marketplace poisoning).
+
+### Deprecations / Monitoring
+- **Native OS Tool Execution**: Monitoring for deprecation in favor of Isolated Skill Sandbox (ISE) for all non-local-trusted tools.

@@ -46,3 +46,9 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-02-27: Hardening A2A for Zero-Trust Swarms**
+    *   **Context:** Recent exploits in multi-agent routing (CVE-2026-25253) necessitate a more rigorous handshake.
+    *   **Architecture Adjustment:**
+        *   Introducing **A2A Mutual Attestation Layer** in Section 4. Every A2A message must now include a `Proof-of-Intent` signed by the originating agent and verified by MCP Any's Policy Engine.
+        *   Deprecating unauthenticated A2A tunneling.
+    *   **Security Impact:** Prevents rogue subagents from spoofing parent delegation and intercepting sensitive state.
