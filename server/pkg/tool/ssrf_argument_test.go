@@ -21,18 +21,6 @@ func TestSSRFArgumentProtection(t *testing.T) {
 	// Ensure protections are ENABLED for this test, even if CI sets them to disabled.
 	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "false")
 
-	// Mock IsSafeURL to fail for loopback/private IPs for this test
-	// TestMain mocks it to always pass, which breaks our "existing check" test case.
-	originalIsSafeURL := validation.IsSafeURL
-	validation.IsSafeURL = func(urlStr string) error {
-		// Simple mock logic for test purposes
-		if urlStr == "http://127.0.0.1" {
-			return assert.AnError
-		}
-		return nil
-	}
-	defer func() { validation.IsSafeURL = originalIsSafeURL }()
-
 	// Setup helper to create tool
 	createTool := func(cmd string) Tool {
 		toolDef := v1.Tool_builder{Name: proto.String("test-tool")}.Build()
@@ -131,27 +119,17 @@ func TestSSRFArgumentProtection(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			// Mock IsSafeIP to respect test case flags instead of global env vars
-			// This avoids modifying global env vars (MCPANY_DANGEROUS_ALLOW_LOCAL_IPS) which could affect parallel tests.
-			originalIsSafeIP := validation.IsSafeIP
-			validation.IsSafeIP = func(ipStr string) error {
-				ip := net.ParseIP(ipStr)
-				if ip == nil {
-					return fmt.Errorf("invalid IP address")
-				}
-				return validation.ValidateIP(ip, tt.allowLoopback, tt.allowPrivate)
-			}
-			defer func() { validation.IsSafeIP = originalIsSafeIP }()
-
-			// We also need to set env vars for the "localhost" check in types.go which reads them directly
 			if tt.allowLoopback {
-				os.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
+				t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "true")
 			} else {
-				os.Unsetenv("MCPANY_ALLOW_LOOPBACK_RESOURCES")
+				t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "false")
 			}
-			// We don't strictly need to unset it after if other tests don't depend on it,
-			// but good practice.
-			defer os.Unsetenv("MCPANY_ALLOW_LOOPBACK_RESOURCES")
+
+			if tt.allowPrivate {
+				t.Setenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES", "true")
+			} else {
+				t.Setenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES", "false")
+			}
 
 			tool := createTool(tt.command)
 			req := &ExecutionRequest{
