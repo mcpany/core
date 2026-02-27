@@ -147,7 +147,7 @@ jobs:
 
   unit-test:
     runs-on: oci-runner
-    # container: golang:1.24
+    container: golang:1.24
     timeout-minutes: 60
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -168,7 +168,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sudo apt-get update && sudo apt-get install -y make xz-utils build-essential git
+          apt-get update && apt-get install -y make xz-utils build-essential git
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -734,7 +734,7 @@ jobs:
 
   e2e-public-api:
     runs-on: oci-runner
-    # container: golang:1.24
+    container: golang:1.24
     timeout-minutes: 30
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -757,9 +757,9 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
+            apt-get update && apt-get install -y make xz-utils build-essential
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz build-base
+             apk add --no-cache make xz build-base
           fi
 
       - name: Configure Docker Registry Mirrors
