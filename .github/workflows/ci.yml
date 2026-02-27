@@ -136,7 +136,10 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils gcc g++ build-essential
+            sudo apt-get update && sudo apt-get install -y make xz-utils gcc g++ build-essential && if ! command -v docker > /dev/null; then sudo apt-get install -y docker.io; fi
+            if ! command -v docker &> /dev/null; then
+               sudo apt-get install -y docker.io
+            fi
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz build-base
           fi
@@ -175,7 +178,7 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils gcc g++ build-essential
+            sudo apt-get update && sudo apt-get install -y make xz-utils gcc g++ build-essential && if ! command -v docker > /dev/null; then sudo apt-get install -y docker.io; fi
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz build-base
           fi
@@ -321,7 +324,7 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils gcc g++ build-essential
+            sudo apt-get update && sudo apt-get install -y make xz-utils gcc g++ build-essential && if ! command -v docker > /dev/null; then sudo apt-get install -y docker.io; fi
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz build-base
           fi
@@ -622,7 +625,7 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils gcc g++ build-essential
+            sudo apt-get update && sudo apt-get install -y make xz-utils gcc g++ build-essential && if ! command -v docker > /dev/null; then sudo apt-get install -y docker.io; fi
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz build-base
           fi
@@ -762,7 +765,7 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils gcc g++ build-essential
+            sudo apt-get update && sudo apt-get install -y make xz-utils gcc g++ build-essential && if ! command -v docker > /dev/null; then sudo apt-get install -y docker.io; fi
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz build-base
           fi
