@@ -34,7 +34,7 @@ jobs:
       src: ${{ steps.filter.outputs.src }}
     steps:
       - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y git
+        run: apt-get update && apt-get install -y git
 
       - uses: actions/checkout@v6
         with:
@@ -134,9 +134,9 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
+            sudo apt-get update && sudo apt-get install -y make xz-utils
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz build-base
+             sudo apk add --no-cache make xz
           fi
 
       - name: Prepare environment
@@ -147,8 +147,8 @@ jobs:
 
   unit-test:
     runs-on: oci-runner
-    container: golang:1.24
-    timeout-minutes: 60
+    # container: public.ecr.aws/docker/library/ubuntu:24.04
+    timeout-minutes: 30
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
     env:
@@ -157,18 +157,23 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          rm -rf /usr/local/lib/android || true
-          rm -rf /usr/share/dotnet || true
-          rm -rf /opt/ghc || true
-          rm -rf /usr/local/share/boost || true
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/share/boost
+
+      - name: Prune Docker
+        run: docker system prune -af
 
       - uses: actions/checkout@v6
-        with:
-          set-safe-directory: true
 
       - name: Install dependencies
         run: |
-          apt-get update && apt-get install -y make xz-utils build-essential git
+          if command -v apt-get &> /dev/null; then
+            sudo apt-get update && sudo apt-get install -y make xz-utils
+          elif command -v apk &> /dev/null; then
+             sudo apk add --no-cache make xz
+          fi
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -304,9 +309,9 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
+            sudo apt-get update && sudo apt-get install -y make xz-utils
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz build-base
+             sudo apk add --no-cache make xz
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -448,6 +453,7 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: ${{ matrix.runner }}
+    container: public.ecr.aws/docker/library/ubuntu:24.04
     strategy:
       fail-fast: false
       matrix:
@@ -461,10 +467,10 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          rm -rf /usr/local/lib/android
-          rm -rf /usr/share/dotnet
-          rm -rf /opt/ghc
-          rm -rf /usr/local/share/boost
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/share/boost
       - uses: actions/checkout@v6
 
       - name: Set up Go
@@ -482,11 +488,6 @@ jobs:
 
       - name: Generate Protobufs
         run: |
-          # Ensure make is available on host runner
-          if ! command -v make &> /dev/null; then
-             sudo apt-get update
-             sudo apt-get install -y make build-essential
-          fi
           make gen
 
       - name: Set up QEMU
@@ -615,10 +616,7 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update || true
-            sudo apt-get install -y make xz-utils build-essential gcc || echo "apt-get install failed"
-            which gcc || echo "gcc not found in path"
-            gcc --version || echo "gcc version check failed"
+            sudo apt-get update && sudo apt-get install -y make xz-utils
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz
           fi
@@ -734,7 +732,7 @@ jobs:
 
   e2e-public-api:
     runs-on: oci-runner
-    container: golang:1.24
+    # container: public.ecr.aws/docker/library/ubuntu:24.04
     timeout-minutes: 30
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -757,9 +755,9 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            apt-get update && apt-get install -y make xz-utils build-essential
+            sudo apt-get update && sudo apt-get install -y make xz-utils
           elif command -v apk &> /dev/null; then
-             apk add --no-cache make xz build-base
+             sudo apk add --no-cache make xz
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -843,9 +841,6 @@ jobs:
         run: make prepare
 
       - name: test public api
-        env:
-          CGO_ENABLED: 1
-          CC: gcc
         run: |
           make test-public-api CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-public-api.out
 
