@@ -18,7 +18,6 @@ import (
 )
 
 func TestSSRFArgumentProtection(t *testing.T) {
-	t.Skip("Temporarily skipped for CI debugging")
 	// Ensure protections are ENABLED for this test, even if CI sets them to disabled.
 	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "false")
 
