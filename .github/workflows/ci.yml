@@ -88,10 +88,10 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          rm -rf /usr/local/lib/android
+          rm -rf /usr/share/dotnet
+          rm -rf /opt/ghc
+          rm -rf /usr/local/share/boost
 
       - name: Prune Docker
         run: docker system prune -af
@@ -141,9 +141,18 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            # Install build-essential for gcc (needed for CGO)
+            if command -v sudo &> /dev/null; then
+              sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
+            else
+              apt-get update && apt-get install -y make xz-utils build-essential
+            fi
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             if command -v sudo &> /dev/null; then
+                sudo apk add --no-cache make xz build-base
+             else
+                apk add --no-cache make xz build-base
+             fi
           fi
 
       - name: Prepare environment
@@ -155,7 +164,7 @@ jobs:
   unit-test:
     runs-on: oci-runner
     # container: public.ecr.aws/docker/library/ubuntu:24.04
-    timeout-minutes: 30
+    timeout-minutes: 45
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
     env:
@@ -164,10 +173,17 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          if command -v sudo &> /dev/null; then
+            sudo rm -rf /usr/local/lib/android
+            sudo rm -rf /usr/share/dotnet
+            sudo rm -rf /opt/ghc
+            sudo rm -rf /usr/local/share/boost
+          else
+            rm -rf /usr/local/lib/android
+            rm -rf /usr/share/dotnet
+            rm -rf /opt/ghc
+            rm -rf /usr/local/share/boost
+          fi
 
       - name: Prune Docker
         run: docker system prune -af
@@ -177,9 +193,18 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            # Install build-essential for gcc (needed for CGO)
+            if command -v sudo &> /dev/null; then
+              sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
+            else
+              apt-get update && apt-get install -y make xz-utils build-essential
+            fi
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             if command -v sudo &> /dev/null; then
+                sudo apk add --no-cache make xz build-base
+             else
+                apk add --no-cache make xz build-base
+             fi
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -316,9 +341,18 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            # Install build-essential for gcc (needed for CGO)
+            if command -v sudo &> /dev/null; then
+              sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
+            else
+              apt-get update && apt-get install -y make xz-utils build-essential
+            fi
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             if command -v sudo &> /dev/null; then
+                sudo apk add --no-cache make xz build-base
+             else
+                apk add --no-cache make xz build-base
+             fi
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -623,9 +657,18 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            # Install build-essential for gcc (needed for CGO)
+            if command -v sudo &> /dev/null; then
+              sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
+            else
+              apt-get update && apt-get install -y make xz-utils build-essential
+            fi
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             if command -v sudo &> /dev/null; then
+                sudo apk add --no-cache make xz build-base
+             else
+                apk add --no-cache make xz build-base
+             fi
           fi
 
       - name: Configure Docker Registry Mirrors
