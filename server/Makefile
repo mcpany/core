@@ -386,6 +386,12 @@ test: test-server
 
 COVERAGE_FILE ?= coverage.out
 
+# Configure race detector flag
+GO_TEST_FLAGS := -race
+ifeq ($(SKIP_RACE),true)
+	GO_TEST_FLAGS :=
+endif
+
 e2e-local: e2e-parallel e2e-sequential
 
 e2e-parallel: build-test-images build build-examples build-e2e-mocks
@@ -393,18 +399,12 @@ e2e-parallel: build-test-images build build-examples build-e2e-mocks
 	@-pkill -f file-upload-server || true
 	@$(EXAMPLE_BIN_DIR)/file-upload-server &
 	@mkdir -p $(BUILD_DIR)/bundles
-	@GEMINI_API_KEY=$(GEMINI_API_KEY) CI=$(CI) MCP_BUNDLE_DIR=$(MCP_BUNDLE_DIR) MCPANY_DEBUG=true MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) SHARD=$(SHARD) MCPANY_PROJECT_ROOT=$(CURDIR) ./tests/run_shard.sh -race -count=1 -timeout 1200s -tags=e2e -cover -coverprofile=$(BUILD_DIR)/coverage.e2e-parallel.out
+	@GEMINI_API_KEY=$(GEMINI_API_KEY) CI=$(CI) MCP_BUNDLE_DIR=$(MCP_BUNDLE_DIR) MCPANY_DEBUG=true MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) SHARD=$(SHARD) MCPANY_PROJECT_ROOT=$(CURDIR) ./tests/run_shard.sh $(GO_TEST_FLAGS) -count=1 -timeout 1200s -tags=e2e -cover -coverprofile=$(BUILD_DIR)/coverage.e2e-parallel.out
 	@-pkill -f file-upload-server
 
 e2e-sequential: build-test-images build build-examples build-e2e-mocks
 	@echo "Running sequential E2E Go tests locally with a 300s timeout..."
-	@GEMINI_API_KEY=$(GEMINI_API_KEY) CI=$(CI) MCP_BUNDLE_DIR=$(MCP_BUNDLE_DIR) MCPANY_DEBUG=true MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) E2E_DOCKER=true MCPANY_PROJECT_ROOT=$(CURDIR) $(GO_CMD) test -p 1 -parallel 1 -race -count=1 -timeout 600s -tags=e2e -cover -coverprofile=$(BUILD_DIR)/coverage.e2e-sequential.out ./tests/e2e_sequential/...
-
-# Configure race detector flag
-GO_TEST_FLAGS := -race
-ifeq ($(SKIP_RACE),true)
-	GO_TEST_FLAGS :=
-endif
+	@GEMINI_API_KEY=$(GEMINI_API_KEY) CI=$(CI) MCP_BUNDLE_DIR=$(MCP_BUNDLE_DIR) MCPANY_DEBUG=true MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) E2E_DOCKER=true MCPANY_PROJECT_ROOT=$(CURDIR) $(GO_CMD) test -p 1 -parallel 1 $(GO_TEST_FLAGS) -count=1 -timeout 600s -tags=e2e -cover -coverprofile=$(BUILD_DIR)/coverage.e2e-sequential.out ./tests/e2e_sequential/...
 
 test-fast: build build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@echo "Running fast Go tests locally with a 300s timeout..."
@@ -417,7 +417,7 @@ test-fast: build build-examples build-e2e-mocks build-e2e-timeserver-docker
 .PHONY: test-public-api
 test-public-api: build build-mock-server
 	@echo "Running public API E2E Go tests with a 300s timeout..."
-	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -parallel 1 -race -count=1 -timeout 300s -tags=e2e_public_api -cover -coverprofile=$(COVERAGE_FILE) ./tests/public_api/...
+	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -parallel 1 $(GO_TEST_FLAGS) -count=1 -timeout 300s -tags=e2e_public_api -cover -coverprofile=$(COVERAGE_FILE) ./tests/public_api/...
 
 # ==============================================================================
 # Example Binaries Build
