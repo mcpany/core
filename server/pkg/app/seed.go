@@ -155,20 +155,24 @@ func (a *Application) clearData(ctx context.Context, log *slog.Logger) error {
 
 func (a *Application) seedData(ctx context.Context, req SeedRequest) error {
 	// Support both keys for services
-	allServices := append(req.ServicesRaw, req.ServicesAltRaw...)
-	for _, raw := range allServices {
-		s := configv1.UpstreamServiceConfig_builder{}.Build()
-		if err := protojson.Unmarshal(raw, s); err != nil {
-			return fmt.Errorf("invalid json in service: %w", err)
-		}
-		// If ID is set but Name is not, use ID as Name (convenience)
-		if s.GetId() != "" && s.GetName() == "" {
-			s.SetName(s.GetId())
-		}
-		if err := a.Storage.SaveService(ctx, s); err != nil {
-			return fmt.Errorf("failed to save service %s: %w", s.GetName(), err)
+	// We iterate over both slices sequentially to avoid allocating a new slice (fixing appendAssign lint)
+	serviceSources := [][]json.RawMessage{req.ServicesRaw, req.ServicesAltRaw}
+	for _, source := range serviceSources {
+		for _, raw := range source {
+			s := configv1.UpstreamServiceConfig_builder{}.Build()
+			if err := protojson.Unmarshal(raw, s); err != nil {
+				return fmt.Errorf("invalid json in service: %w", err)
+			}
+			// If ID is set but Name is not, use ID as Name (convenience)
+			if s.GetId() != "" && s.GetName() == "" {
+				s.SetName(s.GetId())
+			}
+			if err := a.Storage.SaveService(ctx, s); err != nil {
+				return fmt.Errorf("failed to save service %s: %w", s.GetName(), err)
+			}
 		}
 	}
+
 	for _, raw := range req.CredentialsRaw {
 		c := configv1.Credential_builder{}.Build()
 		if err := protojson.Unmarshal(raw, c); err != nil {
@@ -236,11 +240,12 @@ func (a *Application) seedData(ctx context.Context, req SeedRequest) error {
 				// OR we can try to push to the websocket hub if accessible.
 				// But simpler: just log it.
 				lvl := slog.LevelInfo
-				if logEntry.Level == "ERROR" {
+				switch logEntry.Level {
+				case "ERROR":
 					lvl = slog.LevelError
-				} else if logEntry.Level == "WARN" {
+				case "WARN":
 					lvl = slog.LevelWarn
-				} else if logEntry.Level == "DEBUG" {
+				case "DEBUG":
 					lvl = slog.LevelDebug
 				}
 				logger.Log(ctx, lvl, logEntry.Message, "source", logEntry.Source, "seeded", true)
