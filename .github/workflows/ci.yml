@@ -144,6 +144,15 @@ jobs:
           mkdir -p build/env/bin
           ln -sf /usr/local/bin/protoc build/env/bin/protoc
 
+          echo "Debug: Verifying setup..."
+          ls -lR build/env
+          echo "PATH=$PATH"
+          go env
+
+          # Verify Makefile prepare works here
+          echo "Running make prepare dry-run..."
+          make prepare || { echo "Make prepare failed"; exit 1; }
+
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
@@ -584,6 +593,15 @@ jobs:
           # Symlink to expected Makefile location to prevent re-download attempt
           mkdir -p build/env/bin
           ln -sf /usr/local/bin/protoc build/env/bin/protoc
+
+          echo "Debug: Verifying setup..."
+          ls -lR build/env
+          echo "PATH=$PATH"
+          go env
+
+          # Verify Makefile prepare works here
+          echo "Running make prepare dry-run..."
+          make prepare || { echo "Make prepare failed"; exit 1; }
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -1148,6 +1166,15 @@ jobs:
           # Symlink to expected Makefile location to prevent re-download attempt
           mkdir -p build/env/bin
           ln -sf /usr/local/bin/protoc build/env/bin/protoc
+
+          echo "Debug: Verifying setup..."
+          ls -lR build/env
+          echo "PATH=$PATH"
+          go env
+
+          # Verify Makefile prepare works here
+          echo "Running make prepare dry-run..."
+          make prepare || { echo "Make prepare failed"; exit 1; }
 
       - name: Set up Go
         uses: actions/setup-go@v6
