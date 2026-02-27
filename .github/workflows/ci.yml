@@ -99,10 +99,10 @@ jobs:
       - name: Free Disk Space (Fast)
         run: |
           if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
-          $SUDO rm -rf /usr/local/lib/android
-          $SUDO rm -rf /usr/share/dotnet
-          $SUDO rm -rf /opt/ghc
-          $SUDO rm -rf /usr/local/share/boost
+          $SUDO rm -rf /usr/local/lib/android || true
+          $SUDO rm -rf /usr/share/dotnet || true
+          $SUDO rm -rf /opt/ghc || true
+          $SUDO rm -rf /usr/local/share/boost || true
 
       - name: Prune Docker
         run: docker system prune -af
@@ -153,7 +153,8 @@ jobs:
         run: |
           if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
           if command -v apt-get >/dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils
+            $SUDO apt-get update || true
+            $SUDO apt-get install -y make xz-utils
           elif command -v apk >/dev/null; then
              $SUDO apk add --no-cache make xz
           fi
@@ -177,10 +178,10 @@ jobs:
       - name: Free Disk Space (Fast)
         run: |
           if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
-          $SUDO rm -rf /usr/local/lib/android
-          $SUDO rm -rf /usr/share/dotnet
-          $SUDO rm -rf /opt/ghc
-          $SUDO rm -rf /usr/local/share/boost
+          $SUDO rm -rf /usr/local/lib/android || true
+          $SUDO rm -rf /usr/share/dotnet || true
+          $SUDO rm -rf /opt/ghc || true
+          $SUDO rm -rf /usr/local/share/boost || true
 
       - name: Prune Docker
         run: docker system prune -af
@@ -318,10 +319,10 @@ jobs:
       - name: Free Disk Space (Fast)
         run: |
           if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
-          $SUDO rm -rf /usr/local/lib/android
-          $SUDO rm -rf /usr/share/dotnet
-          $SUDO rm -rf /opt/ghc
-          $SUDO rm -rf /usr/local/share/boost
+          $SUDO rm -rf /usr/local/lib/android || true
+          $SUDO rm -rf /usr/share/dotnet || true
+          $SUDO rm -rf /opt/ghc || true
+          $SUDO rm -rf /usr/local/share/boost || true
 
       - name: Prune Docker
         run: docker system prune -af
@@ -491,10 +492,10 @@ jobs:
       - name: Free Disk Space (Fast)
         run: |
           if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
-          $SUDO rm -rf /usr/local/lib/android
-          $SUDO rm -rf /usr/share/dotnet
-          $SUDO rm -rf /opt/ghc
-          $SUDO rm -rf /usr/local/share/boost
+          $SUDO rm -rf /usr/local/lib/android || true
+          $SUDO rm -rf /usr/share/dotnet || true
+          $SUDO rm -rf /opt/ghc || true
+          $SUDO rm -rf /usr/local/share/boost || true
       - uses: actions/checkout@v6
 
       - name: Set up Go
@@ -514,7 +515,8 @@ jobs:
         run: |
           echo "Installing build tools (including Docker CLI)..."
           if command -v apt-get >/dev/null; then
-            apt-get update && apt-get install -y make xz-utils curl docker.io
+            apt-get update || true
+            apt-get install -y make xz-utils curl docker.io
           elif command -v apk >/dev/null; then
             apk add --no-cache make xz docker-cli
           fi
@@ -640,10 +642,10 @@ jobs:
       - name: Free Disk Space (Fast)
         run: |
           if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
-          $SUDO rm -rf /usr/local/lib/android
-          $SUDO rm -rf /usr/share/dotnet
-          $SUDO rm -rf /opt/ghc
-          $SUDO rm -rf /usr/local/share/boost
+          $SUDO rm -rf /usr/local/lib/android || true
+          $SUDO rm -rf /usr/share/dotnet || true
+          $SUDO rm -rf /opt/ghc || true
+          $SUDO rm -rf /usr/local/share/boost || true
 
       - name: Prune Docker
         run: docker system prune -af
@@ -781,10 +783,10 @@ jobs:
       - name: Free Disk Space (Fast)
         run: |
           if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
-          $SUDO rm -rf /usr/local/lib/android
-          $SUDO rm -rf /usr/share/dotnet
-          $SUDO rm -rf /opt/ghc
-          $SUDO rm -rf /usr/local/share/boost
+          $SUDO rm -rf /usr/local/lib/android || true
+          $SUDO rm -rf /usr/share/dotnet || true
+          $SUDO rm -rf /opt/ghc || true
+          $SUDO rm -rf /usr/local/share/boost || true
 
       - name: Prune Docker
         run: docker system prune -af
@@ -793,10 +795,12 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
-          elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+          if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
+          if command -v apt-get >/dev/null; then
+            $SUDO apt-get update || true
+            $SUDO apt-get install -y make xz-utils
+          elif command -v apk >/dev/null; then
+             $SUDO apk add --no-cache make xz
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -961,10 +965,10 @@ jobs:
       - name: Free Disk Space (Fast)
         run: |
           if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
-          $SUDO rm -rf /usr/local/lib/android
-          $SUDO rm -rf /usr/share/dotnet
-          $SUDO rm -rf /opt/ghc
-          $SUDO rm -rf /usr/local/share/boost
+          $SUDO rm -rf /usr/local/lib/android || true
+          $SUDO rm -rf /usr/share/dotnet || true
+          $SUDO rm -rf /opt/ghc || true
+          $SUDO rm -rf /usr/local/share/boost || true
 
       - name: Prune Docker
         run: docker system prune -af
@@ -1015,10 +1019,10 @@ jobs:
       - name: Free Disk Space (Fast)
         run: |
           if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
-          $SUDO rm -rf /usr/local/lib/android
-          $SUDO rm -rf /usr/share/dotnet
-          $SUDO rm -rf /opt/ghc
-          $SUDO rm -rf /usr/local/share/boost
+          $SUDO rm -rf /usr/local/lib/android || true
+          $SUDO rm -rf /usr/share/dotnet || true
+          $SUDO rm -rf /opt/ghc || true
+          $SUDO rm -rf /usr/local/share/boost || true
 
       - name: Prune Docker
         run: docker system prune -af
@@ -1135,7 +1139,8 @@ jobs:
             if ! command -v curl &> /dev/null || ! command -v jq &> /dev/null; then
               echo "curl or jq not found. Installing..."
               if command -v apt-get >/dev/null; then
-                $SUDO apt-get update && $SUDO apt-get install -y curl ca-certificates jq
+                $SUDO apt-get update || true
+                $SUDO apt-get install -y curl ca-certificates jq
               elif command -v apk >/dev/null; then
                 $SUDO apk add --no-cache curl ca-certificates jq
               elif command -v yum >/dev/null; then
