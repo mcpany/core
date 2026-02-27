@@ -46,6 +46,7 @@ func (w *muWriter) Write(p []byte) (int, error) {
 
 func canConnectToDocker(t *testing.T) bool {
 	if os.Getenv("SKIP_DOCKER_TESTS") == "true" {
+		t.Log("Skipping Docker check: SKIP_DOCKER_TESTS is set")
 		return false
 	}
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
