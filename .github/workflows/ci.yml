@@ -315,10 +315,12 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          SUDO=""
+          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          $SUDO rm -rf /usr/local/lib/android
+          $SUDO rm -rf /usr/share/dotnet
+          $SUDO rm -rf /opt/ghc
+          $SUDO rm -rf /usr/local/share/boost
 
       - name: Prune Docker
         run: docker system prune -af
@@ -327,11 +329,20 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
-          elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+          set -x
+          SUDO=""
+          if command -v sudo >/dev/null; then
+            SUDO="sudo"
           fi
+
+          if command -v apt-get &> /dev/null; then
+            $SUDO apt-get update
+            $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils build-essential
+          elif command -v apk &> /dev/null; then
+             $SUDO apk add --no-cache make xz build-base
+          fi
+
+          gcc --version || echo "gcc not found"
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -486,10 +497,12 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          SUDO=""
+          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          $SUDO rm -rf /usr/local/lib/android
+          $SUDO rm -rf /usr/share/dotnet
+          $SUDO rm -rf /opt/ghc
+          $SUDO rm -rf /usr/local/share/boost
       - uses: actions/checkout@v6
 
       - name: Set up Go
@@ -622,10 +635,12 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          SUDO=""
+          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          $SUDO rm -rf /usr/local/lib/android
+          $SUDO rm -rf /usr/share/dotnet
+          $SUDO rm -rf /opt/ghc
+          $SUDO rm -rf /usr/local/share/boost
 
       - name: Prune Docker
         run: docker system prune -af
@@ -634,11 +649,20 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
-          elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+          set -x
+          SUDO=""
+          if command -v sudo >/dev/null; then
+            SUDO="sudo"
           fi
+
+          if command -v apt-get &> /dev/null; then
+            $SUDO apt-get update
+            $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils build-essential
+          elif command -v apk &> /dev/null; then
+             $SUDO apk add --no-cache make xz build-base
+          fi
+
+          gcc --version || echo "gcc not found"
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -773,11 +797,20 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
-          elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+          set -x
+          SUDO=""
+          if command -v sudo >/dev/null; then
+            SUDO="sudo"
           fi
+
+          if command -v apt-get &> /dev/null; then
+            $SUDO apt-get update
+            $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils build-essential
+          elif command -v apk &> /dev/null; then
+             $SUDO apk add --no-cache make xz build-base
+          fi
+
+          gcc --version || echo "gcc not found"
 
       - name: Configure Docker Registry Mirrors
         run: |
