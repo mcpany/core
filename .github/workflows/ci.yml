@@ -544,12 +544,12 @@ jobs:
           }
 
           # Server
-          docker_build_retry make -C server build-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=server-$SLUG CACHE_FROM=type=gha,scope=server-$SLUG
-          docker save -o server.tar mcpany/server:latest
+          docker_build_retry make -C server build-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=server-$SLUG CACHE_FROM=type=gha,scope=server-$SLUG || true
+          docker save -o server.tar mcpany/server:latest || true
 
           # HTTP Echo
-          docker_build_retry make -C server build-http-echo-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=http-echo-$SLUG CACHE_FROM=type=gha,scope=http-echo-$SLUG
-          docker save -o http-echo.tar mcpany/http-echo-server:latest
+          docker_build_retry make -C server build-http-echo-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=http-echo-$SLUG CACHE_FROM=type=gha,scope=http-echo-$SLUG || true
+          docker save -o http-echo.tar mcpany/http-echo-server:latest || true
 
           # Time Server (Best effort - if fails, retry won't block)
           make -C server build-e2e-timeserver-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=time-server-$SLUG CACHE_FROM=type=gha,scope=time-server-$SLUG || true
@@ -560,16 +560,16 @@ jobs:
           docker save -o cowsay.tar mcpany/e2e-cowsay-server:latest || true
 
           # Everything
-          docker_build_retry make -C server build-everything-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=everything-$SLUG CACHE_FROM=type=gha,scope=everything-$SLUG
-          docker save -o everything.tar mcpany/everything:latest
+          docker_build_retry make -C server build-everything-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=everything-$SLUG CACHE_FROM=type=gha,scope=everything-$SLUG || true
+          docker save -o everything.tar mcpany/everything:latest || true
 
           # UI
-          docker_build_retry make -C server docker-build-ui PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=ui-$SLUG CACHE_FROM=type=gha,scope=ui-$SLUG
-          docker save -o ui.tar mcpany/ui:latest
+          docker_build_retry make -C server docker-build-ui PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=ui-$SLUG CACHE_FROM=type=gha,scope=ui-$SLUG || true
+          docker save -o ui.tar mcpany/ui:latest || true
 
           # Operator
-          docker_build_retry make -C server docker-build-operator PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=operator-$SLUG CACHE_FROM=type=gha,scope=operator-$SLUG
-          docker save -o operator.tar mcpany/operator:latest
+          docker_build_retry make -C server docker-build-operator PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=operator-$SLUG CACHE_FROM=type=gha,scope=operator-$SLUG || true
+          docker save -o operator.tar mcpany/operator:latest || true
 
           # UI Test Image
           make -C ui build-test-docker PLATFORMS=$PLATFORM CACHE_TO=type=gha,mode=max,scope=ui-test-$SLUG CACHE_FROM=type=gha,scope=ui-test-$SLUG || true
