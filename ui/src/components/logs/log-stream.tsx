@@ -32,8 +32,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { LogViewer, LogEntry, timeFormatter, LogLevel } from "./log-viewer"
-import { useToast } from "@/hooks/use-toast"
+import { LogViewer, LogEntry, timeFormatter } from "./log-viewer"
 
 /**
  * LogStream component.
@@ -60,7 +59,6 @@ export function LogStream({
   // Optimization: Use a ref to access the latest isPaused state inside the WebSocket closure
   // without triggering a reconnection or having a stale closure.
   const isPausedRef = React.useRef(isPaused)
-  const { toast } = useToast()
 
   React.useEffect(() => {
     isPausedRef.current = isPaused

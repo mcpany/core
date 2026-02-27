@@ -34,7 +34,7 @@ jobs:
       src: ${{ steps.filter.outputs.src }}
     steps:
       - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y git
+        run: apt-get update && apt-get install -y git
 
       - uses: actions/checkout@v6
         with:
@@ -81,10 +81,10 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          rm -rf /usr/local/lib/android
-          rm -rf /usr/share/dotnet
-          rm -rf /opt/ghc
-          rm -rf /usr/local/share/boost
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/share/boost
 
       - name: Prune Docker
         run: docker system prune -af
@@ -134,7 +134,7 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            sudo apt-get update && sudo apt-get install -y make xz-utils gcc build-essential curl unzip
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz
           fi
@@ -170,7 +170,7 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            sudo apt-get update && sudo apt-get install -y make xz-utils gcc build-essential curl unzip
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz
           fi
@@ -309,7 +309,7 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            sudo apt-get update && sudo apt-get install -y make xz-utils gcc build-essential curl unzip
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz
           fi
@@ -471,6 +471,9 @@ jobs:
           rm -rf /usr/share/dotnet
           rm -rf /opt/ghc
           rm -rf /usr/local/share/boost
+      - name: Install dependencies
+        run: apt-get update && apt-get install -y git make xz-utils gcc build-essential curl unzip
+
       - uses: actions/checkout@v6
 
       - name: Set up Go
@@ -616,7 +619,7 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            sudo apt-get update && sudo apt-get install -y make xz-utils gcc build-essential curl unzip
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz
           fi
@@ -755,7 +758,7 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            sudo apt-get update && sudo apt-get install -y make xz-utils gcc build-essential curl unzip
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz
           fi
