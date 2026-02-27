@@ -468,7 +468,16 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y make git curl unzip
+        run: |
+          # Try to install dependencies, but don't fail if apt-get update fails
+          # Check if make is missing first
+          if ! command -v make &> /dev/null; then
+            echo "make not found, installing dependencies..."
+            sudo apt-get update || echo "apt-get update failed, continuing..."
+            sudo apt-get install -y make git curl unzip || echo "apt-get install failed, hoping for the best..."
+          else
+            echo "make is already installed."
+          fi
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -1141,23 +1150,27 @@ jobs:
               exit 1
             fi
 
-            if [ -f "$TARBALL" ]; then
-              tar xz -C /tmp/gh-install -f "$TARBALL"
-              BIN_PATH="/tmp/gh-install/gh_${GH_VERSION}_linux_${ARCH_STR}/bin/gh"
-              if [ -w /usr/local/bin ]; then
-                 cp "$BIN_PATH" /usr/local/bin/
-              elif command -v sudo &> /dev/null; then
-                 sudo cp "$BIN_PATH" /usr/local/bin/
-              else
-                 mkdir -p "$HOME/.local/bin"
-                 cp "$BIN_PATH" "$HOME/.local/bin/"
-                 echo "$HOME/.local/bin" >> $GITHUB_PATH
-              fi
-              rm -rf /tmp/gh-install
-              echo "gh installed successfully."
-            else
-              echo "Failed to download gh after retries. Proceeding without it (comment step may fail)."
+            if [ ! -f "$TARBALL" ]; then
+              echo "Failed to download gh after retries."
+              exit 1
             fi
+
+            tar xz -C /tmp/gh-install -f "$TARBALL"
+
+            BIN_PATH="/tmp/gh-install/gh_${GH_VERSION}_linux_${ARCH_STR}/bin/gh"
+
+            if [ -w /usr/local/bin ]; then
+               cp "$BIN_PATH" /usr/local/bin/
+            elif command -v sudo &> /dev/null; then
+               sudo cp "$BIN_PATH" /usr/local/bin/
+            else
+               mkdir -p "$HOME/.local/bin"
+               cp "$BIN_PATH" "$HOME/.local/bin/"
+               echo "$HOME/.local/bin" >> $GITHUB_PATH
+            fi
+
+            rm -rf /tmp/gh-install
+            echo "gh installed successfully."
           else
             echo "gh is already installed."
           fi
