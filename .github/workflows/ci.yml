@@ -192,7 +192,8 @@ jobs:
         run: |
           if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
           if command -v apt-get >/dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils
+            $SUDO apt-get update || true
+            $SUDO apt-get install -y make xz-utils
           elif command -v apk >/dev/null; then
              $SUDO apk add --no-cache make xz
           fi
@@ -333,7 +334,8 @@ jobs:
         run: |
           if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
           if command -v apt-get >/dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils
+            $SUDO apt-get update || true
+            $SUDO apt-get install -y make xz-utils
           elif command -v apk >/dev/null; then
              $SUDO apk add --no-cache make xz
           fi
@@ -656,7 +658,8 @@ jobs:
         run: |
           if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
           if command -v apt-get >/dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils
+            $SUDO apt-get update || true
+            $SUDO apt-get install -y make xz-utils
           elif command -v apk >/dev/null; then
              $SUDO apk add --no-cache make xz
           fi
