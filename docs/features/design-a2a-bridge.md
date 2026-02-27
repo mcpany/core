@@ -46,3 +46,10 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+
+### Update: 2026-02-27 - Local Transport via Agent System Bus (ASB)
+**Context:** The shift toward "Agent Operating Systems" (OpenClaw) necessitates lower latency than HTTP for local agent handoffs.
+**Architecture Adjustment:**
+* Adding **ASB (Agent System Bus)** as a primary transport for local A2A handoffs.
+* Deprecating standalone SSE for local-only swarms in favor of named pipes provided by the ASB Connector.
+**Security Impact:** Isolates inter-agent traffic from the network stack, reducing the attack surface for local swarms.

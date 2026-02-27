@@ -43,3 +43,10 @@ As AI agent ecosystems evolve from single-agent monoliths to multi-agent swarms 
 
 ## 7. Evolutionary Changelog
 * **2026-02-24**: Initial Document Creation.
+
+### Update: 2026-02-27 - Integration with Agent OS Bus
+**Context:** OpenClaw's shift to an "Agent Operating System" requires the Coordination System to act as the primary scheduler and state manager for the System Bus.
+**Architecture Adjustment:**
+* Harmonizing Session IDs with **Agent System Bus (ASB)** IPC identifiers.
+* Implementing a "Pulse" heartbeat mechanism to monitor agent health within a coordinated session.
+**Security Impact:** Ensures that orphaned subagents cannot continue accessing session resources after the parent process terminates.

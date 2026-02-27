@@ -63,5 +63,18 @@
 - **MCP Provenance Attestation**: Promoted to **P0** as it is a prerequisite for secure Federated MCP peering.
 - **Lazy-MCP Middleware**: Promoted to **P0** (Already P0, but re-affirming importance for Federated Tool Mesh).
 
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **Universal Policy Translator**: (P0) Translates between Gemini CLI policies, Rego/CEL, and Claude's Tool Search parameters.
+- **Verifiable Agent Identity (VAID) Provider**: (P1) Issues short-lived cryptographic tokens to agents to secure A2A handoffs.
+- **Agent System Bus (ASB) Connector**: (P0) A high-performance IPC bridge for Agent OSs like OpenClaw.
+
+### Priority Shifts
+- **Lazy-MCP Middleware**: Re-affirmed as **P0** (High urgency due to Claude Code Tool Search success).
+- **A2A Interop Bridge**: Promoted to **P0** (Immediate need for inter-framework coordination).
+
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
