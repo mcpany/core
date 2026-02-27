@@ -1594,7 +1594,11 @@ func (a *Application) runServerMode(
 	// Wrap the HTTP handler with OpenTelemetry instrumentation
 	// Note: We don't inject HTTPRequestContextKey here anymore because we do it globally
 	// in the HTTPRequestContextMiddleware.
-	httpHandler := otelhttp.NewHandler(rawHTTPHandler, "server-request")
+	// We also wrap it with JSONRPCComplianceMiddleware here instead of globally,
+	// to avoid enforcing JSON-RPC semantics on REST/gRPC-Gateway endpoints.
+	httpHandler := middleware.JSONRPCComplianceMiddleware(
+		otelhttp.NewHandler(rawHTTPHandler, "server-request"),
+	)
 
 	// Check if auth middleware is disabled in config
 	var authDisabled bool
@@ -2132,17 +2136,15 @@ func (a *Application) runServerMode(
 		}
 	}
 
-	// Middleware order: SecurityHeaders -> CORS -> CSRF -> JSONRPCCompliance -> Recovery -> IPAllowList -> RateLimit -> (Debugger -> Optimizer -> Mux)
+	// Middleware order: SecurityHeaders -> CORS -> CSRF -> Recovery -> IPAllowList -> RateLimit -> (Debugger -> Optimizer -> Mux)
 	// We wrap everything with a debug logger to see what's coming in
 	handler := middleware.HTTPSecurityHeadersMiddleware(
 		corsMiddleware.Handler(
 			csrfMiddleware.Handler(
-				middleware.JSONRPCComplianceMiddleware(
-					middleware.RecoveryMiddleware(
-						a.HTTPRequestContextMiddleware(
-							ipMiddleware.Handler(
-								rateLimiter.Handler(finalHandler),
-							),
+				middleware.RecoveryMiddleware(
+					a.HTTPRequestContextMiddleware(
+						ipMiddleware.Handler(
+							rateLimiter.Handler(finalHandler),
 						),
 					),
 				),
@@ -2209,6 +2211,10 @@ func (a *Application) runServerMode(
 	// Register Skill Service
 	v1.RegisterSkillServiceServer(grpcServer, NewSkillServiceServer(a.SkillManager))
 
+	// Register Discovery Service
+	discoveryService := discovery.NewService(serviceRegistry)
+	v1.RegisterDiscoveryServiceServer(grpcServer, discoveryService)
+
 	// Initialize gRPC-Web wrapper even if gRPC port is not exposed
 	wrappedGrpc = grpcweb.WrapServer(grpcServer,
 		grpcweb.WithOriginFunc(func(_ string) bool { return true }),
@@ -2237,6 +2243,8 @@ func (a *Application) runServerMode(
 					errChan <- fmt.Errorf("failed to register skill gateway: %w", err)
 				} else if err := pb_admin.RegisterAdminServiceHandlerFromEndpoint(ctx, gwmux, endpoint, opts); err != nil {
 					errChan <- fmt.Errorf("failed to register admin gateway: %w", err)
+				} else if err := v1.RegisterDiscoveryServiceHandlerFromEndpoint(ctx, gwmux, endpoint, opts); err != nil {
+					errChan <- fmt.Errorf("failed to register discovery gateway: %w", err)
 				} else {
 					// Consolidated handler for /v1/ to support both gRPC Gateway and Asset Uploads
 					mux.Handle("/v1/", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

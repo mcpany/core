@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package api.v1;
+
+import "google/api/annotations.proto";
+import "proto/config/v1/tool.proto";
+
+option go_package = "github.com/mcpany/core/proto/api/v1";
+
+service DiscoveryService {
+  rpc GetIndexStatus(GetIndexStatusRequest) returns (IndexStatus) {
+    option (google.api.http) = {
+      get: "/v1/discovery/status"
+    };
+  }
+
+  rpc SearchTools(SearchToolsRequest) returns (SearchToolsResponse) {
+    option (google.api.http) = {
+      post: "/v1/discovery/search"
+      body: "*"
+    };
+  }
+}
+
+message GetIndexStatusRequest {}
+
+message IndexStatus {
+  int32 total_tools = 1;
+  int32 indexed_tools = 2;
+  string last_updated = 3;
+}
+
+message SearchToolsRequest {
+  string query = 1;
+  int32 limit = 2;
+}
+
+message SearchToolsResponse {
+  repeated SearchResult results = 1;
+}
+
+message SearchResult {
+  mcpany.config.v1.ToolDefinition tool = 1;
+  float relevance = 2;
+  string service_name = 3;
+}

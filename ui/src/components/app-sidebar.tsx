@@ -118,6 +118,11 @@ const platformItems = [
 
 const devItems = [
   {
+    title: "Discovery",
+    url: "/discovery",
+    icon: Brain,
+  },
+  {
     title: "Playground",
     url: "/playground",
     icon: Bot,
