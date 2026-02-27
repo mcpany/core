@@ -511,36 +511,36 @@ jobs:
           esac
           echo "slug=$SLUG" >> $GITHUB_OUTPUT
 
-      # Explicit Downloads (Hardcoded for stability)
+      # Explicit Downloads to avoid disk exhaustion
       - name: Download Server Image
         uses: actions/download-artifact@v4
         with:
           name: image-server-amd64
-          path: downloads
+          path: downloads/server
 
       - name: Download HTTP Echo
         uses: actions/download-artifact@v4
         with:
           name: image-http-echo-amd64
-          path: downloads
+          path: downloads/http-echo
 
       - name: Download Time Server
         uses: actions/download-artifact@v4
         with:
           name: image-time-server-amd64
-          path: downloads
+          path: downloads/time-server
 
       - name: Download Cowsay
         uses: actions/download-artifact@v4
         with:
           name: image-cowsay-amd64
-          path: downloads
+          path: downloads/cowsay
 
       - name: Download Everything
         uses: actions/download-artifact@v4
         with:
           name: image-everything-amd64
-          path: downloads
+          path: downloads/everything
 
       - name: Load Docker Images
         run: |
@@ -631,31 +631,31 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: image-server-amd64
-          path: downloads
+          path: downloads/server
 
       - name: Download HTTP Echo
         uses: actions/download-artifact@v4
         with:
           name: image-http-echo-amd64
-          path: downloads
+          path: downloads/http-echo
 
       - name: Download Time Server
         uses: actions/download-artifact@v4
         with:
           name: image-time-server-amd64
-          path: downloads
+          path: downloads/time-server
 
       - name: Download Cowsay
         uses: actions/download-artifact@v4
         with:
           name: image-cowsay-amd64
-          path: downloads
+          path: downloads/cowsay
 
       - name: Download Everything
         uses: actions/download-artifact@v4
         with:
           name: image-everything-amd64
-          path: downloads
+          path: downloads/everything
 
       - name: Load Docker Images
         run: |
@@ -777,13 +777,13 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: image-server-amd64
-          path: downloads
+          path: downloads/server
 
       - name: Download HTTP Echo
         uses: actions/download-artifact@v4
         with:
           name: image-http-echo-amd64
-          path: downloads
+          path: downloads/http-echo
 
       - name: Load Docker Images
         run: |
@@ -833,7 +833,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: downloads
-          name: image-server-amd64
+          name: image-server-${{ steps.detect-arch.outputs.slug }}
 
       - name: Load Docker Image
         run: |
@@ -876,25 +876,25 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: image-server-amd64
-          path: downloads
+          path: downloads/server
 
       - name: Download UI Image
         uses: actions/download-artifact@v4
         with:
           name: image-ui-amd64
-          path: downloads
+          path: downloads/ui
 
       - name: Download UI Test Image
         uses: actions/download-artifact@v4
         with:
           name: image-ui-test-amd64
-          path: downloads
+          path: downloads/ui-test
 
       - name: Download HTTP Echo
         uses: actions/download-artifact@v4
         with:
           name: image-http-echo-amd64
-          path: downloads
+          path: downloads/http-echo
 
       - name: Load Docker Images
         run: |
@@ -964,19 +964,19 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: image-server-amd64
-          path: downloads
+          path: downloads/server
 
       - name: Download Operator Image
         uses: actions/download-artifact@v4
         with:
           name: image-operator-amd64
-          path: downloads
+          path: downloads/operator
 
       - name: Download UI Image
         uses: actions/download-artifact@v4
         with:
           name: image-ui-amd64
-          path: downloads
+          path: downloads/ui
 
       - name: Load Docker Images into Kind
         run: |
