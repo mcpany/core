@@ -35,12 +35,23 @@ jobs:
     steps:
       - name: Install dependencies
         run: |
-          if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
+          SUDO=""
+          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+
           if command -v apt-get >/dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y git
+            echo "Installing git via apt-get..."
+            $SUDO apt-get update || true
+            $SUDO apt-get install -y git
           elif command -v apk >/dev/null; then
+            echo "Installing git via apk..."
             $SUDO apk add --no-cache git
+          elif command -v yum >/dev/null; then
+             echo "Installing git via yum..."
+             $SUDO yum install -y git
+          else
+            echo "No package manager found. Hoping git is installed..."
           fi
+          git --version
 
       - uses: actions/checkout@v6
         with:
