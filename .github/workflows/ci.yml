@@ -134,9 +134,9 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential gcc g++
+            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential gcc g++ curl unzip git
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz build-base
+             sudo apk add --no-cache make xz build-base curl unzip git
           fi
 
       - name: Prepare environment
@@ -465,10 +465,10 @@ jobs:
             slug: arm64
             runner: ubuntu-24.04-arm
     steps:
-      - uses: actions/checkout@v6
-
       - name: Install dependencies
-        run: apt-get update && apt-get install -y make
+        run: apt-get update && apt-get install -y make git curl unzip gcc g++
+
+      - uses: actions/checkout@v6
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -613,9 +613,9 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential gcc g++
+            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential gcc g++ curl unzip git
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz build-base
+             sudo apk add --no-cache make xz build-base curl unzip git
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -752,9 +752,9 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential gcc g++ curl unzip git
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             sudo apk add --no-cache make xz build-base curl unzip git
           fi
 
       - name: Configure Docker Registry Mirrors
