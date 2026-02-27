@@ -122,7 +122,8 @@ func TestSSRFArgumentProtection(t *testing.T) {
 			command:     "curl",
 			input:       "http://127.0.0.1",
 			expectError: true,
-			errorContains: "unsafe url",
+			// The loopback shorthand check runs first and catches 127.* patterns
+			errorContains: "loopback shorthand address is not allowed",
 		},
 	}
 
