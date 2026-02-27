@@ -150,11 +150,8 @@ gen: clean-protos prepare-proto
 			--descriptor_set_out=$(BUILD_DIR)/all.protoset \
 			--include_imports \
 			--go_out=. \
-			--go_opt=module=github.com/mcpany/core,default_api_level=API_HYBRID \
 			--go-grpc_out=. \
-			--go-grpc_opt=module=github.com/mcpany/core \
 			--grpc-gateway_out=. \
-			--grpc-gateway_opt=module=github.com/mcpany/core \
 			{} +; \
 		rm -rf google
 
@@ -233,3 +230,19 @@ docker-test:
 docker-lint:
 	sg docker -c "docker build -t mcpany/core-test -f server/docker/Dockerfile.dev ."
 	sg docker -c "docker run $(DOCKER_RUN_OPTS) sh -c 'mkdir -p /workspace/build/home && git config --global --add safe.directory /workspace && make lint'"
+
+docker-test-fast:
+	sg docker -c "docker build -t mcpany/core-test -f server/docker/Dockerfile.dev ."
+	sg docker -c "docker run $(DOCKER_RUN_OPTS) sh -c 'mkdir -p /workspace/build/home && git config --global --add safe.directory /workspace && make test-fast'"
+
+docker-test-public-api:
+	sg docker -c "docker build -t mcpany/core-test -f server/docker/Dockerfile.dev ."
+	sg docker -c "docker run $(DOCKER_RUN_OPTS) sh -c 'mkdir -p /workspace/build/home && git config --global --add safe.directory /workspace && make test-public-api'"
+
+docker-e2e-parallel:
+	sg docker -c "docker build -t mcpany/core-test -f server/docker/Dockerfile.dev ."
+	sg docker -c "docker run $(DOCKER_RUN_OPTS) -e SHARD=$(SHARD) sh -c 'mkdir -p /workspace/build/home && git config --global --add safe.directory /workspace && make e2e-parallel'"
+
+docker-e2e-sequential:
+	sg docker -c "docker build -t mcpany/core-test -f server/docker/Dockerfile.dev ."
+	sg docker -c "docker run $(DOCKER_RUN_OPTS) sh -c 'mkdir -p /workspace/build/home && git config --global --add safe.directory /workspace && make e2e-sequential'"
