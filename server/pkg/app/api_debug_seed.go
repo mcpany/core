@@ -82,17 +82,6 @@ func (a *Application) handleDebugSeed() http.HandlerFunc {
 	}
 }
 
-func (a *Application) handleDebugSeedTraffic() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusNotImplemented)
-	}
-}
-
-func (a *Application) handleDebugSeedTraces() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusNotImplemented)
-	}
-}
 
 func (a *Application) clearData(ctx context.Context, log *slog.Logger) error {
 	// Services
