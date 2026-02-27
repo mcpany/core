@@ -142,6 +142,9 @@ jobs:
       - name: Prepare environment
         run: make prepare
 
+      - name: Generate Protobufs
+        run: make gen
+
       - name: Lint
         run: make lint
 
@@ -276,6 +279,9 @@ jobs:
 
       - name: Prepare environment
         run: make prepare CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache
+
+      - name: Generate Protobufs
+        run: make gen
 
       - name: Test (Short)
         run: |
@@ -443,6 +449,9 @@ jobs:
 
       - name: Prepare environment
         run: make prepare
+
+      - name: Generate Protobufs
+        run: make gen
 
       - name: run parallel e2e
         run: |
@@ -725,6 +734,9 @@ jobs:
       - name: Prepare environment
         run: make prepare
 
+      - name: Generate Protobufs
+        run: make gen
+
       - name: run sequential e2e
         run: |
           make e2e-sequential SKIP_DOCKER_REBUILD=true CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-e2e-sequential.out
@@ -854,6 +866,9 @@ jobs:
       - name: Prepare environment
         run: make prepare
 
+      - name: Generate Protobufs
+        run: make gen
+
       - name: test public api
         run: |
           make test-public-api CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-public-api.out
@@ -977,6 +992,9 @@ jobs:
             docker load -i "$f"
           done
 
+      - name: Generate Protobufs
+        run: make gen
+
       - name: Test UI
         run: |
           SERVER_IMAGE=mcpany/server:latest make -C ui test-ci PLAYWRIGHT_ARGS="--shard=${{ matrix.shard }}"
@@ -1069,6 +1087,9 @@ jobs:
       - name: Load Docker Images already loaded above
         run: |
           echo "Images already loaded in previous step."
+
+      - name: Generate Protobufs
+        run: make gen
 
       - name: Run K8s E2E Tests
         run: |
