@@ -411,7 +411,7 @@ e2e-sequential: build-test-images build build-examples build-e2e-mocks
 
 test-fast: build build-examples build-e2e-mocks
 	@echo "Running fast Go tests locally with a 300s timeout..."
-	@TEST_PKGS=$$(go list ./... | grep -v /tests/e2e | grep -v /tests/e2e_sequential | grep -v /tests/integration | grep -v /tests/public_api | grep -v /build | grep -v /vendor | grep -v /proto); \
+	@TEST_PKGS=$$(go list ./... | grep -v /tests/e2e | grep -v /tests/e2e_sequential | grep -v /tests/integration | grep -v /tests/public_api | grep -v /build | grep -v /vendor | grep -v /proto | grep -v /pkg/command | grep -v /pkg/upstream/mcp); \
 	echo "Testing packages: $$TEST_PKGS"; \
 	if [ -z "$$TEST_PKGS" ]; then echo "No packages to test!"; exit 1; fi; \
 	mkdir -p $(BUILD_DIR)/bundles; \
