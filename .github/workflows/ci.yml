@@ -96,6 +96,22 @@ jobs:
 
       - uses: actions/checkout@v6
 
+      - name: Install dependencies
+        run: |
+          if command -v apt-get &> /dev/null; then
+             if command -v sudo &> /dev/null; then
+               sudo apt-get update && sudo apt-get install -y make git
+             else
+               apt-get update && apt-get install -y make git
+             fi
+          elif command -v apk &> /dev/null; then
+             if command -v sudo &> /dev/null; then
+               sudo apk add --no-cache make git
+             else
+               apk add --no-cache make git
+             fi
+          fi
+
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
@@ -139,9 +155,9 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            sudo apt-get update && sudo apt-get install -y make xz-utils gcc build-essential
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             sudo apk add --no-cache make xz gcc musl-dev
           fi
 
       - name: Prepare environment
@@ -175,9 +191,9 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            sudo apt-get update && sudo apt-get install -y make xz-utils gcc build-essential
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             sudo apk add --no-cache make xz gcc musl-dev
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -314,9 +330,9 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            sudo apt-get update && sudo apt-get install -y make xz-utils gcc build-essential
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             sudo apk add --no-cache make xz gcc musl-dev
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -485,6 +501,14 @@ jobs:
           fi
       - uses: actions/checkout@v6
 
+      - name: Install dependencies
+        run: |
+          if command -v apt-get &> /dev/null; then
+             apt-get update && apt-get install -y make git
+          elif command -v apk &> /dev/null; then
+             apk add --no-cache make git
+          fi
+
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
@@ -628,9 +652,9 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            sudo apt-get update && sudo apt-get install -y make xz-utils gcc build-essential
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             sudo apk add --no-cache make xz gcc musl-dev
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -767,9 +791,9 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            sudo apt-get update && sudo apt-get install -y make xz-utils gcc build-essential
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             sudo apk add --no-cache make xz gcc musl-dev
           fi
 
       - name: Configure Docker Registry Mirrors
