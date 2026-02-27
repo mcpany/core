@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **Hardened Serialization Middleware**: (P0) Schema-enforced output sanitization to prevent prompt injection via tool responses (Mitigates LangGrinch).
+- **Virtual Filesystem (VFS) MCP Bridge**: (P1) Provides an audited, versioned filesystem bus for agent-to-agent communication and state storage.
+- **Unified Policy Engine Adapter**: (P0) Universal adapter for injecting Rego/CEL policies into third-party agent CLI engines (Gemini, Claude).
+
+### Priority Shifts
+- **Policy Firewall**: Re-affirmed as **P0** following Google's introduction of the Gemini Policy Engine.
+- **Lazy-MCP Middleware**: Re-affirmed as **P0** following Anthropic's emphasis on Tool Search.
+
+### Deprecations / Monitoring
+- **Shared KV Store**: Monitoring for expansion into the Virtual Filesystem (VFS) Bus.

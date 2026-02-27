@@ -47,3 +47,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **A2A Gateway Protocol**: MCP Any will implement a protocol-neutral bridge for A2A communication, allowing disparate agent frameworks (e.g., OpenClaw, AutoGen) to exchange state and tasks via a unified MCP-like interface.
 - **Federated Tool Mesh**: Moving from a standalone server to a "Mesh" architecture where multiple MCP Any instances can peer and share resources across network boundaries, governed by global Zero-Trust policies.
 - **Resource-Aware Intelligence**: Integrating cost and latency telemetry into the tool discovery process, allowing LLMs to perform "Economical Reasoning" when selecting tools.
+
+---
+
+## Strategic Evolution: [2026-02-27]
+### Focus: Hardened Serialization & Virtual Filesystem Bus
+**Context**: The discovery of LangGrinch (serialization exploitation) and the rise of "Filesystem-as-a-Bus" patterns in agent swarms (Yarrow/OpenClaw) necessitate a shift in how MCP Any handles data transit and shared state.
+**Strategic Pivot**:
+- **Hardened Serialization Middleware**: MCP Any will implement a schema-enforcement layer that proactively sanitizes and redacts outputs from MCP tools. This prevents downstream LLMs or subagents from being exploited by "poisoned" tool responses.
+- **Virtual Filesystem (VFS) Bus**: Rather than just a KV-store, MCP Any will provide a POSIX-like virtual filesystem that agents can use for A2A communication. This VFS will be fully audited, versioned, and restricted by Zero-Trust policies.
+- **Universal Policy Injection**: With Gemini and Claude moving toward proprietary policy engines, MCP Any will position itself as the "Policy Proxy," allowing users to define a single set of Rego rules that are enforced across all connected agent platforms.
