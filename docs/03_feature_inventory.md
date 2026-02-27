@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **Project-Scoped Security Guard**: (P0) Middleware that restricts tool access and config ingestion to a verified project root. Prevents RCE from untrusted `mcp.config` files.
+- **Universal Slash-Command Spawner**: (P1) Standardized MCP tool for deterministic sub-agent spawning, mimicking OpenClaw's successful pattern.
+- **Intent-Goal Alignment Checker**: (P1) A fast-path validation middleware that checks tool calls against a signed "Goal Manifest" to prevent swarm-based escalation.
+
+### Priority Shifts
+- **MCP Provenance Attestation**: Remains **P0**. Critical for mitigating the supply-chain risks highlighted by recent Claude Code exploits.
+- **Shared KV Store**: Remains **P0**. Essential for maintaining state consistency during deterministic agent handoffs.
+
+### Deprecations / Monitoring
+- **Implicit Sub-Agent Spawning**: Monitoring for deprecation in favor of explicit, deterministic spawning to improve reliability.

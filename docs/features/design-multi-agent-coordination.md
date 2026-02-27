@@ -43,3 +43,10 @@ As AI agent ecosystems evolve from single-agent monoliths to multi-agent swarms 
 
 ## 7. Evolutionary Changelog
 * **2026-02-24**: Initial Document Creation.
+
+### Update: 2026-02-27 - Deterministic Delegation & Slash-Command Spawning
+**Context**: Today's market sync revealed that OpenClaw has successfully implemented deterministic sub-agent spawning via slash commands. This reduces the stochastic nature of agent delegation and improves reliability.
+**Architecture Adjustment**:
+*   **Extension to Section 4**: Introducing a standardized "Spawner Tool" (`spawner:spawn_subagent`) that allows agents (or users) to explicitly trigger a new agent session with a predefined "Intent Manifest."
+*   **Explicit Handoffs**: Moving from "Implicit Session Sharing" to "Explicit Handoff Tokens" that must be presented by the sub-agent to access the parent's blackboard.
+**Security Impact**: Reduces the risk of "Escalation of Privilege" where a compromised sub-agent could transitively access all of a parent's tools without an explicit handoff event.

@@ -184,3 +184,8 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Core Middleware Pipeline**: The middleware architecture is robust and extensible.
 - **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates protocol details from business logic.
 - **Documentation**: The project has excellent documentation coverage for most features.
+
+#### Upcoming (2026-02-27 Evolution)
+*   **[P0] Project-Scoped Security Guard**: Middleware for isolating tool/config ingestion to verified project roots.
+*   **[P1] Universal Slash-Command Spawner**: Standardized tool for deterministic sub-agent delegation.
+*   **[P1] Intent-Goal Alignment Checker**: Fast-path validation of tool calls against a signed goal manifest.
