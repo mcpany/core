@@ -9,6 +9,8 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
+	"strings"
 	"testing"
 	"time"
 
@@ -20,46 +22,37 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-// createHelperProgram creates a Go program that prints 'a' n times to stdout.
-func createHelperProgram(t *testing.T) string {
+// createLargeFile creates a temporary file with 'a' repeated size times.
+func createLargeFile(t *testing.T, size int) string {
 	dir := t.TempDir()
-	path := filepath.Join(dir, "printer.go")
-	content := `package main
-import (
-	"fmt"
-	"os"
-	"strconv"
-	"strings"
-)
+	path := filepath.Join(dir, "large_file.txt")
 
-func main() {
-	if len(os.Args) < 2 {
-		return
-	}
-	n, _ := strconv.Atoi(os.Args[1])
-	// Print in chunks to avoid memory issues with huge strings
+	f, err := os.Create(path)
+	assert.NoError(t, err)
+	defer f.Close()
+
+	// Write in chunks
 	chunkSize := 1024 * 1024
-	chunk := strings.Repeat("a", chunkSize)
+	chunk := []byte(strings.Repeat("a", chunkSize))
 
-	for n > 0 {
-		if n >= chunkSize {
-			fmt.Print(chunk)
-			n -= chunkSize
+	remaining := size
+	for remaining > 0 {
+		if remaining >= chunkSize {
+			_, err := f.Write(chunk)
+			assert.NoError(t, err)
+			remaining -= chunkSize
 		} else {
-			fmt.Print(strings.Repeat("a", n))
-			n = 0
+			_, err := f.Write([]byte(strings.Repeat("a", remaining)))
+			assert.NoError(t, err)
+			remaining = 0
 		}
 	}
-}
-`
-	err := os.WriteFile(path, []byte(content), 0600)
-	assert.NoError(t, err)
 	return path
 }
 
 func TestLocalCommandTool_Execute_LargeOutput(t *testing.T) {
-	helperPath := createHelperProgram(t)
 	size := consts.DefaultMaxCommandOutputBytes
+	filePath := createLargeFile(t, size)
 
 	inputSchema, _ := structpb.NewStruct(map[string]interface{}{
 		"properties": map[string]interface{}{
@@ -71,26 +64,18 @@ func TestLocalCommandTool_Execute_LargeOutput(t *testing.T) {
 		InputSchema: inputSchema,
 	}.Build()
 
-	// Pass necessary environment variables for go run
-	envVars := map[string]string{
-		"PATH": os.Getenv("PATH"),
-		"HOME": os.Getenv("HOME"),
-	}
-	// Pass GOCACHE if set, otherwise go run might fail in restricted env
-	if cache := os.Getenv("GOCACHE"); cache != "" {
-		envVars["GOCACHE"] = cache
-	} else {
-		envVars["GOCACHE"] = filepath.Join(t.TempDir(), "gocache")
+	cmdName := "cat"
+	if runtime.GOOS == "windows" {
+		cmdName = "type"
 	}
 
 	service := configv1.CommandLineUpstreamService_builder{
-		Command: proto.String("go"),
+		Command: proto.String(cmdName),
 		Local:   proto.Bool(true),
-		Env:     envVars,
 	}.Build()
 
 	callDef := configv1.CommandLineCallDefinition_builder{
-		Args: []string{"run", helperPath, fmt.Sprintf("%d", size)},
+		Args: []string{filePath},
 	}.Build()
 
 	localTool := NewLocalCommandTool(toolDef, service, callDef, nil, "call-id")
@@ -124,8 +109,9 @@ func TestLocalCommandTool_Execute_LargeOutput_Truncated(t *testing.T) {
 	os.Setenv("MCPANY_MAX_COMMAND_OUTPUT_SIZE", "1024")
 	defer os.Unsetenv("MCPANY_MAX_COMMAND_OUTPUT_SIZE")
 
-	helperPath := createHelperProgram(t)
+	// Create a file larger than the limit
 	targetSize := 2048
+	filePath := createLargeFile(t, targetSize)
 
 	inputSchema, _ := structpb.NewStruct(map[string]interface{}{
 		"properties": map[string]interface{}{
@@ -137,25 +123,18 @@ func TestLocalCommandTool_Execute_LargeOutput_Truncated(t *testing.T) {
 		InputSchema: inputSchema,
 	}.Build()
 
-	// Pass necessary environment variables for go run
-	envVars := map[string]string{
-		"PATH": os.Getenv("PATH"),
-		"HOME": os.Getenv("HOME"),
-	}
-	if cache := os.Getenv("GOCACHE"); cache != "" {
-		envVars["GOCACHE"] = cache
-	} else {
-		envVars["GOCACHE"] = filepath.Join(t.TempDir(), "gocache")
+	cmdName := "cat"
+	if runtime.GOOS == "windows" {
+		cmdName = "type"
 	}
 
 	service := configv1.CommandLineUpstreamService_builder{
-		Command: proto.String("go"),
+		Command: proto.String(cmdName),
 		Local:   proto.Bool(true),
-		Env:     envVars,
 	}.Build()
 
 	callDef := configv1.CommandLineCallDefinition_builder{
-		Args: []string{"run", helperPath, fmt.Sprintf("%d", targetSize)},
+		Args: []string{filePath},
 	}.Build()
 
 	localTool := NewLocalCommandTool(toolDef, service, callDef, nil, "call-id")
