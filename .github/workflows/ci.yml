@@ -79,16 +79,6 @@ jobs:
     runs-on: oci-runner
     # container: public.ecr.aws/docker/library/ubuntu:24.04
     steps:
-      - name: Free Disk Space (Fast)
-        run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
-
-      - name: Prune Docker
-        run: docker system prune -af
-
       - uses: actions/checkout@v6
 
       - name: Set up Go
@@ -134,9 +124,9 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            sudo apt-get update && sudo apt-get install -y make xz-utils gcc g++ build-essential
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             sudo apk add --no-cache make xz gcc g++ build-base
           fi
 
       - name: Prepare environment
@@ -155,24 +145,14 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
-      - name: Free Disk Space (Fast)
-        run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
-
-      - name: Prune Docker
-        run: docker system prune -af
-
       - uses: actions/checkout@v6
 
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            sudo apt-get update && sudo apt-get install -y make xz-utils gcc g++ build-essential
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             sudo apk add --no-cache make xz gcc g++ build-base
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -294,24 +274,14 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
-      - name: Free Disk Space (Fast)
-        run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
-
-      - name: Prune Docker
-        run: docker system prune -af
-
       - uses: actions/checkout@v6
 
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            sudo apt-get update && sudo apt-get install -y make xz-utils gcc g++ build-essential
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             sudo apk add --no-cache make xz gcc g++ build-base
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -465,12 +435,6 @@ jobs:
             slug: arm64
             runner: ubuntu-24.04-arm
     steps:
-      - name: Free Disk Space (Fast)
-        run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
       - uses: actions/checkout@v6
 
       - name: Set up Go
@@ -601,24 +565,14 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
-      - name: Free Disk Space (Fast)
-        run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
-
-      - name: Prune Docker
-        run: docker system prune -af
-
       - uses: actions/checkout@v6
 
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            sudo apt-get update && sudo apt-get install -y make xz-utils gcc g++ build-essential
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             sudo apk add --no-cache make xz gcc g++ build-base
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -740,24 +694,14 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
-      - name: Free Disk Space (Fast)
-        run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
-
-      - name: Prune Docker
-        run: docker system prune -af
-
       - uses: actions/checkout@v6
 
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            sudo apt-get update && sudo apt-get install -y make xz-utils gcc g++ build-essential
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             sudo apk add --no-cache make xz gcc g++ build-base
           fi
 
       - name: Configure Docker Registry Mirrors
