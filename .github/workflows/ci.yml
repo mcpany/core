@@ -138,6 +138,17 @@ jobs:
              sudo apk add --no-cache make xz curl unzip
           fi
 
+      - name: Install Protoc v33.1
+        run: |
+          # Manually install protoc to bypass Makefile flakiness
+          PROTOC_VERSION=33.1
+          PROTOC_ZIP=protoc-$PROTOC_VERSION-linux-x86_64.zip
+          curl -OL https://github.com/protocolbuffers/protobuf/releases/download/v$PROTOC_VERSION/$PROTOC_ZIP
+          sudo unzip -o $PROTOC_ZIP -d /usr/local bin/protoc
+          sudo unzip -o $PROTOC_ZIP -d /usr/local 'include/*'
+          rm -f $PROTOC_ZIP
+          protoc --version
+
       - name: Prepare environment
         run: make prepare
 
@@ -174,6 +185,17 @@ jobs:
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz curl unzip
           fi
+
+      - name: Install Protoc v33.1
+        run: |
+          # Manually install protoc to bypass Makefile flakiness
+          PROTOC_VERSION=33.1
+          PROTOC_ZIP=protoc-$PROTOC_VERSION-linux-x86_64.zip
+          curl -OL https://github.com/protocolbuffers/protobuf/releases/download/v$PROTOC_VERSION/$PROTOC_ZIP
+          sudo unzip -o $PROTOC_ZIP -d /usr/local bin/protoc
+          sudo unzip -o $PROTOC_ZIP -d /usr/local 'include/*'
+          rm -f $PROTOC_ZIP
+          protoc --version
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -314,6 +336,17 @@ jobs:
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz curl unzip
           fi
+
+      - name: Install Protoc v33.1
+        run: |
+          # Manually install protoc to bypass Makefile flakiness
+          PROTOC_VERSION=33.1
+          PROTOC_ZIP=protoc-$PROTOC_VERSION-linux-x86_64.zip
+          curl -OL https://github.com/protocolbuffers/protobuf/releases/download/v$PROTOC_VERSION/$PROTOC_ZIP
+          sudo unzip -o $PROTOC_ZIP -d /usr/local bin/protoc
+          sudo unzip -o $PROTOC_ZIP -d /usr/local 'include/*'
+          rm -f $PROTOC_ZIP
+          protoc --version
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -625,6 +658,17 @@ jobs:
              sudo apk add --no-cache make xz build-base curl unzip
           fi
 
+      - name: Install Protoc v33.1
+        run: |
+          # Manually install protoc to bypass Makefile flakiness
+          PROTOC_VERSION=33.1
+          PROTOC_ZIP=protoc-$PROTOC_VERSION-linux-x86_64.zip
+          curl -OL https://github.com/protocolbuffers/protobuf/releases/download/v$PROTOC_VERSION/$PROTOC_ZIP
+          sudo unzip -o $PROTOC_ZIP -d /usr/local bin/protoc
+          sudo unzip -o $PROTOC_ZIP -d /usr/local 'include/*'
+          rm -f $PROTOC_ZIP
+          protoc --version
+
       - name: Configure Docker Registry Mirrors
         run: |
           sudo mkdir -p /etc/docker
@@ -764,6 +808,17 @@ jobs:
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz build-base curl unzip
           fi
+
+      - name: Install Protoc v33.1
+        run: |
+          # Manually install protoc to bypass Makefile flakiness
+          PROTOC_VERSION=33.1
+          PROTOC_ZIP=protoc-$PROTOC_VERSION-linux-x86_64.zip
+          curl -OL https://github.com/protocolbuffers/protobuf/releases/download/v$PROTOC_VERSION/$PROTOC_ZIP
+          sudo unzip -o $PROTOC_ZIP -d /usr/local bin/protoc
+          sudo unzip -o $PROTOC_ZIP -d /usr/local 'include/*'
+          rm -f $PROTOC_ZIP
+          protoc --version
 
       - name: Configure Docker Registry Mirrors
         run: |
