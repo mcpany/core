@@ -545,9 +545,19 @@ jobs:
       - name: Load Docker Images
         run: |
           # Verify file presence
-          ls -R downloads
-          # Load images using find -exec
-          find downloads -type f -name "*.tar.gz" -exec sh -c 'echo "Loading {}"; gzip -dc "{}" | docker load' \;
+          ls -R downloads || echo "Downloads dir empty/missing"
+
+          # Manually load files to ensure robust handling and failure on missing files
+          for file in $(find downloads -type f -name "*.tar.gz"); do
+            echo "Loading $file..."
+            gzip -dc "$file" | sudo docker load || exit 1
+          done
+
+          # Verify at least one image loaded (optional, but good for sanity)
+          if [ -z "$(sudo docker images -q)" ]; then
+            echo "No images loaded!"
+            exit 1
+          fi
 
       - name: Prepare environment
         run: make prepare
@@ -661,10 +671,11 @@ jobs:
 
       - name: Load Docker Images
         run: |
-          # Verify file presence
-          ls -R downloads
-          # Load images using find -exec
-          find downloads -type f -name "*.tar.gz" -exec sh -c 'echo "Loading {}"; gzip -dc "{}" | docker load' \;
+          ls -R downloads || echo "Downloads missing"
+          for file in $(find downloads -type f -name "*.tar.gz"); do
+            echo "Loading $file..."
+            gzip -dc "$file" | sudo docker load || exit 1
+          done
 
       - name: Prepare environment
         run: make prepare
@@ -791,10 +802,11 @@ jobs:
 
       - name: Load Docker Images
         run: |
-          # Verify file presence
-          ls -R downloads
-          # Load images using find -exec
-          find downloads -type f -name "*.tar.gz" -exec sh -c 'echo "Loading {}"; gzip -dc "{}" | docker load' \;
+          ls -R downloads || echo "Downloads missing"
+          for file in $(find downloads -type f -name "*.tar.gz"); do
+            echo "Loading $file..."
+            gzip -dc "$file" | sudo docker load || exit 1
+          done
 
       - name: test public api
         run: |
@@ -904,10 +916,11 @@ jobs:
 
       - name: Load Docker Images
         run: |
-          # Verify file presence
-          ls -R downloads
-          # Load images using find -exec
-          find downloads -type f -name "*.tar.gz" -exec sh -c 'echo "Loading {}"; gzip -dc "{}" | docker load' \;
+          ls -R downloads || echo "Downloads missing"
+          for file in $(find downloads -type f -name "*.tar.gz"); do
+            echo "Loading $file..."
+            gzip -dc "$file" | sudo docker load || exit 1
+          done
 
       - name: Test UI
         run: |
@@ -988,10 +1001,11 @@ jobs:
 
       - name: Load Docker Images into Kind
         run: |
-          # Verify file presence
-          ls -R downloads
-          # Load images using find -exec
-          find downloads -type f -name "*.tar.gz" -exec sh -c 'echo "Loading {}"; gzip -dc "{}" | docker load' \;
+          ls -R downloads || echo "Downloads missing"
+          for file in $(find downloads -type f -name "*.tar.gz"); do
+            echo "Loading $file..."
+            gzip -dc "$file" | sudo docker load || exit 1
+          done
 
           # Now load specific images into Kind
           kind load docker-image mcpany/server:latest --name mcp-e2e
