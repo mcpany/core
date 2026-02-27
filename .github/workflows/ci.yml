@@ -89,15 +89,15 @@ jobs:
       - name: Free Disk Space (Fast)
         run: |
           if command -v sudo >/dev/null 2>&1; then
-            sudo rm -rf /usr/local/lib/android
-            sudo rm -rf /usr/share/dotnet
-            sudo rm -rf /opt/ghc
-            sudo rm -rf /usr/local/share/boost
+            sudo rm -rf /usr/local/lib/android || true
+            sudo rm -rf /usr/share/dotnet || true
+            sudo rm -rf /opt/ghc || true
+            sudo rm -rf /usr/local/share/boost || true
           else
-            rm -rf /usr/local/lib/android
-            rm -rf /usr/share/dotnet
-            rm -rf /opt/ghc
-            rm -rf /usr/local/share/boost
+            rm -rf /usr/local/lib/android || true
+            rm -rf /usr/share/dotnet || true
+            rm -rf /opt/ghc || true
+            rm -rf /usr/local/share/boost || true
           fi
 
       - name: Prune Docker
@@ -178,15 +178,15 @@ jobs:
       - name: Free Disk Space (Fast)
         run: |
           if command -v sudo >/dev/null 2>&1; then
-            sudo rm -rf /usr/local/lib/android
-            sudo rm -rf /usr/share/dotnet
-            sudo rm -rf /opt/ghc
-            sudo rm -rf /usr/local/share/boost
+            sudo rm -rf /usr/local/lib/android || true
+            sudo rm -rf /usr/share/dotnet || true
+            sudo rm -rf /opt/ghc || true
+            sudo rm -rf /usr/local/share/boost || true
           else
-            rm -rf /usr/local/lib/android
-            rm -rf /usr/share/dotnet
-            rm -rf /opt/ghc
-            rm -rf /usr/local/share/boost
+            rm -rf /usr/local/lib/android || true
+            rm -rf /usr/share/dotnet || true
+            rm -rf /opt/ghc || true
+            rm -rf /usr/local/share/boost || true
           fi
 
       - name: Prune Docker
@@ -317,15 +317,15 @@ jobs:
       - name: Free Disk Space (Fast)
         run: |
           if command -v sudo >/dev/null 2>&1; then
-            sudo rm -rf /usr/local/lib/android
-            sudo rm -rf /usr/share/dotnet
-            sudo rm -rf /opt/ghc
-            sudo rm -rf /usr/local/share/boost
+            sudo rm -rf /usr/local/lib/android || true
+            sudo rm -rf /usr/share/dotnet || true
+            sudo rm -rf /opt/ghc || true
+            sudo rm -rf /usr/local/share/boost || true
           else
-            rm -rf /usr/local/lib/android
-            rm -rf /usr/share/dotnet
-            rm -rf /opt/ghc
-            rm -rf /usr/local/share/boost
+            rm -rf /usr/local/lib/android || true
+            rm -rf /usr/share/dotnet || true
+            rm -rf /opt/ghc || true
+            rm -rf /usr/local/share/boost || true
           fi
 
       - name: Prune Docker
@@ -487,15 +487,15 @@ jobs:
       - name: Free Disk Space (Fast)
         run: |
           if command -v sudo >/dev/null 2>&1; then
-            sudo rm -rf /usr/local/lib/android
-            sudo rm -rf /usr/share/dotnet
-            sudo rm -rf /opt/ghc
-            sudo rm -rf /usr/local/share/boost
+            sudo rm -rf /usr/local/lib/android || true
+            sudo rm -rf /usr/share/dotnet || true
+            sudo rm -rf /opt/ghc || true
+            sudo rm -rf /usr/local/share/boost || true
           else
-            rm -rf /usr/local/lib/android
-            rm -rf /usr/share/dotnet
-            rm -rf /opt/ghc
-            rm -rf /usr/local/share/boost
+            rm -rf /usr/local/lib/android || true
+            rm -rf /usr/share/dotnet || true
+            rm -rf /opt/ghc || true
+            rm -rf /usr/local/share/boost || true
           fi
       - uses: actions/checkout@v6
 
@@ -630,15 +630,15 @@ jobs:
       - name: Free Disk Space (Fast)
         run: |
           if command -v sudo >/dev/null 2>&1; then
-            sudo rm -rf /usr/local/lib/android
-            sudo rm -rf /usr/share/dotnet
-            sudo rm -rf /opt/ghc
-            sudo rm -rf /usr/local/share/boost
+            sudo rm -rf /usr/local/lib/android || true
+            sudo rm -rf /usr/share/dotnet || true
+            sudo rm -rf /opt/ghc || true
+            sudo rm -rf /usr/local/share/boost || true
           else
-            rm -rf /usr/local/lib/android
-            rm -rf /usr/share/dotnet
-            rm -rf /opt/ghc
-            rm -rf /usr/local/share/boost
+            rm -rf /usr/local/lib/android || true
+            rm -rf /usr/share/dotnet || true
+            rm -rf /opt/ghc || true
+            rm -rf /usr/local/share/boost || true
           fi
 
       - name: Prune Docker
@@ -767,15 +767,15 @@ jobs:
       - name: Free Disk Space (Fast)
         run: |
           if command -v sudo >/dev/null 2>&1; then
-            sudo rm -rf /usr/local/lib/android
-            sudo rm -rf /usr/share/dotnet
-            sudo rm -rf /opt/ghc
-            sudo rm -rf /usr/local/share/boost
+            sudo rm -rf /usr/local/lib/android || true
+            sudo rm -rf /usr/share/dotnet || true
+            sudo rm -rf /opt/ghc || true
+            sudo rm -rf /usr/local/share/boost || true
           else
-            rm -rf /usr/local/lib/android
-            rm -rf /usr/share/dotnet
-            rm -rf /opt/ghc
-            rm -rf /usr/local/share/boost
+            rm -rf /usr/local/lib/android || true
+            rm -rf /usr/share/dotnet || true
+            rm -rf /opt/ghc || true
+            rm -rf /usr/local/share/boost || true
           fi
 
       - name: Prune Docker
@@ -930,15 +930,15 @@ jobs:
       - name: Free Disk Space (Fast)
         run: |
           if command -v sudo >/dev/null 2>&1; then
-            sudo rm -rf /usr/local/lib/android
-            sudo rm -rf /usr/share/dotnet
-            sudo rm -rf /opt/ghc
-            sudo rm -rf /usr/local/share/boost
+            sudo rm -rf /usr/local/lib/android || true
+            sudo rm -rf /usr/share/dotnet || true
+            sudo rm -rf /opt/ghc || true
+            sudo rm -rf /usr/local/share/boost || true
           else
-            rm -rf /usr/local/lib/android
-            rm -rf /usr/share/dotnet
-            rm -rf /opt/ghc
-            rm -rf /usr/local/share/boost
+            rm -rf /usr/local/lib/android || true
+            rm -rf /usr/share/dotnet || true
+            rm -rf /opt/ghc || true
+            rm -rf /usr/local/share/boost || true
           fi
 
       - name: Prune Docker
@@ -990,15 +990,15 @@ jobs:
       - name: Free Disk Space (Fast)
         run: |
           if command -v sudo >/dev/null 2>&1; then
-            sudo rm -rf /usr/local/lib/android
-            sudo rm -rf /usr/share/dotnet
-            sudo rm -rf /opt/ghc
-            sudo rm -rf /usr/local/share/boost
+            sudo rm -rf /usr/local/lib/android || true
+            sudo rm -rf /usr/share/dotnet || true
+            sudo rm -rf /opt/ghc || true
+            sudo rm -rf /usr/local/share/boost || true
           else
-            rm -rf /usr/local/lib/android
-            rm -rf /usr/share/dotnet
-            rm -rf /opt/ghc
-            rm -rf /usr/local/share/boost
+            rm -rf /usr/local/lib/android || true
+            rm -rf /usr/share/dotnet || true
+            rm -rf /opt/ghc || true
+            rm -rf /usr/local/share/boost || true
           fi
 
       - name: Prune Docker
