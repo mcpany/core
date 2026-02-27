@@ -34,7 +34,10 @@ jobs:
       src: ${{ steps.filter.outputs.src }}
     steps:
       - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y git
+        run: |
+          SUDO=""
+          if command -v sudo &> /dev/null; then SUDO="sudo"; fi
+          $SUDO apt-get update && $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y git
 
       - uses: actions/checkout@v6
         with:
@@ -82,7 +85,7 @@ jobs:
       - name: Free Disk Space (Fast)
         run: |
           SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if command -v sudo &> /dev/null; then SUDO="sudo"; fi
           $SUDO rm -rf /usr/local/lib/android
           $SUDO rm -rf /usr/share/dotnet
           $SUDO rm -rf /opt/ghc
@@ -137,7 +140,7 @@ jobs:
         run: |
           set -x
           SUDO=""
-          if command -v sudo >/dev/null; then
+          if command -v sudo &> /dev/null; then
             SUDO="sudo"
           fi
 
@@ -170,7 +173,7 @@ jobs:
       - name: Free Disk Space (Fast)
         run: |
           SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if command -v sudo &> /dev/null; then SUDO="sudo"; fi
           $SUDO rm -rf /usr/local/lib/android
           $SUDO rm -rf /usr/share/dotnet
           $SUDO rm -rf /opt/ghc
@@ -185,7 +188,7 @@ jobs:
         run: |
           set -x
           SUDO=""
-          if command -v sudo >/dev/null; then
+          if command -v sudo &> /dev/null; then
             SUDO="sudo"
           fi
 
@@ -200,18 +203,20 @@ jobs:
 
       - name: Configure Docker Registry Mirrors
         run: |
+          SUDO=""
+          if command -v sudo &> /dev/null; then SUDO="sudo"; fi
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
-          sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          $SUDO mkdir -p /etc/docker
+          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json
 
-          if sudo systemctl restart docker 2>/dev/null; then
+          if $SUDO systemctl restart docker 2>/dev/null; then
             echo "Docker restarted via systemctl"
-          elif sudo service docker restart 2>/dev/null; then
+          elif $SUDO service docker restart 2>/dev/null; then
             echo "Docker restarted via service"
           else
             echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
-            sudo pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
+            $SUDO pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
           fi
           docker info # Verify the mirrors are listed
 
@@ -320,7 +325,7 @@ jobs:
       - name: Free Disk Space (Fast)
         run: |
           SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if command -v sudo &> /dev/null; then SUDO="sudo"; fi
           $SUDO rm -rf /usr/local/lib/android
           $SUDO rm -rf /usr/share/dotnet
           $SUDO rm -rf /opt/ghc
@@ -335,7 +340,7 @@ jobs:
         run: |
           set -x
           SUDO=""
-          if command -v sudo >/dev/null; then
+          if command -v sudo &> /dev/null; then
             SUDO="sudo"
           fi
 
@@ -350,18 +355,20 @@ jobs:
 
       - name: Configure Docker Registry Mirrors
         run: |
+          SUDO=""
+          if command -v sudo &> /dev/null; then SUDO="sudo"; fi
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
-          sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          $SUDO mkdir -p /etc/docker
+          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json
 
-          if sudo systemctl restart docker 2>/dev/null; then
+          if $SUDO systemctl restart docker 2>/dev/null; then
             echo "Docker restarted via systemctl"
-          elif sudo service docker restart 2>/dev/null; then
+          elif $SUDO service docker restart 2>/dev/null; then
             echo "Docker restarted via service"
           else
             echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
-            sudo pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
+            $SUDO pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
           fi
           docker info # Verify the mirrors are listed
 
@@ -502,7 +509,7 @@ jobs:
       - name: Free Disk Space (Fast)
         run: |
           SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if command -v sudo &> /dev/null; then SUDO="sudo"; fi
           $SUDO rm -rf /usr/local/lib/android
           $SUDO rm -rf /usr/share/dotnet
           $SUDO rm -rf /opt/ghc
@@ -640,7 +647,7 @@ jobs:
       - name: Free Disk Space (Fast)
         run: |
           SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if command -v sudo &> /dev/null; then SUDO="sudo"; fi
           $SUDO rm -rf /usr/local/lib/android
           $SUDO rm -rf /usr/share/dotnet
           $SUDO rm -rf /opt/ghc
@@ -655,7 +662,7 @@ jobs:
         run: |
           set -x
           SUDO=""
-          if command -v sudo >/dev/null; then
+          if command -v sudo &> /dev/null; then
             SUDO="sudo"
           fi
 
@@ -670,16 +677,18 @@ jobs:
 
       - name: Configure Docker Registry Mirrors
         run: |
-          sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          SUDO=""
+          if command -v sudo &> /dev/null; then SUDO="sudo"; fi
+          $SUDO mkdir -p /etc/docker
+          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json
 
-          if sudo systemctl restart docker 2>/dev/null; then
+          if $SUDO systemctl restart docker 2>/dev/null; then
             echo "Docker restarted via systemctl"
-          elif sudo service docker restart 2>/dev/null; then
+          elif $SUDO service docker restart 2>/dev/null; then
             echo "Docker restarted via service"
           else
             echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
-            sudo pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
+            $SUDO pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
           fi
           docker info
 
@@ -790,7 +799,7 @@ jobs:
       - name: Free Disk Space (Fast)
         run: |
           SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if command -v sudo &> /dev/null; then SUDO="sudo"; fi
           $SUDO rm -rf /usr/local/lib/android
           $SUDO rm -rf /usr/share/dotnet
           $SUDO rm -rf /opt/ghc
@@ -805,7 +814,7 @@ jobs:
         run: |
           set -x
           SUDO=""
-          if command -v sudo >/dev/null; then
+          if command -v sudo &> /dev/null; then
             SUDO="sudo"
           fi
 
@@ -820,18 +829,20 @@ jobs:
 
       - name: Configure Docker Registry Mirrors
         run: |
+          SUDO=""
+          if command -v sudo &> /dev/null; then SUDO="sudo"; fi
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
-          sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          $SUDO mkdir -p /etc/docker
+          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json
 
-          if sudo systemctl restart docker 2>/dev/null; then
+          if $SUDO systemctl restart docker 2>/dev/null; then
             echo "Docker restarted via systemctl"
-          elif sudo service docker restart 2>/dev/null; then
+          elif $SUDO service docker restart 2>/dev/null; then
             echo "Docker restarted via service"
           else
             echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
-            sudo pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
+            $SUDO pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
           fi
           docker info # Verify the mirrors are listed
 
@@ -919,18 +930,20 @@ jobs:
 
       - name: Configure Docker Registry Mirrors
         run: |
+          SUDO=""
+          if command -v sudo &> /dev/null; then SUDO="sudo"; fi
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
-          sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          $SUDO mkdir -p /etc/docker
+          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json
 
-          if sudo systemctl restart docker 2>/dev/null; then
+          if $SUDO systemctl restart docker 2>/dev/null; then
             echo "Docker restarted via systemctl"
-          elif sudo service docker restart 2>/dev/null; then
+          elif $SUDO service docker restart 2>/dev/null; then
             echo "Docker restarted via service"
           else
             echo "Could not restart docker via systemctl or service. Attempting SIGHUP..."
-            sudo pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
+            $SUDO pkill -SIGHUP dockerd || echo "Failed to SIGHUP dockerd. Mirrors might not be applied."
           fi
           docker info # Verify the mirrors are listed
 
@@ -980,7 +993,7 @@ jobs:
       - name: Free Disk Space (Fast)
         run: |
           SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if command -v sudo &> /dev/null; then SUDO="sudo"; fi
           $SUDO rm -rf /usr/local/lib/android
           $SUDO rm -rf /usr/share/dotnet
           $SUDO rm -rf /opt/ghc
@@ -1035,7 +1048,7 @@ jobs:
       - name: Free Disk Space (Fast)
         run: |
           SUDO=""
-          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if command -v sudo &> /dev/null; then SUDO="sudo"; fi
           $SUDO rm -rf /usr/local/lib/android
           $SUDO rm -rf /usr/share/dotnet
           $SUDO rm -rf /opt/ghc
@@ -1148,7 +1161,7 @@ jobs:
       - name: Install Dependencies (gh, jq)
         run: |
           SUDO=""
-          if command -v sudo >/dev/null; then
+          if command -v sudo &> /dev/null; then
             SUDO="sudo"
           fi
 
@@ -1218,7 +1231,7 @@ jobs:
             if [ -w /usr/local/bin ]; then
                cp "$BIN_PATH" /usr/local/bin/
             elif command -v sudo &> /dev/null; then
-               sudo cp "$BIN_PATH" /usr/local/bin/
+               $SUDO cp "$BIN_PATH" /usr/local/bin/
             else
                mkdir -p "$HOME/.local/bin"
                cp "$BIN_PATH" "$HOME/.local/bin/"

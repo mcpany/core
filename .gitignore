@@ -49,3 +49,4 @@ server/bin/
 # Temp
 skipped_tests_manifest.json
 seeder
+proto/**/*.ts
