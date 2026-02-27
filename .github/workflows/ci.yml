@@ -457,6 +457,7 @@ jobs:
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
+    if: ${{ needs.changes.outputs.src == 'true' }}
     steps:
       - name: Free Disk Space (Fast)
         run: |
@@ -510,7 +511,7 @@ jobs:
           esac
           echo "slug=$SLUG" >> $GITHUB_OUTPUT
 
-      # Explicit Downloads to avoid disk exhaustion
+      # Explicit Downloads (No Merge)
       - name: Download Server Image
         uses: actions/download-artifact@v4
         with:
@@ -572,6 +573,7 @@ jobs:
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
+    if: ${{ needs.changes.outputs.src == 'true' }}
     steps:
       - name: Free Disk Space (Fast)
         run: |
@@ -850,6 +852,7 @@ jobs:
       fail-fast: false
       matrix:
         shard: [1/2, 2/2]
+    if: ${{ needs.changes.outputs.src == 'true' }}
     steps:
       - name: Free Disk Space (Fast)
         run: |
@@ -906,6 +909,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     needs: [build-server-images, build-ui-images]
+    if: ${{ needs.changes.outputs.src == 'true' }}
     steps:
       - name: Free Disk Space (Fast)
         run: |
