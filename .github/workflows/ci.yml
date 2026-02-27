@@ -161,7 +161,7 @@ jobs:
         run: make lint
 
   unit-test:
-    runs-on: oci-runner
+    runs-on: ubuntu-latest
     # container: public.ecr.aws/docker/library/ubuntu:24.04
     timeout-minutes: 30
     needs: [changes]
@@ -188,6 +188,8 @@ jobs:
           cat /etc/os-release || true
           if command -v apt-get &> /dev/null; then
             (sudo apt-get update || echo "apt-get update failed, continuing...")
+            # Try to fix potential broken installs first
+            sudo DEBIAN_FRONTEND=noninteractive apt-get install -f -y || true
             sudo DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils build-essential gcc g++
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz build-base
@@ -337,6 +339,7 @@ jobs:
           cat /etc/os-release || true
           if command -v apt-get &> /dev/null; then
             (sudo apt-get update || echo "apt-get update failed, continuing...")
+            sudo DEBIAN_FRONTEND=noninteractive apt-get install -f -y || true
             sudo DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils build-essential gcc g++
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz build-base
@@ -651,6 +654,7 @@ jobs:
           cat /etc/os-release || true
           if command -v apt-get &> /dev/null; then
             (sudo apt-get update || echo "apt-get update failed, continuing...")
+            sudo DEBIAN_FRONTEND=noninteractive apt-get install -f -y || true
             sudo DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils build-essential gcc g++
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz build-base
@@ -1093,6 +1097,7 @@ jobs:
           # Load all tarballs into docker daemon first?
           # kind load docker-image requires image in docker daemon or archive.
           # kind load image-archive might be better but let's stick to docker daemon for consistency
+          ls -lh *.tar || echo "No tar files found"
           for f in *.tar; do
             docker load -i "$f"
           done
