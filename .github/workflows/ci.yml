@@ -143,9 +143,17 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            if command -v sudo >/dev/null; then
+               sudo apt-get update && sudo apt-get install -y make xz-utils git curl unzip
+            else
+               apt-get update && apt-get install -y make xz-utils git curl unzip
+            fi
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             if command -v sudo >/dev/null; then
+                sudo apk add --no-cache make xz git curl
+             else
+                apk add --no-cache make xz git curl
+             fi
           fi
 
       - name: Prepare environment
@@ -183,9 +191,17 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            if command -v sudo >/dev/null; then
+               sudo apt-get update && sudo apt-get install -y make xz-utils git curl unzip
+            else
+               apt-get update && apt-get install -y make xz-utils git curl unzip
+            fi
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             if command -v sudo >/dev/null; then
+                sudo apk add --no-cache make xz git curl
+             else
+                apk add --no-cache make xz git curl
+             fi
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -326,9 +342,17 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            if command -v sudo >/dev/null; then
+               sudo apt-get update && sudo apt-get install -y make xz-utils git curl unzip
+            else
+               apt-get update && apt-get install -y make xz-utils git curl unzip
+            fi
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             if command -v sudo >/dev/null; then
+                sudo apk add --no-cache make xz git curl
+             else
+                apk add --no-cache make xz git curl
+             fi
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -498,15 +522,15 @@ jobs:
         run: |
           if command -v apt-get &> /dev/null; then
             if command -v sudo >/dev/null; then
-               sudo apt-get update && sudo apt-get install -y make xz-utils git curl unzip
+               sudo apt-get update && sudo apt-get install -y make xz-utils git curl unzip docker.io
             else
-               apt-get update && apt-get install -y make xz-utils git curl unzip
+               apt-get update && apt-get install -y make xz-utils git curl unzip docker.io
             fi
           elif command -v apk &> /dev/null; then
              if command -v sudo >/dev/null; then
-                sudo apk add --no-cache make xz git curl
+                sudo apk add --no-cache make xz git curl docker
              else
-                apk add --no-cache make xz git curl
+                apk add --no-cache make xz git curl docker
              fi
           fi
 
@@ -657,9 +681,17 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            if command -v sudo >/dev/null; then
+               sudo apt-get update && sudo apt-get install -y make xz-utils git curl unzip docker.io
+            else
+               apt-get update && apt-get install -y make xz-utils git curl unzip docker.io
+            fi
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             if command -v sudo >/dev/null; then
+                sudo apk add --no-cache make xz git curl docker
+             else
+                apk add --no-cache make xz git curl docker
+             fi
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -800,9 +832,17 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            if command -v sudo >/dev/null; then
+               sudo apt-get update && sudo apt-get install -y make xz-utils git curl unzip docker.io
+            else
+               apt-get update && apt-get install -y make xz-utils git curl unzip docker.io
+            fi
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             if command -v sudo >/dev/null; then
+                sudo apk add --no-cache make xz git curl docker
+             else
+                apk add --no-cache make xz git curl docker
+             fi
           fi
 
       - name: Configure Docker Registry Mirrors
