@@ -485,6 +485,12 @@ func ReplaceURLQuery(urlQuery string, params map[string]interface{}, noEscapePar
 }
 
 func replacePlaceholders(input string, params map[string]interface{}, noEscapeParams map[string]bool, escapeFunc func(string) string) string {
+	// ⚡ BOLT: Optimization: Avoid allocation if no placeholders are present.
+	// Randomized Selection from Top 5 High-Impact Targets
+	if strings.Index(input, "{{") == -1 {
+		return input
+	}
+
 	var sb strings.Builder
 	// Heuristic: grow slightly more than original to accommodate values
 	sb.Grow(len(input) + 32)
