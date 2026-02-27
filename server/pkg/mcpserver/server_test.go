@@ -7,7 +7,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"os"
 	"sync"
 	"testing"
 	"time"
@@ -43,11 +42,13 @@ func (m *mockTool) Tool() *v1.Tool {
 }
 
 func (m *mockTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
-	// Check context immediately
-	if ctx.Err() != nil {
+	// Simulate work that takes a bit of time, allowing context cancellation to be tested.
+	select {
+	case <-time.After(50 * time.Millisecond):
+		return "success", nil
+	case <-ctx.Done():
 		return nil, ctx.Err()
 	}
-	return "success", nil
 }
 
 func (m *mockTool) GetCacheConfig() *configv1.CacheConfig {
@@ -60,9 +61,6 @@ func (m *mockTool) MCPTool() *mcp.Tool {
 }
 
 func TestToolListFiltering(t *testing.T) {
-	if os.Getenv("CI") != "" {
-		t.Skip("Skipping TestToolListFiltering in CI to diagnose instability")
-	}
 	poolManager := pool.NewManager()
 	f := factory.NewUpstreamServiceFactory(poolManager, nil)
 	messageBus := bus_pb.MessageBus_builder{}.Build()
@@ -148,9 +146,6 @@ func TestToolListFiltering(t *testing.T) {
 }
 
 func TestToolListFilteringServiceId(t *testing.T) {
-	if os.Getenv("CI") != "" {
-		t.Skip("Skipping TestToolListFilteringServiceId in CI")
-	}
 	poolManager := pool.NewManager()
 	f := factory.NewUpstreamServiceFactory(poolManager, nil)
 	messageBus := bus_pb.MessageBus_builder{}.Build()
@@ -248,9 +243,6 @@ func (m *mockErrorTool) MCPTool() *mcp.Tool {
 }
 
 func TestServer_CallTool(t *testing.T) {
-	if os.Getenv("CI") != "" {
-		t.Skip("Skipping TestServer_CallTool in CI")
-	}
 	poolManager := pool.NewManager()
 	f := factory.NewUpstreamServiceFactory(poolManager, nil)
 	messageBus := bus_pb.MessageBus_builder{}.Build()
