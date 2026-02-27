@@ -47,3 +47,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **A2A Gateway Protocol**: MCP Any will implement a protocol-neutral bridge for A2A communication, allowing disparate agent frameworks (e.g., OpenClaw, AutoGen) to exchange state and tasks via a unified MCP-like interface.
 - **Federated Tool Mesh**: Moving from a standalone server to a "Mesh" architecture where multiple MCP Any instances can peer and share resources across network boundaries, governed by global Zero-Trust policies.
 - **Resource-Aware Intelligence**: Integrating cost and latency telemetry into the tool discovery process, allowing LLMs to perform "Economical Reasoning" when selecting tools.
+
+---
+
+## Strategic Evolution: [2026-02-27]
+### Focus: Secure Hook Sandboxing & Intent-Bound Policy Enforcements
+**Context**: Recent vulnerabilities in Claude Code (malicious hooks in repo configs) and the shift in Gemini CLI toward "Seatbelt Profiles" highlight a critical need for hardened configuration loading. MCP Any must protect the developer's local environment from untrusted repository-level tool definitions.
+**Strategic Pivot**:
+- **Verified Configuration Pipeline**: Implementing a mandatory static analysis and validation stage for any "auto-loaded" configurations or hooks. Hooks will be executed in a restricted sub-shell by default.
+- **Universal Policy "Seatbelts"**: Aligning our Policy Firewall with the emerging "Seatbelt Profile" standard, allowing users to toggle between "Restricted", "Balanced", and "Permissive" security postures with a single command.
+- **Financial Handoff Guards**: As agents gain autonomous wallets, MCP Any will act as the "Transaction Verifier," ensuring that tool calls involving value transfer match the high-level intent approved by the user.

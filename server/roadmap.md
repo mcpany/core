@@ -29,6 +29,11 @@
 *   **[P1] Federated MCP Peering**: Distributed node discovery and tool proxying. (Added: 2026-02-26)
 *   **[P1] Resource Telemetry Middleware**: Inject latency/cost metrics into tool schemas. (Added: 2026-02-26)
 
+#### Upcoming (2026-02-27 Evolution)
+*   **[P0] Secure Hook Sandbox**: Mandatory isolation for repository-level automated hooks. (Added: 2026-02-27)
+*   **[P1] Universal Security Seatbelts**: Standardized security postures (Restricted/Balanced/Permissive). (Added: 2026-02-27)
+*   **[P1] Financial Intent Verifier**: Validation middleware for agent-driven wallet transactions. (Added: 2026-02-27)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

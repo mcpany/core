@@ -63,5 +63,19 @@
 - **MCP Provenance Attestation**: Promoted to **P0** as it is a prerequisite for secure Federated MCP peering.
 - **Lazy-MCP Middleware**: Promoted to **P0** (Already P0, but re-affirming importance for Federated Tool Mesh).
 
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **Secure Hook Sandbox**: (P0) A mandatory isolation layer for executing automated hooks defined in repository-level configurations. Prevents arbitrary shell execution vulnerabilities.
+- **Security Seatbelt Profiles**: (P1) Standardized security postures (Restricted, Balanced, Permissive) that can be applied globally or per-session, simplifying the Policy Firewall configuration.
+- **Financial Intent Verifier (A2A Wallet Guard)**: (P1) A middleware that intercepts tool calls involving financial transactions (crypto/wallets) and validates them against user-approved intents.
+
+### Priority Shifts
+- **Policy Firewall**: Re-affirming **P0**. Essential for implementing the "Seatbelt Profiles" and protecting against malicious configurations.
+- **MCP Provenance Attestation**: Re-affirming **P0**. Critical for ensuring that auto-loaded tool configurations come from a trusted source.
+
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+- **Unsandboxed Hook Execution**: Monitoring for complete deprecation. All hooks must move to the Secure Sandbox.

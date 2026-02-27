@@ -57,3 +57,10 @@ As the number of available MCP tools grows, agents face "context pollution"—wh
 
 ## 7. Evolutionary Changelog
 *   **2026-02-25:** Initial Document Creation.
+
+### Update: 2026-02-27 - Integration with Session-Bound Context
+**Context:** Gemini CLI v0.30.0 introduced `SessionContext`.
+**Architecture Adjustment:**
+*   Updating the Search API to accept an optional `session_id`.
+*   The search index will now prioritize tools that have been used successfully in the current session or that are tagged as "related" to recently used tools in the `SessionContext`.
+**Benefit:** Increases discovery accuracy by narrowing the search space to the current "agentic intent."
