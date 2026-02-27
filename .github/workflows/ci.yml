@@ -118,18 +118,18 @@ jobs:
         uses: actions/cache@v4
         with:
           path: build/env/bin
-          key: ${{ runner.os }}-build-env-bin-${{ hashFiles('Makefile', 'server/Makefile') }}
+          key: ${{ runner.os }}-build-env-bin-v2-${{ hashFiles('Makefile', 'server/Makefile') }}
           restore-keys: |
-            ${{ runner.os }}-build-env-bin-
+            ${{ runner.os }}-build-env-bin-v2-
 
       # Cache Lint (golangci-lint, pre-commit)
       - name: Cache Lint
         uses: actions/cache@v4
         with:
           path: build/.cache
-          key: ${{ runner.os }}-lint-cache-${{ hashFiles('server/go.sum', 'server/.pre-commit-config.yaml') }}
+          key: ${{ runner.os }}-lint-cache-v2-${{ hashFiles('server/go.sum', 'server/.pre-commit-config.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-lint-cache-
+            ${{ runner.os }}-lint-cache-v2-
 
       - name: Install dependencies
         run: |
@@ -259,23 +259,16 @@ jobs:
       - name: Cache Docker images
         uses: ScribeMD/docker-cache@0.5.0
         with:
-          key: docker-images-${{ runner.os }}-${{ steps.get-date.outputs.week }}
+          key: docker-images-v2-${{ runner.os }}-${{ steps.get-date.outputs.week }}
 
       - name: Cache Tools
         uses: actions/cache@v4
         with:
           path: build/env/bin
-          key: ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}
+          key: ${{ runner.os }}-build-env-bin-v2-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}
           restore-keys: |
-            ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
-            ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-        with:
-          buildkitd-config-inline: |
-            [registry."docker.io"]
-              mirrors = ["mirror.gcr.io"]
+            ${{ runner.os }}-build-env-bin-v2-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
+            ${{ runner.os }}-build-env-bin-v2-${{ steps.get-date.outputs.week }}-
 
       - name: Prepare environment
         run: make prepare CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache
@@ -411,10 +404,10 @@ jobs:
         uses: actions/cache@v4
         with:
           path: build/env/bin
-          key: ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}
+          key: ${{ runner.os }}-build-env-bin-v2-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}
           restore-keys: |
-            ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
-            ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-
+            ${{ runner.os }}-build-env-bin-v2-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
+            ${{ runner.os }}-build-env-bin-v2-${{ steps.get-date.outputs.week }}-
 
       - name: Download Server Image
         uses: actions/download-artifact@v4
@@ -726,10 +719,10 @@ jobs:
         uses: actions/cache@v4
         with:
           path: build/env/bin
-          key: ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}
+          key: ${{ runner.os }}-build-env-bin-v2-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}
           restore-keys: |
-            ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
-            ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-
+            ${{ runner.os }}-build-env-bin-v2-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
+            ${{ runner.os }}-build-env-bin-v2-${{ steps.get-date.outputs.week }}-
 
       - name: Prepare environment
         run: make prepare
@@ -851,17 +844,10 @@ jobs:
         uses: actions/cache@v4
         with:
           path: build/env/bin
-          key: ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}
+          key: ${{ runner.os }}-build-env-bin-v2-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}
           restore-keys: |
-            ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
-            ${{ runner.os }}-build-env-bin-${{ steps.get-date.outputs.week }}-
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-        with:
-          buildkitd-config-inline: |
-            [registry."docker.io"]
-              mirrors = ["mirror.gcr.io"]
+            ${{ runner.os }}-build-env-bin-v2-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
+            ${{ runner.os }}-build-env-bin-v2-${{ steps.get-date.outputs.week }}-
 
       - name: Prepare environment
         run: make prepare
