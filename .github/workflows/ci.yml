@@ -34,14 +34,7 @@ jobs:
       src: ${{ steps.filter.outputs.src }}
     steps:
       - name: Install dependencies
-        run: |
-          SUDO=""
-          if [ "$(id -u)" -ne 0 ]; then
-            if command -v sudo >/dev/null; then
-              SUDO="sudo"
-            fi
-          fi
-          $SUDO apt-get update && $SUDO apt-get install -y git
+        run: apt-get update && apt-get install -y git
 
       - uses: actions/checkout@v6
         with:
@@ -85,8 +78,6 @@ jobs:
     if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: oci-runner
     # container: public.ecr.aws/docker/library/ubuntu:24.04
-    env:
-      SKIP_PLAYWRIGHT: "true"
     steps:
       - name: Free Disk Space (Fast)
         run: |
@@ -99,94 +90,6 @@ jobs:
         run: docker system prune -af
 
       - uses: actions/checkout@v6
-
-      - name: Setup Environment (Protoc & Deps)
-        run: |
-          echo "Debug Info:"
-          id
-          whoami
-          uname -a
-
-          SUDO=""
-          if [ "$(id -u)" -ne 0 ]; then
-            if command -v sudo >/dev/null; then
-              SUDO="sudo"
-            else
-              echo "WARNING: Not root and sudo not found."
-            fi
-          fi
-
-          echo "Installing dependencies..."
-          if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential curl unzip
-          elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz build-base curl unzip
-          fi
-
-          echo "Installing Protoc v33.1 manually..."
-          PROTOC_VERSION="33.1"
-          ARCH=$(uname -m)
-          if [ "$ARCH" = "x86_64" ]; then
-            PROTOC_ARCH="x86_64"
-            GO_ARCH="amd64"
-          elif [ "$ARCH" = "aarch64" ]; then
-            PROTOC_ARCH="aarch_64"
-            GO_ARCH="arm64"
-          else
-            echo "Unsupported arch: $ARCH"
-            exit 1
-          fi
-
-          curl -sSLO "https://github.com/protocolbuffers/protobuf/releases/download/v${PROTOC_VERSION}/protoc-${PROTOC_VERSION}-linux-${PROTOC_ARCH}.zip"
-          $SUDO unzip -o "protoc-${PROTOC_VERSION}-linux-${PROTOC_ARCH}.zip" -d /usr/local
-          $SUDO chmod +x /usr/local/bin/protoc
-          protoc --version
-
-          # Symlink to expected Makefile location to prevent re-download attempt
-          mkdir -p build/env/bin
-          ln -sf /usr/local/bin/protoc build/env/bin/protoc
-
-          echo "Debug: Verifying setup..."
-          ls -lR build/env
-          echo "PATH=$PATH"
-          go env
-
-          echo "Pre-installing Go plugins to avoid network issues in make..."
-          export GOBIN=$(pwd)/build/env/bin
-          mkdir -p $GOBIN
-          # Versions from Makefile
-          go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.11
-          go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.5.1
-          go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@v2.27.3
-          go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@v2.27.3
-          go install github.com/nats-io/nats-server/v2@latest
-
-          # Add to PATH
-          export PATH=$GOBIN:$PATH
-
-          echo "Pre-installing Helm, ShellCheck, GolangCI-Lint..."
-          # Helm
-          HELM_VERSION="v3.19.0"
-          curl -sSL "https://get.helm.sh/helm-${HELM_VERSION}-linux-${GO_ARCH}.tar.gz" -o helm.tar.gz
-          tar -zxvf helm.tar.gz
-          mv linux-${GO_ARCH}/helm $GOBIN/helm
-          rm -rf linux-${GO_ARCH} helm.tar.gz
-
-          # ShellCheck
-          SC_VERSION="stable"
-          curl -sSL "https://github.com/koalaman/shellcheck/releases/download/${SC_VERSION}/shellcheck-${SC_VERSION}.linux.${PROTOC_ARCH}.tar.xz" | tar -xJv
-          mv shellcheck-${SC_VERSION}/shellcheck $GOBIN/shellcheck
-          rm -rf shellcheck-${SC_VERSION}
-
-          # GolangCI-Lint
-          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $GOBIN v1.64.5
-
-          # Gofumpt & Goimports
-          go install mvdan.cc/gofumpt@latest
-          go install golang.org/x/tools/cmd/goimports@latest
-
-          echo "Running make prepare dry-run..."
-          make prepare || { echo "Make prepare failed"; exit 1; }
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -231,8 +134,10 @@ jobs:
       - name: Install dependencies
         run: |
           SUDO=""
-          if command -v sudo >/dev/null; then
-            SUDO="sudo"
+          if [ "$(id -u)" -ne 0 ]; then
+            if command -v sudo >/dev/null; then
+              SUDO="sudo"
+            fi
           fi
           if command -v apt-get &> /dev/null; then
             $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential curl unzip
@@ -255,7 +160,6 @@ jobs:
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
-      SKIP_PLAYWRIGHT: "true"
     steps:
       - name: Free Disk Space (Fast)
         run: |
@@ -272,8 +176,10 @@ jobs:
       - name: Install dependencies
         run: |
           SUDO=""
-          if command -v sudo >/dev/null; then
-            SUDO="sudo"
+          if [ "$(id -u)" -ne 0 ]; then
+            if command -v sudo >/dev/null; then
+              SUDO="sudo"
+            fi
           fi
           if command -v apt-get &> /dev/null; then
             $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential curl unzip
@@ -415,8 +321,10 @@ jobs:
       - name: Install dependencies
         run: |
           SUDO=""
-          if command -v sudo >/dev/null; then
-            SUDO="sudo"
+          if [ "$(id -u)" -ne 0 ]; then
+            if command -v sudo >/dev/null; then
+              SUDO="sudo"
+            fi
           fi
           if command -v apt-get &> /dev/null; then
             $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential curl unzip
@@ -563,9 +471,7 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: ${{ matrix.runner }}
-    # container: public.ecr.aws/docker/library/ubuntu:24.04
-    env:
-      SKIP_PLAYWRIGHT: "true"
+    container: public.ecr.aws/docker/library/ubuntu:24.04
     strategy:
       fail-fast: false
       matrix:
@@ -585,93 +491,19 @@ jobs:
           sudo rm -rf /usr/local/share/boost
       - uses: actions/checkout@v6
 
-      - name: Setup Environment (Protoc & Deps)
+      - name: Install dependencies
         run: |
-          echo "Debug Info:"
-          id
-          whoami
-          uname -a
-
           SUDO=""
           if [ "$(id -u)" -ne 0 ]; then
             if command -v sudo >/dev/null; then
               SUDO="sudo"
-            else
-              echo "WARNING: Not root and sudo not found."
             fi
           fi
-
-          echo "Installing dependencies..."
           if command -v apt-get &> /dev/null; then
             $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential curl unzip
           elif command -v apk &> /dev/null; then
              $SUDO apk add --no-cache make xz build-base curl unzip
           fi
-
-          echo "Installing Protoc v33.1 manually..."
-          PROTOC_VERSION="33.1"
-          ARCH=$(uname -m)
-          if [ "$ARCH" = "x86_64" ]; then
-            PROTOC_ARCH="x86_64"
-            GO_ARCH="amd64"
-          elif [ "$ARCH" = "aarch64" ]; then
-            PROTOC_ARCH="aarch_64"
-            GO_ARCH="arm64"
-          else
-            echo "Unsupported arch: $ARCH"
-            exit 1
-          fi
-
-          curl -sSLO "https://github.com/protocolbuffers/protobuf/releases/download/v${PROTOC_VERSION}/protoc-${PROTOC_VERSION}-linux-${PROTOC_ARCH}.zip"
-          $SUDO unzip -o "protoc-${PROTOC_VERSION}-linux-${PROTOC_ARCH}.zip" -d /usr/local
-          $SUDO chmod +x /usr/local/bin/protoc
-          protoc --version
-
-          # Symlink to expected Makefile location to prevent re-download attempt
-          mkdir -p build/env/bin
-          ln -sf /usr/local/bin/protoc build/env/bin/protoc
-
-          echo "Debug: Verifying setup..."
-          ls -lR build/env
-          echo "PATH=$PATH"
-          go env
-
-          echo "Pre-installing Go plugins to avoid network issues in make..."
-          export GOBIN=$(pwd)/build/env/bin
-          mkdir -p $GOBIN
-          # Versions from Makefile
-          go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.11
-          go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.5.1
-          go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@v2.27.3
-          go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@v2.27.3
-          go install github.com/nats-io/nats-server/v2@latest
-
-          # Add to PATH
-          export PATH=$GOBIN:$PATH
-
-          echo "Pre-installing Helm, ShellCheck, GolangCI-Lint..."
-          # Helm
-          HELM_VERSION="v3.19.0"
-          curl -sSL "https://get.helm.sh/helm-${HELM_VERSION}-linux-${GO_ARCH}.tar.gz" -o helm.tar.gz
-          tar -zxvf helm.tar.gz
-          mv linux-${GO_ARCH}/helm $GOBIN/helm
-          rm -rf linux-${GO_ARCH} helm.tar.gz
-
-          # ShellCheck
-          SC_VERSION="stable"
-          curl -sSL "https://github.com/koalaman/shellcheck/releases/download/${SC_VERSION}/shellcheck-${SC_VERSION}.linux.${PROTOC_ARCH}.tar.xz" | tar -xJv
-          mv shellcheck-${SC_VERSION}/shellcheck $GOBIN/shellcheck
-          rm -rf shellcheck-${SC_VERSION}
-
-          # GolangCI-Lint
-          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $GOBIN v1.64.5
-
-          # Gofumpt & Goimports
-          go install mvdan.cc/gofumpt@latest
-          go install golang.org/x/tools/cmd/goimports@latest
-
-          echo "Running make prepare dry-run..."
-          make prepare || { echo "Make prepare failed"; exit 1; }
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -816,8 +648,10 @@ jobs:
       - name: Install dependencies
         run: |
           SUDO=""
-          if command -v sudo >/dev/null; then
-            SUDO="sudo"
+          if [ "$(id -u)" -ne 0 ]; then
+            if command -v sudo >/dev/null; then
+              SUDO="sudo"
+            fi
           fi
           if command -v apt-get &> /dev/null; then
             $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential curl unzip
@@ -960,8 +794,10 @@ jobs:
       - name: Install dependencies
         run: |
           SUDO=""
-          if command -v sudo >/dev/null; then
-            SUDO="sudo"
+          if [ "$(id -u)" -ne 0 ]; then
+            if command -v sudo >/dev/null; then
+              SUDO="sudo"
+            fi
           fi
           if command -v apt-get &> /dev/null; then
             $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential curl unzip
@@ -1192,94 +1028,6 @@ jobs:
         run: docker system prune -af
 
       - uses: actions/checkout@v6
-
-      - name: Setup Environment (Protoc & Deps)
-        run: |
-          echo "Debug Info:"
-          id
-          whoami
-          uname -a
-
-          SUDO=""
-          if [ "$(id -u)" -ne 0 ]; then
-            if command -v sudo >/dev/null; then
-              SUDO="sudo"
-            else
-              echo "WARNING: Not root and sudo not found."
-            fi
-          fi
-
-          echo "Installing dependencies..."
-          if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential curl unzip
-          elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make xz build-base curl unzip
-          fi
-
-          echo "Installing Protoc v33.1 manually..."
-          PROTOC_VERSION="33.1"
-          ARCH=$(uname -m)
-          if [ "$ARCH" = "x86_64" ]; then
-            PROTOC_ARCH="x86_64"
-            GO_ARCH="amd64"
-          elif [ "$ARCH" = "aarch64" ]; then
-            PROTOC_ARCH="aarch_64"
-            GO_ARCH="arm64"
-          else
-            echo "Unsupported arch: $ARCH"
-            exit 1
-          fi
-
-          curl -sSLO "https://github.com/protocolbuffers/protobuf/releases/download/v${PROTOC_VERSION}/protoc-${PROTOC_VERSION}-linux-${PROTOC_ARCH}.zip"
-          $SUDO unzip -o "protoc-${PROTOC_VERSION}-linux-${PROTOC_ARCH}.zip" -d /usr/local
-          $SUDO chmod +x /usr/local/bin/protoc
-          protoc --version
-
-          # Symlink to expected Makefile location to prevent re-download attempt
-          mkdir -p build/env/bin
-          ln -sf /usr/local/bin/protoc build/env/bin/protoc
-
-          echo "Debug: Verifying setup..."
-          ls -lR build/env
-          echo "PATH=$PATH"
-          go env
-
-          echo "Pre-installing Go plugins to avoid network issues in make..."
-          export GOBIN=$(pwd)/build/env/bin
-          mkdir -p $GOBIN
-          # Versions from Makefile
-          go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.11
-          go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.5.1
-          go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@v2.27.3
-          go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@v2.27.3
-          go install github.com/nats-io/nats-server/v2@latest
-
-          # Add to PATH
-          export PATH=$GOBIN:$PATH
-
-          echo "Pre-installing Helm, ShellCheck, GolangCI-Lint..."
-          # Helm
-          HELM_VERSION="v3.19.0"
-          curl -sSL "https://get.helm.sh/helm-${HELM_VERSION}-linux-${GO_ARCH}.tar.gz" -o helm.tar.gz
-          tar -zxvf helm.tar.gz
-          mv linux-${GO_ARCH}/helm $GOBIN/helm
-          rm -rf linux-${GO_ARCH} helm.tar.gz
-
-          # ShellCheck
-          SC_VERSION="stable"
-          curl -sSL "https://github.com/koalaman/shellcheck/releases/download/${SC_VERSION}/shellcheck-${SC_VERSION}.linux.${PROTOC_ARCH}.tar.xz" | tar -xJv
-          mv shellcheck-${SC_VERSION}/shellcheck $GOBIN/shellcheck
-          rm -rf shellcheck-${SC_VERSION}
-
-          # GolangCI-Lint
-          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $GOBIN v1.64.5
-
-          # Gofumpt & Goimports
-          go install mvdan.cc/gofumpt@latest
-          go install golang.org/x/tools/cmd/goimports@latest
-
-          echo "Running make prepare dry-run..."
-          make prepare || { echo "Make prepare failed"; exit 1; }
 
       - name: Set up Go
         uses: actions/setup-go@v6
