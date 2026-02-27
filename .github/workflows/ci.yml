@@ -815,7 +815,7 @@ jobs:
   e2e-public-api:
     runs-on: oci-runner
     # container: public.ecr.aws/docker/library/ubuntu:24.04
-    timeout-minutes: 60
+    timeout-minutes: 90
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
     env:
@@ -1084,8 +1084,6 @@ jobs:
       - name: Prune Docker
         run: docker system prune -af
 
-      - uses: actions/checkout@v6
-
       - name: Install dependencies
         run: |
           SUDO=""
@@ -1094,10 +1092,12 @@ jobs:
           fi
 
           if command -v apt-get &> /dev/null; then
-            $SUDO apt-get update && $SUDO apt-get install -y make curl unzip git
+            $SUDO apt-get update && $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y build-essential ca-certificates curl git make unzip xz-utils
           elif command -v apk &> /dev/null; then
-             $SUDO apk add --no-cache make curl unzip git
+             $SUDO apk add --no-cache build-base ca-certificates curl git make unzip xz
           fi
+
+      - uses: actions/checkout@v6
 
       - uses: actions/checkout@v6
 
