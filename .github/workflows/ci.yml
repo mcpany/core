@@ -34,14 +34,7 @@ jobs:
       src: ${{ steps.filter.outputs.src }}
     steps:
       - name: Install dependencies
-        run: |
-          if ! command -v git &> /dev/null; then
-            if command -v sudo &> /dev/null; then
-              sudo apt-get update && sudo apt-get install -y git
-            else
-              apt-get update && apt-get install -y git
-            fi
-          fi
+        run: apt-get update && apt-get install -y git
 
       - uses: actions/checkout@v6
         with:
@@ -88,10 +81,11 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          rm -rf /usr/local/lib/android
-          rm -rf /usr/share/dotnet
-          rm -rf /opt/ghc
-          rm -rf /usr/local/share/boost
+          if command -v sudo &> /dev/null; then SUDO="sudo"; else SUDO=""; fi
+          $SUDO rm -rf /usr/local/lib/android || true
+          $SUDO rm -rf /usr/share/dotnet || true
+          $SUDO rm -rf /opt/ghc || true
+          $SUDO rm -rf /usr/local/share/boost || true
 
       - name: Prune Docker
         run: docker system prune -af
@@ -140,19 +134,11 @@ jobs:
 
       - name: Install dependencies
         run: |
+          if command -v sudo &> /dev/null; then SUDO="sudo"; else SUDO=""; fi
           if command -v apt-get &> /dev/null; then
-            # Install build-essential for gcc (needed for CGO)
-            if command -v sudo &> /dev/null; then
-              sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
-            else
-              apt-get update && apt-get install -y make xz-utils build-essential
-            fi
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential
           elif command -v apk &> /dev/null; then
-             if command -v sudo &> /dev/null; then
-                sudo apk add --no-cache make xz build-base
-             else
-                apk add --no-cache make xz build-base
-             fi
+            $SUDO apk add --no-cache make xz build-base
           fi
 
       - name: Prepare environment
@@ -164,7 +150,7 @@ jobs:
   unit-test:
     runs-on: oci-runner
     # container: public.ecr.aws/docker/library/ubuntu:24.04
-    timeout-minutes: 45
+    timeout-minutes: 60
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
     env:
@@ -173,17 +159,11 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          if command -v sudo &> /dev/null; then
-            sudo rm -rf /usr/local/lib/android
-            sudo rm -rf /usr/share/dotnet
-            sudo rm -rf /opt/ghc
-            sudo rm -rf /usr/local/share/boost
-          else
-            rm -rf /usr/local/lib/android
-            rm -rf /usr/share/dotnet
-            rm -rf /opt/ghc
-            rm -rf /usr/local/share/boost
-          fi
+          if command -v sudo &> /dev/null; then SUDO="sudo"; else SUDO=""; fi
+          $SUDO rm -rf /usr/local/lib/android || true
+          $SUDO rm -rf /usr/share/dotnet || true
+          $SUDO rm -rf /opt/ghc || true
+          $SUDO rm -rf /usr/local/share/boost || true
 
       - name: Prune Docker
         run: docker system prune -af
@@ -192,19 +172,11 @@ jobs:
 
       - name: Install dependencies
         run: |
+          if command -v sudo &> /dev/null; then SUDO="sudo"; else SUDO=""; fi
           if command -v apt-get &> /dev/null; then
-            # Install build-essential for gcc (needed for CGO)
-            if command -v sudo &> /dev/null; then
-              sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
-            else
-              apt-get update && apt-get install -y make xz-utils build-essential
-            fi
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential
           elif command -v apk &> /dev/null; then
-             if command -v sudo &> /dev/null; then
-                sudo apk add --no-cache make xz build-base
-             else
-                apk add --no-cache make xz build-base
-             fi
+            $SUDO apk add --no-cache make xz build-base
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -316,7 +288,7 @@ jobs:
   e2e-parallel:
     runs-on: oci-runner
     # container: public.ecr.aws/docker/library/ubuntu:24.04
-    timeout-minutes: 30
+    timeout-minutes: 60
     needs: [build-images]
     strategy:
       fail-fast: false
@@ -328,10 +300,11 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          if command -v sudo &> /dev/null; then SUDO="sudo"; else SUDO=""; fi
+          $SUDO rm -rf /usr/local/lib/android || true
+          $SUDO rm -rf /usr/share/dotnet || true
+          $SUDO rm -rf /opt/ghc || true
+          $SUDO rm -rf /usr/local/share/boost || true
 
       - name: Prune Docker
         run: docker system prune -af
@@ -340,19 +313,11 @@ jobs:
 
       - name: Install dependencies
         run: |
+          if command -v sudo &> /dev/null; then SUDO="sudo"; else SUDO=""; fi
           if command -v apt-get &> /dev/null; then
-            # Install build-essential for gcc (needed for CGO)
-            if command -v sudo &> /dev/null; then
-              sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
-            else
-              apt-get update && apt-get install -y make xz-utils build-essential
-            fi
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential
           elif command -v apk &> /dev/null; then
-             if command -v sudo &> /dev/null; then
-                sudo apk add --no-cache make xz build-base
-             else
-                apk add --no-cache make xz build-base
-             fi
+            $SUDO apk add --no-cache make xz build-base
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -508,10 +473,11 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          if command -v sudo &> /dev/null; then SUDO="sudo"; else SUDO=""; fi
+          $SUDO rm -rf /usr/local/lib/android || true
+          $SUDO rm -rf /usr/share/dotnet || true
+          $SUDO rm -rf /opt/ghc || true
+          $SUDO rm -rf /usr/local/share/boost || true
       - uses: actions/checkout@v6
 
       - name: Set up Go
@@ -644,10 +610,11 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          if command -v sudo &> /dev/null; then SUDO="sudo"; else SUDO=""; fi
+          $SUDO rm -rf /usr/local/lib/android || true
+          $SUDO rm -rf /usr/share/dotnet || true
+          $SUDO rm -rf /opt/ghc || true
+          $SUDO rm -rf /usr/local/share/boost || true
 
       - name: Prune Docker
         run: docker system prune -af
@@ -656,19 +623,11 @@ jobs:
 
       - name: Install dependencies
         run: |
+          if command -v sudo &> /dev/null; then SUDO="sudo"; else SUDO=""; fi
           if command -v apt-get &> /dev/null; then
-            # Install build-essential for gcc (needed for CGO)
-            if command -v sudo &> /dev/null; then
-              sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
-            else
-              apt-get update && apt-get install -y make xz-utils build-essential
-            fi
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential
           elif command -v apk &> /dev/null; then
-             if command -v sudo &> /dev/null; then
-                sudo apk add --no-cache make xz build-base
-             else
-                apk add --no-cache make xz build-base
-             fi
+            $SUDO apk add --no-cache make xz build-base
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -783,7 +742,7 @@ jobs:
   e2e-public-api:
     runs-on: oci-runner
     # container: public.ecr.aws/docker/library/ubuntu:24.04
-    timeout-minutes: 30
+    timeout-minutes: 60
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
     env:
@@ -792,10 +751,11 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          if command -v sudo &> /dev/null; then SUDO="sudo"; else SUDO=""; fi
+          $SUDO rm -rf /usr/local/lib/android || true
+          $SUDO rm -rf /usr/share/dotnet || true
+          $SUDO rm -rf /opt/ghc || true
+          $SUDO rm -rf /usr/local/share/boost || true
 
       - name: Prune Docker
         run: docker system prune -af
@@ -804,10 +764,11 @@ jobs:
 
       - name: Install dependencies
         run: |
+          if command -v sudo &> /dev/null; then SUDO="sudo"; else SUDO=""; fi
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+            $SUDO apk add --no-cache make xz build-base
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -971,10 +932,11 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          if command -v sudo &> /dev/null; then SUDO="sudo"; else SUDO=""; fi
+          $SUDO rm -rf /usr/local/lib/android || true
+          $SUDO rm -rf /usr/share/dotnet || true
+          $SUDO rm -rf /opt/ghc || true
+          $SUDO rm -rf /usr/local/share/boost || true
 
       - name: Prune Docker
         run: docker system prune -af
@@ -1024,10 +986,11 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          if command -v sudo &> /dev/null; then SUDO="sudo"; else SUDO=""; fi
+          $SUDO rm -rf /usr/local/lib/android || true
+          $SUDO rm -rf /usr/share/dotnet || true
+          $SUDO rm -rf /opt/ghc || true
+          $SUDO rm -rf /usr/local/share/boost || true
 
       - name: Prune Docker
         run: docker system prune -af
