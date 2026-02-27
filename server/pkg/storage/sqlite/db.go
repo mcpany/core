@@ -58,7 +58,8 @@ func NewDB(path string) (*DB, error) {
 	if _, err := db.ExecContext(context.Background(), "PRAGMA synchronous=NORMAL;"); err != nil {
 		return nil, fmt.Errorf("failed to set synchronous mode: %w", err)
 	}
-	if _, err := db.ExecContext(context.Background(), "PRAGMA busy_timeout=5000;"); err != nil {
+	// Increased busy_timeout to 30s to handle high concurrency in CI/tests
+	if _, err := db.ExecContext(context.Background(), "PRAGMA busy_timeout=30000;"); err != nil {
 		return nil, fmt.Errorf("failed to set busy_timeout: %w", err)
 	}
 

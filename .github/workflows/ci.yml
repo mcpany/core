@@ -96,18 +96,18 @@ jobs:
           echo "Installing dependencies..."
           if command -v apt-get &> /dev/null; then
             sudo apt-get update
-            sudo apt-get install -y --no-install-recommends make xz-utils build-essential gcc g++
+            sudo apt-get install -y --no-install-recommends make xz-utils build-essential clang
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz build-base
+             sudo apk add --no-cache make xz build-base clang
           else
             echo "No package manager found!"
             exit 1
           fi
-          echo "Checking gcc..."
-          which gcc || echo "gcc not found in PATH"
-          gcc --version || echo "gcc version check failed"
+          echo "Checking clang..."
+          which clang || echo "clang not found in PATH"
+          clang --version || echo "clang version check failed"
           echo "PATH=$PATH"
-          echo "CC=$(which gcc)" >> $GITHUB_ENV
+          echo "CC=$(which clang)" >> $GITHUB_ENV
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -154,18 +154,18 @@ jobs:
           echo "Installing dependencies..."
           if command -v apt-get &> /dev/null; then
             sudo apt-get update
-            sudo apt-get install -y --no-install-recommends make xz-utils build-essential gcc g++
+            sudo apt-get install -y --no-install-recommends make xz-utils build-essential clang
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz build-base
+             sudo apk add --no-cache make xz build-base clang
           else
             echo "No package manager found!"
             exit 1
           fi
-          echo "Checking gcc..."
-          which gcc || echo "gcc not found in PATH"
-          gcc --version || echo "gcc version check failed"
+          echo "Checking clang..."
+          which clang || echo "clang not found in PATH"
+          clang --version || echo "clang version check failed"
           echo "PATH=$PATH"
-          echo "CC=$(which gcc)" >> $GITHUB_ENV
+          echo "CC=$(which clang)" >> $GITHUB_ENV
 
       - name: Prepare environment
         run: make prepare
@@ -200,18 +200,18 @@ jobs:
           echo "Installing dependencies..."
           if command -v apt-get &> /dev/null; then
             sudo apt-get update
-            sudo apt-get install -y --no-install-recommends make xz-utils build-essential gcc g++
+            sudo apt-get install -y --no-install-recommends make xz-utils build-essential clang
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz build-base
+             sudo apk add --no-cache make xz build-base clang
           else
             echo "No package manager found!"
             exit 1
           fi
-          echo "Checking gcc..."
-          which gcc || echo "gcc not found in PATH"
-          gcc --version || echo "gcc version check failed"
+          echo "Checking clang..."
+          which clang || echo "clang not found in PATH"
+          clang --version || echo "clang version check failed"
           echo "PATH=$PATH"
-          echo "CC=$(which gcc)" >> $GITHUB_ENV
+          echo "CC=$(which clang)" >> $GITHUB_ENV
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -310,14 +310,14 @@ jobs:
       - name: Test (Short)
         run: |
           if command -v apt-get &> /dev/null; then
-             sudo apt-get update && sudo apt-get install -y --no-install-recommends build-essential gcc g++
+             sudo apt-get update && sudo apt-get install -y --no-install-recommends build-essential clang
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache build-base
+             sudo apk add --no-cache build-base clang
           fi
-          echo "Debug: GCC info"
-          which gcc || echo "gcc not found"
-          gcc --version || echo "gcc version check failed"
-          export CC=$(which gcc)
+          echo "Debug: Clang info"
+          which clang || echo "clang not found"
+          clang --version || echo "clang version check failed"
+          export CC=$(which clang)
           make test-fast CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache COVERAGE_FILE=coverage-fast.out
 
       - name: Upload coverage to Codecov
@@ -358,18 +358,18 @@ jobs:
           echo "Installing dependencies..."
           if command -v apt-get &> /dev/null; then
             sudo apt-get update
-            sudo apt-get install -y --no-install-recommends make xz-utils build-essential gcc g++
+            sudo apt-get install -y --no-install-recommends make xz-utils build-essential clang
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz build-base
+             sudo apk add --no-cache make xz build-base clang
           else
             echo "No package manager found!"
             exit 1
           fi
-          echo "Checking gcc..."
-          which gcc || echo "gcc not found in PATH"
-          gcc --version || echo "gcc version check failed"
+          echo "Checking clang..."
+          which clang || echo "clang not found in PATH"
+          clang --version || echo "clang version check failed"
           echo "PATH=$PATH"
-          echo "CC=$(which gcc)" >> $GITHUB_ENV
+          echo "CC=$(which clang)" >> $GITHUB_ENV
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -496,11 +496,11 @@ jobs:
       - name: run parallel e2e
         run: |
           if command -v apt-get &> /dev/null; then
-             sudo apt-get update && sudo apt-get install -y --no-install-recommends build-essential gcc g++
+             sudo apt-get update && sudo apt-get install -y --no-install-recommends build-essential clang
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache build-base
+             sudo apk add --no-cache build-base clang
           fi
-          export CC=$(which gcc)
+          export CC=$(which clang)
           make e2e-parallel SHARD=${{ matrix.shard }} SKIP_DOCKER_REBUILD=true CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-e2e-parallel.out
 
       - name: Upload coverage to Codecov
@@ -681,18 +681,18 @@ jobs:
           echo "Installing dependencies..."
           if command -v apt-get &> /dev/null; then
             sudo apt-get update
-            sudo apt-get install -y --no-install-recommends make xz-utils build-essential gcc g++
+            sudo apt-get install -y --no-install-recommends make xz-utils build-essential clang
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz build-base
+             sudo apk add --no-cache make xz build-base clang
           else
             echo "No package manager found!"
             exit 1
           fi
-          echo "Checking gcc..."
-          which gcc || echo "gcc not found in PATH"
-          gcc --version || echo "gcc version check failed"
+          echo "Checking clang..."
+          which clang || echo "clang not found in PATH"
+          clang --version || echo "clang version check failed"
           echo "PATH=$PATH"
-          echo "CC=$(which gcc)" >> $GITHUB_ENV
+          echo "CC=$(which clang)" >> $GITHUB_ENV
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -794,11 +794,11 @@ jobs:
       - name: run sequential e2e
         run: |
           if command -v apt-get &> /dev/null; then
-             sudo apt-get update && sudo apt-get install -y --no-install-recommends build-essential gcc g++
+             sudo apt-get update && sudo apt-get install -y --no-install-recommends build-essential clang
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache build-base
+             sudo apk add --no-cache build-base clang
           fi
-          export CC=$(which gcc)
+          export CC=$(which clang)
           make e2e-sequential SKIP_DOCKER_REBUILD=true CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-e2e-sequential.out
 
       - name: Upload coverage to Codecov
@@ -836,18 +836,18 @@ jobs:
           echo "Installing dependencies..."
           if command -v apt-get &> /dev/null; then
             sudo apt-get update
-            sudo apt-get install -y --no-install-recommends make xz-utils build-essential gcc g++
+            sudo apt-get install -y --no-install-recommends make xz-utils build-essential clang
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz build-base
+             sudo apk add --no-cache make xz build-base clang
           else
             echo "No package manager found!"
             exit 1
           fi
-          echo "Checking gcc..."
-          which gcc || echo "gcc not found in PATH"
-          gcc --version || echo "gcc version check failed"
+          echo "Checking clang..."
+          which clang || echo "clang not found in PATH"
+          clang --version || echo "clang version check failed"
           echo "PATH=$PATH"
-          echo "CC=$(which gcc)" >> $GITHUB_ENV
+          echo "CC=$(which clang)" >> $GITHUB_ENV
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -932,11 +932,11 @@ jobs:
       - name: test public api
         run: |
           if command -v apt-get &> /dev/null; then
-             sudo apt-get update && sudo apt-get install -y --no-install-recommends build-essential gcc g++
+             sudo apt-get update && sudo apt-get install -y --no-install-recommends build-essential clang
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache build-base
+             sudo apk add --no-cache build-base clang
           fi
-          export CC=$(which gcc)
+          export CC=$(which clang)
           make test-public-api CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-public-api.out
 
       - name: Upload coverage to Codecov
@@ -1084,18 +1084,18 @@ jobs:
           echo "Installing dependencies..."
           if command -v apt-get &> /dev/null; then
             sudo apt-get update
-            sudo apt-get install -y --no-install-recommends make xz-utils build-essential gcc g++
+            sudo apt-get install -y --no-install-recommends make xz-utils build-essential clang
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz build-base
+             sudo apk add --no-cache make xz build-base clang
           else
             echo "No package manager found!"
             exit 1
           fi
-          echo "Checking gcc..."
-          which gcc || echo "gcc not found in PATH"
-          gcc --version || echo "gcc version check failed"
+          echo "Checking clang..."
+          which clang || echo "clang not found in PATH"
+          clang --version || echo "clang version check failed"
           echo "PATH=$PATH"
-          echo "CC=$(which gcc)" >> $GITHUB_ENV
+          echo "CC=$(which clang)" >> $GITHUB_ENV
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -1172,11 +1172,11 @@ jobs:
       - name: Run K8s E2E Tests
         run: |
           if command -v apt-get &> /dev/null; then
-             sudo apt-get update && sudo apt-get install -y --no-install-recommends build-essential gcc g++
+             sudo apt-get update && sudo apt-get install -y --no-install-recommends build-essential clang
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache build-base
+             sudo apk add --no-cache build-base clang
           fi
-          export CC=$(which gcc)
+          export CC=$(which clang)
           make k8s-e2e SKIP_IMAGE_BUILD=true IMAGE_TAG=latest
 
   ci-success:
