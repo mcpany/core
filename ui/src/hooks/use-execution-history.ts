@@ -1,22 +1,33 @@
-/**
- * Copyright 2026 Author(s) of MCP Any
- * SPDX-License-Identifier: Apache-2.0
- */
-
 import { useState, useEffect } from "react";
 
 const HISTORY_KEY = "mcpany-tool-history";
 
+/**
+ * Interface representing a persisted tool execution entry.
+ */
 export interface HistoryEntry {
+  /** Unique ID of the entry */
   id: string;
+  /** ISO timestamp of when the tool was executed */
   timestamp: string;
+  /** Name of the tool executed */
   toolName: string;
+  /** Input arguments used for execution */
   args: any;
+  /** Result or output of the tool execution */
   result: any;
+  /** Duration of execution in milliseconds */
   duration: number;
+  /** Status of the execution (success/error) */
   status: "success" | "error";
 }
 
+/**
+ * Hook to manage local execution history of tool runs.
+ * Persists data to localStorage.
+ *
+ * @returns The history state and functions to add/clear entries.
+ */
 export function useExecutionHistory() {
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
