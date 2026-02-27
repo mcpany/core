@@ -39,7 +39,15 @@ jobs:
           if command -v sudo >/dev/null; then
             SUDO="sudo"
           fi
-          $SUDO apt-get update && $SUDO apt-get install -y git
+          if command -v apt-get &> /dev/null; then
+            $SUDO apt-get update && $SUDO apt-get install -y git
+          elif command -v apk &> /dev/null; then
+             $SUDO apk add --no-cache git
+          elif command -v yum &> /dev/null; then
+             $SUDO yum install -y git
+          elif command -v dnf &> /dev/null; then
+             $SUDO dnf install -y git
+          fi
 
       - uses: actions/checkout@v6
         with:
@@ -162,6 +170,10 @@ jobs:
             $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential
           elif command -v apk &> /dev/null; then
              $SUDO apk add --no-cache make xz build-base
+          elif command -v yum &> /dev/null; then
+             $SUDO yum install -y make xz gcc gcc-c++
+          elif command -v dnf &> /dev/null; then
+             $SUDO dnf install -y make xz gcc gcc-c++
           fi
 
       - name: Prepare environment
@@ -202,6 +214,10 @@ jobs:
             $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential
           elif command -v apk &> /dev/null; then
              $SUDO apk add --no-cache make xz build-base
+          elif command -v yum &> /dev/null; then
+             $SUDO yum install -y make xz gcc gcc-c++
+          elif command -v dnf &> /dev/null; then
+             $SUDO dnf install -y make xz gcc gcc-c++
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -345,6 +361,10 @@ jobs:
             $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential
           elif command -v apk &> /dev/null; then
              $SUDO apk add --no-cache make xz build-base
+          elif command -v yum &> /dev/null; then
+             $SUDO yum install -y make xz gcc gcc-c++
+          elif command -v dnf &> /dev/null; then
+             $SUDO dnf install -y make xz gcc gcc-c++
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -672,6 +692,10 @@ jobs:
             $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential
           elif command -v apk &> /dev/null; then
              $SUDO apk add --no-cache make xz build-base
+          elif command -v yum &> /dev/null; then
+             $SUDO yum install -y make xz gcc gcc-c++
+          elif command -v dnf &> /dev/null; then
+             $SUDO dnf install -y make xz gcc gcc-c++
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -815,6 +839,10 @@ jobs:
             $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential
           elif command -v apk &> /dev/null; then
              $SUDO apk add --no-cache make xz build-base
+          elif command -v yum &> /dev/null; then
+             $SUDO yum install -y make xz gcc gcc-c++
+          elif command -v dnf &> /dev/null; then
+             $SUDO dnf install -y make xz gcc gcc-c++
           fi
 
       - name: Configure Docker Registry Mirrors
