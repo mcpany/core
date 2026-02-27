@@ -97,6 +97,12 @@ func TestIsValidBindAddress(t *testing.T) {
 		{"invalid port negative only", "-1", true},
 		{"invalid port too large", "127.0.0.1:65536", true},
 		{"invalid port too large only", "65536", true},
+		// Strict numeric port tests
+		{"non-numeric port service name", "localhost:http", true}, // Now expected to FAIL
+		{"ipv6 no port", "[::1]", true},                           // Now expected to FAIL
+		{"ipv6 with non-numeric port", "[::1]:http", true},        // Now expected to FAIL
+		{"unknown service", "localhost:unknown-service", true},    // Now expected to FAIL
+		{"valid any host", "0.0.0.0:80", false},
 	}
 
 	for _, tt := range tests {

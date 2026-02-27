@@ -17,7 +17,8 @@ import (
 )
 
 // IsValidBindAddress checks if a given string is a valid bind address.
-// A valid bind address is in the format "host:port".
+// A valid bind address is in the format "host:port" or just "port".
+// The port MUST be a numeric value between 0 and 65535.
 //
 // Summary: Validates a bind address string.
 //
@@ -29,30 +30,29 @@ import (
 func IsValidBindAddress(s string) error {
 	_, port, err := net.SplitHostPort(s)
 	if err != nil {
-		// If the error is due to missing port in address (which happens when no colon is present),
-		// we check if it is a valid port-only string by prepending ":".
-		if !strings.Contains(s, ":") {
-			// Ensure it is a numeric port to distinguish from missing-port hostnames like "localhost"
-			if p, err := strconv.Atoi(s); err == nil {
-				if p < 0 || p > 65535 {
-					return fmt.Errorf("port must be between 0 and 65535")
-				}
-				_, port, err = net.SplitHostPort(":" + s)
-				if err == nil && port != "" {
-					return nil
-				}
+		// If splitting failed, it might be a port-only string (e.g. "8080").
+		// We try to parse the entire string as a port.
+		if p, err := strconv.Atoi(s); err == nil {
+			if p < 0 || p > 65535 {
+				return fmt.Errorf("port must be between 0 and 65535")
 			}
+			return nil
 		}
+		// If it's not a valid port number, return the original SplitHostPort error.
+		// This correctly handles IPv6 addresses without ports (e.g. "[::1]") which fail SplitHostPort
+		// and also fail Atoi.
 		return err
 	}
+
 	if port == "" {
 		return fmt.Errorf("port is required")
 	}
-	// Check if port is numeric and within range
+
+	// Check if port is numeric and within range.
+	// We strictly enforce numeric ports to prevent ambiguity and reliance on service names.
 	p, err := strconv.Atoi(port)
 	if err != nil {
-		// Non-numeric ports (service names) are allowed.
-		return nil //nolint:nilerr // Intentional: we allow non-numeric ports
+		return fmt.Errorf("port must be a number: %w", err)
 	}
 	if p < 0 || p > 65535 {
 		return fmt.Errorf("port must be between 0 and 65535")
