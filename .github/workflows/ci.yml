@@ -108,11 +108,7 @@ jobs:
             fi
           done
 
-          if [ "$MISSING_TOOLS" -eq 0 ]; then
-             echo "All required tools are already installed. Skipping installation."
-             make --version
-             exit 0
-          fi
+
 
           echo "Installing missing build tools..."
 
@@ -204,11 +200,7 @@ jobs:
             fi
           done
 
-          if [ "$MISSING_TOOLS" -eq 0 ]; then
-             echo "All required tools are already installed. Skipping installation."
-             make --version
-             exit 0
-          fi
+
 
           echo "Installing missing build tools..."
 
@@ -290,11 +282,7 @@ jobs:
             fi
           done
 
-          if [ "$MISSING_TOOLS" -eq 0 ]; then
-             echo "All required tools are already installed. Skipping installation."
-             make --version
-             exit 0
-          fi
+
 
           echo "Installing missing build tools..."
 
@@ -459,11 +447,7 @@ jobs:
             fi
           done
 
-          if [ "$MISSING_TOOLS" -eq 0 ]; then
-             echo "All required tools are already installed. Skipping installation."
-             make --version
-             exit 0
-          fi
+
 
           echo "Installing missing build tools..."
 
@@ -647,11 +631,7 @@ jobs:
             fi
           done
 
-          if [ "$MISSING_TOOLS" -eq 0 ]; then
-             echo "All required tools are already installed. Skipping installation."
-             make --version
-             exit 0
-          fi
+
 
           echo "Installing missing build tools..."
 
@@ -716,11 +696,7 @@ jobs:
             fi
           done
 
-          if [ "$MISSING_TOOLS" -eq 0 ]; then
-             echo "All required tools are already installed. Skipping installation."
-             make --version
-             exit 0
-          fi
+
 
           echo "Installing missing build tools..."
 
@@ -903,11 +879,7 @@ jobs:
             fi
           done
 
-          if [ "$MISSING_TOOLS" -eq 0 ]; then
-             echo "All required tools are already installed. Skipping installation."
-             make --version
-             exit 0
-          fi
+
 
           echo "Installing missing build tools..."
 
@@ -1092,11 +1064,7 @@ jobs:
             fi
           done
 
-          if [ "$MISSING_TOOLS" -eq 0 ]; then
-             echo "All required tools are already installed. Skipping installation."
-             make --version
-             exit 0
-          fi
+
 
           echo "Installing missing build tools..."
 
@@ -1227,11 +1195,7 @@ jobs:
             fi
           done
 
-          if [ "$MISSING_TOOLS" -eq 0 ]; then
-             echo "All required tools are already installed. Skipping installation."
-             make --version
-             exit 0
-          fi
+
 
           echo "Installing missing build tools..."
 
@@ -1341,11 +1305,7 @@ jobs:
             fi
           done
 
-          if [ "$MISSING_TOOLS" -eq 0 ]; then
-             echo "All required tools are already installed. Skipping installation."
-             make --version
-             exit 0
-          fi
+
 
           echo "Installing missing build tools..."
 
@@ -1452,11 +1412,7 @@ jobs:
             fi
           done
 
-          if [ "$MISSING_TOOLS" -eq 0 ]; then
-             echo "All required tools are already installed. Skipping installation."
-             make --version
-             exit 0
-          fi
+
 
           echo "Installing missing build tools..."
 
