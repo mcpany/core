@@ -53,11 +53,15 @@ type SemanticCache struct {
 
 // NewSemanticCache creates a new SemanticCache.
 //
-// provider is the provider.
-// store is the store.
-// threshold is the threshold.
+// Summary: Creates a new SemanticCache instance.
 //
-// Returns the result.
+// Parameters:
+//   - provider: EmbeddingProvider. The provider for embeddings.
+//   - store: VectorStore. The storage backend.
+//   - threshold: float32. The similarity threshold (0-1).
+//
+// Returns:
+//   - *SemanticCache: The initialized semantic cache.
 func NewSemanticCache(provider EmbeddingProvider, store VectorStore, threshold float32) *SemanticCache {
 	if threshold <= 0 {
 		threshold = 0.9 // Default high threshold
@@ -74,6 +78,19 @@ func NewSemanticCache(provider EmbeddingProvider, store VectorStore, threshold f
 
 // Get attempts to find a semantically similar cached result.
 // It returns the result, the computed embedding, a boolean indicating a hit, and an error.
+//
+// Summary: Retrieves a cached result if a semantically similar entry exists.
+//
+// Parameters:
+//   - ctx: context.Context. The request context.
+//   - key: string. The cache key scope.
+//   - input: string. The input text to search for.
+//
+// Returns:
+//   - any: The cached result.
+//   - []float32: The embedding vector of the input (useful for setting cache on miss).
+//   - bool: True if found.
+//   - error: Error if embedding generation or search fails.
 func (c *SemanticCache) Get(ctx context.Context, key string, input string) (any, []float32, bool, error) {
 	embedding, err := c.provider.Embed(ctx, input)
 	if err != nil {
@@ -89,13 +106,17 @@ func (c *SemanticCache) Get(ctx context.Context, key string, input string) (any,
 
 // Set adds a result to the cache using the provided embedding.
 //
-// ctx is the context for the request.
-// key is the key.
-// embedding is the embedding.
-// result is the result.
-// ttl is the ttl.
+// Summary: Caches a result with its embedding vector.
 //
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The request context.
+//   - key: string. The cache key scope.
+//   - embedding: []float32. The embedding vector.
+//   - result: any. The result to cache.
+//   - ttl: time.Duration. Time to live.
+//
+// Returns:
+//   - error: Error if storage fails.
 func (c *SemanticCache) Set(ctx context.Context, key string, embedding []float32, result any, ttl time.Duration) error {
 	return c.store.Add(ctx, key, embedding, result, ttl)
 }

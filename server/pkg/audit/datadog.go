@@ -35,6 +35,17 @@ type DatadogAuditStore struct {
 }
 
 // NewDatadogAuditStore creates a new DatadogAuditStore.
+//
+// Summary: Creates a new DatadogAuditStore instance.
+//
+// Parameters:
+//   - config (*configv1.DatadogConfig): The Datadog configuration.
+//
+// Returns:
+//   - *DatadogAuditStore: The created store instance.
+//
+// Side Effects:
+//   - Starts background workers to process the log queue.
 func NewDatadogAuditStore(config *configv1.DatadogConfig) *DatadogAuditStore {
 	if config == nil {
 		config = &configv1.DatadogConfig{}
@@ -102,6 +113,21 @@ func (e *DatadogAuditStore) worker() {
 }
 
 // Write implements the Store interface.
+//
+// Summary: Queues an audit entry to be sent to Datadog.
+//
+// Parameters:
+//   - ctx (context.Context): The context (unused).
+//   - entry (Entry): The audit entry to write.
+//
+// Returns:
+//   - error: An error if the queue is full.
+//
+// Errors:
+//   - Returns "audit queue full" if the internal buffer is full.
+//
+// Side Effects:
+//   - Sends the entry to the processing queue.
 func (e *DatadogAuditStore) Write(_ context.Context, entry Entry) error {
 	select {
 	case e.queue <- entry:
@@ -158,11 +184,33 @@ func (e *DatadogAuditStore) sendBatch(batch []Entry) {
 
 
 // Read implements the Store interface.
+//
+// Summary: Reads audit entries (Not Implemented).
+//
+// Parameters:
+//   - ctx (context.Context): The context.
+//   - filter (Filter): The filter criteria.
+//
+// Returns:
+//   - []Entry: Nil.
+//   - error: Error indicating not implemented.
+//
+// Errors:
+//   - Returns "read not implemented for datadog audit store".
 func (e *DatadogAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for datadog audit store")
 }
 
 // Close closes the queue and waits for workers to finish.
+//
+// Summary: Closes the Datadog audit store and waits for pending uploads.
+//
+// Returns:
+//   - error: Always nil.
+//
+// Side Effects:
+//   - Closes the internal channel.
+//   - Waits for worker goroutines to finish.
 func (e *DatadogAuditStore) Close() error {
 	if e.done != nil {
 		close(e.done)

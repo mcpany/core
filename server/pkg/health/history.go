@@ -25,6 +25,16 @@ var (
 )
 
 // AddHealthStatus adds a status point to the history.
+//
+// Summary: Records a health status update for a specific service.
+//
+// Parameters:
+//   - serviceName (string): The name of the service.
+//   - status (string): The health status (e.g., "healthy", "degraded").
+//
+// Side Effects:
+//   - Updates the global historyStore.
+//   - Prunes old history points if limit is exceeded.
 func AddHealthStatus(serviceName string, status string) {
 	historyMu.Lock()
 	defer historyMu.Unlock()
@@ -61,6 +71,14 @@ func AddHealthStatus(serviceName string, status string) {
 }
 
 // GetHealthHistory returns the history for all services.
+//
+// Summary: Retrieves the complete health history for all services.
+//
+// Returns:
+//   - map[string][]HistoryPoint: A map of service names to their health history points.
+//
+// Side Effects:
+//   - Reads from the global historyStore.
 func GetHealthHistory() map[string][]HistoryPoint {
 	historyMu.RLock()
 	defer historyMu.RUnlock()

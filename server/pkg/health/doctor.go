@@ -38,7 +38,13 @@ type Doctor struct {
 
 // NewDoctor creates a new Doctor.
 //
-// Returns the result.
+// Summary: Creates a new Doctor instance for health checking.
+//
+// Returns:
+//   - *Doctor: A new Doctor instance.
+//
+// Side Effects:
+//   - Initializes internal maps and clients.
 func NewDoctor() *Doctor {
 	return &Doctor{
 		checks:     make(map[string]CheckFunc),
@@ -48,8 +54,14 @@ func NewDoctor() *Doctor {
 
 // AddCheck adds a named health check.
 //
-// name is the name of the resource.
-// check is the check.
+// Summary: Registers a new health check function.
+//
+// Parameters:
+//   - name (string): The name of the check.
+//   - check (CheckFunc): The check function.
+//
+// Side Effects:
+//   - Modifies the internal checks map.
 func (d *Doctor) AddCheck(name string, check CheckFunc) {
 	d.mu.Lock()
 	defer d.mu.Unlock()
@@ -58,7 +70,13 @@ func (d *Doctor) AddCheck(name string, check CheckFunc) {
 
 // Handler returns the http handler.
 //
-// Returns the result.
+// Summary: Returns an HTTP handler that executes all health checks and returns a JSON report.
+//
+// Returns:
+//   - http.HandlerFunc: The HTTP handler.
+//
+// Side Effects:
+//   - When executed, performs HTTP requests and invokes registered check functions.
 func (d *Doctor) Handler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		report := DoctorReport{

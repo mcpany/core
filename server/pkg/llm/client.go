@@ -18,12 +18,11 @@ import (
 type Client interface {
 	// ChatCompletion sends a chat request to the LLM and returns the response.
 	//
-	// Summary:
-	//   Sends a chat completion request to the configured LLM provider.
+	// Summary: Sends a chat completion request to the configured LLM provider.
 	//
 	// Parameters:
-	//   - ctx: context.Context. The context for the request.
-	//   - req: ChatRequest. The chat request parameters.
+	//   - ctx (context.Context): The context for the request.
+	//   - req (ChatRequest): The chat request parameters.
 	//
 	// Returns:
 	//   - *ChatResponse: The chat response from the LLM.
@@ -62,6 +61,15 @@ type OpenAIClient struct {
 }
 
 // NewOpenAIClient creates a new OpenAIClient.
+//
+// Summary: Creates a new OpenAI client.
+//
+// Parameters:
+//   - apiKey (string): The OpenAI API key.
+//   - baseURL (string): The base URL for the API (defaults to OpenAI public API).
+//
+// Returns:
+//   - *OpenAIClient: The initialized client.
 func NewOpenAIClient(apiKey string, baseURL string) *OpenAIClient {
 	if baseURL == "" {
 		baseURL = "https://api.openai.com/v1"
@@ -90,6 +98,16 @@ type openAIChatResponse struct {
 }
 
 // ChatCompletion performs a chat completion request.
+//
+// Summary: Sends a chat completion request to OpenAI.
+//
+// Parameters:
+//   - ctx (context.Context): The context.
+//   - req (ChatRequest): The chat request.
+//
+// Returns:
+//   - *ChatResponse: The response.
+//   - error: Error if failed.
 func (c *OpenAIClient) ChatCompletion(ctx context.Context, req ChatRequest) (*ChatResponse, error) {
 	reqBody := openAIChatRequest(req)
 	bodyBytes, err := json.Marshal(reqBody)

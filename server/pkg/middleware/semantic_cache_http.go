@@ -27,13 +27,17 @@ type HTTPEmbeddingProvider struct {
 
 // NewHTTPEmbeddingProvider creates a new HTTPEmbeddingProvider.
 //
-// url is the url.
-// headers is the headers.
-// bodyTemplateStr is the bodyTemplateStr.
-// responseJSONPath is the responseJSONPath.
+// Summary: Creates a new generic HTTP embedding provider.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - url: string. The API URL.
+//   - headers: map[string]string. HTTP headers.
+//   - bodyTemplateStr: string. Template for the request body.
+//   - responseJSONPath: string. JSONPath to extract embedding.
+//
+// Returns:
+//   - *HTTPEmbeddingProvider: The provider instance.
+//   - error: Error if template parsing fails.
 func NewHTTPEmbeddingProvider(url string, headers map[string]string, bodyTemplateStr, responseJSONPath string) (*HTTPEmbeddingProvider, error) {
 	if url == "" {
 		return nil, fmt.Errorf("url is required")
@@ -57,11 +61,15 @@ func NewHTTPEmbeddingProvider(url string, headers map[string]string, bodyTemplat
 
 // Embed generates an embedding for the given text.
 //
-// ctx is the context for the request.
-// text is the text.
+// Summary: Generates a vector embedding via HTTP request.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context.
+//   - text: string.
+//
+// Returns:
+//   - []float32: Embedding vector.
+//   - error: Error if failed.
 func (p *HTTPEmbeddingProvider) Embed(ctx context.Context, text string) ([]float32, error) {
 	// Simple template replacement.
 	// We assume formatting is handled by the caller or configuration?
