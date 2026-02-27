@@ -549,6 +549,24 @@ jobs:
           cache: "npm"
           cache-dependency-path: server/tests/integration/upstream/package-lock.json
 
+      - name: Install dependencies
+        run: |
+          echo "Installing dependencies..."
+          if command -v apt-get &> /dev/null; then
+            sudo apt-get update
+            sudo apt-get install -y --no-install-recommends make xz-utils build-essential clang
+          elif command -v apk &> /dev/null; then
+             sudo apk add --no-cache make xz build-base clang
+          else
+            echo "No package manager found!"
+            exit 1
+          fi
+          echo "Checking clang..."
+          which clang || echo "clang not found in PATH"
+          clang --version || echo "clang version check failed"
+          echo "PATH=$PATH"
+          echo "CC=$(which clang)" >> $GITHUB_ENV
+
       - name: Generate Protobufs
         run: |
           make gen
@@ -936,6 +954,7 @@ jobs:
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache build-base clang
           fi
+          # Ensure CC is exported for this step
           export CC=$(which clang)
           make test-public-api CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-public-api.out
 

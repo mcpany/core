@@ -5,14 +5,10 @@ package tool
 
 import (
 	"context"
-	"fmt"
-	"net"
-	"os"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
-	"github.com/mcpany/core/server/pkg/validation"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
 )
@@ -80,21 +76,10 @@ func TestSSRFArgumentProtection_HostPort(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			// Mock IsSafeIP to respect test case flags instead of global env vars
-			// This avoids modifying global env vars (MCPANY_DANGEROUS_ALLOW_LOCAL_IPS) which could affect parallel tests.
-			originalIsSafeIP := validation.IsSafeIP
-			validation.IsSafeIP = func(ipStr string) error {
-				ip := net.ParseIP(ipStr)
-				if ip == nil {
-					return fmt.Errorf("invalid IP address")
-				}
-				// Default behavior: Strict blocking (allowLoopback=false, allowPrivate=false)
-				return validation.ValidateIP(ip, false, false)
-			}
-			defer func() { validation.IsSafeIP = originalIsSafeIP }()
-
-            // Ensure allow loopback is false
-            os.Unsetenv("MCPANY_ALLOW_LOOPBACK_RESOURCES")
+            // Use t.Setenv to safely control environment variables for validation.IsSafeIP
+            t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "false")
+            t.Setenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES", "false")
+            t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "false")
 
 			tool := createTool("curl")
 			req := &ExecutionRequest{
