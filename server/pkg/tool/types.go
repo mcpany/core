@@ -3137,6 +3137,15 @@ func checkForShellInjection(val string, template string, placeholder string, com
 		if idx := strings.IndexAny(val, "\"$`\\%"); idx != -1 {
 			return fmt.Errorf("shell injection detected: value contains dangerous character %q inside double-quoted argument", val[idx])
 		}
+		// Sentinel Security Update:
+		// Block single quotes in double-quoted shell arguments.
+		// While single quotes are literals inside double quotes in most shells, they can be
+		// dangerous if the shell argument is itself a script (e.g. bash -c "cmd 'arg'").
+		// If the user input breaks out of the nested single quotes, it can lead to injection.
+		// Since analyzeQuoteContext only detects the outer double quotes, we must be conservative.
+		if isShell && strings.Contains(val, "'") {
+			return fmt.Errorf("shell injection detected: value contains single quote inside double-quoted shell argument")
+		}
 		return nil
 	}
 
