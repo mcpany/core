@@ -232,6 +232,9 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Pull QEMU Image
+        run: docker pull tonistiigi/binfmt:latest
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
@@ -364,6 +367,9 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Pull QEMU Image
+        run: docker pull tonistiigi/binfmt:latest
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
@@ -458,7 +464,6 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: ${{ matrix.runner }}
-    container: public.ecr.aws/docker/library/ubuntu:24.04
     strategy:
       fail-fast: false
       matrix:
@@ -470,20 +475,6 @@ jobs:
             slug: arm64
             runner: ubuntu-24.04-arm
     steps:
-      - name: Install dependencies
-        run: |
-          SUDO=""
-          if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null 2>&1; then
-            SUDO="sudo"
-          fi
-          # Unconditional install for build-images as we know it's Ubuntu
-          export DEBIAN_FRONTEND=noninteractive
-          $SUDO apt-get update -y
-          $SUDO apt-get install -y make xz-utils build-essential
-          echo "Verifying make installation:"
-          which make
-          make --version
-
       - name: Free Disk Space (Fast)
         run: |
           SUDO=""
@@ -818,6 +809,9 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Pull QEMU Image
+        run: docker pull tonistiigi/binfmt:latest
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
