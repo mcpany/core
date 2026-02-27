@@ -403,22 +403,16 @@ e2e-sequential: build-test-images build build-examples build-e2e-mocks
 
 test-fast: build build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@echo "Running fast Go tests locally with a 1800s timeout..."
-	@if [ -n "$(SHARD)" ]; then \
-		echo "Running shard $(SHARD) for unit tests..."; \
-		mkdir -p $(BUILD_DIR)/bundles; \
-		GEMINI_API_KEY=$(GEMINI_API_KEY) MCP_BUNDLE_DIR=$(MCP_BUNDLE_DIR) MCPANY_DEBUG=true MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) SHARD=$(SHARD) MCPANY_PROJECT_ROOT=$(CURDIR) ./tests/run_shard.sh $(GO_RACE) -count=1 -timeout 1800s -cover -coverprofile=$(COVERAGE_FILE); \
-	else \
-		TEST_PKGS=$$(go list ./... | grep -v /tests/e2e | grep -v /tests/e2e_sequential | grep -v /tests/integration | grep -v /tests/public_api | grep -v /build | grep -v /vendor | grep -v /proto); \
-		echo "Testing packages: $$TEST_PKGS"; \
-		if [ -z "$$TEST_PKGS" ]; then echo "No packages to test!"; exit 1; fi; \
-		mkdir -p $(BUILD_DIR)/bundles; \
-		GEMINI_API_KEY=$(GEMINI_API_KEY) MCP_BUNDLE_DIR=$(MCP_BUNDLE_DIR) MCPANY_DEBUG=true MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test $(GO_RACE) -count=1 -timeout 1800s -cover -coverprofile=$(COVERAGE_FILE) $$TEST_PKGS; \
-	fi
+	@TEST_PKGS=$$(go list ./... | grep -v /tests/e2e | grep -v /tests/e2e_sequential | grep -v /tests/integration | grep -v /tests/public_api | grep -v /build | grep -v /vendor | grep -v /proto); \
+	echo "Testing packages: $$TEST_PKGS"; \
+	if [ -z "$$TEST_PKGS" ]; then echo "No packages to test!"; exit 1; fi; \
+	mkdir -p $(BUILD_DIR)/bundles; \
+	GEMINI_API_KEY=$(GEMINI_API_KEY) MCP_BUNDLE_DIR=$(MCP_BUNDLE_DIR) MCPANY_DEBUG=true MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test $(GO_RACE) -count=1 -timeout 1800s -cover -coverprofile=$(COVERAGE_FILE) $$TEST_PKGS
 
 .PHONY: test-public-api
 test-public-api: build build-mock-server
 	@echo "Running public API E2E Go tests with a 1800s timeout..."
-	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -parallel 1 $(GO_RACE) -count=1 -timeout 1800s -tags=e2e_public_api -cover -coverprofile=$(COVERAGE_FILE) ./tests/public_api/...
+	@GEMINI_API_KEY=$(GEMINI_API_KEY) MCPANY_DEBUG=true MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test -parallel 2 $(GO_RACE) -count=1 -timeout 1800s -tags=e2e_public_api -cover -coverprofile=$(COVERAGE_FILE) ./tests/public_api/...
 
 # ==============================================================================
 # Example Binaries Build
