@@ -11,6 +11,7 @@ import (
 	"time"
 
 	bus_pb "github.com/mcpany/core/proto/bus"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/bus"
 	"github.com/mcpany/core/server/pkg/mcpserver"
@@ -35,6 +36,10 @@ func (p *testPrompt) Prompt() *mcp.Prompt {
 
 func (p *testPrompt) Service() string {
 	return "test-service"
+}
+
+func (p *testPrompt) Definition() *configv1.PromptDefinition {
+	return nil
 }
 
 func (p *testPrompt) Get(_ context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {
