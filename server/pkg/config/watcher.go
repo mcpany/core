@@ -34,6 +34,9 @@ type Watcher struct {
 
 // NewWatcher creates a new file watcher.
 //
+// Returns:
+//   - *Watcher: A new watcher instance.
+//   - error: An error if watcher creation fails.
 func NewWatcher() (*Watcher, error) {
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {

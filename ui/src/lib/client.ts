@@ -356,7 +356,7 @@ export const apiClient = {
      *
      * Summary: Fetches the list of all configured upstream services from the backend.
      *
-     * @returns A promise that resolves to a list of services.
+     * @returns {Promise<UpstreamServiceConfig[]>} A promise that resolves to a list of services.
      * @throws {Error} If the network request fails or the response is not OK.
      *
      * Side Effects: Makes a GET request to /api/v1/services.
@@ -378,7 +378,7 @@ export const apiClient = {
      *
      * Summary: Fetches available services from the catalog.
      *
-     * @returns A promise that resolves to a list of catalog services.
+     * @returns {Promise<any[]>} A promise that resolves to a list of catalog services.
      * @throws {Error} If the network request fails.
      *
      * Side Effects: Makes a GET request to /api/v1/catalog/services.
@@ -412,8 +412,8 @@ export const apiClient = {
      *
      * Summary: Retrieves the configuration details for a specific upstream service.
      *
-     * @param id - The ID of the service to retrieve.
-     * @returns A promise that resolves to the service configuration.
+     * @param {string} id - The ID of the service to retrieve.
+     * @returns {Promise<any>} A promise that resolves to the service configuration.
      * @throws {Error} If the service is not found or the request fails.
      *
      * Side Effects: Makes a gRPC call or GET request to /api/v1/services/:id.
@@ -469,9 +469,9 @@ export const apiClient = {
      *
      * Summary: Updates the enabled status of a service.
      *
-     * @param name - The name of the service.
-     * @param disable - True to disable the service, false to enable it.
-     * @returns A promise that resolves to the updated service status.
+     * @param {string} name - The name of the service.
+     * @param {boolean} disable - True to disable the service, false to enable it.
+     * @returns {Promise<any>} A promise that resolves to the updated service status.
      * @throws {Error} If the update fails.
      *
      * Side Effects: Makes a PUT request to /api/v1/services/:name.
@@ -491,8 +491,8 @@ export const apiClient = {
      *
      * Summary: Retrieves the runtime status of a service.
      *
-     * @param name - The name of the service.
-     * @returns A promise that resolves to the service status.
+     * @param {string} name - The name of the service.
+     * @returns {Promise<any>} A promise that resolves to the service status.
      * @throws {Error} If the request fails.
      *
      * Side Effects: Makes a GET request to /api/v1/services/:name/status.
@@ -508,8 +508,8 @@ export const apiClient = {
      *
      * Summary: Triggers a restart of a service.
      *
-     * @param name - The name of the service to restart.
-     * @returns A promise that resolves when the service is restarted.
+     * @param {string} name - The name of the service to restart.
+     * @returns {Promise<any>} A promise that resolves when the service is restarted.
      * @throws {Error} If the restart fails.
      *
      * Side Effects: Makes a POST request to /api/v1/services/:name/restart.
@@ -527,8 +527,8 @@ export const apiClient = {
      *
      * Summary: Registers a new upstream service with the provided configuration.
      *
-     * @param config - The configuration of the service to register.
-     * @returns A promise that resolves to the registered service configuration.
+     * @param {UpstreamServiceConfig} config - The configuration of the service to register.
+     * @returns {Promise<any>} A promise that resolves to the registered service configuration.
      * @throws {Error} If the registration fails (e.g., validation error, duplicate ID).
      *
      * Side Effects: Makes a POST request to /api/v1/services.
@@ -638,8 +638,8 @@ export const apiClient = {
      *
      * Summary: Updates the configuration of an existing service.
      *
-     * @param config - The updated configuration of the service.
-     * @returns A promise that resolves to the updated service configuration.
+     * @param {UpstreamServiceConfig} config - The updated configuration of the service.
+     * @returns {Promise<any>} A promise that resolves to the updated service configuration.
      * @throws {Error} If the update fails.
      *
      * Side Effects: Makes a PUT request to /api/v1/services/:name.
@@ -747,8 +747,8 @@ export const apiClient = {
      *
      * Summary: Deletes a service registration.
      *
-     * @param id - The ID of the service to unregister.
-     * @returns A promise that resolves when the service is unregistered.
+     * @param {string} id - The ID of the service to unregister.
+     * @returns {Promise<any>} A promise that resolves when the service is unregistered.
      * @throws {Error} If the unregistration fails.
      *
      * Side Effects: Makes a DELETE request to /api/v1/services/:id.
@@ -766,8 +766,8 @@ export const apiClient = {
      *
      * Summary: Checks the validity of a service configuration.
      *
-     * @param config - The service configuration to validate.
-     * @returns A promise that resolves to the validation result.
+     * @param {UpstreamServiceConfig} config - The service configuration to validate.
+     * @returns {Promise<any>} A promise that resolves to the validation result.
      * @throws {Error} If the validation request fails.
      *
      * Side Effects: Makes a POST request to /api/v1/services/validate.
@@ -883,7 +883,7 @@ export const apiClient = {
      *
      * Summary: Lists available tools.
      *
-     * @returns A promise that resolves to a list of tools.
+     * @returns {Promise<any>} A promise that resolves to a list of tools.
      * @throws {Error} If the request fails.
      *
      * Side Effects: Makes a GET request to /api/v1/tools.
@@ -908,9 +908,9 @@ export const apiClient = {
      *
      * Summary: Executes a tool.
      *
-     * @param request - The execution request (tool name, arguments, etc.).
-     * @param dryRun - If true, performs a dry run without side effects.
-     * @returns A promise that resolves to the execution result.
+     * @param {any} request - The execution request (tool name, arguments, etc.).
+     * @param {boolean} dryRun - If true, performs a dry run without side effects.
+     * @returns {Promise<any>} A promise that resolves to the execution result.
      * @throws {Error} If the execution fails.
      *
      * Side Effects: Makes a POST request to /api/v1/execute.
@@ -950,9 +950,9 @@ export const apiClient = {
      *
      * Summary: Updates tool status.
      *
-     * @param name - The name of the tool.
-     * @param disabled - True to disable the tool, false to enable it.
-     * @returns A promise that resolves to the updated tool status.
+     * @param {string} name - The name of the tool.
+     * @param {boolean} disabled - True to disable the tool, false to enable it.
+     * @returns {Promise<any>} A promise that resolves to the updated tool status.
      *
      * Side Effects: Makes a PUT request to /api/v1/tools.
      */
@@ -971,7 +971,7 @@ export const apiClient = {
      *
      * Summary: Lists available resources.
      *
-     * @returns A promise that resolves to a list of resources.
+     * @returns {Promise<any>} A promise that resolves to a list of resources.
      * @throws {Error} If the request fails.
      *
      * Side Effects: Makes a GET request to /api/v1/resources.
@@ -987,8 +987,8 @@ export const apiClient = {
      *
      * Summary: Reads a resource.
      *
-     * @param uri - The URI of the resource to read.
-     * @returns A promise that resolves to the resource content.
+     * @param {string} uri - The URI of the resource to read.
+     * @returns {Promise<ReadResourceResponse>} A promise that resolves to the resource content.
      * @throws {Error} If the request fails.
      *
      * Side Effects: Makes a GET request to /api/v1/resources/read.
@@ -1004,9 +1004,9 @@ export const apiClient = {
      *
      * Summary: Updates resource status.
      *
-     * @param uri - The URI of the resource.
-     * @param disabled - True to disable the resource, false to enable it.
-     * @returns A promise that resolves to the updated resource status.
+     * @param {string} uri - The URI of the resource.
+     * @param {boolean} disabled - True to disable the resource, false to enable it.
+     * @returns {Promise<any>} A promise that resolves to the updated resource status.
      *
      * Side Effects: Makes a PUT request to /api/v1/resources.
      */
@@ -1025,7 +1025,7 @@ export const apiClient = {
      *
      * Summary: Lists available prompts.
      *
-     * @returns A promise that resolves to a list of prompts.
+     * @returns {Promise<any>} A promise that resolves to a list of prompts.
      * @throws {Error} If the request fails.
      *
      * Side Effects: Makes a GET request to /api/v1/prompts.
@@ -1041,9 +1041,9 @@ export const apiClient = {
      *
      * Summary: Updates prompt status.
      *
-     * @param name - The name of the prompt.
-     * @param enabled - True to enable the prompt, false to disable it.
-     * @returns A promise that resolves to the updated prompt status.
+     * @param {string} name - The name of the prompt.
+     * @param {boolean} enabled - True to enable the prompt, false to disable it.
+     * @returns {Promise<any>} A promise that resolves to the updated prompt status.
      *
      * Side Effects: Makes a POST request to /api/v1/prompts.
      */
@@ -1061,9 +1061,9 @@ export const apiClient = {
      *
      * Summary: Executes a prompt.
      *
-     * @param name - The name of the prompt.
-     * @param args - The arguments for the prompt.
-     * @returns A promise that resolves to the prompt execution result.
+     * @param {string} name - The name of the prompt.
+     * @param {Record<string, string>} args - The arguments for the prompt.
+     * @returns {Promise<any>} A promise that resolves to the prompt execution result.
      * @throws {Error} If execution fails.
      *
      * Side Effects: Makes a POST request to /api/v1/prompts/execute.
@@ -1087,7 +1087,7 @@ export const apiClient = {
      *
      * Fetches from the backend /api/v1/templates endpoint.
      *
-     * @returns A promise that resolves to a list of service templates.
+     * @returns {Promise<any[]>} A promise that resolves to a list of service templates.
      * @throws {Error} If the request fails.
      *
      * Side Effects: Makes a GET request to /api/v1/templates.
@@ -1160,10 +1160,10 @@ export const apiClient = {
      *
      * Summary: Starts OAuth flow.
      *
-     * @param serviceId - The ID of the service (e.g. "google_calendar").
-     * @param credentialId - The ID of the credential to bind (usually same as service name for now).
-     * @param redirectUrl - The URL to redirect back to after auth.
-     * @returns The authorization URL to redirect the user to.
+     * @param {string} serviceId - The ID of the service (e.g. "google_calendar").
+     * @param {string} credentialId - The ID of the credential to bind (usually same as service name for now).
+     * @param {string} redirectUrl - The URL to redirect back to after auth.
+     * @returns {Promise<any>} The authorization URL to redirect the user to.
      * @throws {Error} If initialization fails.
      *
      * Side Effects: Makes a POST request to /api/v1/auth/oauth/initiate.
@@ -1190,7 +1190,7 @@ export const apiClient = {
      *
      * Summary: Lists credentials.
      *
-     * @returns A promise that resolves to the list of credentials.
+     * @returns {Promise<Credential[]>} A promise that resolves to the list of credentials.
      * @throws {Error} If the request fails.
      *
      * Side Effects: Makes a GET request to /api/v1/credentials.
@@ -1207,8 +1207,8 @@ export const apiClient = {
      *
      * Summary: Creates a credential.
      *
-     * @param credential - The credential to create.
-     * @returns A promise that resolves to the created credential.
+     * @param {any} credential - The credential to create.
+     * @returns {Promise<Credential>} A promise that resolves to the created credential.
      * @throws {Error} If creation fails.
      *
      * Side Effects: Makes a POST request to /api/v1/credentials.
@@ -1231,8 +1231,8 @@ export const apiClient = {
      *
      * Summary: Updates a credential.
      *
-     * @param credential - The updated credential.
-     * @returns A promise that resolves to the updated credential.
+     * @param {any} credential - The updated credential.
+     * @returns {Promise<Credential>} A promise that resolves to the updated credential.
      * @throws {Error} If update fails.
      *
      * Side Effects: Makes a PUT request to /api/v1/credentials/:id.
@@ -1255,8 +1255,8 @@ export const apiClient = {
      *
      * Summary: Deletes a credential.
      *
-     * @param id - The ID of the credential to delete.
-     * @returns A promise that resolves when the credential is deleted.
+     * @param {string} id - The ID of the credential to delete.
+     * @returns {Promise<void>} A promise that resolves when the credential is deleted.
      * @throws {Error} If deletion fails.
      *
      * Side Effects: Makes a DELETE request to /api/v1/credentials/:id.
@@ -1273,8 +1273,8 @@ export const apiClient = {
      *
      * Summary: Tests authentication configuration.
      *
-     * @param request - The test request (auth config, target URL, etc.).
-     * @returns A promise that resolves to the test result.
+     * @param {any} request - The test request (auth config, target URL, etc.).
+     * @returns {Promise<any>} A promise that resolves to the test result.
      * @throws {Error} If the test fails.
      *
      * Side Effects: Makes a POST request to /api/v1/debug/auth-test.
@@ -1297,10 +1297,10 @@ export const apiClient = {
      *
      * Summary: Exchanges OAuth code for token.
      *
-     * @param code - The OAuth code.
-     * @param state - The OAuth state.
-     * @param redirectUri - The redirect URI.
-     * @returns A promise that resolves to the token data.
+     * @param {string} code - The OAuth code.
+     * @param {string} state - The OAuth state.
+     * @param {string} redirectUri - The redirect URI.
+     * @returns {Promise<any>} A promise that resolves to the token data.
      * @throws {Error} If exchange fails.
      *
      * Side Effects: Makes a POST request to /api/v1/oauth/exchange.
@@ -1323,11 +1323,11 @@ export const apiClient = {
      *
      * Summary: Handles OAuth callback.
      *
-     * @param serviceId - The service ID being authenticated.
-     * @param code - The authorization code from the provider.
-     * @param redirectUrl - The redirect URL used in the flow.
-     * @param credentialId - Optional specific credential ID to update.
-     * @returns A promise that resolves to the result of the callback handler.
+     * @param {string | null} serviceId - The service ID being authenticated.
+     * @param {string} code - The authorization code from the provider.
+     * @param {string} redirectUrl - The redirect URL used in the flow.
+     * @param {string} [credentialId] - Optional specific credential ID to update.
+     * @returns {Promise<any>} A promise that resolves to the result of the callback handler.
      * @throws {Error} If callback handling fails.
      *
      * Side Effects: Makes a POST request to /api/v1/auth/oauth/callback.
@@ -1355,7 +1355,7 @@ export const apiClient = {
      *
      * Summary: Lists users.
      *
-     * @returns A promise that resolves to the list of users.
+     * @returns {Promise<any>} A promise that resolves to the list of users.
      * @throws {Error} If the request fails.
      *
      * Side Effects: Makes a GET request to /api/v1/users.
@@ -1371,7 +1371,7 @@ export const apiClient = {
      *
      * Summary: Retrieves current user.
      *
-     * @returns A promise that resolves to the current user.
+     * @returns {Promise<any>} A promise that resolves to the current user.
      * @throws {Error} If the request fails.
      *
      * Side Effects: Makes a GET request to /api/v1/users/me.
@@ -1393,8 +1393,8 @@ export const apiClient = {
      *
      * Summary: Creates a user.
      *
-     * @param user - The user data to create.
-     * @returns A promise that resolves to the created user.
+     * @param {any} user - The user data to create.
+     * @returns {Promise<any>} A promise that resolves to the created user.
      * @throws {Error} If creation fails.
      *
      * Side Effects: Makes a POST request to /api/v1/users.
@@ -1417,8 +1417,8 @@ export const apiClient = {
      *
      * Summary: Updates a user.
      *
-     * @param user - The updated user data.
-     * @returns A promise that resolves to the updated user.
+     * @param {any} user - The updated user data.
+     * @returns {Promise<any>} A promise that resolves to the updated user.
      * @throws {Error} If update fails.
      *
      * Side Effects: Makes a PUT request to /api/v1/users/:id.
@@ -1441,8 +1441,8 @@ export const apiClient = {
      *
      * Summary: Deletes a user.
      *
-     * @param id - The ID of the user to delete.
-     * @returns A promise that resolves when the user is deleted.
+     * @param {string} id - The ID of the user to delete.
+     * @returns {Promise<void>} A promise that resolves when the user is deleted.
      * @throws {Error} If deletion fails.
      *
      * Side Effects: Makes a DELETE request to /api/v1/users/:id.
@@ -1459,7 +1459,7 @@ export const apiClient = {
      *
      * Summary: Lists skills.
      *
-     * @returns A promise that resolves to the list of skills.
+     * @returns {Promise<any[]>} A promise that resolves to the list of skills.
      * @throws {Error} If the request fails.
      *
      * Side Effects: Makes a GET request to /api/v1/skills.
@@ -1476,8 +1476,8 @@ export const apiClient = {
      *
      * Summary: Retrieves a skill.
      *
-     * @param name - The name of the skill.
-     * @returns A promise that resolves to the skill.
+     * @param {string} name - The name of the skill.
+     * @returns {Promise<any>} A promise that resolves to the skill.
      * @throws {Error} If the request fails.
      *
      * Side Effects: Makes a GET request to /api/v1/skills/:name.
@@ -1494,8 +1494,8 @@ export const apiClient = {
      *
      * Summary: Creates a skill.
      *
-     * @param skill - The skill data to create.
-     * @returns A promise that resolves to the created skill.
+     * @param {any} skill - The skill data to create.
+     * @returns {Promise<any>} A promise that resolves to the created skill.
      * @throws {Error} If creation fails.
      *
      * Side Effects: Makes a POST request to /api/v1/skills.
@@ -1519,9 +1519,9 @@ export const apiClient = {
      *
      * Summary: Updates a skill.
      *
-     * @param originalName - The original name of the skill.
-     * @param skill - The updated skill data.
-     * @returns A promise that resolves to the updated skill.
+     * @param {string} originalName - The original name of the skill.
+     * @param {any} skill - The updated skill data.
+     * @returns {Promise<any>} A promise that resolves to the updated skill.
      * @throws {Error} If update fails.
      *
      * Side Effects: Makes a PUT request to /api/v1/skills/:originalName.
@@ -1545,8 +1545,8 @@ export const apiClient = {
      *
      * Summary: Deletes a skill.
      *
-     * @param name - The name of the skill to delete.
-     * @returns A promise that resolves when the skill is deleted.
+     * @param {string} name - The name of the skill to delete.
+     * @returns {Promise<void>} A promise that resolves when the skill is deleted.
      * @throws {Error} If deletion fails.
      *
      * Side Effects: Makes a DELETE request to /api/v1/skills/:name.
@@ -1565,8 +1565,8 @@ export const apiClient = {
      *
      * Summary: Creates a profile.
      *
-     * @param profileData - The profile configuration.
-     * @returns A promise that resolves to the created profile.
+     * @param {any} profileData - The profile configuration.
+     * @returns {Promise<any>} A promise that resolves to the created profile.
      * @throws {Error} If creation fails.
      *
      * Side Effects: Makes a POST request to /api/v1/profiles.
@@ -1586,8 +1586,8 @@ export const apiClient = {
      *
      * Summary: Updates a profile.
      *
-     * @param profileData - The profile configuration.
-     * @returns A promise that resolves to the updated profile.
+     * @param {any} profileData - The profile configuration.
+     * @returns {Promise<any>} A promise that resolves to the updated profile.
      * @throws {Error} If update fails.
      *
      * Side Effects: Makes a PUT request to /api/v1/profiles/:name.
@@ -1607,8 +1607,8 @@ export const apiClient = {
     *
     * Summary: Deletes a profile.
     *
-    * @param name - The name of the profile to delete.
-    * @returns A promise that resolves when the profile is deleted.
+    * @param {string} name - The name of the profile to delete.
+    * @returns {Promise<any>} A promise that resolves when the profile is deleted.
     * @throws {Error} If deletion fails.
     *
     * Side Effects: Makes a DELETE request to /api/v1/profiles/:name.
@@ -1626,7 +1626,7 @@ export const apiClient = {
      *
      * Summary: Lists profiles.
      *
-     * @returns A promise that resolves to a list of profiles.
+     * @returns {Promise<any>} A promise that resolves to a list of profiles.
      * @throws {Error} If the request fails.
      *
      * Side Effects: Makes a GET request to /api/v1/profiles.
@@ -1648,7 +1648,7 @@ export const apiClient = {
      *
      * Summary: Lists secrets.
      *
-     * @returns A promise that resolves to a list of secrets.
+     * @returns {Promise<any>} A promise that resolves to a list of secrets.
      * @throws {Error} If the request fails.
      *
      * Side Effects: Makes a GET request to /api/v1/secrets.
@@ -1665,8 +1665,8 @@ export const apiClient = {
      *
      * Summary: Reveals a secret.
      *
-     * @param id - The ID of the secret to reveal.
-     * @returns A promise that resolves to the secret value.
+     * @param {string} id - The ID of the secret to reveal.
+     * @returns {Promise<{ value: string }>} A promise that resolves to the secret value.
      * @throws {Error} If the request fails.
      *
      * Side Effects: Makes a POST request to /api/v1/secrets/:id/reveal.
@@ -1684,8 +1684,8 @@ export const apiClient = {
      *
      * Summary: Saves a secret.
      *
-     * @param secret - The secret definition to save.
-     * @returns A promise that resolves to the saved secret.
+     * @param {SecretDefinition} secret - The secret definition to save.
+     * @returns {Promise<any>} A promise that resolves to the saved secret.
      * @throws {Error} If saving fails.
      *
      * Side Effects: Makes a POST request to /api/v1/secrets.
@@ -1705,8 +1705,8 @@ export const apiClient = {
      *
      * Summary: Deletes a secret.
      *
-     * @param id - The ID of the secret to delete.
-     * @returns A promise that resolves when the secret is deleted.
+     * @param {string} id - The ID of the secret to delete.
+     * @returns {Promise<any>} A promise that resolves when the secret is deleted.
      * @throws {Error} If deletion fails.
      *
      * Side Effects: Makes a DELETE request to /api/v1/secrets/:id.
@@ -1726,7 +1726,7 @@ export const apiClient = {
      *
      * Summary: Retrieves the global configuration settings for the server.
      *
-     * @returns A promise that resolves to the global settings.
+     * @returns {Promise<any>} A promise that resolves to the global settings.
      * @throws {Error} If the request fails.
      *
      * Side Effects: Makes a GET request to /api/v1/settings.
@@ -1742,8 +1742,8 @@ export const apiClient = {
      *
      * Summary: Saves global settings.
      *
-     * @param settings - The settings to save.
-     * @returns A promise that resolves when the settings are saved.
+     * @param {any} settings - The settings to save.
+     * @returns {Promise<void>} A promise that resolves when the settings are saved.
      * @throws {Error} If saving fails.
      *
      * Side Effects: Makes a POST request to /api/v1/settings.
@@ -1762,9 +1762,9 @@ export const apiClient = {
      *
      * Summary: Retrieves traffic history.
      *
-     * @param serviceId - Optional service ID to filter by.
-     * @param timeRange - Optional time range to filter by (e.g. "1h", "24h").
-     * @returns A promise that resolves to the traffic history points.
+     * @param {string} [serviceId] - Optional service ID to filter by.
+     * @param {string} [timeRange] - Optional time range to filter by (e.g. "1h", "24h").
+     * @returns {Promise<any>} A promise that resolves to the traffic history points.
      * @throws {Error} If the request fails.
      *
      * Side Effects: Makes a GET request to /api/v1/dashboard/traffic.
@@ -1787,8 +1787,8 @@ export const apiClient = {
      *
      * Summary: Retrieves top tools.
      *
-     * @param serviceId - Optional service ID to filter by.
-     * @returns A promise that resolves to the top tools stats.
+     * @param {string} [serviceId] - Optional service ID to filter by.
+     * @returns {Promise<any>} A promise that resolves to the top tools stats.
      * @throws {Error} If the request fails.
      *
      * Side Effects: Makes a GET request to /api/v1/dashboard/top-tools.
@@ -1810,7 +1810,7 @@ export const apiClient = {
      *
      * Summary: Lists alerts.
      *
-     * @returns A promise that resolves to a list of alerts.
+     * @returns {Promise<any>} A promise that resolves to a list of alerts.
      * @throws {Error} If the request fails.
      *
      * Side Effects: Makes a GET request to /api/v1/alerts.
@@ -1826,7 +1826,7 @@ export const apiClient = {
      *
      * Summary: Lists alert rules.
      *
-     * @returns A promise that resolves to a list of alert rules.
+     * @returns {Promise<any>} A promise that resolves to a list of alert rules.
      * @throws {Error} If the request fails.
      *
      * Side Effects: Makes a GET request to /api/v1/alerts/rules.
@@ -1842,8 +1842,8 @@ export const apiClient = {
      *
      * Summary: Creates an alert rule.
      *
-     * @param rule - The rule to create.
-     * @returns A promise that resolves to the created rule.
+     * @param {any} rule - The rule to create.
+     * @returns {Promise<any>} A promise that resolves to the created rule.
      * @throws {Error} If creation fails.
      *
      * Side Effects: Makes a POST request to /api/v1/alerts/rules.
@@ -1863,8 +1863,8 @@ export const apiClient = {
      *
      * Summary: Retrieves an alert rule.
      *
-     * @param id - The ID of the rule.
-     * @returns A promise that resolves to the rule.
+     * @param {string} id - The ID of the rule.
+     * @returns {Promise<any>} A promise that resolves to the rule.
      * @throws {Error} If the request fails.
      *
      * Side Effects: Makes a GET request to /api/v1/alerts/rules/:id.
@@ -1880,8 +1880,8 @@ export const apiClient = {
      *
      * Summary: Updates an alert rule.
      *
-     * @param rule - The rule to update.
-     * @returns A promise that resolves to the updated rule.
+     * @param {any} rule - The rule to update.
+     * @returns {Promise<any>} A promise that resolves to the updated rule.
      * @throws {Error} If update fails.
      *
      * Side Effects: Makes a PUT request to /api/v1/alerts/rules/:id.
@@ -1901,8 +1901,8 @@ export const apiClient = {
      *
      * Summary: Deletes an alert rule.
      *
-     * @param id - The ID of the rule to delete.
-     * @returns A promise that resolves when the rule is deleted.
+     * @param {string} id - The ID of the rule to delete.
+     * @returns {Promise<any>} A promise that resolves when the rule is deleted.
      * @throws {Error} If deletion fails.
      *
      * Side Effects: Makes a DELETE request to /api/v1/alerts/rules/:id.
@@ -1920,8 +1920,8 @@ export const apiClient = {
      *
      * Summary: Retrieves tool failures.
      *
-     * @param serviceId - Optional service ID to filter by.
-     * @returns A promise that resolves to the tool failure stats.
+     * @param {string} [serviceId] - Optional service ID to filter by.
+     * @returns {Promise<ToolFailureStats[]>} A promise that resolves to the tool failure stats.
      * @throws {Error} If the request fails.
      *
      * Side Effects: Makes a GET request to /api/v1/dashboard/tool-failures.
@@ -1940,8 +1940,8 @@ export const apiClient = {
      *
      * Summary: Retrieves tool usage.
      *
-     * @param serviceId - Optional service ID to filter by.
-     * @returns A promise that resolves to the tool usage stats.
+     * @param {string} [serviceId] - Optional service ID to filter by.
+     * @returns {Promise<ToolAnalytics[]>} A promise that resolves to the tool usage stats.
      * @throws {Error} If the request fails.
      *
      * Side Effects: Makes a GET request to /api/v1/dashboard/tool-usage.
@@ -1961,7 +1961,7 @@ export const apiClient = {
      *
      * Summary: Retrieves system status.
      *
-     * @returns A promise that resolves to the system status.
+     * @returns {Promise<SystemStatus>} A promise that resolves to the system status.
      * @throws {Error} If the request fails.
      *
      * Side Effects: Makes a GET request to /api/v1/system/status.
@@ -1979,7 +1979,7 @@ export const apiClient = {
      *
      * Summary: Retrieves doctor report.
      *
-     * @returns A promise that resolves to the doctor report.
+     * @returns {Promise<DoctorReport>} A promise that resolves to the doctor report.
      * @throws {Error} If the request fails.
      *
      * Side Effects: Makes a GET request to /api/v1/doctor.
@@ -1995,7 +1995,7 @@ export const apiClient = {
      *
      * Summary: Retrieves dashboard health.
      *
-     * @returns A promise that resolves to the health response.
+     * @returns {Promise<ServiceHealthResponse>} A promise that resolves to the health response.
      * @throws {Error} If the request fails.
      *
      * Side Effects: Makes a GET request to /api/v1/dashboard/health.
@@ -2012,8 +2012,8 @@ export const apiClient = {
      *
      * Summary: Retrieves dashboard metrics.
      *
-     * @param serviceId - Optional service ID to filter by.
-     * @returns A promise that resolves to the metrics list.
+     * @param {string} [serviceId] - Optional service ID to filter by.
+     * @returns {Promise<Metric[]>} A promise that resolves to the metrics list.
      * @throws {Error} If the request fails.
      *
      * Side Effects: Makes a GET request to /api/v1/dashboard/metrics.
@@ -2033,8 +2033,9 @@ export const apiClient = {
      *
      * Summary: Retrieves execution traces.
      *
-     * @param options - Optional parameters.
-     * @returns A promise that resolves to the traces list.
+     * @param {object} [options] - Optional parameters.
+     * @param {number} [options.limit] - Limit the number of traces.
+     * @returns {Promise<any[]>} A promise that resolves to the traces list.
      * @throws {Error} If the request fails.
      *
      * Side Effects: Makes a GET request to /api/v1/traces.
@@ -2054,7 +2055,7 @@ export const apiClient = {
      *
      * Summary: Retrieves network topology.
      *
-     * @returns A promise that resolves to the graph.
+     * @returns {Promise<any>} A promise that resolves to the graph.
      * @throws {Error} If the request fails.
      *
      * Side Effects: Makes a GET request to /api/v1/topology.
@@ -2072,7 +2073,7 @@ export const apiClient = {
      *
      * Summary: Seeds traffic data.
      *
-     * @param points - The traffic points to seed.
+     * @param {any[]} points - The traffic points to seed.
      * @throws {Error} If seeding fails.
      *
      * Side Effects: Makes a POST request to /api/v1/debug/seed_traffic.
@@ -2091,8 +2092,8 @@ export const apiClient = {
      *
      * Summary: Seeds a trace.
      *
-     * @param trace - The trace object to seed.
-     * @returns A promise that resolves to the seeded trace.
+     * @param {any} trace - The trace object to seed.
+     * @returns {Promise<any>} A promise that resolves to the seeded trace.
      * @throws {Error} If seeding fails.
      *
      * Side Effects: Makes a POST request to /api/v1/debug/traces.
@@ -2112,9 +2113,9 @@ export const apiClient = {
      *
      * Summary: Updates alert status.
      *
-     * @param id - The ID of the alert.
-     * @param status - The new status.
-     * @returns A promise that resolves to the updated alert.
+     * @param {string} id - The ID of the alert.
+     * @param {string} status - The new status.
+     * @returns {Promise<any>} A promise that resolves to the updated alert.
      * @throws {Error} If update fails.
      *
      * Side Effects: Makes a PATCH request to /api/v1/alerts/:id.
@@ -2134,7 +2135,7 @@ export const apiClient = {
      *
      * Summary: Retrieves webhook URL.
      *
-     * @returns A promise that resolves to the webhook configuration.
+     * @returns {Promise<{ url: string }>} A promise that resolves to the webhook configuration.
      * @throws {Error} If the request fails.
      *
      * Side Effects: Makes a GET request to /api/v1/alerts/webhook.
@@ -2150,8 +2151,8 @@ export const apiClient = {
      *
      * Summary: Saves webhook URL.
      *
-     * @param url - The webhook URL.
-     * @returns A promise that resolves to the updated webhook configuration.
+     * @param {string} url - The webhook URL.
+     * @returns {Promise<any>} A promise that resolves to the updated webhook configuration.
      * @throws {Error} If saving fails.
      *
      * Side Effects: Makes a POST request to /api/v1/alerts/webhook.
@@ -2173,7 +2174,7 @@ export const apiClient = {
      *
      * Summary: Lists collections.
      *
-     * @returns A promise that resolves to a list of collections.
+     * @returns {Promise<any>} A promise that resolves to a list of collections.
      * @throws {Error} If the request fails.
      *
      * Side Effects: Makes a GET request to /api/v1/collections.
@@ -2197,8 +2198,8 @@ export const apiClient = {
      *
      * Summary: Retrieves a collection.
      *
-     * @param name - The name of the collection.
-     * @returns A promise that resolves to the collection.
+     * @param {string} name - The name of the collection.
+     * @returns {Promise<any>} A promise that resolves to the collection.
      * @throws {Error} If the request fails.
      *
      * Side Effects: Makes a GET request to /api/v1/collections/:name.
@@ -2214,8 +2215,8 @@ export const apiClient = {
      *
      * Summary: Saves a collection.
      *
-     * @param collection - The collection to save.
-     * @returns A promise that resolves when the collection is saved.
+     * @param {any} collection - The collection to save.
+     * @returns {Promise<any>} A promise that resolves when the collection is saved.
      * @throws {Error} If saving fails.
      *
      * Side Effects: Makes a PUT request to /api/v1/collections/:name.
@@ -2248,8 +2249,8 @@ export const apiClient = {
      *
      * Summary: Deletes a collection.
      *
-     * @param name - The name of the collection to delete.
-     * @returns A promise that resolves when the collection is deleted.
+     * @param {string} name - The name of the collection to delete.
+     * @returns {Promise<any>} A promise that resolves when the collection is deleted.
      * @throws {Error} If deletion fails.
      *
      * Side Effects: Makes a DELETE request to /api/v1/collections/:name.
@@ -2267,8 +2268,8 @@ export const apiClient = {
      *
      * Summary: Retrieves stack config.
      *
-     * @param stackId - The ID of the stack.
-     * @returns A promise that resolves to the stack configuration.
+     * @param {string} stackId - The ID of the stack.
+     * @returns {Promise<any>} A promise that resolves to the stack configuration.
      *
      * Side Effects: Delegates to getCollection.
      */
@@ -2282,9 +2283,9 @@ export const apiClient = {
      *
      * Summary: Saves stack config.
      *
-     * @param stackId - The ID of the stack.
-     * @param config - The configuration content (Collection object).
-     * @returns A promise that resolves when the config is saved.
+     * @param {string} stackId - The ID of the stack.
+     * @param {any} config - The configuration content (Collection object).
+     * @returns {Promise<any>} A promise that resolves when the config is saved.
      *
      * Side Effects: Delegates to saveCollection.
      */
@@ -2300,8 +2301,8 @@ export const apiClient = {
      *
      * Summary: Retrieves stack config as YAML.
      *
-     * @param stackId - The ID of the stack.
-     * @returns A promise that resolves to the YAML string.
+     * @param {string} stackId - The ID of the stack.
+     * @returns {Promise<string>} A promise that resolves to the YAML string.
      * @throws {Error} If the request fails.
      *
      * Side Effects: Makes a GET request to /api/v1/stacks/:id/config.
@@ -2317,7 +2318,7 @@ export const apiClient = {
      *
      * Summary: Lists service templates.
      *
-     * @returns A promise that resolves to a list of service templates.
+     * @returns {Promise<ServiceTemplate[]>} A promise that resolves to a list of service templates.
      * @throws {Error} If the request fails.
      *
      * Side Effects: Makes a GET request to /api/v1/templates.
@@ -2333,8 +2334,8 @@ export const apiClient = {
      *
      * Summary: Saves a service template.
      *
-     * @param template - The template to save.
-     * @returns A promise that resolves when the template is saved.
+     * @param {ServiceTemplate} template - The template to save.
+     * @returns {Promise<any>} A promise that resolves when the template is saved.
      * @throws {Error} If saving fails.
      *
      * Side Effects: Makes a POST request to /api/v1/templates.
@@ -2354,8 +2355,8 @@ export const apiClient = {
      *
      * Summary: Deletes a service template.
      *
-     * @param id - The ID of the template to delete.
-     * @returns A promise that resolves when the template is deleted.
+     * @param {string} id - The ID of the template to delete.
+     * @returns {Promise<any>} A promise that resolves when the template is deleted.
      * @throws {Error} If deletion fails.
      *
      * Side Effects: Makes a DELETE request to /api/v1/templates/:id.
@@ -2373,9 +2374,9 @@ export const apiClient = {
      *
      * Summary: Saves stack config from YAML.
      *
-     * @param stackId - The ID of the stack.
-     * @param yamlContent - The YAML configuration content.
-     * @returns A promise that resolves when the config is saved.
+     * @param {string} stackId - The ID of the stack.
+     * @param {string} yamlContent - The YAML configuration content.
+     * @returns {Promise<any>} A promise that resolves when the config is saved.
      * @throws {Error} If saving fails.
      *
      * Side Effects: Makes a POST request to /api/v1/stacks/:id/config.
@@ -2400,8 +2401,15 @@ export const apiClient = {
      *
      * Summary: Lists audit logs.
      *
-     * @param filters - The filters for the audit logs.
-     * @returns A promise that resolves to the list of audit logs.
+     * @param {object} filters - The filters for the audit logs.
+     * @param {string} [filters.start_time] - Start time filter.
+     * @param {string} [filters.end_time] - End time filter.
+     * @param {string} [filters.tool_name] - Tool name filter.
+     * @param {string} [filters.user_id] - User ID filter.
+     * @param {string} [filters.profile_id] - Profile ID filter.
+     * @param {number} [filters.limit] - Limit the number of logs.
+     * @param {number} [filters.offset] - Offset for pagination.
+     * @returns {Promise<any>} A promise that resolves to the list of audit logs.
      * @throws {Error} If the request fails.
      *
      * Side Effects: Makes a GET request to /api/v1/audit/logs.
@@ -2434,7 +2442,7 @@ export const apiClient = {
      *
      * Summary: Retrieves auto-discovery status.
      *
-     * @returns A promise that resolves to the list of provider statuses.
+     * @returns {Promise<any[]>} A promise that resolves to the list of provider statuses.
      * @throws {Error} If the request fails.
      *
      * Side Effects: Makes a GET request to /api/v1/discovery/status.
@@ -2450,7 +2458,7 @@ export const apiClient = {
      *
      * Summary: Triggers a new discovery run.
      *
-     * @returns A promise that resolves when the trigger is accepted.
+     * @returns {Promise<any>} A promise that resolves when the trigger is accepted.
      * @throws {Error} If the request fails.
      *
      * Side Effects: Makes a POST request to /api/v1/discovery/trigger.

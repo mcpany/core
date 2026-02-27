@@ -39,11 +39,11 @@ type Engine interface {
 	// Summary: Parses bytes into a protobuf message.
 	//
 	// Parameters:
-//   - b ([]byte): The raw bytes to parse.
-//   - v (proto.Message): The destination protobuf message.
+	//   - b ([]byte): The raw bytes to parse.
+	//   - v (proto.Message): The destination protobuf message.
 	//
 	// Returns:
-//   - (error): An error if parsing fails.
+	//   - (error): An error if parsing fails.
 	Unmarshal(b []byte, v proto.Message) error
 }
 
@@ -121,13 +121,13 @@ type yamlEngine struct {
 // SetSkipValidation sets whether to skip schema validation.
 //
 // Parameters:
-//   - skip (bool): The parameter.
+//   - skip (bool): True to skip validation.
 //
 // Returns:
 //   - None.
 //
 // Side Effects:
-//   - None.
+//   - Updates the skipValidation flag.
 func (e *yamlEngine) SetSkipValidation(skip bool) {
 	e.skipValidation = skip
 }
@@ -135,13 +135,13 @@ func (e *yamlEngine) SetSkipValidation(skip bool) {
 // SetIgnoreEnv sets whether to ignore environment variables.
 //
 // Parameters:
-//   - ignore (bool): The parameter.
+//   - ignore (bool): True to ignore environment variables.
 //
 // Returns:
 //   - None.
 //
 // Side Effects:
-//   - None.
+//   - Updates the ignoreEnv flag.
 func (e *yamlEngine) SetIgnoreEnv(ignore bool) {
 	e.ignoreEnv = ignore
 }
@@ -149,17 +149,14 @@ func (e *yamlEngine) SetIgnoreEnv(ignore bool) {
 // Unmarshal parses a YAML byte slice into a `proto.Message`.
 //
 // Parameters:
-//   - b ([]byte): The parameter.
-//   - v (proto.Message): The parameter.
+//   - b ([]byte): The YAML data.
+//   - v (proto.Message): The target protobuf message.
 //
 // Returns:
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
+//   - error: An error if unmarshaling fails.
 //
 // Side Effects:
-//   - None.
+//   - Modifies the provided proto.Message.
 func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 	// First, unmarshal YAML into a generic map.
 	var yamlMap map[string]interface{}
@@ -181,18 +178,15 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 // UnmarshalFromMap populates the provided proto.Message from a raw map.
 //
 // Parameters:
-//   - yamlMap (map[string]interface{}): The parameter.
-//   - v (proto.Message): The parameter.
-//   - originalBytes ([]byte): The parameter.
+//   - yamlMap (map[string]interface{}): The raw map data.
+//   - v (proto.Message): The target protobuf message.
+//   - originalBytes ([]byte): Original bytes for error reporting.
 //
 // Returns:
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
+//   - error: An error if unmarshaling fails.
 //
 // Side Effects:
-//   - None.
+//   - Modifies the provided proto.Message.
 func (e *yamlEngine) UnmarshalFromMap(yamlMap map[string]interface{}, v proto.Message, originalBytes []byte) error {
 	return e.unmarshalInternal(yamlMap, v, originalBytes)
 }
@@ -300,17 +294,14 @@ type textprotoEngine struct{}
 // Unmarshal parses a textproto byte slice into a `proto.Message`.
 //
 // Parameters:
-//   - b ([]byte): The parameter.
-//   - v (proto.Message): The parameter.
+//   - b ([]byte): The textproto data.
+//   - v (proto.Message): The target protobuf message.
 //
 // Returns:
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
+//   - error: An error if unmarshaling fails.
 //
 // Side Effects:
-//   - None.
+//   - Modifies the provided proto.Message.
 func (e *textprotoEngine) Unmarshal(b []byte, v proto.Message) error {
 	return prototext.Unmarshal(b, v)
 }
@@ -321,17 +312,14 @@ type jsonEngine struct{}
 // Unmarshal parses a JSON byte slice into a `proto.Message`.
 //
 // Parameters:
-//   - b ([]byte): The parameter.
-//   - v (proto.Message): The parameter.
+//   - b ([]byte): The JSON data.
+//   - v (proto.Message): The target protobuf message.
 //
 // Returns:
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
+//   - error: An error if unmarshaling fails.
 //
 // Side Effects:
-//   - None.
+//   - Modifies the provided proto.Message.
 func (e *jsonEngine) Unmarshal(b []byte, v proto.Message) error {
 	if err := protojson.Unmarshal(b, v); err != nil {
 		// Detect if the user is using Claude Desktop config format
@@ -658,6 +646,9 @@ type FileStore struct {
 
 // SetSkipValidation configures whether to skip schema validation during loading.
 //
+// Parameters:
+//   - skip (bool): True to skip validation.
+//
 // Returns:
 //   - None.
 //
@@ -668,6 +659,9 @@ func (s *FileStore) SetSkipValidation(skip bool) {
 }
 
 // SetIgnoreMissingEnv configures whether to ignore missing environment variables during loading.
+//
+// Parameters:
+//   - ignore (bool): True to ignore missing environment variables.
 //
 // Returns:
 //   - None.

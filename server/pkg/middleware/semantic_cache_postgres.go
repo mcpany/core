@@ -21,6 +21,17 @@ type PostgresVectorStore struct {
 
 // NewPostgresVectorStore creates a new PostgresVectorStore.
 // It connects to the database and ensures the schema exists.
+//
+// Parameters:
+//   - dsn (string): The PostgreSQL connection string (Data Source Name).
+//
+// Returns:
+//   - *PostgresVectorStore: The initialized vector store.
+//   - error: An error if the DSN is empty or connection fails.
+//
+// Side Effects:
+//   - Opens a database connection.
+//   - Creates the `semantic_cache_entries` table and `vector` extension if they don't exist.
 func NewPostgresVectorStore(dsn string) (*PostgresVectorStore, error) {
 	if dsn == "" {
 		return nil, fmt.Errorf("postgres dsn is required")
@@ -42,6 +53,16 @@ func NewPostgresVectorStore(dsn string) (*PostgresVectorStore, error) {
 
 // NewPostgresVectorStoreWithDB creates a new PostgresVectorStore using an existing database connection.
 // It ensures the schema exists.
+//
+// Parameters:
+//   - db (*sql.DB): An active database connection.
+//
+// Returns:
+//   - *PostgresVectorStore: The initialized vector store.
+//   - error: An error if database ping fails or schema creation fails.
+//
+// Side Effects:
+//   - Creates the `semantic_cache_entries` table and `vector` extension if they don't exist.
 func NewPostgresVectorStoreWithDB(db *sql.DB) (*PostgresVectorStore, error) {
 	// Verify connection
 	ctxPing, cancelPing := context.WithTimeout(context.Background(), 5*time.Second)
@@ -85,13 +106,15 @@ func NewPostgresVectorStoreWithDB(db *sql.DB) (*PostgresVectorStore, error) {
 
 // Add adds a new entry to the vector store.
 //
-// ctx is the context for the request.
-// key is the key.
-// vector is the vector.
-// result is the result.
-// ttl is the ttl.
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - key (string): The key identifying the entry.
+//   - vector ([]float32): The embedding vector.
+//   - result (any): The result object to store (marshaled to JSON).
+//   - ttl (time.Duration): The time-to-live for the entry.
 //
-// Returns an error if the operation fails.
+// Returns:
+//   - error: An error if marshaling or database insertion fails.
 func (s *PostgresVectorStore) Add(ctx context.Context, key string, vector []float32, result any, ttl time.Duration) error {
 	vectorJSON, err := json.Marshal(vector)
 	if err != nil {
@@ -121,13 +144,15 @@ func (s *PostgresVectorStore) Add(ctx context.Context, key string, vector []floa
 
 // Search searches for the most similar entry in the vector store.
 //
-// ctx is the context for the request.
-// key is the key.
-// query is the query.
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - key (string): The key to scope the search.
+//   - query ([]float32): The query embedding vector.
 //
-// Returns the result.
-// Returns the result.
-// Returns true if successful.
+// Returns:
+//   - any: The stored result if found.
+//   - float32: The similarity score (0.0 to 1.0).
+//   - bool: True if a matching entry was found.
 func (s *PostgresVectorStore) Search(ctx context.Context, key string, query []float32) (any, float32, bool) {
 	queryJSON, err := json.Marshal(query)
 	if err != nil {
@@ -172,8 +197,12 @@ func (s *PostgresVectorStore) Search(ctx context.Context, key string, query []fl
 
 // Prune removes expired entries.
 //
-// ctx is the context for the request.
-// key is the key.
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - key (string): Optional key to scope the pruning.
+//
+// Side Effects:
+//   - Deletes rows from the database.
 func (s *PostgresVectorStore) Prune(ctx context.Context, key string) {
 	query := "DELETE FROM semantic_cache_entries WHERE expires_at <= $1"
 	args := []interface{}{time.Now()}
@@ -188,7 +217,8 @@ func (s *PostgresVectorStore) Prune(ctx context.Context, key string) {
 
 // Close closes the database connection.
 //
-// Returns an error if the operation fails.
+// Returns:
+//   - error: An error if closing the connection fails.
 func (s *PostgresVectorStore) Close() error {
 	return s.db.Close()
 }

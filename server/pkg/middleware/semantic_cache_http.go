@@ -27,13 +27,15 @@ type HTTPEmbeddingProvider struct {
 
 // NewHTTPEmbeddingProvider creates a new HTTPEmbeddingProvider.
 //
-// url is the url.
-// headers is the headers.
-// bodyTemplateStr is the bodyTemplateStr.
-// responseJSONPath is the responseJSONPath.
+// Parameters:
+//   - url (string): The URL of the embedding service.
+//   - headers (map[string]string): HTTP headers to include in the request.
+//   - bodyTemplateStr (string): Go template string for the request body (input is available as .input).
+//   - responseJSONPath (string): JSONPath to extract the embedding vector from the response.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//   - *HTTPEmbeddingProvider: The initialized provider.
+//   - error: An error if the URL is empty or the body template is invalid.
 func NewHTTPEmbeddingProvider(url string, headers map[string]string, bodyTemplateStr, responseJSONPath string) (*HTTPEmbeddingProvider, error) {
 	if url == "" {
 		return nil, fmt.Errorf("url is required")
@@ -53,15 +55,15 @@ func NewHTTPEmbeddingProvider(url string, headers map[string]string, bodyTemplat
 	}, nil
 }
 
-
-
 // Embed generates an embedding for the given text.
 //
-// ctx is the context for the request.
-// text is the text.
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - text (string): The input text to embed.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Returns:
+//   - []float32: The embedding vector.
+//   - error: An error if the request fails, response status is not 2xx, or extraction fails.
 func (p *HTTPEmbeddingProvider) Embed(ctx context.Context, text string) ([]float32, error) {
 	// Simple template replacement.
 	// We assume formatting is handled by the caller or configuration?

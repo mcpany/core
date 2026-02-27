@@ -18,9 +18,11 @@ type SSOConfig struct {
 
 // SSOMiddleware creates a new SSO middleware.
 //
-// config holds the configuration settings.
+// Parameters:
+//   - config (SSOConfig): The SSO configuration options.
 //
-// Returns the result.
+// Returns:
+//   - gin.HandlerFunc: A Gin middleware handler function.
 func SSOMiddleware(config SSOConfig) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if !config.Enabled {
