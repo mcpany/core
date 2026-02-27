@@ -78,6 +78,7 @@ jobs:
     if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: oci-runner
     # container: public.ecr.aws/docker/library/ubuntu:24.04
+    timeout-minutes: 60
     steps:
       - name: Free Disk Space (Fast)
         run: |
@@ -170,9 +171,9 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
+            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential docker-compose-plugin
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz build-base
+             sudo apk add --no-cache make xz build-base docker-cli-compose
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -284,7 +285,7 @@ jobs:
   e2e-parallel:
     runs-on: oci-runner
     # container: public.ecr.aws/docker/library/ubuntu:24.04
-    timeout-minutes: 30
+    timeout-minutes: 60
     needs: [build-images]
     strategy:
       fail-fast: false
@@ -309,9 +310,9 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
+            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential docker-compose-plugin
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz build-base
+             sudo apk add --no-cache make xz build-base docker-cli-compose
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -616,9 +617,9 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
+            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential docker-compose-plugin
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz build-base
+             sudo apk add --no-cache make xz build-base docker-cli-compose
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -733,7 +734,7 @@ jobs:
   e2e-public-api:
     runs-on: oci-runner
     # container: public.ecr.aws/docker/library/ubuntu:24.04
-    timeout-minutes: 30
+    timeout-minutes: 60
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
     env:
@@ -755,9 +756,9 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
+            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential docker-compose-plugin
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz build-base
+             sudo apk add --no-cache make xz build-base docker-cli-compose
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -912,7 +913,7 @@ jobs:
 
   ui-test:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 60
     needs: [build-images]
     strategy:
       fail-fast: false
@@ -969,7 +970,7 @@ jobs:
 
   k8s-e2e:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 60
     needs: [build-images]
     steps:
       - name: Free Disk Space (Fast)
@@ -1051,6 +1052,7 @@ jobs:
           kind load docker-image mcpany/server:latest --name mcp-e2e
           kind load docker-image mcpany/operator:latest --name mcp-e2e
           kind load docker-image mcpany/ui:latest --name mcp-e2e
+          kind load docker-image mcpany/http-echo-server:latest --name mcp-e2e
 
       - name: Load Docker Images already loaded above
         run: |
