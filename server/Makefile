@@ -130,8 +130,10 @@ prepare:
 	@echo "Preparing development environment..."
 	@mkdir -p $(LOCAL_BIN_DIR)
 	@mkdir -p $(TOOL_INSTALL_DIR)
-	@# Check if protoc is installed
-	@export PATH=$(TOOL_INSTALL_DIR):$$PATH; \
+	@# Determine if sudo is needed for file operations in TOOL_INSTALL_DIR
+	@SUDO_FS=""; if [ ! -w "$(TOOL_INSTALL_DIR)" ] && [ "$$(id -u)" -ne 0 ]; then SUDO_FS="sudo"; fi; \
+	export SUDO_FS=$$SUDO_FS; \
+	export PATH=$(TOOL_INSTALL_DIR):$$PATH; \
 	PROTOC_TAG=$(PROTOC_VERSION); \
 	if test -f "$(PROTOC_BIN)"; then \
 		INSTALLED_VERSION=v$$($(PROTOC_BIN) --version | sed 's/libprotoc //'); \
@@ -139,7 +141,7 @@ prepare:
 			echo "protoc version $${INSTALLED_VERSION} is already installed."; \
 		else \
 			echo "protoc version mismatch. Installed: $${INSTALLED_VERSION}, Required: $${PROTOC_TAG}. Re-installing..."; \
-			rm -f "$(PROTOC_BIN)"; \
+			$$SUDO_FS rm -f "$(PROTOC_BIN)"; \
 			$(MAKE) prepare; \
 		fi; \
 	else \
@@ -147,7 +149,6 @@ prepare:
 		PROTOC_VERSION_NO_V=$$(echo "$${PROTOC_TAG}" | sed 's/v//'); \
 		PROTOC_DOWNLOAD_URL_NO_V="$(PROTOC_DOWNLOAD_URL_BASE)/$${PROTOC_TAG}/protoc-$${PROTOC_VERSION_NO_V}-linux-$(PROTOC_ARCH).zip"; \
 		echo "Downloading protoc from $${PROTOC_DOWNLOAD_URL_NO_V}..."; \
-		SUDO_FS=""; if [ ! -w "$(TOOL_INSTALL_DIR)" ] && [ "$$(id -u)" -ne 0 ]; then SUDO_FS="sudo"; fi; \
 		if command -v curl >/dev/null 2>&1 && command -v unzip >/dev/null 2>&1; then \
 			if curl -sSL "$${PROTOC_DOWNLOAD_URL_NO_V}" -o "$(PROTOC_ZIP)"; then \
 				echo "Unzipping to $(TOOL_INSTALL_DIR) with unzip..."; \
@@ -167,27 +168,27 @@ prepare:
 			exit 1; \
 		fi; \
 		$$SUDO_FS rm -f "$(PROTOC_ZIP)"; \
-	fi
-	@# Install Go protobuf plugins
-	@echo "Installing Go protobuf plugins..."
-	@if test -f "$(PROTOC_GEN_GO)"; then \
+	fi; \
+	echo "Installing Go protobuf plugins..."; \
+	SUDO_FS=""; if [ ! -w "$(TOOL_INSTALL_DIR)" ] && [ "$$(id -u)" -ne 0 ]; then SUDO_FS="sudo"; fi; \
+	if test -f "$(PROTOC_GEN_GO)"; then \
 		INSTALLED_VER=$$($(PROTOC_GEN_GO) --version | awk '{print $$2}'); \
 		if [ "$$INSTALLED_VER" != "$(PROTOC_GEN_GO_VERSION)" ]; then \
 			echo "protoc-gen-go version mismatch. Installed: $$INSTALLED_VER, Required: $(PROTOC_GEN_GO_VERSION). Re-installing..."; \
-			rm -f "$(PROTOC_GEN_GO)"; \
+			$$SUDO_FS rm -f "$(PROTOC_GEN_GO)"; \
 		fi; \
-	fi
-	@if test -f "$(PROTOC_GEN_GO_GRPC)"; then \
+	fi; \
+	if test -f "$(PROTOC_GEN_GO_GRPC)"; then \
 		INSTALLED_VER=$$($(PROTOC_GEN_GO_GRPC) --version | awk '{print $$2}'); \
 		if [ "$$INSTALLED_VER" != "$(PROTOC_GEN_GO_GRPC_VERSION)" ] && [ "v$$INSTALLED_VER" != "$(PROTOC_GEN_GO_GRPC_VERSION)" ]; then \
 			echo "protoc-gen-go-grpc version mismatch. Installed: $$INSTALLED_VER, Required: $(PROTOC_GEN_GO_GRPC_VERSION). Re-installing..."; \
-			rm -f "$(PROTOC_GEN_GO_GRPC)"; \
+			$$SUDO_FS rm -f "$(PROTOC_GEN_GO_GRPC)"; \
 		fi; \
-	fi
-	@if ! test -f "$(PROTOC_GEN_GO)"; then GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install google.golang.org/protobuf/cmd/protoc-gen-go@$(PROTOC_GEN_GO_VERSION); fi
-	@if ! test -f "$(PROTOC_GEN_GO_GRPC)"; then GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install google.golang.org/grpc/cmd/protoc-gen-go-grpc@$(PROTOC_GEN_GO_GRPC_VERSION); fi
-	@if ! test -f "$(PROTOC_GEN_GRPC_GATEWAY)"; then GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@$(GRPC_GATEWAY_VERSION); fi
-	@if ! test -f "$(PROTOC_GEN_OPENAPIV2)"; then GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@$(GRPC_GATEWAY_VERSION); fi
+	fi; \
+	if ! test -f "$(PROTOC_GEN_GO)"; then $$SUDO_FS env GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install google.golang.org/protobuf/cmd/protoc-gen-go@$(PROTOC_GEN_GO_VERSION); fi; \
+	if ! test -f "$(PROTOC_GEN_GO_GRPC)"; then $$SUDO_FS env GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install google.golang.org/grpc/cmd/protoc-gen-go-grpc@$(PROTOC_GEN_GO_GRPC_VERSION); fi; \
+	if ! test -f "$(PROTOC_GEN_GRPC_GATEWAY)"; then $$SUDO_FS env GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@$(GRPC_GATEWAY_VERSION); fi; \
+	if ! test -f "$(PROTOC_GEN_OPENAPIV2)"; then $$SUDO_FS env GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@$(GRPC_GATEWAY_VERSION); fi
 	@echo "Checking for Go protobuf plugins..."
 	@if ! test -f "$(PROTOC_GEN_GO)"; then \
 		echo "protoc-gen-go not found at $(PROTOC_GEN_GO) after attempting install. Please check your GOPATH/GOBIN setup and PATH."; \
@@ -281,7 +282,8 @@ prepare:
 	fi
 	@# Install Helm
 	@echo "Checking for Helm..."
-	@if test -f "$(HELM_BIN)"; then \
+	@SUDO_FS=""; if [ ! -w "$(TOOL_INSTALL_DIR)" ] && [ "$$(id -u)" -ne 0 ]; then SUDO_FS="sudo"; fi; \
+	if test -f "$(HELM_BIN)"; then \
 		echo "Helm is already installed."; \
 	else \
 		echo "Installing Helm to $(TOOL_INSTALL_DIR)..."; \
@@ -297,7 +299,7 @@ prepare:
 		if curl -sSL "$${HELM_DOWNLOAD_URL}" -o "/tmp/$${HELM_TARBALL}"; then \
 			echo "Unpacking to $(TOOL_INSTALL_DIR)..."; \
 			tar -zxvf "/tmp/$${HELM_TARBALL}" -C "/tmp"; \
-			mv "/tmp/$${OS}-$${ARCH}/helm" "$(HELM_BIN)"; \
+			$$SUDO_FS mv "/tmp/$${OS}-$${ARCH}/helm" "$(HELM_BIN)"; \
 			rm "/tmp/$${HELM_TARBALL}"; \
 			rm -rf "/tmp/$${OS}-$${ARCH}"; \
 			if test -f "$(HELM_BIN)"; then \
@@ -313,13 +315,14 @@ prepare:
 	fi
 	@# Install ShellCheck
 	@echo "Checking for ShellCheck..."
-	@if test -f "$(SHELLCHECK_BIN)"; then \
+	@SUDO_FS=""; if [ ! -w "$(TOOL_INSTALL_DIR)" ] && [ "$$(id -u)" -ne 0 ]; then SUDO_FS="sudo"; fi; \
+	if test -f "$(SHELLCHECK_BIN)"; then \
 		echo "ShellCheck is already installed."; \
 	else \
 		echo "Installing ShellCheck to $(TOOL_INSTALL_DIR)..."; \
 		SC_VERSION="stable"; \
 		curl -sSL "https://github.com/koalaman/shellcheck/releases/download/$${SC_VERSION}/shellcheck-$${SC_VERSION}.linux.x86_64.tar.xz" | tar -xJv -C /tmp; \
-		mv "/tmp/shellcheck-$${SC_VERSION}/shellcheck" "$(SHELLCHECK_BIN)"; \
+		$$SUDO_FS mv "/tmp/shellcheck-$${SC_VERSION}/shellcheck" "$(SHELLCHECK_BIN)"; \
 		rm -rf "/tmp/shellcheck-$${SC_VERSION}"; \
 		if test -f "$(SHELLCHECK_BIN)"; then \
 			echo "ShellCheck installed successfully."; \
@@ -330,11 +333,12 @@ prepare:
 	fi
 	@# Install nats-server
 	@echo "Checking for nats-server..."
-	@if test -f "$(NATS_SERVER_BIN)"; then \
+	@SUDO_FS=""; if [ ! -w "$(TOOL_INSTALL_DIR)" ] && [ "$$(id -u)" -ne 0 ]; then SUDO_FS="sudo"; fi; \
+	if test -f "$(NATS_SERVER_BIN)"; then \
 		echo "nats-server is already installed."; \
 	else \
 		echo "Installing nats-server to $(TOOL_INSTALL_DIR)..."; \
-		GOBIN=$(TOOL_INSTALL_DIR) go install github.com/nats-io/nats-server/v2@latest; \
+		$$SUDO_FS env GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install github.com/nats-io/nats-server/v2@latest; \
 		if test -f "$(NATS_SERVER_BIN)"; then \
 			echo "nats-server installed successfully."; \
 		else \
@@ -344,12 +348,13 @@ prepare:
 	fi
 	@# Install golangci-lint
 	@echo "Checking for golangci-lint..."
-	@LINT_VER_CHECK=$$($(GOLANGCI_LINT_BIN) --version 2>/dev/null | grep "v1.64.5"); \
+	@SUDO_FS=""; if [ ! -w "$(TOOL_INSTALL_DIR)" ] && [ "$$(id -u)" -ne 0 ]; then SUDO_FS="sudo"; fi; \
+	LINT_VER_CHECK=$$($(GOLANGCI_LINT_BIN) --version 2>/dev/null | grep "v1.64.5"); \
 	if [ -n "$$LINT_VER_CHECK" ]; then \
 		echo "golangci-lint v1.64.5 is already installed."; \
 	else \
 		echo "Installing golangci-lint v1.64.5 to $(TOOL_INSTALL_DIR)..."; \
-		curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(TOOL_INSTALL_DIR) v1.64.5; \
+		curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | $$SUDO_FS sh -s -- -b $(TOOL_INSTALL_DIR) v1.64.5; \
 		if test -f "$(GOLANGCI_LINT_BIN)"; then \
 			echo "golangci-lint installed successfully."; \
 		else \
