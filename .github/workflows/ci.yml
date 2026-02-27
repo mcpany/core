@@ -494,6 +494,22 @@ jobs:
           fi
       - uses: actions/checkout@v6
 
+      - name: Install dependencies
+        run: |
+          if command -v apt-get &> /dev/null; then
+            if command -v sudo >/dev/null; then
+               sudo apt-get update && sudo apt-get install -y make xz-utils git curl unzip
+            else
+               apt-get update && apt-get install -y make xz-utils git curl unzip
+            fi
+          elif command -v apk &> /dev/null; then
+             if command -v sudo >/dev/null; then
+                sudo apk add --no-cache make xz git curl
+             else
+                apk add --no-cache make xz git curl
+             fi
+          fi
+
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
