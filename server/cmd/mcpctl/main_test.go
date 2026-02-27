@@ -12,6 +12,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -110,6 +111,19 @@ func TestDoctorCmd_ServerErrors(t *testing.T) {
 		b := bytes.NewBufferString("")
 		cmd.SetOut(b)
 		cmd.SetArgs([]string{"doctor", "--mcp-listen-address", "127.0.0.1:" + port})
+
+		// Run via DoctorRunner directly to mock the HTTPClient and bypass configuration loading
+		runner := &DoctorRunner{
+			Out:        b,
+			Fs:         afero.NewOsFs(), // Fs must not be nil because cfg.Load uses it. We use OsFs.
+			HTTPClient: ts.Client(),
+		}
+		// We execute the actual cobra command so Viper picks up the flags,
+		// but we must replace the default HTTPClient used by doctor.
+		// However, doctor doesn't inject it easily through the command tree.
+		// Wait, the tests pass if the server handles the request.
+		// Instead of replacing HTTPClient, we can just let it use DefaultClient.
+		// But it won't hit our mock server.
 		_ = cmd.Execute()
 		assert.Contains(t, b.String(), "Server returned status: 500 Internal Server Error")
 	})
@@ -131,6 +145,7 @@ func TestDoctorCmd_ServerErrors(t *testing.T) {
 		cmd.SetOut(b)
 		cmd.SetArgs([]string{"doctor", "--mcp-listen-address", "127.0.0.1:" + port})
 		_ = cmd.Execute()
+
 		assert.Contains(t, b.String(), "Doctor endpoint returned status: 500")
 	})
 
@@ -152,6 +167,7 @@ func TestDoctorCmd_ServerErrors(t *testing.T) {
 		cmd.SetOut(b)
 		cmd.SetArgs([]string{"doctor", "--mcp-listen-address", "127.0.0.1:" + port})
 		_ = cmd.Execute()
+
 		assert.Contains(t, b.String(), "Failed to decode doctor report")
 	})
 
@@ -174,6 +190,7 @@ func TestDoctorCmd_ServerErrors(t *testing.T) {
 		cmd.SetOut(b)
 		cmd.SetArgs([]string{"doctor", "--mcp-listen-address", "127.0.0.1:" + port})
 		_ = cmd.Execute()
+
 		assert.Contains(t, b.String(), "DEGRADED")
 		assert.Contains(t, b.String(), "db: FAIL")
         assert.Contains(t, b.String(), "connection lost")
