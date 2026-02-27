@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **Policy-as-Code Bridging (Seatbelt Profiles)**: (P0) Compatibility layer for Gemini-style "Seatbelt" policies. Allows importing/exporting strict behavioral constraints.
+- **Root-of-Trust Attestation Engine**: (P0) Evolves provenance checks into a hardware-backed or decentralized root-of-trust for tool registration.
+- **Inter-Agent State Observability (Swarm-Watch)**: (P1) Middleware that tracks state transitions between agents to detect and halt cascading failures.
+
+### Priority Shifts
+- **Policy Firewall**: Promoted to **P0** (Critical for bridging with third-party policy engines like Gemini).
+- **A2A Interop Bridge**: Promoted to **P0** (The "Swarm-Watch" observability depends on this unified transport).
+
+### Deprecations / Monitoring
+- **Client-Side URL Trust**: Monitoring for deprecation in the Management UI (Step towards mitigating OpenClaw-style UI exploits).
