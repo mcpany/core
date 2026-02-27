@@ -90,7 +90,7 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          if command -v sudo &> /dev/null; then
+          if command -v sudo >/dev/null 2>&1; then
             sudo rm -rf /usr/local/lib/android
             sudo rm -rf /usr/share/dotnet
             sudo rm -rf /opt/ghc
@@ -202,7 +202,7 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          if command -v sudo &> /dev/null; then
+          if command -v sudo >/dev/null 2>&1; then
             sudo rm -rf /usr/local/lib/android
             sudo rm -rf /usr/share/dotnet
             sudo rm -rf /opt/ghc
@@ -248,14 +248,14 @@ jobs:
       #     # Configure multiple mirrors in array format
       #     # Docker will try mirror.gcr.io first.
       #
-      #     if [ "$(id -u)" -ne 0 ] && ! command -v sudo &> /dev/null; then
+      #     if [ "$(id -u)" -ne 0 ] && ! command -v sudo >/dev/null 2>&1; then
       #       echo "Skipping Docker Registry Mirror configuration: Non-root user and sudo not available."
       #       docker info
       #       exit 0
       #     fi
       #
       #     SUDO=""
-      #     if command -v sudo &> /dev/null; then
+      #     if command -v sudo >/dev/null 2>&1; then
       #       SUDO="sudo"
       #     fi
       #
@@ -376,7 +376,7 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          if command -v sudo &> /dev/null; then
+          if command -v sudo >/dev/null 2>&1; then
             sudo rm -rf /usr/local/lib/android
             sudo rm -rf /usr/share/dotnet
             sudo rm -rf /opt/ghc
@@ -582,7 +582,7 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          if command -v sudo &> /dev/null; then
+          if command -v sudo >/dev/null 2>&1; then
             sudo rm -rf /usr/local/lib/android
             sudo rm -rf /usr/share/dotnet
             sudo rm -rf /opt/ghc
