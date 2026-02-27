@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-27] Updates
+
+### Proposed Additions
+- **Zero-Trust Localhost Guard**: (P0) Mandatory Origin verification and cryptographically-bound pairing for all local WebSocket/HTTP connections. Mitigates "ClawJacked"-style attacks.
+- **Multi-Agent Team Handoff Protocol**: (P0) A formal protocol for managing shared task state and "Agent-to-Agent" handoffs within the MCP Any bus.
+- **Cross-Framework Teammate Discovery**: (P1) Allows an agent in one framework (e.g., OpenClaw) to discover and enlist "teammates" running in another (e.g., Claude Code).
+
+### Priority Shifts
+- **A2A Interop Bridge**: Promoted from **P0** to **Infrastructure Core**. It is no longer just a feature but the foundation for the Multi-Agent Team Bus.
+- **Policy Firewall**: Re-prioritized to include "Action-Based" rules (ASI) to meet OWASP 2026 standards.
+
+### Deprecations / Monitoring
+- **Implicit Localhost Trust**: Marked for immediate deprecation. All local connections must be authenticated via the Zero-Trust Guard.
