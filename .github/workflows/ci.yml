@@ -84,19 +84,6 @@ jobs:
     runs-on: oci-runner
     # container: public.ecr.aws/docker/library/ubuntu:24.04
     steps:
-      # - name: Free Disk Space (Fast)
-      #   run: |
-      #     if command -v sudo &> /dev/null; then
-      #       sudo rm -rf /usr/local/lib/android
-      #       sudo rm -rf /usr/share/dotnet
-      #       sudo rm -rf /opt/ghc
-      #       sudo rm -rf /usr/local/share/boost
-      #     else
-      #       rm -rf /usr/local/lib/android || true
-      #       rm -rf /usr/share/dotnet || true
-      #       rm -rf /opt/ghc || true
-      #       rm -rf /usr/local/share/boost || true
-      #     fi
 
       - name: Prune Docker
         run: docker system prune -af
@@ -172,19 +159,6 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
-      # - name: Free Disk Space (Fast)
-      #   run: |
-      #     if command -v sudo &> /dev/null; then
-      #       sudo rm -rf /usr/local/lib/android
-      #       sudo rm -rf /usr/share/dotnet
-      #       sudo rm -rf /opt/ghc
-      #       sudo rm -rf /usr/local/share/boost
-      #     else
-      #       rm -rf /usr/local/lib/android || true
-      #       rm -rf /usr/share/dotnet || true
-      #       rm -rf /opt/ghc || true
-      #       rm -rf /usr/local/share/boost || true
-      #     fi
 
       - name: Prune Docker
         run: docker system prune -af
@@ -326,19 +300,6 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
-      # - name: Free Disk Space (Fast)
-      #   run: |
-      #     if command -v sudo &> /dev/null; then
-      #       sudo rm -rf /usr/local/lib/android
-      #       sudo rm -rf /usr/share/dotnet
-      #       sudo rm -rf /opt/ghc
-      #       sudo rm -rf /usr/local/share/boost
-      #     else
-      #       rm -rf /usr/local/lib/android || true
-      #       rm -rf /usr/share/dotnet || true
-      #       rm -rf /opt/ghc || true
-      #       rm -rf /usr/local/share/boost || true
-      #     fi
 
       - name: Prune Docker
         run: docker system prune -af
@@ -512,19 +473,6 @@ jobs:
             slug: arm64
             runner: ubuntu-24.04-arm
     steps:
-      # - name: Free Disk Space (Fast)
-      #   run: |
-      #     if command -v sudo &> /dev/null; then
-      #       sudo rm -rf /usr/local/lib/android
-      #       sudo rm -rf /usr/share/dotnet
-      #       sudo rm -rf /opt/ghc
-      #       sudo rm -rf /usr/local/share/boost
-      #     else
-      #       rm -rf /usr/local/lib/android || true
-      #       rm -rf /usr/share/dotnet || true
-      #       rm -rf /opt/ghc || true
-      #       rm -rf /usr/local/share/boost || true
-      #     fi
       - uses: actions/checkout@v6
 
       - name: Set up Go
@@ -673,19 +621,6 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
-      # - name: Free Disk Space (Fast)
-      #   run: |
-      #     if command -v sudo &> /dev/null; then
-      #       sudo rm -rf /usr/local/lib/android
-      #       sudo rm -rf /usr/share/dotnet
-      #       sudo rm -rf /opt/ghc
-      #       sudo rm -rf /usr/local/share/boost
-      #     else
-      #       rm -rf /usr/local/lib/android || true
-      #       rm -rf /usr/share/dotnet || true
-      #       rm -rf /opt/ghc || true
-      #       rm -rf /usr/local/share/boost || true
-      #     fi
 
       - name: Prune Docker
         run: docker system prune -af
@@ -829,19 +764,6 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
-      # - name: Free Disk Space (Fast)
-      #   run: |
-      #     if command -v sudo &> /dev/null; then
-      #       sudo rm -rf /usr/local/lib/android
-      #       sudo rm -rf /usr/share/dotnet
-      #       sudo rm -rf /opt/ghc
-      #       sudo rm -rf /usr/local/share/boost
-      #     else
-      #       rm -rf /usr/local/lib/android || true
-      #       rm -rf /usr/share/dotnet || true
-      #       rm -rf /opt/ghc || true
-      #       rm -rf /usr/local/share/boost || true
-      #     fi
 
       - name: Prune Docker
         run: docker system prune -af
@@ -1027,19 +949,6 @@ jobs:
       matrix:
         shard: [1/2, 2/2]
     steps:
-      # - name: Free Disk Space (Fast)
-      #   run: |
-      #     if command -v sudo &> /dev/null; then
-      #       sudo rm -rf /usr/local/lib/android
-      #       sudo rm -rf /usr/share/dotnet
-      #       sudo rm -rf /opt/ghc
-      #       sudo rm -rf /usr/local/share/boost
-      #     else
-      #       rm -rf /usr/local/lib/android || true
-      #       rm -rf /usr/share/dotnet || true
-      #       rm -rf /opt/ghc || true
-      #       rm -rf /usr/local/share/boost || true
-      #     fi
 
       - name: Prune Docker
         run: docker system prune -af
@@ -1087,19 +996,6 @@ jobs:
     timeout-minutes: 20
     needs: [build-images]
     steps:
-      # - name: Free Disk Space (Fast)
-      #   run: |
-      #     if command -v sudo &> /dev/null; then
-      #       sudo rm -rf /usr/local/lib/android
-      #       sudo rm -rf /usr/share/dotnet
-      #       sudo rm -rf /opt/ghc
-      #       sudo rm -rf /usr/local/share/boost
-      #     else
-      #       rm -rf /usr/local/lib/android || true
-      #       rm -rf /usr/share/dotnet || true
-      #       rm -rf /opt/ghc || true
-      #       rm -rf /usr/local/share/boost || true
-      #     fi
 
       - name: Prune Docker
         run: docker system prune -af
