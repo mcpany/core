@@ -141,17 +141,16 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential gcc
+            sudo apt-get update && sudo apt-get install -y make xz-utils
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz build-base gcc
+             sudo apk add --no-cache make xz
           elif command -v yum &> /dev/null; then
-             sudo yum install -y make xz gcc
+             sudo yum install -y make xz
           elif command -v dnf &> /dev/null; then
-             sudo dnf install -y make xz gcc
+             sudo dnf install -y make xz
           else
              echo "No package manager found. Assuming dependencies are met."
           fi
-          gcc --version || echo "GCC not found"
 
       - name: Prepare environment
         run: make prepare
@@ -183,17 +182,16 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential gcc
+            sudo apt-get update && sudo apt-get install -y make xz-utils
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz build-base gcc
+             sudo apk add --no-cache make xz
           elif command -v yum &> /dev/null; then
-             sudo yum install -y make xz gcc
+             sudo yum install -y make xz
           elif command -v dnf &> /dev/null; then
-             sudo dnf install -y make xz gcc
+             sudo dnf install -y make xz
           else
              echo "No package manager found. Assuming dependencies are met."
           fi
-          gcc --version || echo "GCC not found"
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -291,7 +289,7 @@ jobs:
 
       - name: Test (Short)
         env:
-          CGO_ENABLED: 1
+          CGO_ENABLED: 0
         run: |
           go env
           make test-fast CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache COVERAGE_FILE=coverage-fast.out
@@ -332,17 +330,16 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential gcc
+            sudo apt-get update && sudo apt-get install -y make xz-utils
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz build-base gcc
+             sudo apk add --no-cache make xz
           elif command -v yum &> /dev/null; then
-             sudo yum install -y make xz gcc
+             sudo yum install -y make xz
           elif command -v dnf &> /dev/null; then
-             sudo dnf install -y make xz gcc
+             sudo dnf install -y make xz
           else
              echo "No package manager found. Assuming dependencies are met."
           fi
-          gcc --version || echo "GCC not found"
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -468,7 +465,7 @@ jobs:
 
       - name: run parallel e2e
         env:
-          CGO_ENABLED: 1
+          CGO_ENABLED: 0
         run: |
           go env
           make e2e-parallel SHARD=${{ matrix.shard }} SKIP_DOCKER_REBUILD=true CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-e2e-parallel.out
@@ -648,17 +645,16 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential gcc
+            sudo apt-get update && sudo apt-get install -y make xz-utils
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz build-base gcc
+             sudo apk add --no-cache make xz
           elif command -v yum &> /dev/null; then
-             sudo yum install -y make xz gcc
+             sudo yum install -y make xz
           elif command -v dnf &> /dev/null; then
-             sudo dnf install -y make xz gcc
+             sudo dnf install -y make xz
           else
              echo "No package manager found. Assuming dependencies are met."
           fi
-          gcc --version || echo "GCC not found"
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -759,7 +755,7 @@ jobs:
 
       - name: run sequential e2e
         env:
-          CGO_ENABLED: 1
+          CGO_ENABLED: 0
         run: |
           go env
           make e2e-sequential SKIP_DOCKER_REBUILD=true CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-e2e-sequential.out
@@ -796,17 +792,16 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential gcc
+            sudo apt-get update && sudo apt-get install -y make xz-utils
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz build-base gcc
+             sudo apk add --no-cache make xz
           elif command -v yum &> /dev/null; then
-             sudo yum install -y make xz gcc
+             sudo yum install -y make xz
           elif command -v dnf &> /dev/null; then
-             sudo dnf install -y make xz gcc
+             sudo dnf install -y make xz
           else
              echo "No package manager found. Assuming dependencies are met."
           fi
-          gcc --version || echo "GCC not found"
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -890,7 +885,7 @@ jobs:
 
       - name: test public api
         env:
-          CGO_ENABLED: 1
+          CGO_ENABLED: 0
         run: |
           go env
           make test-public-api CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-public-api.out
@@ -1016,7 +1011,7 @@ jobs:
 
       - name: Test UI
         env:
-          CGO_ENABLED: 1
+          CGO_ENABLED: 0
         run: |
           SERVER_IMAGE=mcpany/server:latest make -C ui test-ci PLAYWRIGHT_ARGS="--shard=${{ matrix.shard }}"
 
@@ -1117,7 +1112,7 @@ jobs:
 
       - name: Run K8s E2E Tests
         env:
-          CGO_ENABLED: 1
+          CGO_ENABLED: 0
         run: |
           make k8s-e2e SKIP_IMAGE_BUILD=true IMAGE_TAG=latest
 
