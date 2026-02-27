@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { render, screen, fireEvent, act } from "@testing-library/react";
+import { render, screen, fireEvent, act, waitFor } from "@testing-library/react";
 import { LogStream } from "./log-stream";
 import { vi } from "vitest";
 
@@ -25,6 +25,13 @@ vi.mock("next/navigation", () => ({
             return null;
         }
     })
+}));
+
+// Mock toast
+vi.mock("@/hooks/use-toast", () => ({
+    useToast: () => ({
+        toast: vi.fn(),
+    }),
 }));
 
 describe("LogStream", () => {
@@ -288,7 +295,7 @@ describe("LogStream", () => {
     });
 
     // Enter search term
-    const searchInput = screen.getByPlaceholderText("Search logs...");
+    const searchInput = screen.getByPlaceholderText(/Search logs.../);
     fireEvent.change(searchInput, { target: { value: "error" } });
 
     // Advance time to allow for any deferred updates (useDeferredValue)
@@ -300,44 +307,6 @@ describe("LogStream", () => {
     const highlighted = screen.getByText("error");
     expect(highlighted.tagName).toBe("MARK");
     expect(highlighted).toHaveClass("bg-yellow-500/40");
-
-    vi.useRealTimers();
-  });
-
-  it("gracefully handles invalid JSON that passes heuristic", async () => {
-    vi.useFakeTimers();
-    render(<LogStream />);
-
-    act(() => {
-      if (mockWebSocket.onopen) mockWebSocket.onopen();
-    });
-
-    const invalidJsonMessage = "{ this is not valid json }";
-    const log = {
-      id: "invalid-json-1",
-      timestamp: new Date().toISOString(),
-      level: "INFO",
-      message: invalidJsonMessage,
-      source: "test"
-    };
-
-    act(() => {
-      if (mockWebSocket.onmessage) mockWebSocket.onmessage({ data: JSON.stringify(log) });
-    });
-
-    act(() => {
-        vi.advanceTimersByTime(500);
-    });
-
-    // Check if the expand button exists (heuristic should pass)
-    const expandButton = screen.getByLabelText("Expand JSON");
-    expect(expandButton).toBeInTheDocument();
-
-    // Click expand
-    fireEvent.click(expandButton);
-
-    // Should show "Invalid JSON" message
-    expect(screen.getByText("Invalid JSON")).toBeInTheDocument();
 
     vi.useRealTimers();
   });

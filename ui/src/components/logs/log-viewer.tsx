@@ -9,7 +9,9 @@ import * as React from "react"
 import dynamic from "next/dynamic";
 import {
   ChevronRight,
-  ChevronDown
+  ChevronDown,
+  Copy,
+  Check
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -65,10 +67,20 @@ const getLevelColor = (level: LogLevel) => {
     case "INFO": return "text-blue-400"
     case "WARN": return "text-yellow-400"
     case "ERROR": return "text-red-400"
-    case "DEBUG": return "text-gray-400"
+    case "DEBUG": return "text-gray-500"
     default: return "text-foreground"
   }
 }
+
+const getLevelBadgeColor = (level: LogLevel) => {
+    switch (level) {
+      case "INFO": return "bg-blue-500/10 text-blue-400 border-blue-500/20";
+      case "WARN": return "bg-yellow-500/10 text-yellow-400 border-yellow-500/20";
+      case "ERROR": return "bg-red-500/10 text-red-400 border-red-500/20";
+      case "DEBUG": return "bg-gray-500/10 text-gray-400 border-gray-500/20";
+      default: return "bg-gray-500/10 text-gray-400 border-gray-500/20";
+    }
+  }
 
 const getSourceHue = (source: string) => {
   let hash = 0;
@@ -118,6 +130,7 @@ HighlightText.displayName = 'HighlightText';
 const LogRow = React.memo(({ log, highlightRegex }: { log: LogEntry; highlightRegex: RegExp | null }) => {
   const duration = log.metadata?.duration as string | undefined
   const [isExpanded, setIsExpanded] = React.useState(false);
+  const [copied, setCopied] = React.useState(false);
 
   const isPotentialJson = React.useMemo(() => isLikelyJson(log.message), [log.message]);
 
@@ -128,17 +141,24 @@ const LogRow = React.memo(({ log, highlightRegex }: { log: LogEntry; highlightRe
     return null;
   }, [isExpanded, isPotentialJson, log.message]);
 
+  const handleCopy = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      navigator.clipboard.writeText(log.message);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
     <div
-      className="group flex flex-col items-start hover:bg-white/5 p-2 sm:p-1 rounded transition-colors break-words border-b border-white/5 sm:border-0"
+      className="group flex flex-col items-start hover:bg-white/5 p-2 sm:p-1 rounded transition-colors break-words border-b border-white/5 sm:border-0 relative"
       style={{ contentVisibility: 'auto', containIntrinsicSize: '0 32px' } as React.CSSProperties}
     >
-      <div className="flex flex-row w-full items-start gap-1 sm:gap-3">
+      <div className="flex flex-row w-full items-start gap-2 sm:gap-3">
           <div className="flex items-center gap-2 sm:contents">
-              <span className="text-muted-foreground whitespace-nowrap opacity-50 text-[10px] sm:text-xs sm:mt-0.5">
+              <span className="text-muted-foreground whitespace-nowrap opacity-50 text-[10px] sm:text-xs sm:mt-0.5 font-mono w-[70px]">
                 {log.formattedTime || (timeFormatter ? timeFormatter.format(new Date(log.timestamp)) : new Date(log.timestamp).toLocaleTimeString())}
               </span>
-              <span className={cn("font-bold w-12 text-[10px] sm:text-xs sm:mt-0.5", getLevelColor(log.level))}>
+              <span className={cn("font-bold w-[50px] text-[10px] sm:text-[11px] px-1.5 py-0.5 rounded border text-center uppercase tracking-wider shrink-0", getLevelBadgeColor(log.level))}>
                 {log.level}
               </span>
               {log.source && (
@@ -154,7 +174,7 @@ const LogRow = React.memo(({ log, highlightRegex }: { log: LogEntry; highlightRe
 
           {log.source && (
             <span
-              className="hidden sm:inline-block w-24 truncate text-xs mt-0.5 shrink-0 text-[hsl(var(--source-hue),60%,40%)] dark:text-[hsl(var(--source-hue),60%,70%)]"
+              className="hidden sm:inline-block w-28 truncate text-xs mt-0.5 shrink-0 font-mono text-[hsl(var(--source-hue),60%,40%)] dark:text-[hsl(var(--source-hue),60%,70%)]"
               style={{ "--source-hue": getSourceHue(log.source) } as React.CSSProperties}
               title={log.source}
             >
@@ -163,7 +183,7 @@ const LogRow = React.memo(({ log, highlightRegex }: { log: LogEntry; highlightRe
           )}
 
           <div className="flex-1 min-w-0 flex flex-col">
-            <span className="text-gray-300 text-xs sm:text-sm pl-0 flex items-start">
+            <span className="text-gray-300 text-xs sm:text-sm pl-0 flex items-start leading-relaxed font-mono">
                {isPotentialJson && (
                   <button
                     onClick={() => setIsExpanded(!isExpanded)}
@@ -195,6 +215,14 @@ const LogRow = React.memo(({ log, highlightRegex }: { log: LogEntry; highlightRe
               </div>
             )}
           </div>
+
+          <button
+            onClick={handleCopy}
+            className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-white/10 rounded text-muted-foreground hover:text-white absolute right-1 top-1"
+            title="Copy Message"
+          >
+              {copied ? <Check className="h-3 w-3 text-green-500" /> : <Copy className="h-3 w-3" />}
+          </button>
       </div>
     </div>
   )
