@@ -13,6 +13,11 @@ import { IndexStatus } from "@proto/api/v1/discovery_service";
 import { Activity } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
+/**
+ * The main discovery and search page.
+ *
+ * @returns The rendered DiscoveryPage component.
+ */
 export default function DiscoveryPage() {
     const [stats, setStats] = useState<IndexStatus | null>(null);
     const [loading, setLoading] = useState(true);

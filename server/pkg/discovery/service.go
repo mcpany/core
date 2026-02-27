@@ -31,26 +31,26 @@ func NewService(registry ServiceRegistryInterface) *Service {
 }
 
 // GetIndexStatus returns the status of the tool index.
-func (s *Service) GetIndexStatus(ctx context.Context, req *v1.GetIndexStatusRequest) (*v1.IndexStatus, error) {
+func (s *Service) GetIndexStatus(_ context.Context, _ *v1.GetIndexStatusRequest) (*v1.IndexStatus, error) {
 	services, err := s.registry.GetAllServices()
 	if err != nil {
 		return nil, err
 	}
 
-	totalTools := 0
+	var totalTools int32
 	for _, svc := range services {
-		totalTools += countTools(svc)
+		totalTools += int32(countTools(svc)) //nolint:gosec // Not expecting overflow here
 	}
 
 	return &v1.IndexStatus{
-		TotalTools:   int32(totalTools),
-		IndexedTools: int32(totalTools), // For now, we index everything in memory
+		TotalTools:   totalTools,
+		IndexedTools: totalTools, // For now, we index everything in memory
 		LastUpdated:  time.Now().Format(time.RFC3339),
 	}, nil
 }
 
 // SearchTools searches for tools matching the query.
-func (s *Service) SearchTools(ctx context.Context, req *v1.SearchToolsRequest) (*v1.SearchToolsResponse, error) {
+func (s *Service) SearchTools(_ context.Context, req *v1.SearchToolsRequest) (*v1.SearchToolsResponse, error) {
 	services, err := s.registry.GetAllServices()
 	if err != nil {
 		return nil, err

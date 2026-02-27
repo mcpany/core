@@ -15,6 +15,14 @@ interface IndexStatsProps {
     loading: boolean;
 }
 
+/**
+ * Renders the top-level index statistics.
+ *
+ * @param props - The component props.
+ * @param props.stats - The current status of the index.
+ * @param props.loading - Whether the stats are currently loading.
+ * @returns The rendered IndexStats component.
+ */
 export function IndexStats({ stats, loading }: IndexStatsProps) {
     if (loading) {
         return (

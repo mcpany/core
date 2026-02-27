@@ -15,6 +15,9 @@ const transport = new GrpcWebImpl(host, {
 
 const client = new DiscoveryServiceClientImpl(transport);
 
+/**
+ * Represents a single search result.
+ */
 export interface ToolSearchResult {
     toolName: string;
     serviceName: string;
@@ -22,6 +25,9 @@ export interface ToolSearchResult {
     relevance: number;
 }
 
+/**
+ * Provides access to the discovery API.
+ */
 export const discoveryApi = {
     /**
      * Search for tools using a query string.

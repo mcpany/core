@@ -14,6 +14,11 @@ import { ToolSearchResult, discoveryApi } from "@/lib/api-discovery";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
+/**
+ * Renders the search console for testing tool discovery.
+ *
+ * @returns The rendered SearchConsole component.
+ */
 export function SearchConsole() {
     const [query, setQuery] = useState("");
     const [results, setResults] = useState<ToolSearchResult[]>([]);
