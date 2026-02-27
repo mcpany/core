@@ -91,7 +91,7 @@ jobs:
           sudo rm -rf /usr/share/miniconda
           sudo rm -rf /usr/local/lib/node_modules
           sudo rm -rf /var/lib/docker/overlay2/* # Be careful, but we prune later anyway
-          sudo docker system prune -af --volumes || true
+          docker system prune -af --volumes || true
 
       - uses: actions/checkout@v6
 
@@ -162,7 +162,7 @@ jobs:
           sudo rm -rf /usr/local/lib/android
           sudo rm -rf /opt/ghc
           sudo rm -rf /usr/local/share/boost
-          sudo docker system prune -af --volumes || true
+          docker system prune -af --volumes || true
 
       - uses: actions/checkout@v6
 
@@ -274,7 +274,7 @@ jobs:
       - name: Free Disk Space (Aggressive)
         run: |
           sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /usr/local/share/boost
-          sudo docker system prune -af --volumes || true
+          docker system prune -af --volumes || true
       - uses: actions/checkout@v6
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -336,7 +336,7 @@ jobs:
       - name: Free Disk Space (Aggressive)
         run: |
           sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /usr/local/share/boost
-          sudo docker system prune -af --volumes || true
+          docker system prune -af --volumes || true
       - uses: actions/checkout@v6
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -398,7 +398,7 @@ jobs:
       - name: Free Disk Space (Aggressive)
         run: |
           sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /usr/local/share/boost
-          sudo docker system prune -af --volumes || true
+          docker system prune -af --volumes || true
       - uses: actions/checkout@v6
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -462,7 +462,7 @@ jobs:
       - name: Free Disk Space (Fast)
         run: |
           sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /usr/local/share/boost
-          sudo docker system prune -af --volumes || true
+          docker system prune -af --volumes || true
 
       - uses: actions/checkout@v6
 
@@ -550,11 +550,11 @@ jobs:
           # Manually load files to ensure robust handling and failure on missing files
           for file in $(find downloads -type f -name "*.tar"); do
             echo "Loading $file..."
-            sudo docker load -i "$file" || exit 1
+            docker load -i "$file" || exit 1
           done
 
           # Verify at least one image loaded (optional, but good for sanity)
-          if [ -z "$(sudo docker images -q)" ]; then
+          if [ -z "$(docker images -q)" ]; then
             echo "No images loaded!"
             exit 1
           fi
@@ -590,7 +590,7 @@ jobs:
       - name: Free Disk Space (Fast)
         run: |
           sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /usr/local/share/boost
-          sudo docker system prune -af --volumes || true
+          docker system prune -af --volumes || true
 
       - uses: actions/checkout@v6
 
@@ -674,7 +674,7 @@ jobs:
           ls -R downloads || echo "Downloads missing"
           for file in $(find downloads -type f -name "*.tar"); do
             echo "Loading $file..."
-            sudo docker load -i "$file" || exit 1
+            docker load -i "$file" || exit 1
           done
 
       - name: Prepare environment
@@ -704,7 +704,7 @@ jobs:
       - name: Free Disk Space (Fast)
         run: |
           sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /usr/local/share/boost
-          sudo docker system prune -af --volumes || true
+          docker system prune -af --volumes || true
 
       - uses: actions/checkout@v6
 
@@ -805,7 +805,7 @@ jobs:
           ls -R downloads || echo "Downloads missing"
           for file in $(find downloads -type f -name "*.tar"); do
             echo "Loading $file..."
-            sudo docker load -i "$file" || exit 1
+            docker load -i "$file" || exit 1
           done
 
       - name: test public api
@@ -855,7 +855,7 @@ jobs:
 
       - name: Load Docker Image
         run: |
-          find downloads -name "server.tar" -print0 | xargs -0 -I {} sh -c 'echo "Loading {}"; sudo docker load -i "{}"'
+          find downloads -name "server.tar" -print0 | xargs -0 -I {} sh -c 'echo "Loading {}"; docker load -i "{}"'
 
       - name: Smoke Test
         run: |
@@ -875,7 +875,7 @@ jobs:
       - name: Free Disk Space (Fast)
         run: |
           sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /usr/local/share/boost
-          sudo docker system prune -af --volumes || true
+          docker system prune -af --volumes || true
 
       - uses: actions/checkout@v6
 
@@ -919,7 +919,7 @@ jobs:
           ls -R downloads || echo "Downloads missing"
           for file in $(find downloads -type f -name "*.tar"); do
             echo "Loading $file..."
-            sudo docker load -i "$file" || exit 1
+            docker load -i "$file" || exit 1
           done
 
       - name: Test UI
@@ -938,7 +938,7 @@ jobs:
           sudo rm -rf /usr/share/dotnet
           sudo rm -rf /opt/ghc
           sudo rm -rf /usr/local/share/boost
-          sudo docker system prune -af --volumes || true
+          docker system prune -af --volumes || true
 
       - uses: actions/checkout@v6
 
@@ -1004,7 +1004,7 @@ jobs:
           ls -R downloads || echo "Downloads missing"
           for file in $(find downloads -type f -name "*.tar"); do
             echo "Loading $file..."
-            sudo docker load -i "$file" || exit 1
+            docker load -i "$file" || exit 1
           done
 
           # Now load specific images into Kind
