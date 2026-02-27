@@ -28,8 +28,7 @@ permissions:
 
 jobs:
   changes:
-    runs-on: oci-runner
-    # container: public.ecr.aws/docker/library/ubuntu:24.04
+    runs-on: ubuntu-latest
     outputs:
       src: ${{ steps.filter.outputs.src }}
     steps:
@@ -76,8 +75,7 @@ jobs:
   lint:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
-    runs-on: oci-runner
-    # container: public.ecr.aws/docker/library/ubuntu:24.04
+    runs-on: ubuntu-latest
     steps:
       - name: Free Disk Space (Fast)
         run: |
@@ -146,8 +144,7 @@ jobs:
         run: make lint
 
   unit-test:
-    runs-on: oci-runner
-    # container: public.ecr.aws/docker/library/ubuntu:24.04
+    runs-on: ubuntu-latest
     timeout-minutes: 30
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -282,8 +279,7 @@ jobs:
           verbose: true
 
   e2e-parallel:
-    runs-on: oci-runner
-    # container: public.ecr.aws/docker/library/ubuntu:24.04
+    runs-on: ubuntu-latest
     timeout-minutes: 30
     needs: [build-images]
     strategy:
@@ -453,7 +449,6 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: ${{ matrix.runner }}
-    container: public.ecr.aws/docker/library/ubuntu:24.04
     strategy:
       fail-fast: false
       matrix:
@@ -482,7 +477,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          apt-get update && apt-get install -y make
+          sudo apt-get update && sudo apt-get install -y make
 
       - name: Generate Protobufs
         run: |
@@ -591,8 +586,7 @@ jobs:
           retention-days: 1
 
   e2e-sequential:
-    runs-on: oci-runner
-    # container: public.ecr.aws/docker/library/ubuntu:24.04
+    runs-on: ubuntu-latest
     timeout-minutes: 60
     needs: [build-images]
     env:
@@ -729,8 +723,7 @@ jobs:
           verbose: true
 
   e2e-public-api:
-    runs-on: oci-runner
-    # container: public.ecr.aws/docker/library/ubuntu:24.04
+    runs-on: ubuntu-latest
     timeout-minutes: 30
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -1059,8 +1052,7 @@ jobs:
           make k8s-e2e SKIP_IMAGE_BUILD=true IMAGE_TAG=latest
 
   ci-success:
-    runs-on: oci-runner
-    # container: public.ecr.aws/docker/library/ubuntu:24.04
+    runs-on: ubuntu-latest
     needs:
       [
         changes,
