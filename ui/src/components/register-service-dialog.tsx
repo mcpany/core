@@ -26,6 +26,7 @@ import { SERVICE_TEMPLATES, ServiceTemplate } from "@/lib/templates";
 import { ServiceTemplateSelector } from "./services/service-template-selector";
 import { ServiceConfigDiff } from "./services/service-config-diff";
 import { ServiceInspector } from "@/components/services/editor/service-inspector";
+import { EnvVarEditor } from "@/components/services/env-var-editor";
 import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
@@ -33,6 +34,8 @@ const formSchema = z.object({
   type: z.enum(["grpc", "http", "command_line", "openapi", "other"]),
   address: z.string().optional(),
   command: z.string().optional(),
+  workingDirectory: z.string().optional(),
+  env: z.record(z.any()).optional(), // Use z.any() to handle SecretValue structure
   configJson: z.string().optional(), // For advanced mode
   upstreamAuth: z.any().optional(), // Store auth config object
   tags: z.string().optional(),
@@ -98,6 +101,8 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
             serviceToEdit.openapiService ? "openapi" : "other") as "grpc" | "http" | "command_line" | "openapi" | "other",
       address: serviceToEdit.grpcService?.address || serviceToEdit.httpService?.address || serviceToEdit.openapiService?.address || "",
       command: serviceToEdit.commandLineService?.command || "",
+      workingDirectory: serviceToEdit.commandLineService?.workingDirectory || "",
+      env: serviceToEdit.commandLineService?.env || {},
       configJson: JSON.stringify(serviceToEdit, null, 2),
       upstreamAuth: serviceToEdit.upstreamAuth,
       tags: serviceToEdit.tags?.join(", ") || "",
@@ -106,6 +111,8 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
       type: "http" as const,
       address: "",
       command: "",
+      workingDirectory: "",
+      env: {},
       configJson: "{\n  \"name\": \"my-service\",\n  \"httpService\": {\n    \"address\": \"https://api.example.com\"\n  }\n}",
       upstreamAuth: undefined,
       tags: "",
@@ -216,6 +223,8 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
       if (config.grpcService?.address) form.setValue("address", config.grpcService.address);
       if (config.openapiService?.address) form.setValue("address", config.openapiService.address);
       if (config.commandLineService?.command) form.setValue("command", config.commandLineService.command);
+      if (config.commandLineService?.workingDirectory) form.setValue("workingDirectory", config.commandLineService.workingDirectory);
+      if (config.commandLineService?.env) form.setValue("env", config.commandLineService.env);
       if (config.tags) form.setValue("tags", config.tags?.join(", ") || "");
 
       // Also set the JSON for advanced usage
@@ -260,7 +269,7 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
       } else if (values.type === 'http') {
           config.httpService = { address: values.address || "", tools: [], calls: {}, resources: [], prompts: [], healthCheck: undefined, tlsConfig: undefined };
       } else if (values.type === 'command_line') {
-          config.commandLineService = { command: values.command || "", workingDirectory: "", local: false, env: {}, tools: [], resources: [], prompts: [], communicationProtocol: 0, calls: {}, healthCheck: undefined, cache: undefined, containerEnvironment: undefined, timeout: undefined };
+          config.commandLineService = { command: values.command || "", workingDirectory: values.workingDirectory || "", local: false, env: values.env || {}, tools: [], resources: [], prompts: [], communicationProtocol: 0, calls: {}, healthCheck: undefined, cache: undefined, containerEnvironment: undefined, timeout: undefined };
 
           // Try to preserve environment variables from configJson if available.
           // This allows users to use the "Advanced (JSON)" tab to set env vars (like keys)
@@ -269,7 +278,14 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
               try {
                   const jsonConfig = JSON.parse(values.configJson);
                   if (jsonConfig.commandLineService?.env) {
-                      config.commandLineService.env = jsonConfig.commandLineService.env;
+                      // Merge UI env with JSON env, UI takes precedence? Or vice versa?
+                      // Let's merge, but prioritize what's explicitly set in the form state if user touched it.
+                      // Actually, if user is in Basic tab, form state is authoritative.
+                      // If user switches to Advanced tab, they might edit JSON.
+                      // For now, let's trust the 'env' field if populated, else fallback.
+                      if (!values.env || Object.keys(values.env).length === 0) {
+                          config.commandLineService.env = jsonConfig.commandLineService.env;
+                      }
                   }
               } catch (e) {
                   // Ignore JSON parse errors here
@@ -434,11 +450,12 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
             </form>
         ) : (
             <Tabs defaultValue="basic" className="w-full">
-                <TabsList className="grid w-full grid-cols-3">
-                    <TabsTrigger value="basic">Basic Configuration</TabsTrigger>
-                    <TabsTrigger value="auth">Authentication</TabsTrigger>
-                    <TabsTrigger value="advanced">Advanced (JSON)</TabsTrigger>
-                    {isEditing && <TabsTrigger value="inspector">Inspector</TabsTrigger>}
+                <TabsList className="flex w-full overflow-x-auto">
+                    <TabsTrigger value="basic" className="flex-1">Basic</TabsTrigger>
+                    {selectedType === 'command_line' && <TabsTrigger value="environment" className="flex-1">Environment</TabsTrigger>}
+                    <TabsTrigger value="auth" className="flex-1">Authentication</TabsTrigger>
+                    <TabsTrigger value="advanced" className="flex-1">Advanced (JSON)</TabsTrigger>
+                    {isEditing && <TabsTrigger value="inspector" className="flex-1">Inspector</TabsTrigger>}
                 </TabsList>
 
                 <Form {...form}>
@@ -527,22 +544,40 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
                     />
 
                     {selectedType === 'command_line' && (
-                        <FormField
-                        control={form.control}
-                        name="command"
-                        render={({ field }) => (
-                            <FormItem>
-                            <FormLabel>Command</FormLabel>
-                            <FormControl>
-                                <Input placeholder="python script.py" {...field} />
-                            </FormControl>
-                            <FormDescription>
-                                The command to run the MCP server. Ensure all dependencies are installed.
-                            </FormDescription>
-                            <FormMessage />
-                            </FormItem>
-                        )}
-                        />
+                        <>
+                            <FormField
+                            control={form.control}
+                            name="command"
+                            render={({ field }) => (
+                                <FormItem>
+                                <FormLabel>Command</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="python script.py" {...field} />
+                                </FormControl>
+                                <FormDescription>
+                                    The command to run the MCP server. Ensure all dependencies are installed.
+                                </FormDescription>
+                                <FormMessage />
+                                </FormItem>
+                            )}
+                            />
+                            <FormField
+                            control={form.control}
+                            name="workingDirectory"
+                            render={({ field }) => (
+                                <FormItem>
+                                <FormLabel>Working Directory</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="/path/to/cwd" {...field} />
+                                </FormControl>
+                                <FormDescription>
+                                    Optional working directory for the command.
+                                </FormDescription>
+                                <FormMessage />
+                                </FormItem>
+                            )}
+                            />
+                        </>
                     )}
                     {selectedType === 'other' && (
                         <div className="text-sm text-muted-foreground">
@@ -554,10 +589,34 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
                     {selectedTemplate && selectedTemplate.config.commandLineService?.env && Object.keys(selectedTemplate.config.commandLineService.env).length > 0 && (
                          <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-900 rounded-md text-sm text-yellow-800 dark:text-yellow-200">
                             <strong>Note:</strong> This template uses environment variables (e.g., keys).
-                            You may need to configure them in the "Advanced (JSON)" tab or ensure they are set in the server environment.
+                            Please configure them in the "Environment" tab.
                         </div>
                     )}
                 </TabsContent>
+
+                {selectedType === 'command_line' && (
+                    <TabsContent value="environment" className="space-y-4">
+                        <FormField
+                            control={form.control}
+                            name="env"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Environment Variables</FormLabel>
+                                    <FormControl>
+                                        <EnvVarEditor
+                                            initialEnv={field.value}
+                                            onChange={field.onChange}
+                                        />
+                                    </FormControl>
+                                    <FormDescription>
+                                        Define environment variables for the command process. Supports secret references.
+                                    </FormDescription>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </TabsContent>
+                )}
 
                 <TabsContent value="auth" className="space-y-4">
                     <div className="space-y-4 border p-4 rounded-md bg-muted/50">
