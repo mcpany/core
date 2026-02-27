@@ -144,43 +144,29 @@ prepare:
 		fi; \
 	else \
 		echo "protoc not found, attempting to install version $${PROTOC_TAG}..."; \
-		if ! command -v curl >/dev/null 2>&1 || ! command -v unzip >/dev/null 2>&1; then \
-			echo "curl or unzip not found. Attempting installation..."; \
-			SUDO=""; if [ "$$(id -u)" -ne 0 ]; then SUDO="sudo"; fi; \
-			if command -v apt-get >/dev/null 2>&1; then \
-				$$SUDO apt-get update && $$SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y curl unzip; \
-			elif command -v apk >/dev/null 2>&1; then \
-				$$SUDO apk add --no-cache curl unzip; \
-			elif command -v yum >/dev/null 2>&1; then \
-				$$SUDO yum install -y curl unzip; \
-			elif command -v dnf >/dev/null 2>&1; then \
-				$$SUDO dnf install -y curl unzip; \
-			elif command -v zypper >/dev/null 2>&1; then \
-				$$SUDO zypper install -y curl unzip; \
-			else \
-				echo "Error: No supported package manager found. Please install curl and unzip manually."; \
-				exit 1; \
-			fi; \
-		fi; \
 		PROTOC_VERSION_NO_V=$$(echo "$${PROTOC_TAG}" | sed 's/v//'); \
 		PROTOC_DOWNLOAD_URL_NO_V="$(PROTOC_DOWNLOAD_URL_BASE)/$${PROTOC_TAG}/protoc-$${PROTOC_VERSION_NO_V}-linux-$(PROTOC_ARCH).zip"; \
 		echo "Downloading protoc from $${PROTOC_DOWNLOAD_URL_NO_V}..."; \
-		if curl -sSL "$${PROTOC_DOWNLOAD_URL_NO_V}" -o "$(PROTOC_ZIP)"; then \
-			echo "Unzipping to $(TOOL_INSTALL_DIR)..."; \
-			SUDO_FS=""; if [ ! -w "$(TOOL_INSTALL_DIR)" ] && [ "$$(id -u)" -ne 0 ]; then SUDO_FS="sudo"; fi; \
-			$$SUDO_FS unzip -o "$(PROTOC_ZIP)" -d "$(TOOL_INSTALL_DIR)"; \
-			$$SUDO_FS mv "$(TOOL_INSTALL_DIR)/bin/protoc" "$(PROTOC_BIN)"; \
-			if test -f "$(PROTOC_BIN)"; then \
-				export PATH=$(TOOL_INSTALL_DIR):$$PATH; \
-				echo "protoc installed successfully to $(TOOL_INSTALL_DIR). This directory has been added to PATH for this session."; \
-				echo "You may want to add it to your system PATH permanently: export PATH=$(TOOL_INSTALL_DIR):$$PATH"; \
-				$(PROTOC_BIN) --version; \
-			else \
-				echo "Error: protoc binary not found in $(TOOL_INSTALL_DIR) after unzip. The downloaded archive may not have the expected structure."; \
-				exit 1; \
+		SUDO_FS=""; if [ ! -w "$(TOOL_INSTALL_DIR)" ] && [ "$$(id -u)" -ne 0 ]; then SUDO_FS="sudo"; fi; \
+		if command -v curl >/dev/null 2>&1 && command -v unzip >/dev/null 2>&1; then \
+			if curl -sSL "$${PROTOC_DOWNLOAD_URL_NO_V}" -o "$(PROTOC_ZIP)"; then \
+				echo "Unzipping to $(TOOL_INSTALL_DIR) with unzip..."; \
+				$$SUDO_FS unzip -o "$(PROTOC_ZIP)" -d "$(TOOL_INSTALL_DIR)"; \
 			fi; \
-			$$SUDO_FS rm -f "$(PROTOC_ZIP)"; \
+		else \
+			echo "curl or unzip not found. Using Python to download and extract..."; \
+			$(PYTHON_EXEC) -c "import urllib.request, zipfile, io, os; url='$${PROTOC_DOWNLOAD_URL_NO_V}'; dest='$(TOOL_INSTALL_DIR)'; print(f'Downloading {url}...'); data=urllib.request.urlopen(url).read(); print(f'Extracting to {dest}...'); z=zipfile.ZipFile(io.BytesIO(data)); z.extractall(dest)"; \
 		fi; \
+		$$SUDO_FS mv "$(TOOL_INSTALL_DIR)/bin/protoc" "$(PROTOC_BIN)"; \
+		if test -f "$(PROTOC_BIN)"; then \
+			export PATH=$(TOOL_INSTALL_DIR):$$PATH; \
+			echo "protoc installed successfully to $(TOOL_INSTALL_DIR)."; \
+			$(PROTOC_BIN) --version; \
+		else \
+			echo "Error: protoc binary not found in $(TOOL_INSTALL_DIR) after install."; \
+			exit 1; \
+		fi; \
+		$$SUDO_FS rm -f "$(PROTOC_ZIP)"; \
 	fi
 	@# Install Go protobuf plugins
 	@echo "Installing Go protobuf plugins..."
