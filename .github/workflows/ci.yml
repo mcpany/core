@@ -133,8 +133,11 @@ jobs:
 
       - name: Install dependencies
         run: |
+          set -x
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils build-essential
+            # Retry update if it fails, and ignore errors to proceed to install
+            (sudo apt-get update || echo "apt-get update failed, continuing...")
+            sudo DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils build-essential
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz build-base
           fi
@@ -143,6 +146,7 @@ jobs:
              echo "gcc found: $(gcc --version)"
           else
              echo "gcc NOT found"
+             exit 1
           fi
 
       - name: Prepare environment
@@ -175,10 +179,18 @@ jobs:
 
       - name: Install dependencies
         run: |
+          set -x
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils build-essential
+            (sudo apt-get update || echo "apt-get update failed, continuing...")
+            sudo DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils build-essential
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz build-base
+          fi
+          if command -v gcc &> /dev/null; then
+             echo "gcc found: $(gcc --version)"
+          else
+             echo "gcc NOT found"
+             exit 1
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -311,10 +323,18 @@ jobs:
 
       - name: Install dependencies
         run: |
+          set -x
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils build-essential
+            (sudo apt-get update || echo "apt-get update failed, continuing...")
+            sudo DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils build-essential
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz build-base
+          fi
+          if command -v gcc &> /dev/null; then
+             echo "gcc found: $(gcc --version)"
+          else
+             echo "gcc NOT found"
+             exit 1
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -612,10 +632,18 @@ jobs:
 
       - name: Install dependencies
         run: |
+          set -x
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils build-essential
+            (sudo apt-get update || echo "apt-get update failed, continuing...")
+            sudo DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils build-essential
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz build-base
+          fi
+          if command -v gcc &> /dev/null; then
+             echo "gcc found: $(gcc --version)"
+          else
+             echo "gcc NOT found"
+             exit 1
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -1054,6 +1082,9 @@ jobs:
           kind load docker-image mcpany/operator:latest --name mcp-e2e
           kind load docker-image mcpany/ui:latest --name mcp-e2e
           kind load docker-image mcpany/http-echo-server:latest --name mcp-e2e
+
+      - name: Verify Loaded Images
+        run: docker images
 
       - name: Load Docker Images already loaded above
         run: |
