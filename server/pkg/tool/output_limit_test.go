@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -69,6 +70,11 @@ func TestLocalCommandTool_Execute_LargeOutput(t *testing.T) {
 		cmdName = "type"
 	}
 
+	// Resolve full path to avoid PATH issues in restricted environment
+	if path, err := exec.LookPath(cmdName); err == nil {
+		cmdName = path
+	}
+
 	service := configv1.CommandLineUpstreamService_builder{
 		Command: proto.String(cmdName),
 		Local:   proto.Bool(true),
@@ -126,6 +132,11 @@ func TestLocalCommandTool_Execute_LargeOutput_Truncated(t *testing.T) {
 	cmdName := "cat"
 	if runtime.GOOS == "windows" {
 		cmdName = "type"
+	}
+
+	// Resolve full path to avoid PATH issues in restricted environment
+	if path, err := exec.LookPath(cmdName); err == nil {
+		cmdName = path
 	}
 
 	service := configv1.CommandLineUpstreamService_builder{
