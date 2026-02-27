@@ -141,14 +141,13 @@ jobs:
           set -e
           if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
 
-          # Force install of curl/unzip/make to prevent Makefile from trying to apt-get later
-          if command -v apt-get >/dev/null; then
-            export DEBIAN_FRONTEND=noninteractive
-            # Simple retry for update
-            for i in 1 2 3; do $SUDO apt-get update && break || sleep 2; done
-            $SUDO apt-get install -y make xz-utils build-essential curl unzip ca-certificates
-          elif command -v apk >/dev/null; then
-             $SUDO apk add --no-cache make xz build-base curl unzip
+          # Force install of curl/unzip/make/gcc if missing
+          if ! command -v make >/dev/null || ! command -v curl >/dev/null; then
+            if command -v apt-get >/dev/null; then
+              $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential curl unzip ca-certificates
+            elif command -v apk >/dev/null; then
+               $SUDO apk add --no-cache make xz build-base curl unzip
+            fi
           fi
 
       - name: Prepare environment
@@ -185,23 +184,22 @@ jobs:
           set -e
           if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
 
-          # Force install of curl/unzip/make/gcc
-          if command -v apt-get >/dev/null; then
-            export DEBIAN_FRONTEND=noninteractive
-            for i in 1 2 3; do $SUDO apt-get update && break || sleep 2; done
-            $SUDO apt-get install -y make xz-utils build-essential curl unzip ca-certificates
-          elif command -v apk >/dev/null; then
-             $SUDO apk add --no-cache make xz build-base curl unzip
-          elif command -v yum >/dev/null; then
-             $SUDO yum install -y make xz build-essential curl unzip ca-certificates
-          elif command -v dnf >/dev/null; then
-             $SUDO dnf install -y make xz build-essential curl unzip ca-certificates
+          # Force install of curl/unzip/make/gcc if missing
+          if ! command -v make >/dev/null || ! command -v gcc >/dev/null; then
+            if command -v apt-get >/dev/null; then
+              $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential curl unzip ca-certificates
+            elif command -v apk >/dev/null; then
+               $SUDO apk add --no-cache make xz build-base curl unzip
+            elif command -v yum >/dev/null; then
+               $SUDO yum install -y make xz build-essential curl unzip ca-certificates
+            elif command -v dnf >/dev/null; then
+               $SUDO dnf install -y make xz build-essential curl unzip ca-certificates
+            fi
           fi
 
       - name: Configure Docker Registry Mirrors
         run: |
           # Configure multiple mirrors in array format
-          # Docker will try mirror.gcr.io first.
           if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
           $SUDO mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json
@@ -292,8 +290,7 @@ jobs:
 
       - name: Prepare environment
         run: |
-          # Robust prepare with retries
-          for i in 1 2 3; do make prepare CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache && break || sleep 5; done
+          make prepare CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache
           echo "$(pwd)/build/env/bin" >> $GITHUB_PATH
 
       - name: Test (Short)
@@ -339,22 +336,20 @@ jobs:
           set -e
           if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
 
-          if command -v apt-get >/dev/null; then
-            export DEBIAN_FRONTEND=noninteractive
-            for i in 1 2 3; do $SUDO apt-get update && break || sleep 2; done
-            $SUDO apt-get install -y make xz-utils build-essential curl unzip ca-certificates
-          elif command -v apk >/dev/null; then
-             $SUDO apk add --no-cache make xz build-base curl unzip ca-certificates
-          elif command -v yum >/dev/null; then
-             $SUDO yum install -y make xz build-essential curl unzip ca-certificates
-          elif command -v dnf >/dev/null; then
-             $SUDO dnf install -y make xz build-essential curl unzip ca-certificates
+          if ! command -v make >/dev/null || ! command -v curl >/dev/null; then
+            if command -v apt-get >/dev/null; then
+              $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential curl unzip ca-certificates
+            elif command -v apk >/dev/null; then
+               $SUDO apk add --no-cache make xz build-base curl unzip ca-certificates
+            elif command -v yum >/dev/null; then
+               $SUDO yum install -y make xz build-essential curl unzip ca-certificates
+            elif command -v dnf >/dev/null; then
+               $SUDO dnf install -y make xz build-essential curl unzip ca-certificates
+            fi
           fi
 
       - name: Configure Docker Registry Mirrors
         run: |
-          # Configure multiple mirrors in array format
-          # Docker will try mirror.gcr.io first.
           if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
           $SUDO mkdir -p /etc/docker
           echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json
@@ -473,7 +468,7 @@ jobs:
 
       - name: Prepare environment
         run: |
-          for i in 1 2 3; do make prepare && break || sleep 5; done
+          make prepare
           echo "$(pwd)/build/env/bin" >> $GITHUB_PATH
 
       - name: run parallel e2e
@@ -505,13 +500,7 @@ jobs:
             slug: arm64
             runner: ubuntu-24.04-arm
     steps:
-      - name: Free Disk Space (Fast)
-        run: |
-          if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
-          $SUDO rm -rf /usr/local/lib/android
-          $SUDO rm -rf /usr/share/dotnet
-          $SUDO rm -rf /opt/ghc
-          $SUDO rm -rf /usr/local/share/boost
+      # Removed Free Disk Space
 
       - name: Ensure Build Tools
         run: |
@@ -519,10 +508,7 @@ jobs:
           if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
 
           if command -v apt-get >/dev/null; then
-            export DEBIAN_FRONTEND=noninteractive
-            # Retry loop for update
-            for i in 1 2 3; do $SUDO apt-get update && break || sleep 2; done
-            $SUDO apt-get install -y git make curl unzip ca-certificates build-essential
+            $SUDO apt-get update && $SUDO apt-get install -y git make curl unzip ca-certificates build-essential
           elif command -v apk >/dev/null; then
             $SUDO apk add --no-cache git make curl unzip ca-certificates build-base
           elif command -v yum >/dev/null; then
@@ -548,7 +534,7 @@ jobs:
 
       - name: Generate Protobufs
         run: |
-          for i in 1 2 3; do make gen && break || sleep 5; done
+          make gen
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
