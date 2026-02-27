@@ -371,24 +371,12 @@ func (s *Server) toolListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodH
 			managedTools := s.toolManager.ListTools()
 			refreshedTools := make([]*mcp.Tool, 0, len(managedTools))
 
-			// ⚡ Bolt Optimization: Fetch allowed services once to avoid N lock acquisitions
-			var allowedServices map[string]bool
-			if profileID != "" {
-				allowedServices, _ = s.toolManager.GetAllowedServiceIDs(profileID)
-			}
-
 			for _, toolInstance := range managedTools {
 				// Profile-based filtering
 				if profileID != "" {
 					serviceID := toolInstance.Tool().GetServiceId()
 					// Optimized O(1) map lookup
-					if allowedServices != nil {
-						if !allowedServices[serviceID] {
-							continue
-						}
-					} else {
-						// Profile not found or error, default to deny if profileID was present?
-						// Original IsServiceAllowed logic: if profile not found, return false.
+					if !s.toolManager.IsServiceAllowed(serviceID, profileID) {
 						continue
 					}
 				}
@@ -1131,10 +1119,9 @@ func (s *Server) resourceListFilteringMiddleware(next mcp.MethodHandler) mcp.Met
 			refreshedResources := make([]*mcp.Resource, 0, len(managedResources))
 
 			profileID, _ := auth.ProfileIDFromContext(ctx)
-			// ⚡ Bolt Optimization: Fetch allowed services once to avoid N lock acquisitions
-			var allowedServices map[string]bool
-			if profileID != "" {
-				allowedServices, _ = s.toolManager.GetAllowedServiceIDs(profileID)
+			// ⚡ Bolt Optimization: Use cached MCP tools list if no profile filtering is required
+			if profileID == "" {
+				// No filtering needed
 			}
 
 			for _, resourceInstance := range managedResources {
@@ -1142,11 +1129,7 @@ func (s *Server) resourceListFilteringMiddleware(next mcp.MethodHandler) mcp.Met
 				if profileID != "" {
 					serviceID := resourceInstance.Service()
 					// Optimized O(1) map lookup
-					if allowedServices != nil {
-						if !allowedServices[serviceID] {
-							continue
-						}
-					} else {
+					if !s.toolManager.IsServiceAllowed(serviceID, profileID) {
 						continue
 					}
 				}
@@ -1172,22 +1155,13 @@ func (s *Server) promptListFilteringMiddleware(next mcp.MethodHandler) mcp.Metho
 			refreshedPrompts := make([]*mcp.Prompt, 0, len(managedPrompts))
 
 			profileID, _ := auth.ProfileIDFromContext(ctx)
-			// ⚡ Bolt Optimization: Fetch allowed services once to avoid N lock acquisitions
-			var allowedServices map[string]bool
-			if profileID != "" {
-				allowedServices, _ = s.toolManager.GetAllowedServiceIDs(profileID)
-			}
 
 			for _, promptInstance := range managedPrompts {
 				// Profile filtering
 				if profileID != "" {
 					serviceID := promptInstance.Service()
 					// Optimized O(1) map lookup
-					if allowedServices != nil {
-						if !allowedServices[serviceID] {
-							continue
-						}
-					} else {
+					if !s.toolManager.IsServiceAllowed(serviceID, profileID) {
 						continue
 					}
 				}
