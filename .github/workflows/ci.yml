@@ -96,7 +96,23 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         run: |
           set -x
-          echo "Detecting Package Manager..."
+
+          # Check if critical tools are already installed
+          MISSING_TOOLS=0
+          for tool in make git tar gzip; do
+            if ! command -v $tool &> /dev/null; then
+              echo "$tool is missing."
+              MISSING_TOOLS=1
+            fi
+          done
+
+          if [ "$MISSING_TOOLS" -eq 0 ]; then
+             echo "All required tools are already installed. Skipping installation."
+             make --version
+             exit 0
+          fi
+
+          echo "Installing missing build tools..."
 
           install_with_sudo() {
             local PKG_MGR=$1
@@ -176,7 +192,23 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         run: |
           set -x
-          echo "Detecting Package Manager..."
+
+          # Check if critical tools are already installed
+          MISSING_TOOLS=0
+          for tool in make git tar gzip; do
+            if ! command -v $tool &> /dev/null; then
+              echo "$tool is missing."
+              MISSING_TOOLS=1
+            fi
+          done
+
+          if [ "$MISSING_TOOLS" -eq 0 ]; then
+             echo "All required tools are already installed. Skipping installation."
+             make --version
+             exit 0
+          fi
+
+          echo "Installing missing build tools..."
 
           install_with_sudo() {
             local PKG_MGR=$1
@@ -244,7 +276,23 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         run: |
           set -x
-          echo "Detecting Package Manager..."
+
+          # Check if critical tools are already installed
+          MISSING_TOOLS=0
+          for tool in make git tar gzip; do
+            if ! command -v $tool &> /dev/null; then
+              echo "$tool is missing."
+              MISSING_TOOLS=1
+            fi
+          done
+
+          if [ "$MISSING_TOOLS" -eq 0 ]; then
+             echo "All required tools are already installed. Skipping installation."
+             make --version
+             exit 0
+          fi
+
+          echo "Installing missing build tools..."
 
           install_with_sudo() {
             local PKG_MGR=$1
@@ -415,7 +463,23 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         run: |
           set -x
-          echo "Detecting Package Manager..."
+
+          # Check if critical tools are already installed
+          MISSING_TOOLS=0
+          for tool in make git tar gzip; do
+            if ! command -v $tool &> /dev/null; then
+              echo "$tool is missing."
+              MISSING_TOOLS=1
+            fi
+          done
+
+          if [ "$MISSING_TOOLS" -eq 0 ]; then
+             echo "All required tools are already installed. Skipping installation."
+             make --version
+             exit 0
+          fi
+
+          echo "Installing missing build tools..."
 
           install_with_sudo() {
             local PKG_MGR=$1
@@ -607,7 +671,23 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         run: |
           set -x
-          echo "Detecting Package Manager..."
+
+          # Check if critical tools are already installed
+          MISSING_TOOLS=0
+          for tool in make git tar gzip; do
+            if ! command -v $tool &> /dev/null; then
+              echo "$tool is missing."
+              MISSING_TOOLS=1
+            fi
+          done
+
+          if [ "$MISSING_TOOLS" -eq 0 ]; then
+             echo "All required tools are already installed. Skipping installation."
+             make --version
+             exit 0
+          fi
+
+          echo "Installing missing build tools..."
 
           install_with_sudo() {
             local PKG_MGR=$1
@@ -660,7 +740,23 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         run: |
           set -x
-          echo "Detecting Package Manager..."
+
+          # Check if critical tools are already installed
+          MISSING_TOOLS=0
+          for tool in make git tar gzip; do
+            if ! command -v $tool &> /dev/null; then
+              echo "$tool is missing."
+              MISSING_TOOLS=1
+            fi
+          done
+
+          if [ "$MISSING_TOOLS" -eq 0 ]; then
+             echo "All required tools are already installed. Skipping installation."
+             make --version
+             exit 0
+          fi
+
+          echo "Installing missing build tools..."
 
           install_with_sudo() {
             local PKG_MGR=$1
@@ -833,7 +929,23 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         run: |
           set -x
-          echo "Detecting Package Manager..."
+
+          # Check if critical tools are already installed
+          MISSING_TOOLS=0
+          for tool in make git tar gzip; do
+            if ! command -v $tool &> /dev/null; then
+              echo "$tool is missing."
+              MISSING_TOOLS=1
+            fi
+          done
+
+          if [ "$MISSING_TOOLS" -eq 0 ]; then
+             echo "All required tools are already installed. Skipping installation."
+             make --version
+             exit 0
+          fi
+
+          echo "Installing missing build tools..."
 
           install_with_sudo() {
             local PKG_MGR=$1
@@ -1004,7 +1116,23 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         run: |
           set -x
-          echo "Detecting Package Manager..."
+
+          # Check if critical tools are already installed
+          MISSING_TOOLS=0
+          for tool in make git tar gzip; do
+            if ! command -v $tool &> /dev/null; then
+              echo "$tool is missing."
+              MISSING_TOOLS=1
+            fi
+          done
+
+          if [ "$MISSING_TOOLS" -eq 0 ]; then
+             echo "All required tools are already installed. Skipping installation."
+             make --version
+             exit 0
+          fi
+
+          echo "Installing missing build tools..."
 
           install_with_sudo() {
             local PKG_MGR=$1
@@ -1143,7 +1271,23 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         run: |
           set -x
-          echo "Detecting Package Manager..."
+
+          # Check if critical tools are already installed
+          MISSING_TOOLS=0
+          for tool in make git tar gzip; do
+            if ! command -v $tool &> /dev/null; then
+              echo "$tool is missing."
+              MISSING_TOOLS=1
+            fi
+          done
+
+          if [ "$MISSING_TOOLS" -eq 0 ]; then
+             echo "All required tools are already installed. Skipping installation."
+             make --version
+             exit 0
+          fi
+
+          echo "Installing missing build tools..."
 
           install_with_sudo() {
             local PKG_MGR=$1
