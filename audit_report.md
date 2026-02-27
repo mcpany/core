@@ -1,43 +1,32 @@
-# Audit Report: Truth Reconciliation
+# Truth Reconciliation Audit Report
 
 ## Executive Summary
-Performed a comprehensive audit of 10 distinct features across UI and Server domains. The audit revealed a high degree of alignment between the codebase and the intended functionality, with minor discrepancies in documentation and roadmap status.
-*   **Health Score:** 9/10 (Initial), 10/10 (Post-Remediation).
-*   **Primary Issue:** Documentation Drift (Code was ahead of Docs/Roadmap).
-*   **Action:** Synchronized `ui/roadmap.md` and feature documentation to reflect existing, verified capabilities.
+A comprehensive audit was performed on the MCP Any codebase to reconcile documentation (`ui/docs`, `server/docs`) with the actual implementation (`server/pkg`, `ui/src`). The project Roadmap was used as the Source of Truth.
+
+A sample of 10 distinct features was selected across backend, frontend, and configuration domains. **100% of the sampled features were found to be in sync with the documentation.** The codebase demonstrates a high level of fidelity to the specified requirements and documentation.
 
 ## Verification Matrix
 
 | Document Name | Status | Action Taken | Evidence |
 | :--- | :--- | :--- | :--- |
-| `ui/docs/features/connection-diagnostics.md` | ✅ Verified | None | Verified `ConnectionDiagnostic` component logic matches docs. |
-| `ui/docs/features/playground.md` | ⚠️ Drift | **Doc Updated** | Code supports "Copy as Python", doc missed it. Added to doc. |
-| `ui/docs/features/structured_log_viewer.md` | ✅ Verified | None | Verified `LogViewer` JSON auto-detection and expansion. |
-| `server/docs/features/hot_reload.md` | ✅ Verified | None | Verified `ReloadConfig` and `reconcileServices` in `server.go`. |
-| `server/docs/features/health-checks.md` | ✅ Verified | None | Verified `health.go` implements all claimed checks (HTTP, gRPC, FS, etc). |
-| `server/docs/features/dlp.md` | ✅ Verified | None | Verified `dlp.go` implements PII redaction middleware. |
-| `server/docs/features/context_optimizer.md` | ✅ Verified | None | Verified `context_optimizer.go` implements truncation logic. |
-| `server/docs/features/configuration_guide.md` | ✅ Verified | None | Verified configuration loading from files and database. |
-| `server/docs/features/security.md` | ⚠️ Drift | **Doc Updated** | Code enforces "Sentinel Security" (localhost-only) if API Key is missing. Doc updated to reflect this. |
-| `server/docs/features/audit_logging.md` | ✅ Verified | None | Verified `FileAuditStore` implements NDJSON format. |
+| `server/docs/features/kafka.md` | **VERIFIED** | None | `server/pkg/bus/kafka/kafka.go` implements `Bus[T]` using `segmentio/kafka-go`. |
+| `server/docs/features/guardrails.md` | **VERIFIED** | None | `server/pkg/middleware/guardrails.go` implements `BlockedPhrases` logic. |
+| `server/docs/features/dynamic_registration.md` | **VERIFIED** | None | `server/pkg/upstream/openapi` and `grpc` packages exist and implement discovery. |
+| `server/docs/features/terraform.md` | **VERIFIED** | None | Doc states "Proposal", code `server/pkg/terraform` contains Mock implementation. |
+| `server/docs/features/wasm.md` | **VERIFIED** | None | Doc states "Experimental", code `server/pkg/wasm` contains `MockRuntime`. |
+| `ui/docs/features/playground.md` | **VERIFIED** | None | `ui/src/components/shared/universal-schema-form.tsx` implements `FileInput` for `base64` encoding. |
+| `ui/docs/features/secrets.md` | **VERIFIED** | None | `ui/src/components/settings/secrets-manager.tsx` implements full CRUD for secrets. |
+| `ui/docs/features/tool_analytics.md` | **VERIFIED** | None | `ui/src/components/playground/tool-runner.tsx` implements latency charts and error counting. |
+| `ui/docs/features/dashboard.md` | **VERIFIED** | None | `ui/src/components/dashboard/dashboard-grid.tsx` implements drag-and-drop widgets. |
+| `server/docs/features/health-checks.md` | **VERIFIED** | None | `server/pkg/health/health.go` implements checks for HTTP, gRPC, WebSocket, etc. |
 
 ## Remediation Log
 
-### 1. Security Documentation Update
-*   **Issue:** `server/docs/features/security.md` implied open access if `allowed_ips` was empty.
-*   **Reality:** Code (`server/pkg/app/server.go`) enforces strict localhost-only access if no API Key is configured ("Sentinel Security").
-*   **Fix:** Updated documentation to explicitly describe the "Sentinel Security Mode".
+While the sampled feature code was consistent with documentation, the following integration tests were found to be broken (logic errors in test assertions vs mock data) and were fixed as part of the audit (Case B: Roadmap Debt/Broken Code):
 
-### 2. Playground Documentation & Roadmap
-*   **Issue:** `ui/roadmap.md` listed "Copy as Curl/Python" as TODO. `ui/docs/features/playground.md` omitted Python support.
-*   **Reality:** Code (`ui/src/lib/code-generator.ts`, `ui/src/components/playground/tool-runner.tsx`) fully implements Curl and Python code generation.
-*   **Fix:**
-    *   Updated `ui/docs/features/playground.md` to include "Copy as Code".
-    *   Updated `ui/roadmap.md` to mark Playground features as `[x]` (Completed).
-
-### 3. Code Quality (Linting)
-*   **Issue:** `make lint` failed due to missing TSDoc in UI components.
-*   **Fix:** Added missing TSDoc comments to `ui/src/components/logs/log-viewer.tsx` and `ui/src/components/diagnostics/discovery-status.tsx`.
+*   **`server/tests/public_api/bored_test.go`**: Fixed mock response to include a non-empty `link` field, as required by the test assertion.
+*   **`server/tests/public_api/deck_of_cards_test.go`**: Updated mock server path registration to correctly match the request path (excluding query parameters), allowing the test to receive the mock response instead of a 404.
+*   **`server/tests/public_api/agify_test.go`**: Updated mock server path registration to correctly match the request path (excluding query parameters).
 
 ## Security Scrub
-*   No PII, secrets, or internal IPs were found or exposed in this report.
+This report contains no PII, secrets, or internal IP addresses.
