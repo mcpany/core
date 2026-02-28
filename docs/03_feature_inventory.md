@@ -81,3 +81,17 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-02-28] (Evening Update)
+
+### Proposed Additions
+- **Automated Vulnerability Scanner Middleware**: (P0) Real-time scanning of tool inputs and outputs for SSRF, Path Traversal, and credential exfiltration patterns.
+- **MCP Sandbox Wrapper (transient-v1)**: (P0) A lightweight, transient sandbox for every tool execution to isolate the host from potentially malicious MCP servers.
+- **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
+- **Agent DID Integration (Identity Mesh)**: (P1) Support for Decentralized Identifiers (DIDs) to verify agent identity and authorization across multi-agent handoffs.
+
+### Priority Shifts
+- **A2A Interop Bridge**: Promoted to **P0** to support the immediate need for cross-framework coordination in light of the ClawHavoc campaign.
+- **Supply Chain Integrity Guard**: Re-affirmed as **P0** given the rise of "poisoned" community skills.

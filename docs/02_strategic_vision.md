@@ -57,3 +57,12 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-02-28] - Phase 2: Vulnerability Mitigation & Mesh Sovereignty
+**Context**: Today's deeper dive into the OpenClaw "Vulnerability Cascade" (SSRF, Path Traversal) and the "ClawHavoc" malicious skills campaign necessitates a move towards active, identity-first traffic inspection.
+**Strategic Pivot**:
+- **Active Traffic Inspection**: MCP Any will evolve its Policy Firewall to include real-time deep packet/payload inspection for tool calls, specifically targeting SSRF and Path Traversal patterns.
+- **Identity-First Delegation (Agent DID)**: Moving beyond session tokens to decentralized identifiers (DIDs) for agents. This allows for immutable provenance and verifiable delegation across the A2A Mesh.
+- **Hardened Sandbox Wrappers**: Every tool execution will be wrapped in a transient, capability-restricted sandbox by default, ensuring that even "poisoned" tools cannot exfiltrate environment-level secrets.

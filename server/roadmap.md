@@ -33,6 +33,9 @@
 *   **[P0] Safe-by-Default Hardening**: Transition all listeners to `localhost` by default. Implement mandatory Attestation for remote exposure. (Added: 2026-02-28)
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
+*   **[P0] Automated Vulnerability Scanner**: Real-time SSRF and Path Traversal inspection for tool traffic. (Added: 2026-02-28 Phase 2)
+*   **[P0] MCP Sandbox Wrapper**: Transient isolation for tool execution to prevent host secret leakage. (Added: 2026-02-28 Phase 2)
+*   **[P1] Agent DID Identity Mesh**: Integration of DIDs for immutable agent provenance and authorization. (Added: 2026-02-28 Phase 2)
 
 ## 2. Top 10 Recommended Features
 

@@ -59,3 +59,7 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-02-28 (Update): Mitigating OpenClaw Vulnerability Cascade**
+    *   **Architecture Adjustment**: Deprecating raw filesystem access in favor of isolated **Docker-bound named pipes** for inter-agent communication, specifically targeting the Path Traversal (CVE-2026-26329) risk.
+    *   **New Layer**: Introducing an **Active Traffic Inspection** hook in the Policy Firewall to sanitize URLs and payloads, mitigating SSRF (CVE-2026-26322) patterns found in modern agent gateways.
+    *   **Enforcement**: Mandatory "Path Sanitization" middleware for all tool calls involving file paths, ensuring no `../` escapes the defined root.
