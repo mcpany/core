@@ -155,8 +155,7 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            # build-essential contains gcc, g++, make, and other necessary tools for cgo
-            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential
+            sudo DEBIAN_FRONTEND=noninteractive apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils build-essential
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz build-base
           fi
@@ -202,8 +201,7 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            # gcc and g++ are needed for cgo (e.g. sqlite)
-            sudo apt-get update && sudo apt-get install -y make xz-utils gcc g++
+            sudo DEBIAN_FRONTEND=noninteractive apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils build-essential
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz build-base
           fi
@@ -352,8 +350,7 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            # gcc and g++ are needed for cgo (e.g. sqlite)
-            sudo apt-get update && sudo apt-get install -y make xz-utils gcc g++
+            sudo DEBIAN_FRONTEND=noninteractive apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils build-essential
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz build-base
           fi
@@ -664,8 +661,7 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            # gcc and g++ are needed for cgo (e.g. sqlite)
-            sudo apt-get update && sudo apt-get install -y make xz-utils gcc g++
+            sudo DEBIAN_FRONTEND=noninteractive apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y make xz-utils build-essential
           elif command -v apk &> /dev/null; then
              sudo apk add --no-cache make xz build-base
           fi
