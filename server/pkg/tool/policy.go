@@ -6,10 +6,13 @@ package tool
 import (
 	"fmt"
 	"regexp"
+	"sync"
 
-	"github.com/mcpany/core/server/pkg/logging"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/logging"
 )
+
+var exportRegexCache sync.Map
 
 // ShouldExport determines whether a named item (tool, prompt, or resource) should be exported.
 //
@@ -30,15 +33,27 @@ func ShouldExport(name string, policy *configv1.ExportPolicy) bool {
 
 	// Iterate strict rules first
 	for _, rule := range policy.GetRules() {
-		if rule.GetNameRegex() == "" {
+		pattern := rule.GetNameRegex()
+		if pattern == "" {
 			continue
 		}
-		matched, err := regexp.MatchString(rule.GetNameRegex(), name)
-		if err != nil {
-			logging.GetLogger().Error("Invalid regex in export policy", "regex", rule.GetNameRegex(), "error", err)
-			continue
+
+		// ⚡ BOLT: Cached regex compilation for ShouldExport to eliminate O(n) regex compilation overhead during frequent export policy evaluations.
+		// Randomized Selection from Top 5 High-Impact Targets (CPU/Regex)
+		var re *regexp.Regexp
+		if cached, ok := exportRegexCache.Load(pattern); ok {
+			re = cached.(*regexp.Regexp)
+		} else {
+			var err error
+			re, err = regexp.Compile(pattern)
+			if err != nil {
+				logging.GetLogger().Error("Invalid regex in export policy", "regex", pattern, "error", err)
+				continue
+			}
+			exportRegexCache.Store(pattern, re)
 		}
-		if matched {
+
+		if re.MatchString(name) {
 			return rule.GetAction() == configv1.ExportPolicy_EXPORT
 		}
 	}
