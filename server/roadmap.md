@@ -29,6 +29,11 @@
 *   **[P1] Federated MCP Peering**: Distributed node discovery and tool proxying. (Added: 2026-02-26)
 *   **[P1] Resource Telemetry Middleware**: Inject latency/cost metrics into tool schemas. (Added: 2026-02-26)
 
+#### Upcoming (2026-02-28 Evolution)
+*   **[P0] Authenticated Local Transport (Named Pipes/UDS)**: Os-level authentication to prevent hijacking (ClawJacked). (Added: 2026-02-28)
+*   **[P0] Project Configuration Sandbox**: Secure "pre-flight" check for project-bound tool/hook definitions. (Added: 2026-02-28)
+*   **[P1] Intent-Aware "Seatbelt" Policies**: Alignment with Gemini CLI policy model for dynamic intent-based safety. (Added: 2026-02-28)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

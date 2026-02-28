@@ -46,3 +46,4 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-02-28:** **Update: Resolving Local Port Exposure.** Today's market sync revealed the "ClawJacked" exploit pattern. The A2A bridge must also support and prioritize authenticated local transports (Named Pipes/UDS) when bridging to local agents to prevent hijacking. Added requirement for UID verification in local A2A handoffs.

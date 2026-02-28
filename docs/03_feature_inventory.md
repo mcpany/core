@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-28] Updates
+
+### Proposed Additions
+- **Authenticated Local Transport (Named Pipes/UDS)**: (P0) Deprecating unauthenticated local HTTP in favor of OS-level authenticated transports to prevent agent hijacking (ClawJacked).
+- **Project Configuration Sandbox**: (P0) A secure "pre-flight" check for `.mcpany/` or project-bound tool/hook definitions, requiring explicit user attestation or cryptographic signatures.
+- **Intent-Aware "Seatbelt" Policies**: (P1) Dynamic policy enforcement that evaluates the high-level intent of a prompt before allowing high-privilege tool calls, aligning with the Gemini CLI policy model.
+
+### Priority Shifts
+- **MCP Provenance Attestation**: Remains **P0**. Critical for the new "Project Configuration Sandbox" feature.
+- **A2A Interop Bridge**: Remains **P0**. High demand for cross-framework agent collaboration.
+
+### Deprecations / Monitoring
+- **Unauthenticated Local HTTP Listeners**: Marked for deprecation. To be replaced by Unix Domain Sockets and Named Pipes.
