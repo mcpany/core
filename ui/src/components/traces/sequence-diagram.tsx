@@ -180,6 +180,14 @@ export function SequenceDiagram({ trace }: SequenceDiagramProps) {
 
   const getActorX = (index: number) => PADDING_X + index * ACTOR_GAP + ACTOR_WIDTH / 2;
 
+  // ⚡ BOLT: [Render Optimization] Pre-compute actor indices to avoid O(N*M) lookups during message rendering.
+  // Randomized Selection from Top 5 High-Impact Targets
+  const actorIndexMap = useMemo(() => {
+    const map = new Map<string, number>();
+    actors.forEach((a, i) => map.set(a.id, i));
+    return map;
+  }, [actors]);
+
   return (
     <div className="w-full overflow-x-auto border rounded-md bg-white dark:bg-zinc-950 p-4">
         <svg width={width} height={height} className="font-sans text-xs">
@@ -222,8 +230,8 @@ export function SequenceDiagram({ trace }: SequenceDiagramProps) {
 
             {/* Messages */}
             {messages.map((msg, i) => {
-                const fromIndex = actors.findIndex(a => a.id === msg.from);
-                const toIndex = actors.findIndex(a => a.id === msg.to);
+                const fromIndex = actorIndexMap.get(msg.from) ?? -1;
+                const toIndex = actorIndexMap.get(msg.to) ?? -1;
 
                 if (fromIndex === -1 || toIndex === -1) return null;
 
