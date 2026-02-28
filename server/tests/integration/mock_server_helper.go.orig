@@ -31,7 +31,7 @@ func DefaultMockHandler(t *testing.T, responses map[string]string) http.Handler 
 			uri += "?" + r.URL.RawQuery
 		}
 
-		// Check exact path+query match
+		// Check exact path match
 		if body, ok := responses[uri]; ok {
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
@@ -39,18 +39,7 @@ func DefaultMockHandler(t *testing.T, responses map[string]string) http.Handler 
 			return
 		}
 
-		// Fallback to path only match
-		if body, ok := responses[r.URL.Path]; ok {
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusOK)
-			_, _ = w.Write([]byte(body))
-			return
-		}
-
-		t.Logf("Mock server: no response found for '%s' or '%s'. Available keys:", uri, r.URL.Path)
-		for k := range responses {
-			t.Logf("  Key: '%s'", k)
-		}
+		t.Logf("Mock server: no response found for %s", uri)
 		http.NotFound(w, r)
 	})
 }

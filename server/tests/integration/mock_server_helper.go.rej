@@ -1,0 +1,23 @@
+--- server/tests/integration/mock_server_helper.go
++++ server/tests/integration/mock_server_helper.go
+@@ -32,13 +32,18 @@
+		bodyBytes, _ := io.ReadAll(r.Body)
+		t.Logf("Mock server received request: %s %s Body: %s", r.Method, r.URL.Path, string(bodyBytes))
+
++		uri := r.URL.Path
++		if r.URL.RawQuery != "" {
++			uri += "?" + r.URL.RawQuery
++		}
++
+		// Check exact path match
+-		if body, ok := responses[uri]; ok {
++		if body, ok := responses[uri]; ok {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte(body))
+			return
+		}
+
+-		t.Logf("Mock server: no response found for '%s'", uri)
++		t.Logf("Mock server: no response found for '%s'. Available keys: %v", uri, responses)
+		http.NotFound(w, r)
