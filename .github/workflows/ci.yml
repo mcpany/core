@@ -33,7 +33,7 @@ env:
 
 jobs:
   changes:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     outputs:
       src: ${{ steps.filter.outputs.src }}
     steps:
@@ -1061,7 +1061,7 @@ jobs:
           make k8s-e2e SKIP_IMAGE_BUILD=true IMAGE_TAG=latest
 
   ci-success:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     needs:
       [
         changes,
