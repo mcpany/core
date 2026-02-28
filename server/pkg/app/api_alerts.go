@@ -34,6 +34,18 @@ func (a *Application) handleAlerts() http.HandlerFunc {
 	}
 }
 
+func (a *Application) handleAlertStats() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+		stats := a.AlertsManager.GetAlertStats()
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(stats)
+	}
+}
+
 func (a *Application) handleAlertWebhook() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
