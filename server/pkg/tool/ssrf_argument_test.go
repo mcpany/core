@@ -5,17 +5,32 @@ package tool
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/mcpany/core/server/pkg/validation"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
 )
 
 func TestSSRFArgumentProtection(t *testing.T) {
 	// Ensure protections are ENABLED for this test, even if CI sets them to disabled.
 	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "false")
+
+	// Mock IsSafeURL to fail for loopback/private IPs for this test
+	// TestMain mocks it to always pass, which breaks our "existing check" test case.
+	originalIsSafeURL := validation.IsSafeURL
+	validation.IsSafeURL = func(urlStr string) error {
+		// Simple mock logic for test purposes
+		if urlStr == "http://127.0.0.1" {
+			return fmt.Errorf("unsafe url")
+		}
+		return nil
+	}
+	defer func() { validation.IsSafeURL = originalIsSafeURL }()
 
 	// Setup helper to create tool
 	createTool := func(cmd string) Tool {
@@ -136,12 +151,12 @@ func TestSSRFArgumentProtection(t *testing.T) {
 
 			_, err := tool.Execute(context.Background(), req)
 			if tt.expectError {
-				assert.Error(t, err)
+				require.Error(t, err)
 				if tt.errorContains != "" {
 					assert.Contains(t, err.Error(), tt.errorContains)
 				}
 			} else {
-				assert.NoError(t, err)
+				require.NoError(t, err)
 			}
 		})
 	}
