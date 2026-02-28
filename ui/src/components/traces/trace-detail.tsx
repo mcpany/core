@@ -115,28 +115,52 @@ function WaterfallItem({
                 </div>
             </div>
 
-            {/* Details (Input/Output) - Only for leaf nodes or if interesting? Or maybe separate detail pane?
-                Let's put it inline if selected? Or just simple key-values for now.
-            */}
             {expanded && (
-                <div className="text-xs pl-8">
-                    {/* Children */}
-                    {span.children?.map(child => (
-                         <WaterfallItem
-                            key={child.id}
-                            span={child}
-                            depth={depth + 1}
-                            traceStart={traceStart}
-                            traceDuration={traceDuration}
-                        />
-                    ))}
-
-                    {/* Error Message */}
-                    {span.errorMessage && (
-                         <div className="ml-6 mt-1 mb-2 p-2 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900 rounded text-xs font-mono">
-                            Error: {span.errorMessage}
+                <div className="text-xs">
+                    {/* Nested Payload Viewer */}
+                    {((span.input && Object.keys(span.input).length > 0) || (span.output && Object.keys(span.output).length > 0) || span.errorMessage) && (
+                        <div className="ml-8 mr-4 my-2 p-3 bg-card border rounded-md shadow-sm">
+                            <Tabs defaultValue="input" className="w-full">
+                                <div className="flex items-center justify-between mb-2">
+                                    <TabsList className="h-8">
+                                        <TabsTrigger value="input" className="text-xs px-3 h-6"><Code className="h-3 w-3 mr-1" /> Input</TabsTrigger>
+                                        <TabsTrigger value="output" className="text-xs px-3 h-6"><Terminal className="h-3 w-3 mr-1" /> Output</TabsTrigger>
+                                    </TabsList>
+                                </div>
+                                <TabsContent value="input" className="mt-0 border-none p-0">
+                                    {span.input && Object.keys(span.input).length > 0 ? (
+                                        <RichResultViewer result={span.input} />
+                                    ) : (
+                                        <div className="text-muted-foreground p-2">No input data.</div>
+                                    )}
+                                </TabsContent>
+                                <TabsContent value="output" className="mt-0 border-none p-0">
+                                    {span.errorMessage ? (
+                                        <div className="p-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900 rounded text-xs font-mono whitespace-pre-wrap">
+                                            {span.errorMessage}
+                                        </div>
+                                    ) : span.output && Object.keys(span.output).length > 0 ? (
+                                        <RichResultViewer result={span.output} />
+                                    ) : (
+                                        <div className="text-muted-foreground p-2">No output data.</div>
+                                    )}
+                                </TabsContent>
+                            </Tabs>
                         </div>
                     )}
+
+                    {/* Children */}
+                    <div className="pl-8">
+                        {span.children?.map(child => (
+                             <WaterfallItem
+                                key={child.id}
+                                span={child}
+                                depth={depth + 1}
+                                traceStart={traceStart}
+                                traceDuration={traceDuration}
+                            />
+                        ))}
+                    </div>
                 </div>
             )}
         </div>
