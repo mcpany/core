@@ -133,10 +133,11 @@ jobs:
 
       - name: Install dependencies
         run: |
+          export DEBIAN_FRONTEND=noninteractive
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils gcc
+            sudo apt-get update && sudo apt-get install -y build-essential xz-utils
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz gcc
+             sudo apk add --no-cache build-base xz
           fi
 
       - name: Prepare environment
@@ -169,10 +170,11 @@ jobs:
 
       - name: Install dependencies
         run: |
+          export DEBIAN_FRONTEND=noninteractive
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils gcc
+            sudo apt-get update && sudo apt-get install -y build-essential xz-utils
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz gcc
+             sudo apk add --no-cache build-base xz
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -308,10 +310,11 @@ jobs:
 
       - name: Install dependencies
         run: |
+          export DEBIAN_FRONTEND=noninteractive
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils gcc
+            sudo apt-get update && sudo apt-get install -y build-essential xz-utils
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz gcc
+             sudo apk add --no-cache build-base xz
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -469,10 +472,11 @@ jobs:
 
       - name: Install dependencies
         run: |
+          export DEBIAN_FRONTEND=noninteractive
           if command -v apt-get &> /dev/null; then
-            apt-get update && apt-get install -y make xz-utils gcc git
+            apt-get update && apt-get install -y build-essential xz-utils git curl wget
           elif command -v apk &> /dev/null; then
-             apk add --no-cache make xz gcc git
+             apk add --no-cache build-base xz git curl wget
           fi
 
       - name: Set up Go
@@ -617,10 +621,11 @@ jobs:
 
       - name: Install dependencies
         run: |
+          export DEBIAN_FRONTEND=noninteractive
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils gcc
+            sudo apt-get update && sudo apt-get install -y build-essential xz-utils
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz gcc
+             sudo apk add --no-cache build-base xz
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -756,10 +761,11 @@ jobs:
 
       - name: Install dependencies
         run: |
+          export DEBIAN_FRONTEND=noninteractive
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils
+            sudo apt-get update && sudo apt-get install -y build-essential xz-utils
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz
+             sudo apk add --no-cache build-base xz
           fi
 
       - name: Configure Docker Registry Mirrors
