@@ -1,3 +1,8 @@
+/**
+ * Copyright 2026 Author(s) of MCP Any
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { test, expect } from '@playwright/test';
 
 test.describe('Playground Diff Verification', () => {
@@ -80,8 +85,10 @@ test.describe('Playground Diff Verification', () => {
     await expect(monacoEditor).toBeVisible({ timeout: 10000 });
 
     // Check that the unescaped keys and values exist in the diff view
-    await expect(monacoEditor).toContainText('"nested"');
-    await expect(monacoEditor).toContainText('"value"');
-    await expect(monacoEditor).toContainText('Version 2');
+    // Monaco diff editor renders original and modified views
+    const monacoEditorAll = page.locator('.view-lines');
+    await expect(monacoEditorAll.last()).toContainText('"nested"');
+    await expect(monacoEditorAll.last()).toContainText('"value"');
+    await expect(monacoEditorAll.last()).toContainText('Version 2');
   });
 });
