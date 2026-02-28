@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-01 Evolution)
+*   **[P0] Intent Validation Engine (IVE)**: Implement a lightweight Rego/LLM middleware to verify tool call intent against user policy. (Added: 2026-03-01)
+*   **[P0] Isolated Adapter Execution (Sandbox)**: Migrate Command and HTTP adapters to ephemeral, sandboxed environments (Docker/NSJail). (Added: 2026-03-01)
+*   **[P1] User-Signed Policy Verification**: Cryptographic verification that the end-user (not just the agent) authorized a high-risk tool call. (Added: 2026-03-01)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

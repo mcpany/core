@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-01]
+### Focus: Intent Validation & Hardened Orchestration
+**Context**: Today's audit reports from Equixly confirm a systemic failure in current MCP servers: a 43% command injection rate and 30% SSRF vulnerability. The shift from syntax validation to "Intent Validation" is now a survival requirement for AI infrastructure.
+**Strategic Pivot**:
+- **Intent Validation Engine**: MCP Any will implement an LLM-in-the-loop (or light-weight Rego-based) verification step that checks if a tool call matches the user's high-level intent, not just the API schema.
+- **Hardened Adapter Layer**: Moving from "Direct Proxies" to "Isolated Executors" for all command and network adapters, using temporary, read-only filesystem mounts and network namespaces.
+- **Dynamic Capability Attestation**: Ensuring that every capability composed on-the-fly by an agent is explicitly authorized by a "User-Signed Policy," preventing "Confused Deputy" exploits in exploratory orchestration.

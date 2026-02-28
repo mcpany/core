@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-01] Updates
+
+### Proposed Additions
+- **Intent Validation Engine (IVE)**: (P0) LLM/Rego middleware to verify tool call intent against user policy.
+- **Isolated Adapter Execution (Sandbox)**: (P0) Ephemeral, sandboxed execution for Command and HTTP adapters (Docker/NSJail).
+- **User-Signed Policy Verification**: (P1) Cryptographic verification that the end-user (not just the agent) authorized a high-risk tool call.
+
+### Priority Shifts
+- **Policy Firewall**: Re-affirmed as **P0** and expanded to include Intent Validation capabilities.
+- **Safe-by-Default Network Hardening**: Promoted to **P0** (Critical) given the 43% injection rate found in current MCP servers.
+
+### Deprecations / Monitoring
+- **Unsandboxed Command Execution**: Monitoring for deprecation in favor of Isolated Adapter Execution.
