@@ -46,3 +46,10 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+### Update: 2026-02-28 - Transitioning to Stateful Residency
+**Context**: Intermittent connectivity and slow reasoning times in specialized agent swarms make synchronous "Bridge" calls unreliable.
+**Architecture Adjustment**:
+* Implementing "Stateful Residency" where MCP Any acts as a persistent mailbox for A2A messages.
+* Moving from `tools/call` blocking to an async "Handoff & Notify" model.
+* Utilizing the `Shared KV Store` (Blackboard) to persist message queues across server restarts.
+**Observability Impact**: Allows the UI to show "Queued" and "In-Progress" states for long-running inter-agent tasks.

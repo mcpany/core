@@ -74,10 +74,13 @@
 - **"Safe-by-Default" Network Hardening**: (P0) Transition to local-only default bindings for all services. Requires explicit MFA/Attestation for remote exposure.
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
+- **Isolated Command Sandbox (Wasm/gVisor)**: (P0) Hardened execution environment for command adapters to prevent RCE and context leaks (Mitigates CVE-2026-25905).
+- **Agent Performance & Cost Analytics Dashboard**: (P1) Centralized UI for monitoring tool usage, token costs, and latency across all agents.
 
 ### Priority Shifts
 - **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
 - **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.
+- **Cost & Latency Telemetry Middleware**: Promoted to **P0** to support the new Analytics Dashboard and enable economical agent reasoning.
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.

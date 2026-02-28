@@ -59,3 +59,10 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+### Update: 2026-02-28 - Mitigating Python Sandbox Escape (CVE-2026-25905)
+**Context**: Today's market sync revealed an RCE in `mcp-run-python` where escape is possible via Pyodide APIs.
+**Architecture Adjustment**:
+* Mandatory use of `gVisor` or `Wasm` runtimes for all `Command` and `Python` adapters.
+* Deprecating raw `subprocess.run` for user-provided scripts.
+* Implementing "System Call Filtering" for the sandbox to prevent unauthorized network or filesystem access during tool execution.
+**Security Impact**: Neutralizes the Pyodide-to-Host escape vector and ensures strict process-level isolation.

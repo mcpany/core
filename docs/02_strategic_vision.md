@@ -51,9 +51,10 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 ---
 
 ## Strategic Evolution: [2026-02-28]
-### Focus: Safe-by-Default Infrastructure & A2A Mesh Maturity
-**Context**: The "8,000 Exposed Servers" crisis and the "Clawdbot" incident have proven that "Ease of Use" cannot come at the cost of "Default Security." Simultaneously, the A2A protocol is maturing into the primary way agents coordinate.
+### Focus: Safe-by-Default Hardening & Execution Isolation
+**Context**: The "8,000 Exposed Servers" crisis and CVE-2026-25905 (RCE in mcp-run-python) have proven that security must be the primary architectural constraint.
 **Strategic Pivot**:
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
-- **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
-- **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+- **Execution Isolation (Hardened Sandboxing)**: MCP Any will enforce strict process isolation for all command-based adapters using gVisor or Wasm runtimes to prevent cross-context leaks.
+- **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer".
+- **Observability-Driven Safety**: Integrating real-time usage monitoring as a core safety metric, allowing the Policy Engine to throttle or block "anomalous" agent behavior.
