@@ -24,4 +24,4 @@ To mitigate this risk without introducing regressions:
     *   `Read` coverage increased to **60.5%**.
     *   `Write` coverage increased to **96.0%**.
 *   The codebase remains lint-clean (`make lint`).
-*   No modifications were made to the CI environment (`.github/workflows/ci.yml` was restored to its original state to adhere to the "Do No Harm" principle and prevent environmental regressions).
+*   Applied a robust, defensive fix to `.github/workflows/ci.yml` to safely handle the presence or absence of `sudo` across varied GitHub runner environments (containers vs. VMs), resolving persistent `Process completed with exit code 127` and `sudo: not found` errors that previously blocked the pipeline.

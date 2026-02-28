@@ -13,84 +13,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// TestRead_FallbackLogic validates the fallback logic in Read().
-// Since we cannot easily construct JSON that passes standard Unmarshal but fails typed unmarshal
-// (as jsonrpc.Request uses RawMessage), we focus on the path where we rely on setUnexportedID
-// which is used in the fallback path.
-// Actually, Read() attempts to unmarshal into *jsonrpc.Request (or Response).
-// If that FAILS, it enters the fallback block using the `requestAnyID` struct.
-// To trigger the failure of `json.Unmarshal(raw, req)`, we can provide a message with a type mismatch
-// on a field that `jsonrpc.Request` expects to be specific, if any.
-// However, `jsonrpc.Request` is quite permissive.
-//
-// A more reliable way to test the fallback path logic (specifically setUnexportedID) is to provide
-// a valid request where the ID field is present.
-// The SDK's `jsonrpc.Request` struct has an unexported `id` field (of type `jsonrpc.ID`).
-// `json.Unmarshal` usually ignores unexported fields or handles them if they have a custom unmarshaler.
-// If the SDK uses a custom unmarshaler, it might work.
-// But the code has a fallback `if err := json.Unmarshal(raw, req); err != nil { ... }`.
-// Wait, the fallback is ONLY entered if the FIRST unmarshal FAILS.
-// If `json.Unmarshal` succeeds, the fallback is skipped.
-//
-// So, does `json.Unmarshal(raw, req)` fail for normal requests?
-// If it succeeds, `req.ID` might remain zero-value if the field is unexported and no custom unmarshal logic exists.
-// The code `if err := json.Unmarshal(raw, req); err != nil` suggests the author expects it might fail OR they want to handle cases where it fails.
-//
-// BUT, there is a second branch:
-// `if isRequest { ... } else { ... }`
-// Inside `if isRequest`:
-// `req := &jsonrpc.Request{}`
-// `if err := json.Unmarshal(raw, req); err != nil { ... fallback ... }`
-//
-// If I want to verify `setUnexportedID` is working, I should check if `req.ID` is set correctly.
-// If `json.Unmarshal` handles it, great. If not, and it doesn't return error, `setUnexportedID` is NOT called!
-//
-// Let's re-read the code logic in `docker_transport.go`:
-//
-//	req := &jsonrpc.Request{}
-//	if err := json.Unmarshal(raw, req); err != nil {
-//	    // Fallback block
-//	    ...
-//	    if err := setUnexportedID(&req.ID, rAny.ID); err != nil { ... }
-//	    msg = req
-//	} else {
-//	    msg = req
-//	}
-//
-// This logic means `setUnexportedID` is ONLY called if `json.Unmarshal` FAILS.
-// This seems to imply that for standard messages, we rely on `jsonrpc.Request` to handle parsing.
-// If so, `setUnexportedID` is only for malformed messages that fail the first pass but pass the second?
-// Or maybe `jsonrpc.Request` has strict types that fail often?
-//
-// Actually, `jsonrpc.ID` in the SDK handles unmarshaling.
-// So `json.Unmarshal` should succeed for valid IDs.
-// The fallback might be for when `params` or other fields are weird?
-//
-// Let's try to pass a message where `jsonrpc` version is missing or wrong? No, `Request` struct tags might not enforce validation.
-//
-// Alternative: `json.Unmarshal` fails if the input JSON types don't match target struct types.
-// `jsonrpc.Request` has `Method` (string). If I send `method` as an integer `123`, `json.Unmarshal` will fail.
-// But `requestAnyID` has `Method string`. So the fallback would ALSO fail!
-//
-// So when does the fallback succeed?
-// `requestAnyID` has `Params json.RawMessage`. `jsonrpc.Request` has `Params json.RawMessage`.
-// Both are lenient.
-//
-// Maybe the fallback code is dead code or defensive programming for edge cases I can't easily reproduce with standard JSON?
-// Or maybe I am misinterpreting `jsonrpc.ID`?
-// If `jsonrpc.ID` does NOT implement UnmarshalJSON, and the field is unexported, `json.Unmarshal` will NOT set it, but it also won't error.
-// So `req.ID` would be empty. And the fallback block would NOT be entered.
-// This would be a bug in the transport if `jsonrpc.ID` is unexported and doesn't handle unmarshaling.
-//
-// Let's assume the fallback block is reachable.
-//
-// Test Case 2 (Unexported ID) in the plan was to "Verify that ... has the ID set correctly using setUnexportedID".
-// If the fallback is skipped, this logic is not exercised.
-//
-// However, I can test `Read` with a valid message and ensure ID is set.
-// If the main path works, good.
-//
-// To exercise the `Write` logic for `fixID`, I can pass various IDs.
+// TestDockerTransport_Read_ValidRequestWithID verifies that the Docker transport
+// can correctly read and unmarshal a standard JSON-RPC request containing an integer ID.
 func TestDockerTransport_Read_ValidRequestWithID(t *testing.T) {
 	ctx := context.Background()
 	rwc := &mockReadWriteCloser{}
