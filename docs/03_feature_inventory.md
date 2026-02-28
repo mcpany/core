@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-02-28] Supplemental Updates
+
+### Proposed Additions
+- **Identity-Based Agent Microsegmentation**: (P0) Enforce least-privilege tool access at the inter-agent level using cryptographic identities, mitigating lateral movement risks.
+- **A2A Traceability Engine (Full-Chain Audit)**: (P0) Provides a verifiable audit trail of every A2A message to diagnose ASI08 "Cascading Failures" and ASI07 "Insecure Communication."
+- **Unified Project-Level Policy Support**: (P1) Align with Gemini CLI's shift towards project-level policies that replace static tool lists with context-aware rule sets.
+
+### Priority Shifts
+- **A2A Stateful Residency**: Re-affirmed as **P0**. Essential for reliable communication in the "Headless Agentic Infrastructure" model (OpenClaw).
+- **Policy Firewall**: Re-affirmed as **P0**. Crucial for implementing the newly identified need for microsegmentation.
+
+### Deprecations / Monitoring
+- **Static "Allowed-Tool" Lists**: Moving towards dynamic, policy-based access control (Unified Policy Engine).

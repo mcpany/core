@@ -59,3 +59,4 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-02-28 (Update):** Integrated Identity-Based Microsegmentation. Added requirements for per-agent cryptographic identity to prevent lateral movement (ASI07) within the mesh.

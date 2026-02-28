@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-02-28] (Supplemental)
+### Focus: Microsegmentation & Observability in Multi-Agent Swarms
+**Context**: Today's research reveals a massive shift towards "Headless Agentic Infrastructure" (OpenClaw) and the emergence of the "OWASP Top 10 for Agentic Applications." The primary threat is now "Insecure Inter-Agent Communication" (ASI07) and "Cascading Failures" (ASI08).
+**Strategic Pivot**:
+- **Identity-Based Microsegmentation**: MCP Any will evolve into a "Security Micro-Segmenter" for the agent mesh, enforcing least-privilege tool access not just at the gateway, but at the inter-agent level using cryptographic identities.
+- **Deep Observability & Traceability**: Shifting from simple logging to "Full-Chain Traceability." MCP Any must provide a verifiable audit trail of every A2A message to diagnose and prevent cascading failures.
+- **Unified Policy Engine Integration**: Aligning with the Gemini CLI strategy, MCP Any will move towards a centralized, project-level policy model that replaces static "allowed-tool" lists with dynamic, context-aware rule sets.

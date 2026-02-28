@@ -33,6 +33,9 @@
 *   **[P0] Safe-by-Default Hardening**: Transition all listeners to `localhost` by default. Implement mandatory Attestation for remote exposure. (Added: 2026-02-28)
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
+*   **[P0] Identity-Based Agent Microsegmentation**: Cryptographic enforcement of least-privilege tool access at the inter-agent level. (Added: 2026-02-28 Supplemental)
+*   **[P0] A2A Traceability Engine**: Verifiable audit trail of every A2A message to prevent and diagnose cascading failures (ASI08). (Added: 2026-02-28 Supplemental)
+*   **[P1] Unified Project-Level Policies**: Dynamic, context-aware rule sets that replace static tool allow-lists. (Added: 2026-02-28 Supplemental)
 
 ## 2. Top 10 Recommended Features
 
