@@ -143,7 +143,18 @@ export const ToolTable = memo(function ToolTable({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {tools.map((tool) => (
+          {tools.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={10} className="h-24 text-center">
+                <div className="flex flex-col items-center justify-center text-muted-foreground">
+                  <Wrench className="h-8 w-8 mb-2 opacity-50" />
+                  <p className="text-base font-medium">No tools found</p>
+                  <p className="text-sm opacity-70">No tools found for this service or matching your search.</p>
+                </div>
+              </TableCell>
+            </TableRow>
+          ) : (
+          tools.map((tool) => (
             <TableRow key={tool.name} className={cn("group", isCompact ? "h-8" : "", selected.has(tool.name) ? "bg-muted/50" : "")}>
                <TableCell className={cn("pr-0", isCompact ? "py-0 px-2" : "")}>
                  <Checkbox
@@ -210,7 +221,7 @@ export const ToolTable = memo(function ToolTable({
                   </Button>
               </TableCell>
             </TableRow>
-          ))}
+          )))}
         </TableBody>
       </Table>
     </div>
