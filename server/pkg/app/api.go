@@ -800,8 +800,13 @@ func (a *Application) handlePrompts() http.HandlerFunc {
 			prompts := a.PromptManager.ListPrompts()
 			w.Header().Set("Content-Type", "application/json")
 
-			var jsonPrompts []map[string]any
 			opts := protojson.MarshalOptions{UseProtoNames: false, EmitUnpopulated: false}
+
+			// ⚡ BOLT: Prevent redundant marshal/unmarshal cycle to inject serviceId
+			// Randomized Selection from Top 5 High-Impact Targets
+			var buf []byte
+			buf = append(buf, '[')
+			first := true
 
 			for _, p := range prompts {
 				if p.Definition() == nil {
@@ -812,14 +817,30 @@ func (a *Application) handlePrompts() http.HandlerFunc {
 					logging.GetLogger().Error("failed to marshal prompt", "name", p.Definition().GetName(), "error", err)
 					continue
 				}
-				var m map[string]any
-				if err := json.Unmarshal(b, &m); err == nil {
-					m["serviceId"] = p.Service()
-					jsonPrompts = append(jsonPrompts, m)
+
+				if !first {
+					buf = append(buf, ',')
+				}
+				first = false
+
+				// Inject serviceId directly into the JSON string
+				// Assuming the marshaled prompt is always a JSON object starting with '{'
+				serviceIDBytes, _ := json.Marshal(p.Service())
+				if len(b) > 2 {
+					buf = append(buf, []byte(`{"serviceId":`)...)
+					buf = append(buf, serviceIDBytes...)
+					buf = append(buf, ',')
+					buf = append(buf, b[1:]...) // Append the rest of the object
+				} else {
+					// Fallback if empty object "{}"
+					buf = append(buf, []byte(`{"serviceId":`)...)
+					buf = append(buf, serviceIDBytes...)
+					buf = append(buf, '}')
 				}
 			}
+			buf = append(buf, ']')
 
-			_ = json.NewEncoder(w).Encode(jsonPrompts)
+			_, _ = w.Write(buf)
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
