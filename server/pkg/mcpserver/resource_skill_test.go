@@ -177,18 +177,17 @@ func TestSkillResource_Read(t *testing.T) {
 		assert.ErrorIs(t, err, os.ErrNotExist)
 	})
 
-	t.Run("Error: Permission Denied", func(t *testing.T) {
-		// Create file with no permissions
-		noPermFile := filepath.Join(assetsDir, "noperm.txt")
-		err := os.WriteFile(noPermFile, []byte("data"), 0000)
+	t.Run("Error: Read Directory", func(t *testing.T) {
+		// Attempting to read a directory using os.ReadFile will fail,
+		// and this behavior is consistent regardless of whether the user is root.
+		dirPath := filepath.Join(assetsDir, "somedir")
+		err := os.Mkdir(dirPath, 0755)
 		require.NoError(t, err)
 
-		r := NewSkillAssetResource(s, "assets/noperm.txt")
+		r := NewSkillAssetResource(s, "assets/somedir")
 		_, err = r.Read(context.Background())
 		assert.Error(t, err)
-
-		// Cleanup permissions so we can delete temp dir
-		_ = os.Chmod(noPermFile, 0644)
+		assert.Contains(t, err.Error(), "failed to read skill file")
 	})
 }
 
