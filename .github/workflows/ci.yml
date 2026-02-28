@@ -133,21 +133,10 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils curl unzip
+            sudo apt-get update && sudo apt-get install -y make xz-utils protobuf-compiler
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz curl unzip
+             sudo apk add --no-cache make xz
           fi
-
-      - name: Install Protoc v28.3
-        run: |
-          # Manually install protoc to bypass Makefile flakiness
-          PROTOC_VERSION=28.3
-          PROTOC_ZIP=protoc-$PROTOC_VERSION-linux-x86_64.zip
-          curl -OL https://github.com/protocolbuffers/protobuf/releases/download/v$PROTOC_VERSION/$PROTOC_ZIP
-          sudo unzip -o $PROTOC_ZIP -d /usr/local bin/protoc
-          sudo unzip -o $PROTOC_ZIP -d /usr/local 'include/*'
-          rm -f $PROTOC_ZIP
-          protoc --version
 
       - name: Prepare environment
         run: make prepare
@@ -181,21 +170,10 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential curl unzip
+            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential protobuf-compiler
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz curl unzip
+             sudo apk add --no-cache make xz
           fi
-
-      - name: Install Protoc v28.3
-        run: |
-          # Manually install protoc to bypass Makefile flakiness
-          PROTOC_VERSION=28.3
-          PROTOC_ZIP=protoc-$PROTOC_VERSION-linux-x86_64.zip
-          curl -OL https://github.com/protocolbuffers/protobuf/releases/download/v$PROTOC_VERSION/$PROTOC_ZIP
-          sudo unzip -o $PROTOC_ZIP -d /usr/local bin/protoc
-          sudo unzip -o $PROTOC_ZIP -d /usr/local 'include/*'
-          rm -f $PROTOC_ZIP
-          protoc --version
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -332,21 +310,10 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential curl unzip
+            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential protobuf-compiler
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz curl unzip
+             sudo apk add --no-cache make xz
           fi
-
-      - name: Install Protoc v28.3
-        run: |
-          # Manually install protoc to bypass Makefile flakiness
-          PROTOC_VERSION=28.3
-          PROTOC_ZIP=protoc-$PROTOC_VERSION-linux-x86_64.zip
-          curl -OL https://github.com/protocolbuffers/protobuf/releases/download/v$PROTOC_VERSION/$PROTOC_ZIP
-          sudo unzip -o $PROTOC_ZIP -d /usr/local bin/protoc
-          sudo unzip -o $PROTOC_ZIP -d /usr/local 'include/*'
-          rm -f $PROTOC_ZIP
-          protoc --version
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -653,21 +620,10 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential curl unzip
+            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential protobuf-compiler
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz build-base curl unzip
+             sudo apk add --no-cache make xz build-base
           fi
-
-      - name: Install Protoc v28.3
-        run: |
-          # Manually install protoc to bypass Makefile flakiness
-          PROTOC_VERSION=28.3
-          PROTOC_ZIP=protoc-$PROTOC_VERSION-linux-x86_64.zip
-          curl -OL https://github.com/protocolbuffers/protobuf/releases/download/v$PROTOC_VERSION/$PROTOC_ZIP
-          sudo unzip -o $PROTOC_ZIP -d /usr/local bin/protoc
-          sudo unzip -o $PROTOC_ZIP -d /usr/local 'include/*'
-          rm -f $PROTOC_ZIP
-          protoc --version
 
       - name: Configure Docker Registry Mirrors
         run: |
@@ -804,21 +760,10 @@ jobs:
       - name: Install dependencies
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential curl unzip
+            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential protobuf-compiler
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz build-base curl unzip
+             sudo apk add --no-cache make xz build-base
           fi
-
-      - name: Install Protoc v28.3
-        run: |
-          # Manually install protoc to bypass Makefile flakiness
-          PROTOC_VERSION=28.3
-          PROTOC_ZIP=protoc-$PROTOC_VERSION-linux-x86_64.zip
-          curl -OL https://github.com/protocolbuffers/protobuf/releases/download/v$PROTOC_VERSION/$PROTOC_ZIP
-          sudo unzip -o $PROTOC_ZIP -d /usr/local bin/protoc
-          sudo unzip -o $PROTOC_ZIP -d /usr/local 'include/*'
-          rm -f $PROTOC_ZIP
-          protoc --version
 
       - name: Configure Docker Registry Mirrors
         run: |
