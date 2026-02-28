@@ -81,13 +81,13 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          rm -rf /usr/local/lib/android || true
+          rm -rf /usr/share/dotnet || true
+          rm -rf /opt/ghc || true
+          rm -rf /usr/local/share/boost || true
 
       - name: Prune Docker
-        run: docker system prune -af
+        run: docker system prune -af || true
 
       - uses: actions/checkout@v6
 
@@ -139,6 +139,14 @@ jobs:
              sudo apk add --no-cache make xz
           fi
 
+      - name: Install gcc
+        run: |
+          if command -v sudo >/dev/null; then
+            sudo apt-get update && sudo apt-get install -y gcc
+          else
+            apt-get update && apt-get install -y gcc
+          fi
+
       - name: Prepare environment
         run: make prepare
 
@@ -157,13 +165,13 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          rm -rf /usr/local/lib/android || true
+          rm -rf /usr/share/dotnet || true
+          rm -rf /opt/ghc || true
+          rm -rf /usr/local/share/boost || true
 
       - name: Prune Docker
-        run: docker system prune -af
+        run: docker system prune -af || true
 
       - uses: actions/checkout@v6
 
@@ -296,13 +304,13 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          rm -rf /usr/local/lib/android || true
+          rm -rf /usr/share/dotnet || true
+          rm -rf /opt/ghc || true
+          rm -rf /usr/local/share/boost || true
 
       - name: Prune Docker
-        run: docker system prune -af
+        run: docker system prune -af || true
 
       - uses: actions/checkout@v6
 
@@ -467,10 +475,10 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          rm -rf /usr/local/lib/android || true
+          rm -rf /usr/share/dotnet || true
+          rm -rf /opt/ghc || true
+          rm -rf /usr/local/share/boost || true
       - uses: actions/checkout@v6
 
       - name: Set up Go
@@ -603,13 +611,13 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          rm -rf /usr/local/lib/android || true
+          rm -rf /usr/share/dotnet || true
+          rm -rf /opt/ghc || true
+          rm -rf /usr/local/share/boost || true
 
       - name: Prune Docker
-        run: docker system prune -af
+        run: docker system prune -af || true
 
       - uses: actions/checkout@v6
 
@@ -742,13 +750,13 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          rm -rf /usr/local/lib/android || true
+          rm -rf /usr/share/dotnet || true
+          rm -rf /opt/ghc || true
+          rm -rf /usr/local/share/boost || true
 
       - name: Prune Docker
-        run: docker system prune -af
+        run: docker system prune -af || true
 
       - uses: actions/checkout@v6
 
@@ -921,13 +929,13 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          rm -rf /usr/local/lib/android || true
+          rm -rf /usr/share/dotnet || true
+          rm -rf /opt/ghc || true
+          rm -rf /usr/local/share/boost || true
 
       - name: Prune Docker
-        run: docker system prune -af
+        run: docker system prune -af || true
 
       - uses: actions/checkout@v6
 
@@ -974,13 +982,13 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          rm -rf /usr/local/lib/android || true
+          rm -rf /usr/share/dotnet || true
+          rm -rf /opt/ghc || true
+          rm -rf /usr/local/share/boost || true
 
       - name: Prune Docker
-        run: docker system prune -af
+        run: docker system prune -af || true
 
       - uses: actions/checkout@v6
 
