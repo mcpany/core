@@ -81,3 +81,14 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+## Evolution: [2026-02-28] Updates (Technical Edition)
+
+### Proposed Additions
+- **Deterministic Spawning Hook (DSH)**: (P0) Middleware that enables explicit, user-triggered sub-agent spawning, ensuring predictable task delegation.
+- **Context-Aware Dynamic Trimming**: (P1) Optimization for 1M+ token contexts to maintain reasoning quality for high-token models (e.g., Claude 4.6).
+- **A2H (Agent-to-Human) Component Mapping**: (P1) Map interactive components (buttons, modals) from Discord/Slack to standard MCP prompts.
+
+### Priority Shifts
+- **Shared KV Store**: Promoted to **P0** and designated as the "State Residency" layer for the A2A Mesh.
+- **Supply Chain Integrity Guard**: (Already P0) Re-affirmed importance for preventing "Clawdbot" style exploits.

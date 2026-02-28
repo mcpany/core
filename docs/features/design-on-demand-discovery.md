@@ -57,3 +57,10 @@ As the number of available MCP tools grows, agents face "context pollution"—wh
 
 ## 7. Evolutionary Changelog
 *   **2026-02-25:** Initial Document Creation.
+
+### Update: 2026-02-28 - Claude-Style Dynamic Tool Loading
+**Context**: Claude Code's "Tool Search" sets a new standard for handling 100+ tools via "Lazy Loading" into the LLM context.
+**Architecture Adjustment**:
+*   **Lazy-Index Middleware**: MCP Any will now implement a local semantic index (using LiteVector or simple BM25) for all discovered tools.
+*   **Dynamic Context Injection**: Instead of providing the full tool schema on connection, MCP Any provides a "Tool Search" capability. When the LLM calls the search, MCP Any injects the relevant tool schemas into the current context window on-demand.
+**Performance Impact**: Dramatically reduces "Context Bloat" (up to 90% for massive tool libraries) and lowers token costs while maintaining high tool-call accuracy.

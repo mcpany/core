@@ -189,3 +189,8 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Core Middleware Pipeline**: The middleware architecture is robust and extensible.
 - **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates protocol details from business logic.
 - **Documentation**: The project has excellent documentation coverage for most features.
+
+#### Upcoming (2026-02-28 Evolution Addendum)
+*   **[P0] Deterministic Spawning Hook (DSH)**: Enforce user-triggered, predictable sub-agent lifecycles in the middleware. (Added: 2026-02-28)
+*   **[P0] A2A Stateful Residency**: Resident "Mailbox" for A2A message buffering and multi-agent task state persistence. (Added: 2026-02-28)
+*   **[P1] Dynamic Tool Semantic Index**: Similarity-based tool discovery to support 100+ tool context windows (Lazy-Discovery). (Added: 2026-02-28)

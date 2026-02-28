@@ -59,3 +59,10 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+
+### Update: 2026-02-28 - Deterministic MFA for Admin Tools
+**Context**: The "Clawdbot" incident and OpenClaw 2026.2.17's focus on deterministic spawning highlight a need for stronger authentication on "high-permission" tool calls (e.g., File access, Admin tools).
+**Architecture Adjustment**:
+*   **MFA-Bounded Execution**: Introducing a middleware layer that prompts for user MFA/Attestation specifically for "Admin-Scoped" tool calls, even if the gateway is local-only.
+*   **Deterministic Attestation**: Tool calls triggered by "Deterministic Spawning" (slash commands) are automatically signed with a "Session Token," preventing unauthorized agent escalation from autonomous sub-agents.
+**Security Impact**: Effectively eliminates "Shadow Tool" exploitation by requiring explicit, session-bound authorization for any action that could potentially access the host filesystem or environment variables.

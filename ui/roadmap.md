@@ -107,3 +107,8 @@
 - [ ] **Log Source Color Coding**: Assign distinct colors to different log sources automatically for better visual separation.
 - [ ] **Context Usage History**: Track total context usage over time to identify growth trends (requires backend metrics persistence).
 - [ ] **Tool Schema Optimizer**: Analyze tool schemas and suggest removing unused properties or compacting descriptions to save context tokens.
+
+#### Upcoming (2026-02-28 Evolution Addendum)
+- [ ] **[P0] Deterministic Spawning Anchor (DSA) UI**: Manage and visualize user-triggered sub-agent cycles. (Added: 2026-02-28)
+- [ ] **[P0] A2A Stateful Mailbox**: UI for viewing queued and delivered messages in the resident state buffer. (Added: 2026-02-28)
+- [ ] **[P1] Lazy-MCP Tool Index Explorer**: Monitor tool search hits/misses and manage the local semantic index. (Added: 2026-02-28)

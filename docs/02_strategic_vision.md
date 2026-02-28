@@ -57,3 +57,10 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+### Strategic Refinement: [2026-02-28] - Deterministic Orchestration & Stateful Residency
+**Context**: The OpenClaw 2026.2.17 release and Claude Code's Tool Search indicate a shift from fully autonomous, "black-box" agency to **Deterministic & Predictable Task Delegation**. Agents now need to handle 1M+ tokens without losing reasoning precision.
+**Strategic Pivot**:
+- **Deterministic Spawning Hook**: MCP Any will pivot its middleware to support deterministic agent lifecycles, allowing for "slash-command" triggered sub-agents to have verifiable workspace and tool boundaries.
+- **State-Resident Mesh**: Moving from a stateless bridge to a "Resident State" model where the gateway persists the history and context of inter-agent messages, enabling reliable multi-step handoffs.
+- **Large-Context Optimization**: Implementing "Dynamic Context Trimming" for high-token models (Claude 4.6), ensuring that 1M+ token windows are prioritized for high-relevance data, preventing reasoning degradation.
