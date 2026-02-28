@@ -730,6 +730,7 @@ jobs:
   e2e-public-api:
     runs-on: oci-runner
     # container: public.ecr.aws/docker/library/ubuntu:24.04
+    # Increased timeout for slow CGO builds
     timeout-minutes: 45
     needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
