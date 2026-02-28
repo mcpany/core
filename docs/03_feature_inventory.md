@@ -65,3 +65,16 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-28] Updates
+
+### Proposed Additions
+- **Sandboxed MCP Runtime (P0)**: Implementation of ephemeral execution environments (using Docker or WASM) to isolate tool calls and prevent unauthorized host-level command execution and file access.
+- **Dynamic Capability Revocation (P0)**: Real-time monitoring middleware that automatically kills a tool session or revokes specific capabilities if agent behavior deviates from declared safety intents.
+- **A2A Mutual Attestation Protocol (P1)**: Secure handshake mechanism for inter-agent communication that verifies the identity and integrity of both the calling agent and the receiving service before sharing state.
+
+### Priority Shifts
+- **Policy Firewall**: Re-affirmed as **P0** as it acts as the policy enforcement point for the new Sandboxed Runtime.
+- **MCP Provenance Attestation**: Essential prerequisite for the "Runtime Trust" model.

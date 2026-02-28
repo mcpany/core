@@ -11,6 +11,9 @@
 - [ ] **[P0] Agent Chain Tracer (A2A)**: Visual timeline of multi-agent handoffs and message passing. (Added: 2026-02-26)
 - [ ] **[P1] Federated Node Manager**: UI for peering with remote MCP Any instances and managing shared tool access. (Added: 2026-02-26)
 - [ ] **[P1] Resource Cost/Latency Overlay**: Real-time performance metrics displayed directly on tool cards. (Added: 2026-02-26)
+- [ ] **[P0] Sandbox Status Monitor**: Real-time visualization of ephemeral execution environments and resource usage. (Added: 2026-02-28)
+- [ ] **[P0] Capability Manager & Revocation UI**: Dashboard for managing granular tool permissions and manually revoking capabilities. (Added: 2026-02-28)
+- [ ] **[P1] Runtime Trust Attestation Viewer**: UI to inspect mutual attestation results between agents and services. (Added: 2026-02-28)
 - [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
 - [x] **[P1] Tool Playground & Explorer**:
   - [x] Auto-generated forms from Tool JSON Schemas.

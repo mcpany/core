@@ -35,7 +35,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 **Context**: Recent breakthroughs in Claude Code (MCP Tool Search) and the "Clinejection" supply chain attack have shifted the landscape. Agents now need to handle thousands of tools without context pollution, and they must do so within a verified security perimeter.
 **Strategic Pivot**:
 - **Lazy-Discovery Architecture**: MCP Any will pivot from "pushing" all tool schemas to "serving" them on-demand via a high-performance similarity search middleware. This allows for virtually unlimited tool scaling.
-- **Supply Chain Provenance**: Implementing "Attested Tooling" where every MCP server must provide a cryptographic signature of its origin and configuration, preventing rogue installations like those seen in the Cline incident.
+- **Supply Chain Provenance**: Implementing "Attested Tooling" where every MCP server must provide a cryptographic signature of its origin and configuration, preventing rogue installations like those seen in the CLI incident.
 - **Context-Aware Scoping**: Moving beyond simple capability tokens to "Intent-Aware" permissions, where a tool call is only allowed if it aligns with the high-level intent verified by the Policy Engine.
 
 ---
@@ -47,3 +47,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **A2A Gateway Protocol**: MCP Any will implement a protocol-neutral bridge for A2A communication, allowing disparate agent frameworks (e.g., OpenClaw, AutoGen) to exchange state and tasks via a unified MCP-like interface.
 - **Federated Tool Mesh**: Moving from a standalone server to a "Mesh" architecture where multiple MCP Any instances can peer and share resources across network boundaries, governed by global Zero-Trust policies.
 - **Resource-Aware Intelligence**: Integrating cost and latency telemetry into the tool discovery process, allowing LLMs to perform "Economical Reasoning" when selecting tools.
+
+---
+
+## Strategic Evolution: [2026-02-28]
+### Focus: Sandboxed Autonomy & Runtime Trust
+**Context**: The massive OpenClaw security crisis (unauthorized command execution and file access via malicious skills) has exposed the vulnerability of running autonomous agents directly on host systems. As agents move from advisors to actors, the infrastructure must provide an isolated execution runtime.
+**Strategic Pivot**:
+- **Sandboxed MCP Runtime**: MCP Any will transition from simply proxying tool calls to providing an optional, ephemeral containerized/WASM-based environment for executing them. This ensures that even a compromised tool or "malicious skill" cannot impact the host machine.
+- **Runtime Trust & Mutual Attestation**: Introducing a "Mutual Trust" handshake where agents and tools must mutually attest to their identity and integrity before execution.
+- **Dynamic Capability Revocation**: Implementing real-time monitoring that can automatically revoke tool capabilities if an agent's behavior deviates from its declared intent, preventing "hallucination-driven" host exploits.

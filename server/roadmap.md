@@ -29,6 +29,11 @@
 *   **[P1] Federated MCP Peering**: Distributed node discovery and tool proxying. (Added: 2026-02-26)
 *   **[P1] Resource Telemetry Middleware**: Inject latency/cost metrics into tool schemas. (Added: 2026-02-26)
 
+#### Upcoming (2026-02-28 Evolution)
+*   **[P0] Sandboxed MCP Runtime**: Containerized/WASM-based execution isolation for untrusted tool calls. (Added: 2026-02-28)
+*   **[P0] Dynamic Capability Revocation**: Real-time monitor to kill tool sessions upon intent deviation. (Added: 2026-02-28)
+*   **[P1] A2A Mutual Attestation Protocol**: Handshake for inter-agent/service trust verification. (Added: 2026-02-28)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

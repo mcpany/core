@@ -57,3 +57,10 @@ As the number of available MCP tools grows, agents face "context pollution"—wh
 
 ## 7. Evolutionary Changelog
 *   **2026-02-25:** Initial Document Creation.
+
+### Update: 2026-02-28 - Security-Aware Indexing & Verified Signatures
+**Context**: The OpenClaw security crisis (unauthorized command execution and file access via malicious skills) demonstrates that tool discovery is an attack vector.
+**Architecture Adjustment**:
+*   The `Tool Registry` will now prioritize tools with a verified cryptographic signature in search results.
+*   Indexing will flag tools that require host-level permissions (shell/filesystem), allowing agents to reason about the risk before even seeing the schema.
+**Security Impact**: Mitigates "ClawHavoc" style discovery exploits by clearly labeling unverified or high-risk skills in the discovery loop.
