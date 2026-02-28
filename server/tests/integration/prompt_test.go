@@ -23,10 +23,18 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	"google.golang.org/protobuf/proto"
 )
 
 type testPrompt struct {
 	prompt *mcp.Prompt
+}
+
+func (p *testPrompt) Definition() *configv1.PromptDefinition {
+	return configv1.PromptDefinition_builder{
+		Name: proto.String(p.prompt.Name),
+	}.Build()
 }
 
 func (p *testPrompt) Prompt() *mcp.Prompt {

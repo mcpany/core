@@ -29,6 +29,12 @@ import (
 // mockPrompt is a mock implementation of the prompt.Prompt interface for testing.
 type mockPrompt struct{}
 
+func (m *mockPrompt) Definition() *configv1.PromptDefinition {
+	return configv1.PromptDefinition_builder{
+		Name: proto.String("test_prompt"),
+	}.Build()
+}
+
 func (m *mockPrompt) Prompt() *mcp.Prompt {
 	return &mcp.Prompt{
 		Name:        "test_prompt",
