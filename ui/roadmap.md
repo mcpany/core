@@ -107,3 +107,7 @@
 - [ ] **Log Source Color Coding**: Assign distinct colors to different log sources automatically for better visual separation.
 - [ ] **Context Usage History**: Track total context usage over time to identify growth trends (requires backend metrics persistence).
 - [ ] **Tool Schema Optimizer**: Analyze tool schemas and suggest removing unused properties or compacting descriptions to save context tokens.
+
+### Status: Active Development (2026-03-01 Evolution)
+- [ ] **[P0] Config Sandbox Security Report**: UI for reviewing and approving project-level configurations and hooks. (Added: 2026-03-01)
+- [ ] **[P1] Agentic Key Manager**: UI for the secure local credential vault. (Added: 2026-03-01)

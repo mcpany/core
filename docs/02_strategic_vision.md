@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-01]
+### Focus: Configuration Sandboxing & Hardened Hook Architecture
+**Context**: Recent CVEs in Claude Code (RCE via project hooks) have exposed a massive vulnerability in how agentic CLIs handle local project configurations. MCP Any must provide a "Security Air Gap" to prevent malicious configurations from compromising the host.
+**Strategic Pivot**:
+- **Isolated Config Ingestion**: Moving to a model where local project configurations (.claudecode, .mcpany) are ingested into an isolated WASM sandbox for validation before being applied to the gateway.
+- **Signed Lifecycle Hooks**: Introducing a "Sign-then-Execute" requirement for all tool-call hooks. Any hook not explicitly signed by the local user's private key will be blocked by default.
+- **Stateful Residency for Stability**: Accelerating the A2A Stateful residency to address the orchestration stability gaps identified in the latest OpenClaw/Sonnet 4.6 updates.

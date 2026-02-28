@@ -46,3 +46,10 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+
+### Update: 2026-03-01 - Stateful Residency for Orchestration Stability
+**Context:** Today's market sync regarding OpenClaw/Sonnet 4.6 highlights that "Memory Depth" and "Structural Coordination" are the primary bottlenecks. Agents lose coherence when A2A connections are transient.
+**Architecture Adjustment:**
+*   Introducing the **"Stateful Buffer"** in Section 4. MCP Any will now act as a resident mailbox for A2A messages.
+*   Instead of simple proxying, the bridge will persist the last 10 turns of A2A conversation in the `Shared KV Store` to allow "Resume-on-Reconnect" for subagents.
+**Stability Impact:** Prevents state loss in multi-agent workflows when subagents fail or timeout.

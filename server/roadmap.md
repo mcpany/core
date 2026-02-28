@@ -189,3 +189,8 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Core Middleware Pipeline**: The middleware architecture is robust and extensible.
 - **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates protocol details from business logic.
 - **Documentation**: The project has excellent documentation coverage for most features.
+
+#### Upcoming (2026-03-01 Evolution)
+*   **[P0] WASM-Based Config Sandbox**: Isolated ingestion of project-level configurations to prevent RCE. (Added: 2026-03-01)
+*   **[P0] Signed Lifecycle Hook Enforcement**: Cryptographic verification for tool-call hooks. (Added: 2026-03-01)
+*   **[P1] Agentic Credential Vault**: Secure local-first storage for MCP API keys. (Added: 2026-03-01)

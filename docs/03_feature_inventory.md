@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-01] Updates
+
+### Proposed Additions
+- **WASM-Based Config Sandbox**: (P0) Isolated environment for validating project-specific configurations (.claudecode, .mcpany) before ingestion to prevent RCE.
+- **Signed Lifecycle Hook Enforcement**: (P0) Cryptographic signature verification for all tool-call hooks to mitigate malicious configuration injection.
+- **Agentic Credential Vault**: (P1) A secure, local-first vault for managing MCP server API keys, preventing exfiltration via project files.
+
+### Priority Shifts
+- **A2A Stateful Residency**: Re-affirmed as **P0**. Critical for supporting the stability and coordination needs seen in the OpenClaw/Sonnet 4.6 ecosystem.
+- **Safe-by-Default Network Hardening**: Re-affirmed as **P0**. High urgency due to recent CLI security flaws.
+
+### Deprecations / Monitoring
+- **Unsigned Project Hooks**: Monitoring for deprecation in favor of Signed Lifecycle Hooks.
