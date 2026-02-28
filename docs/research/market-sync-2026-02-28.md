@@ -12,10 +12,15 @@
 
 ## Security & Vulnerabilities
 
-### The "8000 Exposed Servers" Crisis
+### The "8000 Exposed Servers" Crisis (BitSight Report)
 - Recent scans revealed over 8,000 MCP servers publicly accessible without authentication.
-- **Clawdbot Incident**: 1,000+ admin panels exposed due to default `0.0.0.0:8080` binding.
+- **Clawdbot/OpenClaw Exposure**: 1,000+ admin panels exposed due to default `0.0.0.0:8080` binding, allowing full control over local workflows.
 - **CVE-2026-2008**: Fermat-MCP code injection vulnerability highlights the danger of unvalidated tool inputs.
+
+### "ClawJacked" (CVE-2026-25253)
+- Critical vulnerability where malicious websites use WebSockets to bridge to local agents.
+- Exploits implicit trust in `localhost` to bypass authentication and brute-force pairing.
+- Highlights the need for strict Origin validation and "Pairing-Required" local listeners.
 
 ### Supply Chain (Clinejection)
 - Continued threats from malicious MCP servers being distributed via community registries. "Shadow Tools" are becoming a primary vector for exfiltrating environment variables.

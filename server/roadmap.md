@@ -31,6 +31,8 @@
 
 #### Upcoming (2026-02-28 Evolution)
 *   **[P0] Safe-by-Default Hardening**: Transition all listeners to `localhost` by default. Implement mandatory Attestation for remote exposure. (Added: 2026-02-28)
+*   **[P0] Browser-Origin Guard**: Implement strict CORS and WebSocket Origin validation to mitigate "ClawJacked" attacks. (Added: 2026-02-28)
+*   **[P0] Local Pairing Middleware**: Interactive CLI/UI flow for authorizing new local client connections. (Added: 2026-02-28)
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 

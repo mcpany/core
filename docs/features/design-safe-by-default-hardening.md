@@ -25,6 +25,7 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
     *   Enforce `localhost` (`127.0.0.1` / `::1`) bindings for all adapters and gateways by default.
     *   Implement a "Remote Access Guard" that prevents `0.0.0.0` or non-local bindings without explicit administrative attestation.
     *   Introduce cryptographic MFA/Attestation for any remote management or tool access.
+    *   **Anti-ClawJack Protection**: Enforce strict Origin validation for WebSockets and CORS for HTTP listeners.
     *   Provide automated "Exposure Check" on startup.
 *   **Non-Goals:**
     *   Completely disabling remote access (it must remain an option for enterprise use).
@@ -42,6 +43,8 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 ## 4. Design & Architecture
 *   **System Flow:**
     - **Listener Configuration**: The `ConfigLoader` validates the `host` parameter. If non-local, it checks for a valid `AttestationToken`.
+    - **Origin Validation Middleware**: Intercepts all incoming requests. For local listeners, it verifies that the `Origin` header matches a list of authorized domains (or is empty for non-browser clients).
+    - **Local Pairing Flow**: When a new browser-based agent attempts to connect, MCP Any triggers a CLI prompt: `Authorize connection from [Origin]? [y/N]`. Approval adds the origin to the `authorized_origins.db`.
     - **Security Bootstrap**: On first run, a unique cryptographic identity (Ed25519) is generated for the instance.
     - **MFA Layer**: Remote access requests must include a signature from the instance's private key, typically handled via a "Second Screen" approval on the local machine.
 *   **APIs / Interfaces:**
@@ -59,3 +62,9 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **Update: 2026-02-28 - Mitigating ClawJacked (CVE-2026-25253)**
+    *   **Context:** Market sync revealed a critical vulnerability where malicious websites use WebSockets to hijack local agents by exploiting implicit `localhost` trust.
+    *   **Architecture Adjustment:**
+        *   Added **Origin Validation Middleware** to Section 4 to prevent cross-origin WebSocket hijacking.
+        *   Introduced **Local Pairing Flow** to ensure that even local connections require explicit user consent on first use.
+    *   **Security Impact:** Prevents "ClawJacked" attacks by moving from implicit trust to verified pairing for all local clients.

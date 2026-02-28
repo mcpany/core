@@ -33,7 +33,7 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
     - **Session Management**: MCP Any uses the `Recursive Context Protocol` headers to track the lineage of the call across agent boundaries.
 *   **APIs / Interfaces:**
     - **MCP Side**: Standard `tools/list` and `tools/call`.
-    - **A2A Side**: Implementation of A2A transport (likely SSE or WebSockets).
+    - **A2A Side**: Implementation of A2A transport (SSE/WebSockets) and the **Stateful Mailbox API** for asynchronous delivery.
 *   **Data Storage/State:** A2A session tokens are stored in the `Shared KV Store` (Blackboard) to allow for asynchronous callbacks.
 
 ## 5. Alternatives Considered
@@ -46,3 +46,9 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **Update: 2026-02-28 - Stateful Residency for A2A Mesh**
+    *   **Context:** Today's strategic evolution identified the need for MCP Any to move from a stateless bridge to a "Resident" state model for A2A communications.
+    *   **Architecture Adjustment:**
+        *   Introduced the **Stateful Mailbox** in Section 4, which buffers messages between agents with intermittent connectivity.
+        *   Enabled **Asynchronous Callbacks** where MCP Any holds the tool response until the calling agent re-establishes a session.
+    *   **Impact:** Enables reliable multi-agent coordination in environments with unstable network conditions (e.g., local agents calling cloud swarms).

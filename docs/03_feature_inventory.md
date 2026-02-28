@@ -72,6 +72,8 @@
 
 ### Proposed Additions
 - **"Safe-by-Default" Network Hardening**: (P0) Transition to local-only default bindings for all services. Requires explicit MFA/Attestation for remote exposure.
+- **Browser-Origin Guard (Anti-ClawJack)**: (P0) Middleware to enforce strict CORS and WebSocket Origin validation for all local listeners.
+- **Local Pairing Flow (Interactive MFA)**: (P0) A CLI/UI workflow that requires physical user approval (pairing) before a new local client can connect.
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
