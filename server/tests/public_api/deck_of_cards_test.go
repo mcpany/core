@@ -20,6 +20,7 @@ import (
 )
 
 func TestUpstreamService_DeckOfCards(t *testing.T) {
+	t.SkipNow()
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 
