@@ -4,6 +4,8 @@
 package app
 
 import (
+	"math/rand"
+
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
@@ -21,6 +23,7 @@ import (
 type Span struct {
 	ID           string         `json:"id"`
 	Name         string         `json:"name"`
+	ServiceName  string         `json:"serviceName,omitempty"`
 	Type         string         `json:"type"`
 	StartTime    int64          `json:"startTime"` // Unix millis
 	EndTime      int64          `json:"endTime"`   // Unix millis
@@ -213,6 +216,20 @@ func (a *Application) handleTracesWS() http.HandlerFunc {
 			}
 		}
 
+		// Send seeded traces
+		a.seededTracesMu.RLock()
+		for _, t := range a.seededTraces {
+			if err := conn.SetWriteDeadline(time.Now().Add(10 * time.Second)); err != nil {
+				logging.GetLogger().Error("failed to set write deadline", "error", err)
+				break
+			}
+			if err := conn.WriteJSON(t); err != nil {
+				logging.GetLogger().Error("failed to write seeded trace to websocket", "error", err)
+				break
+			}
+		}
+		a.seededTracesMu.RUnlock()
+
 		// Send ping periodically
 		go func() {
 			ticker := time.NewTicker(5 * time.Second)
@@ -250,14 +267,7 @@ func (a *Application) handleDebugSeedTraces() http.HandlerFunc {
 			return
 		}
 
-		var trace Trace
-		if err := json.NewDecoder(r.Body).Decode(&trace); err != nil {
-			http.Error(w, "invalid json: "+err.Error(), http.StatusBadRequest)
-			return
-		}
-
-		// Ensure timestamps are set if missing?
-		// For seeding, we trust the input.
+		trace := generateMockTrace()
 
 		a.seededTracesMu.Lock()
 		a.seededTraces = append(a.seededTraces, &trace)
@@ -271,5 +281,106 @@ func (a *Application) handleDebugSeedTraces() http.HandlerFunc {
 
 		w.WriteHeader(http.StatusCreated)
 		_ = json.NewEncoder(w).Encode(map[string]string{"status": "seeded", "id": trace.ID})
+	}
+}
+
+
+func generateMockTrace() Trace {
+	now := time.Now().UnixMilli()
+	traceID := fmt.Sprintf("trace-seed-%d", rand.Intn(10000)) //nolint:gosec // Testing only
+	return Trace{
+		ID:            traceID,
+		Timestamp:     time.Now().Format(time.RFC3339),
+		TotalDuration: 1250,
+		Status:        "success",
+		Trigger:       "user",
+		RootSpan: Span{
+			ID:        "span-1",
+			Name:      "orchestrator-task",
+			Type:      "core",
+			StartTime: now,
+			EndTime:   now + 1250,
+			Status:    "success",
+			Input: map[string]any{
+				"query":   "Analyze Q3 financial report",
+				"context": "user-session-123",
+			},
+			Output: map[string]any{
+				"summary":    "Revenue up 15%",
+				"confidence": 0.98,
+			},
+			Children: []Span{
+				{
+					ID:        "span-2",
+					Name:      "search-tool",
+					Type:      "tool",
+					StartTime: now + 50,
+					EndTime:   now + 450,
+					Status:    "success",
+					Input: map[string]any{
+						"query": "Q3 2024 financials",
+					},
+					Output: map[string]any{
+						"results": []string{"report_q3.pdf", "data_q3.xlsx"},
+					},
+					Children: []Span{
+						{
+							ID:        "span-2-1",
+							Name:      "google-search-api",
+							ServiceName: "google",
+							Type:      "service",
+							StartTime: now + 100,
+							EndTime:   now + 400,
+							Status:    "success",
+							Input: map[string]any{
+								"q": "Q3 2024 financials site:sec.gov",
+							},
+							Output: map[string]any{
+								"items": []map[string]any{
+									{
+										"title": "10-Q",
+										"link":  "...",
+									},
+								},
+							},
+						},
+					},
+				},
+				{
+					ID:        "span-3",
+					Name:      "data-analyzer",
+					Type:      "tool",
+					StartTime: now + 500,
+					EndTime:   now + 1200,
+					Status:    "success",
+					Input: map[string]any{
+						"files": []string{"data_q3.xlsx"},
+					},
+					Output: map[string]any{
+						"analysis": "Growth detected",
+						"metrics": map[string]any{
+							"revenue": 1.15,
+						},
+					},
+					Children: []Span{
+						{
+							ID:        "span-3-1",
+							Name:      "python-interpreter",
+							ServiceName: "local-python",
+							Type:      "service",
+							StartTime: now + 550,
+							EndTime:   now + 1150,
+							Status:    "success",
+							Input: map[string]any{
+								"code": "import pandas as pd\ndf = pd.read_excel('data_q3.xlsx')\nprint(df.revenue.sum())",
+							},
+							Output: map[string]any{
+								"stdout": "115000000",
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 }
