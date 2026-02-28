@@ -281,6 +281,18 @@ func (p *mcpPrompt) Service() string {
 }
 
 // Definition returns the raw configuration definition of the prompt.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - *configv1.PromptDefinition: The resulting *configv1.PromptDefinition.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func (p *mcpPrompt) Definition() *configv1.PromptDefinition {
 	// Construct a partial definition from p.mcpPrompt
 	properties := make(map[string]*structpb.Value)
@@ -438,10 +450,27 @@ func (r *mcpResource) Subscribe(_ context.Context) error {
 	return fmt.Errorf("subscribing to resources on mcp upstreams is not yet implemented")
 }
 
-// Register handles the registration of another MCP service as an upstream. It
-// determines the connection type (stdio or HTTP), connects to the downstream
-// service, lists its available tools, prompts, and resources, and registers
-// them with the appropriate managers.
+// Register handles the registration of another MCP service as an upstream. It determines the connection type (stdio or HTTP), connects to the downstream service, lists its available tools, prompts, and resources, and registers them with the appropriate managers.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - serviceConfig (*configv1.UpstreamServiceConfig): The serviceConfig parameter.
+//   - toolManager (tool.ManagerInterface): The toolManager parameter.
+//   - promptManager (prompt.ManagerInterface): The promptManager parameter.
+//   - resourceManager (resource.ManagerInterface): The resourceManager parameter.
+//   - isReload (bool): The isReload parameter.
+//
+// Returns:
+//   - string: The resulting string.
+//   - []*configv1.ToolDefinition: The resulting []*configv1.ToolDefinition.
+//   - []*configv1.ResourceDefinition: The resulting []*configv1.ResourceDefinition.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails or is invalid.
+//
+// Side Effects:
+//   - None
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

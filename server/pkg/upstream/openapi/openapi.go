@@ -86,9 +86,27 @@ func NewOpenAPIUpstream() upstream.Upstream {
 	}
 }
 
-// Register processes an OpenAPI service configuration. It parses the OpenAPI
-// specification, extracts the operations, converts them into tools, and
-// registers them with the tool manager.
+// Register processes an OpenAPI service configuration. It parses the OpenAPI specification, extracts the operations, converts them into tools, and registers them with the tool manager.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - serviceConfig (*configv1.UpstreamServiceConfig): The serviceConfig parameter.
+//   - toolManager (tool.ManagerInterface): The toolManager parameter.
+//   - promptManager (prompt.ManagerInterface): The promptManager parameter.
+//   - resourceManager (resource.ManagerInterface): The resourceManager parameter.
+//   - isReload (bool): The isReload parameter.
+//
+// Returns:
+//   - string: The resulting string.
+//   - []*configv1.ToolDefinition: The resulting []*configv1.ToolDefinition.
+//   - []*configv1.ResourceDefinition: The resulting []*configv1.ResourceDefinition.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails or is invalid.
+//
+// Side Effects:
+//   - None
 func (u *OpenAPIUpstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

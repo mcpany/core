@@ -98,6 +98,18 @@ func (w *UpstreamWorker) Start(ctx context.Context) {
 }
 
 // Stop waits for the worker to stop.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func (w *UpstreamWorker) Stop() {
 	w.wg.Wait()
 }
