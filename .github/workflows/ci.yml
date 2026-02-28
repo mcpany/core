@@ -483,7 +483,7 @@ jobs:
       - name: Install Build Dependencies
         run: |
           export DEBIAN_FRONTEND=noninteractive
-          apt-get update && apt-get install -y build-essential curl git xz-utils unzip
+          apt-get update && apt-get install -y build-essential curl git xz-utils unzip sudo wget python3
 
       - name: Prepare environment
         run: make prepare
