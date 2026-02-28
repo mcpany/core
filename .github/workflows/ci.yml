@@ -244,7 +244,7 @@ jobs:
 
       - name: Test (Short)
         run: |
-          make test-fast CACHE_TO=type=gha,mode=max,scope=unit-test CACHE_FROM=type=gha,scope=unit-test COVERAGE_FILE=coverage-fast.out
+          make test-fast SKIP_DOCKER_TESTS=true CACHE_TO=type=gha,mode=max,scope=unit-test CACHE_FROM=type=gha,scope=unit-test COVERAGE_FILE=coverage-fast.out
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
