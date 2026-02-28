@@ -93,7 +93,7 @@ func (a *Application) handleUsers(store storage.Storage) http.HandlerFunc {
 				return
 			}
 
-			if err := hashUserPassword(r.Context(), &user, store); err != nil {
+			if err := hashUserPassword(r.Context(), &user, store, nil); err != nil {
 				logging.GetLogger().Error("failed to hash password", "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
@@ -218,7 +218,26 @@ func (a *Application) handleUserDetail(store storage.Storage) http.HandlerFunc {
 			}
 			user.SetId(id)
 
-			if err := hashUserPassword(r.Context(), &user, store); err != nil {
+			// Sentinel Security Update: Prevent Privilege Escalation (IDOR)
+			// Non-admin users cannot change their own roles.
+			// Fetch existing user to enforce this policy.
+			existingUser, err := store.GetUser(r.Context(), id)
+			if err != nil {
+				logging.GetLogger().Error("failed to fetch existing user", "error", err)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
+			if existingUser == nil {
+				http.NotFound(w, r)
+				return
+			}
+
+			if !isAdmin {
+				// Prevent non-admin users from escalating their privileges by restoring their original roles
+				user.SetRoles(existingUser.GetRoles())
+			}
+
+			if err := hashUserPassword(r.Context(), &user, store, existingUser); err != nil {
 				logging.GetLogger().Error("failed to hash password", "error", err)
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
@@ -265,16 +284,19 @@ func (a *Application) handleUserDetail(store storage.Storage) http.HandlerFunc {
 //
 // Returns:
 //   - error: An error if hashing or fetching fails.
-func hashUserPassword(ctx context.Context, user *configv1.User, store storage.Storage) error {
+func hashUserPassword(ctx context.Context, user *configv1.User, store storage.Storage, existingUser *configv1.User) error {
 	if user.GetAuthentication() != nil && user.GetAuthentication().GetBasicAuth() != nil {
 		basicAuth := user.GetAuthentication().GetBasicAuth()
 		plain := basicAuth.GetPasswordHash()
 
 		// Case 1: Password is REDACTED (from SanitizeUser). Restore existing hash.
 		if plain == util.RedactedString {
-			existingUser, err := store.GetUser(ctx, user.GetId())
-			if err != nil {
-				return err
+			if existingUser == nil {
+				var err error
+				existingUser, err = store.GetUser(ctx, user.GetId())
+				if err != nil {
+					return err
+				}
 			}
 			if existingUser != nil && existingUser.GetAuthentication() != nil && existingUser.GetAuthentication().GetBasicAuth() != nil {
 				existingHash := existingUser.GetAuthentication().GetBasicAuth().GetPasswordHash()
