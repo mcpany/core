@@ -9,6 +9,8 @@
 ### Claude Code & Gemini CLI
 - **Tool Discovery**: Claude Code's "MCP Tool Search" has set a new standard for handling 100+ tools. Agents now expect "Lazy Loading" of tool schemas.
 - **Sandboxed Execution**: Trend towards running agents in restricted cloud sandboxes, creating a "Local-to-Cloud Gap" for accessing local developer tools.
+- **Gemini CLI 0.31.0 Update**: Introduction of Gemini 3.1 Pro Preview and an **Experimental Browser Agent** for web-agentic workflows.
+- **Google Managed MCP**: Google Cloud announced fully-managed, remote MCP servers for Google Services (Maps, etc.) and Apigee integration, shifting the burden from local server management to cloud-native gateways.
 
 ## Security & Vulnerabilities
 
@@ -19,8 +21,10 @@
 
 ### Supply Chain (Clinejection)
 - Continued threats from malicious MCP servers being distributed via community registries. "Shadow Tools" are becoming a primary vector for exfiltrating environment variables.
+- **OWASP MCP Top 10**: The release of the first OWASP MCP Top 10 (e.g., MCP01: Token Mismanagement, MCP06: Intent Flow Subversion, MCP09: Shadow MCP Servers) provides a formal framework for auditing agentic infrastructure.
 
 ## Autonomous Agent Pain Points
 - **Context Window Bloat**: Too many tools "pollute" the LLM context, leading to higher costs and lower reasoning quality.
 - **Inter-Agent Trust**: Lack of a standardized way for Agent A to verify that Agent B is authorized to receive sensitive state.
 - **Discovery Friction**: Manual configuration of `mcp_config.json` is the #1 complaint among new users.
+- **Policy Granularity**: Need for project-level policies and wildcard-based tool matching, as seen in the recent Gemini CLI policy engine updates.

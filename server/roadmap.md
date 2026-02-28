@@ -32,6 +32,8 @@
 #### Upcoming (2026-02-28 Evolution)
 *   **[P0] Safe-by-Default Hardening**: Transition all listeners to `localhost` by default. Implement mandatory Attestation for remote exposure. (Added: 2026-02-28)
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
+*   **[P1] Managed Cloud-to-Local Proxy**: Authenticated tunnel for managed cloud agents to interact with local tools. (Added: 2026-02-28)
+*   **[P1] Wildcard Policy Matching (Rego/CEL)**: Support for project-level wildcards and tool-annotation matching. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
 ## 2. Top 10 Recommended Features

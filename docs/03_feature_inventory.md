@@ -74,6 +74,8 @@
 - **"Safe-by-Default" Network Hardening**: (P0) Transition to local-only default bindings for all services. Requires explicit MFA/Attestation for remote exposure.
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
+- **Managed Cloud-to-Local Proxy**: (P1) Authenticated tunnel for managed cloud agents (e.g., Gemini 3.1, Claude Code) to interact with local tools.
+- **Wildcard Policy Matching (Rego/CEL)**: (P1) Support for dynamic, project-level security policies with wildcard tool matching.
 
 ### Priority Shifts
 - **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.

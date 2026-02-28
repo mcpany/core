@@ -59,3 +59,10 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+
+### Update: [2026-02-28] - Rego/CEL Policy Engine Integration
+**Context**: Gemini CLI's update and the OWASP MCP Top 10 highlight the need for granular, project-level policy enforcement.
+**Architecture Adjustment**:
+* Integrating the Rego/CEL Policy Engine to support wildcard tool matching and annotation-based filtering.
+* Deprecating static allowlists in favor of dynamic, intent-aware policies.
+**Security Impact**: Reduces the risk of "Intent Flow Subversion" by ensuring policies can be programmatically verified and restricted to specific project scopes.

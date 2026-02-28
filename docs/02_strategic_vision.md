@@ -57,3 +57,12 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-02-28]
+### Focus: Managed Gateway Parity & Policy Standardization
+**Context**: Google Cloud's managed MCP announcement and Gemini CLI's policy updates require MCP Any to evolve its local-to-cloud bridging and policy granularity.
+**Strategic Pivot**:
+- **Managed Gateway Proxy**: To compete with Google's managed MCP, MCP Any will offer a "Cloud-to-Local Bridge" that allows managed cloud agents to securely tunnel into local MCP Any instances via a hardened, authenticated proxy.
+- **Policy-as-Code (Rego/CEL)**: Standardizing on Rego/CEL for all security policies, enabling project-level wildcards and tool-annotation matching to reduce manual policy maintenance.
