@@ -24,6 +24,21 @@ interface ProviderStatus {
 
 /**
  * DiscoveryStatus displays the status of auto-discovery providers.
+ *
+ * Summary: Displays the status of auto-discovery providers.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - JSX.Element: The rendered React component.
+ *
+ * Throws:
+ *   - None.
+ *
+ * Side Effects:
+ *   - Fetches discovery status from the API.
+ *   - Triggers a scan network operation when the button is clicked.
  */
 export function DiscoveryStatus() {
     const [statuses, setStatuses] = useState<ProviderStatus[]>([]);

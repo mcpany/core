@@ -26,6 +26,18 @@ const KindPostCall = "PostCall"
 // It processes incoming CloudEvents containing HTML and returns the converted Markdown.
 //
 // Summary: Webhook handler for Markdown conversion.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - MarkdownHandler instance.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type MarkdownHandler struct{}
 
 // Handle processes the markdown conversion request.
@@ -40,6 +52,11 @@ type MarkdownHandler struct{}
 // Returns:
 //
 //	None.
+//
+// Errors:
+//   - Returns 405 Method Not Allowed if method is not POST.
+//   - Returns 400 Bad Request if CloudEvent parsing fails or data is invalid.
+//   - Returns 500 Internal Server Error if response event data cannot be set.
 //
 // Side Effects:
 //   - Writes the converted Markdown to the response.
@@ -100,6 +117,18 @@ func (h *MarkdownHandler) Handle(w http.ResponseWriter, r *http.Request) {
 // The maximum characters can be specified via the "max_chars" query parameter (default 100).
 //
 // Summary: Webhook handler for text truncation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - TruncateHandler instance.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type TruncateHandler struct{}
 
 // Handle processes the text truncation request.
@@ -113,6 +142,11 @@ type TruncateHandler struct{}
 // Returns:
 //
 //	None.
+//
+// Errors:
+//   - Returns 405 Method Not Allowed if method is not POST.
+//   - Returns 400 Bad Request if CloudEvent parsing fails or data is invalid.
+//   - Returns 500 Internal Server Error if response event data cannot be set.
 //
 // Side Effects:
 //   - Writes the truncated text to the response.
@@ -179,6 +213,18 @@ func (h *TruncateHandler) Handle(w http.ResponseWriter, r *http.Request) {
 // The page size can be specified via the "page_size" query parameter (default 1000).
 //
 // Summary: Webhook handler for pagination.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - PaginateHandler instance.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type PaginateHandler struct{}
 
 // Handle processes the pagination request.
@@ -192,6 +238,11 @@ type PaginateHandler struct{}
 // Returns:
 //
 //	None.
+//
+// Errors:
+//   - Returns 405 Method Not Allowed if method is not POST.
+//   - Returns 400 Bad Request if CloudEvent parsing fails or data is invalid.
+//   - Returns 500 Internal Server Error if response event data cannot be set.
 //
 // Side Effects:
 //   - Writes the paginated content to the response.

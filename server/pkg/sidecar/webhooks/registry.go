@@ -12,16 +12,31 @@ import (
 // Implementations of this interface process incoming webhook events.
 //
 // Summary: Interface for webhook handlers.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Handler interface {
 	// Handle processes the webhook request.
 	//
 	// Parameters:
-	//   w: http.ResponseWriter. The HTTP response writer to write the response to.
-	//   r: *http.Request. The HTTP request containing the webhook payload.
+	//   - w: http.ResponseWriter. The HTTP response writer to write the response to.
+	//   - r: *http.Request. The HTTP request containing the webhook payload.
 	//
 	// Returns:
 	//
 	//	None.
+	//
+	// Errors:
+	//   - Varies by implementation, but generally handles errors internally and writes error codes to the response.
 	//
 	// Side Effects:
 	//   - Writes the response to the response writer.
@@ -32,6 +47,18 @@ type Handler interface {
 // It provides a thread-safe mechanism to store and lookup handlers by name.
 //
 // Summary: Thread-safe registry for webhook handlers.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Registry struct {
 	mu    sync.RWMutex
 	hooks map[string]Handler
@@ -46,6 +73,9 @@ type Registry struct {
 //
 // Returns:
 //   - *Registry: A pointer to a new, empty Registry.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - Allocates memory for the registry map.
@@ -68,6 +98,9 @@ func NewRegistry() *Registry {
 //
 //	None.
 //
+// Errors:
+//   - None.
+//
 // Side Effects:
 //   - Updates the registry map.
 func (r *Registry) Register(name string, handler Handler) {
@@ -86,6 +119,9 @@ func (r *Registry) Register(name string, handler Handler) {
 // Returns:
 //   - Handler: The registered handler, if found.
 //   - bool: True if the handler exists, false otherwise.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
