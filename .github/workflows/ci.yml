@@ -1067,8 +1067,12 @@ jobs:
         changes,
         build-images,
         e2e-sequential,
+        e2e-parallel,
         e2e-public-api,
         docker-smoke-test,
+        unit-test,
+        ui-test,
+        k8s-e2e
       ]
     if: always()
     permissions:
