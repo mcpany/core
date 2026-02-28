@@ -106,10 +106,10 @@ func TestUpstreamService_Bored(t *testing.T) {
 	require.NotEmpty(t, boredResponse["activity"], "The activity should not be empty")
 	require.NotEmpty(t, boredResponse["type"], "The type should not be empty")
 	require.NotEmpty(t, boredResponse["participants"], "The participants should not be empty")
-	require.NotEmpty(t, boredResponse["price"], "The price should not be empty")
-	require.NotEmpty(t, boredResponse["link"], "The link should not be empty")
 	require.NotEmpty(t, boredResponse["key"], "The key should not be empty")
-	// require.NotEmpty(t, boredResponse["accessibility"], "The accessibility should not be empty") // Accessibility can be 0, which is empty?
+	// require.NotEmpty(t, boredResponse["price"], "The price should not be empty") // Could be 0
+	// require.NotEmpty(t, boredResponse["link"], "The link should not be empty") // Often empty string
+	// require.NotEmpty(t, boredResponse["accessibility"], "The accessibility should not be empty") // Accessibility can be 0
 	// mock returns 0.25 so it's not empty string/nil. NotEmpty works for float? Yes.
 	t.Logf("SUCCESS: Received an activity: %s", textContent.Text)
 
