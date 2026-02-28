@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-02-28] (Supplemental)
+### Focus: Interactive Agency & Secure Hook Orchestration
+**Context**: Supplemental research reveals the launch of "MCP Apps" for interactive UI and the discovery of "Hook-based RCE" vulnerabilities in local agent configurations (e.g., `.mcp.json`).
+**Strategic Pivot**:
+- **Interactive Agency (MCP Apps)**: MCP Any will evolve from a "JSON-RPC proxy" to an "Application Platform" that proxies and validates UI schemas. This ensures that interactive tools can be rendered safely across different agent frontends.
+- **Human-Agent Handoff (Takeover Mode)**: Building on the HITL middleware, MCP Any will support "Active Takeover" patterns, where a human can directly step into an agent's tool-execution session to resolve complex reasoning gaps.
+- **Secure Hook Orchestration**: To mitigate hook-based RCE, MCP Any will implement a signature-based "Verified Hook" protocol. Local configuration files (e.g., `.mcp.json`) will not be allowed to execute initialization commands without explicit, cryptographic multi-factor attestation.

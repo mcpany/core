@@ -59,3 +59,11 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+
+### Update: 2026-02-28 - Mitigating Hook-based RCE
+**Context:** Supplemental research revealed a new exploit pattern where malicious `.mcp.json` hooks are used for remote command execution.
+**Architecture Adjustment:**
+* Incorporating "Verified Hook Integrity" as a core pillar.
+* Initialization commands are now disabled by default.
+* Execution requires a one-time "Trust Signature" from the instance's Ed25519 identity, generated via an interactive CLI challenge.
+**Security Impact:** Mitigates unauthorized host-level command execution by rogue workspace configurations.

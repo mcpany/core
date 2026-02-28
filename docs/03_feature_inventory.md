@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-02-28] Supplemental Updates
+
+### Proposed Additions
+- **Interactive MCP App Gateway**: (P0) A rendering proxy that handles UI schemas and interactive events from MCP servers, allowing agent frontends to safely display dashboards and forms.
+- **Verified Hook Middleware (Secure Initialization)**: (P0) Cryptographic verification of workspace-level initialization commands (e.g., in `.mcp.json`). Prevents RCE from untrusted repositories.
+- **Human Takeover Session Middleware**: (P1) Extends HITL to support bidirectional session takeover, enabling humans to step into an agent's reasoning loop directly.
+
+### Priority Shifts
+- **HITL Middleware**: Promoted to **P0** and expanded to include "Takeover" capabilities.
+- **Supply Chain Integrity Guard**: Re-affirmed as **P0** with new "Hook Verification" requirements.
+
+### Deprecations / Monitoring
+- **Unvalidated Workspace Hooks**: Monitor for immediate deprecation in favor of the Verified Hook Middleware.
