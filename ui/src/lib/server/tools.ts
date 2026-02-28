@@ -71,7 +71,7 @@ export const BuiltInTools: Record<string, Tool> = {
   },
   weather: {
       name: "weather",
-      description: "Get current weather for a location (Mock)",
+      description: "Get current weather for a location",
       schema: {
           type: "object",
           properties: {
@@ -81,18 +81,29 @@ export const BuiltInTools: Record<string, Tool> = {
           required: ["location"]
       },
       execute: async ({ location, unit = "celsius" }: { location: string, unit: string }) => {
-          // Mock data
-          const conditions = ["Sunny", "Cloudy", "Rainy", "Snowy", "Windy"];
-          const condition = conditions[Math.floor(Math.random() * conditions.length)];
-          const tempBase = Math.floor(Math.random() * 30);
-          const temp = unit === "fahrenheit" ? (tempBase * 9/5) + 32 : tempBase;
+          try {
+              const res = await fetch(`https://wttr.in/${encodeURIComponent(location)}?format=j1`);
+              if (!res.ok) {
+                  throw new Error(`Failed to fetch weather data: ${res.statusText}`);
+              }
+              const data = await res.json();
+              const current = data.current_condition[0];
+              const tempBaseC = parseInt(current.temp_C, 10);
+              const tempBaseF = parseInt(current.temp_F, 10);
+              const temp = unit === "fahrenheit" ? tempBaseF : tempBaseC;
 
-          return {
-              location,
-              temperature: temp,
-              unit,
-              condition,
-              humidity: Math.floor(Math.random() * 100) + "%"
+              return {
+                  location,
+                  temperature: temp,
+                  unit,
+                  condition: current.weatherDesc[0].value,
+                  humidity: current.humidity + "%"
+              };
+          } catch (error) {
+              return {
+                  location,
+                  error: "Could not fetch real weather data. Please try again later."
+              };
           }
       }
   }

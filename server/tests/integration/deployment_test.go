@@ -34,8 +34,8 @@ func getDockerCommand(t *testing.T) []string {
 }
 
 func TestDockerCompose(t *testing.T) {
-	t.Skip("Skipping heavy integration test TestDockerCompose (flaky in CI/env due to header/port issues)")
-	// // t.SkipNow()
+	// t.Skip("Skipping heavy integration test TestDockerCompose (flaky in CI/env due to header/port issues)")
+	// t.SkipNow()
 	if !integration.IsDockerSocketAccessible() {
 		// t.Skip("Docker socket not accessible, skipping TestDockerCompose.")
 	}
@@ -186,7 +186,7 @@ func TestHelmChart(t *testing.T) {
 	defer os.Setenv("PATH", oldPath)
 
 	if !commandExists("helm") {
-		t.Skip("helm command not found, skipping TestHelmChart.")
+		// t.Skip("helm command not found, skipping TestHelmChart.")
 	}
 	t.Parallel()
 
@@ -214,7 +214,7 @@ func TestHelmChart(t *testing.T) {
 
 func TestK8sFullStack(t *testing.T) {
 	if os.Getenv("E2E") != "true" {
-		t.Skip("Skipping K8s E2E test (E2E=true not set)")
+		// t.Skip("Skipping K8s E2E test (E2E=true not set)")
 	}
 
 	// Dependencies check

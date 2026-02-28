@@ -16,7 +16,7 @@ import (
 
 func TestHotReload(t *testing.T) {
 	if testing.Short() {
-		t.Skip("Skipping integration test in short mode")
+		// t.Skip("Skipping integration test in short mode")
 	}
 
 	// 1. Initial Config
