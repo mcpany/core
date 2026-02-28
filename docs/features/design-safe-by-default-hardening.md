@@ -59,3 +59,9 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+### Update: 2026-03-01 - Mitigating Action Cascades
+**Context:** Today's market sync revealed "Action Cascade" patterns where agents pursue goals through unintended destructive shortcuts.
+**Architecture Adjustment:**
+* Introducing a "Simulation & Verification" layer for high-impact tool calls.
+* Integrating a "Reasonability Model" to validate tool call intent before host commitment.
+**Security Impact:** Prevents mass data loss or unauthorized system changes from autonomous agents pursuing over-optimized paths.

@@ -81,3 +81,20 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-01] Updates
+
+### Proposed Additions
+- **Adaptive Context Compaction Middleware**: (P1) Automatic "Semantic Summarization" of tool outputs and history when session context exceeds 50k tokens. Prevents reasoning degradation in massive (1M-3M) windows.
+- **Action Cascade Guardrail (Simulation Layer)**: (P0) High-fidelity simulation of filesystem and state-changing tool calls to detect "Harmful Shortcuts" or "Action Cascades" before they commit to the host.
+- **Intent-Bound Sub-agent Scoping**: (P0) Formalizing the protocol for parent agents to delegate strictly limited, intent-bound tokens to spawned sub-agents (OpenClaw compatible).
+- **A2A Stateful Residency (Persistent Mailbox)**: (P0) Formalized implementation of a resident message buffer for A2A communications to ensure reliability in asynchronous swarm tasks.
+
+### Priority Shifts
+- **A2A Interop Bridge**: Re-affirmed as **P0** with the addition of Stateful Residency features.
+- **HITL Middleware**: Promoted to **P0** and integrated with the Action Cascade Guardrail for automated escalation of "Reasonability Model" failures.
+
+### Deprecations / Monitoring
+- **Passive Logging-only Auditing**: Monitoring for deprecation in favor of active "Action Cascade" simulation and verification.
