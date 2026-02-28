@@ -517,7 +517,8 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: ${{ matrix.runner }}
-    container: public.ecr.aws/docker/library/ubuntu:24.04
+    # Remove container directive to run on fully-equipped runner VM
+    # container: public.ecr.aws/docker/library/ubuntu:24.04
     strategy:
       fail-fast: false
       matrix:
@@ -529,9 +530,20 @@ jobs:
             slug: arm64
             runner: ubuntu-24.04-arm
     steps:
-      - name: Install dependencies
+      - name: Free Disk Space (Fast)
+        continue-on-error: true
         run: |
-          apt-get update && apt-get install -y make git curl unzip
+          if command -v sudo >/dev/null; then
+            sudo rm -rf /usr/local/lib/android || true
+            sudo rm -rf /usr/share/dotnet || true
+            sudo rm -rf /opt/ghc || true
+            sudo rm -rf /usr/local/share/boost || true
+          else
+            rm -rf /usr/local/lib/android || true
+            rm -rf /usr/share/dotnet || true
+            rm -rf /opt/ghc || true
+            rm -rf /usr/local/share/boost || true
+          fi
 
       - uses: actions/checkout@v6
 
