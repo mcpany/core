@@ -5,21 +5,44 @@
 
 "use client";
 
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AlertCircle, CheckCircle2, AlertTriangle, Activity } from "lucide-react";
+import { AlertCircle, CheckCircle2, AlertTriangle, Activity, Loader2 } from "lucide-react";
+import { apiClient } from "@/lib/client";
 
 /**
  * AlertStats component.
  * @returns The rendered component.
  */
 export function AlertStats() {
-  // Mock data - in a real app, this would come from props or a query
-  const stats = {
-    activeCritical: 3,
-    activeWarning: 12,
-    mttr: "14m", // Mean Time To Resolution
-    totalToday: 45
-  };
+  const [stats, setStats] = useState<{ activeCritical: number, activeWarning: number, mttr: string, totalToday: number } | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const data = await apiClient.getAlertStats();
+        setStats(data);
+      } catch (error) {
+        console.error("Failed to fetch alert stats:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchStats();
+  }, []);
+
+  if (loading || !stats) {
+    return (
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {[...Array(4)].map((_, i) => (
+          <Card key={i} className="flex h-[120px] items-center justify-center">
+            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+          </Card>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

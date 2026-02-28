@@ -62,3 +62,25 @@ func TestManager_Webhook(t *testing.T) {
 		t.Errorf("expected webhook URL %s, got %s", url, got)
 	}
 }
+
+func TestManager_GetAlertStats(t *testing.T) {
+	m := NewManager()
+	stats := m.GetAlertStats()
+	if stats == nil {
+		t.Error("expected non-nil stats")
+	}
+
+	// With the seeded data, we should have 1 active critical, 1 active warning, and at least some total today
+	if stats.ActiveCritical != 1 {
+		t.Errorf("expected 1 active critical alert, got %d", stats.ActiveCritical)
+	}
+	if stats.ActiveWarning != 1 {
+		t.Errorf("expected 1 active warning alert, got %d", stats.ActiveWarning)
+	}
+	if stats.TotalToday < 1 {
+		t.Errorf("expected >0 total today, got %d", stats.TotalToday)
+	}
+	if stats.MTTR == "" {
+		t.Error("expected non-empty MTTR")
+	}
+}

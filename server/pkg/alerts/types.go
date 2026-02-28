@@ -51,3 +51,11 @@ type AlertRule struct {
 	Enabled     bool      `json:"enabled"`
 	LastUpdated time.Time `json:"last_updated"`
 }
+
+// AlertStats represents aggregated statistics for alerts.
+type AlertStats struct {
+	ActiveCritical int    `json:"activeCritical"`
+	ActiveWarning  int    `json:"activeWarning"`
+	MTTR           string `json:"mttr"`
+	TotalToday     int    `json:"totalToday"`
+}

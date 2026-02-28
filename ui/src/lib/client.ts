@@ -1806,6 +1806,22 @@ export const apiClient = {
     // Alerts
 
     /**
+     * Gets alert statistics.
+     *
+     * Summary: Retrieves alert statistics.
+     *
+     * @returns A promise that resolves to the alert statistics.
+     * @throws {Error} If the request fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/alerts/stats.
+     */
+    getAlertStats: async (): Promise<{ activeCritical: number, activeWarning: number, mttr: string, totalToday: number }> => {
+        const res = await fetchWithAuth('/api/v1/alerts/stats');
+        if (!res.ok) throw new Error('Failed to fetch alert stats');
+        return res.json();
+    },
+
+    /**
      * Lists all alerts.
      *
      * Summary: Lists alerts.

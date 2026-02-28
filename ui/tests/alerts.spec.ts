@@ -13,9 +13,15 @@ test.describe('Alerts Page', () => {
     // Check header
     await expect(page.getByRole('heading', { name: 'Alerts & Incidents' })).toBeVisible();
 
-    // Check stats cards
+    // Check stats cards labels
     await expect(page.getByText('Active Critical')).toBeVisible();
+    await expect(page.getByText('Active Warnings')).toBeVisible();
     await expect(page.getByText('MTTR (Today)')).toBeVisible();
+    await expect(page.getByText('Total Incidents')).toBeVisible();
+
+    // Check that stats values are fetched from the API and rendered
+    // The backend mock data has Active Critical: 1, Active Warning: 1, MTTR: 14m, Total: >0 (we can just verify it's rendered)
+    await expect(page.getByText('14m')).toBeVisible();
 
     // Check table content (mock data)
     await expect(page.getByText('High CPU Usage')).toBeVisible();
