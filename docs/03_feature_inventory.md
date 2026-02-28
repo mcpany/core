@@ -74,8 +74,10 @@
 - **"Safe-by-Default" Network Hardening**: (P0) Transition to local-only default bindings for all services. Requires explicit MFA/Attestation for remote exposure.
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
+- **Policy Firewall Engine (CEL/Rego Integration)**: (P0) Machine-enforceable security policies for tool calls to prevent parameter injection (CVE-2026-2008) and unauthorized capability usage.
 
 ### Priority Shifts
+- **Policy Firewall**: Promoted to **P0** and expanded to include CEL/Rego integration for machine-verifiable security contracts.
 - **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
 - **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.
 

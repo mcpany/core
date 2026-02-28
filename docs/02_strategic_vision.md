@@ -57,3 +57,12 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+## Strategic Evolution: [2026-02-28] (Supplemental)
+### Focus: Policy-as-Code Integration & Mesh Residency Deepening
+**Context**: Supplemental findings on CVE-2026-2008 and the persistence of the "8,000 Exposed Servers" crisis demand a move toward machine-verifiable security contracts.
+**Strategic Pivot**:
+- **Safe-by-Default Hardening (Enhanced)**: This addresses the "8,000 Exposed Servers" crisis by ensuring no server is exposed to the internet without an intentional, verified administrative action via cryptographic attestation.
+- **A2A Mesh Residency (Enhanced)**: By acting as a "Stateful Buffer," MCP Any ensures that multi-agent handoffs are reliable even across intermittent connections, providing a "Stateful Mailbox" for asynchronous agentic workflows.
+- **Provenance-First Discovery (Enhanced)**: Hardened filtering to prevent "Clinejection" and other supply chain attacks by default.
+- **Policy-as-Code Integration**: Transitioning to a model where security policies (CEL/Rego) are treated as first-class configuration. This allows for machine-verifiable security contracts that can block exploits like CVE-2026-2008 (Fermat-MCP) before they reach the upstream adapter.

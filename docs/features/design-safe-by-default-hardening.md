@@ -59,3 +59,10 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+
+### Update: 2026-02-28 - Mitigating the "8,000 Exposed Servers" Crisis
+**Context:** Today's research confirmed that thousands of MCP servers are accidentally exposed via `0.0.0.0` bindings.
+**Architecture Adjustment:**
+*   Enforcing `127.0.0.1` as the immutable default for all listeners in the `ConfigLoader`.
+*   Introducing a "Security Bootstrap" check that prevents startup if a non-local `host` is detected without a matching `access_attestation.token`.
+**Security Impact:** Eliminates the "Accidental Exposure" vector that led to the Clawdbot incident.
