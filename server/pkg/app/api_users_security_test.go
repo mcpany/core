@@ -4,7 +4,9 @@
 package app
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -71,5 +73,48 @@ func TestHandleUserDetail_IDOR_Reproduction(t *testing.T) {
 		handler.ServeHTTP(w, req)
 
 		assert.Equal(t, http.StatusOK, w.Code)
+	})
+}
+
+func TestHandleUserDetail_PrivilegeEscalation_Reproduction(t *testing.T) {
+	app, store := setupApiTestApp()
+	handler := app.handleUserDetail(store)
+
+	// Setup: Create victim user
+	victim := configv1.User_builder{Id: proto.String("victim-user"), Roles: []string{"user"}}.Build()
+	require.NoError(t, store.CreateUser(context.Background(), victim))
+
+	t.Run("Victim Elevates Own Privileges to Admin", func(t *testing.T) {
+		// Attempt to update own profile and inject "admin" role
+		payload := map[string]interface{}{
+			"user": map[string]interface{}{
+				"id": "victim-user",
+				"roles": []string{"admin"}, // <--- Privilege Escalation attempt
+			},
+		}
+		body, _ := json.Marshal(payload)
+
+		req := httptest.NewRequest(http.MethodPut, "/users/victim-user", bytes.NewReader(body))
+		// Simulate Authenticated User: victim-user
+		ctx := auth.ContextWithUser(req.Context(), "victim-user")
+		ctx = auth.ContextWithRoles(ctx, []string{"user"})
+		req = req.WithContext(ctx)
+
+		w := httptest.NewRecorder()
+		handler.ServeHTTP(w, req)
+
+		assert.Equal(t, http.StatusOK, w.Code)
+
+		// Check if the user is now an admin
+		updatedUser, err := store.GetUser(context.Background(), "victim-user")
+		require.NoError(t, err)
+
+		// VULNERABILITY CHECK: The user should NOT have the admin role
+		for _, role := range updatedUser.GetRoles() {
+			if role == "admin" {
+				t.Logf("VULNERABILITY REPRODUCED: User 'victim-user' escalated privileges to 'admin'.")
+				t.Fail()
+			}
+		}
 	})
 }

@@ -175,7 +175,7 @@ func TestHashUserPassword_Redaction(t *testing.T) {
 	}.Build()
 
 	// 3. Call hashUserPassword
-	err := hashUserPassword(context.Background(), updatedUser, store)
+	err := hashUserPassword(context.Background(), updatedUser, store, nil)
 	require.NoError(t, err)
 
 	// 4. Verify that the hash was restored to "real-hash"
