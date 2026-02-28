@@ -23,6 +23,7 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
 type testPrompt struct {
@@ -35,6 +36,10 @@ func (p *testPrompt) Prompt() *mcp.Prompt {
 
 func (p *testPrompt) Service() string {
 	return "test-service"
+}
+
+func (p *testPrompt) Definition() *configv1.PromptDefinition {
+	return nil
 }
 
 func (p *testPrompt) Get(_ context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {
