@@ -6,7 +6,7 @@ import time
 
 def verify_inspector(page: Page):
     # Navigate to Inspector
-    page.goto("http://localhost:9002/inspector")
+    page.goto("http://localhost:9002/inspector", wait_until="networkidle")
 
     # Wait for the toolbar to be visible
     # We look for the "Search traces..." input
@@ -15,7 +15,7 @@ def verify_inspector(page: Page):
     # We check if the Status select is visible
     # The Select component trigger has "Status" as placeholder text usually, but initially it might say "Status" if that is the placeholder.
     # In my code: <SelectValue placeholder="Status" />
-    expect(page.get_by_text("Status")).to_be_visible()
+    expect(page.get_by_text("All Status")).to_be_visible()
 
     # Take screenshot
     page.screenshot(path="verification_inspector.png")
