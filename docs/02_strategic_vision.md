@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-01]
+### Focus: Runtime Behavioral Monitoring & Intent-Aware Guardrails
+**Context**: NIST's recent push for agent monitoring and the rise of ClawMoat highlight that registration is insufficient. The "blast pattern" of autonomous agents must be measured and contained at the execution boundary.
+**Strategic Pivot**:
+- **Intent-Aware Policy Engine**: Moving beyond static capability-based access (e.g., "allow file read") to intent-driven policies (e.g., "allow file read *only if* it relates to task X"). MCP Any will analyze the LLM's high-level goal before permitting tool calls.
+- **Runtime Egress Monitoring**: Implementing real-time monitoring of all network and filesystem activity initiated via MCP Any tools, mirroring the "AppArmor for AI" approach.
+- **Efficiency-Aware Discovery**: Integrating model performance and token cost telemetry into the tool selection process. MCP Any will prioritize "lean" tools/models to minimize the attack surface and operational cost.

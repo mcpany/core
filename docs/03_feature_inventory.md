@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-01] Updates
+
+### Proposed Additions
+- **Runtime Egress Watcher (AgentMoat)**: (P0) Host-level monitor for all system calls and network requests made by tools on behalf of an agent.
+- **Intent-Bound Dynamic Guardrails**: (P1) A Policy Engine upgrade that correlates tool calls with the LLM's high-level goal, blocking "out-of-scope" tool execution.
+- **Efficiency-Prioritized Tool Selector**: (P1) Ranking tools by token footprint and execution cost in search results.
+
+### Priority Shifts
+- **Policy Firewall Engine**: Promoted to **P0** and merged with "Intent-Bound Dynamic Guardrails" for comprehensive runtime protection.
+- **Resource Telemetry Middleware**: Promoted to **P0** to support Efficiency-Prioritized selection.
+
+### Deprecations / Monitoring
+- **Static Scoping**: Monitor for replacement by Intent-Bound Dynamic Scoping.

@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-01 Evolution)
+*   **[P0] Runtime Egress Watcher (AgentMoat)**: eBPF-based host monitoring for tool-initiated system/network calls. (Added: 2026-03-01)
+*   **[P1] Intent-Bound Dynamic Guardrails**: Policy Engine extension for correlating tool calls with high-level LLM intent. (Added: 2026-03-01)
+*   **[P1] Efficiency-Prioritized Tool Selector**: Rank tools by execution cost and token footprint in discovery results. (Added: 2026-03-01)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
