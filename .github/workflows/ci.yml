@@ -36,6 +36,7 @@ jobs:
       - name: Install dependencies
         run: |
           echo "Current user: $(id)"
+          export DEBIAN_FRONTEND=noninteractive
           SUDO=""
           if [ "$(id -u)" -ne 0 ]; then
             if command -v sudo >/dev/null; then
@@ -48,7 +49,7 @@ jobs:
           if command -v apt-get &> /dev/null; then
             $SUDO rm -rf /var/lib/apt/lists/*
             for i in {1..3}; do $SUDO apt-get update && break || sleep 5; done
-            $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends git || echo "Package install failed, but continuing..."
+            $SUDO apt-get install -y --no-install-recommends git || echo "Package install failed, but continuing..."
           elif command -v apk &> /dev/null; then
              $SUDO apk add --no-cache git
           elif command -v dnf &> /dev/null; then
@@ -150,6 +151,7 @@ jobs:
       - name: Install dependencies
         run: |
           echo "Current user: $(id)"
+          export DEBIAN_FRONTEND=noninteractive
           SUDO=""
           if [ "$(id -u)" -ne 0 ]; then
             if command -v sudo >/dev/null; then
@@ -162,7 +164,7 @@ jobs:
           if command -v apt-get &> /dev/null; then
             $SUDO rm -rf /var/lib/apt/lists/*
             for i in {1..3}; do $SUDO apt-get update && break || sleep 5; done
-            $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends make xz-utils build-essential || echo "Package install failed, but continuing..."
+            $SUDO apt-get install -y --no-install-recommends make xz-utils build-essential || echo "Package install failed, but continuing..."
           elif command -v apk &> /dev/null; then
              $SUDO apk add --no-cache make xz build-base
           elif command -v dnf &> /dev/null; then
@@ -200,6 +202,7 @@ jobs:
       - name: Install dependencies
         run: |
           echo "Current user: $(id)"
+          export DEBIAN_FRONTEND=noninteractive
           SUDO=""
           if [ "$(id -u)" -ne 0 ]; then
             if command -v sudo >/dev/null; then
@@ -212,7 +215,7 @@ jobs:
           if command -v apt-get &> /dev/null; then
             $SUDO rm -rf /var/lib/apt/lists/*
             for i in {1..3}; do $SUDO apt-get update && break || sleep 5; done
-            $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends make xz-utils build-essential || echo "Package install failed, but continuing..."
+            $SUDO apt-get install -y --no-install-recommends make xz-utils build-essential || echo "Package install failed, but continuing..."
           elif command -v apk &> /dev/null; then
              $SUDO apk add --no-cache make xz build-base
           elif command -v dnf &> /dev/null; then
@@ -351,6 +354,7 @@ jobs:
       - name: Install dependencies
         run: |
           echo "Current user: $(id)"
+          export DEBIAN_FRONTEND=noninteractive
           SUDO=""
           if [ "$(id -u)" -ne 0 ]; then
             if command -v sudo >/dev/null; then
@@ -549,7 +553,7 @@ jobs:
           if command -v apt-get &> /dev/null; then
             $SUDO rm -rf /var/lib/apt/lists/*
             for i in {1..3}; do $SUDO apt-get update && break || sleep 5; done
-            $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends make xz-utils curl unzip || echo "Package install failed, but continuing..."
+            $SUDO apt-get install -y --no-install-recommends make xz-utils curl unzip || echo "Package install failed, but continuing..."
           elif command -v apk &> /dev/null; then
              $SUDO apk add --no-cache make xz curl unzip
           elif command -v dnf &> /dev/null; then
@@ -683,6 +687,7 @@ jobs:
       - name: Install dependencies
         run: |
           echo "Current user: $(id)"
+          export DEBIAN_FRONTEND=noninteractive
           SUDO=""
           if [ "$(id -u)" -ne 0 ]; then
             if command -v sudo >/dev/null; then
@@ -695,7 +700,7 @@ jobs:
           if command -v apt-get &> /dev/null; then
             $SUDO rm -rf /var/lib/apt/lists/*
             for i in {1..3}; do $SUDO apt-get update && break || sleep 5; done
-            $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends make xz-utils build-essential || echo "Package install failed, but continuing..."
+            $SUDO apt-get install -y --no-install-recommends make xz-utils build-essential || echo "Package install failed, but continuing..."
           elif command -v apk &> /dev/null; then
              $SUDO apk add --no-cache make xz build-base
           elif command -v dnf &> /dev/null; then
@@ -833,6 +838,7 @@ jobs:
       - name: Install dependencies
         run: |
           echo "Current user: $(id)"
+          export DEBIAN_FRONTEND=noninteractive
           SUDO=""
           if [ "$(id -u)" -ne 0 ]; then
             if command -v sudo >/dev/null; then
@@ -845,7 +851,7 @@ jobs:
           if command -v apt-get &> /dev/null; then
             $SUDO rm -rf /var/lib/apt/lists/*
             for i in {1..3}; do $SUDO apt-get update && break || sleep 5; done
-            $SUDO DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends make xz-utils build-essential || echo "Package install failed, but continuing..."
+            $SUDO apt-get install -y --no-install-recommends make xz-utils build-essential || echo "Package install failed, but continuing..."
           elif command -v apk &> /dev/null; then
              $SUDO apk add --no-cache make xz build-base
           elif command -v dnf &> /dev/null; then
