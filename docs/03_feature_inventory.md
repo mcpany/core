@@ -75,9 +75,19 @@
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
+---
+
+## Evolution: [2026-02-28] Updates (Phase 2)
+
+### Proposed Additions
+- **MCP Apps UI Bridge**: (P0) Middleware to proxy interactive UI components from MCP servers to AI clients. Essential for the new "MCP Apps" standard.
+- **Cross-Vendor A2A Orchestrator**: (P0) Enhanced A2A bridge that manages state synchronization and task delegation between Google-A2A, OpenAI, and Anthropic ecosystems.
+- **Verifiable Execution (V-EXE) Layer**: (P0) A security middleware that requires cryptographic attestation from the tool source before execution, preventing "shadow skill" RCE attacks.
+- **Context Search Auto-Scaling**: (P1) Dynamic adjustment of the "Lazy-Discovery" threshold to save tokens based on session-specific context window pressure.
+
 ### Priority Shifts
-- **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
-- **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.
+- **A2A Stateful Residency**: Promoted to **P0**. Critical for reliable cross-vendor delegation in the Google-led A2A mesh.
+- **MCP Provenance Attestation**: Re-affirmed as **P0**. Prerequisite for the V-EXE layer to mitigate OpenClaw-style supply chain attacks.
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.

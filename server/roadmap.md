@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-02-28 Phase 2)
+*   **[P0] MCP Apps UI Bridge**: Proxy rich UI components from upstream tools. (Added: 2026-02-28)
+*   **[P0] Cross-Vendor A2A Orchestrator**: Synchronize state across disparate A2A vendor meshes. (Added: 2026-02-28)
+*   **[P0] Verifiable Execution (V-EXE) Layer**: Mandatory cryptographic attestation for privileged tool calls. (Added: 2026-02-28)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

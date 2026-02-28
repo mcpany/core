@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-02-28] (Phase 2)
+### Focus: Application Protocol Convergence & Interactive Agency
+**Context**: The emergence of "MCP Apps" and the formalization of the A2A protocol by Google mark a transition from agents-as-tools to agents-as-ecosystems. Simultaneously, the OpenClaw security crisis demands a radical shift towards verifiable execution.
+**Strategic Pivot**:
+- **Interactive UI Bridging**: MCP Any will incorporate the "MCP Apps" standard, allowing upstream tools to provide rich UI components that can be proxied to any supporting frontend.
+- **Multi-Vendor A2A Gateway**: Moving beyond simple bridging to become the primary orchestrator for A2A cross-vendor delegation, ensuring state consistency across Google, Anthropic, and OpenAI ecosystems.
+- **Verifiable Execution (V-EXE)**: Implementing a new tier of security where tool execution must be "attested" by both the source and the gateway, mitigating the risk of "shadow skill" execution observed in the OpenClaw crisis.
