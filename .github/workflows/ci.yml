@@ -154,6 +154,7 @@ jobs:
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
+      SKIP_TS_GEN: "true"
     steps:
       - name: Free Disk Space (Fast)
         run: |
@@ -293,6 +294,7 @@ jobs:
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
+      SKIP_TS_GEN: "true"
     steps:
       - name: Free Disk Space (Fast)
         run: |
@@ -488,8 +490,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          apt-get update
-          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends make curl unzip git build-essential ca-certificates
+          sudo apt-get update
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends make curl unzip git build-essential ca-certificates
 
       - name: Generate Protobufs
         run: |
@@ -605,6 +607,7 @@ jobs:
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
+      SKIP_TS_GEN: "true"
     steps:
       - name: Free Disk Space (Fast)
         run: |
@@ -744,6 +747,7 @@ jobs:
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
+      SKIP_TS_GEN: "true"
     steps:
       - name: Free Disk Space (Fast)
         run: |
