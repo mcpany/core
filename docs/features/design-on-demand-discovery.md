@@ -57,3 +57,4 @@ As the number of available MCP tools grows, agents face "context pollution"—wh
 
 ## 7. Evolutionary Changelog
 *   **2026-02-25:** Initial Document Creation.
+*   **2026-02-28:** Integrated Zero-Trust Attestation requirements. Added requirement that tool search results must be cryptographically bound to the session to prevent cross-agent tool leaking.

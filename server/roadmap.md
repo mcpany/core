@@ -29,6 +29,11 @@
 *   **[P1] Federated MCP Peering**: Distributed node discovery and tool proxying. (Added: 2026-02-26)
 *   **[P1] Resource Telemetry Middleware**: Inject latency/cost metrics into tool schemas. (Added: 2026-02-26)
 
+#### Upcoming (2026-02-28 Evolution)
+*   **[P0] Local Zero Trust (LZT) Binding**: Cryptographic session binding for all local WS/HTTP gateways. (Added: 2026-02-28)
+*   **[P0] Config Sandbox & Attestation Engine**: Strict validation and HITL approval for project-level configurations. (Added: 2026-02-28)
+*   **[P1] Encrypted Local Transport**: TLS/Noise support for local agent communication. (Added: 2026-02-28)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

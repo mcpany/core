@@ -11,6 +11,8 @@
 - [ ] **[P0] Agent Chain Tracer (A2A)**: Visual timeline of multi-agent handoffs and message passing. (Added: 2026-02-26)
 - [ ] **[P1] Federated Node Manager**: UI for peering with remote MCP Any instances and managing shared tool access. (Added: 2026-02-26)
 - [ ] **[P1] Resource Cost/Latency Overlay**: Real-time performance metrics displayed directly on tool cards. (Added: 2026-02-26)
+- [ ] **[P0] LZT Session Manager**: UI for generating and managing Agent Access Tokens (AAT) and viewing active local sessions. (Added: 2026-02-28)
+- [ ] **[P0] Config Attestation Portal**: Interactive interface for reviewing and approving untrusted project-level configurations/hooks. (Added: 2026-02-28)
 - [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
 - [x] **[P1] Tool Playground & Explorer**:
   - [x] Auto-generated forms from Tool JSON Schemas.

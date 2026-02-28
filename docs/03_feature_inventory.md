@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-28] Updates
+
+### Proposed Additions
+- **Local Zero Trust (LZT) Binding**: (P0) Cryptographically bind every local connection (WS/HTTP) to a unique agent session token to prevent "Porous Membrane" style cross-site hijacking.
+- **Config Sandbox & Attestation**: (P0) Strict validation and user attestation for project-level/imported configurations to prevent RCE from malicious repositories.
+- **Encrypted Local Transport**: (P1) Enable TLS or Noise protocol for local inter-agent communications to prevent side-channel eavesdropping.
+
+### Priority Shifts
+- **Supply Chain Integrity Guard**: Promoted to **Critical P0**. Recent RCE exploits in major agent frameworks make this the top priority for enterprise deployments.
+- **Lazy-MCP Middleware**: Re-affirming **P0**. Now considered industry standard for managing large toolsets without context pollution.
+
+### Deprecations / Monitoring
+- **IP-Based Trust**: Deprecating the assumption that local network connections are inherently secure.

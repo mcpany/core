@@ -47,3 +47,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **A2A Gateway Protocol**: MCP Any will implement a protocol-neutral bridge for A2A communication, allowing disparate agent frameworks (e.g., OpenClaw, AutoGen) to exchange state and tasks via a unified MCP-like interface.
 - **Federated Tool Mesh**: Moving from a standalone server to a "Mesh" architecture where multiple MCP Any instances can peer and share resources across network boundaries, governed by global Zero-Trust policies.
 - **Resource-Aware Intelligence**: Integrating cost and latency telemetry into the tool discovery process, allowing LLMs to perform "Economical Reasoning" when selecting tools.
+
+---
+
+## Strategic Evolution: [2026-02-28]
+### Focus: Defensive Agency & Local Zero Trust (LZT)
+**Context**: Recent exploits in OpenClaw (Porous Membrane) and Claude Code (Config RCE) prove that the "local barrier" is the new front line. Agents with filesystem and credential access are high-value targets for cross-site and supply-chain attacks.
+**Strategic Pivot**:
+- **Local Zero Trust (LZT)**: MCP Any will move beyond IP-based trust. Every local connection (WebSocket, Stdio) must be cryptographically bound to a unique agent session token to prevent "Porous Membrane" style hijacking.
+- **Config Isolation & Attestation**: Implementing a "Config Sandbox" where any project-level or imported configurations are validated against a strict schema and restricted from executing arbitrary shell hooks unless explicitly attested by the user.
+- **On-Demand Discovery Refinement**: Accelerating the transition to Lazy-Discovery as the default mode to handle the increasing complexity of agentic toolchains without sacrificing context window efficiency or security.
