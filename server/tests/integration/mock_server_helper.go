@@ -26,15 +26,25 @@ func DefaultMockHandler(t *testing.T, responses map[string]string) http.Handler 
 		bodyBytes, _ := io.ReadAll(r.Body)
 		t.Logf("Mock server received request: %s %s Body: %s", r.Method, r.URL.Path, string(bodyBytes))
 
-		// Check exact path match
-		if body, ok := responses[r.URL.Path]; ok {
+		// Check exact path match or full URI
+		pathAndQuery := r.URL.Path
+		if r.URL.RawQuery != "" {
+			pathAndQuery += "?" + r.URL.RawQuery
+		}
+
+		if body, ok := responses[pathAndQuery]; ok {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte(body))
+			return
+		} else if body, ok := responses[r.URL.Path]; ok {
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
 			_, _ = w.Write([]byte(body))
 			return
 		}
 
-		t.Logf("Mock server: no response found for %s", r.URL.Path)
+		t.Logf("Mock server: no response found for %s", pathAndQuery)
 		http.NotFound(w, r)
 	})
 }

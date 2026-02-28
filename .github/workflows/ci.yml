@@ -196,7 +196,9 @@ jobs:
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
           $SUDO mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json
+
+          # Add storage-driver vfs to avoid overlayfs issues in some CI runners
+          echo '{"registry-mirrors": ["https://mirror.gcr.io"], "storage-driver": "vfs"}' | $SUDO tee /etc/docker/daemon.json
 
           if $SUDO systemctl restart docker 2>/dev/null; then
             echo "Docker restarted via systemctl"
@@ -344,7 +346,9 @@ jobs:
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
           $SUDO mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json
+
+          # Add storage-driver vfs to avoid overlayfs issues in some CI runners
+          echo '{"registry-mirrors": ["https://mirror.gcr.io"], "storage-driver": "vfs"}' | $SUDO tee /etc/docker/daemon.json
 
           if $SUDO systemctl restart docker 2>/dev/null; then
             echo "Docker restarted via systemctl"
@@ -478,7 +482,7 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: ${{ matrix.runner }}
-    container: public.ecr.aws/docker/library/ubuntu:24.04
+    # container: public.ecr.aws/docker/library/ubuntu:24.04
     strategy:
       fail-fast: false
       matrix:
@@ -668,7 +672,9 @@ jobs:
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
           $SUDO mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json
+
+          # Add storage-driver vfs to avoid overlayfs issues in some CI runners
+          echo '{"registry-mirrors": ["https://mirror.gcr.io"], "storage-driver": "vfs"}' | $SUDO tee /etc/docker/daemon.json
 
           if $SUDO systemctl restart docker 2>/dev/null; then
             echo "Docker restarted via systemctl"
@@ -818,7 +824,9 @@ jobs:
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
           $SUDO mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json
+
+          # Add storage-driver vfs to avoid overlayfs issues in some CI runners
+          echo '{"registry-mirrors": ["https://mirror.gcr.io"], "storage-driver": "vfs"}' | $SUDO tee /etc/docker/daemon.json
 
           if $SUDO systemctl restart docker 2>/dev/null; then
             echo "Docker restarted via systemctl"
@@ -919,7 +927,9 @@ jobs:
           SUDO=""
           if command -v sudo >/dev/null; then SUDO="sudo"; fi
           $SUDO mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | $SUDO tee /etc/docker/daemon.json
+
+          # Add storage-driver vfs to avoid overlayfs issues in some CI runners
+          echo '{"registry-mirrors": ["https://mirror.gcr.io"], "storage-driver": "vfs"}' | $SUDO tee /etc/docker/daemon.json
 
           if $SUDO systemctl restart docker 2>/dev/null; then
             echo "Docker restarted via systemctl"
