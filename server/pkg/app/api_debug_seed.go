@@ -45,10 +45,10 @@ func (a *Application) handleDebugSeed() http.HandlerFunc {
 		ctx := r.Context()
 		log := logging.GetLogger()
 
-		// Safety check: only allow if not production
-		if os.Getenv("MCPANY_ENV") == "production" {
-			log.Warn("Attempted to seed data in production environment")
-			http.Error(w, "Seeding is disabled in production", http.StatusForbidden)
+		// Safety check: explicitly require opt-in to enable seeding
+		if os.Getenv("MCPANY_ENABLE_TEST_SEED") != "true" {
+			log.Warn("Attempted to seed data without explicit opt-in")
+			http.Error(w, "Seeding is disabled unless MCPANY_ENABLE_TEST_SEED=true", http.StatusForbidden)
 			return
 		}
 

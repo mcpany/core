@@ -542,39 +542,6 @@ func TestDockerExecutor(t *testing.T) {
 		defer cancel()
 
 		_, _, exitCodeChan, err := executor.Execute(ctx, "sleep", []string{"10"}, "", nil)
-		if err != nil && strings.Contains(err.Error(), "failed to mount") {
-			// Environment limitation workaround: fallback to mock
-			executor = newDockerExecutor(containerEnv).(*dockerExecutor)
-			executor.(*dockerExecutor).clientFactory = func() (DockerClient, error) {
-				return &MockDockerClient{
-					ContainerCreateFunc: func(ctx context.Context, config *container.Config, hostConfig *container.HostConfig, networkingConfig *network.NetworkingConfig, platform *v1.Platform, containerName string) (container.CreateResponse, error) {
-						return container.CreateResponse{ID: "mock-id"}, nil
-					},
-					ContainerStartFunc: func(ctx context.Context, containerID string, options container.StartOptions) error {
-						return nil
-					},
-					ContainerLogsFunc: func(ctx context.Context, container string, options container.LogsOptions) (io.ReadCloser, error) {
-						return io.NopCloser(strings.NewReader("")), nil
-					},
-					ContainerWaitFunc: func(ctx context.Context, containerID string, condition container.WaitCondition) (<-chan container.WaitResponse, <-chan error) {
-						statusCh := make(chan container.WaitResponse)
-						errCh := make(chan error, 1)
-						go func() {
-							<-ctx.Done()
-							errCh <- ctx.Err()
-						}()
-						return statusCh, errCh
-					},
-					ContainerRemoveFunc: func(ctx context.Context, containerID string, options container.RemoveOptions) error {
-						return nil
-					},
-					ImagePullFunc: func(ctx context.Context, ref string, options image.PullOptions) (io.ReadCloser, error) {
-						return io.NopCloser(strings.NewReader("")), nil
-					},
-				}, nil
-			}
-			_, _, exitCodeChan, err = executor.Execute(ctx, "sleep", []string{"10"}, "", nil)
-		}
 		require.NoError(t, err)
 
 		cancel()
@@ -636,36 +603,6 @@ func TestDockerExecutor(t *testing.T) {
 		}()
 
 		_, _, exitCodeChan, err := executor.Execute(context.Background(), "echo", []string{"hello"}, "", nil)
-		if err != nil && strings.Contains(err.Error(), "failed to mount") {
-			// Fallback to mock for container removal test if environment fails
-			useMock = true
-			executor = newDockerExecutor(containerEnv).(*dockerExecutor)
-			executor.(*dockerExecutor).clientFactory = func() (DockerClient, error) {
-				return &MockDockerClient{
-					ContainerCreateFunc: func(ctx context.Context, config *container.Config, hostConfig *container.HostConfig, networkingConfig *network.NetworkingConfig, platform *v1.Platform, containerName string) (container.CreateResponse, error) {
-						return container.CreateResponse{ID: containerName}, nil
-					},
-					ContainerStartFunc: func(ctx context.Context, containerID string, options container.StartOptions) error {
-						return nil
-					},
-					ContainerLogsFunc: func(ctx context.Context, container string, options container.LogsOptions) (io.ReadCloser, error) {
-						return io.NopCloser(strings.NewReader("")), nil
-					},
-					ContainerWaitFunc: func(ctx context.Context, containerID string, condition container.WaitCondition) (<-chan container.WaitResponse, <-chan error) {
-						statusCh := make(chan container.WaitResponse, 1)
-						statusCh <- container.WaitResponse{StatusCode: 0}
-						return statusCh, nil
-					},
-					ContainerRemoveFunc: func(ctx context.Context, containerID string, options container.RemoveOptions) error {
-						return nil
-					},
-					ImagePullFunc: func(ctx context.Context, ref string, options image.PullOptions) (io.ReadCloser, error) {
-						return io.NopCloser(strings.NewReader("")), nil
-					},
-				}, nil
-			}
-			_, _, exitCodeChan, err = executor.Execute(context.Background(), "echo", []string{"hello"}, "", nil)
-		}
 		require.NoError(t, err)
 
 		<-exitCodeChan

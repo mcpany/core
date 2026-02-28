@@ -81,10 +81,17 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          if command -v sudo &> /dev/null; then
+            sudo rm -rf /usr/local/lib/android
+            sudo rm -rf /usr/share/dotnet
+            sudo rm -rf /opt/ghc
+            sudo rm -rf /usr/local/share/boost
+          else
+            rm -rf /usr/local/lib/android || true
+            rm -rf /usr/share/dotnet || true
+            rm -rf /opt/ghc || true
+            rm -rf /usr/local/share/boost || true
+          fi
 
       - name: Prune Docker
         run: docker system prune -af
@@ -157,10 +164,17 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          if command -v sudo &> /dev/null; then
+            sudo rm -rf /usr/local/lib/android
+            sudo rm -rf /usr/share/dotnet
+            sudo rm -rf /opt/ghc
+            sudo rm -rf /usr/local/share/boost
+          else
+            rm -rf /usr/local/lib/android || true
+            rm -rf /usr/share/dotnet || true
+            rm -rf /opt/ghc || true
+            rm -rf /usr/local/share/boost || true
+          fi
 
       - name: Prune Docker
         run: docker system prune -af
@@ -296,10 +310,17 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          if command -v sudo &> /dev/null; then
+            sudo rm -rf /usr/local/lib/android
+            sudo rm -rf /usr/share/dotnet
+            sudo rm -rf /opt/ghc
+            sudo rm -rf /usr/local/share/boost
+          else
+            rm -rf /usr/local/lib/android || true
+            rm -rf /usr/share/dotnet || true
+            rm -rf /opt/ghc || true
+            rm -rf /usr/local/share/boost || true
+          fi
 
       - name: Prune Docker
         run: docker system prune -af
@@ -437,6 +458,8 @@ jobs:
         run: make prepare
 
       - name: run parallel e2e
+        env:
+          MCPANY_ENABLE_TEST_SEED: true
         run: |
           make e2e-parallel SHARD=${{ matrix.shard }} SKIP_DOCKER_REBUILD=true CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-e2e-parallel.out
 
@@ -467,10 +490,17 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          if command -v sudo &> /dev/null; then
+            sudo rm -rf /usr/local/lib/android
+            sudo rm -rf /usr/share/dotnet
+            sudo rm -rf /opt/ghc
+            sudo rm -rf /usr/local/share/boost
+          else
+            rm -rf /usr/local/lib/android || true
+            rm -rf /usr/share/dotnet || true
+            rm -rf /opt/ghc || true
+            rm -rf /usr/local/share/boost || true
+          fi
       - uses: actions/checkout@v6
 
       - name: Set up Go
@@ -603,10 +633,17 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          if command -v sudo &> /dev/null; then
+            sudo rm -rf /usr/local/lib/android
+            sudo rm -rf /usr/share/dotnet
+            sudo rm -rf /opt/ghc
+            sudo rm -rf /usr/local/share/boost
+          else
+            rm -rf /usr/local/lib/android || true
+            rm -rf /usr/share/dotnet || true
+            rm -rf /opt/ghc || true
+            rm -rf /usr/local/share/boost || true
+          fi
 
       - name: Prune Docker
         run: docker system prune -af
@@ -719,6 +756,8 @@ jobs:
         run: make prepare
 
       - name: run sequential e2e
+        env:
+          MCPANY_ENABLE_TEST_SEED: true
         run: |
           make e2e-sequential SKIP_DOCKER_REBUILD=true CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-e2e-sequential.out
 
@@ -742,10 +781,17 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          if command -v sudo &> /dev/null; then
+            sudo rm -rf /usr/local/lib/android
+            sudo rm -rf /usr/share/dotnet
+            sudo rm -rf /opt/ghc
+            sudo rm -rf /usr/local/share/boost
+          else
+            rm -rf /usr/local/lib/android || true
+            rm -rf /usr/share/dotnet || true
+            rm -rf /opt/ghc || true
+            rm -rf /usr/local/share/boost || true
+          fi
 
       - name: Prune Docker
         run: docker system prune -af
@@ -841,6 +887,8 @@ jobs:
         run: make prepare
 
       - name: test public api
+        env:
+          MCPANY_ENABLE_TEST_SEED: true
         run: |
           make test-public-api CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-public-api.out
 
@@ -921,10 +969,17 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          if command -v sudo &> /dev/null; then
+            sudo rm -rf /usr/local/lib/android
+            sudo rm -rf /usr/share/dotnet
+            sudo rm -rf /opt/ghc
+            sudo rm -rf /usr/local/share/boost
+          else
+            rm -rf /usr/local/lib/android || true
+            rm -rf /usr/share/dotnet || true
+            rm -rf /opt/ghc || true
+            rm -rf /usr/local/share/boost || true
+          fi
 
       - name: Prune Docker
         run: docker system prune -af
@@ -964,6 +1019,8 @@ jobs:
           done
 
       - name: Test UI
+        env:
+          MCPANY_ENABLE_TEST_SEED: true
         run: |
           SERVER_IMAGE=mcpany/server:latest make -C ui test-ci PLAYWRIGHT_ARGS="--shard=${{ matrix.shard }}"
 
@@ -974,10 +1031,17 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          if command -v sudo &> /dev/null; then
+            sudo rm -rf /usr/local/lib/android
+            sudo rm -rf /usr/share/dotnet
+            sudo rm -rf /opt/ghc
+            sudo rm -rf /usr/local/share/boost
+          else
+            rm -rf /usr/local/lib/android || true
+            rm -rf /usr/share/dotnet || true
+            rm -rf /opt/ghc || true
+            rm -rf /usr/local/share/boost || true
+          fi
 
       - name: Prune Docker
         run: docker system prune -af
@@ -1057,6 +1121,8 @@ jobs:
           echo "Images already loaded in previous step."
 
       - name: Run K8s E2E Tests
+        env:
+          MCPANY_ENABLE_TEST_SEED: true
         run: |
           make k8s-e2e SKIP_IMAGE_BUILD=true IMAGE_TAG=latest
 

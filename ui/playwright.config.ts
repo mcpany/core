@@ -10,6 +10,9 @@ import os from 'os';
 const PORT = process.env.TEST_PORT || 9111;
 const BASE_URL = process.env.PLAYWRIGHT_BASE_URL || `http://localhost:${PORT}`;
 
+// Ensure the server started by Playwright allows seeding
+process.env.MCPANY_ENABLE_TEST_SEED = 'true';
+
 export default defineConfig({
   testDir: './tests',
   globalSetup: require.resolve('./tests/global-setup'),
