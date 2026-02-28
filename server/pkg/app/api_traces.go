@@ -230,31 +230,57 @@ func (a *Application) handleTracesWS() http.HandlerFunc {
 		}
 		a.seededTracesMu.RUnlock()
 
-		// Send ping periodically
-		go func() {
-			ticker := time.NewTicker(5 * time.Second)
-			defer ticker.Stop()
-			for range ticker.C {
+		seededSubCh := make(chan *Trace, 100)
+		a.seededTraceSubsMu.Lock()
+		a.seededTraceSubs[seededSubCh] = struct{}{}
+		a.seededTraceSubsMu.Unlock()
+
+		defer func() {
+			a.seededTraceSubsMu.Lock()
+			delete(a.seededTraceSubs, seededSubCh)
+			a.seededTraceSubsMu.Unlock()
+			close(seededSubCh)
+		}()
+
+		pingTicker := time.NewTicker(5 * time.Second)
+		defer pingTicker.Stop()
+
+		for {
+			select {
+			case <-pingTicker.C:
 				if err := conn.WriteControl(websocket.PingMessage, []byte{}, time.Now().Add(time.Second)); err != nil {
 					return
 				}
-			}
-		}()
+			case msg, ok := <-logCh:
+				if !ok {
+					return
+				}
+				entry, ok := msg.(audit.Entry)
+				if !ok {
+					continue
+				}
+				trace := toTrace(entry)
 
-		for msg := range logCh {
-			entry, ok := msg.(audit.Entry)
-			if !ok {
-				continue
-			}
-			trace := toTrace(entry)
-
-			if err := conn.SetWriteDeadline(time.Now().Add(10 * time.Second)); err != nil {
-				logging.GetLogger().Error("failed to set write deadline", "error", err)
-				return
-			}
-			if err := conn.WriteJSON(trace); err != nil {
-				logging.GetLogger().Error("failed to write trace to websocket", "error", err)
-				return
+				if err := conn.SetWriteDeadline(time.Now().Add(10 * time.Second)); err != nil {
+					logging.GetLogger().Error("failed to set write deadline", "error", err)
+					return
+				}
+				if err := conn.WriteJSON(trace); err != nil {
+					logging.GetLogger().Error("failed to write trace to websocket", "error", err)
+					return
+				}
+			case trace, ok := <-seededSubCh:
+				if !ok {
+					return
+				}
+				if err := conn.SetWriteDeadline(time.Now().Add(10 * time.Second)); err != nil {
+					logging.GetLogger().Error("failed to set write deadline", "error", err)
+					return
+				}
+				if err := conn.WriteJSON(trace); err != nil {
+					logging.GetLogger().Error("failed to write seeded trace to websocket", "error", err)
+					return
+				}
 			}
 		}
 	}
@@ -276,6 +302,16 @@ func (a *Application) handleDebugSeedTraces() http.HandlerFunc {
 			a.seededTraces = a.seededTraces[len(a.seededTraces)-50:]
 		}
 		a.seededTracesMu.Unlock()
+
+		a.seededTraceSubsMu.RLock()
+		for sub := range a.seededTraceSubs {
+			select {
+			case sub <- &trace:
+			default:
+				// If channel is full, skip to avoid blocking
+			}
+		}
+		a.seededTraceSubsMu.RUnlock()
 
 		logging.GetLogger().Info("Seeded debug trace", "id", trace.ID)
 
