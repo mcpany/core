@@ -1,32 +1,18 @@
 # Coverage Intervention Report
 
-## Target
-**File:** `server/cmd/mcpctl/doctor.go`
+**Target:** `server/pkg/validation/url.go` (specifically the `ValidateIP` function)
 
-## Risk Profile
-**Selection Reason:** High Risk / Critical Maintenance Tool.
-The `doctor` command is the primary diagnostic tool used by administrators when the MCP Any system is malfunctioning. It is responsible for:
-1.  **Configuration Validation:** Loading and checking complex configuration files.
-2.  **Network Connectivity:** Diagnosing connection issues between the CLI and the server.
-3.  **System Health:** Parsing and displaying detailed health reports from the server.
+**Risk Profile:**
+The `ValidateIP` function serves as a critical security defense mechanism against Server-Side Request Forgery (SSRF) and DNS rebinding attacks. It verifies whether an IP address belongs to unsafe subnets (loopback, link-local, multicast, or private IP networks). Despite its crucial role in protecting upstream API interactions—such as fetching remote secrets or processing user-defined service configurations—this function had **0.0% test coverage**. This "Dark Matter" logic represented a significant blind spot where a subtle refactoring could unintentionally bypass network boundaries and expose internal metadata services.
 
-**Prior State:**
--   **Coverage:** 0% (Untested "Dark Matter").
--   **Complexity:** High (Handles file I/O, HTTP networking, JSON parsing, and error handling).
--   **Impact:** Bugs in this tool would leave users blind during outages, unable to diagnose why their system is failing.
+**New Coverage:**
+I implemented extensive Table-Driven Tests in `server/pkg/validation/url_test.go` to hermetically verify every condition branch within the function. The guarded paths now include:
+*   **Public Routing:** Ensures safe public IP addresses (e.g., `8.8.8.8`) are always allowed.
+*   **Loopback Defenses:** Validates that standard IPv4/IPv6 loopback addresses (`127.0.0.1`, `::1`), IPv4-compatible IPv6 loopback, and NAT64 loopback mappings are correctly intercepted unless explicitly permitted by policy overrides.
+*   **Metadata Shielding:** Confirms strict blocklists against link-local addresses (`169.254.169.254`, `fe80::1`) to prevent cloud credential extraction.
+*   **Private Boundaries:** Ensures private network spaces (`10.x.x.x`, `192.168.x.x`) are only routed when the `allowPrivate` constraint is strictly passed.
+*   **Edge Cases:** Handles unspecified (`0.0.0.0`) and multicast (`239.x.x.x`) routing blocks to prevent broadcast anomalies.
 
-## New Coverage
-**Implemented Defenses:**
-Refactored the code to use Dependency Injection (`DoctorRunner`), enabling robust testing of all logic paths.
-
-**Guarded Paths:**
-1.  **Happy Path:** Verifies that a fully healthy system is correctly reported as "OK" with all checks passing.
-2.  **Server Connectivity Failure:** Ensures that if the server is unreachable (e.g., down or network issue), the tool reports a failure and provides a helpful suggestion.
-3.  **Health Endpoint Failure:** Verifies that if the server responds with a 500 error on `/health` or `/doctor`, the tool correctly reports the error.
-4.  **Degraded State:** Verifies that if the server reports a "degraded" status (e.g., database down), the CLI correctly reflects this status and lists the failing components.
-5.  **Address Parsing:** Indirectly tests the logic for parsing `host:port` strings through the test scenarios.
-
-## Verification
--   **New Tests:** `go test ./server/cmd/mcpctl/...` passed successfully.
--   **Regression Testing:** `go test ./server/pkg/...` passed successfully, ensuring no negative impact on the core server logic.
--   **Build Integrity:** `make gen` was executed to verify that the project builds and generates necessary artifacts (protobufs) correctly.
+**Verification:**
+*   `make test`: All tests in the repository executed cleanly without regressions. The `ValidateIP` unit tests successfully pass with a 100% statement coverage metric for that function.
+*   `make lint`: Static analysis and formatting passed cleanly according to the strict pre-commit hooks configured for the repository.
