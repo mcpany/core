@@ -19,6 +19,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { useTheme } from "next-themes";
 import { defineDraculaTheme } from "@/lib/monaco-theme";
 import dynamic from "next/dynamic";
+import { deepParseJson } from "@/lib/utils";
 
 // ⚡ BOLT: Lazy load heavy dependencies to improve initial bundle size and TTI.
 // Randomized Selection from Top 5 High-Impact Targets
@@ -253,8 +254,8 @@ export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
                     </DialogHeader>
                     <div className="flex-1 border rounded-md overflow-hidden bg-[#1e1e1e]">
                         <DiffEditor
-                            original={JSON.stringify(message.previousResult, null, 2)}
-                            modified={JSON.stringify(message.toolResult, null, 2)}
+                            original={JSON.stringify(deepParseJson(message.previousResult), null, 2)}
+                            modified={JSON.stringify(deepParseJson(message.toolResult), null, 2)}
                             language="json"
                             theme={theme === "dark" ? "dracula" : "light"}
                             onMount={(editor, monaco) => {
