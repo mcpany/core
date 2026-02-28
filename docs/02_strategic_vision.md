@@ -52,8 +52,8 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ## Strategic Evolution: [2026-02-28]
 ### Focus: Safe-by-Default Infrastructure & A2A Mesh Maturity
-**Context**: The "8,000 Exposed Servers" crisis and the "Clawdbot" incident have proven that "Ease of Use" cannot come at the cost of "Default Security." Simultaneously, the A2A protocol is maturing into the primary way agents coordinate.
+**Context**: The "8,000 Exposed Servers" crisis, specifically the OpenClaw port 18789 exposure, and the "Clawdbot" incident have proven that "Ease of Use" cannot come at the cost of "Default Security." Simultaneously, the A2A protocol is maturing into the primary way agents coordinate, requiring more than just a stateless bridge.
 **Strategic Pivot**:
-- **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
-- **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
-- **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+- **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, **Hardware-Locked Attestation** (e.g., TPM/Secure Enclave signatures) to ensure only authorized administrators can expose tools.
+- **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state. By providing **Zero-Trust Mesh Residency**, MCP Any acts as a "Stateful Buffer" that preserves context and messages between intermittent agent connections, even across network boundaries.
+- **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override and cryptographic validation of the server's identity.

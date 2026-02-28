@@ -11,8 +11,9 @@
 - [ ] **[P0] Agent Chain Tracer (A2A)**: Visual timeline of multi-agent handoffs and message passing. (Added: 2026-02-26)
 - [ ] **[P1] Federated Node Manager**: UI for peering with remote MCP Any instances and managing shared tool access. (Added: 2026-02-26)
 - [ ] **[P1] Resource Cost/Latency Overlay**: Real-time performance metrics displayed directly on tool cards. (Added: 2026-02-26)
-- [ ] **[P0] Connectivity & Security Dashboard**: Visualize local-only vs remote exposure, attestation status, and active MFA sessions. (Added: 2026-02-28)
-- [ ] **[P0] Stateful A2A Mailbox**: UI for viewing queued and delivered A2A messages across the agent mesh. (Added: 2026-02-28)
+- [ ] **[P0] Connectivity & Security Dashboard**: Visualize local-only vs remote exposure, Hardware-Locked Attestation status, and active MFA sessions. (Added: 2026-02-28)
+- [ ] **[P0] Stateful A2A Mailbox**: UI for viewing queued and delivered A2A messages across the agent mesh, including retry status. (Added: 2026-02-28)
+- [ ] **[P1] Port Exposure Mitigation Wizard**: Interactive UI to help users transition from `0.0.0.0` to secure local/attested listeners. (Added: 2026-02-28)
 - [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
 - [x] **[P1] Tool Playground & Explorer**:
   - [x] Auto-generated forms from Tool JSON Schemas.

@@ -73,6 +73,8 @@
 ### Proposed Additions
 - **"Safe-by-Default" Network Hardening**: (P0) Transition to local-only default bindings for all services. Requires explicit MFA/Attestation for remote exposure.
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
+- **Automated Port Security Scanner**: (P1) On-startup scan to detect if any internal MCP services are accidentally bound to public interfaces, providing instant mitigation advice.
+- **Stateful A2A Mailbox**: (P0) Durable persistence layer for inter-agent messages, ensuring delivery even if the recipient agent is offline.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
 ### Priority Shifts

@@ -3,7 +3,8 @@
 ## Ecosystem Updates
 
 ### OpenClaw & Agent Swarms
-- **OpenClaw Evolution**: Moving towards a "Headless Agentic Infrastructure" where the focus is on multi-agent coordination and verifiable security contracts.
+- **OpenClaw Evolution**: The 2026.2.19 update has shifted OpenClaw towards "Practical AI Automation," emphasizing beginner-friendly setup and robust multi-agent coordination.
+- **Agent Operating System**: Since the 2026.2.17 update, OpenClaw has transitioned from a local AI agent to a structural "Agent OS," supporting complex multi-agent modes.
 - **A2A Proliferation**: Increased adoption of the Agent-to-Agent (A2A) protocol for cross-framework delegation (e.g., CrewAI delegating to OpenClaw).
 
 ### Claude Code & Gemini CLI
@@ -14,7 +15,9 @@
 
 ### The "8000 Exposed Servers" Crisis
 - Recent scans revealed over 8,000 MCP servers publicly accessible without authentication.
-- **Clawdbot Incident**: 1,000+ admin panels exposed due to default `0.0.0.0:8080` binding.
+- **OpenClaw Port 18789 Exposure**: A significant portion of the exposure is attributed to OpenClaw's default web gateway (port 18789) being bound to `0.0.0.0`.
+- **Clawdbot Incident**: 1,000+ admin panels exposed due to default `0.0.0.0:8080` binding, leading to unauthorized system access.
+- **Safe Update Mandate**: Community guidelines now recommend VPS snapshots and dependency audits (`pip list --outdated`) before updating agentic infrastructure to prevent regression-based security holes.
 - **CVE-2026-2008**: Fermat-MCP code injection vulnerability highlights the danger of unvalidated tool inputs.
 
 ### Supply Chain (Clinejection)
