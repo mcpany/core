@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-01] Updates
+
+### Proposed Additions
+- **Deterministic Agent Spawning Interface**: (P0) A session branching protocol that allows parent agents to spawn sub-agents with a cryptographically verified "snapshot" of the current state.
+- **Isolated Inter-Agent IPC (Named Pipes/UDS)**: (P0) Transitioning from HTTP/TCP listeners to local-only IPC for inter-agent traffic, especially for agents running in Docker containers.
+- **Context-Aware Token Budgeting Middleware**: (P1) Automatic filtering of tool outputs based on the available token budget and relevance score, optimized for 1M+ context windows.
+
+### Priority Shifts
+- **A2A Stateful Residency**: Re-affirmed as **P0** to support reliable state transfer during deterministic agent branching.
+- **"Safe-by-Default" Network Hardening**: Expanding its scope to include IPC isolation for sub-agents.
+
+### Deprecations / Monitoring
+- **Open-Port Multi-Agent Routing**: Monitoring for deprecation in favor of isolated named pipes/sockets to prevent port-scanning exploits.

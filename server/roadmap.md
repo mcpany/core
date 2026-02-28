@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-01 Evolution)
+*   **[P0] Deterministic Agent Spawning Interface**: Implement session branching for cryptographically verified agent states. (Added: 2026-03-01)
+*   **[P0] Isolated Inter-Agent IPC (Named Pipes/UDS)**: Transition inter-agent routing to host-level isolated IPC (e.g., Docker-bound named pipes). (Added: 2026-03-01)
+*   **[P1] Context-Aware Token Budgeting**: Middleware to importance-filter tool results based on the remaining token budget. (Added: 2026-03-01)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

@@ -59,3 +59,10 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+
+### Update: 2026-03-01 - Isolated Inter-Agent IPC (Named Pipes/UDS)
+**Context:** Market sync revealed a surge in port-scanning exploits (Clawdbot) targeting agent-to-adapter traffic. Standard HTTP listeners on high ports are no longer safe for multi-agent environments.
+**Architecture Adjustment:**
+* Deprecating standard HTTP/TCP listeners for internal inter-agent traffic.
+* Transitioning to host-level isolated IPC (Docker-bound named pipes for Windows/Containers, Unix Domain Sockets for Linux) for local-only agent traffic by default.
+**Security Impact:** Mitigates unauthorized host-level access and lateral movement by rogue sub-agents.

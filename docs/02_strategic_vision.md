@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-01]
+### Focus: Deterministic Agent Spawning & Isolated Inter-Agent IPC
+**Context**: The latest OpenClaw updates (deterministic sub-agent spawning) and the emergence of "Docker-Bound" exploits require a shift from simple HTTP-based inter-agent communication to isolated, host-level IPC channels.
+**Strategic Pivot**:
+- **Isolated Agent IPC**: MCP Any will pivot from standard HTTP/TCP listeners for inter-agent traffic to isolated channels (Docker-bound named pipes and Unix domain sockets) by default, mitigating port-scanning risks in multi-agent environments.
+- **Deterministic Session Management**: Implementing a "Session Branching" protocol where sub-agents inherit a parent's state deterministically, allowing for "Merkle-Proof" style state verification.
+- **Context-Aware Token Budgeting**: Moving beyond simple truncation to "Importance-Aware" tool result filtering, ensuring that a 1M token context window is populated only with the most relevant tool outputs.

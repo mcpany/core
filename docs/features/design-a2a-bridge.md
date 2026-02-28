@@ -46,3 +46,10 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+
+### Update: 2026-03-01 - Support for Deterministic Spawning & Snapshots
+**Context:** The "OpenClaw 2026.2.17" update and the trend toward multi-level agent hierarchies (Parent -> Manager -> Worker) require a mechanism for stable state transfer during handoffs.
+**Architecture Adjustment:**
+* Integrating with the new `Deterministic Agent Spawning Interface` for all A2A handoffs.
+* Implementing "Immutable State Snapshots" (Merkle-tree proofs) during the delegation phase to ensure workers operate on a consistent version of the parent's data.
+**Security Impact:** Prevents state pollution and "Hallucination Loops" in complex, multi-hop agent chains.
