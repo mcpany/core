@@ -76,7 +76,6 @@ jobs:
     runs-on: oci-runner
     # container: public.ecr.aws/docker/library/ubuntu:24.04
     steps:
-
       - name: Prune Docker
         run: docker system prune -af
 
@@ -146,7 +145,6 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
-
       - name: Prune Docker
         run: docker system prune -af
 
@@ -279,7 +277,6 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
-
       - name: Prune Docker
         run: docker system prune -af
 
@@ -432,7 +429,7 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: ${{ matrix.runner }}
-    container: public.ecr.aws/docker/library/ubuntu:24.04
+    # container: public.ecr.aws/docker/library/ubuntu:24.04
     strategy:
       fail-fast: false
       matrix:
@@ -574,7 +571,6 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
-
       - name: Prune Docker
         run: docker system prune -af
 
@@ -707,7 +703,6 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
-
       - name: Prune Docker
         run: docker system prune -af
 
@@ -880,7 +875,6 @@ jobs:
       matrix:
         shard: [1/2, 2/2]
     steps:
-
       - name: Prune Docker
         run: docker system prune -af
 
@@ -927,7 +921,6 @@ jobs:
     timeout-minutes: 20
     needs: [build-images]
     steps:
-
       - name: Prune Docker
         run: docker system prune -af
 
