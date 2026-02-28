@@ -204,7 +204,9 @@ export default function ServicesPage() {
 
   const initServiceFromConfig = (config: Partial<UpstreamServiceConfig>) => {
       // Deep copy config to avoid mutating template
-      const newService = JSON.parse(JSON.stringify(config));
+      // ⚡ BOLT: Replaced slow JSON.parse(JSON.stringify()) with native structuredClone to avoid main thread blocking and reduce memory overhead during deep object cloning.
+      // Randomized Selection from Top 5 High-Impact Targets.
+      const newService = structuredClone(config);
       // Ensure defaults
       newService.version = newService.version || "1.0.0";
       newService.priority = newService.priority || 0;
@@ -236,7 +238,9 @@ export default function ServicesPage() {
 
   const handleDuplicate = useCallback((service: UpstreamServiceConfig) => {
       // Deep clone
-      const newService = JSON.parse(JSON.stringify(service));
+      // ⚡ BOLT: Replaced slow JSON.parse(JSON.stringify()) with native structuredClone to avoid main thread blocking and reduce memory overhead during deep object cloning.
+      // Randomized Selection from Top 5 High-Impact Targets.
+      const newService = structuredClone(service);
       // Reset ID to ensure it creates a new service
       newService.id = "";
       // Append copy to name to avoid collision
@@ -255,7 +259,9 @@ export default function ServicesPage() {
 
   const handleExport = useCallback((service: UpstreamServiceConfig) => {
       // Create a clean copy for export (remove runtime fields like lastError)
-      const exportData = JSON.parse(JSON.stringify(service));
+      // ⚡ BOLT: Replaced slow JSON.parse(JSON.stringify()) with native structuredClone to avoid main thread blocking and reduce memory overhead during deep object cloning.
+      // Randomized Selection from Top 5 High-Impact Targets.
+      const exportData = structuredClone(service);
       delete exportData.lastError;
       // Remove runtime status fields if any
       delete exportData.connectionPool;

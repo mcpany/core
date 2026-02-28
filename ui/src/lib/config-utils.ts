@@ -27,7 +27,7 @@ export type SecretHandlingMode = 'redact' | 'template' | 'unsafe';
  */
 export function sanitizeServiceConfig(service: UpstreamServiceConfig, mode: SecretHandlingMode): UpstreamServiceConfig {
     // Deep clone to avoid mutating original
-    const clone = JSON.parse(JSON.stringify(service));
+    const clone = structuredClone(service);
 
     if (mode === 'unsafe') {
         return clone;

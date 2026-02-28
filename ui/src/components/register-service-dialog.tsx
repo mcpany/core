@@ -171,7 +171,7 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
 
   const populateFormFromTemplate = (template: ServiceTemplate, fieldValues?: Record<string, string>) => {
       // Clone config to avoid mutating template
-      const config = JSON.parse(JSON.stringify(template.config)) as Partial<UpstreamServiceConfig>;
+      const config = structuredClone(template.config) as Partial<UpstreamServiceConfig>;
 
       // Perform substitution if fields present
       if (template.fields && fieldValues) {

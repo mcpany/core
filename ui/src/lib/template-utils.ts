@@ -18,7 +18,7 @@ export function applyTemplateFields(
   fieldValues: Record<string, string>
 ): Partial<UpstreamServiceConfig> {
   // Deep clone the config to avoid mutating the original
-  const config = JSON.parse(JSON.stringify(template.config));
+  const config = structuredClone(template.config);
 
   if (!template.fields) {
     return config;

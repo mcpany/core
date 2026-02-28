@@ -34,6 +34,7 @@ describe("ServiceHealthContext", () => {
         };
 
         (global.fetch as any).mockResolvedValue({
+            headers: new Map(),
             ok: true,
             json: async () => mockTopology,
             text: async () => JSON.stringify(mockTopology)
@@ -47,7 +48,7 @@ describe("ServiceHealthContext", () => {
 
         // Wait for fetch
         await waitFor(() => {
-             expect(global.fetch).toHaveBeenCalledWith('/api/v1/topology');
+             expect(global.fetch).toHaveBeenCalledWith('/api/v1/topology', { headers: {} });
         });
 
         // Check history
@@ -76,6 +77,7 @@ describe("ServiceHealthContext", () => {
         };
 
         (global.fetch as any).mockResolvedValue({
+            headers: new Map(),
             ok: true,
             json: async () => mockTopology,
             text: async () => JSON.stringify(mockTopology)
@@ -102,15 +104,16 @@ describe("ServiceHealthContext", () => {
         });
 
         // Verify first fetch
-        expect(global.fetch).toHaveBeenCalledWith('/api/v1/topology');
+        expect(global.fetch).toHaveBeenCalledWith('/api/v1/topology', { headers: {} });
 
         // Capture render count after initial fetch setup
         const rendersAfterInit = renderCount;
 
         // Mock next fetch with SAME topology (same content, new object)
         // This simulates a poll where metrics might be processed but topology structure is identical
-        const mockTopology2 = JSON.parse(JSON.stringify(mockTopology));
+        const mockTopology2 = structuredClone(mockTopology);
         (global.fetch as any).mockResolvedValue({
+            headers: new Map(),
             ok: true,
             json: async () => mockTopology2,
             text: async () => JSON.stringify(mockTopology2)

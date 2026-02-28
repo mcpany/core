@@ -80,7 +80,7 @@ function CodeBlock({ language, code }: { language: string; code: string }) {
  */
 export const FileConfigCard = memo(function FileConfigCard({ service }: { service: UpstreamServiceConfig }) {
     const { jsonConfig, yamlConfig, textProtoConfig } = useMemo(() => {
-        const tempService = JSON.parse(JSON.stringify(service));
+        const tempService = structuredClone(service);
         delete tempService.id;
 
         return {

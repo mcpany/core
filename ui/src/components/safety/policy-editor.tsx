@@ -71,7 +71,7 @@ export function PolicyEditor({ policies = [], onUpdate }: PolicyEditorProps) {
     const handleEdit = (index: number) => {
         setEditingIndex(index);
         // Deep copy to avoid mutating props directly
-        setCurrentPolicy(JSON.parse(JSON.stringify(policies[index])));
+        setCurrentPolicy(structuredClone(policies[index]));
         setIsDialogOpen(true);
     };
 
