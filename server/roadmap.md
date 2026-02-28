@@ -29,6 +29,11 @@
 *   **[P1] Federated MCP Peering**: Distributed node discovery and tool proxying. (Added: 2026-02-26)
 *   **[P1] Resource Telemetry Middleware**: Inject latency/cost metrics into tool schemas. (Added: 2026-02-26)
 
+#### Upcoming (2026-02-28 Evolution)
+*   **[P0] Self-Healing Tool Middleware**: Agentic loop for autonomous tool call correction. (Added: 2026-02-28)
+*   **[P0] Reflection Sandbox Enforcement**: Strict isolation and validation for reflective tool calls. (Added: 2026-02-28)
+*   **[P1] Multimodal Payload Gateway**: Binary-optimized transport for image/video tool data. (Added: 2026-02-28)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

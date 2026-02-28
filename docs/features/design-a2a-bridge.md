@@ -46,3 +46,7 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-02-28:** **Standardizing A2A State Sync**.
+    - **Context**: Today's market sync revealed that cross-framework state drift is a major pain point.
+    - **Architecture Adjustment**: Introducing a mandatory `state_snapshot` field in A2A handoff messages, managed by MCP Any's `Shared KV Store`.
+    - **Impact**: Ensures that when an agent hands off to a peer from a different framework, the peer has immediate access to the relevant shared blackboard state.

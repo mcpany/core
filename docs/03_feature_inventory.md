@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-28] Updates
+
+### Proposed Additions
+- **Self-Healing Tool Middleware**: (P0) Infrastructure-level agentic loop that diagnoses and corrects tool call failures (e.g., schema mismatches, missing params) before returning error to parent agent.
+- **Multimodal Payload Gateway**: (P1) Binary-optimized transport (gRPC/Protobuf) for large image/video payloads in tool calls, reducing latency for multimodal agents.
+- **Reflection Sandbox Enforcement**: (P0) Middleware that strictly intercepts and validates "Reflective" tool calls to prevent environment variable and secret exfiltration.
+
+### Priority Shifts
+- **A2A Interop Bridge**: (Re-affirming P0) Critical for cross-framework swarm coordination.
+- **Lazy-MCP Middleware**: (P0) Shifted to "JIT Loading" model to align with Claude Code patterns.
+
+### Deprecations / Monitoring
+- **JSON-RPC over Stdio**: Monitoring for deprecation as primary transport for multimodal payloads in favor of binary protocols.
