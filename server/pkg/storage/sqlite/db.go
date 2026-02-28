@@ -62,6 +62,11 @@ func NewDB(path string) (*DB, error) {
 		return nil, fmt.Errorf("failed to set busy_timeout: %w", err)
 	}
 
+	// Restrict to a single connection to prevent "database is locked" errors during concurrent writes
+	// since SQLite supports only one writer at a time. Go's connection pool can deadlock or timeout
+	// if multiple connections try to write simultaneously.
+	db.SetMaxOpenConns(1)
+
 	return &DB{db}, nil
 }
 
