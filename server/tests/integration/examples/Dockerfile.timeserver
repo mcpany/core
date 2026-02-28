@@ -12,15 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM mirror.gcr.io/library/python:3.11-slim
+FROM mirror.gcr.io/library/python:3.11-alpine
 
-# Reverting WORKDIR change as multiple paths failed with OverlayFS errors.
-# Attempting to use default WORKDIR (/) or minimal change.
-# Let's try not setting WORKDIR at all and using absolute paths.
+WORKDIR /app
 
-COPY timeserver_patch/requirements.txt /requirements.txt
-RUN pip install -r /requirements.txt
+COPY timeserver_patch/requirements.txt .
+RUN pip install -r requirements.txt
 
-COPY timeserver_patch/main.py /main.py
+COPY timeserver_patch/main.py .
 
-CMD ["python", "-u", "/main.py", "--mcp-stdio"]
+CMD ["python", "-u", "main.py", "--mcp-stdio"]
