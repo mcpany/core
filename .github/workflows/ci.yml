@@ -34,7 +34,18 @@ jobs:
       src: ${{ steps.filter.outputs.src }}
     steps:
       - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y git
+        run: |
+          SUDO=""
+          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if command -v apt-get &> /dev/null; then
+            $SUDO apt-get update && $SUDO apt-get install -y make git xz-utils gcc build-essential
+          elif command -v apk &> /dev/null; then
+            $SUDO apk add --no-cache make git xz gcc musl-dev
+          elif command -v dnf &> /dev/null; then
+            $SUDO dnf install -y make git xz gcc
+          elif command -v yum &> /dev/null; then
+            $SUDO yum install -y make git xz gcc
+          fi
 
       - uses: actions/checkout@v6
         with:
@@ -81,10 +92,12 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          SUDO=""
+          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          $SUDO rm -rf /usr/local/lib/android || true
+          $SUDO rm -rf /usr/share/dotnet || true
+          $SUDO rm -rf /opt/ghc || true
+          $SUDO rm -rf /usr/local/share/boost || true
 
       - name: Prune Docker
         run: docker system prune -af
@@ -133,10 +146,16 @@ jobs:
 
       - name: Install dependencies
         run: |
+          SUDO=""
+          if command -v sudo >/dev/null; then SUDO="sudo"; fi
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils gcc build-essential
+            $SUDO apt-get update && $SUDO apt-get install -y make git xz-utils gcc build-essential
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz gcc musl-dev
+            $SUDO apk add --no-cache make git xz gcc musl-dev
+          elif command -v dnf &> /dev/null; then
+            $SUDO dnf install -y make git xz gcc
+          elif command -v yum &> /dev/null; then
+            $SUDO yum install -y make git xz gcc
           fi
 
       - name: Prepare environment
@@ -157,10 +176,12 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          SUDO=""
+          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          $SUDO rm -rf /usr/local/lib/android || true
+          $SUDO rm -rf /usr/share/dotnet || true
+          $SUDO rm -rf /opt/ghc || true
+          $SUDO rm -rf /usr/local/share/boost || true
 
       - name: Prune Docker
         run: docker system prune -af
@@ -169,10 +190,16 @@ jobs:
 
       - name: Install dependencies
         run: |
+          SUDO=""
+          if command -v sudo >/dev/null; then SUDO="sudo"; fi
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils gcc build-essential
+            $SUDO apt-get update && $SUDO apt-get install -y make git xz-utils gcc build-essential
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz gcc musl-dev
+            $SUDO apk add --no-cache make git xz gcc musl-dev
+          elif command -v dnf &> /dev/null; then
+            $SUDO dnf install -y make git xz gcc
+          elif command -v yum &> /dev/null; then
+            $SUDO yum install -y make git xz gcc
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -296,10 +323,12 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          SUDO=""
+          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          $SUDO rm -rf /usr/local/lib/android || true
+          $SUDO rm -rf /usr/share/dotnet || true
+          $SUDO rm -rf /opt/ghc || true
+          $SUDO rm -rf /usr/local/share/boost || true
 
       - name: Prune Docker
         run: docker system prune -af
@@ -308,10 +337,16 @@ jobs:
 
       - name: Install dependencies
         run: |
+          SUDO=""
+          if command -v sudo >/dev/null; then SUDO="sudo"; fi
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils gcc build-essential
+            $SUDO apt-get update && $SUDO apt-get install -y make git xz-utils gcc build-essential
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz gcc musl-dev
+            $SUDO apk add --no-cache make git xz gcc musl-dev
+          elif command -v dnf &> /dev/null; then
+            $SUDO dnf install -y make git xz gcc
+          elif command -v yum &> /dev/null; then
+            $SUDO yum install -y make git xz gcc
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -467,19 +502,26 @@ jobs:
     steps:
       - name: Install dependencies
         run: |
-          if command -v sudo >/dev/null; then
-            SUDO="sudo"
-          else
-            SUDO=""
+          SUDO=""
+          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if command -v apt-get &> /dev/null; then
+            $SUDO apt-get update && $SUDO apt-get install -y make git xz-utils gcc build-essential
+          elif command -v apk &> /dev/null; then
+            $SUDO apk add --no-cache make git xz gcc musl-dev
+          elif command -v dnf &> /dev/null; then
+            $SUDO dnf install -y make git xz gcc
+          elif command -v yum &> /dev/null; then
+            $SUDO yum install -y make git xz gcc
           fi
-          $SUDO apt-get update && $SUDO apt-get install -y make git xz-utils gcc build-essential sudo
 
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android || true
-          sudo rm -rf /usr/share/dotnet || true
-          sudo rm -rf /opt/ghc || true
-          sudo rm -rf /usr/local/share/boost || true
+          SUDO=""
+          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          $SUDO rm -rf /usr/local/lib/android || true
+          $SUDO rm -rf /usr/share/dotnet || true
+          $SUDO rm -rf /opt/ghc || true
+          $SUDO rm -rf /usr/local/share/boost || true
       - uses: actions/checkout@v6
 
       - name: Set up Go
@@ -612,10 +654,12 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          SUDO=""
+          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          $SUDO rm -rf /usr/local/lib/android || true
+          $SUDO rm -rf /usr/share/dotnet || true
+          $SUDO rm -rf /opt/ghc || true
+          $SUDO rm -rf /usr/local/share/boost || true
 
       - name: Prune Docker
         run: docker system prune -af
@@ -624,10 +668,16 @@ jobs:
 
       - name: Install dependencies
         run: |
+          SUDO=""
+          if command -v sudo >/dev/null; then SUDO="sudo"; fi
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils gcc build-essential
+            $SUDO apt-get update && $SUDO apt-get install -y make git xz-utils gcc build-essential
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz gcc musl-dev
+            $SUDO apk add --no-cache make git xz gcc musl-dev
+          elif command -v dnf &> /dev/null; then
+            $SUDO dnf install -y make git xz gcc
+          elif command -v yum &> /dev/null; then
+            $SUDO yum install -y make git xz gcc
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -751,10 +801,12 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          SUDO=""
+          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          $SUDO rm -rf /usr/local/lib/android || true
+          $SUDO rm -rf /usr/share/dotnet || true
+          $SUDO rm -rf /opt/ghc || true
+          $SUDO rm -rf /usr/local/share/boost || true
 
       - name: Prune Docker
         run: docker system prune -af
@@ -763,10 +815,16 @@ jobs:
 
       - name: Install dependencies
         run: |
+          SUDO=""
+          if command -v sudo >/dev/null; then SUDO="sudo"; fi
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils gcc build-essential
+            $SUDO apt-get update && $SUDO apt-get install -y make git xz-utils gcc build-essential
           elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz gcc musl-dev
+            $SUDO apk add --no-cache make git xz gcc musl-dev
+          elif command -v dnf &> /dev/null; then
+            $SUDO dnf install -y make git xz gcc
+          elif command -v yum &> /dev/null; then
+            $SUDO yum install -y make git xz gcc
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -930,10 +988,12 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          SUDO=""
+          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          $SUDO rm -rf /usr/local/lib/android || true
+          $SUDO rm -rf /usr/share/dotnet || true
+          $SUDO rm -rf /opt/ghc || true
+          $SUDO rm -rf /usr/local/share/boost || true
 
       - name: Prune Docker
         run: docker system prune -af
@@ -983,10 +1043,12 @@ jobs:
     steps:
       - name: Free Disk Space (Fast)
         run: |
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
+          SUDO=""
+          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          $SUDO rm -rf /usr/local/lib/android || true
+          $SUDO rm -rf /usr/share/dotnet || true
+          $SUDO rm -rf /opt/ghc || true
+          $SUDO rm -rf /usr/local/share/boost || true
 
       - name: Prune Docker
         run: docker system prune -af
