@@ -1823,6 +1823,7 @@ type CommandTool struct {
 	policies        []*CompiledCallPolicy
 	callID          string
 	initError       error
+	allowedParams   map[string]bool
 }
 
 // NewCommandTool creates a new CommandTool instance.
@@ -1846,16 +1847,28 @@ func NewCommandTool(
 	callID string,
 ) Tool {
 	compiled, err := CompileCallPolicies(policies)
+
+	allowedParams := make(map[string]bool)
+	if callDefinition != nil {
+		for _, param := range callDefinition.GetParameters() {
+			if schema := param.GetSchema(); schema != nil {
+				allowedParams[schema.GetName()] = true
+			}
+		}
+	}
+
 	t := &CommandTool{
 		tool:           tool,
 		service:        service,
 		callDefinition: callDefinition,
 		policies:       compiled,
 		callID:         callID,
+		allowedParams:  allowedParams,
 	}
 	if err != nil {
 		t.initError = fmt.Errorf("failed to compile call policies: %w", err)
 	}
+
 	return t
 }
 
@@ -1875,6 +1888,7 @@ type LocalCommandTool struct {
 	callID         string
 	sandboxArgs    []string
 	initError      error
+	allowedParams  map[string]bool
 }
 
 // NewLocalCommandTool creates a new LocalCommandTool instance.
@@ -1898,12 +1912,23 @@ func NewLocalCommandTool(
 	callID string,
 ) Tool {
 	compiled, err := CompileCallPolicies(policies)
+
+	allowedParams := make(map[string]bool)
+	if callDefinition != nil {
+		for _, param := range callDefinition.GetParameters() {
+			if schema := param.GetSchema(); schema != nil {
+				allowedParams[schema.GetName()] = true
+			}
+		}
+	}
+
 	t := &LocalCommandTool{
 		tool:           tool,
 		service:        service,
 		callDefinition: callDefinition,
 		policies:       compiled,
 		callID:         callID,
+		allowedParams:  allowedParams,
 	}
 	if err != nil {
 		t.initError = fmt.Errorf("failed to compile call policies: %w", err)
@@ -2010,6 +2035,16 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 	// ⚡ Bolt Optimization: Use pre-configured fastJSONNumber to avoid per-request decoder allocation.
 	if err := fastJSONNumber.Unmarshal(req.ToolInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
+	}
+
+	// Filter undefined parameters from inputs to prevent mass assignment/pollution
+	for k := range inputs {
+		if k == "args" { // args is handled separately
+			continue
+		}
+		if !t.allowedParams[k] {
+			delete(inputs, k)
+		}
 	}
 
 	args := []string{}
@@ -2370,6 +2405,16 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	// ⚡ Bolt Optimization: Use pre-configured fastJSONNumber to avoid per-request decoder allocation.
 	if err := fastJSONNumber.Unmarshal(req.ToolInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
+	}
+
+	// Filter undefined parameters from inputs to prevent mass assignment/pollution
+	for k := range inputs {
+		if k == "args" { // args is handled separately
+			continue
+		}
+		if !t.allowedParams[k] {
+			delete(inputs, k)
+		}
 	}
 
 	args := []string{}

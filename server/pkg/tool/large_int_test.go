@@ -64,8 +64,14 @@ func TestLargeIntPrecisionLoss(t *testing.T) {
 		Command: proto.String("echo"),
 	}.Build()
 
+	schema := configv1.ParameterSchema_builder{Name: proto.String("id")}.Build()
+	mapping := configv1.CommandLineParameterMapping_builder{
+		Schema: schema,
+	}.Build()
+
 	callDef := configv1.CommandLineCallDefinition_builder{
 		Args: []string{"{{id}}"},
+		Parameters: []*configv1.CommandLineParameterMapping{mapping},
 	}.Build()
 
 	// Create CommandTool manually
@@ -76,6 +82,7 @@ func TestLargeIntPrecisionLoss(t *testing.T) {
 		executorFactory: func(_ *configv1.ContainerEnvironment) command.Executor {
 			return mockExec
 		},
+		allowedParams: map[string]bool{"id": true},
 	}
 
 	// Execute
