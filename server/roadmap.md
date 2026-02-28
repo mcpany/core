@@ -33,6 +33,9 @@
 *   **[P0] Safe-by-Default Hardening**: Transition all listeners to `localhost` by default. Implement mandatory Attestation for remote exposure. (Added: 2026-02-28)
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
+*   **[P0] Deterministic Handoff Control**: Explicit `spawn`/`terminate` primitives for sub-agents (Added: 2026-02-28 Supplemental).
+*   **[P1] Skill Vulnerability Scanner**: Automated auditing of MCP servers for known RCE patterns (Added: 2026-02-28 Supplemental).
+*   **[P0] Non-Networked Transport**: Unix Domain Socket and Named Pipe support for local tools (Added: 2026-02-28 Supplemental).
 
 ## 2. Top 10 Recommended Features
 

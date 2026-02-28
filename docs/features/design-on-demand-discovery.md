@@ -57,3 +57,10 @@ As the number of available MCP tools grows, agents face "context pollution"—wh
 
 ## 7. Evolutionary Changelog
 *   **2026-02-25:** Initial Document Creation.
+
+### Update: 2026-02-28 - Deterministic Discovery Control
+**Context:** The integration of OpenClaw-style deterministic spawning requires that discovery also be more precise. Semantic search is powerful but sometimes too probabilistic for high-stakes orchestration.
+**Architecture Adjustment:**
+*   **Tag-Based Scoping**: Adding support for strict `scope` filters in the discovery tool (e.g., `mcpany_search_tools(query="...", scope="aws-only")`).
+*   **Resource-Aware Ranking**: Discovery results will now be ranked not just by similarity, but by "Execution Cost" and "Success Rate" telemetry.
+**Security Impact:** Prevents "Tool Shadowing" attacks where a malicious tool with a similar description to a legitimate one is picked by the LLM.

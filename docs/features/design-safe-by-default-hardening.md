@@ -59,3 +59,10 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+
+### Update: 2026-02-28 - RCE Mitigation via Isolated Transport
+**Context:** Today's ecosystem audit identified CVE-2026-25253 (One-Click RCE) in OpenClaw's skill execution. This confirms that binding to local ports (even `127.0.0.1`) is insufficient for high-security environments where "Skills" might be malicious.
+**Architecture Adjustment:**
+*   **Isolated Transport**: Implementing support for Named Pipes (Windows) and Unix Domain Sockets (Linux/macOS) as the primary transport for local tool execution.
+*   **Network-Less Binding**: High-privilege tools will now be restricted to these non-networked transports by default.
+**Security Impact:** Completely eliminates the network attack surface for local tools, preventing remote exploitation of execution vulnerabilities.

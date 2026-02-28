@@ -57,3 +57,10 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+### Supplemental: Deterministic Coordination & RCE Mitigation
+**Context**: Today's deeper dive into OpenClaw (v2026.2.17+) and recent CVEs (CVE-2026-25253) reveals that A2A coordination must move beyond LLM-decided handoffs towards deterministic, command-driven spawning. Furthermore, the RCE risk in "Skill" execution necessitates a departure from networked transport for local operations.
+**Strategic Pivot**:
+- **Deterministic Spawning Hub**: MCP Any will expose explicit "Spawn" and "Terminate" primitives for sub-agents, allowing parent agents to maintain strict lifecycle control over the swarm.
+- **Isolated Transport (Unix Sockets/Named Pipes)**: To mitigate RCE risks identified in the OpenClaw ecosystem, MCP Any will prioritize non-networked local transport for high-privilege tools, eliminating the `0.0.0.0` attack surface entirely.
+- **Skill Vulnerability Scanning**: Integrating an automated scanner that audits MCP server definitions (and their underlying "Skills") for known vulnerability patterns before registration.

@@ -46,3 +46,10 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+
+### Update: 2026-02-28 - Deterministic Handoffs & Stateful Residency
+**Context:** Market shifts in OpenClaw (v2026.2.17) toward deterministic sub-agent spawning and the need for reliable A2A message passing have necessitated an evolution of the bridge.
+**Architecture Adjustment:**
+*   **Deterministic Control primitives**: Adding `mcpany_spawn_agent` and `mcpany_terminate_agent` tools to the bridge, allowing parent agents to manage sub-agent lifecycles explicitly.
+*   **Stateful Mailbox**: Implementing a persistent "Blackboard" buffer for A2A messages, ensuring that handoffs are not lost if an agent is temporarily disconnected or busy.
+**Security Impact:** Prevents "unauthorized spawning" by requiring a cryptographic session token for every agent creation request.

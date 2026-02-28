@@ -81,3 +81,15 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-02-28] Supplemental Updates
+
+### Proposed Additions
+- **Deterministic Sub-Agent Control**: (P0) Primitives for explicit `spawn` and `terminate` actions for sub-agents, moving away from probabilistic delegation.
+- **Skill Vulnerability Scanner**: (P1) Automated auditing of MCP server "Skills" against known CVEs (e.g., CVE-2026-25253).
+- **Named Pipe / Unix Socket Transport**: (P0) High-isolation transport layer for local tools to bypass network-based RCE vectors.
+
+### Priority Shifts
+- **Safe-by-Default Hardening**: Re-affirmed as **P0** with added urgency due to recent RCE exploits.
