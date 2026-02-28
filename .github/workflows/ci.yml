@@ -34,7 +34,14 @@ jobs:
       src: ${{ steps.filter.outputs.src }}
     steps:
       - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y git
+        run: |
+          SUDO=""
+          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if command -v apt-get >/dev/null; then
+            $SUDO apt-get update && $SUDO apt-get install -y git
+          elif command -v apk >/dev/null; then
+            $SUDO apk add --no-cache git
+          fi
 
       - uses: actions/checkout@v6
         with:
@@ -133,10 +140,12 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential gcc g++ curl unzip git
-          elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz build-base curl unzip git
+          SUDO=""
+          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if command -v apt-get >/dev/null; then
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential gcc g++ curl unzip git
+          elif command -v apk >/dev/null; then
+             $SUDO apk add --no-cache make xz build-base curl unzip git
           fi
 
       - name: Prepare environment
@@ -466,7 +475,14 @@ jobs:
             runner: ubuntu-24.04-arm
     steps:
       - name: Install dependencies
-        run: apt-get update && apt-get install -y make git curl unzip gcc g++
+        run: |
+          SUDO=""
+          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if command -v apt-get >/dev/null; then
+            $SUDO apt-get update && $SUDO apt-get install -y make git curl unzip gcc g++
+          elif command -v apk >/dev/null; then
+            $SUDO apk add --no-cache make git curl unzip gcc g++
+          fi
 
       - uses: actions/checkout@v6
 
@@ -612,10 +628,12 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential gcc g++ curl unzip git
-          elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz build-base curl unzip git
+          SUDO=""
+          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if command -v apt-get >/dev/null; then
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential gcc g++ curl unzip git
+          elif command -v apk >/dev/null; then
+             $SUDO apk add --no-cache make xz build-base curl unzip git
           fi
 
       - name: Configure Docker Registry Mirrors
@@ -751,10 +769,12 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if command -v apt-get &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y make xz-utils build-essential gcc g++ curl unzip git
-          elif command -v apk &> /dev/null; then
-             sudo apk add --no-cache make xz build-base curl unzip git
+          SUDO=""
+          if command -v sudo >/dev/null; then SUDO="sudo"; fi
+          if command -v apt-get >/dev/null; then
+            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils build-essential gcc g++ curl unzip git
+          elif command -v apk >/dev/null; then
+             $SUDO apk add --no-cache make xz build-base curl unzip git
           fi
 
       - name: Configure Docker Registry Mirrors
