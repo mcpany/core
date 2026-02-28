@@ -59,3 +59,10 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+
+### Update: [2026-02-28] - v2 - Mitigating Path Traversal and Prompt Hardening
+**Context:** Recent "OpenClaw Security Crisis" vulnerabilities (CVE-2026-27008, CVE-2026-27001) highlighted the danger of unsanitized paths and workspace-derived prompts.
+**Architecture Adjustment:**
+*   **Path Sanitization Middleware:** Implementing a strict resolve-and-validate pattern for all file operations (e.g., skill/tool installation) to prevent writing outside designated sandboxes.
+*   **Prompt String Hardening:** Introducing a "Semantic Escaping" layer that strips or escapes Unicode control characters and line separators from runtime-derived strings (e.g., directory names) before they are embedded into LLM prompts.
+**Security Impact:** Mitigates RCE via prompt injection and arbitrary file write vulnerabilities in agentic toolchains.

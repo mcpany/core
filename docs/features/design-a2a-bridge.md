@@ -46,3 +46,11 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+
+### Update: [2026-02-28] - v2 - Alignment with Emerging A2A Standards
+**Context:** The A2A protocol has matured with its transition to neutral foundation governance, defining core pillars for discovery, messaging, and handshakes.
+**Architecture Adjustment:**
+*   **A2A Security Handshake:** Shifting from ad-hoc token sharing to a formal "Security Handshake" protocol for negotiated permissions between agents.
+*   **Standardized Capability Discovery:** Implementing a discovery-first approach where agents advertise skills via the A2A-T standardized formats.
+*   **Stateful Messaging Residency:** Formalizing the "Stateful Buffer" architecture to handle asynchronous tasks and callbacks as per protocol specifications.
+**Security Impact:** Prevents unauthorized delegation and permission inheritance risks during multi-agent handoffs.

@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-02-28] - v2
+### Focus: Gateway-Level Security Mitigations & Standardized Inter-Agent Protocols
+**Context**: The "OpenClaw Security Crisis" has highlighted critical gaps in how AI agents handle unvalidated inputs and paths. Simultaneously, the A2A protocol's transition to a neutral foundation creates a path for secure, cross-vendor agent interoperability.
+**Strategic Pivot**:
+- **Gateway-Level Security Mitigations**: MCP Any will implement proactive, cross-cutting protections against path traversal and prompt injection vulnerabilities observed in the ecosystem. This moves beyond simple firewalling to "Deep Semantic Inspection."
+- **Standardized Inter-Agent Protocols**: Shifting from custom A2A implementations to a native "A2A Mesh" that follows emerging standards for capability discovery and security handshakes.
+- **Shadow Agent Mitigation**: Providing enterprise features that help security teams discover and govern unmanaged AI agents operating within their perimeter.

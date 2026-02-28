@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-02-28] Updates
+
+### Proposed Additions
+- **Middleware for enhanced security**: (P0) A security-first middleware layer that implements path sanitization and prompt hardening to prevent instruction injection.
+- **Standardized inter-agent communication bridge**: (P0) A protocol-compliant bridge for inter-agent communication, following the emerging A2A standards for security handshakes.
+- **Agentic Resource discovery & Inventory**: (P1) Tools and dashboards for identifying and cataloging AI agents and their tool usage across the network.
+
+### Priority Shifts
+- **Policy Firewall**: Promoted from **P0** to **P0+** (Critical). Essential for cross-framework security.
+- **A2A Interop Bridge**: Re-aligned as **Standardized inter-agent communication bridge** to focus on protocol compliance.
+
+### Deprecations / Monitoring
+- **Ad-hoc inter-agent routing**: Monitoring for deprecation in favor of protocol-compliant handshakes.

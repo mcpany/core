@@ -189,3 +189,8 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Core Middleware Pipeline**: The middleware architecture is robust and extensible.
 - **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates protocol details from business logic.
 - **Documentation**: The project has excellent documentation coverage for most features.
+
+#### Upcoming (2026-02-28 Evolution)
+*   **[P0] Security middleware for tool execution**: Addressing multi-vector enterprise threats in agentic workflows (path traversal, prompt injection). (Added: 2026-02-28)
+*   **[P0] Standardized inter-agent communication bridge**: Implement cross-framework protocol alignment for security and discovery. (Added: 2026-02-28)
+*   **[P1] Agentic resource discovery & inventory**: Tools for identifying and cataloging AI agents and their tool usage across the network. (Added: 2026-02-28)

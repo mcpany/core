@@ -107,3 +107,8 @@
 - [ ] **Log Source Color Coding**: Assign distinct colors to different log sources automatically for better visual separation.
 - [ ] **Context Usage History**: Track total context usage over time to identify growth trends (requires backend metrics persistence).
 - [ ] **Tool Schema Optimizer**: Analyze tool schemas and suggest removing unused properties or compacting descriptions to save context tokens.
+
+#### Upcoming (2026-02-28 Evolution)
+*   [ ] **[P0] Shadow Agent Inventory**: UI for discovering and cataloging unmanaged AI agents and their tool interactions. (Added: 2026-02-28)
+*   [ ] **[P0] A2A Handshake & Hand-off Trace**: Real-time visualization of inter-agent security handshakes and state passing. (Added: 2026-02-28)
+*   [ ] **[P1] Prompt Hardening Monitor**: Dashboard for auditing prompt-derived strings for potential injection markers. (Added: 2026-02-28)
