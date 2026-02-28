@@ -57,3 +57,12 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-02-28] - Phase 2: Memory & Config Integrity
+**Context**: Today's findings show a critical vulnerability (CVE-2025-59536) in how agent-specific configuration (hooks, .mcp.json) is executed. Simultaneously, the rise of `CLAUDE.md` highlights the need for a standardized "Memory-as-Code" layer.
+**Strategic Pivot**:
+- **Sandboxed Configuration Parsing**: MCP Any will pivot to a "Zero-Trust Config Loader." All discovery commands and hook scripts will execute in an isolated WASM or Docker sandbox to prevent host-level RCE.
+- **Universal Agentic Memory (mcpany.md)**: Standardizing a vendor-neutral memory file format that allows any MCP-compliant agent to inherit project-level context, style guides, and local tool preferences.
+- **Local-to-Cloud Bridge**: Implementing a secure, ephemeral relay for cloud-hosted agents (e.g., Anthropic's) to access local-only MCP tools without exposing the developer's entire network.

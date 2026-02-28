@@ -46,3 +46,7 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-02-28: A2A Mesh Residency Update**
+    - **Context**: Market sync reveals that agent delegation often involves high-latency, asynchronous tasks that outlast a single HTTP request.
+    - **Architecture Adjustment**: Shifting from a stateless "Bridge" to a "Resident" model. MCP Any will now act as a stateful buffer (Mailbox) for A2A messages.
+    - **New Interface**: Exposing `mcpany_check_mailbox` tool to allow agents to poll for completed background tasks from other agents.

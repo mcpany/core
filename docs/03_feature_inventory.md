@@ -74,10 +74,15 @@
 - **"Safe-by-Default" Network Hardening**: (P0) Transition to local-only default bindings for all services. Requires explicit MFA/Attestation for remote exposure.
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
+- **Zero-Trust Config Loader (Sandbox)**: (P0) Executes discovery commands and lifecycle hooks in an isolated WASM/Docker sandbox.
+- **Universal Agentic Memory (mcpany.md)**: (P1) Support for reading and writing to standardized project-local memory files.
+- **Local-to-Cloud MCP Relay**: (P0) Ephemeral, secure tunnel for cloud-hosted agents to access local-only tools.
 
 ### Priority Shifts
 - **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
 - **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.
+- **Supply Chain Integrity Guard**: Promoted to **P0** due to increased prevalence of "Shadow Tool" attacks.
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+- **Unsandboxed Discovery Commands**: Monitoring for deprecation in favor of the Zero-Trust Config Loader.

@@ -59,3 +59,7 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-02-28: MFA Attestation & Local-Only Enforcement**
+    - **Context**: "8,000 Exposed Servers" crisis highlights that warnings are insufficient.
+    - **Architecture Adjustment**: Hard enforcement of `localhost` listeners.
+    - **Security Impact**: Non-local bindings are blocked at the application level unless a valid `access_attestation.token` is present, which must be generated via local physical access (MFA).
