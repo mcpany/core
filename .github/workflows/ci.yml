@@ -153,6 +153,13 @@ jobs:
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
       SKIP_RACE: true
     steps:
+      - name: Workaround Docker containerd snapshotter issue
+        run: |
+          sudo systemctl stop docker || true
+          echo '{"features":{"containerd-snapshotter":false}}' | sudo tee /etc/docker/daemon.json
+          sudo rm -rf /var/lib/docker/overlay2
+          sudo systemctl start docker || true
+
       - name: Free Disk Space (Fast)
         run: |
           sudo rm -rf /usr/local/lib/android
@@ -178,7 +185,7 @@ jobs:
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
           sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          echo '{"registry-mirrors": ["https://mirror.gcr.io"], "features":{"containerd-snapshotter":false}}' | sudo tee /etc/docker/daemon.json
 
           if sudo systemctl restart docker 2>/dev/null; then
             echo "Docker restarted via systemctl"
@@ -291,6 +298,13 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
+      - name: Workaround Docker containerd snapshotter issue
+        run: |
+          sudo systemctl stop docker || true
+          echo '{"features":{"containerd-snapshotter":false}}' | sudo tee /etc/docker/daemon.json
+          sudo rm -rf /var/lib/docker/overlay2
+          sudo systemctl start docker || true
+
       - name: Free Disk Space (Fast)
         run: |
           sudo rm -rf /usr/local/lib/android
@@ -316,7 +330,7 @@ jobs:
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
           sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          echo '{"registry-mirrors": ["https://mirror.gcr.io"], "features":{"containerd-snapshotter":false}}' | sudo tee /etc/docker/daemon.json
 
           if sudo systemctl restart docker 2>/dev/null; then
             echo "Docker restarted via systemctl"
@@ -462,12 +476,20 @@ jobs:
             slug: arm64
             runner: ubuntu-24.04-arm
     steps:
+      - name: Workaround Docker containerd snapshotter issue
+        run: |
+          sudo systemctl stop docker || true
+          echo '{"features":{"containerd-snapshotter":false}}' | sudo tee /etc/docker/daemon.json
+          sudo rm -rf /var/lib/docker/overlay2
+          sudo systemctl start docker || true
+
       - name: Free Disk Space (Fast)
         run: |
           sudo rm -rf /usr/local/lib/android
           sudo rm -rf /usr/share/dotnet
           sudo rm -rf /opt/ghc
           sudo rm -rf /usr/local/share/boost
+
       - uses: actions/checkout@v6
 
       - name: Set up Go
@@ -597,6 +619,13 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
+      - name: Workaround Docker containerd snapshotter issue
+        run: |
+          sudo systemctl stop docker || true
+          echo '{"features":{"containerd-snapshotter":false}}' | sudo tee /etc/docker/daemon.json
+          sudo rm -rf /var/lib/docker/overlay2
+          sudo systemctl start docker || true
+
       - name: Free Disk Space (Fast)
         run: |
           sudo rm -rf /usr/local/lib/android
@@ -620,7 +649,7 @@ jobs:
       - name: Configure Docker Registry Mirrors
         run: |
           sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          echo '{"registry-mirrors": ["https://mirror.gcr.io"], "features":{"containerd-snapshotter":false}}' | sudo tee /etc/docker/daemon.json
 
           if sudo systemctl restart docker 2>/dev/null; then
             echo "Docker restarted via systemctl"
@@ -735,6 +764,13 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
+      - name: Workaround Docker containerd snapshotter issue
+        run: |
+          sudo systemctl stop docker || true
+          echo '{"features":{"containerd-snapshotter":false}}' | sudo tee /etc/docker/daemon.json
+          sudo rm -rf /var/lib/docker/overlay2
+          sudo systemctl start docker || true
+
       - name: Free Disk Space (Fast)
         run: |
           sudo rm -rf /usr/local/lib/android
@@ -760,7 +796,7 @@ jobs:
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
           sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          echo '{"registry-mirrors": ["https://mirror.gcr.io"], "features":{"containerd-snapshotter":false}}' | sudo tee /etc/docker/daemon.json
 
           if sudo systemctl restart docker 2>/dev/null; then
             echo "Docker restarted via systemctl"
@@ -852,6 +888,13 @@ jobs:
     timeout-minutes: 15
     needs: [build-images]
     steps:
+      - name: Workaround Docker containerd snapshotter issue
+        run: |
+          sudo systemctl stop docker || true
+          echo '{"features":{"containerd-snapshotter":false}}' | sudo tee /etc/docker/daemon.json
+          sudo rm -rf /var/lib/docker/overlay2
+          sudo systemctl start docker || true
+
       - uses: actions/checkout@v6
 
       - name: Configure Docker Registry Mirrors
@@ -859,7 +902,7 @@ jobs:
           # Configure multiple mirrors in array format
           # Docker will try mirror.gcr.io first.
           sudo mkdir -p /etc/docker
-          echo '{"registry-mirrors": ["https://mirror.gcr.io"]}' | sudo tee /etc/docker/daemon.json
+          echo '{"registry-mirrors": ["https://mirror.gcr.io"], "features":{"containerd-snapshotter":false}}' | sudo tee /etc/docker/daemon.json
 
           if sudo systemctl restart docker 2>/dev/null; then
             echo "Docker restarted via systemctl"
@@ -914,6 +957,13 @@ jobs:
       matrix:
         shard: [1/2, 2/2]
     steps:
+      - name: Workaround Docker containerd snapshotter issue
+        run: |
+          sudo systemctl stop docker || true
+          echo '{"features":{"containerd-snapshotter":false}}' | sudo tee /etc/docker/daemon.json
+          sudo rm -rf /var/lib/docker/overlay2
+          sudo systemctl start docker || true
+
       - name: Free Disk Space (Fast)
         run: |
           sudo rm -rf /usr/local/lib/android
@@ -967,6 +1017,13 @@ jobs:
     timeout-minutes: 20
     needs: [build-images]
     steps:
+      - name: Workaround Docker containerd snapshotter issue
+        run: |
+          sudo systemctl stop docker || true
+          echo '{"features":{"containerd-snapshotter":false}}' | sudo tee /etc/docker/daemon.json
+          sudo rm -rf /var/lib/docker/overlay2
+          sudo systemctl start docker || true
+
       - name: Free Disk Space (Fast)
         run: |
           sudo rm -rf /usr/local/lib/android
