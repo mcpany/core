@@ -465,7 +465,7 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: ${{ matrix.runner }}
-    container: public.ecr.aws/docker/library/ubuntu:24.04
+    # Remove container block to run directly on the runner VM to avoid docker-in-docker and sudo issues
     strategy:
       fail-fast: false
       matrix:
