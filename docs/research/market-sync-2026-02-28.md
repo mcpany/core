@@ -4,16 +4,19 @@
 
 ### OpenClaw & Agent Swarms
 - **OpenClaw Evolution**: Moving towards a "Headless Agentic Infrastructure" where the focus is on multi-agent coordination and verifiable security contracts.
+- **A2A "Agent Cards"**: Formalization of verifiable identity metadata for agents (donated to Linux Foundation), allowing for secure cross-platform discovery and capability negotiation.
 - **A2A Proliferation**: Increased adoption of the Agent-to-Agent (A2A) protocol for cross-framework delegation (e.g., CrewAI delegating to OpenClaw).
 
 ### Claude Code & Gemini CLI
-- **Tool Discovery**: Claude Code's "MCP Tool Search" has set a new standard for handling 100+ tools. Agents now expect "Lazy Loading" of tool schemas.
+- **Tool Discovery**: Claude Code's "MCP Tool Search" has set a new standard for handling 100+ tools. Agents now expect "Lazy Loading" of tool schemas via a `ToolSearchTool` interface.
+- **Programmatic Tool Calling**: Emerging trend of agents using code execution to orchestrate tool chains, reducing inference passes and context pollution.
 - **Sandboxed Execution**: Trend towards running agents in restricted cloud sandboxes, creating a "Local-to-Cloud Gap" for accessing local developer tools.
 
 ## Security & Vulnerabilities
 
 ### The "8000 Exposed Servers" Crisis
 - Recent scans revealed over 8,000 MCP servers publicly accessible without authentication.
+- **"NeighborJack" Exploits**: Systematic targeting of MCP servers binding to `0.0.0.0`. Industry shift towards mandatory `localhost` binding with cryptographic attestation for remote access.
 - **Clawdbot Incident**: 1,000+ admin panels exposed due to default `0.0.0.0:8080` binding.
 - **CVE-2026-2008**: Fermat-MCP code injection vulnerability highlights the danger of unvalidated tool inputs.
 

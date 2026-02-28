@@ -51,9 +51,9 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 ---
 
 ## Strategic Evolution: [2026-02-28]
-### Focus: Safe-by-Default Infrastructure & A2A Mesh Maturity
-**Context**: The "8,000 Exposed Servers" crisis and the "Clawdbot" incident have proven that "Ease of Use" cannot come at the cost of "Default Security." Simultaneously, the A2A protocol is maturing into the primary way agents coordinate.
+### Focus: Verifiable Identity & Programmatic Orchestration Runtime
+**Context**: The "NeighborJack" exploit pattern and the formalization of A2A "Agent Cards" signify a shift from simple tool-calling to verifiable multi-agent orchestration. Agents now require secure, ephemeral execution environments for "Programmatic Tool Calling" to handle complex chains without context bloat.
 **Strategic Pivot**:
-- **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
-- **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
-- **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+- **Verifiable Agent Identity (Agent Cards)**: MCP Any will evolve into a "Resident Identity Hub." Every agent session will be anchored by a verifiable Agent Card, enabling Zero-Trust handoffs and capability negotiation between heterogeneous frameworks.
+- **Ephemeral Tool Runtime (Sandbox-as-a-Service)**: Transitioning from a static tool proxy to a managed execution environment. MCP Any will provide "JIT Sandboxing" for tools, particularly for "Programmatic Tool Calling" where agents execute code to coordinate multiple tools.
+- **Safe-by-Default & Attested Discovery**: Hardening all listeners to `localhost` by default to mitigate "NeighborJack" risks. All tool discovery will prioritize cryptographically "Attested" sources to prevent "Shadow Tool" injection.

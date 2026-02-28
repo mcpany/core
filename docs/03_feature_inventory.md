@@ -71,13 +71,16 @@
 ## Evolution: [2026-02-28] Updates
 
 ### Proposed Additions
-- **"Safe-by-Default" Network Hardening**: (P0) Transition to local-only default bindings for all services. Requires explicit MFA/Attestation for remote exposure.
+- **A2A Agent Card Identity Verification**: (P0) Resident identity management using the standardized A2A Agent Card format for verifiable cross-framework trust.
+- **Ephemeral Tool Execution Environment (JIT Sandbox)**: (P0) Managed, isolated runtime for executing "Programmatic Tool Calling" orchestration logic safely.
+- **"Safe-by-Default" Network Hardening**: (P0) Transition to local-only default bindings for all services. Requires explicit MFA/Attestation for remote exposure to mitigate "NeighborJack" risks.
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
 ### Priority Shifts
 - **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
-- **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.
+- **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency and Agent Card verification features.
+- **Lazy-MCP Middleware**: Re-affirmed as **P0** given the success of Claude Code's Tool Search functionality.
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.

@@ -46,3 +46,7 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-02-28: Agent Card Identity Verification**
+    *   **Context:** Industry adoption of standardized "Agent Cards" requires MCP Any to act as a verifiable identity registry.
+    *   **Architecture Adjustment:** Upgrading Section 4 to include an "Identity Registry" that validates incoming A2A messages against cryptographically signed Agent Cards.
+    *   **Security Impact:** Prevents "Agent Spoofing" and ensures that state is only shared with authorized, attested agents.

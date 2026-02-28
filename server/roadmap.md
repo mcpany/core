@@ -30,7 +30,9 @@
 *   **[P1] Resource Telemetry Middleware**: Inject latency/cost metrics into tool schemas. (Added: 2026-02-26)
 
 #### Upcoming (2026-02-28 Evolution)
-*   **[P0] Safe-by-Default Hardening**: Transition all listeners to `localhost` by default. Implement mandatory Attestation for remote exposure. (Added: 2026-02-28)
+*   **[P0] A2A Agent Card Identity Verification**: Resident identity registry for verifiable cross-framework agent trust. (Added: 2026-02-28)
+*   **[P0] Ephemeral Tool Execution Environment (JIT Sandbox)**: Secure, isolated runtime for "Programmatic Tool Calling" and orchestration scripts. (Added: 2026-02-28)
+*   **[P0] Safe-by-Default Hardening**: Transition all listeners to `localhost` by default to mitigate "NeighborJack" risks. (Added: 2026-02-28)
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
