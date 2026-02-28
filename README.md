@@ -2,6 +2,8 @@
 
 [![Documentation: Gold Standard](https://img.shields.io/badge/Documentation-Gold%20Standard-gold.svg)](https://github.com/mcpany/core)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/mcpany/core/ci.yml?branch=main)](https://github.com/mcpany/core/actions)
+[![Go Report Card](https://goreportcard.com/badge/github.com/mcpany/core)](https://goreportcard.com/report/github.com/mcpany/core)
 
 ## Elevator Pitch
 
@@ -195,6 +197,22 @@ upstreamAuth:
 ```
 
 Ensure `OPENAI_API_KEY` (or your specific secret) is set in the server's environment before starting.
+
+## Troubleshooting
+
+Common issues and solutions:
+
+**"bind: address already in use"**
+If you see this error, port 50050 is occupied.
+*   Kill existing process: `lsof -ti:50050 | xargs kill`
+*   Or change port: `export MCPANY_MCP_LISTEN_ADDRESS=:50051`
+
+**"protoc not found" or build errors**
+Run `make prepare` to install all necessary toolchain dependencies into `build/env/bin`.
+
+## Contributing
+
+We welcome contributions! Please read [AGENTS.md](server/AGENTS.md) for our coding standards, documentation requirements, and development workflow.
 
 ## License
 

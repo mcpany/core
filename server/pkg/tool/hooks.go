@@ -29,6 +29,8 @@ type compiledRule struct {
 }
 
 // PolicyHook implements PreCallHook using CallPolicy.
+//
+// Summary: Pre-call hook that enforces call policies defined in configuration.
 type PolicyHook struct {
 	policy        *configv1.CallPolicy
 	compiledRules []compiledRule
@@ -36,9 +38,17 @@ type PolicyHook struct {
 
 // NewPolicyHook creates a new PolicyHook with the given call policy.
 //
-// policy is the policy.
+// Summary: Initializes a new PolicyHook.
 //
-// Returns the result.
+// Parameters:
+//   - policy: *configv1.CallPolicy. The policy configuration to enforce.
+//
+// Returns:
+//   - *PolicyHook: The initialized hook.
+//
+// Side Effects:
+//   - Compiles regex patterns from the policy rules.
+//   - Logs errors for invalid regexes.
 func NewPolicyHook(policy *configv1.CallPolicy) *PolicyHook {
 	compiledRules := make([]compiledRule, len(policy.GetRules()))
 	for i, rule := range policy.GetRules() {
@@ -76,12 +86,20 @@ func NewPolicyHook(policy *configv1.CallPolicy) *PolicyHook {
 
 // ExecutePre executes the policy check before a tool is called.
 //
-// _ is an unused parameter.
-// req is the request object.
+// Summary: Evaluates the tool request against the compiled policy rules.
 //
-// Returns the result.
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - _: context.Context. Unused.
+//   - req: *ExecutionRequest. The tool execution request.
+//
+// Returns:
+//   - Action: The action to take (Allow, Deny, etc.).
+//   - *ExecutionRequest: The modified request (nil if no modification).
+//   - error: An error if the policy denies execution.
+//
+// Errors:
+//   - Returns error if an explicit DENY rule is matched.
+//   - Returns error if the default policy is DENY and no ALLOW rule matches.
 func (h *PolicyHook) ExecutePre(
 	_ context.Context,
 	req *ExecutionRequest,
@@ -134,6 +152,8 @@ func (h *PolicyHook) ExecutePre(
 // (Deprecated hooks removed)
 
 // WebhookClient handles the communication with an external webhook.
+//
+// Summary: Client for sending CloudEvents to external webhooks.
 type WebhookClient struct {
 	url     string
 	timeout time.Duration
@@ -143,9 +163,16 @@ type WebhookClient struct {
 
 // NewWebhookClient creates a new WebhookClient.
 //
-// config holds the configuration settings.
+// Summary: Initializes a new WebhookClient.
 //
-// Returns the result.
+// Parameters:
+//   - config: *configv1.WebhookConfig. The webhook configuration.
+//
+// Returns:
+//   - *WebhookClient: The initialized client.
+//
+// Side Effects:
+//   - Initializes HTTP client and optional signer.
 func NewWebhookClient(config *configv1.WebhookConfig) *WebhookClient {
 	timeout := 5 * time.Second
 	if t := config.GetTimeout(); t != nil {
@@ -179,12 +206,24 @@ func NewWebhookClient(config *configv1.WebhookConfig) *WebhookClient {
 
 // Call sends a cloud event to the webhook and returns the response event.
 //
-// ctx is the context for the request.
-// eventType is the eventType.
-// data is the data.
+// Summary: Sends a synchronous CloudEvent to the webhook URL.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The request context.
+//   - eventType: string. The CloudEvent type.
+//   - data: any. The event payload.
+//
+// Returns:
+//   - *cloudevents.Event: The response CloudEvent.
+//   - error: An error if the request fails or response is missing.
+//
+// Errors:
+//   - Returns error if event creation or serialization fails.
+//   - Returns error if the HTTP request fails or is undelivered.
+//   - Returns error if no response event is received.
+//
+// Side Effects:
+//   - Makes an external HTTP POST request.
 func (c *WebhookClient) Call(ctx context.Context, eventType string, data any) (*cloudevents.Event, error) {
 	event := cloudevents.NewEvent()
 	event.SetID(uuid.New().String())
@@ -223,15 +262,21 @@ func (c *WebhookClient) Call(ctx context.Context, eventType string, data any) (*
 }
 
 // WebhookHook supports modification of requests and responses via external webhook using CloudEvents.
+//
+// Summary: Hook implementation that delegates logic to an external webhook.
 type WebhookHook struct {
 	client *WebhookClient
 }
 
 // NewWebhookHook creates a new WebhookHook.
 //
-// config holds the configuration settings.
+// Summary: Initializes a new WebhookHook.
 //
-// Returns the result.
+// Parameters:
+//   - config: *configv1.WebhookConfig. The webhook configuration.
+//
+// Returns:
+//   - *WebhookHook: The initialized hook.
 func NewWebhookHook(config *configv1.WebhookConfig) *WebhookHook {
 	return &WebhookHook{
 		client: NewWebhookClient(config),
@@ -240,12 +285,25 @@ func NewWebhookHook(config *configv1.WebhookConfig) *WebhookHook {
 
 // ExecutePre executes the webhook notification before a tool is called.
 //
-// ctx is the context for the request.
-// req is the request object.
+// Summary: Sends a pre-call event to the webhook and handles the response.
 //
-// Returns the result.
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The request context.
+//   - req: *ExecutionRequest. The execution request.
+//
+// Returns:
+//   - Action: Allow or Deny based on webhook response.
+//   - *ExecutionRequest: Modified request if webhook returned replacements.
+//   - error: An error if webhook denies or fails.
+//
+// Errors:
+//   - Returns error if input marshaling fails.
+//   - Returns error if webhook call fails.
+//   - Returns error if webhook response parsing fails.
+//   - Returns "denied by webhook" if explicitly denied.
+//
+// Side Effects:
+//   - Invokes external webhook.
 func (h *WebhookHook) ExecutePre(
 	ctx context.Context,
 	req *ExecutionRequest,
@@ -308,12 +366,22 @@ func (h *WebhookHook) ExecutePre(
 
 // ExecutePost executes the webhook notification after a tool is called.
 //
-// ctx is the context for the request.
-// req is the request object.
-// result is the result.
+// Summary: Sends a post-call event to the webhook and potentially modifies the result.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The request context.
+//   - req: *ExecutionRequest. The original request.
+//   - result: any. The result of the tool execution.
+//
+// Returns:
+//   - any: The (potentially modified) result.
+//   - error: An error if the webhook call fails.
+//
+// Errors:
+//   - Returns error if webhook call or response processing fails.
+//
+// Side Effects:
+//   - Invokes external webhook.
 func (h *WebhookHook) ExecutePost(
 	ctx context.Context,
 	req *ExecutionRequest,
@@ -364,6 +432,8 @@ func (h *WebhookHook) ExecutePost(
 }
 
 // WebhookStatus represents the status returned by the webhook.
+//
+// Summary: Status information included in the webhook response.
 type WebhookStatus struct {
 	// Code is the status code returned by the webhook.
 	Code    int    `json:"code"`
@@ -372,6 +442,8 @@ type WebhookStatus struct {
 }
 
 // SigningRoundTripper signs the request using the webhook signer.
+//
+// Summary: HTTP Transport that adds HMAC signatures to outgoing requests.
 type SigningRoundTripper struct {
 	signer *webhook.Webhook
 	base   http.RoundTripper
@@ -379,10 +451,18 @@ type SigningRoundTripper struct {
 
 // RoundTrip executes the HTTP request with a signature.
 //
-// req is the request object.
+// Summary: Intercepts the request to add Webhook-Id, Webhook-Timestamp, and Webhook-Signature headers.
 //
-// Returns the response.
-// Returns an error if the operation fails.
+// Parameters:
+//   - req: *http.Request. The outgoing request.
+//
+// Returns:
+//   - *http.Response: The received response.
+//   - error: An error if signing or transport fails.
+//
+// Side Effects:
+//   - Reads and buffers the request body for signing.
+//   - Modifies request headers.
 func (s *SigningRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
 	if s.signer != nil {
 		payload := []byte{} // Signing requires payload, but request body might be stream.

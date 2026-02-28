@@ -14,15 +14,21 @@ import (
 
 // CallPolicyMiddleware is a middleware that enforces call policies (allow/deny)
 // based on tool name and arguments.
+//
+// Summary: Middleware that evaluates and enforces security policies for tool executions.
 type CallPolicyMiddleware struct {
 	toolManager tool.ManagerInterface
 }
 
 // NewCallPolicyMiddleware creates a new CallPolicyMiddleware.
 //
-// toolManager is the toolManager.
+// Summary: Initializes a new CallPolicyMiddleware.
 //
-// Returns the result.
+// Parameters:
+//   - toolManager: tool.ManagerInterface. The tool manager to access tool and service information.
+//
+// Returns:
+//   - *CallPolicyMiddleware: The initialized middleware.
 func NewCallPolicyMiddleware(toolManager tool.ManagerInterface) *CallPolicyMiddleware {
 	return &CallPolicyMiddleware{
 		toolManager: toolManager,
@@ -31,12 +37,25 @@ func NewCallPolicyMiddleware(toolManager tool.ManagerInterface) *CallPolicyMiddl
 
 // Execute enforces call policies before proceeding to the next handler.
 //
-// ctx is the context for the request.
-// req is the request object.
-// next is the next.
+// Summary: Checks if the tool execution is allowed by the service's policies.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - ctx: context.Context. The execution context.
+//   - req: *tool.ExecutionRequest. The tool execution request.
+//   - next: tool.ExecutionFunc. The next handler in the chain.
+//
+// Returns:
+//   - any: The execution result if allowed.
+//   - error: An error if the policy blocks execution or policy evaluation fails.
+//
+// Errors:
+//   - Returns error if service info is not found (fail closed).
+//   - Returns error if policy evaluation fails.
+//   - Returns "execution denied by policy" if the policy denies the request.
+//
+// Side Effects:
+//   - Logs errors if service info is missing or policy evaluation fails.
+//   - Increments a metric counter when a call is blocked.
 func (m *CallPolicyMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := m.toolManager.GetTool(req.ToolName)
 	if !ok {
