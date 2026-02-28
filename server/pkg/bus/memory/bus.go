@@ -28,11 +28,19 @@ type DefaultBus[T any] struct {
 	publishTimeout time.Duration
 }
 
-// New creates and returns a new instance of DefaultBus, which is the default,
-// thread-safe implementation of the Bus interface. It is initialized with the
-// default publish timeout.
+// New creates and returns a new instance of DefaultBus, which is the default, thread-safe implementation of the Bus interface. It is initialized with the default publish timeout. The type parameter T specifies the type of message that the bus will handle.
 //
-// The type parameter T specifies the type of message that the bus will handle.
+// Parameters:
+//   - None
+//
+// Returns:
+//   - *DefaultBus[T]: The resulting *DefaultBus[T].
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func New[T any]() *DefaultBus[T] {
 	return &DefaultBus[T]{
 		subscribers:    make(map[string]map[uintptr]chan T),

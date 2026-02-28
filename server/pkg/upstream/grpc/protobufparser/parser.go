@@ -105,10 +105,22 @@ func (f *McpField) GetIsRepeated() bool {
 	return f.IsRepeated
 }
 
-// ParseProtoFromDefs parses a set of protobuf definitions from a slice of
-// ProtoDefinition and a ProtoCollection. It writes the proto files to a
-// temporary directory, invokes protoc to generate a FileDescriptorSet, and
-// then returns the parsed FileDescriptorSet.
+// ParseProtoFromDefs parses a set of protobuf definitions from a slice of ProtoDefinition and a ProtoCollection. It writes the proto files to a temporary directory, invokes protoc to generate a FileDescriptorSet, and then returns the parsed FileDescriptorSet.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - protoDefinitions ([]*configv1.ProtoDefinition): The protoDefinitions parameter.
+//   - protoCollections ([]*configv1.ProtoCollection): The protoCollections parameter.
+//
+// Returns:
+//   - *descriptorpb.FileDescriptorSet: The resulting *descriptorpb.FileDescriptorSet.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails or is invalid.
+//
+// Side Effects:
+//   - None
 func ParseProtoFromDefs(
 	ctx context.Context,
 	protoDefinitions []*configv1.ProtoDefinition,

@@ -79,10 +79,19 @@ type ValidationError struct {
 	Err         error
 }
 
-// Error returns the formatted error message.
+// Error returns the formatted error message. Side Effects: - None.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - string: The resulting string.
+//
+// Errors:
+//   - None
 //
 // Side Effects:
-//   - None.
+//   - None
 func (e *ValidationError) Error() string {
 	return fmt.Sprintf("service %q: %v", e.ServiceName, e.Err)
 }
