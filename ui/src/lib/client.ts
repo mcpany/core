@@ -2097,11 +2097,11 @@ export const apiClient = {
      *
      * Side Effects: Makes a POST request to /api/v1/debug/traces.
      */
-    seedTrace: async (trace: any) => {
+    seedTrace: async (trace?: any) => {
         const res = await fetchWithAuth('/api/v1/debug/traces', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(trace)
+            body: JSON.stringify(trace || {})
         });
         if (!res.ok) throw new Error('Failed to seed trace');
         return res.json();
