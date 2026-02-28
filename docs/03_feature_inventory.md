@@ -65,3 +65,19 @@
 
 ### Deprecations / Monitoring
 - **Static Tool Schemas**: Moving towards dynamic, metadata-rich schemas that include real-time performance metrics.
+
+---
+
+## Evolution: [2026-02-28] Updates
+
+### Proposed Additions
+- **"Safe-by-Default" Network Hardening**: (P0) Transition to local-only default bindings for all services. Requires explicit MFA/Attestation for remote exposure.
+- **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
+- **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
+
+### Priority Shifts
+- **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
+- **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.
+
+### Deprecations / Monitoring
+- **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
