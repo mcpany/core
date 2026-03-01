@@ -23,7 +23,6 @@ WORKDIR /app
 # These are placed here by server/Makefile
 COPY .build-context/core/go.mod .build-context/core/go.sum ./
 COPY .build-context/core/proto ./proto/
-COPY .build-context/core/pkg ./pkg/
 
 WORKDIR /app/server
 

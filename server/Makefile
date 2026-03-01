@@ -739,6 +739,8 @@ prepare-docker-context:
 	@mkdir -p $(BUILD_CONTEXT_DIR)/core
 	@cp ../go.mod ../go.sum $(BUILD_CONTEXT_DIR)/core/
 	@cp -r ../proto $(BUILD_CONTEXT_DIR)/core/
+	@cp -r ../pkg $(BUILD_CONTEXT_DIR)/core/
+
 
 clean-docker-context:
 	@rm -rf $(BUILD_CONTEXT_DIR)
