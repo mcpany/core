@@ -42,6 +42,11 @@ func (b *Provider) initPlaywright() error {
 		return nil
 	}
 
+	err := playwright.Install()
+	if err != nil {
+		return fmt.Errorf("could not install playwright: %w", err)
+	}
+
 	pw, err := playwright.Run()
 	if err != nil {
 		return fmt.Errorf("could not start playwright: %w", err)
