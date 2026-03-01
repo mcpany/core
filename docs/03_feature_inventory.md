@@ -81,3 +81,16 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-01] Updates
+
+### Proposed Additions
+- **Secure Config Sandbox**: (P0) Isolation layer for repo-level `.mcpany/config` files with mandatory manual trust/verification.
+- **Dynamic Tool Discovery (Grep-for-Tools)**: (P0) High-performance tool searching API that mimics `mcp-cli grep`, providing 99% token reduction for LLMs.
+- **Isolated Tool Runtime (Container-on-Demand)**: (P1) Spawns ephemeral, firewalled containers for untrusted tool execution.
+
+### Priority Shifts
+- **On-Demand Discovery Middleware (Lazy-MCP)**: Promoted to **P0** (Already P0, but re-affirming importance for competitive token efficiency).
+- **Supply Chain Integrity Guard**: Promoted to **P0** (Critical priority due to Claude Code RCE exploits).

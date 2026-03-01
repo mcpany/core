@@ -57,3 +57,9 @@ As the number of available MCP tools grows, agents face "context pollution"—wh
 
 ## 7. Evolutionary Changelog
 *   **2026-02-25:** Initial Document Creation.
+*   **2026-03-01:** **Update: Competitive Token Efficiency & Grep-Discovery.**
+    *   **Context:** Market sync (2026-03-01) revealed `mcp-cli` achieving 99% token reduction. MCP Any must match this.
+    *   **Architecture Adjustment:**
+        *   Implementing `mcpany_grep_tools` tool for regex-based discovery, complementing the semantic `search_tools`.
+        *   Introducing a "Lazy-Daemon" mode for tool registration to handle transient Stdio servers without startup lag.
+    *   **Performance Impact:** Targets <500 tokens for initial agent handshake, regardless of the number of connected MCP servers.
