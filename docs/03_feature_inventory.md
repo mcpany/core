@@ -81,3 +81,16 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-01] Updates
+
+### Proposed Additions
+- **Chain of Custody (CoC) Middleware**: (P0) Cryptographically signs the intent/authority chain of tool calls to prevent "Shadow Agent Chain" exploits.
+- **Dynamic Capability Bridge**: (P0) A secure, signed bridge that allows cloud-sandboxed agents (e.g., Claude Code STS) to request local capabilities without port-level exposure.
+- **Lazy-MCP Discovery Guardrails**: (P1) Real-time tool availability verification during the discovery process to eliminate semantic-search-driven hallucinations.
+
+### Priority Shifts
+- **Environment Bridging Middleware**: Promoted to **P0** and merged into **Dynamic Capability Bridge**.
+- **A2A Stateful Residency**: Re-affirmed as **P0** as it provides the backbone for CoC tracking.

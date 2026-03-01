@@ -46,3 +46,4 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-03-01:** **A2A Chain Attestation Update**: Integrated support for the `Chain of Custody (CoC)` protocol. Every A2A message routed through the bridge must now include a verifiable lineage header to prevent "Shadow Agent Chain" exploits.

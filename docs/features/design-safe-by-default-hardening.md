@@ -59,3 +59,4 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-01:** **Attested Handover Update**: Added requirement for CoC token validation even for local-to-local agent handoffs. This ensures that "Safe-by-Default" also protects against internal rogue subagent hallucinations, not just external network exposure.

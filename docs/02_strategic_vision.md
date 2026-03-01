@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-01]
+### Focus: Chain of Custody & Dynamic Capability Bridging
+**Context**: The rise of "Refinement Swarms" (OpenClaw) and "Secure Tool Sandboxes" (Claude Code) necessitates a shift from static permissions to dynamic, attested authority chains. The "Shadow Agent Chain" exploit confirms that A2A security must be cryptographically linked to intent.
+**Strategic Pivot**:
+- **Chain of Custody Attestation**: MCP Any will implement a cryptographic "Handover" protocol. Every tool call or A2A message must carry a verifiable chain of intent, ensuring subagents cannot exceed the authority of their lead agent.
+- **Dynamic Capability Bridging**: Acting as the "Local Capability Provider" for cloud-sandboxed agents. This allows sandboxed environments to securely "request" local resources via a cryptographically signed bridge, rather than simple port forwarding.
+- **Discovery Guardrails**: Enhancing Lazy-Discovery with a "Pre-Commit Availability Check." This prevents models from assuming tools exist based on semantic similarity alone, reducing discovery-driven hallucinations.
