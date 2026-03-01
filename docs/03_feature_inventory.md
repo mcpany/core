@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-01] Updates
+
+### Proposed Additions
+- **Universal Tool Search Middleware (Vector-MCP)**: (P0) High-performance, vector-indexed tool discovery. Allows agents to search for tools by intent rather than loading them all.
+- **Secure Cross-Framework Handoff (Inter-Framework)**: (P0) A protocol for secure task and context transfer between disparate agent frameworks (e.g., CrewAI to AutoGen).
+- **Immutable Black Box Recorder (BBR)**: (P1) An unalterable audit log for all tool-agent interactions, providing non-repudiation for autonomous actions.
+
+### Priority Shifts
+- **A2A Interop Bridge**: (Already P0) High urgency to integrate "Secure Cross-Framework Handoff" into the A2A Bridge.
+- **Lazy-MCP Middleware**: (Already P0) Re-labeled as "Universal Tool Search Middleware" to emphasize multi-protocol support.
+
+### Deprecations / Monitoring
+- **Non-Searchable Tool Catalogs**: Monitoring for deprecation in favor of the Universal Tool Search.

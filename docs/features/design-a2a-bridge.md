@@ -46,3 +46,7 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-03-01: Evolution to Secure Cross-Framework Handoff**
+    - **Context:** OWASP ASI07 identifies insecure inter-agent communication as a top risk.
+    - **Architecture Adjustment:** Implementing "Limited Context Inheritance" for inter-framework transfers (e.g., CrewAI to AutoGen).
+    - **Security Impact:** Ensures that sensitive parent context isn't leaked to downstream specialized agents without explicit policy permission.

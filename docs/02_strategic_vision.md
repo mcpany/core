@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-01]
+### Focus: Universal Tool Discovery & Secure Inter-Agent Handoff
+**Context**: Today's findings reveal a convergence of "Tool Search" standards (Claude MCP Tool Search) and "Insecure A2A" risks (OWASP ASI07). As agents scale to thousands of tools and multi-framework swarms, the gateway must handle discovery and cross-framework trust.
+**Strategic Pivot**:
+- **Protocol-Agnostic Tool Search**: MCP Any will implement a high-performance vector-indexed middleware for tool discovery. This allows any agent (OpenClaw, Gemini, Claude) to search for and "on-demand" load any MCP tool without context pollution.
+- **Secure A2A Handoff (Inter-Framework)**: Implementing a "Limited Context Inheritance" protocol for A2A communication. This ensures that when a task moves from one framework (e.g., CrewAI) to another (e.g., AutoGen), only the minimal verified context and permissions are shared.
+- **Black Box Recorder (BBR)**: A new immutable logging standard for all tool calls and agentic decisions, ensuring auditability and compliance for enterprise deployments.

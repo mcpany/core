@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-01 Evolution)
+*   **[P0] Universal Tool Search (Vector-MCP)**: High-performance, vector-indexed tool discovery for multi-agent swarms. (Added: 2026-03-01)
+*   **[P0] Secure Cross-Framework Handoff**: Protocol for secure task and context transfer between disparate agent frameworks. (Added: 2026-03-01)
+*   **[P1] Immutable Black Box Recorder (BBR)**: Unalterable audit log for all tool-agent interactions. (Added: 2026-03-01)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
