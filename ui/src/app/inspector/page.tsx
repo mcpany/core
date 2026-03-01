@@ -179,7 +179,7 @@ export default function InspectorPage() {
       </div>
 
       <div className="flex-1 min-h-0">
-        <InspectorTable traces={filteredTraces} loading={loading && traces.length === 0} />
+        <InspectorTable traces={filteredTraces} loading={loading && traces.length === 0} isConnected={isConnected} />
       </div>
     </div>
   );

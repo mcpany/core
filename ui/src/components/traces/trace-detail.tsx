@@ -20,6 +20,7 @@ import { useRouter } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { JsonView } from "@/components/ui/json-view";
 import { RichResultViewer } from "@/components/tools/rich-result-viewer";
+import { PropertiesTable } from "@/components/inspector/properties-table";
 import { analyzeTrace } from "@/lib/diagnostics";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { SequenceDiagram } from "@/components/traces/sequence-diagram";
@@ -380,17 +381,21 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
                 <TabsContent value="payload" className="flex-1 p-0 overflow-hidden m-0">
                      <ScrollArea className="h-full p-6">
                         <div className="grid grid-cols-1 gap-6">
-                            <div className="space-y-2">
-                                <h3 className="text-sm font-medium flex items-center gap-2 text-primary">
-                                    <Code className="h-4 w-4" /> Request Payload
-                                </h3>
-                                <JsonView data={trace.rootSpan.input} maxHeight={400} />
+                            <div className="space-y-3">
+                                <div className="flex items-center justify-between">
+                                    <h3 className="text-sm font-medium flex items-center gap-2 text-primary">
+                                        <Code className="h-4 w-4" /> Request Payload
+                                    </h3>
+                                </div>
+                                <PropertiesTable data={trace.rootSpan.input} />
                             </div>
-                            <div className="space-y-2">
-                                <h3 className="text-sm font-medium flex items-center gap-2 text-primary">
-                                    <Terminal className="h-4 w-4" /> Response Payload
-                                </h3>
-                                <JsonView data={trace.rootSpan.output} maxHeight={400} />
+                            <div className="space-y-3">
+                                <div className="flex items-center justify-between">
+                                    <h3 className="text-sm font-medium flex items-center gap-2 text-primary">
+                                        <Terminal className="h-4 w-4" /> Response Payload
+                                    </h3>
+                                </div>
+                                <PropertiesTable data={trace.rootSpan.output} />
                             </div>
                         </div>
                      </ScrollArea>

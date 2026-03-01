@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
 import { TraceDetail } from "@/components/traces/trace-detail";
-import { CheckCircle2, AlertCircle, Clock, Terminal, Globe, Database } from "lucide-react";
+import { CheckCircle2, AlertCircle, Clock, Terminal, Globe, Database, Unplug } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import { TableVirtuoso } from "react-virtuoso";
@@ -37,6 +37,10 @@ interface InspectorTableProps {
    * Whether the table is currently loading data.
    */
   loading?: boolean;
+  /**
+   * Whether the client is connected to the backend.
+   */
+  isConnected?: boolean;
 }
 
 /**
@@ -79,7 +83,7 @@ function TypeIcon({ type, className }: { type: string, className?: string }) {
  * @param props.loading - Whether the data is loading.
  * @returns The rendered table component.
  */
-export function InspectorTable({ traces, loading }: InspectorTableProps) {
+export function InspectorTable({ traces, loading, isConnected = true }: InspectorTableProps) {
   const [selectedTrace, setSelectedTrace] = useState<Trace | null>(null);
 
   return (
@@ -89,9 +93,14 @@ export function InspectorTable({ traces, loading }: InspectorTableProps) {
             ⚡ BOLT: Implemented virtualization for trace table using react-virtuoso.
             Randomized Selection from Top 5 High-Impact Targets
         */}
-        {traces.length === 0 && !loading ? (
+        {traces.length === 0 && !loading && isConnected ? (
              <div className="flex items-center justify-center h-24 text-muted-foreground text-sm">
                 No traces found.
+             </div>
+        ) : !isConnected && traces.length === 0 ? (
+             <div className="flex items-center justify-center h-24 text-muted-foreground text-sm flex-col gap-2">
+                <Unplug className="h-6 w-6 opacity-50" />
+                <span>Disconnected from server</span>
              </div>
         ) : loading && traces.length === 0 ? (
              <div className="flex items-center justify-center h-24 text-muted-foreground text-sm">
