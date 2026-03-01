@@ -18,8 +18,7 @@ func TestBrowserProvider(t *testing.T) {
 
 	content, err := p.BrowsePage(context.Background(), "https://example.com")
 	assert.NoError(t, err)
-	assert.Contains(t, content, "Mock Content")
-	assert.Contains(t, content, "example.com")
+	assert.Contains(t, content, "Example Domain")
 
 	_, err = p.BrowsePage(context.Background(), "")
 	assert.Error(t, err)

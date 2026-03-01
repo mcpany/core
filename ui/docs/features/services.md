@@ -38,7 +38,7 @@ To register a new upstream service:
 3. Select a service template (e.g., PostgreSQL, HTTP) or configure a custom type.
 4. Follow the configuration wizard to register the service.
 
-![Add Service Dialog](screenshots/services_add_dialog.png)
+![Add Service Sheet](screenshots/services_add_dialog.png)
 
 ### 3. Configure Service
 
