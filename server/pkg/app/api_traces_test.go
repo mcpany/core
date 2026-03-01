@@ -50,10 +50,8 @@ func setupTracesTestApp(t *testing.T) (*Application, *middleware.AuditMiddleware
 	}
 
 	// Initialize Application
-	app := &Application{
-		standardMiddlewares: standardMiddlewares,
-		seededTraceSubs:   make(map[chan *Trace]struct{}),
-	}
+	app := NewApplication()
+	app.standardMiddlewares = standardMiddlewares
 
 	return app, auditMiddleware
 }
@@ -183,10 +181,9 @@ func TestHandleTracesWS(t *testing.T) {
 
 func TestHandleTraces_DisabledAudit(t *testing.T) {
 	// Setup app with nil audit middleware
-	app := &Application{
-		standardMiddlewares: &middleware.StandardMiddlewares{
-			Audit: nil,
-		},
+	app := NewApplication()
+	app.standardMiddlewares = &middleware.StandardMiddlewares{
+		Audit: nil,
 	}
 
 	req := httptest.NewRequest("GET", "/traces", nil)
@@ -207,10 +204,9 @@ func TestHandleTraces_DisabledAudit(t *testing.T) {
 
 func TestHandleTracesWS_DisabledAudit(t *testing.T) {
 	// Setup app with nil audit middleware
-	app := &Application{
-		standardMiddlewares: &middleware.StandardMiddlewares{
-			Audit: nil,
-		},
+	app := NewApplication()
+	app.standardMiddlewares = &middleware.StandardMiddlewares{
+		Audit: nil,
 	}
 
 	server := httptest.NewServer(app.handleTracesWS())
