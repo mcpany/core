@@ -9,17 +9,29 @@ test.describe('Network Topology Visualizer', () => {
   test.beforeEach(async ({ page, request }) => {
     // 1. Seed Traffic Data via API
     // We use the request fixture to call the backend API directly
+    // time format expected by backend is "15:04"
+    const now = new Date();
+    const timeStr1 = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes() - 2).padStart(2, '0')}`;
+    const timeStr2 = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes() - 1).padStart(2, '0')}`;
+
     const trafficData = [
-      { time: "10:00", total: 100, errors: 2, latency: 50 },
-      { time: "10:01", total: 120, errors: 0, latency: 45 },
+      { time: timeStr1, total: 100, errors: 2, latency: 50 },
+      { time: timeStr2, total: 120, errors: 0, latency: 45 },
     ];
 
     // The backend URL is proxied via Next.js in dev, but in test we can hit the API route on Next.js
     // Playwright baseURL is configured to the Next.js app.
     const response = await request.post('/api/v1/debug/seed_traffic', {
-      data: trafficData
+      data: trafficData,
+      headers: {
+        'Authorization': 'Bearer test-token',
+        'X-API-Key': 'test-token'
+      }
     });
 
+    if (!response.ok()) {
+      console.log('Seed traffic failed:', await response.text());
+    }
     expect(response.ok()).toBeTruthy();
   });
 
