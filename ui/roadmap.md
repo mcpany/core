@@ -107,3 +107,8 @@
 - [ ] **Log Source Color Coding**: Assign distinct colors to different log sources automatically for better visual separation.
 - [ ] **Context Usage History**: Track total context usage over time to identify growth trends (requires backend metrics persistence).
 - [ ] **Tool Schema Optimizer**: Analyze tool schemas and suggest removing unused properties or compacting descriptions to save context tokens.
+
+### Local Security & Governance (2026-03-01 Evolution)
+- [ ] **[P0] Project Policy Manager**: UI for viewing and editing project-specific tool access policies and `.mcp-policy` files. (Added: 2026-03-01)
+- [ ] **[P0] Config Integrity Dashboard**: Security view showing signature status for all loaded configuration files and managing trusted keys. (Added: 2026-03-01)
+- [ ] **[P1] Local Handshake Monitor**: Visualization of attested local client connections and session health. (Added: 2026-03-01)

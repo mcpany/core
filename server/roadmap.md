@@ -189,3 +189,9 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Core Middleware Pipeline**: The middleware architecture is robust and extensible.
 - **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates protocol details from business logic.
 - **Documentation**: The project has excellent documentation coverage for most features.
+
+#### Upcoming (2026-03-01 Evolution)
+*   **[P0] Project-Aware Policy Scoping**: Support for project-bound tool availability and `.mcp-policy` files. (Added: 2026-03-01)
+*   **[P0] Config Integrity Guard**: Cryptographic signature verification for all configuration files. (Added: 2026-03-01)
+*   **[P1] Cryptographic Local Handshake**: Attested handshake for local gateway connections. (Added: 2026-03-01)
+*   **[P1] Tool Annotation Matcher**: Attribute-based access control for tools using metadata annotations. (Added: 2026-03-01)

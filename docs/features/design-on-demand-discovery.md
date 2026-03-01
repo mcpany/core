@@ -57,3 +57,10 @@ As the number of available MCP tools grows, agents face "context pollution"—wh
 
 ## 7. Evolutionary Changelog
 *   **2026-02-25:** Initial Document Creation.
+
+### Update: 2026-03-01 - Project-Level Scoping & Annotation Matching
+**Context**: Gemini CLI v0.31.0 introduced project-level policies and tool annotation matching, setting a new expectation for how agents discover and access tools within specific contexts.
+**Architecture Adjustment**:
+*   **CWD-Bound Discovery**: Lazy-discovery will now prioritize tools that are explicitly authorized for the agent's current working directory (CWD), as verified by local `.mcp-policy` files.
+*   **Annotation Matching Engine**: MCP Any will support metadata-based tool discovery, allowing agents to search for tools by tags (e.g., `category: "database"`, `risk: "low"`) matching the Gemini CLI attribute-based policy standard.
+**Usability Impact**: Reduces context window pollution by only surfacing tools relevant to the current project and security profile.

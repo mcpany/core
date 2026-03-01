@@ -81,3 +81,17 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-01] Updates
+
+### Proposed Additions
+- **Project-Aware Policy Scoping**: (P0) Restrict tool availability based on the agent's current working directory (CWD) and project-specific `.mcp-policy` files.
+- **Config Integrity Guard**: (P0) Mandatory cryptographic signature verification for all configuration files to prevent "Repo-based RCE."
+- **Cryptographic Local Handshake**: (P1) Secure, attested handshake protocol for all local client-to-gateway connections to mitigate "ClawJacked"-style hijacking.
+- **Tool Annotation Policy Matcher**: (P1) Align with Gemini CLI's attribute-based access control, allowing tool access based on metadata annotations.
+
+### Priority Shifts
+- **Safe-by-Default Network Hardening**: Promoted to **P0** and expanded to include local handshake attestation.
+- **Lazy-MCP Discovery**: (P0) High priority to support discovery within specific project scopes.

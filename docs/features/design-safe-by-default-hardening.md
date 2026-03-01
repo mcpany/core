@@ -59,3 +59,10 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+
+### Update: 2026-03-01 - Mitigating Local Connection Hijacking
+**Context**: The "ClawJacked" (CVE-2026-25253) incident proved that `127.0.0.1` binding is insufficient when malicious websites can bridge to local ports.
+**Architecture Adjustment**:
+*   Introducing a **Cryptographic Local Handshake**: All MCP Any clients must perform a one-time attested handshake using an Ed25519-signed challenge before being granted access to the gateway, even on localhost.
+*   **Config Integrity Verification**: Implementing mandatory signature checks for `.mcpany/config.yaml`. The server will refuse to load any config that is not signed by a trusted local key, mitigating "Repo-based RCE" vulnerabilities discovered in Claude Code.
+**Security Impact**: Prevents unauthorized browser-based or repo-based tool execution by requiring explicit, out-of-band attestation for both the connection and the configuration.

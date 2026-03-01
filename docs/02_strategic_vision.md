@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-01]
+### Focus: Hardening the Local Trusted Perimeter & Project-Level Capability Scoping
+**Context**: The "ClawJacked" (CVE-2026-25253) and Claude Code config-based RCE (CVE-2025-59536) incidents have fundamentally broken the assumption that "local" is "safe." Simultaneously, Gemini CLI v0.31.0 has set a new standard for project-level tool policies.
+**Strategic Pivot**:
+- **Zero-Trust Local Foundation**: MCP Any will treat all local connections as potentially hostile. We will move beyond simple port binding to implement a cryptographically attested "Local Handshake" for all agent-to-gateway communication.
+- **Config Integrity Attestation**: Implementing mandatory signing for all configuration files. MCP Any will refuse to load any configuration that cannot be verified against a user-controlled "Trusted Keyring," preventing repo-based RCE.
+- **Project-Aware Capability Scoping**: Transitioning from global tool availability to "Project-Bound" tools. A tool will only be exposed to the agent if the agent's current working directory is explicitly verified and authorized within the MCP Any policy engine.
