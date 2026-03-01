@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net"
 	"net/http"
 	"os"
@@ -164,9 +165,14 @@ func TestDockerCompose(t *testing.T) {
 	}, 30*time.Second, 2*time.Second, "Failed to get a successful response from mcpany")
 
 	defer func() { _ = resp.Body.Close() }()
+
+	// Read body bytes first for better debugging
+	bodyBytes, err := io.ReadAll(resp.Body)
+	require.NoError(t, err, "failed to read response body")
+
 	var result map[string]interface{}
-	err = json.NewDecoder(resp.Body).Decode(&result)
-	require.NoError(t, err)
+	err = json.Unmarshal(bodyBytes, &result)
+	require.NoError(t, err, "failed to parse json response: %s", string(bodyBytes))
 
 	// Check the response
 	require.NotNil(t, result["result"])

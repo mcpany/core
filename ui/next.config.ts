@@ -132,6 +132,13 @@ const nextConfig: NextConfig = {
     };
     // Important: Disable symlink resolution to prevent Webpack from resolving symlinks to their real path (which is outside the project)
     config.resolve.symlinks = false;
+
+    // Ignore fsevents missing module error
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      fsevents: false,
+    };
+
     return config;
   },
   // rewrites moved to middleware.ts for runtime/dynamic proxy support
