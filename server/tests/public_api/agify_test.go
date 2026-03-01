@@ -30,6 +30,7 @@ func TestUpstreamService_Agify(t *testing.T) {
 	// --- 1. Start Mock Server ---
 	mockResponse := `{"name": "michael", "age": 50, "count": 100}`
 	mockServer := integration.CreateMockServerWithResponses(t, map[string]string{
+		"/": mockResponse,
 		"/?name=michael": mockResponse,
 	})
 	defer mockServer.Close()
