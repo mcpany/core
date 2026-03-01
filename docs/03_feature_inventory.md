@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-01] Updates
+
+### Proposed Additions
+- **Docker-Bound Named Pipe Transport**: (P0) High-security IPC for inter-agent and agent-to-gateway communication. Eliminates local TCP port exposure.
+- **Predictive Context Warmup Middleware**: (P1) Analyzes initial prompt intent to pre-fetch relevant MCP tool schemas, reducing "First Call" latency in ephemeral sessions.
+- **Ephemeral Session State Purge**: (P1) Automated secure wiping of session-bound KV state and tool results upon agent disconnection.
+
+### Priority Shifts
+- **"Safe-by-Default" Network Hardening**: (Already P0) Re-prioritized to include mandatory migration from TCP to Named Pipes for all local subagent clusters.
+- **A2A Stateful Residency**: (Already P0) Expanded to support "Warm-Start" session resumption using the Predictive Context Warmup middleware.
+
+### Deprecations / Monitoring
+- **Local TCP for Subagents**: Monitoring for deprecation in Q2 2026 in favor of Named Pipes/Unix Domain Sockets.
