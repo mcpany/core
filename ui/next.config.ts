@@ -117,6 +117,15 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async rewrites() {
+    const backendUrl = process.env.BACKEND_URL || 'http://localhost:50050';
+    return [
+      {
+        source: '/api/v1/ws/:path*',
+        destination: `${backendUrl}/api/v1/ws/:path*`,
+      }
+    ];
+  },
   webpack: (config) => {
 
     // Explicitly add alias for @proto to resolve external directory
