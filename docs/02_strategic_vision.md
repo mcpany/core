@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-01]
+### Focus: Swarm Trust Domains & Mobile-to-Local Bridging
+**Context**: As agent swarms become the default architectural pattern, the concept of a single "Security Perimeter" is failing. Simultaneously, the "Claude Code Remote Control" feature highlights a massive user demand for accessing local tools from mobile/remote agent interfaces.
+**Strategic Pivot**:
+- **Swarm Trust Domains**: MCP Any will introduce "Trust Domains," allowing for fluid context and tool sharing within a swarm while maintaining rigid boundaries between disparate swarms or organizations.
+- **Universal Remote Bridge**: Moving beyond local-only access, MCP Any will implement a secure, end-to-end encrypted bridge that allows authorized mobile and cloud-native agents to invoke local MCP tools without exposing the host to the public internet.
+- **Policy Wildcarding & Inheritance**: Aligning with the Gemini CLI evolution, we will implement declarative policy inheritance and wildcarding to reduce the configuration overhead for complex multi-agent trust models.

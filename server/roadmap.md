@@ -34,6 +34,12 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-01 Evolution)
+*   **[P0] Swarm Trust Domains (STDs)**: Implement cryptographic isolation and context sharing boundaries for agent swarms. (Added: 2026-03-01)
+*   **[P0] Universal Mobile-to-Local Bridge**: Secure, E2EE relay for cloud/mobile agent access to local MCP tools. (Added: 2026-03-01)
+*   **[P1] Declarative Policy Wildcards**: Support for `mcp:*` and `service:*` wildcards in the Policy Firewall. (Added: 2026-03-01)
+*   **[P1] Contextual TTL for Swarm State**: Automatic expiry of shared blackboard state post-task. (Added: 2026-03-01)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

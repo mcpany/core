@@ -81,3 +81,17 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-01] Updates
+
+### Proposed Additions
+- **Swarm Trust Domains (STDs)**: (P0) Cryptographic grouping of agents to allow seamless context/tool inheritance within a "Trust Domain" while isolating from external swarms.
+- **Universal Mobile-to-Local Bridge**: (P0) Secure, E2EE relay for cloud/mobile agents to access local tools.
+- **Declarative Policy Wildcards**: (P1) Support for `mcp:*` and `service:*` wildcards in the Policy Firewall, reducing config friction for large swarms.
+- **Contextual TTL for Swarm State**: (P1) Automatic expiry and cleanup of shared blackboard state after a swarm task completes.
+
+### Priority Shifts
+- **A2A Stateful Residency**: Promoted to **P0** as it is a critical dependency for robust swarm communication across intermittent connections.
+- **Environment Bridging Middleware**: Re-prioritized to **P0** and merged with the "Universal Remote Bridge" initiative.
