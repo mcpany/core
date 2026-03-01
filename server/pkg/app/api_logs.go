@@ -57,26 +57,29 @@ func (a *Application) handleLogsWS() http.HandlerFunc {
 			}
 		}
 
-		// Send ping periodically
-		go func() {
-			ticker := time.NewTicker(5 * time.Second)
-			defer ticker.Stop()
-			for range ticker.C {
+		// Create a separate ping ticker
+		pingTicker := time.NewTicker(5 * time.Second)
+		defer pingTicker.Stop()
+
+		for {
+			select {
+			case <-pingTicker.C:
 				if err := conn.WriteControl(websocket.PingMessage, []byte{}, time.Now().Add(time.Second)); err != nil {
 					return
 				}
-			}
-		}()
-
-		for msg := range logCh {
-			// ⚡ BOLT: Write struct directly to WebSocket (marshals internally)
-			if err := conn.WriteJSON(msg); err != nil {
-				logging.GetLogger().Error("failed to write log message to websocket", "error", err)
-				return
-			}
-			if err := conn.SetWriteDeadline(time.Now().Add(10 * time.Second)); err != nil {
-				logging.GetLogger().Error("failed to set write deadline", "error", err)
-				return
+			case msg, ok := <-logCh:
+				if !ok {
+					return
+				}
+				// ⚡ BOLT: Write struct directly to WebSocket (marshals internally)
+				if err := conn.WriteJSON(msg); err != nil {
+					logging.GetLogger().Error("failed to write log message to websocket", "error", err)
+					return
+				}
+				if err := conn.SetWriteDeadline(time.Now().Add(10 * time.Second)); err != nil {
+					logging.GetLogger().Error("failed to set write deadline", "error", err)
+					return
+				}
 			}
 		}
 	}
