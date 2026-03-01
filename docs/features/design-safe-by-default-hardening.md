@@ -59,3 +59,10 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+
+### Update: 2026-03-01 - Addressing Sandbox Escapes & Token Theft
+**Context:** Today's market sync revealed a critical sandbox escape in Claude Code (CVE-2026-25725) and RCE via token theft in OpenClaw (CVE-2026-25253).
+**Architecture Adjustment:**
+- **Fail-Closed Whitelisting**: Transitioning from a "blacklist/protection" model to a "strict whitelist" for all tool execution environments. Filesystem access is denied by default unless the path is explicitly allowed by the session's security context.
+- **Hardware-Bound Identity**: Deprecating plain-text bearer tokens in favor of hardware-signed requests. MCP Any will utilize the host's Secure Enclave/TPM to sign an ephemeral challenge for every administrative or high-privilege tool call.
+**Security Impact:** Mitigates the risk of session hijacking via token theft and prevents sandbox escapes that rely on creating unprotected files in writable directories.

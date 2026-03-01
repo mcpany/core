@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-01] Updates
+
+### Proposed Additions
+- **Fail-Closed Sandbox Guard**: (P0) A security middleware that enforces a strict whitelist policy for filesystem and network access, preventing sandbox escapes via new file creation.
+- **Hardware-Attested Tool Execution**: (P1) Integration with host Secure Enclaves (TPM/Apple Silicon) to sign tool execution requests, eliminating bearer token theft risks.
+- **Per-Request Stateless Attestation**: (P0) Transitioning from long-lived session tokens to ephemeral, hardware-signed challenges for every high-stakes tool call.
+
+### Priority Shifts
+- **"Safe-by-Default" Network Hardening**: (Already P0, but re-prioritizing implementation) High urgency following the OpenClaw RCE incidents.
+- **Supply Chain Integrity Guard**: (P0) Essential for verifying the provenance of tools in a hardware-attested environment.
+
+### Deprecations / Monitoring
+- **File-Based Session Tokens**: Monitoring for deprecation in favor of Hardware-Bound Identity.

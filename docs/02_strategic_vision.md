@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-01]
+### Focus: Fail-Closed Sandboxing & Hardware-Bound Identity
+**Context**: Recent exploits in Claude Code (sandbox escape via unprotected file creation) and OpenClaw (RCE via token theft) have exposed critical weaknesses in current agent security models. Security cannot be an "opt-in" or "additive" layer; it must be the immutable foundation.
+**Strategic Pivot**:
+- **Fail-Closed Sandbox Guard**: MCP Any will implement a "Negative-Permission" sandboxing model. Instead of protecting known files, the gateway will assume all paths are forbidden unless explicitly whitelisted, preventing "creation-based escapes" like those seen in Claude Code.
+- **Hardware-Bound Identity (Secure Enclave)**: To mitigate token theft (as seen in OpenClaw), MCP Any will transition from file-based session tokens to hardware-bound identities (TPM/Secure Enclave). Every tool call must be signed by the host's hardware.
+- **Stateless Authentication**: Moving towards a model where agent sessions are verified per-request against a local hardware attestation, eliminating the risk of long-lived bearer tokens being stolen from disk.
