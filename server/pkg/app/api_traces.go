@@ -199,38 +199,6 @@ func (a *Application) handleTracesWS() http.HandlerFunc {
 			return conn.SetWriteDeadline(time.Now().Add(10 * time.Second))
 		})
 
-		// Send history
-		for _, msg := range history {
-			entry, ok := msg.(audit.Entry)
-			if !ok {
-				continue
-			}
-			trace := toTrace(entry)
-
-			if err := conn.SetWriteDeadline(time.Now().Add(10 * time.Second)); err != nil {
-				// Disconnected
-				return
-			}
-			if err := conn.WriteJSON(trace); err != nil {
-				// Disconnected
-				return
-			}
-		}
-
-		// Send seeded traces
-		a.seededTracesMu.RLock()
-		for _, t := range a.seededTraces {
-			if err := conn.SetWriteDeadline(time.Now().Add(10 * time.Second)); err != nil {
-				// Disconnected
-				break
-			}
-			if err := conn.WriteJSON(t); err != nil {
-				// Disconnected
-				break
-			}
-		}
-		a.seededTracesMu.RUnlock()
-
 		seededSubCh := make(chan *Trace, 100)
 		a.seededTraceSubsMu.Lock()
 		a.seededTraceSubs[seededSubCh] = struct{}{}
@@ -265,6 +233,42 @@ func (a *Application) handleTracesWS() http.HandlerFunc {
 		defer pingTicker.Stop()
 
 		var writeMu sync.Mutex
+
+		// Send history
+		for _, msg := range history {
+			entry, ok := msg.(audit.Entry)
+			if !ok {
+				continue
+			}
+			trace := toTrace(entry)
+
+			writeMu.Lock()
+			err := conn.SetWriteDeadline(time.Now().Add(10 * time.Second))
+			if err == nil {
+				err = conn.WriteJSON(trace)
+			}
+			writeMu.Unlock()
+			if err != nil {
+				// Disconnected
+				return
+			}
+		}
+
+		// Send seeded traces
+		a.seededTracesMu.RLock()
+		for _, t := range a.seededTraces {
+			writeMu.Lock()
+			err := conn.SetWriteDeadline(time.Now().Add(10 * time.Second))
+			if err == nil {
+				err = conn.WriteJSON(t)
+			}
+			writeMu.Unlock()
+			if err != nil {
+				// Disconnected
+				break
+			}
+		}
+		a.seededTracesMu.RUnlock()
 
 		for {
 			select {

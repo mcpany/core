@@ -45,19 +45,6 @@ func (a *Application) handleLogsWS() http.HandlerFunc {
 			return conn.SetWriteDeadline(time.Now().Add(10 * time.Second))
 		})
 
-		// Send history
-		for _, msg := range history {
-			if err := conn.SetWriteDeadline(time.Now().Add(10 * time.Second)); err != nil {
-				// Disconnected
-				return
-			}
-			// ⚡ BOLT: Write struct directly to WebSocket (marshals internally)
-			if err := conn.WriteJSON(msg); err != nil {
-				// Disconnected
-				return
-			}
-		}
-
 		// ⚡ BOLT: Prevent concurrent read/write to the websocket
 		// A websocket connection cannot be read and written to concurrently by multiple goroutines.
 		// The read loop is needed to process incoming messages like pong responses, which
@@ -82,6 +69,21 @@ func (a *Application) handleLogsWS() http.HandlerFunc {
 
 		// Setup ping write mutex
 		var writeMu sync.Mutex
+
+		// Send history
+		for _, msg := range history {
+			writeMu.Lock()
+			err := conn.SetWriteDeadline(time.Now().Add(10 * time.Second))
+			if err == nil {
+				// ⚡ BOLT: Write struct directly to WebSocket (marshals internally)
+				err = conn.WriteJSON(msg)
+			}
+			writeMu.Unlock()
+			if err != nil {
+				// Disconnected
+				return
+			}
+		}
 
 		for {
 			select {
