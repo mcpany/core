@@ -39,6 +39,7 @@ const nextConfig: NextConfig = {
     ],
   },
   experimental: {
+    externalDir: true,
     // turbopack: {
     //   resolveAlias: {
     //     'canvas': './empty-module.ts',

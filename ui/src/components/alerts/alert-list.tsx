@@ -156,7 +156,7 @@ export function AlertList() {
               </div>
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Statuses</SelectItem>
+              <SelectItem value="all">All Status</SelectItem>
               <SelectItem value="active">Active</SelectItem>
               <SelectItem value="acknowledged">Acknowledged</SelectItem>
               <SelectItem value="resolved">Resolved</SelectItem>
