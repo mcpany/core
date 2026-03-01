@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-01 Evolution)
+*   **[P0] Strict Session Isolation Scoping**: Cryptographically bind session state to user/agent pairs (CVE-2026-27004). (Added: 2026-03-01)
+*   **[P0] Environment Metadata Sanitizer**: Middleware to scrub and sanitize context injected from OS/Environment (CVE-2026-27001). (Added: 2026-03-01)
+*   **[P1] OS-Keyring Secret Storage**: Native integration with Keychain/Secret Service for agent secrets. (Added: 2026-03-01)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-01] Updates
+
+### Proposed Additions
+- **Strict Session Isolation Scoping**: (P0) Ensures that all tool outputs and session state are cryptographically bound to a unique user/agent session. Prevents cross-session leaks (CVE-2026-27004).
+- **Environment Metadata Sanitizer Middleware**: (P0) Automatically scrubs and sanitizes "environmental context" (e.g., directory names, git metadata) to prevent indirect prompt injection (CVE-2026-27001).
+- **Encrypted Secret Management Tool**: (P1) A native tool for agents to store and retrieve secrets using OS-level secure storage (Keychain/Secret Service), replacing plaintext storage.
+
+### Priority Shifts
+- **HITL Middleware**: Promoted to **P0**. User approval is now the primary defense against autonomous agent command injection.
+- **"Safe-by-Default" Network Hardening**: Re-affirmed as **P0** with immediate implementation priority.
+
+### Deprecations / Monitoring
+- **Plaintext Secret Configuration**: Monitoring for deprecation in favor of the Encrypted Secret Management Tool.

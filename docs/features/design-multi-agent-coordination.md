@@ -43,3 +43,7 @@ As AI agent ecosystems evolve from single-agent monoliths to multi-agent swarms 
 
 ## 7. Evolutionary Changelog
 * **2026-02-24**: Initial Document Creation.
+* **2026-03-01**: Hardening Session Isolation (CVE-2026-27004).
+    * **Context**: Research revealed OpenClaw session tools leaked data across users.
+    * **Adjustment**: In Section 4, "Data Storage/State" now specifies that SQLite Blackboard entries are cryptographically hashed with the `SessionID` and a `UserSecret`. This ensures that even if an agent gains unauthorized access to the database, it cannot read state from other sessions.
+    * **Interface Change**: `POST /session/init` now requires a `user_id` and `signature` for binding.

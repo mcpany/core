@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-01]
+### Focus: Hardened Session Isolation & Metadata-Aware Security
+**Context**: The OpenClaw security crisis (CVE-2026-27004, CVE-2026-27001) has demonstrated that multi-agent systems are vulnerable to cross-session data leaks and "environmental" prompt injections. As agents move from single-user experiments to enterprise-grade swarms, infrastructure must enforce strict isolation and sanitize all metadata.
+**Strategic Pivot**:
+- **Hardened Session Isolation**: MCP Any will implement a cryptographic session-bounding protocol. Tools and state will be strictly scoped to a unique session key, preventing cross-user transcript exposure even in shared-agent deployments.
+- **Environment Metadata Sanitization**: Shifting security from "Input Sanitization" to "Context Sanitization." MCP Any will intercept and scrub metadata (directory names, git branch info, etc.) before it is injected into the LLM context, mitigating the "Prompt Injection via Environment" vector.
+- **Zero-Knowledge Secret Storage**: Moving away from plaintext configuration. MCP Any will integrate with OS-level keychains or hardware-backed enclaves to ensure agents never handle raw API keys or secrets in memory or logs.
