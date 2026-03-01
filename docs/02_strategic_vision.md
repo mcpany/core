@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-01]
+### Focus: Runtime Tool Synthesis & Content Attestation
+**Context**: The emergence of "Dynamic Subagent Synthesis" in OpenClaw and "Implicit Context Injection" in Gemini CLI necessitates a shift. Tools are no longer static; they are being synthesized on-the-fly. Simultaneously, "Tool Description Poisoning" (TDP) represents a new frontier of prompt injection.
+**Strategic Pivot**:
+- **Runtime Tool Factory**: MCP Any will evolve from a static registry to a runtime factory capable of dynamically generating and scoping tools based on the active agent session's "Intent Manifest."
+- **Content Attestation & Sanitization**: Beyond verifying "where" a tool came from (Provenance), we must verify "what" the tool claims to do. Integrating LLM-based sanitizers to strip adversarial instructions from tool descriptions before they reach the agent.
+- **Atomic Multi-Agent State Sync**: Implementing a "Write-Ahead Log" for multi-agent state changes to prevent fragmentation and hallucinations in parallel swarms.

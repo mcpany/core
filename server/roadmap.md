@@ -34,6 +34,12 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-01 Evolution)
+*   **[P0] Runtime Tool Factory (Dynamic Synthesis)**: Enable on-the-fly tool registration and intent-bound scoping for specialized subagents. (Added: 2026-03-01)
+*   **[P0] TDP Sanitizer Middleware**: LLM-powered sanitization of tool descriptions to neutralize "Tool Description Poisoning" attacks. (Added: 2026-03-01)
+*   **[P1] Atomic Multi-Agent State Sync (WAL)**: Write-Ahead Log implementation for parallel agent swarms to ensure state consistency. (Added: 2026-03-01)
+*   **[P1] Zero-Knowledge Tunneling Adapter**: Secure, signed tunneling for cloud-sandboxed agents to access local tools. (Added: 2026-03-01)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

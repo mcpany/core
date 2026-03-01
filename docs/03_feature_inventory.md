@@ -81,3 +81,20 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-01] Updates
+
+### Proposed Additions
+- **Runtime Tool Factory (Dynamic Synthesis)**: (P0) Capability to dynamically register and scope tools during an active agent session based on its "Intent Manifest."
+- **TDP Sanitizer Middleware**: (P0) LLM-powered middleware to sanitize tool descriptions and metadata, neutralizing "Tool Description Poisoning" (TDP) attacks.
+- **Atomic Multi-Agent State Sync (WAL)**: (P1) Implementation of a "Write-Ahead Log" for all agent-driven state changes to ensure consistency across parallel swarms.
+- **Zero-Knowledge Tunneling Adapter**: (P1) Secure, cryptographically signed tunneling for cloud-sandboxed agents to access local tools without port exposure.
+
+### Priority Shifts
+- **Environment Bridging Middleware**: Re-affirmed as **P0**. Essential for modern cloud-to-local workflows (Claude Code / Gemini).
+- **A2A Stateful Residency**: Re-affirmed as **P0**. High urgency to resolve state fragmentation in complex swarms.
+
+### Deprecations / Monitoring
+- **Static Tool Registration**: Monitoring for phase-out in favor of Session-Bound Dynamic Synthesis.

@@ -57,3 +57,9 @@ As the number of available MCP tools grows, agents face "context pollution"—wh
 
 ## 7. Evolutionary Changelog
 *   **2026-02-25:** Initial Document Creation.
+*   **2026-03-01: Update: Integrating TDP Sanitizer Middleware**
+    * **Context**: Research has identified "Tool Description Poisoning" (TDP) as a critical vulnerability where malicious MCP servers inject adversarial instructions into tool metadata.
+    * **Architecture Adjustment**:
+        * Introducing a `SanitizationMiddleware` that runs during the indexing phase.
+        * This middleware uses a small, fast LLM (e.g., Llama 3-8B) or specialized regex-based filters to "wash" tool descriptions and parameter metadata before they are stored in the search index.
+    * **Security Impact**: Prevents "invisible" prompt injection attacks that could lead to unauthorized system actions when an agent uses a discovered tool.
