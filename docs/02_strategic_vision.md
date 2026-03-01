@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-01]
+### Focus: Agent Identity & Cascading Failure Mitigation
+**Context**: Today's research on the OpenClaw explosion and the "poisoned agent" threat model reveals that A2A Mesh security must go beyond simple transport encryption. We must be able to identify and isolate agents that deviate from their "Attested Goal."
+**Strategic Pivot**:
+- **Agent Identity & Attestation (Agent Passport)**: Implementing a cryptographic identity layer for agents. Every agent in the mesh must carry an "Agent Passport" that includes its identity, origin, and an attested summary of its current goal.
+- **Cascading Failure Circuit Breaker**: Moving from passive logging to active mitigation. MCP Any will implement "Swarm Circuit Breakers" that automatically throttle or isolate agents if they exhibit patterns of "Poisoned Propagation" (e.g., rapid, anomalous tool calls across multiple subagents).
+- **Deep A2A Observability**: Enhancing the gateway to provide "Lineage Tracing" for every message, allowing operators to visualize the "Patient Zero" agent in a cascading failure event.

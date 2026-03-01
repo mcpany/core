@@ -81,3 +81,15 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-01] Updates
+
+### Proposed Additions
+- **A2A Agent Passport (Identity Layer)**: (P0) A cryptographic identity and goal-attestation layer for agents. Prevents impersonation and enables goal-alignment verification.
+- **Swarm Circuit Breaker Middleware**: (P1) Automatic throttling and isolation of agents exhibiting "Poisoned Propagation" patterns to prevent cascading swarm failures.
+- **A2A Message Lineage Tracing**: (P1) Deep observability tool to trace the origin and flow of messages across a multi-agent swarm.
+
+### Priority Shifts
+- **A2A Stateful Residency**: Re-affirmed as **P0**. Essential for reliable communication in the growing OpenClaw/Moltbot ecosystem.

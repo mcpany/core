@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-01 Evolution)
+*   **[P0] A2A Agent Passport**: Cryptographic identity layer for agent goal-attestation. (Added: 2026-03-01)
+*   **[P1] Swarm Circuit Breaker**: Middleware to detect and throttle anomalous A2A message patterns. (Added: 2026-03-01)
+*   **[P1] A2A Message Lineage**: Backend support for tracing message origin across agent chains. (Added: 2026-03-01)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
