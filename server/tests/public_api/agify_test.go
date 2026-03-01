@@ -30,7 +30,7 @@ func TestUpstreamService_Agify(t *testing.T) {
 	// --- 1. Start Mock Server ---
 	mockResponse := `{"name": "michael", "age": 50, "count": 100}`
 	mockServer := integration.CreateMockServerWithResponses(t, map[string]string{
-		"/?name=michael": mockResponse,
+		"/": mockResponse, // The request comes as GET / with query parameter name=michael, but DefaultMockHandler only matches exactly r.URL.Path which is /
 	})
 	defer mockServer.Close()
 
