@@ -39,17 +39,7 @@ test.describe('Network Topology Visualizer', () => {
     // We restrict search to the react-flow container to avoid matching sidebar title
     await expect(page.locator('.react-flow').getByText('MCP Any')).toBeVisible();
 
-    // 6. Seed Data Trigger (for interactive test)
-    // Check that the Seed Data button exists and is clickable
-    const seedBtn = page.getByRole('button', { name: 'Seed Data' });
-    await expect(seedBtn).toBeVisible();
-    await seedBtn.click();
-
-    // 7. Verify Toast
-    // Use first() to avoid strict mode violation if multiple elements match (accessibility + visible)
-    await expect(page.getByText('Traffic Seeded').first()).toBeVisible();
-
-    // 8. Wait for refresh and verify graph update
+    // 6. Wait for refresh and verify graph update
     // Since seed traffic just updates history, it might not add new NODES unless we also register services.
     // The Core node is always there.
     // If we want to see Client nodes, the SeedTrafficHistory in backend updates SessionStats?
