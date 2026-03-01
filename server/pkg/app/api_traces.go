@@ -242,11 +242,31 @@ func (a *Application) handleTracesWS() http.HandlerFunc {
 			close(seededSubCh)
 		}()
 
+		// ⚡ BOLT: Prevent concurrent read/write to the websocket
+		// A websocket connection cannot be read and written to concurrently by multiple goroutines.
+		// The read loop is needed to process incoming messages like pong responses, which
+		// prevents the connection from timing out from the client's perspective and from our end.
+
+		// Setup a channel to act as a close signal
+		closeCh := make(chan struct{})
+
+		// Start a read loop to process pongs and detect client disconnects
+		go func() {
+			for {
+				if _, _, err := conn.ReadMessage(); err != nil {
+					close(closeCh)
+					return
+				}
+			}
+		}()
+
 		pingTicker := time.NewTicker(5 * time.Second)
 		defer pingTicker.Stop()
 
 		for {
 			select {
+			case <-closeCh:
+				return // Client disconnected
 			case <-pingTicker.C:
 				if err := conn.WriteControl(websocket.PingMessage, []byte{}, time.Now().Add(time.Second)); err != nil {
 					return
