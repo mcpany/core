@@ -107,3 +107,8 @@
 - [ ] **Log Source Color Coding**: Assign distinct colors to different log sources automatically for better visual separation.
 - [ ] **Context Usage History**: Track total context usage over time to identify growth trends (requires backend metrics persistence).
 - [ ] **Tool Schema Optimizer**: Analyze tool schemas and suggest removing unused properties or compacting descriptions to save context tokens.
+
+### Resilient & Confidential Infrastructure (2026-03-01 Evolution)
+- [ ] **[P0] Self-Healing Patch Reviewer**: UI for reviewing and approving suggested configuration patches from the resilience middleware. (Added: 2026-03-01)
+- [ ] **[P1] TEE Attestation Viewer**: Security dashboard for verifying enclave quotes and remote attestation status. (Added: 2026-03-01)
+- [ ] **[P1] Session Snapshot Manager**: UI for browsing, saving, and restoring agent session binary states. (Added: 2026-03-01)

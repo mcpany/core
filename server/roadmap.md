@@ -189,3 +189,8 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Core Middleware Pipeline**: The middleware architecture is robust and extensible.
 - **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates protocol details from business logic.
 - **Documentation**: The project has excellent documentation coverage for most features.
+
+#### Upcoming (2026-03-01 Evolution)
+*   **[P0] Self-Healing Toolchain Middleware**: Active resilience layer for auto-patching and intelligent retries. (Added: 2026-03-01)
+*   **[P1] Confidential TEE Runtime Adapter**: Secure execution of local commands within hardware-backed enclaves. (Added: 2026-03-01)
+*   **[P1] Agent Session Snapshotting**: Binary persistence protocol for migrating agent states. (Added: 2026-03-01)

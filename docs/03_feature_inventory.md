@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-01] Updates
+
+### Proposed Additions
+- **Self-Healing Toolchain Middleware**: (P0) Active resilience layer that auto-patches configuration and suggests parameter fixes for failing tools.
+- **Confidential TEE Runtime Adapter**: (P1) Integration with Trusted Execution Environments (e.g., Intel SGX, Nitro Enclaves) for secure local command execution.
+- **Agent Session Snapshotting**: (P1) Binary state persistence for agent sessions, enabling "hibernate and restore" functionality across environments.
+
+### Priority Shifts
+- **Smart Error Recovery**: (Currently in Server Roadmap) Promoted to **P0** and renamed to **Self-Healing Toolchain Middleware** for strategic alignment.
+- **"Safe-by-Default" Network Hardening**: Re-affirmed as **P0** as a prerequisite for TEE-based execution.
+
+### Deprecations / Monitoring
+- **Passive Error Logging**: Monitoring for deprecation in favor of Active Resilience (Self-Healing).
