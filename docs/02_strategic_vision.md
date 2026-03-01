@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-01]
+### Focus: Multi-Model Agent Teams & Cross-Provider Policy Enforcement
+**Context**: Today's findings show a rapid shift toward "Parallel Agent Teams" (Claude Code) and "Multimodal Loops" (Gemini CLI). However, these teams lack a unified coordination layer that works across different LLM providers, and they are increasingly vulnerable to "Indirect Prompt Injection" via browser-enabled agents.
+**Strategic Pivot**:
+- **Team-Aware Coordination**: MCP Any will evolve to support "Parallel Session Ownership," allowing multiple agents to simultaneously access and lock shared resources (files, keys) via a centralized hub.
+- **Cross-Provider Policy Engine**: Implementing a universal policy layer that enforces consistent "Seatbelt" profiles regardless of whether the agent is Claude, Gemini, or a local OpenClaw instance.
+- **Injection-Aware Middleware**: Introducing a new inspection layer that specifically scans tool inputs (especially from browser-based agents) for "Malicious Website Orders," mitigating indirect prompt injection risks.

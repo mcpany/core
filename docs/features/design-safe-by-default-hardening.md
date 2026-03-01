@@ -59,3 +59,9 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-01:** Mitigation for Indirect Prompt Injection.
+    - **Context**: "Malicious Website Orders" crisis in browser-based agents.
+    - **Architecture Adjustment**:
+        - Adding `SeatbeltScanner` middleware to the default pipeline.
+        - Scans tool inputs for "imperative instruction patterns" originating from untrusted web sources.
+        - Mandatory HITL (Human-in-the-Loop) trigger for any tool call containing suspect web-derived data.

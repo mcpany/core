@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-01] Updates
+
+### Proposed Additions
+- **Cross-Provider Agent Team Bridge**: (P0) A coordination layer that enables parallel agent teams (like Claude Code Teams) to synchronize task lists and resource locks across different LLM providers.
+- **Indirect Injection Scanner (Seatbelt-AI)**: (P0) Middleware that inspects tool inputs for malicious "website orders" or hidden instructions that trigger unauthorized actions.
+- **Parallel Context Sharding**: (P1) Efficiency middleware that splits context across parallel agent instances to prevent token bloat while maintaining a shared state.
+
+### Priority Shifts
+- **HITL Middleware**: Promoted to **P0** (Essential for mitigating "Malicious Website Orders" by requiring user approval for risky autonomous actions).
+- **A2A Stateful Residency**: Re-affirmed as **P0** for reliable agent team communication.
+
+### Deprecations / Monitoring
+- **Uninspected Web-to-Tool Flows**: Monitoring for deprecation. All data originating from browser agents must pass through the Indirect Injection Scanner.

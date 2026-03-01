@@ -43,3 +43,6 @@ As AI agent ecosystems evolve from single-agent monoliths to multi-agent swarms 
 
 ## 7. Evolutionary Changelog
 * **2026-02-24**: Initial Document Creation.
+* **2026-03-01**: Expanded to support Parallel Agent Teams and Cross-Provider Locking.
+    - **Context**: Claude Code's "Agent Teams" requires parallel state management.
+    - **Update**: Introducing `POST /session/{id}/lock` and `POST /session/{id}/tasks` to manage shared resource access and parallel task lists for heterogeneous agent swarms.

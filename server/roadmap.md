@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-01 Evolution)
+*   **[P0] Cross-Provider Agent Team Bridge**: Parallel session ownership and locking for multi-model swarms. (Added: 2026-03-01)
+*   **[P0] Indirect Injection Scanner (Seatbelt-AI)**: Middleware to detect and block malicious website-originated instructions. (Added: 2026-03-01)
+*   **[P1] Parallel Context Sharding**: Shard context across agent instances while maintaining shared state. (Added: 2026-03-01)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
