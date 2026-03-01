@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-01 Evolution)
+*   **[P0] Lazy-Discovery Search Standard (ToolSearchTool)**: Universal middleware for the `ToolSearchTool` standard to eliminate "Context Wall" issues. (Added: 2026-03-01)
+*   **[P0] Mandatory Tool Provenance Signing**: Cryptographic enforcement of MCP server integrity to prevent marketplace-based RCE. (Added: 2026-03-01)
+*   **[P1] Context Metadata Sanitizer**: Security layer to prevent indirect prompt injection (CVE-2026-27001) in agent environments. (Added: 2026-03-01)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

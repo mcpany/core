@@ -57,3 +57,11 @@ As the number of available MCP tools grows, agents face "context pollution"—wh
 
 ## 7. Evolutionary Changelog
 *   **2026-02-25:** Initial Document Creation.
+*   **2026-03-01:** Alignment with Claude Code `ToolSearchTool` standard.
+    ### Update: 2026-03-01 - Standardizing `ToolSearchTool` Interface
+    **Context:** Today's market sync revealed that Anthropic's Claude Code has standardized on a `ToolSearchTool` for lazy loading when tool schemas exceed 10% of the context window.
+    **Architecture Adjustment:**
+    - Renaming the internal discovery tool from `mcpany_search_tools` to `ToolSearchTool` for native compatibility with Claude Code and other high-end clients.
+    - Implementing a "Context Monitor" middleware that automatically triggers the transition from full `tools/list` to `ToolSearchTool` based on real-time token counts.
+    - Added "Semantic Snippets": Tool search results will now include minimal usage examples (snippets) to help the LLM understand complex schemas without full documentation.
+    **Security Impact:** Reduces the risk of "Context Injection" by ensuring only the necessary tool subsets are ever visible to the model at any given time.

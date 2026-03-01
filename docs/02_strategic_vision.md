@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-01]
+### Focus: Tool Schema Compression & Hardened Provenance (Post-OpenClaw Meltdown)
+**Context**: Today's findings show that agent ecosystems are hitting a "Context Wall" with 67k+ tokens for tool schemas. Simultaneously, the OpenClaw "ClawHub" security crisis has proven that unvetted tool marketplaces are an RCE vector.
+**Strategic Pivot**:
+- **Lazy-Discovery Optimization**: MCP Any will adopt the `ToolSearchTool` standard pioneered by Claude Code, reducing context overhead by up to 90% via on-demand, semantic tool retrieval.
+- **Hardened Supply Chain**: Implementing mandatory cryptographic signatures for all MCP servers. Any tool lacking valid provenance will be executed in a "Zero-Trust" sandbox with no network or filesystem access, regardless of policy.
+- **Indirect Injection Sanitization**: Integrating a "Context Sanitization" layer that scans tool inputs and environment-derived metadata (file paths, repo names) for malicious control characters or hidden instructions (mitigating CVE-2026-27001).

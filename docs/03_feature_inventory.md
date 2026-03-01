@@ -81,3 +81,16 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-01] Updates
+
+### Proposed Additions
+- **Lazy-Discovery Search Standard (`ToolSearchTool`)**: (P0) High-performance middleware aligning with the Claude Code `ToolSearchTool` standard for dynamic tool loading.
+- **Context Metadata Sanitizer**: (P1) Security layer that scrubs environment-derived metadata (file paths, repo names) for control characters to prevent indirect prompt injection (CVE-2026-27001).
+- **Mandatory Tool Provenance Signing**: (P0) Critical requirement for all MCP servers to provide cryptographic signatures before execution to mitigate marketplace-based RCE vectors.
+
+### Priority Shifts
+- **MCP Provenance Attestation**: Re-affirmed as **P0** (Critical for responding to the OpenClaw "ClawHub" crisis).
+- **On-Demand Discovery Middleware (Lazy-MCP)**: Prioritized for the next engineering cycle to resolve the "Context Wall" issues seen in high-tool environments.
