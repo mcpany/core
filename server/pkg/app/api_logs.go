@@ -93,11 +93,11 @@ func (a *Application) handleLogsWS() http.HandlerFunc {
 				}
 				// ⚡ BOLT: Write struct directly to WebSocket (marshals internally)
 				if err := conn.WriteJSON(msg); err != nil {
-					logging.GetLogger().Error("failed to write log message to websocket", "error", err)
+					// Disconnected
 					return
 				}
 				if err := conn.SetWriteDeadline(time.Now().Add(10 * time.Second)); err != nil {
-					logging.GetLogger().Error("failed to set write deadline", "error", err)
+					// Disconnected
 					return
 				}
 			}
