@@ -131,7 +131,7 @@ func TestDoctorCmd_ServerErrors(t *testing.T) {
 		cmd.SetOut(b)
 		cmd.SetArgs([]string{"doctor", "--mcp-listen-address", "127.0.0.1:" + port})
 		_ = cmd.Execute()
-		assert.Contains(t, b.String(), "Doctor endpoint returned status: 500")
+		assert.Contains(t, b.String(), "Doctor endpoint returned status: 500 Internal Server Error")
 	})
 
 	// 3. Doctor returns invalid JSON

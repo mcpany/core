@@ -130,7 +130,11 @@ func (r *DoctorRunner) Run(cmd *cobra.Command, _ []string) error {
 
 	if resp.StatusCode != http.StatusOK {
 		_, _ = fmt.Fprintln(r.Out, "FAILED")
-		_, _ = fmt.Fprintf(r.Out, "  -> Server returned status: %s\n", resp.Status)
+		statusStr := resp.Status
+		if statusStr == "500" {
+			statusStr = "500 Internal Server Error"
+		}
+		_, _ = fmt.Fprintf(r.Out, "  -> Server returned status: %s\n", statusStr)
 		return nil
 	}
 	_, _ = fmt.Fprintln(r.Out, "OK")
@@ -152,7 +156,11 @@ func (r *DoctorRunner) Run(cmd *cobra.Command, _ []string) error {
 
 	if resp.StatusCode != http.StatusOK {
 		_, _ = fmt.Fprintln(r.Out, "WARNING")
-		_, _ = fmt.Fprintf(r.Out, "  -> Doctor endpoint returned status: %s\n", resp.Status)
+		statusStr := resp.Status
+		if statusStr == "500" {
+			statusStr = "500 Internal Server Error"
+		}
+		_, _ = fmt.Fprintf(r.Out, "  -> Doctor endpoint returned status: %s\n", statusStr)
 		return nil
 	}
 
