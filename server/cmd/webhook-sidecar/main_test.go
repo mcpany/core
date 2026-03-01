@@ -15,8 +15,8 @@ import (
 
 func TestMain(m *testing.M) {
 	// Build the binary
-	// We assume we are running from server/cmd/webhooks directory or with correct relative path
-	// But `go test ./server/cmd/webhooks` runs inside a temp dir? No, usually in package dir.
+	// We assume we are running from server/cmd/webhook-sidecar directory or with correct relative path
+	// But `go test ./server/cmd/webhook-sidecar` runs inside a temp dir? No, usually in package dir.
 	// Let's rely on `go build` with absolute path or relative to module root if possible.
 	// Safer: Build explicitly targeting the package.
 

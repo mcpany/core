@@ -11,7 +11,7 @@ import (
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
-	"github.com/mcpany/core/server/pkg/client"
+	"github.com/mcpany/core/pkg/client"
 	"github.com/mcpany/core/server/pkg/pool"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"

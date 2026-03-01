@@ -99,11 +99,11 @@ Based on a review of the MCP ecosystem (mcp.so, LobeHub, GitHub, Docker), we ide
 
 ### Critical Areas
 
-- **Webhooks "Test" Code**: `server/cmd/webhooks` needs formalization if intended for production (Sidecar pattern).
+- **Webhooks "Test" Code**: `server/cmd/webhook-sidecar` needs formalization if intended for production (Sidecar pattern).
 - **SDK Consolidation**: `server/pkg/client` should ideally be in a separate repository to be used by other Go clients without pulling in the whole server.
 
 ### Recommendations
 
-1.  **Formalize Webhook Server**: Polish `server/cmd/webhooks` as a Sidecar.
+1.  **Formalize Webhook Server**: Polish `server/cmd/webhook-sidecar` as a Sidecar.
 4.  **Standardize Configuration**: Consistent config patterns (Done: fixed documentation/error handling for `service_config`).
 5.  **Consolidate SDKs**: Move `server/pkg/client` to separate repo.

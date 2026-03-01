@@ -13,7 +13,7 @@ import (
 	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/mcpany/core/server/pkg/client"
+	"github.com/mcpany/core/pkg/client"
 	healthChecker "github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/pool"
 	"github.com/mcpany/core/server/pkg/util"

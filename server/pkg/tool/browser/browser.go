@@ -7,13 +7,21 @@ package browser
 import (
 	"context"
 	"fmt"
+	"net"
+	"net/url"
+	"strings"
+	"sync"
+
+	"github.com/playwright-community/playwright-go"
 )
 
 // Provider implements a basic browser automation tool.
 //
 // Summary: Tool provider for browsing web pages.
 type Provider struct {
-	// dependencies like chromedp allocator would go here
+	pw *playwright.Playwright
+	bw playwright.Browser
+	mu sync.Mutex
 }
 
 // NewProvider creates a new Provider.
@@ -26,27 +34,143 @@ func NewProvider() *Provider {
 	return &Provider{}
 }
 
-// BrowsePage simulates browsing a page
-// In a real implementation, this would use chromedp or playwright-go.
+func (b *Provider) initPlaywright() error {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+
+	if b.pw != nil && b.bw != nil {
+		return nil
+	}
+
+	pw, err := playwright.Run()
+	if err != nil {
+		return fmt.Errorf("could not start playwright: %w", err)
+	}
+
+	bw, err := pw.Chromium.Launch(playwright.BrowserTypeLaunchOptions{
+		Headless: playwright.Bool(true),
+	})
+	if err != nil {
+		_ = pw.Stop()
+		return fmt.Errorf("could not launch browser: %w", err)
+	}
+
+	b.pw = pw
+	b.bw = bw
+	return nil
+}
+
+// Close gracefully closes the browser and Playwright instances.
 //
-// Summary: Fetches the content of a web page.
+// Summary: Closes the browser and stops Playwright.
+//
+// Returns:
+//   - error: An error if closing fails.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Stops the Playwright browser instance.
+func (b *Provider) Close() error {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+
+	if b.bw != nil {
+		_ = b.bw.Close()
+	}
+	if b.pw != nil {
+		_ = b.pw.Stop()
+	}
+	return nil
+}
+
+func isSafeURL(targetURL string) error {
+	u, err := url.Parse(targetURL)
+	if err != nil {
+		return fmt.Errorf("invalid URL: %w", err)
+	}
+
+	if u.Scheme != "http" && u.Scheme != "https" {
+		return fmt.Errorf("invalid URL scheme: %s, only http/https allowed", u.Scheme)
+	}
+
+	host := u.Hostname()
+
+	// Check for local loopback or common internal names
+	if host == "localhost" || host == "127.0.0.1" || host == "::1" || strings.HasSuffix(host, ".local") {
+		return fmt.Errorf("URL points to an internal/local resource: %s", host)
+	}
+
+	// Resolve the IP addresses
+	ips, err := net.LookupIP(host)
+	if err != nil {
+		return fmt.Errorf("could not resolve hostname: %w", err)
+	}
+
+	for _, ip := range ips {
+		if ip.IsLoopback() || ip.IsPrivate() || ip.IsLinkLocalUnicast() || ip.IsLinkLocalMulticast() || ip.IsUnspecified() {
+			return fmt.Errorf("URL resolves to an internal/local IP address: %s", ip.String())
+		}
+	}
+
+	return nil
+}
+
+// BrowsePage simulates browsing a page
+//
+// Summary: Fetches the content of a web page using Playwright.
 //
 // Parameters:
 //   - _: context.Context. Unused.
-//   - url: string. The URL to visit.
+//   - targetURL: string. The URL to visit.
 //
 // Returns:
-//   - string: The HTML content of the page (mocked).
-//   - error: An error if the URL is empty.
+//   - string: The HTML content of the page.
+//   - error: An error if the URL is empty or the page cannot be loaded.
 //
 // Errors:
-//   - Returns "url is required" if url is empty.
-func (b *Provider) BrowsePage(_ context.Context, url string) (string, error) {
-	if url == "" {
+//   - Returns "url is required" if targetURL is empty.
+//   - Returns an error if the URL is pointing to a local or internal network.
+//   - Returns an error if Playwright initialization fails.
+//   - Returns an error if the page fails to load.
+//
+// Side Effects:
+//   - Starts Playwright on first use.
+//   - Navigates the browser to the specified URL.
+func (b *Provider) BrowsePage(_ context.Context, targetURL string) (string, error) {
+	if targetURL == "" {
 		return "", fmt.Errorf("url is required")
 	}
-	// Mock implementation for MVP/Roadmap
-	return fmt.Sprintf("Browsed content of %s: <html><body>Mock Content</body></html>", url), nil
+
+	if err := isSafeURL(targetURL); err != nil {
+		return "", fmt.Errorf("security policy violation: %w", err)
+	}
+
+	if err := b.initPlaywright(); err != nil {
+		return "", fmt.Errorf("failed to initialize browser: %w", err)
+	}
+
+	b.mu.Lock()
+	bw := b.bw
+	b.mu.Unlock()
+
+	page, err := bw.NewPage()
+	if err != nil {
+		return "", fmt.Errorf("could not create page: %w", err)
+	}
+	defer page.Close()
+
+	if _, err = page.Goto(targetURL); err != nil {
+		return "", fmt.Errorf("could not goto: %w", err)
+	}
+
+	content, err := page.Content()
+	if err != nil {
+		return "", fmt.Errorf("could not get content: %w", err)
+	}
+
+	return content, nil
 }
 
 // ToolDefinition returns the MCP tool definition.
@@ -55,6 +179,12 @@ func (b *Provider) BrowsePage(_ context.Context, url string) (string, error) {
 //
 // Returns:
 //   - map[string]interface{}: The JSON schema definition of the tool.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (b *Provider) ToolDefinition() map[string]interface{} {
 	return map[string]interface{}{
 		"name":        "browse_page",
