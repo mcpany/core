@@ -232,6 +232,9 @@ func (a *Application) handleTracesWS() http.HandlerFunc {
 
 		seededSubCh := make(chan *Trace, 100)
 		a.seededTraceSubsMu.Lock()
+		if a.seededTraceSubs == nil {
+			a.seededTraceSubs = make(map[chan *Trace]struct{})
+		}
 		a.seededTraceSubs[seededSubCh] = struct{}{}
 		a.seededTraceSubsMu.Unlock()
 
