@@ -208,11 +208,11 @@ func (a *Application) handleTracesWS() http.HandlerFunc {
 			trace := toTrace(entry)
 
 			if err := conn.SetWriteDeadline(time.Now().Add(10 * time.Second)); err != nil {
-				logging.GetLogger().Error("failed to set write deadline", "error", err)
+				// Disconnected
 				return
 			}
 			if err := conn.WriteJSON(trace); err != nil {
-				logging.GetLogger().Error("failed to write history trace to websocket", "error", err)
+				// Disconnected
 				return
 			}
 		}
@@ -221,11 +221,11 @@ func (a *Application) handleTracesWS() http.HandlerFunc {
 		a.seededTracesMu.RLock()
 		for _, t := range a.seededTraces {
 			if err := conn.SetWriteDeadline(time.Now().Add(10 * time.Second)); err != nil {
-				logging.GetLogger().Error("failed to set write deadline", "error", err)
+				// Disconnected
 				break
 			}
 			if err := conn.WriteJSON(t); err != nil {
-				logging.GetLogger().Error("failed to write seeded trace to websocket", "error", err)
+				// Disconnected
 				break
 			}
 		}

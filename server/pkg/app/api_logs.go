@@ -48,12 +48,12 @@ func (a *Application) handleLogsWS() http.HandlerFunc {
 		// Send history
 		for _, msg := range history {
 			if err := conn.SetWriteDeadline(time.Now().Add(10 * time.Second)); err != nil {
-				logging.GetLogger().Error("failed to set write deadline", "error", err)
+				// Disconnected
 				return
 			}
 			// ⚡ BOLT: Write struct directly to WebSocket (marshals internally)
 			if err := conn.WriteJSON(msg); err != nil {
-				logging.GetLogger().Error("failed to write history log message to websocket", "error", err)
+				// Disconnected
 				return
 			}
 		}
