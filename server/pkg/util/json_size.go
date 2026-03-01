@@ -117,6 +117,20 @@ func estimateJSONSizeRecursive(v interface{}, visited map[uintptr]bool) int {
 		}
 		size++ // }
 		return size
+	case map[string]int:
+		// ⚡ BOLT: Optimized JSON size estimation for map[string]int to avoid expensive reflection.
+		// Randomized Selection from Top 5 High-Impact Targets
+		size := 1 // {
+		count := 0
+		for k, n := range val {
+			if count > 0 {
+				size++
+			}
+			size += len(k) + 2 + 1 + estimateIntSize(int64(n))
+			count++
+		}
+		size++ // }
+		return size
 	default:
 		return estimateReflect(val, visited)
 	}
