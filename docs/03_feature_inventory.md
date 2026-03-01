@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-01] Updates
+
+### Proposed Additions
+- **Intent-Attestation Protocol (IAP)**: (P0) Cryptographically links tool calls to a verified user intent, preventing "Goal Hijacking."
+- **Unified Agentic Sandbox (UAS)**: (P0) A containerized "Safe Execution Environment" (SEE) that isolates tool execution from the host OS, mitigating RCE vulnerabilities.
+- **Secure Mesh Inter-Agent (SMIA) Protocol**: (P1) Encrypted and authenticated communication channel between agents in a swarm, addressing OWASP ASI07.
+
+### Priority Shifts
+- **"Safe-by-Default" Network Hardening**: Promoted to **P0** following global exposure of thousands of unsecured MCP servers.
+- **HITL Middleware**: Promoted to **P0**. Human-in-the-loop verification is becoming the primary defense against "Action Cascades."
+
+### Deprecations / Monitoring
+- **Direct Local Host Execution**: Deprecate in favor of sandbox-first tool execution (UAS).

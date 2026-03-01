@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-01]
+### Focus: Intent Verification & Agentic Sandboxing
+**Context**: Today's findings (OpenClaw RCE, OWASP ASI01/ASI07) underscore that "access" is no longer the bottleneck; "governed action" is. Multi-agent systems are suffering from "Goal Hijacking" and "Insecure Inter-Agent Communication."
+**Strategic Pivot**:
+- **Intent-Attestation Layer**: MCP Any will introduce a cryptographic "Intent-Attestation" protocol. Tool calls must be accompanied by a signed "intent-token" that proves they originated from a verified user goal, not an indirect prompt injection.
+- **Unified Agentic Sandbox (UAS)**: Moving from simple tool proxying to a containerized "Safe Execution Environment" (SEE). All tool calls will execute within a transient, resource-constrained sandbox by default, mitigating RCE risks seen in OpenClaw.
+- **Secure Mesh Inter-Agent (SMIA) Protocol**: Establishing an encrypted, authenticated channel for inter-agent context sharing, specifically targeting OWASP ASI07 vulnerabilities.

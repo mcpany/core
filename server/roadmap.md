@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-01 Evolution)
+*   **[P0] Intent-Attestation Protocol (IAP)**: Cryptographically link tool calls to verified user intent. (Added: 2026-03-01)
+*   **[P0] Unified Agentic Sandbox (UAS)**: Containerized "Safe Execution Environment" for tool calls. (Added: 2026-03-01)
+*   **[P1] Secure Mesh Inter-Agent (SMIA) Protocol**: Authenticated channel for inter-agent context sharing. (Added: 2026-03-01)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
