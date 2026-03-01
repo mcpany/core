@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-01] Updates
+
+### Proposed Additions
+- **Intent-Lock (Instruction Provenance)**: (P0) Middleware that verifies if a tool call originates from a user-authorized intent, preventing "Indirect Prompt Injection" from malicious data sources.
+- **Just-in-Time MFA (Sensitive Action Protocol)**: (P1) A protocol allowing high-risk tools to request user verification (biometric/hardware key) before execution.
+- **Semantic Lazy-Discovery**: (P0) Enhances the Lazy-MCP middleware with real-time semantic routing, ensuring agents only see the tool schemas relevant to their current instruction.
+
+### Priority Shifts
+- **Policy Firewall**: Promoted to include "Instruction Provenance" as a core requirement for Zero Trust.
+- **Supply Chain Integrity Guard**: Re-affirmed as **P0** with immediate urgency due to active RCE exploits in the competitor ecosystem.
+
+### Deprecations / Monitoring
+- **Broad Tool Scoping**: Monitoring for deprecation in favor of granular "Intent-Scoped" tokens.

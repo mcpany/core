@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-01]
+### Focus: Instruction Provenance & Scalable Dynamic Discovery
+**Context**: Recent exploits in OpenClaw and Claude Code (CVE-2026-25725) prove that verifying the *tool* is not enough; we must verify the *instruction*. Simultaneously, the success of `mcp-cli` in reducing context bloat by 99% confirms that lazy-loading tool schemas is the only path to enterprise scalability.
+**Strategic Pivot**:
+- **Intent-Lock Architecture**: Moving beyond static tool permissions to "Instruction-Linked Authorization." This requires the gateway to verify that a tool call was directly requested by an authorized user prompt, mitigating "Indirect Prompt Injection" from malicious websites or repositories.
+- **Lazy-Schema Standard**: Transitioning MCP Any from an "Aggregator" to a "Dynamic Index." MCP Any will only serve tool schemas when the agent's current task explicitly requires them, based on real-time semantic matching.
+- **Just-in-Time MFA**: Implementing a "Sensitive Action" protocol where high-impact tools (e.g., file deletion, fund transfers) trigger a localized MFA challenge (biometric or hardware key) delivered through the MCP Any UI or a trusted sub-channel.

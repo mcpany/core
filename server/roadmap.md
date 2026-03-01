@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-01 Evolution)
+*   **[P0] Intent-Lock (Instruction Provenance)**: Middleware to verify tool calls against authorized user intents, preventing Indirect Prompt Injection. (Added: 2026-03-01)
+*   **[P0] Semantic Lazy-Discovery**: Similarity-based tool discovery with proactive schema injection based on user prompt. (Added: 2026-03-01)
+*   **[P1] Just-in-Time MFA**: Localized biometric/hardware MFA challenge for high-risk tool calls. (Added: 2026-03-01)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

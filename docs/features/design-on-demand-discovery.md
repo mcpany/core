@@ -57,3 +57,4 @@ As the number of available MCP tools grows, agents face "context pollution"—wh
 
 ## 7. Evolutionary Changelog
 *   **2026-02-25:** Initial Document Creation.
+*   **2026-03-01:** Shifting to "Semantic Lazy-Discovery" to address context bloat and improve relevance. Added the concept of "Context-Aware Schema Injection" where the gateway proactively suggests tools based on the current user prompt.
