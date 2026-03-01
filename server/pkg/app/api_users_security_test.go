@@ -117,4 +117,38 @@ func TestHandleUserDetail_PrivilegeEscalation_Reproduction(t *testing.T) {
 			}
 		}
 	})
+
+	t.Run("Victim Elevates Own Profile IDs to Admin", func(t *testing.T) {
+		// Attempt to update own profile and inject "admin_profile" profile
+		payload := map[string]interface{}{
+			"user": map[string]interface{}{
+				"id": "victim-user",
+				"profile_ids": []string{"admin_profile"}, // <--- Privilege Escalation attempt
+			},
+		}
+		body, _ := json.Marshal(payload)
+
+		req := httptest.NewRequest(http.MethodPut, "/users/victim-user", bytes.NewReader(body))
+		// Simulate Authenticated User: victim-user
+		ctx := auth.ContextWithUser(req.Context(), "victim-user")
+		ctx = auth.ContextWithRoles(ctx, []string{"user"})
+		req = req.WithContext(ctx)
+
+		w := httptest.NewRecorder()
+		handler.ServeHTTP(w, req)
+
+		assert.Equal(t, http.StatusOK, w.Code)
+
+		// Check if the user is now has the admin_profile
+		updatedUser, err := store.GetUser(context.Background(), "victim-user")
+		require.NoError(t, err)
+
+		// VULNERABILITY CHECK: The user should NOT have the admin_profile
+		for _, profile := range updatedUser.GetProfileIds() {
+			if profile == "admin_profile" {
+				t.Logf("VULNERABILITY REPRODUCED: User 'victim-user' escalated profile_ids to 'admin_profile'.")
+				t.Fail()
+			}
+		}
+	})
 }
