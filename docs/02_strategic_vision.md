@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-01]
+### Focus: Config-Driven Threat Mitigation & Zero Trust Identity
+**Context**: Recent vulnerabilities in Claude Code (CVE-2026-0757, CVE-2025-59536) have exposed "Configuration Hooks" as a major RCE vector. Simultaneously, the rise of A2A Mesh architectures demands a shift from static secrets to OIDC-style identity.
+**Strategic Pivot**:
+- **Configuration Sandboxing**: MCP Any will introduce a "Config-Safe" layer that sandboxes and validates all MCP-related environment variables and repository-level hooks (`.claude/settings.json`, etc.) before they are ingested by tools.
+- **Identity-First Gateway**: Transitioning from simple API key management to a "Managed Identity" model where MCP Any issues short-lived, OIDC-compliant identity tokens for all A2A and A2T (Agent-to-Tool) interactions.
+- **Intent-Scoped Context Pruning**: Moving beyond "full context sharing" to "Intent-Scoped Context" where subagents only receive the minimal set of state and tools necessary for their specific, verified intent.

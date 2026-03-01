@@ -59,3 +59,10 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+
+### Update: 2026-03-01 - Config-Driven Threat Mitigation
+**Context:** Recent RCE exploits in the ecosystem (CVE-2026-0757) have proven that "local-only" listeners are not enough if the *configuration* itself can be malicious.
+**Architecture Adjustment:**
+* Integrating `Configuration Sandboxing Middleware` (Design Doc: `design-configuration-sandboxing.md`) as a mandatory pre-flight check for any tool execution, regardless of listener locality.
+* **Strict Config Mode:** Introducing a `--strict` flag that treats all configuration warnings (e.g., deprecated or unvalidated env vars) as fatal errors.
+**Security Impact:** Prevents "Inside-Out" attacks where a malicious repository compromises the local machine even if the gateway is only listening on `127.0.0.1`.

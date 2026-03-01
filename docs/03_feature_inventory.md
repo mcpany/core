@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-01] Updates
+
+### Proposed Additions
+- **Configuration Sandboxing Middleware**: (P0) A secure ingestion layer that validates and sanitizes repository-level hooks and environment variables before tool execution. Prevents RCE via malicious config.
+- **Identity-as-a-Service (IDaaS) for Agents**: (P1) OIDC-compliant identity provider built into MCP Any for secure A2A/A2T authentication.
+- **Intent-Scoped Context Pruning**: (P1) Dynamic filtering of context and tools based on a "Verified Intent" token, reducing token bloat and attack surface.
+
+### Priority Shifts
+- **Safe-by-Default Hardening**: Re-affirmed as **P0**. Recent RCEs in the ecosystem make local-only bindings and strict config validation non-negotiable.
+- **Provenance-First Discovery**: Promoted to **P0**. Validating the *source* of a configuration is as important as the config itself.
+
+### Deprecations / Monitoring
+- **Unvalidated Environment Injection**: Monitoring for deprecation. All env vars passed to tools should be explicitly whitelisted or sandboxed.
