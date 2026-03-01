@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-01] Updates
+
+### Proposed Additions
+- **Cryptographic Skill Attestation Middleware**: (P0) Requires all MCP tools and servers to provide a verifiable signature before execution.
+- **Runtime Behavioral Analysis (Immune System)**: (P0) Monitor tool call chains for anomalous patterns (e.g., unexpected privilege escalation or data exfiltration).
+- **Automated Security Policy Generation**: (P1) LLM-assisted generation of Rego/CEL policies based on observed safe behavior.
+
+### Priority Shifts
+- **"Safe-by-Default" Network Hardening**: Re-affirmed as **P0** with immediate enforcement of `127.0.0.1` bindings.
+- **MCP Provenance Attestation**: Merged into **Cryptographic Skill Attestation Middleware** (P0).
+
+### Deprecations / Monitoring
+- **Unsigned Third-Party Skills**: All unsigned skills from public repositories (like ClawHub) are marked for immediate quarantine.

@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-01]
+### Focus: Immune-System Architecture & Attested Skill Execution
+**Context**: The OpenClaw crisis has exposed the fatal flaw in "Marketplace-driven" agentic ecosystems: the lack of verifiable provenance. Supply chain poisoning in ClawHub and mass exposure of misconfigured instances demonstrate that agents need more than just sandboxing; they need an "Immune System."
+**Strategic Pivot**:
+- **Immune-System Architecture**: Shifting from reactive patching to a proactive, behavior-based security model. MCP Any will not just proxy tool calls but monitor for "anomalous tool-chains" (e.g., an email skill suddenly calling a shell-exec skill).
+- **Cryptographic Skill Attestation**: Every MCP server and skill must be cryptographically signed. "Anonymous" or "Unsigned" skills will be blocked by default in all production profiles.
+- **Local-Binding Enforcement**: To counter the "8,000 Exposed Servers" incident, MCP Any will enforce non-routable local bindings (127.0.0.1) for all internal gateways, requiring explicit, hardware-backed attestation for any network exposure.

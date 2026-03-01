@@ -59,3 +59,4 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-01:** Updated to include immediate enforcement of local-only bindings. In response to the OpenClaw mass-exposure crisis, the "Security Override" mechanism now requires a hardware-backed attestation (WebAuthn/YubiKey) for any binding broader than `127.0.0.1`.
