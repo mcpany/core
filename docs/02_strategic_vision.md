@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-01]
+### Focus: Attested Configuration & Intent-Aware Security (The "Claude-Code" Hardening)
+**Context**: Recent vulnerabilities in Claude Code highlight that tool-level security is insufficient if the configuration layer (hooks, `mcp.json`) can be poisoned. Security must shift from "Tool Gating" to "Configuration Attestation."
+**Strategic Pivot**:
+- **Signed Configuration Manifests**: MCP Any will transition to a model where all tool configurations and orchestration hooks must be cryptographically signed by a trusted identity (e.g., the developer or organization).
+- **Intent-Aware Permission Elevation**: Implementing "Intent-Verification" for sensitive tool calls. Permissions are granted not just for a "tool," but for a "task," verified by a Policy Engine that checks the high-level goal against the execution chain.
+- **Config-Sandboxing**: Isolating project-local tool configurations (like those found in `.mcp.json` or `.claudecode/hooks`) into an ephemeral, non-persistent sandbox to prevent cross-project exfiltration.
