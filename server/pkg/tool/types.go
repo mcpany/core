@@ -2925,7 +2925,7 @@ var dangerousEnvVars = map[string]bool{
 	"BASH_ENV": true, "ENV": true, "PS4": true, "SHELLOPTS": true, "PROMPT_COMMAND": true, "IFS": true,
 
 	// Execution & Config Hijacking
-	"GCONV_PATH": true, "SHELL": true, "HOME": true,
+	"GCONV_PATH": true, "SHELL": true, "HOME": true, "PATH": true,
 	"XDG_CONFIG_HOME": true, "XDG_DATA_HOME": true, "XDG_CACHE_HOME": true,
 }
 
