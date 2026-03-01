@@ -339,6 +339,7 @@ func NewApplication() *Application {
 		MetricsGatherer:   prometheus.DefaultGatherer,
 		statsCache:        make(map[string]statsCacheEntry),
 		seededTraceSubs:   make(map[chan *Trace]struct{}),
+		seededTraces:      make([]*Trace, 0),
 	}
 }
 
