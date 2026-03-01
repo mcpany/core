@@ -598,7 +598,7 @@ func TestRun_ConfigLoadError(t *testing.T) {
 	err := afero.WriteFile(fs, "/config.yaml", []byte("malformed yaml:"), 0o644)
 	require.NoError(t, err)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5000*time.Millisecond)
+	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
 	defer cancel()
 
 	app := NewApplication()
@@ -639,7 +639,7 @@ func TestRun_BusProviderError(t *testing.T) {
 	}
 	defer func() { bus.NewProviderHook = nil }()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5000*time.Millisecond)
+	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
 	defer cancel()
 
 	app := NewApplication()
@@ -655,7 +655,7 @@ func TestRun_EmptyConfig(t *testing.T) {
 	err := afero.WriteFile(fs, "/config.yaml", []byte(""), 0o644)
 	require.NoError(t, err)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5000*time.Millisecond)
+	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
 	defer cancel()
 
 	app := NewApplication()
@@ -685,7 +685,7 @@ func TestRun_StdioMode(t *testing.T) {
 	}
 
 	fs := afero.NewMemMapFs()
-	ctx, cancel := context.WithTimeout(context.Background(), 5000*time.Millisecond)
+	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
 	defer cancel()
 
 	err := app.Run(RunOptions{Ctx: ctx, Fs: fs, Stdio: true, JSONRPCPort: "127.0.0.1:0", GRPCPort: "127.0.0.1:0", ConfigPaths: nil, APIKey: "", ShutdownTimeout: 5 * time.Second, DBPath: ""})
@@ -722,7 +722,7 @@ func TestRun_ServerStartupErrors(t *testing.T) {
 	app.Storage = mockStore
 
 	t.Run("nil_fs_fail", func(t *testing.T) {
-		ctx, cancel := context.WithTimeout(context.Background(), 5000*time.Millisecond)
+		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
 		defer cancel()
 
 		err := app.Run(RunOptions{
@@ -1511,7 +1511,7 @@ func TestRunStdioMode(t *testing.T) {
 	}
 
 	fs := afero.NewMemMapFs()
-	ctx, cancel := context.WithTimeout(context.Background(), 5000*time.Millisecond)
+	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
 	defer cancel()
 
 	err := app.Run(RunOptions{Ctx: ctx, Fs: fs, Stdio: true, JSONRPCPort: "127.0.0.1:0", GRPCPort: "127.0.0.1:0", ConfigPaths: nil, APIKey: "", ShutdownTimeout: 5 * time.Second, DBPath: ""})
@@ -1591,7 +1591,7 @@ func TestRun_InMemoryBus(t *testing.T) {
 	err := afero.WriteFile(fs, "/config.yaml", []byte(""), 0o644)
 	require.NoError(t, err)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5000*time.Millisecond)
+	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
 	defer cancel()
 
 	app := NewApplication()
@@ -1605,7 +1605,7 @@ func TestRun_CachingMiddleware(t *testing.T) {
 	err := afero.WriteFile(fs, "/config.yaml", []byte(""), 0o644)
 	require.NoError(t, err)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5000*time.Millisecond)
+	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
 	defer cancel()
 
 	app := NewApplication()
