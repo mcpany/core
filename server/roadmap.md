@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-01 Evolution)
+*   **[P0] Agentic Loop Detector (ALOD)**: Heuristic-based circuit breaker for inter-agent loops. (Added: 2026-03-01)
+*   **[P0] Cryptographic Context Attestation**: Middleware for signing/verifying agent-generated context. (Added: 2026-03-01)
+*   **[P1] Automated State Rollback**: Restore session to last known-good state on loop detection. (Added: 2026-03-01)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

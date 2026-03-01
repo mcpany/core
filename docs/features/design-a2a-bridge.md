@@ -46,3 +46,7 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-03-01: Integrating Loop Prevention & Stateful Residency**
+    *   **Context**: Added requirements for detecting infinite agentic loops and providing a stateful buffer for asynchronous handoffs.
+    *   **Architecture Adjustment**: The Bridge now hooks into the `Agentic Loop Detector (ALOD)` to monitor transition frequencies.
+    *   **State Impact**: A2A messages are now persisted in the "Stateful Buffer" within MCP Any, ensuring reliability during handoffs between agents with intermittent connectivity.

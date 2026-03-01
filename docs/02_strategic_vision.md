@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-01]
+### Focus: Agentic Loop Prevention & Context Integrity
+**Context**: Emerging patterns of infinite agent-to-agent loops and "Prompt Shadowing" attacks via MCP tool outputs necessitate a shift towards active loop detection and cryptographic context attestation.
+**Strategic Pivot**:
+- **Agentic Loop Detection (ALOD)**: MCP Any will integrate a heuristic-based circuit breaker that monitors agent state transitions and tool-call patterns to detect and interrupt non-productive recursive loops.
+- **Context Integrity & Attestation**: Implementing a "Signed Context" standard where agent-generated state is cryptographically signed. This prevents intermediate tools or rogue middleware from injecting malicious instructions (Prompt Shadowing).
+- **Self-Healing State Recovery**: Moving beyond simple error reporting to "State Rollback," allowing agents to revert to the last known-good state when a loop or corruption is detected.

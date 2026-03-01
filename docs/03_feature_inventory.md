@@ -75,9 +75,18 @@
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
+---
+
+## Evolution: [2026-03-01] Updates
+
+### Proposed Additions
+- **Agentic Loop Detector (ALOD)**: (P0) Heuristic-based circuit breaker for inter-agent loops. Integrates with the A2A Bridge to detect non-productive state cycles.
+- **Cryptographic Context Attestation**: (P0) Middleware that signs and verifies agent-generated context to prevent "Prompt Shadowing" from rogue MCP tool outputs.
+- **Automated State Rollback**: (P1) Ability for MCP Any to restore a session to the last "Signed-Good" state upon loop detection or integrity failure.
+
 ### Priority Shifts
-- **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
-- **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.
+- **A2A Stateful Residency**: Promoted to **P0** (Re-affirmed). Critical for maintaining the "Last Known Good State" needed for Automated State Rollback.
+- **A2A Interop Bridge**: Promoted to **P0** (Re-affirmed). Now includes loop detection hooks as a core requirement.
 
 ### Deprecations / Monitoring
-- **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+- **Unsigned Multi-Agent State**: Monitoring for deprecation in favor of Cryptographic Context Attestation.
