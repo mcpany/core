@@ -119,6 +119,9 @@ nodes:
 	if err := runCommand(t, ctx, rootDir, "kind", "load", "docker-image", fmt.Sprintf("mcpany/ui:%s", tag), "--name", clusterName); err != nil {
 		t.Fatalf("Failed to load ui image: %v", err)
 	}
+	if err := runCommand(t, ctx, rootDir, "make", "-C", "server", "build-http-echo-docker"); err != nil {
+		t.Fatalf("Failed to build http-echo-server image: %v", err)
+	}
 	if err := runCommand(t, ctx, rootDir, "kind", "load", "docker-image", "mcpany/http-echo-server:latest", "--name", clusterName); err != nil {
 		t.Fatalf("Failed to load http-echo-server image: %v", err)
 	}
