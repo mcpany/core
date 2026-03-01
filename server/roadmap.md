@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-01 Evolution)
+*   **[P0] WebSocket Origin Validation**: Mandatory `Origin` and `Host` header verification to prevent ClawJacked (CVE-2026-25253) exploits. (Added: 2026-03-01)
+*   **[P0] Claude-Aligned Tool Search**: Native implementation of the `tools/search` extension to support Claude's GA Tool Search protocol. (Added: 2026-03-01)
+*   **[P1] Ephemeral Vulnerability Sandbox**: Restricted Docker-bound environments for safe agentic reproduction of security bugs. (Added: 2026-03-01)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

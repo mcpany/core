@@ -59,3 +59,10 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-01: Mitigating Browser-to-Local Exploits (ClawJacked)**
+    *   **Context**: The ClawJacked (CVE-2026-25253) exploit proved that `localhost` trust is insufficient because browsers can bridge external JS to local WebSockets.
+    *   **Architecture Adjustment**:
+        *   Mandating `Origin` header validation for all WebSocket adapters.
+        *   Requiring `Host` header to match the configured listener exactly.
+        *   Introducing "Session-Specific Authorization Tokens" for browser-based tool access, preventing unauthorized pairing.
+    *   **Security Impact**: Eliminates the "porous membrane" risk where external websites can interact with local MCP Any instances without user consent.

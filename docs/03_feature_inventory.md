@@ -75,9 +75,20 @@
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
+---
+
+## Evolution: [2026-03-01] Updates
+
+### Proposed Additions
+- **WebSocket Origin Validation Middleware**: (P0) Mandatory `Origin` and `Host` validation for all WebSocket adapters. Prevents "ClawJacked" style browser-to-local bridge exploits.
+- **Claude-Aligned Search API (MCP-TS)**: (P0) Finalizing the `tools/search` implementation to match Claude's GA specification.
+- **Vulnerability-Aware Sandbox (Ephemeral Env)**: (P1) On-demand, restricted Docker containers for agents to reproduce and triage AI-discovered security vulnerabilities.
+
 ### Priority Shifts
 - **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
 - **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.
+- **Lazy-Discovery Middleware**: Re-affirmed as **P0** following Claude's Tool Search GA.
+- **Safe-by-Default Hardening**: Re-affirmed as **P0** to include WebSocket origin validation.
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.

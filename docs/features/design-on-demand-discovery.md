@@ -57,3 +57,9 @@ As the number of available MCP tools grows, agents face "context pollution"—wh
 
 ## 7. Evolutionary Changelog
 *   **2026-02-25:** Initial Document Creation.
+*   **2026-03-01: Claude Tool Search GA Alignment**
+    *   **Context**: Anthropic announced MCP Tool Search GA on 2026-01-14 and fully rolled it out by 2026-02-07.
+    *   **Architecture Adjustment**:
+        *   Transitioning `mcpany_search_tools` from a custom MCP tool to a native protocol extension matching the `tools/search` GA spec.
+        *   Enabling "Lazy-First" mode by default for agents identified as `claude-code/*`.
+    *   **Strategic Impact**: Ensures MCP Any is the most compatible "Standard Bearer" for Claude's tool discovery, preventing client-side fragmentation.

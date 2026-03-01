@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-01]
+### Focus: Browser-to-Local Security & Standardized On-Demand Discovery
+**Context**: The "ClawJacked" exploit (CVE-2026-25253) has exposed a critical flaw in how local agents trust browser-initiated connections. Simultaneously, Claude's "MCP Tool Search" reaching GA marks the shift from upfront tool loading to a permanent "Lazy-Discovery" standard.
+**Strategic Pivot**:
+- **WebSocket Origin Validation**: MCP Any will implement mandatory `Origin` and `Host` header validation for all WebSocket adapters, eliminating the "implicit trust in localhost" that led to the ClawJacked vulnerability.
+- **Tool Search Protocol Alignment**: Transitioning "Lazy-MCP" from an experimental feature to the primary discovery mechanism, ensuring full compatibility with Claude's GA Tool Search specification.
+- **Autonomous Triage Containment**: In response to the surge in AI-discovered vulnerabilities, MCP Any will introduce "Vulnerability-Aware Sandboxing," providing agents with restricted, ephemeral environments for safe bug reproduction and triage.
