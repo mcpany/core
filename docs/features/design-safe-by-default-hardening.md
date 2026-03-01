@@ -59,3 +59,4 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-01:** Updated to include **Config-as-a-Threat** analysis. Added strict validation for repository-controlled configurations to mitigate RCE risks discovered in Claude Code. Introduced integration with the Hardened Sandbox Proxy for all remote-originated tool calls.

@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-01]
+### Focus: Hardened Tool Isolation & Metadata-Driven Governance
+**Context**: The emergence of multi-layer SSRF in OpenClaw and configuration-based RCE in Claude Code proves that tools can no longer be trusted even if they are locally hosted. Simultaneously, Gemini's adoption of annotation-based policies provides a new standard for granular tool governance.
+**Strategic Pivot**:
+- **Hardened Sandbox Proxying**: MCP Any will evolve from a transparent proxy to a "Validating Gateway." All tool inputs and outputs will be scrubbed for SSRF patterns (e.g., internal IP ranges, protocol smuggling) and path traversal attempts.
+- **Annotation-Driven Policy Engine**: Shifting from simple name-based policies to metadata-aware governance. MCP Any will allow policies to be applied based on tool "annotations" (e.g., `security.tier: sensitive`, `data.access: read-only`), enabling dynamic, context-aware security.
+- **Config-as-a-Threat Model**: Treating configuration files (`mcpany.yaml`) as untrusted input. Implementing strict schema validation and "Impact Assessment" for every configuration change to prevent silent RCE via malicious repository clones.

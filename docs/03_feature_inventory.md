@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-01] Updates
+
+### Proposed Additions
+- **Hardened Sandbox Proxy Middleware**: (P0) Gateway-level input/output scrubbing for SSRF and path traversal. Essential for secure execution of third-party tools.
+- **Annotation-Based Policy Matching**: (P1) Extends the Policy Firewall to match tools based on metadata annotations (e.g., `trust-level`, `capability-class`), mirroring Gemini CLI's latest updates.
+- **Config Integrity & Impact Analyzer**: (P1) A "pre-flight" check for configuration changes that identifies risky permissions or insecure transport settings before applying them.
+
+### Priority Shifts
+- **"Safe-by-Default" Network Hardening**: (P0) Elevated importance due to the rise in SSRF and configuration-based exploits.
+- **MCP Provenance Attestation**: (P0) Critical for preventing malicious tool injection via supply chain attacks.
+
+### Deprecations / Monitoring
+- **Name-Only Tool Policies**: Monitoring for deprecation in favor of more flexible annotation-based policies.
