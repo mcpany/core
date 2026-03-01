@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-01]
+### Focus: Deterministic Lineage & Mesh Observability
+**Context**: As OpenClaw and other frameworks move toward nested orchestration, the primary risk is "Lineage Hallucination"—where an agent loses track of why it was spawned or what its parent's intent was. Simultaneously, the "Swarm Control" crisis requires centralized observability for decentralized A2A comms.
+**Strategic Pivot**:
+- **Deterministic Lineage Tracking**: MCP Any will implement a "Chain-of-Custody" for agent spawning. Every sub-agent request will be wrapped in a signed lineage header that persists through the entire execution tree.
+- **Mesh-Wide Observability**: Transitioning the UI from a "Server Dashboard" to a "Mesh Explorer." This allows architects to visualize the live topology of agents, tools, and their interdependencies across federated nodes.
+- **Policy-Enforced Handoffs**: Moving beyond tool-call filtering to "Agent-to-Agent Handoff Validation." MCP Any will verify that an agent handoff is authorized by a high-level orchestration policy before routing the A2A message.

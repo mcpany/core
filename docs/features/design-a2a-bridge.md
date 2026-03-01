@@ -46,3 +46,9 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-03-01: Deterministic Lineage & Mesh Integration**
+    *   **Context**: OpenClaw's nested orchestration requires tracking the "Agent Family Tree."
+    *   **Architecture Adjustment**:
+        *   Introducing `LineageHeaderMiddleware` to sign and propagate agent-origin tokens.
+        *   Expanding Section 4 to include `Mesh Explorer` hooks for live A2A flow visualization.
+    *   **Security Impact**: Prevents "Orphaned Agents" from executing tools without a verified parent lineage.

@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-01] Updates
+
+### Proposed Additions
+- **Deterministic Sub-agent Lineage**: (P0) A signed header-based tracking system that records the full spawning tree of agents, ensuring context and intent are never lost.
+- **A2A Mesh Observability (Mesh Explorer)**: (P1) A live, topological visualization of the agent mesh, including federated nodes and cross-agent tool calls.
+- **Signed Agent Handoffs**: (P0) Cryptographic attestation of agent-to-agent task delegation to prevent unauthorized "Shadow Swarms."
+
+### Priority Shifts
+- **"Safe-by-Default" Network Hardening**: Re-affirmed as **P0**. High urgency due to ongoing gateway exposure reports.
+- **A2A Interop Bridge**: Promoted to **P0** to support the new Lineage and Handoff security features.
+
+### Deprecations / Monitoring
+- **Non-Attested A2A Handoffs**: Monitoring for deprecation in favor of Signed Handoffs.

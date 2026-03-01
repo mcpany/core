@@ -59,3 +59,9 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-01: Cryptographic MFA for Remote Exposure**
+    *   **Context**: Today's market sync confirmed that simple warnings are insufficient for "Shadow MCP" server prevention.
+    *   **Architecture Adjustment**:
+        *   Strengthening Section 4: Remote listeners (`0.0.0.0`) now require a 2FA challenge via the local `mcpany` CLI before the port opens.
+        *   Added "Exposure Heartbeat" to periodically re-verify the necessity of remote listeners.
+    *   **Security Impact**: Eliminates accidental exposure by requiring explicit, multi-step administrative intent.
