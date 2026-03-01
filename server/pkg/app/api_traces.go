@@ -192,7 +192,7 @@ func (a *Application) handleTracesWS() http.HandlerFunc {
 
 		// Set write deadline
 		if err := conn.SetWriteDeadline(time.Now().Add(10 * time.Second)); err != nil {
-			logging.GetLogger().Error("failed to set write deadline", "error", err)
+			// Disconnected
 			return
 		}
 		conn.SetPongHandler(func(string) error {
