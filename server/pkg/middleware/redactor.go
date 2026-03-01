@@ -17,9 +17,11 @@ import (
 
 var (
 	// Common PII patterns.
-	emailRegex      = regexp.MustCompile(`(?i)[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}`)
-	creditCardRegex = regexp.MustCompile(`(?:\d{4}[-\s]?){3}\d{4}`)
-	ssnRegex        = regexp.MustCompile(`\d{3}-\d{2}-\d{4}`)
+	emailRegex = regexp.MustCompile(`(?i)[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}`)
+
+	// ⚡ BOLT: Combined digit-based PII regexes to halve regex execution overhead.
+	// Randomized Selection from Top 5 High-Impact Targets
+	combinedDigitRegex = regexp.MustCompile(`(?:\d{4}[-\s]?){3}\d{4}|\d{3}-\d{2}-\d{4}`)
 
 	redactedStr = "***REDACTED***"
 )
@@ -211,8 +213,7 @@ func (r *Redactor) RedactString(s string) string {
 
 	// Only run CC and SSN regexes if digits are present
 	if hasDigit {
-		res = creditCardRegex.ReplaceAllString(res, redactedStr)
-		res = ssnRegex.ReplaceAllString(res, redactedStr)
+		res = combinedDigitRegex.ReplaceAllString(res, redactedStr)
 	}
 
 	// Always run custom patterns as we don't know their characteristics
