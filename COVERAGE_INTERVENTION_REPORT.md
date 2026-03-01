@@ -1,18 +1,12 @@
 # Coverage Intervention Report
 
-**Target:** `server/pkg/validation/url.go` (specifically the `ValidateIP` function)
-
-**Risk Profile:**
-The `ValidateIP` function serves as a critical security defense mechanism against Server-Side Request Forgery (SSRF) and DNS rebinding attacks. It verifies whether an IP address belongs to unsafe subnets (loopback, link-local, multicast, or private IP networks). Despite its crucial role in protecting upstream API interactions—such as fetching remote secrets or processing user-defined service configurations—this function had **0.0% test coverage**. This "Dark Matter" logic represented a significant blind spot where a subtle refactoring could unintentionally bypass network boundaries and expose internal metadata services.
-
-**New Coverage:**
-I implemented extensive Table-Driven Tests in `server/pkg/validation/url_test.go` to hermetically verify every condition branch within the function. The guarded paths now include:
-*   **Public Routing:** Ensures safe public IP addresses (e.g., `8.8.8.8`) are always allowed.
-*   **Loopback Defenses:** Validates that standard IPv4/IPv6 loopback addresses (`127.0.0.1`, `::1`), IPv4-compatible IPv6 loopback, and NAT64 loopback mappings are correctly intercepted unless explicitly permitted by policy overrides.
-*   **Metadata Shielding:** Confirms strict blocklists against link-local addresses (`169.254.169.254`, `fe80::1`) to prevent cloud credential extraction.
-*   **Private Boundaries:** Ensures private network spaces (`10.x.x.x`, `192.168.x.x`) are only routed when the `allowPrivate` constraint is strictly passed.
-*   **Edge Cases:** Handles unspecified (`0.0.0.0`) and multicast (`239.x.x.x`) routing blocks to prevent broadcast anomalies.
-
-**Verification:**
-*   `make test`: All tests in the repository executed cleanly without regressions. The `ValidateIP` unit tests successfully pass with a 100% statement coverage metric for that function.
-*   `make lint`: Static analysis and formatting passed cleanly according to the strict pre-commit hooks configured for the repository.
+* **Target:** `server/pkg/util/json_size.go`
+* **Risk Profile:** This module handles custom JSON size estimation to avoid large string allocations, implementing a highly recursive structure with many fast paths. It touches numerous data types and reflection boundaries (`reflect.Value`), putting it at a high risk for edge-case errors like panics or infinite recursion in the absence of sufficient test coverage. Prior to this intervention, its statement coverage was ~53%, with crucial paths related to array sizing and boolean checking entirely untested.
+* **New Coverage:**
+  * Slices, empty interfaces, zero-valued variables.
+  * Explicit tests for different `uint` boundaries (`uint8`, `uint16`, `uint32`, `uint64`).
+  * Explicit float definitions and integer sizing boundary testing.
+  * Empty map and slice testing to guard against panics or map allocations.
+  * Structs featuring the `omitempty` tag.
+  * Cyclic struct pointers and slice pointers to prevent stack overflows, proving the cyclic safety features using a memory-pool based recursive tracker.
+* **Verification:** `make lint` passes. Unit tests pass cleanly. Statement coverage for `json_size.go` specifically increased from ~53% to ~88%, guarding the most critical and complex logic paths.

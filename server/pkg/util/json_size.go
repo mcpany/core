@@ -347,7 +347,12 @@ func estimateReflectSlice(val reflect.Value, visited map[uintptr]bool) int {
 		if i > 0 {
 			size++
 		}
-		size += estimateJSONSizeRecursive(val.Index(i).Interface(), visited)
+		item := val.Index(i)
+		if item.CanInterface() {
+			size += estimateJSONSizeRecursive(item.Interface(), visited)
+		} else {
+			size += 4 // fallback if unexported or cannot interface
+		}
 	}
 	size++
 	return size
