@@ -7,11 +7,16 @@ import (
 	"context"
 	"strings"
 	"testing"
+	"os"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestBrowserProvider(t *testing.T) {
+	if os.Getenv("CI") == "true" {
+		t.Skip("Skipping TestBrowserProvider in CI environment where browser dependencies might be missing")
+	}
+
 	p := NewProvider()
 	defer p.Close()
 
