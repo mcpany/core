@@ -36,13 +36,26 @@ func (a *Application) handleLogsWS() http.HandlerFunc {
 		logCh, history := logging.GlobalBroadcaster.SubscribeWithHistory()
 		defer logging.GlobalBroadcaster.Unsubscribe(logCh)
 
+		// Create a separate ping ticker
+		pingTicker := time.NewTicker(5 * time.Second)
+		defer pingTicker.Stop()
+
+		// Setup ping write mutex
+		var writeMu sync.Mutex
+
 		// Set write deadline
-		if err := conn.SetWriteDeadline(time.Now().Add(10 * time.Second)); err != nil {
+		writeMu.Lock()
+		err = conn.SetWriteDeadline(time.Now().Add(10 * time.Second))
+		writeMu.Unlock()
+		if err != nil {
 			// Disconnected
 			return
 		}
 		conn.SetPongHandler(func(string) error {
-			return conn.SetWriteDeadline(time.Now().Add(10 * time.Second))
+			writeMu.Lock()
+			err := conn.SetWriteDeadline(time.Now().Add(10 * time.Second))
+			writeMu.Unlock()
+			return err
 		})
 
 		// ⚡ BOLT: Prevent concurrent read/write to the websocket
@@ -62,13 +75,6 @@ func (a *Application) handleLogsWS() http.HandlerFunc {
 				}
 			}
 		}()
-
-		// Create a separate ping ticker
-		pingTicker := time.NewTicker(5 * time.Second)
-		defer pingTicker.Stop()
-
-		// Setup ping write mutex
-		var writeMu sync.Mutex
 
 		// Send history
 		for _, msg := range history {
