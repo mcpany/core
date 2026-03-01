@@ -167,14 +167,15 @@ const LogRow = React.memo(({ log, highlightRegex }: { log: LogEntry; highlightRe
                {isPotentialJson && (
                   <button
                     onClick={() => setIsExpanded(!isExpanded)}
-                    className="mr-1 mt-0.5 text-muted-foreground hover:text-foreground"
+                    className="mr-1 mt-0.5 text-muted-foreground hover:text-foreground shrink-0 z-10"
                     aria-label={isExpanded ? "Collapse JSON" : "Expand JSON"}
+                    style={{ pointerEvents: 'auto' }}
                   >
                     {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
                   </button>
                )}
                <span className="break-all whitespace-pre-wrap">
-                 <HighlightText text={log.message} regex={highlightRegex} />
+                 {isExpanded && isPotentialJson ? null : <HighlightText text={log.message} regex={highlightRegex} />}
                </span>
                {duration && (
                 <span className="ml-2 inline-flex items-center rounded-sm bg-white/10 px-1.5 py-0.5 text-[10px] font-medium text-gray-400 font-mono shrink-0">

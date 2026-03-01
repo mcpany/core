@@ -28,7 +28,7 @@ services:
  */
 export default function StackDetailPage() {
   const params = useParams();
-  const stackId = Array.isArray(params?.stackId) ? params.stackId[0] : params?.stackId;
+  const stackId = Array.isArray(params?.name) ? params.name[0] : params?.name;
 
   const router = useRouter();
   const { toast } = useToast();
