@@ -31,6 +31,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuCheckboxItem,
+} from "@/components/ui/dropdown-menu"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { LogViewer, LogEntry, timeFormatter } from "./log-viewer"
 
@@ -69,7 +75,7 @@ export function LogStream({
   const initialSource = source || searchParams.get("source") || "ALL"
 
   const initialLevel = searchParams.get("level") || "ALL"
-  const [filterLevel, setFilterLevel] = React.useState<string>(initialLevel)
+  const [filterLevels, setFilterLevels] = React.useState<string[]>(initialLevel === "ALL" ? ["INFO", "WARN", "ERROR", "DEBUG"] : initialLevel.split(","))
   const [filterSource, setFilterSource] = React.useState<string>(initialSource)
   const [searchQuery, setSearchQuery] = React.useState("")
   const [isConnected, setIsConnected] = React.useState(false)
@@ -227,7 +233,7 @@ export function LogStream({
       }
 
       // Normal Filtering
-      const matchesLevel = filterLevel === "ALL" || log.level === filterLevel
+      const matchesLevel = filterLevels.includes(log.level)
       const matchesSource = filterSource === "ALL" || log.source === filterSource
 
       // ⚡ BOLT: Optimized memory usage by removing eager search string allocation.
@@ -239,7 +245,7 @@ export function LogStream({
 
       return matchesLevel && matchesSource && matchesSearch
     })
-  }, [logs, filterLevel, filterSource, deferredSearchQuery, traceId, traceStartTime, traceEndTime])
+  }, [logs, filterLevels, filterSource, deferredSearchQuery, traceId, traceStartTime, traceEndTime])
 
   const clearLogs = () => setLogs([])
 
@@ -349,18 +355,33 @@ export function LogStream({
                         </Select>
 
                         <Filter className="h-4 w-4 text-muted-foreground ml-2" />
-                        <Select value={filterLevel} onValueChange={setFilterLevel}>
-                            <SelectTrigger className="w-[120px] bg-background">
-                                <SelectValue placeholder="Level" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="ALL">All Levels</SelectItem>
-                                <SelectItem value="INFO">Info</SelectItem>
-                                <SelectItem value="WARN">Warning</SelectItem>
-                                <SelectItem value="ERROR">Error</SelectItem>
-                                <SelectItem value="DEBUG">Debug</SelectItem>
-                            </SelectContent>
-                        </Select>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="outline" className="w-[120px] justify-start bg-background font-normal overflow-hidden truncate px-3 py-2 text-sm">
+                                    {filterLevels.length === 4 ? "All Levels" : filterLevels.join(", ") || "None"}
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className="w-[120px]">
+                                {["INFO", "WARN", "ERROR", "DEBUG"].map(level => (
+                                    <DropdownMenuCheckboxItem
+                                        key={level}
+                                        checked={filterLevels.includes(level)}
+                                        onCheckedChange={(checked) => {
+                                            setFilterLevels(prev => {
+                                                if (checked) {
+                                                    return [...prev, level];
+                                                }
+                                                return prev.filter(l => l !== level);
+                                            });
+                                        }}
+                                    >
+                                        {level === "INFO" ? "Info" :
+                                         level === "WARN" ? "Warning" :
+                                         level === "ERROR" ? "Error" : "Debug"}
+                                    </DropdownMenuCheckboxItem>
+                                ))}
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     </div>
                 )}
              </div>
