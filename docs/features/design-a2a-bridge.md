@@ -46,3 +46,4 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-03-01:** Expanded to support **Nested Hierarchical Delegation** and **Parallel Agent Teams**. Introduced `X-MCP-Depth` header to prevent infinite recursion in nested swarms.

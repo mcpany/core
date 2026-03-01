@@ -75,6 +75,16 @@
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
+---
+
+## Evolution: [2026-03-01] Updates
+
+### Proposed Additions
+- **Nested Delegation Middleware**: (P0) Support for hierarchical agent spawning and deep state inheritance, tracking context across arbitrary nesting depths.
+- **Alignment Critic Hook**: (P0) Pluggable middleware that routes tool calls to a secondary "Overseer" LLM to verify alignment with high-level intent (Gate 2 of Triple Gate).
+- **Ephemeral Identity Manager (JIT-ID)**: (P1) Automatic generation of short-lived, scope-restricted access tokens for upstream services (Gate 3 of Triple Gate).
+- **Project-Level Policy Scoping**: (P1) Ability to dynamically load and enforce policies defined in local project metadata (e.g., `.mcpany/policy.yaml`).
+
 ### Priority Shifts
 - **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
 - **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.

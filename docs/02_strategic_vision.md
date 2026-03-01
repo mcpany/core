@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-01]
+### Focus: Hierarchical Multi-Agent Orchestration & Triple-Gate Defense
+**Context**: Recent updates in OpenClaw (Nested Orchestration) and Claude Code (Agent Teams) have shifted the paradigm from flat swarms to hierarchical, parallel execution. Simultaneously, the "Lethal Trifecta" of prompt injection has necessitated a "Triple-Gate" defensive posture.
+**Strategic Pivot**:
+- **Hierarchical Context Inheritance**: Evolving the Recursive Context Protocol to support arbitrary nesting depths and "Teammate" state sharing for parallel agent execution.
+- **Triple-Gate Security Enforcement**: MCP Any will natively implement the Triple-Gate framework: acting as the primary Proxy (Gate 1), integrating an LLM-based Alignment Critic (Gate 2), and managing JIT Ephemeral Identities (Gate 3).
+- **Project-Aware Scoping**: Aligning with Gemini CLI's project-level policies to allow MCP Any to automatically adjust its security and tool discovery posture based on the local project metadata (e.g., `GEMINI.md` or `AGENTS.md`).

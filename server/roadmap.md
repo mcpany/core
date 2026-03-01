@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-01 Evolution)
+*   **[P0] Alignment Critic Middleware**: secondary LLM verification of tool calls against user intent (Triple-Gate: Gate 2). (Added: 2026-03-01)
+*   **[P0] Nested Orchestration Support**: Recursive header protocol for hierarchical agent swarms with infinite loop protection. (Added: 2026-03-01)
+*   **[P1] Project-Level Policy Scoping**: Automatic security policy loading from project-root metadata files. (Added: 2026-03-01)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
