@@ -5,6 +5,7 @@ package app
 
 import (
 	"net/http"
+	"sync"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -79,24 +80,34 @@ func (a *Application) handleLogsWS() http.HandlerFunc {
 		pingTicker := time.NewTicker(5 * time.Second)
 		defer pingTicker.Stop()
 
+		// Setup ping write mutex
+		var writeMu sync.Mutex
+
 		for {
 			select {
 			case <-closeCh:
 				return // Client disconnected
 			case <-pingTicker.C:
-				if err := conn.WriteControl(websocket.PingMessage, []byte{}, time.Now().Add(time.Second)); err != nil {
+				writeMu.Lock()
+				err := conn.WriteControl(websocket.PingMessage, []byte{}, time.Now().Add(time.Second))
+				writeMu.Unlock()
+				if err != nil {
 					return
 				}
 			case msg, ok := <-logCh:
 				if !ok {
 					return
 				}
-				// ⚡ BOLT: Write struct directly to WebSocket (marshals internally)
-				if err := conn.WriteJSON(msg); err != nil {
-					// Disconnected
-					return
+
+				writeMu.Lock()
+				err := conn.SetWriteDeadline(time.Now().Add(10 * time.Second))
+				if err == nil {
+					// ⚡ BOLT: Write struct directly to WebSocket (marshals internally)
+					err = conn.WriteJSON(msg)
 				}
-				if err := conn.SetWriteDeadline(time.Now().Add(10 * time.Second)); err != nil {
+				writeMu.Unlock()
+
+				if err != nil {
 					// Disconnected
 					return
 				}

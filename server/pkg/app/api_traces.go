@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -263,12 +264,17 @@ func (a *Application) handleTracesWS() http.HandlerFunc {
 		pingTicker := time.NewTicker(5 * time.Second)
 		defer pingTicker.Stop()
 
+		var writeMu sync.Mutex
+
 		for {
 			select {
 			case <-closeCh:
 				return // Client disconnected
 			case <-pingTicker.C:
-				if err := conn.WriteControl(websocket.PingMessage, []byte{}, time.Now().Add(time.Second)); err != nil {
+				writeMu.Lock()
+				err := conn.WriteControl(websocket.PingMessage, []byte{}, time.Now().Add(time.Second))
+				writeMu.Unlock()
+				if err != nil {
 					return
 				}
 			case msg, ok := <-logCh:
@@ -281,11 +287,14 @@ func (a *Application) handleTracesWS() http.HandlerFunc {
 				}
 				trace := toTrace(entry)
 
-				if err := conn.SetWriteDeadline(time.Now().Add(10 * time.Second)); err != nil {
-					// Disconnected
-					return
+				writeMu.Lock()
+				err := conn.SetWriteDeadline(time.Now().Add(10 * time.Second))
+				if err == nil {
+					err = conn.WriteJSON(trace)
 				}
-				if err := conn.WriteJSON(trace); err != nil {
+				writeMu.Unlock()
+
+				if err != nil {
 					// Disconnected
 					return
 				}
@@ -293,11 +302,15 @@ func (a *Application) handleTracesWS() http.HandlerFunc {
 				if !ok {
 					return
 				}
-				if err := conn.SetWriteDeadline(time.Now().Add(10 * time.Second)); err != nil {
-					// Disconnected
-					return
+
+				writeMu.Lock()
+				err := conn.SetWriteDeadline(time.Now().Add(10 * time.Second))
+				if err == nil {
+					err = conn.WriteJSON(trace)
 				}
-				if err := conn.WriteJSON(trace); err != nil {
+				writeMu.Unlock()
+
+				if err != nil {
 					// Disconnected
 					return
 				}
