@@ -59,3 +59,10 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-01: Addressing Local Port Exposure**
+    *   **Context:** Research into the OpenClaw exploit pattern reveals that rogue subagents can bypass local-only bindings by exploiting HTTP tunnels or named pipes that lack proper session isolation.
+    *   **Architecture Adjustment:**
+        *   Deprecating unauthenticated local HTTP tunnels for inter-agent communication.
+        *   Introducing **Session-Bound Named Pipes** for all local tool calls. Each agent session will have a unique, cryptographically isolated communication channel.
+        *   Implementing **Namespace Isolation** for subagents, preventing them from seeing or connecting to the parent's local listeners.
+    *   **Security Impact:** Mitigates the risk of a compromised subagent scanning or attacking the host's local services via the loopback interface.

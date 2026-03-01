@@ -34,6 +34,12 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-01 Evolution)
+*   **[P0] Policy-Driven HITL Gateway**: Programmable human-approval layer for high-risk tool calls. (Added: 2026-03-01)
+*   **[P0] Low-Trust Community Sandbox**: Isolated gVisor/Wasm-based execution for unverified community tools. (Added: 2026-03-01)
+*   **[P1] Local Attestation Service**: Malware scanning and integrity attestation for local tool installations. (Added: 2026-03-01)
+*   **[P1] Session-Bound Named Pipes**: Cryptographically isolated local communication channels to prevent rogue subagent scanning. (Added: 2026-03-01)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

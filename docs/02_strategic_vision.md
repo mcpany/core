@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-01]
+### Focus: Policy-Driven Agency & Supply Chain Lockdown
+**Context**: The "ClawHavoc" campaign and Claude Opus 4.6's discovery of 500+ zero-days have accelerated the transition from "Autonomous" to "Governed" agency. Trust in third-party tool registries has reached an all-time low.
+**Strategic Pivot**:
+- **Policy-Driven Human-in-the-Loop (HITL)**: Moving beyond simple "Yes/No" approvals to code-defined, policy-driven HITL. High-risk actions (e.g., file system writes, API token access) will trigger a mandatory, policy-governed review flow.
+- **Community Tool Sandboxing**: Implementing a "Low-Trust Sandbox" for all non-attested community tools. Any tool without a verified cryptographic signature will be isolated in a restricted environment with zero network access and ephemeral storage.
+- **Attestation-as-a-Service**: MCP Any will provide a local attestation service that verifies the integrity of both the MCP server and its underlying environment (e.g., checking for AMOS-style malware indicators).

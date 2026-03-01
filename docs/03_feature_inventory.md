@@ -81,3 +81,21 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-01] Updates
+
+### Proposed Additions
+- **Policy-Driven HITL Gateway**: (P0) A programmable approval layer that triggers human intervention based on policy violations (e.g., trying to write to `/etc/` or access `.env` files).
+- **Low-Trust Community Sandbox**: (P0) An isolated execution environment (e.g., gVisor/Wasm) for running unverified tools with zero host access.
+- **Local Attestation Service**: (P1) Integrated tool that scans the local environment for known agent malware indicators (like AMOS) and reports to the UI.
+- **Dynamic Context Header Scoping**: (P1) Middleware to automatically prune the `SessionContext` passed to tools based on the minimum required state for the specific tool call.
+
+### Priority Shifts
+- **Supply Chain Integrity Guard**: Promoted to **P0** and merged with **MCP Provenance Attestation** to form a unified security perimeter.
+- **HITL Middleware**: Promoted to **P0** and expanded to **Policy-Driven HITL Gateway**.
+- **On-Demand Discovery Middleware (Lazy-MCP)**: Re-affirmed **P0** to support secure tool filtering at the gateway level.
+
+### Deprecations / Monitoring
+- **Unsandboxed Tool Execution**: Moving towards sandboxing all tools by default, with opt-out only for attested sources.
