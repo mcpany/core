@@ -1,0 +1,1 @@
+export class GrpcWebImpl {} export class RegistrationServiceClientImpl {} export const HttpUpstreamService = {}; export const ServiceProvenance = {}; export const ProfileDefinition = {}; export const ToolDefinition = {};
