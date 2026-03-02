@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-02]
+### Focus: Defense-in-Depth Tool Validation & Cloud-to-Local Bridging
+**Context**: Today's findings on OpenClaw's SSRF and authentication vulnerabilities highlight that MCP Any must enforce validation at every layer—not just as a proxy. Additionally, the success of Claude Code in the CLI space reinforces the need for high-performance Local-to-Cloud bridging.
+**Strategic Pivot**:
+- **Defense-in-Depth Validation Layer**: MCP Any will implement a mandatory validation middleware that inspects both tool inputs (to prevent SSRF/Path Traversal) and tool outputs (to prevent data exfiltration).
+- **Hardened Cloud-to-Local Bridge**: Enhancing the "Environment Bridging Middleware" to specifically address the needs of CLI-first agents like Claude Code, allowing them to access local dev tools securely from cloud sandboxes.
+- **Zero-Trust Tool Parameter Binding**: Moving towards a model where tool parameters are strictly typed and bound to specific resources, preventing dynamic parameter injection.
