@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-02 Evolution)
+*   **[P1] P2P Gossip Discovery Provider**: Decentralized, mesh-wide tool discovery mechanism. (Added: 2026-03-02)
+*   **[P0] Continuous Mesh Attestation Service**: Background service monitoring mesh-wide security health. (Added: 2026-03-02)
+*   **[P0] JIT Scoping Middleware**: Dynamic capability elevation for task-specific tool access. (Added: 2026-03-02)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

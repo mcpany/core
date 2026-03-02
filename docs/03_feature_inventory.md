@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-02] Updates
+
+### Proposed Additions
+- **P2P Gossip Discovery Provider**: (P1) Implement a decentralized discovery mechanism for federated meshes.
+- **Continuous Mesh Attestation Service**: (P0) Background service that monitors mesh health and peer integrity.
+- **Just-in-Time (JIT) Scoping Middleware**: (P0) Dynamic elevation of permissions based on task-specific requirements.
+
+### Priority Shifts
+- **Federated MCP Node Peering**: Promoted to **P0** to support decentralized Gossip discovery.
+- **Supply Chain Integrity Guard**: Re-affirmed as **P0** and expanded to include mesh-wide attestation.
+
+### Deprecations / Monitoring
+- **Centralized MCP Registry**: Monitoring for deprecation in favor of Gossip-based discovery.
