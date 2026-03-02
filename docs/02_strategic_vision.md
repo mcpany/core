@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-02]
+### Focus: Reasoning-Aware Telemetry & Project-Scoped Security
+**Context**: With the release of Claude 4.6 (Adaptive Thinking) and Gemini CLI 0.31.0 (Project Policies), the "Universal Bus" must now handle the internal state of models (reasoning tokens) and more granular organizational structures (projects).
+**Strategic Pivot**:
+- **Reasoning-Aware Telemetry**: MCP Any will capture and standardize "Thinking" metadata across different LLM providers, allowing for accurate cost/latency analysis of "Agentic Reasoning" vs "Tool Execution."
+- **Hierarchical Policy Scoping**: Moving from global policies to a "Project-Scoped" model where security rules and tool availability are automatically inherited based on the agent's active project context.
+- **Browser Sandbox Isolation**: Introducing a dedicated "Sandbox" tier for tools that interact with the web, ensuring that browser-based agents are isolated from the host filesystem and local network.
