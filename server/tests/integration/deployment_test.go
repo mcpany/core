@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net"
 	"net/http"
 	"os"
@@ -165,8 +166,11 @@ func TestDockerCompose(t *testing.T) {
 
 	defer func() { _ = resp.Body.Close() }()
 	var result map[string]interface{}
-	err = json.NewDecoder(resp.Body).Decode(&result)
-	require.NoError(t, err)
+	bodyBytes, _ := io.ReadAll(resp.Body)
+	err = json.Unmarshal(bodyBytes, &result)
+	if err != nil {
+		t.Fatalf("Failed to decode json response: %v, raw body: %s", err, string(bodyBytes))
+	}
 
 	// Check the response
 	require.NotNil(t, result["result"])
