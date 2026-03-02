@@ -59,3 +59,10 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+
+### Update: 2026-03-03 - Mitigating Configuration Hijacking
+**Context:** Today's research identified CVE-2026-23523, where crafted deeplinks could install rogue MCP configurations.
+**Architecture Adjustment:**
+*   Introducing "Attested Configuration Deeplinks."
+*   All one-click imports now require a cryptographic signature (`.sig` file or header) from a verified source registry.
+**Security Impact:** Prevents unauthorized local command execution via malicious tool configurations.

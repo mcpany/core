@@ -57,3 +57,10 @@ As the number of available MCP tools grows, agents face "context pollution"—wh
 
 ## 7. Evolutionary Changelog
 *   **2026-02-25:** Initial Document Creation.
+
+### Update: 2026-03-03 - Intent-Based Fuzzy Discovery
+**Context:** Today's market sync revealed that Anthropic launched a "tool search tool" in public beta for Claude Sonnet 4.6, prioritizing semantic discovery over static listing.
+**Architecture Adjustment:**
+*   Refining the `mcpany_search_tools` API to support intent-based fuzzy matching.
+*   Integrating the scoring engine from the Intent-Aware Routing middleware into the discovery process.
+**Security Impact:** Ensures that "Lazy-Discovery" only exposes tools within the session's authorized intent-scope.

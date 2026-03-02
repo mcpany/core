@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-03]
+### Focus: Dynamic Tool Routing & "Economical Reasoning" Middleware
+**Context**: Today's findings (Claude's Tool Search, Gemini CLI's Policy Engine) prove that the "Static Tool Schema" era is ending. Agents need a way to reason about tool *selection* before execution, based on cost, latency, and intent.
+**Strategic Pivot**:
+- **Intent-Aware Routing**: MCP Any will evolve from a passive proxy into an active router that suggests tools based on high-level agent intent and historical success rates.
+- **Economical Telemetry**: Integrating real-time cost and performance metrics into the MCP metadata. This enables agents to perform "Economical Reasoning" (e.g., choosing a local SQLite tool over a remote Postgres tool for simple lookups).
+- **Secure Configuration Import**: Implementing "Attested Deeplinks" for configuration. All one-click imports will require cryptographic verification of the source to mitigate new configuration hijacking vulnerabilities.

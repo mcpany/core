@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-03] Updates
+
+### Proposed Additions
+- **Intent-Aware Routing Middleware**: (P0) Suggests tools based on high-level agent intent and historical success rates, reducing context noise.
+- **Attested Configuration Deeplinks**: (P0) Cryptographic verification of "one-click" config imports to mitigate configuration hijacking.
+- **Economical Telemetry Layer**: (P1) Real-time cost and performance metrics in tool metadata for model-level "Economical Reasoning."
+
+### Priority Shifts
+- **Lazy-MCP Middleware**: Re-affirmed as **P0**. Crucial to handle expanding tool catalogs without context bloat.
+- **Resource Telemetry Middleware**: Promoted from **P1** to **P0**. Models are now capable of and require cost/performance reasoning.
+
+### Deprecations / Monitoring
+- **Unverified Configuration Imports**: Deprecating direct file-based config imports without origin attestation.
