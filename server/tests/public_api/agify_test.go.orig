@@ -10,59 +10,60 @@ import (
 	"encoding/json"
 	"testing"
 
+	"github.com/mcpany/core/server/pkg/util"
 	apiv1 "github.com/mcpany/core/proto/api/v1"
 	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/mcpany/core/server/pkg/util"
 	"github.com/mcpany/core/server/tests/integration"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
 )
 
-func TestUpstreamService_Bored(t *testing.T) {
+func TestUpstreamService_Agify(t *testing.T) {
+	// t.SkipNow()
 	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
 	defer cancel()
 
-	t.Log("INFO: Starting E2E Test Scenario for Bored Server...")
+	t.Log("INFO: Starting E2E Test Scenario for Agify Server...")
 	t.Parallel()
 
 	// --- 1. Start Mock Server ---
-	mockResponse := `{"activity":"Learn a new language","type":"education","participants":1,"price":0.1,"link":"https://en.wikipedia.org/wiki/Language","key":"5881028","accessibility":0.25}`
+	mockResponse := `{"name": "michael", "age": 50, "count": 100}`
 	mockServer := integration.CreateMockServerWithResponses(t, map[string]string{
-		"/api/activity": mockResponse,
+		"/:?name=michael": mockResponse,
 	})
 	defer mockServer.Close()
 
 	// --- 2. Start MCPANY Server ---
-	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2EBoredServerTest")
+	mcpAnyTestServerInfo := integration.StartMCPANYServer(t, "E2EAgifyServerTest")
 	defer mcpAnyTestServerInfo.CleanupFunc()
 
-	// --- 3. Register Bored Server with MCPANY ---
-	const boredServiceID = "e2e_bored"
-	boredServiceEndpoint := mockServer.URL
-	t.Logf("INFO: Registering '%s' with MCPANY at endpoint %s...", boredServiceID, boredServiceEndpoint)
+	// --- 3. Register Agify Server with MCPANY ---
+	const agifyServiceID = "e2e_agify"
+	agifyServiceEndpoint := mockServer.URL
+	t.Logf("INFO: Registering '%s' with MCPANY at endpoint %s...", agifyServiceID, agifyServiceEndpoint)
 	registrationGRPCClient := mcpAnyTestServerInfo.RegistrationClient
 
-	callID := "getActivity"
+	callID := "getAge"
 	httpCall := configv1.HttpCallDefinition_builder{
 		Id:           proto.String(callID),
-		EndpointPath: proto.String("/api/activity"),
+		EndpointPath: proto.String("/?name=michael"),
 		Method:       configv1.HttpCallDefinition_HttpMethod(configv1.HttpCallDefinition_HttpMethod_value["HTTP_METHOD_GET"]).Enum(),
 	}.Build()
 
 	toolDef := configv1.ToolDefinition_builder{
-		Name:   proto.String("getActivity"),
+		Name:   proto.String("getAge"),
 		CallId: proto.String(callID),
 	}.Build()
 
 	httpService := configv1.HttpUpstreamService_builder{
-		Address: proto.String(boredServiceEndpoint),
+		Address: proto.String(agifyServiceEndpoint),
 		Tools:   []*configv1.ToolDefinition{toolDef},
 		Calls:   map[string]*configv1.HttpCallDefinition{callID: httpCall},
 	}.Build()
 
 	config := configv1.UpstreamServiceConfig_builder{
-		Name:        proto.String(boredServiceID),
+		Name:        proto.String(agifyServiceID),
 		HttpService: httpService,
 	}.Build()
 
@@ -71,7 +72,7 @@ func TestUpstreamService_Bored(t *testing.T) {
 	}.Build()
 
 	integration.RegisterServiceViaAPI(t, registrationGRPCClient, req)
-	t.Logf("INFO: '%s' registered.", boredServiceID)
+	t.Logf("INFO: '%s' registered.", agifyServiceID)
 
 	// --- 3. Call Tool via MCPANY ---
 	testMCPClient := mcp.NewClient(&mcp.Implementation{Name: "test-mcp-client", Version: "v1.0.0"}, nil)
@@ -85,33 +86,29 @@ func TestUpstreamService_Bored(t *testing.T) {
 		t.Logf("Discovered tool from MCPANY: %s", tool.Name)
 	}
 
-	serviceID, _ := util.SanitizeServiceName(boredServiceID)
-	sanitizedToolName, _ := util.SanitizeToolName("getActivity")
+	serviceID, _ := util.SanitizeServiceName(agifyServiceID)
+	sanitizedToolName, _ := util.SanitizeToolName("getAge")
 	toolName := serviceID + "." + sanitizedToolName
+	name := `{"name": "michael"}`
 
-	// Call the tool directly (mock server is fast, no retries needed)
-	res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(`{}`)})
-	require.NoError(t, err, "Error calling getActivity tool")
-	require.NotNil(t, res, "Nil response from getActivity tool")
+	// Call the tool directly
+	res, err := cs.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: json.RawMessage(name)})
+	require.NoError(t, err, "Error calling getAge tool")
+	require.NotNil(t, res, "Nil response from getAge tool")
 
 	// --- 4. Assert Response ---
 	require.Len(t, res.Content, 1, "Expected exactly one content item")
 	textContent, ok := res.Content[0].(*mcp.TextContent)
 	require.True(t, ok, "Expected text content")
 
-	var boredResponse map[string]interface{}
-	err = json.Unmarshal([]byte(textContent.Text), &boredResponse)
+	var agifyResponse map[string]interface{}
+	err = json.Unmarshal([]byte(textContent.Text), &agifyResponse)
 	require.NoError(t, err, "Failed to unmarshal JSON response")
 
-	require.NotEmpty(t, boredResponse["activity"], "The activity should not be empty")
-	require.NotEmpty(t, boredResponse["type"], "The type should not be empty")
-	require.NotEmpty(t, boredResponse["participants"], "The participants should not be empty")
-	require.NotEmpty(t, boredResponse["price"], "The price should not be empty")
-	require.NotEmpty(t, boredResponse["link"], "The link should not be empty")
-	require.NotEmpty(t, boredResponse["key"], "The key should not be empty")
-	// require.NotEmpty(t, boredResponse["accessibility"], "The accessibility should not be empty") // Accessibility can be 0, which is empty?
-	// mock returns 0.25 so it's not empty string/nil. NotEmpty works for float? Yes.
-	t.Logf("SUCCESS: Received an activity: %s", textContent.Text)
+	require.Equal(t, "michael", agifyResponse["name"], "The name does not match")
+	require.NotEmpty(t, agifyResponse["age"], "The age should not be empty")
+	require.NotEmpty(t, agifyResponse["count"], "The count should not be empty")
+	t.Logf("SUCCESS: Received correct age for michael: %s", textContent.Text)
 
-	t.Log("INFO: E2E Test Scenario for Bored Server Completed Successfully!")
+	t.Log("INFO: E2E Test Scenario for Agify Server Completed Successfully!")
 }

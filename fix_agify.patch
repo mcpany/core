@@ -1,0 +1,10 @@
+--- server/tests/public_api/agify_test.go
++++ server/tests/public_api/agify_test.go
+@@ -34,7 +34,7 @@
+	// --- 1. Start Mock Server ---
+	mockResponse := `{"name": "michael", "age": 50, "count": 100}`
+	mockServer := integration.CreateMockServerWithResponses(t, map[string]string{
+-		"/?name=michael": mockResponse,
++		"/:?name=michael": mockResponse,
+	})
+	defer mockServer.Close()

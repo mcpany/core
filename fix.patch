@@ -1,0 +1,11 @@
+--- server/pkg/app/server.go
++++ server/pkg/app/server.go
+@@ -338,8 +338,8 @@
+		startupCh:       make(chan struct{}),
+		startTime:       time.Now(),
+		MetricsGatherer:   prometheus.DefaultGatherer,
+		statsCache:        make(map[string]statsCacheEntry),
+-		seededTraceSubs:   make(map[chan *Trace]struct{}),
++		seededTraceSubs:   make(map[chan *Trace]struct{}),
+	}
+ }
