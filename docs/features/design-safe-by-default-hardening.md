@@ -59,3 +59,9 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+### Update: 2026-03-01 - mDNS/BLE One-Tap Trusted Discovery
+**Context:** Market sync revealed a trend toward "One-Tap" discovery in Gemini CLI. MCP Any needs to support this while maintaining its "Safe-by-Default" posture.
+**Architecture Adjustment:**
+*   Adding mDNS (Multicast DNS) and Bluetooth LE (BLE) as trusted local discovery transports in Section 4.
+*   Integrating these discovery methods into the `Remote Access Guard` to allow seamless but secure local pairing.
+**Security Impact:** Enables low-friction tool discovery for local agents without requiring non-local bindings or exposing services to the network.

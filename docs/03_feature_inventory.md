@@ -79,5 +79,18 @@
 - **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
 - **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.
 
+---
+
+## Evolution: [2026-03-01] Updates
+
+### Proposed Additions
+- **Output Sanitization Middleware**: (P0) Real-time interceptor that strips instruction-like patterns (e.g., "Ignore previous instructions") from tool outputs to prevent indirect prompt injection.
+- **Ephemeral Tool Sandbox Manager**: (P1) Lifecycle management for transient, container-isolated MCP servers.
+- **DHT-based Swarm Adapter**: (P1) Integration with decentralized DHT protocols (OpenClaw v2) for tool discovery in peer-to-peer swarms.
+
+### Priority Shifts
+- **Machine-Checkable Security Contracts**: Promoted to **P0**. High urgency to verify tool outputs against safety contracts to mitigate injection risks.
+- **MCP Provenance Attestation**: Re-affirmed as **P0**. Essential for securing the DHT discovery mesh.
+
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
