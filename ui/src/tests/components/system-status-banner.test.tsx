@@ -27,7 +27,7 @@ describe('SystemStatusBanner', () => {
     render(<SystemStatusBanner />);
 
     await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining('/doctor'), expect.any(Object));
+      expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining('/api/v1/doctor'), expect.any(Object));
     });
 
     expect(screen.queryByText(/System Status/i)).not.toBeInTheDocument();
