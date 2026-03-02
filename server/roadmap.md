@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-01 Evolution)
+*   **[P0] Local Runtime Sandbox Adapter**: Isolated tool execution via gVisor/WASM middleware. (Added: 2026-03-01)
+*   **[P1] Managed Ephemeral Browser Tool**: Secure, containerized browser instance for agentic web search. (Added: 2026-03-01)
+*   **[P1] Project-Aware Policy Manifests**: Support for `.mcp-policy.yaml` files for granular project-level tool access. (Added: 2026-03-01)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

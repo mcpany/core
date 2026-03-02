@@ -46,3 +46,7 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-03-01: Addressing Inter-Agent Security Boundaries.**
+    *   **Context:** Today's market sync revealed a new exploit pattern in the OpenClaw "Clawdbot" incident, where a compromised subagent leveraged parent context to gain host access.
+    *   **Architecture Adjustment:** Deprecating "Direct Trust" in A2A handoffs. All A2A messages now require "Context Attestation" headers verified by the Policy Firewall.
+    *   **Security Impact:** Prevents subagents from "escalating" permissions by spoofing their parent's session token.

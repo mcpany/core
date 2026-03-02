@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-01]
+### Focus: Policy-Controlled Local Runtime & Secure Browser Sandboxing
+**Context**: Today's findings from OpenClaw's security hardening and Gemini's experimental browser agent indicate that the "Last Mile" of agent execution (local tool runs and web interactions) is the new critical security boundary.
+**Strategic Pivot**:
+- **Policy-Controlled Local Runtime**: MCP Any will evolve to provide a "Verified Execution Sandbox" for local tools, moving beyond simple proxying to active process isolation and syscall filtering for tools.
+- **Secure Browser Sandboxing**: Integrating ephemeral, containerized browser sessions as a standard MCP tool, ensuring that "agentic web search" does not leak host session data or credentials.
+- **Project-Level Policy Scoping**: Adopting the Gemini CLI pattern of project-specific security manifests, allowing for hyper-granular control over tool access based on the repository or workspace context.
