@@ -41,7 +41,7 @@ test.describe('Network Topology Visualizer', () => {
 
     // 6. Seed Data Trigger (for interactive test)
     // Check that the Seed Data button exists and is clickable
-    const seedBtn = page.getByRole('button', { name: 'Seed Data' });
+    const seedBtn = page.getByRole('button', { name: 'Simulate Load' });
     await expect(seedBtn).toBeVisible();
     await seedBtn.click();
 
