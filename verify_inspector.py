@@ -6,7 +6,7 @@ import time
 
 def verify_inspector(page: Page):
     # Navigate to Inspector
-    page.goto("http://localhost:9002/inspector", wait_until="networkidle")
+    page.goto("http://localhost:3000/inspector", wait_until="networkidle")
 
     # Wait for the toolbar to be visible
     # We look for the "Search traces..." input
