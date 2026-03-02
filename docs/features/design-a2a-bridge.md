@@ -46,3 +46,10 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-03-02:** **Update: Shifting to a Stateful Residency Model for A2A Comms**
+    **Context:** Recent "Agent Hijacking" exploits highlight the danger of direct, point-to-point agent connections.
+    **Architecture Adjustment:**
+    *   Transitioning from a "Bridge" to a "Resident" model where MCP Any is the native, persistent home for A2A state.
+    *   Implementing **Stateful Residency** for A2A messages, enabling asynchronous, multi-agent handoffs with persistent, verifiable state buffers.
+    *   Introducing **Intent Integrity Checks** on all A2A handoffs to verify that the delegated task aligns with the original parent session's authorized intent.
+    **Security Impact:** Prevents hijacked subagents from bypassing security policies during handoffs by ensuring all inter-agent messages are buffered and validated by the resident gateway.

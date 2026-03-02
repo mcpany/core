@@ -59,3 +59,10 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-02:** **Update: Enforcing Local-Only Enforcement and Exposure Warnings**
+    **Context:** Today's market sync confirmed the rising frequency of "8,000 Exposed Servers" style vulnerabilities.
+    **Architecture Adjustment:**
+    *   Deprecating the `host: 0.0.0.0` configuration option for all non-admin users.
+    *   Introducing **Exposure Warning Banners** in the UI when non-local bindings are detected.
+    *   **Automated Quarantining**: Any tool call originating from a non-attested remote connection will be quarantined by default, requiring a "HITL Challenge" on the local host.
+    **Security Impact:** Significantly reduces the blast radius of misconfigured MCP Any instances by ensuring all remote tool calls are explicitly authorized and human-verified.

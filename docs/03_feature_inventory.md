@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-02] Updates
+
+### Proposed Additions
+- **Anomalous Tool Call Detector**: (P0) A reasoning middleware that evaluates tool calls against a session's high-level intent to detect and block hijacked agents.
+- **Context Integrity Attestation**: (P1) Cryptographic "Linkage Tokens" that bind parent agent instructions to downstream tool calls, ensuring state hasn't been tampered with.
+- **Tool Annotation Policy Matcher**: (P1) Extends the Policy Firewall to match tools based on their semantic annotations (e.g., `scope:web_browsing`) instead of just tool names.
+
+### Priority Shifts
+- **Policy Firewall**: Promoted from **P0** to **Core Infrastructure P0** to incorporate autonomous governance.
+- **Safe-by-Default Network Hardening**: Promoted to **P0** (Critical immediate response to the "8,000 Exposed Servers" crisis).
+
+### Deprecations / Monitoring
+- **Manual Capability Tokenization**: Monitoring for move towards automated intent-aware scoping.
