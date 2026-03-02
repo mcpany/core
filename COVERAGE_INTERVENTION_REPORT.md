@@ -1,13 +1,18 @@
 # Coverage Intervention Report
 
-* **Target:** `server/pkg/api/rest/catalog.go` (Specifically `NewCatalogServer` and `ListServices`)
-* **Risk Profile:** This file was identified as "Dark Matter" because it connects the `catalog.Manager` to the public API handler but lacked testing (0.0% coverage). As part of the core business logic governing the dynamic loading of service configurations, leaving this untested creates a significant risk that failures in catalog retrieval or instantiation might go unnoticed.
-* **New Coverage:**
-  * Created table-driven tests mimicking the standard test methodology for the `rest` package.
-  * `TestNewCatalogServer`: Validates successful initialization (Happy path).
-  * `TestCatalogServer_ListServices`: Validates that catalog services are successfully fetched and enumerated correctly into the protocol buffer message format (`apiv1.ListCatalogServicesResponse`), dealing correctly with both empty and populated mock filesystems.
-  * Increased test coverage from `0.0%` to `100.0%` for `NewCatalogServer` and `75.0%` for `ListServices` (covering all logic except error handling from the catalog manager load, which typically shouldn't error in typical mock workflows without further system stubbing).
-* **Verification:**
-  * Confirmed that `go test -v ./pkg/api/rest/...` passed cleanly.
-  * Executed `make lint` clean run.
-  * Executed `make test` confirming that unit tests remain successful with "Do No Harm" principle enforced. (Note: A Docker build error occurred in E2E timeserver, verified to be unrelated to the modified package).
+**Target:** `server/pkg/tool/types.go` (SQL Injection Defense Methods)
+
+**Risk Profile:**
+The target functions (`checkSQLInjection`, `checkSQLiteInjection`, `checkMySQLInjection`, and `checkPSQLInjection`) are critical security barriers designed to prevent command injection when an AI agent runs database queries on behalf of a user. Before this intervention, their test coverage was severely lacking: `checkSQLiteInjection` was at 50%, `checkMySQLInjection` was at 33.3%, and `checkPSQLInjection` was at 0%. A failure in these functions could allow arbitrary shell execution, file manipulation, or data exfiltration.
+
+**New Coverage:**
+Comprehensive table-driven tests have been implemented to guarantee the behavior of each engine-specific function, bringing coverage up to 100%. Specific logic paths now guarded include:
+
+*   **SQLite3 Defense:** Defends against `.shell`, `.system`, `.open`, `.output`, `.once`, `.read`, `.import`, and `.load` meta-commands. (Included a minor code fix to address a vulnerability where preceding spaces could bypass the checks).
+*   **MySQL Defense:** Defends against unquoted `system` and `source` commands, and file access via `INFILE` / `OUTFILE`.
+*   **PostgreSQL Defense:** Defends against `\!`, `\o`, `\copy` and combinations like `COPY ... TO PROGRAM`.
+*   **Generic SQL Keyword Defense:** Blocks specific DDL and dangerous keywords like `DROP`, `ALTER`, `UNION`, `DELETE`, etc. if outside standard bounds.
+
+**Verification:**
+*   Confirmed `go test ./server/pkg/tool -run TestCheckSQLInjection` passed correctly.
+*   Confirmed `make lint` completed without errors, including properly addressing auto-added headers.

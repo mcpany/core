@@ -3777,6 +3777,8 @@ func checkSQLInjection(val, base string, quoteLevel int) error {
 }
 
 func checkSQLiteInjection(valLower string) error {
+	valTrimmed := strings.TrimSpace(valLower)
+	valLower = strings.ToLower(valTrimmed)
 	if strings.HasPrefix(valLower, ".") {
 		if strings.HasPrefix(valLower, ".shell") || strings.HasPrefix(valLower, ".system") {
 			return fmt.Errorf("sqlite3 injection detected: .shell/.system command")
