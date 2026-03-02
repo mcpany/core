@@ -59,3 +59,11 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+
+### Update: [2026-03-02] - Autonomous Governance & Strict Seatbelt Profiles
+**Context:** The surge of OpenClaw-style "agentic AI" with root-level access necessitates pre-defined security templates beyond simple capability tokens.
+**Architecture Adjustment:**
+* Introducing "Strict Seatbelt Profiles" in the Policy Firewall.
+* Profiles like `sandboxed-shell` or `read-only-filesystem` can be applied to autonomous sessions.
+* Integration with Gemini-style project-level policies for centralized governance.
+**Security Impact:** Prevents uncontrolled autonomous actions by "hands-on" agents by default.

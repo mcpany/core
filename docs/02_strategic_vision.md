@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-02]
+### Focus: Autonomous Agentic Governance & High-Fidelity Interaction
+**Context**: The rapid rise of "agentic AI" like OpenClaw, which has "hands-on" capabilities (shell/file access), and the launch of Gemini's Browser Agent, highlights two critical needs: stricter, pre-defined safety boundaries and higher-fidelity environment interaction.
+**Strategic Pivot**:
+- **Autonomous Governance (Seatbelts)**: MCP Any will introduce "Strict Seatbelt Profiles" in its Policy Firewall. These are pre-defined, project-level permission templates that automatically restrict "autonomous" agents to a set of verified safe actions.
+- **Browser-as-a-Tool (Browser Agent Adapter)**: To enable agents to interact with the broader web (beyond just APIs), MCP Any will implement a Universal Browser Adapter. This will provide a standardized interface for non-Gemini agents to leverage high-fidelity web page interaction and DOM manipulation.
+- **Context-Aware Compaction (Lazy-MCP GA)**: With Claude's move of Tool Search to General Availability, MCP Any will align its Lazy-MCP discovery process to be natively compatible with the `ToolSearchTool` standard, ensuring efficient token usage across massive (100+) tool libraries.

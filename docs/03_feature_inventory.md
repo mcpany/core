@@ -81,3 +81,16 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-02] Updates
+
+### Proposed Additions
+- **Universal Browser Agent Adapter**: (P1) Standardized bridge to browser-based tool interaction, inspired by Gemini 3.1's browser agent.
+- **Strict Seatbelt Profiles**: (P0) Pre-defined, project-level security templates for high-risk autonomous agent actions (shell, filesystem, web).
+- **Claude-Native ToolSearch Compatibility**: (P0) Full implementation of the Claude GA ToolSearch protocol for seamless lazy-loading in Claude Code.
+
+### Priority Shifts
+- **Policy Firewall**: Re-affirmed as **P0** to support new "Seatbelt Profiles" for autonomous agents.
+- **Lazy-MCP Middleware**: Re-affirmed as **P0** to support Claude GA compatibility.

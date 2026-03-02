@@ -57,3 +57,10 @@ As the number of available MCP tools grows, agents face "context pollution"—wh
 
 ## 7. Evolutionary Changelog
 *   **2026-02-25:** Initial Document Creation.
+
+### Update: [2026-03-02] - Claude GA Compatibility & Context Compaction
+**Context:** Anthropic has moved Tool Search (Lazy Loading) to General Availability with Opus 4.6.
+**Architecture Adjustment:**
+* Aligning the `mcpany_search_tools` response format to be natively compatible with the Claude `ToolSearchTool` standard.
+* Implementing "Context-Aware Compaction" where the middleware automatically detects and responds to Claude's 50k token compaction triggers.
+**Efficiency Impact:** Ensures seamless integration with Claude Code while maintaining universal compatibility for other LLMs.

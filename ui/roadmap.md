@@ -107,3 +107,6 @@
 - [ ] **Log Source Color Coding**: Assign distinct colors to different log sources automatically for better visual separation.
 - [ ] **Context Usage History**: Track total context usage over time to identify growth trends (requires backend metrics persistence).
 - [ ] **Tool Schema Optimizer**: Analyze tool schemas and suggest removing unused properties or compacting descriptions to save context tokens.
+- [ ] **[P0] Autonomous Seatbelt Manager**: UI for configuring and applying strict safety profiles to agent sessions. (Added: 2026-03-02)
+- [ ] **[P0] ToolSearch Compaction Monitor**: Visualization of Claude-style context compaction events and lazy-loading hits. (Added: 2026-03-02)
+- [ ] **[P1] Live Browser Interaction Stream**: Real-time view of agent-driven browser actions and visual grounding feedback. (Added: 2026-03-02)

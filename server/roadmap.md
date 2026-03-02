@@ -189,3 +189,8 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Core Middleware Pipeline**: The middleware architecture is robust and extensible.
 - **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates protocol details from business logic.
 - **Documentation**: The project has excellent documentation coverage for most features.
+
+#### Upcoming (2026-03-02 Evolution)
+*   **[P0] Strict Seatbelt Profiles**: Pre-defined permission templates for autonomous agent actions (shell, filesystem, web). (Added: 2026-03-02)
+*   **[P0] Claude GA ToolSearch Support**: Native implementation of Claude's GA Tool Search protocol for lazy-loading. (Added: 2026-03-02)
+*   **[P1] Universal Browser Agent Adapter**: Standardized MCP tools for high-fidelity browser interaction (Playwright/Puppeteer). (Added: 2026-03-02)
