@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-02]
+### Focus: Mesh Governance & Cross-Agent Integrity
+**Context**: The shift toward decentralized "Mesh-based Delegation" and the emergence of the IEEE P3119 standard demand a more sophisticated governance layer. Simultaneously, "Swarm Hijacking" and "Instructional Poisoning" have emerged as critical threats to multi-agent security.
+**Strategic Pivot**:
+- **Agentic Rules of Engagement (RoE)**: MCP Any will implement a machine-readable governance framework (based on P3119) that allows swarm owners to define explicit "Rules of Engagement" for A2A interactions.
+- **Cross-Agent Sanitization**: Introducing a high-performance middleware that inspects inter-agent A2A messages for "instructional payloads" meant to override agent system prompts, ensuring the integrity of the chain.
+- **Mesh-Native Discovery (Gossip MCP)**: Evolving discovery from a hub-and-spoke model to a decentralized peer-to-peer gossip protocol, enabling resilient discovery in large-scale, dynamic agent meshes.

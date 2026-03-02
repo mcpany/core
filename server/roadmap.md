@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-02 Evolution)
+*   **[P0] A2A "Rules of Engagement" (RoE) Engine**: Machine-readable governance for agent-to-agent interactions (IEEE P3119). (Added: 2026-03-02)
+*   **[P0] Cross-Agent Instructional Guard**: Middleware to detect and neutralize "Instructional Poisoning" in A2A/Tool payloads. (Added: 2026-03-02)
+*   **[P1] Gossip-based Mesh Discovery**: Decentralized P2P discovery for dynamic agent meshes. (Added: 2026-03-02)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

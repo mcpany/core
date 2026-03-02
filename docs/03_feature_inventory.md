@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-02] Updates
+
+### Proposed Additions
+- **A2A "Rules of Engagement" (RoE) Engine**: (P0) A policy engine specifically for governing agent-to-agent delegations, aligned with IEEE P3119.
+- **Cross-Agent Instructional Guard**: (P0) Middleware to detect and strip malicious "instructional overrides" in A2A message payloads.
+- **Gossip-based Discovery Provider**: (P1) Decentralized discovery mechanism for large-scale agent meshes.
+
+### Priority Shifts
+- **A2A Interop Bridge**: Re-affirmed as **P0**. Now expanded to include RoE enforcement.
+- **Federated MCP Node Peering**: Promoted to **P0**. Critical for the shift toward decentralized meshes.
+
+### Deprecations / Monitoring
+- **Centralized Registry Pattern**: Monitoring for gradual transition to Mesh-based discovery.
