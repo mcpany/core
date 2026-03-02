@@ -109,7 +109,7 @@ export function useTraces(options: UseTracesOptions = {}) {
 
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
         const host = window.location.host;
-        const wsUrl = `${protocol}//${host}/api/v1/ws/traces`;
+        const wsUrl = `${protocol}//${host}/ws/traces`;
 
         // Cleanup previous
         if (wsRef.current) {

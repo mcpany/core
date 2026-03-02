@@ -125,7 +125,7 @@ export function LogStream({
       const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
       const host = window.location.host
 
-      let wsUrl = `${protocol}//${host}/api/v1/ws/logs`
+      let wsUrl = `${protocol}//${host}/ws/logs`
 
       // Append auth token if available to authenticate the WebSocket connection
       if (typeof window !== 'undefined') {

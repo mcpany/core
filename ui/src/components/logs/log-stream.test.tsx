@@ -71,7 +71,7 @@ describe("LogStream", () => {
 
   it("connects to the correct WebSocket URL", () => {
     render(<LogStream />);
-    expect(global.WebSocket).toHaveBeenCalledWith(expect.stringContaining("/api/v1/ws/logs"));
+    expect(global.WebSocket).toHaveBeenCalledWith(expect.stringContaining("/ws/logs"));
   });
 
   it("stops processing logs when paused", async () => {
