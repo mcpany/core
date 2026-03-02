@@ -1,3 +1,8 @@
+/**
+ * Copyright 2026 Author(s) of MCP Any
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 const { request } = require('@playwright/test');
 (async () => {
     const ctx = await request.newContext({ baseURL: 'http://localhost:50050' });
