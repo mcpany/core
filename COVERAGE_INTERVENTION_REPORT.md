@@ -16,3 +16,12 @@ I implemented extensive Table-Driven Tests in `server/pkg/validation/url_test.go
 **Verification:**
 *   `make test`: All tests in the repository executed cleanly without regressions. The `ValidateIP` unit tests successfully pass with a 100% statement coverage metric for that function.
 *   `make lint`: Static analysis and formatting passed cleanly according to the strict pre-commit hooks configured for the repository.
+# Coverage Intervention Report
+
+* **Target:** `server/pkg/client/grpc_client_wrapper.go`
+* **Risk Profile:** This file was identified as high risk due to being a central piece of logic handling remote gRPC connections and bridging gRPC clients with the health checking pool. Missing test coverage here could allow health check logic issues and connection management bugs to go unnoticed, potentially causing unreliable connectivity across the Universal Adapter.
+* **New Coverage:**
+  - `NewGrpcClientWrapper`: Initializing with custom and default health checkers.
+  - `IsHealthy`: Edge cases where the connection is down (`connectivity.Shutdown`), bypass scenarios (e.g., `bufnet`), handling of missing checkers, and responses (`StatusUp` / `StatusDown`) from configured health checkers.
+  - `Close`: Error propagation and ensuring the underlying `Conn.Close()` is called correctly.
+* **Verification:** `make test-fast` and `make lint` passed cleanly (excluding minor whitespace formatting which were ignored/auto-fixed).
