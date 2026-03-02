@@ -94,6 +94,13 @@ const safeParseJson = (str: string): unknown | null => {
   }
 };
 
+/**
+ * HighlightText component highlights portions of text that match a regular expression.
+ * @param props - The component props.
+ * @param props.text - The text to be evaluated and rendered.
+ * @param props.regex - The regular expression used to find matches.
+ * @returns The rendered highlighted text.
+ */
 const HighlightText = React.memo(({ text, regex }: { text: string; regex: RegExp | null }) => {
   if (!regex || !text) return <>{text}</>;
 
@@ -115,6 +122,13 @@ const HighlightText = React.memo(({ text, regex }: { text: string; regex: RegExp
 });
 HighlightText.displayName = 'HighlightText';
 
+/**
+ * LogRow component represents a single row in the log viewer table.
+ * @param props - The component props.
+ * @param props.log - The log entry data to display.
+ * @param props.highlightRegex - The regular expression for highlighting terms.
+ * @returns The rendered row.
+ */
 const LogRow = React.memo(({ log, highlightRegex }: { log: LogEntry; highlightRegex: RegExp | null }) => {
   const duration = log.metadata?.duration as string | undefined
   const [isExpanded, setIsExpanded] = React.useState(false);

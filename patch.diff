@@ -1,0 +1,82 @@
+diff --git a/patch.diff b/patch.diff
+new file mode 100644
+index 0000000..e69de29
+diff --git a/ui/src/app/inspector/page.tsx b/ui/src/app/inspector/page.tsx
+index 65fa313..c21fbf1 100644
+--- a/ui/src/app/inspector/page.tsx
++++ b/ui/src/app/inspector/page.tsx
+@@ -149,7 +149,7 @@ export default function InspectorPage() {
+               <Select value={statusFilter} onValueChange={setStatusFilter}>
+                   <SelectTrigger className="w-[140px] bg-background">
+                       <Filter className="mr-2 h-4 w-4 text-muted-foreground" />
+-                      <SelectValue placeholder="Status" />
++                      <SelectValue placeholder="All Status" />
+                   </SelectTrigger>
+                   <SelectContent>
+                       <SelectItem value="all">All Status</SelectItem>
+@@ -162,7 +162,7 @@ export default function InspectorPage() {
+               <Select value={typeFilter} onValueChange={setTypeFilter}>
+                   <SelectTrigger className="w-[140px] bg-background">
+                       <Filter className="mr-2 h-4 w-4 text-muted-foreground" />
+-                      <SelectValue placeholder="Type" />
++                      <SelectValue placeholder="All Types" />
+                   </SelectTrigger>
+                   <SelectContent>
+                       <SelectItem value="all">All Types</SelectItem>
+diff --git a/ui/src/components/diagnostics/discovery-status.tsx b/ui/src/components/diagnostics/discovery-status.tsx
+index ba91eba..3eff2c7 100644
+--- a/ui/src/components/diagnostics/discovery-status.tsx
++++ b/ui/src/components/diagnostics/discovery-status.tsx
+@@ -14,6 +14,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
+ import { RefreshCw, Scan, Radio } from "lucide-react";
+ import { useToast } from "@/hooks/use-toast";
+
++/**
++ * ProviderStatus represents the status of a specific auto-discovery provider.
++ */
+ interface ProviderStatus {
+     name: string;
+     status: string;
+@@ -24,6 +27,7 @@ interface ProviderStatus {
+
+ /**
+  * DiscoveryStatus displays the status of auto-discovery providers.
++ * @returns The rendered component.
+  */
+ export function DiscoveryStatus() {
+     const [statuses, setStatuses] = useState<ProviderStatus[]>([]);
+diff --git a/ui/src/components/logs/log-viewer.tsx b/ui/src/components/logs/log-viewer.tsx
+index b7121a2..5a74363 100644
+--- a/ui/src/components/logs/log-viewer.tsx
++++ b/ui/src/components/logs/log-viewer.tsx
+@@ -94,6 +94,13 @@ const safeParseJson = (str: string): unknown | null => {
+   }
+ };
+
++/**
++ * HighlightText component highlights portions of text that match a regular expression.
++ * @param props - The component props.
++ * @param props.text - The text to be evaluated and rendered.
++ * @param props.regex - The regular expression used to find matches.
++ * @returns The rendered highlighted text.
++ */
+ const HighlightText = React.memo(({ text, regex }: { text: string; regex: RegExp | null }) => {
+   if (!regex || !text) return <>{text}</>;
+
+@@ -115,6 +122,13 @@ const HighlightText = React.memo(({ text, regex }: { text: string; regex: RegExp
+ });
+ HighlightText.displayName = 'HighlightText';
+
++/**
++ * LogRow component represents a single row in the log viewer table.
++ * @param props - The component props.
++ * @param props.log - The log entry data to display.
++ * @param props.highlightRegex - The regular expression for highlighting terms.
++ * @returns The rendered row.
++ */
+ const LogRow = React.memo(({ log, highlightRegex }: { log: LogEntry; highlightRegex: RegExp | null }) => {
+   const duration = log.metadata?.duration as string | undefined
+   const [isExpanded, setIsExpanded] = React.useState(false);
+diff --git a/verification_inspector.png b/verification_inspector.png
+index f649bc2..fed999e 100644
+Binary files a/verification_inspector.png and b/verification_inspector.png differ

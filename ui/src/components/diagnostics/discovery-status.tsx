@@ -14,6 +14,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { RefreshCw, Scan, Radio } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
+/**
+ * ProviderStatus represents the status of a specific auto-discovery provider.
+ */
 interface ProviderStatus {
     name: string;
     status: string;
@@ -24,6 +27,7 @@ interface ProviderStatus {
 
 /**
  * DiscoveryStatus displays the status of auto-discovery providers.
+ * @returns The rendered component.
  */
 export function DiscoveryStatus() {
     const [statuses, setStatuses] = useState<ProviderStatus[]>([]);
