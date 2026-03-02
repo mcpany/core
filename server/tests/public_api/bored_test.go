@@ -20,11 +20,12 @@ import (
 )
 
 func TestUpstreamService_Bored(t *testing.T) {
-	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
-	defer cancel()
-
 	t.Log("INFO: Starting E2E Test Scenario for Bored Server...")
 	t.Parallel()
+
+	// Use a longer timeout for tests that spin up an e2e stack that was causing DeadlineExceeded
+	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeLong)
+	defer cancel()
 
 	// --- 1. Start Mock Server ---
 	mockResponse := `{"activity":"Learn a new language","type":"education","participants":1,"price":0.1,"link":"","key":"5881028","accessibility":0.25}`
@@ -107,7 +108,8 @@ func TestUpstreamService_Bored(t *testing.T) {
 	require.NotEmpty(t, boredResponse["type"], "The type should not be empty")
 	require.NotEmpty(t, boredResponse["participants"], "The participants should not be empty")
 	require.NotEmpty(t, boredResponse["price"], "The price should not be empty")
-	require.NotEmpty(t, boredResponse["link"], "The link should not be empty")
+	// the link in the mock response is intentionally empty in this test case
+	// require.NotEmpty(t, boredResponse["link"], "The link should not be empty")
 	require.NotEmpty(t, boredResponse["key"], "The key should not be empty")
 	// require.NotEmpty(t, boredResponse["accessibility"], "The accessibility should not be empty") // Accessibility can be 0, which is empty?
 	// mock returns 0.25 so it's not empty string/nil. NotEmpty works for float? Yes.

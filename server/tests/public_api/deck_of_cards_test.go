@@ -20,11 +20,12 @@ import (
 )
 
 func TestUpstreamService_DeckOfCards(t *testing.T) {
-	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
-	defer cancel()
-
 	t.Log("INFO: Starting E2E Test Scenario for Deck of Cards Server...")
 	t.Parallel()
+
+	// Use a longer timeout for tests that spin up an e2e stack that was causing DeadlineExceeded
+	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeLong)
+	defer cancel()
 
 	// --- 1. Start Mock Server ---
 	mockResponse := `{"success": true, "deck_id": "mockdeck", "shuffled": true, "remaining": 52}`

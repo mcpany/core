@@ -21,11 +21,12 @@ import (
 
 func TestUpstreamService_Agify(t *testing.T) {
 	// t.SkipNow()
-	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeShort)
-	defer cancel()
-
 	t.Log("INFO: Starting E2E Test Scenario for Agify Server...")
 	t.Parallel()
+
+	// Use a longer timeout for tests that spin up an e2e stack that was causing DeadlineExceeded
+	ctx, cancel := context.WithTimeout(context.Background(), integration.TestWaitTimeLong)
+	defer cancel()
 
 	// --- 1. Start Mock Server ---
 	mockResponse := `{"name": "michael", "age": 50, "count": 100}`
