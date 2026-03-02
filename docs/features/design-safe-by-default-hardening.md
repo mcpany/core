@@ -1,17 +1,3 @@
-# Copyright 2026 MCP Any Authors
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 # Design Doc: Safe-by-Default Infrastructure Hardening
 
 **Status:** Draft
@@ -59,3 +45,10 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+
+### Update: 2026-03-02 - Mitigating "MCP Top 10" Risks
+**Context:** Today's market sync highlighted the formalization of the "MCP Top 10" vulnerabilities, specifically "Unauthenticated Discovery" and "Tool Poisoning."
+**Architecture Adjustment:**
+*   **Mandatory Local-First Bindings**: All new MCP Any instances will now bind exclusively to `127.0.0.1`. Remote exposure via `0.0.0.0` will require an explicit `ALLOW_REMOTE_EXPOSURE=true` flag AND a valid Attestation Token.
+*   **Discovery Sanitization Middleware**: Introduced a "Sanitization Hook" that runs before any tool schema is returned. This hook automatically strips potentially malicious script tags or unexpected fields from the tool definition.
+**Security Impact:** Prevents accidental exposure to the public internet and mitigates common "Tool Poisoning" vectors found in the current MCP registry.

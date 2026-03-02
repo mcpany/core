@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-02]
+### Focus: Browser-as-Infrastructure & A2A Identity Attestation
+**Context**: Today's findings show that the browser has become a primary execution environment for all major agent frameworks (OpenClaw, Claude Code, Gemini CLI). Simultaneously, the "Identity Crisis" in A2A communication highlights a critical need for verifiable agent provenance.
+**Strategic Pivot**:
+- **Browser-Native MCP Gateway**: MCP Any will pivot to provide a "Universal Browser Bridge" that standardizes how agents interact with browser-use tools, ensuring cross-framework compatibility (e.g., OpenClaw agents driving Claude-standard browser tools).
+- **A2A Attested Identity**: Implementing "Agent Certificates" within the A2A Mesh. Every agent interaction must be signed by a verifiable identity provider, preventing session smuggling and unauthorized capability escalation.
+- **Context-Sparsity Optimization**: Moving beyond "Lazy Discovery" to "Context-Sparsity," where MCP Any automatically prunes and compresses tool schemas based on the agent's real-time "Intent-Graph," ensuring minimal token usage even in 1M+ token windows.

@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-02] Updates
+
+### Proposed Additions
+- **Universal Browser Bridge (UBB)**: (P0) Standardized MCP interface for browser-use tools. Allows agents to share browser sessions securely.
+- **A2A Attested Identity (AgentCert)**: (P1) X.509-based certificates for agent-to-agent communication, ensuring verifiable provenance and preventing session hijacking.
+- **Context-Sparsity Engine**: (P1) Automatically prunes and summarizes tool schemas based on the active agent's intent-graph to minimize token bloat.
+
+### Priority Shifts
+- **"Safe-by-Default" Network Hardening**: (P0) High urgency given the documented "MCP Top 10" vulnerabilities and the rise in unauthenticated MCP server exploits.
+- **Supply Chain Integrity Guard**: (P0) Essential for the "Provenance-First Discovery" model to prevent malicious tool injection via hijacked MCP servers.
+
+### Deprecations / Monitoring
+- **Manual MCP Registry Addition**: Monitoring for deprecation in favor of the "Unified Discovery Service" and "Provenance-First Discovery."
