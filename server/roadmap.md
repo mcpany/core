@@ -32,7 +32,13 @@
 #### Upcoming (2026-02-28 Evolution)
 *   **[P0] Safe-by-Default Hardening**: Transition all listeners to `localhost` by default. Implement mandatory Attestation for remote exposure. (Added: 2026-02-28)
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
-*   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
+*   **[P0] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Promoted: 2026-03-02)
+
+#### Upcoming (2026-03-02 Evolution)
+*   **[P0] CLAW-10 Compliance Engine**: Real-time evaluation and reporting of infrastructure against CLAW-10 dimensions. (Added: 2026-03-02)
+*   **[P0] ClawHavoc Threat Guard**: Automated scanning of tool schemas for malicious patterns and known-bad domains. (Added: 2026-03-02)
+*   **[P0] Anti-Pivot Middleware**: Implementation of security headers and origin-checking to mitigate CVE-2026-25253. (Added: 2026-03-02)
+*   **[P1] External Secret Management**: Integration with HashiCorp Vault / AWS Secrets Manager (CLAW-10 D4). (Added: 2026-03-02)
 
 ## 2. Top 10 Recommended Features
 
