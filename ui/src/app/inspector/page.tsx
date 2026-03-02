@@ -149,7 +149,7 @@ export default function InspectorPage() {
               <Select value={statusFilter} onValueChange={setStatusFilter}>
                   <SelectTrigger className="w-[140px] bg-background">
                       <Filter className="mr-2 h-4 w-4 text-muted-foreground" />
-                      <SelectValue placeholder="Status" />
+                      <SelectValue placeholder="All Status" />
                   </SelectTrigger>
                   <SelectContent>
                       <SelectItem value="all">All Status</SelectItem>
@@ -162,7 +162,7 @@ export default function InspectorPage() {
               <Select value={typeFilter} onValueChange={setTypeFilter}>
                   <SelectTrigger className="w-[140px] bg-background">
                       <Filter className="mr-2 h-4 w-4 text-muted-foreground" />
-                      <SelectValue placeholder="Type" />
+                      <SelectValue placeholder="All Types" />
                   </SelectTrigger>
                   <SelectContent>
                       <SelectItem value="all">All Types</SelectItem>
