@@ -22,8 +22,9 @@ import { Badge } from "@/components/ui/badge";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
-import { CalendarIcon, Search, RefreshCw, Eye, AlertTriangle } from "lucide-react";
+import { CalendarIcon, Search, RefreshCw, Eye, AlertTriangle, Download } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
@@ -48,7 +49,9 @@ interface AuditLogEntry {
 export function AuditLogViewer() {
     const [logs, setLogs] = useState<AuditLogEntry[]>([]);
     const [loading, setLoading] = useState(true);
+    const [exporting, setExporting] = useState(false);
     const [selectedLog, setSelectedLog] = useState<AuditLogEntry | null>(null);
+    const { toast } = useToast();
 
     // Filters
     const [toolName, setToolName] = useState("");
@@ -89,6 +92,32 @@ export function AuditLogViewer() {
     useEffect(() => {
         fetchLogs();
     }, [fetchLogs]);
+
+    const handleExport = async () => {
+        setExporting(true);
+        try {
+            const filters: any = {};
+            if (toolName) filters.tool_name = toolName;
+            if (userId) filters.user_id = userId;
+            if (startDate) filters.start_time = startDate.toISOString();
+            if (endDate) filters.end_time = endDate.toISOString();
+
+            await apiClient.exportAuditLogs(filters);
+            toast({
+                title: "Export Successful",
+                description: "Audit logs have been exported.",
+            });
+        } catch (e: any) {
+            console.error("Failed to export audit logs", e);
+            toast({
+                title: "Export Failed",
+                description: e.message || "Failed to export audit logs.",
+                variant: "destructive",
+            });
+        } finally {
+            setExporting(false);
+        }
+    };
 
     const formatJson = (jsonStr: string) => {
         if (!jsonStr) return null;
@@ -174,10 +203,16 @@ export function AuditLogViewer() {
                                 </Popover>
                             </div>
                         </div>
-                        <Button onClick={fetchLogs} disabled={loading}>
-                            {loading ? <RefreshCw className="mr-2 h-4 w-4 animate-spin" /> : <Search className="mr-2 h-4 w-4" />}
-                            Filter
-                        </Button>
+                        <div className="flex gap-2 w-full md:w-auto mt-4 md:mt-0">
+                            <Button variant="outline" onClick={handleExport} disabled={exporting || loading}>
+                                {exporting ? <RefreshCw className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-2 h-4 w-4" />}
+                                Export CSV
+                            </Button>
+                            <Button onClick={fetchLogs} disabled={loading}>
+                                {loading ? <RefreshCw className="mr-2 h-4 w-4 animate-spin" /> : <Search className="mr-2 h-4 w-4" />}
+                                Filter
+                            </Button>
+                        </div>
                     </div>
                 </CardContent>
             </Card>

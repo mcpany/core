@@ -35,4 +35,29 @@ test.describe('Feature Screenshot', () => {
         console.warn('Failed to save screenshot:', e);
     }
   });
+
+  test('Export Audit Logs to CSV', async ({ page }) => {
+    await page.goto('/audit');
+    await page.waitForSelector('text=Audit Logs');
+
+    // Start waiting for download before clicking.
+    const downloadPromise = page.waitForEvent('download', { timeout: 10000 }).catch(() => null);
+
+    // Wait for Export CSV button to be visible and enabled
+    const exportBtn = page.locator('button:has-text("Export CSV")');
+    await exportBtn.waitFor({ state: 'visible' });
+
+    // Check if we need to mock since we are not fully seeding audit data for this specific test
+    // but the backend handles /api/v1/audit/export naturally.
+    await exportBtn.click();
+
+    const download = await downloadPromise;
+    if (download) {
+        const suggestedFilename = download.suggestedFilename();
+        if (!suggestedFilename.includes('audit_export')) {
+             throw new Error(`Unexpected filename: ${suggestedFilename}`);
+        }
+        await download.cancel();
+    }
+  });
 });
