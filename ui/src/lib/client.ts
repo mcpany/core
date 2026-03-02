@@ -2446,6 +2446,55 @@ export const apiClient = {
     },
 
     /**
+     * Exports audit logs as a CSV file.
+     *
+     * Summary: Exports audit logs.
+     *
+     * @param filters - The filters for the audit logs.
+     * @throws {Error} If the request fails.
+     *
+     * Side Effects: Triggers a file download.
+     */
+    exportAuditLogs: async (filters: {
+        start_time?: string;
+        end_time?: string;
+        tool_name?: string;
+        user_id?: string;
+        profile_id?: string;
+    }) => {
+        const query = new URLSearchParams();
+        if (filters.start_time) query.set('start_time', filters.start_time);
+        if (filters.end_time) query.set('end_time', filters.end_time);
+        if (filters.tool_name) query.set('tool_name', filters.tool_name);
+        if (filters.user_id) query.set('user_id', filters.user_id);
+        if (filters.profile_id) query.set('profile_id', filters.profile_id);
+
+        const res = await fetchWithAuth(`/api/v1/audit/export?${query.toString()}`);
+        if (!res.ok) throw new Error('Failed to export audit logs');
+
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+
+        const contentDisposition = res.headers.get('Content-Disposition');
+        let filename = 'audit_export.csv';
+        if (contentDisposition) {
+            const filenameMatch = contentDisposition.match(/filename="?([^"]+)"?/);
+            if (filenameMatch && filenameMatch.length === 2) {
+                filename = filenameMatch[1];
+            }
+        }
+
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+    },
+
+    /**
      * Gets the discovery status.
      *
      * Summary: Retrieves auto-discovery status.
