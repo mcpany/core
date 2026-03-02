@@ -74,6 +74,9 @@
 - **"Safe-by-Default" Network Hardening**: (P0) Transition to local-only default bindings for all services. Requires explicit MFA/Attestation for remote exposure.
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
+- **Ephemeral Lifecycle Manager**: (P0) High-performance registry for short-lived, task-specific MCP servers.
+- **Metadata Sanitization Middleware**: (P0) Regex and LLM-based filtering of tool descriptions to prevent "Context Smuggling" attacks.
+- **Side-Effect Attestation Guard**: (P1) Enforcement of "Zero-IO" policies for unverified tools.
 
 ### Priority Shifts
 - **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
