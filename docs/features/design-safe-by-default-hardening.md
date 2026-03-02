@@ -59,3 +59,8 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-02:** **Update: Sandboxed Hook Execution**
+    - **Context**: Recent Claude Code vulnerabilities (CVE-2025-59356) proved that local "hooks" can be hijacked for RCE.
+    - **Architecture Adjustment**:
+        - Mandatory WASM isolation for all tool-related hooks and dynamic scripts.
+        - Introduction of "Config Attestation" - sensitive configuration changes (like new hooks) must be signed by a local administrator key.

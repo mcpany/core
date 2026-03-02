@@ -81,3 +81,16 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-02] Updates
+
+### Proposed Additions
+- **Sandboxed Hook Execution Environment**: (P0) A secure, WASM-based runner for any "hook" or dynamic configuration script. Prevents terminal-compromise exploits like CVE-2025-59356.
+- **Config Change Attestation Guard**: (P0) Cryptographically signed approvals for all modifications to sensitive configuration fields (e.g., adding a new MCP server or changing a tool hook).
+- **Identity-Based A2A Router**: (P0) A middleware that routes A2A messages based on the recipient's verified identity (Ed25519) rather than a static URL.
+
+### Priority Shifts
+- **A2A Stateful Residency**: Promoted to **P0** (Critical for reliable multi-agent coordination in swarms).
+- **Safe-by-Default Hardening**: Promoted to **P0** (Must include sandboxing for any local tool-execution hooks).

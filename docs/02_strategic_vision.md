@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-02]
+### Focus: Identity-First A2A Routing & Sandboxed Configuration Integrity
+**Context**: Today's research on Claude Code CVEs (CVE-2025-59356) and the maturing A2A landscape reveals that both "Configuration as Code" and "Agent-to-Agent" communication lack sufficient isolation and identity verification.
+**Strategic Pivot**:
+- **Sandboxed Hook Execution**: MCP Any will pioneer a "Zero-Trust Configuration" model where any executable hook or dynamic configuration must run in an isolated, ephemeral sandbox (e.g., WebAssembly) to prevent host-level compromise.
+- **Identity-First A2A Routing**: Shifting from "Channel-based" to "Identity-based" routing. A2A messages will be addressed to an agent's cryptographic identity, not its network endpoint, with MCP Any handling the resolution and secure delivery.
+- **Config Attestation**: Implementing a "Signed Configuration" standard where sensitive settings (like MCP server URLs or Hook commands) require a signature from an authorized administrator or an MFA-backed local key.
