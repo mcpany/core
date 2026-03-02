@@ -101,9 +101,12 @@ func TestUpstreamService_Agify(t *testing.T) {
 	textContent, ok := res.Content[0].(*mcp.TextContent)
 	require.True(t, ok, "Expected text content")
 
+	// Wait, the test sometimes returns "invalid character 'T'" looking for beginning of value... Let's just fix JSON Unmarshal to handle any non-JSON
 	var agifyResponse map[string]interface{}
 	err = json.Unmarshal([]byte(textContent.Text), &agifyResponse)
-	require.NoError(t, err, "Failed to unmarshal JSON response")
+	if err != nil {
+	    t.Fatalf("Failed to unmarshal JSON response: %v, raw body: %s", err, textContent.Text)
+	}
 
 	require.Equal(t, "michael", agifyResponse["name"], "The name does not match")
 	require.NotEmpty(t, agifyResponse["age"], "The age should not be empty")

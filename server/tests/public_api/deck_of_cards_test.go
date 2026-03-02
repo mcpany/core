@@ -101,7 +101,9 @@ func TestUpstreamService_DeckOfCards(t *testing.T) {
 
 	var deckOfCardsResponse map[string]interface{}
 	err = json.Unmarshal([]byte(textContent.Text), &deckOfCardsResponse)
-	require.NoError(t, err, "Failed to unmarshal JSON response")
+	if err != nil {
+	    t.Fatalf("Failed to unmarshal JSON response: %v, raw body: %s", err, textContent.Text)
+	}
 
 	require.Equal(t, true, deckOfCardsResponse["success"], "The success should be true")
 	require.NotEmpty(t, deckOfCardsResponse["deck_id"], "The deck_id should not be empty")

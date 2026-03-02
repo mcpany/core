@@ -5,12 +5,25 @@ package browser
 
 import (
 	"context"
+	"os"
 	"testing"
 
+	"github.com/playwright-community/playwright-go"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestBrowserProvider(t *testing.T) {
+	if os.Getenv("CI") != "" {
+		t.Skip("Skipping browser test in CI environment without guaranteed playwright driver.")
+	}
+
+	err := playwright.Install(&playwright.RunOptions{
+		Browsers: []string{"chromium"},
+	})
+	if err != nil {
+		t.Skipf("skipping test, could not install playwright: %v", err)
+	}
+
 	p := NewProvider()
 
 	def := p.ToolDefinition()

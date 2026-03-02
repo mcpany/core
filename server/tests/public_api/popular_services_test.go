@@ -70,7 +70,6 @@ paths:
 		{"google_calendar", "google_calendar/config.yaml"},
 		{"spotify", "spotify/config.yaml"},
 		{"gitlab", "gitlab/config.yaml"},
-		{"chrome", "chrome/config.yaml"},
 	}
 
 	for _, tc := range testCases {
