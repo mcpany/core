@@ -59,3 +59,11 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-02:** **Update: Mitigating Cross-Site WebSocket Hijacking (CVE-2026-25253)**
+    *   **Context**: The OpenClaw crisis revealed that `localhost` TCP listeners are vulnerable to cross-site hijacking from browsers.
+    *   **Architecture Adjustment**: Introducing **UDS/Named Pipe Transport** for all local agent-to-gateway communications.
+    *   **Implementation**:
+        *   Deprecating TCP-based local discovery in favor of Unix Domain Sockets (Linux/macOS) and Named Pipes (Windows).
+        *   Implementing **Strict Origin & Header Validation** for any legacy TCP listeners that must remain active for compatibility.
+        *   Transitioning `mcpany` configuration to a **stable CLI-driven registry** to mitigate path-hijacking and config-breakage caused by host-application updates (e.g., Claude Windows MSIX migration).
+    *   **Security Impact**: Ensures that even if a user is tricked into visiting a malicious site, the browser cannot bridge into the local MCP Any control plane.

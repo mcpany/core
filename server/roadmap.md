@@ -34,6 +34,13 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-02 Evolution)
+*   **[P0] Named Pipe / UDS Transport Adapter**: Mitigates cross-site WebSocket hijacking (CVE-2026-25253) by moving inter-agent comms to Unix Domain Sockets (UDS) or Windows Named Pipes. (Added: 2026-03-02)
+*   **[P0] Agent Identity & Attestation (AIA)**: Issues short-lived, cryptographic identities to individual agents in a swarm. (Added: 2026-03-02)
+*   **[P0] Audited Blackboard (MAS Stateful Bus)**: Secure, audited state-management hub for multi-agent coordination (MAS). (Added: 2026-03-02)
+*   **[P1] Universal Commerce Protocol (UCP) Adapter**: Support for Google's agentic commerce standard. (Added: 2026-03-02)
+*   **[P1] Stable CLI-Driven Config Registry**: Path-agnostic configuration management to avoid upstream host app breaks. (Added: 2026-03-02)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

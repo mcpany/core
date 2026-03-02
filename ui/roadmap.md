@@ -13,6 +13,11 @@
 - [ ] **[P1] Resource Cost/Latency Overlay**: Real-time performance metrics displayed directly on tool cards. (Added: 2026-02-26)
 - [ ] **[P0] Connectivity & Security Dashboard**: Visualize local-only vs remote exposure, attestation status, and active MFA sessions. (Added: 2026-02-28)
 - [ ] **[P0] Stateful A2A Mailbox**: UI for viewing queued and delivered A2A messages across the agent mesh. (Added: 2026-02-28)
+- [ ] **[P0] Transport Isolation Status**: UI indicator for UDS/Named Pipe vs TCP connectivity, highlighting protection against CVE-2026-25253. (Added: 2026-03-02)
+- [ ] **[P0] Agent Identity (AIA) Manager**: Dashboard for viewing active agent sessions, scoped tokens, and identity attestation status. (Added: 2026-03-02)
+- [ ] **[P0] Audited Blackboard Explorer**: Visual browser for the shared state "Blackboard," including full audit logs of state transitions. (Added: 2026-03-02)
+- [ ] **[P1] Multi-Protocol Bridge Monitor**: Visualization of traffic across MCP, A2A, and UCP protocols. (Added: 2026-03-02)
+- [ ] **[P1] Config Registry CLI Helper**: UI for generating path-agnostic CLI commands for config management. (Added: 2026-03-02)
 - [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
 - [x] **[P1] Tool Playground & Explorer**:
   - [x] Auto-generated forms from Tool JSON Schemas.
