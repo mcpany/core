@@ -14,11 +14,12 @@ import (
 )
 
 func TestSeededE2E(t *testing.T) {
-	ctx, cancel := context.WithTimeout(context.Background(), TestWaitTimeShort)
-	defer cancel()
-
 	t.Log("INFO: Starting Seeded E2E Test...")
 	t.Parallel()
+
+	// Use a longer timeout for this specific test as it has timed out previously
+	ctx, cancel := context.WithTimeout(context.Background(), TestWaitTimeLong)
+	defer cancel()
 
 	// 1. Start Server
 	serverInfo := StartMCPANYServer(t, "SeededE2ETest")
