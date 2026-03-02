@@ -46,3 +46,10 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-03-02: Evolution to Stateful A2A Residency (The "Mailbox" Model)**
+    *   **Context:** Market sync reveals that edge/mobile agents suffer from intermittent connectivity, causing "Request-Response" MCP calls to fail during long-running tasks.
+    *   **Architecture Adjustment:**
+        *   Transitioning from a "Pass-through Bridge" to a "Resident Mailbox" model.
+        *   Introducing `A2AMessageStore`: A persistent, SQLite-backed buffer for A2A messages.
+        *   Adding `DeliveryRetryMiddleware`: Automatically retries message delivery to target agents with exponential backoff and jitter.
+    *   **Security Impact:** Enables "Asynchronous Attestation," where the identity of an offline agent can be verified against a cached public key before message delivery.
