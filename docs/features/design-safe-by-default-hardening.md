@@ -59,3 +59,10 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-02: Resolving Local Port Exposure & WebSocket Hijacking**
+    - **Context**: Market sync revealed the "OpenClaw 1-Click RCE" (CVE-2026-25253) where malicious links can trigger WebSocket connections to `localhost` and leak tokens.
+    - **Architecture Adjustment**:
+        - **Deprecating Unprotected Local HTTP/WS**: Section 4 updated to prioritize isolated transport.
+        - **Introducing Docker-bound Named Pipes**: For inter-agent communication within swarms, use named pipes mounted into containers, bypassing the host network stack entirely.
+        - **Strict Gateway Validation**: All dynamic URLs for MCP gateways now require cryptographic attestation before connection initiation.
+    - **Security Impact**: Eliminates the possibility of browser-based "1-Click" exploits targeting the gateway, as the transport layer is no longer accessible via standard network protocols.

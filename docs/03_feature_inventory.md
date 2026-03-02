@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-02] Updates
+
+### Proposed Additions
+- **Docker-bound Named Pipes Transport**: (P0) Implements non-network inter-agent communication for swarms. Mitigates WebSocket hijacking.
+- **Strict Gateway URL Validator**: (P0) Middleware that enforces cryptographic attestation for all dynamic MCP/Gateway URLs. Prevents "1-Click RCE" exploits.
+- **Sandbox-Native Tool Mounting**: (P1) Capability to mount MCP tools directly into agent sandboxes (Docker/K8s) via sidecar containers.
+
+### Priority Shifts
+- **Safe-by-Default Network Hardening**: Promoted to **P0+** (Immediate Hardening). All future adapters must support non-IP transport.
+- **Provenance-First Discovery**: Promoted to **P0**. Critical for validating gateway URLs before connection.
+
+### Deprecations / Monitoring
+- **Browser-based Tool Management**: Deprecate management interfaces that do not use CSRF-protected, attested sessions.
