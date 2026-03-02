@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-02] Updates
+
+### Proposed Additions
+- **Protocol-Native HITL Signaling**: (P0) Extends the JSON-RPC/gRPC interface to support a native `approval_required` response state.
+- **Programmatic Edge-Logic Bridge (Logic-Adapter)**: (P1) A sandboxed runtime (e.g., WebAssembly or restricted Python) within MCP Any to execute client-supplied logic for tool orchestration.
+- **WebSocket Protocol Inspector**: (P0) Real-time validation of WebSocket upgrades and subsequent frames to prevent "Gateway Hopping" exploits.
+
+### Priority Shifts
+- **HITL Middleware**: Promoted to **P0** and merged with **Protocol-Native HITL Signaling**.
+- **On-Demand Discovery (Lazy-MCP)**: Re-affirmed as **P0** to support massive tool-calling scaling (Anthropic benchmark).
+
+### Deprecations / Monitoring
+- **Middleware-based HITL**: Monitor for deprecation as it moves into the core protocol state.
