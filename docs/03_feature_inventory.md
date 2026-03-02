@@ -75,6 +75,15 @@
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
+---
+
+## Evolution: [2026-03-02] Updates
+
+### Proposed Additions
+- **Annotation-Based Policy Routing**: (P0) A policy engine that enforces access controls based on tool-level metadata (annotations) rather than just names.
+- **Headless CI/CD Attestation Profile**: (P1) Support for non-interactive attestation (OIDC, TPM) to enable secure remote exposure in CI/CD environments.
+- **Intent-Bound "Auto-Accept" Middleware**: (P1) Allows parent agents to authorize a specific "High-Level Intent" that auto-approves all subsequent tool calls within that scope.
+
 ### Priority Shifts
 - **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
 - **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.

@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-02]
+### Focus: Metadata-Driven Policy & Headless CI/CD Agency
+**Context**: Recent updates in Gemini CLI (annotation matching) and Claude Code (headless mode) confirm that the "Agent-to-Gateway" interaction is maturing. Policies must move beyond static tool names to dynamic, metadata-driven intents. Simultaneously, as agents enter CI/CD pipelines, "Safe-by-Default" must support unattended, but still secure, attestation.
+**Strategic Pivot**:
+- **Annotation-Driven Security Middleware**: MCP Any will pivot towards an "Annotation-First" policy engine. This allows tool providers to tag tools with "Security Classes" (e.g., `read-only`, `destructive`, `external-net`), which MCP Any will use to apply global policies without manual per-tool configuration.
+- **Headless-First Security (CI/CD)**: Introducing "Attestation Profiles" for non-interactive environments. This allows CI/CD agents to present a "Machine Attestation" (e.g., via GitHub Actions OIDC or TPM-bound keys) to bypass interactive MFA while maintaining a Zero-Trust chain.
+- **Intent-Scoped "Auto-Accept"**: Transitioning from a binary "Yes/No" for tool permissions to "Intent-Scoped" authorization, where a user or parent agent can authorize a specific *intent* (e.g., "Refactor the auth module") that encompasses a bounded set of tool calls.

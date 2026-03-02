@@ -59,3 +59,7 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-02: Headless CI/CD Unattended Attestation Update**
+    *   **Context:** Market sync revealed increasing use of Claude Code in CI/CD (headless mode).
+    *   **Architecture Adjustment:** Introducing `AttestationProfile` (e.g., `type: oidc`) to bypass interactive MFA.
+    *   **Security Impact:** Prevents breaking CI/CD pipelines while maintaining a cryptographic chain of trust.
