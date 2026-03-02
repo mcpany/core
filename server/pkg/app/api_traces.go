@@ -231,12 +231,12 @@ func (a *Application) handleTracesWS() http.HandlerFunc {
 		a.seededTracesMu.RUnlock()
 
 		seededSubCh := make(chan *Trace, 100)
-		a.seededTraceSubsMu.Lock()
+		if a.seededTraceSubs == nil { a.seededTraceSubs = make(map[chan *Trace]struct{}) }; a.seededTraceSubsMu.Lock()
 		a.seededTraceSubs[seededSubCh] = struct{}{}
 		a.seededTraceSubsMu.Unlock()
 
 		defer func() {
-			a.seededTraceSubsMu.Lock()
+			if a.seededTraceSubs == nil { a.seededTraceSubs = make(map[chan *Trace]struct{}) }; a.seededTraceSubsMu.Lock()
 			delete(a.seededTraceSubs, seededSubCh)
 			a.seededTraceSubsMu.Unlock()
 			close(seededSubCh)
