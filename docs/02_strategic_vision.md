@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-01]
+### Focus: Resilient State Residency & Multi-Model Schema Harmonization
+**Context**: Today's analysis of Gemini CLI and Claude Code reveals that while transport is becoming standardized, "Schema Friction" (incompatibility between MCP output and specific LLM expectations) and "Ephemeral State" remain top hurdles.
+**Strategic Pivot**:
+- **Schema Harmonization Engine**: MCP Any will include a transformation layer that automatically "tunes" MCP tool definitions for the specific target LLM (e.g., Gemini's sanitization requirements vs Claude's strict inputSchema).
+- **Resilient Message Residency**: Moving from a "Pass-through" A2A bridge to a "Resilient Residency" where MCP Any buffers agent communications, allowing for asynchronous coordination and recovery from agent crashes.
+- **Contextual "Deep-Freeze"**: Implementing the ability to "snapshot" the entire state of an agent swarm (including tool results and KV store) to allow for long-term task suspension and resumption across different days or environments.

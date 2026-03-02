@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-01] Updates
+
+### Proposed Additions
+- **Schema Harmonization Middleware**: (P0) Automatically transforms and sanitizes MCP tool definitions to match the specific requirements of the requesting LLM (e.g., Google-specific schema constraints).
+- **A2A Message Persistence (Residency)**: (P0) Extends the A2A bridge with a persistent message queue, allowing agents to communicate asynchronously even if they are not online simultaneously.
+- **Swarm Snapshotting (Deep-Freeze)**: (P1) Ability to export/import the full state of an MCP Any session (KV store, message history, tool results) for persistent multi-day tasks.
+
+### Priority Shifts
+- **"Safe-by-Default" Network Hardening**: Confirmed as **P0**. High urgency due to OWASP ASI07 findings.
+- **Provenance-First Discovery**: Promoted to **P0**. Critical to mitigate Agentic Supply Chain vulnerabilities (ASI04).
+
+### Deprecations / Monitoring
+- **Unformatted Tool Metadata**: Monitoring for deprecation in favor of model-specific optimized schemas.
