@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-02 Evolution)
+*   **[P0] "Time-to-Trust" Progressive Permissions**: Implementation of the CSA "Probation/Junior/Senior" permission model. (Added: 2026-03-02)
+*   **[P1] Wildcard Policy Engine**: RegEx and wildcard support for tool/server ACLs. (Added: 2026-03-02)
+*   **[P1] Sub-agent Spawning Determinism**: Coordination layer for stable nested agent lifecycles. (Added: 2026-03-02)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

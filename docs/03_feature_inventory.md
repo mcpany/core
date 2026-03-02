@@ -81,3 +81,20 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-02] Updates
+
+### Proposed Additions
+- **"Time-to-Trust" Progressive Permissions (P0)**: Implementation of the CSA "Probation/Junior/Senior" permission model for agents.
+- **Wildcard Policy Engine (P1)**: Support for RegEx and wildcard matching in tool and server-level access control lists (ACLs).
+- **Sub-agent Spawning Determinism (P1)**: A coordination layer that ensures stable and traceable spawning of nested agents (inspired by OpenClaw).
+- **Tool Annotation Policy Bridge (P2)**: Automatically granting or restricting tool access based on semantic annotations in the tool schema (e.g., `@dangerous`, `@read-only`).
+
+### Priority Shifts
+- **Policy Firewall**: Re-affirmed as **P0** and expanded to include Wildcard support.
+- **A2A Stateful Residency**: Re-affirmed as **P0** to support deterministic sub-agent handoffs.
+
+### Deprecations / Monitoring
+- **Manual Per-Tool Permissioning**: Monitoring for deprecation in favor of Pattern-Based and Annotation-Based policies.

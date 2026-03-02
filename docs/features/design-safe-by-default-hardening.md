@@ -44,8 +44,10 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
     - **Listener Configuration**: The `ConfigLoader` validates the `host` parameter. If non-local, it checks for a valid `AttestationToken`.
     - **Security Bootstrap**: On first run, a unique cryptographic identity (Ed25519) is generated for the instance.
     - **MFA Layer**: Remote access requests must include a signature from the instance's private key, typically handled via a "Second Screen" approval on the local machine.
+    - **Anti-Vibe Constraint Engine**: Explicitly prevents "sudo" or "admin" level capabilities from being granted to any agent session by default. These are "High-Stakes" capabilities that require one-time cryptographic attestation per session.
 *   **APIs / Interfaces:**
     - New CLI command: `mcpany secure authorize-remote [ip]`
+    - New CLI command: `mcpany secure attest-high-stakes [session_id] [capability]`
     - Metadata extension for tool calls: `_mcp_source_locality: "local" | "remote"`
 *   **Data Storage/State:** Secure storage of the instance identity in a protected file (e.g., `~/.mcpany/id_ed25519`).
 
@@ -59,3 +61,10 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+
+### Update: 2026-03-02 - Mitigating the "Vibe-Code" Vulnerability
+**Context:** Recent market sync revealed a growing trend where developers grant over-privileged "sudo" access to agents because it "vibes" (works faster/easier), bypassing critical system safety.
+**Architecture Adjustment:**
+*   Introducing the **Anti-Vibe Constraint Engine** in Section 4.
+*   Added `mcpany secure attest-high-stakes` CLI command to require explicit, one-time attestation for dangerous capabilities.
+**Security Impact:** Prevents accidental or lazy exposure of host-level administrative access to rogue or hallucinating agents.

@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-02]
+### Focus: Progressive Trust & Scalable Governance
+**Context**: The "8,000 Exposed Servers" crisis has matured into the "Vibe-Code" vulnerability, where ease-of-use bypasses system safety. Simultaneously, Gemini CLI's wildcard policies and the CSA's "Time-to-Trust" framework show the path forward for scalable, safe agentic infrastructure.
+**Strategic Pivot**:
+- **Progressive "Time-to-Trust" Model**: MCP Any will move from binary permissions (allow/deny) to a temporal model where agent capabilities are gated by time, success, and manual attestation.
+- **Pattern-Based Policy Logic**: Implementing wildcard and annotation-based tool discovery and permission matching to support large-scale enterprise deployments without manual per-tool configuration.
+- **System-First Safety (Anti-Vibe)**: Prioritizing "System Safety" (steel cages) over "Model Safety" (teaching the shark not to bite), ensuring that no agent, regardless of its "intelligence," can bypass infrastructure-level constraints without explicit attestation.
