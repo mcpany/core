@@ -38,17 +38,15 @@ func NewDB(path string) (*DB, error) {
 		return nil, fmt.Errorf("failed to create db directory: %w", err)
 	}
 
-	db, err := sql.Open("sqlite", path)
+	// Append PRAGMA parameters to the DSN for modernc.org/sqlite to apply to all pool connections
+	dsn := fmt.Sprintf("%s?_pragma=busy_timeout(10000)&_pragma=journal_mode(WAL)&_pragma=synchronous(NORMAL)", path)
+
+	db, err := sql.Open("sqlite", dsn)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open sqlite db: %w", err)
 	}
 
-	if err := initSchema(db); err != nil {
-		_ = db.Close()
-		return nil, fmt.Errorf("failed to init schema: %w", err)
-	}
-
-	// Set pragmas
+	// Set pragmas explicitly just in case, before schema init
 	if _, err := db.ExecContext(context.Background(), "PRAGMA journal_mode=WAL;"); err != nil {
 		return nil, fmt.Errorf("failed to set WAL mode: %w", err)
 	}
@@ -58,8 +56,13 @@ func NewDB(path string) (*DB, error) {
 	if _, err := db.ExecContext(context.Background(), "PRAGMA synchronous=NORMAL;"); err != nil {
 		return nil, fmt.Errorf("failed to set synchronous mode: %w", err)
 	}
-	if _, err := db.ExecContext(context.Background(), "PRAGMA busy_timeout=5000;"); err != nil {
+	if _, err := db.ExecContext(context.Background(), "PRAGMA busy_timeout=10000;"); err != nil {
 		return nil, fmt.Errorf("failed to set busy_timeout: %w", err)
+	}
+
+	if err := initSchema(db); err != nil {
+		_ = db.Close()
+		return nil, fmt.Errorf("failed to init schema: %w", err)
 	}
 
 	return &DB{db}, nil
