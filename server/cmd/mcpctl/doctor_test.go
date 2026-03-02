@@ -27,7 +27,7 @@ func TestDoctorRunner_Run_HappyPath(t *testing.T) {
 			w.WriteHeader(http.StatusOK)
 			return
 		}
-		if r.URL.Path == "/doctor" {
+		if r.URL.Path == "/api/v1/doctor" {
 			w.WriteHeader(http.StatusOK)
 			report := health.DoctorReport{
 				Status: "healthy",
@@ -128,7 +128,7 @@ func TestDoctorRunner_Run_DoctorEndpointFail(t *testing.T) {
 			w.WriteHeader(http.StatusOK)
 			return
 		}
-		if r.URL.Path == "/doctor" {
+		if r.URL.Path == "/api/v1/doctor" {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
@@ -164,7 +164,7 @@ func TestDoctorRunner_Run_DoctorDegraded(t *testing.T) {
 			w.WriteHeader(http.StatusOK)
 			return
 		}
-		if r.URL.Path == "/doctor" {
+		if r.URL.Path == "/api/v1/doctor" {
 			w.WriteHeader(http.StatusOK)
 			report := health.DoctorReport{
 				Status: "degraded",

@@ -47,7 +47,7 @@ func TestDoctorCmd_Online(t *testing.T) {
 		if r.URL.Path == "/health" {
 			w.WriteHeader(http.StatusOK)
 			_, _ = w.Write([]byte("OK"))
-		} else if r.URL.Path == "/doctor" {
+		} else if r.URL.Path == "/api/v1/doctor" {
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
 			_, _ = w.Write([]byte(`{"status":"healthy","checks":{"internet":{"status":"ok"}}}`))
@@ -119,7 +119,7 @@ func TestDoctorCmd_ServerErrors(t *testing.T) {
 		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if r.URL.Path == "/health" {
 				w.WriteHeader(http.StatusOK)
-			} else {
+			} else if strings.HasPrefix(r.URL.Path, "/api/v1/doctor") {
 				w.WriteHeader(http.StatusInternalServerError)
 			}
 		}))
@@ -139,7 +139,7 @@ func TestDoctorCmd_ServerErrors(t *testing.T) {
 		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if r.URL.Path == "/health" {
 				w.WriteHeader(http.StatusOK)
-			} else {
+			} else if strings.HasPrefix(r.URL.Path, "/api/v1/doctor") {
 				w.WriteHeader(http.StatusOK)
 				w.Write([]byte("invalid json"))
 			}
@@ -160,7 +160,7 @@ func TestDoctorCmd_ServerErrors(t *testing.T) {
 		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if r.URL.Path == "/health" {
 				w.WriteHeader(http.StatusOK)
-			} else {
+			} else if strings.HasPrefix(r.URL.Path, "/api/v1/doctor") {
                 w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
                 w.Write([]byte(`{"status":"degraded","checks":{"db":{"status":"failed","message":"connection lost"}}}`))

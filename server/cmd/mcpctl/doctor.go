@@ -137,7 +137,7 @@ func (r *DoctorRunner) Run(cmd *cobra.Command, _ []string) error {
 
 	// 3. Check Deep Health (/doctor endpoint)
 	_, _ = fmt.Fprint(r.Out, "[ ] Checking System Health... ")
-	req, err = http.NewRequestWithContext(ctx, http.MethodGet, baseURL+"/doctor", nil)
+	req, err = http.NewRequestWithContext(ctx, http.MethodGet, baseURL+"/api/v1/doctor", nil)
 	if err != nil {
 		_, _ = fmt.Fprintln(r.Out, "WARNING")
 		return fmt.Errorf("failed to create request: %w", err)
