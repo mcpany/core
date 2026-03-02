@@ -28,10 +28,10 @@ test.describe('MCP Any UI E2E Tests', () => {
 
     await page.fill('input[name="username"]', 'e2e-admin-core');
     await page.fill('input[name="password"]', 'password');
-    await page.click('button[type="submit"]', { force: true });
-
-    // Wait for redirect to home page and verify
-    await page.waitForURL('/', { timeout: 30000 });
+    await Promise.all([
+      page.waitForURL('/', { timeout: 30000 }),
+      page.click('button[type="submit"]', { force: true })
+    ]);
     await expect(page).toHaveURL('/', { timeout: 15000 });
   });
   test.afterEach(async ({ request }) => {

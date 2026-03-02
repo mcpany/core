@@ -21,8 +21,10 @@ test.describe('MCP Any UI E2E', () => {
     await page.waitForLoadState('networkidle');
     await page.fill('input[name="username"]', 'e2e-admin-core');
     await page.fill('input[name="password"]', 'password');
-    await page.click('button[type="submit"]', { force: true });
-    await page.waitForURL('/', { timeout: 30000 });
+    await Promise.all([
+      page.waitForURL('/', { timeout: 30000 }),
+      page.click('button[type="submit"]', { force: true })
+    ]);
     await expect(page).toHaveURL('/', { timeout: 15000 });
   });
 
@@ -91,10 +93,12 @@ test.describe('MCP Any UI E2E', () => {
       // await expect(statsLink).toBeVisible(); // Might be hidden in collapsed sidebar
       await expect(statsLink).toHaveAttribute('href', '/stats');
 
-      await statsLink.click({ force: true });
       // Explicitly wait for navigation
       try {
-        await page.waitForURL(/.*\/stats/, { timeout: 10000, waitUntil: 'domcontentloaded' });
+        await Promise.all([
+          page.waitForURL(/.*\/stats/, { timeout: 10000, waitUntil: 'domcontentloaded' }),
+          statsLink.click({ force: true })
+        ]);
       } catch (e) {
         console.log('Navigation from sidebar timed out, trying page.goto fallback...');
         await page.goto('/stats');

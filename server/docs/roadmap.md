@@ -41,7 +41,7 @@ Based on a review of the MCP ecosystem (mcp.so, LobeHub, GitHub, Docker), we ide
 
 | Feature                | Status      | Feasibility / Strategy                                                 |
 | :--------------------- | :---------- | :--------------------------------------------------------------------- |
-| **Browser Automation** | Missing     | **High**: Implement `server/pkg/upstream/browser` using Playwright-go. |
+| **Browser Automation** | Implemented | **High**: Implemented `server/pkg/tool/browser` using Playwright-go. |
 | **K8s Operator V2**    | In Progress | **High**: Enhance `k8s/operator` with CRDs and controller logic.       |
 
 ## Critical User Journeys (Upcoming)
@@ -84,7 +84,7 @@ Based on a review of the MCP ecosystem (mcp.so, LobeHub, GitHub, Docker), we ide
 27. **Jira/Confluence Connector**: Read/Write tickets and docs.
 28. **Slack/Discord Bot Gateway**: Expose tools directly as chat commands.
 29. **Email Server Gateway**: Trigger tools via inbound email (SMTP/IMAP).
-30. **Browser Automation Provider**: Headless browser tool for "Read Webpage" capabilities.
+30. **Browser Automation Provider**: [Completed] Headless browser tool for "Read Webpage" capabilities.
 31. **GraphQL Subscriptions**: Support real-time data push from GraphQL upstreams.
 32. **Binary Protocol Support**: Protobuf over WebSocket for high-performance low-bandwidth agents.
 33. **Edge Computing Support**: Optimized build for Cloudflare Workers / AWS Lambda.

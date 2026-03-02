@@ -30,8 +30,10 @@ test.describe('Trace Viewer', () => {
     await page.goto('/login');
     await page.fill('input[name="username"]', 'e2e-admin');
     await page.fill('input[name="password"]', 'password');
-    await page.click('button[type="submit"]', { force: true });
-    await page.waitForURL('/', { timeout: 30000 });
+    await Promise.all([
+      page.waitForURL('/', { timeout: 30000 }),
+      page.click('button[type="submit"]', { force: true })
+    ]);
 
     // Navigate to dashboard
     await page.goto('/');
@@ -40,8 +42,10 @@ test.describe('Trace Viewer', () => {
     const tracesLink = page.getByRole('link', { name: 'Traces' });
     if (await tracesLink.count() > 0) {
         await expect(tracesLink).toHaveAttribute('href', '/traces');
-        await tracesLink.click();
-        await page.waitForURL(/\/traces/);
+        await Promise.all([
+          page.waitForURL(/\/traces/),
+          tracesLink.click()
+        ]);
         await expect(page).toHaveURL(/\/traces/);
     } else {
         // Fallback for when link is hidden (e.g. non-admin)

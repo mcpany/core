@@ -7,13 +7,16 @@ package browser
 import (
 	"context"
 	"fmt"
+	"log"
+	"strings"
+
+	"github.com/playwright-community/playwright-go"
 )
 
 // Provider implements a basic browser automation tool.
 //
 // Summary: Tool provider for browsing web pages.
 type Provider struct {
-	// dependencies like chromedp allocator would go here
 }
 
 // NewProvider creates a new Provider.
@@ -26,27 +29,68 @@ func NewProvider() *Provider {
 	return &Provider{}
 }
 
-// BrowsePage simulates browsing a page
-// In a real implementation, this would use chromedp or playwright-go.
+// BrowsePage simulates browsing a page using playwright-go.
 //
 // Summary: Fetches the content of a web page.
 //
 // Parameters:
-//   - _: context.Context. Unused.
+//   - ctx: context.Context. The context for the request.
 //   - url: string. The URL to visit.
 //
 // Returns:
-//   - string: The HTML content of the page (mocked).
-//   - error: An error if the URL is empty.
+//   - string: The text content of the page.
+//   - error: An error if the URL is empty or the browser fails.
 //
 // Errors:
 //   - Returns "url is required" if url is empty.
+//   - Returns "failed to start playwright" or "failed to launch browser" if the browser fails to start.
 func (b *Provider) BrowsePage(_ context.Context, url string) (string, error) {
 	if url == "" {
 		return "", fmt.Errorf("url is required")
 	}
-	// Mock implementation for MVP/Roadmap
-	return fmt.Sprintf("Browsed content of %s: <html><body>Mock Content</body></html>", url), nil
+
+	pw, err := playwright.Run()
+	if err != nil {
+		return "", fmt.Errorf("could not start playwright: %w", err)
+	}
+	defer func() {
+		if err := pw.Stop(); err != nil {
+			log.Printf("could not stop playwright: %v", err)
+		}
+	}()
+
+	browser, err := pw.Chromium.Launch(playwright.BrowserTypeLaunchOptions{
+		Headless: playwright.Bool(true),
+	})
+	if err != nil {
+		return "", fmt.Errorf("could not launch browser: %w", err)
+	}
+	defer func() {
+		if err := browser.Close(); err != nil {
+			log.Printf("could not close browser: %v", err)
+		}
+	}()
+
+	page, err := browser.NewPage()
+	if err != nil {
+		return "", fmt.Errorf("could not create page: %w", err)
+	}
+
+	if _, err = page.Goto(url, playwright.PageGotoOptions{
+		WaitUntil: playwright.WaitUntilStateDomcontentloaded,
+	}); err != nil {
+		return "", fmt.Errorf("could not goto: %w", err)
+	}
+
+	content, err := page.Locator("body").TextContent()
+	if err != nil {
+		return "", fmt.Errorf("could not extract text content: %w", err)
+	}
+
+	// Clean up content slightly
+	content = strings.TrimSpace(content)
+
+	return content, nil
 }
 
 // ToolDefinition returns the MCP tool definition.

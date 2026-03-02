@@ -16,8 +16,10 @@ test.describe('MCP Any Profile & Collection Tests', () => {
     await page.goto('/login');
     await page.fill('input[name="username"]', 'profile-admin-e2e');
     await page.fill('input[name="password"]', 'password');
-    await page.click('button[type="submit"]', { force: true });
-    await page.waitForURL('/', { timeout: 30000 });
+    await Promise.all([
+      page.waitForURL('/', { timeout: 30000 }),
+      page.click('button[type="submit"]', { force: true })
+    ]);
   });
 
   test('Create new Profile', async ({ page }) => {

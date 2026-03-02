@@ -15,8 +15,10 @@ test.describe('Network Topology', () => {
       await page.goto('/login');
       await page.fill('input[name="username"]', 'e2e-admin-core'); // Matches seedGlobalState user
       await page.fill('input[name="password"]', 'password');
-      await page.click('button[type="submit"]', { force: true });
-      await page.waitForURL('/', { timeout: 30000 });
+    await Promise.all([
+      page.waitForURL('/', { timeout: 30000 }),
+      page.click('button[type="submit"]', { force: true })
+    ]);
 
       // No mocking! Real data from backend.
       await page.goto('/network');

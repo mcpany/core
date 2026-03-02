@@ -26,7 +26,7 @@ Navigate to `/playground`. The interface presents a clean slate.
 Click the **Available Tools** button (or press `Cmd+K`) to open the tool selection sheet.
 
 1. Click "Use Tool" on a tool card (e.g., `filesystem.list_dir`).
-2. A configuration dialog opens showing the **Tool Description** and a dynamically generated **Input Form**.
+2. A configuration sheet opens showing the **Tool Description** and a dynamically generated **Input Form**.
 
 ![Tool Selected](screenshots/playground_tool_selected.png)
 
@@ -48,7 +48,7 @@ The execution result is displayed in the chat stream.
 
 ## Advanced Features
 
-- **JSON Mode**: Switch to the "JSON" tab in the tool configuration dialog to input raw parameters if the form is too constraining.
+- **JSON Mode**: Switch to the "JSON" tab in the tool configuration sheet to input raw parameters if the form is too constraining.
 - **History**: Previous tool calls in the session remain visible above.
 - **Copy as Code**: Generate `curl` or `Python` code snippets for the current tool execution to easily integrate it into your scripts or applications.
 - **Native File Upload**: Automatically detects base64 encoded fields in tool schemas (e.g., `contentEncoding: "base64"`) and provides a native file picker for seamless file uploads.
