@@ -1628,10 +1628,11 @@ func TestRun_CachingMiddleware(t *testing.T) {
 
 	mu.Lock()
 	defer mu.Unlock()
-	if err == nil || !strings.Contains(err.Error(), "database is locked") {
-		if len(middlewareNames) > 0 {
-			assert.Contains(t, middlewareNames, "CachingMiddleware", "CachingMiddleware should be in the middleware chain")
-		}
+	// If there are no middleware names recorded, it means the test finished before
+	// the server fully started (which is expected in some CI conditions due to DB locks/timeouts).
+	// We only assert if the list is populated.
+	if len(middlewareNames) > 0 {
+		assert.Contains(t, middlewareNames, "CachingMiddleware", "CachingMiddleware should be in the middleware chain")
 	}
 }
 
