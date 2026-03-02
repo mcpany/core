@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-02]
+### Focus: Deterministic Coordination & Automated Compatibility
+**Context**: Today's findings from the OpenClaw 2026.2.17 update and recent Gemini CLI shifts highlight two major trends: the move toward "Deterministic Sub-agent Spawning" and the increasing fragmentation of LLM function-calling schemas.
+**Strategic Pivot**:
+- **Deterministic Coordination**: MCP Any will evolve from "Proxying" calls to "Managing the Spawning Tree." We will introduce a standardized `spawn_subagent` interface that allows parent agents to explicitly delegate tasks with verified context inheritance.
+- **Automated Schema Mapping**: To reduce configuration friction, MCP Any will implement a "Model-Aware Translation" layer. This middleware will automatically adapt MCP tool schemas to the specific requirements of the target LLM (Gemini, Claude, or OpenAI) on-the-fly.
+- **Runtime Containment Integration**: Moving beyond simple `localhost` bindings, MCP Any will support "Isolated Transport" options like Docker-bound named pipes, ensuring that subagents are contained within a secure execution perimeter.

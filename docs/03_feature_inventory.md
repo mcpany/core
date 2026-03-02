@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-02] Updates
+
+### Proposed Additions
+- **Deterministic Sub-agent Spawning Tool**: (P0) A standard tool interface for parent agents to explicitly spawn and manage sub-agents with verified context.
+- **Model-Aware Schema Translator**: (P0) Middleware that automatically adapts MCP tool definitions to the specific function-calling requirements of the target LLM (Gemini, Claude, OpenAI).
+- **Isolated Transport Bindings (Named Pipes/Unix Sockets)**: (P1) Security-focused transport options to contain sub-agent communication within isolated execution environments.
+
+### Priority Shifts
+- **Safe-by-Default Hardening**: Re-affirmed as **P0**. Urgency increased due to new local port exposure exploit patterns.
+- **Multi-Agent Session Management**: Promoted to **P0** (Already P0, but expanded scope to include spawning trees).
+
+### Deprecations / Monitoring
+- **Manual Tool Schema Mapping**: Monitoring for deprecation as Automated Translation matures.
