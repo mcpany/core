@@ -13,7 +13,7 @@ import (
 )
 
 func TestBrowserProvider(t *testing.T) {
-	if os.Getenv("CI") != "" {
+	if os.Getenv("CI") != "" || os.Getenv("GITHUB_ACTIONS") != "" {
 		t.Skip("Skipping browser test in CI environment without guaranteed playwright driver.")
 	}
 
