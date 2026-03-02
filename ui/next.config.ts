@@ -38,6 +38,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  serverExternalPackages: ['chokidar', 'fsevents'],
   experimental: {
     // turbopack: {
     //   resolveAlias: {
