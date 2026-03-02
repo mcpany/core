@@ -2094,6 +2094,15 @@ func (a *Application) runServerMode(
 		mux.Handle("/debug/entries", authMiddleware(standardMiddlewares.Debugger.APIHandler()))
 	}
 
+	// Register Recursive Context Manager
+	if standardMiddlewares != nil && standardMiddlewares.RecursiveContext == nil {
+		standardMiddlewares.RecursiveContext = middleware.NewRecursiveContextManager()
+	}
+	if standardMiddlewares != nil {
+		mux.Handle("/context/session", authMiddleware(standardMiddlewares.RecursiveContext.APIHandler()))
+		mux.Handle("/context/session/", authMiddleware(standardMiddlewares.RecursiveContext.APIHandler()))
+	}
+
 	httpBindAddress := bindAddress
 	if httpBindAddress == "" {
 		if envAddr := os.Getenv("MCPANY_DEFAULT_HTTP_ADDR"); envAddr != "" {
@@ -2135,6 +2144,10 @@ func (a *Application) runServerMode(
 		if standardMiddlewares.Debugger != nil {
 			finalHandler = standardMiddlewares.Debugger.Handler(finalHandler)
 		}
+			// Recursive Context
+			if standardMiddlewares.RecursiveContext != nil {
+				finalHandler = standardMiddlewares.RecursiveContext.HandleContext(finalHandler)
+			}
 	}
 
 	// Middleware order: SecurityHeaders -> CORS -> CSRF -> JSONRPCCompliance -> Recovery -> IPAllowList -> RateLimit -> (Debugger -> Optimizer -> Mux)

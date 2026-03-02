@@ -124,6 +124,7 @@ type StandardMiddlewares struct {
 	ContextOptimizer *ContextOptimizer
 	Debugger         *Debugger
 	SmartRecovery    *SmartRecoveryMiddleware
+	RecursiveContext *RecursiveContextManager
 	Cleanup          func() error
 }
 
@@ -355,12 +356,18 @@ func InitStandardMiddlewares(
 		}
 	})
 
+	recursiveContext := NewRecursiveContextManager()
+	Register("recursive_context", func(_ *configv1.Middleware) func(http.Handler) http.Handler {
+		return recursiveContext.HandleContext
+	})
+
 	return &StandardMiddlewares{
 		Audit:            audit,
 		GlobalRateLimit:  globalRateLimit,
 		ContextOptimizer: contextOptimizer,
 		Debugger:         debugger,
 		SmartRecovery:    smartRecovery,
+		RecursiveContext: recursiveContext,
 		Cleanup:          audit.Close,
 	}, nil
 }
