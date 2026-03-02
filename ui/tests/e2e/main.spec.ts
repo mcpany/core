@@ -93,10 +93,12 @@ test.describe('MCP Any UI E2E', () => {
       // await expect(statsLink).toBeVisible(); // Might be hidden in collapsed sidebar
       await expect(statsLink).toHaveAttribute('href', '/stats');
 
-      await statsLink.click({ force: true });
       // Explicitly wait for navigation
       try {
-        await page.waitForURL(/.*\/stats/, { timeout: 10000, waitUntil: 'domcontentloaded' });
+        await Promise.all([
+          page.waitForURL(/.*\/stats/, { timeout: 10000, waitUntil: 'domcontentloaded' }),
+          statsLink.click({ force: true })
+        ]);
       } catch (e) {
         console.log('Navigation from sidebar timed out, trying page.goto fallback...');
         await page.goto('/stats');

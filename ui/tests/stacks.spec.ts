@@ -14,8 +14,10 @@ test.describe('Stacks Management', () => {
     await expect(page.locator('h1')).toContainText('Stacks');
 
     // 2. Click "Create Stack"
-    await page.getByRole('link', { name: 'Create Stack' }).first().click();
-    await page.waitForURL('**/stacks/new');
+    await Promise.all([
+      page.waitForURL('**/stacks/new'),
+      page.getByRole('link', { name: 'Create Stack' }).first().click(),
+    ]);
 
     // 3. Enter YAML content
     await page.waitForSelector('.monaco-editor');

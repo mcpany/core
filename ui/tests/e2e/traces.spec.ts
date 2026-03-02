@@ -42,8 +42,10 @@ test.describe('Trace Viewer', () => {
     const tracesLink = page.getByRole('link', { name: 'Traces' });
     if (await tracesLink.count() > 0) {
         await expect(tracesLink).toHaveAttribute('href', '/traces');
-        await tracesLink.click();
-        await page.waitForURL(/\/traces/);
+        await Promise.all([
+          page.waitForURL(/\/traces/),
+          tracesLink.click()
+        ]);
         await expect(page).toHaveURL(/\/traces/);
     } else {
         // Fallback for when link is hidden (e.g. non-admin)
