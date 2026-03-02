@@ -25,3 +25,4 @@ The "Truth Reconciliation Audit" was performed on 10 sampled documentation files
 
 ## Security Scrub
 - Confirmed no PII or secrets in the report.
+Algorithmic
