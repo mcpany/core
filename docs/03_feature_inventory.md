@@ -75,9 +75,19 @@
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
+---
+
+## Evolution: [2026-03-03] Updates
+
+### Proposed Additions
+- **Universal Policy Translator**: (P0) Adapts a single source of truth for security policies into the native formats of Gemini, Claude, and OpenClaw.
+- **Subagent Delegation Protocol**: (P0) A secure middleware that manages the "handoff" of a subset of permissions and state from a parent agent to a newly spawned subagent.
+- **Hierarchical Token Scoping**: (P1) Capability tokens that are cryptographically bound to a specific agent sub-session, preventing "token leakage."
+
 ### Priority Shifts
-- **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
-- **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.
+- **Safe-by-Default Network Hardening**: Promoted to **P0** following the "8,000 Exposed Servers" incident. Essential for preventing accidental exposure of sensitive local tools.
+- **Policy Firewall**: Promoted to **P0** (Already P0, but re-affirming its role as the foundation for the Universal Policy Translator).
 
 ### Deprecations / Monitoring
+- **Manual Permission Copy-Pasting**: Explicitly target for removal in favor of the Subagent Delegation Protocol.
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.

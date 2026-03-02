@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-03]
+### Focus: Universal Policy Translation & Multi-Agent Context Handoff
+**Context**: Today's findings show a fragmentation in policy enforcement (Gemini CLI vs. Claude Code vs. OpenClaw) and a rising need for formal context delegation in hierarchical multi-agent swarms.
+**Strategic Pivot**:
+- **Universal Policy Translation**: MCP Any will evolve into a "Policy Adapter," allowing users to define security rules once (e.g., in Rego or CEL) and have them translated into the native policy formats of various agent frameworks.
+- **Formal Context Handoff (Agent-to-Subagent)**: Implementing a "Delegation Protocol" that allows a parent agent to "spawn" a sub-session with a cryptographically-bound subset of its own permissions and a filtered "State Slice."
+- **Policy-Aware Tool Annotations**: Moving beyond static tool schemas to "Policy-Annotated Tools," where a tool's allowed behaviors are dynamically determined by the current user session and agent persona.
