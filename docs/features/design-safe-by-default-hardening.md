@@ -59,3 +59,11 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+
+### Update: 2026-03-02 - Project-Level Trust Boundaries & Shadow Configs
+**Context:** Today's market sync revealed critical sandbox escapes in Claude Code caused by unvalidated project-level configuration injection.
+**Architecture Adjustment:**
+*   **Shadow Configuration Loader**: Deprecating direct loading of project-level `.mcpany/config.yaml`.
+*   **Trust Attestation**: Project-level configs must now be "Attested" (signed by the global instance key) or run in an isolated "Shadow Mode" where they cannot override global security hooks or define system-level `pre-start` commands.
+*   **Missing Config Protection**: Enforcing a "Safe Default" schema even if `config.yaml` is missing, preventing "Missing File" injection exploits seen in CVE-2026-25725.
+**Security Impact:** Mitigates RCE and sandbox escapes from malicious repositories by enforcing a strict hierarchy of trust between global and project-scoped settings.

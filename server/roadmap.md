@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-02 Evolution)
+*   **[P0] Project-Scoped Isolation Loader**: Implement Shadow Config loader to prevent malicious project-level config injection. (Added: 2026-03-02)
+*   **[P1] Browser-Agent Adapter**: Standardized MCP adapter for browser-use tools (Playwright/Puppeteer). (Added: 2026-03-02)
+*   **[P0] A2A Resident Hub**: Upgrade A2A residency to support full session persistence and handoff recovery. (Added: 2026-03-02)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

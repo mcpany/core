@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-02]
+### Focus: Project-Scoped Isolation & Unified Browser-Agent Interfaces
+**Context**: Recent exploits in Claude Code (sandbox escapes via config injection) and the fragmentation of browser-use tools in OpenClaw and Gemini CLI necessitate a move towards "Isolated Project Contexts" and standardized interaction patterns for web-based agency.
+**Strategic Pivot**:
+- **Project-Scoped Isolation**: MCP Any will introduce a "Virtual Configuration Layer" that prevents project-level settings from overriding global security policies or executing commands without explicit, attested trust prompts.
+- **Standardized Browser-Agent Adapter**: Moving to create a universal MCP adapter for browser-based tools, ensuring that "Computer Use" capabilities are consistent, secure, and vendor-neutral.
+- **Stateful A2A Residency**: Transitioning from simple message passing to "Stateful Resident Hubs" where multi-agent sessions can persist across tool calls even if the primary agent disconnects, ensuring reliable handoffs in complex swarms.
