@@ -18,8 +18,10 @@ test.describe('Visual Audit', () => {
     await page.goto('/login');
     await page.getByLabel('Username').fill(USER_ID);
     await page.getByLabel('Password').fill('password'); // From test-data hash
-    await page.getByRole('button', { name: 'Sign in' }).click({ force: true });
-    await page.waitForURL('/', { timeout: 30000 });
+    await Promise.all([
+      page.waitForURL('/', { timeout: 30000 }),
+      page.getByRole('button', { name: 'Sign in' }).click({ force: true })
+    ]);
   });
 
   const pages = [

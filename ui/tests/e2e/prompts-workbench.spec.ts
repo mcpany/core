@@ -16,8 +16,10 @@ test.describe('Prompts Workbench', () => {
       await page.goto('/login');
       await page.fill('input[name="username"]', 'e2e-admin-prompts');
       await page.fill('input[name="password"]', 'password');
-      await page.click('button[type="submit"]', { force: true });
-      await page.waitForURL('/', { timeout: 30000 });
+    await Promise.all([
+      page.waitForURL('/', { timeout: 30000 }),
+      page.click('button[type="submit"]', { force: true })
+    ]);
   });
 
   test.afterEach(async ({ request }) => {

@@ -17,8 +17,10 @@ test.describe('Agent Skills', () => {
     await page.waitForLoadState('networkidle');
     await page.fill('input[name="username"]', 'e2e-admin-skills');
     await page.fill('input[name="password"]', 'password');
-    await page.click('button[type="submit"]', { force: true });
-    await page.waitForURL('/', { timeout: 30000 });
+    await Promise.all([
+      page.waitForURL('/', { timeout: 30000 }),
+      page.click('button[type="submit"]', { force: true })
+    ]);
     await expect(page).toHaveURL('/', { timeout: 15000 });
 
     await page.goto('/skills');
