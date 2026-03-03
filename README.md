@@ -1,4 +1,4 @@
-# MCP Any
+# MCP Any - Gold Standard Universal Adapter
 
 [![Documentation: Gold Standard](https://img.shields.io/badge/Documentation-Gold%20Standard-gold.svg)](https://github.com/mcpany/core)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
