@@ -59,3 +59,11 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-02:** Added Update for Origin hijacking mitigation.
+
+### Update: 2026-03-02 - Mitigating Cross-Protocol Origin Hijacking
+**Context:** Today's market sync revealed a critical hijacking vulnerability in OpenClaw where malicious websites could trigger local agent actions via the browser.
+**Architecture Adjustment:**
+*   Mandating "Origin-Attestation" for all incoming HTTP/WebSocket connections.
+*   Integrating a "Handshake Token" that must be retrieved via a local-only (`127.0.0.1`) endpoint before a client can connect from a non-standard origin.
+**Security Impact:** Prevents "Drive-by Agent Hijacking" where a user visiting a malicious site accidentally triggers local tool execution (e.g., `rm -rf /`) through the browser's ability to reach local ports.

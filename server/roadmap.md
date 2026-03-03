@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-02 Evolution)
+*   **[P0] Origin-Attestation Handshake (OAA)**: Prevent cross-protocol hijacking from malicious browser sites. (Added: 2026-03-02)
+*   **[P0] Semantic Path Scoping Middleware**: Prevent path traversal and out-of-scope modifications for sensitive tools (Git, FS). (Added: 2026-03-02)
+*   **[P1] ACP-to-MCP Translation Layer**: Bridge the gap between Agent Communication Protocol and MCP tools. (Added: 2026-03-02)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

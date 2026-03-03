@@ -75,6 +75,15 @@
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
+---
+
+## Evolution: [2026-03-02] Updates
+
+### Proposed Additions
+- **Origin-Attestation Handshake (OAA)**: (P0) A security middleware that requires clients to complete a local-origin handshake to prevent cross-protocol hijacking from browser-based malicious sites.
+- **ACP-to-MCP Translation Layer**: (P1) Bridge for the Agent Communication Protocol (ACP), allowing ACP-native agents to use MCP Any tools as native message endpoints.
+- **Semantic Path Scoping Middleware**: (P0) Middleware that validates file paths and semantic targets for sensitive tools (Git, FS, Shell) against a verified intent-scope.
+
 ### Priority Shifts
 - **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
 - **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.

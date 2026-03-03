@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-02]
+### Focus: Origin-Aware Security & Multi-Stack A2A Bridge
+**Context**: Today's research into the OpenClaw hijacking vulnerability and the emergence of the Agent Communication Protocol (ACP) reveals that the "Universal Bus" must be both origin-aware and protocol-polyglot.
+**Strategic Pivot**:
+- **Origin-Aware Authentication (OAA)**: MCP Any will implement mandatory "Origin-Attestation" for all incoming requests. This prevents malicious browser-based sites from hijacking local agent sessions by requiring a unique, short-lived handshake for non-standard origins.
+- **Dual-Stack Gateway (MCP+ACP)**: Recognizing ACP as a peer to MCP, MCP Any will evolve into a "Dual-Stack" gateway that can translate between MCP tool calls and ACP message primitives, allowing agents from different standard-camps to collaborate.
+- **Path-Bound Sandbox Middleware**: Moving beyond simple FS permissions to "Content-Aware Scoping" where tools (like Git or File IO) are restricted by both path and semantic intent, mitigating traversal vulnerabilities.
