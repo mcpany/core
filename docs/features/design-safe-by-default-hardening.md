@@ -59,3 +59,7 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-03:** Resolving Local WebSocket Origin Hijacking.
+    *   **Context:** Today's market sync revealed a critical 0-click exploit in OpenClaw gateways where malicious websites could hijack local agents via unvalidated WebSocket connections.
+    *   **Architecture Adjustment:** Mandatory `Origin` header validation in the WebSocket handshake. Defaulting to `localhost` and whitelisted UI origins.
+    *   **Security Impact:** Prevents cross-origin "Session Hijacking" by malicious browser-based scripts.

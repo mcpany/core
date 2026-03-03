@@ -34,6 +34,12 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-03 Evolution)
+*   **[P0] Strict WebSocket Origin Enforcement**: Mandatory validation of Origin headers to prevent 0-click browser hijacking. (Added: 2026-03-03)
+*   **[P0] Intent-Aware Tool Policy Middleware**: Signed Intent Manifests for temporal tool authorization. (Added: 2026-03-03)
+*   **[P0] Policy-First Discovery**: Tool list filtering based on active session intent. (Added: 2026-03-03)
+*   **[P1] SessionContext State Bridge**: Rich state inheritance for Gemini-style agent sessions. (Added: 2026-03-03)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-03] Updates
+
+### Proposed Additions
+- **Strict WebSocket Origin Enforcement**: (P0) Mandatory middleware that validates the `Origin` header and sub-protocols for all incoming WebSocket connections to prevent 0-click browser hijacking.
+- **Intent-Aware Tool Policy Middleware**: (P0) Enhances the Policy Firewall to require a valid "Intent Token" (signed by the orchestrator) for sensitive tool calls, preventing unauthorized execution by hijacked subagents.
+- **SessionContext State Bridge**: (P1) Native support for Gemini CLI style `SessionContext` in the tool execution pipeline, enabling richer state inheritance.
+
+### Priority Shifts
+- **"Safe-by-Default" Network Hardening**: Promoted to **P0 (Critical)**. Expanded to include mandatory WebSocket protection in response to the OpenClaw incident.
+- **Policy-First Discovery**: (New Addition, P0) Filtering tool lists based on active session intent to minimize the attack surface.
+
+### Deprecations / Monitoring
+- **Unauthenticated Local WebSockets**: Deprecate support for WebSocket connections that do not provide either a valid Origin or a temporary session token.
