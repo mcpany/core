@@ -42,8 +42,25 @@ export function RequestVolumeChart() {
     };
     fetchData();
     // Poll every 30 seconds
-    const interval = setInterval(fetchData, 30000);
-    return () => clearInterval(interval);
+    // ⚡ BOLT: [Network/Resource Optimization] Pause polling when tab is not visible to save bandwidth and battery
+    // Randomized Selection from Top 5 High-Impact Targets
+    const interval = setInterval(() => {
+        if (!document.hidden) {
+            fetchData();
+        }
+    }, 30000);
+
+    const onVisibilityChange = () => {
+        if (!document.hidden) {
+            fetchData();
+        }
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
+
+    return () => {
+        clearInterval(interval);
+        document.removeEventListener("visibilitychange", onVisibilityChange);
+    };
   }, [serviceId, timeRange]);
 
   if (!mounted) return null;
