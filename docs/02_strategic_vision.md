@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-03]
+### Focus: Model-Agnostic Lazy Loading & Annotation-Driven Governance
+**Context**: Market shifts in Claude (10% context threshold for tool search) and Gemini (Annotation-based policies) indicate a move away from static tool manifests. Simultaneously, OpenClaw's ClawHub proves the utility of a "pull-based" capability model for autonomous agents.
+**Strategic Pivot**:
+- **Model-Agnostic Lazy Discovery**: MCP Any will implement a universal "Context Threshold" middleware that monitors LLM usage and automatically transitions to on-demand tool search, regardless of the underlying model's native support.
+- **Annotation-Driven Policy Engine**: Evolving the Policy Firewall to support rich metadata filtering (annotations). This allows for granular governance based on "intent-profiles" rather than just tool names.
+- **A2A Registry Integration**: Standardizing a "ClawHub-compatible" registry interface within MCP Any, allowing it to serve as a discovery hub for disparate agent sessions and specialized skills.

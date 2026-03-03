@@ -53,3 +53,4 @@ As agentic workflows evolve from single-agent tasks to multi-agent swarms (e.g.,
 
 ## 7. Evolutionary Changelog
 * **2026-02-23:** Initial Document Creation. Standardizing Recursive Context Protocol for multi-agent swarm orchestration.
+* **2026-03-03:** Added alignment with Gemini CLI's `SessionContext` for standardized tool call state.

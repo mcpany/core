@@ -81,3 +81,16 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-03] Updates
+
+### Proposed Additions
+- **Universal Context Threshold Guard**: (P0) A middleware that dynamically calculates tool context volume and switches to Lazy-Discovery mode to protect the LLM's effective context window.
+- **Annotation-Based Policy Filter**: (P0) Enhances the Policy Firewall to allow/deny tool execution based on tool metadata (annotations) like `risk_score` or `requires_auth`.
+- **ClawHub Discovery Bridge**: (P1) Native support for discovering and pulling tools from OpenClaw's ClawHub registry format.
+
+### Priority Shifts
+- **Lazy-MCP Middleware**: Re-affirmed as **P0** and promoted to "High-Performance Implementation" phase due to market adoption of similar patterns in Claude.
+- **Policy Firewall**: Expanded to include Annotation support as a P0 requirement.
