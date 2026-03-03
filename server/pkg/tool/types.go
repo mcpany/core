@@ -3075,10 +3075,12 @@ func checkForArgumentInjection(val string) error {
 }
 
 func isShellCommand(cmd string) bool {
+	cmd = strings.TrimSpace(cmd)
 	return isShell(cmd) || isInterpreter(cmd)
 }
 
 func isShell(cmd string) bool {
+	cmd = strings.TrimSpace(cmd)
 	// True shells and commands that behave like shells (parsing command lines)
 	shells := []string{
 		"sh", "bash", "zsh", "dash", "ash", "ksh", "csh", "tcsh", "fish",

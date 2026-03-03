@@ -147,7 +147,21 @@ func TestCommandInjection_Advanced(t *testing.T) {
 		}
 	})
 
-	// Case 9: cmd.exe single quote bypass prevention
+	// Case 9: trailing space bypass prevention
+	t.Run("trailing_space_bypass", func(t *testing.T) {
+		cmd := "bash " // Trailing space bypass attempt
+		tool := createTestCommandToolWithTemplate(cmd, "{{input}}")
+		req := &ExecutionRequest{
+			ToolName: "test",
+			ToolInputs: []byte(`{"input": "foo; rm -rf /"}`),
+		}
+
+		_, err := tool.Execute(context.Background(), req)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "shell injection detected", "Commands with trailing spaces should be properly identified as shells")
+	})
+
+	// Case 10: cmd.exe single quote bypass prevention
 	t.Run("cmd_exe_single_quote_bypass", func(t *testing.T) {
 		cmd := "cmd.exe"
 		toolDef := v1.Tool_builder{Name: proto.String("test-tool")}.Build()
