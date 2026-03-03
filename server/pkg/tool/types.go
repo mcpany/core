@@ -790,7 +790,7 @@ func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		}
 
 		if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
-			t.logRequest(ctx, httpReq, bodyForAttempt)
+			t.logRequest(ctx, httpReq, bodyForAttempt, redactedURLString)
 		}
 
 		attemptResp, err := httpClient.Do(httpReq)
@@ -887,16 +887,21 @@ func (t *HTTPTool) createHTTPRequest(ctx context.Context, urlString string, body
 	return httpReq, nil
 }
 
-func (t *HTTPTool) logRequest(ctx context.Context, httpReq *http.Request, body io.Reader) {
+func (t *HTTPTool) logRequest(ctx context.Context, httpReq *http.Request, body io.Reader, redactedURLString string) {
+	parsedURL, err := url.Parse(redactedURLString)
+	var pathAndQuery string
+	if err == nil {
+		pathAndQuery = parsedURL.Path
+		if parsedURL.RawQuery != "" {
+			pathAndQuery += "?" + parsedURL.RawQuery
+		}
+	} else {
+		pathAndQuery = httpReq.URL.Path // fallback
+	}
+
 	// Log headers
-	// Note: We use httpReq.URL.Path here which might contain secrets.
-	// However, logRequest is only called if debug logging is enabled.
-	// Debug logging assumes trusted access to logs.
-	// The critical fix is for error logging which might be more exposed or monitored.
-	// Ideally we should pass redacted URL here too, but it requires changing signature.
-	// Given debug constraint, we accept this risk for now, but note it.
 	var headerBuf bytes.Buffer
-	headerBuf.WriteString(fmt.Sprintf("%s %s %s\n", httpReq.Method, httpReq.URL.Path, httpReq.Proto))
+	headerBuf.WriteString(fmt.Sprintf("%s %s %s\n", httpReq.Method, pathAndQuery, httpReq.Proto))
 	headerBuf.WriteString(fmt.Sprintf("Host: %s\n", httpReq.Host))
 	for k, v := range httpReq.Header {
 		val := strings.Join(v, ", ")

@@ -98,3 +98,80 @@ func TestHTTPTool_Execute_SecretLeakageInLogs(t *testing.T) {
 		t.Logf("Full Log Output:\n%s", logOutput)
 	}
 }
+
+// TestHTTPTool_Execute_SecretLeakageInDebugLogs verifies that secrets passed as query parameters
+// are redacted in the debug logs when a successful request occurs and debug is enabled.
+func TestHTTPTool_Execute_SecretLeakageInDebugLogs(t *testing.T) {
+	// Allow local IPs for testing (bypass SSRF protection)
+	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "true")
+
+	// Reset logger for this test
+	logging.ForTestsOnlyResetLogger()
+	defer logging.ForTestsOnlyResetLogger()
+
+	// Capture logs
+	var logBuf bytes.Buffer
+	logging.Init(slog.LevelDebug, &logBuf, "")
+
+	// Setup upstream that returns success to trigger debug logging of request
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte(`{"status": "ok"}`))
+	})
+	server := httptest.NewServer(handler)
+	defer server.Close()
+
+	// Setup Pool
+	poolManager := pool.NewManager()
+	p, err := pool.New(func(_ context.Context) (*client.HTTPClientWrapper, error) {
+		return &client.HTTPClientWrapper{Client: server.Client()}, nil
+	}, 1, 1, 1, 0, true)
+	require.NoError(t, err)
+	poolManager.Register("test-service", p)
+
+	// Define Tool with Secret Parameter in Query using Placeholder
+	methodAndURL := "GET " + server.URL + "?api_key={{api_key}}"
+	mcpTool := v1.Tool_builder{
+		UnderlyingMethodFqn: &methodAndURL,
+	}.Build()
+
+	paramMapping := configv1.HttpParameterMapping_builder{
+		Schema: configv1.ParameterSchema_builder{
+			Name: proto.String("api_key"),
+		}.Build(),
+		Secret: configv1.SecretValue_builder{
+			EnvironmentVariable: proto.String("API_KEY"),
+		}.Build(),
+	}.Build()
+
+	callDef := configv1.HttpCallDefinition_builder{
+		Method:     configv1.HttpCallDefinition_HTTP_METHOD_GET.Enum(),
+		Parameters: []*configv1.HttpParameterMapping{paramMapping},
+	}.Build()
+
+	// Mock Secret Resolution via env var
+	t.Setenv("API_KEY", "super_secret_value")
+
+	httpTool := tool.NewHTTPTool(mcpTool, poolManager, "test-service", nil, callDef, nil, nil, "")
+
+	// Execute with debug context
+	inputs := json.RawMessage(`{}`)
+	req := &tool.ExecutionRequest{ToolInputs: inputs}
+
+	// We create a context and we rely on slog.LevelDebug being initialized
+	_, err = httpTool.Execute(context.Background(), req)
+	require.NoError(t, err)
+
+	// Verify logs
+	logOutput := logBuf.String()
+
+	// The log should contain the debug log with the URL
+	if assert.Contains(t, logOutput, "sending http request headers", "Should log upstream request headers") {
+		// Check that the secret is NOT present
+		assert.NotContains(t, logOutput, "super_secret_value", "Log should NOT contain secret value")
+		// Check that it IS redacted
+		assert.Contains(t, logOutput, "api_key=[REDACTED]", "Log should contain redacted secret")
+	} else {
+		t.Logf("Full Log Output:\n%s", logOutput)
+	}
+}
