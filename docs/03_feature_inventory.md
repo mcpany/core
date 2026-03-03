@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-02] Updates
+
+### Proposed Additions
+- **WebSocket Origin Validation Middleware**: (P0) Strictly enforces `Origin` header checks for all local listeners. Prevents cross-origin "Zero-Click" hijacking from malicious websites.
+- **Coordinated Swarm Security Hub**: (P1) A centralized security controller that correlates tool call telemetry across multiple agent sessions to identify distributed attack patterns.
+- **Out-of-Band (OOB) Auth Confirmation**: (P1) A local UI/CLI prompt required for any new browser-based connection to the local gateway, providing a human "Seatbelt" for WebSocket links.
+
+### Priority Shifts
+- **"Safe-by-Default" Network Hardening**: Re-affirmed as **P0**. High urgency to move away from trust-based localhost bindings.
+- **Policy Firewall**: Promoted to **P0** and expanded to include "Intent-Aware" filtering for agent swarms.
+
+### Deprecations / Monitoring
+- **Trust-on-First-Use (TOFU) for Localhost**: Deprecating the assumption that `localhost` connections are safe without origin validation.

@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-02 Evolution)
+*   **[P0] WebSocket Origin Validation**: Enforce strict Origin header checks and OOB confirmation for local WebSocket connections. (Added: 2026-03-02)
+*   **[P1] Coordinated Swarm Security Hub**: Centralized telemetry correlation to detect distributed "Predator Swarm" attack patterns. (Added: 2026-03-02)
+*   **[P1] Intent-Based Attestation**: Implement high-level intent verification for agent tool call chains. (Added: 2026-03-02)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
