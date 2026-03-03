@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-03 Evolution)
+*   **[P0] Intent-Based Access Control (IBAC) Middleware**: Semantic firewall to validate tool-call intent against session goals. (Added: 2026-03-03)
+*   **[P1] Agent Handoff Supervision**: Mandatory contract validation for A2A delegations. (Added: 2026-03-03)
+*   **[P1] OpenClaw Secure Adapter**: Hardened adapter for OpenClaw's system-access capabilities. (Added: 2026-03-03)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

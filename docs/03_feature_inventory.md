@@ -75,7 +75,22 @@
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
+---
+
+## Evolution: [2026-03-03] Updates
+
+### Proposed Additions
+- **Intent-Based Access Control (IBAC) Middleware**: (P0) A semantic firewall that validates tool-call intent against parent-agent goals. Essential to prevent A2A Contagion.
+- **Agent Handoff Supervision**: (P1) A specialized tool for A2A handoffs that requires explicit "contract" validation (input/output schemas) between agents.
+- **OpenClaw Secure Adapter**: (P1) A purpose-built bridge for OpenClaw that wraps its powerful system access in MCP Any's Zero-Trust and Policy Firewall layers.
+
 ### Priority Shifts
+- **A2A Stateful Residency**: Promoted to **P0**. As agent swarms (like Claude Code teams) become more common, the need for a persistent mailbox/buffer for inter-agent messages is critical.
+- **"Safe-by-Default" Network Hardening**: Re-affirmed as **P0**. Non-negotiable given the security climate around OpenClaw.
+
+### Deprecations / Monitoring
+- **Unsupervised Agent Handoffs**: Monitoring for deprecation in favor of Supervised Delegation.
+
 - **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
 - **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.
 

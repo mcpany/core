@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-03]
+### Focus: Semantic Sandboxing & Supervised Delegation
+**Context**: The rise of "A2A Contagion" and the rapid adoption of OpenClaw/Claude Code swarms have highlighted a new architectural requirement: Intent-Based Access Control (IBAC). It is no longer enough to verify *who* is calling a tool; we must verify *why* they are calling it.
+**Strategic Pivot**:
+- **Semantic Sandboxing**: MCP Any will evolve to inspect the "Intent" of a tool call or agent handoff using a secondary, lightweight "Safety LLM" or deterministic rule engine (Rego/CEL) to ensure it aligns with the parent agent's original goal.
+- **Supervised Delegation**: Implementing a "Supervisor" pattern where MCP Any doesn't just route A2A messages, but validates the "Contract" of the delegation. If a Coding Agent is asked to "Delete the root directory" by a Research Agent, the bridge will block the task as a "semantic violation."
+- **Agent Mesh Kernel**: Positioning MCP Any as the "Kernel" for autonomous systems—managing process (agent) isolation, resource (tool) allocation, and secure inter-process (A2A) communication.

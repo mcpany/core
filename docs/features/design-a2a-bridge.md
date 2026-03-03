@@ -46,3 +46,9 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-03-03:** **Update: Resolving A2A Contagion via Supervised Delegation**
+    * **Context**: Today's market sync revealed the "A2A Contagion" threat where malicious intent propagates through agent swarms.
+    * **Architecture Adjustment**:
+        * Integrated `IBAC Middleware` (Intent-Based Access Control) into the A2A translation layer.
+        * Introducing mandatory "Agent Cards" for all peering agents to verify identity and baseline capabilities.
+    * **Security Impact**: Prevents "Intent Hijacking" by ensuring subagents cannot be coerced into actions that violate the orchestrator's original goal.
