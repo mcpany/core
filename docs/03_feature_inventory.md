@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-03] Updates
+
+### Proposed Additions
+- **Attested Tooling Middleware**: (P0) Cryptographic signature verification for all loaded MCP tools. Prevents "ClawHub"-style malicious skill injection.
+- **"Ghost-Mode" Tunneling Gateway**: (P0) Ensures the gateway is invisible to public network scans by using authenticated, encrypted tunnels (e.g., WireGuard-based) for all remote tool access.
+- **Config Integrity Guard**: (P0) Mandatory cryptographic attestation for all agent configuration changes to prevent "Shadow Config" exploits (inspired by Claude Code RCE).
+
+### Priority Shifts
+- **Safe-by-Default Network Hardening**: Promoted to **P0+** (Absolute Critical) given the scale of exposed servers.
+- **Provenance-First Discovery**: Promoted to **P0**. Verification must happen at the discovery stage to prevent malicious tools from even being considered by the LLM.
+
+### Deprecations / Monitoring
+- **Unauthenticated Remote Access**: Any remote tool access without explicit MFA/Attestation is now targeted for immediate deprecation.

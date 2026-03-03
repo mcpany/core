@@ -59,3 +59,9 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-03:** Day 2 Update - Resolving Local Port Exposure.
+    *   **Context:** Today's research on the "8,000 Exposed Servers" crisis confirms that even with `localhost` binding, rogue local processes or subagents can still attempt to tunnel out of the environment.
+    *   **Architecture Adjustment:**
+        *   Deprecating standard TCP/HTTP listeners for inter-agent communication within the same host.
+        *   Introducing isolated Docker-bound named pipes or Unix Domain Sockets (UDS) as the primary, hardened transport.
+    *   **Security Impact:** Prevents accidental host-level exposure via network tunneling tools or rogue subagents attempting to reach the gateway via localhost from an unauthenticated container.

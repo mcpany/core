@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-03]
+### Focus: Hardened Universal Gateway & Attested Tool Mesh
+**Context**: The "8,000 Exposed Servers" crisis and the disclosure of 1,000+ malicious skills on "ClawHub" highlight a critical need for verified agent infrastructure. MCP Any must pivot to a "Verified-by-Default" stance for both network exposure and tool integrity.
+**Strategic Pivot**:
+- **Verified Registry Architecture**: Transitioning from a simple tool proxy to a "Verified Tool Mesh" where all MCP tools must provide a cryptographic signature of their source and configuration before being loaded.
+- **"Ghost-Mode" Defaults**: Implementing a strict "Safe-by-Default" policy where the gateway is invisible to the network by default, using encrypted, authenticated tunnels for all external communication.
+- **Config Integrity Attestation**: Protecting against "Shadow Configuration" injection (as seen in Claude Code exploits) by requiring cryptographic attestation for all agent configuration changes.

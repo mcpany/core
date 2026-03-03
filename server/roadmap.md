@@ -34,6 +34,12 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-03 Evolution)
+*   **[P0] Attested Tooling Middleware**: Implementation of cryptographic signature verification for all MCP tools. (Added: 2026-03-03)
+*   **[P0] Ghost-Mode Tunneling**: Integration of WireGuard-based encrypted tunnels for secure remote access without port exposure. (Added: 2026-03-03)
+*   **[P0] Config Integrity Guard**: Cryptographic attestation system for agent configuration files. (Added: 2026-03-03)
+*   **[P0] UDS/Named Pipe Transport**: Implement Unix Domain Sockets and Named Pipes for hardened local inter-agent comms. (Added: 2026-03-03)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
