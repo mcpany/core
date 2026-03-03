@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-03]
+### Focus: Deterministic Replayability & Unified State Handshake
+**Context**: As agent swarms become more complex, "hallucination debugging" is becoming the primary bottleneck. Findings in OpenClaw and the proposed USH standard indicate that connectivity is no longer enough; we need deterministic replayability and standardized state handshakes.
+**Strategic Pivot**:
+- **Deterministic Replay Engine (DARE)**: MCP Any will evolve into a "Time-Travel Aware" gateway, capable of snapshotting and replaying tool execution sequences to reproduce and fix agent errors.
+- **Unified State Handshake (USH) Implementation**: Adopting the USH standard to ensure that "Intent-State" is seamlessly passed between disparate agent frameworks via MCP Any, eliminating context fragmentation.
+- **Semantic Tool Discovery (Lazy-Discovery 2.0)**: Upgrading discovery to use context-aware semantic indexing, ensuring agents find the most relevant tools among thousands without bloating the context window.

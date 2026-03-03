@@ -43,3 +43,9 @@ As AI agent ecosystems evolve from single-agent monoliths to multi-agent swarms 
 
 ## 7. Evolutionary Changelog
 * **2026-02-24**: Initial Document Creation.
+* **2026-03-03**: **Update: Integrating USH & Deterministic Snapshots**
+    * **Context**: Research into USH (Unified State Handshake) highlights a need for standardized intent-state passing.
+    * **Architecture Adjustment**:
+        * Adopting USH headers for `/session/{id}/handoff` to ensure cross-framework compatibility.
+        * Integrating with DARE (Deterministic Agent Replay Engine) to allow session-level state snapshots during handoffs, ensuring a "Fail-Safe" point for every agent transition.
+    * **Security Impact**: Deterministic snapshots allow for forensic auditing of state during handoffs, mitigating "State Injection" attacks.

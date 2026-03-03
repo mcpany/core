@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-03] Updates
+
+### Proposed Additions
+- **Deterministic Agent Replay Engine (DARE)**: (P0) Snapshot-based replay system for tool execution sequences, enabling deterministic debugging of multi-agent flows.
+- **USH Adapter (Unified State Handshake)**: (P0) Implementation of the USH protocol to standardize intent-state transfer between disparate agent frameworks.
+- **Context-Aware Semantic Discovery**: (P1) Enhances Lazy-Discovery with vector-based semantic search, prioritizing tools based on current agent intent.
+
+### Priority Shifts
+- **Lazy-MCP Middleware**: Promoted to **P0** (Already P0, but emphasizing Semantic upgrade).
+- **A2A Interop Bridge**: Promoted to **P0** to integrate with USH Adapter.
+
+### Deprecations / Monitoring
+- **Keyword-Only Tool Search**: Monitoring for deprecation in favor of Semantic Discovery.
