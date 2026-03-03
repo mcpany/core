@@ -46,3 +46,10 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+
+### Update: 2026-03-03 - Precision Context & Ephemeral Security
+**Context:** Market shifts towards "Partial State Handoff" (OpenClaw) and "Ephemeral Sessions" (Claude Code) require the A2A Bridge to be more than a simple proxy.
+**Architecture Adjustment:**
+*   **Context Pruning**: The bridge now implements `Semantic State Pruning` to ensure only the minimum necessary history is passed to the A2A agent during a handoff.
+*   **Ephemeral Tokens**: A2A agent credentials will now be session-bound and ephemeral, managed by the `Policy Firewall`.
+**Security Impact:** Reduces the risk of "Context Leakage" and credential theft during multi-agent orchestration.

@@ -75,9 +75,19 @@
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
+---
+
+## Evolution: [2026-03-03] Updates
+
+### Proposed Additions
+- **Semantic State Pruning Middleware**: (P0) Automatically filters conversation history during subagent handoffs based on task-intent (inspired by OpenClaw PSH).
+- **Metadata Security Scanner**: (P0) Scans tool schemas and metadata (labels, descriptions) for prompt injection patterns during the discovery phase.
+- **Ephemeral Session Entitlements**: (P1) Support for short-lived, one-time-use tool access tokens for agent sessions.
+- **Looping Drain Protection**: (P1) Rate-limiting and recursion depth monitoring for tool calls to prevent accidental or malicious billing exhaustion.
+
 ### Priority Shifts
-- **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
-- **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.
+- **On-Demand Discovery Middleware (Lazy-MCP)**: Re-affirmed as **P0**. Crucial for Gemini-style Semantic Tool Routing.
+- **Policy Firewall**: Promoted to **P0+** (Core Infrastructure). Must now include Metadata Scanning as a prerequisite for tool discovery.
 
 ### Deprecations / Monitoring
-- **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+- **Long-Lived Tool Tokens**: Monitoring for deprecation in favor of Ephemeral Session Entitlements.

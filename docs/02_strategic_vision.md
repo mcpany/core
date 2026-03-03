@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-03]
+### Focus: Precision Context Control & Metadata Integrity
+**Context**: Today's findings from OpenClaw's Partial State Handoff (PSH) and the emergence of Meta-Injection vulnerabilities emphasize that "Universal" connectivity is no longer enough. The Universal Agent Bus must now provide "Precision" control over what agents see and how tool metadata is verified.
+**Strategic Pivot**:
+- **Semantic State Pruning**: MCP Any will evolve its context protocol to support "Semantic Pruning," where the system automatically filters parent context based on the subagent's task-intent, preventing context leakage and token bloat.
+- **Metadata-Aware Policy Engine**: Expanding the Policy Firewall from "Runtime Tool Call" verification to "Discovery-Time Metadata" verification. Every tool schema and label must be scanned for prompt injections before being served to an agent.
+- **Ephemeral Entitlement**: Transitioning towards short-lived, session-bound tool entitlements (inspired by Claude Code) to minimize the blast radius of compromised agent sessions.
