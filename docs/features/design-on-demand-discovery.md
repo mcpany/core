@@ -57,3 +57,10 @@ As the number of available MCP tools grows, agents face "context pollution"—wh
 
 ## 7. Evolutionary Changelog
 *   **2026-02-25:** Initial Document Creation.
+
+### Update: 2026-03-03 - Transitioning to Default-On Discovery
+**Context:** Today's market sync revealed that Claude Code has moved "MCP Tool Search" (Lazy Loading) to the default mode, reporting up to 85% token savings.
+**Architecture Adjustment:**
+*   Promoting "Lazy-Discovery" from an optional middleware to the **Default Mode** for all MCP Any instances where context exceeds 10% of the window.
+*   Integrating "Context-Aware Summary API" to provide a fall-back for agents that still require some upfront tool visibility without full schema bloat.
+**Security Impact:** Reduces "Search-Based Injection" surface area by limiting the tool schemas exposed to the LLM during the initial reasoning phase.
