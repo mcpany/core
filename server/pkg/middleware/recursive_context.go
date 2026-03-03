@@ -29,6 +29,12 @@ type RecursiveContextManager struct {
 }
 
 // NewRecursiveContextManager creates a new RecursiveContextManager.
+//
+// Returns:
+//   - *RecursiveContextManager: A new instance of the manager.
+//
+// Side Effects:
+//   - Allocates memory for a new RecursiveContextManager and its internal sessions map.
 func NewRecursiveContextManager() *RecursiveContextManager {
 	return &RecursiveContextManager{
 		sessions: make(map[string]*SessionState),
@@ -36,6 +42,17 @@ func NewRecursiveContextManager() *RecursiveContextManager {
 }
 
 // CreateSession creates a new context session with initial data.
+//
+// Parameters:
+//   - data (map[string]interface{}): The initial data to store in the session.
+//   - ttl (time.Duration): The time-to-live for the session.
+//
+// Returns:
+//   - *SessionState: The newly created session state.
+//
+// Side Effects:
+//   - Adds a new session to the internal map.
+//   - Cleans up any expired sessions from the internal map.
 func (m *RecursiveContextManager) CreateSession(data map[string]interface{}, ttl time.Duration) *SessionState {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -61,6 +78,16 @@ func (m *RecursiveContextManager) CreateSession(data map[string]interface{}, ttl
 }
 
 // GetSession retrieves a context session by ID.
+//
+// Parameters:
+//   - id (string): The unique identifier of the session.
+//
+// Returns:
+//   - *SessionState: The requested session state.
+//   - bool: True if the session exists and is not expired, false otherwise.
+//
+// Side Effects:
+//   - None.
 func (m *RecursiveContextManager) GetSession(id string) (*SessionState, bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -76,6 +103,12 @@ func (m *RecursiveContextManager) GetSession(id string) (*SessionState, bool) {
 }
 
 // APIHandler handles HTTP requests for the Recursive Context Protocol endpoints.
+//
+// Returns:
+//   - http.HandlerFunc: An HTTP handler function for managing context sessions.
+//
+// Side Effects:
+//   - Depending on the HTTP request, it may create or read from context sessions in the manager.
 func (m *RecursiveContextManager) APIHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodPost {
@@ -143,6 +176,15 @@ const (
 
 // HandleContext is the middleware that intercepts requests, checks for the X-MCP-Parent-Context-ID header,
 // and injects the corresponding state into the request context.
+//
+// Parameters:
+//   - next (http.Handler): The next handler in the middleware chain.
+//
+// Returns:
+//   - http.Handler: A new HTTP handler that injects context state.
+//
+// Side Effects:
+//   - Modifies the request context to include session data if a valid context ID is provided.
 func (m *RecursiveContextManager) HandleContext(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		contextID := r.Header.Get("X-MCP-Parent-Context-ID")
