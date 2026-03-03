@@ -31,9 +31,15 @@ env:
   GOGC: 50 # Balanced GC to avoid excessive CPU usage while keeping memory in check
   GO_RACE: "" # Disable race detector in CI due to OOM on constrained runners
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   changes:
     runs-on: oci-runner
+    container:
+      image: iowoi/mcp-runner:latest
     outputs:
       src: ${{ steps.filter.outputs.src }}
     steps:
@@ -48,9 +54,9 @@ jobs:
             exit 0
           fi
           if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
-          if command -v apt-get &> /dev/null; then
+          if command -v apt-get > /dev/null 2>&1; then
             $SUDO apt-get update && $SUDO apt-get install -y make xz-utils curl unzip build-essential
-          elif command -v apk &> /dev/null; then
+          elif command -v apk > /dev/null 2>&1; then
              $SUDO apk add --no-cache make xz curl unzip build-base
           fi
 
@@ -70,27 +76,26 @@ jobs:
             DIFF=$(git diff --name-only HEAD~1 HEAD)
           fi
 
-          echo "Changed files:"
           echo "$DIFF"
-
           SRC_CHANGED="false"
-          while IFS= read -r file; do
-            if [[ -z "$file" ]]; then continue; fi
+          echo "$DIFF" | while IFS= read -r file; do
+            if [ -z "$file" ]; then continue; fi
             # Ignore markdown, txt, docs, license
-            if [[ "$file" == *.md ]] || [[ "$file" == *.txt ]] || [[ "$file" == docs/* ]] || [[ "$file" == LICENSE ]]; then
-              continue
-            fi
-            # Found a source file
-            SRC_CHANGED="true"
-            break
-          done <<< "$DIFF"
+            case "$file" in
+              *.md|*.txt|docs/*|LICENSE) continue ;;
+              *) SRC_CHANGED="true"; break ;;
+            esac
+          done
 
           echo "src=$SRC_CHANGED" >> $GITHUB_OUTPUT
+        shell: bash
 
   lint:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: oci-runner
+    container:
+      image: iowoi/mcp-runner:latest
     timeout-minutes: 90
     steps:
       - name: Free Disk Space (Fast)
@@ -113,9 +118,9 @@ jobs:
             exit 0
           fi
           if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
-          if command -v apt-get &> /dev/null; then
+          if command -v apt-get > /dev/null 2>&1; then
             $SUDO apt-get update && $SUDO apt-get install -y make xz-utils curl unzip build-essential
-          elif command -v apk &> /dev/null; then
+          elif command -v apk > /dev/null 2>&1; then
              $SUDO apk add --no-cache make xz curl unzip build-base
           fi
 
@@ -167,6 +172,8 @@ jobs:
 
   unit-test:
     runs-on: oci-runner
+    container:
+      image: iowoi/mcp-runner:latest
     timeout-minutes: 60
     needs: [changes, build-images]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -194,9 +201,9 @@ jobs:
             exit 0
           fi
           if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
-          if command -v apt-get &> /dev/null; then
+          if command -v apt-get > /dev/null 2>&1; then
             $SUDO apt-get update && $SUDO apt-get install -y make xz-utils curl unzip build-essential
-          elif command -v apk &> /dev/null; then
+          elif command -v apk > /dev/null 2>&1; then
              $SUDO apk add --no-cache make xz curl unzip build-base
           fi
 
@@ -298,6 +305,8 @@ jobs:
 
   e2e-parallel:
     runs-on: oci-runner
+    container:
+      image: iowoi/mcp-runner:latest
     timeout-minutes: 180
     needs: [changes, build-images]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -330,9 +339,9 @@ jobs:
             exit 0
           fi
           if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
-          if command -v apt-get &> /dev/null; then
+          if command -v apt-get > /dev/null 2>&1; then
             $SUDO apt-get update && $SUDO apt-get install -y make xz-utils curl unzip build-essential
-          elif command -v apk &> /dev/null; then
+          elif command -v apk > /dev/null 2>&1; then
              $SUDO apk add --no-cache make xz curl unzip build-base
           fi
 
@@ -469,6 +478,8 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: oci-runner
+    container:
+      image: iowoi/mcp-runner:latest
     strategy:
       fail-fast: false
       matrix:
@@ -505,9 +516,9 @@ jobs:
             exit 0
           fi
           if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
-          if command -v apt-get &> /dev/null; then
+          if command -v apt-get > /dev/null 2>&1; then
             $SUDO apt-get update && $SUDO apt-get install -y make curl unzip grep sed findutils build-essential
-          elif command -v apk &> /dev/null; then
+          elif command -v apk > /dev/null 2>&1; then
              $SUDO apk add --no-cache make curl unzip grep sed findutils build-base
           fi
       - name: Set up Go
@@ -599,6 +610,8 @@ jobs:
 
   e2e-sequential:
     runs-on: oci-runner
+    container:
+      image: iowoi/mcp-runner:latest
     timeout-minutes: 180
     needs: [changes, build-images]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -626,9 +639,9 @@ jobs:
             exit 0
           fi
           if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
-          if command -v apt-get &> /dev/null; then
+          if command -v apt-get > /dev/null 2>&1; then
             $SUDO apt-get update && $SUDO apt-get install -y make xz-utils curl unzip build-essential
-          elif command -v apk &> /dev/null; then
+          elif command -v apk > /dev/null 2>&1; then
              $SUDO apk add --no-cache make xz curl unzip build-base
           fi
 
@@ -747,6 +760,8 @@ jobs:
 
   e2e-public-api:
     runs-on: oci-runner
+    container:
+      image: iowoi/mcp-runner:latest
     timeout-minutes: 180
     needs: [changes, build-images]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -775,9 +790,9 @@ jobs:
             exit 0
           fi
           if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
-          if command -v apt-get &> /dev/null; then
+          if command -v apt-get > /dev/null 2>&1; then
             $SUDO apt-get update && $SUDO apt-get install -y make xz-utils curl unzip build-essential
-          elif command -v apk &> /dev/null; then
+          elif command -v apk > /dev/null 2>&1; then
              $SUDO apk add --no-cache make xz curl unzip build-base
           fi
 
@@ -876,6 +891,8 @@ jobs:
 
   docker-smoke-test:
     runs-on: oci-runner
+    container:
+      image: iowoi/mcp-runner:latest
     timeout-minutes: 15
     needs: [changes, build-images]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -889,9 +906,9 @@ jobs:
             exit 0
           fi
           if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
-          if command -v apt-get &> /dev/null; then
+          if command -v apt-get > /dev/null 2>&1; then
             $SUDO apt-get update && $SUDO apt-get install -y make xz-utils curl unzip build-essential
-          elif command -v apk &> /dev/null; then
+          elif command -v apk > /dev/null 2>&1; then
              $SUDO apk add --no-cache make xz curl unzip build-base
           fi
 
@@ -926,6 +943,8 @@ jobs:
 
   ui-test:
     runs-on: oci-runner
+    container:
+      image: iowoi/mcp-runner:latest
     timeout-minutes: 180
     needs: [changes, build-images]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -956,9 +975,9 @@ jobs:
             exit 0
           fi
           if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
-          if command -v apt-get &> /dev/null; then
+          if command -v apt-get > /dev/null 2>&1; then
             $SUDO apt-get update && $SUDO apt-get install -y make xz-utils curl unzip build-essential
-          elif command -v apk &> /dev/null; then
+          elif command -v apk > /dev/null 2>&1; then
              $SUDO apk add --no-cache make xz curl unzip build-base
           fi
 
@@ -1009,6 +1028,8 @@ jobs:
 
   k8s-e2e:
     runs-on: oci-runner
+    container:
+      image: iowoi/mcp-runner:latest
     timeout-minutes: 360 # Increased timeout for k8s tests
     needs: [changes, build-images]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -1034,9 +1055,9 @@ jobs:
             exit 0
           fi
           if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
-          if command -v apt-get &> /dev/null; then
+          if command -v apt-get > /dev/null 2>&1; then
             $SUDO apt-get update && $SUDO apt-get install -y make xz-utils curl unzip build-essential
-          elif command -v apk &> /dev/null; then
+          elif command -v apk > /dev/null 2>&1; then
              $SUDO apk add --no-cache make xz curl unzip build-base
           fi
 
@@ -1122,6 +1143,8 @@ jobs:
 
   ci-success:
     runs-on: oci-runner
+    container:
+      image: iowoi/mcp-runner:latest
     needs:
       [
         changes,
@@ -1150,9 +1173,9 @@ jobs:
             exit 0
           fi
           if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
-          if command -v apt-get &> /dev/null; then
+          if command -v apt-get > /dev/null 2>&1; then
             $SUDO apt-get update && $SUDO apt-get install -y make xz-utils curl unzip build-essential
-          elif command -v apk &> /dev/null; then
+          elif command -v apk > /dev/null 2>&1; then
              $SUDO apk add --no-cache make xz curl unzip build-base
           fi
 
