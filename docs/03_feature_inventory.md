@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-03] Updates
+
+### Proposed Additions
+- **Universal Identity Translation Middleware**: (P0) Maps and propagates identity tokens (JWT, OAuth) across agent handoffs between frameworks like OpenClaw and AutoGen.
+- **Intent-Aware Deduplication & Budgeting**: (P0) Prevents redundant tool calls and "Loop Injection" cost spikes by tracking tool outputs within an intent session.
+- **Process Attestation Hook**: (P1) Verifies that local MCP servers are launched by authorized parent processes, mitigating "Shadow MCP" risks.
+
+### Priority Shifts
+- **HITL Middleware**: Promoted to **P0**. Critical for "Delegate-able Approvals" in high-autonomy swarms to reduce user friction.
+- **A2A Stateful Residency**: Re-affirmed as **P0**. Essential for reliable Identity Bridge propagation.
+
+### Deprecations / Monitoring
+- **Unstructured Identity Headers**: Monitoring for deprecation in favor of the Universal Identity Mesh standard.

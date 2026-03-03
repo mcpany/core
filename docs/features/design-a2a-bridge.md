@@ -46,3 +46,4 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-03-03:** Integrated Universal Identity Mesh for JWT/OAuth propagation across A2A handoffs. Added support for Intent-Based Cost Guard to deduplicate A2A message-based tool triggers.

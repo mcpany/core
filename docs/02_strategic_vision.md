@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-03]
+### Focus: Universal Identity Mesh & Intent-Based Rate Limiting
+**Context**: Modern swarms are struggling with "Identity Fragmentation" (losing user context across agent handoffs) and "Recursive Cost Bloat" (redundant tool calls). Security concerns are shifting toward "Shadow MCPs" started by subagents.
+**Strategic Pivot**:
+- **Universal Identity Bridge**: MCP Any will implement a protocol-neutral identity layer that propagates and translates user JWTs and session identities across disparate agent frameworks (OpenClaw, AutoGen, etc.).
+- **Intent-Based Cost Guard**: Introducing a middleware that deduplicates tool calls within a single "Intent Scope" and enforces budget-bound rate limiting to prevent "Loop Injection" attacks.
+- **Process-Level Attestation**: Moving beyond network-level security to verify the parent process integrity of any MCP server, preventing unmanaged "Shadow" tools from executing in the mesh.
