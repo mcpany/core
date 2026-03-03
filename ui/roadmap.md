@@ -13,6 +13,9 @@
 - [ ] **[P1] Resource Cost/Latency Overlay**: Real-time performance metrics displayed directly on tool cards. (Added: 2026-02-26)
 - [ ] **[P0] Connectivity & Security Dashboard**: Visualize local-only vs remote exposure, attestation status, and active MFA sessions. (Added: 2026-02-28)
 - [ ] **[P0] Stateful A2A Mailbox**: UI for viewing queued and delivered A2A messages across the agent mesh. (Added: 2026-02-28)
+- [ ] **[P0] Sandbox Isolation Monitor**: Real-time status of tool sandboxes, including resource usage and security violation alerts. (Added: 2026-03-03)
+- [ ] **[P0] Secret Redaction Audit Log**: UI for reviewing (redacted) logs and managing redaction rules/patterns. (Added: 2026-03-03)
+- [ ] **[P1] "Safe Harbor" Registry Browser**: In-app marketplace for verified MCP servers with security trust scores. (Added: 2026-03-03)
 - [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
 - [x] **[P1] Tool Playground & Explorer**:
   - [x] Auto-generated forms from Tool JSON Schemas.

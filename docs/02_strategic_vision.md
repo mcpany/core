@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-03]
+### Focus: Skill Sandboxing & Proactive Secret Redaction
+**Context**: The OpenClaw security crisis and associated CVEs (RCE, Secret Disclosure) have demonstrated that even "Local-Only" agents are vulnerable if their tools have broad access. The ecosystem is moving from "Connect Everything" to "Isolate and Verify."
+**Strategic Pivot**:
+- **Skill Sandboxing**: MCP Any will evolve into a "Tool Hypervisor" that runs MCP servers in ephemeral, resource-constrained environments (e.g., WASM, Docker, or isolated sub-processes) by default.
+- **Proactive Redaction Engine**: Moving secret redaction from a logging-afterthought to a "Middleware Barrier." Every tool response is scanned for PII and secrets before it is ever returned to the Agent or stored in session state.
+- **The "Safe Harbor" Registry**: Establishing a reputation-based tool discovery mechanism where only "Attested" and "Scanned" MCP servers are granted high-privilege scopes.

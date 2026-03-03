@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-03 Evolution)
+*   **[P0] Ephemeral Skill Sandbox**: Implement Tool Hypervisor for isolated MCP server execution (Subprocess/Docker/WASM). (Added: 2026-03-03)
+*   **[P0] Proactive Redaction Middleware**: In-flight scanning and redaction of secrets in tool I/O. (Added: 2026-03-03)
+*   **[P1] Safe Harbor Tool Registry**: Reputation-based discovery and automated security scanning for MCP servers. (Added: 2026-03-03)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

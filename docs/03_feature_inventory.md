@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-03] Updates
+
+### Proposed Additions
+- **Ephemeral Skill Sandbox (Tool Hypervisor)**: (P0) A middleware that spawns MCP servers in restricted, ephemeral containers or WASM runtimes to mitigate RCE risks (inspired by OpenClaw CVEs).
+- **Proactive Secret Redaction Middleware**: (P0) Scans tool inputs/outputs for secrets (Regex/Entropy-based) before they reach the Agent or logs.
+- **"Safe Harbor" Tool Registry**: (P1) A community-curated and automated-scanning registry for MCP servers that provides trust scores and security attestations.
+
+### Priority Shifts
+- **"Safe-by-Default" Network Hardening**: Re-affirmed as **P0** with increased urgency.
+- **Policy Firewall**: Promotion to **P0** (Already P0, but expanding scope to include "Data Leakage Prevention" rules).
+
+### Deprecations / Monitoring
+- **Raw Tool I/O Logging**: Monitoring for deprecation in favor of "Redacted-by-Default" logging.
