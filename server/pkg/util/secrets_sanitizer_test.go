@@ -664,3 +664,162 @@ func TestCoverageForEmptyStripFunctions(t *testing.T) {
 	stripSecretsFromOpenapiService(nil)
 	stripSecretsFromMcpCall(nil)
 }
+
+// TestStripSecretsFromService_NilBranches ensures that our recursive stripping
+// functions safely handle nil or empty structures without panicking, which is a
+// required property of our configuration sanitization contract.
+func TestStripSecretsFromService_NilBranches(t *testing.T) {
+	tests := []struct {
+		name     string
+		sanitize func()
+	}{
+		{
+			name: "CommandLineService with nil",
+			sanitize: func() { stripSecretsFromCommandLineService(nil) },
+		},
+		{
+			name: "HTTPService with nil",
+			sanitize: func() { stripSecretsFromHTTPService(nil) },
+		},
+		{
+			name: "McpService with nil",
+			sanitize: func() { stripSecretsFromMcpService(nil) },
+		},
+		{
+			name: "FilesystemService with nil",
+			sanitize: func() { stripSecretsFromFilesystemService(nil) },
+		},
+		{
+			name: "VectorService with nil",
+			sanitize: func() { stripSecretsFromVectorService(nil) },
+		},
+		{
+			name: "WebsocketService with nil",
+			sanitize: func() { stripSecretsFromWebsocketService(nil) },
+		},
+		{
+			name: "WebrtcService with nil",
+			sanitize: func() { stripSecretsFromWebrtcService(nil) },
+		},
+		{
+			name: "Hook with nil",
+			sanitize: func() { stripSecretsFromHook(nil) },
+		},
+		{
+			name: "CommandLineCall with nil",
+			sanitize: func() { stripSecretsFromCommandLineCall(nil) },
+		},
+		{
+			name: "HTTPCall with nil",
+			sanitize: func() { stripSecretsFromHTTPCall(nil) },
+		},
+		{
+			name: "WebsocketCall with nil",
+			sanitize: func() { stripSecretsFromWebsocketCall(nil) },
+		},
+		{
+			name: "WebrtcCall with nil",
+			sanitize: func() { stripSecretsFromWebrtcCall(nil) },
+		},
+		{
+			name: "SecretValue with nil",
+			sanitize: func() { scrubSecretValue(nil) },
+		},
+		{
+			name: "Profile with nil",
+			sanitize: func() { StripSecretsFromProfile(nil) },
+		},
+		{
+			name: "Collection with nil",
+			sanitize: func() { StripSecretsFromCollection(nil) },
+		},
+		{
+			name: "Service with nil config",
+			sanitize: func() { StripSecretsFromService(nil) },
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// The assertion is that these do not panic.
+			requireNotPanic(t, tt.sanitize)
+		})
+	}
+}
+
+// requireNotPanic is a helper to ensure a function executes without panicking.
+func requireNotPanic(t *testing.T, f func()) {
+	t.Helper()
+	defer func() {
+		if r := recover(); r != nil {
+			t.Errorf("The code panicked: %v", r)
+		}
+	}()
+	f()
+}
+
+// TestStripSecretsFromService_VectorAndFS explicitly tests the branches
+// for VectorDb and Filesystem configurations to ensure credentials are removed.
+func TestStripSecretsFromService_VectorAndFS(t *testing.T) {
+	// 1. Test Milvus VectorDB
+	sMilvus := configv1.VectorUpstreamService_builder{
+		Milvus: configv1.MilvusVectorDB_builder{
+			ApiKey:   proto.String("test-api-key"),
+			Password: proto.String("test-password"),
+		}.Build(),
+	}.Build()
+
+	// 1b. Test with raw struct literal for Milvus VectorDB
+	// sMilvus := &configv1.VectorUpstreamService{
+	// 	VectorDbType: &configv1.VectorUpstreamService_Milvus{
+	// 		Milvus: &configv1.MilvusVectorDB{
+	// 			ApiKey:   "test-api-key",
+	// 			Password: "test-password",
+	// 		},
+	// 	},
+	// }
+
+	stripSecretsFromVectorService(sMilvus)
+
+	if sMilvus.GetMilvus().GetApiKey() != "" {
+		t.Errorf("expected milvus API key to be stripped, got %q", sMilvus.GetMilvus().GetApiKey())
+	}
+	if sMilvus.GetMilvus().GetPassword() != "" {
+		t.Errorf("expected milvus password to be stripped, got %q", sMilvus.GetMilvus().GetPassword())
+	}
+
+	// 2. Test SFTP Filesystem
+	sSftp := configv1.FilesystemUpstreamService_builder{
+		Sftp: configv1.SftpFs_builder{
+			Password: proto.String("test-password"),
+		}.Build(),
+	}.Build()
+
+	stripSecretsFromFilesystemService(sSftp)
+
+	if sSftp.GetSftp().GetPassword() != "" {
+		t.Errorf("expected sftp password to be stripped, got %q", sSftp.GetSftp().GetPassword())
+	}
+}
+
+// TestEmptyServiceSignatures ensures that services with empty/no-op secret stripping
+// implementations still fulfill the contract without error.
+func TestEmptyServiceSignatures(t *testing.T) {
+	t.Run("GrpcService", func(t *testing.T) {
+		sGrpc := configv1.GrpcUpstreamService_builder{}.Build()
+		requireNotPanic(t, func() { stripSecretsFromGrpcService(sGrpc) })
+		requireNotPanic(t, func() { stripSecretsFromGrpcService(nil) })
+	})
+
+	t.Run("OpenapiService", func(t *testing.T) {
+		sOpenapi := configv1.OpenapiUpstreamService_builder{}.Build()
+		requireNotPanic(t, func() { stripSecretsFromOpenapiService(sOpenapi) })
+		requireNotPanic(t, func() { stripSecretsFromOpenapiService(nil) })
+	})
+
+	t.Run("McpCall", func(t *testing.T) {
+		sMcpCall := configv1.MCPCallDefinition_builder{}.Build()
+		requireNotPanic(t, func() { stripSecretsFromMcpCall(sMcpCall) })
+		requireNotPanic(t, func() { stripSecretsFromMcpCall(nil) })
+	})
+}
