@@ -1,43 +1,33 @@
-# Audit Report: Truth Reconciliation
+# Truth Reconciliation Audit Report
 
 ## Executive Summary
-Performed a comprehensive audit of 10 distinct features across UI and Server domains. The audit revealed a high degree of alignment between the codebase and the intended functionality, with minor discrepancies in documentation and roadmap status.
-*   **Health Score:** 9/10 (Initial), 10/10 (Post-Remediation).
-*   **Primary Issue:** Documentation Drift (Code was ahead of Docs/Roadmap).
-*   **Action:** Synchronized `ui/roadmap.md` and feature documentation to reflect existing, verified capabilities.
+
+A "Truth Reconciliation Audit" was performed against the `mcpany/core` project. Ten random documentation files from `ui/docs` and `server/docs` were selected and cross-referenced with the codebase (Implementation) and Product Roadmap.
+
+The overall health of the documentation is good, with 8 out of 10 sampled files matching the roadmap and code perfectly. Two instances of **Documentation Drift** (Case A) were discovered and rectified, where the code correctly implemented a feature or changed behavior, but the documentation had not been fully updated to reflect those changes. No instances of **Roadmap Debt** (Case B) were found in this sample.
 
 ## Verification Matrix
 
 | Document Name | Status | Action Taken | Evidence |
 | :--- | :--- | :--- | :--- |
-| `ui/docs/features/connection-diagnostics.md` | ✅ Verified | None | Verified `ConnectionDiagnostic` component logic matches docs. |
-| `ui/docs/features/playground.md` | ⚠️ Drift | **Doc Updated** | Code supports "Copy as Python", doc missed it. Added to doc. |
-| `ui/docs/features/structured_log_viewer.md` | ✅ Verified | None | Verified `LogViewer` JSON auto-detection and expansion. |
-| `server/docs/features/hot_reload.md` | ✅ Verified | None | Verified `ReloadConfig` and `reconcileServices` in `server.go`. |
-| `server/docs/features/health-checks.md` | ✅ Verified | None | Verified `health.go` implements all claimed checks (HTTP, gRPC, FS, etc). |
-| `server/docs/features/dlp.md` | ✅ Verified | None | Verified `dlp.go` implements PII redaction middleware. |
-| `server/docs/features/context_optimizer.md` | ✅ Verified | None | Verified `context_optimizer.go` implements truncation logic. |
-| `server/docs/features/configuration_guide.md` | ✅ Verified | None | Verified configuration loading from files and database. |
-| `server/docs/features/security.md` | ⚠️ Drift | **Doc Updated** | Code enforces "Sentinel Security" (localhost-only) if API Key is missing. Doc updated to reflect this. |
-| `server/docs/features/audit_logging.md` | ✅ Verified | None | Verified `FileAuditStore` implements NDJSON format. |
+| `server/docs/features/terraform.md` | Perfectly Synced | None | `server/pkg/terraform/` contains the Terraform provider implementation. |
+| `server/docs/features/message_bus.md` | Perfectly Synced | None | `server/pkg/bus/` contains implementations for both Kafka and NATS message brokers. |
+| `server/docs/features/authentication/README.md` | Perfectly Synced | None | Authentication and Upstream Authentication are fully implemented and verified in middleware code. |
+| `server/docs/features/wasm.md` | Perfectly Synced | None | `server/pkg/wasm/runtime.go` implements experimental WASM plugin sandbox logic. |
+| `ui/docs/features/network.md` | Documentation Drift | Refactored documentation. | Documentation previously stated "force-directed layout", but `ui/src/hooks/use-network-topology.ts` uses Dagre, which is a hierarchical layout. Updated the markdown file to reflect the actual DAG layout. |
+| `ui/docs/features/connection-diagnostics.md` | Perfectly Synced | None | `host.docker.internal` detection is correctly implemented in `ui/src/lib/diagnostics-utils.ts`. |
+| `server/docs/features/resilience/README.md` | Documentation Drift | Refactored documentation. | Codebase contains `server/pkg/resilience/retry.go` with exponential backoff which satisfies Roadmap requirement "Service Retry Policy", but the documentation only mentioned `circuit_breaker`. Updated the doc to document `retry_policy`. |
+| `server/docs/features/documentation_generation.md` | Perfectly Synced | None | Configured in `server/cmd/server/main.go` under `config doc` command. |
+| `server/docs/monitoring.md` | Perfectly Synced | None | Monitoring and tracing metrics are emitted correctly via Prom/Otel tools. |
+| `server/docs/architecture.md` | Perfectly Synced | None | The described architecture, including `StdioUpstreamService`, matches the core components in `server/pkg/upstream/`. |
 
 ## Remediation Log
 
-### 1. Security Documentation Update
-*   **Issue:** `server/docs/features/security.md` implied open access if `allowed_ips` was empty.
-*   **Reality:** Code (`server/pkg/app/server.go`) enforces strict localhost-only access if no API Key is configured ("Sentinel Security").
-*   **Fix:** Updated documentation to explicitly describe the "Sentinel Security Mode".
-
-### 2. Playground Documentation & Roadmap
-*   **Issue:** `ui/roadmap.md` listed "Copy as Curl/Python" as TODO. `ui/docs/features/playground.md` omitted Python support.
-*   **Reality:** Code (`ui/src/lib/code-generator.ts`, `ui/src/components/playground/tool-runner.tsx`) fully implements Curl and Python code generation.
-*   **Fix:**
-    *   Updated `ui/docs/features/playground.md` to include "Copy as Code".
-    *   Updated `ui/roadmap.md` to mark Playground features as `[x]` (Completed).
-
-### 3. Code Quality (Linting)
-*   **Issue:** `make lint` failed due to missing TSDoc in UI components.
-*   **Fix:** Added missing TSDoc comments to `ui/src/components/logs/log-viewer.tsx` and `ui/src/components/diagnostics/discovery-status.tsx`.
+1. **`ui/docs/features/network.md`**: Fixed a Documentation Drift issue. The actual UI uses a hierarchical directed acyclic graph layout (using Dagre) for the Network Topology visualization. The documentation originally stated it used a "force-directed layout", which was inaccurate. The text was updated to "hierarchical layout (Dagre)".
+2. **`server/docs/features/resilience/README.md`**: Fixed a Documentation Drift issue. The resilience manager in the codebase (`server/pkg/resilience/manager.go`) properly implements a Retry Policy with an exponential backoff algorithm in addition to the Circuit Breaker. The documentation only covered the Circuit Breaker logic. The markdown file was expanded to explain and demonstrate the `retry_policy` configuration syntax.
 
 ## Security Scrub
-*   No PII, secrets, or internal IPs were found or exposed in this report.
+
+- Checked for personally identifiable information (PII): **None Found**.
+- Checked for exposed internal IPs/domain names: **None Found**.
+- Checked for hardcoded secrets/API keys: **None Found**.

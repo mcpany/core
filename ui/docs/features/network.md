@@ -8,7 +8,7 @@ Visualize the relationships between services, tools, and clients. The Network Gr
 ## Usage Guide
 
 ### 1. View Graph
-Navigate to `/network`. The graph renders automatically using a force-directed layout.
+Navigate to `/network`. The graph renders automatically using a hierarchical layout (Dagre).
 - **Nodes**: Represent Services, Clients, and Shared Resources.
 - **Edges**: Represent active connections or dependencies.
 
