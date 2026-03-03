@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-03 Evolution)
+*   **[P0] Identity-Aware Tool Scoping Middleware**: Implement role-based access control for subagents within swarms. (Added: 2026-03-03)
+*   **[P0] Adversarial Tool Hijack Scanner**: Pattern-based scanning of tool descriptions to prevent "WhatsApp-style" poisoning. (Added: 2026-03-03)
+*   **[P1] Role-Based Metadata Injection**: Automate injection of agent role context into upstream tool headers. (Added: 2026-03-03)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

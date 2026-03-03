@@ -75,9 +75,18 @@
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
+---
+
+## Evolution: [2026-03-03] Updates
+
+### Proposed Additions
+- **Identity-Aware Tool Scoping Middleware**: (P0) Enforce tool access policies based on the "Origin Identity" (e.g., agent role) of the caller.
+- **Adversarial Tool Hijack Scanner**: (P0) Middleware to detect and neutralize "tool poisoning" patterns in tool descriptions before they reach the LLM.
+- **Role-Based Metadata Injection**: (P1) Automatically inject role-specific metadata and context into tool call headers for specialized subagents.
+
 ### Priority Shifts
-- **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
-- **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.
+- **Policy Firewall**: Re-affirmed as **P0**. Escalating urgency for "Identity-Aware" policy enforcement.
+- **Provenance-First Discovery**: Promoted to **P0** due to rising "tool poisoning" incidents in the ecosystem.
 
 ### Deprecations / Monitoring
-- **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+- **Implicit Tool Access**: Moving towards a "Strict Origin Verification" model where calls without an "Origin Identity" are logged and eventually blocked.

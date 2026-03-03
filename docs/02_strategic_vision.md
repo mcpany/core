@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-03]
+### Focus: Identity-Based Scoping & Adversarial Tool Defense
+**Context**: Today's findings reveal a major shift towards specialized agent roles (OpenClaw's "Refinement-as-a-Service") and a corresponding increase in "Adversarial Tool" attacks (The WhatsApp Exploit). MCP Any must move beyond simple capability-based tokens to identity-aware and intent-aware security.
+**Strategic Pivot**:
+- **Identity-Based Tool Scoping**: Every tool call will now require an "Origin Identity" (e.g., `role:critic`, `role:coder`). MCP Any will enforce policies not just on "What" is being called, but "Who" is calling it.
+- **Adversarial Tool Sanitization**: Implementing a new middleware layer that automatically scans tool descriptions for "Hijack Patterns" before they reach the LLM, preventing tool poisoning.
+- **Role-Based Context Injection**: MCP Any will automatically inject role-specific metadata and context into tool calls, ensuring that specialized subagents have the necessary background without context bloat.

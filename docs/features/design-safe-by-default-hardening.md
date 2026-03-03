@@ -59,3 +59,7 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-03:** **Update: Hardening against "8,000 Exposed Servers" Vulnerability.**
+    *   **Context:** Market sync today confirmed widespread exposure of MCP servers due to default `0.0.0.0` bindings.
+    *   **Architecture Adjustment:** Introducing a "Pre-flight Exposure Check" that runs every 60 seconds. If a public IP is detected on a non-attested listener, the server will enter "Safe Mode" and suspend all non-read-only tool calls.
+    *   **Security Impact:** Prevents accidental long-term exposure even if a user bypasses initial startup checks.
