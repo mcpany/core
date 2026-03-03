@@ -81,3 +81,16 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-03] Updates
+
+### Proposed Additions
+- **Skill Workspace Sandbox Hardening**: (P0) Implements filesystem isolation and symlink escape protection for agent workspaces.
+- **Multimodal Tool Transport (MMTT)**: (P1) Standardized transport layer for binary/stream tool inputs (Audio, PDF, Images).
+- **Explicit Auth-First Routing Middleware**: (P0) Enforces mandatory authentication declarations for all agent-to-agent and tool-to-tool handoffs.
+
+### Priority Shifts
+- **Policy Firewall**: Re-affirmed as **P0** with expanded scope to include workspace filesystem hooks.
+- **Safe-by-Default Hardening**: Expanded to include mandatory explicit authentication for all internal routes.

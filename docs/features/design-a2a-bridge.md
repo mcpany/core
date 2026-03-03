@@ -46,3 +46,7 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-03-03:** Updated to align with OpenClaw v2026.3.2 release.
+    *   **"Messaging-First" Alignment**: Default configurations for A2A bridge endpoints now favor a messaging-first approach, prioritizing task handoffs over raw tool execution.
+    *   **Explicit Auth-First Routing**: All registered A2A routes now require explicit authentication declarations (`auth_required: true` by default) to prevent unauthorized "Ghost Handoffs."
+    *   **SecretRef Integration**: A2A tokens and credentials are now managed via the `SecretRef` mechanism, ensuring they are not exposed in plaintext during the handoff process.

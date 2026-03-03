@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-03]
+### Focus: Hardened Local Execution & Multimodal Toolsets
+**Context**: The latest OpenClaw release (v2026.3.2) signals a shift toward specialized multimodal transport (PDF, STT) and enhanced protection for local agent workspaces.
+**Strategic Pivot**:
+- **Skill Workspace Hardening**: Moving beyond simple network-level security to filesystem-level isolation. MCP Any will implement "Workspace Chrooting" to prevent symlink escapes and unauthorized path traversal by subagents.
+- **Multimodal Data Bus**: Transitioning from text-only tool transport to a multimodal-first gateway that standardizes binary streams (Audio, PDF, Vision) for all connected MCP servers.
+- **Explicit Auth-First Routing**: Adopting a "deny-by-default" routing policy for all agent-to-agent and tool-to-tool handoffs, requiring explicit authentication declarations for every registered route.
