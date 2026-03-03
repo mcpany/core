@@ -34,6 +34,12 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-03 Evolution)
+*   **[P0] Hardened Local Agent Sandbox**: Ephemeral containerized execution for untrusted tools. (Added: 2026-03-03)
+*   **[P0] Command-Level Cryptographic Attestation**: Mandatory digital signatures for high-risk operations. (Added: 2026-03-03)
+*   **[P1] WebSocket Origin Enforcement**: Mitigation for browser-to-local hijacking vulnerabilities. (Added: 2026-03-03)
+*   **[P1] A2A End-to-End Encryption**: Encrypted inter-agent messaging via the MCP Any bus. (Added: 2026-03-03)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

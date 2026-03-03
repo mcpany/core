@@ -75,6 +75,16 @@
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
+---
+
+## Evolution: [2026-03-03] Updates
+
+### Proposed Additions
+- **Hardened Local Agent Sandbox**: (P0) Ephemeral, containerized (Docker/WASM) execution environment for local tools to prevent RCE from untrusted project configurations.
+- **Command-Level Cryptographic Attestation**: (P0) Required digital signatures for high-risk tool calls (shell, filesystem) to ensure intent provenance.
+- **WebSocket Origin Enforcement Middleware**: (P1) Strict validation of `Origin` headers and device-pairing tokens to mitigate browser-to-local hijacking (OpenClaw-style).
+- **A2A Message Encryption (End-to-End)**: (P1) Ensures that inter-agent communications via MCP Any are encrypted, even if the mesh node is compromised.
+
 ### Priority Shifts
 - **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
 - **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.
