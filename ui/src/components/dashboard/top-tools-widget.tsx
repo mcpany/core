@@ -40,7 +40,13 @@ export function TopToolsWidget() {
 
     fetchData();
     // Refresh every 30s
-    const interval = setInterval(fetchData, 30000);
+    // ⚡ BOLT: [Network/Resource Optimization] Pause polling when tab is not visible to save bandwidth
+    // Randomized Selection from Top 5 High-Impact Targets
+    const interval = setInterval(() => {
+        if (!document.hidden) {
+            fetchData();
+        }
+    }, 30000);
     return () => clearInterval(interval);
   }, [serviceId]);
 
