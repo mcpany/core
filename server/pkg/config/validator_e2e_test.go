@@ -35,6 +35,21 @@ func TestGlobalSettings_InvalidBindAddress(t *testing.T) {
 			bindAddress:   "127.0.0.1:8080",
 			expectedError: "",
 		},
+		{
+			name:          "Remote Address Guard",
+			bindAddress:   "0.0.0.0:8080",
+			expectedError: "remote access guard: binding to 0.0.0.0:8080 requires MCPANY_ATTESTATION_TOKEN to be set",
+		},
+		{
+			name:          "Remote Address Guard Port Only",
+			bindAddress:   "8080",
+			expectedError: "remote access guard: binding to 8080 requires MCPANY_ATTESTATION_TOKEN to be set",
+		},
+		{
+			name:          "Remote Address Guard Empty Host",
+			bindAddress:   ":8080",
+			expectedError: "remote access guard: binding to :8080 requires MCPANY_ATTESTATION_TOKEN to be set",
+		},
 	}
 
 	for _, tc := range tests {
@@ -52,9 +67,16 @@ func TestGlobalSettings_InvalidBindAddress(t *testing.T) {
 				assert.NotEmpty(t, errs)
 				found := false
 				for _, err := range errs {
-					if err.Err.Error() == tc.expectedError {
-						found = true
-						break
+					if ae, ok := err.Err.(*ActionableError); ok {
+						if ae.Err.Error() == tc.expectedError {
+							found = true
+							break
+						}
+					} else {
+						if err.Err.Error() == tc.expectedError {
+							found = true
+							break
+						}
 					}
 				}
 				assert.True(t, found, "Expected error %q not found in %v", tc.expectedError, errs)

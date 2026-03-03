@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"net"
 	"net/url"
 	"os"
 	"os/exec"
@@ -433,6 +434,31 @@ func validateGlobalSettings(ctx context.Context, gs *configv1.GlobalSettings, bi
 		if gs.GetMcpListenAddress() != "" {
 			if err := validation.IsValidBindAddress(gs.GetMcpListenAddress()); err != nil {
 				return fmt.Errorf("invalid mcp_listen_address: %w", err)
+			}
+			addr := gs.GetMcpListenAddress()
+			var host string
+			// Check if it's just a port or an invalid format without a host.
+			if !strings.Contains(addr, ":") {
+				// E.g., "50050"
+				host = ""
+			} else {
+				h, _, err := net.SplitHostPort(addr)
+				if err != nil {
+					// Fallback: if we can't parse it, err on the side of caution or just treat it as wildcard.
+					// A plain string might just be a port or malformed.
+					host = ""
+				} else {
+					host = h
+				}
+			}
+
+			if host == "" || host == "0.0.0.0" || host == "::" {
+				if os.Getenv("MCPANY_ATTESTATION_TOKEN") == "" {
+					return &ActionableError{
+						Err:        fmt.Errorf("remote access guard: binding to %s requires MCPANY_ATTESTATION_TOKEN to be set", gs.GetMcpListenAddress()),
+						Suggestion: "By default, MCP Any only binds to localhost. To expose it remotely, you must provide an attestation token. Set the MCPANY_ATTESTATION_TOKEN environment variable.",
+					}
+				}
 			}
 		}
 	case Client:
