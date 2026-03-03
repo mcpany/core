@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-03]
+### Focus: Config Trust Isolation & Verified A2A Handshake
+**Context**: Recent exploits (CVE-2025-59536, OpenClaw Local Hijack) have proven that "Local-Only" is not enough. The entire agent supply chain, from repository configuration files to inter-agent message passing, must be explicitly authenticated and sandboxed.
+**Strategic Pivot**:
+- **Config Trust Sandbox**: MCP Any will implement a "Trust-Before-Load" mechanism for all repository-level settings. Configurations will be loaded in a virtualized environment to prevent "Shadow Config" attacks that exfiltrate API keys.
+- **Origin-Verified Gateway**: All local listeners will enforce strict `Origin` and `Sec-Fetch-Site` header validation to prevent malicious websites from hijacking the local AI agent bus.
+- **Verified A2A Handshake**: Moving from a simple "A2A Bridge" to a "Cryptographically Verified Handshake" for all Agent-to-Agent interactions, ensuring that subagents only interact with peers that have proven their identity and policy compliance.

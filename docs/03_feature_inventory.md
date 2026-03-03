@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-03] Updates
+
+### Proposed Additions
+- **Config Trust Sandbox (Trust-Before-Load)**: (P0) A secure middleware that parses and validates project-level configuration files (like `.claude/settings.json`) in an isolated environment before they are applied to the active MCP Any session.
+- **Origin-Enforcement Middleware**: (P0) Hardens local listeners by requiring valid `Origin` headers for all incoming requests, preventing "Cross-Site Agent Hijacking."
+- **A2A Cryptographic Handshake**: (P1) Implementation of an identity-based handshake for the A2A protocol to ensure secure peer-to-peer agent coordination.
+
+### Priority Shifts
+- **A2A Stateful Residency**: Promoted to **P0** (Critical for reliable cross-framework swarm communication).
+- **HITL Middleware**: Re-affirmed as **P0** (Essential for human-supervised swarm control as swarms reach 100+ agents).
+
+### Deprecations / Monitoring
+- **Unauthenticated Local Listeners**: Deprecating all listeners that do not require an Auth-Token or Origin-Validation.

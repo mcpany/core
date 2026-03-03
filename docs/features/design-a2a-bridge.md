@@ -46,3 +46,6 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-03-03:** **Update: Verified A2A Handshake.**
+    * **Context**: Recent local hijacking exploits have shown that a simple A2A bridge is insufficient for security.
+    * **Architecture Adjustment**: Implementing a cryptographically verified handshake for all A2A connections. This replaces simple token-based auth with a full identity proof (Ed25519) to prevent peer spoofing in the agent mesh.
