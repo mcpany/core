@@ -6,7 +6,16 @@ package util //nolint:revive,nolintlint // Package name 'util' is common in this
 import (
 	"bytes"
 	"math"
+	"sync"
 )
+
+var jsonWalkerBufferPool = sync.Pool{
+	New: func() interface{} {
+		b := make([]byte, 0, 4096)
+		return &b
+	},
+}
+
 
 // WalkJSONStrings visits every string value in the JSON input.
 //
@@ -21,6 +30,7 @@ import (
 // Returns:
 //   - []byte: The potentially modified JSON output.
 func WalkJSONStrings(input []byte, visitor func(raw []byte) ([]byte, bool)) []byte {
+	var outPtr *[]byte
 	var out []byte
 	i := 0
 	lastWrite := 0
@@ -83,9 +93,15 @@ func WalkJSONStrings(input []byte, visitor func(raw []byte) ([]byte, bool)) []by
 			replacement, modified := visitor(raw)
 			if modified {
 				if out == nil {
-					// Allocate buffer
-					// Heuristic: start with input size + small buffer
-					out = make([]byte, 0, calculateCapacity(len(input)))
+					// ⚡ BOLT: Reuse byte buffers for JSON walking to reduce allocations on heavy text replacement paths
+					// Randomized Selection from Top 5 High-Impact Targets (Memory Category)
+					outPtr = jsonWalkerBufferPool.Get().(*[]byte)
+					out = (*outPtr)[:0]
+
+					targetCap := calculateCapacity(len(input))
+					if cap(out) < targetCap {
+						out = make([]byte, 0, targetCap)
+					}
 				}
 				out = append(out, input[lastWrite:quotePos]...)
 				out = append(out, replacement...)
@@ -100,7 +116,16 @@ func WalkJSONStrings(input []byte, visitor func(raw []byte) ([]byte, bool)) []by
 		return input
 	}
 	out = append(out, input[lastWrite:]...)
-	return out
+
+	result := make([]byte, len(out))
+	copy(result, out)
+
+	if outPtr != nil {
+		*outPtr = out
+		jsonWalkerBufferPool.Put(outPtr)
+	}
+
+	return result
 }
 
 // WalkStandardJSONStrings visits every string value in the JSON input.
@@ -116,6 +141,7 @@ func WalkJSONStrings(input []byte, visitor func(raw []byte) ([]byte, bool)) []by
 // Returns:
 //   - []byte: The potentially modified JSON output.
 func WalkStandardJSONStrings(input []byte, visitor func(raw []byte) ([]byte, bool)) []byte {
+	var outPtr *[]byte
 	var out []byte
 	i := 0
 	lastWrite := 0
@@ -159,9 +185,15 @@ func WalkStandardJSONStrings(input []byte, visitor func(raw []byte) ([]byte, boo
 			replacement, modified := visitor(raw)
 			if modified {
 				if out == nil {
-					// Allocate buffer
-					// Heuristic: start with input size + small buffer
-					out = make([]byte, 0, calculateCapacity(len(input)))
+					// ⚡ BOLT: Reuse byte buffers for JSON walking to reduce allocations on heavy text replacement paths
+					// Randomized Selection from Top 5 High-Impact Targets (Memory Category)
+					outPtr = jsonWalkerBufferPool.Get().(*[]byte)
+					out = (*outPtr)[:0]
+
+					targetCap := calculateCapacity(len(input))
+					if cap(out) < targetCap {
+						out = make([]byte, 0, targetCap)
+					}
 				}
 				out = append(out, input[lastWrite:quotePos]...)
 				out = append(out, replacement...)
@@ -176,7 +208,16 @@ func WalkStandardJSONStrings(input []byte, visitor func(raw []byte) ([]byte, boo
 		return input
 	}
 	out = append(out, input[lastWrite:]...)
-	return out
+
+	result := make([]byte, len(out))
+	copy(result, out)
+
+	if outPtr != nil {
+		*outPtr = out
+		jsonWalkerBufferPool.Put(outPtr)
+	}
+
+	return result
 }
 
 // skipWhitespace returns the index of the first non-whitespace character starting from start.
