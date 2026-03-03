@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-03]
+### Focus: Skill Attestation & Zero-Trust Tool Runtimes
+**Context**: Today's findings around the OpenClaw "ClawHavoc" incident and CVE-2026-25253 highlight that "local execution" is not inherently "safe execution." The leakage of gateway tokens via malicious JavaScript and "Skill-Squatting" are the new frontlines of AI agent security.
+**Strategic Pivot**:
+- **Skill Attestation Registry (SAR)**: MCP Any will move beyond simple provenance to a "Behavioral Attestation" model. Tools will be matched against a decentralized registry of known-safe behaviors and cryptographic signatures.
+- **Isolated Execution Sidecars**: Transitioning from direct local execution to "Sidecar-based" tool runtimes. Every tool call will occur in a transient, WASM or Docker-lite container with zero access to the host gateway's tokens or filesystem unless explicitly mounted.
+- **Intent-Scoped Authorization**: Implementing a "Policy-per-Intent" framework where a tool's capabilities are dynamically constrained based on the high-level goal verified by the parent agent, preventing "Task-Creep" or unauthorized data exfiltration.
