@@ -46,3 +46,7 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-03-03:** **Evolution: PoA Alignment Awareness**
+    - **Context**: Today's findings show that advanced A2A swarms (e.g., OpenClaw) require alignment heartbeats (lobster/crab emojis) to be passed through the bridge.
+    - **Adjustment**: Updating `A2ABridgeMiddleware` in Section 4 to include a "PoA Carrier" that preserves and validates these markers during cross-agent handoffs.
+    - **Impact**: Prevents "Alignment Loss" when a task crosses from an MCP agent to an A2A agent.

@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-03]
+### Focus: Proof-of-Alignment & Heterogeneous Swarm Orchestration
+**Context**: The rise of viral agents like OpenClaw has introduced the "Proof-of-Alignment" (PoA) protocol, using emoji-based cryptographic heartbeats (🦞/🦀) to maintain subagent integrity. Simultaneously, "Shadow-MCP" backchannels present a new shadow IT threat for AI.
+**Strategic Pivot**:
+- **PoA-Aware Gateway**: MCP Any must evolve to natively understand and validate PoA alignment markers within JSON-RPC payloads. It will act as the "Alignment Validator" that ensures subagents are not deviating from parent instructions.
+- **Shadow-MCP Detection & Quarantine**: Implementing real-time monitoring for unauthorized MCP server spawns. MCP Any will automatically detect and isolate ad-hoc tool backchannels that attempt to bypass the primary Policy Firewall.
+- **Heterogeneous Alignment Bridging**: Providing a "Translation Layer" for alignment signals between different agent frameworks, ensuring that a "🦞" signal from OpenClaw is understood by a Claude-native subagent.

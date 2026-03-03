@@ -19,9 +19,6 @@
 - **Recursive Context Protocol**: Promoted from **P1** to **P0**. Essential for modern agent swarms to prevent state loss.
 - **Shared KV Store**: Promoted from **P1** to **P0**. Critical for coordinating multi-agent actions in complex workflows.
 
-### Deprecations / Monitoring
-- *None today.*
-
 ---
 
 ## Evolution: [2026-02-24] Updates
@@ -81,3 +78,16 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-03] Updates
+
+### Proposed Additions
+- **MCP-PoA Validator**: (P0) Middleware that validates "Proof-of-Alignment" markers (emojis/metadata) in payloads to ensure subagent compliance.
+- **Emoji-based Alignment Verification**: (P1) Automatic injection and extraction of cryptographic PoA markers for multi-agent handoffs.
+- **Shadow-MCP Detector & Quarantine**: (P0) Real-time monitoring for unauthorized MCP server spawns to prevent tool backchannels.
+
+### Priority Shifts
+- **A2A Interop Bridge**: Promoted to include PoA markers in its translation layer.
+- **Machine-Checkable Security Contracts**: Promoted to **P0** to support the automated validation requirements of PoA.
