@@ -57,3 +57,10 @@ As the number of available MCP tools grows, agents face "context pollution"—wh
 
 ## 7. Evolutionary Changelog
 *   **2026-02-25:** Initial Document Creation.
+
+### Update: 2026-03-03 - Transitioning to General Availability (GA) Standards
+**Context:** Anthropic's GA release of "Tool Search" and Google's Policy Engine maturity have established high-performance tool search as the industry standard. MCP Any must transition from experimental Lazy-Discovery to a production-grade, standardized implementation.
+**Architecture Adjustment:**
+*   **Standardized Search Discovery Tool**: MCP Any will expose a `mcpany_search_tools` tool that follows the emerging Claude/Gemini-compatible search patterns, ensuring that any agent can discover tools without context pollution.
+*   **Attested Search Results**: Integrating with the Supply Chain Integrity Guard to ensure that only cryptographically verified tools are returned in search results, preventing the injection of malicious tools (as seen in the "ClawHub" incidents).
+*   **Lazy Loading as a Default**: For enterprise-scale environments (10+ servers), Lazy-Discovery will be the default mode to preserve context window stability.
