@@ -81,3 +81,20 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-03] Updates
+
+### Proposed Additions
+- **Swarm-to-Swarm (S2S) Handoff Protocol**: (P0) A high-performance protocol for cross-network swarm coordination and context handoff.
+- **Metadata Sanitization Hook**: (P0) Prevents prompt injection by scrubbing malicious patterns from tool descriptions and JSON schemas.
+- **Ephemeral Tool Sandboxing (Docker-Bound)**: (P1) Automatic orchestration of disposable tool environments.
+- **Intent-Based Semantic Router**: (P1) Maps high-level agent "Intents" to a dynamic set of tools and sub-swarms.
+
+### Priority Shifts
+- **Provenance-First Discovery**: Promoted to **P0**. Essential for preventing "poisoned" schema ingestion in larger agent meshes.
+- **Lazy-MCP Discovery Middleware**: Re-affirmed as **P0**. Critical to scale discovery as swarm handoffs increase.
+
+### Deprecations / Monitoring
+- **Unsanitized Metadata Access**: Monitor for deprecation of direct access to raw tool metadata in favor of the Sanitized Gateway.

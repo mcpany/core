@@ -34,6 +34,12 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-03 Evolution)
+*   **[P0] Swarm-to-Swarm (S2S) Handoff Protocol**: Implement cross-network swarm coordination and context handoff. (Added: 2026-03-03)
+*   **[P0] Metadata Sanitization Hook**: Middleware to scrub prompt injection patterns from tool descriptions and JSON schemas. (Added: 2026-03-03)
+*   **[P1] Ephemeral Tool Sandboxing (Docker-Bound)**: Automatic orchestration of disposable tool environments. (Added: 2026-03-03)
+*   **[P1] Intent-Based Semantic Router**: Map agent "Intents" to a dynamic set of tools and sub-swarms. (Added: 2026-03-03)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

@@ -57,3 +57,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-03]
+### Focus: Swarm-to-Swarm (S2S) Orchestration & Schema Integrity
+**Context**: Today's market sync reveals a shift from individual agent coordination (A2A) to large-scale swarm handoffs (S2S) and new prompt injection vectors hidden within tool metadata ("Schema Poisoning").
+**Strategic Pivot**:
+- **S2S Handoff Gateway**: MCP Any will evolve to support cross-swarm context transfer, enabling entire clusters of agents to hand off tasks and state to other specialized swarms across network boundaries.
+- **Metadata Sanitization & Integrity**: Implementing a "Sanitization Layer" that scrubs tool descriptions and schemas for malicious system prompt instructions, ensuring the "Tool Discovery" phase is not exploited for prompt injection.
+- **Ephemeral Tool Execution**: Integrating optional container-based sandboxing for tool execution, allowing MCP Any to spin up disposable environments for unverified third-party tools.
+- **Intent-Based Discovery**: Moving towards "Intent-to-Tool" mapping where agents express a goal, and MCP Any performs semantic routing to the optimal set of tools or sub-swarms.
