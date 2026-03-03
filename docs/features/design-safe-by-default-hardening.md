@@ -59,3 +59,9 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-03:** **Update: Mitigation of Configuration Injection Attacks**
+    - **Context**: Today's research into Claude Code CVE-2025-59536 and CVE-2026-21852 reveals that "Safe-by-Default" must extend beyond network bindings to include **configuration provenance**.
+    - **Architecture Adjustment**:
+        - Hardening the `ConfigLoader` to reject any non-local or untrusted project-level configurations that attempt to override security hooks.
+        - Integrating the **Project-Config Sandbox Middleware** as a core component of the "Safe-by-Default" posture.
+    - **Security Impact**: Prevents Remote Code Execution (RCE) even if an attacker manages to trick a user into running an agent in a malicious repository.

@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-03]
+### Focus: Secure Project-Scoping & Configuration Sandboxing
+**Context**: Today's research into the Claude Code CVEs and OpenClaw execution patterns reveals that "Configuration Injection" (malicious `.mcp` or project-level tool configs) is the primary attack vector for supply chain compromise in agentic workflows.
+**Strategic Pivot**:
+- **Project-Scoped Tool Isolation**: MCP Any will implement a virtualized "Project Boundary" for tools. Tools defined in project configuration files will be automatically isolated from the host environment and require explicit user opt-in for each session.
+- **Configuration Sandboxing**: Moving from raw config parsing to a "Validated Schema Only" approach where project-level MCP configurations cannot execute arbitrary shell commands or hooks without passing a strict, non-executable validation layer.
+- **Secure Remote-to-Local Handshake**: Enhancing the "Plan Remotely, Execute Locally" pattern by implementing a cryptographic handshake that verifies the remote planner's identity before allowing local tool execution, mitigating rogue agent takeover.

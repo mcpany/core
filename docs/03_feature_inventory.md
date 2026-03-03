@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-03] Updates
+
+### Proposed Additions
+- **Project-Config Sandbox Middleware**: (P0) Intercepts and validates project-level MCP configurations before they are loaded, preventing RCE and exfiltration via malicious `hooks` or `env` overrides.
+- **MFA-for-Tooling (HITL Expansion)**: (P1) Extension of HITL middleware specifically for "Sensitive Config Adoption" where a user must approve new tool definitions discovered in a repo.
+- **Remote-to-Local Identity Handshake**: (P1) A protocol for local MCP Any instances to verify the cryptographic identity of remote planners (e.g., Claude Code, OpenClaw remote nodes).
+
+### Priority Shifts
+- **Safe-by-Default Network Hardening**: Re-affirmed as **P0**. The move to local-only bindings is critical for mitigating the risk of exposed MCP configurations.
+- **MCP Provenance Attestation**: Promoted to include "Config-level Attestation" as a requirement for P0 status.
+
+### Deprecations / Monitoring
+- **Implicit Repo Config Trust**: Deprecating the automatic loading of `.mcp` or project configs without explicit user/sandbox verification.

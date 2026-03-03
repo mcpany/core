@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-03 Evolution)
+*   **[P0] Project-Config Sandbox Middleware**: Intercepts and validates project-level MCP configurations before they are loaded, preventing RCE and exfiltration. (Added: 2026-03-03)
+*   **[P1] MFA-for-Tooling (HITL Expansion)**: Extension of HITL middleware specifically for "Sensitive Config Adoption" where a user must approve new tool definitions discovered in a repo. (Added: 2026-03-03)
+*   **[P1] Remote-to-Local Identity Handshake**: A protocol for local MCP Any instances to verify the cryptographic identity of remote planners (e.g., Claude Code, OpenClaw remote nodes). (Added: 2026-03-03)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
