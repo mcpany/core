@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-03] Updates
+
+### Proposed Additions
+- **WebSocket Origin Enforcement Middleware**: (P0) Mandatory origin validation and CSRF protection for all local gateway connections.
+- **Shadow AI Inventory Beacon**: (P1) A discoverable service endpoint for organizational governance tools to inventory local agent instances.
+- **Attestation-First Plugin Loader**: (P0) Restrict plugin execution to those with valid cryptographic signatures from verified providers.
+
+### Priority Shifts
+- **"Safe-by-Default" Network Hardening**: (P0) Re-affirmed and expanded to include cross-origin protection.
+- **Provenance-First Discovery**: (P0) Promoted from P1 to P0 due to the discovery of 1,000+ malicious plugins in the ecosystem.
+
+### Deprecations / Monitoring
+- **Unverified Third-Party Plugins**: Monitoring for strict deprecation in favor of the Attested Plugin Model.

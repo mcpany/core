@@ -59,3 +59,9 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-03:** Mitigating Browser-Based WebSocket Hijacking.
+    *   **Context:** Today's research on the OpenClaw exploit demonstrates that `localhost` listeners are vulnerable to cross-origin attacks from a victim's browser.
+    *   **Architecture Adjustment:**
+        *   Implementing a mandatory `Origin` whitelist for all WebSocket and HTTP gateway connections.
+        *   Introducing a "Connection Handshake Secret" (CSRF-like token) that must be provided by the client (agent) before the gateway upgrades to a full session.
+    *   **Security Impact:** Prevents malicious websites from interacting with the local MCP Any gateway even if the user is logged into the workstation.

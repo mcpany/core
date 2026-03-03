@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-03 Evolution)
+*   **[P0] WebSocket Origin Enforcement**: Implement mandatory Origin validation and CSRF protection for local listeners to prevent browser-based hijacking. (Added: 2026-03-03)
+*   **[P1] Shadow AI Inventory Beacon**: Discoverable endpoint for organizational governance and agent inventory. (Added: 2026-03-03)
+*   **[P0] Attestation-First Plugin Loader**: Cryptographic signature verification for all third-party plugins. (Added: 2026-03-03)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
