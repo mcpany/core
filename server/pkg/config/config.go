@@ -34,7 +34,7 @@ func BindRootFlags(cmd *cobra.Command) {
 	viper.SetEnvPrefix("MCPANY")
 	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
 
-	cmd.PersistentFlags().String("mcp-listen-address", "50050", "MCP server's bind address. Env: MCPANY_MCP_LISTEN_ADDRESS")
+	cmd.PersistentFlags().String("mcp-listen-address", "127.0.0.1:50050", "MCP server's bind address. Env: MCPANY_MCP_LISTEN_ADDRESS")
 	cmd.PersistentFlags().StringSlice("config-path", []string{}, "Paths to configuration files or directories for pre-registering services. Can be specified multiple times. Env: MCPANY_CONFIG_PATH")
 	cmd.PersistentFlags().String("metrics-listen-address", "", "Address to expose Prometheus metrics on. If not specified, metrics are disabled. Env: MCPANY_METRICS_LISTEN_ADDRESS")
 	cmd.PersistentFlags().Bool("debug", false, "Enable debug logging. Env: MCPANY_DEBUG")

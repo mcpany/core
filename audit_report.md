@@ -1,33 +1,35 @@
 # Truth Reconciliation Audit Report
 
-## Executive Summary
+## 1. Executive Summary
 
-A "Truth Reconciliation Audit" was performed against the `mcpany/core` project. Ten random documentation files from `ui/docs` and `server/docs` were selected and cross-referenced with the codebase (Implementation) and Product Roadmap.
+This report details the findings and remediation actions from a "10-File" Truth Reconciliation Audit. The objective was to verify that the Documentation, Codebase, and Product Roadmap are in perfect sync. The audit revealed a major discrepancy: the Product Roadmap (and corresponding design docs) designated "Safe-by-Default Hardening" (specifically blocking `0.0.0.0` binds without explicit attestation) as a P0 priority, yet the codebase still defaulted to `50050` and allowed binding to `0.0.0.0` without any remote access guards. This constitutes a severe "Roadmap Debt" which was immediately remediated through engineering the required zero-trust logic.
 
-The overall health of the documentation is good, with 8 out of 10 sampled files matching the roadmap and code perfectly. Two instances of **Documentation Drift** (Case A) were discovered and rectified, where the code correctly implemented a feature or changed behavior, but the documentation had not been fully updated to reflect those changes. No instances of **Roadmap Debt** (Case B) were found in this sample.
-
-## Verification Matrix
+## 2. Verification Matrix
 
 | Document Name | Status | Action Taken | Evidence |
 | :--- | :--- | :--- | :--- |
-| `server/docs/features/terraform.md` | Perfectly Synced | None | `server/pkg/terraform/` contains the Terraform provider implementation. |
-| `server/docs/features/message_bus.md` | Perfectly Synced | None | `server/pkg/bus/` contains implementations for both Kafka and NATS message brokers. |
-| `server/docs/features/authentication/README.md` | Perfectly Synced | None | Authentication and Upstream Authentication are fully implemented and verified in middleware code. |
-| `server/docs/features/wasm.md` | Perfectly Synced | None | `server/pkg/wasm/runtime.go` implements experimental WASM plugin sandbox logic. |
-| `ui/docs/features/network.md` | Documentation Drift | Refactored documentation. | Documentation previously stated "force-directed layout", but `ui/src/hooks/use-network-topology.ts` uses Dagre, which is a hierarchical layout. Updated the markdown file to reflect the actual DAG layout. |
-| `ui/docs/features/connection-diagnostics.md` | Perfectly Synced | None | `host.docker.internal` detection is correctly implemented in `ui/src/lib/diagnostics-utils.ts`. |
-| `server/docs/features/resilience/README.md` | Documentation Drift | Refactored documentation. | Codebase contains `server/pkg/resilience/retry.go` with exponential backoff which satisfies Roadmap requirement "Service Retry Policy", but the documentation only mentioned `circuit_breaker`. Updated the doc to document `retry_policy`. |
-| `server/docs/features/documentation_generation.md` | Perfectly Synced | None | Configured in `server/cmd/server/main.go` under `config doc` command. |
-| `server/docs/monitoring.md` | Perfectly Synced | None | Monitoring and tracing metrics are emitted correctly via Prom/Otel tools. |
-| `server/docs/architecture.md` | Perfectly Synced | None | The described architecture, including `StdioUpstreamService`, matches the core components in `server/pkg/upstream/`. |
+| `ui/docs/features/real-time-inspector.md` | Sync | Verified Inspector page matches documentation (Live badge, Seed Trace). | UI `inspector/page.tsx` contains described components. |
+| `server/docs/features/debugger.md` | Sync | Verified Agent Debugger middleware exists and handles logs. | Source code at `server/pkg/middleware/debugger.go`. |
+| `server/docs/features/dynamic_registration.md` | Sync | Verified dynamic tools generation from OpenAPI/gRPC works. | OpenAPI parser source matches docs. |
+| `server/docs/architecture.md` | Sync | Overall flow and configuration structure matches current state. | `server/pkg/config` logic matches the document. |
+| `ui/roadmap.md` | Drift | Noted missing UI features (e.g. Agent Chain Tracer). | Remediated core backend issue first per priority logic. |
+| `server/roadmap.md` | Drift | Roadmap listed P0 Safe-by-Default Hardening as missing. | Implemented missing feature. |
+| `docs/02_strategic_vision.md` | Sync | Aligns with overarching goals of the codebase. | Review of recent commits shows alignment. |
+| `docs/03_feature_inventory.md` | Drift | Same as roadmap, missing features like Safe-by-Default. | Implemented Safe-by-Default logic in configuration. |
+| `docs/features/design-a2a-bridge.md` | Drift | Outlined design not yet implemented in code. | Documented as roadmap debt. |
+| `docs/features/design-safe-by-default-hardening.md` | **Drift** | Designed feature to block 0.0.0.0 without attestation was completely missing in implementation. | **Engineered Solution** (Case B Action). |
 
-## Remediation Log
+## 3. Remediation Log
 
-1. **`ui/docs/features/network.md`**: Fixed a Documentation Drift issue. The actual UI uses a hierarchical directed acyclic graph layout (using Dagre) for the Network Topology visualization. The documentation originally stated it used a "force-directed layout", which was inaccurate. The text was updated to "hierarchical layout (Dagre)".
-2. **`server/docs/features/resilience/README.md`**: Fixed a Documentation Drift issue. The resilience manager in the codebase (`server/pkg/resilience/manager.go`) properly implements a Retry Policy with an exponential backoff algorithm in addition to the Circuit Breaker. The documentation only covered the Circuit Breaker logic. The markdown file was expanded to explain and demonstrate the `retry_policy` configuration syntax.
+**Case B: Roadmap Debt (Code is Missing/Broken)**
+*   **Target:** `docs/features/design-safe-by-default-hardening.md` and `server/roadmap.md`
+*   **Condition:** The document matches the Roadmap/Requirements (P0 Safe-by-Default Hardening), but the code was missing this critical security control.
+*   **Action:** Engineered the Solution.
+    *   Updated `server/pkg/config/config.go` to bind to `127.0.0.1:50050` by default instead of `50050` (which previously defaulted to all interfaces).
+    *   Implemented `ValidateGlobalSettings` in `server/pkg/config/validator.go` to parse `mcp_listen_address` and explicitly block `0.0.0.0` or `::` (unspecified/all interfaces) unless the `MCPANY_ATTESTATION_TOKEN` environment variable is provided, fulfilling the "Remote Access Guard" requirement.
+    *   Added strict, typed unit testing in `server/pkg/config/validator_e2e_test.go` and `server/pkg/config/config_test.go` to ensure these new security rules are covered.
 
-## Security Scrub
-
-- Checked for personally identifiable information (PII): **None Found**.
-- Checked for exposed internal IPs/domain names: **None Found**.
-- Checked for hardcoded secrets/API keys: **None Found**.
+## 4. Security Scrub
+*   No PII, internal IPs, or secrets are present in this report.
+*   All IP references (`127.0.0.1`, `0.0.0.0`) are standard non-routable loopback/unspecified addresses.
+*   Variable names (`MCPANY_ATTESTATION_TOKEN`) reflect the environment configuration and do not contain sensitive key material.
