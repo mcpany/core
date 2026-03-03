@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-03 Evolution)
+*   **[P0] Dynamic Permission Escalation Middleware**: JIT permission requests for high-risk tools with HITL integration. (Added: 2026-03-03)
+*   **[P0] Tool Metadata Sanitizer**: Injection guard for tool descriptions and outputs. (Added: 2026-03-03)
+*   **[P1] Contextual Anchor Tool**: Mission verification via cryptographic state anchors. (Added: 2026-03-03)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

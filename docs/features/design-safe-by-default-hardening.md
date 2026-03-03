@@ -59,3 +59,7 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-03: Mitigating Metadata Injection.**
+    - **Context:** Today's market sync revealed a new "Metadata Poisoning" exploit (CVE-2026-0303) that bypasses network boundaries by injecting malicious instructions via tool descriptions.
+    - **Architecture Adjustment:** Integrating the `Tool Metadata Sanitizer` as a mandatory pre-processor for all incoming tool definitions, even for `local` listeners.
+    - **Security Impact:** Prevents "Remote-to-Local" escalation where a malicious remote tool tricks a local agent into executing host-level commands via poisoned metadata.
