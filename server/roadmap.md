@@ -34,6 +34,12 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-03 Evolution)
+*   **[P0] Governed Execution Middleware**: Implementation of HITL approval gates for high-risk tools. (Added: 2026-03-03)
+*   **[P0] Virtual Patching Engine**: Regex/Schema-based sanitization for upstream tool calls to mitigate argument injection. (Added: 2026-03-03)
+*   **[P1] Universal State Synchronizer**: GSD-compatible state sharing layer for cross-runtime context persistence. (Added: 2026-03-03)
+*   **[P1] Audit-First Discovery Scanning**: Automated vulnerability scanning of discovered tool schemas. (Added: 2026-03-03)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

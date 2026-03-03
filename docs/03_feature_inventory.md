@@ -75,6 +75,15 @@
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
+---
+
+## Evolution: [2026-03-03] Updates
+
+### Proposed Additions
+- **Governed Execution Middleware (HITL Gateways)**: (P0) Mandatory Human-in-the-Loop checkpoints for tools tagged as "High Risk" (e.g., infrastructure changes, code pushes).
+- **Virtual Patching for Upstream MCPs**: (P0) Gateway-level regex and schema-based filtering to fix known vulnerabilities (e.g., shell injection) in third-party MCP servers before execution.
+- **Universal State Synchronizer (GSD-Compatible)**: (P1) A cross-platform state sharing layer that allows agents in different runtimes (Claude, Gemini, OpenClaw) to maintain a unified project context via MCP Any.
+
 ### Priority Shifts
 - **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
 - **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.

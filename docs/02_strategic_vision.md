@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-03]
+### Focus: Governed Autonomy & Cross-Runtime Alignment
+**Context**: Today's research into Claude Code Security and the GSD (Get "Stuff" Done) framework indicates that the market is moving past "autonomous execution" toward "governed execution." Simultaneously, the proliferation of runtimes (Gemini CLI, OpenCode) requires MCP Any to bridge state not just between MCP servers, but across disparate agent ecosystems.
+**Strategic Pivot**:
+- **Governed Execution Layer**: MCP Any will transition from a passive proxy to an active "Governor." This includes mandatory human-in-the-loop (HITL) gates for high-risk tools and real-time security patching of vulnerable upstream tool implementations (e.g., fixing argument injection in standard Git MCP servers at the gateway).
+- **Universal State Synchronizer**: Expanding the "Shared KV Store" concept to be compatible with cross-platform frameworks like GSD, allowing MCP Any to serve as the source of truth for agents regardless of their native runtime (Claude, Gemini, or OpenClaw).
+- **Security-First Tool Attestation**: Moving from "Provenance-First" to "Audit-First" discovery, where tool schemas are automatically scanned for known exploit patterns (path traversal, shell injection) before being exposed to the LLM.
