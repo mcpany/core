@@ -11,6 +11,7 @@ import (
 
 	"github.com/DATA-DOG/go-sqlmock"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
@@ -530,6 +531,48 @@ func TestPostgresStore(t *testing.T) {
 
 		err := store.DeleteToken(context.Background(), "user1", "svc1")
 		require.NoError(t, err)
+
+		require.NoError(t, mock.ExpectationsWereMet())
+	})
+
+	// SaveLog Tests
+	t.Run("SaveLog", func(t *testing.T) {
+		entry := &logging.LogEntry{
+			ID:        "log-1",
+			Timestamp: "2026-03-04T00:00:00Z",
+			Level:     "INFO",
+			Source:    "test-source",
+			Message:   "test message",
+			Metadata:  map[string]interface{}{"key": "value"},
+		}
+
+		mock.ExpectExec("INSERT INTO logs").
+			WithArgs(entry.ID, entry.Timestamp, entry.Level, entry.Source, entry.Message, `{"key":"value"}`).
+			WillReturnResult(sqlmock.NewResult(1, 1))
+
+		err := store.SaveLog(context.Background(), entry)
+		require.NoError(t, err)
+
+		require.NoError(t, mock.ExpectationsWereMet())
+	})
+
+	t.Run("SaveLog_Error", func(t *testing.T) {
+		entry := &logging.LogEntry{
+			ID:        "log-1",
+			Timestamp: "2026-03-04T00:00:00Z",
+			Level:     "INFO",
+			Source:    "test-source",
+			Message:   "test message",
+			Metadata:  map[string]interface{}{"key": "value"},
+		}
+
+		mock.ExpectExec("INSERT INTO logs").
+			WithArgs(entry.ID, entry.Timestamp, entry.Level, entry.Source, entry.Message, `{"key":"value"}`).
+			WillReturnError(errors.New("db error"))
+
+		err := store.SaveLog(context.Background(), entry)
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "failed to save log")
 
 		require.NoError(t, mock.ExpectationsWereMet())
 	})
