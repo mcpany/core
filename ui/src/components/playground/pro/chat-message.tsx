@@ -19,6 +19,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { useTheme } from "next-themes";
 import { defineDraculaTheme } from "@/lib/monaco-theme";
 import dynamic from "next/dynamic";
+import { unwrapMcpResult } from "@/lib/mcp-unwrap";
 
 // ⚡ BOLT: Lazy load heavy dependencies to improve initial bundle size and TTI.
 // Randomized Selection from Top 5 High-Impact Targets
@@ -200,8 +201,11 @@ export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
     }
 
     if (message.type === "tool-result") {
+        const prevUnwrapped = message.previousResult !== undefined ? unwrapMcpResult(message.previousResult) : undefined;
+        const currUnwrapped = unwrapMcpResult(message.toolResult);
+
         const hasDiff = message.previousResult !== undefined &&
-                        JSON.stringify(message.previousResult) !== JSON.stringify(message.toolResult);
+                        JSON.stringify(prevUnwrapped) !== JSON.stringify(currUnwrapped);
 
          return (
             <>
@@ -253,8 +257,8 @@ export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
                     </DialogHeader>
                     <div className="flex-1 border rounded-md overflow-hidden bg-[#1e1e1e]">
                         <DiffEditor
-                            original={JSON.stringify(message.previousResult, null, 2)}
-                            modified={JSON.stringify(message.toolResult, null, 2)}
+                            original={JSON.stringify(prevUnwrapped, null, 2)}
+                            modified={JSON.stringify(currUnwrapped, null, 2)}
                             language="json"
                             theme={theme === "dark" ? "dracula" : "light"}
                             onMount={(editor, monaco) => {
