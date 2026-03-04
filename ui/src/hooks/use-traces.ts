@@ -109,7 +109,14 @@ export function useTraces(options: UseTracesOptions = {}) {
 
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
         const host = window.location.host;
-        const wsUrl = `${protocol}//${host}/api/v1/ws/traces`;
+        let wsUrl = `${protocol}//${host}/api/v1/ws/traces`;
+
+        // Inject auth token from localStorage if available
+        const token = localStorage.getItem('mcp_auth_token');
+        if (token) {
+            // Encode the token because it might contain special characters (like base64 padding =)
+            wsUrl += `?auth_token=${encodeURIComponent(token)}`;
+        }
 
         // Cleanup previous
         if (wsRef.current) {
