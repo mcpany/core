@@ -107,3 +107,8 @@
 - [ ] **Log Source Color Coding**: Assign distinct colors to different log sources automatically for better visual separation.
 - [ ] **Context Usage History**: Track total context usage over time to identify growth trends (requires backend metrics persistence).
 - [ ] **Tool Schema Optimizer**: Analyze tool schemas and suggest removing unused properties or compacting descriptions to save context tokens.
+
+#### Upcoming (2026-03-04 Evolution)
+*   **[P0] Agent IdP Dashboard**: Interface for managing non-human identities, token issuance, and delegation. (Added: 2026-03-04)
+*   **[P1] Secure Keychain Configuration Wizard**: UI for configuring credential-less operation and managing local secrets. (Added: 2026-03-04)
+*   **[P0] OpenClaw Swarm Activity Feed**: Specialized real-time visualization for OpenClaw's multi-agent routing. (Added: 2026-03-04)

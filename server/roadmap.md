@@ -189,3 +189,8 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Core Middleware Pipeline**: The middleware architecture is robust and extensible.
 - **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates protocol details from business logic.
 - **Documentation**: The project has excellent documentation coverage for most features.
+
+#### Upcoming (2026-03-04 Evolution)
+*   **[P0] Agent Identity Provider (IdP)**: Cryptographically verifiable identities for NHI and subagent delegation. (Added: 2026-03-04)
+*   **[P1] Credential-less Agent Configuration**: Integration with local keychains to remove raw secrets from config files. (Added: 2026-03-04)
+*   **[P0] OpenClaw Optimized Adapter**: High-performance bridge for OpenClaw's tool-calling and routing patterns. (Added: 2026-03-04)

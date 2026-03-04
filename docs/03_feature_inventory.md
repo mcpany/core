@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-04] Updates
+
+### Proposed Additions
+- **Agent Identity Provider (IdP) for NHI**: (P0) Provides cryptographically verifiable identities to agents and subagents, managing "Non-Human Identity" (NHI) permissions.
+- **Credential-less Agent Configuration**: (P1) Integration with local keychains to remove raw secrets (e.g., OpenAI API Keys) from individual agent configuration files.
+- **OpenClaw Optimized Adapter**: (P0) A high-performance bridge tailored for OpenClaw's specific tool-calling patterns and subagent routing.
+
+### Priority Shifts
+- **Provenance-First Discovery**: Promoted to **P0** to address the "Shadow MCP" security crisis and prevent unvetted tool deployments.
+- **"Safe-by-Default" Network Hardening**: Re-affirmed as **P0** following the mass exposure of 8,000+ unauthenticated MCP servers.
+
+### Deprecations / Monitoring
+- **Plain-text Secret Configuration**: Monitoring for deprecation in favor of the Credential-less Agent Configuration model.

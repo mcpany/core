@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-04]
+### Focus: Agent-as-a-Service (AaaS) Identity & Hardened Defaults
+**Context**: The "8,000 Exposed Servers" crisis and the rise of OpenClaw have shifted the priority from "Connectivity" to "Identity and Hardening." Agents are no longer just scripts; they are Non-Human Identities (NHI) that need a managed security perimeter.
+**Strategic Pivot**:
+- **NHI Identity Provider**: MCP Any will evolve to include a lightweight "Agent Identity Provider" (IdP), assigning cryptographically verifiable identities to every agent and subagent in the swarm.
+- **Credential-less Operation**: Moving towards a model where MCP Any handles all upstream authentication (OpenAI, Anthropic, etc.) via secure local keychains, ensuring that individual agent configuration files never contain raw secrets.
+- **Air-Gapped Tooling**: Implementing a "Local-First, Cloud-Optional" tool execution model, where sensitive tools are physically restricted to local execution even if the agent logic resides in a cloud sandbox.

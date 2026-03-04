@@ -59,3 +59,10 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+
+### Update: 2026-03-04 - Response to the "8,000 Exposed Servers" Crisis
+**Context:** Today's market sync confirmed that over 8,000 MCP servers were found publicly exposed due to insecure default bindings, highlighting the urgent need for enforced local isolation.
+**Architecture Adjustment:**
+*   **Enforced Local-Only Binding**: Deprecating all remote exposure by default.
+*   **Cryptographic Attestation for Remote Access**: Introducing a mandatory "Second-Screen" approval via a local `mcpany` process to authorize any non-local network listener.
+**Security Impact**: Eliminates the most common misconfiguration path for novice users and protects against automated scanners targeting default agent ports.
