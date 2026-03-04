@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-04] Updates
+
+### Proposed Additions
+- **Origin/Host Validation Middleware**: (P0) Strict validation of incoming request headers to prevent browser-based agent hijacking (inspired by the OpenClaw March 2 vulnerability).
+- **Intelligent Context Compactor**: (P0) Autonomous middleware that summarizes and compacts tool history to prevent context window exhaustion in multi-agent swarms.
+- **Attested Skill Guard**: (P1) Automatic reputation-based filtering and warning system for tools installed from public registries (e.g., ClawHub).
+
+### Priority Shifts
+- **Safe-by-Default Hardening**: Promoted to **P0** and expanded to include Origin/Host validation.
+- **Recursive Context Protocol**: Re-affirmed as **P0** as it provides the foundation for Autonomous Context Compaction.
+
+### Deprecations / Monitoring
+- **Passive Skill Execution**: Monitoring for deprecation. Moving towards a model where all "unverified" skills require explicit user-level attestation.

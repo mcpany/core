@@ -59,3 +59,11 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+
+    ### Update: 2026-03-04 - Mitigating Browser-Based Agent Hijacking
+    **Context:** Research into the OpenClaw March 2 vulnerability revealed that binding to `localhost` is insufficient if a malicious website can make cross-origin requests to the local agent.
+    **Architecture Adjustment:**
+    *   Implementing **Mandatory Header Validation** in the `Listener` layer.
+    *   Requests must include a valid `Host` header matching the configured listener (e.g., `localhost:8080`).
+    *   Enforcing a strict **Origin Allowlist**. By default, only the MCP Any UI and authorized local clients are allowed. Cross-origin requests from unknown web domains will be rejected with a 403 Forbidden.
+    **Security Impact:** Prevents "Shadowing" attacks where a malicious website uses the developer's own AI agent to perform unauthorized local actions.
