@@ -59,3 +59,10 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+
+    ### Update: 2026-03-04 - Mitigating Localhost Hijacking (CSWSH)
+    **Context:** The OpenClaw incident (CVE-2026-25253) revealed that simple localhost binding is insufficient due to browser-initiated WebSocket connections.
+    **Architecture Adjustment:**
+    *   **Origin Enforcement:** All adapters (HTTP/WebSocket) must now validate the `Origin` and `Host` headers against a whitelist (defaulting to `localhost` and the bound IP).
+    *   **Mandatory Local Tokens:** Even for localhost connections, a temporary `Auth-Token` generated on startup (and stored in a local-only file) will be required.
+    *   **Named Pipe Migration:** Researching the transition from TCP ports to Docker-bound named pipes or Unix Domain Sockets for inter-agent communication to bypass the browser's reach entirely.
