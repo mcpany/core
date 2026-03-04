@@ -81,3 +81,16 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-04] Updates
+
+### Proposed Additions
+- **Universal Tool Argument Sanitizer**: (P0) A new middleware that performs recursive sanitization on all tool arguments to prevent command injection (CVE-2026-0755).
+- **Tool Behavioral Monitoring**: (P1) Tracks tool behavior to detect anomalies like unexpected file reads or network calls.
+- **Subagent Sandbox Isolation**: (P0) Enables per-call sandboxing for tools to prevent persistent compromise of the local environment.
+
+### Priority Shifts
+- **Policy Firewall**: Re-affirmed as **P0** as it's the primary enforcement point for the new Sanitizer.
+- **Safe-by-Default Hardening**: Re-affirmed as **P0** following the discovery of the Gemini RCE vulnerability.

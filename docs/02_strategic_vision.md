@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-04]
+### Focus: Defense-in-Depth & Universal Sanitization
+**Context**: Today's research on the Gemini MCP 0-day (CVE-2026-0755) reveals a critical vulnerability in the ecosystem: adapters themselves are often the weak link. MCP Any must evolve from a "Pass-through Gateway" to a "Security-Enforcing Proxy."
+**Strategic Pivot**:
+- **Universal Input Sanitization**: Implementing a mandatory sanitization middleware that scrubs all tool arguments (especially for shell-executing tools) before they reach any adapter.
+- **Active Exploit Scanning**: Integrating a real-time scanning engine that monitors tool execution for known exploit patterns (e.g., command injection, directory traversal).
+- **Ephemeral Session Sandboxing**: Moving towards a model where every subagent execution happens in a disposable, kernel-isolated sandbox, even for local tool calls.

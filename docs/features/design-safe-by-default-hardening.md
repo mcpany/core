@@ -59,3 +59,10 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+
+### Update: 2026-03-04 - Strengthening against Adapter-Level RCE
+**Context:** The discovery of CVE-2026-0755 (RCE in `gemini-mcp-tool`) shows that even if the gateway is secure, the adapters can still be exploited.
+**Architecture Adjustment:**
+*   Adding mandatory **Input Sanitization Middleware** (Design Doc: `design-universal-sanitizer.md`) as a prerequisite for any tool execution.
+*   Integrating "Host-Level Isolation" for adapters that use `execAsync` or similar system calls.
+**Security Impact:** Prevents remote attackers from leveraging vulnerable adapters to compromise the host, even if they bypass initial gateway filters.
