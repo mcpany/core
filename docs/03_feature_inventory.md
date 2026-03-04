@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-04] Updates
+
+### Proposed Additions
+- **Project-Level Security Sandbox**: (P0) A secure execution layer that quarantines repository-local configurations and tools until explicitly trusted by the user.
+- **Dynamic Tool Scoping Middleware**: (P1) Automatically filters available tools based on the active project context and current agent intent.
+- **A2A Session Hardening**: (P0) Cryptographic session binding for multi-agent handoffs via the A2A protocol.
+
+### Priority Shifts
+- **Safe-by-Default Hardening**: Re-affirmed as **P0**. The Claude Code vulnerability reinforces the need for strict local-only defaults.
+- **Supply Chain Integrity Guard**: Promoted to **P0** and integrated into the Project-Level Sandbox.
+
+### Deprecations / Monitoring
+- **Automatic Project-Local Config Loading**: Flagged for deprecation. All local configs will require user attestation by 2026-Q2.

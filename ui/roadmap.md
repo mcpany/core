@@ -13,6 +13,8 @@
 - [ ] **[P1] Resource Cost/Latency Overlay**: Real-time performance metrics displayed directly on tool cards. (Added: 2026-02-26)
 - [ ] **[P0] Connectivity & Security Dashboard**: Visualize local-only vs remote exposure, attestation status, and active MFA sessions. (Added: 2026-02-28)
 - [ ] **[P0] Stateful A2A Mailbox**: UI for viewing queued and delivered A2A messages across the agent mesh. (Added: 2026-02-28)
+- [ ] **[P0] Project-Level Trust Manager**: UI for inspecting and trusting quarantined project-local tools and configurations. (Added: 2026-03-04)
+- [ ] **[P1] Context-Aware Tool Filter**: UI overlay to show which tools are currently active based on the project sandbox. (Added: 2026-03-04)
 - [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
 - [x] **[P1] Tool Playground & Explorer**:
   - [x] Auto-generated forms from Tool JSON Schemas.
@@ -65,7 +67,7 @@
 - [ ] **Tag-based Access Control**: Restrict service access to specific user profiles based on tags.
 - [ ] **Live Tool Usage Graph**: Visual graph of tool execution metrics over time (RPS, Latency) in Tool Detail view.
 - [x] **Tool Filtering by Service**: Filter the tool list by selecting a specific service.
-- [ ] **Compact Tool View**: A toggle to switch between comfortable and compact table view for high density lists.
+- [ ] **Compact Density Mode**: A toggle to reduce padding and font sizes for high-information-density dashboards.
 - [ ] **Bulk Edit Configuration**: Ability to edit common properties (like tags, timeout, or environment variables) for multiple selected services.
 - [x] **Tool Search Bar**: A text input to filter tools by name or description within the current view (filtered by service or not).
 - [x] **Tool Grouping by Category**: Group tools not just by service but by category/tags if available.

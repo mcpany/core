@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-04]
+### Focus: Project-Level Trust Isolation & Governance
+**Context**: The recent Claude Code vulnerabilities (CVE-2025-59536, CVE-2026-21852) have exposed the fragility of repository-level configuration trust. "Configuration-as-Execution" is now a primary attack vector in the AI supply chain.
+**Strategic Pivot**:
+- **Project Sandbox Architecture**: MCP Any will introduce "Trust Tiers" for tool discovery. Tools and configurations discovered at the repository level will be isolated in a "Quarantine Sandbox" until explicit user attestation is granted.
+- **Recursive Governance**: Implementing project-specific policy overrides that can only *restrict* permissions, never *expand* them, ensuring that a compromised project cannot escalate privileges.
+- **A2A Session Hardening**: Leveraging the maturing A2A protocol to create cryptographically bound session handoffs, preventing "Man-in-the-Middle" agent hijacking during complex delegations.
