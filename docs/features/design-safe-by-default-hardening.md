@@ -59,3 +59,9 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-02: Update - Resolving Local-to-Web Hijacking**
+    *   **Context:** The "Agent-Hijack" (OpenClaw) exploit revealed that local-only bindings are still vulnerable if accessible via cross-origin requests from a user's browser.
+    *   **Architecture Adjustment:**
+        *   Introducing `Cross-Origin Security Middleware` as a mandatory dependency for the `Safe-by-Default` posture.
+        *   Mandating `X-MCP-Session-Token` for any request coming from a non-local or browser-based origin.
+    *   **Security Impact:** Mitigates the risk of malicious websites using a developer's agent as a proxy for tool execution or local file access.

@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-02]
+### Focus: Secure Origin Attribution & Project-Scoped Governance
+**Context**: The "Agent-Hijack" exploit (OpenClaw) has identified that "Local-Only" is not enough if the local listener can be accessed via a browser-origin attack. Furthermore, Gemini CLI's shift towards project-level policies signals a need for more granular governance.
+**Strategic Pivot**:
+- **Secure Origin Attribution**: MCP Any will evolve to mandate origin verification for all incoming requests. Every connection must be attributed to a trusted local process or a verified browser origin, preventing Cross-Origin Hijacks.
+- **Project-Scoped Governance**: Moving beyond global policies to directory-sensitive or "Project-Scoped" configurations. MCP Any will automatically adjust its security posture and tool availability based on the current working directory of the calling agent.
+- **Zero-Friction Prompt Intelligence**: Implementing native prompt suggestion bridges that leverage local tool history and project context to reduce agentic "cold start" problems.
