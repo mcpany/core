@@ -36,6 +36,7 @@ export interface Schema {
     type?: string | string[];
     description?: string;
     properties?: Record<string, Schema>;
+    additionalProperties?: boolean | Schema;
     items?: Schema;
     required?: string[];
     anyOf?: Schema[];
@@ -308,36 +309,130 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
         const requiredFields = schema.required || [];
         const objectValue = (value as Record<string, unknown>) || {};
 
+        const hasProperties = Object.keys(properties).length > 0;
+        const allowDynamic = schema.additionalProperties !== false;
+
         const handleChildChange = (key: string, childValue: unknown) => {
             const newValue = { ...objectValue, [key]: childValue };
             onChange(path, newValue);
         };
 
-        const hasProperties = Object.keys(properties).length > 0;
+        const handleAddDynamicProperty = () => {
+            let index = 1;
+            while (`key${index}` in objectValue) {
+                index++;
+            }
+            const newValue = { ...objectValue, [`key${index}`]: "" };
+            onChange(path, newValue);
+        };
+
+        const handleDynamicKeyChange = (oldKey: string, newKey: string) => {
+            if (oldKey === newKey) return;
+            const newValue = { ...objectValue };
+
+            // If the user clears the input completely, we still need a temporary key
+            // otherwise they can't type a new one. In practice, we update the key name.
+            // If newKey is empty, we set it to an empty string key (not ideal for JSON,
+            // but necessary for the controlled React input to allow clearing).
+            newValue[newKey] = newValue[oldKey];
+            delete newValue[oldKey];
+            onChange(path, newValue);
+        };
+
+        const handleRemoveDynamicProperty = (key: string) => {
+            const newValue = { ...objectValue };
+            delete newValue[key];
+            onChange(path, newValue);
+        };
+
+        const renderDynamicProperties = () => {
+            if (!allowDynamic) return null;
+
+            const dynamicKeys = Object.keys(objectValue).filter(k => !(k in properties));
+
+            return (
+                <div className="space-y-2 mt-4">
+                    {dynamicKeys.length > 0 && (
+                        <div className="space-y-2 border-t pt-4 border-dashed">
+                            <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                                Custom Properties
+                            </Label>
+                            {dynamicKeys.map((key) => (
+                                <div key={key} className="flex gap-2 items-start group relative pl-2">
+                                    <div className="mt-2.5 text-muted-foreground/30 absolute left-0">
+                                         <div className="w-1 h-1 rounded-full bg-current" />
+                                    </div>
+                                    <div className="w-1/3 min-w-[120px]">
+                                        <Input
+                                            value={key}
+                                            onChange={(e) => handleDynamicKeyChange(key, e.target.value)}
+                                            className="h-9 text-xs font-mono bg-muted/30"
+                                            placeholder="Key name"
+                                        />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <SchemaField
+                                            path={path ? `${path}.${key}` : key}
+                                            schema={typeof schema.additionalProperties === 'object' ? schema.additionalProperties : { type: "string" }}
+                                            value={objectValue[key]}
+                                            onChange={(_, v) => handleChildChange(key, v)}
+                                            errors={errors}
+                                            level={level + 1}
+                                            label=""
+                                        />
+                                    </div>
+                                    <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="icon"
+                                        onClick={() => handleRemoveDynamicProperty(key)}
+                                        className="h-9 w-9 text-muted-foreground hover:text-destructive hover:bg-destructive/10 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"
+                                        title="Remove Property"
+                                    >
+                                        <Trash2 className="size-3" />
+                                    </Button>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                    <div className={dynamicKeys.length === 0 && !hasProperties ? "" : "pt-2"}>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={handleAddDynamicProperty}
+                            className="h-8 text-xs border-dashed text-muted-foreground hover:text-foreground"
+                        >
+                            <Plus className="size-3 mr-1" /> Add Property
+                        </Button>
+                    </div>
+                </div>
+            );
+        };
 
         // Root level object (level 0) - Render flat
         if (level === 0) {
             return (
                 <div className="space-y-5">
-                    {hasProperties ? (
-                        Object.entries(properties).map(([key, propSchema]) => (
-                            <SchemaField
-                                key={key}
-                                path={path ? `${path}.${key}` : key}
-                                schema={propSchema}
-                                value={objectValue[key]}
-                                onChange={(_, v) => handleChildChange(key, v)}
-                                errors={errors}
-                                required={requiredFields.includes(key)}
-                                label={propSchema.title || key}
-                                level={level + 1}
-                            />
-                        ))
-                    ) : (
+                    {hasProperties && Object.entries(properties).map(([key, propSchema]) => (
+                        <SchemaField
+                            key={key}
+                            path={path ? `${path}.${key}` : key}
+                            schema={propSchema}
+                            value={objectValue[key]}
+                            onChange={(_, v) => handleChildChange(key, v)}
+                            errors={errors}
+                            required={requiredFields.includes(key)}
+                            label={propSchema.title || key}
+                            level={level + 1}
+                        />
+                    ))}
+                    {(!hasProperties && !allowDynamic) && (
                         <div className="text-sm text-muted-foreground italic p-4 border border-dashed rounded bg-muted/20 text-center">
                             No properties defined.
                         </div>
                     )}
+                    {allowDynamic && renderDynamicProperties()}
                 </div>
             );
         }
@@ -361,7 +456,7 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
                     )}
                 </div>
                 <CollapsibleContent className="space-y-4 pt-1 pb-2 pl-2">
-                     {Object.entries(properties).map(([key, propSchema]) => (
+                    {hasProperties && Object.entries(properties).map(([key, propSchema]) => (
                         <SchemaField
                             key={key}
                             path={path ? `${path}.${key}` : key}
@@ -374,6 +469,7 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
                             level={level + 1}
                         />
                     ))}
+                    {allowDynamic && renderDynamicProperties()}
                 </CollapsibleContent>
             </Collapsible>
         );
