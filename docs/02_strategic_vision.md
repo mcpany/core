@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-04]
+### Focus: Verifiable Agent Identity & Autonomous Security Orchestration
+**Context**: The emergence of "Agent Checkpoint" patterns for verifying agent identity in commerce and the rise of autonomous security orchestration (e.g., AIDA) necessitates a more proactive security layer in MCP Any.
+**Strategic Pivot**:
+- **Identity-First A2A Bridge**: Shifting the A2A gateway from simple message passing to a "Verifiable Identity Bridge." Every inter-agent delegation must be backed by a cryptographic attestation of the source agent's identity and intent.
+- **Autonomous Policy Orchestration**: Transitioning the Policy Firewall from static Rego/CEL rules to a dynamic "Policy Orchestrator" that adjusts security levels based on real-time agent performance data and context-specific risk assessments.
+- **Zero-Trust Commerce Protocol**: Implementing specialized MCP tools for "Secure Commercial Handoffs," ensuring that financial or sensitive transactions performed by agents are always multi-factor attested and lineage-tracked.

@@ -46,3 +46,9 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-03-04:** Integrating Identity Attestation.
+    - **Context**: Recent market shifts show a rise in "Identity Spoofing" and the need for "Agent Checkpoints."
+    - **Architecture Adjustment**:
+        - Introduced the `Agent Identity Attestation Service` into the bridge flow.
+        - Every A2A handoff now requires a `Digital Identity Token` (DIT) verified by MCP Any.
+    - **Security Impact**: Prevents rogue agents from impersonating trusted specialists in the swarm.

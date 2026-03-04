@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-04] Updates
+
+### Proposed Additions
+- **Agent Identity Attestation Service**: (P0) A core service for verifying the cryptographic identity and intent-attestation of agents during A2A handoffs.
+- **Autonomous Policy Orchestrator**: (P1) Middleware that dynamically adjusts Policy Firewall rules based on real-time agent performance data and session risk scores.
+- **Contextual Anchoring Middleware**: (P1) Ensures stable "anchoring" of critical state across agent context window resets, preventing state fragmentation.
+
+### Priority Shifts
+- **Federated MCP Node Peering**: Promoted to **P0** to support decentralized agent identity verification across different network boundaries.
+- **Environment Bridging Middleware**: Re-affirmed as **P0** due to increasing cloud-native agent adoption.
+
+### Deprecations / Monitoring
+- **Static Policy Files**: Monitoring for deprecation in favor of the Autonomous Policy Orchestrator.
