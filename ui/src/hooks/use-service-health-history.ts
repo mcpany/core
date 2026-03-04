@@ -3,8 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { apiClient, ServiceHealth, HealthHistoryPoint } from "@/lib/client";
+import { usePolling } from "@/hooks/use-polling";
 
 // Re-export types for consumers
 export type { ServiceHealth, HealthHistoryPoint };
@@ -27,41 +28,26 @@ export function useServiceHealthHistory() {
   const [services, setServices] = useState<ServiceHealth[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    async function fetchHealth() {
-      try {
-        const data = await apiClient.getDashboardHealth();
-        // Backend returns history keyed by ID
-        setServices(data.services || []);
-        setHistory(data.history || {});
-      } catch (error) {
-        console.warn("Failed to fetch health data", error);
-      } finally {
-        setIsLoading(false);
-      }
+  const fetchHealth = useCallback(async () => {
+    try {
+      const data = await apiClient.getDashboardHealth();
+      // Backend returns history keyed by ID
+      setServices(data.services || []);
+      setHistory(data.history || {});
+    } catch (error) {
+      console.warn("Failed to fetch health data", error);
+    } finally {
+      setIsLoading(false);
     }
-
-    fetchHealth();
-
-    // Poll every 10 seconds
-    const interval = setInterval(() => {
-      if (!document.hidden) {
-        fetchHealth();
-      }
-    }, 10000);
-
-    const onVisibilityChange = () => {
-      if (!document.hidden) {
-        fetchHealth();
-      }
-    };
-    document.addEventListener("visibilitychange", onVisibilityChange);
-
-    return () => {
-      clearInterval(interval);
-      document.removeEventListener("visibilitychange", onVisibilityChange);
-    };
   }, []);
+
+  useEffect(() => {
+    fetchHealth();
+  }, [fetchHealth]);
+
+  // ⚡ BOLT: Refactored to use centralized usePolling hook for consistent lifecycle management and memory leak prevention.
+  // Randomized Selection from Top 5 High-Impact Targets (Network Category)
+  usePolling(fetchHealth, 10000);
 
   return { services, history, isLoading };
 }
