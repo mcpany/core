@@ -57,3 +57,7 @@ As the number of available MCP tools grows, agents face "context pollution"—wh
 
 ## 7. Evolutionary Changelog
 *   **2026-02-25:** Initial Document Creation.
+*   **2026-03-04:** Evolutionary Update - Dynamic Catalog Loading.
+    - **Context**: Claude Code's MCP Tool Search has demonstrated the effectiveness of on-demand loading for large (50+) tool catalogs.
+    - **Adjustment**: Introducing "Lazy-MCP v2" which supports automated background indexing of all connected upstreams.
+    - **Feature**: Implementing a "Dynamic Threshold" where tool schemas are automatically omitted from the primary `tools/list` and moved to the on-demand search index if the total catalog size exceeds a configurable limit (e.g., 50 tools).
