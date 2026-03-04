@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-01]
+### Focus: Nano-Isolation & Spec-Driven Governance
+**Context**: The market is shifting from monolithic agent trust to minimalist, ephemeral "Nano-Isolation" (NanoClaw) and formal specification-driven agency (Google Conductor). MCP Any must evolve to enforce not just what a tool can do, but how it aligns with a high-level formal specification.
+**Strategic Pivot**:
+- **Ephemeral Nano-Isolation**: Implementing "Zero-Persistence" execution environments for tool calls. Every tool execution is sandboxed in a per-call, ephemeral micro-container or WASM module, minimizing the blast radius of any single subagent failure.
+- **Spec-Driven Policy Enforcement**: Integrating with formal Markdown specs (e.g., Google Conductor). The Policy Firewall will now validate tool calls against a "Specification Manifest," ensuring that agent actions remain within the formally defined boundaries of the current task.
+- **Headless Attestation Flow**: Moving beyond user-centric MFA to "Machine-to-Machine Attestation" where headless subagents must provide a cryptographic proof of task-integrity before being granted access to sensitive tools.
