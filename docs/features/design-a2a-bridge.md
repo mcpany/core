@@ -46,3 +46,10 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+
+### Update: 2026-03-04 - Standardized SessionContext for Swarms
+**Context**: Multi-agent swarms using Gemini 3.1 Flash-Lite require low-latency state synchronization.
+**Architecture Adjustment**:
+*   **SessionContext Middleware**: All A2A handoffs now include a `SessionContext` header, which contains a pointer to the shared Blackboard state.
+*   **Blackboard Syncing**: A2A agents can now push/pull state to the `Shared KV Store` directly via the A2A Bridge, ensuring all agents in the "Chain" have a consistent view.
+**Performance Impact**: Reduces the need for agents to re-summarize their entire history when handing off tasks.

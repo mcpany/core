@@ -189,3 +189,9 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Core Middleware Pipeline**: The middleware architecture is robust and extensible.
 - **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates protocol details from business logic.
 - **Documentation**: The project has excellent documentation coverage for most features.
+
+#### Upcoming (2026-03-04 Evolution)
+*   **[P0] Local Gateway Cross-Origin Protection**: Mandatory Origin/Referer header validation for all HTTP/WebSocket listeners. (Added: 2026-03-04)
+*   **[P0] WebSocket Connection Rate-Limiting**: Leaky-bucket handshake protection to mitigate brute-force attacks. (Added: 2026-03-04)
+*   **[P0] SessionContext Sync (A2A Bridge)**: Standardized state synchronization for A2A agent swarms. (Added: 2026-03-04)
+*   **[P1] Flash-Lite Optimization Pass**: High-performance middleware tuning for low-latency agentic loops. (Added: 2026-03-04)

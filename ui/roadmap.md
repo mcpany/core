@@ -107,3 +107,8 @@
 - [ ] **Log Source Color Coding**: Assign distinct colors to different log sources automatically for better visual separation.
 - [ ] **Context Usage History**: Track total context usage over time to identify growth trends (requires backend metrics persistence).
 - [ ] **Tool Schema Optimizer**: Analyze tool schemas and suggest removing unused properties or compacting descriptions to save context tokens.
+
+### Upcoming (2026-03-04 Evolution)
+- [ ] **[P0] Origin Authorization Manager**: UI for managing the 'AllowedOrigins' list and active browser sessions. (Added: 2026-03-04)
+- [ ] **[P0] A2A SessionContext Inspector**: Visualize the shared 'Blackboard' state and session tokens in the Agent Chain Tracer. (Added: 2026-03-04)
+- [ ] **[P1] Ultra-Low-Latency Metrics**: Real-time visualization of sub-50ms tool-calling performance. (Added: 2026-03-04)

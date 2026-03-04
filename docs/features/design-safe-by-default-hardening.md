@@ -59,3 +59,10 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+
+### Update: 2026-03-04 - Mitigating Cross-Origin Gateway Takeover
+**Context**: The "ClawJacked" OpenClaw vulnerability demonstrated that `localhost` bindings are still vulnerable to browser-based attacks.
+**Architecture Adjustment**:
+*   **Mandatory Origin Filtering**: Adding an `AllowedOrigins` list to all HTTP/WebSocket listeners. By default, only the MCP Any UI and authorized CLI nodes are allowed.
+*   **WebSocket Rate-Limiting**: Implementing leaky-bucket rate limiting on the WebSocket handshake to prevent brute-forcing of the local gateway's administrative password.
+**Security Impact**: Prevents malicious websites from silently interacting with the local MCP Any instance via the user's browser.

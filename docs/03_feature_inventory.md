@@ -81,3 +81,17 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-04] Updates
+
+### Proposed Additions
+- **Local Gateway Cross-Origin Protection**: (P0) Mandatory Origin/Referer header validation and CORS enforcement for all local WebSocket and HTTP endpoints.
+- **WebSocket Connection Rate-Limiting**: (P0) Protects against brute-force attacks on gateway authentication.
+- **SessionContext Sync (A2A Bridge)**: (P0) Standardized mechanism for A2A agents to synchronize state via SessionContext headers, preventing state drift in swarms.
+- **Flash-Lite Optimization Pass**: (P1) Dedicated performance tuning for the tool-calling middleware to support 20ms round-trip times for high-volume agents.
+
+### Priority Shifts
+- **Safe-by-Default Hardening**: Re-affirmed as **P0** and expanded to include Cross-Origin Protection.
+- **A2A Interop Bridge**: Re-affirmed as **P0** with mandatory SessionContext support.

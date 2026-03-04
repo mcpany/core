@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-04]
+### Focus: Post-ClawJacked Security & A2A Mesh Maturity
+**Context**: The "ClawJacked" OpenClaw vulnerability (Feb 26 - Mar 2, 2026) has exposed a critical flaw in "Local-Only" security models. Simply binding to localhost is insufficient when any browser tab can initiate a WebSocket connection. Simultaneously, the launch of Gemini 3.1 Flash-Lite increases the demand for ultra-low-latency tool calling in agentic swarms.
+**Strategic Pivot**:
+- **Cross-Origin Guardrail**: MCP Any will implement mandatory origin validation for all WebSocket and HTTP gateways. Connections from non-approved browsers or domains will be rejected by default, even on localhost.
+- **Ultra-Low-Latency Gateway**: Optimizing the middleware pipeline to match the performance profile of Gemini 3.1 Flash-Lite, ensuring MCP Any doesn't become the bottleneck in high-speed agentic loops.
+- **A2A SessionContext Standard**: Moving from simple "Handoffs" to full "SessionContext" in the A2A Bridge, allowing agents to share a unified view of the world (blackboard state) across different model families.
