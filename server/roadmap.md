@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-04 Evolution)
+*   **[P0] Anti-Smuggling Context Filter**: Cryptographically signed context blocks and result sanitization to prevent unauthorized context injection. (Added: 2026-03-04)
+*   **[P1] Dynamic Tool Negotiation Bridge**: Handshake middleware for brokering advanced protocol capabilities (streaming, progress) between modern agents and legacy upstreams. (Added: 2026-03-04)
+*   **[P1] Locality-Aware Discovery Metadata**: Support for node locality hints during discovery, enabling low-latency "pinned" subagent execution. (Added: 2026-03-04)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

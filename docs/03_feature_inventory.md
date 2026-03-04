@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-04] Updates
+
+### Proposed Additions
+- **Anti-Smuggling Context Filter**: (P0) High-priority middleware that cryptographically signs and validates context blocks to prevent "Context Smuggling" attacks.
+- **Dynamic Tool Negotiation Bridge**: (P1) Handshake middleware for brokering advanced protocol capabilities (streaming, progress) between agents like Gemini CLI and legacy upstreams.
+- **Locality-Aware Discovery Metadata**: (P1) Support for "Node Locality" hints in tool discovery, enabling OpenClaw-style subagent pinning for low-latency execution.
+
+### Priority Shifts
+- **Unified MCP Discovery Service**: Promoted to **P0**. Critical for managing the increasing diversity of "pinned" and decentralized subagent tool nodes.
+- **Recursive Context Protocol**: Re-affirmed as **P0**. Now a prerequisite for the Anti-Smuggling filter.
+
+### Deprecations / Monitoring
+- **Passive Context Inheritance**: Monitoring for deprecation in favor of "Attested Context Lineage."
