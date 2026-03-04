@@ -9,16 +9,16 @@ FROM debian:bookworm-slim
 ENV DEBIAN_FRONTEND=noninteractive
 USER root
 
-# Create or rename the runner user to match the official actions-runner image
-RUN if id -u 1000 >/dev/null 2>&1; then \
-  OLD_USER=$(id -un 1000); \
+# Create or rename the runner user to match the official actions-runner image (UID 1001)
+RUN if id -u 1001 >/dev/null 2>&1; then \
+  OLD_USER=$(id -un 1001); \
   if [ "$OLD_USER" != "runner" ]; then \
-  groupmod -n runner $(id -gn 1000) && \
+  groupmod -n runner $(id -gn 1001) && \
   usermod -l runner -d /home/runner -m $OLD_USER; \
   fi \
   else \
-  groupadd -g 1000 runner && \
-  useradd -m -u 1000 -g runner runner; \
+  groupadd -g 1001 runner && \
+  useradd -m -u 1001 -g runner runner; \
   fi && \
   apt-get update && apt-get install -y sudo && \
   echo "runner ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
@@ -80,6 +80,6 @@ RUN go mod download && cd server && go mod download \
 # Final Cleanup
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# Default to root user for CI compatibility with mounted volumes
-USER root
+# Default to runner user for CI compatibility
+USER runner
 WORKDIR /home/runner/actions-runner
