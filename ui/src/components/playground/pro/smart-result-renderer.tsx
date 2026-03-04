@@ -10,6 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button";
 import { Code, Table as TableIcon, Image as ImageIcon, FileText } from "lucide-react";
 import { JsonView } from "@/components/ui/json-view";
+import { unwrapMcpResult } from "@/lib/mcp-unwrap";
 
 /**
  * Props for the SmartResultRenderer component.
@@ -36,6 +37,7 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
 
     // 1. Shared unwrapping logic
     const unwrappedContent = useMemo(() => {
+        // First unwrap the main wrapper without parsing inner text yet
         let content = result;
 
         // Unwrap CallToolResult structure
@@ -65,11 +67,13 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
         return content;
     }, [result]);
 
+    const fullyUnwrapped = useMemo(() => unwrapMcpResult(result), [result]);
+
     // 2. Identify MCP Content
     const mcpContent = useMemo<McpContent[] | null>(() => {
         if (Array.isArray(unwrappedContent) && unwrappedContent.length > 0) {
             const isMcp = unwrappedContent.every((item: any) =>
-                typeof item === 'object' &&
+                typeof item === 'object' && item !== null &&
                 (item.type === 'text' || item.type === 'image' || item.type === 'resource')
             );
             if (isMcp) return unwrappedContent as McpContent[];
@@ -79,6 +83,14 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
 
     // 3. Identify Table Data
     const tableData = useMemo(() => {
+        // If fullyUnwrapped is a table, and there's no MCP content with non-text elements, use it directly!
+        if (Array.isArray(fullyUnwrapped) && fullyUnwrapped.length > 0) {
+             const isTable = fullyUnwrapped.every((item: any) => typeof item === 'object' && item !== null);
+             // Make sure we don't accidentally treat MCP image objects as a table row if we want rich view
+             const isRichMcp = mcpContent && mcpContent.some(c => c.type !== 'text');
+             if (isTable && !isRichMcp) return fullyUnwrapped;
+        }
+
         // If MCP content, try to extract table data from text
         if (mcpContent) {
              const hasNonText = mcpContent.some(c => c.type !== 'text');
@@ -103,7 +115,7 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
         }
 
         return null;
-    }, [unwrappedContent, mcpContent]);
+    }, [fullyUnwrapped, unwrappedContent, mcpContent]);
 
     const activeView = useMemo(() => {
         // User override
