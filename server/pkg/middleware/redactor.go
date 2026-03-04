@@ -119,17 +119,10 @@ func (r *Redactor) RedactJSON(data []byte) ([]byte, error) {
 			// Check for '@' and '\' first using optimized SIMD scan
 			if bytes.IndexByte(raw, '@') != -1 || bytes.IndexByte(raw, '\\') != -1 {
 				hasIndicator = true
-			} else {
-				// Check for digits '0'-'9'
-				// Using bytes.IndexByte for each digit is faster than a linear scan in Go for longer strings (approx > 64 bytes)
-				// because it uses SIMD instructions. Since raw can be large, this is a significant win.
-				// For very short strings, the overhead is negligible.
-				for c := byte('0'); c <= '9'; c++ {
-					if bytes.IndexByte(raw, c) != -1 {
-						hasIndicator = true
-						break
-					}
-				}
+			} else if bytes.ContainsAny(raw, "0123456789") {
+				// ⚡ BOLT: Replaced sequential bytes.IndexByte calls (up to 10 passes) with a single string.ContainsAny check.
+				// Randomized Selection from Top 5 High-Impact Targets
+				hasIndicator = true
 			}
 
 			if !hasIndicator {
@@ -194,12 +187,9 @@ func (r *Redactor) RedactString(s string) string {
 		}
 	} else {
 		hasAt = strings.IndexByte(s, '@') != -1
-		for c := byte('0'); c <= '9'; c++ {
-			if strings.IndexByte(s, c) != -1 {
-				hasDigit = true
-				break
-			}
-		}
+		// ⚡ BOLT: Replaced sequential strings.IndexByte calls (up to 10 passes) with a single string.ContainsAny check.
+		// Randomized Selection from Top 5 High-Impact Targets
+		hasDigit = strings.ContainsAny(s, "0123456789")
 	}
 
 	res := s
