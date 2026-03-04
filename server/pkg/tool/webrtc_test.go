@@ -404,3 +404,208 @@ func TestWebrtcTool_CloseMethod(t *testing.T) {
 	require.NoError(t, err)
 	assert.NoError(t, wt.Close())
 }
+
+func TestWebrtcTool_Execute_SecretResolutionError(t *testing.T) {
+	t.Setenv("MCPANY_WEBRTC_DISABLE_STUN", "true")
+	toolDef := &v1.Tool{}
+	toolDef.SetName("test-webrtc-secret-err")
+
+	// Create a parameter mapping that references a non-existent secret
+	paramMapping := configv1.WebrtcParameterMapping_builder{
+		Schema: configv1.ParameterSchema_builder{Name: ptr("my_secret")}.Build(),
+		Secret: configv1.SecretValue_builder{
+			EnvironmentVariable: ptr("INVALID_SECRET_ENV_VAR_THAT_DOES_NOT_EXIST_XYZ"),
+		}.Build(),
+	}.Build()
+
+	callDef := configv1.WebrtcCallDefinition_builder{
+		Parameters: []*configv1.WebrtcParameterMapping{paramMapping},
+	}.Build()
+
+	poolManager := pool.NewManager()
+	wt, err := NewWebrtcTool(toolDef, poolManager, "webrtc-service", nil, callDef)
+	require.NoError(t, err)
+
+	req := &ExecutionRequest{
+		ToolName:   "test-webrtc-secret-err",
+		ToolInputs: json.RawMessage("{}"),
+	}
+
+	_, err = wt.Execute(context.Background(), req)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "failed to resolve secret for parameter")
+}
+
+func TestWebrtcTool_Execute_TemplateRenderError(t *testing.T) {
+	t.Setenv("MCPANY_WEBRTC_DISABLE_STUN", "true")
+	toolDef := &v1.Tool{}
+	toolDef.SetName("test-webrtc-render-err")
+
+	callDef := configv1.WebrtcCallDefinition_builder{
+		InputTransformer: configv1.InputTransformer_builder{
+			// The syntax is valid go template but it will error when trying to evaluate a missing field
+			// without default or when an undefined method is called
+			Template: ptr(`{{ .missing.Field }}`),
+		}.Build(),
+	}.Build()
+
+	poolManager := pool.NewManager()
+	wt, err := NewWebrtcTool(toolDef, poolManager, "webrtc-service", nil, callDef)
+	require.NoError(t, err)
+
+	req := &ExecutionRequest{
+		ToolName:   "test-webrtc-render-err",
+		// Pass an empty object to trigger the missing field evaluation error
+		ToolInputs: json.RawMessage(`{}`),
+	}
+
+	_, err = wt.Execute(context.Background(), req)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "failed to render input template")
+}
+
+func TestWebrtcTool_Execute_SignalingHTTPError(t *testing.T) {
+	t.Setenv("MCPANY_WEBRTC_DISABLE_STUN", "true")
+	toolDef := &v1.Tool{}
+	toolDef.SetName("test-webrtc-http-err")
+
+	// Set an invalid URL that will cause an HTTP error
+	toolDef.SetUnderlyingMethodFqn("WEBRTC http://invalid-url-that-does-not-exist.local")
+
+	callDef := &configv1.WebrtcCallDefinition{}
+
+	poolManager := pool.NewManager()
+	wt, err := NewWebrtcTool(toolDef, poolManager, "webrtc-service", nil, callDef)
+	require.NoError(t, err)
+
+	req := &ExecutionRequest{
+		ToolName:   "test-webrtc-http-err",
+		ToolInputs: json.RawMessage(`{}`),
+	}
+
+	_, err = wt.Execute(context.Background(), req)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "failed to send offer to signaling server")
+}
+
+func TestWebrtcTool_Execute_SignalingJSONDecodeError(t *testing.T) {
+	t.Setenv("MCPANY_WEBRTC_DISABLE_STUN", "true")
+	toolDef := &v1.Tool{}
+	toolDef.SetName("test-webrtc-json-err")
+
+	signalingServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		// Write invalid JSON
+		_, _ = w.Write([]byte(`{invalid-json}`))
+	}))
+	defer signalingServer.Close()
+
+	toolDef.SetUnderlyingMethodFqn("WEBRTC " + signalingServer.URL)
+
+	callDef := &configv1.WebrtcCallDefinition{}
+
+	poolManager := pool.NewManager()
+	wt, err := NewWebrtcTool(toolDef, poolManager, "webrtc-service", nil, callDef)
+	require.NoError(t, err)
+
+	req := &ExecutionRequest{
+		ToolName:   "test-webrtc-json-err",
+		ToolInputs: json.RawMessage(`{}`),
+	}
+
+	_, err = wt.Execute(context.Background(), req)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "failed to decode answer")
+}
+
+// FailingAuthenticator always returns an error.
+type FailingAuthenticator struct{}
+
+func (f *FailingAuthenticator) Authenticate(req *http.Request) error {
+	return assert.AnError
+}
+
+func TestWebrtcTool_Execute_AuthFailure(t *testing.T) {
+	t.Setenv("MCPANY_WEBRTC_DISABLE_STUN", "true")
+	toolDef := &v1.Tool{}
+	toolDef.SetName("test-webrtc-auth-err")
+
+	signalingServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer signalingServer.Close()
+
+	toolDef.SetUnderlyingMethodFqn("WEBRTC " + signalingServer.URL)
+
+	callDef := &configv1.WebrtcCallDefinition{}
+
+	poolManager := pool.NewManager()
+	wt, err := NewWebrtcTool(toolDef, poolManager, "webrtc-service", nil, callDef)
+	require.NoError(t, err)
+
+	// Inject the failing authenticator
+	wt.authenticator = &FailingAuthenticator{}
+
+	req := &ExecutionRequest{
+		ToolName:   "test-webrtc-auth-err",
+		ToolInputs: json.RawMessage("{}"),
+	}
+
+	_, err = wt.Execute(context.Background(), req)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "failed to authenticate request")
+}
+
+func TestWebrtcTool_Execute_ContextCancellation(t *testing.T) {
+	t.Setenv("MCPANY_WEBRTC_DISABLE_STUN", "true")
+	toolDef := &v1.Tool{}
+	toolDef.SetName("test-webrtc-ctx-cancel")
+
+	signalingServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		pc, err := webrtc.NewPeerConnection(webrtc.Configuration{})
+		require.NoError(t, err)
+
+		var offer webrtc.SessionDescription
+		err = json.NewDecoder(r.Body).Decode(&offer)
+		require.NoError(t, err)
+
+		err = pc.SetRemoteDescription(offer)
+		require.NoError(t, err)
+
+		answer, err := pc.CreateAnswer(nil)
+		require.NoError(t, err)
+
+		gatherComplete := webrtc.GatheringCompletePromise(pc)
+		err = pc.SetLocalDescription(answer)
+		require.NoError(t, err)
+		<-gatherComplete
+
+		response, err := json.Marshal(*pc.LocalDescription())
+		require.NoError(t, err)
+
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write(response)
+	}))
+	defer signalingServer.Close()
+
+	toolDef.SetUnderlyingMethodFqn("WEBRTC " + signalingServer.URL)
+
+	callDef := &configv1.WebrtcCallDefinition{}
+
+	poolManager := pool.NewManager()
+	wt, err := NewWebrtcTool(toolDef, poolManager, "webrtc-service", nil, callDef)
+	require.NoError(t, err)
+
+	req := &ExecutionRequest{
+		ToolName:   "test-webrtc-ctx-cancel",
+		ToolInputs: json.RawMessage(`{}`),
+	}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	// Cancel the context immediately so it triggers the ctx.Done() block in the select
+	cancel()
+
+	_, err = wt.Execute(ctx, req)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), context.Canceled.Error())
+}
