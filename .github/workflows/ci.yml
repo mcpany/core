@@ -34,8 +34,6 @@ env:
 jobs:
   changes:
     runs-on: oci-runner
-    container:
-      image: ubuntu:latest
     outputs:
       src: ${{ steps.filter.outputs.src }}
     steps:
@@ -93,8 +91,6 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: oci-runner
-    container:
-      image: ubuntu:latest
     timeout-minutes: 90
     steps:
       - name: Free Disk Space (Fast)
@@ -171,8 +167,6 @@ jobs:
 
   unit-test:
     runs-on: oci-runner
-    container:
-      image: ubuntu:latest
     timeout-minutes: 60
     needs: [changes, build-images]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -304,8 +298,6 @@ jobs:
 
   e2e-parallel:
     runs-on: oci-runner
-    container:
-      image: ubuntu:latest
     timeout-minutes: 180
     needs: [changes, build-images]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -477,8 +469,6 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: oci-runner
-    container:
-      image: ubuntu:latest
     strategy:
       fail-fast: false
       matrix:
@@ -609,8 +599,6 @@ jobs:
 
   e2e-sequential:
     runs-on: oci-runner
-    container:
-      image: ubuntu:latest
     timeout-minutes: 180
     needs: [changes, build-images]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -759,8 +747,6 @@ jobs:
 
   e2e-public-api:
     runs-on: oci-runner
-    container:
-      image: ubuntu:latest
     timeout-minutes: 180
     needs: [changes, build-images]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -890,8 +876,6 @@ jobs:
 
   docker-smoke-test:
     runs-on: oci-runner
-    container:
-      image: ubuntu:latest
     timeout-minutes: 15
     needs: [changes, build-images]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -942,8 +926,6 @@ jobs:
 
   ui-test:
     runs-on: oci-runner
-    container:
-      image: ubuntu:latest
     timeout-minutes: 180
     needs: [changes, build-images]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -1027,8 +1009,6 @@ jobs:
 
   k8s-e2e:
     runs-on: oci-runner
-    container:
-      image: ubuntu:latest
     timeout-minutes: 360 # Increased timeout for k8s tests
     needs: [changes, build-images]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -1142,8 +1122,6 @@ jobs:
 
   ci-success:
     runs-on: oci-runner
-    container:
-      image: ubuntu:latest
     needs:
       [
         changes,
