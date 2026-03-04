@@ -149,10 +149,10 @@ export default function InspectorPage() {
               <Select value={statusFilter} onValueChange={setStatusFilter}>
                   <SelectTrigger className="w-[140px] bg-background">
                       <Filter className="mr-2 h-4 w-4 text-muted-foreground" />
-                      <SelectValue placeholder="All Status" />
+                      <SelectValue placeholder="All Statuses" />
                   </SelectTrigger>
                   <SelectContent>
-                      <SelectItem value="all">All Status</SelectItem>
+                      <SelectItem value="all">All Statuses</SelectItem>
                       <SelectItem value="success">Success</SelectItem>
                       <SelectItem value="error">Error</SelectItem>
                       <SelectItem value="pending">Pending</SelectItem>
