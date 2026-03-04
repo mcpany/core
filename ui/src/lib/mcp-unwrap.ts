@@ -63,3 +63,39 @@ export function unwrapMcpResult(result: any): any {
 
     return content;
 }
+
+/**
+ * Recursively traverses an object or array and parses any stringified JSON values.
+ * This is particularly useful for diffing tool results where inner payloads might
+ * be returned as strings within an MCP Text block, ensuring a rich diff view.
+ *
+ * @param obj The object or string to deeply parse
+ * @returns The fully expanded object
+ */
+export function deepParseJson(obj: any): any {
+    if (typeof obj === 'string') {
+        try {
+            const parsed = JSON.parse(obj);
+            if (typeof parsed === 'object' && parsed !== null) {
+                return deepParseJson(parsed);
+            }
+        } catch (e) {
+            // Not a JSON string
+        }
+        return obj;
+    }
+
+    if (Array.isArray(obj)) {
+        return obj.map(deepParseJson);
+    }
+
+    if (typeof obj === 'object' && obj !== null) {
+        const result: any = {};
+        for (const [key, value] of Object.entries(obj)) {
+            result[key] = deepParseJson(value);
+        }
+        return result;
+    }
+
+    return obj;
+}

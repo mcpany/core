@@ -19,7 +19,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { useTheme } from "next-themes";
 import { defineDraculaTheme } from "@/lib/monaco-theme";
 import dynamic from "next/dynamic";
-import { unwrapMcpResult } from "@/lib/mcp-unwrap";
+import { unwrapMcpResult, deepParseJson } from "@/lib/mcp-unwrap";
 
 // ⚡ BOLT: Lazy load heavy dependencies to improve initial bundle size and TTI.
 // Randomized Selection from Top 5 High-Impact Targets
@@ -201,8 +201,8 @@ export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
     }
 
     if (message.type === "tool-result") {
-        const prevUnwrapped = message.previousResult !== undefined ? unwrapMcpResult(message.previousResult) : undefined;
-        const currUnwrapped = unwrapMcpResult(message.toolResult);
+        const prevUnwrapped = message.previousResult !== undefined ? deepParseJson(unwrapMcpResult(message.previousResult)) : undefined;
+        const currUnwrapped = deepParseJson(unwrapMcpResult(message.toolResult));
 
         const hasDiff = message.previousResult !== undefined &&
                         JSON.stringify(prevUnwrapped) !== JSON.stringify(currUnwrapped);

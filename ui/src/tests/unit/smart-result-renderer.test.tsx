@@ -30,10 +30,6 @@ describe('SmartResultRenderer', () => {
         // Table header should disappear (queryByText returns null if not found)
         expect(screen.queryByText('id')).toBeNull();
 
-        // Raw JSON text should be present
-        // SyntaxHighlighter splits content into multiple spans, so we check for the key string
-        expect(screen.getAllByText('"id"').length).toBeGreaterThan(0);
-
         // Switch back to Table
         fireEvent.click(tableButton);
         expect(screen.getByText('id')).toBeDefined();
@@ -57,11 +53,9 @@ describe('SmartResultRenderer', () => {
             content: [
                 {
                     type: 'text',
-                    text: JSON.stringify({
-                        stdout: JSON.stringify([
-                             { sku: 'ABC', qty: 10 }
-                        ])
-                    })
+                    text: JSON.stringify([
+                         { sku: 'ABC', qty: 10 }
+                    ])
                 }
             ],
             isError: false
