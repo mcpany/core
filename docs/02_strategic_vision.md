@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-04]
+### Focus: Hardened Local Gateways & Swarm Governance
+**Context**: The OpenClaw 0-click exploit and the shift toward "Agentic Swarms" have redefined the infrastructure requirements. We are moving from a world of "Connect any tool" to "Safely coordinate any swarm."
+**Strategic Pivot**:
+- **Hardened Local Transport**: Moving beyond simple HTTP/WS. MCP Any will investigate and implement "Authenticated Local-Only" transports (e.g., encrypted named pipes, strictly-validated Unix domain sockets) to prevent cross-site hijacking of local agent gateways.
+- **Swarm Governance Middleware**: Implementing "Chatter Control" to prevent unbounded multi-agent loops and ensure "State Discipline" through a centralized, immutable session ledger.
+- **Project-Aware Scoping**: Aligning with the "Project-Level Policy" trend (Gemini CLI) to allow tools to be automatically scoped based on the current Git repository or workspace directory.

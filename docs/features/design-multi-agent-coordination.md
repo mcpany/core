@@ -43,3 +43,12 @@ As AI agent ecosystems evolve from single-agent monoliths to multi-agent swarms 
 
 ## 7. Evolutionary Changelog
 * **2026-02-24**: Initial Document Creation.
+* **2026-03-04**: Added Swarm Governance and Immutable Session Ledger updates.
+
+### Update: 2026-03-04 - Swarm Governance & Chatter Control
+**Context:** Multi-agent swarms in 2026 are prone to "unbounded chatter" (infinite loops of agents talking to each other) and "state drift."
+**Architecture Adjustment:**
+*   **Immutable Session Ledger**: All tool calls and A2A handoffs are now recorded in a write-only, cryptographically hashed ledger. This ensures a "Single Source of Truth" that agents cannot hallucinate or override.
+*   **Chatter Control Middleware**: Implementing TTL (Time-to-Live) for A2A messages and "Loop Detection" logic that pauses a session if it detects repetitive agent patterns without progress.
+*   **Resource-Aware Handoffs**: Injecting cost and latency metadata into the handoff headers to allow the next agent to make "Economical Reasoning" decisions.
+**Security Impact:** Prevents "Denial of Wallet" attacks caused by runaway agent loops and ensures auditability of complex swarm behaviors.

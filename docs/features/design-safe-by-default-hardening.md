@@ -59,3 +59,12 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-04:** Added Hardened Local Transport section to mitigate 0-click WebSocket hijacking.
+
+### Update: 2026-03-04 - Mitigating Local Gateway Hijacking
+**Context:** The March 2026 OpenClaw 0-click exploit demonstrated that local WebSocket gateways can be hijacked by malicious websites via the browser. This bypasses traditional "local-only" IP bindings.
+**Architecture Adjustment:**
+*   **Non-Networked Transports**: Introducing support for Unix Domain Sockets (UDS) on Linux/macOS and Named Pipes on Windows as the preferred local communication channel between agents and MCP Any.
+*   **Origin & Token Validation**: If WebSockets must be used, mandatory "Connection Token" (OTP) passed via sub-protocol or header, and strict "Origin" header enforcement (refusing any browser-based origin by default).
+*   **Process-Bound Security**: Exploring "PID-Verification" for local connections to ensure the requester is a known agent process.
+**Security Impact:** Prevents a rogue website from sending commands to a local MCP Any instance through the user's browser, even if the user is currently running a local agent.

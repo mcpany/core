@@ -81,3 +81,20 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-04] Updates
+
+### Proposed Additions
+- **Local Gateway Hardening (Named Pipes/UDS)**: (P0) Introduce support for non-networked local transports to mitigate 0-click WebSocket attacks.
+- **Swarm Chatter-Control Middleware**: (P1) Rate-limiting and loop detection for agent-to-agent communications to prevent cost/latency explosions.
+- **Project-Level Policy Scoping**: (P1) Ability to define and enforce tool permissions at the directory/project level, matching Gemini CLI's security model.
+- **Immutable Session Ledger**: (P0) A write-only audit trail for all tool calls and A2A messages within a session, ensuring "State Discipline."
+
+### Priority Shifts
+- **Safe-by-Default Hardening**: Re-affirmed as **P0**. Urgent priority given the OpenClaw incident.
+- **A2A Stateful Residency**: Promoted to **P0**. Centralized state management is critical for swarm governance.
+
+### Deprecations / Monitoring
+- **Unauthenticated Local WebSockets**: Monitoring for deprecation. All local WS connections must require a one-time-password (OTP) or bearer token.

@@ -13,6 +13,10 @@
 - [ ] **[P1] Resource Cost/Latency Overlay**: Real-time performance metrics displayed directly on tool cards. (Added: 2026-02-26)
 - [ ] **[P0] Connectivity & Security Dashboard**: Visualize local-only vs remote exposure, attestation status, and active MFA sessions. (Added: 2026-02-28)
 - [ ] **[P0] Stateful A2A Mailbox**: UI for viewing queued and delivered A2A messages across the agent mesh. (Added: 2026-02-28)
+- [ ] **[P0] Immutable Session Ledger Viewer**: Secure, authenticated UI for viewing the cryptographically hashed session history and swarm activities. (Added: 2026-03-04)
+- [ ] **[P1] Local Transport Manager**: UI for configuring and monitoring Unix Domain Sockets (UDS) and Named Pipes for local agent-to-gateway comms. (Added: 2026-03-04)
+- [ ] **[P1] Chatter Control Dashboard**: Visualize swarm communication loops, TTL status, and throttle controls. (Added: 2026-03-04)
+- [ ] **[P1] Project-Scoped Policy Manager**: UI for managing tool permissions at the directory/Git repository level. (Added: 2026-03-04)
 - [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
 - [x] **[P1] Tool Playground & Explorer**:
   - [x] Auto-generated forms from Tool JSON Schemas.
