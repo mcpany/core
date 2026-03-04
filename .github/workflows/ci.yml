@@ -107,6 +107,12 @@ jobs:
           $SUDO rm -rf /opt/ghc
           $SUDO rm -rf /usr/local/share/boost
 
+      - name: Debug Environment
+        run: |
+          id
+          ls -l /var/run/docker.sock || echo "No docker socket found"
+          ls -ld /__w || echo "No /__w found"
+
       - name: Prune Docker
         run: docker system prune -af
 
