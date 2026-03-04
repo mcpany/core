@@ -17,6 +17,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/auth"
 	"github.com/mcpany/core/server/pkg/util"
+	"github.com/mcpany/core/server/pkg/validation"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -79,6 +80,12 @@ func writeError(w http.ResponseWriter, err error) {
 		status = http.StatusNotFound
 		msg = errStr
 	case strings.Contains(errStr, "required") || strings.Contains(errStr, "invalid"):
+		status = http.StatusBadRequest
+		msg = errStr
+	case strings.Contains(errStr, "unsafe"):
+		status = http.StatusBadRequest
+		msg = errStr
+	case strings.Contains(errStr, "blocked"):
 		status = http.StatusBadRequest
 		msg = errStr
 	default:
@@ -376,6 +383,11 @@ func (a *Application) testAuthHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func prepareAndExecuteRequest(ctx context.Context, w http.ResponseWriter, req TestAuthRequest, authConfig *configv1.Authentication, userToken *configv1.UserToken) {
+	if err := validation.IsSafeURL(req.TargetURL); err != nil {
+		writeError(w, fmt.Errorf("unsafe target url: %w", err))
+		return
+	}
+
 	// Prepare Request
 	method := req.Method
 	if method == "" {

@@ -467,18 +467,31 @@ func TestAuthTestEndpoint_SSRF(t *testing.T) {
 
 		app.testAuthHandler(rr, req)
 
-		assert.Equal(t, http.StatusOK, rr.Code)
-		var resp TestAuthResponse
+		assert.Equal(t, http.StatusBadRequest, rr.Code)
+		var resp map[string]string
 		err := json.Unmarshal(rr.Body.Bytes(), &resp)
 		require.NoError(t, err)
 
 		// We expect the request to have failed due to SSRF protection.
-		if resp.Status == 200 && resp.Body == "success" {
-			t.Logf("VULNERABILITY CONFIRMED: Successfully accessed 127.0.0.1: %s", upstream.URL)
-			t.Fail()
-		} else {
-			assert.NotEmpty(t, resp.Error, "Expected an error message due to blocked connection")
-			assert.Contains(t, strings.ToLower(resp.Error), "blocked", "Error message should mention 'blocked'")
+		assert.NotEmpty(t, resp["error"], "Expected an error message due to blocked connection")
+		assert.Contains(t, strings.ToLower(resp["error"]), "unsafe", "Error message should mention 'unsafe'")
+	})
+
+	t.Run("should block unsafe scheme access", func(t *testing.T) {
+		reqData := TestAuthRequest{
+			TargetURL: "file:///etc/passwd",
 		}
+		body, _ := json.Marshal(reqData)
+		req := httptest.NewRequest(http.MethodPost, "/api/v1/debug/auth-test", bytes.NewReader(body))
+		rr := httptest.NewRecorder()
+
+		app.testAuthHandler(rr, req)
+
+		assert.Equal(t, http.StatusBadRequest, rr.Code)
+		var resp map[string]string
+		err := json.Unmarshal(rr.Body.Bytes(), &resp)
+		require.NoError(t, err)
+
+		assert.Contains(t, strings.ToLower(resp["error"]), "unsafe target url")
 	})
 }
