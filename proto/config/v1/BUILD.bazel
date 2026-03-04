@@ -40,6 +40,9 @@ go_proto_library(
     proto = ":v1_proto",
     visibility = ["//visibility:public"],
     deps = [
+        "@org_golang_google_protobuf//types/known/durationpb",
+        "@org_golang_google_protobuf//types/known/timestamppb",
+        "@org_golang_google_protobuf//types/known/structpb",
         "//google/protobuf:go_features_go_proto",
         "//proto/bus",
     ],

@@ -14,7 +14,7 @@ proto_library(
 
 go_proto_library(
     name = "v1_go_proto",
-    compilers = ["//:go_grpc_editions"],
+    compilers = ["//:go_proto_editions", "//:go_grpc_editions"],
     importpath = "github.com/mcpany/core/proto/examples/weather/v1",
     proto = ":v1_proto",
     visibility = ["//visibility:public"],

@@ -30,6 +30,7 @@ go_test(
     embed = [":sqlite"],
     deps = [
         "//proto/config/v1:v1_go_proto",
+        "//server/pkg/logging",
         "@com_github_stretchr_testify//assert",
         "@com_github_stretchr_testify//require",
         "@org_golang_google_protobuf//proto",

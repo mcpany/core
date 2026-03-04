@@ -36,6 +36,11 @@ load("@rules_go//go:def.bzl", "go_binary", "go_library")
 
 # gazelle:resolve go google.golang.org/protobuf/types/descriptorpb @org_golang_google_protobuf//types/descriptorpb
 # gazelle:resolve go google.golang.org/protobuf/types/gofeaturespb @org_golang_google_protobuf//types/gofeaturespb
+# gazelle:resolve go google.golang.org/protobuf/types/known/anypb @org_golang_google_protobuf//types/known/anypb
+# gazelle:resolve go google.golang.org/protobuf/types/known/structpb @org_golang_google_protobuf//types/known/structpb
+# gazelle:resolve go google.golang.org/protobuf/types/known/timestamppb @org_golang_google_protobuf//types/known/timestamppb
+# gazelle:resolve go google.golang.org/protobuf/types/known/durationpb @org_golang_google_protobuf//types/known/durationpb
+# gazelle:resolve go google.golang.org/protobuf/types/known/wrapperspb @org_golang_google_protobuf//types/known/wrapperspb
 # gazelle:resolve go google.golang.org/genproto/googleapis/api/annotations @org_golang_google_genproto_googleapis_api//annotations
 
 # gazelle:go_proto_compilers //:go_proto_editions

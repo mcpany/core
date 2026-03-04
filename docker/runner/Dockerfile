@@ -41,13 +41,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   python3-pip \
   && rm -rf /var/lib/apt/lists/*
 
-# Install GitHub CLI (gh)
+# Install GitHub CLI (gh) and Docker CLI
 RUN mkdir -p -m 755 /etc/apt/keyrings \
   && wget -qO- https://cli.github.com/packages/githubcli-archive-keyring.gpg | tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null \
   && chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg \
   && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
+  && install -m 0755 -d /etc/apt/keyrings \
+  && curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc \
+  && chmod a+r /etc/apt/keyrings/docker.asc \
+  && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null \
   && apt-get update \
-  && apt-get install -y gh \
+  && apt-get install -y gh docker-ce-cli \
   && rm -rf /var/lib/apt/lists/*
 
 # Install Go 1.24 (Architecture-aware)
@@ -80,6 +84,6 @@ RUN go mod download && cd server && go mod download \
 # Final Cleanup
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# Default to runner user for CI compatibility
-USER runner
+# Default to root user for CI compatibility with mounted volumes
+USER root
 WORKDIR /home/runner/actions-runner

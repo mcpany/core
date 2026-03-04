@@ -167,6 +167,7 @@ go_test(
         "schema_sanitizer_mutation_test.go",
         "schema_sanitizer_test.go",
         "script_execution_test.go",
+        "security_injection_test.go",
         "security_leak_test.go",
         "security_log_test.go",
         "security_logging_test.go",

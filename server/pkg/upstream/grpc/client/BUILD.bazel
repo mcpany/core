@@ -14,7 +14,7 @@ proto_library(
 
 go_proto_library(
     name = "client_go_proto",
-    compilers = ["//:go_grpc_editions"],
+    compilers = ["//:go_proto_editions", "//:go_grpc_editions"],
     importpath = "github.com/mcpany/core/pkg/upstream/grpc/client",
     proto = ":client_proto",
     visibility = ["//visibility:public"],

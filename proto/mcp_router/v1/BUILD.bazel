@@ -17,11 +17,12 @@ proto_library(
 
 go_proto_library(
     name = "v1_go_proto",
-    compilers = ["//:go_grpc_editions"],
+    compilers = ["//:go_proto_editions", "//:go_grpc_editions"],
     importpath = "github.com/mcpany/core/proto/mcp_router/v1",
     proto = ":v1_proto",
     visibility = ["//visibility:public"],
     deps = [
+        "@org_golang_google_protobuf//types/known/structpb",
         "@org_golang_google_grpc//:grpc",
         "@org_golang_google_grpc//codes",
         "@org_golang_google_grpc//status","//google/protobuf:go_features_go_proto"],
