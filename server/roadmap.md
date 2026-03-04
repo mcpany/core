@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-04 Evolution)
+*   **[P1] Reasoning Trace Redaction Middleware**: Automatically detect and redact sensitive data encoded in internal agent reasoning traces. (Added: 2026-03-04)
+*   **[P0] Unified HITL Approval Gateway**: Central governance hub for "Human-in-the-Loop" approval flows. (Added: 2026-03-04)
+*   **[P0] Label-Aware Information Flow Controller**: Enforce tool access policies based on context sensitivity labels (e.g., PII, Confidential). (Added: 2026-03-04)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

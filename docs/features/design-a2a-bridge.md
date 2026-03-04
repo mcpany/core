@@ -46,3 +46,7 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-03-04: Integration with Reasoning Trace Scrutiny**
+    - **Context**: Market sync revealed steganographic exfiltration risks in inter-agent handoffs.
+    - **Update**: `A2ABridgeMiddleware` now propagates the `_mcp_reasoning` metadata from the parent agent to the subagent to ensure a continuous reasoning trace.
+    - **Security Enhancement**: All reasoning traces from external A2A agents are now passed through the `Reasoning Trace Redaction Middleware` before being stored in the session blackboard.

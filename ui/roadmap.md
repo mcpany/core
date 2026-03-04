@@ -13,6 +13,9 @@
 - [ ] **[P1] Resource Cost/Latency Overlay**: Real-time performance metrics displayed directly on tool cards. (Added: 2026-02-26)
 - [ ] **[P0] Connectivity & Security Dashboard**: Visualize local-only vs remote exposure, attestation status, and active MFA sessions. (Added: 2026-02-28)
 - [ ] **[P0] Stateful A2A Mailbox**: UI for viewing queued and delivered A2A messages across the agent mesh. (Added: 2026-02-28)
+- [ ] **[P1] Reasoning Trace Explorer**: UI for inspecting and auditing redacted agent reasoning traces. (Added: 2026-03-04)
+- [ ] **[P0] Governed Approval Dashboard**: Unified interface for managing HITL requests across all agent frameworks. (Added: 2026-03-04)
+- [ ] **[P0] Context Sensitivity Visualizer**: Real-time visualization of security labels and flow restrictions. (Added: 2026-03-04)
 - [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
 - [x] **[P1] Tool Playground & Explorer**:
   - [x] Auto-generated forms from Tool JSON Schemas.

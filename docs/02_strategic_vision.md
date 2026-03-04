@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-04]
+### Focus: Reasoning Trace Observability & Governed Execution
+**Context**: The rise of "steganographic chain-of-thought" (OpenClaw/Academia) and the shift toward "human-approval architectures" (Claude Code) necessitate a deeper level of gateway inspection and governance. Security is moving from the "tool output" to the "reasoning process."
+**Strategic Pivot**:
+- **Reasoning Trace Scrutiny**: MCP Any will evolve to treat internal agent reasoning traces as sensitive data objects. We will implement middleware for "Steganographic Redaction" to prevent hidden exfiltration via reasoning logs.
+- **Unified HITL Governance**: Transitioning the HITL (Human-in-the-Loop) middleware from a "suspension feature" to a central "Governed Execution Gateway" that standardizes approval flows across all connected agent frameworks.
+- **Label-Aware Information Flow**: Moving towards "Label-Aware Routing," where security labels (e.g., PII, Confidential) are tracked through the execution flow, and tool access is dynamically restricted based on the current context's sensitivity level.
