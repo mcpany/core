@@ -72,8 +72,13 @@ export function useRealTimeTopology() {
     const [isLive, setIsLive] = useState(false);
 
     // ⚡ BOLT: Refs to store previous state for memoization
-    const prevStructureHash = useRef<string>("");
+    // prevStructureHash removed, using fast structure check
     const nodesRef = useRef<Node[]>([]);
+    const edgesRef = useRef<Edge[]>([]);
+
+    useEffect(() => {
+        edgesRef.current = edges;
+    }, [edges]);
 
     // Update nodesRef whenever nodes change so fetchData can access the latest positions
     useEffect(() => {
@@ -199,10 +204,32 @@ export function useRealTimeTopology() {
                 });
             }
 
-            // ⚡ BOLT: Calculate structure hash to avoid unnecessary re-layouts
-            const structureHash = rawNodes.map(n => n.id).sort().join(',') + '|' + rawEdges.map(e => e.id).sort().join(',');
+            // ⚡ BOLT: Optimized O(N) structure check instead of O(N log N) sorts and string joins
+            // Randomized Selection from Top 5 High-Impact Targets (Algorithmic)
+            let isSameStructure = nodesRef.current.length > 0 &&
+                rawNodes.length === nodesRef.current.length &&
+                rawEdges.length === edgesRef.current.length;
 
-            if (structureHash === prevStructureHash.current && nodesRef.current.length > 0) {
+            if (isSameStructure) {
+                const prevNodeSet = new Set(nodesRef.current.map(n => n.id));
+                const prevEdgeSet = new Set(edgesRef.current.map(e => e.id));
+                for (let i = 0; i < rawNodes.length; i++) {
+                    if (!prevNodeSet.has(rawNodes[i].id)) {
+                        isSameStructure = false;
+                        break;
+                    }
+                }
+                if (isSameStructure) {
+                    for (let i = 0; i < rawEdges.length; i++) {
+                        if (!prevEdgeSet.has(rawEdges[i].id)) {
+                            isSameStructure = false;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (isSameStructure) {
                 // Structure matches, only update data (metrics) and preserve positions
                 const currentNodesMap = new Map(nodesRef.current.map(n => [n.id, n]));
 
@@ -224,7 +251,6 @@ export function useRealTimeTopology() {
                 const layout = getLayoutedElements(rawNodes, rawEdges);
                 setNodes(layout.nodes);
                 setEdges(layout.edges);
-                prevStructureHash.current = structureHash;
             }
 
             setLastUpdated(new Date());

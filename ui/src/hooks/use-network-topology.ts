@@ -84,7 +84,7 @@ export function useNetworkTopology() {
     // ⚡ Bolt Optimization: Refs to track current state without adding dependencies to fetchData
     const nodesRef = useRef(nodes);
     const edgesRef = useRef(edges);
-    const lastStructureHash = useRef<string>('');
+    // lastStructureHash removed, using fast structure check
 
     // Keep refs in sync with state
     useEffect(() => { nodesRef.current = nodes; }, [nodes]);
@@ -174,11 +174,32 @@ export function useNetworkTopology() {
             // If structure is same, we reuse positions from previous state, preserving user drags/layout,
             // and only update node data (metrics, status, etc).
 
-            const nodeIds = newNodes.map(n => n.id).sort().join(',');
-            const edgeIds = newEdges.map(e => e.id).sort().join(',');
-            const currentStructureHash = `${nodeIds}|${edgeIds}`;
+            // ⚡ BOLT: Optimized O(N) structure check instead of O(N log N) sorts and string joins
+            // Randomized Selection from Top 5 High-Impact Targets (Algorithmic)
+            let isSameStructure = nodesRef.current.length > 0 &&
+                newNodes.length === nodesRef.current.length &&
+                newEdges.length === edgesRef.current.length;
 
-            if (currentStructureHash === lastStructureHash.current && nodesRef.current.length > 0) {
+            if (isSameStructure) {
+                const prevNodeSet = new Set(nodesRef.current.map(n => n.id));
+                const prevEdgeSet = new Set(edgesRef.current.map(e => e.id));
+                for (let i = 0; i < newNodes.length; i++) {
+                    if (!prevNodeSet.has(newNodes[i].id)) {
+                        isSameStructure = false;
+                        break;
+                    }
+                }
+                if (isSameStructure) {
+                    for (let i = 0; i < newEdges.length; i++) {
+                        if (!prevEdgeSet.has(newEdges[i].id)) {
+                            isSameStructure = false;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (isSameStructure) {
                 // Structure match! Reuse positions.
                 const currentNodesMap = new Map(nodesRef.current.map(n => [n.id, n]));
 
@@ -205,7 +226,7 @@ export function useNetworkTopology() {
                 const layouted = getLayoutedElements(newNodes, newEdges);
                 setNodes(layouted.nodes);
                 setEdges(layouted.edges);
-                lastStructureHash.current = currentStructureHash;
+                // lastStructureHash is replaced by isSameStructure checks
             }
 
         } catch (error) {
@@ -230,7 +251,7 @@ export function useNetworkTopology() {
     }, [refreshContextTopology]);
 
     const autoLayout = useCallback(() => {
-         lastStructureHash.current = ''; // Force layout recalculation
+         nodesRef.current = []; // Force layout recalculation by failing isSameStructure
          if (latestTopology) {
              processGraph(latestTopology);
          }
