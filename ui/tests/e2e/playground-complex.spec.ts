@@ -57,6 +57,16 @@ const SERVICE_CONFIG = {
         "call_id": "get_image",
         "description": "Get an image returning base64",
         "input_schema": { "type": "object", "properties": {} }
+      },
+      {
+        "name": "update_metadata",
+        "call_id": "update_metadata",
+        "description": "Update generic metadata",
+        "input_schema": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        }
       }
     ],
     // The 'calls' map allows us to mock the arguments passed to 'echo', effectively mocking the output.
@@ -64,7 +74,8 @@ const SERVICE_CONFIG = {
       "create_user": { "args": ["{\"status\": \"created\", \"id\": 123}"] },
       "list_users": { "args": ["[{\"id\": 1, \"name\": \"Alice\", \"role\": \"Admin\", \"active\": true}, {\"id\": 2, \"name\": \"Bob\", \"role\": \"User\", \"active\": false}, {\"id\": 3, \"name\": \"Charlie\", \"role\": \"Guest\", \"active\": true}]"] },
       // A small red dot base64 png
-      "get_image": { "args": ["{\"image_data\": \"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mUEAAkA+ABx/8O1AAAAAElFTkSuQmCC\"}"] }
+      "get_image": { "args": ["{\"image_data\": \"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mUEAAkA+ABx/8O1AAAAAElFTkSuQmCC\"}"] },
+      "update_metadata": { "args": ["{\"status\": \"metadata_updated\"}"] }
     }
   }
 };
@@ -207,6 +218,42 @@ test.describe('Playground Complex UI', () => {
     // We might need to click "Show More" if it's collapsed or ensure tree is expanded
     // NOTE: Flaky in some envs if image load is slow or structure differs
     // await expect(page.locator('img').first()).toBeVisible();
+  });
+
+  test('supports adding dynamic custom properties to unstructured objects', async ({ page }) => {
+    await page.goto('/tools');
+
+    // In the tools page table, there's a button to inspect.
+    // We should be able to find it within the row
+    await page.getByRole('row', { name: /update_metadata/i }).getByRole('button', { name: /Inspect/i }).click();
+
+    // Now in the inspector dialogue
+    // The tool has no properties defined, so the "Add Property" button should be visible
+    await page.getByRole('button', { name: /Add Property/i }).click();
+
+    // An input for the key should appear with placeholder "Key name"
+    const keyInput = page.getByPlaceholder('Key name');
+    await expect(keyInput).toBeVisible();
+    await keyInput.fill('customKey');
+
+    // Add a value to the field
+    // In universal-schema-form, it's rendered as an Input
+    const valueInput = page.getByRole('textbox').nth(1);
+    await expect(valueInput).toBeVisible();
+    await valueInput.fill('customValue');
+
+    // Switch to JSON view to verify the underlying state updated correctly
+    await page.getByRole('tab', { name: 'JSON' }).click();
+    const textarea = page.locator('textarea.font-mono');
+    await expect(textarea).toHaveValue(/customKey/);
+    await expect(textarea).toHaveValue(/customValue/);
+
+    // Switch back to Form view and execute
+    await page.getByRole('tab', { name: 'Form' }).click();
+    await page.getByRole('button', { name: 'Execute' }).click();
+
+    // Verify success result
+    await expect(page.getByText('metadata_updated')).toBeVisible({ timeout: 10000 });
   });
 
 });

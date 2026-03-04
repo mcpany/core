@@ -55,11 +55,25 @@ upstream_services:
             fields:
               dummy:
                 string_value: "val"
+        - name: "update_metadata"
+          description: "Update generic metadata"
+          call_id: "update_metadata"
+          input_schema:
+            fields:
+              type:
+                string_value: "object"
+              properties:
+                struct_value:
+                  fields: {}
+              additionalProperties:
+                bool_value: true
       calls:
         get_complex_data:
           args: ['[{"id": 1, "name": "Alice", "role": "Admin", "details": {"active": true}}, {"id": 2, "name": "Bob", "role": "User", "details": {"active": false}}]']
         get_rich_content:
           args: ['{"content": [{"type": "text", "text": "# Rich Content Test\n\nThis is a **markdown** test with a list:\n- Item 1\n- Item 2\n\nAnd an image below:"}, {"type": "image", "data": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==", "mimeType": "image/png"}], "isError": false}']
+        update_metadata:
+          args: ['{"status": "metadata_updated"}']
 
   - id: "mcp-verified-service"
     name: "mcp-verified-service"
