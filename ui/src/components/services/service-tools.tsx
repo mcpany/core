@@ -18,8 +18,7 @@ import {
     DialogDescription,
     DialogTrigger,
 } from "@/components/ui/dialog";
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { SchemaVisualizer } from "@/components/schema-visualizer";
 
 
 interface ServiceToolsProps {
@@ -69,13 +68,7 @@ export function ServiceTools({ tools }: ServiceToolsProps) {
                                         </DialogDescription>
                                     </DialogHeader>
                                     <div className="rounded-md border overflow-hidden">
-                                         <SyntaxHighlighter
-                                            language="json"
-                                            style={vscDarkPlus}
-                                            customStyle={{ margin: 0, fontSize: '12px' }}
-                                        >
-                                            {JSON.stringify(tool.inputSchema || {}, null, 2)}
-                                        </SyntaxHighlighter>
+                                        <SchemaVisualizer schema={tool.inputSchema || {}} />
                                     </div>
                                 </DialogContent>
                             </Dialog>

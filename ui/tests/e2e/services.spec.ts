@@ -13,7 +13,25 @@ test.describe('Services Feature', () => {
         address: "https://stripe.com",
         status: "up",
         version: "v1.2.0",
-        enabled: true
+        enabled: true,
+        tools: [{
+            name: "process_payment",
+            description: "Process a payment via Stripe.",
+            inputSchema: {
+                type: "object",
+                properties: {
+                    amount: {
+                        type: "number",
+                        description: "Payment amount in cents"
+                    },
+                    currency: {
+                        type: "string",
+                        description: "Currency code (e.g., USD)"
+                    }
+                },
+                required: ["amount", "currency"]
+            }
+        }]
     },
     {
         name: "User Service",
@@ -92,6 +110,33 @@ test.describe('Services Feature', () => {
     await expect(page.locator('input[id="name"]')).toHaveValue(serviceName);
     await page.getByRole('button', { name: 'Cancel' }).click();
   });
+
+  test('should render schema visualizer in service tools dialog', async ({ page }) => {
+    const paymentRow = page.locator('tr').filter({ hasText: 'Payment Gateway' });
+
+    // Click on the row to open details
+    await paymentRow.click();
+
+    // Click on tools tab
+    await page.getByRole('tab', { name: 'Tools' }).click();
+
+    // Should see process_payment tool
+    await expect(page.getByText('process_payment')).toBeVisible();
+
+    // Click View Schema button
+    await page.locator('button[title="View Schema"]').click();
+
+    // The dialog should appear and it should have the visualizer table
+    // we added SchemaVisualizer which renders a Table with headers "Property", "Type", "Description"
+    await expect(page.getByRole('dialog').getByRole('columnheader', { name: 'Property' })).toBeVisible();
+    await expect(page.getByRole('dialog').getByRole('columnheader', { name: 'Type' })).toBeVisible();
+
+    // Should see the properties we defined
+    await expect(page.getByRole('dialog').getByText('amount')).toBeVisible();
+    await expect(page.getByRole('dialog').getByText('currency')).toBeVisible();
+    await expect(page.getByRole('dialog').getByText('Payment amount in cents')).toBeVisible();
+  });
+
   test('should navigate to logs from service list', async ({ page }) => {
     const serviceName = 'Payment Gateway';
     const row = page.locator('tr').filter({ hasText: serviceName });
@@ -108,10 +153,5 @@ test.describe('Services Feature', () => {
 
     // Should navigate to logs page with query param
     await expect(page).toHaveURL(/.*\/logs.*source=Payment/);
-
-    // Verify filter is applied (assuming log-stream uses query param to filter)
-    // We can check if the source dropdown or some indicator reflects the selection
-    // Based on implementation: source query param sets filterSource
-    // await expect(page.getByText('Payment Gateway')).toBeVisible(); // Source selector should show it
   });
 });
