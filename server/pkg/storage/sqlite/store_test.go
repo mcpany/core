@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/logging"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -387,6 +388,22 @@ func TestStore(t *testing.T) {
 		got, _ = store.GetToken(context.Background(), "user-1", "svc-1")
 		if got != nil {
 			t.Errorf("expected token to be nil, got %v", got)
+		}
+	})
+
+	t.Run("SaveLog", func(t *testing.T) {
+		entry := &logging.LogEntry{
+			ID:        "log-1",
+			Timestamp: "2026-03-04T00:00:00Z",
+			Level:     "INFO",
+			Source:    "test-source",
+			Message:   "test message",
+			Metadata:  map[string]interface{}{"key": "value"},
+		}
+
+		err := store.SaveLog(context.Background(), entry)
+		if err != nil {
+			t.Fatalf("failed to save log: %v", err)
 		}
 	})
 }

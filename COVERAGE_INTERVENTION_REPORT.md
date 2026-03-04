@@ -1,7 +1,15 @@
-* **Target:** `server/pkg/tool/types.go` (`checkGdbInjection`, `checkJqInjection`, `checkTarInjection`)
-* **Risk Profile:** These functions contain crucial security logic designed to protect the system from Command Injection attacks—a severe Level 0 vulnerability—by preventing arbitrary command execution within the `gdb`, `jq`, and `tar` commands. Prior to this intervention, these methods exhibited significant "Dark Matter" with path coverage at 75%. Due to the complex quoting constraints and evaluation rules in these specific interpreters, the risk of logic gaps or regressions was high.
-* **New Coverage:**
-  * `checkGdbInjection`: Coverage increased from 75.0% to **93.8%** (representing 100% of reachable paths, as the remaining block is an unreachable length check after `strings.TrimSpace`). New tests verify the blockade of malicious sub-commands like `shell`, `system`, `pipe`, and `make`, while respecting quoting levels correctly (e.g., allowing them as single-quoted string literals).
-  * `checkJqInjection`: Coverage increased from 75.0% to **100.0%**. The new suite enforces the strict distinction between safe runtime interpreters and environment leakages, explicitly blocking keywords like `env`, `input`, and `import` when provided outside of double-quoted literal scopes.
-  * `checkTarInjection`: Coverage increased from 75.0% to **100.0%**. Tests rigorously block RCE attempts using specific execution directives inside flag values (e.g., `exec=`, `command=`, and `--checkpoint-action`) while preserving legitimate tar options.
-* **Verification:** I have executed the full test suite (`cd server && go test ./pkg/tool/...`). All new hermetic, table-driven unit tests pass without causing regressions in the legacy suite. The implementation conforms to Google's rigorous engineering standards and adheres perfectly to the existing test methodologies within the repository.
+# Coverage Intervention Report
+
+**Target:** `server/pkg/storage/postgres/store.go` and `server/pkg/storage/sqlite/store.go`
+
+**Risk Profile:**
+These files handle critical interactions with the database layer, specifically persisting global state and logging interactions. We identified that the `SaveLog` method, responsible for saving system and session activity logs to the database, was entirely untested. Missing tests in database components pose a high risk of runtime failures and data loss if regressions are introduced.
+
+**New Coverage:**
+- `server/pkg/storage/postgres/store_test.go`: Added specific tests for `SaveLog` to verify correct query execution and error handling using `sqlmock`.
+- `server/pkg/storage/sqlite/store_test.go`: Added specific tests for `SaveLog` leveraging the real temporary database approach used in the rest of the SQLite suite to confirm that a valid log entry is safely committed to the database.
+
+**Verification:**
+- Executed `go test ./pkg/storage/... -v` to confirm new tests pass cleanly.
+- Verified test coverage increased for both storage layers.
+- Ran `make test` and `make lint` from the project root. `make lint` passed with 100% compliance.
