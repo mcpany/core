@@ -59,3 +59,10 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+
+### Update: 2026-03-04 - Mitigating ClawHub Malicious Skills
+**Context:** Market sync revealed 1,184 malicious skills on ClawHub and widespread RCE via unsanitized command injection in community MCP servers.
+**Architecture Adjustment:**
+- **Mandatory WASM Isolation**: Deprecating direct stdio execution for unverified 3rd-party tools. All tools from non-attested sources must run in the **WASM Tool Sandbox**.
+- **Runtime Input/Output Interceptors**: Adding a mandatory middleware layer that sanitizes tool inputs for shell metacharacters and redacts PII/Secrets from tool outputs.
+**Security Impact:** Prevents RCE and credential exfiltration even if a user unknowingly installs a "poisoned" tool from a public registry.

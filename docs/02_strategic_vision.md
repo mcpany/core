@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-04]
+### Focus: Runtime Enforcement & WASM-based Tool Isolation
+**Context**: Recent market findings show a surge in "tool-poisoning" and RCE via unsanitized inputs in MCP servers. The ecosystem is shifting toward "Runtime Security" as the only viable enforcement layer.
+**Strategic Pivot**:
+- **Runtime Interceptor Architecture**: MCP Any will pivot to an "Inline Inspection" model where every tool call (input/output) is scanned for PII, secrets, and injection patterns before reaching the agent or the tool.
+- **WASM-First Execution**: Moving toward a future where "Vibe-Coded" or unverified tools are executed within a WASM sandbox by default, preventing host-level file access or unauthorized network calls.
+- **Identity-First Tooling**: Implementing a universal OAuth 2.1 bridge to standardize remote MCP authentication, ensuring that every tool call is tied to a verified identity and intent.

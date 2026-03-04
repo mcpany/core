@@ -29,6 +29,11 @@
 *   **[P1] Federated MCP Peering**: Distributed node discovery and tool proxying. (Added: 2026-02-26)
 *   **[P1] Resource Telemetry Middleware**: Inject latency/cost metrics into tool schemas. (Added: 2026-02-26)
 
+#### Upcoming (2026-03-04 Evolution)
+*   **[P0] WASM Tool Sandbox**: Isolated runtime for unverified MCP servers to prevent host compromise.
+*   **[P0] Universal OAuth 2.1 Identity Bridge**: Standardized authentication for remote MCP servers and delegated tool access.
+*   **[P1] Inline Security Interceptor Middleware**: Runtime scanning of tool inputs/outputs for secrets and injection.
+
 #### Upcoming (2026-02-28 Evolution)
 *   **[P0] Safe-by-Default Hardening**: Transition all listeners to `localhost` by default. Implement mandatory Attestation for remote exposure. (Added: 2026-02-28)
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)

@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-04] Updates
+
+### Proposed Additions
+- **WASM Tool Sandbox**: (P0) A secure runtime that executes MCP server logic in an isolated WASM environment. Prevents unauthorized file access and command injection from malicious tools.
+- **Universal OAuth 2.1 Identity Bridge**: (P0) Standardizes authentication for remote MCP servers. Supports delegated tool authorization for agents.
+- **Inline Security Interceptor Middleware**: (P1) Scans tool inputs for injection patterns and outputs for sensitive data (PII, API keys) before they reach the agent or user.
+
+### Priority Shifts
+- **MCP Provenance Attestation**: (P0) Re-affirmed as critical. Essential for blocking tools from unverified sources like ClawHub's "malicious skills."
+- **Policy Firewall**: (P0) Expanded to include real-time behavioral monitoring of tool calls.
+
+### Deprecations / Monitoring
+- **Native stdio Tool Execution**: Moving toward a future where all local stdio tools are executed within the WASM sandbox or a Docker-bound named pipe for isolation.
