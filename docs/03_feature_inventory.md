@@ -75,6 +75,16 @@
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
+---
+
+## Evolution: [2026-03-04] Updates
+
+### Proposed Additions
+- **PITTO Output Sanitizer Middleware**: (P0) Active inspection and sanitization of tool outputs to prevent prompt injection attacks originating from tool responses.
+- **Agent Identity Provider (OIDC Bridge)**: (P0) Native support for agent-specific identities and OIDC-based "on-behalf-of" authentication.
+- **ClawMesh-to-MCP Gateway**: (P1) A discovery bridge that maps decentralized ClawMesh P2P tool discovery to standard MCP schemas.
+- **Batch Tool Execution API**: (P1) A performance-optimized endpoint for executing multiple independent tool calls in a single round-trip, reducing latency for local swarms.
+
 ### Priority Shifts
 - **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
 - **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.

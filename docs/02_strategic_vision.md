@@ -57,3 +57,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-04]
+### Focus: Mesh Interoperability, Output Integrity, and Agent Identity
+**Context**: Today's research into "ClawMesh," PITTO exploits, and Agentic "Shadow IT" indicates that MCP Any must evolve to handle decentralized tool discovery, protect models from malicious tool payloads, and provide unique identities to autonomous agents.
+**Strategic Pivot**:
+- **Mesh Gateway Expansion**: MCP Any will serve as the bridge between standard MCP and P2P discovery protocols like ClawMesh, ensuring that decentralized tools remain governed by central Zero-Trust policies.
+- **Active Output Sanitization**: Implementing a new middleware layer that inspects and sanitizes tool outputs to prevent Prompt Injection via Tool Output (PITTO), ensuring the model is not "tricked" by malicious tool responses.
+- **Agent-First Identity (OIDC)**: Moving beyond shared API keys to a native Agent Identity provider. This allows for granular auditing of "Agent-on-Behalf-of-User" actions, solving the compliance challenges of autonomous sub-processes.
+- **Batch-Processing Optimization**: Introducing a "Batch Execution" primitive to the gateway to reduce the latency of high-frequency tool-calling loops in local agent swarms.
