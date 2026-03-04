@@ -45,6 +45,35 @@ const DiffEditor = dynamic(
 export type MessageType = "user" | "assistant" | "tool-call" | "tool-result" | "error";
 
 /**
+ * Recursively parses stringified JSON inside an object to produce a clean structure for diffing.
+ */
+function deeplyParseJsonStrings(obj: any): any {
+    if (typeof obj === 'string') {
+        try {
+            const parsed = JSON.parse(obj);
+            if (typeof parsed === 'object' && parsed !== null) {
+                return deeplyParseJsonStrings(parsed);
+            }
+        } catch {
+            // Not a valid JSON string or not an object, return original string
+        }
+        return obj;
+    }
+    if (Array.isArray(obj)) {
+        return obj.map(deeplyParseJsonStrings);
+    }
+    if (typeof obj === 'object' && obj !== null) {
+        const result: any = {};
+        for (const key in obj) {
+            result[key] = deeplyParseJsonStrings(obj[key]);
+        }
+        return result;
+    }
+    return obj;
+}
+
+
+/**
  * Message type definition.
  */
 export interface Message {
@@ -201,8 +230,8 @@ export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
     }
 
     if (message.type === "tool-result") {
-        const prevUnwrapped = message.previousResult !== undefined ? unwrapMcpResult(message.previousResult) : undefined;
-        const currUnwrapped = unwrapMcpResult(message.toolResult);
+        const prevUnwrapped = message.previousResult !== undefined ? deeplyParseJsonStrings(unwrapMcpResult(message.previousResult)) : undefined;
+        const currUnwrapped = deeplyParseJsonStrings(unwrapMcpResult(message.toolResult));
 
         const hasDiff = message.previousResult !== undefined &&
                         JSON.stringify(prevUnwrapped) !== JSON.stringify(currUnwrapped);
