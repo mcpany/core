@@ -59,3 +59,10 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+
+### Update: 2026-03-04 - Mitigating Browser-Based WebSocket Hijacks
+**Context:** Today's market sync revealed a critical exploit pattern in the OpenClaw agent where malicious websites could silently hijack the local gateway via unverified WebSocket connections.
+**Architecture Adjustment:**
+*   Implementing mandatory `Origin` header verification for all WebSocket upgrade requests.
+*   Introducing a strict rate-limiting policy for connection attempts to prevent automated password brute-forcing of the local gateway.
+**Security Impact:** Prevents unauthorized host-level access by rogue websites, closing a major local-first agentic security gap.

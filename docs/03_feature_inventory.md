@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-04] Updates
+
+### Proposed Additions
+- **WebSocket Origin Enforcement Middleware**: (P0) Validates the `Origin` header for all incoming WebSocket connections. Essential to prevent browser-based hijacks as seen in the OpenClaw incident.
+- **Standardized HTTP Hook Interface**: (P1) Allows tools and services to define lifecycle hooks as HTTP endpoints instead of shell commands. Enables better isolation and containerization.
+- **Git-Worktree Shared State**: (P1) Synchronizes agent "auto-memory" and session context across multiple git worktrees in the same repository.
+
+### Priority Shifts
+- **"Safe-by-Default" Network Hardening**: Re-affirmed as **P0**. Urgent requirement to add origin checks alongside the local-only binding.
+- **A2A Stateful Residency**: Promoted to **P0** as multi-agent handoffs become the standard for complex workflows.
+
+### Deprecations / Monitoring
+- **Shell-only Hooking**: Monitoring for deprecation in favor of the HTTP Hook Interface to reduce the host-level attack surface.
