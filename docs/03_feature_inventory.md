@@ -81,3 +81,15 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-04] Updates
+
+### Proposed Additions
+- **Inter-Agent Intent Tracking System**: (P0) A protocol and middleware for verifying that task delegations between agents align with parent intentions.
+- **Cascading Failure Circuit Breaker**: (P1) Automatic detection and halting of recursive or malicious inter-agent loops that lead to resource exhaustion.
+- **Dynamic Token Budgeter**: (P1) Per-session token and cost limits to prevent runaway "salty" agent sessions.
+
+### Priority Shifts
+- **Resource Telemetry Middleware**: Promoted to **P0**. Essential for economic reasoning and cost management in complex swarms.

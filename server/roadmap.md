@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-04 Evolution)
+*   **[P0] Inter-Agent Intent Tracking System**: Middleware for verifying task delegation alignment with parent intent. (Added: 2026-03-04)
+*   **[P1] Cascading Failure Circuit Breaker**: Automated detection and halting of malicious or recursive agent loops. (Added: 2026-03-04)
+*   **[P1] Dynamic Token Budgeter**: Per-session cost and usage limits for agentic sessions. (Added: 2026-03-04)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

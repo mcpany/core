@@ -46,3 +46,10 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+
+### Update: 2026-03-04 - Mitigating Inter-Agent Semantic Exploits
+**Context:** Today's market sync identified "Semantic Payloads" and cascading inter-agent failures as critical risks in hierarchical swarms.
+**Architecture Adjustment:**
+*   Integrating the `Inter-Agent Intent Tracking System` into the `A2ABridgeMiddleware`.
+*   Propagating cryptographically signed "Intent Manifests" via `Recursive Context Protocol` headers.
+**Security Impact:** Prevents unauthorized lateral movement and "Intent Deviation" during cross-framework agent delegation.

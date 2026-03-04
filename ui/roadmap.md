@@ -13,6 +13,9 @@
 - [ ] **[P1] Resource Cost/Latency Overlay**: Real-time performance metrics displayed directly on tool cards. (Added: 2026-02-26)
 - [ ] **[P0] Connectivity & Security Dashboard**: Visualize local-only vs remote exposure, attestation status, and active MFA sessions. (Added: 2026-02-28)
 - [ ] **[P0] Stateful A2A Mailbox**: UI for viewing queued and delivered A2A messages across the agent mesh. (Added: 2026-02-28)
+- [ ] **[P0] Intent Manifest Viewer**: UI for visualizing and verifying the lineage of intent across multi-agent handoffs. (Added: 2026-03-04)
+- [ ] **[P0] Inter-Agent Cascade Visualizer**: Real-time topology map showing agent delegations and circuit breaker status. (Added: 2026-03-04)
+- [ ] **[P1] Token Budget Management UI**: Dashboard for setting and monitoring per-session token/cost limits. (Added: 2026-03-04)
 - [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
 - [x] **[P1] Tool Playground & Explorer**:
   - [x] Auto-generated forms from Tool JSON Schemas.
