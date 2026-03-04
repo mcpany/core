@@ -59,3 +59,11 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+
+### Update: 2026-03-04 - Mitigating 0-Click Local Gateway Hijacking
+**Context:** The "ClawJacked" exploit in OpenClaw proved that binding to `localhost` is insufficient if the browser can be used as a side-channel. Malicious websites can brute-force local gateway credentials via WebSocket connections.
+**Architecture Adjustment:**
+*   **Strict Origin Validation**: Introducing mandatory `Origin` header allowlisting in Section 4. Only trusted local UI origins (e.g., `http://localhost:3000`, `vscode-webview://*`) will be permitted.
+*   **Host Header Verification**: Enforcing strict `Host` header checks to prevent DNS rebinding attacks.
+*   **Local Token Rotation**: Transitioning from static passwords to short-lived, session-bound tokens generated on server startup and passed via secure IPC to local clients.
+**Security Impact:** Prevents remote web-based attackers from interacting with the local MCP Any gateway, even if the user is logged into a malicious site.

@@ -81,3 +81,21 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-04] Updates
+
+### Proposed Additions
+- **Anti-Hijack Gateway Guard**: (P0) Strict Host/Origin validation middleware for the local WebSocket/HTTP gateway. Prevents 0-click attacks from malicious websites.
+- **WASM Hook Runtime**: (P1) A sandboxed environment for executing pre/post message hooks, replacing raw shell execution to prevent repo-level injections.
+- **Stateful A2A Inbox**: (P0) Implements a mailbox-style communication pattern for agent swarms, supporting parallel task tracking and asynchronous handoffs.
+- **Signed Skill Manifests**: (P1) Cryptographic verification for "Skill Bundles" to ensure tool integrity and supply chain provenance.
+
+### Priority Shifts
+- **"Safe-by-Default" Network Hardening**: Re-affirmed as **P0**. High urgency due to the OpenClaw "ClawJacked" exploit.
+- **A2A Stateful Residency**: Promoted to **P0** as it underpins the Stateful A2A Inbox feature.
+
+### Deprecations / Monitoring
+- **Unsanitized Shell Hooks**: Deprecate raw shell execution for lifecycle hooks in favor of the WASM Hook Runtime.
+- **Unverified Local Gateway Access**: Deprecate any local listener that does not perform strict Origin validation.

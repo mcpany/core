@@ -57,3 +57,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-04]
+### Focus: Local Gateway Hardening & Swarm Communication Protocols
+**Context**: Today's market sync revealed critical "0-click" hijacking vulnerabilities in local agent gateways (OpenClaw) and injection flaws in multi-agent hook systems (Claude Code). As swarms become the default architecture, the "Local-is-Safe" assumption is officially dead.
+**Strategic Pivot**:
+- **Cross-Origin Lockdown**: MCP Any will implement strict `Origin` and `Host` validation for all local WebSocket and HTTP listeners, specifically targeting side-channel attacks from malicious websites.
+- **Inbox-Based Swarm Coordination**: Adopting a "Stateful Inbox" model for A2A communication, similar to Claude Code's successful swarm implementation. This decouples agent execution from communication, increasing resilience.
+- **Sandboxed Hook Execution**: Shifting from raw shell hooks to a WASM-based or containerized "Hook Runtime" to prevent repository-level injection attacks.
+- **Attested Skill Bundles**: Moving beyond simple MCP servers to "Skill Bundles" that include signed metadata and declarative resource requirements.

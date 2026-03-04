@@ -46,3 +46,11 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+
+### Update: 2026-03-04 - Shifting to Stateful A2A Inbox Model
+**Context:** Market shifts (Claude Code Swarms) indicate that synchronous "waiting" for agent tool calls is fragile and prone to context degradation. Agents need a decoupled way to exchange tasks.
+**Architecture Adjustment:**
+*   **Inbox-Based Communication**: Deprecating synchronous tool-to-agent mapping in favor of a "Stateful Inbox" (Section 4). Agents now post to a teammate's inbox and receive an `item_id`.
+*   **Async Completion Hooks**: Replacing polling with a push-based completion notification system via the MCP `notifications` protocol.
+*   **Task Board Integration**: Integrating the `Shared KV Store` as a global task board that tracks the status of all cross-agent delegations.
+**Security Impact:** Reduces the risk of "Long-Running Tool" timeouts being exploited and provides a clearer audit trail for delegated tasks.
