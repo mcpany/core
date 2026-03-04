@@ -1,0 +1,31 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "nats",
+    srcs = ["nats.go"],
+    importpath = "github.com/mcpany/core/server/pkg/bus/nats",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//proto/bus:bus_go_proto",
+        "@com_github_nats_io_nats_go//:nats_go",
+        "@com_github_nats_io_nats_server_v2//server",
+    ],
+)
+
+go_test(
+    name = "nats_test",
+    srcs = [
+        "nats_coverage_test.go",
+        "nats_test.go",
+    ],
+    embed = [":nats"],
+    deps = [
+        "//proto/bus:bus_go_proto",
+        "@com_github_nats_io_nats_server_v2//server",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//require",
+    ],
+)

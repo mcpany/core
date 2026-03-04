@@ -64,6 +64,7 @@ require (
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pion/webrtc/v3 v3.3.6
 	github.com/pkg/sftp v1.13.10
+	github.com/playwright-community/playwright-go v0.5700.1
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2
 	github.com/prometheus/client_golang v1.23.2
 	github.com/puzpuzpuz/xsync/v4 v4.2.0
@@ -96,6 +97,7 @@ require (
 	golang.org/x/time v0.14.0
 	google.golang.org/api v0.256.0
 	google.golang.org/grpc v1.77.0
+	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.6.1
 	google.golang.org/protobuf v1.36.11
 	gopkg.in/square/go-jose.v2 v2.6.0
 	gopkg.in/yaml.v2 v2.4.0
@@ -244,7 +246,6 @@ require (
 	github.com/pion/turn/v2 v2.1.6 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/planetscale/vtprotobuf v0.6.1-0.20240319094008-0393e58bdf10 // indirect
-	github.com/playwright-community/playwright-go v0.5700.1 // indirect
 	github.com/prometheus/client_model v0.6.2 // indirect
 	github.com/prometheus/common v0.66.1 // indirect
 	github.com/prometheus/procfs v0.16.1 // indirect

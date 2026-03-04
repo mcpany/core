@@ -1,0 +1,53 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "vector",
+    srcs = [
+        "milvus.go",
+        "pinecone.go",
+        "upstream.go",
+    ],
+    importpath = "github.com/mcpany/core/server/pkg/upstream/vector",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//proto/config/v1:v1_go_proto",
+        "//server/pkg/logging",
+        "//server/pkg/prompt",
+        "//server/pkg/resource",
+        "//server/pkg/tool",
+        "//server/pkg/upstream",
+        "//server/pkg/util",
+        "@com_github_milvus_io_milvus_sdk_go_v2//client",
+        "@com_github_milvus_io_milvus_sdk_go_v2//entity",
+        "@org_golang_google_protobuf//proto",
+        "@org_golang_google_protobuf//types/known/structpb",
+    ],
+)
+
+go_test(
+    name = "vector_test",
+    srcs = [
+        "client_test.go",
+        "milvus_conversion_test.go",
+        "milvus_methods_test.go",
+        "milvus_test.go",
+        "mock_milvus_test.go",
+        "pinecone_test.go",
+        "upstream_coverage_test.go",
+        "upstream_test.go",
+    ],
+    embed = [":vector"],
+    deps = [
+        "//proto/config/v1:v1_go_proto",
+        "//server/pkg/tool",
+        "@com_github_milvus_io_milvus_sdk_go_v2//client",
+        "@com_github_milvus_io_milvus_sdk_go_v2//entity",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//mock",
+        "@com_github_stretchr_testify//require",
+        "@org_golang_google_protobuf//proto",
+    ],
+)

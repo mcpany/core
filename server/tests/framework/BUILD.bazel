@@ -1,0 +1,43 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "framework",
+    srcs = [
+        "aitool.go",
+        "claude.go",
+        "copilot.go",
+        "e2e.go",
+        "everything.go",
+        "gemini.go",
+        "http.go",
+        "middleware.go",
+    ],
+    importpath = "github.com/mcpany/core/server/tests/framework",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//proto/api/v1:v1_go_proto",
+        "//proto/config/v1:v1_go_proto",
+        "//server/tests/integration",
+        "@com_github_modelcontextprotocol_go_sdk//mcp",
+        "@com_github_stretchr_testify//require",
+        "@org_golang_google_protobuf//proto",
+    ],
+)
+
+go_test(
+    name = "framework_test",
+    srcs = [
+        "e2e_test.go",
+        "framework_test.go",
+    ],
+    embed = [":framework"],
+    deps = [
+        "//server/tests/integration",
+        "@com_github_modelcontextprotocol_go_sdk//mcp",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//require",
+    ],
+)

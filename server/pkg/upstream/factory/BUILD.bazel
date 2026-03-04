@@ -1,0 +1,50 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "factory",
+    srcs = ["factory.go"],
+    importpath = "github.com/mcpany/core/server/pkg/upstream/factory",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//proto/config/v1:v1_go_proto",
+        "//server/pkg/pool",
+        "//server/pkg/upstream",
+        "//server/pkg/upstream/command",
+        "//server/pkg/upstream/filesystem",
+        "//server/pkg/upstream/graphql",
+        "//server/pkg/upstream/grpc",
+        "//server/pkg/upstream/http",
+        "//server/pkg/upstream/mcp",
+        "//server/pkg/upstream/openapi",
+        "//server/pkg/upstream/sql",
+        "//server/pkg/upstream/vector",
+        "//server/pkg/upstream/webrtc",
+        "//server/pkg/upstream/websocket",
+    ],
+)
+
+go_test(
+    name = "factory_test",
+    srcs = ["factory_test.go"],
+    embed = [":factory"],
+    deps = [
+        "//proto/config/v1:v1_go_proto",
+        "//server/pkg/pool",
+        "//server/pkg/upstream/command",
+        "//server/pkg/upstream/filesystem",
+        "//server/pkg/upstream/graphql",
+        "//server/pkg/upstream/grpc",
+        "//server/pkg/upstream/http",
+        "//server/pkg/upstream/mcp",
+        "//server/pkg/upstream/openapi",
+        "//server/pkg/upstream/sql",
+        "//server/pkg/upstream/vector",
+        "//server/pkg/upstream/webrtc",
+        "//server/pkg/upstream/websocket",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//require",
+    ],
+)

@@ -1,0 +1,28 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "catalog",
+    srcs = ["manager.go"],
+    importpath = "github.com/mcpany/core/server/pkg/catalog",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//proto/config/v1:v1_go_proto",
+        "//server/pkg/config",
+        "@com_github_spf13_afero//:afero",
+        "@org_golang_x_sync//errgroup",
+    ],
+)
+
+go_test(
+    name = "catalog_test",
+    srcs = ["manager_test.go"],
+    embed = [":catalog"],
+    deps = [
+        "@com_github_spf13_afero//:afero",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//require",
+    ],
+)

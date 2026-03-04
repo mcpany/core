@@ -1,0 +1,47 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "topology",
+    srcs = [
+        "manager.go",
+        "middleware.go",
+    ],
+    importpath = "github.com/mcpany/core/server/pkg/topology",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//proto/topology/v1:v1_go_proto",
+        "//server/pkg/auth",
+        "//server/pkg/consts",
+        "//server/pkg/logging",
+        "//server/pkg/serviceregistry",
+        "//server/pkg/tool",
+        "@com_github_modelcontextprotocol_go_sdk//mcp",
+    ],
+)
+
+go_test(
+    name = "topology_test",
+    srcs = [
+        "manager_filtering_test.go",
+        "manager_stats_test.go",
+        "manager_test.go",
+        "middleware_test.go",
+    ],
+    embed = [":topology"],
+    deps = [
+        "//proto/config/v1:v1_go_proto",
+        "//proto/mcp_router/v1:v1_go_proto",
+        "//proto/topology/v1:v1_go_proto",
+        "//server/pkg/auth",
+        "//server/pkg/consts",
+        "//server/pkg/tool",
+        "@com_github_modelcontextprotocol_go_sdk//mcp",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//mock",
+        "@com_github_stretchr_testify//require",
+        "@org_golang_google_protobuf//proto",
+    ],
+)

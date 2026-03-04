@@ -1,0 +1,56 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "health",
+    srcs = [
+        "auth_doctor.go",
+        "doctor.go",
+        "health.go",
+        "history.go",
+    ],
+    importpath = "github.com/mcpany/core/server/pkg/health",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//proto/config/v1:v1_go_proto",
+        "//server/pkg/command",
+        "//server/pkg/logging",
+        "//server/pkg/metrics",
+        "//server/pkg/util",
+        "@com_github_alexliesenfeld_health//:health",
+        "@com_github_coder_websocket//:websocket",
+        "@com_github_samber_lo//:lo",
+        "@org_golang_google_grpc//:grpc",
+        "@org_golang_google_grpc//credentials/insecure",
+        "@org_golang_google_grpc//health/grpc_health_v1",
+    ],
+)
+
+go_test(
+    name = "health_test",
+    srcs = [
+        "auth_doctor_test.go",
+        "check_period_test.go",
+        "doctor_test.go",
+        "health_test.go",
+        "history_test.go",
+        "main_test.go",
+        "webhook_test.go",
+    ],
+    embed = [":health"],
+    deps = [
+        "//proto/config/v1:v1_go_proto",
+        "//server/pkg/util",
+        "@com_github_alexliesenfeld_health//:health",
+        "@com_github_coder_websocket//:websocket",
+        "@com_github_samber_lo//:lo",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//require",
+        "@org_golang_google_grpc//:grpc",
+        "@org_golang_google_grpc//health/grpc_health_v1",
+        "@org_golang_google_protobuf//proto",
+        "@org_golang_google_protobuf//types/known/durationpb",
+    ],
+)

@@ -1,0 +1,21 @@
+# Copyright 2025 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+load("@rules_go//proto:def.bzl", "go_proto_library")
+load("@rules_proto//proto:defs.bzl", "proto_library")
+
+proto_library(
+    name = "go_features_proto",
+    srcs = ["go_features.proto"],
+    strip_import_prefix = "/third_party/proto",
+    visibility = ["//visibility:public"],
+    deps = ["@com_google_protobuf//:descriptor_proto"],
+)
+
+go_proto_library(
+    name = "go_features_go_proto",
+    importpath = "google.golang.org/protobuf/types/gofeaturespb",
+    proto = ":go_features_proto",
+    visibility = ["//visibility:public"],
+    deps = ["@org_golang_google_protobuf//types/descriptorpb"],
+)

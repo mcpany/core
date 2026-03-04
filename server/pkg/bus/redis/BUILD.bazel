@@ -1,0 +1,38 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "redis",
+    srcs = ["bus.go"],
+    importpath = "github.com/mcpany/core/server/pkg/bus/redis",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//proto/bus:bus_go_proto",
+        "//server/pkg/logging",
+        "@com_github_redis_go_redis_v9//:go-redis",
+    ],
+)
+
+go_test(
+    name = "redis_test",
+    srcs = [
+        "bus_test.go",
+        "redis_bus_test.go",
+        "redis_coverage_test.go",
+        "thread_safe_buffer_test.go",
+    ],
+    embed = [":redis"],
+    deps = [
+        "//proto/bus:bus_go_proto",
+        "//server/pkg/logging",
+        "@com_github_alicebob_miniredis_v2//:miniredis",
+        "@com_github_go_redis_redismock_v9//:redismock",
+        "@com_github_redis_go_redis_v9//:go-redis",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//require",
+        "@org_golang_google_protobuf//proto",
+        "@org_uber_go_goleak//:goleak",
+    ],
+)

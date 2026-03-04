@@ -1,0 +1,18 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "terraform",
+    srcs = ["resource_mcp_server.go"],
+    importpath = "github.com/mcpany/core/server/pkg/terraform",
+    visibility = ["//visibility:public"],
+)
+
+go_test(
+    name = "terraform_test",
+    srcs = ["resource_mcp_server_test.go"],
+    embed = [":terraform"],
+    deps = ["@com_github_stretchr_testify//assert"],
+)

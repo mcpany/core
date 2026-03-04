@@ -1,0 +1,37 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "sqlite",
+    srcs = [
+        "db.go",
+        "store.go",
+        "store_templates.go",
+    ],
+    importpath = "github.com/mcpany/core/server/pkg/storage/sqlite",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//proto/config/v1:v1_go_proto",
+        "//server/pkg/logging",
+        "@org_golang_google_protobuf//encoding/protojson",
+        "@org_modernc_sqlite//:sqlite",
+    ],
+)
+
+go_test(
+    name = "sqlite_test",
+    srcs = [
+        "store_coverage_test.go",
+        "store_templates_test.go",
+        "store_test.go",
+    ],
+    embed = [":sqlite"],
+    deps = [
+        "//proto/config/v1:v1_go_proto",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//require",
+        "@org_golang_google_protobuf//proto",
+    ],
+)

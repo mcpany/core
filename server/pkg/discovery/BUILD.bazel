@@ -1,0 +1,33 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "discovery",
+    srcs = [
+        "manager.go",
+        "ollama.go",
+    ],
+    importpath = "github.com/mcpany/core/server/pkg/discovery",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//proto/config/v1:v1_go_proto",
+        "//server/pkg/logging",
+        "@org_golang_google_protobuf//proto",
+    ],
+)
+
+go_test(
+    name = "discovery_test",
+    srcs = [
+        "manager_test.go",
+        "ollama_test.go",
+    ],
+    embed = [":discovery"],
+    deps = [
+        "//proto/config/v1:v1_go_proto",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//require",
+    ],
+)

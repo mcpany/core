@@ -83,9 +83,10 @@ jobs:
             # Ignore markdown, txt, docs, license
             case "$file" in
               *.md|*.txt|docs/*|LICENSE) continue ;;
-              *) SRC_CHANGED="true"; break ;;
+              *) echo "true" > /tmp/src_changed; break ;;
             esac
           done
+          if [ -f /tmp/src_changed ]; then SRC_CHANGED="true"; rm /tmp/src_changed; fi
 
           echo "src=$SRC_CHANGED" >> $GITHUB_OUTPUT
         shell: bash

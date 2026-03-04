@@ -1,0 +1,69 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "provider",
+    srcs = [
+        "gcs.go",
+        "local.go",
+        "provider.go",
+        "s3.go",
+        "sftp.go",
+        "tmpfs.go",
+        "zip.go",
+    ],
+    importpath = "github.com/mcpany/core/server/pkg/upstream/filesystem/provider",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//proto/config/v1:v1_go_proto",
+        "//server/pkg/validation",
+        "@com_github_aws_aws_sdk_go//aws",
+        "@com_github_aws_aws_sdk_go//aws/credentials",
+        "@com_github_aws_aws_sdk_go//aws/session",
+        "@com_github_fclairamb_afero_s3//:afero-s3",
+        "@com_github_pkg_sftp//:sftp",
+        "@com_github_spf13_afero//:afero",
+        "@com_github_spf13_afero//zipfs",
+        "@com_google_cloud_go_storage//:storage",
+        "@org_golang_google_api//iterator",
+        "@org_golang_x_crypto//ssh",
+    ],
+)
+
+go_test(
+    name = "provider_test",
+    srcs = [
+        "coverage_test.go",
+        "gcs_mock_test.go",
+        "gcs_test.go",
+        "local_edge_test.go",
+        "local_extra_test.go",
+        "local_test.go",
+        "provider_extra_coverage_test.go",
+        "provider_test.go",
+        "reproduce_bug_test.go",
+        "root_path_test.go",
+        "s3_mock_test.go",
+        "s3_test.go",
+        "sftp_extra_test.go",
+        "sftp_test.go",
+        "symlink_mode_test.go",
+        "tmpfs_test.go",
+        "zip_extra_test.go",
+    ],
+    embed = [":provider"],
+    deps = [
+        "//proto/config/v1:v1_go_proto",
+        "//server/pkg/validation",
+        "@com_github_pkg_sftp//:sftp",
+        "@com_github_spf13_afero//:afero",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//require",
+        "@com_google_cloud_go_storage//:storage",
+        "@org_golang_google_api//option",
+        "@org_golang_google_protobuf//proto",
+        "@org_golang_x_crypto//ssh",
+    ],
+)

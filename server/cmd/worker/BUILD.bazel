@@ -1,0 +1,35 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+load("@rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
+
+go_library(
+    name = "worker_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/mcpany/core/server/cmd/worker",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//proto/bus:bus_go_proto",
+        "//proto/config/v1:v1_go_proto",
+        "//server/pkg/bus",
+        "//server/pkg/config",
+        "//server/pkg/worker",
+    ],
+)
+
+go_binary(
+    name = "worker",
+    embed = [":worker_lib"],
+    visibility = ["//visibility:public"],
+)
+
+go_test(
+    name = "worker_test",
+    srcs = ["main_test.go"],
+    embed = [":worker_lib"],
+    deps = [
+        "//proto/bus:bus_go_proto",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//suite",
+    ],
+)

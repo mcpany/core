@@ -1,0 +1,59 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "serviceregistry",
+    srcs = [
+        "mock_registry.go",
+        "registry.go",
+    ],
+    importpath = "github.com/mcpany/core/server/pkg/serviceregistry",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//proto/config/v1:v1_go_proto",
+        "//server/pkg/auth",
+        "//server/pkg/logging",
+        "//server/pkg/prompt",
+        "//server/pkg/resource",
+        "//server/pkg/tool",
+        "//server/pkg/upstream",
+        "//server/pkg/upstream/factory",
+        "//server/pkg/util",
+        "@com_github_stretchr_testify//mock",
+        "@org_golang_google_protobuf//proto",
+        "@org_golang_google_protobuf//types/known/timestamppb",
+    ],
+)
+
+go_test(
+    name = "serviceregistry_test",
+    srcs = [
+        "coverage_test.go",
+        "error_propagation_test.go",
+        "provenance_test.go",
+        "registry_advanced_test.go",
+        "registry_drift_test.go",
+        "registry_health_test.go",
+        "registry_secrets_test.go",
+        "registry_test.go",
+    ],
+    embed = [":serviceregistry"],
+    deps = [
+        "//proto/config/v1:v1_go_proto",
+        "//proto/mcp_router/v1:v1_go_proto",
+        "//server/pkg/auth",
+        "//server/pkg/pool",
+        "//server/pkg/prompt",
+        "//server/pkg/resource",
+        "//server/pkg/tool",
+        "//server/pkg/upstream",
+        "//server/pkg/upstream/factory",
+        "//server/pkg/util",
+        "@com_github_modelcontextprotocol_go_sdk//mcp",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//require",
+        "@org_golang_google_protobuf//proto",
+    ],
+)

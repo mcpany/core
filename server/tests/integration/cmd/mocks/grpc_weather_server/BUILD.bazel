@@ -1,0 +1,22 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+load("@rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "grpc_weather_server_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/mcpany/core/server/tests/integration/cmd/mocks/grpc_weather_server",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//proto/examples/weather/v1:v1_go_proto",
+        "@org_golang_google_grpc//:grpc",
+        "@org_golang_google_grpc//reflection",
+    ],
+)
+
+go_binary(
+    name = "grpc_weather_server",
+    embed = [":grpc_weather_server_lib"],
+    visibility = ["//visibility:public"],
+)

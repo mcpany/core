@@ -1,0 +1,49 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "worker",
+    srcs = [
+        "registration_worker.go",
+        "upstream_worker.go",
+        "worker.go",
+    ],
+    importpath = "github.com/mcpany/core/server/pkg/worker",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//server/pkg/bus",
+        "//server/pkg/logging",
+        "//server/pkg/metrics",
+        "//server/pkg/serviceregistry",
+        "//server/pkg/tool",
+        "//server/pkg/util",
+        "@com_github_alitto_pond_v2//:pond",
+        "@dev_essio_al_pkg_shellescape//:shellescape",
+    ],
+)
+
+go_test(
+    name = "worker_test",
+    srcs = [
+        "registration_async_test.go",
+        "registration_worker_coverage_test.go",
+        "registration_worker_test.go",
+        "upstream_worker_test.go",
+        "worker_coverage_test.go",
+        "worker_test.go",
+    ],
+    embed = [":worker"],
+    deps = [
+        "//proto/bus:bus_go_proto",
+        "//proto/config/v1:v1_go_proto",
+        "//server/pkg/bus",
+        "//server/pkg/serviceregistry",
+        "//server/pkg/tool",
+        "@com_github_modelcontextprotocol_go_sdk//mcp",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//require",
+        "@org_golang_google_protobuf//types/known/durationpb",
+    ],
+)
