@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-04 Evolution)
+*   **[P0] Origin-Verified Gateway Handshake**: Cryptographic challenge-response to prevent WebSocket hijacking from browsers (anti-ClawJacked). (Added: 2026-03-04)
+*   **[P0] Global Path-Traversal Guard**: Middleware that automatically sanitizes and restricts file-system paths in tool arguments to a defined sandbox. (Added: 2026-03-04)
+*   **[P1] Team-Scoped Blackboard Middleware**: Shared context storage specifically isolated for "Agent Teams" rather than individual sessions. (Added: 2026-03-04)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

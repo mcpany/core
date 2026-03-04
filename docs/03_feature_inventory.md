@@ -75,9 +75,18 @@
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
+---
+
+## Evolution: [2026-03-04] Updates
+
+### Proposed Additions
+- **Origin-Verified Gateway Handshake**: (P0) Cryptographic challenge-response to prevent WebSocket hijacking from browsers (anti-ClawJacked).
+- **Global Path-Traversal Guard**: (P0) Middleware that automatically sanitizes and restricts file-system paths in tool arguments to a defined sandbox.
+- **Team-Scoped Blackboard Middleware**: (P1) Shared context storage specifically isolated for "Agent Teams" rather than individual sessions.
+
 ### Priority Shifts
-- **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
-- **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.
+- **"Safe-by-Default" Network Hardening**: Promoted to **P0** (Critical) due to escalating local hijacking exploits.
+- **Shared KV Store**: Evolving into **Team-Scoped Blackboard** to match Claude Agent Teams' architectural shift.
 
 ### Deprecations / Monitoring
-- **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+- **Unauthenticated Local WebSockets**: To be deprecated immediately. All local socket connections must prove origin or have a valid app-binding token.
