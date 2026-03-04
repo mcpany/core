@@ -75,8 +75,17 @@
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
+---
+
+## Evolution: [2026-03-01] Updates
+
+### Proposed Additions
+- **Project-Scoped Safe Discovery**: (P0) Sandboxed discovery of tools within local project contexts. Prevents auto-loading of malicious configs (Claude Code mitigation).
+- **Deterministic Tool Execution Templates**: (P1) Pre-defined, signed templates for tool execution that prevent runtime argument injection.
+- **Hierarchical Session Attestation**: (P0) Tracking and verifying trust chains in nested sub-agent architectures (OpenClaw support).
+
 ### Priority Shifts
-- **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
+- **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery and mitigate project-load exploits.
 - **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.
 
 ### Deprecations / Monitoring

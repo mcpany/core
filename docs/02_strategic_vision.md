@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-01]
+### Focus: Immutable Discovery & Hierarchical Attestation
+**Context**: The Claude Code RCE exploits and OpenClaw's nested orchestration have shifted the priority to "Chain of Trust" and "Safe Discovery." Automatic loading of project-specific tools is now a primary attack vector.
+**Strategic Pivot**:
+- **Project-Scoped Sandboxing**: MCP Any will isolate tool discovery to the specific project context, treating local `.claude/settings.json` or similar as untrusted by default.
+- **Hierarchical Attestation**: Implementing a signature chain where a parent agent's trust level is inherited by sub-agents, but tool access is strictly limited by "Attested Discovery" tokens.
+- **Immutable Discovery Templates**: Transitioning from dynamic configuration to signed "Tool Templates" that prevent runtime modification of command-line arguments or environment variables by malicious repositories.

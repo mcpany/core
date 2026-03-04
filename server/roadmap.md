@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-01 Evolution)
+*   **[P0] Project-Scoped Safe Discovery**: Sandboxed discovery of tools within local project contexts to mitigate RCE (Claude Code mitigation). (Added: 2026-03-01)
+*   **[P0] Hierarchical Session Attestation**: Tracking and verifying trust chains in nested sub-agent architectures (OpenClaw support). (Added: 2026-03-01)
+*   **[P1] Deterministic Tool Execution Templates**: Pre-defined, signed templates for tool execution that prevent runtime argument injection. (Added: 2026-03-01)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
