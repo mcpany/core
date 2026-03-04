@@ -125,6 +125,7 @@ type StandardMiddlewares struct {
 	Debugger         *Debugger
 	SmartRecovery    *SmartRecoveryMiddleware
 	RecursiveContext *RecursiveContextManager
+	A2ABridge        *A2ABridgeMiddleware
 	Cleanup          func() error
 }
 
@@ -361,6 +362,15 @@ func InitStandardMiddlewares(
 		return recursiveContext.HandleContext
 	})
 
+	a2aBridge := NewA2ABridgeMiddleware(recursiveContext)
+	RegisterMCP("a2a_bridge", func(_ *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler {
+		return func(next mcp.MethodHandler) mcp.MethodHandler {
+			return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
+				return a2aBridge.Execute(ctx, method, req, next)
+			}
+		}
+	})
+
 	return &StandardMiddlewares{
 		Audit:            audit,
 		GlobalRateLimit:  globalRateLimit,
@@ -368,6 +378,7 @@ func InitStandardMiddlewares(
 		Debugger:         debugger,
 		SmartRecovery:    smartRecovery,
 		RecursiveContext: recursiveContext,
+		A2ABridge:        a2aBridge,
 		Cleanup:          audit.Close,
 	}, nil
 }
