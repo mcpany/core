@@ -13,7 +13,10 @@
 - [ ] **[P1] Resource Cost/Latency Overlay**: Real-time performance metrics displayed directly on tool cards. (Added: 2026-02-26)
 - [ ] **[P0] Connectivity & Security Dashboard**: Visualize local-only vs remote exposure, attestation status, and active MFA sessions. (Added: 2026-02-28)
 - [ ] **[P0] Stateful A2A Mailbox**: UI for viewing queued and delivered A2A messages across the agent mesh. (Added: 2026-02-28)
-- [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
+- [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions. (Expanded for Tool-Level MFA 2026-03-04)
+- [ ] **[P0] Intent Verification Dashboard**: Interface for defining and auditing "Intent Patterns" and monitoring policy violations. (Added: 2026-03-04)
+- [ ] **[P0] Mobile MFA Companion**: Mobile-friendly web view or companion app for out-of-band tool approvals. (Added: 2026-03-04)
+- [ ] **[P1] Economical Reasoning Overlay**: Visualization of estimated costs for different tool execution paths in the playground. (Added: 2026-03-04)
 - [x] **[P1] Tool Playground & Explorer**:
   - [x] Auto-generated forms from Tool JSON Schemas.
   - [x] "Execute" button with history and result visualization.

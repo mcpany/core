@@ -81,3 +81,20 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-04] Updates
+
+### Proposed Additions
+- **Intent-Aware Policy Engine**: (P0) Inspects the "High-Level Intent" of a tool call before it reaches the execution stage. Mitigates "Prompt Injection" and "Agent Hijacking" scenarios.
+- **Contextual Tool-Level MFA (Step-Up Auth)**: (P0) A protocol for requiring user confirmation on a mobile device or hardware token for sensitive tool calls (e.g., filesystem deletions).
+- **Tool Cost-Reasoning Middleware**: (P1) Provides real-time token and API cost estimates to agents during the tool discovery phase.
+- **MCP TEE Adapter**: (P2) Experimental adapter for running MCP tool logic inside a Trusted Execution Environment (TEE).
+
+### Priority Shifts
+- **Policy Firewall**: Promoted from **P0** to **P0+** (Mission Critical) following recent RCE exploits in competitive frameworks.
+- **HITL Middleware**: Promoted to **P0**. The need for granular "Tool-Level MFA" is now a baseline security requirement.
+
+### Deprecations / Monitoring
+- **Static Schema Caching**: Monitoring for deprecation in favor of metadata-rich, dynamic schemas.

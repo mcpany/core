@@ -59,3 +59,10 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+
+### Update: 2026-03-04 - Resolving Local Port Exposure in Swarms
+**Context:** Today's market sync revealed a new exploit pattern where subagents in a swarm can be tricked into bridging local ports to remote command-and-control (C2) servers via MCP "proxy" tools.
+**Architecture Adjustment:**
+* Introducing support for isolated Docker-bound named pipes or Unix Domain Sockets (UDS) for inter-agent communication within the same host, deprecating local TCP/HTTP tunneling for A2A traffic where possible.
+* Tools that make outbound network calls (e.g., `fetch`, `http_request`) will now require an explicit `egress_policy` in the `config.yaml`, defaulting to "Deny All" for newly discovered or unverified tools.
+**Security Impact:** Mitigates unauthorized host-level network access by rogue or hijacked subagents.
