@@ -13,6 +13,8 @@
 - [ ] **[P1] Resource Cost/Latency Overlay**: Real-time performance metrics displayed directly on tool cards. (Added: 2026-02-26)
 - [ ] **[P0] Connectivity & Security Dashboard**: Visualize local-only vs remote exposure, attestation status, and active MFA sessions. (Added: 2026-02-28)
 - [ ] **[P0] Stateful A2A Mailbox**: UI for viewing queued and delivered A2A messages across the agent mesh. (Added: 2026-02-28)
+- [ ] **[P0] Agent Identity & Swarm Hierarchy Viewer**: A visual tree showing the hierarchy of agents in a swarm, their `Agent-ID`s, and active permissions. (Added: 2026-03-04)
+- [ ] **[P0] Config Trust Manager**: UI for reviewing and approving untrusted repository-local configurations and managing the developer keyring. (Added: 2026-03-04)
 - [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
 - [x] **[P1] Tool Playground & Explorer**:
   - [x] Auto-generated forms from Tool JSON Schemas.

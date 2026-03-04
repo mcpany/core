@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-04]
+### Focus: Config Sandboxing & Agentic Identity (Who-Am-I)
+**Context**: Today's research into the Claude Code RCE (via poisoned `.claudecode` configs) and OpenClaw's nested swarms reveals that "Security" must now extend to the configuration layer itself. Additionally, the "Identity Crisis" in multi-agent swarms makes it impossible to enforce granular permissions without knowing *which* agent in the tree is making a call.
+**Strategic Pivot**:
+- **Non-Trusting Config Architecture**: MCP Any will pivot to a "Zero-Trust Configuration" model. Repository-level configuration files (like `.mcpany` or `.claudecode`) will be ignored or sandboxed unless they are cryptographically signed by a trusted developer identity.
+- **Agent Identity Protocol (Who-Am-I)**: We will implement a standard identity header (`X-MCP-Agent-ID`) that propagates through the swarm, allowing the Policy Firewall to distinguish between a "Human-initiated" call and a "Sub-agent-initiated" call.
+- **A2A Residency as a Service**: MCP Any will evolve from a bridge to a "Resident Hub" that provides persistent state and identity for local agent swarms, ensuring that even if an agent process restarts, its swarm-identity and shared state remain intact.
