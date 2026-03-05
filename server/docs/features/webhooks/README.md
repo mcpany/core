@@ -47,7 +47,7 @@ MCP Any includes a production-ready sidecar binary that provides common webhook 
 
 1.  **Build the Sidecar**:
     ```bash
-    go build -o webhook-sidecar ./server/cmd/webhooks
+    go build -o webhook-sidecar ./server/cmd/webhook-sidecar
     ```
 
 2.  **Run the Sidecar**:

@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mcpany/core/server/pkg/client"
+	"github.com/mcpany/core/pkg/client"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/pool"

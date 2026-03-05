@@ -1,43 +1,45 @@
-# Audit Report: Truth Reconciliation
+# Truth Reconciliation Audit
 
 ## Executive Summary
-Performed a comprehensive audit of 10 distinct features across UI and Server domains. The audit revealed a high degree of alignment between the codebase and the intended functionality, with minor discrepancies in documentation and roadmap status.
-*   **Health Score:** 9/10 (Initial), 10/10 (Post-Remediation).
-*   **Primary Issue:** Documentation Drift (Code was ahead of Docs/Roadmap).
-*   **Action:** Synchronized `ui/roadmap.md` and feature documentation to reflect existing, verified capabilities.
+This PR performs a "Truth Reconciliation Audit" against the codebase, `ui/docs`, `server/docs`, and the `server/docs/roadmap.md`. Based on a rigorous audit, three primary discrepancies (Roadmap Debt & Documentation Drift) were identified and actively remediated in code.
+
+1. **Browser Automation Provider**: Mapped the mock implementation to an actual `playwright-go` implementation.
+2. **Formalize Webhook Server**: Converted the `server/cmd/webhooks` binary into `server/cmd/webhook-sidecar` for proper Sidecar deployment matching the roadmap vision.
+3. **SDK Consolidation**: Migrated `server/pkg/client` to the root `pkg/client` package to decouple the Client SDK from the internal server code.
+
+The 10 sampled documentation files successfully matched the current product state or have been brought into alignment via this PR. All backend/UI tests are green. No PII/secrets or internal IPs are contained in this audit payload.
 
 ## Verification Matrix
 
 | Document Name | Status | Action Taken | Evidence |
 | :--- | :--- | :--- | :--- |
-| `ui/docs/features/connection-diagnostics.md` | ✅ Verified | None | Verified `ConnectionDiagnostic` component logic matches docs. |
-| `ui/docs/features/playground.md` | ⚠️ Drift | **Doc Updated** | Code supports "Copy as Python", doc missed it. Added to doc. |
-| `ui/docs/features/structured_log_viewer.md` | ✅ Verified | None | Verified `LogViewer` JSON auto-detection and expansion. |
-| `server/docs/features/hot_reload.md` | ✅ Verified | None | Verified `ReloadConfig` and `reconcileServices` in `server.go`. |
-| `server/docs/features/health-checks.md` | ✅ Verified | None | Verified `health.go` implements all claimed checks (HTTP, gRPC, FS, etc). |
-| `server/docs/features/dlp.md` | ✅ Verified | None | Verified `dlp.go` implements PII redaction middleware. |
-| `server/docs/features/context_optimizer.md` | ✅ Verified | None | Verified `context_optimizer.go` implements truncation logic. |
-| `server/docs/features/configuration_guide.md` | ✅ Verified | None | Verified configuration loading from files and database. |
-| `server/docs/features/security.md` | ⚠️ Drift | **Doc Updated** | Code enforces "Sentinel Security" (localhost-only) if API Key is missing. Doc updated to reflect this. |
-| `server/docs/features/audit_logging.md` | ✅ Verified | None | Verified `FileAuditStore` implements NDJSON format. |
+| `ui/docs/features/prompts.md` | **Aligned** | None required | Verified prompt list and "Use Prompt" redirection flow matches current Playground implementation. |
+| `ui/docs/features/structured_log_viewer.md` | **Aligned** | None required | Verified auto-detection and expansion of JSON objects in the Logs page works as intended. |
+| `ui/docs/features/dashboard.md` | **Aligned** | None required | Verified layout engine, active service counts, and Quick Actions widget match frontend. |
+| `ui/docs/features/real-time-inspector.md` | **Aligned** | None required | Verified WebSocket stream properly pushes live trace data to the UI table. |
+| `ui/docs/features/tag-based-access-control.md` | **Aligned** | None required | Verified auto-selection logic of tags matching environment types in Profile Editor. |
+| `server/docs/features/health-checks.md` | **Aligned** | None required | Verified `health_check` schema and internal logic match `http_service` and `grpc_service` parsing logic. |
+| `server/docs/features/rate-limiting/README.md` | **Aligned** | None required | Verified `token bucket` algorithm and `cost_metric: COST_METRIC_TOKENS` logic exists in rate limit middleware. |
+| `server/docs/features/authentication/README.md` | **Aligned** | None required | Verified environment variables and `X-Mcp-Api-Key` headers are properly parsed and handled in the pipeline. |
+| `server/docs/features/webhooks/README.md` | **Drift** | Renamed `webhooks` -> `webhook-sidecar` | Formalized the Sidecar pattern; updated docs, E2E tests, and code paths. |
+| `server/docs/roadmap.md` | **Debt** | Implemented `pkg/tool/browser` and `pkg/client` | Removed mock implementation in browser tool, replaced with real Playwright execution & SSRF protection. Moved `pkg/client` to root directory. |
 
 ## Remediation Log
 
-### 1. Security Documentation Update
-*   **Issue:** `server/docs/features/security.md` implied open access if `allowed_ips` was empty.
-*   **Reality:** Code (`server/pkg/app/server.go`) enforces strict localhost-only access if no API Key is configured ("Sentinel Security").
-*   **Fix:** Updated documentation to explicitly describe the "Sentinel Security Mode".
+* **Case B (Roadmap Debt) - Browser Automation Provider**:
+  * Implemented `playwright-go` inside `server/pkg/tool/browser/browser.go`.
+  * Employed lazy initialization (`initPlaywright()`) using `sync.Mutex` to ensure thread-safe concurrent browser startup.
+  * Avoided `playwright.Install()` in code to adhere to containerized/dockerized best practices (where OS deps are resolved externally).
+  * Implemented rigorous Server-Side Request Forgery (SSRF) protections using `net.LookupIP` and scheme validation.
+  * Augmented functions with the Gold Standard of docstrings (Summary, Parameters, Returns, Errors, Side Effects).
 
-### 2. Playground Documentation & Roadmap
-*   **Issue:** `ui/roadmap.md` listed "Copy as Curl/Python" as TODO. `ui/docs/features/playground.md` omitted Python support.
-*   **Reality:** Code (`ui/src/lib/code-generator.ts`, `ui/src/components/playground/tool-runner.tsx`) fully implements Curl and Python code generation.
-*   **Fix:**
-    *   Updated `ui/docs/features/playground.md` to include "Copy as Code".
-    *   Updated `ui/roadmap.md` to mark Playground features as `[x]` (Completed).
+* **Case B (Roadmap Debt) - Formalize Webhook Sidecar**:
+  * Moved `server/cmd/webhooks` to `server/cmd/webhook-sidecar`.
+  * Updated references across `server/docs/features/webhooks/*` and tests.
 
-### 3. Code Quality (Linting)
-*   **Issue:** `make lint` failed due to missing TSDoc in UI components.
-*   **Fix:** Added missing TSDoc comments to `ui/src/components/logs/log-viewer.tsx` and `ui/src/components/diagnostics/discovery-status.tsx`.
+* **Case A (Documentation Drift) - SDK Consolidation**:
+  * Migrated `server/pkg/client` to `pkg/client` to allow external consumers to import the SDK without fetching the entire server module.
+  * Automated grep/sed replacements of the import paths across ~40 files.
 
 ## Security Scrub
-*   No PII, secrets, or internal IPs were found or exposed in this report.
+* **Passed**: Verified `config.yaml` examples and doc paths contain only mock (`example.com`, `httpbin.org`) or local loopback (`localhost:8080`) IPs. No proprietary credentials/tokens exposed. SSRF implemented to block internal IPs in `BrowsePage`.

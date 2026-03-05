@@ -13,7 +13,7 @@ import (
 	"testing"
 
 	"github.com/gorilla/websocket"
-	"github.com/mcpany/core/server/pkg/client"
+	"github.com/mcpany/core/pkg/client"
 	"github.com/mcpany/core/server/pkg/pool"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"

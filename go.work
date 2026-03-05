@@ -3,6 +3,7 @@ go 1.24.0
 use (
 	./
 	./k8s/operator
+	./pkg/client
 	./server
 	./server/examples/upstream_service_demo/grpc/greeter_server
 )
