@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-05]
+### Focus: Agentic Mesh Maturity & Context Immutability
+**Context**: The release of OpenClaw Mesh 1.0 (AMS) and the discovery of Shadow Context Injection (CVE-2026-3001) mark a shift from "Connected Agents" to a "Sovereign Agent Mesh." Security must now evolve from perimeter defense to internal "state sovereignty."
+**Strategic Pivot**:
+- **AMS-Native Peering**: MCP Any will evolve into a native Agentic Mesh Standard (AMS) node, enabling decentralized discovery and peering without central registries.
+- **Context Immutability Scopes**: Transitioning from "shared blackboard" to "Immutable State Channels," where subagents can read but never overwrite parent-defined intent without explicit cryptographic proof.
+- **Identity-Linked Tooling**: Integrating OIDC and decentralized identifiers (DIDs) directly into the tool call metadata, ensuring every action is linked to a verified agent identity rather than just a session token.
