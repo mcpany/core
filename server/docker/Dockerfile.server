@@ -38,8 +38,8 @@ ARG TARGETARCH
 # CGO_ENABLED=1 is required for go-sqlite3
 RUN --mount=type=cache,target=/root/.cache/go-build \
     --mount=type=cache,target=/go/pkg/mod \
-    CGO_ENABLED=1 GOOS=${TARGETOS} GOARCH=${TARGETARCH} \
-    go build -o /server cmd/server/main.go
+    CGO_ENABLED=1 GOOS=${TARGETOS} GOARCH=${TARGETARCH} GOMEMLIMIT=1024MiB GOGC=50 \
+    go build -p 2 -o /server cmd/server/main.go
 
 # Stage 2: Create the small runtime image
 FROM mirror.gcr.io/library/debian:bookworm-slim

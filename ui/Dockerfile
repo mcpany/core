@@ -33,6 +33,8 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ARG NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:50050}
 
+# Limit memory/concurrency for the build
+ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN npm run build
 RUN mkdir -p public
 
