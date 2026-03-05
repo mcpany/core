@@ -5,13 +5,13 @@ package middleware
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"sync"
 	"time"
 
 	"github.com/mcpany/core/server/pkg/tokenizer"
 	"github.com/mcpany/core/server/pkg/tool"
+	"github.com/mcpany/core/server/pkg/util"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/prometheus/client_golang/prometheus"
 )
@@ -248,11 +248,8 @@ func calculateOutputSize(result any) int {
 	case []byte:
 		return len(v)
 	default:
-		// Fallback to json marshal size estimate
-		b, err := json.Marshal(v)
-		if err == nil {
-			return len(b)
-		}
+		// ⚡ BOLT: Avoid full JSON serialization for size estimation
+		// Randomized Selection from Top 5 High-Impact Targets
+		return util.EstimateJSONSize(v)
 	}
-	return 0
 }
