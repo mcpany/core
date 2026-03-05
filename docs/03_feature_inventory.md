@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-05] Updates
+
+### Proposed Additions
+- **MAESTRO Orchestration Policy Engine**: (P0) Middleware that implements Layer 7 sub-agent spawning allowlists and inter-agent communication monitoring.
+- **Zero-Parameter UI Security Protocol**: (P0) Security hardening for the UI to prevent token exfiltration via URL-injected parameters (Mitigation for CVE-2026-25253).
+- **A2A Self-Healing Recovery**: (P1) Automated retry and state-correction for A2A message delivery failures.
+
+### Priority Shifts
+- **HITL Middleware**: Re-affirmed as **P0** due to Claude Code's focus on human-approval for consequential actions.
+- **Policy Firewall**: Promoted to **P0** and merged with MAESTRO requirements for swarms.
+
+### Deprecations / Monitoring
+- **UI URL-Based Configuration**: Deprecate `gatewayUrl` and `token` as query parameters in the UI dashboard.

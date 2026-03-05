@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-05 Evolution)
+*   **[P0] MAESTRO Orchestration Policy Engine**: Middleware for Layer 7 sub-agent spawning allowlists and inter-agent communication monitoring. (Added: 2026-03-05)
+*   **[P0] Zero-Parameter UI Security Protocol**: Hardening for the UI to prevent token exfiltration via URL-injected parameters (CVE-2026-25253 Mitigation). (Added: 2026-03-05)
+*   **[P1] A2A Self-Healing Recovery**: Automated retry and state-correction for A2A message delivery failures. (Added: 2026-03-05)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

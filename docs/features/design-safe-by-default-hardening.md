@@ -59,3 +59,7 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-05:** **Evolution: Zero-Parameter UI Security Protocol.**
+    *   **Context:** Today's market sync revealed the CVE-2026-25253 exploit in Clawdbot/OpenClaw.
+    *   **Architecture Adjustment:** Deprecating `gatewayUrl` and `token` as query parameters in the UI. Implementing "Sealed Local Storage" where sensitive state is only accessible via strict CORS/CSP.
+    *   **Security Impact:** Mitigates 1-click token exfiltration via malicious links or cross-site WebSocket hijacking.
