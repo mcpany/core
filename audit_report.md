@@ -1,35 +1,36 @@
 # Truth Reconciliation Audit Report
 
 ## 1. Executive Summary
-
-This report details the findings and remediation actions from a "10-File" Truth Reconciliation Audit. The objective was to verify that the Documentation, Codebase, and Product Roadmap are in perfect sync. The audit revealed a major discrepancy: the Product Roadmap (and corresponding design docs) designated "Safe-by-Default Hardening" (specifically blocking `0.0.0.0` binds without explicit attestation) as a P0 priority, yet the codebase still defaulted to `50050` and allowed binding to `0.0.0.0` without any remote access guards. This constitutes a severe "Roadmap Debt" which was immediately remediated through engineering the required zero-trust logic.
+An extensive "Truth Reconciliation Audit" was performed, sampling 10 distinct documentation files (spanning UI, Configuration, Security, and Core Server capabilities). The codebase was mapped against the `roadmap.md` files for both `server` and `ui` to ensure strict alignment. Overall, the codebase health is excellent with a 90% alignment out-of-the-box. One discrepancy was identified and remediated in the UI Inspector feature where the implementation drifted from the intended verification state. All other features (Playground, Context Optimizer, DLP, Audit Logging, etc.) exhibit perfect synchronization between documentation, roadmap, and implementation.
 
 ## 2. Verification Matrix
 
 | Document Name | Status | Action Taken | Evidence |
 | :--- | :--- | :--- | :--- |
-| `ui/docs/features/real-time-inspector.md` | Sync | Verified Inspector page matches documentation (Live badge, Seed Trace). | UI `inspector/page.tsx` contains described components. |
-| `server/docs/features/debugger.md` | Sync | Verified Agent Debugger middleware exists and handles logs. | Source code at `server/pkg/middleware/debugger.go`. |
-| `server/docs/features/dynamic_registration.md` | Sync | Verified dynamic tools generation from OpenAPI/gRPC works. | OpenAPI parser source matches docs. |
-| `server/docs/architecture.md` | Sync | Overall flow and configuration structure matches current state. | `server/pkg/config` logic matches the document. |
-| `ui/roadmap.md` | Drift | Noted missing UI features (e.g. Agent Chain Tracer). | Remediated core backend issue first per priority logic. |
-| `server/roadmap.md` | Drift | Roadmap listed P0 Safe-by-Default Hardening as missing. | Implemented missing feature. |
-| `docs/02_strategic_vision.md` | Sync | Aligns with overarching goals of the codebase. | Review of recent commits shows alignment. |
-| `docs/03_feature_inventory.md` | Drift | Same as roadmap, missing features like Safe-by-Default. | Implemented Safe-by-Default logic in configuration. |
-| `docs/features/design-a2a-bridge.md` | Drift | Outlined design not yet implemented in code. | Documented as roadmap debt. |
-| `docs/features/design-safe-by-default-hardening.md` | **Drift** | Designed feature to block 0.0.0.0 without attestation was completely missing in implementation. | **Engineered Solution** (Case B Action). |
+| `ui/docs/features/playground.md` | ALIGNED | Verified "Native File Upload" (base64) & "Copy as Code" exist in `file-input.tsx` & `tool-runner.tsx` | Found in codebase. |
+| `ui/docs/features/traces.md` | DEBT | Engineered fix for `SelectValue` text mismatch ("All Statuses" instead of "All Types") | Code refactored & UI Test passed. |
+| `ui/docs/features/logs.md` | ALIGNED | Verified "Structured Log Viewer" & Syntax Highlighting exist | Found in `log-viewer.tsx`. |
+| `ui/docs/features/marketplace.md` | ALIGNED | Verified Export/Share logic (Redact, Template Variables) | Found in `share-collection-dialog.tsx`. |
+| `ui/docs/features/test_connection.md` | ALIGNED | Verified Connection Diagnostic tool flows | Found in `connection-diagnostic.tsx`. |
+| `server/docs/features/context_optimizer.md` | ALIGNED | Verified `max_chars` truncation logic & 32000 default | Found in `context_optimizer.go`. |
+| `server/docs/features/health-checks.md` | ALIGNED | Verified HTTP, gRPC, WebSocket, FS, CLI health checks | Found in `health/health.go`. |
+| `server/docs/features/dlp.md` | ALIGNED | Verified tool input/output PII redaction | Found in `middleware/dlp.go`. |
+| `server/docs/features/dynamic_registration.md` | ALIGNED | Verified GraphQL & OpenAPI introspection | Found in `upstream/graphql.go` & `openapi.go`. |
+| `server/docs/features/audit_logging.md` | ALIGNED | Verified SQLite, File, Postgres, Webhook, Splunk sinks | Found in `audit/*`. |
 
 ## 3. Remediation Log
 
-**Case B: Roadmap Debt (Code is Missing/Broken)**
-*   **Target:** `docs/features/design-safe-by-default-hardening.md` and `server/roadmap.md`
-*   **Condition:** The document matches the Roadmap/Requirements (P0 Safe-by-Default Hardening), but the code was missing this critical security control.
-*   **Action:** Engineered the Solution.
-    *   Updated `server/pkg/config/config.go` to bind to `127.0.0.1:50050` by default instead of `50050` (which previously defaulted to all interfaces).
-    *   Implemented `ValidateGlobalSettings` in `server/pkg/config/validator.go` to parse `mcp_listen_address` and explicitly block `0.0.0.0` or `::` (unspecified/all interfaces) unless the `MCPANY_ATTESTATION_TOKEN` environment variable is provided, fulfilling the "Remote Access Guard" requirement.
-    *   Added strict, typed unit testing in `server/pkg/config/validator_e2e_test.go` and `server/pkg/config/config_test.go` to ensure these new security rules are covered.
+*   **Code Fixes (Case B: Roadmap Debt):**
+    *   **Feature:** Inspector (Live Traces) Dashboard Filtering.
+    *   **Discrepancy:** The filter dropdown for trace types was incorrectly displaying the placeholder "All Statuses" instead of the intended "All Types". This caused a failure in the Playwright UI verification script (`verify_inspector.py`) which acts as the operational contract.
+    *   **Action:** Modified `ui/src/app/inspector/page.tsx` to correctly display `<SelectValue placeholder="All Types" />`.
+    *   **Testing:** Reran the Playwright test `verify_inspector.py` which successfully matched the locator and captured `verification_inspector.png`. No new tests needed as the existing verification script covers this line of code.
+
+*   **Documentation Updates (Case A: Documentation Drift):**
+    *   None required. The documentation accurately reflected the Roadmap, and the code was the source of the drift in the single issue found.
 
 ## 4. Security Scrub
-*   No PII, internal IPs, or secrets are present in this report.
-*   All IP references (`127.0.0.1`, `0.0.0.0`) are standard non-routable loopback/unspecified addresses.
-*   Variable names (`MCPANY_ATTESTATION_TOKEN`) reflect the environment configuration and do not contain sensitive key material.
+*   No PII was exposed during the audit.
+*   No raw secrets or API keys are included in this report.
+*   No internal Google IPs or proprietary infrastructure details are present.
+*   The `docker-compose.yml` was used strictly for isolated topology analysis.
