@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-02 Evolution)
+*   **[P0] Cross-Origin Request Verification (CORV)**: Cryptographic binding of tool execution requests to verified local origins. (Added: 2026-03-02)
+*   **[P0] Prompt-Injection Firewall (PIF)**: Multi-layered intent verification middleware using LLM-based logic. (Added: 2026-03-02)
+*   **[P0] Deny-by-Default Shell Access**: Mandatory allowlist and HITL for system-level tool execution. (Added: 2026-03-02)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

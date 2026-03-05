@@ -75,9 +75,19 @@
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
+---
+
+## Evolution: [2026-03-02] Updates
+
+### Proposed Additions
+- **Cross-Origin Request Verification (CORV)**: (P0) Cryptographically binds every tool execution request to a verified local origin to prevent "Ambient Hijacking" (e.g., from malicious sites).
+- **Prompt-Injection Firewall (PIF)**: (P0) A multi-layered firewall that uses "Intent-Verification" LLM loops to validate tool arguments against the high-level task, mitigating prompt injection risks.
+- **Deny-by-Default Shell Access**: (P0) Enforces strict allowlists and mandatory human-in-the-loop (HITL) for any tool capable of system-level command execution.
+
 ### Priority Shifts
-- **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
-- **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.
+- **Safe-by-Default Network Hardening**: Promoted to **P0** (Already P0, but re-affirming criticality in light of the OpenClaw incident).
+- **HITL Middleware**: Promoted to **P0** as it becomes a mandatory requirement for shell-like tool execution.
 
 ### Deprecations / Monitoring
-- **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+- **Regex-based Tool Sanitization**: Deprecate in favor of LLM-based Intent Verification (PIF).
+- **Unverified Tool Origins**: Monitor and flag any tool call missing origin attestation metadata.
