@@ -386,3 +386,16 @@ func (m *AuditMiddleware) Close() error {
 	}
 	return nil
 }
+
+// Write writes an audit entry directly to the store.
+func (m *AuditMiddleware) Write(ctx context.Context, entry audit.Entry) error {
+	m.mu.RLock()
+	store := m.store
+	m.mu.RUnlock()
+
+	if store == nil {
+		return fmt.Errorf("audit store not initialized")
+	}
+	m.writeLog(ctx, store, entry)
+	return nil
+}

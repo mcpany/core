@@ -69,3 +69,15 @@ export const LazyHealthHistoryChart = dynamic(
     loading: () => <ChartSkeleton />,
   }
 );
+
+/**
+ * LazyAuditLogWidget is a dynamically loaded AuditLogViewer component.
+ * It uses a skeleton loader while the component is being fetched.
+ */
+export const LazyAuditLogWidget = dynamic(
+  () => import("@/components/audit/audit-log-viewer").then((mod) => mod.AuditLogViewer),
+  {
+    ssr: false,
+    loading: () => <ChartSkeleton />,
+  }
+);
