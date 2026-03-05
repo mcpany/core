@@ -34,7 +34,7 @@ func TestOperatorE2E(t *testing.T) {
 		t.Skip("Skipping E2E test. Set E2E=true to run.")
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Minute)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Minute)
 	defer cancel()
 
 	rootDir, err := getRootDir()

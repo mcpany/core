@@ -400,21 +400,6 @@ func runCommand(t *testing.T, dir string, name string, args ...string) {
 	require.NoError(t, err, "Command failed: %s %s", name, strings.Join(args, " "))
 }
 
-func verifyEndpoint(t *testing.T, url string, expectedStatus int, timeout time.Duration) {
-	deadline := time.Now().Add(timeout)
-	for time.Now().Before(deadline) {
-		//nolint:gosec // G107: Url is constructed internally in test
-		resp, err := http.Get(url)
-		if err == nil {
-			_ = resp.Body.Close()
-			if resp.StatusCode == expectedStatus {
-				return
-			}
-		}
-		time.Sleep(1 * time.Second)
-	}
-	t.Fatalf("Failed to verify endpoint %s within %v", url, timeout)
-}
 
 func verifyPrometheusMetric(t *testing.T, url string, expectedTarget string) {
 	//nolint:gosec // G107: Url is constructed internally in test
@@ -608,17 +593,4 @@ func createDynamicCompose(t *testing.T, rootDir, originalPath string) string {
 	tmpFile.Close()
 
 	return tmpFile.Name()
-}
-
-// translatePath translates a container path to a host path for Docker-in-Docker
-func translatePath(p string) string {
-	hostRoot := os.Getenv("HOST_WORKSPACE_ROOT")
-	if hostRoot == "" {
-		return p
-	}
-	abs, _ := filepath.Abs(p)
-	if strings.HasPrefix(abs, "/workspace") {
-		return strings.Replace(abs, "/workspace", hostRoot, 1)
-	}
-	return p
 }

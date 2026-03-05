@@ -214,16 +214,3 @@ upstream_services:
 	}
 	require.True(t, foundFile, "Result did not contain backend_file.txt in %v", res.Content)
 }
-
-// translatePath translates a container path to a host path for Docker-in-Docker
-func translatePath(p string) string {
-	hostRoot := os.Getenv("HOST_WORKSPACE_ROOT")
-	if hostRoot == "" {
-		return p
-	}
-	abs, _ := filepath.Abs(p)
-	if strings.HasPrefix(abs, "/workspace") {
-		return strings.Replace(abs, "/workspace", hostRoot, 1)
-	}
-	return p
-}
