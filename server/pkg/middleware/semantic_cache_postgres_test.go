@@ -14,6 +14,22 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestNewPostgresVectorStore(t *testing.T) {
+	t.Run("EmptyDSN", func(t *testing.T) {
+		store, err := NewPostgresVectorStore("")
+		assert.Error(t, err)
+		assert.Nil(t, store)
+		assert.Equal(t, "postgres dsn is required", err.Error())
+	})
+
+	t.Run("InvalidDSN", func(t *testing.T) {
+		store, err := NewPostgresVectorStore("invalid-dsn")
+		// The error from sql.Open with invalid DSN (or ping) will be returned
+		assert.Error(t, err)
+		assert.Nil(t, store)
+	})
+}
+
 func TestNewPostgresVectorStoreWithDB(t *testing.T) {
 	t.Run("Success", func(t *testing.T) {
 		db, mock, err := sqlmock.New(sqlmock.MonitorPingsOption(true))
@@ -167,5 +183,18 @@ func TestPostgresVectorStore_Prune(t *testing.T) {
 		WillReturnResult(sqlmock.NewResult(0, 5))
 
 	store.Prune(context.Background(), "test_key")
+	assert.NoError(t, mock.ExpectationsWereMet())
+}
+
+func TestPostgresVectorStore_Close(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	require.NoError(t, err)
+
+	store := &PostgresVectorStore{db: db}
+
+	mock.ExpectClose()
+
+	err = store.Close()
+	assert.NoError(t, err)
 	assert.NoError(t, mock.ExpectationsWereMet())
 }
