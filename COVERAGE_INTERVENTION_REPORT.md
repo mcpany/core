@@ -12,17 +12,16 @@
 9. `server/pkg/app/server.go` (Run and reconcile loops)
 10. `server/pkg/upstream/grpc/grpc_pool.go` (Closing operations on the connection pools)
 
-**Target:** `server/pkg/middleware/global_ratelimit.go`
+**Target:** `server/pkg/middleware/audit.go`
 
 **Risk Profile:**
-This component manages global rate limiting for incoming MCP requests. It relies on caching, handles context propagation for different user identity signals (API Key, User ID, HTTP Headers), and connects dynamically to Redis. Prior to intervention, key methods handling configuration updates, caching layer integration, partitioned key resolution, and configuration hash calculations had zero or extremely low test coverage. Because this is the primary edge defense for preventing DoS/abuse on upstream tools, any untested regressions in routing logic could lead to service disruption or incorrect limit enforcement.
+This component manages the Audit Middleware, responsible for logging tool executions, redacting sensitive parameters/data to comply with data safety, and broadcasting audit logs for historical and real-time security tracking. Previously, critical elements like live subscription feeds and log history methods (`SubscribeWithHistory`, `GetHistory`, `Unsubscribe`), as well as configuration dynamic updates (`UpdateConfig`) and direct log writing logic, had ~0% to 68% coverage. As an essential security component that traces and secures the execution outputs, it was high-risk for leaving redaction logic regressions untested or disrupting audit pipelines.
 
 **New Coverage:**
-*   `UpdateConfig`: Added coverage to ensure that changing rate limiting properties at runtime propagates to the middleware state correctly (100% coverage).
-*   `getPartitionKey`: Added robust table-driven tests evaluating the context extraction logic. It now verifies correct resolution of IP, User ID, and API keys sourced both via typical Context patterns and directly off incoming HTTP Request headers (100% coverage).
-*   `calculateConfigHash`: Confirmed that structurally identical vs distinct Redis configuration sets are mapped properly to avoid colliding cached client pools (100% coverage).
-*   `getRedisClient`: Validated the cache lookups for Redis connections to assure we are returning active cached clients on identical configs, preventing leakages from excessive redundant client spawning (81.8% coverage).
-*   `getLimiter`: Tested retrieval, fallback logic without Redis configs, and caching behaviors, ensuring we accurately clamp invalid burst inputs (83.3% coverage).
+*   `SubscribeWithHistory`, `GetHistory`, `Unsubscribe`: Gained complete test coverage evaluating correct atomic behavior in tracking live broadcast subscribers alongside buffering history streams (100% coverage).
+*   `Write`: Assured directly written audit logs propagate fully or block when initialization is missing to prevent silent drops (100% coverage).
+*   `UpdateConfig`: Exhaustively covered paths for rotating `StorageType` instances dynamically (such as updating to PostgreSQL logs, File, or Webhooks) and safely nullifying old configurations on demand (100% coverage).
+*   `Execute`: Amplified testing to securely verify data redaction behavior, ensuring empty inputs map adequately to standard formats, verifying missing/disabled configurations act seamlessly, and verifying `TraceID`/`SpanID` recursion contexts populate (jumped to 77.3% coverage).
 
 **Verification:**
-Confirmed that `go test` specific to the middleware package passes cleanly and coverage has drastically improved (>86%). Linting is passing.
+Confirmed that `go test` and `make test` for the middleware package pass cleanly without disruption to surrounding packages. Linting rules have all passed safely via `make lint`.
