@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-05]
+### Focus: Immutable Auditing & Zero-Trust Configuration
+**Context**: The disclosure of critical RCE vulnerabilities in Claude Code (CVE-2025-59536) via malicious project configurations has exposed a major flaw in the "Agent Supply Chain." Simultaneously, the industry shift towards multi-agent swarms requires a source of truth for agent actions that cannot be tampered with by the agents themselves.
+**Strategic Pivot**:
+- **Immutable Execution Auditing**: MCP Any will implement a cryptographic append-only log for all tool executions. This ensures that even if an agent is compromised, the audit trail of its actions remains tamper-proof and verifiable by human supervisors.
+- **Zero-Trust Configuration Loading**: We are moving from "Trusting the Project" to "Sandboxed Configuration." All project-level MCP configurations (e.g., `.mcpany/config.yaml`) will be run through a restricted validator and policy engine before being active, preventing malicious hooks or unauthorized tool registrations.
+- **Multi-Agent Truth Source**: Positioning MCP Any as the "Immutable Blackboard" for swarms, where shared state is versioned and attributed, preventing "hallucination loops" where agents reinforce each other's errors.
