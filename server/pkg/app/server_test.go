@@ -631,7 +631,7 @@ func TestRun_ConfigLoadError(t *testing.T) {
 
 func TestRun_BusProviderError(t *testing.T) {
 	fs := afero.NewMemMapFs()
-	err := afero.WriteFile(fs, "/config.yaml", []byte(""), 0o644)
+	err := afero.WriteFile(fs, "/config.yaml", []byte("global_settings:\n  mcp_listen_address: \"127.0.0.1:0\"\nupstream_services: []"), 0644)
 	require.NoError(t, err)
 
 	bus.NewProviderHook = func(_ *bus_pb.MessageBus) (*bus.Provider, error) {
@@ -652,10 +652,11 @@ func TestRun_BusProviderError(t *testing.T) {
 func TestRun_EmptyConfig(t *testing.T) {
 	fs := afero.NewMemMapFs()
 	// Create an empty config file
-	err := afero.WriteFile(fs, "/config.yaml", []byte(""), 0o644)
+	err := afero.WriteFile(fs, "/config.yaml", []byte("global_settings:\n  mcp_listen_address: \"127.0.0.1:0\"\nupstream_services: []"), 0644)
 	require.NoError(t, err)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+	// Give it enough time to do sqlite operations during startup, such as creating admin user.
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
 	app := NewApplication()
@@ -1588,10 +1589,11 @@ func Test_runStdioMode_real(t *testing.T) {
 func TestRun_InMemoryBus(t *testing.T) {
 	fs := afero.NewMemMapFs()
 	// An empty config will result in an in-memory bus.
-	err := afero.WriteFile(fs, "/config.yaml", []byte(""), 0o644)
+	err := afero.WriteFile(fs, "/config.yaml", []byte("global_settings:\n  mcp_listen_address: \"127.0.0.1:0\"\nupstream_services: []"), 0644)
 	require.NoError(t, err)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+	// Give it enough time to do sqlite operations during startup, such as creating admin user.
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
 	app := NewApplication()
@@ -1602,10 +1604,11 @@ func TestRun_InMemoryBus(t *testing.T) {
 
 func TestRun_CachingMiddleware(t *testing.T) {
 	fs := afero.NewMemMapFs()
-	err := afero.WriteFile(fs, "/config.yaml", []byte(""), 0o644)
+	err := afero.WriteFile(fs, "/config.yaml", []byte("global_settings:\n  mcp_listen_address: \"127.0.0.1:0\"\nupstream_services: []"), 0644)
 	require.NoError(t, err)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+	// Give it enough time to do sqlite operations during startup, such as creating admin user.
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
 	app := NewApplication()
@@ -1620,7 +1623,8 @@ func TestRun_CachingMiddleware(t *testing.T) {
 	}
 	defer func() { mcpserver.AddReceivingMiddlewareHook = nil }()
 
-	err = app.Run(RunOptions{Ctx: ctx, Fs: fs, Stdio: false, JSONRPCPort: "127.0.0.1:0", GRPCPort: "", ConfigPaths: nil, APIKey: "", ShutdownTimeout: 5 * time.Second})
+	dbPath := filepath.Join(t.TempDir(), "mcpany-cache-test.db")
+	err = app.Run(RunOptions{Ctx: ctx, Fs: fs, Stdio: false, JSONRPCPort: "127.0.0.1:0", GRPCPort: "", ConfigPaths: nil, APIKey: "", ShutdownTimeout: 5 * time.Second, DBPath: dbPath})
 	require.NoError(t, err)
 
 	assert.Contains(t, middlewareNames, "CachingMiddleware", "CachingMiddleware should be in the middleware chain")

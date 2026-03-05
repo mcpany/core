@@ -38,7 +38,12 @@ func NewDB(path string) (*DB, error) {
 		return nil, fmt.Errorf("failed to create db directory: %w", err)
 	}
 
-	db, err := sql.Open("sqlite", path)
+	// Apply PRAGMAs to the connection string to handle SQLite busy errors consistently, especially on initial setup.
+	// busy_timeout=15000: wait up to 15s when a table is locked.
+	// _journal_mode=WAL: use Write-Ahead Logging for better concurrency.
+	dsn := fmt.Sprintf("%s?_pragma=busy_timeout(15000)&_pragma=journal_mode(WAL)&_pragma=synchronous(NORMAL)", path)
+
+	db, err := sql.Open("sqlite", dsn)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open sqlite db: %w", err)
 	}

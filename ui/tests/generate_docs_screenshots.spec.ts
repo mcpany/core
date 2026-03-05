@@ -546,19 +546,23 @@ test.describe('Generate Detailed Docs Screenshots', () => {
       await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'resources_split_view.png'), fullPage: true });
 
       // Open Preview Modal
-      const firstResource = page.locator('.flex.items-center.gap-3.p-3').first();
+      const firstResource = page.locator('.flex.items-center.gap-3.p-3, .cursor-pointer').filter({ hasText: 'uri' }).first();
       try {
-          await firstResource.waitFor({ state: 'visible', timeout: 5000 });
-          await firstResource.click({ button: 'right' });
+          // If a resource is found, attempt to open the modal
+          if (await firstResource.count() > 0) {
+              await firstResource.click({ button: 'right' });
 
-          const previewBtn = page.getByText('Preview in Modal');
-          await previewBtn.waitFor({ state: 'visible', timeout: 3000 });
-          await previewBtn.click();
+              const previewBtn = page.getByText('Preview in Modal');
+              await previewBtn.waitFor({ state: 'visible', timeout: 3000 });
+              await previewBtn.click();
 
-          await page.waitForTimeout(3000); // give it time to load content
-          await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'resource_preview_modal.png') });
+              await page.waitForTimeout(3000); // give it time to load content
+              await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'resource_preview_modal.png') });
+          } else {
+              console.log("No resources found to capture modal for.");
+          }
       } catch (e) {
-          console.warn('Could not capture resource preview modal:', e);
+          console.log(`Could not capture resource preview modal: ${e}`);
       }
   });
 
