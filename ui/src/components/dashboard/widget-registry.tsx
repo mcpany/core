@@ -6,11 +6,11 @@
 import React from "react";
 import { MetricsOverview } from "@/components/dashboard/metrics-overview";
 import { ServiceHealthWidget } from "@/components/dashboard/service-health-widget";
-import { LazyRequestVolumeChart, LazyTopToolsWidget, LazyHealthHistoryChart, LazyRecentActivityWidget } from "@/components/dashboard/lazy-charts";
+import { LazyRequestVolumeChart, LazyTopToolsWidget, LazyHealthHistoryChart, LazyRecentActivityWidget, LazyAuditLogWidget } from "@/components/dashboard/lazy-charts";
 import { ToolFailureRateWidget } from "@/components/dashboard/tool-failure-rate-widget";
 import { QuickActionsWidget } from "@/components/dashboard/quick-actions-widget";
 import { NetworkGraphWidget } from "@/components/dashboard/network-graph-widget";
-import { Activity, BarChart, Server, AlertTriangle, TrendingUp, Hash, HeartPulse, Zap, Share2 } from "lucide-react";
+import { Activity, BarChart, Server, AlertTriangle, TrendingUp, Hash, HeartPulse, Zap, Share2, ClipboardCheck } from "lucide-react";
 
 /**
  * Defines the possible sizes for a dashboard widget.
@@ -115,6 +115,14 @@ export const WIDGET_DEFINITIONS: WidgetDefinition[] = [
         defaultSize: "third",
         component: LazyTopToolsWidget,
         icon: Hash
+    },
+    {
+        type: "audit-logs",
+        title: "Audit Logs",
+        description: "Track and inspect tool executions for compliance.",
+        defaultSize: "full",
+        component: LazyAuditLogWidget,
+        icon: ClipboardCheck
     },
 ];
 
