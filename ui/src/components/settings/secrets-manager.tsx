@@ -15,7 +15,8 @@ import {
     Key,
     Shield,
     Search,
-    RefreshCw
+    RefreshCw,
+    Upload
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -51,6 +52,9 @@ export function SecretsManager() {
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
     const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+    const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
+    const [importText, setImportText] = useState("");
+    const [importing, setImporting] = useState(false);
     const { toast } = useToast();
 
     // Form state
@@ -77,6 +81,65 @@ export function SecretsManager() {
             });
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleImportEnv = async () => {
+        setImporting(true);
+        try {
+            const lines = importText.split('\n');
+            let successCount = 0;
+            for (const line of lines) {
+                const trimmed = line.trim();
+                if (!trimmed || trimmed.startsWith('#')) continue;
+
+                const eqIndex = trimmed.indexOf('=');
+                if (eqIndex === -1) continue;
+
+                const key = trimmed.slice(0, eqIndex).trim();
+                let value = trimmed.slice(eqIndex + 1).trim();
+
+                // Remove quotes if present
+                if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+                    value = value.slice(1, -1);
+                }
+
+                if (key && value) {
+                    // Auto-determine provider based on key prefix
+                    let provider: 'custom' | 'openai' | 'anthropic' | 'aws' | 'gcp' = 'custom';
+                    if (key.startsWith('OPENAI_')) provider = 'openai';
+                    else if (key.startsWith('ANTHROPIC_')) provider = 'anthropic';
+                    else if (key.startsWith('AWS_')) provider = 'aws';
+                    else if (key.startsWith('GOOGLE_')) provider = 'gcp';
+
+                    await apiClient.saveSecret({
+                        id: crypto.randomUUID(),
+                        name: `${key} (Imported)`,
+                        key: key,
+                        value: value,
+                        provider: provider,
+                        createdAt: new Date().toISOString()
+                    });
+                    successCount++;
+                }
+            }
+
+            toast({
+                title: "Import Successful",
+                description: `Imported ${successCount} secret(s).`,
+            });
+            setIsImportDialogOpen(false);
+            setImportText("");
+            fetchSecrets();
+        } catch (e) {
+            console.error(e);
+            toast({
+                title: "Import Failed",
+                description: "There was an error importing secrets. See console.",
+                variant: "destructive",
+            });
+        } finally {
+            setImporting(false);
         }
     };
 
@@ -159,12 +222,43 @@ export function SecretsManager() {
                         Manage secure credentials for your upstream services.
                     </p>
                 </div>
-                <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-                    <DialogTrigger asChild>
-                        <Button onClick={resetForm}>
-                            <Plus className="mr-2 h-4 w-4" /> Add Secret
-                        </Button>
-                    </DialogTrigger>
+                <div className="flex items-center gap-2">
+                    <Dialog open={isImportDialogOpen} onOpenChange={setIsImportDialogOpen}>
+                        <DialogTrigger asChild>
+                            <Button variant="outline">
+                                <Upload className="mr-2 h-4 w-4" /> Import .env
+                            </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle>Import from .env</DialogTitle>
+                                <DialogDescription>
+                                    Paste the contents of your .env file below. Lines starting with # will be ignored.
+                                </DialogDescription>
+                            </DialogHeader>
+                            <div className="py-4">
+                                <textarea
+                                    className="flex min-h-[200px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 font-mono"
+                                    placeholder={`OPENAI_API_KEY=sk-...\nANTHROPIC_API_KEY=sk-ant-...`}
+                                    value={importText}
+                                    onChange={(e) => setImportText(e.target.value)}
+                                />
+                            </div>
+                            <DialogFooter>
+                                <Button variant="outline" onClick={() => setIsImportDialogOpen(false)} disabled={importing}>Cancel</Button>
+                                <Button onClick={handleImportEnv} disabled={importing || !importText.trim()}>
+                                    {importing ? "Importing..." : "Import Secrets"}
+                                </Button>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
+
+                    <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+                        <DialogTrigger asChild>
+                            <Button onClick={resetForm}>
+                                <Plus className="mr-2 h-4 w-4" /> Add Secret
+                            </Button>
+                        </DialogTrigger>
                     <DialogContent>
                         <DialogHeader>
                             <DialogTitle>Add New Secret</DialogTitle>
@@ -223,6 +317,7 @@ export function SecretsManager() {
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>
+                </div>
             </div>
 
             <Card className="flex-1 flex flex-col overflow-hidden bg-background/50 backdrop-blur-sm border-muted/50">
