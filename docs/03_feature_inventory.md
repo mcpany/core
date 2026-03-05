@@ -81,3 +81,16 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-05] Updates
+
+### Proposed Additions
+- **Agentic Delegation Firewall**: (P0) A security middleware that enforces single-use, task-scoped capability tokens for subagents. Prevents session hijacking and "lateral movement" by rogue agents.
+- **Compute-Aware Routing (Adaptive Resource Middleware)**: (P1) Middleware that injects "Reasoning Effort" metadata and "Adaptive Thinking" status into tool calls. Enables LLMs to optimize for cost/latency.
+- **Skill Reputation & Verification Engine**: (P0) A system for scoring MCP servers based on cryptographic provenance and community-verified security audits.
+
+### Priority Shifts
+- **Provenance-First Discovery**: Promoted to **P0** (Already P1, but urgency increased due to ClawJacked).
+- **"Safe-by-Default" Network Hardening**: Re-affirmed as **P0** with added requirement for CSRF/XSS protection for local dashboards.

@@ -59,3 +59,4 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-05:** Addressing "ClawJacked" CSRF/XSS vectors for local dashboards. Added requirement for mandatory Origin/Referrer validation and session-bound CSRF tokens for all agent-facing UI components.

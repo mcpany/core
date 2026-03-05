@@ -32,7 +32,12 @@
 #### Upcoming (2026-02-28 Evolution)
 *   **[P0] Safe-by-Default Hardening**: Transition all listeners to `localhost` by default. Implement mandatory Attestation for remote exposure. (Added: 2026-02-28)
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
-*   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
+*   **[P0] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Promoted to P0: 2026-03-05)
+
+#### Upcoming (2026-03-05 Evolution)
+*   **[P0] Agentic Delegation Firewall**: Enforce single-use, task-scoped capability tokens for subagents. (Added: 2026-03-05)
+*   **[P1] Adaptive Resource Middleware**: Inject "Reasoning Effort" and "Adaptive Thinking" metadata into tool calls. (Added: 2026-03-05)
+*   **[P0] Skill Reputation Engine**: Scoring and verification system for MCP servers based on community audits. (Added: 2026-03-05)
 
 ## 2. Top 10 Recommended Features
 
