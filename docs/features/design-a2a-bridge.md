@@ -46,3 +46,9 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-03-05: Secure Identity and Privacy in Handoffs**
+    *   **Context:** Market shifts indicate a need for non-repudiable agent identity in multi-agent swarms to prevent task injection and data leakage.
+    *   **Architecture Adjustment:**
+        - Integrated **Cryptographic Agent Identity (A2A-ID)** requirements. Every A2A handoff must now be signed by the originating agent's private key.
+        - Introduced **PII Redaction Middleware** in the A2A translation layer to sanitize messages before routing to external/third-party agent nodes.
+    *   **Security Impact:** Ensures that agent delegations are authentic and prevents accidental exposure of user PII during cross-framework coordination.

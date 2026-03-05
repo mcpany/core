@@ -59,3 +59,10 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-05: Addressing Cross-Origin Hijacking (ClawJacked)**
+    *   **Context:** Today's market sync revealed the "ClawJacked" exploit pattern where malicious websites hijack local agents via the browser.
+    *   **Architecture Adjustment:**
+        - Strict `Host` and `Origin` header validation in the `HTTPGateway`.
+        - Reject any request from a web origin unless explicitly whitelisted in `config.yaml` or authorized via the "Remote Access Guard."
+        - Introduction of `Sec-MCP-Origin` custom header for internal agent routing.
+    *   **Security Impact:** Mitigates the risk of rogue websites communicating with the local MCP Any instance via the developer's browser.
