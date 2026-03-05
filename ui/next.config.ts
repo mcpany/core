@@ -139,7 +139,16 @@ const nextConfig: NextConfig = {
     return config;
   },
   // rewrites moved to middleware.ts for runtime/dynamic proxy support
-  // async rewrites() { ... }
+  // Exception: WebSockets must be proxied via next.config.ts because middleware NextRequest.rewrite does not support HTTP Upgrade
+  async rewrites() {
+    const backendUrl = process.env.BACKEND_URL || 'http://localhost:50050';
+    return [
+      {
+        source: '/api/v1/ws/:path*',
+        destination: `${backendUrl}/api/v1/ws/:path*`,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

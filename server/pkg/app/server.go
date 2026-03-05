@@ -13,6 +13,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"html"
+	"google.golang.org/protobuf/encoding/protojson"
 	"io"
 	"net"
 	"net/http"
@@ -1716,7 +1717,13 @@ func (a *Application) runServerMode(
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
-		_ = json.NewEncoder(w).Encode(resp)
+		b, err := protojson.Marshal(resp)
+		if err != nil {
+			logging.GetLogger().Error("Failed to marshal catalog services", "error", err)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+		_, _ = w.Write(b)
 	})))
 
 	logging.GetLogger().Info("DEBUG: Registering /mcp/u/ handler")
