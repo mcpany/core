@@ -81,3 +81,16 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-05] Updates
+
+### Proposed Additions
+- **Swarm Consensus Middleware**: (P0) A centralized consistency provider for decentralized swarms (e.g. OpenClaw). Ensures all subagents operate on verified and synchronized tool schemas.
+- **Universal State Handoff Bridge**: (P1) A framework-neutral protocol for handing off complex execution state between disparate agent swarms (e.g. Gemini to AutoGen).
+- **Persistent Warm Sandboxes**: (P1) High-performance, secure execution environments that persist across tool calls while maintaining strict isolation, reducing latency seen in ephemeral models.
+
+### Priority Shifts
+- **A2A Stateful Residency**: Re-affirmed as **P0**. Critical for supporting Universal State Handoff.
+- **Provenance-First Discovery**: Promoted to **P0**. Essential to mitigate "Gossip Injection" attacks in decentralized swarms.

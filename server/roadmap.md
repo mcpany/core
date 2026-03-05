@@ -32,7 +32,12 @@
 #### Upcoming (2026-02-28 Evolution)
 *   **[P0] Safe-by-Default Hardening**: Transition all listeners to `localhost` by default. Implement mandatory Attestation for remote exposure. (Added: 2026-02-28)
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
-*   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
+*   **[P0] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Promoted: 2026-03-05)
+
+#### Upcoming (2026-03-05 Evolution)
+*   **[P0] Swarm Consensus Middleware**: Centralized consistency provider to prevent "Gossip Injection" and schema drift in decentralized swarms. (Added: 2026-03-05)
+*   **[P1] Universal State Handoff Bridge**: Framework-neutral state snapshots for cross-ecosystem agent handoffs. (Added: 2026-03-05)
+*   **[P1] Persistent Warm Sandboxes**: Secure execution environments that persist across tool calls to reduce latency. (Added: 2026-03-05)
 
 ## 2. Top 10 Recommended Features
 
