@@ -425,6 +425,7 @@ func (a *Application) Run(opts RunOptions) error {
 		return fmt.Errorf("failed to initialize database: %w", err)
 	}
 
+
 	// Initialize Log Persistence (Hydration & Worker)
 	if s, ok := storageStore.(storage.Storage); ok {
 		if err := a.initializeLogPersistence(opts.Ctx, s); err != nil {
@@ -1718,7 +1719,7 @@ func (a *Application) runServerMode(
 		w.Header().Set("Content-Type", "application/json")
 		// Use protojson for marshaling as ListCatalogServicesResponse uses opaque fields
 		// that are not visible to standard encoding/json.
-		marshaler := runtime.JSONBuiltin{}
+		marshaler := runtime.JSONPb{}
 		b, err := marshaler.Marshal(resp)
 		if err != nil {
 			logging.GetLogger().Error("Failed to marshal catalog services response", "error", err)
