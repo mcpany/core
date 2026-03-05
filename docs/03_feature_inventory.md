@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-05] Updates
+
+### Proposed Additions
+- **Immutable Execution Logs**: (P0) A cryptographic, append-only ledger for all agent tool calls and system state changes. Ensures auditability even if the agent process is compromised.
+- **Config Sandbox Validator**: (P0) A secure middleware that parses and validates untrusted project-level MCP configurations in an isolated environment before activation.
+- **Policy Refinement Loop**: (P1) A HITL (Human-in-the-Loop) flow that suggests policy updates based on blocked malicious patterns observed in the ecosystem.
+
+### Priority Shifts
+- **HITL Middleware**: Promoted from **P1** to **P0**. With the rise of RCE-level vulnerabilities in agent configurations, manual approval of "Sensitive Hooks" is no longer optional.
+- **MCP Provenance Attestation**: Re-affirmed as **P0** (Critical for Config Sandbox validation).
+
+### Deprecations / Monitoring
+- **Implicit Hook Execution**: Monitoring for deprecation. All config hooks must be explicitly audited or signed by a trusted authority.
