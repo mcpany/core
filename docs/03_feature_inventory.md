@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-05] Updates
+
+### Proposed Additions
+- **Origin Verification Middleware**: (P0) Mandatory `Origin` validation for all incoming RPC connections (WebSocket/HTTP). Essential to prevent browser-based hijacking of local agents.
+- **Agentic Identity Governance (Persona Management)**: (P1) Tracking and auditing tool calls based on the specific subagent identity. Integrates with the Policy Firewall.
+- **Context Threshold Auto-Pruning**: (P0) Automatically switches tools to "Lazy-Discovery" mode when schemas exceed 10% of the active context window.
+
+### Priority Shifts
+- **Safe-by-Default Hardening**: Re-affirmed as **P0**. Urgency increased due to the OpenClaw breach.
+- **A2A Stateful Residency**: Promoted to **P0**. Critical for supporting complex, long-running agent identities.
+
+### Deprecations / Monitoring
+- **Unvalidated WebSocket Connections**: Deprecate any listener that doesn't enforce same-origin or explicit origin whitelisting.

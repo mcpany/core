@@ -59,3 +59,9 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-05: Addressing Cross-Origin WebSocket Hijacking**
+    *   **Context**: The OpenClaw v2026.2.25 disclosure proved that `localhost` bindings are vulnerable to browser-based attacks.
+    *   **Architecture Adjustment**:
+        *   Introducing mandatory `Origin` header validation in the `AdapterMiddleware`.
+        *   Requests from browsers (detected via `Sec-Fetch-Mode` and `Origin`) will be rejected by default unless the origin matches the `allowed_origins` config (defaulting only to the `ui` host).
+        *   Implementing a "Pre-flight Handshake" for WebSockets that requires a short-lived, locally-generated "Handshake Token" passed via sub-protocol.
