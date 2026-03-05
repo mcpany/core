@@ -39,6 +39,7 @@ upstream_services:
 	}
 	os.Unsetenv("MCPANY_ENABLE_FILE_CONFIG")
 
+	t.Setenv("MCPANY_ATTESTATION_TOKEN", "test-token")
 	app := NewApplication()
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()

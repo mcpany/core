@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-05 Evolution)
+*   **[P0] Real-time Threat Intel Middleware**: Connects to a verified feed of malicious MCP servers and agent skills. (Added: 2026-03-05)
+*   **[P1] Ephemeral Tool Sandboxing**: Lightweight isolation (nsjail/Wasm) for high-risk tool execution. (Added: 2026-03-05)
+*   **[P0] Cross-Origin Security Enforcement**: Mandatory strict CORS and security headers to prevent localhost RCE. (Added: 2026-03-05)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

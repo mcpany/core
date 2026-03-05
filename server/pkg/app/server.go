@@ -59,6 +59,7 @@ import (
 	"github.com/mcpany/core/server/pkg/webhooks"
 	"github.com/mcpany/core/server/pkg/worker"
 	"github.com/pmezard/go-difflib/difflib"
+	"google.golang.org/protobuf/encoding/protojson"
 	otelgrpc "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 
@@ -1716,7 +1717,15 @@ func (a *Application) runServerMode(
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
-		_ = json.NewEncoder(w).Encode(resp)
+		// The response struct v1.ListCatalogServicesResponse might not have exported fields
+		// or custom marshaling, which triggers SA9005. We use protojson for proto messages.
+		b, err := protojson.Marshal(resp)
+		if err != nil {
+			logging.GetLogger().Error("Failed to marshal catalog services response", "error", err)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+		_, _ = w.Write(b)
 	})))
 
 	logging.GetLogger().Info("DEBUG: Registering /mcp/u/ handler")

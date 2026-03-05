@@ -36,6 +36,7 @@ upstream_services: []
 	// Run App
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
+	t.Setenv("MCPANY_ATTESTATION_TOKEN", "test-token")
 	app := NewApplication()
 
 	errChan := make(chan error, 1)

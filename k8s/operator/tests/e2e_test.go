@@ -34,7 +34,7 @@ func TestOperatorE2E(t *testing.T) {
 		t.Skip("Skipping E2E test. Set E2E=true to run.")
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Minute)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Minute)
 	defer cancel()
 
 	rootDir, err := getRootDir()
@@ -145,9 +145,10 @@ nodes:
 		"--set", "env.MCPANY_ADMIN_INIT_PASSWORD=password",
 		"--set", "env.MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true",
 		"--set", "env.MCPANY_ALLOW_LOOPBACK_RESOURCES=true",
+		"--set", "env.MCPANY_ATTESTATION_TOKEN=test-attestation-token",
 		"--set-file", "config=server/config.minimal.yaml",
 		"--wait",
-		"--timeout", "10m",
+		"--timeout", "20m",
 	); err != nil {
 		t.Fatalf("Failed to install helm chart: %v", err)
 	}

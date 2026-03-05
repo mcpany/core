@@ -577,6 +577,7 @@ upstream_services:
 	err := afero.WriteFile(fs, "/config.yaml", []byte(configContent), 0o644)
 	require.NoError(t, err)
 
+	t.Setenv("MCPANY_ATTESTATION_TOKEN", "test-token")
 	app := NewApplication()
 	errChan := make(chan error, 1)
 	go func() {
@@ -660,6 +661,7 @@ func TestRun_EmptyConfig(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
+	t.Setenv("MCPANY_ATTESTATION_TOKEN", "test-token")
 	app := NewApplication()
 	// This should not panic
 	err = app.Run(RunOptions{
@@ -711,6 +713,7 @@ func TestRun_NoGrpcServer(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
+	t.Setenv("MCPANY_ATTESTATION_TOKEN", "test-token")
 	app := NewApplication()
 	errChan := make(chan error, 1)
 	go func() {
@@ -849,6 +852,7 @@ func TestRun_DefaultBindAddress(t *testing.T) {
 	// Set the environment variable to use a dynamic port (127.0.0.1:0) as default
 	// This avoids "address already in use" errors when 8070 is occupied.
 	t.Setenv("MCPANY_DEFAULT_HTTP_ADDR", "127.0.0.1:0")
+	t.Setenv("MCPANY_ATTESTATION_TOKEN", "test-token")
 
 	fs := afero.NewMemMapFs()
 	ctx, cancel := context.WithCancel(context.Background())
@@ -909,6 +913,7 @@ func TestRun_DefaultBindAddress(t *testing.T) {
 }
 
 func TestRun_GrpcPortNumber(t *testing.T) {
+	t.Setenv("MCPANY_ATTESTATION_TOKEN", "test-token")
 	fs := afero.NewMemMapFs()
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -1060,6 +1065,7 @@ func TestGRPCServer_PortReleasedAfterShutdown(t *testing.T) {
 }
 
 func TestRun_ServerMode_LogsCorrectPort(t *testing.T) {
+	t.Setenv("MCPANY_ATTESTATION_TOKEN", "test-token")
 	logging.ForTestsOnlyResetLogger()
 	var buf ThreadSafeBuffer
 	logging.Init(slog.LevelInfo, &buf, "")
@@ -1598,6 +1604,7 @@ func Test_runStdioMode_real(t *testing.T) {
 }
 
 func TestRun_InMemoryBus(t *testing.T) {
+	t.Setenv("MCPANY_ATTESTATION_TOKEN", "test-token")
 	fs := afero.NewMemMapFs()
 	// An empty config will result in an in-memory bus.
 	err := afero.WriteFile(fs, "/config.yaml", []byte(""), 0o644)
@@ -1617,6 +1624,7 @@ func TestRun_InMemoryBus(t *testing.T) {
 }
 
 func TestRun_CachingMiddleware(t *testing.T) {
+	t.Setenv("MCPANY_ATTESTATION_TOKEN", "test-token")
 	fs := afero.NewMemMapFs()
 	err := afero.WriteFile(fs, "/config.yaml", []byte(""), 0o644)
 	require.NoError(t, err)
@@ -1959,6 +1967,7 @@ upstream_services:
 }
 
 func TestRun_NoConfigDoesNotBlock(t *testing.T) {
+	t.Setenv("MCPANY_ATTESTATION_TOKEN", "test-token")
 	fs := afero.NewMemMapFs()
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
@@ -1975,6 +1984,7 @@ func TestRun_NoConfigDoesNotBlock(t *testing.T) {
 }
 
 func TestRun_NoConfig(t *testing.T) {
+	t.Setenv("MCPANY_ATTESTATION_TOKEN", "test-token")
 	fs := afero.NewMemMapFs()
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
@@ -2388,6 +2398,7 @@ func TestGRPCServer_PortReleasedOnGracefulShutdown(t *testing.T) {
 }
 
 func TestRun_IPAllowlist(t *testing.T) {
+	t.Setenv("MCPANY_ATTESTATION_TOKEN", "test-token")
 	t.Run("Allowed", func(t *testing.T) {
 		fs := afero.NewMemMapFs()
 		ctx, cancel := context.WithCancel(context.Background())
@@ -2639,6 +2650,7 @@ func TestRunServerMode_Auth(t *testing.T) {
 }
 
 func TestHealthEndpointAlias(t *testing.T) {
+	t.Setenv("MCPANY_ATTESTATION_TOKEN", "test-token")
 	fs := afero.NewMemMapFs()
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -3289,6 +3301,7 @@ func TestFilesystemHealthCheck(t *testing.T) {
 }
 
 func TestMultiUserToolFiltering(t *testing.T) {
+	t.Setenv("MCPANY_ATTESTATION_TOKEN", "test-token")
 	fs := afero.NewMemMapFs()
 	configContent := `
 global_settings:
@@ -3319,6 +3332,7 @@ upstream_services:
 }
 
 func TestFix_ReloadReliability(t *testing.T) {
+	t.Setenv("MCPANY_ATTESTATION_TOKEN", "test-token")
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(`{"openapi": "3.0.0", "info": {"title": "T", "version": "1"}, "paths": {"/t": {"get": {"operationId": "op"}}}}`))
@@ -3354,6 +3368,7 @@ func TestFix_ReloadReliability(t *testing.T) {
 }
 
 func TestStartup_Resilience_UpstreamFailure(t *testing.T) {
+	t.Setenv("MCPANY_ATTESTATION_TOKEN", "test-token")
 	fs := afero.NewMemMapFs()
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()

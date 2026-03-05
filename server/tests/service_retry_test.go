@@ -71,6 +71,7 @@ func TestServiceRetry(t *testing.T) {
 	mockStore.On("GetGlobalSettings", mock.Anything).Return(&configv1.GlobalSettings{}, nil)
 	mockStore.On("Close").Return(nil)
 
+	t.Setenv("MCPANY_ATTESTATION_TOKEN", "test-token")
 	a := app.NewApplication()
 	a.Storage = mockStore
 
