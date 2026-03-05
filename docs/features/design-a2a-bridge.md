@@ -46,3 +46,4 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-03-05:** **Intermittent Messaging-Agent Residency.** Expanded the A2A bridge to include "Message-Bound Residency" for agents running on messaging platforms (WhatsApp/Telegram). This allows the bridge to act as a persistent mailbox for agents that may be offline or unreachable during a task handoff.

@@ -75,9 +75,19 @@
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
+---
+
+## Evolution: [2026-03-05] Updates
+
+### Proposed Additions
+- **OpenClaw Messaging Bridge**: (P1) Native adapter for OpenClaw-style messaging triggers (WhatsApp, Telegram, Slack).
+- **Claude-Compatible Tool Search**: (P0) Aligning Lazy-MCP middleware with the newly released Anthropic Tool Search features.
+- **Message-Bound Agent Buffer**: (P1) Persistent mailbox for A2A agents on messaging platforms with intermittent connectivity.
+- **Autonomous Heartbeat Scheduler**: (P1) Middleware that triggers tool calls based on time-based schedules, enabling autonomous behavior.
+
 ### Priority Shifts
-- **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
-- **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.
+- **Lazy-MCP Middleware**: Re-affirmed as **P0** and expanded to include semantic search indexing for Claude Code compatibility.
+- **A2A Stateful Residency**: Promoted to **P0** as it is a prerequisite for Message-Bound Agent Buffering.
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.

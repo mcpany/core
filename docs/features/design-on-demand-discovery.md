@@ -57,3 +57,4 @@ As the number of available MCP tools grows, agents face "context pollution"—wh
 
 ## 7. Evolutionary Changelog
 *   **2026-02-25:** Initial Document Creation.
+*   **2026-03-05:** **Claude Code Compatibility Alignment.** Updated design to support the Anthropic `ToolSearchTool` standard. Semantic search results are now mapped to the specific discovery format required by Claude Code.
