@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-05]
+### Focus: Just-in-Time (JIT) Permissions & Tool Output Sanitization
+**Context**: As agents perform more complex and high-risk tasks, the traditional model of granting all permissions upfront is becoming a security liability. Simultaneously, the "Leaky Tool" problem shows that even authorized tools can accidentally expose sensitive system metadata.
+**Strategic Pivot**:
+- **JIT Permission Escalation**: MCP Any will implement a "Just-in-Time" permission model where agents can request temporary capability escalations. This allows for a "Least Privilege by Default" posture that only expands when necessary and authorized.
+- **Tool Output Sanitization Firewall**: Moving beyond input validation, MCP Any will introduce a middleware layer that sanitizes tool outputs (stdout/stderr). This prevents PII, secrets, and internal system metadata from reaching the LLM, mitigating the risk of inadvertent data exfiltration.
+- **Adaptive Consent Management**: To combat "Consent Fatigue," the gateway will use a policy-driven engine to automatically approve low-risk JIT escalations while reserving high-risk escalations for interactive user approval.

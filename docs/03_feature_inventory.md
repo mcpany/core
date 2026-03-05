@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-05] Updates
+
+### Proposed Additions
+- **JIT Permission Escalation Middleware**: (P0) Allows agents to request temporary capability upgrades during a session, governed by the Policy Engine.
+- **Tool Output Sanitization Firewall**: (P1) Middleware that scrubs tool responses (stdout/stderr) for PII, secrets, and system-sensitive metadata using regex and LLM-based redaction.
+- **Adaptive Consent Engine**: (P1) A policy-driven component that automatically approves or denies JIT requests based on risk scores and user-defined rules.
+
+### Priority Shifts
+- **Policy Firewall**: Re-affirmed as **P0**. It is now the primary enabler for JIT Permission Escalation.
+- **HITL Middleware**: Promoted to **P0**. Necessary for the Interactive Permission Flows required by modern agents.
+
+### Deprecations / Monitoring
+- **Static Scope Assignment**: Monitoring for deprecation in favor of JIT-based capability leases.
