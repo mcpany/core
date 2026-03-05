@@ -46,3 +46,7 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-03-05:** Update: Mitigating "Ghost Tooling" via Parent Attestation.
+    *   **Context**: Today's market sync identified a "Ghost Tooling" vulnerability where rogue subagents mimic A2A headers to inject unauthorized tools.
+    *   **Architecture Adjustment**: Every A2A-originated tool registration now requires a cryptographic `Parent-Attestation-Token`. MCP Any will verify this token against the session's root agent identity.
+    *   **Security Impact**: Prevents lateral movement and tool injection by compromised subagents in a swarm.
