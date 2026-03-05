@@ -59,3 +59,7 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-05:** Update - Addressing Localhost RCE (CVE-2026-25253).
+    *   **Context**: Today's market sync revealed a critical RCE vulnerability in OpenClaw that bypasses localhost protections.
+    *   **Architecture Adjustment**: Mandatory cryptographic origin validation for all loopback requests to prevent cross-origin tool execution.
+    *   **Security Impact**: Mitigates one-click RCE chains targeting local agent instances.

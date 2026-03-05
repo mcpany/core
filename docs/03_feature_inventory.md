@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-05] Updates
+
+### Proposed Additions
+- **Real-time Threat Intel Middleware**: (P0) Connects to a verified feed of malicious MCP servers and agent skills (e.g., blocking ClawHavoc-related hashes).
+- **Ephemeral Tool Sandboxing (Docker-less)**: (P1) Integration with lightweight isolation (like WebAssembly or nsjail) for high-risk tool execution.
+- **Cross-Origin Security Headers Enforcement**: (P0) Mandatory strict CORS and COOP/COEP headers for the gateway to prevent localhost-targeted RCE.
+
+### Priority Shifts
+- **Provenance-First Discovery**: Promoted to **P0**. Essential for preventing the ingestion of poisoned skills into agent workflows.
+- **"Safe-by-Default" Network Hardening**: Re-affirmed as **P0** and expanded to include mandatory auth for *all* connections, including loopback.
+
+### Deprecations / Monitoring
+- **Unauthenticated Local Access**: Deprecate the ability to call tools from localhost without a session token or cryptographic attestation.
