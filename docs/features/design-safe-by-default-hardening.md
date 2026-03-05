@@ -59,3 +59,11 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+
+### Update: 2026-03-05 - Mitigating "ClawJacked" via Strict Origin Enforcement
+**Context**: The "ClawJacked" vulnerability in OpenClaw proved that binding to `localhost` is insufficient if the gateway accepts connections from arbitrary browser origins.
+**Architecture Adjustment**:
+*   **Mandatory Origin Filtering**: Section 4 updated to include an `OriginAllowlist` middleware. By default, only the MCP Any UI and authorized CLI tools can initiate WebSocket/HTTP handshakes.
+*   **Token-Based Handshakes**: Introducing a required `X-MCP-Session-Token` for all local connections. This token is rotating and can only be retrieved via a privileged local process (CLI).
+*   **CORS Hardening**: Setting explicit `Access-Control-Allow-Origin` headers to prevent cross-site requests from hijacking the JSON-RPC interface.
+**Security Impact**: Eliminates the "No-Interaction Hijack" vector by ensuring browsers cannot talk to the MCP Any gateway without a pre-negotiated, per-session secret.

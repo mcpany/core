@@ -189,3 +189,9 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Core Middleware Pipeline**: The middleware architecture is robust and extensible.
 - **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates protocol details from business logic.
 - **Documentation**: The project has excellent documentation coverage for most features.
+
+#### Upcoming (2026-03-05 Evolution)
+*   **[P0] WebSocket Origin & CORS Enforcement**: Implement strict validation of incoming browser connections to prevent "ClawJacked" style hijacking. (Added: 2026-03-05)
+*   **[P0] A2A Standard Adapter**: Native support for the Google/IBM A2A protocol for cross-framework agent coordination. (Added: 2026-03-05)
+*   **[P1] Inbound Tool-Data Sanitizer**: Middleware to prevent indirect prompt injection from external tool content. (Added: 2026-03-05)
+*   **[P1] Local Challenge-Response Handshake**: Security layer for local-only CLI/UI authorization. (Added: 2026-03-05)
