@@ -99,7 +99,6 @@ jobs:
     container:
       image: iowoi/mcp-runner:latest
       options: --user root -v /var/run/docker.sock:/var/run/docker.sock
-      options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 90
     steps:
       # - name: Free Disk Space (Fast)
@@ -184,7 +183,6 @@ jobs:
     runs-on: oci-runner
     container:
       image: iowoi/mcp-runner:latest
-      options: --user root -v /var/run/docker.sock:/var/run/docker.sock
       options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 60
     needs: [changes, build-images]
@@ -629,7 +627,6 @@ jobs:
     container:
       image: iowoi/mcp-runner:latest
       options: --user root -v /var/run/docker.sock:/var/run/docker.sock
-      options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 180
     needs: [changes, build-images]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -781,7 +778,6 @@ jobs:
     container:
       image: iowoi/mcp-runner:latest
       options: --user root -v /var/run/docker.sock:/var/run/docker.sock
-      options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 180
     needs: [changes, build-images]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -914,7 +910,6 @@ jobs:
     container:
       image: iowoi/mcp-runner:latest
       options: --user root -v /var/run/docker.sock:/var/run/docker.sock
-      options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 15
     needs: [changes, build-images]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -968,7 +963,6 @@ jobs:
     runs-on: oci-runner
     container:
       image: iowoi/mcp-runner:latest
-      options: --user root -v /var/run/docker.sock:/var/run/docker.sock
       options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 180
     needs: [changes, build-images]
@@ -1172,7 +1166,6 @@ jobs:
     runs-on: oci-runner
     container:
       image: iowoi/mcp-runner:latest
-      options: --user root -v /var/run/docker.sock:/var/run/docker.sock
       options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     needs:
       [
