@@ -2252,7 +2252,7 @@ func waitForServerReady(t *testing.T, addr string) {
 		}
 		_ = conn.Close()
 		return true
-	}, 5*time.Second, 100*time.Millisecond, "server should be ready to accept connections")
+	}, 5*time.Second, 10*time.Millisecond, "server should be ready to accept connections")
 }
 
 func TestRun_APIKeyAuthentication(t *testing.T) {
@@ -3289,7 +3289,7 @@ upstream_services:
 		errChan <- app.Run(RunOptions{Ctx: ctx, Fs: fs, Stdio: false, JSONRPCPort: "127.0.0.1:0", GRPCPort: "127.0.0.1:0", ConfigPaths: []string{"/config.yaml"}, APIKey: "", ShutdownTimeout: 5 * time.Second})
 	}()
 
-	require.Eventually(t, func() bool { return app.BoundHTTPPort.Load() != 0 }, 5*time.Second, 100*time.Millisecond)
+	require.Eventually(t, func() bool { return app.BoundHTTPPort.Load() != 0 }, 5*time.Second, 10*time.Millisecond)
 	cancel()
 	<-errChan
 }
