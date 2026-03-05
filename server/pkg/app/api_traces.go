@@ -320,7 +320,6 @@ func (a *Application) handleDebugSeedTraces() http.HandlerFunc {
 	}
 }
 
-
 func generateMockTrace() Trace {
 	now := time.Now().UnixMilli()
 	traceID := fmt.Sprintf("trace-seed-%d", rand.Intn(10000)) //nolint:gosec // Testing only
@@ -361,13 +360,13 @@ func generateMockTrace() Trace {
 					},
 					Children: []Span{
 						{
-							ID:        "span-2-1",
-							Name:      "google-search-api",
+							ID:          "span-2-1",
+							Name:        "google-search-api",
 							ServiceName: "google",
-							Type:      "service",
-							StartTime: now + 100,
-							EndTime:   now + 400,
-							Status:    "success",
+							Type:        "service",
+							StartTime:   now + 100,
+							EndTime:     now + 400,
+							Status:      "success",
 							Input: map[string]any{
 								"q": "Q3 2024 financials site:sec.gov",
 							},
@@ -400,13 +399,13 @@ func generateMockTrace() Trace {
 					},
 					Children: []Span{
 						{
-							ID:        "span-3-1",
-							Name:      "python-interpreter",
+							ID:          "span-3-1",
+							Name:        "python-interpreter",
 							ServiceName: "local-python",
-							Type:      "service",
-							StartTime: now + 550,
-							EndTime:   now + 1150,
-							Status:    "success",
+							Type:        "service",
+							StartTime:   now + 550,
+							EndTime:     now + 1150,
+							Status:      "success",
 							Input: map[string]any{
 								"code": "import pandas as pd\ndf = pd.read_excel('data_q3.xlsx')\nprint(df.revenue.sum())",
 							},

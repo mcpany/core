@@ -88,7 +88,7 @@ func TestHandleUserDetail_PrivilegeEscalation_Reproduction(t *testing.T) {
 		// Attempt to update own profile and inject "admin" role
 		payload := map[string]interface{}{
 			"user": map[string]interface{}{
-				"id": "victim-user",
+				"id":    "victim-user",
 				"roles": []string{"admin"}, // <--- Privilege Escalation attempt
 			},
 		}

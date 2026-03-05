@@ -4,6 +4,8 @@
 package app
 
 import (
+	"path/filepath"
+
 	"context"
 	"log/slog"
 	"testing"
@@ -42,12 +44,12 @@ upstream_services: []
 	go func() {
 		// Run with ephemeral ports
 		errChan <- app.Run(RunOptions{
-			Ctx:             ctx,
-			Fs:              fs,
-			Stdio:           false,
-			JSONRPCPort:     "127.0.0.1:0",
-			GRPCPort:        "127.0.0.1:0",
-			ConfigPaths:     []string{"/config.yaml"},
+			Ctx:         ctx,
+			Fs:          fs,
+			Stdio:       false,
+			JSONRPCPort: "127.0.0.1:0",
+			GRPCPort:    "127.0.0.1:0",
+			DBPath:      filepath.Join(t.TempDir(), "test.db"), ConfigPaths: []string{"/config.yaml"},
 			APIKey:          "",
 			ShutdownTimeout: 100 * time.Millisecond,
 		})

@@ -627,7 +627,7 @@ type mockPrompt struct {
 func (m *mockPrompt) Prompt() *mcp.Prompt {
 	return &mcp.Prompt{Name: m.name}
 }
-func (m *mockPrompt) Service() string { return "mock" }
+func (m *mockPrompt) Service() string                        { return "mock" }
 func (m *mockPrompt) Definition() *configv1.PromptDefinition { return nil }
 func (m *mockPrompt) Get(ctx context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {
 	return &mcp.GetPromptResult{
@@ -1084,8 +1084,8 @@ func (e *errorResource) Subscribe(ctx context.Context) error { return nil }
 
 type errorPrompt struct{}
 
-func (e *errorPrompt) Prompt() *mcp.Prompt { return &mcp.Prompt{Name: "error-prompt"} }
-func (e *errorPrompt) Service() string     { return "test" }
+func (e *errorPrompt) Prompt() *mcp.Prompt                    { return &mcp.Prompt{Name: "error-prompt"} }
+func (e *errorPrompt) Service() string                        { return "test" }
 func (e *errorPrompt) Definition() *configv1.PromptDefinition { return nil }
 func (e *errorPrompt) Get(ctx context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {
 	return nil, errors.New("get failed")
@@ -1257,9 +1257,7 @@ func TestHandleSystemStatus(t *testing.T) {
 	assert.GreaterOrEqual(t, resp["uptime_seconds"].(float64), float64(10))
 }
 
-
 // TestHandleTemplates removed in favor of api_templates_test.go
-
 
 func TestHandleUsers(t *testing.T) {
 	app := NewApplication()
@@ -1409,7 +1407,7 @@ func (s *MockServiceStore) GetService(ctx context.Context, name string) (*config
 func (s *MockServiceStore) ListServices(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	return s.services, nil
 }
-func (s *MockServiceStore) DeleteService(ctx context.Context, name string) error  { return nil }
+func (s *MockServiceStore) DeleteService(ctx context.Context, name string) error { return nil }
 func (s *MockServiceStore) ListSecrets(ctx context.Context) ([]*configv1.Secret, error) {
 	return nil, nil
 }
@@ -1448,12 +1446,12 @@ func (s *MockServiceStore) GetGlobalSettings(ctx context.Context) (*configv1.Glo
 func (s *MockServiceStore) SaveGlobalSettings(ctx context.Context, gs *configv1.GlobalSettings) error {
 	return nil
 }
-func (s *MockServiceStore) Close() error                                           { return nil }
+func (s *MockServiceStore) Close() error                                              { return nil }
 func (s *MockServiceStore) CreateUser(ctx context.Context, user *configv1.User) error { return nil }
 func (s *MockServiceStore) GetUser(ctx context.Context, id string) (*configv1.User, error) {
 	return nil, nil
 }
-func (s *MockServiceStore) ListUsers(ctx context.Context) ([]*configv1.User, error) { return nil, nil }
+func (s *MockServiceStore) ListUsers(ctx context.Context) ([]*configv1.User, error)   { return nil, nil }
 func (s *MockServiceStore) UpdateUser(ctx context.Context, user *configv1.User) error { return nil }
 func (s *MockServiceStore) DeleteUser(ctx context.Context, id string) error           { return nil }
 func (s *MockServiceStore) SaveToken(ctx context.Context, token *configv1.UserToken) error {
@@ -1642,9 +1640,9 @@ func TestSecretLeak(t *testing.T) {
 
 	secretID := "sensitive-secret-123"
 	body := map[string]interface{}{
-		"id":   secretID,
-		"name": "My Secret",
-		"key":  "my_secret_key",
+		"id":    secretID,
+		"name":  "My Secret",
+		"key":   "my_secret_key",
 		"value": "SUPER_SECRET_VALUE",
 	}
 	bodyBytes, _ := json.Marshal(body)
@@ -1656,7 +1654,6 @@ func TestSecretLeak(t *testing.T) {
 	require.NoError(t, err, "failed to decode response body")
 	assert.Equal(t, "[REDACTED]", result["value"])
 }
-
 
 func TestReproduction_ProtocolCompliance(t *testing.T) {
 	fs := afero.NewMemMapFs()
@@ -1672,7 +1669,7 @@ func TestReproduction_ProtocolCompliance(t *testing.T) {
 
 	errChan := make(chan error, 1)
 	go func() {
-		errChan <- app.Run(RunOptions{Ctx: ctx, Fs: fs, Stdio: false, JSONRPCPort: fmt.Sprintf("127.0.0.1:%d", httpPort), GRPCPort: "127.0.0.1:0", ConfigPaths: []string{"/config.yaml"}, APIKey: "", ShutdownTimeout: 5*time.Second})
+		errChan <- app.Run(RunOptions{Ctx: ctx, Fs: fs, Stdio: false, JSONRPCPort: fmt.Sprintf("127.0.0.1:%d", httpPort), GRPCPort: "127.0.0.1:0", DBPath: filepath.Join(t.TempDir(), "test.db"), ConfigPaths: []string{"/config.yaml"}, APIKey: "", ShutdownTimeout: 5 * time.Second})
 	}()
 
 	require.NoError(t, app.WaitForStartup(ctx))
@@ -1725,8 +1722,8 @@ func TestHandleAuthTest(t *testing.T) {
 	store.SaveCredential(context.Background(), cred)
 
 	req := AuthTestRequest{
-		CredentialID: credID,
-		ServiceType:  "HTTP",
+		CredentialID:  credID,
+		ServiceType:   "HTTP",
 		ServiceConfig: map[string]any{"http_service": map[string]any{"address": ts.URL}},
 	}
 	body, _ := json.Marshal(req)

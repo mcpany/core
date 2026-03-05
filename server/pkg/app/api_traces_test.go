@@ -52,6 +52,7 @@ func setupTracesTestApp(t *testing.T) (*Application, *middleware.AuditMiddleware
 	// Initialize Application
 	app := &Application{
 		standardMiddlewares: standardMiddlewares,
+		seededTraceSubs:     make(map[chan *Trace]struct{}),
 	}
 
 	return app, auditMiddleware

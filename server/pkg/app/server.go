@@ -336,9 +336,9 @@ func NewApplication() *Application {
 		configFiles:     make(map[string]string),
 		startupCh:       make(chan struct{}),
 		startTime:       time.Now(),
-		MetricsGatherer:   prometheus.DefaultGatherer,
-		statsCache:        make(map[string]statsCacheEntry),
-		seededTraceSubs:   make(map[chan *Trace]struct{}),
+		MetricsGatherer: prometheus.DefaultGatherer,
+		statsCache:      make(map[string]statsCacheEntry),
+		seededTraceSubs: make(map[chan *Trace]struct{}),
 	}
 }
 
@@ -1042,8 +1042,9 @@ func (a *Application) updateGlobalSettings(cfg *config_v1.McpAnyServerConfig) {
 	}
 }
 
-//nolint:gocyclo // complexity is fine here
 // reconcileServices reconciles the service registry with the new configuration.
+//
+//nolint:gocyclo // complexity is fine here
 func (a *Application) reconcileServices(ctx context.Context, cfg *config_v1.McpAnyServerConfig) {
 	log := logging.GetLogger()
 	// Get current active services

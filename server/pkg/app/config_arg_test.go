@@ -6,6 +6,7 @@ package app
 import (
 	"context"
 	"os"
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -49,6 +50,7 @@ upstream_services:
 			Ctx:         ctx,
 			Fs:          afero.NewOsFs(),
 			ConfigPaths: []string{tmpFile.Name()},
+			DBPath:      filepath.Join(t.TempDir(), "test.db"),
 			// Use random ports to avoid conflicts
 			JSONRPCPort: "localhost:0",
 			GRPCPort:    "localhost:0",

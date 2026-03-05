@@ -27,7 +27,7 @@ func TestUpstreamService_Bored(t *testing.T) {
 	t.Parallel()
 
 	// --- 1. Start Mock Server ---
-	mockResponse := `{"activity":"Learn a new language","type":"education","participants":1,"price":0.1,"link":"","key":"5881028","accessibility":0.25}`
+	mockResponse := `{"activity":"Learn a new language","type":"education","participants":1,"price":0.1,"link":"https://example.com","key":"5881028","accessibility":0.25}`
 	mockServer := integration.CreateMockServerWithResponses(t, map[string]string{
 		"/api/activity": mockResponse,
 	})
