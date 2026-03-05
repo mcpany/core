@@ -37,7 +37,7 @@ defaults:
 
 jobs:
   changes:
-    runs-on: oci-runner
+    runs-on: ubuntu-latest
     container:
       image: iowoi/mcp-runner:latest
       options: --user root -v /var/run/docker.sock:/var/run/docker.sock
@@ -95,29 +95,25 @@ jobs:
   lint:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
-    runs-on: oci-runner
+    runs-on: ubuntu-latest
     container:
       image: iowoi/mcp-runner:latest
       options: --user root -v /var/run/docker.sock:/var/run/docker.sock
-      options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 90
     steps:
-      # - name: Free Disk Space (Fast)
-      #   run: |
-      #     if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
-      #     $SUDO rm -rf /usr/local/lib/android
-      #     $SUDO rm -rf /usr/share/dotnet
-      #     $SUDO rm -rf /opt/ghc
-      #     $SUDO rm -rf /usr/local/share/boost
+      - name: Free Disk Space (Fast)
+        run: |
+          if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
+          $SUDO rm -rf /usr/local/lib/android
+          $SUDO rm -rf /usr/share/dotnet
+          $SUDO rm -rf /opt/ghc
+          $SUDO rm -rf /usr/local/share/boost
 
       - name: Debug Environment
         run: |
           id
           ls -l /var/run/docker.sock || echo "No docker socket found"
           ls -ld /__w || echo "No /__w found"
-
-      # - name: Prune Docker
-      #   run: docker system prune -af
 
       - uses: actions/checkout@v6
 
@@ -134,20 +130,8 @@ jobs:
              $SUDO apk add --no-cache make xz curl unzip build-base
           fi
 
-      # - name: Set up Go
-      #   uses: actions/setup-go@v6
-      #   with:
-      #     go-version: "1.24"
-      #     cache: true
-
-      # - name: Set up Python
-      #   uses: actions/setup-python@v6
-      #   with:
-      #     python-version: "3.13"
-      #     cache: "pip"
-
       - name: Install Python dependencies
-        run: pip install -r server/requirements.txt
+        run: pip install --break-system-packages -r server/requirements.txt
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -181,10 +165,9 @@ jobs:
         run: make lint
 
   unit-test:
-    runs-on: oci-runner
+    runs-on: ubuntu-latest
     container:
       image: iowoi/mcp-runner:latest
-      options: --user root -v /var/run/docker.sock:/var/run/docker.sock
       options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 60
     needs: [changes, build-images]
@@ -193,16 +176,16 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
-      # - name: Free Disk Space (Fast)
-      #   run: |
-      #     if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
-      #     $SUDO rm -rf /usr/local/lib/android
-      #     $SUDO rm -rf /usr/share/dotnet
-      #     $SUDO rm -rf /opt/ghc
-      #     $SUDO rm -rf /usr/local/share/boost
+      - name: Free Disk Space (Fast)
+        run: |
+          if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
+          $SUDO rm -rf /usr/local/lib/android
+          $SUDO rm -rf /usr/share/dotnet
+          $SUDO rm -rf /opt/ghc
+          $SUDO rm -rf /usr/local/share/boost
 
-      # - name: Prune Docker
-      #   run: docker system prune -af
+      - name: Prune Docker
+        run: docker system prune -af
 
       - uses: actions/checkout@v6
 
@@ -219,20 +202,8 @@ jobs:
              $SUDO apk add --no-cache make xz curl unzip build-base
           fi
 
-      # - name: Set up Go
-      #   uses: actions/setup-go@v6
-      #   with:
-      #     go-version: "1.24"
-      #     cache: true
-
-      # - name: Set up Python
-      #   uses: actions/setup-python@v6
-      #   with:
-      #     python-version: "3.13"
-      #     cache: "pip"
-
       - name: Install Python dependencies
-        run: pip install -r server/requirements.txt
+        run: pip install --break-system-packages -r server/requirements.txt
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -317,10 +288,6 @@ jobs:
 
   e2e-parallel:
     runs-on: ubuntu-latest
-    # runs-on: oci-runner
-    # container:
-    #   image: iowoi/mcp-runner:latest
-    #   options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 180
     needs: [changes, build-images]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -333,16 +300,16 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
-      # - name: Free Disk Space (Fast)
-      #   run: |
-      #     if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
-      #     $SUDO rm -rf /usr/local/lib/android
-      #     $SUDO rm -rf /usr/share/dotnet
-      #     $SUDO rm -rf /opt/ghc
-      #     $SUDO rm -rf /usr/local/share/boost
+      - name: Free Disk Space (Fast)
+        run: |
+          if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
+          $SUDO rm -rf /usr/local/lib/android
+          $SUDO rm -rf /usr/share/dotnet
+          $SUDO rm -rf /opt/ghc
+          $SUDO rm -rf /usr/local/share/boost
 
-      # - name: Prune Docker
-      #   run: docker system prune -af
+      - name: Prune Docker
+        run: docker system prune -af
 
       - uses: actions/checkout@v6
 
@@ -372,7 +339,7 @@ jobs:
           cache: "pip"
 
       - name: Install Python dependencies
-        run: pip install -r server/requirements.txt
+        run: pip install --break-system-packages -r server/requirements.txt
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -429,8 +396,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-build-env-bin-v3-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
             ${{ runner.os }}-build-env-bin-v3-${{ steps.get-date.outputs.week }}-
-
-      # Intentionally omitting Server Image download for e2e-parallel as it uses binary
 
       - name: Download HTTP Echo Image
         uses: actions/download-artifact@v4
@@ -492,10 +457,6 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: ubuntu-latest
-    # runs-on: oci-runner
-    # container:
-    #   image: iowoi/mcp-runner:latest
-    #   options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     strategy:
       fail-fast: false
       matrix:
@@ -625,10 +586,9 @@ jobs:
           retention-days: 1
 
   e2e-sequential:
-    runs-on: oci-runner
+    runs-on: ubuntu-latest
     container:
       image: iowoi/mcp-runner:latest
-      options: --user root -v /var/run/docker.sock:/var/run/docker.sock
       options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 180
     needs: [changes, build-images]
@@ -637,16 +597,16 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
-      # - name: Free Disk Space (Fast)
-      #   run: |
-      #     if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
-      #     $SUDO rm -rf /usr/local/lib/android
-      #     $SUDO rm -rf /usr/share/dotnet
-      #     $SUDO rm -rf /opt/ghc
-      #     $SUDO rm -rf /usr/local/share/boost
+      - name: Free Disk Space (Fast)
+        run: |
+          if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
+          $SUDO rm -rf /usr/local/lib/android
+          $SUDO rm -rf /usr/share/dotnet
+          $SUDO rm -rf /opt/ghc
+          $SUDO rm -rf /usr/local/share/boost
 
-      # - name: Prune Docker
-      #   run: docker system prune -af
+      - name: Prune Docker
+        run: docker system prune -af
 
       - uses: actions/checkout@v6
 
@@ -676,7 +636,7 @@ jobs:
           cache: "pip"
 
       - name: Install Python dependencies
-        run: pip install -r server/requirements.txt
+        run: pip install --break-system-packages -r server/requirements.txt
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -777,10 +737,9 @@ jobs:
           verbose: true
 
   e2e-public-api:
-    runs-on: oci-runner
+    runs-on: ubuntu-latest
     container:
       image: iowoi/mcp-runner:latest
-      options: --user root -v /var/run/docker.sock:/var/run/docker.sock
       options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 180
     needs: [changes, build-images]
@@ -829,7 +788,7 @@ jobs:
           cache: "pip"
 
       - name: Install Python dependencies
-        run: pip install -r server/requirements.txt
+        run: pip install --break-system-packages -r server/requirements.txt
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -910,10 +869,9 @@ jobs:
           verbose: true
 
   docker-smoke-test:
-    runs-on: oci-runner
+    runs-on: ubuntu-latest
     container:
       image: iowoi/mcp-runner:latest
-      options: --user root -v /var/run/docker.sock:/var/run/docker.sock
       options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 15
     needs: [changes, build-images]
@@ -964,11 +922,9 @@ jobs:
           ./server/tests/smoke_test.sh mcpany/server:latest
 
   ui-test:
-    # runs-on: ubuntu-latest
-    runs-on: oci-runner
+    runs-on: ubuntu-latest
     container:
       image: iowoi/mcp-runner:latest
-      options: --user root -v /var/run/docker.sock:/var/run/docker.sock
       options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 180
     needs: [changes, build-images]
@@ -980,16 +936,16 @@ jobs:
       matrix:
         shard: [1/2, 2/2]
     steps:
-      # - name: Free Disk Space (Fast)
-      #   run: |
-      #     if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
-      #     $SUDO rm -rf /usr/local/lib/android
-      #     $SUDO rm -rf /usr/share/dotnet
-      #     $SUDO rm -rf /opt/ghc
-      #     $SUDO rm -rf /usr/local/share/boost
+      - name: Free Disk Space (Fast)
+        run: |
+          if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
+          $SUDO rm -rf /usr/local/lib/android
+          $SUDO rm -rf /usr/share/dotnet
+          $SUDO rm -rf /opt/ghc
+          $SUDO rm -rf /usr/local/share/boost
 
-      # - name: Prune Docker
-      #   run: docker system prune -af
+      - name: Prune Docker
+        run: docker system prune -af
 
       - uses: actions/checkout@v6
 
@@ -1053,10 +1009,6 @@ jobs:
 
   k8s-e2e:
     runs-on: ubuntu-latest
-    # runs-on: oci-runner
-    # container:
-    #   image: iowoi/mcp-runner:latest
-    #   options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 360 # Increased timeout for k8s tests
     needs: [changes, build-images]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -1157,22 +1109,32 @@ jobs:
           docker load -i image.tar
           rm -f image.tar
 
+      - name: Download HTTP Echo Image
+        uses: actions/download-artifact@v4
+        with:
+          name: image-http-echo-${{ steps.detect-arch.outputs.slug }}
+
+      - name: Load HTTP Echo Image
+        run: |
+          docker load -i image.tar
+          rm -f image.tar
+
       - name: Load Docker Images into Kind
         run: |
           # Now load specific images into Kind
           kind load docker-image mcpany/server:latest --name mcp-e2e
           kind load docker-image mcpany/operator:latest --name mcp-e2e
           kind load docker-image mcpany/ui:latest --name mcp-e2e
+          kind load docker-image mcpany/http-echo-server:latest --name mcp-e2e
 
       - name: Run K8s E2E Tests
         run: |
           make k8s-e2e SKIP_IMAGE_BUILD=true IMAGE_TAG=latest
 
   ci-success:
-    runs-on: oci-runner
+    runs-on: ubuntu-latest
     container:
       image: iowoi/mcp-runner:latest
-      options: --user root -v /var/run/docker.sock:/var/run/docker.sock
       options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     needs:
       [

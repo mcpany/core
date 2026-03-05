@@ -59,3 +59,7 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-05:** Update: Tool Output Sanitization Firewall.
+    - **Context**: Added "Leaky Tool" protection as part of the hardening initiative.
+    - **Architecture Adjustment**: Section 4 now includes a `ResponseSanitizer` middleware that runs before tool results are returned to the agent.
+    - **Security Impact**: Mitigates PII leakage and accidental credential exposure in tool `stdout/stderr`.
