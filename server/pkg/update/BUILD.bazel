@@ -1,0 +1,27 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "update",
+    srcs = ["updater.go"],
+    importpath = "github.com/mcpany/core/server/pkg/update",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@com_github_google_go_github_v39//github",
+        "@com_github_spf13_afero//:afero",
+    ],
+)
+
+go_test(
+    name = "update_test",
+    srcs = ["updater_test.go"],
+    embed = [":update"],
+    deps = [
+        "@com_github_google_go_github_v39//github",
+        "@com_github_spf13_afero//:afero",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//require",
+    ],
+)

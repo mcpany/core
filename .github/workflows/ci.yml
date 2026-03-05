@@ -31,9 +31,16 @@ env:
   GOGC: 50 # Balanced GC to avoid excessive CPU usage while keeping memory in check
   GO_RACE: "" # Disable race detector in CI due to OOM on constrained runners
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   changes:
     runs-on: oci-runner
+    container:
+      image: iowoi/mcp-runner:latest
+      options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     outputs:
       src: ${{ steps.filter.outputs.src }}
     steps:
@@ -48,9 +55,9 @@ jobs:
             exit 0
           fi
           if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
-          if command -v apt-get &> /dev/null; then
+          if command -v apt-get > /dev/null 2>&1; then
             $SUDO apt-get update && $SUDO apt-get install -y make xz-utils curl unzip build-essential
-          elif command -v apk &> /dev/null; then
+          elif command -v apk > /dev/null 2>&1; then
              $SUDO apk add --no-cache make xz curl unzip build-base
           fi
 
@@ -70,39 +77,47 @@ jobs:
             DIFF=$(git diff --name-only HEAD~1 HEAD)
           fi
 
-          echo "Changed files:"
           echo "$DIFF"
-
           SRC_CHANGED="false"
-          while IFS= read -r file; do
-            if [[ -z "$file" ]]; then continue; fi
+          echo "$DIFF" | while IFS= read -r file; do
+            if [ -z "$file" ]; then continue; fi
             # Ignore markdown, txt, docs, license
-            if [[ "$file" == *.md ]] || [[ "$file" == *.txt ]] || [[ "$file" == docs/* ]] || [[ "$file" == LICENSE ]]; then
-              continue
-            fi
-            # Found a source file
-            SRC_CHANGED="true"
-            break
-          done <<< "$DIFF"
+            case "$file" in
+              *.md|*.txt|docs/*|LICENSE) continue ;;
+              *) echo "true" > /tmp/src_changed; break ;;
+            esac
+          done
+          if [ -f /tmp/src_changed ]; then SRC_CHANGED="true"; rm /tmp/src_changed; fi
 
           echo "src=$SRC_CHANGED" >> $GITHUB_OUTPUT
+        shell: bash
 
   lint:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: oci-runner
+    container:
+      image: iowoi/mcp-runner:latest
+      options: --user root -v /var/run/docker.sock:/var/run/docker.sock
+      options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 90
     steps:
-      - name: Free Disk Space (Fast)
-        run: |
-          if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
-          $SUDO rm -rf /usr/local/lib/android
-          $SUDO rm -rf /usr/share/dotnet
-          $SUDO rm -rf /opt/ghc
-          $SUDO rm -rf /usr/local/share/boost
+      # - name: Free Disk Space (Fast)
+      #   run: |
+      #     if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
+      #     $SUDO rm -rf /usr/local/lib/android
+      #     $SUDO rm -rf /usr/share/dotnet
+      #     $SUDO rm -rf /opt/ghc
+      #     $SUDO rm -rf /usr/local/share/boost
 
-      - name: Prune Docker
-        run: docker system prune -af
+      - name: Debug Environment
+        run: |
+          id
+          ls -l /var/run/docker.sock || echo "No docker socket found"
+          ls -ld /__w || echo "No /__w found"
+
+      # - name: Prune Docker
+      #   run: docker system prune -af
 
       - uses: actions/checkout@v6
 
@@ -113,23 +128,23 @@ jobs:
             exit 0
           fi
           if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
-          if command -v apt-get &> /dev/null; then
+          if command -v apt-get > /dev/null 2>&1; then
             $SUDO apt-get update && $SUDO apt-get install -y make xz-utils curl unzip build-essential
-          elif command -v apk &> /dev/null; then
+          elif command -v apk > /dev/null 2>&1; then
              $SUDO apk add --no-cache make xz curl unzip build-base
           fi
 
-      - name: Set up Go
-        uses: actions/setup-go@v6
-        with:
-          go-version: "1.24"
-          cache: true
+      # - name: Set up Go
+      #   uses: actions/setup-go@v6
+      #   with:
+      #     go-version: "1.24"
+      #     cache: true
 
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: "3.13"
-          cache: "pip"
+      # - name: Set up Python
+      #   uses: actions/setup-python@v6
+      #   with:
+      #     python-version: "3.13"
+      #     cache: "pip"
 
       - name: Install Python dependencies
         run: pip install -r server/requirements.txt
@@ -167,6 +182,10 @@ jobs:
 
   unit-test:
     runs-on: oci-runner
+    container:
+      image: iowoi/mcp-runner:latest
+      options: --user root -v /var/run/docker.sock:/var/run/docker.sock
+      options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 60
     needs: [changes, build-images]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -174,16 +193,16 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
-      - name: Free Disk Space (Fast)
-        run: |
-          if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
-          $SUDO rm -rf /usr/local/lib/android
-          $SUDO rm -rf /usr/share/dotnet
-          $SUDO rm -rf /opt/ghc
-          $SUDO rm -rf /usr/local/share/boost
+      # - name: Free Disk Space (Fast)
+      #   run: |
+      #     if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
+      #     $SUDO rm -rf /usr/local/lib/android
+      #     $SUDO rm -rf /usr/share/dotnet
+      #     $SUDO rm -rf /opt/ghc
+      #     $SUDO rm -rf /usr/local/share/boost
 
-      - name: Prune Docker
-        run: docker system prune -af
+      # - name: Prune Docker
+      #   run: docker system prune -af
 
       - uses: actions/checkout@v6
 
@@ -194,23 +213,23 @@ jobs:
             exit 0
           fi
           if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
-          if command -v apt-get &> /dev/null; then
+          if command -v apt-get > /dev/null 2>&1; then
             $SUDO apt-get update && $SUDO apt-get install -y make xz-utils curl unzip build-essential
-          elif command -v apk &> /dev/null; then
+          elif command -v apk > /dev/null 2>&1; then
              $SUDO apk add --no-cache make xz curl unzip build-base
           fi
 
-      - name: Set up Go
-        uses: actions/setup-go@v6
-        with:
-          go-version: "1.24"
-          cache: true
+      # - name: Set up Go
+      #   uses: actions/setup-go@v6
+      #   with:
+      #     go-version: "1.24"
+      #     cache: true
 
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: "3.13"
-          cache: "pip"
+      # - name: Set up Python
+      #   uses: actions/setup-python@v6
+      #   with:
+      #     python-version: "3.13"
+      #     cache: "pip"
 
       - name: Install Python dependencies
         run: pip install -r server/requirements.txt
@@ -297,7 +316,11 @@ jobs:
           verbose: true
 
   e2e-parallel:
-    runs-on: oci-runner
+    runs-on: ubuntu-latest
+    # runs-on: oci-runner
+    # container:
+    #   image: iowoi/mcp-runner:latest
+    #   options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 180
     needs: [changes, build-images]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -310,16 +333,16 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
-      - name: Free Disk Space (Fast)
-        run: |
-          if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
-          $SUDO rm -rf /usr/local/lib/android
-          $SUDO rm -rf /usr/share/dotnet
-          $SUDO rm -rf /opt/ghc
-          $SUDO rm -rf /usr/local/share/boost
+      # - name: Free Disk Space (Fast)
+      #   run: |
+      #     if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
+      #     $SUDO rm -rf /usr/local/lib/android
+      #     $SUDO rm -rf /usr/share/dotnet
+      #     $SUDO rm -rf /opt/ghc
+      #     $SUDO rm -rf /usr/local/share/boost
 
-      - name: Prune Docker
-        run: docker system prune -af
+      # - name: Prune Docker
+      #   run: docker system prune -af
 
       - uses: actions/checkout@v6
 
@@ -330,9 +353,9 @@ jobs:
             exit 0
           fi
           if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
-          if command -v apt-get &> /dev/null; then
+          if command -v apt-get > /dev/null 2>&1; then
             $SUDO apt-get update && $SUDO apt-get install -y make xz-utils curl unzip build-essential
-          elif command -v apk &> /dev/null; then
+          elif command -v apk > /dev/null 2>&1; then
              $SUDO apk add --no-cache make xz curl unzip build-base
           fi
 
@@ -468,7 +491,11 @@ jobs:
     name: Build Docker Image (${{ matrix.image }}, ${{ matrix.platform_slug }})
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
-    runs-on: oci-runner
+    runs-on: ubuntu-latest
+    # runs-on: oci-runner
+    # container:
+    #   image: iowoi/mcp-runner:latest
+    #   options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     strategy:
       fail-fast: false
       matrix:
@@ -505,9 +532,9 @@ jobs:
             exit 0
           fi
           if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
-          if command -v apt-get &> /dev/null; then
+          if command -v apt-get > /dev/null 2>&1; then
             $SUDO apt-get update && $SUDO apt-get install -y make curl unzip grep sed findutils build-essential
-          elif command -v apk &> /dev/null; then
+          elif command -v apk > /dev/null 2>&1; then
              $SUDO apk add --no-cache make curl unzip grep sed findutils build-base
           fi
       - name: Set up Go
@@ -599,6 +626,10 @@ jobs:
 
   e2e-sequential:
     runs-on: oci-runner
+    container:
+      image: iowoi/mcp-runner:latest
+      options: --user root -v /var/run/docker.sock:/var/run/docker.sock
+      options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 180
     needs: [changes, build-images]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -606,16 +637,16 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       IPINFO_API_TOKEN: ${{ secrets.IPINFO_API_TOKEN }}
     steps:
-      - name: Free Disk Space (Fast)
-        run: |
-          if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
-          $SUDO rm -rf /usr/local/lib/android
-          $SUDO rm -rf /usr/share/dotnet
-          $SUDO rm -rf /opt/ghc
-          $SUDO rm -rf /usr/local/share/boost
+      # - name: Free Disk Space (Fast)
+      #   run: |
+      #     if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
+      #     $SUDO rm -rf /usr/local/lib/android
+      #     $SUDO rm -rf /usr/share/dotnet
+      #     $SUDO rm -rf /opt/ghc
+      #     $SUDO rm -rf /usr/local/share/boost
 
-      - name: Prune Docker
-        run: docker system prune -af
+      # - name: Prune Docker
+      #   run: docker system prune -af
 
       - uses: actions/checkout@v6
 
@@ -626,9 +657,9 @@ jobs:
             exit 0
           fi
           if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
-          if command -v apt-get &> /dev/null; then
+          if command -v apt-get > /dev/null 2>&1; then
             $SUDO apt-get update && $SUDO apt-get install -y make xz-utils curl unzip build-essential
-          elif command -v apk &> /dev/null; then
+          elif command -v apk > /dev/null 2>&1; then
              $SUDO apk add --no-cache make xz curl unzip build-base
           fi
 
@@ -747,6 +778,10 @@ jobs:
 
   e2e-public-api:
     runs-on: oci-runner
+    container:
+      image: iowoi/mcp-runner:latest
+      options: --user root -v /var/run/docker.sock:/var/run/docker.sock
+      options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 180
     needs: [changes, build-images]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -775,9 +810,9 @@ jobs:
             exit 0
           fi
           if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
-          if command -v apt-get &> /dev/null; then
+          if command -v apt-get > /dev/null 2>&1; then
             $SUDO apt-get update && $SUDO apt-get install -y make xz-utils curl unzip build-essential
-          elif command -v apk &> /dev/null; then
+          elif command -v apk > /dev/null 2>&1; then
              $SUDO apk add --no-cache make xz curl unzip build-base
           fi
 
@@ -876,6 +911,10 @@ jobs:
 
   docker-smoke-test:
     runs-on: oci-runner
+    container:
+      image: iowoi/mcp-runner:latest
+      options: --user root -v /var/run/docker.sock:/var/run/docker.sock
+      options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 15
     needs: [changes, build-images]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -889,9 +928,9 @@ jobs:
             exit 0
           fi
           if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
-          if command -v apt-get &> /dev/null; then
+          if command -v apt-get > /dev/null 2>&1; then
             $SUDO apt-get update && $SUDO apt-get install -y make xz-utils curl unzip build-essential
-          elif command -v apk &> /dev/null; then
+          elif command -v apk > /dev/null 2>&1; then
              $SUDO apk add --no-cache make xz curl unzip build-base
           fi
 
@@ -925,7 +964,12 @@ jobs:
           ./server/tests/smoke_test.sh mcpany/server:latest
 
   ui-test:
+    # runs-on: ubuntu-latest
     runs-on: oci-runner
+    container:
+      image: iowoi/mcp-runner:latest
+      options: --user root -v /var/run/docker.sock:/var/run/docker.sock
+      options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 180
     needs: [changes, build-images]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -936,16 +980,16 @@ jobs:
       matrix:
         shard: [1/2, 2/2]
     steps:
-      - name: Free Disk Space (Fast)
-        run: |
-          if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
-          $SUDO rm -rf /usr/local/lib/android
-          $SUDO rm -rf /usr/share/dotnet
-          $SUDO rm -rf /opt/ghc
-          $SUDO rm -rf /usr/local/share/boost
+      # - name: Free Disk Space (Fast)
+      #   run: |
+      #     if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
+      #     $SUDO rm -rf /usr/local/lib/android
+      #     $SUDO rm -rf /usr/share/dotnet
+      #     $SUDO rm -rf /opt/ghc
+      #     $SUDO rm -rf /usr/local/share/boost
 
-      - name: Prune Docker
-        run: docker system prune -af
+      # - name: Prune Docker
+      #   run: docker system prune -af
 
       - uses: actions/checkout@v6
 
@@ -956,9 +1000,9 @@ jobs:
             exit 0
           fi
           if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
-          if command -v apt-get &> /dev/null; then
+          if command -v apt-get > /dev/null 2>&1; then
             $SUDO apt-get update && $SUDO apt-get install -y make xz-utils curl unzip build-essential
-          elif command -v apk &> /dev/null; then
+          elif command -v apk > /dev/null 2>&1; then
              $SUDO apk add --no-cache make xz curl unzip build-base
           fi
 
@@ -1008,7 +1052,11 @@ jobs:
           SERVER_IMAGE=mcpany/server:latest make -C ui test-ci PLAYWRIGHT_ARGS="--shard=${{ matrix.shard }}"
 
   k8s-e2e:
-    runs-on: oci-runner
+    runs-on: ubuntu-latest
+    # runs-on: oci-runner
+    # container:
+    #   image: iowoi/mcp-runner:latest
+    #   options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 360 # Increased timeout for k8s tests
     needs: [changes, build-images]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -1034,9 +1082,9 @@ jobs:
             exit 0
           fi
           if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
-          if command -v apt-get &> /dev/null; then
+          if command -v apt-get > /dev/null 2>&1; then
             $SUDO apt-get update && $SUDO apt-get install -y make xz-utils curl unzip build-essential
-          elif command -v apk &> /dev/null; then
+          elif command -v apk > /dev/null 2>&1; then
              $SUDO apk add --no-cache make xz curl unzip build-base
           fi
 
@@ -1122,6 +1170,10 @@ jobs:
 
   ci-success:
     runs-on: oci-runner
+    container:
+      image: iowoi/mcp-runner:latest
+      options: --user root -v /var/run/docker.sock:/var/run/docker.sock
+      options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     needs:
       [
         changes,
@@ -1150,9 +1202,9 @@ jobs:
             exit 0
           fi
           if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
-          if command -v apt-get &> /dev/null; then
+          if command -v apt-get > /dev/null 2>&1; then
             $SUDO apt-get update && $SUDO apt-get install -y make xz-utils curl unzip build-essential
-          elif command -v apk &> /dev/null; then
+          elif command -v apk > /dev/null 2>&1; then
              $SUDO apk add --no-cache make xz curl unzip build-base
           fi
 

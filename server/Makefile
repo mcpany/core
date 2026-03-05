@@ -394,12 +394,12 @@ e2e-parallel: build-test-images build build-examples build-e2e-mocks
 	@-pkill -f file-upload-server || true
 	@$(EXAMPLE_BIN_DIR)/file-upload-server &
 	@mkdir -p $(BUILD_DIR)/bundles
-	@GEMINI_API_KEY=$(GEMINI_API_KEY) CI=$(CI) MCP_BUNDLE_DIR=$(MCP_BUNDLE_DIR) MCPANY_DEBUG=true MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) SHARD=$(SHARD) MCPANY_PROJECT_ROOT=$(CURDIR) ./tests/run_shard.sh $(GO_RACE) -count=1 -timeout 1200s -tags=e2e -cover -coverprofile=$(BUILD_DIR)/coverage.e2e-parallel.out
+	@GEMINI_API_KEY=$(GEMINI_API_KEY) CI=$(CI) MCP_BUNDLE_DIR=$(MCP_BUNDLE_DIR) MCPANY_DEBUG=true MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) SHARD=$(SHARD) MCPANY_PROJECT_ROOT=$(CURDIR) ./tests/run_shard.sh $(GO_RACE) -count=1 -timeout 1200s -tags=e2e -cover -coverprofile=$(BUILD_DIR)/coverage.e2e-parallel.out $(TEST_ARGS)
 	@-pkill -f file-upload-server
 
 e2e-sequential: build-test-images build build-examples build-e2e-mocks
 	@echo "Running sequential E2E Go tests locally with a 1800s timeout..."
-	@GEMINI_API_KEY=$(GEMINI_API_KEY) CI=$(CI) MCP_BUNDLE_DIR=$(MCP_BUNDLE_DIR) MCPANY_DEBUG=true MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) E2E_DOCKER=true MCPANY_PROJECT_ROOT=$(CURDIR) $(GO_CMD) test -p 1 -parallel 1 $(GO_RACE) -count=1 -timeout 1800s -tags=e2e -cover -coverprofile=$(BUILD_DIR)/coverage.e2e-sequential.out ./tests/e2e_sequential/...
+	@GEMINI_API_KEY=$(GEMINI_API_KEY) CI=$(CI) MCP_BUNDLE_DIR=$(MCP_BUNDLE_DIR) MCPANY_DEBUG=true MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) E2E_DOCKER=true MCPANY_PROJECT_ROOT=$(CURDIR) $(GO_CMD) test -p 1 -parallel 1 $(GO_RACE) -count=1 -timeout 1800s -tags=e2e -cover -coverprofile=$(BUILD_DIR)/coverage.e2e-sequential.out ./tests/e2e_sequential/... $(TEST_ARGS)
 
 test-fast: build build-examples build-e2e-mocks build-e2e-timeserver-docker
 	@echo "Running fast Go tests locally with a 3600s timeout..."
@@ -503,7 +503,7 @@ E2E_BIN_DIR := $(BUILD_DIR)/test/bin
 E2E_MOCK_SERVICES := http_echo_server http_authed_echo_server grpc_weather_server grpc_authed_weather_server openapi_weather_server webrtc_weather_server command-tester prompt-server
 
 # Target to build all E2E mock services
-.PHONY: build-e2e-mocks
+.PHONY: build-e2e-mocks FORCE
 build-e2e-mocks:
 	@mkdir -p $(E2E_BIN_DIR)
 	@$(MAKE) $(addprefix $(E2E_BIN_DIR)/,$(E2E_MOCK_SERVICES))
@@ -513,11 +513,11 @@ build-e2e-mocks:
 # < is the first prerequisite (the main.go file)
 # * is the stem of the pattern match (the service name)
 # @ is the target name (the output binary path)
-$(E2E_BIN_DIR)/%: $(E2E_MOCK_DIR)/%/main.go
+$(E2E_BIN_DIR)/%: $(E2E_MOCK_DIR)/%/main.go FORCE
 	@echo "Building E2E mock service: $* from $< into $(E2E_BIN_DIR)"
 	@$(GO_CMD) build -buildvcs=false -o $@ $<
 
-$(E2E_BIN_DIR)/command-tester: tests/integration/cmd/command-tester/main.go
+$(E2E_BIN_DIR)/command-tester: tests/integration/cmd/command-tester/main.go FORCE
 	@echo "Building E2E mock service: command-tester from $< into $(E2E_BIN_DIR)"
 	@$(GO_CMD) build -buildvcs=false -o $@ $<
 

@@ -1,0 +1,18 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+load("@rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "prompt-server_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/mcpany/core/server/tests/integration/cmd/mocks/prompt-server",
+    visibility = ["//visibility:private"],
+    deps = ["@com_github_modelcontextprotocol_go_sdk//mcp"],
+)
+
+go_binary(
+    name = "prompt-server",
+    embed = [":prompt-server_lib"],
+    visibility = ["//visibility:public"],
+)

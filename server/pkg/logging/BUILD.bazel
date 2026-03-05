@@ -1,0 +1,46 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "logging",
+    srcs = [
+        "audit.go",
+        "broadcaster.go",
+        "handler.go",
+        "hydration.go",
+        "logging.go",
+        "writer.go",
+    ],
+    importpath = "github.com/mcpany/core/server/pkg/logging",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//proto/config/v1:v1_go_proto",
+        "//server/pkg/audit",
+        "//server/pkg/util",
+        "@com_github_google_uuid//:uuid",
+    ],
+)
+
+go_test(
+    name = "logging_test",
+    srcs = [
+        "audit_test.go",
+        "broadcaster_test.go",
+        "handler_test.go",
+        "hydration_test.go",
+        "init_test.go",
+        "logging_bench_test.go",
+        "logging_dynamic_test.go",
+        "logging_test.go",
+        "logging_verify_test.go",
+    ],
+    embed = [":logging"],
+    deps = [
+        "//proto/config/v1:v1_go_proto",
+        "//server/pkg/audit",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//require",
+    ],
+)

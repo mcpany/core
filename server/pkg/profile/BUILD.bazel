@@ -1,0 +1,27 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "profile",
+    srcs = ["manager.go"],
+    importpath = "github.com/mcpany/core/server/pkg/profile",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//proto/config/v1:v1_go_proto",
+        "@org_golang_google_protobuf//proto",
+    ],
+)
+
+go_test(
+    name = "profile_test",
+    srcs = ["manager_test.go"],
+    embed = [":profile"],
+    deps = [
+        "//proto/config/v1:v1_go_proto",
+        "@com_github_google_go_cmp//cmp",
+        "@org_golang_google_protobuf//proto",
+        "@org_golang_google_protobuf//testing/protocmp",
+    ],
+)

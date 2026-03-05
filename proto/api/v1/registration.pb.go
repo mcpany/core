@@ -7,8 +7,6 @@
 // 	protoc        v6.33.1
 // source: proto/api/v1/registration.proto
 
-//go:build !protoopaque
-
 package v1
 
 import (
@@ -30,11 +28,10 @@ const (
 
 // RegisterServiceRequest represents a request to register a new upstream service.
 type RegisterServiceRequest struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// The configuration of the upstream service to register.
-	Config        *v1.UpstreamServiceConfig `protobuf:"bytes,1,opt,name=config" json:"config,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state             protoimpl.MessageState    `protogen:"opaque.v1"`
+	xxx_hidden_Config *v1.UpstreamServiceConfig `protobuf:"bytes,1,opt,name=config"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *RegisterServiceRequest) Reset() {
@@ -64,24 +61,24 @@ func (x *RegisterServiceRequest) ProtoReflect() protoreflect.Message {
 
 func (x *RegisterServiceRequest) GetConfig() *v1.UpstreamServiceConfig {
 	if x != nil {
-		return x.Config
+		return x.xxx_hidden_Config
 	}
 	return nil
 }
 
 func (x *RegisterServiceRequest) SetConfig(v *v1.UpstreamServiceConfig) {
-	x.Config = v
+	x.xxx_hidden_Config = v
 }
 
 func (x *RegisterServiceRequest) HasConfig() bool {
 	if x == nil {
 		return false
 	}
-	return x.Config != nil
+	return x.xxx_hidden_Config != nil
 }
 
 func (x *RegisterServiceRequest) ClearConfig() {
-	x.Config = nil
+	x.xxx_hidden_Config = nil
 }
 
 type RegisterServiceRequest_builder struct {
@@ -95,23 +92,19 @@ func (b0 RegisterServiceRequest_builder) Build() *RegisterServiceRequest {
 	m0 := &RegisterServiceRequest{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Config = b.Config
+	x.xxx_hidden_Config = b.Config
 	return m0
 }
 
 // RegisterServiceResponse represents the response after registering a service.
 type RegisterServiceResponse struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// A status message indicating success or failure details (e.g., "Service registered successfully").
-	Message string `protobuf:"bytes,1,opt,name=message" json:"message,omitempty"`
-	// A list of tools discovered during the registration process.
-	DiscoveredTools []*v1.ToolDefinition `protobuf:"bytes,2,rep,name=discovered_tools,json=discoveredTools" json:"discovered_tools,omitempty"`
-	// The generated unique key for the registered service.
-	ServiceKey string `protobuf:"bytes,3,opt,name=service_key,json=serviceKey" json:"service_key,omitempty"`
-	// A list of resources discovered during the registration process.
-	DiscoveredResources []*v1.ResourceDefinition `protobuf:"bytes,4,rep,name=discovered_resources,json=discoveredResources" json:"discovered_resources,omitempty"`
-	unknownFields       protoimpl.UnknownFields
-	sizeCache           protoimpl.SizeCache
+	state                          protoimpl.MessageState    `protogen:"opaque.v1"`
+	xxx_hidden_Message             string                    `protobuf:"bytes,1,opt,name=message"`
+	xxx_hidden_DiscoveredTools     *[]*v1.ToolDefinition     `protobuf:"bytes,2,rep,name=discovered_tools,json=discoveredTools"`
+	xxx_hidden_ServiceKey          string                    `protobuf:"bytes,3,opt,name=service_key,json=serviceKey"`
+	xxx_hidden_DiscoveredResources *[]*v1.ResourceDefinition `protobuf:"bytes,4,rep,name=discovered_resources,json=discoveredResources"`
+	unknownFields                  protoimpl.UnknownFields
+	sizeCache                      protoimpl.SizeCache
 }
 
 func (x *RegisterServiceResponse) Reset() {
@@ -141,46 +134,50 @@ func (x *RegisterServiceResponse) ProtoReflect() protoreflect.Message {
 
 func (x *RegisterServiceResponse) GetMessage() string {
 	if x != nil {
-		return x.Message
+		return x.xxx_hidden_Message
 	}
 	return ""
 }
 
 func (x *RegisterServiceResponse) GetDiscoveredTools() []*v1.ToolDefinition {
 	if x != nil {
-		return x.DiscoveredTools
+		if x.xxx_hidden_DiscoveredTools != nil {
+			return *x.xxx_hidden_DiscoveredTools
+		}
 	}
 	return nil
 }
 
 func (x *RegisterServiceResponse) GetServiceKey() string {
 	if x != nil {
-		return x.ServiceKey
+		return x.xxx_hidden_ServiceKey
 	}
 	return ""
 }
 
 func (x *RegisterServiceResponse) GetDiscoveredResources() []*v1.ResourceDefinition {
 	if x != nil {
-		return x.DiscoveredResources
+		if x.xxx_hidden_DiscoveredResources != nil {
+			return *x.xxx_hidden_DiscoveredResources
+		}
 	}
 	return nil
 }
 
 func (x *RegisterServiceResponse) SetMessage(v string) {
-	x.Message = v
+	x.xxx_hidden_Message = v
 }
 
 func (x *RegisterServiceResponse) SetDiscoveredTools(v []*v1.ToolDefinition) {
-	x.DiscoveredTools = v
+	x.xxx_hidden_DiscoveredTools = &v
 }
 
 func (x *RegisterServiceResponse) SetServiceKey(v string) {
-	x.ServiceKey = v
+	x.xxx_hidden_ServiceKey = v
 }
 
 func (x *RegisterServiceResponse) SetDiscoveredResources(v []*v1.ResourceDefinition) {
-	x.DiscoveredResources = v
+	x.xxx_hidden_DiscoveredResources = &v
 }
 
 type RegisterServiceResponse_builder struct {
@@ -200,20 +197,19 @@ func (b0 RegisterServiceResponse_builder) Build() *RegisterServiceResponse {
 	m0 := &RegisterServiceResponse{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Message = b.Message
-	x.DiscoveredTools = b.DiscoveredTools
-	x.ServiceKey = b.ServiceKey
-	x.DiscoveredResources = b.DiscoveredResources
+	x.xxx_hidden_Message = b.Message
+	x.xxx_hidden_DiscoveredTools = &b.DiscoveredTools
+	x.xxx_hidden_ServiceKey = b.ServiceKey
+	x.xxx_hidden_DiscoveredResources = &b.DiscoveredResources
 	return m0
 }
 
 // ValidateServiceRequest represents a request to validate a service configuration without registering it.
 type ValidateServiceRequest struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// The configuration of the upstream service to validate.
-	Config        *v1.UpstreamServiceConfig `protobuf:"bytes,1,opt,name=config" json:"config,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state             protoimpl.MessageState    `protogen:"opaque.v1"`
+	xxx_hidden_Config *v1.UpstreamServiceConfig `protobuf:"bytes,1,opt,name=config"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *ValidateServiceRequest) Reset() {
@@ -243,24 +239,24 @@ func (x *ValidateServiceRequest) ProtoReflect() protoreflect.Message {
 
 func (x *ValidateServiceRequest) GetConfig() *v1.UpstreamServiceConfig {
 	if x != nil {
-		return x.Config
+		return x.xxx_hidden_Config
 	}
 	return nil
 }
 
 func (x *ValidateServiceRequest) SetConfig(v *v1.UpstreamServiceConfig) {
-	x.Config = v
+	x.xxx_hidden_Config = v
 }
 
 func (x *ValidateServiceRequest) HasConfig() bool {
 	if x == nil {
 		return false
 	}
-	return x.Config != nil
+	return x.xxx_hidden_Config != nil
 }
 
 func (x *ValidateServiceRequest) ClearConfig() {
-	x.Config = nil
+	x.xxx_hidden_Config = nil
 }
 
 type ValidateServiceRequest_builder struct {
@@ -274,23 +270,19 @@ func (b0 ValidateServiceRequest_builder) Build() *ValidateServiceRequest {
 	m0 := &ValidateServiceRequest{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Config = b.Config
+	x.xxx_hidden_Config = b.Config
 	return m0
 }
 
 // ValidateServiceResponse represents the result of a service validation request.
 type ValidateServiceResponse struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// Indicates whether the service configuration is valid.
-	Valid bool `protobuf:"varint,1,opt,name=valid" json:"valid,omitempty"`
-	// A message describing the validation result or error details.
-	Message string `protobuf:"bytes,2,opt,name=message" json:"message,omitempty"`
-	// A list of tools that would be discovered if registered.
-	DiscoveredTools []*v1.ToolDefinition `protobuf:"bytes,3,rep,name=discovered_tools,json=discoveredTools" json:"discovered_tools,omitempty"`
-	// A list of resources that would be discovered if registered.
-	DiscoveredResources []*v1.ResourceDefinition `protobuf:"bytes,4,rep,name=discovered_resources,json=discoveredResources" json:"discovered_resources,omitempty"`
-	unknownFields       protoimpl.UnknownFields
-	sizeCache           protoimpl.SizeCache
+	state                          protoimpl.MessageState    `protogen:"opaque.v1"`
+	xxx_hidden_Valid               bool                      `protobuf:"varint,1,opt,name=valid"`
+	xxx_hidden_Message             string                    `protobuf:"bytes,2,opt,name=message"`
+	xxx_hidden_DiscoveredTools     *[]*v1.ToolDefinition     `protobuf:"bytes,3,rep,name=discovered_tools,json=discoveredTools"`
+	xxx_hidden_DiscoveredResources *[]*v1.ResourceDefinition `protobuf:"bytes,4,rep,name=discovered_resources,json=discoveredResources"`
+	unknownFields                  protoimpl.UnknownFields
+	sizeCache                      protoimpl.SizeCache
 }
 
 func (x *ValidateServiceResponse) Reset() {
@@ -320,46 +312,50 @@ func (x *ValidateServiceResponse) ProtoReflect() protoreflect.Message {
 
 func (x *ValidateServiceResponse) GetValid() bool {
 	if x != nil {
-		return x.Valid
+		return x.xxx_hidden_Valid
 	}
 	return false
 }
 
 func (x *ValidateServiceResponse) GetMessage() string {
 	if x != nil {
-		return x.Message
+		return x.xxx_hidden_Message
 	}
 	return ""
 }
 
 func (x *ValidateServiceResponse) GetDiscoveredTools() []*v1.ToolDefinition {
 	if x != nil {
-		return x.DiscoveredTools
+		if x.xxx_hidden_DiscoveredTools != nil {
+			return *x.xxx_hidden_DiscoveredTools
+		}
 	}
 	return nil
 }
 
 func (x *ValidateServiceResponse) GetDiscoveredResources() []*v1.ResourceDefinition {
 	if x != nil {
-		return x.DiscoveredResources
+		if x.xxx_hidden_DiscoveredResources != nil {
+			return *x.xxx_hidden_DiscoveredResources
+		}
 	}
 	return nil
 }
 
 func (x *ValidateServiceResponse) SetValid(v bool) {
-	x.Valid = v
+	x.xxx_hidden_Valid = v
 }
 
 func (x *ValidateServiceResponse) SetMessage(v string) {
-	x.Message = v
+	x.xxx_hidden_Message = v
 }
 
 func (x *ValidateServiceResponse) SetDiscoveredTools(v []*v1.ToolDefinition) {
-	x.DiscoveredTools = v
+	x.xxx_hidden_DiscoveredTools = &v
 }
 
 func (x *ValidateServiceResponse) SetDiscoveredResources(v []*v1.ResourceDefinition) {
-	x.DiscoveredResources = v
+	x.xxx_hidden_DiscoveredResources = &v
 }
 
 type ValidateServiceResponse_builder struct {
@@ -379,16 +375,16 @@ func (b0 ValidateServiceResponse_builder) Build() *ValidateServiceResponse {
 	m0 := &ValidateServiceResponse{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Valid = b.Valid
-	x.Message = b.Message
-	x.DiscoveredTools = b.DiscoveredTools
-	x.DiscoveredResources = b.DiscoveredResources
+	x.xxx_hidden_Valid = b.Valid
+	x.xxx_hidden_Message = b.Message
+	x.xxx_hidden_DiscoveredTools = &b.DiscoveredTools
+	x.xxx_hidden_DiscoveredResources = &b.DiscoveredResources
 	return m0
 }
 
 // ListServicesRequest represents a request to list all registered services.
 type ListServicesRequest struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
+	state         protoimpl.MessageState `protogen:"opaque.v1"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -432,11 +428,10 @@ func (b0 ListServicesRequest_builder) Build() *ListServicesRequest {
 
 // ListServicesResponse contains the list of registered services.
 type ListServicesResponse struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// The list of registered upstream service configurations.
-	Services      []*v1.UpstreamServiceConfig `protobuf:"bytes,1,rep,name=services" json:"services,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state               protoimpl.MessageState       `protogen:"opaque.v1"`
+	xxx_hidden_Services *[]*v1.UpstreamServiceConfig `protobuf:"bytes,1,rep,name=services"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
 }
 
 func (x *ListServicesResponse) Reset() {
@@ -466,13 +461,15 @@ func (x *ListServicesResponse) ProtoReflect() protoreflect.Message {
 
 func (x *ListServicesResponse) GetServices() []*v1.UpstreamServiceConfig {
 	if x != nil {
-		return x.Services
+		if x.xxx_hidden_Services != nil {
+			return *x.xxx_hidden_Services
+		}
 	}
 	return nil
 }
 
 func (x *ListServicesResponse) SetServices(v []*v1.UpstreamServiceConfig) {
-	x.Services = v
+	x.xxx_hidden_Services = &v
 }
 
 type ListServicesResponse_builder struct {
@@ -486,23 +483,19 @@ func (b0 ListServicesResponse_builder) Build() *ListServicesResponse {
 	m0 := &ListServicesResponse{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Services = b.Services
+	x.xxx_hidden_Services = &b.Services
 	return m0
 }
 
 // InitiateOAuth2FlowRequest represents a request to start an OAuth2 flow.
 type InitiateOAuth2FlowRequest struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// The ID of the service to authenticate with.
-	ServiceId string `protobuf:"bytes,1,opt,name=service_id,json=serviceId" json:"service_id,omitempty"`
-	// The namespace of the service.
-	Namespace string `protobuf:"bytes,2,opt,name=namespace" json:"namespace,omitempty"`
-	// The ID of the credential to use or create.
-	CredentialId string `protobuf:"bytes,3,opt,name=credential_id,json=credentialId" json:"credential_id,omitempty"`
-	// The URL to redirect to after successful authentication.
-	RedirectUrl   string `protobuf:"bytes,4,opt,name=redirect_url,json=redirectUrl" json:"redirect_url,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                   protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_ServiceId    string                 `protobuf:"bytes,1,opt,name=service_id,json=serviceId"`
+	xxx_hidden_Namespace    string                 `protobuf:"bytes,2,opt,name=namespace"`
+	xxx_hidden_CredentialId string                 `protobuf:"bytes,3,opt,name=credential_id,json=credentialId"`
+	xxx_hidden_RedirectUrl  string                 `protobuf:"bytes,4,opt,name=redirect_url,json=redirectUrl"`
+	unknownFields           protoimpl.UnknownFields
+	sizeCache               protoimpl.SizeCache
 }
 
 func (x *InitiateOAuth2FlowRequest) Reset() {
@@ -532,46 +525,46 @@ func (x *InitiateOAuth2FlowRequest) ProtoReflect() protoreflect.Message {
 
 func (x *InitiateOAuth2FlowRequest) GetServiceId() string {
 	if x != nil {
-		return x.ServiceId
+		return x.xxx_hidden_ServiceId
 	}
 	return ""
 }
 
 func (x *InitiateOAuth2FlowRequest) GetNamespace() string {
 	if x != nil {
-		return x.Namespace
+		return x.xxx_hidden_Namespace
 	}
 	return ""
 }
 
 func (x *InitiateOAuth2FlowRequest) GetCredentialId() string {
 	if x != nil {
-		return x.CredentialId
+		return x.xxx_hidden_CredentialId
 	}
 	return ""
 }
 
 func (x *InitiateOAuth2FlowRequest) GetRedirectUrl() string {
 	if x != nil {
-		return x.RedirectUrl
+		return x.xxx_hidden_RedirectUrl
 	}
 	return ""
 }
 
 func (x *InitiateOAuth2FlowRequest) SetServiceId(v string) {
-	x.ServiceId = v
+	x.xxx_hidden_ServiceId = v
 }
 
 func (x *InitiateOAuth2FlowRequest) SetNamespace(v string) {
-	x.Namespace = v
+	x.xxx_hidden_Namespace = v
 }
 
 func (x *InitiateOAuth2FlowRequest) SetCredentialId(v string) {
-	x.CredentialId = v
+	x.xxx_hidden_CredentialId = v
 }
 
 func (x *InitiateOAuth2FlowRequest) SetRedirectUrl(v string) {
-	x.RedirectUrl = v
+	x.xxx_hidden_RedirectUrl = v
 }
 
 type InitiateOAuth2FlowRequest_builder struct {
@@ -591,22 +584,20 @@ func (b0 InitiateOAuth2FlowRequest_builder) Build() *InitiateOAuth2FlowRequest {
 	m0 := &InitiateOAuth2FlowRequest{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.ServiceId = b.ServiceId
-	x.Namespace = b.Namespace
-	x.CredentialId = b.CredentialId
-	x.RedirectUrl = b.RedirectUrl
+	x.xxx_hidden_ServiceId = b.ServiceId
+	x.xxx_hidden_Namespace = b.Namespace
+	x.xxx_hidden_CredentialId = b.CredentialId
+	x.xxx_hidden_RedirectUrl = b.RedirectUrl
 	return m0
 }
 
 // InitiateOAuth2FlowResponse contains the information needed to proceed with OAuth2.
 type InitiateOAuth2FlowResponse struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// The URL the user should visit to authorize access.
-	AuthorizationUrl string `protobuf:"bytes,1,opt,name=authorization_url,json=authorizationUrl" json:"authorization_url,omitempty"`
-	// The state parameter used for CSRF protection.
-	State         string `protobuf:"bytes,2,opt,name=state" json:"state,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                       protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_AuthorizationUrl string                 `protobuf:"bytes,1,opt,name=authorization_url,json=authorizationUrl"`
+	xxx_hidden_State            string                 `protobuf:"bytes,2,opt,name=state"`
+	unknownFields               protoimpl.UnknownFields
+	sizeCache                   protoimpl.SizeCache
 }
 
 func (x *InitiateOAuth2FlowResponse) Reset() {
@@ -636,24 +627,24 @@ func (x *InitiateOAuth2FlowResponse) ProtoReflect() protoreflect.Message {
 
 func (x *InitiateOAuth2FlowResponse) GetAuthorizationUrl() string {
 	if x != nil {
-		return x.AuthorizationUrl
+		return x.xxx_hidden_AuthorizationUrl
 	}
 	return ""
 }
 
 func (x *InitiateOAuth2FlowResponse) GetState() string {
 	if x != nil {
-		return x.State
+		return x.xxx_hidden_State
 	}
 	return ""
 }
 
 func (x *InitiateOAuth2FlowResponse) SetAuthorizationUrl(v string) {
-	x.AuthorizationUrl = v
+	x.xxx_hidden_AuthorizationUrl = v
 }
 
 func (x *InitiateOAuth2FlowResponse) SetState(v string) {
-	x.State = v
+	x.xxx_hidden_State = v
 }
 
 type InitiateOAuth2FlowResponse_builder struct {
@@ -669,20 +660,18 @@ func (b0 InitiateOAuth2FlowResponse_builder) Build() *InitiateOAuth2FlowResponse
 	m0 := &InitiateOAuth2FlowResponse{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.AuthorizationUrl = b.AuthorizationUrl
-	x.State = b.State
+	x.xxx_hidden_AuthorizationUrl = b.AuthorizationUrl
+	x.xxx_hidden_State = b.State
 	return m0
 }
 
 // UnregisterServiceRequest represents a request to unregister a service.
 type UnregisterServiceRequest struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// The user-defined unique ID (name) of the service to deregister.
-	ServiceName string `protobuf:"bytes,1,opt,name=service_name,json=serviceName" json:"service_name,omitempty"`
-	// The namespace of the service (optional).
-	Namespace     string `protobuf:"bytes,2,opt,name=namespace" json:"namespace,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_ServiceName string                 `protobuf:"bytes,1,opt,name=service_name,json=serviceName"`
+	xxx_hidden_Namespace   string                 `protobuf:"bytes,2,opt,name=namespace"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *UnregisterServiceRequest) Reset() {
@@ -712,24 +701,24 @@ func (x *UnregisterServiceRequest) ProtoReflect() protoreflect.Message {
 
 func (x *UnregisterServiceRequest) GetServiceName() string {
 	if x != nil {
-		return x.ServiceName
+		return x.xxx_hidden_ServiceName
 	}
 	return ""
 }
 
 func (x *UnregisterServiceRequest) GetNamespace() string {
 	if x != nil {
-		return x.Namespace
+		return x.xxx_hidden_Namespace
 	}
 	return ""
 }
 
 func (x *UnregisterServiceRequest) SetServiceName(v string) {
-	x.ServiceName = v
+	x.xxx_hidden_ServiceName = v
 }
 
 func (x *UnregisterServiceRequest) SetNamespace(v string) {
-	x.Namespace = v
+	x.xxx_hidden_Namespace = v
 }
 
 type UnregisterServiceRequest_builder struct {
@@ -745,18 +734,17 @@ func (b0 UnregisterServiceRequest_builder) Build() *UnregisterServiceRequest {
 	m0 := &UnregisterServiceRequest{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.ServiceName = b.ServiceName
-	x.Namespace = b.Namespace
+	x.xxx_hidden_ServiceName = b.ServiceName
+	x.xxx_hidden_Namespace = b.Namespace
 	return m0
 }
 
 // UnregisterServiceResponse represents the response after unregistering a service.
 type UnregisterServiceResponse struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// A message indicating success or details about the operation.
-	Message       string `protobuf:"bytes,1,opt,name=message" json:"message,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state              protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Message string                 `protobuf:"bytes,1,opt,name=message"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *UnregisterServiceResponse) Reset() {
@@ -786,13 +774,13 @@ func (x *UnregisterServiceResponse) ProtoReflect() protoreflect.Message {
 
 func (x *UnregisterServiceResponse) GetMessage() string {
 	if x != nil {
-		return x.Message
+		return x.xxx_hidden_Message
 	}
 	return ""
 }
 
 func (x *UnregisterServiceResponse) SetMessage(v string) {
-	x.Message = v
+	x.xxx_hidden_Message = v
 }
 
 type UnregisterServiceResponse_builder struct {
@@ -806,21 +794,18 @@ func (b0 UnregisterServiceResponse_builder) Build() *UnregisterServiceResponse {
 	m0 := &UnregisterServiceResponse{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Message = b.Message
+	x.xxx_hidden_Message = b.Message
 	return m0
 }
 
 // RegisterToolsRequest represents a request to manually register tools for a service.
 type RegisterToolsRequest struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// The name of the service to register tools for.
-	ServiceName string `protobuf:"bytes,1,opt,name=service_name,json=serviceName" json:"service_name,omitempty"`
-	// The namespace of the service.
-	Namespace string `protobuf:"bytes,2,opt,name=namespace" json:"namespace,omitempty"`
-	// The list of tool definitions to register.
-	Tools         []*v1.ToolDefinition `protobuf:"bytes,3,rep,name=tools" json:"tools,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_ServiceName string                 `protobuf:"bytes,1,opt,name=service_name,json=serviceName"`
+	xxx_hidden_Namespace   string                 `protobuf:"bytes,2,opt,name=namespace"`
+	xxx_hidden_Tools       *[]*v1.ToolDefinition  `protobuf:"bytes,3,rep,name=tools"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *RegisterToolsRequest) Reset() {
@@ -850,35 +835,37 @@ func (x *RegisterToolsRequest) ProtoReflect() protoreflect.Message {
 
 func (x *RegisterToolsRequest) GetServiceName() string {
 	if x != nil {
-		return x.ServiceName
+		return x.xxx_hidden_ServiceName
 	}
 	return ""
 }
 
 func (x *RegisterToolsRequest) GetNamespace() string {
 	if x != nil {
-		return x.Namespace
+		return x.xxx_hidden_Namespace
 	}
 	return ""
 }
 
 func (x *RegisterToolsRequest) GetTools() []*v1.ToolDefinition {
 	if x != nil {
-		return x.Tools
+		if x.xxx_hidden_Tools != nil {
+			return *x.xxx_hidden_Tools
+		}
 	}
 	return nil
 }
 
 func (x *RegisterToolsRequest) SetServiceName(v string) {
-	x.ServiceName = v
+	x.xxx_hidden_ServiceName = v
 }
 
 func (x *RegisterToolsRequest) SetNamespace(v string) {
-	x.Namespace = v
+	x.xxx_hidden_Namespace = v
 }
 
 func (x *RegisterToolsRequest) SetTools(v []*v1.ToolDefinition) {
-	x.Tools = v
+	x.xxx_hidden_Tools = &v
 }
 
 type RegisterToolsRequest_builder struct {
@@ -896,21 +883,19 @@ func (b0 RegisterToolsRequest_builder) Build() *RegisterToolsRequest {
 	m0 := &RegisterToolsRequest{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.ServiceName = b.ServiceName
-	x.Namespace = b.Namespace
-	x.Tools = b.Tools
+	x.xxx_hidden_ServiceName = b.ServiceName
+	x.xxx_hidden_Namespace = b.Namespace
+	x.xxx_hidden_Tools = &b.Tools
 	return m0
 }
 
 // RegisterToolsResponse represents the response after registering tools.
 type RegisterToolsResponse struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// A message indicating success.
-	Message string `protobuf:"bytes,1,opt,name=message" json:"message,omitempty"`
-	// The number of tools that were successfully registered.
-	ToolsRegistered int32 `protobuf:"varint,2,opt,name=tools_registered,json=toolsRegistered" json:"tools_registered,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	state                      protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Message         string                 `protobuf:"bytes,1,opt,name=message"`
+	xxx_hidden_ToolsRegistered int32                  `protobuf:"varint,2,opt,name=tools_registered,json=toolsRegistered"`
+	unknownFields              protoimpl.UnknownFields
+	sizeCache                  protoimpl.SizeCache
 }
 
 func (x *RegisterToolsResponse) Reset() {
@@ -940,24 +925,24 @@ func (x *RegisterToolsResponse) ProtoReflect() protoreflect.Message {
 
 func (x *RegisterToolsResponse) GetMessage() string {
 	if x != nil {
-		return x.Message
+		return x.xxx_hidden_Message
 	}
 	return ""
 }
 
 func (x *RegisterToolsResponse) GetToolsRegistered() int32 {
 	if x != nil {
-		return x.ToolsRegistered
+		return x.xxx_hidden_ToolsRegistered
 	}
 	return 0
 }
 
 func (x *RegisterToolsResponse) SetMessage(v string) {
-	x.Message = v
+	x.xxx_hidden_Message = v
 }
 
 func (x *RegisterToolsResponse) SetToolsRegistered(v int32) {
-	x.ToolsRegistered = v
+	x.xxx_hidden_ToolsRegistered = v
 }
 
 type RegisterToolsResponse_builder struct {
@@ -973,18 +958,17 @@ func (b0 RegisterToolsResponse_builder) Build() *RegisterToolsResponse {
 	m0 := &RegisterToolsResponse{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Message = b.Message
-	x.ToolsRegistered = b.ToolsRegistered
+	x.xxx_hidden_Message = b.Message
+	x.xxx_hidden_ToolsRegistered = b.ToolsRegistered
 	return m0
 }
 
 // GetServiceRequest represents a request to retrieve a service configuration.
 type GetServiceRequest struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// The name of the service to retrieve.
-	ServiceName   string `protobuf:"bytes,1,opt,name=service_name,json=serviceName" json:"service_name,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_ServiceName string                 `protobuf:"bytes,1,opt,name=service_name,json=serviceName"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *GetServiceRequest) Reset() {
@@ -1014,13 +998,13 @@ func (x *GetServiceRequest) ProtoReflect() protoreflect.Message {
 
 func (x *GetServiceRequest) GetServiceName() string {
 	if x != nil {
-		return x.ServiceName
+		return x.xxx_hidden_ServiceName
 	}
 	return ""
 }
 
 func (x *GetServiceRequest) SetServiceName(v string) {
-	x.ServiceName = v
+	x.xxx_hidden_ServiceName = v
 }
 
 type GetServiceRequest_builder struct {
@@ -1034,17 +1018,16 @@ func (b0 GetServiceRequest_builder) Build() *GetServiceRequest {
 	m0 := &GetServiceRequest{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.ServiceName = b.ServiceName
+	x.xxx_hidden_ServiceName = b.ServiceName
 	return m0
 }
 
 // GetServiceResponse contains the requested service configuration.
 type GetServiceResponse struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// The configuration of the requested service.
-	Service       *v1.UpstreamServiceConfig `protobuf:"bytes,1,opt,name=service" json:"service,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state              protoimpl.MessageState    `protogen:"opaque.v1"`
+	xxx_hidden_Service *v1.UpstreamServiceConfig `protobuf:"bytes,1,opt,name=service"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *GetServiceResponse) Reset() {
@@ -1074,24 +1057,24 @@ func (x *GetServiceResponse) ProtoReflect() protoreflect.Message {
 
 func (x *GetServiceResponse) GetService() *v1.UpstreamServiceConfig {
 	if x != nil {
-		return x.Service
+		return x.xxx_hidden_Service
 	}
 	return nil
 }
 
 func (x *GetServiceResponse) SetService(v *v1.UpstreamServiceConfig) {
-	x.Service = v
+	x.xxx_hidden_Service = v
 }
 
 func (x *GetServiceResponse) HasService() bool {
 	if x == nil {
 		return false
 	}
-	return x.Service != nil
+	return x.xxx_hidden_Service != nil
 }
 
 func (x *GetServiceResponse) ClearService() {
-	x.Service = nil
+	x.xxx_hidden_Service = nil
 }
 
 type GetServiceResponse_builder struct {
@@ -1105,19 +1088,17 @@ func (b0 GetServiceResponse_builder) Build() *GetServiceResponse {
 	m0 := &GetServiceResponse{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Service = b.Service
+	x.xxx_hidden_Service = b.Service
 	return m0
 }
 
 // GetServiceStatusRequest represents a request to retrieve service status.
 type GetServiceStatusRequest struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// The name of the service.
-	ServiceName string `protobuf:"bytes,1,opt,name=service_name,json=serviceName" json:"service_name,omitempty"`
-	// The namespace of the service.
-	Namespace     string `protobuf:"bytes,2,opt,name=namespace" json:"namespace,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_ServiceName string                 `protobuf:"bytes,1,opt,name=service_name,json=serviceName"`
+	xxx_hidden_Namespace   string                 `protobuf:"bytes,2,opt,name=namespace"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *GetServiceStatusRequest) Reset() {
@@ -1147,24 +1128,24 @@ func (x *GetServiceStatusRequest) ProtoReflect() protoreflect.Message {
 
 func (x *GetServiceStatusRequest) GetServiceName() string {
 	if x != nil {
-		return x.ServiceName
+		return x.xxx_hidden_ServiceName
 	}
 	return ""
 }
 
 func (x *GetServiceStatusRequest) GetNamespace() string {
 	if x != nil {
-		return x.Namespace
+		return x.xxx_hidden_Namespace
 	}
 	return ""
 }
 
 func (x *GetServiceStatusRequest) SetServiceName(v string) {
-	x.ServiceName = v
+	x.xxx_hidden_ServiceName = v
 }
 
 func (x *GetServiceStatusRequest) SetNamespace(v string) {
-	x.Namespace = v
+	x.xxx_hidden_Namespace = v
 }
 
 type GetServiceStatusRequest_builder struct {
@@ -1180,20 +1161,18 @@ func (b0 GetServiceStatusRequest_builder) Build() *GetServiceStatusRequest {
 	m0 := &GetServiceStatusRequest{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.ServiceName = b.ServiceName
-	x.Namespace = b.Namespace
+	x.xxx_hidden_ServiceName = b.ServiceName
+	x.xxx_hidden_Namespace = b.Namespace
 	return m0
 }
 
 // GetServiceStatusResponse contains the status and metrics of a service.
 type GetServiceStatusResponse struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// The list of tools currently available for this service.
-	Tools []*v1.ToolDefinition `protobuf:"bytes,1,rep,name=tools" json:"tools,omitempty"`
-	// Key-value pairs of metrics for the service (e.g., "uptime", "requests").
-	Metrics       map[string]int64 `protobuf:"bytes,2,rep,name=metrics" json:"metrics,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state              protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Tools   *[]*v1.ToolDefinition  `protobuf:"bytes,1,rep,name=tools"`
+	xxx_hidden_Metrics map[string]int64       `protobuf:"bytes,2,rep,name=metrics" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *GetServiceStatusResponse) Reset() {
@@ -1223,24 +1202,26 @@ func (x *GetServiceStatusResponse) ProtoReflect() protoreflect.Message {
 
 func (x *GetServiceStatusResponse) GetTools() []*v1.ToolDefinition {
 	if x != nil {
-		return x.Tools
+		if x.xxx_hidden_Tools != nil {
+			return *x.xxx_hidden_Tools
+		}
 	}
 	return nil
 }
 
 func (x *GetServiceStatusResponse) GetMetrics() map[string]int64 {
 	if x != nil {
-		return x.Metrics
+		return x.xxx_hidden_Metrics
 	}
 	return nil
 }
 
 func (x *GetServiceStatusResponse) SetTools(v []*v1.ToolDefinition) {
-	x.Tools = v
+	x.xxx_hidden_Tools = &v
 }
 
 func (x *GetServiceStatusResponse) SetMetrics(v map[string]int64) {
-	x.Metrics = v
+	x.xxx_hidden_Metrics = v
 }
 
 type GetServiceStatusResponse_builder struct {
@@ -1256,8 +1237,8 @@ func (b0 GetServiceStatusResponse_builder) Build() *GetServiceStatusResponse {
 	m0 := &GetServiceStatusResponse{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Tools = b.Tools
-	x.Metrics = b.Metrics
+	x.xxx_hidden_Tools = &b.Tools
+	x.xxx_hidden_Metrics = b.Metrics
 	return m0
 }
 
@@ -1327,7 +1308,7 @@ const file_proto_api_v1_registration_proto_rawDesc = "" +
 	"\x10GetServiceStatus\x12&.mcpany.api.v1.GetServiceStatusRequest\x1a'.mcpany.api.v1.GetServiceStatusResponse\"*\x82\xd3\xe4\x93\x02$\x12\"/v1/services/{service_name}/status\x12m\n" +
 	"\fListServices\x12\".mcpany.api.v1.ListServicesRequest\x1a#.mcpany.api.v1.ListServicesResponse\"\x14\x82\xd3\xe4\x93\x02\x0e\x12\f/v1/services\x12v\n" +
 	"\n" +
-	"GetService\x12 .mcpany.api.v1.GetServiceRequest\x1a!.mcpany.api.v1.GetServiceResponse\"#\x82\xd3\xe4\x93\x02\x1d\x12\x1b/v1/services/{service_name}B=B\x11RegistrationProtoZ#github.com/mcpany/core/proto/api/v1\x92\x03\x02\b\x02b\beditionsp\xe8\a"
+	"GetService\x12 .mcpany.api.v1.GetServiceRequest\x1a!.mcpany.api.v1.GetServiceResponse\"#\x82\xd3\xe4\x93\x02\x1d\x12\x1b/v1/services/{service_name}BBB\x11RegistrationProtoZ#github.com/mcpany/core/proto/api/v1\x92\x03\a\xd2>\x02\x10\x03\b\x02b\beditionsp\xe8\a"
 
 var file_proto_api_v1_registration_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
 var file_proto_api_v1_registration_proto_goTypes = []any{

@@ -1,0 +1,27 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+load("@rules_go//go:def.bzl", "go_test")
+
+go_test(
+    name = "e2e_test",
+    srcs = [
+        "login_test.go",
+        "redactor_bug_test.go",
+        "user_mgmt_test.go",
+    ],
+    deps = [
+        "//proto/admin/v1:v1_go_proto",
+        "//proto/config/v1:v1_go_proto",
+        "//server/pkg/app",
+        "//server/pkg/middleware",
+        "//server/tests/integration",
+        "@com_github_coreos_go_oidc_v3//oidc",
+        "@com_github_spf13_afero//:afero",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//require",
+        "@org_golang_google_grpc//:grpc",
+        "@org_golang_google_grpc//credentials/insecure",
+        "@org_golang_google_protobuf//proto",
+    ],
+)

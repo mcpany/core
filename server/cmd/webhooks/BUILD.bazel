@@ -1,0 +1,26 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+load("@rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
+
+go_library(
+    name = "webhooks_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/mcpany/core/server/cmd/webhooks",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//server/pkg/sidecar/webhooks",
+        "@com_github_standard_webhooks_standard_webhooks_libraries//go",
+    ],
+)
+
+go_binary(
+    name = "webhooks",
+    embed = [":webhooks_lib"],
+    visibility = ["//visibility:public"],
+)
+
+go_test(
+    name = "webhooks_test",
+    srcs = ["main_test.go"],
+)

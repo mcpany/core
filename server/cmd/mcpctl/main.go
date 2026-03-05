@@ -15,11 +15,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
-	// Version is the version of the mcpctl CLI.
-	// It is set at build time via -ldflags.
-	Version = "dev"
-)
+// Version is the version of the mcpctl CLI.
+// It is set at build time via -ldflags.
+var Version = "dev"
 
 // main is the entry point for the mcpctl CLI.
 //

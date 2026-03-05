@@ -1,0 +1,33 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+load("@rules_go//proto:def.bzl", "go_proto_library")
+load("@rules_proto//proto:defs.bzl", "proto_library")
+
+proto_library(
+    name = "client_proto",
+    srcs = ["test.proto"],
+    visibility = ["//visibility:public"],
+)
+
+go_proto_library(
+    name = "client_go_proto",
+    compilers = ["//:go_proto_editions", "//:go_grpc_editions"],
+    importpath = "github.com/mcpany/core/pkg/upstream/grpc/client",
+    proto = ":client_proto",
+    visibility = ["//visibility:public"],
+
+    deps = [
+        "@org_golang_google_grpc//:grpc",
+        "@org_golang_google_grpc//codes",
+        "@org_golang_google_grpc//status",
+    ],)
+
+go_library(
+    name = "client",
+    embed = [":client_go_proto"],
+    importpath = "github.com/mcpany/core/pkg/upstream/grpc/client",
+    visibility = ["//visibility:public"],
+)

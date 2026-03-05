@@ -1,0 +1,53 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "admin",
+    srcs = ["server.go"],
+    importpath = "github.com/mcpany/core/server/pkg/admin",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//proto/admin/v1:v1_go_proto",
+        "//proto/config/v1:v1_go_proto",
+        "//proto/mcp_router/v1:v1_go_proto",
+        "//server/pkg/audit",
+        "//server/pkg/config",
+        "//server/pkg/discovery",
+        "//server/pkg/middleware",
+        "//server/pkg/serviceregistry",
+        "//server/pkg/storage",
+        "//server/pkg/tool",
+        "//server/pkg/util/passhash",
+        "@org_golang_google_grpc//codes",
+        "@org_golang_google_grpc//status",
+        "@org_golang_google_protobuf//proto",
+    ],
+)
+
+go_test(
+    name = "admin_test",
+    srcs = [
+        "security_test.go",
+        "server_test.go",
+    ],
+    embed = [":admin"],
+    deps = [
+        "//proto/admin/v1:v1_go_proto",
+        "//proto/config/v1:v1_go_proto",
+        "//proto/mcp_router/v1:v1_go_proto",
+        "//server/pkg/audit",
+        "//server/pkg/discovery",
+        "//server/pkg/middleware",
+        "//server/pkg/serviceregistry",
+        "//server/pkg/storage/memory",
+        "//server/pkg/tool",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//require",
+        "@org_golang_google_grpc//codes",
+        "@org_golang_google_grpc//status",
+        "@org_golang_google_protobuf//proto",
+        "@org_uber_go_mock//gomock",
+    ],
+)

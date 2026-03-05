@@ -60,5 +60,5 @@ func (s *CatalogServer) ListServices(ctx context.Context, _ *apiv1.ListCatalogSe
 	if err != nil {
 		return nil, err
 	}
-	return &apiv1.ListCatalogServicesResponse{Services: services}, nil
+	return apiv1.ListCatalogServicesResponse_builder{Services: services}.Build(), nil
 }

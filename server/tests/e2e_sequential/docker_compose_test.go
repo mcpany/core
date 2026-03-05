@@ -77,12 +77,13 @@ func TestDockerComposeE2E(t *testing.T) {
 			// or better: just don't rely on relative paths for logs if possible, OR, we need to store the projectDir alongside the compose file.
 			// For simplicity in cleanup, we might skip --project-directory for `logs` if it doesn't strictly need it to find container names (it usually searches by project name + service name).
 			// Docker compose V2 usually needs the project name which we set via env.
+			// We need to pass the same project directory or project name to find the containers.
+			// The project name is held in COMPOSE_PROJECT_NAME env var.
 			cmd := exec.Command("docker", "compose", "-f", currentComposeFile, "logs")
+			cmd.Env = os.Environ()
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
-			if err := cmd.Run(); err != nil {
-				t.Logf("Failed to dump logs: %v", err)
-			}
+			_ = cmd.Run()
 		}
 
 		// Dump logs from manually run weather container
@@ -112,6 +113,9 @@ func TestDockerComposeE2E(t *testing.T) {
 	}
 	defer cleanup()
 	cleanup() // Ensure clean start
+
+	// Helper to translate container path to host path for Docker-in-Docker
+	// Moved to global scope
 
 	// Helper to get dynamic port
 	getServicePort := func(composeFile, projectDir, service, internalPort string) string {
@@ -203,7 +207,7 @@ func testFunctionalWeather(t *testing.T, rootDir string) {
 	cmd := exec.Command("docker", "run", "-d", "--name", containerName,
 		"-p", "0:50050", // Dynamic port
 		"--env", "MCPANY_ENABLE_FILE_CONFIG=true",
-		"-v", fmt.Sprintf("%s:/config.yaml", configPath),
+		"-v", fmt.Sprintf("%s:/config.yaml", translatePath(configPath)),
 		"-e", "MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES=true",
 		"-e", "MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true",
 		"mcpany/server:latest",
@@ -229,7 +233,9 @@ func testFunctionalWeather(t *testing.T, rootDir string) {
 	}()
 
 	// Get assigned port
-	out, err := exec.Command("docker", "port", containerName, "50050/tcp").Output()
+	portCmd := exec.Command("docker", "port", containerName, "50050/tcp")
+	portCmd.Env = os.Environ()
+	out, err := portCmd.Output()
 	require.NoError(t, err, "Failed to get assigned port")
 	// Output example: 0.0.0.0:32768
 	portBinding := strings.TrimSpace(string(out))
@@ -380,12 +386,16 @@ func verifyToolMetricWithService(t *testing.T, metricsURL, toolName, serviceID s
 }
 
 func runCommand(t *testing.T, dir string, name string, args ...string) {
+	// Note: We don't translate arguments here anymore because the Docker client
+	// needs to find files like -f compose.yml locally in the container.
+	// Volume paths are handled within the generated compose YAML or via translatePath where used.
+
 	cmd := exec.Command(name, args...)
 	cmd.Dir = dir
 	cmd.Env = os.Environ() // Explicitly pass environment to ensure t.Setenv works
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-	t.Logf("Running: %s %s (Env: COMPOSE_PROJECT_NAME=%s)", name, strings.Join(args, " "), os.Getenv("COMPOSE_PROJECT_NAME"))
+	t.Logf("Running: %s %s (Env: COMPOSE_PROJECT_NAME=%s, Dir: %s)", name, strings.Join(args, " "), os.Getenv("COMPOSE_PROJECT_NAME"), dir)
 	err := cmd.Run()
 	require.NoError(t, err, "Command failed: %s %s", name, strings.Join(args, " "))
 }
@@ -573,6 +583,17 @@ func createDynamicCompose(t *testing.T, rootDir, originalPath string) string {
 		s = strings.Replace(s, "environment:", "environment:\n      - MCPANY_ENABLE_FILE_CONFIG=true", -1)
 	}
 
+	// Docker-in-Docker Path Translation:
+	// 1. Resolve relative paths to absolute container paths
+	projectDir := filepath.Dir(originalPath)
+	s = strings.ReplaceAll(s, "./", projectDir+"/")
+
+	// 2. Translate /workspace to host path
+	hostRoot := os.Getenv("HOST_WORKSPACE_ROOT")
+	if hostRoot != "" {
+		s = strings.ReplaceAll(s, "/workspace", hostRoot)
+	}
+
 	// Ensure build directory exists
 	buildDir := filepath.Join(rootDir, "build")
 	err = os.MkdirAll(buildDir, 0755)
@@ -587,4 +608,17 @@ func createDynamicCompose(t *testing.T, rootDir, originalPath string) string {
 	tmpFile.Close()
 
 	return tmpFile.Name()
+}
+
+// translatePath translates a container path to a host path for Docker-in-Docker
+func translatePath(p string) string {
+	hostRoot := os.Getenv("HOST_WORKSPACE_ROOT")
+	if hostRoot == "" {
+		return p
+	}
+	abs, _ := filepath.Abs(p)
+	if strings.HasPrefix(abs, "/workspace") {
+		return strings.Replace(abs, "/workspace", hostRoot, 1)
+	}
+	return p
 }

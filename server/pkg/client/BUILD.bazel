@@ -1,0 +1,44 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "client",
+    srcs = [
+        "client.go",
+        "grpc_client_wrapper.go",
+        "http_client_wrapper.go",
+        "websocket.go",
+    ],
+    importpath = "github.com/mcpany/core/server/pkg/client",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//proto/config/v1:v1_go_proto",
+        "//server/pkg/health",
+        "@com_github_alexliesenfeld_health//:health",
+        "@com_github_gorilla_websocket//:websocket",
+        "@com_github_modelcontextprotocol_go_sdk//mcp",
+        "@org_golang_google_grpc//:grpc",
+        "@org_golang_google_grpc//connectivity",
+    ],
+)
+
+go_test(
+    name = "client_test",
+    srcs = ["client_test.go"],
+    embed = [":client"],
+    deps = [
+        "//proto/config/v1:v1_go_proto",
+        "@com_github_gorilla_websocket//:websocket",
+        "@com_github_samber_lo//:lo",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//require",
+        "@org_golang_google_grpc//:grpc",
+        "@org_golang_google_grpc//connectivity",
+        "@org_golang_google_grpc//credentials/insecure",
+        "@org_golang_google_grpc//health",
+        "@org_golang_google_grpc//health/grpc_health_v1",
+        "@org_golang_google_protobuf//encoding/protojson",
+    ],
+)

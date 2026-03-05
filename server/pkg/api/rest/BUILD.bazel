@@ -1,0 +1,44 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "rest",
+    srcs = [
+        "catalog.go",
+        "handler.go",
+        "model.go",
+    ],
+    importpath = "github.com/mcpany/core/server/pkg/api/rest",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//proto/api/v1:v1_go_proto",
+        "//proto/config/v1:v1_go_proto",
+        "//server/pkg/catalog",
+        "//server/pkg/config",
+        "@in_gopkg_yaml_v3//:yaml_v3",
+    ],
+)
+
+go_test(
+    name = "rest_test",
+    srcs = [
+        "catalog_test.go",
+        "handler_coverage_test.go",
+        "handler_env_isolation_test.go",
+        "handler_extra_test.go",
+        "handler_filesystem_leak_repro_test.go",
+        "handler_repro_leak_test.go",
+        "handler_security_test.go",
+        "handler_test.go",
+        "sentinel_handler_test.go",
+    ],
+    embed = [":rest"],
+    deps = [
+        "//proto/api/v1:v1_go_proto",
+        "//server/pkg/catalog",
+        "@com_github_spf13_afero//:afero",
+        "@com_github_stretchr_testify//assert",
+    ],
+)

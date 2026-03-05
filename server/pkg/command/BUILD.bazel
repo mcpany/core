@@ -1,0 +1,50 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "command",
+    srcs = [
+        "command.go",
+        "docker_interface.go",
+    ],
+    importpath = "github.com/mcpany/core/server/pkg/command",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//proto/config/v1:v1_go_proto",
+        "//server/pkg/logging",
+        "//server/pkg/validation",
+        "@com_github_docker_docker//api/types",
+        "@com_github_docker_docker//api/types/container",
+        "@com_github_docker_docker//api/types/image",
+        "@com_github_docker_docker//api/types/mount",
+        "@com_github_docker_docker//api/types/network",
+        "@com_github_docker_docker//client",
+        "@com_github_docker_docker//pkg/stdcopy",
+        "@com_github_opencontainers_image_spec//specs-go/v1:specs-go",
+    ],
+)
+
+go_test(
+    name = "command_test",
+    srcs = [
+        "command_coverage_test.go",
+        "command_test.go",
+        "docker_mock_test.go",
+    ],
+    embed = [":command"],
+    deps = [
+        "//proto/config/v1:v1_go_proto",
+        "//server/pkg/validation",
+        "@com_github_docker_docker//api/types",
+        "@com_github_docker_docker//api/types/container",
+        "@com_github_docker_docker//api/types/image",
+        "@com_github_docker_docker//api/types/network",
+        "@com_github_docker_docker//client",
+        "@com_github_docker_docker//errdefs",
+        "@com_github_opencontainers_image_spec//specs-go/v1:specs-go",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//require",
+    ],
+)

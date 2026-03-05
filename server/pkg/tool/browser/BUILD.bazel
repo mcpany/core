@@ -1,0 +1,22 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "browser",
+    srcs = ["browser.go"],
+    importpath = "github.com/mcpany/core/server/pkg/tool/browser",
+    visibility = ["//visibility:public"],
+    deps = ["@com_github_playwright_community_playwright_go//:playwright-go"],
+)
+
+go_test(
+    name = "browser_test",
+    srcs = ["browser_test.go"],
+    embed = [":browser"],
+    deps = [
+        "@com_github_playwright_community_playwright_go//:playwright-go",
+        "@com_github_stretchr_testify//assert",
+    ],
+)

@@ -1,0 +1,46 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "protobufparser",
+    srcs = ["parser.go"],
+    importpath = "github.com/mcpany/core/server/pkg/upstream/grpc/protobufparser",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//proto/config/v1:v1_go_proto",
+        "//proto/mcp_options/v1:v1_go_proto",
+        "@com_github_bufbuild_protocompile//:protocompile",
+        "@org_golang_google_grpc//:grpc",
+        "@org_golang_google_grpc//credentials/insecure",
+        "@org_golang_google_grpc//reflection/grpc_reflection_v1",
+        "@org_golang_google_protobuf//proto",
+        "@org_golang_google_protobuf//reflect/protodesc",
+        "@org_golang_google_protobuf//reflect/protoreflect",
+        "@org_golang_google_protobuf//types/descriptorpb",
+    ],
+)
+
+go_test(
+    name = "protobufparser_test",
+    srcs = [
+        "parser_custom_test.go",
+        "parser_integration_test.go",
+        "parser_test.go",
+    ],
+    embed = [":protobufparser"],
+    deps = [
+        "//proto/config/v1:v1_go_proto",
+        "//proto/examples/weather/v1:v1_go_proto",
+        "//proto/mcp_options/v1:v1_go_proto",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//mock",
+        "@com_github_stretchr_testify//require",
+        "@org_golang_google_grpc//:grpc",
+        "@org_golang_google_grpc//reflection",
+        "@org_golang_google_grpc//reflection/grpc_reflection_v1",
+        "@org_golang_google_protobuf//proto",
+        "@org_golang_google_protobuf//types/descriptorpb",
+    ],
+)

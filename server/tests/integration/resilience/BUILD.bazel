@@ -1,0 +1,16 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+load("@rules_go//go:def.bzl", "go_test")
+
+go_test(
+    name = "resilience_test",
+    srcs = ["http_resilience_test.go"],
+    deps = [
+        "//server/pkg/util",
+        "//server/tests/framework",
+        "//server/tests/integration",
+        "@com_github_modelcontextprotocol_go_sdk//mcp",
+        "@com_github_stretchr_testify//require",
+    ],
+)

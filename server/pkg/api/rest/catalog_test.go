@@ -79,7 +79,7 @@ upstream_services:
 			m := tt.setupManager()
 			server := NewCatalogServer(m)
 
-			resp, err := server.ListServices(context.Background(), &apiv1.ListCatalogServicesRequest{})
+			resp, err := server.ListServices(context.Background(), apiv1.ListCatalogServicesRequest_builder{}.Build())
 
 			if (err != nil) != tt.expectErr {
 				t.Fatalf("expected error: %v, got: %v", tt.expectErr, err)
@@ -90,14 +90,14 @@ upstream_services:
 					t.Fatal("expected non-nil response")
 				}
 
-				if len(resp.Services) != tt.expectCount {
-					t.Errorf("expected %d services, got %d", tt.expectCount, len(resp.Services))
+				if len(resp.GetServices()) != tt.expectCount {
+					t.Errorf("expected %d services, got %d", tt.expectCount, len(resp.GetServices()))
 				}
 
 				// If there are services, do a basic check on the first one.
-				if tt.expectCount > 0 && len(resp.Services) > 0 {
-					if resp.Services[0].GetName() != "test-service" {
-						t.Errorf("expected service name 'test-service', got '%s'", resp.Services[0].GetName())
+				if tt.expectCount > 0 && len(resp.GetServices()) > 0 {
+					if resp.GetServices()[0].GetName() != "test-service" {
+						t.Errorf("expected service name 'test-service', got '%s'", resp.GetServices()[0].GetName())
 					}
 				}
 			}

@@ -71,8 +71,8 @@ upstream_services:
 		"--network", networkName,
 		"--network-alias", "upstream",
 		"-p", "25010:50050",
-		"-v", fmt.Sprintf("%s:/mcp_config", upstreamConfigDir),
-		"-v", fmt.Sprintf("%s:/data", upstreamConfigDir),
+		"-v", fmt.Sprintf("%s:/mcp_config", translatePath(upstreamConfigDir)),
+		"-v", fmt.Sprintf("%s:/data", translatePath(upstreamConfigDir)),
 		"mcpany/server:latest",
 		"run", "--config-path", "/mcp_config/config.yaml", "--mcp-listen-address", ":50050", "--debug", "--api-key", "test-key",
 	)
@@ -110,7 +110,7 @@ upstream_services:
 	gatewayCmd := exec.Command("docker", "run", "-d", "--name", gatewayName,
 		"--network", networkName,
 		"-p", "25011:50050",
-		"-v", fmt.Sprintf("%s:/mcp_config", gatewayConfigDir),
+		"-v", fmt.Sprintf("%s:/mcp_config", translatePath(gatewayConfigDir)),
 		"mcpany/server:latest",
 		"run", "--config-path", "/mcp_config/config.yaml", "--mcp-listen-address", ":50050", "--debug", "--api-key", "test-key",
 	)
@@ -213,4 +213,17 @@ upstream_services:
 		}
 	}
 	require.True(t, foundFile, "Result did not contain backend_file.txt in %v", res.Content)
+}
+
+// translatePath translates a container path to a host path for Docker-in-Docker
+func translatePath(p string) string {
+	hostRoot := os.Getenv("HOST_WORKSPACE_ROOT")
+	if hostRoot == "" {
+		return p
+	}
+	abs, _ := filepath.Abs(p)
+	if strings.HasPrefix(abs, "/workspace") {
+		return strings.Replace(abs, "/workspace", hostRoot, 1)
+	}
+	return p
 }

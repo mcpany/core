@@ -69,10 +69,11 @@ func request_SkillService_GetSkill_0(ctx context.Context, marshaler runtime.Mars
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "name")
 	}
-	protoReq.Name, err = runtime.String(val)
+	convertedName, err := runtime.String(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "name", err)
 	}
+	protoReq.SetName(convertedName)
 	msg, err := client.GetSkill(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 }
@@ -87,10 +88,11 @@ func local_request_SkillService_GetSkill_0(ctx context.Context, marshaler runtim
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "name")
 	}
-	protoReq.Name, err = runtime.String(val)
+	convertedName, err := runtime.String(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "name", err)
 	}
+	protoReq.SetName(convertedName)
 	msg, err := server.GetSkill(ctx, &protoReq)
 	return msg, metadata, err
 }
@@ -100,9 +102,11 @@ func request_SkillService_CreateSkill_0(ctx context.Context, marshaler runtime.M
 		protoReq CreateSkillRequest
 		metadata runtime.ServerMetadata
 	)
-	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq.Skill); err != nil && !errors.Is(err, io.EOF) {
+	var bodyData CreateSkillRequest
+	if err := marshaler.NewDecoder(req.Body).Decode(&bodyData); err != nil && !errors.Is(err, io.EOF) {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
+	protoReq.SetSkill(bodyData.GetSkill())
 	if req.Body != nil {
 		_, _ = io.Copy(io.Discard, req.Body)
 	}
@@ -115,9 +119,11 @@ func local_request_SkillService_CreateSkill_0(ctx context.Context, marshaler run
 		protoReq CreateSkillRequest
 		metadata runtime.ServerMetadata
 	)
-	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq.Skill); err != nil && !errors.Is(err, io.EOF) {
+	var bodyData CreateSkillRequest
+	if err := marshaler.NewDecoder(req.Body).Decode(&bodyData); err != nil && !errors.Is(err, io.EOF) {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
+	protoReq.SetSkill(bodyData.GetSkill())
 	msg, err := server.CreateSkill(ctx, &protoReq)
 	return msg, metadata, err
 }
@@ -128,9 +134,11 @@ func request_SkillService_UpdateSkill_0(ctx context.Context, marshaler runtime.M
 		metadata runtime.ServerMetadata
 		err      error
 	)
-	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq.Skill); err != nil && !errors.Is(err, io.EOF) {
+	var bodyData UpdateSkillRequest
+	if err := marshaler.NewDecoder(req.Body).Decode(&bodyData); err != nil && !errors.Is(err, io.EOF) {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
+	protoReq.SetSkill(bodyData.GetSkill())
 	if req.Body != nil {
 		_, _ = io.Copy(io.Discard, req.Body)
 	}
@@ -138,10 +146,11 @@ func request_SkillService_UpdateSkill_0(ctx context.Context, marshaler runtime.M
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "name")
 	}
-	protoReq.Name, err = runtime.String(val)
+	convertedName, err := runtime.String(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "name", err)
 	}
+	protoReq.SetName(convertedName)
 	msg, err := client.UpdateSkill(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 }
@@ -152,17 +161,20 @@ func local_request_SkillService_UpdateSkill_0(ctx context.Context, marshaler run
 		metadata runtime.ServerMetadata
 		err      error
 	)
-	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq.Skill); err != nil && !errors.Is(err, io.EOF) {
+	var bodyData UpdateSkillRequest
+	if err := marshaler.NewDecoder(req.Body).Decode(&bodyData); err != nil && !errors.Is(err, io.EOF) {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
+	protoReq.SetSkill(bodyData.GetSkill())
 	val, ok := pathParams["name"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "name")
 	}
-	protoReq.Name, err = runtime.String(val)
+	convertedName, err := runtime.String(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "name", err)
 	}
+	protoReq.SetName(convertedName)
 	msg, err := server.UpdateSkill(ctx, &protoReq)
 	return msg, metadata, err
 }
@@ -180,10 +192,11 @@ func request_SkillService_DeleteSkill_0(ctx context.Context, marshaler runtime.M
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "name")
 	}
-	protoReq.Name, err = runtime.String(val)
+	convertedName, err := runtime.String(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "name", err)
 	}
+	protoReq.SetName(convertedName)
 	msg, err := client.DeleteSkill(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 }
@@ -198,10 +211,11 @@ func local_request_SkillService_DeleteSkill_0(ctx context.Context, marshaler run
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "name")
 	}
-	protoReq.Name, err = runtime.String(val)
+	convertedName, err := runtime.String(val)
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "name", err)
 	}
+	protoReq.SetName(convertedName)
 	msg, err := server.DeleteSkill(ctx, &protoReq)
 	return msg, metadata, err
 }

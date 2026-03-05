@@ -1,0 +1,29 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "kafka",
+    srcs = ["kafka.go"],
+    importpath = "github.com/mcpany/core/server/pkg/bus/kafka",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//proto/bus:bus_go_proto",
+        "//server/pkg/logging",
+        "@com_github_google_uuid//:uuid",
+        "@com_github_segmentio_kafka_go//:kafka-go",
+    ],
+)
+
+go_test(
+    name = "kafka_test",
+    srcs = ["kafka_test.go"],
+    embed = [":kafka"],
+    deps = [
+        "//proto/bus:bus_go_proto",
+        "@com_github_segmentio_kafka_go//:kafka-go",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//mock",
+    ],
+)

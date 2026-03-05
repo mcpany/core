@@ -1,0 +1,63 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "filesystem",
+    srcs = [
+        "file_ops.go",
+        "info.go",
+        "search.go",
+        "tools.go",
+        "types.go",
+        "upstream.go",
+    ],
+    importpath = "github.com/mcpany/core/server/pkg/upstream/filesystem",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//proto/config/v1:v1_go_proto",
+        "//server/pkg/health",
+        "//server/pkg/logging",
+        "//server/pkg/prompt",
+        "//server/pkg/resource",
+        "//server/pkg/tool",
+        "//server/pkg/upstream",
+        "//server/pkg/upstream/filesystem/provider",
+        "//server/pkg/util",
+        "@com_github_alexliesenfeld_health//:health",
+        "@com_github_spf13_afero//:afero",
+        "@org_golang_google_protobuf//proto",
+        "@org_golang_google_protobuf//types/known/structpb",
+    ],
+)
+
+go_test(
+    name = "filesystem_test",
+    srcs = [
+        "coverage_improvement_test.go",
+        "file_ops_advanced_test.go",
+        "file_ops_security_test.go",
+        "file_ops_test.go",
+        "info_test.go",
+        "search_regression_test.go",
+        "search_test.go",
+        "toctou_security_test.go",
+        "upstream_coverage_test.go",
+        "upstream_test.go",
+        "upstream_unavailable_path_test.go",
+    ],
+    embed = [":filesystem"],
+    deps = [
+        "//proto/config/v1:v1_go_proto",
+        "//server/pkg/bus",
+        "//server/pkg/health",
+        "//server/pkg/tool",
+        "//server/pkg/validation",
+        "@com_github_alexliesenfeld_health//:health",
+        "@com_github_spf13_afero//:afero",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//require",
+        "@org_golang_google_protobuf//proto",
+    ],
+)

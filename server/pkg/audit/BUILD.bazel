@@ -1,0 +1,50 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "audit",
+    srcs = [
+        "datadog.go",
+        "file.go",
+        "postgres.go",
+        "splunk.go",
+        "sqlite.go",
+        "types.go",
+        "util.go",
+        "webhook.go",
+    ],
+    importpath = "github.com/mcpany/core/server/pkg/audit",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//proto/config/v1:v1_go_proto",
+        "//server/pkg/validation",
+        "@com_github_lib_pq//:pq",
+        "@org_modernc_sqlite//:sqlite",
+    ],
+)
+
+go_test(
+    name = "audit_test",
+    srcs = [
+        "audit_test.go",
+        "datadog_test.go",
+        "file_test.go",
+        "postgres_test.go",
+        "splunk_test.go",
+        "sqlite_error_test.go",
+        "sqlite_test.go",
+        "util_test.go",
+        "webhook_test.go",
+    ],
+    embed = [":audit"],
+    deps = [
+        "//proto/config/v1:v1_go_proto",
+        "//server/pkg/validation",
+        "@com_github_data_dog_go_sqlmock//:go-sqlmock",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//require",
+        "@org_modernc_sqlite//:sqlite",
+    ],
+)

@@ -1,0 +1,51 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+load("@rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
+
+go_library(
+    name = "server_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/mcpany/core/server/cmd/server",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//server/pkg/app",
+        "//server/pkg/appconsts",
+        "//server/pkg/config",
+        "//server/pkg/doctor",
+        "//server/pkg/lint",
+        "//server/pkg/logging",
+        "//server/pkg/metrics",
+        "//server/pkg/update",
+        "@com_github_joho_godotenv//:godotenv",
+        "@com_github_spf13_afero//:afero",
+        "@com_github_spf13_cobra//:cobra",
+        "@in_gopkg_yaml_v3//:yaml_v3",
+        "@org_golang_x_oauth2//:oauth2",
+    ],
+)
+
+go_binary(
+    name = "server",
+    embed = [":server_lib"],
+    visibility = ["//visibility:public"],
+)
+
+go_test(
+    name = "server_test",
+    srcs = [
+        "exit_code_test.go",
+        "main_test.go",
+    ],
+    data = glob(["testdata/**"]),
+    embed = [":server_lib"],
+    deps = [
+        "//server/pkg/app",
+        "//server/pkg/appconsts",
+        "//server/pkg/util",
+        "@com_github_spf13_afero//:afero",
+        "@com_github_spf13_viper//:viper",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//require",
+    ],
+)

@@ -1,0 +1,33 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "tokenizer",
+    srcs = ["tokenizer.go"],
+    importpath = "github.com/mcpany/core/server/pkg/tokenizer",
+    visibility = ["//visibility:public"],
+)
+
+go_test(
+    name = "tokenizer_test",
+    srcs = [
+        "benchmark_test.go",
+        "bugfix_float_test.go",
+        "bugfix_test.go",
+        "coverage_test.go",
+        "repro_test.go",
+        "tokenizer_consistency_test.go",
+        "tokenizer_extended_test.go",
+        "tokenizer_extra_test.go",
+        "tokenizer_fastpath_test.go",
+        "tokenizer_int_test.go",
+        "tokenizer_perf_test.go",
+        "tokenizer_reflection_test.go",
+        "tokenizer_test.go",
+        "tokenizer_types_test.go",
+    ],
+    embed = [":tokenizer"],
+    deps = ["@com_github_stretchr_testify//assert"],
+)

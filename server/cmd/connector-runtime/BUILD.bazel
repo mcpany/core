@@ -1,0 +1,23 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+load("@rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
+
+go_library(
+    name = "connector-runtime_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/mcpany/core/server/cmd/connector-runtime",
+    visibility = ["//visibility:private"],
+)
+
+go_binary(
+    name = "connector-runtime",
+    embed = [":connector-runtime_lib"],
+    visibility = ["//visibility:public"],
+)
+
+go_test(
+    name = "connector-runtime_test",
+    srcs = ["main_test.go"],
+    embed = [":connector-runtime_lib"],
+)

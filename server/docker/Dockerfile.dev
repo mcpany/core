@@ -89,7 +89,7 @@ RUN groupadd -g ${GID} user || true && \
 
 # Add installed tools to PATH
 ENV PATH="/workspace/server/tools:${PATH}"
-ENV GOPATH="/workspace/server/tools/go"
+ENV GOPATH="/workspace/server/tools/.go"
 ENV PATH="$GOPATH/bin:$PATH"
 
 CMD ["/bin/bash"]

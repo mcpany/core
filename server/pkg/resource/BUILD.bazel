@@ -1,0 +1,48 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "resource",
+    srcs = [
+        "dynamic_resource.go",
+        "mock_resource_manager.go",
+        "resource.go",
+        "static_resource.go",
+    ],
+    importpath = "github.com/mcpany/core/server/pkg/resource",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//proto/config/v1:v1_go_proto",
+        "//server/pkg/tool",
+        "//server/pkg/util",
+        "@com_github_modelcontextprotocol_go_sdk//mcp",
+        "@org_uber_go_mock//gomock",
+    ],
+)
+
+go_test(
+    name = "resource_test",
+    srcs = [
+        "deadlock_test.go",
+        "dynamic_resource_test.go",
+        "limit_overflow_test.go",
+        "mock_resource_manager_test.go",
+        "resource_test.go",
+        "static_resource_security_test.go",
+        "static_resource_test.go",
+    ],
+    embed = [":resource"],
+    deps = [
+        "//proto/config/v1:v1_go_proto",
+        "//proto/mcp_router/v1:v1_go_proto",
+        "//server/pkg/tool",
+        "@com_github_modelcontextprotocol_go_sdk//mcp",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//mock",
+        "@com_github_stretchr_testify//require",
+        "@org_golang_google_protobuf//proto",
+        "@org_uber_go_mock//gomock",
+    ],
+)

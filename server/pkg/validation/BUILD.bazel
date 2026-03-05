@@ -1,0 +1,40 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "validation",
+    srcs = [
+        "ip.go",
+        "url.go",
+        "validation.go",
+    ],
+    importpath = "github.com/mcpany/core/server/pkg/validation",
+    visibility = ["//visibility:public"],
+    deps = ["//proto/config/v1:v1_go_proto"],
+)
+
+go_test(
+    name = "validation_test",
+    srcs = [
+        "ip_test.go",
+        "sensitive_files_test.go",
+        "url_private_test.go",
+        "url_test.go",
+        "validation_control_chars_test.go",
+        "validation_is_allowed_path_test.go",
+        "validation_is_secure_path_test.go",
+        "validation_security_test.go",
+        "validation_test.go",
+        "validation_url_coverage_test.go",
+    ],
+    embed = [":validation"],
+    deps = [
+        "//proto/config/v1:v1_go_proto",
+        "@com_github_samber_lo//:lo",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//require",
+        "@org_golang_google_protobuf//proto",
+    ],
+)

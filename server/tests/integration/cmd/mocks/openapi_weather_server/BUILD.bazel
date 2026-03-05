@@ -1,0 +1,18 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+load("@rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "openapi_weather_server_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/mcpany/core/server/tests/integration/cmd/mocks/openapi_weather_server",
+    visibility = ["//visibility:private"],
+    deps = ["//server/pkg/consts"],
+)
+
+go_binary(
+    name = "openapi_weather_server",
+    embed = [":openapi_weather_server_lib"],
+    visibility = ["//visibility:public"],
+)

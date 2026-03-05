@@ -1,0 +1,73 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "auth",
+    srcs = [
+        "auth.go",
+        "grpc.go",
+        "interactive.go",
+        "mock.go",
+        "oauth.go",
+        "oauth_config.go",
+        "oauth_test_server.go",
+        "oidc.go",
+        "rbac.go",
+        "upstream.go",
+    ],
+    importpath = "github.com/mcpany/core/server/pkg/auth",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//proto/config/v1:v1_go_proto",
+        "//server/pkg/storage",
+        "//server/pkg/util",
+        "//server/pkg/util/passhash",
+        "@com_github_coreos_go_oidc_v3//oidc",
+        "@com_github_go_jose_go_jose_v4//:go-jose",
+        "@com_github_golang_jwt_jwt_v5//:jwt",
+        "@com_github_puzpuzpuz_xsync_v4//:xsync",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//require",
+        "@org_golang_google_grpc//credentials",
+        "@org_golang_google_protobuf//proto",
+        "@org_golang_x_oauth2//:oauth2",
+        "@org_golang_x_oauth2//clientcredentials",
+    ],
+)
+
+go_test(
+    name = "auth_test",
+    srcs = [
+        "auth_extra_test.go",
+        "auth_test.go",
+        "grpc_test.go",
+        "interactive_extra_test.go",
+        "interactive_test.go",
+        "manager_test.go",
+        "mock_test.go",
+        "oauth2_test.go",
+        "oauth_config_test.go",
+        "oauth_test.go",
+        "oidc_callback_test.go",
+        "oidc_cookie_test.go",
+        "oidc_test.go",
+        "rbac_test.go",
+        "upstream_discovery_test.go",
+        "upstream_test.go",
+    ],
+    embed = [":auth"],
+    deps = [
+        "//proto/config/v1:v1_go_proto",
+        "//server/pkg/storage/memory",
+        "//server/pkg/util/passhash",
+        "@com_github_go_jose_go_jose_v4//:go-jose",
+        "@com_github_golang_jwt_jwt_v5//:jwt",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//require",
+        "@in_gopkg_square_go_jose_v2//:go-jose_v2",
+        "@org_golang_google_protobuf//proto",
+        "@org_golang_x_oauth2//:oauth2",
+    ],
+)

@@ -1,0 +1,45 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "resilience",
+    srcs = [
+        "circuit_breaker.go",
+        "doc.go",
+        "errors.go",
+        "manager.go",
+        "retry.go",
+        "timeout.go",
+    ],
+    importpath = "github.com/mcpany/core/server/pkg/resilience",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//proto/config/v1:v1_go_proto",
+        "//server/pkg/util",
+        "@org_golang_google_protobuf//types/known/durationpb",
+    ],
+)
+
+go_test(
+    name = "resilience_test",
+    srcs = [
+        "backlog_test.go",
+        "circuit_breaker_concurrency_test.go",
+        "circuit_breaker_race_test.go",
+        "circuit_breaker_test.go",
+        "errors_test.go",
+        "extended_coverage_test.go",
+        "manager_test.go",
+        "retry_test.go",
+        "timeout_test.go",
+    ],
+    embed = [":resilience"],
+    deps = [
+        "//proto/config/v1:v1_go_proto",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//require",
+        "@org_golang_google_protobuf//types/known/durationpb",
+    ],
+)
