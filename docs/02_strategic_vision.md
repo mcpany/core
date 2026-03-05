@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-05]
+### Focus: Autonomous Tool Evolution & Dynamic Swarm Residency
+**Context**: Today's findings reveal that agent swarms are outgrowing static tool definitions and ephemeral connectivity. OpenClaw's ATR and the "Zombie Session" problem in swarms demand that MCP Any evolves into a learning, stateful infrastructure.
+**Strategic Pivot**:
+- **Autonomous Tool Refinement (ATR) Proxy**: MCP Any will implement a "Learning Layer" that captures agent feedback on tool failures and autonomously evolves tool schemas or parameter mappings (Human-in-the-loop verified).
+- **Dynamic State Buffer (DSB)**: Transitioning from simple message passing to a "Swarm Mailbox" where state is persisted at the infrastructure layer, allowing subagents to crash and recover without swarm-wide state loss.
+- **Multi-Modal Discovery Bridge**: Anticipating vision-augmented tool discovery by allowing MCP Any to ingest and index non-textual context (e.g., screenshots, UI state) to improve tool relevance.
