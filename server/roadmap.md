@@ -189,3 +189,9 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Core Middleware Pipeline**: The middleware architecture is robust and extensible.
 - **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates protocol details from business logic.
 - **Documentation**: The project has excellent documentation coverage for most features.
+
+#### Upcoming (2026-03-05 Evolution)
+*   **[P0] Intelligent Compaction Middleware (ICM)**: Semantic summarizing of tool outputs for high-token models (Opus 4.6). (Added: 2026-03-05)
+*   **[P0] Agent Behavioral Loop Guard**: Detect and block infinite execution loops (ALI) and tool-chain cycles. (Added: 2026-03-05)
+*   **[P1] Dynamic Tool Name Obfuscation**: Prevent infrastructure reconnaissance via system prompts. (Added: 2026-03-05)
+*   **[P1] Vertex AI Extension Adapter**: Upstream support for Google's Vertex AI Extensions. (Added: 2026-03-05)

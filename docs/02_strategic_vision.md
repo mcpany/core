@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-05]
+### Focus: Behavioral Execution Guards & Intelligent Compaction
+**Context**: As agents move into multi-million token windows (Claude Opus 4.6) and cross-agent "Automation Swarms" (OpenClaw), the problem shifts from simple access control to behavioral safety and cost-aware orchestration.
+**Strategic Pivot**:
+- **Behavioral Execution Guard**: MCP Any will pivot its security layer from "Static Auth" to "Active Behavioral Monitoring." This includes loop detection, rate-limiting on tool chaining, and anomaly detection for unexpected tool call patterns.
+- **Intelligent Context Compaction**: Moving beyond simple truncation to "Semantic Compaction" middleware. This middleware will summarize tool outputs and historical state before the LLM sees them, optimizing both cost and latency for massive context windows.
+- **Tool-Layer Obfuscation**: To mitigate prompt injection and reconnaissance, MCP Any will implement dynamic aliasing of tool and service names, shielding internal infrastructure details from the agent's view.

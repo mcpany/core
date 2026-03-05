@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-05] Updates
+
+### Proposed Additions
+- **Intelligent Compaction Middleware (ICM)**: (P0) Semantic summarizing of tool outputs for high-token models (Opus 4.6).
+- **Agent Behavioral Loop Guard**: (P0) Middleware to detect and block infinite execution loops (ALI) and tool-chain cycles.
+- **Dynamic Tool Name Obfuscation**: (P1) Automatic aliasing of upstream tool names to prevent infrastructure reconnaissance via system prompts.
+- **Vertex AI Extension Adapter**: (P1) Upstream support for Google's Vertex AI Extensions, ensuring unified connectivity.
+
+### Priority Shifts
+- **A2A Interop Bridge**: Re-prioritized to include **Stateful Handoff** requirements for multi-agent "Automation Swarms" (OpenClaw).
+
+### Deprecations / Monitoring
+- **Basic Context Truncation**: Monitoring for deprecation in favor of ICM.

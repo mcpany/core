@@ -46,3 +46,10 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+
+### Update: 2026-03-05 - Multi-Agent Automation Swarms & Stateful Handoffs
+**Context**: OpenClaw's evolution towards specialized "Automation Swarms" requires more than just simple message passing. High-fidelity agent coordination now depends on reliable "Stateful Handoffs" and loop prevention during inter-agent delegation.
+**Architecture Adjustment**:
+*   **Stateful Handoff Support**: MCP Any will implement a "Pending Task" queue within the `A2A Interop Bridge` to manage asynchronous agent responses, especially when one agent is waiting on another's completion.
+*   **A2A Loop Prevention**: Integrating the `Behavioral Loop Guard` directly into the A2A routing logic to prevent cross-agent infinite delegation loops (e.g., Agent A delegates to Agent B, which delegates back to Agent A).
+**Security Impact**: Prevents "Token Bankruptcy" caused by misconfigured or malicious multi-agent swarms while ensuring state stability across disparate frameworks.
