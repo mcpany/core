@@ -4,7 +4,12 @@
 package alerts
 
 import (
+	"encoding/json"
+	"net/http"
+	"net/http/httptest"
+	"sync/atomic"
 	"testing"
+	"time"
 )
 
 func TestManager_CreateAndGet(t *testing.T) {
@@ -82,5 +87,98 @@ func TestManager_GetAlertStats(t *testing.T) {
 	}
 	if stats.MTTR == "" {
 		t.Error("expected non-empty MTTR")
+	}
+}
+
+func TestManager_WebhookTriggers(t *testing.T) {
+	var requestCount int32
+	alertChan := make(chan Alert, 1)
+
+	// Create a test HTTP server
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		atomic.AddInt32(&requestCount, 1)
+
+		if r.Method != http.MethodPost {
+			t.Errorf("Expected method POST, got %s", r.Method)
+		}
+
+		if r.Header.Get("Content-Type") != "application/json" {
+			t.Errorf("Expected Content-Type application/json, got %s", r.Header.Get("Content-Type"))
+		}
+
+		var lastAlert Alert
+		err := json.NewDecoder(r.Body).Decode(&lastAlert)
+		if err != nil {
+			t.Errorf("Failed to decode webhook payload: %v", err)
+		}
+
+		// Simulate occasionally failing response
+		if atomic.LoadInt32(&requestCount) == 2 {
+			w.WriteHeader(http.StatusInternalServerError)
+			alertChan <- lastAlert
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		alertChan <- lastAlert
+	}))
+	defer ts.Close()
+
+	m := NewManager()
+	m.SetWebhookURL(ts.URL)
+
+	// Test 1: CreateAlert triggers webhook
+	alert := &Alert{
+		Title:    "Test Webhook Alert",
+		Severity: SeverityCritical,
+		Status:   StatusActive,
+	}
+	created := m.CreateAlert(alert)
+
+	var receivedAlert Alert
+	select {
+	case receivedAlert = <-alertChan:
+		// success
+	case <-time.After(2 * time.Second):
+		t.Fatal("timeout waiting for webhook request")
+	}
+
+	if atomic.LoadInt32(&requestCount) != 1 {
+		t.Errorf("Expected webhook request count to be 1, got %d", atomic.LoadInt32(&requestCount))
+	}
+	if receivedAlert.ID != created.ID {
+		t.Errorf("Expected webhook to send alert ID %s, got %s", created.ID, receivedAlert.ID)
+	}
+
+	// Test 2: UpdateAlert triggers webhook (even if it returns 500, shouldn't panic/fail test)
+	m.UpdateAlert(created.ID, &Alert{Status: StatusResolved})
+
+	select {
+	case receivedAlert = <-alertChan:
+		// success
+	case <-time.After(2 * time.Second):
+		t.Fatal("timeout waiting for webhook request")
+	}
+
+	if atomic.LoadInt32(&requestCount) != 2 {
+		t.Errorf("Expected webhook request count to be 2, got %d", atomic.LoadInt32(&requestCount))
+	}
+	if receivedAlert.Status != StatusResolved {
+		t.Errorf("Expected webhook to send updated status Resolved, got %s", receivedAlert.Status)
+	}
+
+	// Test 3: Invalid Webhook URL doesn't crash application
+	m.SetWebhookURL("http://invalid-url-that-does-not-exist.local")
+	m.CreateAlert(&Alert{Title: "Should fail gracefully"})
+
+	// Wait a bit just to be sure there's no panic during execution
+	time.Sleep(100 * time.Millisecond)
+
+	// If we reach here, no panic occurred.
+
+	// Test 4: Unexisting alert on Update
+	nilRes := m.UpdateAlert("non-existent-id", &Alert{Status: StatusResolved})
+	if nilRes != nil {
+		t.Errorf("Expected nil when updating non-existent alert, got %+v", nilRes)
 	}
 }
