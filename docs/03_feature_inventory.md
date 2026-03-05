@@ -81,3 +81,20 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-05] Updates
+
+### Proposed Additions
+- **AMS Mesh Adapter**: (P0) Native implementation of the Agentic Mesh Standard for decentralized peer discovery and service advertisement.
+- **Context Immutability Middleware**: (P0) Enforces read-only scopes for sensitive parent context, mitigating CVE-2026-3001 (Shadow Context Injection).
+- **Identity-Linked Tool Metadata**: (P1) Automatic injection of verified agent identity (OIDC/DID) into every tool call request.
+- **Session-Pinned Tool Scoping**: (P1) Restriction of tool availability to specific conversation branches (inspired by Claude Code).
+
+### Priority Shifts
+- **Federated MCP Node Peering**: Promoted to **P0**. Prerequisite for full AMS support.
+- **Provenance-First Discovery**: Promoted to **P0**. Essential for filtering rogue mesh agents.
+
+### Deprecations / Monitoring
+- **Mutable Shared Blackboard**: Monitoring for deprecation in favor of Immutable State Channels.

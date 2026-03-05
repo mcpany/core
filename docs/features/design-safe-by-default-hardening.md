@@ -59,3 +59,7 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-05:** **Identity-Aware Delegation**.
+    *   **Context**: Security requirements now demand that remote access is tied to a specific agent identity, not just a host IP.
+    *   **Architecture Adjustment**: Integrating OIDC/DID attestation into the "Remote Access Guard." Remote listeners now require an `identity_provider` configuration.
+    *   **Security Impact**: Prevents "anonymous" tool access even if a host is authorized. Every call is traceable to a cryptographic identity.

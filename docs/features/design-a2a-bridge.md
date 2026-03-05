@@ -46,3 +46,7 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-03-05:** **AMS (Agentic Mesh Standard) Integration**.
+    *   **Context**: OpenClaw Mesh 1.0 has moved A2A from "point-to-point" to "mesh-native."
+    *   **Architecture Adjustment**: Replacing static A2A endpoint configuration with dynamic AMS discovery. MCP Any now functions as an AMS node, allowing it to "join" agent meshes and automatically expose mesh-resident agents as MCP tools.
+    *   **Capability Upgrade**: Added support for "Semantic Tool Filtering" to manage discovery noise in large meshes.
