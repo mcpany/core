@@ -57,3 +57,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-05]
+### Focus: Defensive Orchestration & Hierarchical Task Isolation
+**Context**: The "ClawJacked" CSRF exploit and the rise of "Gas Town" parallel orchestration have redefined the security and scaling requirements for Universal Agent Buses. It is no longer enough to just bridge agents; we must defensively isolate their execution environments and control planes.
+**Strategic Pivot**:
+- **Defensive control Plane**: MCP Any will implement mandatory web-standard security (Strict-Origin, CSRF tokens) for all WebSocket and HTTP agent listeners, treating agentic protocols with the same rigor as financial APIs.
+- **Hierarchical Role Standardization**: Beyond parent-child relationships, we will support "Mayor/Deacon" patterns, allowing for high-throughput task distribution with specialized health-monitoring "Deacon" nodes.
+- **Ephemeral Workspace Provisioning**: Integrating "Workspace-as-a-Service" where MCP Any can automatically provision isolated Git worktrees or containers for tool execution, mitigating "Agent-as-a-Proxy" (AaaP) risks and file system contention.
+- **Deep Tool Inspection (DTI)**: Moving from simple schema validation to "Behavioral Attestation," where tool-initiated network calls are inspected and filtered against a session-bound egress policy.

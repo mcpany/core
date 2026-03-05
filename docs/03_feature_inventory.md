@@ -75,9 +75,19 @@
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
+---
+
+## Evolution: [2026-03-05] Updates
+
+### Proposed Additions
+- **Strict Control Plane Security (Anti-ClawJack)**: (P0) Mandatory CSRF protection and Strict-Origin validation for all WebSocket/HTTP listeners to mitigate CVE-2026-25253 style exploits.
+- **Deep Tool Inspection (DTI) Middleware**: (P0) Egress filtering and Behavioral Attestation for tool-initiated network calls to prevent "Agent-as-a-Proxy" (AaaP) attacks.
+- **Hierarchical Role Headers (Mayor/Deacon)**: (P1) Standardized headers for hierarchical task distribution in high-throughput swarms (inspired by Gas Town).
+- **Ephemeral Workspace Provisioning Tool**: (P1) Automatic provisioning of isolated Git worktrees or temporary containers for agent tool execution to prevent workspace contamination.
+
 ### Priority Shifts
-- **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
-- **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.
+- **"Safe-by-Default" Network Hardening**: Re-affirmed as **P0**. High urgency due to the ongoing "8,000 Exposed Servers" crisis.
+- **A2A Interop Bridge**: Re-affirmed as **P0**. Essential for cross-framework coordination in the emerging Gas Town/OpenClaw ecosystem.
 
 ### Deprecations / Monitoring
-- **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+- **Unauthenticated WebSocket Listeners**: Deprecate support for WebSocket connections without explicit Origin validation and CSRF/Token-based authentication.

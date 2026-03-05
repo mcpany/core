@@ -34,6 +34,12 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-05 Evolution)
+*   **[P0] Strict Control Plane Security**: Implement mandatory CSRF tokens and Strict-Origin validation for WebSocket/HTTP listeners to prevent "ClawJack" exploits. (Added: 2026-03-05)
+*   **[P0] Deep Tool Inspection (DTI)**: Egress filtering and Behavioral Attestation middleware for tool calls. (Added: 2026-03-05)
+*   **[P1] Hierarchical Role Headers**: Support for Mayor/Deacon patterns in high-throughput swarms. (Added: 2026-03-05)
+*   **[P1] Ephemeral Workspace Provisioner**: Automated isolation for tool execution environments (Git worktrees/containers). (Added: 2026-03-05)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
