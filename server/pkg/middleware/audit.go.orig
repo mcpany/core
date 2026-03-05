@@ -387,8 +387,8 @@ func (m *AuditMiddleware) Close() error {
 	return nil
 }
 
-// WriteEntry writes an audit entry directly to the store.
-func (m *AuditMiddleware) WriteEntry(ctx context.Context, entry audit.Entry) error {
+// Write writes an audit entry directly to the store.
+func (m *AuditMiddleware) Write(ctx context.Context, entry audit.Entry) error {
 	m.mu.RLock()
 	store := m.store
 	m.mu.RUnlock()

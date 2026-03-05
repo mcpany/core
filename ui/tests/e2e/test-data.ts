@@ -258,3 +258,16 @@ export const seedCollection = async (requestContext?: APIRequestContext) => {
 export const cleanupCollection = async (requestContext?: APIRequestContext) => {
     // No-op
 };
+
+export const seedAuditLogs = async (requestContext?: import('@playwright/test').APIRequestContext) => {
+    const { request } = require('@playwright/test');
+    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    try {
+        const res = await context.post('/api/v1/debug/seed_audit', { headers: HEADERS });
+        if (!res.ok()) {
+            console.log(`Failed to seed audit logs: ${res.status()}`);
+        }
+    } catch (e) {
+        console.log(`Failed to seed audit logs: ${e}`);
+    }
+};

@@ -1,0 +1,11 @@
+--- api_audit.go
++++ api_audit.go
+@@ -159,7 +159,7 @@
+			DurationMs: 100,
+		}
+
+-		if err := a.standardMiddlewares.Audit.Write(r.Context(), entry); err != nil {
++		if err := a.standardMiddlewares.Audit.WriteEntry(r.Context(), entry); err != nil {
+			http.Error(w, "Failed to write seed audit log: "+err.Error(), http.StatusInternalServerError)
+			return
+		}

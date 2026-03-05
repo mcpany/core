@@ -1,0 +1,12 @@
+--- server/pkg/middleware/audit.go
++++ server/pkg/middleware/audit.go
+@@ -345,7 +345,7 @@
+ }
+
+-// Write writes an audit entry directly to the store.
+-func (m *AuditMiddleware) Write(ctx context.Context, entry audit.Entry) error {
++// WriteEntry writes an audit entry directly to the store.
++func (m *AuditMiddleware) WriteEntry(ctx context.Context, entry audit.Entry) error {
+	m.mu.RLock()
+	store := m.store
+	m.mu.RUnlock()
