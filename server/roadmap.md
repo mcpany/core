@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-05 Evolution)
+*   **[P0] CEL-based Policy Firewall Engine**: Implement a dynamic expression engine for complex, granular tool-call policies. (Added: 2026-03-05)
+*   **[P0] Gateway Loopback Hardening**: Mandatory origin verification (CORS/Origin) for local WebSocket and HTTP listeners. (Added: 2026-03-05)
+*   **[P1] Tool Annotation Scoping**: Permission logic based on verified tool metadata (e.g., `security:critical`). (Added: 2026-03-05)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

@@ -388,6 +388,18 @@ func (m *AuditMiddleware) Close() error {
 }
 
 // Write writes an audit entry directly to the store.
+//
+// Summary: Manually writes an audit entry to the store and broadcasts it.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - entry (audit.Entry): The audit entry to write.
+//
+// Returns:
+//   - error: An error if the audit store is not initialized.
+//
+// Side Effects:
+//   - Writes to the audit store and broadcasts to subscribers.
 func (m *AuditMiddleware) Write(ctx context.Context, entry audit.Entry) error {
 	m.mu.RLock()
 	store := m.store

@@ -13,6 +13,9 @@
 - [ ] **[P1] Resource Cost/Latency Overlay**: Real-time performance metrics displayed directly on tool cards. (Added: 2026-02-26)
 - [ ] **[P0] Connectivity & Security Dashboard**: Visualize local-only vs remote exposure, attestation status, and active MFA sessions. (Added: 2026-02-28)
 - [ ] **[P0] Stateful A2A Mailbox**: UI for viewing queued and delivered A2A messages across the agent mesh. (Added: 2026-02-28)
+- [ ] **[P0] Policy Firewall Policy Editor**: Visual builder for CEL-based tool policies with "Safe-by-Default" templates. (Added: 2026-03-05)
+- [ ] **[P0] Audit Trail & Violation Viewer**: Real-time monitoring of tool calls with color-coded policy evaluations (Allow/Deny/Bypass). (Added: 2026-03-05)
+- [ ] **[P1] Tool Annotation Explorer**: UI for inspecting and filtering tools based on their verified security annotations. (Added: 2026-03-05)
 - [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
 - [x] **[P1] Tool Playground & Explorer**:
   - [x] Auto-generated forms from Tool JSON Schemas.
