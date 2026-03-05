@@ -81,3 +81,17 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-05] Updates
+
+### Proposed Additions
+- **JIT Capability Negotiation Middleware**: (P0) Implements on-the-fly tool schema pruning based on agent intent.
+- **Cryptographic Capability Delegation (Auth Chains)**: (P0) Verifiable token protocol for parent-to-subagent permission handoff.
+- **Secure Cloud-Local WebSocket Bridge**: (P1) Persistent bi-directional bridge for sandboxed agents.
+
+### Priority Shifts
+- **Lazy-MCP Middleware**: Promoted to **P0** (already P0) and integrated with JIT Capability Negotiation.
+- **A2A Interop Bridge**: Priority reaffirmed as **P0** due to rising "A2A Proliferation."
+- **Safe-by-Default Hardening**: Priority reaffirmed as **P0** due to "8000 Exposed Servers" crisis.

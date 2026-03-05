@@ -3,6 +3,9 @@
 ## Status: Active Development
 
 ### Universal Agent Bus (New Strategic Priorities)
+- [ ] **[P0] JIT Capability Negotiator**: UI for managing the dynamic tool pruning engine and intent-based filtering. (Added: 2026-03-05)
+- [ ] **[P0] Auth Chain Explorer**: Visualizer for cryptographic capability delegation (Parent -> Subagent delegation chains). (Added: 2026-03-05)
+- [ ] **[P1] WebSocket Bridge Monitor**: Real-time status and message inspector for Cloud-Local secure bridges. (Added: 2026-03-05)
 - [ ] **[P0] Recursive Context Dashboard**: Visualize state inheritance and session tokens across agent swarms. (Added: 2026-02-23)
 - [ ] **[P0] Multi-Agent Session Timeline**: Visual tracking of agent handoffs and shared tool state. (Added: 2026-02-24)
 - [ ] **[P1] Unified Discovery Manager**: UI for managing and auto-discovering MCP servers across transports. (Added: 2026-02-24)

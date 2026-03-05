@@ -11,6 +11,11 @@
 
 ### Status: Active Development
 
+#### Upcoming (2026-03-05 Evolution)
+*   **[P0] JIT Capability Negotiation Middleware**: Implement on-the-fly tool schema pruning based on agent intent. (Added: 2026-03-05)
+*   **[P0] Cryptographic Capability Delegation (Auth Chains)**: Verifiable token protocol for parent-to-subagent permission handoff. (Added: 2026-03-05)
+*   **[P1] Secure Cloud-Local WebSocket Bridge**: Persistent bi-directional bridge for sandboxed agents. (Added: 2026-03-05)
+
 #### Upcoming (2026-02-23 Evolution)
 *   **[P0] Recursive Context Protocol**: Finalize header-based context inheritance for swarms.
 *   **[P0] Zero-Trust Subagent Scoping**: Implement intent-bound capability tokens.
