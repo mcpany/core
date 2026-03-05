@@ -29,13 +29,13 @@ func TestSeededE2E(t *testing.T) {
 
 	// 3. Verify Data via API
 	// List services
-	resp, err := serverInfo.RegistrationClient.ListServices(ctx, &apiv1.ListServicesRequest{})
+	resp, err := serverInfo.RegistrationClient.ListServices(ctx, apiv1.ListServicesRequest_builder{}.Build())
 	require.NoError(t, err)
 	require.NotNil(t, resp)
 
 	foundCore := false
 	foundTools := false
-	for _, svc := range resp.Services {
+	for _, svc := range resp.GetServices() {
 		if svc.GetName() == "seed-core" {
 			foundCore = true
 		}

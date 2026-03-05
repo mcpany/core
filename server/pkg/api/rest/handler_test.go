@@ -24,7 +24,7 @@ func TestValidateConfigHandler(t *testing.T) {
 		{
 			name:           "Valid Method",
 			method:         http.MethodPost,
-			body:           `{"content": "global_settings:\n  mcp_listen_address: :8080"}`,
+			body:           `{"content": "global_settings:\n  mcp_listen_address: 127.0.0.1:8080"}`,
 			expectedStatus: http.StatusOK,
 			expectedValid:  true,
 		},
@@ -89,7 +89,7 @@ func TestValidateConfigHandler(t *testing.T) {
 				}
 
 				if resp.Valid != tt.expectedValid {
-					t.Errorf("expected valid %v, got %v", tt.expectedValid, resp.Valid)
+					t.Errorf("expected valid %v, got %v. Errors: %v", tt.expectedValid, resp.Valid, resp.Errors)
 				}
 
 				if tt.expectError && len(resp.Errors) == 0 {

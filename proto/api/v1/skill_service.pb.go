@@ -7,8 +7,6 @@
 // 	protoc        v6.33.1
 // source: proto/api/v1/skill_service.proto
 
-//go:build !protoopaque
-
 package v1
 
 import (
@@ -30,7 +28,7 @@ const (
 
 // ListSkillsRequest represents a request to list available skills.
 type ListSkillsRequest struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
+	state         protoimpl.MessageState `protogen:"opaque.v1"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -74,11 +72,10 @@ func (b0 ListSkillsRequest_builder) Build() *ListSkillsRequest {
 
 // ListSkillsResponse contains the list of skills.
 type ListSkillsResponse struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// The list of skill definitions.
-	Skills        []*v1.Skill `protobuf:"bytes,1,rep,name=skills" json:"skills,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state             protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Skills *[]*v1.Skill           `protobuf:"bytes,1,rep,name=skills"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *ListSkillsResponse) Reset() {
@@ -108,13 +105,15 @@ func (x *ListSkillsResponse) ProtoReflect() protoreflect.Message {
 
 func (x *ListSkillsResponse) GetSkills() []*v1.Skill {
 	if x != nil {
-		return x.Skills
+		if x.xxx_hidden_Skills != nil {
+			return *x.xxx_hidden_Skills
+		}
 	}
 	return nil
 }
 
 func (x *ListSkillsResponse) SetSkills(v []*v1.Skill) {
-	x.Skills = v
+	x.xxx_hidden_Skills = &v
 }
 
 type ListSkillsResponse_builder struct {
@@ -128,17 +127,16 @@ func (b0 ListSkillsResponse_builder) Build() *ListSkillsResponse {
 	m0 := &ListSkillsResponse{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Skills = b.Skills
+	x.xxx_hidden_Skills = &b.Skills
 	return m0
 }
 
 // GetSkillRequest represents a request to retrieve a skill.
 type GetSkillRequest struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// The unique name of the skill to retrieve.
-	Name          string `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state           protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Name string                 `protobuf:"bytes,1,opt,name=name"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *GetSkillRequest) Reset() {
@@ -168,13 +166,13 @@ func (x *GetSkillRequest) ProtoReflect() protoreflect.Message {
 
 func (x *GetSkillRequest) GetName() string {
 	if x != nil {
-		return x.Name
+		return x.xxx_hidden_Name
 	}
 	return ""
 }
 
 func (x *GetSkillRequest) SetName(v string) {
-	x.Name = v
+	x.xxx_hidden_Name = v
 }
 
 type GetSkillRequest_builder struct {
@@ -188,17 +186,16 @@ func (b0 GetSkillRequest_builder) Build() *GetSkillRequest {
 	m0 := &GetSkillRequest{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Name = b.Name
+	x.xxx_hidden_Name = b.Name
 	return m0
 }
 
 // GetSkillResponse contains the requested skill definition.
 type GetSkillResponse struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// The skill definition.
-	Skill         *v1.Skill `protobuf:"bytes,1,opt,name=skill" json:"skill,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state            protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Skill *v1.Skill              `protobuf:"bytes,1,opt,name=skill"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *GetSkillResponse) Reset() {
@@ -228,24 +225,24 @@ func (x *GetSkillResponse) ProtoReflect() protoreflect.Message {
 
 func (x *GetSkillResponse) GetSkill() *v1.Skill {
 	if x != nil {
-		return x.Skill
+		return x.xxx_hidden_Skill
 	}
 	return nil
 }
 
 func (x *GetSkillResponse) SetSkill(v *v1.Skill) {
-	x.Skill = v
+	x.xxx_hidden_Skill = v
 }
 
 func (x *GetSkillResponse) HasSkill() bool {
 	if x == nil {
 		return false
 	}
-	return x.Skill != nil
+	return x.xxx_hidden_Skill != nil
 }
 
 func (x *GetSkillResponse) ClearSkill() {
-	x.Skill = nil
+	x.xxx_hidden_Skill = nil
 }
 
 type GetSkillResponse_builder struct {
@@ -259,17 +256,16 @@ func (b0 GetSkillResponse_builder) Build() *GetSkillResponse {
 	m0 := &GetSkillResponse{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Skill = b.Skill
+	x.xxx_hidden_Skill = b.Skill
 	return m0
 }
 
 // CreateSkillRequest represents a request to create a new skill.
 type CreateSkillRequest struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// The definition of the skill to create.
-	Skill         *v1.Skill `protobuf:"bytes,1,opt,name=skill" json:"skill,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state            protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Skill *v1.Skill              `protobuf:"bytes,1,opt,name=skill"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *CreateSkillRequest) Reset() {
@@ -299,24 +295,24 @@ func (x *CreateSkillRequest) ProtoReflect() protoreflect.Message {
 
 func (x *CreateSkillRequest) GetSkill() *v1.Skill {
 	if x != nil {
-		return x.Skill
+		return x.xxx_hidden_Skill
 	}
 	return nil
 }
 
 func (x *CreateSkillRequest) SetSkill(v *v1.Skill) {
-	x.Skill = v
+	x.xxx_hidden_Skill = v
 }
 
 func (x *CreateSkillRequest) HasSkill() bool {
 	if x == nil {
 		return false
 	}
-	return x.Skill != nil
+	return x.xxx_hidden_Skill != nil
 }
 
 func (x *CreateSkillRequest) ClearSkill() {
-	x.Skill = nil
+	x.xxx_hidden_Skill = nil
 }
 
 type CreateSkillRequest_builder struct {
@@ -330,17 +326,16 @@ func (b0 CreateSkillRequest_builder) Build() *CreateSkillRequest {
 	m0 := &CreateSkillRequest{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Skill = b.Skill
+	x.xxx_hidden_Skill = b.Skill
 	return m0
 }
 
 // CreateSkillResponse contains the created skill definition.
 type CreateSkillResponse struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// The created skill definition.
-	Skill         *v1.Skill `protobuf:"bytes,1,opt,name=skill" json:"skill,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state            protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Skill *v1.Skill              `protobuf:"bytes,1,opt,name=skill"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *CreateSkillResponse) Reset() {
@@ -370,24 +365,24 @@ func (x *CreateSkillResponse) ProtoReflect() protoreflect.Message {
 
 func (x *CreateSkillResponse) GetSkill() *v1.Skill {
 	if x != nil {
-		return x.Skill
+		return x.xxx_hidden_Skill
 	}
 	return nil
 }
 
 func (x *CreateSkillResponse) SetSkill(v *v1.Skill) {
-	x.Skill = v
+	x.xxx_hidden_Skill = v
 }
 
 func (x *CreateSkillResponse) HasSkill() bool {
 	if x == nil {
 		return false
 	}
-	return x.Skill != nil
+	return x.xxx_hidden_Skill != nil
 }
 
 func (x *CreateSkillResponse) ClearSkill() {
-	x.Skill = nil
+	x.xxx_hidden_Skill = nil
 }
 
 type CreateSkillResponse_builder struct {
@@ -401,19 +396,17 @@ func (b0 CreateSkillResponse_builder) Build() *CreateSkillResponse {
 	m0 := &CreateSkillResponse{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Skill = b.Skill
+	x.xxx_hidden_Skill = b.Skill
 	return m0
 }
 
 // UpdateSkillRequest represents a request to update an existing skill.
 type UpdateSkillRequest struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// The name of the skill to update.
-	Name string `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
-	// The new definition of the skill.
-	Skill         *v1.Skill `protobuf:"bytes,2,opt,name=skill" json:"skill,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state            protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Name  string                 `protobuf:"bytes,1,opt,name=name"`
+	xxx_hidden_Skill *v1.Skill              `protobuf:"bytes,2,opt,name=skill"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *UpdateSkillRequest) Reset() {
@@ -443,35 +436,35 @@ func (x *UpdateSkillRequest) ProtoReflect() protoreflect.Message {
 
 func (x *UpdateSkillRequest) GetName() string {
 	if x != nil {
-		return x.Name
+		return x.xxx_hidden_Name
 	}
 	return ""
 }
 
 func (x *UpdateSkillRequest) GetSkill() *v1.Skill {
 	if x != nil {
-		return x.Skill
+		return x.xxx_hidden_Skill
 	}
 	return nil
 }
 
 func (x *UpdateSkillRequest) SetName(v string) {
-	x.Name = v
+	x.xxx_hidden_Name = v
 }
 
 func (x *UpdateSkillRequest) SetSkill(v *v1.Skill) {
-	x.Skill = v
+	x.xxx_hidden_Skill = v
 }
 
 func (x *UpdateSkillRequest) HasSkill() bool {
 	if x == nil {
 		return false
 	}
-	return x.Skill != nil
+	return x.xxx_hidden_Skill != nil
 }
 
 func (x *UpdateSkillRequest) ClearSkill() {
-	x.Skill = nil
+	x.xxx_hidden_Skill = nil
 }
 
 type UpdateSkillRequest_builder struct {
@@ -487,18 +480,17 @@ func (b0 UpdateSkillRequest_builder) Build() *UpdateSkillRequest {
 	m0 := &UpdateSkillRequest{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Name = b.Name
-	x.Skill = b.Skill
+	x.xxx_hidden_Name = b.Name
+	x.xxx_hidden_Skill = b.Skill
 	return m0
 }
 
 // UpdateSkillResponse contains the updated skill definition.
 type UpdateSkillResponse struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// The updated skill definition.
-	Skill         *v1.Skill `protobuf:"bytes,1,opt,name=skill" json:"skill,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state            protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Skill *v1.Skill              `protobuf:"bytes,1,opt,name=skill"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *UpdateSkillResponse) Reset() {
@@ -528,24 +520,24 @@ func (x *UpdateSkillResponse) ProtoReflect() protoreflect.Message {
 
 func (x *UpdateSkillResponse) GetSkill() *v1.Skill {
 	if x != nil {
-		return x.Skill
+		return x.xxx_hidden_Skill
 	}
 	return nil
 }
 
 func (x *UpdateSkillResponse) SetSkill(v *v1.Skill) {
-	x.Skill = v
+	x.xxx_hidden_Skill = v
 }
 
 func (x *UpdateSkillResponse) HasSkill() bool {
 	if x == nil {
 		return false
 	}
-	return x.Skill != nil
+	return x.xxx_hidden_Skill != nil
 }
 
 func (x *UpdateSkillResponse) ClearSkill() {
-	x.Skill = nil
+	x.xxx_hidden_Skill = nil
 }
 
 type UpdateSkillResponse_builder struct {
@@ -559,17 +551,16 @@ func (b0 UpdateSkillResponse_builder) Build() *UpdateSkillResponse {
 	m0 := &UpdateSkillResponse{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Skill = b.Skill
+	x.xxx_hidden_Skill = b.Skill
 	return m0
 }
 
 // DeleteSkillRequest represents a request to delete a skill.
 type DeleteSkillRequest struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// The name of the skill to delete.
-	Name          string `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state           protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Name string                 `protobuf:"bytes,1,opt,name=name"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *DeleteSkillRequest) Reset() {
@@ -599,13 +590,13 @@ func (x *DeleteSkillRequest) ProtoReflect() protoreflect.Message {
 
 func (x *DeleteSkillRequest) GetName() string {
 	if x != nil {
-		return x.Name
+		return x.xxx_hidden_Name
 	}
 	return ""
 }
 
 func (x *DeleteSkillRequest) SetName(v string) {
-	x.Name = v
+	x.xxx_hidden_Name = v
 }
 
 type DeleteSkillRequest_builder struct {
@@ -619,13 +610,13 @@ func (b0 DeleteSkillRequest_builder) Build() *DeleteSkillRequest {
 	m0 := &DeleteSkillRequest{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Name = b.Name
+	x.xxx_hidden_Name = b.Name
 	return m0
 }
 
 // DeleteSkillResponse represents the response after deleting a skill.
 type DeleteSkillResponse struct {
-	state         protoimpl.MessageState `protogen:"hybrid.v1"`
+	state         protoimpl.MessageState `protogen:"opaque.v1"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }

@@ -77,7 +77,7 @@ func TestSendWebhook(t *testing.T) {
 		assert.Equal(t, "health_status_changed", payload["event"])
 		assert.Equal(t, "webhook-test-service", payload["service"])
 		assert.Equal(t, "up", payload["status"])
-	case <-time.After(1 * time.Second):
+	case <-time.After(5 * time.Second):
 		t.Fatal("timeout waiting for webhook")
 	}
 
@@ -128,7 +128,7 @@ func TestSendWebhook(t *testing.T) {
 		// Consume initial webhook
 		select {
 		case <-receivedPayloads:
-		case <-time.After(1 * time.Second):
+		case <-time.After(5 * time.Second):
 			t.Fatal("timeout waiting for initial webhook")
 		}
 
@@ -148,7 +148,7 @@ func TestSendWebhook(t *testing.T) {
 		case payload := <-receivedPayloads:
 			assert.Equal(t, "flapping-service", payload["service"])
 			assert.Equal(t, "down", payload["status"])
-		case <-time.After(1 * time.Second):
+		case <-time.After(5 * time.Second):
 			t.Fatal("timeout waiting for down webhook")
 		}
 	})

@@ -4,6 +4,9 @@
 # Variables
 GO = go
 GO_CMD := $(GO)
+ifdef INSIDE_DOCKER_CONTAINER
+GO_CMD := /usr/local/go/bin/go
+endif
 BUILD_DIR := $(abspath ./build)
 TOOL_INSTALL_DIR := $(BUILD_DIR)/env/bin
 PROTOC_INCLUDE_DIR := $(TOOL_INSTALL_DIR)/include
@@ -55,7 +58,8 @@ build-docker:
 
 test-proto:
 	@echo "Running proto tests..."
-	@go test ./proto/...
+	@echo "GO_CMD is $(GO_CMD) and INSIDE_DOCKER_CONTAINER is $(INSIDE_DOCKER_CONTAINER)"
+	@$(GO_CMD) test ./proto/...
 
 k8s-e2e:
 	@export PATH=$(TOOL_INSTALL_DIR):$$PATH; $(MAKE) -C k8s test
@@ -150,11 +154,11 @@ gen: clean-protos prepare-proto
 			--descriptor_set_out=$(BUILD_DIR)/all.protoset \
 			--include_imports \
 			--go_out=. \
-			--go_opt=module=github.com/mcpany/core,default_api_level=API_HYBRID \
+			--go_opt=module=github.com/mcpany/core,default_api_level=API_OPAQUE \
 			--go-grpc_out=. \
 			--go-grpc_opt=module=github.com/mcpany/core \
 			--grpc-gateway_out=. \
-			--grpc-gateway_opt=module=github.com/mcpany/core \
+			--grpc-gateway_opt=module=github.com/mcpany/core,use_opaque_api=true \
 			{} +; \
 		rm -rf google
 

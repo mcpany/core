@@ -12,10 +12,12 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestRootCmd(t *testing.T) {
+	viper.Reset()
 	cmd := newRootCmd()
 	b := bytes.NewBufferString("")
 	cmd.SetOut(b)
@@ -26,6 +28,7 @@ func TestRootCmd(t *testing.T) {
 }
 
 func TestDoctorCmd_Offline(t *testing.T) {
+	viper.Reset()
 	cmd := newRootCmd()
 	b := bytes.NewBufferString("")
 	cmd.SetOut(b)
@@ -42,6 +45,7 @@ func TestDoctorCmd_Offline(t *testing.T) {
 }
 
 func TestDoctorCmd_Online(t *testing.T) {
+	viper.Reset()
 	// Mock server
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/health" {
@@ -85,6 +89,7 @@ func TestDoctorCmd_AddressParsing(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			viper.Reset()
 			cmd := newRootCmd()
 			b := bytes.NewBufferString("")
 			cmd.SetOut(b)
@@ -100,6 +105,7 @@ func TestDoctorCmd_AddressParsing(t *testing.T) {
 func TestDoctorCmd_ServerErrors(t *testing.T) {
 	// 1. Server returns 500 on health
 	t.Run("Health 500", func(t *testing.T) {
+		viper.Reset()
 		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusInternalServerError)
 		}))
@@ -116,6 +122,7 @@ func TestDoctorCmd_ServerErrors(t *testing.T) {
 
 	// 2. Server returns 500 on doctor
 	t.Run("Doctor 500", func(t *testing.T) {
+		viper.Reset()
 		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if r.URL.Path == "/health" {
 				w.WriteHeader(http.StatusOK)
@@ -136,6 +143,7 @@ func TestDoctorCmd_ServerErrors(t *testing.T) {
 
 	// 3. Doctor returns invalid JSON
 	t.Run("Doctor Invalid JSON", func(t *testing.T) {
+		viper.Reset()
 		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if r.URL.Path == "/health" {
 				w.WriteHeader(http.StatusOK)
@@ -157,6 +165,7 @@ func TestDoctorCmd_ServerErrors(t *testing.T) {
 
     // 4. Doctor returns degraded status
 	t.Run("Doctor Degraded", func(t *testing.T) {
+		viper.Reset()
 		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if r.URL.Path == "/health" {
 				w.WriteHeader(http.StatusOK)

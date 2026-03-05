@@ -7,8 +7,6 @@
 // 	protoc        v6.33.1
 // source: proto/api/v1/catalog_service.proto
 
-//go:build !protoopaque
-
 package v1
 
 import (
@@ -28,11 +26,10 @@ const (
 )
 
 type ListCatalogServicesRequest struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// Optional: Filter by tags.
-	Tags          []string `protobuf:"bytes,1,rep,name=tags" json:"tags,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state           protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Tags []string               `protobuf:"bytes,1,rep,name=tags"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *ListCatalogServicesRequest) Reset() {
@@ -62,13 +59,13 @@ func (x *ListCatalogServicesRequest) ProtoReflect() protoreflect.Message {
 
 func (x *ListCatalogServicesRequest) GetTags() []string {
 	if x != nil {
-		return x.Tags
+		return x.xxx_hidden_Tags
 	}
 	return nil
 }
 
 func (x *ListCatalogServicesRequest) SetTags(v []string) {
-	x.Tags = v
+	x.xxx_hidden_Tags = v
 }
 
 type ListCatalogServicesRequest_builder struct {
@@ -82,16 +79,15 @@ func (b0 ListCatalogServicesRequest_builder) Build() *ListCatalogServicesRequest
 	m0 := &ListCatalogServicesRequest{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Tags = b.Tags
+	x.xxx_hidden_Tags = b.Tags
 	return m0
 }
 
 type ListCatalogServicesResponse struct {
-	state protoimpl.MessageState `protogen:"hybrid.v1"`
-	// The list of services.
-	Services      []*v1.UpstreamServiceConfig `protobuf:"bytes,1,rep,name=services" json:"services,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state               protoimpl.MessageState       `protogen:"opaque.v1"`
+	xxx_hidden_Services *[]*v1.UpstreamServiceConfig `protobuf:"bytes,1,rep,name=services"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
 }
 
 func (x *ListCatalogServicesResponse) Reset() {
@@ -121,13 +117,15 @@ func (x *ListCatalogServicesResponse) ProtoReflect() protoreflect.Message {
 
 func (x *ListCatalogServicesResponse) GetServices() []*v1.UpstreamServiceConfig {
 	if x != nil {
-		return x.Services
+		if x.xxx_hidden_Services != nil {
+			return *x.xxx_hidden_Services
+		}
 	}
 	return nil
 }
 
 func (x *ListCatalogServicesResponse) SetServices(v []*v1.UpstreamServiceConfig) {
-	x.Services = v
+	x.xxx_hidden_Services = &v
 }
 
 type ListCatalogServicesResponse_builder struct {
@@ -141,7 +139,7 @@ func (b0 ListCatalogServicesResponse_builder) Build() *ListCatalogServicesRespon
 	m0 := &ListCatalogServicesResponse{}
 	b, x := &b0, m0
 	_, _ = b, x
-	x.Services = b.Services
+	x.xxx_hidden_Services = &b.Services
 	return m0
 }
 
