@@ -3,6 +3,9 @@
 ## Status: Active Development
 
 ### Universal Agent Bus (New Strategic Priorities)
+- [ ] **[P0] Ephemeral Permission Monitor**: Real-time visualization of per-turn tool authorizations. (Added: 2026-03-05)
+- [ ] **[P0] Discovery Attestation Shield**: Security UI for managing verified discovery sources. (Added: 2026-03-05)
+- [ ] **[P1] Streaming Tool Console**: UI support for viewing real-time streaming tool outputs. (Added: 2026-03-05)
 - [ ] **[P0] Recursive Context Dashboard**: Visualize state inheritance and session tokens across agent swarms. (Added: 2026-02-23)
 - [ ] **[P0] Multi-Agent Session Timeline**: Visual tracking of agent handoffs and shared tool state. (Added: 2026-02-24)
 - [ ] **[P1] Unified Discovery Manager**: UI for managing and auto-discovering MCP servers across transports. (Added: 2026-02-24)

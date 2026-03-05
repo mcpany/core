@@ -81,3 +81,20 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-05] Updates
+
+### Proposed Additions
+- **Ephemeral Scoping Middleware**: (P0) Extends Policy Firewall to support per-turn tool permissions.
+- **Discovery-Time Attestation Guard**: (P0) Prevents tool discovery from unverified MCP servers, mitigating PITD attacks.
+- **Speculative Attestation Engine**: (P1) Background attestation for predicted tool calls to reduce latency in federated meshes.
+- **Streaming Tool Output Adapter**: (P1) Support for Gemini-style streaming responses from long-running MCP tools.
+
+### Priority Shifts
+- **Policy Firewall**: Re-affirmed as **P0** and expanded to include Ephemeral Scoping.
+- **Lazy-MCP Middleware**: Promoted to **P0** with mandatory Discovery-Time Attestation.
+
+### Deprecations / Monitoring
+- **Discovery without Attestation**: Marked for deprecation. All discovery providers must support attestation by Q3 2026.

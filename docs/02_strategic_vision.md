@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-05]
+### Focus: Ephemeral Trust & Discovery Hardening
+**Context**: Today's research into Claude Code's ephemeral sessions and the emergence of Prompt-Injected Tool Discovery (PITD) necessitates a shift from "Session-Level Trust" to "Instruction-Level Trust." Additionally, the "Latency Tax" in federated meshes requires optimization of the attestation pipeline.
+**Strategic Pivot**:
+- **Instruction-Level Ephemeral Scoping**: MCP Any will evolve its Policy Firewall to support "Ephemeral Scopes" that expire immediately after a single tool call or turn, mirroring the latest security postures in the ecosystem.
+- **Discovery-Time Attestation**: To mitigate PITD, we are shifting our security model to require cryptographic attestation *at the point of discovery*. Tools from unverified sources will be invisible to the LLM by default, preventing injection via discovery.
+- **Speculative Attestation**: To combat the "Latency Tax," MCP Any will implement speculative attestation for likely next-step tools, ensuring that security checks do not block the agent's critical path.
