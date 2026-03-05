@@ -59,3 +59,9 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+### Update: 2026-03-05 - Origin Trust & Unix Sockets
+**Context:** Today's market sync revealed the "ClawJacked" exploit pattern in OpenClaw, allowing browser-based hijacks of local agents.
+**Architecture Adjustment:**
+* Accelerating the adoption of Unix Domain Sockets (UDS) for all local IPC to bypass TCP-based browser access entirely.
+* Implementing mandatory "Origin-Locked" handshakes for any TCP-bound local services.
+**Security Impact:** Eliminates the primary vector for "Confused Deputy" attacks from malicious websites targeting the local agent gateway.

@@ -81,3 +81,16 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-05] Updates
+
+### Proposed Additions
+- **Origin-Locked Gateway Middleware**: (P0) Mandatory CORS and Origin header verification for all local API/WebSocket endpoints to prevent "ClawJacked" style browser hijacks.
+- **Swarm Multi-Tenant Registry**: (P1) Allows a single MCP Any instance to manage multiple independent "Swarm Sessions" with isolated state and permissions.
+- **Vendor Marketplace Bridge**: (P1) Adapters to ingest tool definitions from Claude Code and Gemini CLI marketplaces into the Universal Discovery Service.
+
+### Priority Shifts
+- **Safe-by-Default Hardening**: Re-affirmed as **P0**. Includes moving to Unix Domain Sockets for local inter-process communication where possible.
+- **On-Demand Discovery (Lazy-MCP)**: Promoted to **P0** as marketplace aggregation will increase tool counts by orders of magnitude.
