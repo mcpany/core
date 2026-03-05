@@ -1667,6 +1667,7 @@ func TestReproduction_ProtocolCompliance(t *testing.T) {
 	httpPort := l.Addr().(*net.TCPAddr).Port
 	_ = l.Close()
 
+	t.Setenv("MCPANY_ATTESTATION_TOKEN", "test-token")
 	app := NewApplication()
 	afero.WriteFile(fs, "/config.yaml", []byte("upstream_services: []"), 0o644)
 

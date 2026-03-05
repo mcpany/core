@@ -74,6 +74,7 @@ upstream_services:
 	// Use dynamic ports to avoid race conditions
 	ctx, cancel = context.WithTimeout(context.Background(), 15*time.Second)
 
+	t.Setenv("MCPANY_ATTESTATION_TOKEN", "test-token")
 	appRunner = app.NewApplication()
 
 	errChan := make(chan error, 1)

@@ -18,6 +18,7 @@ services:
       - MCPANY_ALLOW_LOOPBACK_RESOURCES=true
       - MCPANY_ADMIN_INIT_USERNAME=e2e-admin
       - MCPANY_ADMIN_INIT_PASSWORD=password
+      - MCPANY_ATTESTATION_TOKEN=test-attestation-token
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:50050/healthz"]
       interval: 5s

@@ -90,6 +90,7 @@ upstream_services:
 
         serverBin := filepath.Join(rootDir, "build/bin/server")
         cmd = exec.Command(serverBin, "run", "--config-path", configPath, "--debug", "--api-key", "test-key")
+        cmd.Env = append(os.Environ(), "MCPANY_ATTESTATION_TOKEN=test-attestation-token")
         // Redirect output for debugging
         // logFile, _ := os.Create(filepath.Join(configDir, "server.log"))
         // cmd.Stdout = logFile
@@ -165,7 +166,7 @@ upstream_services:
         cmd.Wait()
         // time.Sleep(1 * time.Second) // No wait needed if new port
         cmd = exec.Command(filepath.Join(rootDir, "build/bin/server"), "run", "--config-path", configPath, "--debug", "--api-key", "test-key")
-        cmd.Env = os.Environ()
+        cmd.Env = append(os.Environ(), "MCPANY_ATTESTATION_TOKEN=test-attestation-token")
         cmd.Stderr = os.Stderr
         if err := cmd.Start(); err != nil {
              t.Fatalf("Failed to restart server: %v", err)
@@ -219,6 +220,7 @@ upstream_services:
         cmd.Wait()
         time.Sleep(1 * time.Second)
         cmd = exec.Command(filepath.Join(rootDir, "build/bin/server"), "run", "--config-path", configPath, "--debug", "--api-key", "test-key")
+        cmd.Env = append(os.Environ(), "MCPANY_ATTESTATION_TOKEN=test-attestation-token")
         cmd.Start()
     }
 

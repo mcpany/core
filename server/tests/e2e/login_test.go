@@ -59,6 +59,7 @@ global_settings:
 	go func() {
 		defer close(done)
 		fs := afero.NewOsFs()
+		t.Setenv("MCPANY_ATTESTATION_TOKEN", "test-token")
 		opts := app.RunOptions{
 			Ctx:             ctx,
 			Fs:              fs,

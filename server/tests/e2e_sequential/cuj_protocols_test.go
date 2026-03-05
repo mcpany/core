@@ -73,6 +73,7 @@ upstream_services:
 		"-p", "25010:50050",
 		"-v", fmt.Sprintf("%s:/mcp_config", translatePath(upstreamConfigDir)),
 		"-v", fmt.Sprintf("%s:/data", translatePath(upstreamConfigDir)),
+		"-e", "MCPANY_ATTESTATION_TOKEN=test-attestation-token",
 		"mcpany/server:latest",
 		"run", "--config-path", "/mcp_config/config.yaml", "--mcp-listen-address", ":50050", "--debug", "--api-key", "test-key",
 	)
@@ -111,6 +112,7 @@ upstream_services:
 		"--network", networkName,
 		"-p", "25011:50050",
 		"-v", fmt.Sprintf("%s:/mcp_config", translatePath(gatewayConfigDir)),
+		"-e", "MCPANY_ATTESTATION_TOKEN=test-attestation-token",
 		"mcpany/server:latest",
 		"run", "--config-path", "/mcp_config/config.yaml", "--mcp-listen-address", ":50050", "--debug", "--api-key", "test-key",
 	)

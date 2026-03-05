@@ -23,6 +23,7 @@ func TestPortConflict(t *testing.T) {
 	portStr := l.Addr().String()
 
 	// 2. Try to start the application on the same port
+	t.Setenv("MCPANY_ATTESTATION_TOKEN", "test-token")
 	app := NewApplication()
 	opts := RunOptions{
 		Ctx:             context.Background(),

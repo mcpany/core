@@ -96,6 +96,7 @@ global_settings:
 		defer close(done)
 		// Mock filesystem with our config
 		fs := afero.NewOsFs()
+		t.Setenv("MCPANY_ATTESTATION_TOKEN", "test-token")
 		// Use 127.0.0.1:0 to let OS choose free ports and avoid dual-stack flakes
 		opts := app.RunOptions{
 			Ctx:             ctx,

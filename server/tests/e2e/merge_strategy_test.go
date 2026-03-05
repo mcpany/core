@@ -165,6 +165,7 @@ upstream_services:
 	defer cancel()
 
 	fs := afero.NewOsFs()
+	t.Setenv("MCPANY_ATTESTATION_TOKEN", "test-token")
 	runner := app.NewApplication()
 
 	// Pick random ports
