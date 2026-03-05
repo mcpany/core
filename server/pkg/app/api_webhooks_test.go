@@ -84,4 +84,35 @@ func TestHandleWebhookDetail(t *testing.T) {
 	if _, ok := app.WebhooksManager.GetWebhook("wh-123"); ok {
 		t.Errorf("DELETE expected webhook to be gone")
 	}
+
+	// Re-add for PUT test
+	app.WebhooksManager.AddWebhook(&webhooks.WebhookConfig{
+		ID:     "wh-123",
+		URL:    "http://example.com",
+		Events: []string{"test"},
+		Active: false,
+	})
+
+	// Test PUT
+	updateCfg := webhooks.WebhookConfig{
+		URL:    "http://example.com/updated",
+		Events: []string{"test"},
+		Active: true,
+	}
+	body, _ := json.Marshal(updateCfg)
+	req = httptest.NewRequest("PUT", "/webhooks/wh-123", bytes.NewBuffer(body))
+	rr = httptest.NewRecorder()
+	handler.ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusOK {
+		t.Errorf("PUT expected 200, got %d", rr.Code)
+	}
+
+	wh, ok := app.WebhooksManager.GetWebhook("wh-123")
+	if !ok {
+		t.Errorf("PUT expected webhook to exist")
+	}
+	if !wh.Active || wh.URL != "http://example.com/updated" {
+		t.Errorf("PUT expected webhook to be updated, got Active=%v, URL=%s", wh.Active, wh.URL)
+	}
 }

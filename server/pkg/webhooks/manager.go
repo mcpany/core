@@ -93,6 +93,33 @@ func (m *Manager) AddWebhook(w *WebhookConfig) {
 	m.webhooks[w.ID] = w
 }
 
+// UpdateWebhook updates an existing webhook by ID.
+//
+// Summary: Updates a webhook.
+//
+// Parameters:
+//   - id (string): The webhook ID to update.
+//   - w (*WebhookConfig): The updated webhook configuration.
+//
+// Returns:
+//   - error: An error if the webhook is not found.
+//
+// Side Effects:
+//   - Updates the internal webhook map.
+func (m *Manager) UpdateWebhook(id string, w *WebhookConfig) error {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	if _, ok := m.webhooks[id]; !ok {
+		return fmt.Errorf("webhook not found")
+	}
+
+	// Preserve existing ID
+	w.ID = id
+	m.webhooks[id] = w
+	return nil
+}
+
 // GetWebhook returns a webhook by ID.
 //
 // Summary: Retrieves a webhook by ID.
