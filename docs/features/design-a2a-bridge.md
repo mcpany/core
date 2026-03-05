@@ -46,3 +46,7 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-03-05:** Evolution to Universal Agent Bus.
+    - Added OAuth 2.1 with PKCE for secure A2A authentication.
+    - Integrated with "Proactive Injection Scanner" to sanitize cross-agent tool calls.
+    - Support for "Nested Orchestration" context via the Recursive Context Protocol.

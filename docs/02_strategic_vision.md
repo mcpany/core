@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-05]
+### Focus: Secure Agentic Orchestration & A2A Standardization
+**Context**: The rapid adoption of the Google A2A protocol and the persistent command injection vulnerabilities in the MCP ecosystem demand a shift toward "Intent-Aware" security and native inter-agent interoperability.
+**Strategic Pivot**:
+- **A2A-Native Architecture**: MCP Any will pivot from being a "Model-to-Tool" adapter to a "Universal Agent Bus" that treats other agents (via A2A) as first-class citizens.
+- **Intent-Scoped Policy Enforcement**: Moving the `Policy Firewall` from simple command blocking to "Intent Validation." Tool calls must be cryptographically tied to a parent agent's verified task intent.
+- **Zero-Trust Tool Sanitation**: Implementing a "Proactive Injection Scanner" middleware that sanitizes all tool inputs against known command injection patterns before they reach the upstream MCP server.

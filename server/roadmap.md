@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-05 Evolution)
+*   **[P0] A2A OAuth 2.1 Auth Translation Layer**: Secure A2A authentication with PKCE. (Added: 2026-03-05)
+*   **[P0] Proactive Injection Scanner Middleware**: Real-time sanitation of tool call arguments. (Added: 2026-03-05)
+*   **[P1] Intent-Aware Policy Engine**: Validation of tool calls against verified agent intent. (Added: 2026-03-05)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
