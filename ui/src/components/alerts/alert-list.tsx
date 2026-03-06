@@ -24,7 +24,8 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, AlertCircle, AlertTriangle, Search, Filter, MoreHorizontal, Clock, RefreshCw, Activity, Loader2 } from "lucide-react";
+import { CheckCircle2, AlertCircle, AlertTriangle, Search, Filter, MoreHorizontal, Clock, RefreshCw, Activity, Loader2, CheckSquare } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -48,6 +49,8 @@ export function AlertList() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterSeverity, setFilterSeverity] = useState<string>("all");
   const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [selectedAlertIds, setSelectedAlertIds] = useState<Set<string>>(new Set());
+  const [isBulkUpdating, setIsBulkUpdating] = useState(false);
   const { toast } = useToast();
 
   const fetchAlerts = async () => {
@@ -101,6 +104,57 @@ export function AlertList() {
             variant: "destructive",
         });
     }
+  };
+
+  const handleBulkStatusChange = async (newStatus: AlertStatus) => {
+    if (selectedAlertIds.size === 0) return;
+    setIsBulkUpdating(true);
+    try {
+      const ids = Array.from(selectedAlertIds);
+      const updatedAlerts = await Promise.all(
+        ids.map(id => apiClient.updateAlertStatus(id, newStatus))
+      );
+
+      setAlerts(prev => prev.map(a => {
+        const updated = updatedAlerts.find(u => u.id === a.id);
+        return updated ? updated : a;
+      }));
+
+      setSelectedAlertIds(new Set());
+      toast({
+        title: "Bulk Update Successful",
+        description: `${ids.length} alerts marked as ${newStatus}`,
+      });
+    } catch (error) {
+      console.error("Bulk update failed:", error);
+      toast({
+        title: "Bulk Update Failed",
+        description: "An error occurred while updating alerts.",
+        variant: "destructive",
+      });
+      // Refresh to ensure consistent state if partial failure
+      fetchAlerts();
+    } finally {
+      setIsBulkUpdating(false);
+    }
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedAlertIds.size === filteredAlerts.length && filteredAlerts.length > 0) {
+      setSelectedAlertIds(new Set());
+    } else {
+      setSelectedAlertIds(new Set(filteredAlerts.map(a => a.id)));
+    }
+  };
+
+  const toggleSelectAlert = (id: string) => {
+    const newSelected = new Set(selectedAlertIds);
+    if (newSelected.has(id)) {
+      newSelected.delete(id);
+    } else {
+      newSelected.add(id);
+    }
+    setSelectedAlertIds(newSelected);
   };
 
   const getSeverityBadge = (severity: Severity) => {
@@ -168,10 +222,48 @@ export function AlertList() {
         </div>
       </div>
 
+      {selectedAlertIds.size > 0 && (
+        <div className="flex items-center justify-between p-3 bg-muted/30 border rounded-md shadow-sm mb-4 animate-in fade-in slide-in-from-top-2">
+          <div className="text-sm font-medium flex items-center gap-2">
+            <CheckSquare className="h-4 w-4 text-primary" />
+            <span>{selectedAlertIds.size} alert{selectedAlertIds.size > 1 ? 's' : ''} selected</span>
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleBulkStatusChange('acknowledged')}
+              disabled={isBulkUpdating}
+              className="text-yellow-600 hover:text-yellow-700 hover:bg-yellow-50 dark:hover:bg-yellow-950/20"
+            >
+              <AlertTriangle className="mr-2 h-4 w-4" />
+              Acknowledge
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleBulkStatusChange('resolved')}
+              disabled={isBulkUpdating}
+              className="text-green-600 hover:text-green-700 hover:bg-green-50 dark:hover:bg-green-950/20"
+            >
+              <CheckCircle2 className="mr-2 h-4 w-4" />
+              Resolve
+            </Button>
+          </div>
+        </div>
+      )}
+
       <div className="rounded-md border bg-card">
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead className="w-[40px] text-center">
+                <Checkbox
+                  checked={filteredAlerts.length > 0 && selectedAlertIds.size === filteredAlerts.length}
+                  onCheckedChange={toggleSelectAll}
+                  aria-label="Select all alerts"
+                />
+              </TableHead>
               <TableHead className="w-[100px]">Severity</TableHead>
               <TableHead className="w-[100px]">Status</TableHead>
               <TableHead>Summary</TableHead>
@@ -198,7 +290,14 @@ export function AlertList() {
                 </TableRow>
             ) : (
                 filteredAlerts.map((alert) => (
-                <TableRow key={alert.id} className="group">
+                <TableRow key={alert.id} className="group" data-state={selectedAlertIds.has(alert.id) ? "selected" : undefined}>
+                    <TableCell className="text-center">
+                      <Checkbox
+                        checked={selectedAlertIds.has(alert.id)}
+                        onCheckedChange={() => toggleSelectAlert(alert.id)}
+                        aria-label={`Select alert ${alert.id}`}
+                      />
+                    </TableCell>
                     <TableCell>{getSeverityBadge(alert.severity)}</TableCell>
                     <TableCell>
                     <div className="flex items-center gap-2" title={alert.status}>

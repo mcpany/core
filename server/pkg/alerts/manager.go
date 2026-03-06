@@ -89,6 +89,9 @@ func (m *Manager) seedData() {
 	m.CreateAlert(&Alert{ID: "AL-1022", Title: "Disk Space Low", Message: "Volume /data at 85%", Severity: SeverityWarning, Status: StatusAcknowledged, Service: "database-primary", Source: "Disk Monitor", Timestamp: now.Add(-45 * time.Minute)})
 	m.CreateAlert(&Alert{ID: "AL-1021", Title: "Connection Refused", Message: "Upstream connection failed", Severity: SeverityCritical, Status: StatusResolved, Service: "payment-provider", Source: "Connectivity Check", Timestamp: now.Add(-2 * time.Hour)})
 	m.CreateAlert(&Alert{ID: "AL-1020", Title: "New Service Deployed", Message: "Service 'search-v2' detected", Severity: SeverityInfo, Status: StatusResolved, Service: "discovery", Source: "Orchestrator", Timestamp: now.Add(-5 * time.Hour)})
+	m.CreateAlert(&Alert{ID: "AL-1019", Title: "High Memory Usage", Message: "Memory > 95% for 10m", Severity: SeverityCritical, Status: StatusActive, Service: "cache-service", Source: "System Monitor", Timestamp: now.Add(-10 * time.Minute)})
+	m.CreateAlert(&Alert{ID: "AL-1018", Title: "Database Replication Lag", Message: "Replication lag > 30s", Severity: SeverityWarning, Status: StatusActive, Service: "database-replica", Source: "DB Monitor", Timestamp: now.Add(-20 * time.Minute)})
+	m.CreateAlert(&Alert{ID: "AL-1017", Title: "Payment Gateway Timeout", Message: "Payment API response > 5s", Severity: SeverityCritical, Status: StatusActive, Service: "payment-provider", Source: "Latency Watchdog", Timestamp: now.Add(-30 * time.Minute)})
 
 	// Seed Rules
 	m.CreateRule(&AlertRule{ID: "rule-1", Name: "High CPU", Metric: "cpu_usage", Operator: ">", Threshold: 90, Duration: "5m", Severity: SeverityCritical, Enabled: true, LastUpdated: now})
