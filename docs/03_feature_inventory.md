@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-06] Updates
+
+### Proposed Additions
+- **Shadow-Guard Configuration Sandbox**: (P0) Middleware that quarantines and validates project-local MCP/Claude configs before tool loading. Essential for protecting against RCE.
+- **Cloud-IAM Identity Passthrough**: (P1) Bridging module for mapping local agent tokens to remote cloud (GCP/AWS/Azure) roles for managed MCP tool execution.
+- **Cross-Agent Task Tokens**: (P1) Shared task state identifiers for interoperability between Gemini and Claude-style routing agents.
+
+### Priority Shifts
+- **Provenance-First Discovery**: Promoted from **P1** to **P0**. The recent RCE disclosures make cryptographic verification of tool sources a non-negotiable prerequisite.
+- **Cost & Latency Telemetry**: Promoted from **P1** to **P0** to support efficient "Economical Reasoning" as tools move from local to managed-remote.
+
+### Deprecations / Monitoring
+- **Unverified Local Config Parsing**: Deprecate automatic loading of `.mcp.json` from untrusted repository roots.

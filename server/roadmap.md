@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-06 Evolution)
+*   **[P0] Shadow-Guard Configuration Sandbox**: Middleware for validating project-local configs against RCE vulnerabilities. (Added: 2026-03-06)
+*   **[P1] Cloud-IAM Identity Passthrough**: Secure mapping of local agent tokens to cloud-managed MCP IAM roles. (Added: 2026-03-06)
+*   **[P1] Cross-Agent Task Tokens**: Shared task state identifiers for Gemini/Claude agent interoperability. (Added: 2026-03-06)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
