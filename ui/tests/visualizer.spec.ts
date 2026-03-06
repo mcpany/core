@@ -40,8 +40,8 @@ test.describe('Network Topology Visualizer', () => {
     await expect(page.locator('.react-flow').getByText('MCP Any')).toBeVisible();
 
     // 6. Seed Data Trigger (for interactive test)
-    // Check that the Seed Data button exists and is clickable
-    const seedBtn = page.getByRole('button', { name: 'Seed Data' });
+    // Check that the Simulate Load button exists and is clickable
+    const seedBtn = page.getByRole('button', { name: 'Simulate Load' });
     await expect(seedBtn).toBeVisible();
     await seedBtn.click();
 

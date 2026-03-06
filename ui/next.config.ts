@@ -38,6 +38,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  serverExternalPackages: ['chokidar', 'fsevents'],
   experimental: {
     // turbopack: {
     //   resolveAlias: {
@@ -115,6 +116,15 @@ const nextConfig: NextConfig = {
         destination: '/network',
         permanent: true,
       },
+    ];
+  },
+  async rewrites() {
+    const backendUrl = process.env.BACKEND_URL || 'http://localhost:50050';
+    return [
+      {
+        source: '/api/v1/ws/:path*',
+        destination: `${backendUrl}/api/v1/ws/:path*`,
+      }
     ];
   },
   webpack: (config) => {

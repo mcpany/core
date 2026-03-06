@@ -17,7 +17,9 @@ export function middleware(request: NextRequest) {
 
   // Intercept /api/v1 requests AND gRPC requests
   // console.log(`[Middleware] Processing ${pathname}`);
-  if (pathname.startsWith('/api/v1') || pathname.startsWith('/mcpany.api.v1.') || pathname.startsWith('/doctor') || pathname.startsWith('/v1/') || pathname.startsWith('/auth/oauth/') || pathname === '/auth/login' || pathname.startsWith('/debug/') || pathname.startsWith('/sse') || pathname.startsWith('/messages') || pathname.startsWith('/mcp/')) {
+  const isWsPath = pathname.startsWith('/api/v1/ws/');
+
+  if (!isWsPath && (pathname.startsWith('/api/v1') || pathname.startsWith('/mcpany.api.v1.') || pathname.startsWith('/doctor') || pathname.startsWith('/v1/') || pathname.startsWith('/auth/oauth/') || pathname === '/auth/login' || pathname.startsWith('/debug/') || pathname.startsWith('/sse') || pathname.startsWith('/messages') || pathname.startsWith('/mcp/'))) {
     // Dynamic Proxying via Middleware to avoid build-time baking of BACKEND_URL
     const backendUrl = process.env.BACKEND_URL || 'http://localhost:50050';
     console.log(`[Middleware] Proxying ${pathname} to ${backendUrl}`);

@@ -48,7 +48,8 @@ func NewSQLiteVectorStore(path string) (*SQLiteVectorStore, error) {
 		return nil, fmt.Errorf("sqlite path is required")
 	}
 
-	db, err := sql.Open("sqlite", path)
+	dsn := fmt.Sprintf("%s?_pragma=busy_timeout(10000)&_pragma=journal_mode(WAL)&_pragma=synchronous(NORMAL)", path)
+	db, err := sql.Open("sqlite", dsn)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open sqlite database: %w", err)
 	}
@@ -72,7 +73,7 @@ func NewSQLiteVectorStore(path string) (*SQLiteVectorStore, error) {
 		return nil, fmt.Errorf("failed to create semantic_cache_entries table: %w", err)
 	}
 
-	// Optimize SQLite performance
+	// Optimize SQLite performance (also applied via DSN)
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -84,7 +85,7 @@ func NewSQLiteVectorStore(path string) (*SQLiteVectorStore, error) {
 		_ = db.Close()
 		return nil, fmt.Errorf("failed to set synchronous mode: %w", err)
 	}
-	if _, err := db.ExecContext(ctx, "PRAGMA busy_timeout=5000;"); err != nil {
+	if _, err := db.ExecContext(ctx, "PRAGMA busy_timeout=10000;"); err != nil {
 		_ = db.Close()
 		return nil, fmt.Errorf("failed to set busy_timeout: %w", err)
 	}
