@@ -81,3 +81,17 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-02] Updates
+
+### Proposed Additions
+- **CLAW-10 Scoring & Compliance Dashboard**: (P0) Real-time visualization of the system's security posture against the 10 dimensions of the CLAW-10 Matrix.
+- **ClawHavoc Threat Intelligence Feed**: (P0) Automated middleware that cross-references tool schemas against known malicious patterns from the ClawHavoc campaign.
+- **Anti-Pivot Gateway Hardening**: (P0) Security headers and origin-checking to prevent browser-based RCE pivots (CVE-2026-25253).
+- **Encrypted Secret Provider (Vault Integration)**: (P1) First-class integration with HashiCorp Vault or AWS Secrets Manager to meet CLAW-10 Dimension 4.
+
+### Priority Shifts
+- **Provenance-First Discovery**: Promoted from **P1** to **P0**. Non-negotiable after the supply chain attacks.
+- **"Safe-by-Default" Network Hardening**: Re-affirmed as **P0** with immediate implementation urgency.

@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: 2026-03-02
+### Focus: The Enterprise Hardening Mandate (CLAW-10 Compliance)
+**Context**: The OpenClaw security collapse (CVE-2026-25253, ClawHavoc) has triggered a massive enterprise ban on autonomous agents. The market is demanding a transition from "Ambient Authority" to "Attested Capabilities."
+**Strategic Pivot**:
+- **CLAW-10 Alignment**: MCP Any will pivot its core value proposition to achieving a "Level 4" score on the CLAW-10 Matrix. This means prioritizing SSO, RBAC, encrypted secrets, and sandboxed tool execution.
+- **Supply Chain Attestation**: Implementing "ClawHavoc-Aware" discovery. MCP Any will not only verify signatures but also cross-reference tool schemas against a global threat intelligence feed to detect malicious patterns before they reach the LLM.
+- **Browser-Pivot Protection**: Hardening the local gateway against cross-origin and browser-based attacks that bypass localhost-only restrictions (mitigating CVE-2026-25253 style attacks).

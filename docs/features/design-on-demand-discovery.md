@@ -57,3 +57,11 @@ As the number of available MCP tools grows, agents face "context pollution"—wh
 
 ## 7. Evolutionary Changelog
 *   **2026-02-25:** Initial Document Creation.
+
+### Update: 2026-03-02 - ClawHavoc-Aware Threat Filtering
+**Context**: The ClawHavoc campaign poisoned the skill marketplace with 1,184+ malicious packages. Lazy discovery must act as a security gate, not just a performance optimization.
+**Architecture Adjustment**:
+*   The indexing pipeline now includes a "Threat Scanning" step.
+*   Integrating a local rules engine (YARA-like) to detect known malicious patterns in tool descriptions or schemas (e.g., hidden `curl` to unauthorized domains).
+*   Automatic quarantine of tools from unverified/unsigned sources that exhibit high-risk signatures.
+**Security Impact**: Prevents "Shadow AI" supply chain attacks by blocking malicious tools before they are discovered or called by an LLM.

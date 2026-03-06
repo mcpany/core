@@ -59,3 +59,11 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+
+### Update: 2026-03-02 - Mitigating Browser-Based Pivots (CVE-2026-25253)
+**Context**: The OpenClaw RCE vulnerability demonstrated that localhost-only binding is insufficient if an attacker can pivot through a victim's browser.
+**Architecture Adjustment**:
+*   Implementing strict `Cross-Origin-Embedder-Policy` (COEP) and `Cross-Origin-Opener-Policy` (COOP) headers for the gateway.
+*   Enforcing `Host` header validation and mandatory CSRF tokens for all loopback requests.
+*   Introducing a "Local Authorization" challenge (e.g., a one-time code shown in the CLI) for the first browser-to-gateway connection.
+**Security Impact**: Mitigates one-click RCE attacks where malicious websites attempt to interact with the local MCP Any API through the user's browser context.
