@@ -59,3 +59,7 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-02:** **Update: Runtime Containment Integration**
+    *   **Context**: Today's market sync revealed new exploit patterns targeting "Shadow MCP Servers" on local ports.
+    *   **Architecture Adjustment**: Expanding "Safe-by-Default" to include **Isolated Transport Bindings**. MCP Any will now support and prioritize Docker-bound named pipes and Unix domain sockets for inter-agent communication, reducing the reliance on TCP/IP loopback which can be scanned by other local processes.
+    *   **Security Impact**: Eliminates the "Local Port Scanning" attack vector for sub-agent communication.
