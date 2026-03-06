@@ -18,7 +18,7 @@ FROM mirror.gcr.io/library/python:3.11-slim
 WORKDIR /srv
 
 COPY timeserver_patch/requirements.txt .
-RUN pip install -r requirements.txt
+RUN pip install --break-system-packages -r requirements.txt
 
 COPY timeserver_patch/main.py /service/main.py
 
