@@ -25,6 +25,7 @@ import (
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/improbable-eng/grpc-web/go/grpcweb"
+	"google.golang.org/protobuf/encoding/protojson"
 	pb_admin "github.com/mcpany/core/proto/admin/v1"
 	v1 "github.com/mcpany/core/proto/api/v1"
 	"github.com/mcpany/core/server/pkg/admin"
@@ -1716,7 +1717,8 @@ func (a *Application) runServerMode(
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
-		_ = json.NewEncoder(w).Encode(resp)
+		b, _ := protojson.Marshal(resp)
+		_, _ = w.Write(b)
 	})))
 
 	logging.GetLogger().Info("DEBUG: Registering /mcp/u/ handler")
