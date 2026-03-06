@@ -167,3 +167,10 @@ func TestPostgresAuditStore_New_Error(t *testing.T) {
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "dsn is required")
 }
+
+func TestPostgresAuditStore_Read(t *testing.T) {
+	store := &PostgresAuditStore{}
+	_, err := store.Read(context.Background(), Filter{})
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "read not implemented for postgres audit store")
+}

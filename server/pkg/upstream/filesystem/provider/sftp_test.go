@@ -243,6 +243,12 @@ func TestSftpProvider(t *testing.T) {
 		infos, err := d.Readdir(0)
 		require.NoError(t, err)
 		assert.Len(t, infos, 2)
+
+		names, err := d.(*sftpFile).Readdirnames(0)
+		require.NoError(t, err)
+		assert.Len(t, names, 2)
+		assert.Contains(t, names, "f1.txt")
+		assert.Contains(t, names, "f2.txt")
 	})
 
 	t.Run("ReadAt and Seek", func(t *testing.T) {
@@ -317,6 +323,29 @@ func TestSftpProvider(t *testing.T) {
 
 		// Just call it, expecting either nil or error, but covering the line.
 		_ = fs.Chown(path, 1000, 1000)
+	})
+
+	t.Run("Name", func(t *testing.T) {
+		assert.Equal(t, "sftp", fs.Name())
+	})
+
+	t.Run("File Methods", func(t *testing.T) {
+		filename := filepath.Join(tmpDir, "file_methods.txt")
+		f, err := fs.Create(filename)
+		require.NoError(t, err)
+
+		info, err := f.(*sftpFile).Stat()
+		require.NoError(t, err)
+		assert.Equal(t, "file_methods.txt", filepath.Base(info.Name()))
+
+		err = f.(*sftpFile).Sync()
+		require.NoError(t, err)
+
+		err = f.(*sftpFile).Truncate(0)
+		require.NoError(t, err)
+
+		err = f.Close()
+		require.NoError(t, err)
 	})
 }
 
