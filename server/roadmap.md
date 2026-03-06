@@ -34,6 +34,12 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-06 Evolution)
+*   **[P0] WebSocket Origin Filtering**: Mandatory validation of `Allow-Origin` headers for all local gateway connections. (Added: 2026-03-06)
+*   **[P0] A2A Identity Attestation**: Authenticated handshake for agent card discovery, aligned with Gemini CLI. (Added: 2026-03-06)
+*   **[P0] Local Rate-Limiting Guard**: Brute-force protection for local administrative endpoints. (Added: 2026-03-06)
+*   **[P1] Persistent Blackboard for Swarms**: Long-lived shared state for parallel agent teams (e.g., Claude Code). (Added: 2026-03-06)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

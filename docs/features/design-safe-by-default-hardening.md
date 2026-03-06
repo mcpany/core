@@ -59,3 +59,10 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+### Update: 2026-03-06 - Addressing Localhost Hijacking
+**Context:** The OpenClaw localhost hijacking exploit (CVE-2026-OPENCLAW) has proven that `localhost` is not a sufficient security boundary against browser-based side-channel attacks.
+**Architecture Adjustment:**
+*   Expanded Section 4 to include mandatory WebSocket Origin Filtering (`Allow-Origin` validation) for all gateway listeners.
+*   Introduced "Local Rate-Limiting" for the administrative gateway to mitigate brute-force attempts on local authentication.
+*   Added "Browser-Side Attestation" requirement for all local WebSocket connections.
+**Security Impact:** Mitigates unauthorized cross-origin access to the local MCP Any gateway from malicious websites running in the user's browser.
