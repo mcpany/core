@@ -81,3 +81,15 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-06] Updates
+
+### Proposed Additions
+- **Agent Identity Management (Agent IAM)**: (P0) A system for assigning and verifying cryptographic identities for individual agents, supporting granular ACLs and audit logging.
+- **Autonomous Security Attestation**: (P1) Automatic generation of security proofs for agent tool calls, ensuring compliance with organizational policies in real-time.
+- **A2A Visibility Middleware**: (P1) Specialized logging and monitoring for Agent-to-Agent interactions to eliminate "Observability Blind Spots."
+
+### Priority Shifts
+- **Provenance-First Discovery**: Re-affirmed as **P0**. Critical for mitigating the "Shadow MCP" problem identified in recent security reports.
