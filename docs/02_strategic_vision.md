@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-06]
+### Focus: Federated Marketplace Discovery & Resilient Swarm Context
+**Context**: The emergence of centralized marketplaces (Claude Code) and decentralized swarm research (Gossip Protocols) creates a tension between discoverability and autonomy. MCP Any must bridge these worlds.
+**Strategic Pivot**:
+- **Marketplace Federation**: MCP Any will act as a unified proxy for multiple agent marketplaces (Anthropic, ClawHub, etc.), allowing users to "subscribe" to catalogs and discover tools across heterogeneous registries.
+- **Gossip-Sub Context Layer**: Transitioning from a purely central context residency to a "Gossip-Sync" model for swarm nodes. This ensures that subagents in a large-scale swarm eventually share relevant context without constant orchestration overhead.
+- **Grounded "Agentic Search" Middleware**: Moving beyond simple KV stores to provide agents with "Grounding Tools" that perform multi-view searches across the project's own codebase and documentation, mimicking the Gemini CLI's self-building capabilities.

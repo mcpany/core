@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-06] Updates
+
+### Proposed Additions
+- **Universal Marketplace Discovery Adapter**: (P1) Allows MCP Any to subscribe to and proxy plugins from centralized marketplaces (e.g., Claude Code, ClawHub).
+- **Gossip-Sub Context Middleware**: (P2) Implements eventually-consistent context sharing across decentralized agent swarms using gossip protocols.
+- **Project Grounding Tool (Agentic Search)**: (P0) Provides agents with high-fidelity search capabilities across the project's own source code, documentation, and issues, enabling "self-building" capabilities.
+
+### Priority Shifts
+- **Lazy-MCP Middleware**: Promoted to **P0** (Already P0, but expanded to include "Active Grounding" capabilities).
+- **A2A Stateful Residency**: Priority re-affirmed as **P0** as it is a prerequisite for Gossip-based context convergence.
+
+### Deprecations / Monitoring
+- **Centralized Session State**: Monitoring for partial deprecation in favor of decentralized Gossip-based state sync for large swarms.
