@@ -75,9 +75,21 @@
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
+---
+
+## Evolution: [2026-03-02] Updates
+
+### Proposed Additions
+- **Project-Scoped Isolation Middleware**: (P0) Prevents untrusted project-level configurations from overriding global security policies or executing unverified hooks.
+- **Standardized Browser-Tooling Adapter**: (P1) A universal MCP adapter for browser-automation tools (Playwright/Puppeteer/Chrome Extension) with unified schema and security constraints.
+- **A2A Stateful Residency (Resident Hub)**: (P0) Upgraded from "Stateful Buffer" to a full "Resident Hub" that manages long-running multi-agent sessions and shared state residency.
+
 ### Priority Shifts
-- **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
-- **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.
+- **A2A Stateful Residency**: Promoted to **P0**. Essential for robust multi-agent swarms as observed in recent OpenClaw updates.
+- **Machine-Checkable Security Contracts**: Promoted from **P1** to **P0** to mitigate supply chain risks in project-level configurations.
+
+### Deprecations / Monitoring
+- **Unvalidated Project Configs**: Monitoring for deprecation. All project-level `.mcpany/config.yaml` or similar must be explicitly "Attested" or run in "Shadow Mode."
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
