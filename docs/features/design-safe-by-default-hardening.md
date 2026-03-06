@@ -59,3 +59,9 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-05:** Update - Resolving Local Bus Hijacking.
+    *   **Context:** Today's research on the OpenClaw hijacking vulnerability (March 2, 2026) revealed that unvalidated local JSON-RPC/HTTP listeners are a major vector for CSRF-style attacks.
+    *   **Architecture Adjustment:**
+        *   Mandatory Origin Validation: All requests from browser-based agents must include a `Sec-Fetch-Site: same-origin` or a pre-authorized `Origin` header.
+        *   Cryptographic Handshake: Introducing a local challenge-response protocol for the first connection. The agent must prove it can read a local "nonce" file before the bus allows tool execution.
+    *   **Security Impact:** Prevents malicious websites from tasking the local MCP Any bus via the developer's browser session.

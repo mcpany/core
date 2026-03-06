@@ -75,9 +75,19 @@
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
+---
+
+## Evolution: [2026-03-05] Updates
+
+### Proposed Additions
+- **Origin-Locked Local Bus**: (P0) Mandatory CORS/Origin validation and cryptographic challenge-response for all local JSON-RPC/HTTP connections. (Prevents OpenClaw-style hijacking).
+- **A2A Task Lifecycle Manager**: (P0) Implements the A2A Task object state machine (submitted, working, input-required, etc.) as a core MCP Any middleware.
+- **Semantic Annotation Firewall**: (P1) Policy rules that trigger based on tool metadata/annotations (e.g., "requires-network", "writes-to-disk") rather than exact names.
+
 ### Priority Shifts
-- **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
-- **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.
+- **Safe-by-Default Hardening**: Promoted to **P0** with immediate urgency due to OpenClaw ecosystem vulnerabilities.
+- **A2A Stateful Residency**: Promoted to **P0** to support the emerging "Agent Internet" task model.
 
 ### Deprecations / Monitoring
-- **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+- **Unvalidated Loopback Access**: Monitoring for immediate deprecation. All local connections will require a "Connection Handshake."
+- **Regex-Based Command Blacklists**: Deprecate in favor of "Annotation-Based Capability Scopes."
