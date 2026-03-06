@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-06]
+### Focus: Config-Hardening & Contextual Integrity
+**Context**: Recent exploits in major AI coding tools (Claude Code) have demonstrated that configuration files themselves are now a primary attack vector for RCE and credential theft. Furthermore, agent swarms are struggling with "State Fragmentation" during high-frequency handoffs.
+**Strategic Pivot**:
+- **Signed Configuration Manifests**: MCP Any will move towards a model where all project-level configurations must be cryptographically signed. Unsigned configurations will be treated as "ReadOnly/No-Exec" by default.
+- **Environment Variable Isolation**: Critical system variables (like API Base URLs and Auth Headers) will be locked at the global level and cannot be overridden by project-local configuration files.
+- **Stateful Context Bus**: Transitioning from a simple "Shared KV Store" to a "Verified Context Bus" where every state change is signed by the agent making the change, providing a tamper-proof audit log for multi-agent workflows.

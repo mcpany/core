@@ -59,3 +59,11 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-06:** Added Hardening against Configuration Hijacking.
+
+### Update: 2026-03-06 - Hardening against Configuration Hijacking
+**Context:** Today's market sync revealed critical vulnerabilities in Claude Code (CVE-2025-59536, CVE-2026-21852) where malicious project-level configuration files could trigger RCE and API key theft.
+**Architecture Adjustment:**
+* Integrating **Signed Configuration Manifests** to prevent execution of unverified hooks.
+* Implementing **Immutable System Overrides** to block project-local redirection of sensitive API base URLs.
+**Security Impact:** Prevents supply chain attacks targeting developer environments via malicious repository configurations.
