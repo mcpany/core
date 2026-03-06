@@ -68,7 +68,7 @@ export function DashboardGrid() {
     const [isMounted, setIsMounted] = useState(false);
     const [loading, setLoading] = useState(true);
 
-    const migrateLayout = (parsed: any): WidgetInstance[] => {
+    const migrateLayout = (parsed: any): { migratedWidgets: WidgetInstance[], didMigrate: boolean } => {
         // Migration Logic
         // Case 1: Legacy format (DashboardWidget[]) where id matches type
         if (Array.isArray(parsed) && parsed.length > 0 && !parsed[0].instanceId) {
@@ -92,16 +92,31 @@ export function DashboardGrid() {
             // If migration resulted in empty or too few widgets, append defaults?
             // No, respect user's (possibly empty) layout, but ensure at least we tried.
             if (validMigrated.length === 0) {
-                return DEFAULT_LAYOUT;
+                return { migratedWidgets: DEFAULT_LAYOUT, didMigrate: true };
             } else {
-                return validMigrated;
+                return { migratedWidgets: validMigrated, didMigrate: true };
             }
         } else if (Array.isArray(parsed)) {
             // Case 2: Already in new format
-            return parsed;
+            return { migratedWidgets: parsed, didMigrate: false };
         }
-        return DEFAULT_LAYOUT;
+        return { migratedWidgets: DEFAULT_LAYOUT, didMigrate: false };
     }
+
+    const saveLayoutImmediately = async (newWidgets: WidgetInstance[]) => {
+        try {
+            await fetch('/api/v1/user/preferences', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    'dashboard-layout': JSON.stringify(newWidgets)
+                })
+            });
+            localStorage.setItem("dashboard-layout", JSON.stringify(newWidgets));
+        } catch (err) {
+            console.error("Failed to save layout immediately", err);
+        }
+    };
 
     useEffect(() => {
         setIsMounted(true);
@@ -115,7 +130,11 @@ export function DashboardGrid() {
                     if (data && data['dashboard-layout']) {
                          try {
                             const parsed = JSON.parse(data['dashboard-layout']);
-                            setWidgets(migrateLayout(parsed));
+                            const { migratedWidgets, didMigrate } = migrateLayout(parsed);
+                            setWidgets(migratedWidgets);
+                            if (didMigrate) {
+                                await saveLayoutImmediately(migratedWidgets);
+                            }
                          } catch (e) {
                             console.error("Failed to parse remote layout", e);
                             setWidgets(DEFAULT_LAYOUT);
@@ -126,9 +145,10 @@ export function DashboardGrid() {
                          if (local) {
                              try {
                                 const parsed = JSON.parse(local);
-                                const migrated = migrateLayout(parsed);
-                                setWidgets(migrated);
-                                // We rely on the save effect to sync this to backend
+                                const { migratedWidgets, didMigrate } = migrateLayout(parsed);
+                                setWidgets(migratedWidgets);
+                                // Actually we should ALWAYS save to the API since it was absent from the API
+                                await saveLayoutImmediately(migratedWidgets);
                              } catch (e) {
                                 console.error("Failed to parse local layout", e);
                                 setWidgets(DEFAULT_LAYOUT);
@@ -143,7 +163,11 @@ export function DashboardGrid() {
                      const local = localStorage.getItem("dashboard-layout");
                      if (local) {
                         try {
-                            setWidgets(migrateLayout(JSON.parse(local)));
+                            const { migratedWidgets, didMigrate } = migrateLayout(JSON.parse(local));
+                            setWidgets(migratedWidgets);
+                            if (didMigrate) {
+                                await saveLayoutImmediately(migratedWidgets);
+                            }
                         } catch {
                             setWidgets(DEFAULT_LAYOUT);
                         }
