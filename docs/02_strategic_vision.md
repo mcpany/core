@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-06]
+### Focus: Identity-Aware Tool Bridging & Dynamic Capability Negotiation
+**Context**: Today's findings (OpenClaw's browser-hijack and Claude Code's sub-agent MCP access) show that tool security is no longer just about *network* access, but *identity* and *origin* access. Sub-agents need fine-grained, delegated access to tools.
+**Strategic Pivot**:
+- **Identity-Aware Tool Bridging**: MCP Any will implement "Trusted App Certificates" for local agents (e.g., OpenClaw, Claude Code). This ensures that only authorized processes can access the MCP gateway, mitigating browser-based hijack attacks.
+- **Dynamic Capability Negotiation**: Moving from static tool lists to a "Negotiated Access" model. When Agent A delegates to Agent B (A2A), MCP Any will facilitate a "capability handshake" where only the minimum necessary tools are exposed to the sub-agent for the duration of the task.
+- **Progressive Tool Enrichment**: Following Claude Code's model, MCP Any will optimize session loading by serving tool metadata progressively, reducing initialization latency for massive tool meshes.

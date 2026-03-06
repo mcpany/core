@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-06 Evolution)
+*   **[P0] Trusted App Attestation**: Middleware for local process/executable verification to prevent browser-origin hijacking. (Added: 2026-03-06)
+*   **[P0] Dynamic Capability Handshake**: Just-in-time tool manifest filtering for sub-agents based on A2A delegation context. (Added: 2026-03-06)
+*   **[P1] Progressive Tool Discovery**: Progressive metadata serving for tool schemas to reduce initialization latency for large toolsets. (Added: 2026-03-06)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
