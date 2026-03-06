@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-06]
+### Focus: Intent-Aware Security & Autonomous Hivenet Defense
+**Context**: Today's research on "AI Predator Swarms" (Hivenets) and OpenClaw's recent hijacking vulnerability (CVE-2026-OC-01) proves that traditional RBAC and provenance are no longer sufficient. When 82% of network participants are autonomous agents, security must shift from "Who" to "Why."
+**Strategic Pivot**:
+- **Intent-Based Policy Enforcement**: MCP Any will integrate an "Intent Classifier" into the Policy Firewall. Tool calls will be evaluated against the high-level task goal, not just static permissions. If a tool call (e.g., `fs:write`) doesn't align with the stated intent (e.g., `process_emails`), it is blocked.
+- **Dynamic Hivenet IPS**: We will implement an inter-agent monitoring layer that detects "Malicious Coordination Patterns" (e.g., rapid context-sharing between unrelated agents) to prevent swarm-based attacks.
+- **Strict Origin & Session Attestation**: Moving beyond simple signatures to "Cryptographic Session Binding," where every tool request must prove it originated from a verified agent session that was initiated by a human-in-the-loop (HITL) action.

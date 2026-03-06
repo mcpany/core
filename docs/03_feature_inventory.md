@@ -81,3 +81,17 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-06] Updates
+
+### Proposed Additions
+- **Intent-Aware Policy Engine**: (P0) Integrates LLM-based intent classification into the Policy Firewall to validate tool calls against stated high-level goals.
+- **Hivenet Coordination Monitor (IPS)**: (P1) A specialized middleware that analyzes cross-agent traffic for "swarm attack" signatures (e.g., recursive tool chaining, unauthorized context sharing).
+- **Cryptographic Session Binding**: (P0) Extends provenance to the "Session" level, requiring per-request proof of agent origin and human-initiated session state.
+- **Automated SDK Schema Compaction**: (P1) Middleware that automatically compresses/summarizes tool schemas when context limits are reached (following Claude's 10% threshold pattern).
+
+### Priority Shifts
+- **Policy Firewall**: Re-affirmed as **P0** and expanded with Intent-Aware capabilities.
+- **HITL Middleware**: Promoted from **P1** to **P0** as it is now the "Root of Trust" for Cryptographic Session Binding.
