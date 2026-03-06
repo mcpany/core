@@ -6,6 +6,7 @@ package provider
 import (
 	"io"
 	"os"
+	"path"
 	"path/filepath"
 	"testing"
 	"time"
@@ -143,5 +144,36 @@ func TestSftpProvider_Extended(t *testing.T) {
 		require.NoError(t, err)
 		assert.Contains(t, names, "a.txt")
 		assert.Contains(t, names, "b.txt")
+	})
+
+	t.Run("Name", func(t *testing.T) {
+		assert.Equal(t, "sftp", fs.Name())
+	})
+
+	t.Run("File Methods (Stat, Sync, Truncate)", func(t *testing.T) {
+		f := path.Join(tmpDir, "file_methods.txt")
+		file, err := fs.Create(f)
+		require.NoError(t, err)
+		defer file.Close()
+
+		_, err = file.WriteString("hello world")
+		require.NoError(t, err)
+
+		// Test Sync
+		err = file.Sync()
+		require.NoError(t, err)
+
+		// Test Stat
+		info, err := file.Stat()
+		require.NoError(t, err)
+		assert.Equal(t, int64(11), info.Size())
+
+		// Test Truncate
+		err = file.Truncate(5)
+		require.NoError(t, err)
+
+		info, err = file.Stat()
+		require.NoError(t, err)
+		assert.Equal(t, int64(5), info.Size())
 	})
 }
