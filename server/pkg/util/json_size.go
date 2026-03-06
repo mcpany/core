@@ -4,7 +4,6 @@
 package util
 
 import (
-	"fmt"
 	"reflect"
 	"strconv"
 	"strings"
@@ -230,7 +229,9 @@ func estimateReflect(v interface{}, visited map[uintptr]bool) int {
 		return estimateJSONSizeRecursive(val.Elem().Interface(), visited)
 
 	default:
-		return len(fmt.Sprintf("%v", v)) + 2
+		// ⚡ BOLT: Replaced slow fmt.Sprintf with optimized ToString to avoid reflection overhead during size estimation.
+		// Randomized Selection from Top 5 High-Impact Targets (Memory/CPU)
+		return len(ToString(v)) + 2
 	}
 }
 
@@ -313,7 +314,9 @@ func estimateReflectMap(val reflect.Value, visited map[uintptr]bool) int {
 		if k.Kind() == reflect.String {
 			size += k.Len() + 2
 		} else {
-			keyStr := fmt.Sprintf("%v", k.Interface())
+			// ⚡ BOLT: Replaced slow fmt.Sprintf with optimized ToString to avoid reflection overhead during size estimation.
+			// Randomized Selection from Top 5 High-Impact Targets (Memory/CPU)
+			keyStr := ToString(k.Interface())
 			size += len(keyStr) + 2
 		}
 		size++ // :
