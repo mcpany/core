@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-02]
+### Focus: Secure Execution Runtimes & Ephemeral Orchestration
+**Context**: OpenClaw's shift toward "Skills as Code" and deterministic sub-agent spawning introduces a new threat model where tool definitions are executable, and agent lifecycles are highly dynamic.
+**Strategic Pivot**:
+- **Skill Sandboxing**: MCP Any must evolve into a secure execution host, utilizing WASM or isolated containers to execute untrusted skills discovered in the ecosystem (e.g., ClawHub).
+- **Ephemeral Lifecycle Management**: Implementing a "Spawn & Reap" controller that tracks the state, resource consumption, and cleanup of short-lived sub-agents.
+- **IPC-First Communication**: Mitigating local port exposure by prioritizing Unix Domain Sockets or named pipes for inter-agent (A2A) communication on the same host.

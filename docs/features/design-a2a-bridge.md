@@ -46,3 +46,7 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-03-02:** Addressing Local Port Exposure.
+    *   **Architecture Adjustment**: Introducing `IPC A2A Transport` as the preferred communication method for local-to-local agent calls.
+    *   **Design Change**: Deprecating local HTTP listeners for A2A in favor of Unix Domain Sockets (on Linux/macOS) and Named Pipes (on Windows).
+    *   **Security Impact**: This eliminates the risk of cross-talk or unauthorized network access to inter-agent communication channels.

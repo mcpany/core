@@ -13,6 +13,9 @@
 - [ ] **[P1] Resource Cost/Latency Overlay**: Real-time performance metrics displayed directly on tool cards. (Added: 2026-02-26)
 - [ ] **[P0] Connectivity & Security Dashboard**: Visualize local-only vs remote exposure, attestation status, and active MFA sessions. (Added: 2026-02-28)
 - [ ] **[P0] Stateful A2A Mailbox**: UI for viewing queued and delivered A2A messages across the agent mesh. (Added: 2026-02-28)
+- [ ] **[P0] WASM Runtime Monitor**: Real-time visualization of sandboxed skill execution, including gas usage and capability grants. (Added: 2026-03-02)
+- [ ] **[P1] Ephemeral Agent Lifecycle View**: Dashboard for tracking deterministic sub-agent spawns and their resource cleanup status. (Added: 2026-03-02)
+- [ ] **[P1] IPC Transport Status**: Security indicator for inter-agent communication via Unix Domain Sockets/Named Pipes. (Added: 2026-03-02)
 - [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
 - [x] **[P1] Tool Playground & Explorer**:
   - [x] Auto-generated forms from Tool JSON Schemas.

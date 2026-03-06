@@ -75,6 +75,15 @@
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
+---
+
+## Evolution: [2026-03-02] Updates
+
+### Proposed Additions
+- **WASM Skill Runtime**: (P0) A secure, sandboxed environment for executing "Skills as Code" from untrusted sources like ClawHub.
+- **Ephemeral Agent Controller**: (P1) Lifecycle management for deterministic sub-agent spawning, ensuring resource cleanup and state handoff.
+- **IPC A2A Transport**: (P1) Secure, local inter-agent communication via Unix Domain Sockets to eliminate network-based attack vectors.
+
 ### Priority Shifts
 - **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
 - **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.
