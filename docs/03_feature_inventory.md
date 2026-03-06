@@ -75,8 +75,17 @@
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
+---
+
+## Evolution: [2026-03-05] Updates
+
+### Proposed Additions
+- **Economic Intelligence Middleware (Cost-Aware Routing)**: (P1) Injects real-time cost metadata into tool schemas and provides routing suggestions based on prompt complexity (inspired by ClawRouter).
+- **Attested Repository Config Guard**: (P0) Prevents unauthorized RCE via project-level config files (e.g., `.mcp/config.yaml`). Requires manual attestation for any "hooks" or "auto-exec" commands.
+- **MFA-Attested Tool Execution**: (P1) Optional policy for high-risk tools that requires a physical MFA check or "Second Screen" approval before execution.
+
 ### Priority Shifts
-- **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
+- **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery and Attested Repository Config Guard.
 - **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.
 
 ### Deprecations / Monitoring

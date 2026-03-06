@@ -59,3 +59,10 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-05:** Update - Resolving Repository-Level RCE (Claude Code Exploit).
+    *   **Context:** Today's market sync revealed a vulnerability where malicious repo-level configs inject RCE via hooks.
+    *   **Architecture Adjustment:**
+        *   Implementing **Attested Configuration Guard** in Section 4.
+        *   Automatically quarantining any `hooks`, `auto-exec`, or `pre-commands` found in `.mcp/config.yaml` or `.claude/settings.json`.
+        *   Requiring explicit **MFA/Secure Attestation** (via CLI or UI) to authorize any tool registration or command execution from repository-local files.
+    *   **Security Impact:** Mitigates "Repo-Poisoning" attacks where cloning a malicious repo leads to immediate local system compromise.

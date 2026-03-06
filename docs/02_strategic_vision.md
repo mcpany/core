@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-05]
+### Focus: Economic Reasoning & Repository-Level Security
+**Context**: Today's findings show that the "Claude Code exploit" (RCE via repo-level hooks) and the rise of "ClawRouter" (cost-aware orchestration) define the next frontier. Security must extend to the configuration layer, and intelligence must encompass economic viability.
+**Strategic Pivot**:
+- **Attested Configuration Layer**: MCP Any will treat repository-level configuration files (e.g., `.mcp/config.yaml`) as untrusted by default. Any automated tool registration from these files will require a "Secure Attestation" (MFA/Signature) before execution.
+- **Economic Intelligence Middleware**: Integrating "Cost-Aware Routing" directly into the Universal Bus. MCP Any will not just proxy tools, but will provide metadata to LLMs about the *financial cost* of a tool call, enabling "Economic Reasoning."
+- **Immutable Supply Chain**: Moving beyond signature verification to a "Merkle-Tree of Capabilities," where any change to a tool's underlying code or configuration invalidates its execution token until re-attested.
