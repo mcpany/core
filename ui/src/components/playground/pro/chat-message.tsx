@@ -201,11 +201,11 @@ export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
     }
 
     if (message.type === "tool-result") {
-        const prevResult = message.previousResult;
-        const currResult = message.toolResult;
+        const prevUnwrapped = message.previousResult !== undefined ? deepParseJson(unwrapMcpResult(message.previousResult)) : undefined;
+        const currUnwrapped = deepParseJson(unwrapMcpResult(message.toolResult));
 
-        const hasDiff = prevResult !== undefined &&
-                        JSON.stringify(prevResult) !== JSON.stringify(currResult);
+        const hasDiff = message.previousResult !== undefined &&
+                        JSON.stringify(prevUnwrapped) !== JSON.stringify(currUnwrapped);
 
          return (
             <>
@@ -257,8 +257,8 @@ export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
                     </DialogHeader>
                     <div className="flex-1 border rounded-md overflow-hidden bg-[#1e1e1e]">
                         <DiffEditor
-                            original={JSON.stringify(prevResult, null, 2)}
-                            modified={JSON.stringify(currResult, null, 2)}
+                            original={JSON.stringify(prevUnwrapped, null, 2)}
+                            modified={JSON.stringify(currUnwrapped, null, 2)}
                             language="json"
                             theme={theme === "dark" ? "dracula" : "light"}
                             onMount={(editor, monaco) => {
