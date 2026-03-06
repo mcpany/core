@@ -297,10 +297,14 @@ func convertToMarkdown(converter *md.Converter, data any) any {
 func truncateRecursive(data any, maxChars int) any {
 	switch v := data.(type) {
 	case string:
-		// Convert to runes to handle multi-byte characters correctly
-		runes := []rune(v)
-		if len(runes) > maxChars {
-			return string(runes[:maxChars]) + "..."
+		// ⚡ BOLT: Prevent O(N) memory allocation by avoiding full string to []rune conversion during truncation.
+		// Randomized Selection from Top 5 High-Impact Targets (Memory Category)
+		count := 0
+		for i := range v {
+			if count == maxChars {
+				return v[:i] + "..."
+			}
+			count++
 		}
 		return v
 	case map[string]any:
