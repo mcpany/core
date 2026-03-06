@@ -401,7 +401,7 @@ e2e-sequential: build-test-images build build-examples build-e2e-mocks
 	@echo "Running sequential E2E Go tests locally with a 1800s timeout..."
 	@GEMINI_API_KEY=$(GEMINI_API_KEY) CI=$(CI) MCP_BUNDLE_DIR=$(MCP_BUNDLE_DIR) MCPANY_DEBUG=true MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) E2E_DOCKER=true MCPANY_PROJECT_ROOT=$(CURDIR) $(GO_CMD) test -p 1 -parallel 1 $(GO_RACE) -count=1 -timeout 1800s -tags=e2e -cover -coverprofile=$(BUILD_DIR)/coverage.e2e-sequential.out ./tests/e2e_sequential/... $(TEST_ARGS)
 
-test-fast: build build-examples build-e2e-mocks build-e2e-timeserver-docker
+test-fast: build build-examples build-e2e-mocks
 	@echo "Running fast Go tests locally with a 3600s timeout..."
 	@TEST_PKGS=$$(go list ./... | grep -v /tests/e2e | grep -v /tests/e2e_sequential | grep -v /tests/integration | grep -v /tests/public_api | grep -v /build | grep -v /vendor | grep -v /proto); \
 	echo "Testing packages: $$TEST_PKGS"; \
@@ -526,8 +526,8 @@ $(E2E_BIN_DIR):
 	@echo "Creating E2E binary directory: $(E2E_BIN_DIR)"
 	@mkdir -p $(E2E_BIN_DIR)
 
-.PHONY: build-e2e-timeserver-docker
-build-e2e-timeserver-docker: tests/integration/examples/Dockerfile.timeserver tests/integration/examples/timeserver_patch/main.py
+.PHONY:
+: tests/integration/examples/Dockerfile.timeserver tests/integration/examples/timeserver_patch/main.py
 ifneq ($(SKIP_DOCKER_TESTS),true)
 ifndef SKIP_DOCKER_REBUILD
 ifdef HAS_DOCKER
@@ -684,7 +684,7 @@ endif
 # Target to build all test images
 build-test-images:
 ifndef SKIP_DOCKER_REBUILD
-	@$(MAKE) build-docker build-http-echo-docker build-e2e-timeserver-docker build-cowsay-docker build-everything-docker
+	@$(MAKE) build-docker build-http-echo-docker  build-cowsay-docker build-everything-docker
 else
 	@echo "Skipping Docker image build (SKIP_DOCKER_REBUILD is set)"
 endif
