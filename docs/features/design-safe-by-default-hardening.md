@@ -59,3 +59,10 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+
+### Update: 2026-03-02 - Addressing mDNS Discovery Risks
+**Context:** Today's market sync revealed that Gemini CLI now supports mDNS-based MCP Discovery, which could lead to unauthorized local tool exposure.
+**Architecture Adjustment:**
+* Adding "Discovery Scoping" to Section 2.
+* Enforcing Zero-Trust policy verification for all auto-discovered local tools.
+**Security Impact:** Prevents "Shadow MCP" servers from bypassing intent-based authorization via local network discovery.

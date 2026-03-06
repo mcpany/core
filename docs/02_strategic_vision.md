@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-02]
+### Focus: Metadata Integrity & Ephemeral Lifecycle
+**Context**: Today's findings reveal a dual challenge: the rise of "Ephemeral Tooling" (short-lived, task-specific servers) and "Context Smuggling" (exploiting tool metadata to inject malicious instructions). MCP Any must evolve to handle high-churn tool environments while strictly sanitizing the metadata that agents consume.
+**Strategic Pivot**:
+- **Ephemeral Tooling Management**: Implementing a high-churn lifecycle manager that can rapidly register, proxy, and decommission short-lived MCP servers without manual configuration overhead or persistent state bloat.
+- **Metadata Sanitization Pipeline**: Introducing a mandatory sanitization layer for all tool schemas and resource metadata. This layer will strip or neutralize instruction-like patterns (e.g., "Ignore previous instructions", "SYSTEM:") from tool descriptions before they reach the LLM.
+- **Side-Effect Attestation (Zero-IO)**: Aligning with the "Zero-IO" movement by allowing tools to declare "Side-Effect Profiles," which can be cryptographically verified and enforced by the Policy Firewall.
