@@ -295,7 +295,7 @@ jobs:
 
       - name: Load Time Server Image
         run: |
-          if ! docker load -i image.tar; then sudo docker load -i image.tar || true; fi
+          docker load -i image.tar || sudo docker load -i image.tar || true
           rm -f image.tar
 
       - name: Prepare environment
@@ -437,7 +437,7 @@ jobs:
 
       - name: Load HTTP Echo Image
         run: |
-          if ! docker load -i image.tar; then sudo docker load -i image.tar || true; fi
+          docker load -i image.tar || sudo docker load -i image.tar || true
           rm -f image.tar
 
       - name: Download Time Server Image
@@ -447,7 +447,7 @@ jobs:
 
       - name: Load Time Server Image
         run: |
-          if ! docker load -i image.tar; then sudo docker load -i image.tar || true; fi
+          docker load -i image.tar || sudo docker load -i image.tar || true
           rm -f image.tar
 
       - name: Download Cowsay Image
@@ -457,7 +457,7 @@ jobs:
 
       - name: Load Cowsay Image
         run: |
-          if ! docker load -i image.tar; then sudo docker load -i image.tar || true; fi
+          docker load -i image.tar || sudo docker load -i image.tar || true
           rm -f image.tar
 
       - name: Download Everything Image
@@ -467,7 +467,7 @@ jobs:
 
       - name: Load Everything Image
         run: |
-          if ! docker load -i image.tar; then sudo docker load -i image.tar || true; fi
+          docker load -i image.tar || sudo docker load -i image.tar || true
           rm -f image.tar
 
       - name: Prepare environment
@@ -715,7 +715,7 @@ jobs:
 
       - name: Load Server Image
         run: |
-          if ! docker load -i image.tar; then sudo docker load -i image.tar || true; fi
+          docker load -i image.tar || sudo docker load -i image.tar || true
           rm -f image.tar
 
       - name: Download HTTP Echo Image
@@ -725,7 +725,7 @@ jobs:
 
       - name: Load HTTP Echo Image
         run: |
-          if ! docker load -i image.tar; then sudo docker load -i image.tar || true; fi
+          docker load -i image.tar || sudo docker load -i image.tar || true
           rm -f image.tar
 
       - name: Download Time Server Image
@@ -735,7 +735,7 @@ jobs:
 
       - name: Load Time Server Image
         run: |
-          if ! docker load -i image.tar; then sudo docker load -i image.tar || true; fi
+          docker load -i image.tar || sudo docker load -i image.tar || true
           rm -f image.tar
 
       - name: Download Cowsay Image
@@ -745,7 +745,7 @@ jobs:
 
       - name: Load Cowsay Image
         run: |
-          if ! docker load -i image.tar; then sudo docker load -i image.tar || true; fi
+          docker load -i image.tar || sudo docker load -i image.tar || true
           rm -f image.tar
 
       - name: Download Everything Image
@@ -755,7 +755,7 @@ jobs:
 
       - name: Load Everything Image
         run: |
-          if ! docker load -i image.tar; then sudo docker load -i image.tar || true; fi
+          docker load -i image.tar || sudo docker load -i image.tar || true
           rm -f image.tar
 
       - name: Prepare environment
@@ -950,7 +950,7 @@ jobs:
 
       - name: Load Docker Image
         run: |
-          if ! docker load -i image.tar; then sudo docker load -i image.tar || true; fi
+          docker load -i image.tar || sudo docker load -i image.tar || true
           rm image.tar
 
       - name: Smoke Test
@@ -1018,7 +1018,7 @@ jobs:
 
       - name: Load Server Image
         run: |
-          if ! docker load -i image.tar; then sudo docker load -i image.tar || true; fi
+          docker load -i image.tar || sudo docker load -i image.tar || true
           rm -f image.tar
 
       - name: Download UI Test Image
@@ -1028,7 +1028,7 @@ jobs:
 
       - name: Load UI Test Image
         run: |
-          if ! docker load -i image.tar; then sudo docker load -i image.tar || true; fi
+          docker load -i image.tar || sudo docker load -i image.tar || true
           rm -f image.tar
 
       - name: Download HTTP Echo Image
@@ -1038,7 +1038,7 @@ jobs:
 
       - name: Load HTTP Echo Image
         run: |
-          if ! docker load -i image.tar; then sudo docker load -i image.tar || true; fi
+          docker load -i image.tar || sudo docker load -i image.tar || true
           rm -f image.tar
 
       - name: Test UI
@@ -1128,7 +1128,7 @@ jobs:
 
       - name: Load Server Image
         run: |
-          if ! docker load -i image.tar; then sudo docker load -i image.tar || true; fi
+          docker load -i image.tar || sudo docker load -i image.tar || true
           rm -f image.tar
 
       - name: Download Operator Image
@@ -1138,7 +1138,7 @@ jobs:
 
       - name: Load Operator Image
         run: |
-          if ! docker load -i image.tar; then sudo docker load -i image.tar || true; fi
+          docker load -i image.tar || sudo docker load -i image.tar || true
           rm -f image.tar
 
       - name: Download UI Image
@@ -1148,7 +1148,7 @@ jobs:
 
       - name: Load UI Image
         run: |
-          if ! docker load -i image.tar; then sudo docker load -i image.tar || true; fi
+          docker load -i image.tar || sudo docker load -i image.tar || true
           rm -f image.tar
 
       - name: Load Docker Images into Kind
