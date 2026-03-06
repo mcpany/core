@@ -75,9 +75,18 @@
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
+---
+
+## Evolution: [2026-03-06] Updates
+
+### Proposed Additions
+- **Origin-Aware Middleware**: (P0) Mandatory origin validation for all incoming RPC/HTTP requests using local session tokens and signed headers. Prevents CSRF-style hijacking of local agents.
+- **Intent-Bound Multi-Agent Handoff**: (P1) A protocol for cryptographically signing the high-level "Intent" of a user, which must be propagated and verified by all subagents in a swarm.
+- **Agentic "Confused Deputy" Guard**: (P0) Middleware that analyzes tool request chains to ensure they align with the original user-approved intent.
+
 ### Priority Shifts
-- **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
-- **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.
+- **Safe-by-Default Hardening**: Promoted to **Immediate P0** due to the OpenClaw origin hijacking incident.
+- **Recursive Context Protocol**: Expanded to include **Provenance Tags** to ensure context integrity in hierarchical swarms.
 
 ### Deprecations / Monitoring
-- **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+- **Unsigned Local Tool Calls**: Monitoring for future deprecation; all local tools should eventually require origin attestation.

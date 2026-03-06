@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-06]
+### Focus: Origin Integrity & Intent-Based Scoping
+**Context**: The "OpenClaw Hijacking" and "MS-Agent Shell" exploits have highlighted that "Agency" without "Origin Integrity" is a massive liability. MCP Any must evolve to not only manage tools but to strictly police the *intent* and *origin* of every request.
+**Strategic Pivot**:
+- **Origin Integrity**: Implementing mandatory cryptographic validation of request origins (e.g., via local tokens or signed headers) to prevent browser-based hijacking of local agent sessions.
+- **Intent-Based Guardrails**: Transitioning from static tool permissions to dynamic, "Intent-Verified" execution, where tool calls must be cryptographically linked to a high-level user-approved intent to mitigate the "Confused Deputy" problem.
+- **Hierarchical Context Integrity**: Enhancing the Recursive Context Protocol to support "Proof of Origin" for context inherited by subagents, preventing context poisoning in increasingly common hierarchical multi-agent swarms.
