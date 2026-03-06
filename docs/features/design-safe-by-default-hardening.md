@@ -59,3 +59,4 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-06:** Evolution: Shift focus from network-level hardening to payload-level "MCP-DPI" security to address the 88% surge in agent-related security incidents.

@@ -46,3 +46,4 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-03-06:** Evolution: Introducing mandatory Agent Identity (AIM) for secure A2A handoffs. Every agent-to-agent message must now be cryptographically signed by the source agent's SID to prevent identity spoofing in swarms.
