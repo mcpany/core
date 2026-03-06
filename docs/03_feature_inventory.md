@@ -75,7 +75,19 @@
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
+---
+
+## Evolution: [2026-03-06] Updates
+
+### Proposed Additions
+- **Recursive Agent-as-a-Server Proxy**: (P0) Enables MCP Any to wrap an entire agent session (like Claude Code) as a single MCP server, allowing other agents to delegate high-level tasks recursively.
+- **Contextual Input Guard (PleaseFix Shield)**: (P0) A security middleware that scans tool results (e.g., HTML, Calendar events) for embedded prompt injection patterns before they are passed back to the LLM.
+- **Agentic OAuth Relay**: (P1) Automatic propagation of OAuth 2.1 identity tokens through nested agent calls, ensuring end-to-end user attestation.
+- **Recursive Loop Protection**: (P1) Detects and kills infinite agent-calling-agent loops (e.g., Agent A calls Agent B which calls Agent A) by tracking call depth and cyclic dependencies in the MCP headers.
+
 ### Priority Shifts
+- **A2A Stateful Residency**: Promoted to **P0** (Already P0, but increased urgency due to Recursive Agency trend).
+- **"Safe-by-Default" Network Hardening**: (P0) Increased urgency to mitigate unauthorized local tool access by compromised subagents.
 - **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
 - **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.
 

@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-06]
+### Focus: Agent-Recursive Mesh & Contextual Guardrails (Input-to-LLM Firewall)
+**Context**: The "Agent-as-a-Server" (AaaS) pattern is now mainstream (Claude Code), and the "PleaseFix" vulnerability highlights a new attack vector where agents are exploited through malicious content in routine tools (Calendar, Browser).
+**Strategic Pivot**:
+- **Agent-Recursive Proxying**: MCP Any will pivot from being a tool gateway to a "Recursive Agent Mesh." This includes managing tool-to-agent-to-tool handoffs, maintaining state across nested agent calls (Recursive context), and ensuring session boundaries.
+- **Contextual Guardrail Middleware**: Moving the security focus from "Tool-to-System" (Output) to "Content-to-Agent" (Input). We will implement a specialized "Input-to-LLM" firewall that detects and filters prompt injections embedded in tool results (e.g., calendar invite bodies, web page scrapes) before they reach the reasoning model.
+- **Identity Mesh (OAuth-First)**: Standardizing OAuth 2.1 identity propagation through the agent chain, ensuring that subagents only act with the explicit, authenticated identity of the parent agent/user.
