@@ -107,3 +107,8 @@
 - [ ] **Log Source Color Coding**: Assign distinct colors to different log sources automatically for better visual separation.
 - [ ] **Context Usage History**: Track total context usage over time to identify growth trends (requires backend metrics persistence).
 - [ ] **Tool Schema Optimizer**: Analyze tool schemas and suggest removing unused properties or compacting descriptions to save context tokens.
+
+### Universal Agent Bus (New Strategic Priorities)
+- [ ] **[P0] Agent-to-Agent (A2A) Discovery Dashboard**: UI for managing and visualizing discovered agents from various frameworks. (Added: 2026-03-03)
+- [ ] **[P0] MFA Approval UI**: New Human-in-the-Loop (HITL) component for verifying destructive tool calls via mobile/biometric attestation. (Added: 2026-03-03)
+- [ ] **[P1] Tool Schema Summary Visualizer**: Monitoring dashboard for the Context-Aware Summary middleware. (Added: 2026-03-03)

@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-03] Updates
+
+### Proposed Additions
+- **A2A-D (Agent-to-Agent Discovery) Protocol**: (P0) A standard discovery endpoint allowing agents to find and communicate with other agent instances via MCP Any. (Inspired by Claude's `claude agents`).
+- **Context-Aware Summary API**: (P1) Middleware that generates tool summaries for high-context agents (like OpenClaw 1M) to reduce initial context ingest costs.
+- **MFA-Verified Tool Execution**: (P0) A security hook requiring manual "Human-in-the-Loop" MFA via UI/App for any tool that performs destructive actions on local files.
+
+### Priority Shifts
+- **A2A Interop Bridge**: Promoted to **P0** as A2A-D becomes a critical requirement for multi-framework swarms.
+- **Safe-by-Default Hardening**: Re-affirmed as **P0** and expanded to include MFA-Verified Tool Execution.
+
+### Deprecations / Monitoring
+- **Unverified Agent Discovery**: Moving towards a "Verified-Only" discovery model to prevent rogue sub-agent "shadowing."

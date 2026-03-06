@@ -189,3 +189,8 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Core Middleware Pipeline**: The middleware architecture is robust and extensible.
 - **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates protocol details from business logic.
 - **Documentation**: The project has excellent documentation coverage for most features.
+
+#### Upcoming (2026-03-03 Evolution)
+*   **[P0] A2A-D (Agent-to-Agent Discovery)**: Standard discovery endpoint for cross-framework agent swarms. (Added: 2026-03-03)
+*   **[P0] MFA-Verified Tool Execution**: Multi-factor attestation for destructive local tool actions. (Added: 2026-03-03)
+*   **[P1] Context-Aware Summary API**: Dynamic middleware to summarize tool schemas for 1M context agents. (Added: 2026-03-03)
