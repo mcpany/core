@@ -57,3 +57,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-02]
+### Focus: Defensive Isolation & Multi-Protocol Orchestration (MCP+A2A+UCP)
+**Context**: Today's findings reveal a convergence of threats and opportunities. The OpenClaw security crisis (CVE-2026-25253) and the Moltbook token leak have exposed the fragility of "Localhost Security." Simultaneously, Google's UCP announcement and Claude 4.6's MAS performance jump indicate that the "Universal Agent Bus" must evolve into a secure, multi-protocol coordination hub.
+**Strategic Pivot**:
+- **Defensive Isolation (Beyond Localhost)**: Shifting from TCP-bound listeners to isolated Docker-bound named pipes and Unix domain sockets (UDS) for inter-agent communication. This mitigates cross-site WebSocket hijacking risks by ensuring only processes with filesystem-level access can reach the gateway.
+- **Agentic Identity & Attestation (AIA)**: Implementing a native identity layer where every agent/subagent in a swarm is issued a short-lived, session-bound cryptographic identity. This prevents "Token Harvest" attacks and enables granular, identity-aware tool permissions.
+- **Multi-Protocol Mesh**: Expanding the gateway to natively support not just MCP, but also A2A and the newly announced Universal Commerce Protocol (UCP). MCP Any will act as the translation layer between these agentic standards.
+- **The "Audited Blackboard"**: Evolving from simple KV stores to an "Audited Blackboard" that serves as the authoritative, secure shared state for MAS, ensuring that context and intent are preserved across agent handoffs without leaking secrets.

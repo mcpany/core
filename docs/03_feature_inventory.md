@@ -75,9 +75,21 @@
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
+---
+
+## Evolution: [2026-03-02] Updates
+
+### Proposed Additions
+- **Named Pipe / UDS Transport Adapter**: (P0) Mitigates cross-site WebSocket hijacking (CVE-2026-25253) by moving inter-agent comms to Unix Domain Sockets (UDS) or Windows Named Pipes.
+- **Agent Identity & Attestation (AIA)**: (P0) Issues short-lived, cryptographic identities to individual agents in a swarm, preventing wide-scale token leakage.
+- **Audited Blackboard (MAS Stateful Bus)**: (P0) Evolution of the Shared KV Store into a secure, audited state-management hub for multi-agent coordination (MAS).
+- **Universal Commerce Protocol (UCP) Adapter**: (P1) Bridging Google's newly announced agentic commerce standard with existing MCP tools.
+
 ### Priority Shifts
-- **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
-- **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.
+- **"Safe-by-Default" Hardening**: Re-affirmed as **P0**. Urgent requirement to move beyond simple localhost TCP listeners due to CVE-2026-25253.
+- **Shared KV Store**: Promoted to **P0** and rebranded as **Audited Blackboard** to support MAS governance and high-performance multi-agent benchmarks.
+- **A2A Interop Bridge**: Re-affirmed as **P0** to support multi-protocol orchestration (MCP+A2A+UCP).
 
 ### Deprecations / Monitoring
-- **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+- **TCP-based Local Discovery**: Monitoring for deprecation in high-security environments in favor of UDS/Named Pipes.
+- **Static Config Paths**: Monitoring for deprecation in favor of a stable CLI-driven config registry to avoid host-app path changes (e.g. Claude Windows bug).
