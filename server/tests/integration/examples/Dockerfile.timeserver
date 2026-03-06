@@ -14,6 +14,8 @@
 
 FROM python:3.11-slim
 
+WORKDIR /app
+
 COPY timeserver_patch/requirements.txt /tmp/requirements.txt
 RUN pip install --break-system-packages -r /tmp/requirements.txt
 

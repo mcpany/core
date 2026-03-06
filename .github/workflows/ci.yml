@@ -142,7 +142,7 @@ jobs:
       # - name: Set up Python
       #   uses: actions/setup-python@v6
       #   with:
-      #     python-version: "3.13"
+      #     python-version: "3.12"
       #     cache: "pip"
 
       - name: Install Python dependencies
@@ -174,10 +174,10 @@ jobs:
             ${{ runner.os }}-lint-cache-v3-
 
       - name: Prepare environment
-        run: make prepare
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE" && make prepare
 
       - name: Lint
-        run: make lint
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE" && make lint
 
   unit-test:
     runs-on: oci-runner
@@ -226,7 +226,7 @@ jobs:
       # - name: Set up Python
       #   uses: actions/setup-python@v6
       #   with:
-      #     python-version: "3.13"
+      #     python-version: "3.12"
       #     cache: "pip"
 
       - name: Install Python dependencies
@@ -299,7 +299,7 @@ jobs:
           rm -f image.tar
 
       - name: Prepare environment
-        run: make prepare CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE" && make prepare CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache
 
       - name: Test (Short)
         run: |
@@ -366,7 +366,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: "3.13"
+          python-version: "3.12"
           cache: "pip"
 
       - name: Install Python dependencies
@@ -471,11 +471,11 @@ jobs:
           rm -f image.tar
 
       - name: Prepare environment
-        run: make prepare
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE" && make prepare
 
       - name: run parallel e2e
         run: |
-          make e2e-parallel SHARD=${{ matrix.shard }} SKIP_DOCKER_REBUILD=true CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-e2e-parallel.out
+          git config --global --add safe.directory "$GITHUB_WORKSPACE" && make e2e-parallel SHARD=${{ matrix.shard }} SKIP_DOCKER_REBUILD=true CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-e2e-parallel.out
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
@@ -669,7 +669,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: "3.13"
+          python-version: "3.12"
           cache: "pip"
 
       - name: Install Python dependencies
@@ -759,11 +759,11 @@ jobs:
           rm -f image.tar
 
       - name: Prepare environment
-        run: make prepare
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE" && make prepare
 
       - name: run sequential e2e
         run: |
-          make e2e-sequential SKIP_DOCKER_REBUILD=true CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-e2e-sequential.out
+          git config --global --add safe.directory "$GITHUB_WORKSPACE" && make e2e-sequential SKIP_DOCKER_REBUILD=true CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-e2e-sequential.out
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
@@ -821,7 +821,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: "3.13"
+          python-version: "3.12"
           cache: "pip"
 
       - name: Install Python dependencies
@@ -886,7 +886,7 @@ jobs:
       # Intentionally omitting Docker downloads as e2e-public-api doesn't need them
 
       - name: Prepare environment
-        run: make prepare
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE" && make prepare
 
       - name: Debug Environment
         run: |
