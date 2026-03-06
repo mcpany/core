@@ -243,8 +243,8 @@ prepare:
 				exit 1; \
 			fi; \
 			if ! test -f "$$VENV_DIR/.installed"; then \
-				$(PYTHON_EXEC) -m pip install --upgrade pip; \
-				$(PYTHON_EXEC) -m pip install -r requirements.txt; \
+				$(PYTHON_EXEC) -m pip install --break-system-packages --upgrade pip; \
+				$(PYTHON_EXEC) -m pip install --break-system-packages -r requirements.txt; \
 				touch "$$VENV_DIR/.installed"; \
 			fi; \
 			mkdir -p $(BUILD_DIR)/.cache/pre-commit; \
