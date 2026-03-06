@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-02]
+### Focus: Protocol-Native HITL & Programmatic Tool Bridging
+**Context**: Today's findings from OpenClaw's WebSocket vulnerability and Anthropic's Programmatic Tool Calling (PTC) highlight a need for deeper integration between security and execution.
+**Strategic Pivot**:
+- **Protocol-Level HITL**: Moving Human-in-the-Loop from a "Middleware" to a "First-Class Protocol State." Every tool call can natively signal a `PENDING_APPROVAL` status that is understood by both the LLM and the Gateway.
+- **Programmatic Bridging (Logic-in-the-Middle)**: Allowing MCP Any to execute "Edge Logic" (small, verified sandboxed scripts) to aggregate multiple tool calls, reducing LLM round-trips and improving performance for complex swarms.
+- **Dynamic Egress Validation**: Implementing real-time protocol inspection for persistent connections (WebSockets, gRPC Streams) to prevent unauthorized "Gateway Hopping" as seen in recent CVEs.
