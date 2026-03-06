@@ -142,11 +142,11 @@ jobs:
       # - name: Set up Python
       #   uses: actions/setup-python@v6
       #   with:
-      #     python-version: "3.12"
+      #     python-version: "3.13"
       #     cache: "pip"
 
       - name: Install Python dependencies
-        run: pip install --break-system-packages -r server/requirements.txt
+        run: pip install -r server/requirements.txt
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -177,7 +177,7 @@ jobs:
         run: make prepare
 
       - name: Lint
-        run: git config --global --add safe.directory "$GITHUB_WORKSPACE" && make lint
+        run: make lint
 
   unit-test:
     runs-on: oci-runner
@@ -226,11 +226,11 @@ jobs:
       # - name: Set up Python
       #   uses: actions/setup-python@v6
       #   with:
-      #     python-version: "3.12"
+      #     python-version: "3.13"
       #     cache: "pip"
 
       - name: Install Python dependencies
-        run: pip install --break-system-packages -r server/requirements.txt
+        run: pip install -r server/requirements.txt
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -366,11 +366,11 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: "3.12"
+          python-version: "3.13"
           cache: "pip"
 
       - name: Install Python dependencies
-        run: pip install --break-system-packages -r server/requirements.txt
+        run: pip install -r server/requirements.txt
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -669,11 +669,11 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: "3.12"
+          python-version: "3.13"
           cache: "pip"
 
       - name: Install Python dependencies
-        run: pip install --break-system-packages -r server/requirements.txt
+        run: pip install -r server/requirements.txt
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -821,11 +821,11 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: "3.12"
+          python-version: "3.13"
           cache: "pip"
 
       - name: Install Python dependencies
-        run: pip install --break-system-packages -r server/requirements.txt
+        run: pip install -r server/requirements.txt
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
