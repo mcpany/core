@@ -75,9 +75,18 @@
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
+---
+
+## Evolution: [2026-03-02] Updates
+
+### Proposed Additions
+- **Loopback Origin Validation & Rate Limiting**: (P0) Treat loopback connections with Zero-Trust scrutiny. Mandatory WebSocket origin checking and rate limiting for localhost to prevent cross-site hijacking.
+- **Hook Approval Protocol (Safe-Hooks)**: (P0) Out-of-band user approval or cryptographic signing for all automated commands/hooks defined in configuration files.
+- **Immutable Context Fragments**: (P1) Standard for shared context that prevents subagents from overwriting parent mission state or historical fragments.
+
 ### Priority Shifts
-- **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
-- **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.
+- **Safe-by-Default Hardening**: Re-affirmed as **P0**. The OpenClaw incident proves that local-only binding is not enough without origin validation.
+- **Supply Chain Integrity Guard**: Expanded to include "Hook Attestation."
 
 ### Deprecations / Monitoring
-- **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+- **Unvalidated Loopback Access**: Deprecate the assumption that `localhost` source is inherently trusted.
