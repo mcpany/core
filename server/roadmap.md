@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-02 Evolution)
+*   **[P0] Project-Scoped Policy Engine**: Hierarchical Rego/CEL policy evaluation based on project context. (Added: 2026-03-02)
+*   **[P1] Adaptive Thinking Telemetry**: Capture reasoning tokens and metadata from Claude 4.6 and Gemini 3.1. (Added: 2026-03-02)
+*   **[P1] Ephemeral Browser Sandbox**: Managed isolated browser environments for agentic web automation. (Added: 2026-03-02)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

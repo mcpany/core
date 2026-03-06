@@ -81,3 +81,16 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-02] Updates
+
+### Proposed Additions
+- **Adaptive Thinking Telemetry Middleware**: (P1) Capture and expose reasoning tokens/duration for models like Claude 4.6.
+- **Project-Scoped Policy Engine**: (P0) Support for hierarchical policy evaluation (Global > Project > Agent).
+- **Ephemeral Browser Sandbox Adapter**: (P1) Isolated Playwright/Puppeteer execution as a managed MCP server.
+
+### Priority Shifts
+- **A2A Stateful Residency**: Re-affirmed as **P0**. Critical for the next wave of decentralized swarms.
+- **Safe-by-Default Hardening**: Promoted to **P0** (Already P0, but increased urgency due to rising OpenClaw popularity).

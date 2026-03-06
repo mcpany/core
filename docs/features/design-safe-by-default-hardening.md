@@ -59,3 +59,10 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+
+### Update: 2026-03-02 - Ephemeral Browser Sandboxing
+**Context:** Recent market sync reveals that as agents like Gemini and OpenClaw move towards autonomous browser use, the risk of "Browser-to-Host" escapes increases.
+**Architecture Adjustment:**
+*   Introducing a "Sandbox" tier for tools. Tools marked with `category: browser` will be executed in an ephemeral, isolated container (via Playwright/Puppeteer) by default.
+*   Deprecating direct local browser execution in favor of managed sandboxes.
+**Security Impact:** Mitigates the risk of a rogue agent using a browser to access local files (via `file://` URIs) or the internal network.
