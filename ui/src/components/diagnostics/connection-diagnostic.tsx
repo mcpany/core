@@ -304,7 +304,7 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
       <DialogTrigger asChild>
         {trigger || (
             <Button variant="outline" size="sm" className="gap-2">
-                <Activity className="h-4 w-4" /> Troubleshoot
+                <Play className="h-4 w-4" /> Test Connection
             </Button>
         )}
       </DialogTrigger>

@@ -1,43 +1,35 @@
-# Audit Report: Truth Reconciliation
+# Truth Reconciliation Audit Report
 
-## Executive Summary
-Performed a comprehensive audit of 10 distinct features across UI and Server domains. The audit revealed a high degree of alignment between the codebase and the intended functionality, with minor discrepancies in documentation and roadmap status.
-*   **Health Score:** 9/10 (Initial), 10/10 (Post-Remediation).
-*   **Primary Issue:** Documentation Drift (Code was ahead of Docs/Roadmap).
-*   **Action:** Synchronized `ui/roadmap.md` and feature documentation to reflect existing, verified capabilities.
+## 1. Executive Summary
 
-## Verification Matrix
+This report documents the results of a Truth Reconciliation Audit performed across 10 sampled documentation files, the codebase, and the Project Roadmap for the MCP Any project. The audit revealed a high degree of health and alignment, with only minor discrepancies identified and resolved.
+
+Overall, the system demonstrates strong adherence to the intended Roadmap. The "Test Connection" diagnostic tool had a terminology mismatch that has been fixed to align with the Phase 1 goals. The real-time logging, context optimizer, and other features correctly implement their documented behavior without drift.
+
+## 2. Verification Matrix
 
 | Document Name | Status | Action Taken | Evidence |
 | :--- | :--- | :--- | :--- |
-| `ui/docs/features/connection-diagnostics.md` | ✅ Verified | None | Verified `ConnectionDiagnostic` component logic matches docs. |
-| `ui/docs/features/playground.md` | ⚠️ Drift | **Doc Updated** | Code supports "Copy as Python", doc missed it. Added to doc. |
-| `ui/docs/features/structured_log_viewer.md` | ✅ Verified | None | Verified `LogViewer` JSON auto-detection and expansion. |
-| `server/docs/features/hot_reload.md` | ✅ Verified | None | Verified `ReloadConfig` and `reconcileServices` in `server.go`. |
-| `server/docs/features/health-checks.md` | ✅ Verified | None | Verified `health.go` implements all claimed checks (HTTP, gRPC, FS, etc). |
-| `server/docs/features/dlp.md` | ✅ Verified | None | Verified `dlp.go` implements PII redaction middleware. |
-| `server/docs/features/context_optimizer.md` | ✅ Verified | None | Verified `context_optimizer.go` implements truncation logic. |
-| `server/docs/features/configuration_guide.md` | ✅ Verified | None | Verified configuration loading from files and database. |
-| `server/docs/features/security.md` | ⚠️ Drift | **Doc Updated** | Code enforces "Sentinel Security" (localhost-only) if API Key is missing. Doc updated to reflect this. |
-| `server/docs/features/audit_logging.md` | ✅ Verified | None | Verified `FileAuditStore` implements NDJSON format. |
+| `ui/docs/features/log-search-highlighting.md` | **Verified** | None | `ui/src/components/logs/log-stream.tsx` uses `highlightRegex` properly to highlight logs. Code and tests (`log-stream.test.tsx`) are in sync. |
+| `ui/docs/features/test_connection.md` | **Fixed** | Updated Code | Changed button label from "Troubleshoot" to "Test Connection" in `connection-diagnostic.tsx` and related tests to match docs & roadmap. |
+| `ui/docs/features/real-time-inspector.md` | **Verified** | Updated Test Script | UI component (`inspector/page.tsx`) matches docs. E2E test script `verify_inspector.py` was using the wrong port (9002), updated to 3000 to successfully test the component. |
+| `ui/docs/features/connect-client-center.md` | **Verified** | None | `ConnectClientButton` is implemented correctly and imported via `ui/src/app/layout.tsx`. |
+| `ui/docs/features/dashboard.md` | **Verified** | None | `ui/src/app/page.tsx` properly renders the widget registry (`ui/src/components/dashboard/widget-registry.tsx`) including `MetricsOverview` and `ServiceHealthWidget`. |
+| `server/docs/features/context_optimizer.md` | **Verified** | None | `server/pkg/middleware/context_optimizer.go` implements correct truncation. `context_optimizer_test.go` exists. |
+| `server/docs/features/audit_logging.md` | **Verified** | None | `server/pkg/middleware/audit.go` logs all required context parameters correctly. |
+| `server/docs/features/log_streaming_ui.md` | **Verified** | None | Real-time `LogStream` component in `ui/src/components/logs/log-stream.tsx` correctly aligns with backend event streaming. |
+| `server/docs/features/skill_manager.md` | **Verified** | None | `server/pkg/skill/manager.go` parses metadata from `SKILL.md` exactly as documented. |
+| `server/docs/features/hot_reload.md` | **Verified** | None | `server/pkg/config/watcher.go` implements valid configuration watcher functionality. |
 
-## Remediation Log
+## 3. Remediation Log
 
-### 1. Security Documentation Update
-*   **Issue:** `server/docs/features/security.md` implied open access if `allowed_ips` was empty.
-*   **Reality:** Code (`server/pkg/app/server.go`) enforces strict localhost-only access if no API Key is configured ("Sentinel Security").
-*   **Fix:** Updated documentation to explicitly describe the "Sentinel Security Mode".
+* **Case B: Roadmap Debt (Code Fixes):**
+    * **Test Connection Tool:** The `connection-diagnostic.tsx` component and associated `connection-diagnostic.test.tsx` file were updated. The button labeled "Troubleshoot" with an `<Activity>` icon was changed to "Test Connection" with a `<Play>` icon. This resolves the divergence and accurately matches the "Test Connection" and "Service Connection Diagnostic Tool" expectations in the Roadmap and documentation.
+    * **Inspector Verification Script:** The Playwright test script `verify_inspector.py` failed because it expected the app to run on port 9002 instead of standard 3000. It was patched to ensure successful automated verifications.
 
-### 2. Playground Documentation & Roadmap
-*   **Issue:** `ui/roadmap.md` listed "Copy as Curl/Python" as TODO. `ui/docs/features/playground.md` omitted Python support.
-*   **Reality:** Code (`ui/src/lib/code-generator.ts`, `ui/src/components/playground/tool-runner.tsx`) fully implements Curl and Python code generation.
-*   **Fix:**
-    *   Updated `ui/docs/features/playground.md` to include "Copy as Code".
-    *   Updated `ui/roadmap.md` to mark Playground features as `[x]` (Completed).
+* **Case A: Documentation Drift:**
+    * No documentation drift that required updates was found among the 10 sampled files.
 
-### 3. Code Quality (Linting)
-*   **Issue:** `make lint` failed due to missing TSDoc in UI components.
-*   **Fix:** Added missing TSDoc comments to `ui/src/components/logs/log-viewer.tsx` and `ui/src/components/diagnostics/discovery-status.tsx`.
+## 4. Security Scrub
 
-## Security Scrub
-*   No PII, secrets, or internal IPs were found or exposed in this report.
+No internal IPs, Personally Identifiable Information (PII), or secrets have been included in this report.
