@@ -12,13 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM mirror.gcr.io/library/python:3.11-slim
+FROM python:3.11-slim
 
-# Changing WORKDIR to avoid potential OverlayFS invalid argument errors on /app in some CI environments
-WORKDIR /srv
-
-COPY timeserver_patch/requirements.txt .
-RUN pip install -r requirements.txt
+COPY timeserver_patch/requirements.txt /tmp/requirements.txt
+RUN pip install --break-system-packages -r /tmp/requirements.txt
 
 COPY timeserver_patch/main.py /service/main.py
 

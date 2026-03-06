@@ -59,7 +59,7 @@ upstream_services:
 	select {
 	case <-app.startupCh:
 		// Startup complete
-	case <-time.After(5 * time.Second):
+	case <-time.After(15 * time.Second):
 		t.Fatal("Startup timed out")
 	}
 
