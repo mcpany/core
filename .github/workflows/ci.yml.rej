@@ -1,0 +1,16 @@
+--- ci.yml
++++ ci.yml
+@@ -165,13 +165,6 @@
+         with:
+           path: server/tests/integration/upstream/package-lock.json
+
+-      - name: Cache pre-commit
+-        uses: actions/cache@v4
+-        with:
+-          path: build/.cache
+-          key: ${{ runner.os }}-lint-cache-v3-${{ hashFiles('**/go.sum') }}
+-          restore-keys: |
+-            ${{ runner.os }}-lint-cache-v3-
+
+       - name: Prepare environment
+         run: git config --global --add safe.directory "$GITHUB_WORKSPACE" && make prepare
