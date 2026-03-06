@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-06] Updates
+
+### Proposed Additions
+- **Config Integrity Attestation**: (P0) Cryptographic signing and verification of project-level configuration files to prevent malicious hook injection and unauthorized overrides.
+- **Universal Credential Isolation Proxy**: (P0) A secure middleware that proxies API requests and injects credentials, preventing agents from ever seeing or exfiltrating raw API keys.
+- **Swarm Economic Guardrails**: (P1) Policy-based limits on tool-call depth and token usage per-session to manage large-scale agent swarms.
+
+### Priority Shifts
+- **A2A Stateful Residency**: Re-affirmed as **P0** to support reliable message passing in 100+ agent swarms.
+- **Safe-by-Default Hardening**: Promoted to include "Config-Safe" defaults, rejecting unverified project configs.
+
+### Deprecations / Monitoring
+- **Direct Environment Variable Injection**: Monitor for deprecation in favor of Credential Isolation Proxy.
