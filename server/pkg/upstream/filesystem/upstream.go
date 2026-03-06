@@ -29,20 +29,30 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-// Upstream implements the upstream.Upstream interface for filesystem services.
+// Upstream implements the upstream.Upstream interface for filesystem services. It provides tools for interacting with various filesystem backends (local, S3, GCS, etc.) as defined in the service configuration.
 //
-// It provides tools for interacting with various filesystem backends (local,
-// S3, GCS, etc.) as defined in the service configuration.
+// Summary: Upstream implements the upstream.Upstream interface for filesystem services. It provides tools for interacting with various filesystem backends (local, S3, GCS, etc.) as defined in the service configuration.
+//
+// Fields:
+//   - Contains the configuration and state properties required for Upstream functionality.
 type Upstream struct {
 	mu      sync.Mutex
 	closers []io.Closer
 	checker health.Checker
 }
 
-// NewUpstream creates a new instance of FilesystemUpstream.
+// NewUpstream creates a new instance of FilesystemUpstream. Returns: - upstream.Upstream: A new instance of the filesystem upstream. Side Effects: - None.
+//
+// Summary: NewUpstream creates a new instance of FilesystemUpstream. Returns: - upstream.Upstream: A new instance of the filesystem upstream. Side Effects: - None.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - upstream.Upstream: A new instance of the filesystem upstream.
+//   - (upstream.Upstream): The resulting upstream.Upstream object containing the requested data.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -211,17 +221,23 @@ type fsCallable struct {
 	handler func(ctx context.Context, args map[string]interface{}) (map[string]interface{}, error)
 }
 
-// Call executes the filesystem tool with the provided request arguments.
+// Call executes the filesystem tool with the provided request arguments. Summary: Executes a filesystem tool. Parameters: - ctx: context.Context. The execution context. - req: *tool.ExecutionRequest. The request containing arguments. Returns: - any: The result of the execution. - error: An error if execution fails.
 //
-// Summary: Executes a filesystem tool.
+// Summary: Call executes the filesystem tool with the provided request arguments. Summary: Executes a filesystem tool. Parameters: - ctx: context.Context. The execution context. - req: *tool.ExecutionRequest. The request containing arguments. Returns: - any: The result of the execution. - error: An error if execution fails.
 //
 // Parameters:
-//   - ctx: context.Context. The execution context.
-//   - req: *tool.ExecutionRequest. The request containing arguments.
+//   - ctx (context.Context): The context for managing request lifecycle and cancellation.
+//   - req (*tool.ExecutionRequest): The request object containing specific parameters.
 //
 // Returns:
-//   - any: The result of the execution.
-//   - error: An error if execution fails.
+//   - (any): The resulting any object containing the requested data.
+//   - (error): An error object if the operation fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the underlying operation fails or encounters invalid input.
+//
+// Side Effects:
+//   - None.
 func (c *fsCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	args := req.Arguments
 	if args == nil && len(req.ToolInputs) > 0 {

@@ -39,9 +39,12 @@ const (
 	StatusSkipped Status = "SKIPPED"
 )
 
-// CheckResult represents the result of a single service check.
+// CheckResult defines the core structure for check result within the system.
 //
-// It aggregates the status, any message, and potential error encountered during the check.
+// Summary: CheckResult defines the core structure for check result within the system.
+//
+// Fields:
+//   - Contains the configuration and state properties required for CheckResult functionality.
 type CheckResult struct {
 	// ServiceName is the name of the service being checked.
 	ServiceName string

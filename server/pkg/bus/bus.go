@@ -61,14 +61,12 @@ type Bus[T any] interface {
 	SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func())
 }
 
-// Provider is a thread-safe container for managing multiple, type-safe bus
-// instances, with each bus being dedicated to a specific topic. It ensures that
-// for any given topic, there is only one bus instance, creating one on demand
-// if it doesn't already exist.
+// Provider is a thread-safe container for managing multiple, type-safe bus instances, with each bus being dedicated to a specific topic. It ensures that for any given topic, there is only one bus instance, creating one on demand if it doesn't already exist. This allows different parts of the application to get a bus for a specific message type and topic without needing to manage the lifecycle of the bus instances themselves.
 //
-// This allows different parts of the application to get a bus for a specific
-// message type and topic without needing to manage the lifecycle of the bus
-// instances themselves.
+// Summary: Provider is a thread-safe container for managing multiple, type-safe bus instances, with each bus being dedicated to a specific topic. It ensures that for any given topic, there is only one bus instance, creating one on demand if it doesn't already exist. This allows different parts of the application to get a bus for a specific message type and topic without needing to manage the lifecycle of the bus instances themselves.
+//
+// Fields:
+//   - Contains the configuration and state properties required for Provider functionality.
 type Provider struct {
 	buses  *xsync.Map[string, any]
 	config *bus.MessageBus
@@ -77,15 +75,22 @@ type Provider struct {
 // NewProviderHook is a test hook for overriding the NewProvider logic.
 var NewProviderHook func(*bus.MessageBus) (*Provider, error)
 
-// NewProvider creates and returns a new Provider, which is used to manage
-// multiple topic-based bus instances.
+// NewProvider creates and returns a new Provider, which is used to manage multiple topic-based bus instances. Parameters: messageBus: The configuration for the message bus. Returns: *Provider: The created Provider. error: An error if creation fails.
+//
+// Summary: NewProvider creates and returns a new Provider, which is used to manage multiple topic-based bus instances. Parameters: messageBus: The configuration for the message bus. Returns: *Provider: The created Provider. error: An error if creation fails.
 //
 // Parameters:
-//   messageBus: The configuration for the message bus.
+//   - messageBus (*bus.MessageBus): The message bus parameter used in the operation.
 //
 // Returns:
-//   *Provider: The created Provider.
-//   error: An error if creation fails.
+//   - (*Provider): The resulting Provider object containing the requested data.
+//   - (error): An error object if the operation fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the underlying operation fails or encounters invalid input.
+//
+// Side Effects:
+//   - None.
 func NewProvider(messageBus *bus.MessageBus) (*Provider, error) {
 	if NewProviderHook != nil {
 		return NewProviderHook(messageBus)

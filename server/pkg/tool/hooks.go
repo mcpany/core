@@ -28,9 +28,12 @@ type compiledRule struct {
 	rule          *configv1.CallPolicyRule
 }
 
-// PolicyHook implements PreCallHook using CallPolicy.
+// PolicyHook implements PreCallHook using CallPolicy. Summary: Pre-call hook that enforces call policies defined in configuration.
 //
-// Summary: Pre-call hook that enforces call policies defined in configuration.
+// Summary: PolicyHook implements PreCallHook using CallPolicy. Summary: Pre-call hook that enforces call policies defined in configuration.
+//
+// Fields:
+//   - Contains the configuration and state properties required for PolicyHook functionality.
 type PolicyHook struct {
 	policy        *configv1.CallPolicy
 	compiledRules []compiledRule
@@ -151,9 +154,12 @@ func (h *PolicyHook) ExecutePre(
 
 // (Deprecated hooks removed)
 
-// WebhookClient handles the communication with an external webhook.
+// WebhookClient handles the communication with an external webhook. Summary: Client for sending CloudEvents to external webhooks.
 //
-// Summary: Client for sending CloudEvents to external webhooks.
+// Summary: WebhookClient handles the communication with an external webhook. Summary: Client for sending CloudEvents to external webhooks.
+//
+// Fields:
+//   - Contains the configuration and state properties required for WebhookClient functionality.
 type WebhookClient struct {
 	url     string
 	timeout time.Duration
@@ -261,22 +267,31 @@ func (c *WebhookClient) Call(ctx context.Context, eventType string, data any) (*
 	return respEvent, nil
 }
 
-// WebhookHook supports modification of requests and responses via external webhook using CloudEvents.
+// WebhookHook supports modification of requests and responses via external webhook using CloudEvents. Summary: Hook implementation that delegates logic to an external webhook.
 //
-// Summary: Hook implementation that delegates logic to an external webhook.
+// Summary: WebhookHook supports modification of requests and responses via external webhook using CloudEvents. Summary: Hook implementation that delegates logic to an external webhook.
+//
+// Fields:
+//   - Contains the configuration and state properties required for WebhookHook functionality.
 type WebhookHook struct {
 	client *WebhookClient
 }
 
-// NewWebhookHook creates a new WebhookHook.
+// NewWebhookHook creates a new WebhookHook. Summary: Initializes a new WebhookHook. Parameters: - config: *configv1.WebhookConfig. The webhook configuration. Returns: - *WebhookHook: The initialized hook.
 //
-// Summary: Initializes a new WebhookHook.
+// Summary: NewWebhookHook creates a new WebhookHook. Summary: Initializes a new WebhookHook. Parameters: - config: *configv1.WebhookConfig. The webhook configuration. Returns: - *WebhookHook: The initialized hook.
 //
 // Parameters:
-//   - config: *configv1.WebhookConfig. The webhook configuration.
+//   - config (*configv1.WebhookConfig): The configuration settings to be applied.
 //
 // Returns:
-//   - *WebhookHook: The initialized hook.
+//   - (*WebhookHook): The resulting WebhookHook object containing the requested data.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewWebhookHook(config *configv1.WebhookConfig) *WebhookHook {
 	return &WebhookHook{
 		client: NewWebhookClient(config),
@@ -431,9 +446,12 @@ func (h *WebhookHook) ExecutePost(
 	return result, nil
 }
 
-// WebhookStatus represents the status returned by the webhook.
+// WebhookStatus defines the core structure for webhook status within the system.
 //
-// Summary: Status information included in the webhook response.
+// Summary: WebhookStatus defines the core structure for webhook status within the system.
+//
+// Fields:
+//   - Contains the configuration and state properties required for WebhookStatus functionality.
 type WebhookStatus struct {
 	// Code is the status code returned by the webhook.
 	Code    int    `json:"code"`
@@ -441,9 +459,12 @@ type WebhookStatus struct {
 	Message string `json:"message"`
 }
 
-// SigningRoundTripper signs the request using the webhook signer.
+// SigningRoundTripper signs the request using the webhook signer. Summary: HTTP Transport that adds HMAC signatures to outgoing requests.
 //
-// Summary: HTTP Transport that adds HMAC signatures to outgoing requests.
+// Summary: SigningRoundTripper signs the request using the webhook signer. Summary: HTTP Transport that adds HMAC signatures to outgoing requests.
+//
+// Fields:
+//   - Contains the configuration and state properties required for SigningRoundTripper functionality.
 type SigningRoundTripper struct {
 	signer *webhook.Webhook
 	base   http.RoundTripper

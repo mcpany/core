@@ -13,8 +13,12 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// A2ABridgeMiddleware represents the Agent-to-Agent (A2A) Bridge middleware.
-// It intercepts tool calls prefixed with "call_agent_" and bridges them to the A2A protocol.
+// A2ABridgeMiddleware defines the core structure for a2 a bridge middleware within the system.
+//
+// Summary: A2ABridgeMiddleware defines the core structure for a2 a bridge middleware within the system.
+//
+// Fields:
+//   - Contains the configuration and state properties required for A2ABridgeMiddleware functionality.
 type A2ABridgeMiddleware struct {
 	contextManager *RecursiveContextManager
 }

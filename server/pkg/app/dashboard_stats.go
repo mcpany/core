@@ -63,7 +63,12 @@ const (
 	labelStatus          = "status"
 )
 
-// ToolUsageStats represents usage statistics for a tool.
+// ToolUsageStats defines the core structure for tool usage stats within the system.
+//
+// Summary: ToolUsageStats defines the core structure for tool usage stats within the system.
+//
+// Fields:
+//   - Contains the configuration and state properties required for ToolUsageStats functionality.
 type ToolUsageStats struct {
 	Name      string `json:"name"`
 	ServiceID string `json:"serviceId"`
@@ -209,7 +214,12 @@ func (a *Application) handleDebugSeedTraffic() http.HandlerFunc {
 	}
 }
 
-// ToolFailureStats represents failure statistics for a tool.
+// ToolFailureStats defines the core structure for tool failure stats within the system.
+//
+// Summary: ToolFailureStats defines the core structure for tool failure stats within the system.
+//
+// Fields:
+//   - Contains the configuration and state properties required for ToolFailureStats functionality.
 type ToolFailureStats struct {
 	Name        string  `json:"name"`
 	ServiceID   string  `json:"serviceId"`
@@ -329,7 +339,12 @@ func (a *Application) handleDashboardToolFailures() http.HandlerFunc {
 	}
 }
 
-// ToolAnalytics represents detailed usage analytics for a tool.
+// ToolAnalytics defines the core structure for tool analytics within the system.
+//
+// Summary: ToolAnalytics defines the core structure for tool analytics within the system.
+//
+// Fields:
+//   - Contains the configuration and state properties required for ToolAnalytics functionality.
 type ToolAnalytics struct {
 	Name        string  `json:"name"`
 	ServiceID   string  `json:"serviceId"`
@@ -443,13 +458,23 @@ func (a *Application) handleDashboardToolUsage() http.HandlerFunc {
 	}
 }
 
-// ServiceHealthResponse represents the response for the health dashboard.
+// ServiceHealthResponse defines the core structure for service health response within the system.
+//
+// Summary: ServiceHealthResponse defines the core structure for service health response within the system.
+//
+// Fields:
+//   - Contains the configuration and state properties required for ServiceHealthResponse functionality.
 type ServiceHealthResponse struct {
 	Services []ServiceHealth                 `json:"services"`
 	History  map[string][]health.HistoryPoint `json:"history"`
 }
 
-// ServiceHealth represents the health status of a service.
+// ServiceHealth defines the core structure for service health within the system.
+//
+// Summary: ServiceHealth defines the core structure for service health within the system.
+//
+// Fields:
+//   - Contains the configuration and state properties required for ServiceHealth functionality.
 type ServiceHealth struct {
 	ID      string `json:"id"`
 	Name    string `json:"name"`

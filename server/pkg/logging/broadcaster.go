@@ -8,6 +8,11 @@ import (
 )
 
 // Broadcaster manages a set of subscribers and broadcasts messages to them.
+//
+// Summary: Broadcaster manages a set of subscribers and broadcasts messages to them.
+//
+// Fields:
+//   - Contains the configuration and state properties required for Broadcaster functionality.
 type Broadcaster struct {
 	mu          sync.RWMutex
 	subscribers map[chan any]struct{}

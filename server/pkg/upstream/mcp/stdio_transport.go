@@ -17,8 +17,12 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// StdioTransport implements mcp.Transport for a local command,
-// capturing stderr to provide better error messages on failure.
+// StdioTransport implements mcp.Transport for a local command, capturing stderr to provide better error messages on failure.
+//
+// Summary: StdioTransport implements mcp.Transport for a local command, capturing stderr to provide better error messages on failure.
+//
+// Fields:
+//   - Contains the configuration and state properties required for StdioTransport functionality.
 type StdioTransport struct {
 	Command *exec.Cmd
 }
@@ -252,13 +256,18 @@ func (c *stdioConn) Write(_ context.Context, msg jsonrpc.Message) error {
 	return c.encoder.Encode(wire)
 }
 
-// Close terminates the command and closes the streams.
+// Close terminates the command and closes the streams. Returns: - error: An error if the operation fails. Errors: - Returns an error if ... Side Effects: - None.
+//
+// Summary: Close terminates the command and closes the streams. Returns: - error: An error if the operation fails. Errors: - Returns an error if ... Side Effects: - None.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - (error): An error object if the operation fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Returns an error if the underlying operation fails or encounters invalid input.
 //
 // Side Effects:
 //   - None.
@@ -277,10 +286,18 @@ func (c *stdioConn) Close() error {
 	return nil
 }
 
-// SessionID returns a static session ID for the stdio connection.
+// SessionID returns a static session ID for the stdio connection. Returns: - string: The result. Side Effects: - None.
+//
+// Summary: SessionID returns a static session ID for the stdio connection. Returns: - string: The result. Side Effects: - None.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - string: The result.
+//   - (string): A string value representing the operation's result.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.

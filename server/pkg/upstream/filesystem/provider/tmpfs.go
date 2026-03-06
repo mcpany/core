@@ -10,14 +10,27 @@ import (
 )
 
 // TmpfsProvider provides access to a temporary in-memory filesystem.
+//
+// Summary: TmpfsProvider provides access to a temporary in-memory filesystem.
+//
+// Fields:
+//   - Contains the configuration and state properties required for TmpfsProvider functionality.
 type TmpfsProvider struct {
 	fs afero.Fs
 }
 
-// NewTmpfsProvider creates a new TmpfsProvider.
+// NewTmpfsProvider creates a new TmpfsProvider. Returns: - *TmpfsProvider: The result. Side Effects: - None.
+//
+// Summary: NewTmpfsProvider creates a new TmpfsProvider. Returns: - *TmpfsProvider: The result. Side Effects: - None.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - *TmpfsProvider: The result.
+//   - (*TmpfsProvider): The resulting TmpfsProvider object containing the requested data.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -27,10 +40,18 @@ func NewTmpfsProvider() *TmpfsProvider {
 	}
 }
 
-// GetFs returns the underlying filesystem.
+// GetFs returns the underlying filesystem. Returns: - afero.Fs: The result. Side Effects: - None.
+//
+// Summary: GetFs returns the underlying filesystem. Returns: - afero.Fs: The result. Side Effects: - None.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - afero.Fs: The result.
+//   - (afero.Fs): The resulting afero.Fs object containing the requested data.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -57,13 +78,18 @@ func (p *TmpfsProvider) ResolvePath(virtualPath string) (string, error) {
 	return filepath.Clean(virtualPath), nil
 }
 
-// Close closes the provider.
+// Close closes the provider. Returns: - error: An error if the operation fails. Errors: - Returns an error if ... Side Effects: - None.
+//
+// Summary: Close closes the provider. Returns: - error: An error if the operation fails. Errors: - Returns an error if ... Side Effects: - None.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - (error): An error object if the operation fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Returns an error if the underlying operation fails or encounters invalid input.
 //
 // Side Effects:
 //   - None.

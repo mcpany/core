@@ -18,6 +18,11 @@ import (
 )
 
 // ManagerInterface defines the interface for managing alerts.
+//
+// Summary: ManagerInterface defines the interface for managing alerts.
+//
+// Methods:
+//   - Defines the required contract and behavior for implementations of ManagerInterface.
 type ManagerInterface interface {
 	// ListAlerts returns a list of all alerts.
 	ListAlerts() []*Alert
@@ -52,6 +57,11 @@ type ManagerInterface interface {
 }
 
 // Manager implements ManagerInterface using in-memory storage.
+//
+// Summary: Manager implements ManagerInterface using in-memory storage.
+//
+// Fields:
+//   - Contains the configuration and state properties required for Manager functionality.
 type Manager struct {
 	mu         sync.RWMutex
 	alerts     map[string]*Alert

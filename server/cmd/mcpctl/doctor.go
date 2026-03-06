@@ -19,9 +19,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// DoctorRunner runs the doctor command checks.
+// DoctorRunner runs the doctor command checks. Summary: Component to run system health diagnostics.
 //
-// Summary: Component to run system health diagnostics.
+// Summary: DoctorRunner runs the doctor command checks. Summary: Component to run system health diagnostics.
+//
+// Fields:
+//   - Contains the configuration and state properties required for DoctorRunner functionality.
 type DoctorRunner struct {
 	Out        io.Writer
 	Fs         afero.Fs

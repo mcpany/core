@@ -13,17 +13,23 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// Config holds the configuration for the worker.
+// Config holds the configuration for the worker. Summary: Configuration for worker pool.
 //
-// Summary: Configuration for worker pool.
+// Summary: Config holds the configuration for the worker. Summary: Configuration for worker pool.
+//
+// Fields:
+//   - Contains the configuration and state properties required for Config functionality.
 type Config struct {
 	MaxWorkers   int
 	MaxQueueSize int
 }
 
-// Worker is responsible for processing jobs from the bus.
+// Worker is responsible for processing jobs from the bus. Summary: Processes background jobs.
 //
-// Summary: Processes background jobs.
+// Summary: Worker is responsible for processing jobs from the bus. Summary: Processes background jobs.
+//
+// Fields:
+//   - Contains the configuration and state properties required for Worker functionality.
 type Worker struct {
 	busProvider *bus.Provider
 	pond        pond.Pool
@@ -32,16 +38,22 @@ type Worker struct {
 	wg          sync.WaitGroup
 }
 
-// New creates a new Worker.
+// New creates a new Worker. Summary: Initializes a new Worker. Parameters: - busProvider: *bus.Provider. The bus provider. - cfg: *Config. The worker configuration. Returns: - *Worker: The initialized worker.
 //
-// Summary: Initializes a new Worker.
+// Summary: New creates a new Worker. Summary: Initializes a new Worker. Parameters: - busProvider: *bus.Provider. The bus provider. - cfg: *Config. The worker configuration. Returns: - *Worker: The initialized worker.
 //
 // Parameters:
-//   - busProvider: *bus.Provider. The bus provider.
-//   - cfg: *Config. The worker configuration.
+//   - busProvider (*bus.Provider): The unique identifier used to reference the busProver resource.
+//   - cfg (*Config): The cfg parameter used in the operation.
 //
 // Returns:
-//   - *Worker: The initialized worker.
+//   - (*Worker): The resulting Worker object containing the requested data.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func New(busProvider *bus.Provider, cfg *Config) *Worker {
 	return &Worker{
 		busProvider: busProvider,
@@ -52,12 +64,21 @@ func New(busProvider *bus.Provider, cfg *Config) *Worker {
 	}
 }
 
-// Start starts the worker and its background tasks.
+// Start starts the worker and its background tasks. Summary: Starts the worker processing loop. Parameters: - ctx: context.Context. The context for the worker.
 //
-// Summary: Starts the worker processing loop.
+// Summary: Start starts the worker and its background tasks. Summary: Starts the worker processing loop. Parameters: - ctx: context.Context. The context for the worker.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the worker.
+//   - ctx (context.Context): The context for managing request lifecycle and cancellation.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Modifies global state, writes to the database, or establishes network connections.
 func (w *Worker) Start(ctx context.Context) {
 	w.wg.Add(1)
 	go w.startToolExecutionWorker(ctx)

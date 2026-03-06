@@ -17,6 +17,11 @@ import (
 )
 
 // S3Provider provides access to files in an S3 bucket.
+//
+// Summary: S3Provider provides access to files in an S3 bucket.
+//
+// Fields:
+//   - Contains the configuration and state properties required for S3Provider functionality.
 type S3Provider struct {
 	fs afero.Fs
 }
@@ -72,10 +77,18 @@ func NewS3Provider(config *configv1.S3Fs) (*S3Provider, error) {
 	return &S3Provider{fs: fs}, nil
 }
 
-// GetFs returns the underlying filesystem.
+// GetFs returns the underlying filesystem. Returns: - afero.Fs: The result. Side Effects: - None.
+//
+// Summary: GetFs returns the underlying filesystem. Returns: - afero.Fs: The result. Side Effects: - None.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - afero.Fs: The result.
+//   - (afero.Fs): The resulting afero.Fs object containing the requested data.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -113,13 +126,18 @@ func (p *S3Provider) ResolvePath(virtualPath string) (string, error) {
 	return cleanPath, nil
 }
 
-// Close closes the provider.
+// Close closes the provider. Returns: - error: An error if the operation fails. Errors: - Returns an error if ... Side Effects: - None.
+//
+// Summary: Close closes the provider. Returns: - error: An error if the operation fails. Errors: - Returns an error if ... Side Effects: - None.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - (error): An error object if the operation fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Returns an error if the underlying operation fails or encounters invalid input.
 //
 // Side Effects:
 //   - None.

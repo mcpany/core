@@ -15,24 +15,34 @@ import (
 	"github.com/mcpany/core/server/pkg/tool"
 )
 
-// UpstreamWorker is a background worker that handles tool execution requests. It
-// listens for ToolExecutionRequest messages on the event bus, uses the
-// tool manager to execute the requested tool, and then publishes the outcome as
-// a ToolExecutionResult message.
+// UpstreamWorker is a background worker that handles tool execution requests. It listens for ToolExecutionRequest messages on the event bus, uses the tool manager to execute the requested tool, and then publishes the outcome as a ToolExecutionResult message.
+//
+// Summary: UpstreamWorker is a background worker that handles tool execution requests. It listens for ToolExecutionRequest messages on the event bus, uses the tool manager to execute the requested tool, and then publishes the outcome as a ToolExecutionResult message.
+//
+// Fields:
+//   - Contains the configuration and state properties required for UpstreamWorker functionality.
 type UpstreamWorker struct {
 	bus         *bus.Provider
 	toolManager tool.ManagerInterface
 	wg          sync.WaitGroup
 }
 
-// NewUpstreamWorker creates a new UpstreamWorker.
+// NewUpstreamWorker creates a new UpstreamWorker. Parameters: - bus: The event bus used for receiving requests and publishing results. - toolManager: The tool manager that will handle the actual tool execution. Returns: - *UpstreamWorker: A new upstream worker.
+//
+// Summary: NewUpstreamWorker creates a new UpstreamWorker. Parameters: - bus: The event bus used for receiving requests and publishing results. - toolManager: The tool manager that will handle the actual tool execution. Returns: - *UpstreamWorker: A new upstream worker.
 //
 // Parameters:
-//   - bus: The event bus used for receiving requests and publishing results.
-//   - toolManager: The tool manager that will handle the actual tool execution.
+//   - bus (*bus.Provider): The bus parameter used in the operation.
+//   - toolManager (tool.ManagerInterface): The tool manager parameter used in the operation.
 //
 // Returns:
-//   - *UpstreamWorker: A new upstream worker.
+//   - (*UpstreamWorker): The resulting UpstreamWorker object containing the requested data.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewUpstreamWorker(bus *bus.Provider, toolManager tool.ManagerInterface) *UpstreamWorker {
 	return &UpstreamWorker{
 		bus:         bus,
@@ -40,12 +50,21 @@ func NewUpstreamWorker(bus *bus.Provider, toolManager tool.ManagerInterface) *Up
 	}
 }
 
-// Start launches the worker in a new goroutine. It subscribes to tool execution
-// requests on the event bus and will continue to process them until the
-// provided context is canceled.
+// Start launches the worker in a new goroutine. It subscribes to tool execution requests on the event bus and will continue to process them until the provided context is canceled. Parameters: - ctx: The context that controls the lifecycle of the worker.
+//
+// Summary: Start launches the worker in a new goroutine. It subscribes to tool execution requests on the event bus and will continue to process them until the provided context is canceled. Parameters: - ctx: The context that controls the lifecycle of the worker.
 //
 // Parameters:
-//   - ctx: The context that controls the lifecycle of the worker.
+//   - ctx (context.Context): The context for managing request lifecycle and cancellation.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Modifies global state, writes to the database, or establishes network connections.
 func (w *UpstreamWorker) Start(ctx context.Context) {
 	w.wg.Add(1)
 	log := logging.GetLogger().With("component", "UpstreamWorker")

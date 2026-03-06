@@ -180,16 +180,21 @@ func (w *gzipResponseWriter) Write(b []byte) (int, error) {
 	return len(b), nil
 }
 
-// WriteHeader captures the status code.
+// WriteHeader stores the header into the persistent storage.
 //
-// Summary: Captures the status code for later writing.
+// Summary: Stores the header into the persistent storage.
 //
 // Parameters:
-//   - code: int. The HTTP status code.
+//   - code (int): The code parameter used in the operation.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Sets the internal status code.
-//   - May trigger an immediate flush if the content type is not compressible.
+//   - Modifies global state, writes to the database, or establishes network connections.
 func (w *gzipResponseWriter) WriteHeader(code int) {
 	if w.headerWritten {
 		return

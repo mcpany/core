@@ -17,9 +17,12 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-// SQLiteAuditStore writes audit logs to a SQLite database.
+// SQLiteAuditStore writes audit logs to a SQLite database. Summary: Stores audit logs in a local SQLite database with tamper-evident hashing.
 //
-// Summary: Stores audit logs in a local SQLite database with tamper-evident hashing.
+// Summary: SQLiteAuditStore writes audit logs to a SQLite database. Summary: Stores audit logs in a local SQLite database with tamper-evident hashing.
+//
+// Fields:
+//   - Contains the configuration and state properties required for SQLiteAuditStore functionality.
 type SQLiteAuditStore struct {
 	db *sql.DB
 	mu sync.Mutex
@@ -311,19 +314,22 @@ func (s *SQLiteAuditStore) Read(ctx context.Context, filter Filter) ([]Entry, er
 	return entries, nil
 }
 
-// Verify checks the integrity of the audit logs.
+// Verify checks the integrity of the audit logs. Summary: Validates the cryptographic hash chain of all audit entries. Returns: - bool: True if the chain is valid, false otherwise. - error: An error if verification fails or data is corrupted. Errors: - Returns error if a hash mismatch is detected. Side Effects: - Scans the entire audit_logs table.
 //
-// Summary: Validates the cryptographic hash chain of all audit entries.
+// Summary: Verify checks the integrity of the audit logs. Summary: Validates the cryptographic hash chain of all audit entries. Returns: - bool: True if the chain is valid, false otherwise. - error: An error if verification fails or data is corrupted. Errors: - Returns error if a hash mismatch is detected. Side Effects: - Scans the entire audit_logs table.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - bool: True if the chain is valid, false otherwise.
-//   - error: An error if verification fails or data is corrupted.
+//   - (bool): A boolean indicating the success or status of the operation.
+//   - (error): An error object if the operation fails, otherwise nil.
 //
 // Errors:
-//   - Returns error if a hash mismatch is detected.
+//   - Returns an error if the underlying operation fails or encounters invalid input.
 //
 // Side Effects:
-//   - Scans the entire audit_logs table.
+//   - None.
 func (s *SQLiteAuditStore) Verify() (bool, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -371,15 +377,21 @@ func (s *SQLiteAuditStore) Verify() (bool, error) {
 	return true, nil
 }
 
-// Close closes the database connection.
+// Close closes the database connection. Summary: Closes the SQLite database connection. Returns: - error: An error if closing fails. Side Effects: - Closes the DB connection.
 //
-// Summary: Closes the SQLite database connection.
+// Summary: Close closes the database connection. Summary: Closes the SQLite database connection. Returns: - error: An error if closing fails. Side Effects: - Closes the DB connection.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - error: An error if closing fails.
+//   - (error): An error object if the operation fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the underlying operation fails or encounters invalid input.
 //
 // Side Effects:
-//   - Closes the DB connection.
+//   - None.
 func (s *SQLiteAuditStore) Close() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

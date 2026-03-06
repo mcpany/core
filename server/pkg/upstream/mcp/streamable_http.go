@@ -40,9 +40,12 @@ var (
 	connectForTesting       func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error)
 )
 
-// ClientSession defines an interface that abstracts the capabilities of an
-// mcp.ClientSession. This is used primarily for testing, allowing mock sessions
-// to be injected.
+// ClientSession defines an interface that abstracts the capabilities of an mcp.ClientSession. This is used primarily for testing, allowing mock sessions to be injected.
+//
+// Summary: ClientSession defines an interface that abstracts the capabilities of an mcp.ClientSession. This is used primarily for testing, allowing mock sessions to be injected.
+//
+// Methods:
+//   - Defines the required contract and behavior for implementations of ClientSession.
 type ClientSession interface {
 	// ListTools lists the tools available in the session.
 	//
@@ -150,10 +153,12 @@ func SetConnectForTesting(f func(client *mcp.Client, ctx context.Context, transp
 	connectForTesting = f
 }
 
-// Upstream implements the upstream.Upstream interface for services that are
-// themselves MCP-compliant. It connects to the downstream MCP service, discovers
-// its tools, prompts, and resources, and registers them with the current server,
-// effectively acting as a proxy or aggregator.
+// Upstream implements the upstream.Upstream interface for services that are themselves MCP-compliant. It connects to the downstream MCP service, discovers its tools, prompts, and resources, and registers them with the current server, effectively acting as a proxy or aggregator.
+//
+// Summary: Upstream implements the upstream.Upstream interface for services that are themselves MCP-compliant. It connects to the downstream MCP service, discovers its tools, prompts, and resources, and registers them with the current server, effectively acting as a proxy or aggregator.
+//
+// Fields:
+//   - Contains the configuration and state properties required for Upstream functionality.
 type Upstream struct {
 	sessionRegistry *SessionRegistry
 	// BundleBaseDir is the directory where bundles are extracted.
@@ -258,10 +263,18 @@ type mcpPrompt struct {
 	*mcpConnection
 }
 
-// Prompt returns the underlying *mcp.Prompt definition.
+// Prompt returns the underlying *mcp.Prompt definition. Returns: - *mcp.Prompt: The result. Side Effects: - None.
+//
+// Summary: Prompt returns the underlying *mcp.Prompt definition. Returns: - *mcp.Prompt: The result. Side Effects: - None.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - *mcp.Prompt: The result.
+//   - (*mcp.Prompt): The resulting mcp.Prompt object containing the requested data.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -269,10 +282,18 @@ func (p *mcpPrompt) Prompt() *mcp.Prompt {
 	return p.mcpPrompt
 }
 
-// Service returns the ID of the service that this prompt belongs to.
+// Service returns the ID of the service that this prompt belongs to. Returns: - string: The result. Side Effects: - None.
+//
+// Summary: Service returns the ID of the service that this prompt belongs to. Returns: - string: The result. Side Effects: - None.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - string: The result.
+//   - (string): A string value representing the operation's result.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -383,10 +404,18 @@ type mcpResource struct {
 	*mcpConnection
 }
 
-// Resource returns the underlying *mcp.Resource definition.
+// Resource returns the underlying *mcp.Resource definition. Returns: - *mcp.Resource: The result. Side Effects: - None.
+//
+// Summary: Resource returns the underlying *mcp.Resource definition. Returns: - *mcp.Resource: The result. Side Effects: - None.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - *mcp.Resource: The result.
+//   - (*mcp.Resource): The resulting mcp.Resource object containing the requested data.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -394,10 +423,18 @@ func (r *mcpResource) Resource() *mcp.Resource {
 	return r.mcpResource
 }
 
-// Service returns the ID of the service that this resource belongs to.
+// Service returns the ID of the service that this resource belongs to. Returns: - string: The result. Side Effects: - None.
+//
+// Summary: Service returns the ID of the service that this resource belongs to. Returns: - string: The result. Side Effects: - None.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - string: The result.
+//   - (string): A string value representing the operation's result.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -1322,6 +1359,11 @@ func (rt *authenticatedRoundTripper) RoundTrip(req *http.Request) (*http.Respons
 }
 
 // StreamableHTTP implements the mcp.Transport interface for HTTP connections.
+//
+// Summary: StreamableHTTP implements the mcp.Transport interface for HTTP connections.
+//
+// Fields:
+//   - Contains the configuration and state properties required for StreamableHTTP functionality.
 type StreamableHTTP struct {
 	// Address is the HTTP address of the MCP service.
 	Address string

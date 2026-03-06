@@ -18,108 +18,165 @@ import (
 	gomock "go.uber.org/mock/gomock"
 )
 
-// MockManagerInterface is a mock of ManagerInterface interface.
+// MockManagerInterface is a mock of ManagerInterface interface. Summary: Mock tool manager for testing.
 //
-// Summary: Mock tool manager for testing.
+// Summary: MockManagerInterface is a mock of ManagerInterface interface. Summary: Mock tool manager for testing.
+//
+// Fields:
+//   - Contains the configuration and state properties required for MockManagerInterface functionality.
 type MockManagerInterface struct {
 	ctrl     *gomock.Controller
 	recorder *MockManagerInterfaceMockRecorder
 	isgomock struct{}
 }
 
-// MockManagerInterfaceMockRecorder is the mock recorder for MockManagerInterface.
+// MockManagerInterfaceMockRecorder is the mock recorder for MockManagerInterface. Summary: Recorder for MockManagerInterface expectations.
 //
-// Summary: Recorder for MockManagerInterface expectations.
+// Summary: MockManagerInterfaceMockRecorder is the mock recorder for MockManagerInterface. Summary: Recorder for MockManagerInterface expectations.
+//
+// Fields:
+//   - Contains the configuration and state properties required for MockManagerInterfaceMockRecorder functionality.
 type MockManagerInterfaceMockRecorder struct {
 	mock *MockManagerInterface
 }
 
-// NewMockManagerInterface creates a new mock instance.
+// NewMockManagerInterface creates a new mock instance. Summary: Initializes a new mock tool manager. Parameters: - ctrl: *gomock.Controller. The mock controller. Returns: - *MockManagerInterface: A new mock instance.
 //
-// Summary: Initializes a new mock tool manager.
+// Summary: NewMockManagerInterface creates a new mock instance. Summary: Initializes a new mock tool manager. Parameters: - ctrl: *gomock.Controller. The mock controller. Returns: - *MockManagerInterface: A new mock instance.
 //
 // Parameters:
-//   - ctrl: *gomock.Controller. The mock controller.
+//   - ctrl (*gomock.Controller): The ctrl parameter used in the operation.
 //
 // Returns:
-//   - *MockManagerInterface: A new mock instance.
+//   - (*MockManagerInterface): The resulting MockManagerInterface object containing the requested data.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewMockManagerInterface(ctrl *gomock.Controller) *MockManagerInterface {
 	mock := &MockManagerInterface{ctrl: ctrl}
 	mock.recorder = &MockManagerInterfaceMockRecorder{mock}
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use.
+// EXPECT returns an object that allows the caller to indicate expected use. Summary: Returns the recorder for expectations. Returns: - *MockManagerInterfaceMockRecorder: The recorder.
 //
-// Summary: Returns the recorder for expectations.
+// Summary: EXPECT returns an object that allows the caller to indicate expected use. Summary: Returns the recorder for expectations. Returns: - *MockManagerInterfaceMockRecorder: The recorder.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - *MockManagerInterfaceMockRecorder: The recorder.
+//   - (*MockManagerInterfaceMockRecorder): The resulting MockManagerInterfaceMockRecorder object containing the requested data.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *MockManagerInterface) EXPECT() *MockManagerInterfaceMockRecorder {
 	return m.recorder
 }
 
-// AddMiddleware mocks base method.
+// AddMiddleware mocks base method. Summary: Mock implementation of AddMiddleware. Parameters: - middleware: ExecutionMiddleware. The middleware to add.
 //
-// Summary: Mock implementation of AddMiddleware.
+// Summary: AddMiddleware mocks base method. Summary: Mock implementation of AddMiddleware. Parameters: - middleware: ExecutionMiddleware. The middleware to add.
 //
 // Parameters:
-//   - middleware: ExecutionMiddleware. The middleware to add.
+//   - middleware (ExecutionMiddleware): The unique identifier used to reference the mdleware resource.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *MockManagerInterface) AddMiddleware(middleware ExecutionMiddleware) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "AddMiddleware", middleware)
 }
 
-// AddMiddleware indicates an expected call of AddMiddleware.
+// AddMiddleware indicates an expected call of AddMiddleware. Summary: Expectation for AddMiddleware. Parameters: - middleware: any. The expected middleware. Returns: - *gomock.Call: The mock call.
 //
-// Summary: Expectation for AddMiddleware.
+// Summary: AddMiddleware indicates an expected call of AddMiddleware. Summary: Expectation for AddMiddleware. Parameters: - middleware: any. The expected middleware. Returns: - *gomock.Call: The mock call.
 //
 // Parameters:
-//   - middleware: any. The expected middleware.
+//   - middleware (any): The unique identifier used to reference the mdleware resource.
 //
 // Returns:
-//   - *gomock.Call: The mock call.
+//   - (*gomock.Call): The resulting gomock.Call object containing the requested data.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (mr *MockManagerInterfaceMockRecorder) AddMiddleware(middleware any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddMiddleware", reflect.TypeOf((*MockManagerInterface)(nil).AddMiddleware), middleware)
 }
 
-// AddServiceInfo mocks base method.
+// AddServiceInfo mocks base method. Summary: Mock implementation of AddServiceInfo. Parameters: - serviceID: string. The service ID. - info: *ServiceInfo. The service info.
 //
-// Summary: Mock implementation of AddServiceInfo.
+// Summary: AddServiceInfo mocks base method. Summary: Mock implementation of AddServiceInfo. Parameters: - serviceID: string. The service ID. - info: *ServiceInfo. The service info.
 //
 // Parameters:
-//   - serviceID: string. The service ID.
-//   - info: *ServiceInfo. The service info.
+//   - serviceID (string): The unique identifier used to reference the service resource.
+//   - info (*ServiceInfo): The info parameter used in the operation.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *MockManagerInterface) AddServiceInfo(serviceID string, info *ServiceInfo) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "AddServiceInfo", serviceID, info)
 }
 
-// AddServiceInfo indicates an expected call of AddServiceInfo.
+// AddServiceInfo indicates an expected call of AddServiceInfo. Summary: Expectation for AddServiceInfo. Parameters: - serviceID: any. The expected service ID. - info: any. The expected service info. Returns: - *gomock.Call: The mock call.
 //
-// Summary: Expectation for AddServiceInfo.
+// Summary: AddServiceInfo indicates an expected call of AddServiceInfo. Summary: Expectation for AddServiceInfo. Parameters: - serviceID: any. The expected service ID. - info: any. The expected service info. Returns: - *gomock.Call: The mock call.
 //
 // Parameters:
-//   - serviceID: any. The expected service ID.
-//   - info: any. The expected service info.
+//   - _ (serviceID): An unnamed parameter of type serviceID.
+//   - info (any): The info parameter used in the operation.
 //
 // Returns:
-//   - *gomock.Call: The mock call.
+//   - (*gomock.Call): The resulting gomock.Call object containing the requested data.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (mr *MockManagerInterfaceMockRecorder) AddServiceInfo(serviceID, info any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddServiceInfo", reflect.TypeOf((*MockManagerInterface)(nil).AddServiceInfo), serviceID, info)
 }
 
-// AddTool mocks base method.
+// AddTool mocks base method. Summary: Mock implementation of AddTool. Parameters: - tool: Tool. The tool to add. Returns: - error: An error if the operation fails.
 //
-// Summary: Mock implementation of AddTool.
+// Summary: AddTool mocks base method. Summary: Mock implementation of AddTool. Parameters: - tool: Tool. The tool to add. Returns: - error: An error if the operation fails.
 //
 // Parameters:
-//   - tool: Tool. The tool to add.
+//   - tool (Tool): The tool parameter used in the operation.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - (error): An error object if the operation fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the underlying operation fails or encounters invalid input.
+//
+// Side Effects:
+//   - None.
 func (m *MockManagerInterface) AddTool(tool Tool) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "AddTool", tool)
@@ -127,56 +184,83 @@ func (m *MockManagerInterface) AddTool(tool Tool) error {
 	return ret0
 }
 
-// AddTool indicates an expected call of AddTool.
+// AddTool indicates an expected call of AddTool. Summary: Expectation for AddTool. Parameters: - tool: any. The expected tool. Returns: - *gomock.Call: The mock call.
 //
-// Summary: Expectation for AddTool.
+// Summary: AddTool indicates an expected call of AddTool. Summary: Expectation for AddTool. Parameters: - tool: any. The expected tool. Returns: - *gomock.Call: The mock call.
 //
 // Parameters:
-//   - tool: any. The expected tool.
+//   - tool (any): The tool parameter used in the operation.
 //
 // Returns:
-//   - *gomock.Call: The mock call.
+//   - (*gomock.Call): The resulting gomock.Call object containing the requested data.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (mr *MockManagerInterfaceMockRecorder) AddTool(tool any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddTool", reflect.TypeOf((*MockManagerInterface)(nil).AddTool), tool)
 }
 
-// ClearToolsForService mocks base method.
+// ClearToolsForService mocks base method. Summary: Mock implementation of ClearToolsForService. Parameters: - serviceID: string. The service ID.
 //
-// Summary: Mock implementation of ClearToolsForService.
+// Summary: ClearToolsForService mocks base method. Summary: Mock implementation of ClearToolsForService. Parameters: - serviceID: string. The service ID.
 //
 // Parameters:
-//   - serviceID: string. The service ID.
+//   - serviceID (string): The unique identifier used to reference the service resource.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *MockManagerInterface) ClearToolsForService(serviceID string) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "ClearToolsForService", serviceID)
 }
 
-// ClearToolsForService indicates an expected call of ClearToolsForService.
+// ClearToolsForService indicates an expected call of ClearToolsForService. Summary: Expectation for ClearToolsForService. Parameters: - serviceID: any. The expected service ID. Returns: - *gomock.Call: The mock call.
 //
-// Summary: Expectation for ClearToolsForService.
+// Summary: ClearToolsForService indicates an expected call of ClearToolsForService. Summary: Expectation for ClearToolsForService. Parameters: - serviceID: any. The expected service ID. Returns: - *gomock.Call: The mock call.
 //
 // Parameters:
-//   - serviceID: any. The expected service ID.
+//   - serviceID (any): The unique identifier used to reference the service resource.
 //
 // Returns:
-//   - *gomock.Call: The mock call.
+//   - (*gomock.Call): The resulting gomock.Call object containing the requested data.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (mr *MockManagerInterfaceMockRecorder) ClearToolsForService(serviceID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ClearToolsForService", reflect.TypeOf((*MockManagerInterface)(nil).ClearToolsForService), serviceID)
 }
 
-// ExecuteTool mocks base method.
+// ExecuteTool mocks base method. Summary: Mock implementation of ExecuteTool. Parameters: - ctx: context.Context. The request context. - req: *ExecutionRequest. The request object. Returns: - any: The result. - error: An error if the operation fails.
 //
-// Summary: Mock implementation of ExecuteTool.
+// Summary: ExecuteTool mocks base method. Summary: Mock implementation of ExecuteTool. Parameters: - ctx: context.Context. The request context. - req: *ExecutionRequest. The request object. Returns: - any: The result. - error: An error if the operation fails.
 //
 // Parameters:
-//   - ctx: context.Context. The request context.
-//   - req: *ExecutionRequest. The request object.
+//   - ctx (context.Context): The context for managing request lifecycle and cancellation.
+//   - req (*ExecutionRequest): The request object containing specific parameters.
 //
 // Returns:
-//   - any: The result.
-//   - error: An error if the operation fails.
+//   - (any): The resulting any object containing the requested data.
+//   - (error): An error object if the operation fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the underlying operation fails or encounters invalid input.
+//
+// Side Effects:
+//   - None.
 func (m *MockManagerInterface) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ExecuteTool", ctx, req)
@@ -185,31 +269,43 @@ func (m *MockManagerInterface) ExecuteTool(ctx context.Context, req *ExecutionRe
 	return ret0, ret1
 }
 
-// ExecuteTool indicates an expected call of ExecuteTool.
+// ExecuteTool indicates an expected call of ExecuteTool. Summary: Expectation for ExecuteTool. Parameters: - ctx: any. The expected context. - req: any. The expected request. Returns: - *gomock.Call: The mock call.
 //
-// Summary: Expectation for ExecuteTool.
+// Summary: ExecuteTool indicates an expected call of ExecuteTool. Summary: Expectation for ExecuteTool. Parameters: - ctx: any. The expected context. - req: any. The expected request. Returns: - *gomock.Call: The mock call.
 //
 // Parameters:
-//   - ctx: any. The expected context.
-//   - req: any. The expected request.
+//   - _ (ctx): An unnamed parameter of type ctx.
+//   - req (any): The request object containing specific parameters.
 //
 // Returns:
-//   - *gomock.Call: The mock call.
+//   - (*gomock.Call): The resulting gomock.Call object containing the requested data.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (mr *MockManagerInterfaceMockRecorder) ExecuteTool(ctx, req any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ExecuteTool", reflect.TypeOf((*MockManagerInterface)(nil).ExecuteTool), ctx, req)
 }
 
-// GetAllowedServiceIDs mocks base method.
+// GetAllowedServiceIDs mocks base method. Summary: Mock implementation of GetAllowedServiceIDs. Parameters: - profileID: string. The profile ID. Returns: - map[string]bool: The map of allowed service IDs. - bool: True if successful.
 //
-// Summary: Mock implementation of GetAllowedServiceIDs.
+// Summary: GetAllowedServiceIDs mocks base method. Summary: Mock implementation of GetAllowedServiceIDs. Parameters: - profileID: string. The profile ID. Returns: - map[string]bool: The map of allowed service IDs. - bool: True if successful.
 //
 // Parameters:
-//   - profileID: string. The profile ID.
+//   - profileID (string): The unique identifier used to reference the profile resource.
 //
 // Returns:
-//   - map[string]bool: The map of allowed service IDs.
-//   - bool: True if successful.
+//   - (map[string]bool): A boolean indicating the success or status of the operation.
+//   - (bool): A boolean indicating the success or status of the operation.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *MockManagerInterface) GetAllowedServiceIDs(profileID string) (map[string]bool, bool) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetAllowedServiceIDs", profileID)
@@ -218,29 +314,41 @@ func (m *MockManagerInterface) GetAllowedServiceIDs(profileID string) (map[strin
 	return ret0, ret1
 }
 
-// GetAllowedServiceIDs indicates an expected call of GetAllowedServiceIDs.
+// GetAllowedServiceIDs indicates an expected call of GetAllowedServiceIDs. Summary: Expectation for GetAllowedServiceIDs. Parameters: - profileID: any. The expected profile ID. Returns: - *gomock.Call: The mock call.
 //
-// Summary: Expectation for GetAllowedServiceIDs.
+// Summary: GetAllowedServiceIDs indicates an expected call of GetAllowedServiceIDs. Summary: Expectation for GetAllowedServiceIDs. Parameters: - profileID: any. The expected profile ID. Returns: - *gomock.Call: The mock call.
 //
 // Parameters:
-//   - profileID: any. The expected profile ID.
+//   - profileID (any): The unique identifier used to reference the profile resource.
 //
 // Returns:
-//   - *gomock.Call: The mock call.
+//   - (*gomock.Call): The resulting gomock.Call object containing the requested data.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (mr *MockManagerInterfaceMockRecorder) GetAllowedServiceIDs(profileID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllowedServiceIDs", reflect.TypeOf((*MockManagerInterface)(nil).GetAllowedServiceIDs), profileID)
 }
 
-// GetToolCountForService mocks base method.
+// GetToolCountForService mocks base method. Summary: Mock implementation of GetToolCountForService. Parameters: - serviceID: string. The service ID. Returns: - int: The tool count.
 //
-// Summary: Mock implementation of GetToolCountForService.
+// Summary: GetToolCountForService mocks base method. Summary: Mock implementation of GetToolCountForService. Parameters: - serviceID: string. The service ID. Returns: - int: The tool count.
 //
 // Parameters:
-//   - serviceID: string. The service ID.
+//   - serviceID (string): The unique identifier used to reference the service resource.
 //
 // Returns:
-//   - int: The tool count.
+//   - (int): The resulting int object containing the requested data.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *MockManagerInterface) GetToolCountForService(serviceID string) int {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetToolCountForService", serviceID)
@@ -248,30 +356,42 @@ func (m *MockManagerInterface) GetToolCountForService(serviceID string) int {
 	return ret0
 }
 
-// GetToolCountForService indicates an expected call of GetToolCountForService.
+// GetToolCountForService indicates an expected call of GetToolCountForService. Summary: Expectation for GetToolCountForService. Parameters: - serviceID: any. The expected service ID. Returns: - *gomock.Call: The mock call.
 //
-// Summary: Expectation for GetToolCountForService.
+// Summary: GetToolCountForService indicates an expected call of GetToolCountForService. Summary: Expectation for GetToolCountForService. Parameters: - serviceID: any. The expected service ID. Returns: - *gomock.Call: The mock call.
 //
 // Parameters:
-//   - serviceID: any. The expected service ID.
+//   - serviceID (any): The unique identifier used to reference the service resource.
 //
 // Returns:
-//   - *gomock.Call: The mock call.
+//   - (*gomock.Call): The resulting gomock.Call object containing the requested data.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (mr *MockManagerInterfaceMockRecorder) GetToolCountForService(serviceID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetToolCountForService", reflect.TypeOf((*MockManagerInterface)(nil).GetToolCountForService), serviceID)
 }
 
-// GetServiceInfo mocks base method.
+// GetServiceInfo mocks base method. Summary: Mock implementation of GetServiceInfo. Parameters: - serviceID: string. The service ID. Returns: - *ServiceInfo: The service info. - bool: True if found.
 //
-// Summary: Mock implementation of GetServiceInfo.
+// Summary: GetServiceInfo mocks base method. Summary: Mock implementation of GetServiceInfo. Parameters: - serviceID: string. The service ID. Returns: - *ServiceInfo: The service info. - bool: True if found.
 //
 // Parameters:
-//   - serviceID: string. The service ID.
+//   - serviceID (string): The unique identifier used to reference the service resource.
 //
 // Returns:
-//   - *ServiceInfo: The service info.
-//   - bool: True if found.
+//   - (*ServiceInfo): The resulting ServiceInfo object containing the requested data.
+//   - (bool): A boolean indicating the success or status of the operation.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *MockManagerInterface) GetServiceInfo(serviceID string) (*ServiceInfo, bool) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetServiceInfo", serviceID)
@@ -280,30 +400,42 @@ func (m *MockManagerInterface) GetServiceInfo(serviceID string) (*ServiceInfo, b
 	return ret0, ret1
 }
 
-// GetServiceInfo indicates an expected call of GetServiceInfo.
+// GetServiceInfo indicates an expected call of GetServiceInfo. Summary: Expectation for GetServiceInfo. Parameters: - serviceID: any. The expected service ID. Returns: - *gomock.Call: The mock call.
 //
-// Summary: Expectation for GetServiceInfo.
+// Summary: GetServiceInfo indicates an expected call of GetServiceInfo. Summary: Expectation for GetServiceInfo. Parameters: - serviceID: any. The expected service ID. Returns: - *gomock.Call: The mock call.
 //
 // Parameters:
-//   - serviceID: any. The expected service ID.
+//   - serviceID (any): The unique identifier used to reference the service resource.
 //
 // Returns:
-//   - *gomock.Call: The mock call.
+//   - (*gomock.Call): The resulting gomock.Call object containing the requested data.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (mr *MockManagerInterfaceMockRecorder) GetServiceInfo(serviceID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetServiceInfo", reflect.TypeOf((*MockManagerInterface)(nil).GetServiceInfo), serviceID)
 }
 
-// GetTool mocks base method.
+// GetTool mocks base method. Summary: Mock implementation of GetTool. Parameters: - toolName: string. The tool name. Returns: - Tool: The tool. - bool: True if found.
 //
-// Summary: Mock implementation of GetTool.
+// Summary: GetTool mocks base method. Summary: Mock implementation of GetTool. Parameters: - toolName: string. The tool name. Returns: - Tool: The tool. - bool: True if found.
 //
 // Parameters:
-//   - toolName: string. The tool name.
+//   - toolName (string): The tool name parameter used in the operation.
 //
 // Returns:
-//   - Tool: The tool.
-//   - bool: True if found.
+//   - (Tool): The resulting Tool object containing the requested data.
+//   - (bool): A boolean indicating the success or status of the operation.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *MockManagerInterface) GetTool(toolName string) (Tool, bool) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetTool", toolName)
@@ -312,30 +444,42 @@ func (m *MockManagerInterface) GetTool(toolName string) (Tool, bool) {
 	return ret0, ret1
 }
 
-// GetTool indicates an expected call of GetTool.
+// GetTool indicates an expected call of GetTool. Summary: Expectation for GetTool. Parameters: - toolName: any. The expected tool name. Returns: - *gomock.Call: The mock call.
 //
-// Summary: Expectation for GetTool.
+// Summary: GetTool indicates an expected call of GetTool. Summary: Expectation for GetTool. Parameters: - toolName: any. The expected tool name. Returns: - *gomock.Call: The mock call.
 //
 // Parameters:
-//   - toolName: any. The expected tool name.
+//   - toolName (any): The tool name parameter used in the operation.
 //
 // Returns:
-//   - *gomock.Call: The mock call.
+//   - (*gomock.Call): The resulting gomock.Call object containing the requested data.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (mr *MockManagerInterfaceMockRecorder) GetTool(toolName any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTool", reflect.TypeOf((*MockManagerInterface)(nil).GetTool), toolName)
 }
 
-// IsServiceAllowed mocks base method.
+// IsServiceAllowed mocks base method. Summary: Mock implementation of IsServiceAllowed. Parameters: - serviceID: string. The service ID. - profileID: string. The profile ID. Returns: - bool: True if allowed.
 //
-// Summary: Mock implementation of IsServiceAllowed.
+// Summary: IsServiceAllowed mocks base method. Summary: Mock implementation of IsServiceAllowed. Parameters: - serviceID: string. The service ID. - profileID: string. The profile ID. Returns: - bool: True if allowed.
 //
 // Parameters:
-//   - serviceID: string. The service ID.
-//   - profileID: string. The profile ID.
+//   - _ (serviceID): An unnamed parameter of type serviceID.
+//   - profileID (string): The unique identifier used to reference the profile resource.
 //
 // Returns:
-//   - bool: True if allowed.
+//   - (bool): A boolean indicating the success or status of the operation.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *MockManagerInterface) IsServiceAllowed(serviceID, profileID string) bool {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "IsServiceAllowed", serviceID, profileID)
@@ -343,27 +487,42 @@ func (m *MockManagerInterface) IsServiceAllowed(serviceID, profileID string) boo
 	return ret0
 }
 
-// IsServiceAllowed indicates an expected call of IsServiceAllowed.
+// IsServiceAllowed indicates an expected call of IsServiceAllowed. Summary: Expectation for IsServiceAllowed. Parameters: - serviceID: any. The expected service ID. - profileID: any. The expected profile ID. Returns: - *gomock.Call: The mock call.
 //
-// Summary: Expectation for IsServiceAllowed.
+// Summary: IsServiceAllowed indicates an expected call of IsServiceAllowed. Summary: Expectation for IsServiceAllowed. Parameters: - serviceID: any. The expected service ID. - profileID: any. The expected profile ID. Returns: - *gomock.Call: The mock call.
 //
 // Parameters:
-//   - serviceID: any. The expected service ID.
-//   - profileID: any. The expected profile ID.
+//   - _ (serviceID): An unnamed parameter of type serviceID.
+//   - profileID (any): The unique identifier used to reference the profile resource.
 //
 // Returns:
-//   - *gomock.Call: The mock call.
+//   - (*gomock.Call): The resulting gomock.Call object containing the requested data.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (mr *MockManagerInterfaceMockRecorder) IsServiceAllowed(serviceID, profileID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IsServiceAllowed", reflect.TypeOf((*MockManagerInterface)(nil).IsServiceAllowed), serviceID, profileID)
 }
 
-// ListMCPTools mocks base method.
+// ListMCPTools mocks base method. Summary: Mock implementation of ListMCPTools. Returns: - []*mcp.Tool: The list of MCP tools.
 //
-// Summary: Mock implementation of ListMCPTools.
+// Summary: ListMCPTools mocks base method. Summary: Mock implementation of ListMCPTools. Returns: - []*mcp.Tool: The list of MCP tools.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - []*mcp.Tool: The list of MCP tools.
+//   - ([]*mcp.Tool): The resulting []mcp.Tool object containing the requested data.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *MockManagerInterface) ListMCPTools() []*mcp.Tool {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListMCPTools")
@@ -371,23 +530,41 @@ func (m *MockManagerInterface) ListMCPTools() []*mcp.Tool {
 	return ret0
 }
 
-// ListMCPTools indicates an expected call of ListMCPTools.
+// ListMCPTools indicates an expected call of ListMCPTools. Summary: Expectation for ListMCPTools. Returns: - *gomock.Call: The mock call.
 //
-// Summary: Expectation for ListMCPTools.
+// Summary: ListMCPTools indicates an expected call of ListMCPTools. Summary: Expectation for ListMCPTools. Returns: - *gomock.Call: The mock call.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - *gomock.Call: The mock call.
+//   - (*gomock.Call): The resulting gomock.Call object containing the requested data.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (mr *MockManagerInterfaceMockRecorder) ListMCPTools() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListMCPTools", reflect.TypeOf((*MockManagerInterface)(nil).ListMCPTools))
 }
 
-// ListServices mocks base method.
+// ListServices mocks base method. Summary: Mock implementation of ListServices. Returns: - []*ServiceInfo: The list of services.
 //
-// Summary: Mock implementation of ListServices.
+// Summary: ListServices mocks base method. Summary: Mock implementation of ListServices. Returns: - []*ServiceInfo: The list of services.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - []*ServiceInfo: The list of services.
+//   - ([]*ServiceInfo): The resulting []ServiceInfo object containing the requested data.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *MockManagerInterface) ListServices() []*ServiceInfo {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListServices")
@@ -395,23 +572,41 @@ func (m *MockManagerInterface) ListServices() []*ServiceInfo {
 	return ret0
 }
 
-// ListServices indicates an expected call of ListServices.
+// ListServices indicates an expected call of ListServices. Summary: Expectation for ListServices. Returns: - *gomock.Call: The mock call.
 //
-// Summary: Expectation for ListServices.
+// Summary: ListServices indicates an expected call of ListServices. Summary: Expectation for ListServices. Returns: - *gomock.Call: The mock call.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - *gomock.Call: The mock call.
+//   - (*gomock.Call): The resulting gomock.Call object containing the requested data.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (mr *MockManagerInterfaceMockRecorder) ListServices() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListServices", reflect.TypeOf((*MockManagerInterface)(nil).ListServices))
 }
 
-// ListTools mocks base method.
+// ListTools mocks base method. Summary: Mock implementation of ListTools. Returns: - []Tool: The list of tools.
 //
-// Summary: Mock implementation of ListTools.
+// Summary: ListTools mocks base method. Summary: Mock implementation of ListTools. Returns: - []Tool: The list of tools.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - []Tool: The list of tools.
+//   - ([]Tool): The resulting []Tool object containing the requested data.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *MockManagerInterface) ListTools() []Tool {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListTools")
@@ -419,79 +614,124 @@ func (m *MockManagerInterface) ListTools() []Tool {
 	return ret0
 }
 
-// ListTools indicates an expected call of ListTools.
+// ListTools indicates an expected call of ListTools. Summary: Expectation for ListTools. Returns: - *gomock.Call: The mock call.
 //
-// Summary: Expectation for ListTools.
+// Summary: ListTools indicates an expected call of ListTools. Summary: Expectation for ListTools. Returns: - *gomock.Call: The mock call.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - *gomock.Call: The mock call.
+//   - (*gomock.Call): The resulting gomock.Call object containing the requested data.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (mr *MockManagerInterfaceMockRecorder) ListTools() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTools", reflect.TypeOf((*MockManagerInterface)(nil).ListTools))
 }
 
-// SetMCPServer mocks base method.
+// SetMCPServer mocks base method. Summary: Mock implementation of SetMCPServer. Parameters: - mcpServer: MCPServerProvider. The MCP server provider.
 //
-// Summary: Mock implementation of SetMCPServer.
+// Summary: SetMCPServer mocks base method. Summary: Mock implementation of SetMCPServer. Parameters: - mcpServer: MCPServerProvider. The MCP server provider.
 //
 // Parameters:
-//   - mcpServer: MCPServerProvider. The MCP server provider.
+//   - mcpServer (MCPServerProvider): The mcp server parameter used in the operation.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Modifies global state, writes to the database, or establishes network connections.
 func (m *MockManagerInterface) SetMCPServer(mcpServer MCPServerProvider) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "SetMCPServer", mcpServer)
 }
 
-// SetMCPServer indicates an expected call of SetMCPServer.
+// SetMCPServer indicates an expected call of SetMCPServer. Summary: Expectation for SetMCPServer. Parameters: - mcpServer: any. The expected MCP server provider. Returns: - *gomock.Call: The mock call.
 //
-// Summary: Expectation for SetMCPServer.
+// Summary: SetMCPServer indicates an expected call of SetMCPServer. Summary: Expectation for SetMCPServer. Parameters: - mcpServer: any. The expected MCP server provider. Returns: - *gomock.Call: The mock call.
 //
 // Parameters:
-//   - mcpServer: any. The expected MCP server provider.
+//   - mcpServer (any): The mcp server parameter used in the operation.
 //
 // Returns:
-//   - *gomock.Call: The mock call.
+//   - (*gomock.Call): The resulting gomock.Call object containing the requested data.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Modifies global state, writes to the database, or establishes network connections.
 func (mr *MockManagerInterfaceMockRecorder) SetMCPServer(mcpServer any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetMCPServer", reflect.TypeOf((*MockManagerInterface)(nil).SetMCPServer), mcpServer)
 }
 
-// SetProfiles mocks base method.
+// SetProfiles mocks base method. Summary: Mock implementation of SetProfiles. Parameters: - enabled: []string. Enabled profiles. - defs: []*v1.ProfileDefinition. Profile definitions.
 //
-// Summary: Mock implementation of SetProfiles.
+// Summary: SetProfiles mocks base method. Summary: Mock implementation of SetProfiles. Parameters: - enabled: []string. Enabled profiles. - defs: []*v1.ProfileDefinition. Profile definitions.
 //
 // Parameters:
-//   - enabled: []string. Enabled profiles.
-//   - defs: []*v1.ProfileDefinition. Profile definitions.
+//   - enabled ([]string): The enabled parameter used in the operation.
+//   - defs ([]*v1.ProfileDefinition): The defs parameter used in the operation.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Modifies global state, writes to the database, or establishes network connections.
 func (m *MockManagerInterface) SetProfiles(enabled []string, defs []*v1.ProfileDefinition) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "SetProfiles", enabled, defs)
 }
 
-// SetProfiles indicates an expected call of SetProfiles.
+// SetProfiles indicates an expected call of SetProfiles. Summary: Expectation for SetProfiles. Parameters: - enabled: any. The expected enabled profiles. - defs: any. The expected profile definitions. Returns: - *gomock.Call: The mock call.
 //
-// Summary: Expectation for SetProfiles.
+// Summary: SetProfiles indicates an expected call of SetProfiles. Summary: Expectation for SetProfiles. Parameters: - enabled: any. The expected enabled profiles. - defs: any. The expected profile definitions. Returns: - *gomock.Call: The mock call.
 //
 // Parameters:
-//   - enabled: any. The expected enabled profiles.
-//   - defs: any. The expected profile definitions.
+//   - _ (enabled): An unnamed parameter of type enabled.
+//   - defs (any): The defs parameter used in the operation.
 //
 // Returns:
-//   - *gomock.Call: The mock call.
+//   - (*gomock.Call): The resulting gomock.Call object containing the requested data.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Modifies global state, writes to the database, or establishes network connections.
 func (mr *MockManagerInterfaceMockRecorder) SetProfiles(enabled, defs any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetProfiles", reflect.TypeOf((*MockManagerInterface)(nil).SetProfiles), enabled, defs)
 }
 
-// ToolMatchesProfile mocks base method.
+// ToolMatchesProfile mocks base method. Summary: Mock implementation of ToolMatchesProfile. Parameters: - tool: Tool. The tool. - profileID: string. The profile ID. Returns: - bool: True if the tool matches the profile.
 //
-// Summary: Mock implementation of ToolMatchesProfile.
+// Summary: ToolMatchesProfile mocks base method. Summary: Mock implementation of ToolMatchesProfile. Parameters: - tool: Tool. The tool. - profileID: string. The profile ID. Returns: - bool: True if the tool matches the profile.
 //
 // Parameters:
-//   - tool: Tool. The tool.
-//   - profileID: string. The profile ID.
+//   - tool (Tool): The tool parameter used in the operation.
+//   - profileID (string): The unique identifier used to reference the profile resource.
 //
 // Returns:
-//   - bool: True if the tool matches the profile.
+//   - (bool): A boolean indicating the success or status of the operation.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *MockManagerInterface) ToolMatchesProfile(tool Tool, profileID string) bool {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ToolMatchesProfile", tool, profileID)
@@ -499,16 +739,22 @@ func (m *MockManagerInterface) ToolMatchesProfile(tool Tool, profileID string) b
 	return ret0
 }
 
-// ToolMatchesProfile indicates an expected call of ToolMatchesProfile.
+// ToolMatchesProfile indicates an expected call of ToolMatchesProfile. Summary: Expectation for ToolMatchesProfile. Parameters: - tool: any. The expected tool. - profileID: any. The expected profile ID. Returns: - *gomock.Call: The mock call.
 //
-// Summary: Expectation for ToolMatchesProfile.
+// Summary: ToolMatchesProfile indicates an expected call of ToolMatchesProfile. Summary: Expectation for ToolMatchesProfile. Parameters: - tool: any. The expected tool. - profileID: any. The expected profile ID. Returns: - *gomock.Call: The mock call.
 //
 // Parameters:
-//   - tool: any. The expected tool.
-//   - profileID: any. The expected profile ID.
+//   - _ (tool): An unnamed parameter of type tool.
+//   - profileID (any): The unique identifier used to reference the profile resource.
 //
 // Returns:
-//   - *gomock.Call: The mock call.
+//   - (*gomock.Call): The resulting gomock.Call object containing the requested data.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (mr *MockManagerInterfaceMockRecorder) ToolMatchesProfile(tool, profileID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ToolMatchesProfile", reflect.TypeOf((*MockManagerInterface)(nil).ToolMatchesProfile), tool, profileID)

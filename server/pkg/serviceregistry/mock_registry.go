@@ -12,6 +12,11 @@ import (
 )
 
 // MockServiceRegistry is a mock implementation of ServiceRegistryInterface.
+//
+// Summary: MockServiceRegistry is a mock implementation of ServiceRegistryInterface.
+//
+// Fields:
+//   - Contains the configuration and state properties required for MockServiceRegistry functionality.
 type MockServiceRegistry struct {
 	mock.Mock
 }
@@ -51,14 +56,22 @@ func (m *MockServiceRegistry) UnregisterService(ctx context.Context, serviceName
 	return args.Error(0)
 }
 
-// GetAllServices returns a list of all currently registered services.
+// GetAllServices returns a list of all currently registered services. Returns: - []*configv1.UpstreamServiceConfig: A list of all registered service configurations. - error: An error if retrieval fails. Side Effects: - Records method call for mock.
+//
+// Summary: GetAllServices returns a list of all currently registered services. Returns: - []*configv1.UpstreamServiceConfig: A list of all registered service configurations. - error: An error if retrieval fails. Side Effects: - Records method call for mock.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - []*configv1.UpstreamServiceConfig: A list of all registered service configurations.
-//   - error: An error if retrieval fails.
+//   - ([]*configv1.UpstreamServiceConfig): The resulting []configv1.UpstreamServiceConfig object containing the requested data.
+//   - (error): An error object if the operation fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the underlying operation fails or encounters invalid input.
 //
 // Side Effects:
-//   - Records method call for mock.
+//   - None.
 func (m *MockServiceRegistry) GetAllServices() ([]*configv1.UpstreamServiceConfig, error) {
 	args := m.Called()
 	if args.Get(0) == nil {

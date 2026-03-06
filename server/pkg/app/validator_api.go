@@ -13,13 +13,23 @@ import (
 	"sigs.k8s.io/yaml"
 )
 
-// ValidateRequest represents the request body for the validation endpoint.
+// ValidateRequest defines the core structure for validate request within the system.
+//
+// Summary: ValidateRequest defines the core structure for validate request within the system.
+//
+// Fields:
+//   - Contains the configuration and state properties required for ValidateRequest functionality.
 type ValidateRequest struct {
 	Content string `json:"content"`
 	Format  string `json:"format"` // "json" or "yaml"
 }
 
-// ValidateResponse represents the response body for the validation endpoint.
+// ValidateResponse defines the core structure for validate response within the system.
+//
+// Summary: ValidateResponse defines the core structure for validate response within the system.
+//
+// Fields:
+//   - Contains the configuration and state properties required for ValidateResponse functionality.
 type ValidateResponse struct {
 	Valid   bool   `json:"valid"`
 	Error   string `json:"error,omitempty"`

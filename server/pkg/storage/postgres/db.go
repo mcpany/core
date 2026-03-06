@@ -14,6 +14,11 @@ import (
 )
 
 // DB wraps the sql.DB connection.
+//
+// Summary: DB wraps the sql.DB connection.
+//
+// Fields:
+//   - Contains the configuration and state properties required for DB functionality.
 type DB struct {
 	*sql.DB
 }

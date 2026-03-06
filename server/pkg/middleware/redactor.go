@@ -24,9 +24,12 @@ var (
 	redactedStr = "***REDACTED***"
 )
 
-// Redactor handles redaction of sensitive data based on configuration.
+// Redactor handles redaction of sensitive data based on configuration. Summary: Component responsible for identifying and masking sensitive information (PII) in data.
 //
-// Summary: Component responsible for identifying and masking sensitive information (PII) in data.
+// Summary: Redactor handles redaction of sensitive data based on configuration. Summary: Component responsible for identifying and masking sensitive information (PII) in data.
+//
+// Fields:
+//   - Contains the configuration and state properties required for Redactor functionality.
 type Redactor struct {
 	customPattern  *regexp.Regexp
 	customPatterns []*regexp.Regexp
@@ -216,15 +219,21 @@ func (r *Redactor) RedactString(s string) string {
 	return res
 }
 
-// RedactStruct redacts sensitive information from a map.
+// RedactStruct redacts sensitive information from a map. Summary: Recursively redacts sensitive information from a map (struct representation). Parameters: - v: map[string]interface{}. The map to redact. Side Effects: - Modifies the map in place.
 //
-// Summary: Recursively redacts sensitive information from a map (struct representation).
+// Summary: RedactStruct redacts sensitive information from a map. Summary: Recursively redacts sensitive information from a map (struct representation). Parameters: - v: map[string]interface{}. The map to redact. Side Effects: - Modifies the map in place.
 //
 // Parameters:
-//   - v: map[string]interface{}. The map to redact.
+//   - v (map[string]interface{}): The v parameter used in the operation.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Modifies the map in place.
+//   - None.
 func (r *Redactor) RedactStruct(v map[string]interface{}) {
 	if r == nil {
 		return

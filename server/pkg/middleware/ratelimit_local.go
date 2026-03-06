@@ -12,9 +12,12 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
-// LocalLimiter is an in-memory implementation of Limiter.
+// LocalLimiter is an in-memory implementation of Limiter. Summary: Rate limiter implementation using golang.org/x/time/rate.
 //
-// Summary: Rate limiter implementation using golang.org/x/time/rate.
+// Summary: LocalLimiter is an in-memory implementation of Limiter. Summary: Rate limiter implementation using golang.org/x/time/rate.
+//
+// Fields:
+//   - Contains the configuration and state properties required for LocalLimiter functionality.
 type LocalLimiter struct {
 	*rate.Limiter
 }
@@ -54,16 +57,22 @@ func (l *LocalLimiter) AllowN(_ context.Context, n int) (bool, error) {
 	return l.Limiter.AllowN(time.Now(), n), nil
 }
 
-// Update updates the limiter configuration.
+// Update updates the limiter configuration. Summary: Dynamically updates the rate limit and burst size. Parameters: - rps: float64. The new requests per second limit. - burst: int. The new burst size. Side Effects: - Modifies the underlying rate.Limiter state.
 //
-// Summary: Dynamically updates the rate limit and burst size.
+// Summary: Update updates the limiter configuration. Summary: Dynamically updates the rate limit and burst size. Parameters: - rps: float64. The new requests per second limit. - burst: int. The new burst size. Side Effects: - Modifies the underlying rate.Limiter state.
 //
 // Parameters:
-//   - rps: float64. The new requests per second limit.
-//   - burst: int. The new burst size.
+//   - rps (float64): The rps parameter used in the operation.
+//   - burst (int): The burst parameter used in the operation.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Modifies the underlying rate.Limiter state.
+//   - Modifies global state, writes to the database, or establishes network connections.
 func (l *LocalLimiter) Update(rps float64, burst int) {
 	limit := rate.Limit(rps)
 	if l.Limit() != limit {
@@ -74,17 +83,29 @@ func (l *LocalLimiter) Update(rps float64, burst int) {
 	}
 }
 
-// LocalStrategy implements RateLimitStrategy for local in-memory rate limiting.
+// LocalStrategy implements RateLimitStrategy for local in-memory rate limiting. Summary: Strategy for creating local rate limiters.
 //
-// Summary: Strategy for creating local rate limiters.
+// Summary: LocalStrategy implements RateLimitStrategy for local in-memory rate limiting. Summary: Strategy for creating local rate limiters.
+//
+// Fields:
+//   - Contains the configuration and state properties required for LocalStrategy functionality.
 type LocalStrategy struct{}
 
-// NewLocalStrategy creates a new LocalStrategy.
+// NewLocalStrategy creates a new LocalStrategy. Summary: Initializes a new LocalStrategy. Returns: - *LocalStrategy: The initialized strategy.
 //
-// Summary: Initializes a new LocalStrategy.
+// Summary: NewLocalStrategy creates a new LocalStrategy. Summary: Initializes a new LocalStrategy. Returns: - *LocalStrategy: The initialized strategy.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - *LocalStrategy: The initialized strategy.
+//   - (*LocalStrategy): The resulting LocalStrategy object containing the requested data.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewLocalStrategy() *LocalStrategy {
 	return &LocalStrategy{}
 }

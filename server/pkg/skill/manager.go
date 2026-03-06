@@ -28,6 +28,11 @@ var (
 )
 
 // Manager handles the storage and retrieval of skills.
+//
+// Summary: Manager handles the storage and retrieval of skills.
+//
+// Fields:
+//   - Contains the configuration and state properties required for Manager functionality.
 type Manager struct {
 	rootDir string
 	mu      sync.RWMutex

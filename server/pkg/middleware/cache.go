@@ -38,6 +38,11 @@ var (
 )
 
 // CachingMiddleware handles caching of tool execution results.
+//
+// Summary: CachingMiddleware handles caching of tool execution results.
+//
+// Fields:
+//   - Contains the configuration and state properties required for CachingMiddleware functionality.
 type CachingMiddleware struct {
 	cache           *cache.Cache[any]
 	toolManager     tool.ManagerInterface

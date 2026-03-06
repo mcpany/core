@@ -18,6 +18,11 @@ import (
 )
 
 // SmartRecoveryMiddleware handles automatic error recovery using LLM.
+//
+// Summary: SmartRecoveryMiddleware handles automatic error recovery using LLM.
+//
+// Fields:
+//   - Contains the configuration and state properties required for SmartRecoveryMiddleware functionality.
 type SmartRecoveryMiddleware struct {
 	config      *configv1.SmartRecoveryConfig
 	llmClient   llm.Client
