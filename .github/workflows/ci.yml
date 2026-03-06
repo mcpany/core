@@ -30,6 +30,7 @@ env:
   # GOMAXPROCS allowed to default to max cores available to speed up unit tests
   GOGC: 50 # Balanced GC to avoid excessive CPU usage while keeping memory in check
   GO_RACE: "" # Disable race detector in CI due to OOM on constrained runners
+  GOFLAGS: "-buildvcs=false" # Prevent dubious ownership git errors during golangci-lint
 
 defaults:
   run:
