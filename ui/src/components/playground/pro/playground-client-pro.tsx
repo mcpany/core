@@ -226,10 +226,13 @@ export function PlaygroundClientPro() {
 
           if (previousCall) {
               const callIndex = messages.findIndex(m => m.id === previousCall.id);
-              if (callIndex !== -1 && callIndex + 1 < messages.length) {
-                  const resultMsg = messages[callIndex + 1];
-                  if (resultMsg.type === "tool-result") {
-                      previousResult = resultMsg.toolResult;
+              if (callIndex !== -1) {
+                  // Find the first tool-result after this call that matches the tool name
+                  for (let i = callIndex + 1; i < messages.length; i++) {
+                      if (messages[i].type === "tool-result" && messages[i].toolName === toolName) {
+                          previousResult = messages[i].toolResult;
+                          break;
+                      }
                   }
               }
           }
