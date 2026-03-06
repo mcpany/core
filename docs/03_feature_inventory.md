@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-02] Updates
+
+### Proposed Additions
+- **Defense-in-Depth Validation Middleware**: (P0) Inspects tool inputs/outputs for SSRF, Path Traversal, and data exfiltration patterns. Critical response to OpenClaw vulnerabilities.
+- **Hardened Cloud-to-Local Bridge**: (P0) Secure, high-performance tunneling specifically optimized for CLI agents like Claude Code to access local tools.
+- **Strict Parameter Type Binding**: (P1) Enforces strict typing and resource-binding for tool parameters to prevent injection attacks.
+
+### Priority Shifts
+- **Environment Bridging Middleware**: Re-affirmed as **P0** and renamed to **Hardened Cloud-to-Local Bridge**.
+- **Supply Chain Integrity Guard**: Re-affirmed as **P0**. Essential for defense-in-depth.
+
+### Deprecations / Monitoring
+- **Unvalidated Tool Parameters**: Moving towards mandatory schema validation for all tool calls.
