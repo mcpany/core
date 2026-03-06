@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-01]
+### Focus: Ephemeral Agency & Defensive Tooling
+**Context**: The rise of "Indirect Prompt Injection" via tool results and Claude's "Ephemeral Tooling" shift the landscape from "Static Infrastructure" to "Dynamic & Defensive Infrastructure."
+**Strategic Pivot**:
+- **Defensive Middleware Layer**: MCP Any must evolve from a passive proxy to an active "Security Interceptor." It will implement real-time output sanitization to block malicious instructions embedded in tool results.
+- **Ephemeral Sandbox Architecture**: Introducing "Transient Tool Environments" where MCP servers are provisioned on-demand, isolated by container-level namespaces, and destroyed after the task.
+- **Decentralized Swarm Discovery**: Adapting to the DHT-based discovery models (OpenClaw v2) to ensure MCP Any remains the universal bus even in peer-to-peer agent meshes.
