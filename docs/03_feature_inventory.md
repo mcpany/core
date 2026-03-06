@@ -81,3 +81,20 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-06] Updates
+
+### Proposed Additions
+- **Generalist Agent Delegation Middleware**: (P0) Orchestration layer that allows a "Generalist Agent" to autonomously route tasks to specialized subagents.
+- **Hardened Plugin Route Registry**: (P1) A secure, authenticated registry for all internal plugin routes to prevent unauthorized shadowing or injection.
+- **Adaptive Tool Scoping (Context-Aware MCP)**: (P1) Automatically filters available tools based on current task intent and agent role, reducing context pollution.
+- **SecretRef for Runtime Collectors**: (P1) Extends the SecretRef mechanism to runtime telemetry and log collectors for end-to-end credential safety.
+
+### Priority Shifts
+- **Lazy-MCP Middleware**: Re-affirmed as **P0** and renamed to **Adaptive Tool Scoping** to align with industry GA standards (Claude Tool Search).
+- **"Safe-by-Default" Network Hardening**: Promoted to **P0** (Already P0, but adding specific requirements for WebSocket loopback hardening).
+
+### Deprecations / Monitoring
+- **Legacy `registerHttpHandler` API**: Deprecate in favor of `registerHttpRoute` with mandatory auth.
