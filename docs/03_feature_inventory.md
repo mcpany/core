@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-06] Updates
+
+### Proposed Additions
+- **Origin-Aware Request Gating (OARG)**: (P0) Strict local origin validation to prevent browser-based agent hijacking (inspired by the OpenClaw vulnerability).
+- **Generic Filesystem Jail Middleware**: (P0) kernel-level interception of file paths in tool calls to enforce sandboxing, mitigating downstream vulnerabilities like CVE-2026-27735.
+- **Universal Tool Search Proxy**: (P1) A middleware that implements on-demand tool discovery for clients that do not natively support search (e.g. older OpenClaw versions).
+
+### Priority Shifts
+- **Safe-by-Default Network Hardening**: Promoted to **P0** with immediate urgency due to the "8,000 Exposed Servers" incident.
+- **Unified MCP Discovery Service**: Promoted from **P1** to **P0** to better handle the explosive growth of the ClawHub/MCP ecosystem.
+
+### Deprecations / Monitoring
+- **Unvalidated Local Access**: Monitor for deprecation of all unauthenticated `localhost` endpoints.

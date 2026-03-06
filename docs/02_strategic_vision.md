@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-06]
+### Focus: Origin-Aware Security & Standardized Sandboxing
+**Context**: Today's findings show that even when bound to localhost, MCP servers can be hijacked via malicious browser-based connections (OpenClaw's Origin flaw). Furthermore, downstream tools like `mcp-server-git` (CVE-2026-27735) often lack the validation needed to prevent path traversal, even when the gateway is secure.
+**Strategic Pivot**:
+- **Origin-Aware Request Gating**: MCP Any will implement strict CSRF-like protections for local connections, ensuring that only trusted applications (and not the local browser unless explicitly authorized) can issue tool calls.
+- **Filesystem Sandbox Middleware**: Moving beyond simple validation to a "Kernel-Style" sandboxing middleware that intercept and jail all filesystem-related tool calls to the configured repository roots, regardless of the downstream tool's own logic.
+- **Universal Search Proxy**: As Claude Code and Gemini CLI move toward on-demand tool search, MCP Any will pivot to become a "Search-First Proxy" that allows any LLM client to benefit from high-performance tool indexing without context window bloat.
