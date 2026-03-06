@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-02]
+### Focus: Stateful A2A Residency & Edge-to-Cloud Bridging
+**Context**: Today's findings show that as agents move toward "Edge" and "Mobile" execution, the standard MCP "Request-Response" pattern is failing. Connectivity is intermittent, and state is easily lost during handoffs.
+**Strategic Pivot**:
+- **A2A Stateful Residency (The "Mailbox" Model)**: MCP Any must evolve into a "Resident" for agent state, not just a pass-through. It will manage a "Mailbox" for A2A messages, ensuring delivery even if the target agent is temporarily offline.
+- **Edge-to-Cloud Bridge**: With GitHub's self-hosted runner fees, more agents will run in managed cloud sandboxes. MCP Any will provide a secure, low-latency bridge that allows these cloud agents to "reach back" to local tools without exposing the local network.
+- **Context Integrity Guard**: To mitigate "Cross-Agent Prompt Injection" in shared context windows (like those in OpenClaw), MCP Any will implement "Context Isolation" where each subagent only sees a cryptographic hash of the parent's context until explicitly authorized.

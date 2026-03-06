@@ -81,3 +81,16 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-02] Updates
+
+### Proposed Additions
+- **A2A Stateful Mailbox (P0)**: High-reliability "Mailbox" for A2A message delivery, ensuring state-consistent agent handoffs across intermittent edge connections.
+- **Edge-to-Cloud Local Bridge (P1)**: Secure, low-latency tunneling for cloud-based agents (e.g., GitHub Actions, Cloud Runners) to access local enterprise tools.
+- **Context Isolation Guard (P0)**: Cryptographic isolation of subagent context windows to prevent "Cross-Agent Prompt Injection."
+
+### Priority Shifts
+- **Lazy-MCP Discovery**: Promoted from **P1** to **P0**. Essential for performance as agents move to 1M token context windows.
+- **"Safe-by-Default" Network Hardening**: Re-affirmed as **P0** to align with OpenClaw's security pivot.
