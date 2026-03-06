@@ -32,42 +32,30 @@ const (
 // MaxRecursionDepth limits the depth of nested messages to prevent infinite recursion.
 const MaxRecursionDepth = 10
 
-// MethodDescriptorToProtoProperties converts the fields of a method's input message into a `structpb.Struct` for use as the `properties` field in a tool input schema. Parameters: - methodDesc: The method descriptor to convert. Returns: - *structpb.Struct: The properties structure for the input schema. - error: An error if the conversion fails.
-//
-// Summary: MethodDescriptorToProtoProperties converts the fields of a method's input message into a `structpb.Struct` for use as the `properties` field in a tool input schema. Parameters: - methodDesc: The method descriptor to convert. Returns: - *structpb.Struct: The properties structure for the input schema. - error: An error if the conversion fails.
+// MethodDescriptorToProtoProperties converts the fields of a method's input
+// message into a `structpb.Struct` for use as the `properties` field in a tool
+// input schema.
 //
 // Parameters:
-//   - methodDesc (protoreflect.MethodDescriptor): The method desc parameter used in the operation.
+//   - methodDesc: The method descriptor to convert.
 //
 // Returns:
-//   - (*structpb.Struct): The resulting structpb.Struct object containing the requested data.
-//   - (error): An error object if the operation fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the underlying operation fails or encounters invalid input.
-//
-// Side Effects:
-//   - None.
+//   - *structpb.Struct: The properties structure for the input schema.
+//   - error: An error if the conversion fails.
 func MethodDescriptorToProtoProperties(methodDesc protoreflect.MethodDescriptor) (*structpb.Struct, error) {
 	return fieldsToProperties(methodDesc.Input().Fields(), 0)
 }
 
-// MethodOutputDescriptorToProtoProperties converts the fields of a method's output message into a `structpb.Struct` for use as the `properties` field in a tool output schema. Parameters: - methodDesc: The method descriptor to convert. Returns: - *structpb.Struct: The properties structure for the output schema. - error: An error if the conversion fails.
-//
-// Summary: MethodOutputDescriptorToProtoProperties converts the fields of a method's output message into a `structpb.Struct` for use as the `properties` field in a tool output schema. Parameters: - methodDesc: The method descriptor to convert. Returns: - *structpb.Struct: The properties structure for the output schema. - error: An error if the conversion fails.
+// MethodOutputDescriptorToProtoProperties converts the fields of a method's
+// output message into a `structpb.Struct` for use as the `properties` field in
+// a tool output schema.
 //
 // Parameters:
-//   - methodDesc (protoreflect.MethodDescriptor): The method desc parameter used in the operation.
+//   - methodDesc: The method descriptor to convert.
 //
 // Returns:
-//   - (*structpb.Struct): The resulting structpb.Struct object containing the requested data.
-//   - (error): An error object if the operation fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the underlying operation fails or encounters invalid input.
-//
-// Side Effects:
-//   - None.
+//   - *structpb.Struct: The properties structure for the output schema.
+//   - error: An error if the conversion fails.
 func MethodOutputDescriptorToProtoProperties(methodDesc protoreflect.MethodDescriptor) (*structpb.Struct, error) {
 	return fieldsToProperties(methodDesc.Output().Fields(), 0)
 }
@@ -162,12 +150,7 @@ func fieldToSchema(field protoreflect.FieldDescriptor, depth int) (map[string]in
 	return schema, nil
 }
 
-// ConfigParameter - Auto-generated documentation.
-//
-// Summary: ConfigParameter an interface for config parameter schemas.
-//
-// Methods:
-//   - Various methods for ConfigParameter.
+// ConfigParameter an interface for config parameter schemas.
 type ConfigParameter interface {
 	// GetSchema returns the parameter schema.
 	//
@@ -176,12 +159,7 @@ type ConfigParameter interface {
 	GetSchema() *configv1.ParameterSchema
 }
 
-// McpFieldParameter - Auto-generated documentation.
-//
-// Summary: McpFieldParameter an interface for McpField parameter schemas.
-//
-// Methods:
-//   - Various methods for McpFieldParameter.
+// McpFieldParameter an interface for McpField parameter schemas.
 type McpFieldParameter interface {
 	// GetName returns the name of the parameter.
 	//

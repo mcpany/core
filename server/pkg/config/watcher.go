@@ -187,21 +187,10 @@ func (w *Watcher) Watch(paths []string, reloadFunc func()) error {
 	return nil
 }
 
-// Close - Auto-generated documentation.
-//
-// Summary: Close stops the file watcher and releases resources.
+// Close stops the file watcher and releases resources.
 //
 // Parameters:
-//   - args: Variable arguments.
-//
-// Returns:
-//   - result: The result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external calls.
+//   - None.
 func (w *Watcher) Close() {
 	close(w.done)
 	_ = w.watcher.Close()

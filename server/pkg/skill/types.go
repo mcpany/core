@@ -3,12 +3,7 @@
 
 package skill
 
-// Frontmatter - Auto-generated documentation.
-//
-// Summary: Frontmatter represents the YAML frontmatter of a SKILL.md file.
-//
-// Fields:
-//   - Various fields for Frontmatter.
+// Frontmatter represents the YAML frontmatter of a SKILL.md file.
 type Frontmatter struct {
 	Name         string            `yaml:"name" json:"name"`
 	Description  string            `yaml:"description" json:"description"`
@@ -18,12 +13,7 @@ type Frontmatter struct {
 	AllowedTools []string          `yaml:"allowed-tools,omitempty" json:"allowedTools,omitempty"`
 }
 
-// Skill - Auto-generated documentation.
-//
-// Summary: Skill represents a complete Agent Skill.
-//
-// Fields:
-//   - Various fields for Skill.
+// Skill represents a complete Agent Skill.
 type Skill struct {
 	// Frontmatter contains the metadata parsed from the YAML frontmatter.
 	Frontmatter `yaml:",inline"`

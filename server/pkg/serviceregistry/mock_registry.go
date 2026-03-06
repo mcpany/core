@@ -11,12 +11,7 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-// MockServiceRegistry - Auto-generated documentation.
-//
-// Summary: MockServiceRegistry is a mock implementation of ServiceRegistryInterface.
-//
-// Fields:
-//   - Various fields for MockServiceRegistry.
+// MockServiceRegistry is a mock implementation of ServiceRegistryInterface.
 type MockServiceRegistry struct {
 	mock.Mock
 }
@@ -56,21 +51,14 @@ func (m *MockServiceRegistry) UnregisterService(ctx context.Context, serviceName
 	return args.Error(0)
 }
 
-// GetAllServices - Auto-generated documentation.
-//
-// Summary: GetAllServices returns a list of all currently registered services.
-//
-// Parameters:
-//   - args: Variable arguments.
+// GetAllServices returns a list of all currently registered services.
 //
 // Returns:
-//   - result: The result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
+//   - []*configv1.UpstreamServiceConfig: A list of all registered service configurations.
+//   - error: An error if retrieval fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - Records method call for mock.
 func (m *MockServiceRegistry) GetAllServices() ([]*configv1.UpstreamServiceConfig, error) {
 	args := m.Called()
 	if args.Get(0) == nil {

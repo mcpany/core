@@ -13,12 +13,7 @@ import (
 	"unicode/utf8"
 )
 
-// Tokenizer - Auto-generated documentation.
-//
-// Summary: Tokenizer defines the interface for counting tokens in a given text.
-//
-// Methods:
-//   - Various methods for Tokenizer.
+// Tokenizer defines the interface for counting tokens in a given text.
 type Tokenizer interface {
 	// CountTokens estimates or calculates the number of tokens in the input text.
 	//
@@ -29,12 +24,8 @@ type Tokenizer interface {
 	CountTokens(text string) (int, error)
 }
 
-// SimpleTokenizer - Auto-generated documentation.
-//
-// Summary: SimpleTokenizer implements a character-based heuristic.
-//
-// Fields:
-//   - Various fields for SimpleTokenizer.
+// SimpleTokenizer implements a character-based heuristic.
+// Logic: ~4 characters per token.
 type SimpleTokenizer struct{}
 
 // NewSimpleTokenizer creates a new SimpleTokenizer. Returns the result.
@@ -79,12 +70,8 @@ func (t *SimpleTokenizer) CountTokens(text string) (int, error) {
 	return count, nil
 }
 
-// WordTokenizer - Auto-generated documentation.
-//
-// Summary: WordTokenizer implements a word-based heuristic.
-//
-// Fields:
-//   - Various fields for WordTokenizer.
+// WordTokenizer implements a word-based heuristic.
+// Logic: Count words (split by space) and multiply by a factor (e.g. 1.3) to account for subwords/punctuation.
 type WordTokenizer struct {
 	Factor float64
 }
@@ -245,22 +232,14 @@ func CountTokensInValue(t Tokenizer, v interface{}) (int, error) {
 // rawWordCounter implements the recursiveTokenizer interface but counts raw words instead of tokens.
 type rawWordCounter struct{}
 
-// CountTokens counts the number of words in the text. Parameters: - text: The input text. Returns: - int: The word count. - error: Always nil.
-//
-// Summary: CountTokens counts the number of words in the text. Parameters: - text: The input text. Returns: - int: The word count. - error: Always nil.
+// CountTokens counts the number of words in the text.
 //
 // Parameters:
-//   - text (string): The text parameter used in the operation.
+//   - text: The input text.
 //
 // Returns:
-//   - (int): The resulting int object containing the requested data.
-//   - (error): An error object if the operation fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the underlying operation fails or encounters invalid input.
-//
-// Side Effects:
-//   - None.
+//   - int: The word count.
+//   - error: Always nil.
 func (r *rawWordCounter) CountTokens(text string) (int, error) {
 	return countWords(text), nil
 }

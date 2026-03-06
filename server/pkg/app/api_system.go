@@ -13,12 +13,7 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// SystemStatusResponse - Auto-generated documentation.
-//
-// Summary: SystemStatusResponse represents the response from the system status API.
-//
-// Fields:
-//   - Various fields for SystemStatusResponse.
+// SystemStatusResponse represents the response from the system status API.
 type SystemStatusResponse struct {
 	UptimeSeconds     int64    `json:"uptime_seconds"`
 	ActiveConnections int32    `json:"active_connections"`

@@ -12,24 +12,14 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// JSONRPCError - Auto-generated documentation.
-//
-// Summary: JSONRPCError represents a JSON-RPC 2.0 error object.
-//
-// Fields:
-//   - Various fields for JSONRPCError.
+// JSONRPCError represents a JSON-RPC 2.0 error object.
 type JSONRPCError struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
 	Data    any    `json:"data,omitempty"`
 }
 
-// JSONRPCResponse - Auto-generated documentation.
-//
-// Summary: JSONRPCResponse represents a JSON-RPC 2.0 response object.
-//
-// Fields:
-//   - Various fields for JSONRPCResponse.
+// JSONRPCResponse represents a JSON-RPC 2.0 response object.
 type JSONRPCResponse struct {
 	JSONRPC string        `json:"jsonrpc"`
 	ID      any           `json:"id"`
@@ -101,40 +91,22 @@ type smartResponseWriter struct {
 	passThrough bool
 }
 
-// Header - Auto-generated documentation.
+// Header returns the header map that will be sent by WriteHeader.
 //
-// Summary: Header returns the header map that will be sent by WriteHeader.
-//
-// Parameters:
-//   - args: Variable arguments.
+// Summary: Returns the response headers.
 //
 // Returns:
-//   - result: The result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external calls.
+//   - http.Header: The header map.
 func (w *smartResponseWriter) Header() http.Header {
 	return w.header
 }
 
-// WriteHeader - Auto-generated documentation.
+// WriteHeader sends an HTTP response header with the provided status code.
 //
-// Summary: WriteHeader sends an HTTP response header with the provided status code.
+// Summary: Writes the status code to the response.
 //
 // Parameters:
-//   - args: Variable arguments.
-//
-// Returns:
-//   - result: The result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external calls.
+//   - code: int. The HTTP status code.
 func (w *smartResponseWriter) WriteHeader(code int) {
 	if w.committed {
 		return
@@ -157,22 +129,16 @@ func (w *smartResponseWriter) WriteHeader(code int) {
 	}
 }
 
-// Write writes the data to the connection as part of an HTTP reply. Summary: Writes data to the response body, buffering if necessary. Parameters: - b: []byte. The data to write. Returns: - int: The number of bytes written. - error: An error if the write fails.
+// Write writes the data to the connection as part of an HTTP reply.
 //
-// Summary: Write writes the data to the connection as part of an HTTP reply. Summary: Writes data to the response body, buffering if necessary. Parameters: - b: []byte. The data to write. Returns: - int: The number of bytes written. - error: An error if the write fails.
+// Summary: Writes data to the response body, buffering if necessary.
 //
 // Parameters:
-//   - b ([]byte): The b parameter used in the operation.
+//   - b: []byte. The data to write.
 //
 // Returns:
-//   - (int): The resulting int object containing the requested data.
-//   - (error): An error object if the operation fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the underlying operation fails or encounters invalid input.
-//
-// Side Effects:
-//   - Modifies global state, writes to the database, or establishes network connections.
+//   - int: The number of bytes written.
+//   - error: An error if the write fails.
 func (w *smartResponseWriter) Write(b []byte) (int, error) {
 	if !w.committed {
 		w.WriteHeader(http.StatusOK)
@@ -209,21 +175,13 @@ func (w *smartResponseWriter) flushHeader() {
 	w.w.WriteHeader(w.statusCode)
 }
 
-// Flush - Auto-generated documentation.
+// Flush implements http.Flusher to support streaming.
 //
-// Summary: Flush implements http.Flusher to support streaming.
-//
-// Parameters:
-//   - args: Variable arguments.
+// Summary: Flushes the response buffer to the client.
 //
 // Returns:
-//   - result: The result of the operation.
 //
-// Errors:
-//   - Returns an error if the operation fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external calls.
+//	None.
 func (w *smartResponseWriter) Flush() {
 	if w.passThrough {
 		if f, ok := w.w.(http.Flusher); ok {

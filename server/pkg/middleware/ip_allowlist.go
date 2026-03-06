@@ -12,33 +12,24 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// IPAllowlistMiddleware - Auto-generated documentation.
+// IPAllowlistMiddleware restricts access to allowed IP addresses.
 //
-// Summary: IPAllowlistMiddleware restricts access to allowed IP addresses.
-//
-// Fields:
-//   - Various fields for IPAllowlistMiddleware.
+// Summary: Middleware that filters requests based on a list of allowed IP addresses or CIDRs.
 type IPAllowlistMiddleware struct {
 	mu            sync.RWMutex
 	allowedIPNets []*net.IPNet
 }
 
-// NewIPAllowlistMiddleware creates a new IPAllowlistMiddleware. Summary: Initializes the middleware with the initial list of allowed CIDRs. Parameters: - allowedCIDRs: []string. A list of IP addresses or CIDR blocks to allow. Returns: - *IPAllowlistMiddleware: The initialized middleware instance. - error: An error if any of the provided CIDRs are invalid.
+// NewIPAllowlistMiddleware creates a new IPAllowlistMiddleware.
 //
-// Summary: NewIPAllowlistMiddleware creates a new IPAllowlistMiddleware. Summary: Initializes the middleware with the initial list of allowed CIDRs. Parameters: - allowedCIDRs: []string. A list of IP addresses or CIDR blocks to allow. Returns: - *IPAllowlistMiddleware: The initialized middleware instance. - error: An error if any of the provided CIDRs are invalid.
+// Summary: Initializes the middleware with the initial list of allowed CIDRs.
 //
 // Parameters:
-//   - allowedCIDRs ([]string): The unique identifier used to reference the allowedCRs resource.
+//   - allowedCIDRs: []string. A list of IP addresses or CIDR blocks to allow.
 //
 // Returns:
-//   - (*IPAllowlistMiddleware): The resulting IPAllowlistMiddleware object containing the requested data.
-//   - (error): An error object if the operation fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the underlying operation fails or encounters invalid input.
-//
-// Side Effects:
-//   - None.
+//   - *IPAllowlistMiddleware: The initialized middleware instance.
+//   - error: An error if any of the provided CIDRs are invalid.
 func NewIPAllowlistMiddleware(allowedCIDRs []string) (*IPAllowlistMiddleware, error) {
 	m := &IPAllowlistMiddleware{}
 	if err := m.Update(allowedCIDRs); err != nil {
@@ -47,21 +38,15 @@ func NewIPAllowlistMiddleware(allowedCIDRs []string) (*IPAllowlistMiddleware, er
 	return m, nil
 }
 
-// Update updates the allowlist with new CIDRs/IPs. Summary: Dynamically updates the list of allowed IPs. Parameters: - allowedCIDRs: []string. The new list of allowed IP addresses or CIDR blocks. Returns: - error: An error if any of the provided CIDRs are invalid.
+// Update updates the allowlist with new CIDRs/IPs.
 //
-// Summary: Update updates the allowlist with new CIDRs/IPs. Summary: Dynamically updates the list of allowed IPs. Parameters: - allowedCIDRs: []string. The new list of allowed IP addresses or CIDR blocks. Returns: - error: An error if any of the provided CIDRs are invalid.
+// Summary: Dynamically updates the list of allowed IPs.
 //
 // Parameters:
-//   - allowedCIDRs ([]string): The unique identifier used to reference the allowedCRs resource.
+//   - allowedCIDRs: []string. The new list of allowed IP addresses or CIDR blocks.
 //
 // Returns:
-//   - (error): An error object if the operation fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the underlying operation fails or encounters invalid input.
-//
-// Side Effects:
-//   - Modifies global state, writes to the database, or establishes network connections.
+//   - error: An error if any of the provided CIDRs are invalid.
 func (m *IPAllowlistMiddleware) Update(allowedCIDRs []string) error {
 	nets := make([]*net.IPNet, 0, len(allowedCIDRs))
 	for _, cidr := range allowedCIDRs {
@@ -92,21 +77,15 @@ func (m *IPAllowlistMiddleware) Update(allowedCIDRs []string) error {
 	return nil
 }
 
-// Allow checks if the given remote address is allowed. Summary: Checks if a remote address is in the allowed list. Parameters: - remoteAddr: string. The remote address (IP or IP:Port). Returns: - bool: True if allowed, false otherwise.
+// Allow checks if the given remote address is allowed.
 //
-// Summary: Allow checks if the given remote address is allowed. Summary: Checks if a remote address is in the allowed list. Parameters: - remoteAddr: string. The remote address (IP or IP:Port). Returns: - bool: True if allowed, false otherwise.
+// Summary: Checks if a remote address is in the allowed list.
 //
 // Parameters:
-//   - remoteAddr (string): The remote addr parameter used in the operation.
+//   - remoteAddr: string. The remote address (IP or IP:Port).
 //
 // Returns:
-//   - (bool): A boolean indicating the success or status of the operation.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
+//   - bool: True if allowed, false otherwise.
 func (m *IPAllowlistMiddleware) Allow(remoteAddr string) bool {
 	m.mu.RLock()
 	nets := m.allowedIPNets
@@ -141,21 +120,15 @@ func (m *IPAllowlistMiddleware) Allow(remoteAddr string) bool {
 	return false
 }
 
-// Handler returns an HTTP handler that enforces the allowlist. Summary: Returns an HTTP handler that blocks unauthorized IPs. Parameters: - next: http.Handler. The next handler in the chain. Returns: - http.Handler: The wrapped handler.
+// Handler returns an HTTP handler that enforces the allowlist.
 //
-// Summary: Handler returns an HTTP handler that enforces the allowlist. Summary: Returns an HTTP handler that blocks unauthorized IPs. Parameters: - next: http.Handler. The next handler in the chain. Returns: - http.Handler: The wrapped handler.
+// Summary: Returns an HTTP handler that blocks unauthorized IPs.
 //
 // Parameters:
-//   - next (http.Handler): The next parameter used in the operation.
+//   - next: http.Handler. The next handler in the chain.
 //
 // Returns:
-//   - (http.Handler): The resulting http.Handler object containing the requested data.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
+//   - http.Handler: The wrapped handler.
 func (m *IPAllowlistMiddleware) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if !m.Allow(r.RemoteAddr) {

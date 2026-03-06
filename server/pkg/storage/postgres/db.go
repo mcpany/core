@@ -13,12 +13,7 @@ import (
 	_ "github.com/lib/pq" // Register postgres driver
 )
 
-// DB - Auto-generated documentation.
-//
-// Summary: DB wraps the sql.DB connection.
-//
-// Fields:
-//   - Various fields for DB.
+// DB wraps the sql.DB connection.
 type DB struct {
 	*sql.DB
 }

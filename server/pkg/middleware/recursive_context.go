@@ -14,12 +14,7 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// SessionState - Auto-generated documentation.
-//
-// Summary: SessionState represents the shared state for a recursive context session.
-//
-// Fields:
-//   - Various fields for SessionState.
+// SessionState represents the shared state for a recursive context session.
 type SessionState struct {
 	ID        string                 `json:"id"`
 	Data      map[string]interface{} `json:"data"`
@@ -27,12 +22,7 @@ type SessionState struct {
 	ExpiresAt time.Time              `json:"expires_at"`
 }
 
-// RecursiveContextManager - Auto-generated documentation.
-//
-// Summary: RecursiveContextManager manages the shared context sessions (Blackboard).
-//
-// Fields:
-//   - Various fields for RecursiveContextManager.
+// RecursiveContextManager manages the shared context sessions (Blackboard).
 type RecursiveContextManager struct {
 	mu       sync.RWMutex
 	sessions map[string]*SessionState

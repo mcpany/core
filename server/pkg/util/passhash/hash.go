@@ -10,22 +10,14 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// Password hashes a password using bcrypt. Parameters: - password: The password to hash. Returns: - string: The hashed password. - error: An error if the hashing fails.
-//
-// Summary: Password hashes a password using bcrypt. Parameters: - password: The password to hash. Returns: - string: The hashed password. - error: An error if the hashing fails.
+// Password hashes a password using bcrypt.
 //
 // Parameters:
-//   - password (string): The password parameter used in the operation.
+//   - password: The password to hash.
 //
 // Returns:
-//   - (string): A string value representing the operation's result.
-//   - (error): An error object if the operation fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the underlying operation fails or encounters invalid input.
-//
-// Side Effects:
-//   - None.
+//   - string: The hashed password.
+//   - error: An error if the hashing fails.
 func Password(password string) (string, error) {
 	// Increase cost to 12 for better security (default is 10)
 	const cost = 12
@@ -36,22 +28,14 @@ func Password(password string) (string, error) {
 	return string(bytes), nil
 }
 
-// CheckPassword checks if a password matches a hash. Parameters: - password: The password to check. - hash: The hash to compare against. Returns: - bool: True if the password matches the hash, false otherwise.
-//
-// Summary: CheckPassword checks if a password matches a hash. Parameters: - password: The password to check. - hash: The hash to compare against. Returns: - bool: True if the password matches the hash, false otherwise.
+// CheckPassword checks if a password matches a hash.
 //
 // Parameters:
-//   - _ (password): An unnamed parameter of type password.
-//   - hash (string): The hash parameter used in the operation.
+//   - password: The password to check.
+//   - hash: The hash to compare against.
 //
 // Returns:
-//   - (bool): A boolean indicating the success or status of the operation.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
+//   - bool: True if the password matches the hash, false otherwise.
 func CheckPassword(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil

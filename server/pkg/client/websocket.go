@@ -10,12 +10,8 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-// WebsocketClientWrapper - Auto-generated documentation.
-//
-// Summary: WebsocketClientWrapper wraps a *websocket.Conn to adapt it for use in a
-//
-// Fields:
-//   - Various fields for WebsocketClientWrapper.
+// WebsocketClientWrapper wraps a *websocket.Conn to adapt it for use in a
+// connection pool, implementing the pool.ClosableClient interface.
 type WebsocketClientWrapper struct {
 	Conn *websocket.Conn
 }

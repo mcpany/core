@@ -15,12 +15,8 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// StaticResource - Auto-generated documentation.
-//
-// Summary: StaticResource implements the Resource interface for resources that are
-//
-// Fields:
-//   - Various fields for StaticResource.
+// StaticResource implements the Resource interface for resources that are
+// defined statically in the configuration (e.g. pointing to a URL).
 type StaticResource struct {
 	resource      *mcp.Resource
 	serviceID     string
@@ -28,22 +24,16 @@ type StaticResource struct {
 	staticContent *configv1.StaticResource
 }
 
-// NewStaticResource creates a new instance of StaticResource. Summary: Initializes a static resource. Parameters: - def: *configv1.ResourceDefinition. The resource definition. - serviceID: string. The ID of the service owning the resource. Returns: - *StaticResource: The initialized static resource.
+// NewStaticResource creates a new instance of StaticResource.
 //
-// Summary: NewStaticResource creates a new instance of StaticResource. Summary: Initializes a static resource. Parameters: - def: *configv1.ResourceDefinition. The resource definition. - serviceID: string. The ID of the service owning the resource. Returns: - *StaticResource: The initialized static resource.
+// Summary: Initializes a static resource.
 //
 // Parameters:
-//   - def (*configv1.ResourceDefinition): The def parameter used in the operation.
-//   - serviceID (string): The unique identifier used to reference the service resource.
+//   - def: *configv1.ResourceDefinition. The resource definition.
+//   - serviceID: string. The ID of the service owning the resource.
 //
 // Returns:
-//   - (*StaticResource): The resulting StaticResource object containing the requested data.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
+//   - *StaticResource: The initialized static resource.
 func NewStaticResource(def *configv1.ResourceDefinition, serviceID string) *StaticResource {
 	return &StaticResource{
 		resource: &mcp.Resource{
@@ -59,40 +49,22 @@ func NewStaticResource(def *configv1.ResourceDefinition, serviceID string) *Stat
 	}
 }
 
-// Resource - Auto-generated documentation.
+// Resource returns the MCP representation of the resource.
 //
-// Summary: Resource returns the MCP representation of the resource.
-//
-// Parameters:
-//   - args: Variable arguments.
+// Summary: Retrieves the MCP resource metadata.
 //
 // Returns:
-//   - result: The result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external calls.
+//   - *mcp.Resource: The MCP resource definition.
 func (r *StaticResource) Resource() *mcp.Resource {
 	return r.resource
 }
 
-// Service - Auto-generated documentation.
+// Service returns the ID of the service that provides this resource.
 //
-// Summary: Service returns the ID of the service that provides this resource.
-//
-// Parameters:
-//   - args: Variable arguments.
+// Summary: Retrieves the service ID.
 //
 // Returns:
-//   - result: The result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external calls.
+//   - string: The service ID.
 func (r *StaticResource) Service() string {
 	return r.serviceID
 }
@@ -191,21 +163,15 @@ func (r *StaticResource) Read(ctx context.Context) (*mcp.ReadResourceResult, err
 	}, nil
 }
 
-// Subscribe is not yet implemented for static resources. Summary: Subscribes to resource updates (Not Implemented). Parameters: - _: context.Context. Unused. Returns: - error: Always returns an error indicating not implemented.
+// Subscribe is not yet implemented for static resources.
 //
-// Summary: Subscribe is not yet implemented for static resources. Summary: Subscribes to resource updates (Not Implemented). Parameters: - _: context.Context. Unused. Returns: - error: Always returns an error indicating not implemented.
+// Summary: Subscribes to resource updates (Not Implemented).
 //
 // Parameters:
-//   - _ (context.Context): The _ parameter used in the operation.
+//   - _: context.Context. Unused.
 //
 // Returns:
-//   - (error): An error object if the operation fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the underlying operation fails or encounters invalid input.
-//
-// Side Effects:
-//   - None.
+//   - error: Always returns an error indicating not implemented.
 func (r *StaticResource) Subscribe(_ context.Context) error {
 	return fmt.Errorf("subscribing to static resources is not yet implemented")
 }

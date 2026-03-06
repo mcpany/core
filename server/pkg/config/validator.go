@@ -72,12 +72,9 @@ var (
 	execLookPath = exec.LookPath
 )
 
-// ValidationError - Auto-generated documentation.
+// ValidationError encapsulates a validation error for a specific service.
 //
-// Summary: ValidationError encapsulates a validation error for a specific service.
-//
-// Fields:
-//   - Various fields for ValidationError.
+// Summary: Represents a configuration validation error.
 type ValidationError struct {
 	ServiceName string
 	Err         error
@@ -100,23 +97,17 @@ func (e *ValidationError) Error() string {
 	return fmt.Sprintf("service %q: %v", e.ServiceName, e.Err)
 }
 
-// Validate inspects the given McpAnyServerConfig for correctness and consistency. Summary: Validates the entire server configuration. Parameters: - ctx (context.Context): The context for the validation (used for secret resolution). - config (*configv1.McpAnyServerConfig): The server configuration to be validated. - binaryType (BinaryType): The type of binary (server, worker) which might affect validation rules. Returns: - ([]ValidationError): A slice of ValidationErrors, which will be empty if the configuration is valid.
+// Validate inspects the given McpAnyServerConfig for correctness and consistency.
 //
-// Summary: Validate inspects the given McpAnyServerConfig for correctness and consistency. Summary: Validates the entire server configuration. Parameters: - ctx (context.Context): The context for the validation (used for secret resolution). - config (*configv1.McpAnyServerConfig): The server configuration to be validated. - binaryType (BinaryType): The type of binary (server, worker) which might affect validation rules. Returns: - ([]ValidationError): A slice of ValidationErrors, which will be empty if the configuration is valid.
+// Summary: Validates the entire server configuration.
 //
 // Parameters:
-//   - ctx (context.Context): The context for managing request lifecycle and cancellation.
-//   - config (*configv1.McpAnyServerConfig): The configuration settings to be applied.
-//   - binaryType (BinaryType): The binary type parameter used in the operation.
+//   - ctx (context.Context): The context for the validation (used for secret resolution).
+//   - config (*configv1.McpAnyServerConfig): The server configuration to be validated.
+//   - binaryType (BinaryType): The type of binary (server, worker) which might affect validation rules.
 //
 // Returns:
-//   - ([]ValidationError): The resulting []ValidationError object containing the requested data.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
+//   - ([]ValidationError): A slice of ValidationErrors, which will be empty if the configuration is valid.
 func Validate(ctx context.Context, config *configv1.McpAnyServerConfig, binaryType BinaryType) []ValidationError {
 	var validationErrors []ValidationError
 	serviceNames := make(map[string]bool)
@@ -513,22 +504,16 @@ func validateGlobalSettings(ctx context.Context, gs *configv1.GlobalSettings, bi
 	return nil
 }
 
-// ValidateOrError validates a single upstream service configuration and returns an error if it's invalid. Summary: Validates a single upstream service. Parameters: - ctx (context.Context): The context for the validation. - service (*configv1.UpstreamServiceConfig): The upstream service configuration to validate. Returns: - (error): An error if validation fails.
+// ValidateOrError validates a single upstream service configuration and returns an error if it's invalid.
 //
-// Summary: ValidateOrError validates a single upstream service configuration and returns an error if it's invalid. Summary: Validates a single upstream service. Parameters: - ctx (context.Context): The context for the validation. - service (*configv1.UpstreamServiceConfig): The upstream service configuration to validate. Returns: - (error): An error if validation fails.
+// Summary: Validates a single upstream service.
 //
 // Parameters:
-//   - ctx (context.Context): The context for managing request lifecycle and cancellation.
-//   - service (*configv1.UpstreamServiceConfig): The service parameter used in the operation.
+//   - ctx (context.Context): The context for the validation.
+//   - service (*configv1.UpstreamServiceConfig): The upstream service configuration to validate.
 //
 // Returns:
-//   - (error): An error object if the operation fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the underlying operation fails or encounters invalid input.
-//
-// Side Effects:
-//   - None.
+//   - (error): An error if validation fails.
 func ValidateOrError(ctx context.Context, service *configv1.UpstreamServiceConfig) error {
 	return validateUpstreamService(ctx, service)
 }

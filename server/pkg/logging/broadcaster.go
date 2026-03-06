@@ -7,12 +7,7 @@ import (
 	"sync"
 )
 
-// Broadcaster - Auto-generated documentation.
-//
-// Summary: Broadcaster manages a set of subscribers and broadcasts messages to them.
-//
-// Fields:
-//   - Various fields for Broadcaster.
+// Broadcaster manages a set of subscribers and broadcasts messages to them.
 type Broadcaster struct {
 	mu          sync.RWMutex
 	subscribers map[chan any]struct{}

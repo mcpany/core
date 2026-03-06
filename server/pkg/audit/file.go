@@ -14,12 +14,9 @@ import (
 	"github.com/mcpany/core/server/pkg/validation"
 )
 
-// FileAuditStore - Auto-generated documentation.
+// FileAuditStore writes audit logs to a file or stdout.
 //
-// Summary: FileAuditStore writes audit logs to a file or stdout.
-//
-// Fields:
-//   - Various fields for FileAuditStore.
+// Summary: Audit store implementation that appends newline-delimited JSON (NDJSON) to a file or standard output.
 type FileAuditStore struct {
 	mu   sync.Mutex
 	file *os.File
@@ -98,42 +95,30 @@ func (s *FileAuditStore) Write(_ context.Context, entry Entry) error {
 	return err
 }
 
-// Read implements the Store interface. Summary: Reads audit entries (Not implemented). Parameters: - _: context.Context. Unused. - _: Filter. Unused. Returns: - []Entry: Nil. - error: Always returns "not implemented".
+// Read implements the Store interface.
 //
-// Summary: Read implements the Store interface. Summary: Reads audit entries (Not implemented). Parameters: - _: context.Context. Unused. - _: Filter. Unused. Returns: - []Entry: Nil. - error: Always returns "not implemented".
+// Summary: Reads audit entries (Not implemented).
 //
 // Parameters:
-//   - _ (context.Context): The _ parameter used in the operation.
-//   - _ (Filter): The _ parameter used in the operation.
+//   - _: context.Context. Unused.
+//   - _: Filter. Unused.
 //
 // Returns:
-//   - ([]Entry): The resulting []Entry object containing the requested data.
-//   - (error): An error object if the operation fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the underlying operation fails or encounters invalid input.
-//
-// Side Effects:
-//   - None.
+//   - []Entry: Nil.
+//   - error: Always returns "not implemented".
 func (s *FileAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for file audit store")
 }
 
-// Close - Auto-generated documentation.
+// Close closes the file.
 //
-// Summary: Close closes the file.
-//
-// Parameters:
-//   - args: Variable arguments.
+// Summary: Closes the underlying file handle if one exists.
 //
 // Returns:
-//   - result: The result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
+//   - error: An error if closing the file fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - Closes the file descriptor.
 func (s *FileAuditStore) Close() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

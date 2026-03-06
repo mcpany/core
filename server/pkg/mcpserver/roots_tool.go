@@ -15,32 +15,22 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-// RootsTool - Auto-generated documentation.
+// RootsTool implements the Tool interface for listing roots.
 //
-// Summary: RootsTool implements the Tool interface for listing roots.
-//
-// Fields:
-//   - Various fields for RootsTool.
+// It provides a built-in tool ("mcp:list_roots") that allows the server to query the client
+// for available filesystem roots.
 type RootsTool struct {
 	tool    *v1.Tool
 	mcpTool *mcp.Tool
 }
 
-// NewRootsTool - Auto-generated documentation.
-//
-// Summary: NewRootsTool creates a new instance of the RootsTool.
-//
-// Parameters:
-//   - args: Variable arguments.
+// NewRootsTool creates a new instance of the RootsTool.
 //
 // Returns:
-//   - result: The result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
+//   - *RootsTool: A new instance of RootsTool.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - None.
 func NewRootsTool() *RootsTool {
 	inputSchema := &structpb.Struct{
 		Fields: map[string]*structpb.Value{
@@ -62,40 +52,24 @@ func NewRootsTool() *RootsTool {
 	}
 }
 
-// Tool - Auto-generated documentation.
-//
-// Summary: Tool returns the protobuf definition of the tool.
-//
-// Parameters:
-//   - args: Variable arguments.
+// Tool returns the protobuf definition of the tool.
 //
 // Returns:
-//   - result: The result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
+//   - *v1.Tool: The protobuf tool definition.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - None.
 func (t *RootsTool) Tool() *v1.Tool {
 	return t.tool
 }
 
-// MCPTool - Auto-generated documentation.
-//
-// Summary: MCPTool returns the MCP-compliant tool definition.
-//
-// Parameters:
-//   - args: Variable arguments.
+// MCPTool returns the MCP-compliant tool definition.
 //
 // Returns:
-//   - result: The result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
+//   - *mcp.Tool: The MCP tool definition.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - None.
 func (t *RootsTool) MCPTool() *mcp.Tool {
 	return t.mcpTool
 }
@@ -129,21 +103,13 @@ func (t *RootsTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any,
 	return rootsResult, nil
 }
 
-// GetCacheConfig - Auto-generated documentation.
-//
-// Summary: GetCacheConfig returns the caching configuration for this tool.
-//
-// Parameters:
-//   - args: Variable arguments.
+// GetCacheConfig returns the caching configuration for this tool.
 //
 // Returns:
-//   - result: The result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
+//   - *configv1.CacheConfig: Always nil (caching disabled).
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - None.
 func (t *RootsTool) GetCacheConfig() *configv1.CacheConfig {
 	return nil
 }

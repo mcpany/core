@@ -1,0 +1,57 @@
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+edition = "2023";
+
+option features.field_presence = IMPLICIT;
+
+package topology.v1;
+
+import "google/protobuf/go_features.proto";
+
+option features.(pb.go).api_level = API_OPAQUE;
+
+option go_package = "github.com/mcpany/core/proto/topology/v1";
+
+// Graph represents the full network topology.
+message Graph {
+  repeated Node clients = 1;
+  Node core = 2;
+}
+
+// Node represents a node in the topology graph.
+message Node {
+  string id = 1;
+  string label = 2;
+  NodeType type = 3;
+  NodeStatus status = 4;
+  map<string, string> metadata = 5;
+  repeated Node children = 6;
+  NodeMetrics metrics = 7;
+}
+
+enum NodeType {
+  NODE_TYPE_UNSPECIFIED = 0;
+  NODE_TYPE_CLIENT = 1;
+  NODE_TYPE_CORE = 2;
+  NODE_TYPE_SERVICE = 3;
+  NODE_TYPE_TOOL = 4;
+  NODE_TYPE_RESOURCE = 5;
+  NODE_TYPE_PROMPT = 6;
+  NODE_TYPE_API_CALL = 7;
+  NODE_TYPE_MIDDLEWARE = 8;
+  NODE_TYPE_WEBHOOK = 9;
+}
+
+enum NodeStatus {
+  NODE_STATUS_UNSPECIFIED = 0;
+  NODE_STATUS_ACTIVE = 1;
+  NODE_STATUS_INACTIVE = 2;
+  NODE_STATUS_ERROR = 3;
+}
+
+message NodeMetrics {
+  double qps = 1;
+  double latency_ms = 2;
+  double error_rate = 3;
+}

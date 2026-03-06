@@ -9,12 +9,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
-// Limiter - Auto-generated documentation.
-//
-// Summary: Limiter interface defines the methods required for a rate limiter.
-//
-// Methods:
-//   - Various methods for Limiter.
+// Limiter interface defines the methods required for a rate limiter.
 type Limiter interface {
 	// Allow checks if the request is allowed.
 	//
@@ -38,12 +33,7 @@ type Limiter interface {
 	Update(rps float64, burst int)
 }
 
-// RateLimitStrategy - Auto-generated documentation.
-//
-// Summary: RateLimitStrategy defines the interface for creating rate limiters.
-//
-// Methods:
-//   - Various methods for RateLimitStrategy.
+// RateLimitStrategy defines the interface for creating rate limiters.
 type RateLimitStrategy interface {
 	// Create creates a new Limiter instance.
 	//

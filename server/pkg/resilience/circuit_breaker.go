@@ -25,12 +25,8 @@ const (
 	StateHalfOpen
 )
 
-// CircuitBreaker - Auto-generated documentation.
-//
-// Summary: CircuitBreaker implements the circuit breaker pattern. It prevents the
-//
-// Fields:
-//   - Various fields for CircuitBreaker.
+// CircuitBreaker implements the circuit breaker pattern. It prevents the
+// application from performing operations that are likely to fail.
 type CircuitBreaker struct {
 	mutex sync.Mutex
 
@@ -228,12 +224,7 @@ func (cb *CircuitBreaker) onFailure(originState State) {
 	}
 }
 
-// CircuitBreakerOpenError - Auto-generated documentation.
-//
-// Summary: CircuitBreakerOpenError is returned when the circuit breaker is in the Open state.
-//
-// Fields:
-//   - Various fields for CircuitBreakerOpenError.
+// CircuitBreakerOpenError is returned when the circuit breaker is in the Open state.
 type CircuitBreakerOpenError struct{}
 
 // Error returns the error message for a CircuitBreakerOpenError.

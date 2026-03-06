@@ -63,12 +63,7 @@ const (
 	labelStatus          = "status"
 )
 
-// ToolUsageStats - Auto-generated documentation.
-//
-// Summary: ToolUsageStats represents usage statistics for a tool.
-//
-// Fields:
-//   - Various fields for ToolUsageStats.
+// ToolUsageStats represents usage statistics for a tool.
 type ToolUsageStats struct {
 	Name      string `json:"name"`
 	ServiceID string `json:"serviceId"`
@@ -214,12 +209,7 @@ func (a *Application) handleDebugSeedTraffic() http.HandlerFunc {
 	}
 }
 
-// ToolFailureStats - Auto-generated documentation.
-//
-// Summary: ToolFailureStats represents failure statistics for a tool.
-//
-// Fields:
-//   - Various fields for ToolFailureStats.
+// ToolFailureStats represents failure statistics for a tool.
 type ToolFailureStats struct {
 	Name        string  `json:"name"`
 	ServiceID   string  `json:"serviceId"`
@@ -339,12 +329,7 @@ func (a *Application) handleDashboardToolFailures() http.HandlerFunc {
 	}
 }
 
-// ToolAnalytics - Auto-generated documentation.
-//
-// Summary: ToolAnalytics represents detailed usage analytics for a tool.
-//
-// Fields:
-//   - Various fields for ToolAnalytics.
+// ToolAnalytics represents detailed usage analytics for a tool.
 type ToolAnalytics struct {
 	Name        string  `json:"name"`
 	ServiceID   string  `json:"serviceId"`
@@ -458,23 +443,13 @@ func (a *Application) handleDashboardToolUsage() http.HandlerFunc {
 	}
 }
 
-// ServiceHealthResponse - Auto-generated documentation.
-//
-// Summary: ServiceHealthResponse represents the response for the health dashboard.
-//
-// Fields:
-//   - Various fields for ServiceHealthResponse.
+// ServiceHealthResponse represents the response for the health dashboard.
 type ServiceHealthResponse struct {
 	Services []ServiceHealth                 `json:"services"`
 	History  map[string][]health.HistoryPoint `json:"history"`
 }
 
-// ServiceHealth - Auto-generated documentation.
-//
-// Summary: ServiceHealth represents the health status of a service.
-//
-// Fields:
-//   - Various fields for ServiceHealth.
+// ServiceHealth represents the health status of a service.
 type ServiceHealth struct {
 	ID      string `json:"id"`
 	Name    string `json:"name"`

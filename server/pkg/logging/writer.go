@@ -9,12 +9,7 @@ import (
 	"github.com/mcpany/core/server/pkg/util"
 )
 
-// RedactingWriter - Auto-generated documentation.
-//
-// Summary: RedactingWriter is an io.Writer that redacts sensitive information from JSON logs.
-//
-// Fields:
-//   - Various fields for RedactingWriter.
+// RedactingWriter is an io.Writer that redacts sensitive information from JSON logs.
 type RedactingWriter struct {
 	w io.Writer
 }

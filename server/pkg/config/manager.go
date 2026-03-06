@@ -29,12 +29,13 @@ import (
 // Summary: Constant for "replace" merge strategy.
 const MergeStrategyReplace = "replace"
 
-// UpstreamServiceManager - Auto-generated documentation.
+// UpstreamServiceManager manages the lifecycle and configuration of upstream services.
 //
-// Summary: UpstreamServiceManager manages the lifecycle and configuration of upstream services.
+// Summary: Handles loading, validating, and merging service configurations from various sources.
 //
-// Fields:
-//   - Various fields for UpstreamServiceManager.
+// Side Effects:
+//   - Stores the final, merged UpstreamServiceConfig objects.
+//   - Makes HTTP requests to fetch remote configurations.
 type UpstreamServiceManager struct {
 	log               *slog.Logger
 	services          map[string]*configv1.UpstreamServiceConfig // Stores the final, merged UpstreamServiceConfig objects
@@ -47,21 +48,15 @@ type UpstreamServiceManager struct {
 	profileSecrets          map[string]*configv1.SecretValue          // Stores secrets resolved from profiles
 }
 
-// NewUpstreamServiceManager creates a new instance of UpstreamServiceManager. Summary: Initializes a new UpstreamServiceManager with the specified profiles. Parameters: - enabledProfiles ([]string): A list of profile names that are active. Services must match one of these profiles to be loaded. Returns: - (*UpstreamServiceManager): A pointer to a fully initialized UpstreamServiceManager.
+// NewUpstreamServiceManager creates a new instance of UpstreamServiceManager.
 //
-// Summary: NewUpstreamServiceManager creates a new instance of UpstreamServiceManager. Summary: Initializes a new UpstreamServiceManager with the specified profiles. Parameters: - enabledProfiles ([]string): A list of profile names that are active. Services must match one of these profiles to be loaded. Returns: - (*UpstreamServiceManager): A pointer to a fully initialized UpstreamServiceManager.
+// Summary: Initializes a new UpstreamServiceManager with the specified profiles.
 //
 // Parameters:
-//   - enabledProfiles ([]string): The enabled profiles parameter used in the operation.
+//   - enabledProfiles ([]string): A list of profile names that are active. Services must match one of these profiles to be loaded.
 //
 // Returns:
-//   - (*UpstreamServiceManager): The resulting UpstreamServiceManager object containing the requested data.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
+//   - (*UpstreamServiceManager): A pointer to a fully initialized UpstreamServiceManager.
 func NewUpstreamServiceManager(enabledProfiles []string) *UpstreamServiceManager {
 	if len(enabledProfiles) == 0 {
 		enabledProfiles = []string{"default"}

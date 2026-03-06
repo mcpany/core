@@ -8,12 +8,10 @@ import (
 	"sync"
 )
 
-// Handler - Auto-generated documentation.
+// Handler defines the interface for handling webhook requests.
+// Implementations of this interface process incoming webhook events.
 //
-// Summary: Handler defines the interface for handling webhook requests.
-//
-// Methods:
-//   - Various methods for Handler.
+// Summary: Interface for webhook handlers.
 type Handler interface {
 	// Handle processes the webhook request.
 	//
@@ -30,12 +28,10 @@ type Handler interface {
 	Handle(w http.ResponseWriter, r *http.Request)
 }
 
-// Registry - Auto-generated documentation.
+// Registry manages the registration and retrieval of system webhooks.
+// It provides a thread-safe mechanism to store and lookup handlers by name.
 //
-// Summary: Registry manages the registration and retrieval of system webhooks.
-//
-// Fields:
-//   - Various fields for Registry.
+// Summary: Thread-safe registry for webhook handlers.
 type Registry struct {
 	mu    sync.RWMutex
 	hooks map[string]Handler

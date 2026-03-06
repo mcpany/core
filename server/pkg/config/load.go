@@ -14,24 +14,18 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// LoadServices loads, validates, and processes the MCP Any server configuration from a given store. Summary: Loads and validates the server configuration. Parameters: - ctx: context.Context. The context for the operation. - store: Store. The configuration store from which to load the configuration. - binaryType: string. The type of binary running the code (e.g., "server", "worker"). Returns: - *configv1.McpAnyServerConfig: A validated configuration object. - error: An error if loading or validation fails.
+// LoadServices loads, validates, and processes the MCP Any server configuration from a given store.
 //
-// Summary: LoadServices loads, validates, and processes the MCP Any server configuration from a given store. Summary: Loads and validates the server configuration. Parameters: - ctx: context.Context. The context for the operation. - store: Store. The configuration store from which to load the configuration. - binaryType: string. The type of binary running the code (e.g., "server", "worker"). Returns: - *configv1.McpAnyServerConfig: A validated configuration object. - error: An error if loading or validation fails.
+// Summary: Loads and validates the server configuration.
 //
 // Parameters:
-//   - ctx (context.Context): The context for managing request lifecycle and cancellation.
-//   - store (Store): The store parameter used in the operation.
-//   - binaryType (string): The binary type parameter used in the operation.
+//   - ctx: context.Context. The context for the operation.
+//   - store: Store. The configuration store from which to load the configuration.
+//   - binaryType: string. The type of binary running the code (e.g., "server", "worker").
 //
 // Returns:
-//   - (*configv1.McpAnyServerConfig): The resulting configv1.McpAnyServerConfig object containing the requested data.
-//   - (error): An error object if the operation fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the underlying operation fails or encounters invalid input.
-//
-// Side Effects:
-//   - Modifies global state, writes to the database, or establishes network connections.
+//   - *configv1.McpAnyServerConfig: A validated configuration object.
+//   - error: An error if loading or validation fails.
 func LoadServices(ctx context.Context, store Store, binaryType string) (*configv1.McpAnyServerConfig, error) {
 	log := logging.GetLogger().With("component", "configLoader")
 
@@ -100,23 +94,17 @@ func LoadServices(ctx context.Context, store Store, binaryType string) (*configv
 	return fileConfig, nil
 }
 
-// LoadResolvedConfig loads key resolved configuration (merging services, setting defaults) without performing strict validation. Summary: Loads configuration with merging and defaults but without strict validation. Parameters: - ctx: context.Context. The context for the operation. - store: Store. The configuration store. Returns: - *configv1.McpAnyServerConfig: The resolved configuration. - error: An error if loading fails.
+// LoadResolvedConfig loads key resolved configuration (merging services, setting defaults) without performing strict validation.
 //
-// Summary: LoadResolvedConfig loads key resolved configuration (merging services, setting defaults) without performing strict validation. Summary: Loads configuration with merging and defaults but without strict validation. Parameters: - ctx: context.Context. The context for the operation. - store: Store. The configuration store. Returns: - *configv1.McpAnyServerConfig: The resolved configuration. - error: An error if loading fails.
+// Summary: Loads configuration with merging and defaults but without strict validation.
 //
 // Parameters:
-//   - ctx (context.Context): The context for managing request lifecycle and cancellation.
-//   - store (Store): The store parameter used in the operation.
+//   - ctx: context.Context. The context for the operation.
+//   - store: Store. The configuration store.
 //
 // Returns:
-//   - (*configv1.McpAnyServerConfig): The resulting configv1.McpAnyServerConfig object containing the requested data.
-//   - (error): An error object if the operation fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the underlying operation fails or encounters invalid input.
-//
-// Side Effects:
-//   - Modifies global state, writes to the database, or establishes network connections.
+//   - *configv1.McpAnyServerConfig: The resolved configuration.
+//   - error: An error if loading fails.
 func LoadResolvedConfig(ctx context.Context, store Store) (*configv1.McpAnyServerConfig, error) {
 	log := logging.GetLogger().With("component", "configLoader")
 

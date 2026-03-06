@@ -16,12 +16,7 @@ import (
 	"github.com/spf13/afero"
 )
 
-// S3Provider - Auto-generated documentation.
-//
-// Summary: S3Provider provides access to files in an S3 bucket.
-//
-// Fields:
-//   - Various fields for S3Provider.
+// S3Provider provides access to files in an S3 bucket.
 type S3Provider struct {
 	fs afero.Fs
 }
@@ -77,21 +72,13 @@ func NewS3Provider(config *configv1.S3Fs) (*S3Provider, error) {
 	return &S3Provider{fs: fs}, nil
 }
 
-// GetFs - Auto-generated documentation.
-//
-// Summary: GetFs returns the underlying filesystem.
-//
-// Parameters:
-//   - args: Variable arguments.
+// GetFs returns the underlying filesystem.
 //
 // Returns:
-//   - result: The result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
+//   - afero.Fs: The result.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - None.
 func (p *S3Provider) GetFs() afero.Fs {
 	return p.fs
 }
@@ -126,21 +113,16 @@ func (p *S3Provider) ResolvePath(virtualPath string) (string, error) {
 	return cleanPath, nil
 }
 
-// Close - Auto-generated documentation.
-//
-// Summary: Close closes the provider.
-//
-// Parameters:
-//   - args: Variable arguments.
+// Close closes the provider.
 //
 // Returns:
-//   - result: The result of the operation.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if ...
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - None.
 func (p *S3Provider) Close() error {
 	// S3 provider doesn't hold open connections that need explicit closing typically,
 	// but satisfy the interface.

@@ -37,12 +37,7 @@ var (
 	metricCacheErrors = []string{"cache", "errors"}
 )
 
-// CachingMiddleware - Auto-generated documentation.
-//
-// Summary: CachingMiddleware handles caching of tool execution results.
-//
-// Fields:
-//   - Various fields for CachingMiddleware.
+// CachingMiddleware handles caching of tool execution results.
 type CachingMiddleware struct {
 	cache           *cache.Cache[any]
 	toolManager     tool.ManagerInterface

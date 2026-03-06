@@ -9,21 +9,22 @@ import (
 	"strings"
 )
 
-// IsEnvVarAllowed checks if an environment variable is allowed to be accessed by the configuration system. Summary: Validates if an environment variable is safe to expose to the configuration system. Security Policy: 1. Block `MCPANY_*` variables by default to prevent exfiltration of server secrets (like MCPANY_API_KEY, MCPANY_DB_DSN) via configuration injection. 2. Allow explicitly whitelisted variables via `MCPANY_ALLOWED_ENV` (comma-separated). 3. In Strict Mode (`MCPANY_STRICT_ENV_MODE=true`), block ALL variables unless whitelisted. Parameters: - name: The name of the environment variable to check. Returns: - bool: True if the environment variable is allowed, false otherwise.
+// IsEnvVarAllowed checks if an environment variable is allowed to be accessed
+// by the configuration system.
 //
-// Summary: IsEnvVarAllowed checks if an environment variable is allowed to be accessed by the configuration system. Summary: Validates if an environment variable is safe to expose to the configuration system. Security Policy: 1. Block `MCPANY_*` variables by default to prevent exfiltration of server secrets (like MCPANY_API_KEY, MCPANY_DB_DSN) via configuration injection. 2. Allow explicitly whitelisted variables via `MCPANY_ALLOWED_ENV` (comma-separated). 3. In Strict Mode (`MCPANY_STRICT_ENV_MODE=true`), block ALL variables unless whitelisted. Parameters: - name: The name of the environment variable to check. Returns: - bool: True if the environment variable is allowed, false otherwise.
+// Summary: Validates if an environment variable is safe to expose to the configuration system.
+//
+// Security Policy:
+// 1. Block `MCPANY_*` variables by default to prevent exfiltration of server secrets
+//    (like MCPANY_API_KEY, MCPANY_DB_DSN) via configuration injection.
+// 2. Allow explicitly whitelisted variables via `MCPANY_ALLOWED_ENV` (comma-separated).
+// 3. In Strict Mode (`MCPANY_STRICT_ENV_MODE=true`), block ALL variables unless whitelisted.
 //
 // Parameters:
-//   - name (string): The name parameter used in the operation.
+//   - name: The name of the environment variable to check.
 //
 // Returns:
-//   - (bool): A boolean indicating the success or status of the operation.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
+//   - bool: True if the environment variable is allowed, false otherwise.
 func IsEnvVarAllowed(name string) bool {
 	// 1. Check Allowlist
 	allowedEnv := os.Getenv("MCPANY_ALLOWED_ENV")

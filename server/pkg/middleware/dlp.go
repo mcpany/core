@@ -11,22 +11,16 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// DLPMiddleware creates a middleware that redacts PII from request arguments and result content. Summary: Middleware for Data Loss Prevention (PII redaction). Parameters: - config (*configv1.DLPConfig): The DLP configuration settings. - log (*slog.Logger): The logger for reporting errors. Returns: - mcp.Middleware: The configured middleware function.
+// DLPMiddleware creates a middleware that redacts PII from request arguments and result content.
 //
-// Summary: DLPMiddleware creates a middleware that redacts PII from request arguments and result content. Summary: Middleware for Data Loss Prevention (PII redaction). Parameters: - config (*configv1.DLPConfig): The DLP configuration settings. - log (*slog.Logger): The logger for reporting errors. Returns: - mcp.Middleware: The configured middleware function.
+// Summary: Middleware for Data Loss Prevention (PII redaction).
 //
 // Parameters:
-//   - config (*configv1.DLPConfig): The configuration settings to be applied.
-//   - log (*slog.Logger): The log parameter used in the operation.
+//   - config (*configv1.DLPConfig): The DLP configuration settings.
+//   - log (*slog.Logger): The logger for reporting errors.
 //
 // Returns:
-//   - (mcp.Middleware): The resulting mcp.Middleware object containing the requested data.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
+//   - mcp.Middleware: The configured middleware function.
 func DLPMiddleware(config *configv1.DLPConfig, log *slog.Logger) mcp.Middleware {
 	redactor := NewRedactor(config, log)
 	if redactor == nil {

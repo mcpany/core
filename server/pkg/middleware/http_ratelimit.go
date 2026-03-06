@@ -13,12 +13,9 @@ import (
 	"golang.org/x/time/rate"
 )
 
-// HTTPRateLimitMiddleware - Auto-generated documentation.
+// HTTPRateLimitMiddleware provides global rate limiting for HTTP endpoints.
 //
-// Summary: HTTPRateLimitMiddleware provides global rate limiting for HTTP endpoints.
-//
-// Fields:
-//   - Various fields for HTTPRateLimitMiddleware.
+// Summary: Middleware for rate limiting HTTP requests based on IP address.
 type HTTPRateLimitMiddleware struct {
 	limiters   *ttlcache.Cache[string, *rate.Limiter]
 	rps        rate.Limit
@@ -31,44 +28,32 @@ type HTTPRateLimitMiddleware struct {
 // Summary: Functional option type for configuring the middleware.
 type HTTPRateLimitOption func(*HTTPRateLimitMiddleware)
 
-// WithTrustProxy enables trusting the X-Forwarded-For header. Summary: Configures the middleware to trust the X-Forwarded-For header. Parameters: - trust: bool. Whether to trust the proxy headers. Returns: - HTTPRateLimitOption: The configuration option.
+// WithTrustProxy enables trusting the X-Forwarded-For header.
 //
-// Summary: WithTrustProxy enables trusting the X-Forwarded-For header. Summary: Configures the middleware to trust the X-Forwarded-For header. Parameters: - trust: bool. Whether to trust the proxy headers. Returns: - HTTPRateLimitOption: The configuration option.
+// Summary: Configures the middleware to trust the X-Forwarded-For header.
 //
 // Parameters:
-//   - trust (bool): The trust parameter used in the operation.
+//   - trust: bool. Whether to trust the proxy headers.
 //
 // Returns:
-//   - (HTTPRateLimitOption): The resulting HTTPRateLimitOption object containing the requested data.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
+//   - HTTPRateLimitOption: The configuration option.
 func WithTrustProxy(trust bool) HTTPRateLimitOption {
 	return func(m *HTTPRateLimitMiddleware) {
 		m.trustProxy = trust
 	}
 }
 
-// NewHTTPRateLimitMiddleware creates a new HTTPRateLimitMiddleware. Summary: Initializes a new HTTP rate limit middleware. Parameters: - rps: float64. Requests per second allowed per IP. - burst: int. Maximum burst size allowed per IP. - opts: ...HTTPRateLimitOption. Optional configuration options. Returns: - *HTTPRateLimitMiddleware: The initialized middleware instance.
+// NewHTTPRateLimitMiddleware creates a new HTTPRateLimitMiddleware.
 //
-// Summary: NewHTTPRateLimitMiddleware creates a new HTTPRateLimitMiddleware. Summary: Initializes a new HTTP rate limit middleware. Parameters: - rps: float64. Requests per second allowed per IP. - burst: int. Maximum burst size allowed per IP. - opts: ...HTTPRateLimitOption. Optional configuration options. Returns: - *HTTPRateLimitMiddleware: The initialized middleware instance.
+// Summary: Initializes a new HTTP rate limit middleware.
 //
 // Parameters:
-//   - rps (float64): The rps parameter used in the operation.
-//   - burst (int): The burst parameter used in the operation.
-//   - opts (...HTTPRateLimitOption): The opts parameter used in the operation.
+//   - rps: float64. Requests per second allowed per IP.
+//   - burst: int. Maximum burst size allowed per IP.
+//   - opts: ...HTTPRateLimitOption. Optional configuration options.
 //
 // Returns:
-//   - (*HTTPRateLimitMiddleware): The resulting HTTPRateLimitMiddleware object containing the requested data.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - Modifies global state, writes to the database, or establishes network connections.
+//   - *HTTPRateLimitMiddleware: The initialized middleware instance.
 func NewHTTPRateLimitMiddleware(rps float64, burst int, opts ...HTTPRateLimitOption) *HTTPRateLimitMiddleware {
 	// ⚡ BOLT: Prevented unbounded memory growth by enforcing a capacity limit on the rate limiter cache.
 	// Randomized Selection from Top 5 High-Impact Targets
@@ -91,21 +76,15 @@ func NewHTTPRateLimitMiddleware(rps float64, burst int, opts ...HTTPRateLimitOpt
 	return m
 }
 
-// Handler wraps an http.Handler with rate limiting. Summary: Returns a handler that enforces rate limiting. Parameters: - next: http.Handler. The next handler in the chain. Returns: - http.Handler: The wrapped handler.
+// Handler wraps an http.Handler with rate limiting.
 //
-// Summary: Handler wraps an http.Handler with rate limiting. Summary: Returns a handler that enforces rate limiting. Parameters: - next: http.Handler. The next handler in the chain. Returns: - http.Handler: The wrapped handler.
+// Summary: Returns a handler that enforces rate limiting.
 //
 // Parameters:
-//   - next (http.Handler): The next parameter used in the operation.
+//   - next: http.Handler. The next handler in the chain.
 //
 // Returns:
-//   - (http.Handler): The resulting http.Handler object containing the requested data.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
+//   - http.Handler: The wrapped handler.
 func (m *HTTPRateLimitMiddleware) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ip := util.ExtractIP(r.RemoteAddr)

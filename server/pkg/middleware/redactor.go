@@ -24,12 +24,9 @@ var (
 	redactedStr = "***REDACTED***"
 )
 
-// Redactor - Auto-generated documentation.
+// Redactor handles redaction of sensitive data based on configuration.
 //
-// Summary: Redactor handles redaction of sensitive data based on configuration.
-//
-// Fields:
-//   - Various fields for Redactor.
+// Summary: Component responsible for identifying and masking sensitive information (PII) in data.
 type Redactor struct {
 	customPattern  *regexp.Regexp
 	customPatterns []*regexp.Regexp
@@ -219,21 +216,15 @@ func (r *Redactor) RedactString(s string) string {
 	return res
 }
 
-// RedactStruct - Auto-generated documentation.
+// RedactStruct redacts sensitive information from a map.
 //
-// Summary: RedactStruct redacts sensitive information from a map.
+// Summary: Recursively redacts sensitive information from a map (struct representation).
 //
 // Parameters:
-//   - args: Variable arguments.
-//
-// Returns:
-//   - result: The result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
+//   - v: map[string]interface{}. The map to redact.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - Modifies the map in place.
 func (r *Redactor) RedactStruct(v map[string]interface{}) {
 	if r == nil {
 		return

@@ -27,12 +27,7 @@ var (
 	validNameRegex = regexp.MustCompile(`^[a-z0-9]([-a-z0-9]*[a-z0-9])?$`)
 )
 
-// Manager - Auto-generated documentation.
-//
-// Summary: Manager handles the storage and retrieval of skills.
-//
-// Fields:
-//   - Various fields for Manager.
+// Manager handles the storage and retrieval of skills.
 type Manager struct {
 	rootDir string
 	mu      sync.RWMutex

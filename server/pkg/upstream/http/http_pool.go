@@ -26,21 +26,13 @@ type httpPool struct {
 	transport *http.Transport
 }
 
-// Close - Auto-generated documentation.
-//
-// Summary: Close closes the connection pool and the idle connections.
-//
-// Parameters:
-//   - args: Variable arguments.
+// Close closes the connection pool and the idle connections.
 //
 // Returns:
-//   - result: The result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
+//   - error: An error if the pool cannot be closed.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - Closes idle network connections.
 func (p *httpPool) Close() error {
 	if err := p.Pool.Close(); err != nil {
 		return err

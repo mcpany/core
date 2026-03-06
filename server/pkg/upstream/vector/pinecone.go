@@ -17,12 +17,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
-// PineconeClient - Auto-generated documentation.
-//
-// Summary: PineconeClient implements VectorClient for Pinecone.
-//
-// Fields:
-//   - Various fields for PineconeClient.
+// PineconeClient implements VectorClient for Pinecone.
 type PineconeClient struct {
 	config  *configv1.PineconeVectorDB
 	client  *http.Client

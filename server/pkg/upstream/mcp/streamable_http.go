@@ -40,12 +40,9 @@ var (
 	connectForTesting       func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error)
 )
 
-// ClientSession - Auto-generated documentation.
-//
-// Summary: ClientSession defines an interface that abstracts the capabilities of an
-//
-// Methods:
-//   - Various methods for ClientSession.
+// ClientSession defines an interface that abstracts the capabilities of an
+// mcp.ClientSession. This is used primarily for testing, allowing mock sessions
+// to be injected.
 type ClientSession interface {
 	// ListTools lists the tools available in the session.
 	//
@@ -153,12 +150,10 @@ func SetConnectForTesting(f func(client *mcp.Client, ctx context.Context, transp
 	connectForTesting = f
 }
 
-// Upstream - Auto-generated documentation.
-//
-// Summary: Upstream implements the upstream.Upstream interface for services that are
-//
-// Fields:
-//   - Various fields for Upstream.
+// Upstream implements the upstream.Upstream interface for services that are
+// themselves MCP-compliant. It connects to the downstream MCP service, discovers
+// its tools, prompts, and resources, and registers them with the current server,
+// effectively acting as a proxy or aggregator.
 type Upstream struct {
 	sessionRegistry *SessionRegistry
 	// BundleBaseDir is the directory where bundles are extracted.
@@ -263,40 +258,24 @@ type mcpPrompt struct {
 	*mcpConnection
 }
 
-// Prompt - Auto-generated documentation.
-//
-// Summary: Prompt returns the underlying *mcp.Prompt definition.
-//
-// Parameters:
-//   - args: Variable arguments.
+// Prompt returns the underlying *mcp.Prompt definition.
 //
 // Returns:
-//   - result: The result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
+//   - *mcp.Prompt: The result.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - None.
 func (p *mcpPrompt) Prompt() *mcp.Prompt {
 	return p.mcpPrompt
 }
 
-// Service - Auto-generated documentation.
-//
-// Summary: Service returns the ID of the service that this prompt belongs to.
-//
-// Parameters:
-//   - args: Variable arguments.
+// Service returns the ID of the service that this prompt belongs to.
 //
 // Returns:
-//   - result: The result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
+//   - string: The result.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - None.
 func (p *mcpPrompt) Service() string {
 	return p.service
 }
@@ -404,40 +383,24 @@ type mcpResource struct {
 	*mcpConnection
 }
 
-// Resource - Auto-generated documentation.
-//
-// Summary: Resource returns the underlying *mcp.Resource definition.
-//
-// Parameters:
-//   - args: Variable arguments.
+// Resource returns the underlying *mcp.Resource definition.
 //
 // Returns:
-//   - result: The result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
+//   - *mcp.Resource: The result.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - None.
 func (r *mcpResource) Resource() *mcp.Resource {
 	return r.mcpResource
 }
 
-// Service - Auto-generated documentation.
-//
-// Summary: Service returns the ID of the service that this resource belongs to.
-//
-// Parameters:
-//   - args: Variable arguments.
+// Service returns the ID of the service that this resource belongs to.
 //
 // Returns:
-//   - result: The result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
+//   - string: The result.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - None.
 func (r *mcpResource) Service() string {
 	return r.service
 }
@@ -1358,12 +1321,7 @@ func (rt *authenticatedRoundTripper) RoundTrip(req *http.Request) (*http.Respons
 	return base.RoundTrip(req)
 }
 
-// StreamableHTTP - Auto-generated documentation.
-//
-// Summary: StreamableHTTP implements the mcp.Transport interface for HTTP connections.
-//
-// Fields:
-//   - Various fields for StreamableHTTP.
+// StreamableHTTP implements the mcp.Transport interface for HTTP connections.
 type StreamableHTTP struct {
 	// Address is the HTTP address of the MCP service.
 	Address string

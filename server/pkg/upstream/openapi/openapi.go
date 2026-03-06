@@ -31,12 +31,9 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// OpenAPIUpstream - Auto-generated documentation.
-//
-// Summary: OpenAPIUpstream implements the upstream.Upstream interface for services that
-//
-// Fields:
-//   - Various fields for OpenAPIUpstream.
+// OpenAPIUpstream implements the upstream.Upstream interface for services that
+// are defined by an OpenAPI specification. It parses the spec, discovers the
+// available operations, and registers them as tools.
 type OpenAPIUpstream struct { //nolint:revive
 	openapiCache *ttlcache.Cache[string, *openapi3.T]
 	httpClients  map[string]*http.Client
@@ -69,21 +66,14 @@ func (u *OpenAPIUpstream) Shutdown(_ context.Context) error {
 	return nil
 }
 
-// NewOpenAPIUpstream - Auto-generated documentation.
-//
-// Summary: NewOpenAPIUpstream creates a new instance of OpenAPIUpstream. It initializes a
-//
-// Parameters:
-//   - args: Variable arguments.
+// NewOpenAPIUpstream creates a new instance of OpenAPIUpstream. It initializes a
+// cache for storing parsed OpenAPI documents to avoid redundant parsing.
 //
 // Returns:
-//   - result: The result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
+//   - upstream.Upstream: The result.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - None.
 func NewOpenAPIUpstream() upstream.Upstream {
 	cache := ttlcache.New[string, *openapi3.T](
 		ttlcache.WithTTL[string, *openapi3.T](5 * time.Minute),

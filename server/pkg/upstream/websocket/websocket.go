@@ -30,12 +30,9 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-// Upstream - Auto-generated documentation.
-//
-// Summary: Upstream implements the upstream.Upstream interface for services that
-//
-// Fields:
-//   - Various fields for Upstream.
+// Upstream implements the upstream.Upstream interface for services that
+// are exposed via a WebSocket connection. It manages a connection pool and
+// registers tools based on the service configuration.
 type Upstream struct {
 	poolManager *pool.Manager
 	serviceID   string
@@ -71,21 +68,14 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 	return nil
 }
 
-// Shutdown gracefully terminates the WebSocket upstream service by shutting down the associated connection pool. Parameters: - ctx: The context for the shutdown operation. Returns: - error: An error if the shutdown operation fails, or nil on success.
-//
-// Summary: Shutdown gracefully terminates the WebSocket upstream service by shutting down the associated connection pool. Parameters: - ctx: The context for the shutdown operation. Returns: - error: An error if the shutdown operation fails, or nil on success.
+// Shutdown gracefully terminates the WebSocket upstream service by shutting down
+// the associated connection pool.
 //
 // Parameters:
-//   - _ (context.Context): The _ parameter used in the operation.
+//   - ctx: The context for the shutdown operation.
 //
 // Returns:
-//   - (error): An error object if the operation fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the underlying operation fails or encounters invalid input.
-//
-// Side Effects:
-//   - None.
+//   - error: An error if the shutdown operation fails, or nil on success.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	if u.checker != nil {
@@ -100,21 +90,13 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
 
-// NewUpstream creates a new instance of WebsocketUpstream. Parameters: - poolManager: The connection pool manager to be used for managing WebSocket connections. Returns: - upstream.Upstream: A new Upstream instance for WebSocket services.
-//
-// Summary: NewUpstream creates a new instance of WebsocketUpstream. Parameters: - poolManager: The connection pool manager to be used for managing WebSocket connections. Returns: - upstream.Upstream: A new Upstream instance for WebSocket services.
+// NewUpstream creates a new instance of WebsocketUpstream.
 //
 // Parameters:
-//   - poolManager (*pool.Manager): The pool manager parameter used in the operation.
+//   - poolManager: The connection pool manager to be used for managing WebSocket connections.
 //
 // Returns:
-//   - (upstream.Upstream): The resulting upstream.Upstream object containing the requested data.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
+//   - upstream.Upstream: A new Upstream instance for WebSocket services.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	return &Upstream{
 		poolManager: poolManager,

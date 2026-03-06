@@ -3,32 +3,19 @@
 
 package config
 
-// MockWatcher - Auto-generated documentation.
-//
-// Summary: MockWatcher is a mock implementation of the Watcher for testing.
-//
-// Fields:
-//   - Various fields for MockWatcher.
+// MockWatcher is a mock implementation of the Watcher for testing.
 type MockWatcher struct {
 	WatchFunc func(paths []string, reloadFunc func())
 	CloseFunc func()
 }
 
-// NewMockWatcher - Auto-generated documentation.
-//
-// Summary: NewMockWatcher creates a new mock watcher.
-//
-// Parameters:
-//   - args: Variable arguments.
+// NewMockWatcher creates a new mock watcher.
 //
 // Returns:
-//   - result: The result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
+//   - *MockWatcher: The result.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - None.
 func NewMockWatcher() *MockWatcher {
 	return &MockWatcher{}
 }
@@ -54,21 +41,13 @@ func (m *MockWatcher) Watch(paths []string, reloadFunc func()) error {
 	return nil
 }
 
-// Close - Auto-generated documentation.
-//
-// Summary: Close mocks the Close method.
+// Close mocks the Close method.
 //
 // Parameters:
-//   - args: Variable arguments.
-//
-// Returns:
-//   - result: The result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - None.
 func (m *MockWatcher) Close() {
 	if m.CloseFunc != nil {
 		m.CloseFunc()

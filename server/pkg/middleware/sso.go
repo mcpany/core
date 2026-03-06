@@ -10,12 +10,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// SSOConfig - Auto-generated documentation.
+// SSOConfig defines the SSO configuration.
 //
-// Summary: SSOConfig defines the SSO configuration.
-//
-// Fields:
-//   - Various fields for SSOConfig.
+// Summary: Configuration options for Single Sign-On (SSO) middleware.
 type SSOConfig struct {
 	Enabled bool
 	IDPURL  string

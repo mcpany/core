@@ -14,31 +14,25 @@ import (
 
 var redisClientCreator = redis.NewClient
 
-// SetRedisClientCreatorForTests - Auto-generated documentation.
+// SetRedisClientCreatorForTests allows injecting a mock Redis client creator for testing purposes.
 //
-// Summary: SetRedisClientCreatorForTests allows injecting a mock Redis client creator for testing purposes.
+// Summary: Replaces the default Redis client creator with a mock for unit testing.
 //
 // Parameters:
-//   - args: Variable arguments.
-//
-// Returns:
-//   - result: The result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
+//   - creator: func(*redis.Options) *redis.Client. The factory function to create Redis clients.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - Modifies the global redisClientCreator variable.
 func SetRedisClientCreatorForTests(creator func(opts *redis.Options) *redis.Client) {
 	redisClientCreator = creator
 }
 
-// RedisLimiter - Auto-generated documentation.
+// RedisLimiter implements a distributed rate limiter backed by Redis.
+// It uses a token bucket algorithm to enforce rate limits across multiple service instances,
+// ensuring that the configured Requests Per Second (RPS) and burst limits are respected
+// regardless of how many server replicas are running.
 //
-// Summary: RedisLimiter implements a distributed rate limiter backed by Redis.
-//
-// Fields:
-//   - Various fields for RedisLimiter.
+// Summary: Distributed token bucket rate limiter using Redis.
 type RedisLimiter struct {
 	client     *redis.Client
 	key        string
@@ -115,25 +109,20 @@ func NewRedisLimiterWithPartition(serviceID, limitScopeKey, partitionKey string,
 	}, nil
 }
 
-// NewRedisLimiterWithClient creates a new RedisLimiter using an existing Redis client. This avoids creating a new connection pool if one is already available. Summary: Initializes a RedisLimiter reusing an existing Redis client. Parameters: - client: *redis.Client. The existing Redis client instance. - serviceID: string. The unique identifier of the service. - limitScopeKey: string. An optional key to scope the limit. - partitionKey: string. An optional key to further partition the limit. - config: *configv1.RateLimitConfig. The rate limit configuration. Returns: - *RedisLimiter: The initialized limiter.
+// NewRedisLimiterWithClient creates a new RedisLimiter using an existing Redis client.
+// This avoids creating a new connection pool if one is already available.
 //
-// Summary: NewRedisLimiterWithClient creates a new RedisLimiter using an existing Redis client. This avoids creating a new connection pool if one is already available. Summary: Initializes a RedisLimiter reusing an existing Redis client. Parameters: - client: *redis.Client. The existing Redis client instance. - serviceID: string. The unique identifier of the service. - limitScopeKey: string. An optional key to scope the limit. - partitionKey: string. An optional key to further partition the limit. - config: *configv1.RateLimitConfig. The rate limit configuration. Returns: - *RedisLimiter: The initialized limiter.
+// Summary: Initializes a RedisLimiter reusing an existing Redis client.
 //
 // Parameters:
-//   - client (*redis.Client): The client parameter used in the operation.
-//   - _ (serviceID): An unnamed parameter of type serviceID.
-//   - _ (limitScopeKey): An unnamed parameter of type limitScopeKey.
-//   - partitionKey (string): The partition key parameter used in the operation.
-//   - config (*configv1.RateLimitConfig): The configuration settings to be applied.
+//   - client: *redis.Client. The existing Redis client instance.
+//   - serviceID: string. The unique identifier of the service.
+//   - limitScopeKey: string. An optional key to scope the limit.
+//   - partitionKey: string. An optional key to further partition the limit.
+//   - config: *configv1.RateLimitConfig. The rate limit configuration.
 //
 // Returns:
-//   - (*RedisLimiter): The resulting RedisLimiter object containing the requested data.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
+//   - *RedisLimiter: The initialized limiter.
 func NewRedisLimiterWithClient(client *redis.Client, serviceID, limitScopeKey, partitionKey string, config *configv1.RateLimitConfig) *RedisLimiter {
 	key := "ratelimit:" + serviceID
 	if limitScopeKey != "" {
@@ -261,60 +250,41 @@ func (l *RedisLimiter) AllowN(ctx context.Context, n int) (bool, error) {
 	return res == 1, nil
 }
 
-// Update - Auto-generated documentation.
+// Update dynamically updates the rate limit configuration for the running limiter.
 //
-// Summary: Update dynamically updates the rate limit configuration for the running limiter.
+// Summary: Updates the rate limit settings (RPS and burst).
 //
 // Parameters:
-//   - args: Variable arguments.
-//
-// Returns:
-//   - result: The result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
+//   - rps: float64. The new requests per second limit.
+//   - burst: int. The new burst capacity.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - Modifies the internal state of the limiter.
 func (l *RedisLimiter) Update(rps float64, burst int) {
 	l.rps = rps
 	l.burst = burst
 }
 
-// GetConfigHash - Auto-generated documentation.
+// GetConfigHash returns a hash string representing the underlying Redis configuration.
+// This is used to detect configuration changes that might require a client reconnection.
 //
-// Summary: GetConfigHash returns a hash string representing the underlying Redis configuration.
-//
-// Parameters:
-//   - args: Variable arguments.
+// Summary: Retrieves the hash of the current Redis configuration.
 //
 // Returns:
-//   - result: The result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external calls.
+//   - string: The configuration hash string.
 func (l *RedisLimiter) GetConfigHash() string {
 	return l.configHash
 }
 
-// Close - Auto-generated documentation.
+// Close terminates the Redis client connection and releases resources.
 //
-// Summary: Close terminates the Redis client connection and releases resources.
-//
-// Parameters:
-//   - args: Variable arguments.
+// Summary: Closes the Redis client connection.
 //
 // Returns:
-//   - result: The result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
+//   - error: An error if closing the client fails.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - Closes the TCP connection to Redis.
 func (l *RedisLimiter) Close() error {
 	return l.client.Close()
 }

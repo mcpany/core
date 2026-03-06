@@ -17,12 +17,11 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-// Manager - Auto-generated documentation.
+// Manager handles the loading and listing of catalog services.
 //
-// Summary: Manager handles the loading and listing of catalog services.
+// Summary: Manages the service catalog.
 //
-// Fields:
-//   - Various fields for Manager.
+// It scans a specified directory for service configurations and provides access to them.
 type Manager struct {
 	mu          sync.RWMutex
 	fs          afero.Fs
@@ -30,22 +29,16 @@ type Manager struct {
 	services    []*configv1.UpstreamServiceConfig
 }
 
-// NewManager creates a new Catalog Manager. Summary: Initializes a new Catalog Manager. Parameters: - fs: afero.Fs. The filesystem to scan. - catalogPath: string. The path to the catalog directory. Returns: - *Manager: The initialized manager.
+// NewManager creates a new Catalog Manager.
 //
-// Summary: NewManager creates a new Catalog Manager. Summary: Initializes a new Catalog Manager. Parameters: - fs: afero.Fs. The filesystem to scan. - catalogPath: string. The path to the catalog directory. Returns: - *Manager: The initialized manager.
+// Summary: Initializes a new Catalog Manager.
 //
 // Parameters:
-//   - fs (afero.Fs): The fs parameter used in the operation.
-//   - catalogPath (string): The catalog path parameter used in the operation.
+//   - fs: afero.Fs. The filesystem to scan.
+//   - catalogPath: string. The path to the catalog directory.
 //
 // Returns:
-//   - (*Manager): The resulting Manager object containing the requested data.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
+//   - *Manager: The initialized manager.
 func NewManager(fs afero.Fs, catalogPath string) *Manager {
 	return &Manager{
 		fs:          fs,
@@ -134,22 +127,16 @@ func (m *Manager) Load(ctx context.Context) error {
 	return g.Wait()
 }
 
-// ListServices returns the list of loaded services. Summary: Retrieves the list of loaded services. Parameters: - _ context.Context: The context (unused). Returns: - []*configv1.UpstreamServiceConfig: A slice of service configurations. - error: Always nil.
+// ListServices returns the list of loaded services.
 //
-// Summary: ListServices returns the list of loaded services. Summary: Retrieves the list of loaded services. Parameters: - _ context.Context: The context (unused). Returns: - []*configv1.UpstreamServiceConfig: A slice of service configurations. - error: Always nil.
+// Summary: Retrieves the list of loaded services.
 //
 // Parameters:
-//   - _ (context.Context): The _ parameter used in the operation.
+//   - _ context.Context: The context (unused).
 //
 // Returns:
-//   - ([]*configv1.UpstreamServiceConfig): The resulting []configv1.UpstreamServiceConfig object containing the requested data.
-//   - (error): An error object if the operation fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the underlying operation fails or encounters invalid input.
-//
-// Side Effects:
-//   - None.
+//   - []*configv1.UpstreamServiceConfig: A slice of service configurations.
+//   - error: Always nil.
 func (m *Manager) ListServices(_ context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()

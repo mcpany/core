@@ -17,12 +17,8 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// StdioTransport - Auto-generated documentation.
-//
-// Summary: StdioTransport implements mcp.Transport for a local command,
-//
-// Fields:
-//   - Various fields for StdioTransport.
+// StdioTransport implements mcp.Transport for a local command,
+// capturing stderr to provide better error messages on failure.
 type StdioTransport struct {
 	Command *exec.Cmd
 }
@@ -256,21 +252,16 @@ func (c *stdioConn) Write(_ context.Context, msg jsonrpc.Message) error {
 	return c.encoder.Encode(wire)
 }
 
-// Close - Auto-generated documentation.
-//
-// Summary: Close terminates the command and closes the streams.
-//
-// Parameters:
-//   - args: Variable arguments.
+// Close terminates the command and closes the streams.
 //
 // Returns:
-//   - result: The result of the operation.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if ...
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - None.
 func (c *stdioConn) Close() error {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
@@ -286,21 +277,13 @@ func (c *stdioConn) Close() error {
 	return nil
 }
 
-// SessionID - Auto-generated documentation.
-//
-// Summary: SessionID returns a static session ID for the stdio connection.
-//
-// Parameters:
-//   - args: Variable arguments.
+// SessionID returns a static session ID for the stdio connection.
 //
 // Returns:
-//   - result: The result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
+//   - string: The result.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - None.
 func (c *stdioConn) SessionID() string {
 	return "stdio-session"
 }

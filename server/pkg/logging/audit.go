@@ -14,12 +14,7 @@ import (
 	"github.com/mcpany/core/server/pkg/audit"
 )
 
-// AuditHandler - Auto-generated documentation.
-//
-// Summary: AuditHandler is a slog.Handler that exports logs to audit sinks.
-//
-// Fields:
-//   - Various fields for AuditHandler.
+// AuditHandler is a slog.Handler that exports logs to audit sinks.
 type AuditHandler struct {
 	next   slog.Handler
 	config *configv1.AuditConfig

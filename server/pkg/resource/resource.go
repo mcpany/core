@@ -14,12 +14,12 @@ import (
 // ErrResourceNotFound is returned when a requested resource cannot be found.
 var ErrResourceNotFound = errors.New("resource not found")
 
-// Resource - Auto-generated documentation.
+// Resource defines the interface for a resource that can be managed by the Manager.
 //
-// Summary: Resource defines the interface for a resource that can be managed by the Manager.
+// Summary: Interface for a managed resource.
 //
-// Methods:
-//   - Various methods for Resource.
+// A resource represents a data source (e.g., a file, a database record) that can be
+// read by an MCP client.
 type Resource interface {
 	// Resource returns the MCP representation of the resource, which includes its metadata.
 	//
@@ -53,12 +53,12 @@ type Resource interface {
 	Subscribe(ctx context.Context) error
 }
 
-// ManagerInterface - Auto-generated documentation.
+// ManagerInterface defines the interface for managing a collection of resources.
 //
-// Summary: ManagerInterface defines the interface for managing a collection of resources.
+// Summary: Interface for resource management.
 //
-// Methods:
-//   - Various methods for ManagerInterface.
+// It provides methods for adding, removing, listing, and retrieving resources, as well
+// as managing callbacks for list changes.
 type ManagerInterface interface {
 	// GetResource retrieves a resource by its URI.
 	//
@@ -113,12 +113,12 @@ type ManagerInterface interface {
 	ClearResourcesForService(serviceID string)
 }
 
-// Manager - Auto-generated documentation.
+// Manager is a thread-safe implementation of the ManagerInterface.
 //
-// Summary: Manager is a thread-safe implementation of the ManagerInterface.
+// Summary: Thread-safe resource manager implementation.
 //
-// Fields:
-//   - Various fields for Manager.
+// It manages the lifecycle and retrieval of resources, providing thread-safe access
+// and efficient listing via caching.
 type Manager struct {
 	mu                sync.RWMutex
 	resources         map[string]Resource
@@ -126,43 +126,28 @@ type Manager struct {
 	cachedResources   []Resource
 }
 
-// NewManager - Auto-generated documentation.
+// NewManager creates and returns a new, empty Manager.
 //
-// Summary: NewManager creates and returns a new, empty Manager.
-//
-// Parameters:
-//   - args: Variable arguments.
+// Summary: Creates a new resource manager.
 //
 // Returns:
-//   - result: The result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external calls.
+//   - *Manager: A new Manager instance.
 func NewManager() *Manager {
 	return &Manager{
 		resources: make(map[string]Resource),
 	}
 }
 
-// GetResource retrieves a resource from the manager by its URI. Summary: Retrieves a resource by URI. Parameters: - uri: string. The URI of the resource. Returns: - Resource: The resource instance. - bool: True if found, false otherwise.
+// GetResource retrieves a resource from the manager by its URI.
 //
-// Summary: GetResource retrieves a resource from the manager by its URI. Summary: Retrieves a resource by URI. Parameters: - uri: string. The URI of the resource. Returns: - Resource: The resource instance. - bool: True if found, false otherwise.
+// Summary: Retrieves a resource by URI.
 //
 // Parameters:
-//   - uri (string): The uri parameter used in the operation.
+//   - uri: string. The URI of the resource.
 //
 // Returns:
-//   - (Resource): The resulting Resource object containing the requested data.
-//   - (bool): A boolean indicating the success or status of the operation.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
+//   - Resource: The resource instance.
+//   - bool: True if found, false otherwise.
 func (rm *Manager) GetResource(uri string) (Resource, bool) {
 	rm.mu.RLock()
 	defer rm.mu.RUnlock()
@@ -226,21 +211,15 @@ func (rm *Manager) RemoveResource(uri string) {
 	}
 }
 
-// ListResources - Auto-generated documentation.
+// ListResources returns a slice containing all the resources currently registered in the manager.
 //
-// Summary: ListResources returns a slice containing all the resources currently registered in the manager.
+// Summary: Lists all managed resources.
 //
-// Parameters:
-//   - args: Variable arguments.
+// It uses a read-through cache (double-checked locking) to minimize allocation overhead
+// for frequent calls.
 //
 // Returns:
-//   - result: The result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external calls.
+//   - []Resource: A slice of currently registered resources.
 func (rm *Manager) ListResources() []Resource {
 	// ⚡ Bolt: Use a read-through cache to avoid repeated map iteration and slice allocation.
 	// The cache is invalidated on any write operation (Add/Remove).
@@ -278,43 +257,32 @@ func (rm *Manager) ListResources() []Resource {
 	return result
 }
 
-// OnListChanged sets a callback function that will be invoked whenever the list of resources is modified. Summary: Registers a callback for list changes. Parameters: - f: func(). The callback function. Returns: None.
+// OnListChanged sets a callback function that will be invoked whenever the list
+// of resources is modified.
 //
-// Summary: OnListChanged sets a callback function that will be invoked whenever the list of resources is modified. Summary: Registers a callback for list changes. Parameters: - f: func(). The callback function. Returns: None.
+// Summary: Registers a callback for list changes.
 //
 // Parameters:
-//   - f (func(): The f parameter used in the operation.
+//   - f: func(). The callback function.
 //
 // Returns:
-//   - None.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
+//   None.
 func (rm *Manager) OnListChanged(f func()) {
 	rm.mu.Lock()
 	defer rm.mu.Unlock()
 	rm.onListChangedFunc = f
 }
 
-// Subscribe finds a resource by its URI and calls its Subscribe method. Summary: Subscribes to a resource. Parameters: - ctx: context.Context. The context for the subscription. - uri: string. The URI of the resource. Returns: - error: An error if resource not found or subscription fails.
+// Subscribe finds a resource by its URI and calls its Subscribe method.
 //
-// Summary: Subscribe finds a resource by its URI and calls its Subscribe method. Summary: Subscribes to a resource. Parameters: - ctx: context.Context. The context for the subscription. - uri: string. The URI of the resource. Returns: - error: An error if resource not found or subscription fails.
+// Summary: Subscribes to a resource.
 //
 // Parameters:
-//   - ctx (context.Context): The context for managing request lifecycle and cancellation.
-//   - uri (string): The uri parameter used in the operation.
+//   - ctx: context.Context. The context for the subscription.
+//   - uri: string. The URI of the resource.
 //
 // Returns:
-//   - (error): An error object if the operation fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the underlying operation fails or encounters invalid input.
-//
-// Side Effects:
-//   - None.
+//   - error: An error if resource not found or subscription fails.
 func (rm *Manager) Subscribe(ctx context.Context, uri string) error {
 	resource, ok := rm.GetResource(uri)
 	if !ok {

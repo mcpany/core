@@ -22,12 +22,12 @@ import (
 //   - error: An error if the operation fails.
 type MethodHandler func(ctx context.Context, req mcp.Request) (mcp.Result, error)
 
-// Router - Auto-generated documentation.
+// Router is responsible for mapping MCP method names to their corresponding handler functions.
 //
-// Summary: Router is responsible for mapping MCP method names to their corresponding handler functions.
+// Summary: Routes MCP requests to registered handlers.
 //
-// Fields:
-//   - Various fields for Router.
+// Side Effects:
+//   - Stores handlers in an internal map.
 type Router struct {
 	handlers map[string]MethodHandler
 }

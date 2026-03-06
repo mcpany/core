@@ -30,12 +30,9 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// Engine - Auto-generated documentation.
+// Engine defines the interface for configuration unmarshaling from different file formats.
 //
-// Summary: Engine defines the interface for configuration unmarshaling from different file formats.
-//
-// Methods:
-//   - Various methods for Engine.
+// Summary: Abstraction for parsing configuration files into protobuf messages.
 type Engine interface {
 	// Unmarshal parses the given byte slice and populates the provided proto.Message.
 	//
@@ -50,12 +47,9 @@ type Engine interface {
 	Unmarshal(b []byte, v proto.Message) error
 }
 
-// StructuredEngine - Auto-generated documentation.
+// StructuredEngine defines an interface for engines that can unmarshal directly from a map structure.
 //
-// Summary: StructuredEngine defines an interface for engines that can unmarshal directly from a map structure.
-//
-// Methods:
-//   - Various methods for StructuredEngine.
+// Summary: Abstraction for parsing configurations from map structures, avoiding double parsing.
 type StructuredEngine interface {
 	Engine
 	// UnmarshalFromMap populates the provided proto.Message from a raw map.
@@ -72,12 +66,9 @@ type StructuredEngine interface {
 	UnmarshalFromMap(m map[string]interface{}, v proto.Message, originalBytes []byte) error
 }
 
-// ConfigurableEngine - Auto-generated documentation.
+// ConfigurableEngine defines an interface for engines that support configuration options.
 //
-// Summary: ConfigurableEngine defines an interface for engines that support configuration options.
-//
-// Methods:
-//   - Various methods for ConfigurableEngine.
+// Summary: Interface for engines that can be configured (e.g. skip validation).
 type ConfigurableEngine interface {
 	Engine
 	// SetSkipValidation sets whether to skip schema validation.
@@ -97,22 +88,16 @@ type ConfigurableEngine interface {
 	SetIgnoreEnv(ignore bool)
 }
 
-// NewEngine returns a configuration engine capable of unmarshaling the format indicated by the file extension. Summary: Factory function to create the appropriate Engine for a given file path. Parameters: - path (string): The file path used to determine the configuration format. Returns: - (Engine): An initialized Engine implementation. - (error): An error if the file extension is not supported.
+// NewEngine returns a configuration engine capable of unmarshaling the format indicated by the file extension.
 //
-// Summary: NewEngine returns a configuration engine capable of unmarshaling the format indicated by the file extension. Summary: Factory function to create the appropriate Engine for a given file path. Parameters: - path (string): The file path used to determine the configuration format. Returns: - (Engine): An initialized Engine implementation. - (error): An error if the file extension is not supported.
+// Summary: Factory function to create the appropriate Engine for a given file path.
 //
 // Parameters:
-//   - path (string): The path parameter used in the operation.
+//   - path (string): The file path used to determine the configuration format.
 //
 // Returns:
-//   - (Engine): The resulting Engine object containing the requested data.
-//   - (error): An error object if the operation fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the underlying operation fails or encounters invalid input.
-//
-// Side Effects:
-//   - None.
+//   - (Engine): An initialized Engine implementation.
+//   - (error): An error if the file extension is not supported.
 func NewEngine(path string) (Engine, error) {
 	ext := strings.ToLower(filepath.Ext(path))
 	switch ext {
@@ -379,12 +364,9 @@ func (e *jsonEngine) Unmarshal(b []byte, v proto.Message) error {
 	return nil
 }
 
-// Store - Auto-generated documentation.
+// Store defines the interface for loading MCP-X server configurations.
 //
-// Summary: Store defines the interface for loading MCP-X server configurations.
-//
-// Methods:
-//   - Various methods for Store.
+// Summary: Abstraction for configuration sources.
 type Store interface {
 	// Load retrieves and returns the McpAnyServerConfig.
 	//
@@ -407,12 +389,9 @@ type Store interface {
 	HasConfigSources() bool
 }
 
-// ServiceStore - Auto-generated documentation.
+// ServiceStore extends Store to provide CRUD operations for UpstreamServices.
 //
-// Summary: ServiceStore extends Store to provide CRUD operations for UpstreamServices.
-//
-// Methods:
-//   - Various methods for ServiceStore.
+// Summary: Interface for stores that support managing individual services.
 type ServiceStore interface {
 	Store
 	// SaveService saves or updates a service configuration.
@@ -666,12 +645,9 @@ func handleSimpleVar(b []byte, startIdx int, buf *bytes.Buffer, missingErrBuilde
 	return j - startIdx
 }
 
-// FileStore - Auto-generated documentation.
+// FileStore implements the `Store` interface for loading configurations from files.
 //
-// Summary: FileStore implements the `Store` interface for loading configurations from files.
-//
-// Fields:
-//   - Various fields for FileStore.
+// Summary: Loads configurations from the filesystem.
 type FileStore struct {
 	fs               afero.Fs
 	paths            []string
@@ -680,80 +656,52 @@ type FileStore struct {
 	skipValidation   bool
 }
 
-// SetSkipValidation - Auto-generated documentation.
-//
-// Summary: SetSkipValidation configures whether to skip schema validation during loading.
-//
-// Parameters:
-//   - args: Variable arguments.
+// SetSkipValidation configures whether to skip schema validation during loading.
 //
 // Returns:
-//   - result: The result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - None.
 func (s *FileStore) SetSkipValidation(skip bool) {
 	s.skipValidation = skip
 }
 
-// SetIgnoreMissingEnv - Auto-generated documentation.
-//
-// Summary: SetIgnoreMissingEnv configures whether to ignore missing environment variables during loading.
-//
-// Parameters:
-//   - args: Variable arguments.
+// SetIgnoreMissingEnv configures whether to ignore missing environment variables during loading.
 //
 // Returns:
-//   - result: The result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
+//   - None.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - None.
 func (s *FileStore) SetIgnoreMissingEnv(ignore bool) {
 	s.IgnoreMissingEnv = ignore
 }
 
-// NewFileStore creates a new FileStore with the given filesystem and paths. Summary: Initializes a new FileStore. Parameters: - fs (afero.Fs): The filesystem to use. - paths ([]string): The list of paths to scan. Returns: - (*FileStore): A new instance of FileStore.
+// NewFileStore creates a new FileStore with the given filesystem and paths.
 //
-// Summary: NewFileStore creates a new FileStore with the given filesystem and paths. Summary: Initializes a new FileStore. Parameters: - fs (afero.Fs): The filesystem to use. - paths ([]string): The list of paths to scan. Returns: - (*FileStore): A new instance of FileStore.
+// Summary: Initializes a new FileStore.
 //
 // Parameters:
-//   - fs (afero.Fs): The fs parameter used in the operation.
-//   - paths ([]string): The paths parameter used in the operation.
+//   - fs (afero.Fs): The filesystem to use.
+//   - paths ([]string): The list of paths to scan.
 //
 // Returns:
-//   - (*FileStore): The resulting FileStore object containing the requested data.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - Modifies global state, writes to the database, or establishes network connections.
+//   - (*FileStore): A new instance of FileStore.
 func NewFileStore(fs afero.Fs, paths []string) *FileStore {
 	return &FileStore{fs: fs, paths: paths}
 }
 
-// NewFileStoreWithSkipErrors creates a new FileStore that skips malformed config files. Summary: Initializes a new FileStore that tolerates errors in config files. Parameters: - fs (afero.Fs): The filesystem to use. - paths ([]string): The list of paths to scan. Returns: - (*FileStore): A new instance of FileStore.
+// NewFileStoreWithSkipErrors creates a new FileStore that skips malformed config files.
 //
-// Summary: NewFileStoreWithSkipErrors creates a new FileStore that skips malformed config files. Summary: Initializes a new FileStore that tolerates errors in config files. Parameters: - fs (afero.Fs): The filesystem to use. - paths ([]string): The list of paths to scan. Returns: - (*FileStore): A new instance of FileStore.
+// Summary: Initializes a new FileStore that tolerates errors in config files.
 //
 // Parameters:
-//   - fs (afero.Fs): The fs parameter used in the operation.
-//   - paths ([]string): The paths parameter used in the operation.
+//   - fs (afero.Fs): The filesystem to use.
+//   - paths ([]string): The list of paths to scan.
 //
 // Returns:
-//   - (*FileStore): The resulting FileStore object containing the requested data.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - Modifies global state, writes to the database, or establishes network connections.
+//   - (*FileStore): A new instance of FileStore.
 func NewFileStoreWithSkipErrors(fs afero.Fs, paths []string) *FileStore {
 	return &FileStore{fs: fs, paths: paths, skipErrors: true}
 }
@@ -775,22 +723,16 @@ func (s *FileStore) HasConfigSources() bool {
 	return len(s.paths) > 0
 }
 
-// Load scans the configured paths and merges them into a single configuration. Summary: Loads and merges configurations from all configured paths. Parameters: - ctx (context.Context): The context for the request. Returns: - (*configv1.McpAnyServerConfig): The merged configuration. - (error): An error if loading or merging fails.
+// Load scans the configured paths and merges them into a single configuration.
 //
-// Summary: Load scans the configured paths and merges them into a single configuration. Summary: Loads and merges configurations from all configured paths. Parameters: - ctx (context.Context): The context for the request. Returns: - (*configv1.McpAnyServerConfig): The merged configuration. - (error): An error if loading or merging fails.
+// Summary: Loads and merges configurations from all configured paths.
 //
 // Parameters:
-//   - ctx (context.Context): The context for managing request lifecycle and cancellation.
+//   - ctx (context.Context): The context for the request.
 //
 // Returns:
-//   - (*configv1.McpAnyServerConfig): The resulting configv1.McpAnyServerConfig object containing the requested data.
-//   - (error): An error object if the operation fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the underlying operation fails or encounters invalid input.
-//
-// Side Effects:
-//   - Modifies global state, writes to the database, or establishes network connections.
+//   - (*configv1.McpAnyServerConfig): The merged configuration.
+//   - (error): An error if loading or merging fails.
 func (s *FileStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
 	filePaths, err := s.collectFilePaths()
 	if err != nil {
@@ -1272,51 +1214,36 @@ func findField(md protoreflect.MessageDescriptor, name string) protoreflect.Fiel
 	return nil
 }
 
-// MultiStore - Auto-generated documentation.
+// MultiStore implements the Store interface for loading configurations from multiple stores.
 //
-// Summary: MultiStore implements the Store interface for loading configurations from multiple stores.
-//
-// Fields:
-//   - Various fields for MultiStore.
+// Summary: Combines multiple stores into a single logical store.
 type MultiStore struct {
 	stores []Store
 }
 
-// NewMultiStore creates a new MultiStore with the given stores. Summary: Initializes a new MultiStore. Parameters: - stores: ...Store. The stores to aggregate. Returns: - *MultiStore: A new instance of MultiStore.
+// NewMultiStore creates a new MultiStore with the given stores.
 //
-// Summary: NewMultiStore creates a new MultiStore with the given stores. Summary: Initializes a new MultiStore. Parameters: - stores: ...Store. The stores to aggregate. Returns: - *MultiStore: A new instance of MultiStore.
+// Summary: Initializes a new MultiStore.
 //
 // Parameters:
-//   - stores (...Store): The stores parameter used in the operation.
+//   - stores: ...Store. The stores to aggregate.
 //
 // Returns:
-//   - (*MultiStore): The resulting MultiStore object containing the requested data.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - Modifies global state, writes to the database, or establishes network connections.
+//   - *MultiStore: A new instance of MultiStore.
 func NewMultiStore(stores ...Store) *MultiStore {
 	return &MultiStore{stores: stores}
 }
 
-// Load loads configurations from all stores and merges them into a single config. Summary: Loads and merges configurations from all underlying stores. Parameters: - ctx: context.Context. The context for the request. Returns: - *configv1.McpAnyServerConfig: The merged configuration. - error: An error if loading fails.
+// Load loads configurations from all stores and merges them into a single config.
 //
-// Summary: Load loads configurations from all stores and merges them into a single config. Summary: Loads and merges configurations from all underlying stores. Parameters: - ctx: context.Context. The context for the request. Returns: - *configv1.McpAnyServerConfig: The merged configuration. - error: An error if loading fails.
+// Summary: Loads and merges configurations from all underlying stores.
 //
 // Parameters:
-//   - ctx (context.Context): The context for managing request lifecycle and cancellation.
+//   - ctx: context.Context. The context for the request.
 //
 // Returns:
-//   - (*configv1.McpAnyServerConfig): The resulting configv1.McpAnyServerConfig object containing the requested data.
-//   - (error): An error object if the operation fails, otherwise nil.
-//
-// Errors:
-//   - Returns an error if the underlying operation fails or encounters invalid input.
-//
-// Side Effects:
-//   - Modifies global state, writes to the database, or establishes network connections.
+//   - *configv1.McpAnyServerConfig: The merged configuration.
+//   - error: An error if loading fails.
 func (ms *MultiStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
 	mergedConfig := configv1.McpAnyServerConfig_builder{}.Build()
 	for _, s := range ms.stores {

@@ -15,12 +15,8 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
-// SeedRequest - Auto-generated documentation.
-//
-// Summary: SeedRequest defines the payload for seeding the database.
-//
-// Fields:
-//   - Various fields for SeedRequest.
+// SeedRequest defines the payload for seeding the database.
+// We use json.RawMessage to manually unmarshal using protojson, ensuring correct Protobuf handling.
 type SeedRequest struct {
 	ServicesRaw    []json.RawMessage `json:"upstream_services"`
 	CredentialsRaw []json.RawMessage `json:"credentials"`

@@ -20,12 +20,7 @@ import (
 	"google.golang.org/api/iterator"
 )
 
-// GcsProvider - Auto-generated documentation.
-//
-// Summary: GcsProvider provides access to files in a Google Cloud Storage bucket.
-//
-// Fields:
-//   - Various fields for GcsProvider.
+// GcsProvider provides access to files in a Google Cloud Storage bucket.
 type GcsProvider struct {
 	fs     afero.Fs
 	client *storage.Client
@@ -64,21 +59,13 @@ func NewGcsProvider(_ context.Context, config *configv1.GcsFs) (*GcsProvider, er
 	}, nil
 }
 
-// GetFs - Auto-generated documentation.
-//
-// Summary: GetFs returns the underlying filesystem.
-//
-// Parameters:
-//   - args: Variable arguments.
+// GetFs returns the underlying filesystem.
 //
 // Returns:
-//   - result: The result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
+//   - afero.Fs: The result.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - None.
 func (p *GcsProvider) GetFs() afero.Fs {
 	return p.fs
 }
@@ -108,21 +95,16 @@ func (p *GcsProvider) ResolvePath(virtualPath string) (string, error) {
 	return cleanPath, nil
 }
 
-// Close - Auto-generated documentation.
-//
-// Summary: Close closes the GCS client.
-//
-// Parameters:
-//   - args: Variable arguments.
+// Close closes the GCS client.
 //
 // Returns:
-//   - result: The result of the operation.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if ...
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - None.
 func (p *GcsProvider) Close() error {
 	if p.client != nil {
 		return p.client.Close()
@@ -353,21 +335,13 @@ func (fs *gcsFs) Stat(name string) (os.FileInfo, error) {
 	}, nil
 }
 
-// Name - Auto-generated documentation.
-//
-// Summary: Name returns the name of this file system.
-//
-// Parameters:
-//   - args: Variable arguments.
+// Name returns the name of this file system.
 //
 // Returns:
-//   - result: The result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
+//   - string: The result.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - None.
 func (fs *gcsFs) Name() string {
 	return "gcs"
 }
@@ -435,21 +409,16 @@ type gcsFile struct {
 	writer *storage.Writer
 }
 
-// Close - Auto-generated documentation.
-//
-// Summary: Close closes the file.
-//
-// Parameters:
-//   - args: Variable arguments.
+// Close closes the file.
 //
 // Returns:
-//   - result: The result of the operation.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if ...
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - None.
 func (f *gcsFile) Close() error {
 	if f.writer != nil {
 		return f.writer.Close()
@@ -567,21 +536,13 @@ func (f *gcsFile) WriteAt(_ []byte, _ int64) (n int, err error) {
 	return 0, fmt.Errorf("writeat not supported")
 }
 
-// Name - Auto-generated documentation.
-//
-// Summary: Name returns the name of the file as presented to Open.
-//
-// Parameters:
-//   - args: Variable arguments.
+// Name returns the name of the file as presented to Open.
 //
 // Returns:
-//   - result: The result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
+//   - string: The result.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - None.
 func (f *gcsFile) Name() string {
 	return f.name
 }
@@ -670,21 +631,17 @@ func (f *gcsFile) Readdirnames(n int) ([]string, error) {
 	return names, nil
 }
 
-// Stat - Auto-generated documentation.
-//
-// Summary: Stat returns the FileInfo structure describing file.
-//
-// Parameters:
-//   - args: Variable arguments.
+// Stat returns the FileInfo structure describing file.
 //
 // Returns:
-//   - result: The result of the operation.
+//   - os.FileInfo: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if ...
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - None.
 func (f *gcsFile) Stat() (os.FileInfo, error) {
 	if f.reader != nil {
 		return &gcsFileInfo{
@@ -706,21 +663,16 @@ func (f *gcsFile) Stat() (os.FileInfo, error) {
 	return f.fs.Stat(f.name)
 }
 
-// Sync - Auto-generated documentation.
-//
-// Summary: Sync commits the current contents of the file to stable storage.
-//
-// Parameters:
-//   - args: Variable arguments.
+// Sync commits the current contents of the file to stable storage.
 //
 // Returns:
-//   - result: The result of the operation.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if ...
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - None.
 func (f *gcsFile) Sync() error {
 	return nil
 }
@@ -767,59 +719,35 @@ type gcsFileInfo struct {
 	isDir   bool
 }
 
-// Name - Auto-generated documentation.
-//
-// Summary: Name returns the base name of the file.
-//
-// Parameters:
-//   - args: Variable arguments.
+// Name returns the base name of the file.
 //
 // Returns:
-//   - result: The result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
+//   - string: The result.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - None.
 func (fi *gcsFileInfo) Name() string {
 	return fi.name
 }
 
-// Size - Auto-generated documentation.
-//
-// Summary: Size returns the length in bytes for regular files; system-dependent for others.
-//
-// Parameters:
-//   - args: Variable arguments.
+// Size returns the length in bytes for regular files; system-dependent for others.
 //
 // Returns:
-//   - result: The result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
+//   - int64: The result.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - None.
 func (fi *gcsFileInfo) Size() int64 {
 	return fi.size
 }
 
-// Mode - Auto-generated documentation.
-//
-// Summary: Mode returns file mode bits.
-//
-// Parameters:
-//   - args: Variable arguments.
+// Mode returns file mode bits.
 //
 // Returns:
-//   - result: The result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
+//   - os.FileMode: The result.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - None.
 func (fi *gcsFileInfo) Mode() os.FileMode {
 	if fi.isDir {
 		return os.ModeDir | 0755
@@ -827,59 +755,35 @@ func (fi *gcsFileInfo) Mode() os.FileMode {
 	return 0644
 }
 
-// ModTime - Auto-generated documentation.
-//
-// Summary: ModTime returns the modification time.
-//
-// Parameters:
-//   - args: Variable arguments.
+// ModTime returns the modification time.
 //
 // Returns:
-//   - result: The result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
+//   - time.Time: The result.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - None.
 func (fi *gcsFileInfo) ModTime() time.Time {
 	return fi.modTime
 }
 
-// IsDir - Auto-generated documentation.
-//
-// Summary: IsDir returns true if the file is a directory.
-//
-// Parameters:
-//   - args: Variable arguments.
+// IsDir returns true if the file is a directory.
 //
 // Returns:
-//   - result: The result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
+//   - bool: The result.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - None.
 func (fi *gcsFileInfo) IsDir() bool {
 	return fi.isDir
 }
 
-// Sys - Auto-generated documentation.
-//
-// Summary: Sys returns underlying data source (can return nil).
-//
-// Parameters:
-//   - args: Variable arguments.
+// Sys returns underlying data source (can return nil).
 //
 // Returns:
-//   - result: The result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
+//   - interface: The result.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - None.
 func (fi *gcsFileInfo) Sys() interface{} {
 	return nil
 }

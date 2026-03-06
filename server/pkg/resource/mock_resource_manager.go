@@ -15,24 +15,14 @@ import (
 	gomock "go.uber.org/mock/gomock"
 )
 
-// MockManagerInterface - Auto-generated documentation.
-//
-// Summary: MockManagerInterface is a mock of ManagerInterface interface.
-//
-// Fields:
-//   - Various fields for MockManagerInterface.
+// MockManagerInterface is a mock of ManagerInterface interface.
 type MockManagerInterface struct {
 	ctrl     *gomock.Controller
 	recorder *MockManagerInterfaceMockRecorder
 	isgomock struct{}
 }
 
-// MockManagerInterfaceMockRecorder - Auto-generated documentation.
-//
-// Summary: MockManagerInterfaceMockRecorder is the mock recorder for MockManagerInterface.
-//
-// Fields:
-//   - Various fields for MockManagerInterfaceMockRecorder.
+// MockManagerInterfaceMockRecorder is the mock recorder for MockManagerInterface.
 type MockManagerInterfaceMockRecorder struct {
 	mock *MockManagerInterface
 }

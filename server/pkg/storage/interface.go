@@ -11,12 +11,9 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// Storage - Auto-generated documentation.
+// Storage defines the interface for persisting configuration.
 //
-// Summary: Storage defines the interface for persisting configuration.
-//
-// Methods:
-//   - Various methods for Storage.
+// Summary: Interface for backend storage operations.
 type Storage interface {
 	// Load retrieves the full server configuration.
 	//

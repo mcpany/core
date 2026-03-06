@@ -19,12 +19,10 @@ import (
 	"github.com/mcpany/core/server/pkg/util"
 )
 
-// ServiceRegistrationWorker - Auto-generated documentation.
-//
-// Summary: ServiceRegistrationWorker is a background worker responsible for handling
-//
-// Fields:
-//   - Various fields for ServiceRegistrationWorker.
+// ServiceRegistrationWorker is a background worker responsible for handling
+// service registration requests. It listens for ServiceRegistrationRequest
+// messages on the event bus, processes them using the service registry, and
+// publishes the results as ServiceRegistrationResult messages.
 type ServiceRegistrationWorker struct {
 	bus             *bus.Provider
 	serviceRegistry serviceregistry.ServiceRegistryInterface
@@ -32,22 +30,14 @@ type ServiceRegistrationWorker struct {
 	retryDelay      time.Duration
 }
 
-// NewServiceRegistrationWorker creates a new ServiceRegistrationWorker. Parameters: - bus: The event bus used for receiving requests and publishing results. - serviceRegistry: The registry that will handle the actual registration logic. Returns: - *ServiceRegistrationWorker: A new service registration worker.
-//
-// Summary: NewServiceRegistrationWorker creates a new ServiceRegistrationWorker. Parameters: - bus: The event bus used for receiving requests and publishing results. - serviceRegistry: The registry that will handle the actual registration logic. Returns: - *ServiceRegistrationWorker: A new service registration worker.
+// NewServiceRegistrationWorker creates a new ServiceRegistrationWorker.
 //
 // Parameters:
-//   - bus (*bus.Provider): The bus parameter used in the operation.
-//   - serviceRegistry (serviceregistry.ServiceRegistryInterface): The service registry parameter used in the operation.
+//   - bus: The event bus used for receiving requests and publishing results.
+//   - serviceRegistry: The registry that will handle the actual registration logic.
 //
 // Returns:
-//   - (*ServiceRegistrationWorker): The resulting ServiceRegistrationWorker object containing the requested data.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
+//   - *ServiceRegistrationWorker: A new service registration worker.
 func NewServiceRegistrationWorker(bus *bus.Provider, serviceRegistry serviceregistry.ServiceRegistryInterface) *ServiceRegistrationWorker {
 	return &ServiceRegistrationWorker{
 		bus:             bus,
@@ -56,40 +46,20 @@ func NewServiceRegistrationWorker(bus *bus.Provider, serviceRegistry serviceregi
 	}
 }
 
-// SetRetryDelay - Auto-generated documentation.
-//
-// Summary: SetRetryDelay sets the retry delay for failed registrations.
+// SetRetryDelay sets the retry delay for failed registrations.
 //
 // Parameters:
-//   - args: Variable arguments.
-//
-// Returns:
-//   - result: The result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external calls.
+//   - d: The duration to wait before retrying.
 func (w *ServiceRegistrationWorker) SetRetryDelay(d time.Duration) {
 	w.retryDelay = d
 }
 
-// Start - Auto-generated documentation.
-//
-// Summary: Start launches the worker in a new goroutine. It subscribes to service
+// Start launches the worker in a new goroutine. It subscribes to service
+// registration requests on the event bus and will continue to process them
+// until the provided context is canceled.
 //
 // Parameters:
-//   - args: Variable arguments.
-//
-// Returns:
-//   - result: The result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
-//
-// Side Effects:
-//   - May modify internal state or perform external calls.
+//   - ctx: The context that controls the lifecycle of the worker.
 func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 	w.wg.Add(1)
 	log := logging.GetLogger().With("component", "ServiceRegistrationWorker")

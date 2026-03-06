@@ -11,31 +11,22 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// MCPSession - Auto-generated documentation.
+// MCPSession wraps an MCP session to provide client interaction capabilities like sampling and roots.
 //
-// Summary: MCPSession wraps an MCP session to provide client interaction capabilities like sampling and roots.
-//
-// Fields:
-//   - Various fields for MCPSession.
+// Summary: Provides a wrapper around the MCP server session to facilitate client interactions.
 type MCPSession struct {
 	session *mcp.ServerSession
 }
 
-// NewMCPSession creates a new MCPSession. Summary: Initializes a new MCPSession instance. Parameters: - session: *mcp.ServerSession. The underlying MCP server session. Returns: - *MCPSession: A new instance of MCPSession.
+// NewMCPSession creates a new MCPSession.
 //
-// Summary: NewMCPSession creates a new MCPSession. Summary: Initializes a new MCPSession instance. Parameters: - session: *mcp.ServerSession. The underlying MCP server session. Returns: - *MCPSession: A new instance of MCPSession.
+// Summary: Initializes a new MCPSession instance.
 //
 // Parameters:
-//   - session (*mcp.ServerSession): The session parameter used in the operation.
+//   - session: *mcp.ServerSession. The underlying MCP server session.
 //
 // Returns:
-//   - (*MCPSession): The resulting MCPSession object containing the requested data.
-//
-// Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
+//   - *MCPSession: A new instance of MCPSession.
 func NewMCPSession(session *mcp.ServerSession) *MCPSession {
 	return &MCPSession{session: session}
 }
@@ -56,23 +47,20 @@ func NewMCPSampler(session *mcp.ServerSession) *MCPSession {
 	return NewMCPSession(session)
 }
 
-// CreateMessage requests a message creation from the client (sampling). Summary: Requests the client to create a message, effectively sampling the LLM. Parameters: - ctx: context.Context. The context for the request. - params: *mcp.CreateMessageParams. The parameters for the message creation request. Returns: - *mcp.CreateMessageResult: The result of the message creation from the client. - error: An error if no active session is available or if the request fails. Throws/Errors: - Returns an error if the session is nil.
+// CreateMessage requests a message creation from the client (sampling).
 //
-// Summary: CreateMessage requests a message creation from the client (sampling). Summary: Requests the client to create a message, effectively sampling the LLM. Parameters: - ctx: context.Context. The context for the request. - params: *mcp.CreateMessageParams. The parameters for the message creation request. Returns: - *mcp.CreateMessageResult: The result of the message creation from the client. - error: An error if no active session is available or if the request fails. Throws/Errors: - Returns an error if the session is nil.
+// Summary: Requests the client to create a message, effectively sampling the LLM.
 //
 // Parameters:
-//   - ctx (context.Context): The context for managing request lifecycle and cancellation.
-//   - params (*mcp.CreateMessageParams): The params parameter used in the operation.
+//   - ctx: context.Context. The context for the request.
+//   - params: *mcp.CreateMessageParams. The parameters for the message creation request.
 //
 // Returns:
-//   - (*mcp.CreateMessageResult): The resulting mcp.CreateMessageResult object containing the requested data.
-//   - (error): An error object if the operation fails, otherwise nil.
+//   - *mcp.CreateMessageResult: The result of the message creation from the client.
+//   - error: An error if no active session is available or if the request fails.
 //
-// Errors:
-//   - Returns an error if the underlying operation fails or encounters invalid input.
-//
-// Side Effects:
-//   - Modifies global state, writes to the database, or establishes network connections.
+// Throws/Errors:
+//   - Returns an error if the session is nil.
 func (s *MCPSession) CreateMessage(ctx context.Context, params *mcp.CreateMessageParams) (*mcp.CreateMessageResult, error) {
 	if s.session == nil {
 		return nil, fmt.Errorf("no active session available for sampling")
@@ -80,22 +68,19 @@ func (s *MCPSession) CreateMessage(ctx context.Context, params *mcp.CreateMessag
 	return s.session.CreateMessage(ctx, params)
 }
 
-// ListRoots requests the list of roots from the client. Summary: Requests the list of root directories from the client. Parameters: - ctx: context.Context. The context for the request. Returns: - *mcp.ListRootsResult: The list of roots returned by the client. - error: An error if no active session is available or if the request fails. Throws/Errors: - Returns an error if the session is nil.
+// ListRoots requests the list of roots from the client.
 //
-// Summary: ListRoots requests the list of roots from the client. Summary: Requests the list of root directories from the client. Parameters: - ctx: context.Context. The context for the request. Returns: - *mcp.ListRootsResult: The list of roots returned by the client. - error: An error if no active session is available or if the request fails. Throws/Errors: - Returns an error if the session is nil.
+// Summary: Requests the list of root directories from the client.
 //
 // Parameters:
-//   - ctx (context.Context): The context for managing request lifecycle and cancellation.
+//   - ctx: context.Context. The context for the request.
 //
 // Returns:
-//   - (*mcp.ListRootsResult): The resulting mcp.ListRootsResult object containing the requested data.
-//   - (error): An error object if the operation fails, otherwise nil.
+//   - *mcp.ListRootsResult: The list of roots returned by the client.
+//   - error: An error if no active session is available or if the request fails.
 //
-// Errors:
-//   - Returns an error if the underlying operation fails or encounters invalid input.
-//
-// Side Effects:
-//   - None.
+// Throws/Errors:
+//   - Returns an error if the session is nil.
 func (s *MCPSession) ListRoots(ctx context.Context) (*mcp.ListRootsResult, error) {
 	if s.session == nil {
 		return nil, fmt.Errorf("no active session available for roots inspection")

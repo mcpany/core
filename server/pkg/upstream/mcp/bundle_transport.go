@@ -30,31 +30,19 @@ type transportError struct {
 	Data    any    `json:"data,omitempty"`
 }
 
-// Error - Auto-generated documentation.
-//
-// Summary: Error returns the error message.
-//
-// Parameters:
-//   - args: Variable arguments.
+// Error returns the error message.
 //
 // Returns:
-//   - result: The result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
+//   - string: The result.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - None.
 func (e *transportError) Error() string {
 	return e.Message
 }
 
-// BundleDockerTransport - Auto-generated documentation.
-//
-// Summary: BundleDockerTransport implements the mcp.Transport interface to connect to a service
-//
-// Fields:
-//   - Various fields for BundleDockerTransport.
+// BundleDockerTransport implements the mcp.Transport interface to connect to a service
+// running inside a Docker container from a bundle. It supports mounts and environment variables.
 type BundleDockerTransport struct {
 	Image      string
 	Command    string
@@ -467,40 +455,27 @@ func fixIDExtracted(val interface{}) interface{} {
 	return fixID(val)
 }
 
-// Close - Auto-generated documentation.
-//
-// Summary: Close closes the connection.
-//
-// Parameters:
-//   - args: Variable arguments.
+// Close closes the connection.
 //
 // Returns:
-//   - result: The result of the operation.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - Returns an error if the operation fails.
+//   - Returns an error if ...
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - None.
 func (c *bundleDockerConn) Close() error {
 	return c.rwc.Close()
 }
 
-// SessionID - Auto-generated documentation.
-//
-// Summary: SessionID returns the session ID of the connection.
-//
-// Parameters:
-//   - args: Variable arguments.
+// SessionID returns the session ID of the connection.
 //
 // Returns:
-//   - result: The result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
+//   - string: The result.
 //
 // Side Effects:
-//   - May modify internal state or perform external calls.
+//   - None.
 func (c *bundleDockerConn) SessionID() string {
 	return "bundle-docker"
 }

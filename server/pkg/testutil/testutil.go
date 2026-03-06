@@ -45,12 +45,9 @@ func NewTestPoolManager(t *testing.T) *pool.Manager {
 	return pm
 }
 
-// MockAuthenticator - Auto-generated documentation.
+// MockAuthenticator is a mock implementation of the auth.UpstreamAuthenticator interface.
 //
-// Summary: MockAuthenticator is a mock implementation of the auth.UpstreamAuthenticator interface.
-//
-// Fields:
-//   - Various fields for MockAuthenticator.
+// Summary: Mock authenticator for testing upstream requests.
 type MockAuthenticator struct {
 	AuthenticateFunc func(req *http.Request) error
 }
