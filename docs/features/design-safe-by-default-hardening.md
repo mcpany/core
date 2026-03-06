@@ -59,3 +59,10 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+### Update: 2026-03-02 - Mesh-Wide Continuous Attestation
+**Context:** Today's research on "Mesh-Splitting" attacks highlights that a static attestation at startup is insufficient for long-lived federated meshes.
+**Architecture Adjustment:**
+* Expanding the "Safe-by-Default" posture to include federated meshes.
+* Every peer in a mesh must periodically re-attest its local policy and listener configuration to its neighbors.
+* Introduction of "Mesh Heartbeat" which includes a signature of the node's `mcp.yaml` checksum to ensure no runtime configuration poisoning occurred.
+**Security Impact:** Prevents runtime configuration poisoning and identifies partitioned or compromised nodes in real-time.
