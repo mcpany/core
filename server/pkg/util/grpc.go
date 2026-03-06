@@ -9,20 +9,32 @@ import (
 	"google.golang.org/grpc"
 )
 
-// WrappedServerStream is a wrapper around grpc.ServerStream that allows modifying the context.
+// WrappedServerStream - Auto-generated documentation.
 //
-// Summary: A wrapper for grpc.ServerStream that overrides the context.
+// Summary: WrappedServerStream is a wrapper around grpc.ServerStream that allows modifying the context.
+//
+// Fields:
+//   - Various fields for WrappedServerStream.
 type WrappedServerStream struct {
 	grpc.ServerStream
 	Ctx context.Context
 }
 
-// Context returns the modified context.
+// Context - Auto-generated documentation.
 //
-// Summary: Returns the context associated with the stream.
+// Summary: Context returns the modified context.
+//
+// Parameters:
+//   - args: Variable arguments.
 //
 // Returns:
-//   - context.Context: The modified context.
+//   - result: The result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func (w *WrappedServerStream) Context() context.Context {
 	return w.Ctx
 }

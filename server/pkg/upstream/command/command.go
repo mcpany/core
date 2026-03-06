@@ -26,11 +26,12 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-// Upstream implements the upstream.Upstream interface for services that
-// are exposed as command-line tools.
+// Upstream - Auto-generated documentation.
 //
-// It discovers and registers tools based on a list of commands defined in the
-// service configuration.
+// Summary: Upstream implements the upstream.Upstream interface for services that
+//
+// Fields:
+//   - Various fields for Upstream.
 type Upstream struct {
 	mu      sync.Mutex
 	checker health.Checker
@@ -56,13 +57,21 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
 
-// NewUpstream creates a new instance of CommandUpstream.
+// NewUpstream - Auto-generated documentation.
+//
+// Summary: NewUpstream creates a new instance of CommandUpstream.
+//
+// Parameters:
+//   - args: Variable arguments.
 //
 // Returns:
-//   - upstream.Upstream: A new instance of the command upstream.
+//   - result: The result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func NewUpstream() upstream.Upstream {
 	return &Upstream{}
 }

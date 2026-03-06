@@ -13,19 +13,31 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// MockTool is a mock implementation of the tool.Tool interface for testing.
+// MockTool - Auto-generated documentation.
 //
-// Summary: Mock tool for unit testing.
+// Summary: MockTool is a mock implementation of the tool.Tool interface for testing.
+//
+// Fields:
+//   - Various fields for MockTool.
 type MockTool struct {
 	ExecuteFunc func(ctx context.Context, req *tool.ExecutionRequest) (any, error)
 }
 
-// Tool returns a basic tool definition for the mock tool.
+// Tool - Auto-generated documentation.
 //
-// Summary: Returns the tool definition.
+// Summary: Tool returns a basic tool definition for the mock tool.
+//
+// Parameters:
+//   - args: Variable arguments.
 //
 // Returns:
-//   - *v1.Tool: A minimal tool definition.
+//   - result: The result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func (m *MockTool) Tool() *v1.Tool {
 	return v1.Tool_builder{
 		Name: proto.String("mock-tool"),
@@ -53,12 +65,21 @@ func (m *MockTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any
 	return nil, nil
 }
 
-// GetCacheConfig returns nil for the mock tool.
+// GetCacheConfig - Auto-generated documentation.
 //
-// Summary: Returns cache configuration (nil for mock).
+// Summary: GetCacheConfig returns nil for the mock tool.
+//
+// Parameters:
+//   - args: Variable arguments.
 //
 // Returns:
-//   - *configv1.CacheConfig: Always nil.
+//   - result: The result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func (m *MockTool) GetCacheConfig() *configv1.CacheConfig {
 	return nil
 }

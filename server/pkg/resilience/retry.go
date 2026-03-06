@@ -13,7 +13,12 @@ import (
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
-// Retry implements a retry policy for failed operations.
+// Retry - Auto-generated documentation.
+//
+// Summary: Retry implements a retry policy for failed operations.
+//
+// Fields:
+//   - Various fields for Retry.
 type Retry struct {
 	config *configv1.RetryConfig
 }

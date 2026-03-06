@@ -10,16 +10,22 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// ListServiceTemplates retrieves all service templates.
+// ListServiceTemplates retrieves all service templates. Summary: Lists all stored service templates. Parameters: - _: context.Context. Unused. Returns: - []*configv1.ServiceTemplate: A list of service templates. - error: Always nil.
 //
-// Summary: Lists all stored service templates.
+// Summary: ListServiceTemplates retrieves all service templates. Summary: Lists all stored service templates. Parameters: - _: context.Context. Unused. Returns: - []*configv1.ServiceTemplate: A list of service templates. - error: Always nil.
 //
 // Parameters:
-//   - _: context.Context. Unused.
+//   - _ (context.Context): The _ parameter used in the operation.
 //
 // Returns:
-//   - []*configv1.ServiceTemplate: A list of service templates.
-//   - error: Always nil.
+//   - ([]*configv1.ServiceTemplate): The resulting []configv1.ServiceTemplate object containing the requested data.
+//   - (error): An error object if the operation fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the underlying operation fails or encounters invalid input.
+//
+// Side Effects:
+//   - None.
 func (s *Store) ListServiceTemplates(_ context.Context) ([]*configv1.ServiceTemplate, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -30,17 +36,23 @@ func (s *Store) ListServiceTemplates(_ context.Context) ([]*configv1.ServiceTemp
 	return list, nil
 }
 
-// GetServiceTemplate retrieves a service template by ID.
+// GetServiceTemplate retrieves a service template by ID. Summary: Retrieves a service template by ID. Parameters: - _: context.Context. Unused. - id: string. The template ID. Returns: - *configv1.ServiceTemplate: The template, or nil if not found. - error: Always nil.
 //
-// Summary: Retrieves a service template by ID.
+// Summary: GetServiceTemplate retrieves a service template by ID. Summary: Retrieves a service template by ID. Parameters: - _: context.Context. Unused. - id: string. The template ID. Returns: - *configv1.ServiceTemplate: The template, or nil if not found. - error: Always nil.
 //
 // Parameters:
-//   - _: context.Context. Unused.
-//   - id: string. The template ID.
+//   - _ (context.Context): The _ parameter used in the operation.
+//   - id (string): The unique identifier used to reference the  resource.
 //
 // Returns:
-//   - *configv1.ServiceTemplate: The template, or nil if not found.
-//   - error: Always nil.
+//   - (*configv1.ServiceTemplate): The resulting configv1.ServiceTemplate object containing the requested data.
+//   - (error): An error object if the operation fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the underlying operation fails or encounters invalid input.
+//
+// Side Effects:
+//   - None.
 func (s *Store) GetServiceTemplate(_ context.Context, id string) (*configv1.ServiceTemplate, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()

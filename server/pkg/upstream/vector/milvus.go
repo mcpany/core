@@ -14,7 +14,12 @@ import (
 	"github.com/milvus-io/milvus-sdk-go/v2/entity"
 )
 
-// MilvusClient implements VectorClient for Milvus.
+// MilvusClient - Auto-generated documentation.
+//
+// Summary: MilvusClient implements VectorClient for Milvus.
+//
+// Fields:
+//   - Various fields for MilvusClient.
 type MilvusClient struct {
 	config *configv1.MilvusVectorDB
 	client client.Client

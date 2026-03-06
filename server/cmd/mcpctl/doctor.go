@@ -19,9 +19,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// DoctorRunner runs the doctor command checks.
+// DoctorRunner - Auto-generated documentation.
 //
-// Summary: Component to run system health diagnostics.
+// Summary: DoctorRunner runs the doctor command checks.
+//
+// Fields:
+//   - Various fields for DoctorRunner.
 type DoctorRunner struct {
 	Out        io.Writer
 	Fs         afero.Fs

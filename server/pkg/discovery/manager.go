@@ -12,7 +12,12 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// ProviderStatus represents the status of a discovery provider.
+// ProviderStatus - Auto-generated documentation.
+//
+// Summary: ProviderStatus represents the status of a discovery provider.
+//
+// Fields:
+//   - Various fields for ProviderStatus.
 type ProviderStatus struct {
 	Name            string
 	Status          string // "OK", "ERROR"
@@ -21,7 +26,12 @@ type ProviderStatus struct {
 	DiscoveredCount int
 }
 
-// Manager manages auto-discovery providers.
+// Manager - Auto-generated documentation.
+//
+// Summary: Manager manages auto-discovery providers.
+//
+// Fields:
+//   - Various fields for Manager.
 type Manager struct {
 	providers []Provider
 	mu        sync.RWMutex

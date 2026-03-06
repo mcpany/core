@@ -36,10 +36,12 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-// Upstream implements the upstream.Upstream interface for gRPC services.
+// Upstream - Auto-generated documentation.
 //
-// It uses gRPC reflection to discover services and methods, and creates tools
-// for them. It also manages a connection pool and a cache for reflection data.
+// Summary: Upstream implements the upstream.Upstream interface for gRPC services.
+//
+// Fields:
+//   - Various fields for Upstream.
 type Upstream struct {
 	poolManager     *pool.Manager
 	reflectionCache *ttlcache.Cache[string, *descriptorpb.FileDescriptorSet]

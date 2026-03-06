@@ -13,9 +13,12 @@ import (
 	"time"
 )
 
-// OpenAIEmbeddingProvider implements EmbeddingProvider for OpenAI.
+// OpenAIEmbeddingProvider - Auto-generated documentation.
 //
-// Summary: Provides vector embeddings using the OpenAI API.
+// Summary: OpenAIEmbeddingProvider implements EmbeddingProvider for OpenAI.
+//
+// Fields:
+//   - Various fields for OpenAIEmbeddingProvider.
 type OpenAIEmbeddingProvider struct {
 	apiKey  string
 	model   string

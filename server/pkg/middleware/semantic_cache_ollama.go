@@ -13,9 +13,12 @@ import (
 	"time"
 )
 
-// OllamaEmbeddingProvider implements EmbeddingProvider for Ollama.
+// OllamaEmbeddingProvider - Auto-generated documentation.
 //
-// Summary: Provides an interface to generate text embeddings using the Ollama API.
+// Summary: OllamaEmbeddingProvider implements EmbeddingProvider for Ollama.
+//
+// Fields:
+//   - Various fields for OllamaEmbeddingProvider.
 type OllamaEmbeddingProvider struct {
 	baseURL string
 	model   string

@@ -21,11 +21,12 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// WebsocketTool implements the Tool interface for a tool exposed via a WebSocket
-// connection. It handles sending and receiving messages over a persistent
-// WebSocket connection managed by a connection pool.
+// WebsocketTool - Auto-generated documentation.
 //
-// Summary: A tool implementation for WebSocket services.
+// Summary: WebsocketTool implements the Tool interface for a tool exposed via a WebSocket
+//
+// Fields:
+//   - Various fields for WebsocketTool.
 type WebsocketTool struct {
 	tool              *v1.Tool
 	mcpTool           *mcp.Tool
@@ -71,22 +72,40 @@ func NewWebsocketTool(
 	}
 }
 
-// Tool returns the protobuf definition of the WebSocket tool.
+// Tool - Auto-generated documentation.
 //
-// Summary: Retrieves the underlying tool definition.
+// Summary: Tool returns the protobuf definition of the WebSocket tool.
+//
+// Parameters:
+//   - args: Variable arguments.
 //
 // Returns:
-//   - *v1.Tool: The tool definition.
+//   - result: The result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func (t *WebsocketTool) Tool() *v1.Tool {
 	return t.tool
 }
 
-// MCPTool returns the MCP tool definition.
+// MCPTool - Auto-generated documentation.
 //
-// Summary: Retrieves the MCP-compatible tool definition.
+// Summary: MCPTool returns the MCP tool definition.
+//
+// Parameters:
+//   - args: Variable arguments.
 //
 // Returns:
-//   - *mcp.Tool: The MCP tool definition.
+//   - result: The result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func (t *WebsocketTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -98,30 +117,42 @@ func (t *WebsocketTool) MCPTool() *mcp.Tool {
 	return t.mcpTool
 }
 
-// GetCacheConfig returns the cache configuration for the WebSocket tool.
+// GetCacheConfig - Auto-generated documentation.
 //
-// Summary: Retrieves the cache configuration.
+// Summary: GetCacheConfig returns the cache configuration for the WebSocket tool.
+//
+// Parameters:
+//   - args: Variable arguments.
 //
 // Returns:
-//   - *configv1.CacheConfig: The cache configuration.
+//   - result: The result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func (t *WebsocketTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
 
-// Execute handles the execution of the WebSocket tool.
+// Execute handles the execution of the WebSocket tool. Summary: Executes the tool over WebSocket. It retrieves a connection from the pool, sends the tool inputs as a message, and waits for a single response message, which it then processes and returns. Parameters: - ctx: context.Context. The execution context. - req: *ExecutionRequest. The request containing input arguments. Returns: - any: The execution result. - error: An error if execution fails.
 //
-// Summary: Executes the tool over WebSocket.
-//
-// It retrieves a connection from the pool, sends the tool inputs as a message,
-// and waits for a single response message, which it then processes and returns.
+// Summary: Execute handles the execution of the WebSocket tool. Summary: Executes the tool over WebSocket. It retrieves a connection from the pool, sends the tool inputs as a message, and waits for a single response message, which it then processes and returns. Parameters: - ctx: context.Context. The execution context. - req: *ExecutionRequest. The request containing input arguments. Returns: - any: The execution result. - error: An error if execution fails.
 //
 // Parameters:
-//   - ctx: context.Context. The execution context.
-//   - req: *ExecutionRequest. The request containing input arguments.
+//   - ctx (context.Context): The context for managing request lifecycle and cancellation.
+//   - req (*ExecutionRequest): The request object containing specific parameters.
 //
 // Returns:
-//   - any: The execution result.
-//   - error: An error if execution fails.
+//   - (any): The resulting any object containing the requested data.
+//   - (error): An error object if the operation fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the underlying operation fails or encounters invalid input.
+//
+// Side Effects:
+//   - None.
 func (t *WebsocketTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	wsPool, ok := pool.Get[*client.WebsocketClientWrapper](t.poolManager, t.serviceID)
 	if !ok {

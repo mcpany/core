@@ -16,7 +16,12 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-// SftpProvider provides access to files via SFTP.
+// SftpProvider - Auto-generated documentation.
+//
+// Summary: SftpProvider provides access to files via SFTP.
+//
+// Fields:
+//   - Various fields for SftpProvider.
 type SftpProvider struct {
 	fs     afero.Fs
 	client *sftp.Client
@@ -89,13 +94,21 @@ func NewSftpProvider(config *configv1.SftpFs) (*SftpProvider, error) {
 	}, nil
 }
 
-// GetFs returns the underlying filesystem.
+// GetFs - Auto-generated documentation.
+//
+// Summary: GetFs returns the underlying filesystem.
+//
+// Parameters:
+//   - args: Variable arguments.
 //
 // Returns:
-//   - afero.Fs: The result.
+//   - result: The result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func (p *SftpProvider) GetFs() afero.Fs {
 	return p.fs
 }
@@ -123,16 +136,21 @@ func (p *SftpProvider) ResolvePath(virtualPath string) (string, error) {
 	return filepath.Clean(virtualPath), nil
 }
 
-// Close closes the SFTP client and connection.
+// Close - Auto-generated documentation.
+//
+// Summary: Close closes the SFTP client and connection.
+//
+// Parameters:
+//   - args: Variable arguments.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - result: The result of the operation.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func (p *SftpProvider) Close() error {
 	if p.client != nil {
 		_ = p.client.Close()
@@ -324,13 +342,21 @@ func (s *sftpFs) Stat(name string) (os.FileInfo, error) {
 	return s.client.Stat(name)
 }
 
-// Name returns the name of this file system.
+// Name - Auto-generated documentation.
+//
+// Summary: Name returns the name of this file system.
+//
+// Parameters:
+//   - args: Variable arguments.
 //
 // Returns:
-//   - string: The result.
+//   - result: The result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func (s *sftpFs) Name() string {
 	return "sftp"
 }
@@ -396,16 +422,21 @@ type sftpFile struct {
 	client *sftp.Client
 }
 
-// Close closes the file.
+// Close - Auto-generated documentation.
+//
+// Summary: Close closes the file.
+//
+// Parameters:
+//   - args: Variable arguments.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - result: The result of the operation.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func (f *sftpFile) Close() error {
 	return f.f.Close()
 }
@@ -503,13 +534,21 @@ func (f *sftpFile) WriteAt(p []byte, off int64) (n int, err error) {
 	return f.f.WriteAt(p, off)
 }
 
-// Name returns the name of the file as presented to Open.
+// Name - Auto-generated documentation.
+//
+// Summary: Name returns the name of the file as presented to Open.
+//
+// Parameters:
+//   - args: Variable arguments.
 //
 // Returns:
-//   - string: The result.
+//   - result: The result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func (f *sftpFile) Name() string {
 	return f.f.Name()
 }
@@ -559,31 +598,40 @@ func (f *sftpFile) Readdirnames(n int) ([]string, error) {
 	return names, nil
 }
 
-// Stat returns the FileInfo structure describing file.
+// Stat - Auto-generated documentation.
+//
+// Summary: Stat returns the FileInfo structure describing file.
+//
+// Parameters:
+//   - args: Variable arguments.
 //
 // Returns:
-//   - os.FileInfo: The result.
-//   - error: An error if the operation fails.
+//   - result: The result of the operation.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func (f *sftpFile) Stat() (os.FileInfo, error) {
 	return f.f.Stat()
 }
 
-// Sync commits the current contents of the file to stable storage.
+// Sync - Auto-generated documentation.
+//
+// Summary: Sync commits the current contents of the file to stable storage.
+//
+// Parameters:
+//   - args: Variable arguments.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - result: The result of the operation.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func (f *sftpFile) Sync() error {
 	return nil
 }

@@ -14,7 +14,12 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// Config defines the configuration for the GC Worker.
+// Config - Auto-generated documentation.
+//
+// Summary: Config defines the configuration for the GC Worker.
+//
+// Fields:
+//   - Various fields for Config.
 type Config struct {
 	Enabled  bool
 	Interval time.Duration
@@ -22,7 +27,12 @@ type Config struct {
 	Paths    []string
 }
 
-// Worker implements a background worker for garbage collection.
+// Worker - Auto-generated documentation.
+//
+// Summary: Worker implements a background worker for garbage collection.
+//
+// Fields:
+//   - Various fields for Worker.
 type Worker struct {
 	config Config
 }

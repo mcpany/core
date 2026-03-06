@@ -13,37 +13,51 @@ import (
 	"github.com/playwright-community/playwright-go"
 )
 
-// Provider implements a basic browser automation tool.
+// Provider - Auto-generated documentation.
 //
-// Summary: Tool provider for browsing web pages.
+// Summary: Provider implements a basic browser automation tool.
+//
+// Fields:
+//   - Various fields for Provider.
 type Provider struct {
 }
 
-// NewProvider creates a new Provider.
+// NewProvider - Auto-generated documentation.
 //
-// Summary: Initializes a new browser provider.
+// Summary: NewProvider creates a new Provider.
+//
+// Parameters:
+//   - args: Variable arguments.
 //
 // Returns:
-//   - *Provider: The initialized provider.
+//   - result: The result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func NewProvider() *Provider {
 	return &Provider{}
 }
 
-// BrowsePage simulates browsing a page using playwright-go.
+// BrowsePage simulates browsing a page using playwright-go. Summary: Fetches the content of a web page. Parameters: - ctx: context.Context. The context for the request. - url: string. The URL to visit. Returns: - string: The text content of the page. - error: An error if the URL is empty or the browser fails. Errors: - Returns "url is required" if url is empty. - Returns "failed to start playwright" or "failed to launch browser" if the browser fails to start.
 //
-// Summary: Fetches the content of a web page.
+// Summary: BrowsePage simulates browsing a page using playwright-go. Summary: Fetches the content of a web page. Parameters: - ctx: context.Context. The context for the request. - url: string. The URL to visit. Returns: - string: The text content of the page. - error: An error if the URL is empty or the browser fails. Errors: - Returns "url is required" if url is empty. - Returns "failed to start playwright" or "failed to launch browser" if the browser fails to start.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the request.
-//   - url: string. The URL to visit.
+//   - _ (context.Context): The _ parameter used in the operation.
+//   - url (string): The url parameter used in the operation.
 //
 // Returns:
-//   - string: The text content of the page.
-//   - error: An error if the URL is empty or the browser fails.
+//   - (string): A string value representing the operation's result.
+//   - (error): An error object if the operation fails, otherwise nil.
 //
 // Errors:
-//   - Returns "url is required" if url is empty.
-//   - Returns "failed to start playwright" or "failed to launch browser" if the browser fails to start.
+//   - Returns an error if the underlying operation fails or encounters invalid input.
+//
+// Side Effects:
+//   - None.
 func (b *Provider) BrowsePage(_ context.Context, url string) (string, error) {
 	if url == "" {
 		return "", fmt.Errorf("url is required")
@@ -93,12 +107,21 @@ func (b *Provider) BrowsePage(_ context.Context, url string) (string, error) {
 	return content, nil
 }
 
-// ToolDefinition returns the MCP tool definition.
+// ToolDefinition - Auto-generated documentation.
 //
-// Summary: Defines the metadata for the browse_page tool.
+// Summary: ToolDefinition returns the MCP tool definition.
+//
+// Parameters:
+//   - args: Variable arguments.
 //
 // Returns:
-//   - map[string]interface{}: The JSON schema definition of the tool.
+//   - result: The result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func (b *Provider) ToolDefinition() map[string]interface{} {
 	return map[string]interface{}{
 		"name":        "browse_page",

@@ -20,7 +20,12 @@ import (
 	"github.com/spf13/viper"
 )
 
-// Settings defines the global configuration for the application.
+// Settings - Auto-generated documentation.
+//
+// Summary: Settings defines the global configuration for the application.
+//
+// Fields:
+//   - Various fields for Settings.
 type Settings struct {
 	proto           *configv1.GlobalSettings
 	grpcPort        string

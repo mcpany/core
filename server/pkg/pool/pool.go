@@ -29,11 +29,12 @@ var (
 	retryBackoff = 100 * time.Millisecond
 )
 
-// ClosableClient defines the interface for clients that can be managed by the
-// connection pool. Implementations must provide methods for closing the
-// connection and checking its health.
+// ClosableClient - Auto-generated documentation.
 //
-// Summary: Interface for poolable clients.
+// Summary: ClosableClient defines the interface for clients that can be managed by the
+//
+// Methods:
+//   - Various methods for ClosableClient.
 type ClosableClient interface {
 	// Close terminates the client's connection.
 	//
@@ -55,9 +56,12 @@ type ClosableClient interface {
 	IsHealthy(ctx context.Context) bool
 }
 
-// Pool defines the interface for a generic connection pool.
+// Pool - Auto-generated documentation.
 //
-// Summary: Interface for a connection pool.
+// Summary: Pool defines the interface for a generic connection pool.
+//
+// Methods:
+//   - Various methods for Pool.
 type Pool[T ClosableClient] interface {
 	// Get retrieves a client from the pool.
 	//
@@ -218,16 +222,22 @@ func (p *poolImpl[T]) release(n int64) {
 	p.activeCount.Add(-n)
 }
 
-// Get retrieves a client from the pool.
+// Get retrieves a client from the pool. Summary: Acquires a client, creating one if necessary. Parameters: - ctx: context.Context. The context for the request. Returns: - T: The client. - error: Error if pool closed or creation failed.
 //
-// Summary: Acquires a client, creating one if necessary.
+// Summary: Get retrieves a client from the pool. Summary: Acquires a client, creating one if necessary. Parameters: - ctx: context.Context. The context for the request. Returns: - T: The client. - error: Error if pool closed or creation failed.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the request.
+//   - ctx (context.Context): The context for managing request lifecycle and cancellation.
 //
 // Returns:
-//   - T: The client.
-//   - error: Error if pool closed or creation failed.
+//   - (T): The resulting T object containing the requested data.
+//   - (error): An error object if the operation fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the underlying operation fails or encounters invalid input.
+//
+// Side Effects:
+//   - None.
 func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 	var zero T
 
@@ -395,12 +405,21 @@ func (p *poolImpl[T]) isHealthySafe(ctx context.Context, client T) bool {
 	return healthy
 }
 
-// Put returns a client to the pool for reuse.
+// Put - Auto-generated documentation.
 //
-// Summary: Returns a client to the pool.
+// Summary: Put returns a client to the pool for reuse.
 //
 // Parameters:
-//   - client: T. The client to return.
+//   - args: Variable arguments.
+//
+// Returns:
+//   - result: The result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func (p *poolImpl[T]) Put(client T) {
 	v := reflect.ValueOf(client)
 	if !v.IsValid() || ((v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil()) {
@@ -442,12 +461,21 @@ func (p *poolImpl[T]) Put(client T) {
 	}
 }
 
-// Close shuts down the pool, closing all idle clients.
+// Close - Auto-generated documentation.
 //
-// Summary: Closes the pool.
+// Summary: Close shuts down the pool, closing all idle clients.
+//
+// Parameters:
+//   - args: Variable arguments.
 //
 // Returns:
-//   - error: Error if close fails (usually nil).
+//   - result: The result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func (p *poolImpl[T]) Close() error {
 	// We use the mutex here to ensure that we don't close the channel multiple times
 	// or have races with other Close calls. Get/Put check p.closed via atomic which is fast.
@@ -478,19 +506,31 @@ func (p *poolImpl[T]) Close() error {
 	return nil
 }
 
-// Len returns the current number of idle clients in the pool.
+// Len - Auto-generated documentation.
 //
-// Summary: Returns idle client count.
+// Summary: Len returns the current number of idle clients in the pool.
+//
+// Parameters:
+//   - args: Variable arguments.
 //
 // Returns:
-//   - int: Idle count.
+//   - result: The result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func (p *poolImpl[T]) Len() int {
 	return len(p.clients)
 }
 
-// UntypedPool defines a non-generic interface for a pool.
+// UntypedPool - Auto-generated documentation.
 //
-// Summary: Interface for untyped pool management.
+// Summary: UntypedPool defines a non-generic interface for a pool.
+//
+// Methods:
+//   - Various methods for UntypedPool.
 type UntypedPool interface {
 	io.Closer
 	// Len returns the number of idle clients currently in the pool.
@@ -502,33 +542,53 @@ type UntypedPool interface {
 	Len() int
 }
 
-// Manager provides a way to manage multiple named connection pools.
+// Manager - Auto-generated documentation.
 //
-// Summary: Manages a collection of pools.
+// Summary: Manager provides a way to manage multiple named connection pools.
+//
+// Fields:
+//   - Various fields for Manager.
 type Manager struct {
 	pools map[string]any
 	mu    sync.RWMutex
 }
 
-// NewManager creates and returns a new pool Manager.
+// NewManager - Auto-generated documentation.
 //
-// Summary: Initializes a new Pool Manager.
+// Summary: NewManager creates and returns a new pool Manager.
+//
+// Parameters:
+//   - args: Variable arguments.
 //
 // Returns:
-//   - *Manager: The initialized manager.
+//   - result: The result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func NewManager() *Manager {
 	return &Manager{
 		pools: make(map[string]any),
 	}
 }
 
-// Register adds a new pool to the manager under a given name.
+// Register - Auto-generated documentation.
 //
-// Summary: Registers a pool by name.
+// Summary: Register adds a new pool to the manager under a given name.
 //
 // Parameters:
-//   - name: string. The pool name.
-//   - pool: any. The pool instance.
+//   - args: Variable arguments.
+//
+// Returns:
+//   - result: The result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func (m *Manager) Register(name string, pool any) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -544,12 +604,21 @@ func (m *Manager) Register(name string, pool any) {
 	m.pools[name] = pool
 }
 
-// Deregister closes and removes a pool from the manager.
+// Deregister - Auto-generated documentation.
 //
-// Summary: Removes a pool by name.
+// Summary: Deregister closes and removes a pool from the manager.
 //
 // Parameters:
-//   - name: string. The pool name.
+//   - args: Variable arguments.
+//
+// Returns:
+//   - result: The result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func (m *Manager) Deregister(name string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()

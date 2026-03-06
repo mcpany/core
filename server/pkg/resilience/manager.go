@@ -9,24 +9,33 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
-// Manager orchestrates resilience features like circuit breakers, retries, and timeouts.
+// Manager - Auto-generated documentation.
 //
-// Summary: Central manager for applying resilience patterns to operations.
+// Summary: Manager orchestrates resilience features like circuit breakers, retries, and timeouts.
+//
+// Fields:
+//   - Various fields for Manager.
 type Manager struct {
 	circuitBreaker *CircuitBreaker
 	retry          *Retry
 	timeout        *Timeout
 }
 
-// NewManager creates a new Manager with the given resilience configuration.
+// NewManager creates a new Manager with the given resilience configuration. Summary: Initializes a new Resilience Manager. Parameters: - config: *configv1.ResilienceConfig. The resilience configuration. Returns: - *Manager: The initialized manager, or nil if no resilience features are enabled.
 //
-// Summary: Initializes a new Resilience Manager.
+// Summary: NewManager creates a new Manager with the given resilience configuration. Summary: Initializes a new Resilience Manager. Parameters: - config: *configv1.ResilienceConfig. The resilience configuration. Returns: - *Manager: The initialized manager, or nil if no resilience features are enabled.
 //
 // Parameters:
-//   - config: *configv1.ResilienceConfig. The resilience configuration.
+//   - config (*configv1.ResilienceConfig): The configuration settings to be applied.
 //
 // Returns:
-//   - *Manager: The initialized manager, or nil if no resilience features are enabled.
+//   - (*Manager): The resulting Manager object containing the requested data.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewManager(config *configv1.ResilienceConfig) *Manager {
 	if config == nil {
 		return nil

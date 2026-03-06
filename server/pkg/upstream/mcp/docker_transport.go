@@ -45,8 +45,12 @@ var newDockerClient = func(ops ...client.Opt) (dockerClient, error) {
 	return client.NewClientWithOpts(ops...)
 }
 
-// DockerTransport implements the mcp.Transport interface to connect to a service
-// running inside a Docker container. It manages the container lifecycle.
+// DockerTransport - Auto-generated documentation.
+//
+// Summary: DockerTransport implements the mcp.Transport interface to connect to a service
+//
+// Fields:
+//   - Various fields for DockerTransport.
 type DockerTransport struct {
 	StdioConfig *configv1.McpStdioConnection
 }
@@ -350,27 +354,40 @@ func (c *dockerConn) Write(_ context.Context, msg jsonrpc.Message) error {
 	return c.encoder.Encode(wire)
 }
 
-// Close terminates the connection by closing the underlying ReadWriteCloser.
+// Close - Auto-generated documentation.
+//
+// Summary: Close terminates the connection by closing the underlying ReadWriteCloser.
+//
+// Parameters:
+//   - args: Variable arguments.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - result: The result of the operation.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func (c *dockerConn) Close() error {
 	return c.rwc.Close()
 }
 
-// SessionID returns a static identifier for the Docker transport session.
+// SessionID - Auto-generated documentation.
+//
+// Summary: SessionID returns a static identifier for the Docker transport session.
+//
+// Parameters:
+//   - args: Variable arguments.
 //
 // Returns:
-//   - string: The result.
+//   - result: The result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func (c *dockerConn) SessionID() string {
 	return "docker-transport-session"
 }
@@ -383,16 +400,21 @@ type dockerReadWriteCloser struct {
 	cli         dockerClient
 }
 
-// Close closes the underlying connection and removes the associated Docker container.
+// Close - Auto-generated documentation.
+//
+// Summary: Close closes the underlying connection and removes the associated Docker container.
+//
+// Parameters:
+//   - args: Variable arguments.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - result: The result of the operation.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func (c *dockerReadWriteCloser) Close() error {
 	err := c.WriteCloser.Close()
 
@@ -477,13 +499,21 @@ func (b *tailBuffer) Write(p []byte) (n int, err error) {
 	return len(p), nil
 }
 
-// String returns the buffered data as a string.
+// String - Auto-generated documentation.
+//
+// Summary: String returns the buffered data as a string.
+//
+// Parameters:
+//   - args: Variable arguments.
 //
 // Returns:
-//   - string: The result.
+//   - result: The result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func (b *tailBuffer) String() string {
 	b.mu.Lock()
 	defer b.mu.Unlock()

@@ -27,10 +27,12 @@ import (
 // ErrServiceAlreadyRegistered is returned when attempting to register a service that is already active.
 var ErrServiceAlreadyRegistered = errors.New("service already registered")
 
-// ServiceRegistryInterface defines the interface for a service registry.
+// ServiceRegistryInterface - Auto-generated documentation.
 //
-// It manages the registration, lifecycle, and discovery of upstream services
-// and their associated capabilities (tools, resources, prompts).
+// Summary: ServiceRegistryInterface defines the interface for a service registry.
+//
+// Methods:
+//   - Various methods for ServiceRegistryInterface.
 type ServiceRegistryInterface interface { //nolint:revive
 	// RegisterService registers a new upstream service based on the provided configuration.
 	//
@@ -97,10 +99,12 @@ type ServiceRegistryInterface interface { //nolint:revive
 	GetServiceError(serviceID string) (string, bool)
 }
 
-// ServiceRegistry is the concrete implementation of ServiceRegistryInterface.
+// ServiceRegistry - Auto-generated documentation.
 //
-// It serves as the central hub for managing upstream services, coordinating
-// with tool, prompt, and resource managers.
+// Summary: ServiceRegistry is the concrete implementation of ServiceRegistryInterface.
+//
+// Fields:
+//   - Various fields for ServiceRegistry.
 type ServiceRegistry struct {
 	mu              sync.RWMutex
 	serviceConfigs  map[string]*config.UpstreamServiceConfig
@@ -300,14 +304,21 @@ func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *co
 	return serviceID, discoveredTools, discoveredResources, nil
 }
 
-// AddServiceInfo stores metadata about a service.
+// AddServiceInfo - Auto-generated documentation.
+//
+// Summary: AddServiceInfo stores metadata about a service.
 //
 // Parameters:
-//   - serviceID (string): The service identifier.
-//   - info (*tool.ServiceInfo): The service metadata.
+//   - args: Variable arguments.
+//
+// Returns:
+//   - result: The result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - Updates the internal service info map.
+//   - May modify internal state or perform external calls.
 func (r *ServiceRegistry) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -439,14 +450,21 @@ func (r *ServiceRegistry) GetServiceError(serviceID string) (string, bool) {
 	return err, ok
 }
 
-// StartHealthChecks initiates a background loop to periodically check the health of services.
+// StartHealthChecks - Auto-generated documentation.
+//
+// Summary: StartHealthChecks initiates a background loop to periodically check the health of services.
 //
 // Parameters:
-//   - ctx (context.Context): The context to control the loop.
-//   - interval (time.Duration): The frequency of health checks.
+//   - args: Variable arguments.
+//
+// Returns:
+//   - result: The result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - Starts a background goroutine.
+//   - May modify internal state or perform external calls.
 func (r *ServiceRegistry) StartHealthChecks(ctx context.Context, interval time.Duration) {
 	go func() {
 		ticker := time.NewTicker(interval)
@@ -550,14 +568,21 @@ func (r *ServiceRegistry) Close(ctx context.Context) error {
 	return nil
 }
 
-// GetAllServices returns a list of all registered services.
+// GetAllServices - Auto-generated documentation.
+//
+// Summary: GetAllServices returns a list of all registered services.
+//
+// Parameters:
+//   - args: Variable arguments.
 //
 // Returns:
-//   - []*config.UpstreamServiceConfig: A list of all registered service configurations.
-//   - error: An error if retrieval fails.
+//   - result: The result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func (r *ServiceRegistry) GetAllServices() ([]*config.UpstreamServiceConfig, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()

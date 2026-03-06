@@ -14,20 +14,32 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-// RedisStrategy implements RateLimitStrategy for Redis-based rate limiting.
+// RedisStrategy - Auto-generated documentation.
 //
-// Summary: Strategy for creating Redis-backed distributed rate limiters.
+// Summary: RedisStrategy implements RateLimitStrategy for Redis-based rate limiting.
+//
+// Fields:
+//   - Various fields for RedisStrategy.
 type RedisStrategy struct {
 	// redisClients caches Redis clients per config. Key is configHash.
 	redisClients sync.Map
 }
 
-// NewRedisStrategy creates a new RedisStrategy.
+// NewRedisStrategy - Auto-generated documentation.
 //
-// Summary: Initializes a new RedisStrategy.
+// Summary: NewRedisStrategy creates a new RedisStrategy.
+//
+// Parameters:
+//   - args: Variable arguments.
 //
 // Returns:
-//   - *RedisStrategy: The initialized strategy.
+//   - result: The result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func NewRedisStrategy() *RedisStrategy {
 	return &RedisStrategy{}
 }

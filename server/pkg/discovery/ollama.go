@@ -17,7 +17,12 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// Provider defines the interface for auto-discovering local services.
+// Provider - Auto-generated documentation.
+//
+// Summary: Provider defines the interface for auto-discovering local services.
+//
+// Methods:
+//   - Various methods for Provider.
 type Provider interface {
 	// Name returns the name of the discovery provider.
 	Name() string
@@ -25,8 +30,12 @@ type Provider interface {
 	Discover(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error)
 }
 
-// OllamaProvider discovers local Ollama instances.
-// OllamaProvider is a provider that discovers local Ollama instances.
+// OllamaProvider - Auto-generated documentation.
+//
+// Summary: OllamaProvider discovers local Ollama instances.
+//
+// Fields:
+//   - Various fields for OllamaProvider.
 type OllamaProvider struct {
 	Endpoint   string // e.g., "http://localhost:11434"
 	client     *http.Client

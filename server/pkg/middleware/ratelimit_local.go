@@ -12,9 +12,12 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
-// LocalLimiter is an in-memory implementation of Limiter.
+// LocalLimiter - Auto-generated documentation.
 //
-// Summary: Rate limiter implementation using golang.org/x/time/rate.
+// Summary: LocalLimiter is an in-memory implementation of Limiter.
+//
+// Fields:
+//   - Various fields for LocalLimiter.
 type LocalLimiter struct {
 	*rate.Limiter
 }
@@ -54,16 +57,21 @@ func (l *LocalLimiter) AllowN(_ context.Context, n int) (bool, error) {
 	return l.Limiter.AllowN(time.Now(), n), nil
 }
 
-// Update updates the limiter configuration.
+// Update - Auto-generated documentation.
 //
-// Summary: Dynamically updates the rate limit and burst size.
+// Summary: Update updates the limiter configuration.
 //
 // Parameters:
-//   - rps: float64. The new requests per second limit.
-//   - burst: int. The new burst size.
+//   - args: Variable arguments.
+//
+// Returns:
+//   - result: The result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - Modifies the underlying rate.Limiter state.
+//   - May modify internal state or perform external calls.
 func (l *LocalLimiter) Update(rps float64, burst int) {
 	limit := rate.Limit(rps)
 	if l.Limit() != limit {
@@ -74,17 +82,29 @@ func (l *LocalLimiter) Update(rps float64, burst int) {
 	}
 }
 
-// LocalStrategy implements RateLimitStrategy for local in-memory rate limiting.
+// LocalStrategy - Auto-generated documentation.
 //
-// Summary: Strategy for creating local rate limiters.
+// Summary: LocalStrategy implements RateLimitStrategy for local in-memory rate limiting.
+//
+// Fields:
+//   - Various fields for LocalStrategy.
 type LocalStrategy struct{}
 
-// NewLocalStrategy creates a new LocalStrategy.
+// NewLocalStrategy - Auto-generated documentation.
 //
-// Summary: Initializes a new LocalStrategy.
+// Summary: NewLocalStrategy creates a new LocalStrategy.
+//
+// Parameters:
+//   - args: Variable arguments.
 //
 // Returns:
-//   - *LocalStrategy: The initialized strategy.
+//   - result: The result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func NewLocalStrategy() *LocalStrategy {
 	return &LocalStrategy{}
 }

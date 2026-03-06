@@ -19,7 +19,12 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// Span represents a span in a trace.
+// Span - Auto-generated documentation.
+//
+// Summary: Span represents a span in a trace.
+//
+// Fields:
+//   - Various fields for Span.
 type Span struct {
 	ID           string         `json:"id"`
 	Name         string         `json:"name"`
@@ -34,7 +39,12 @@ type Span struct {
 	Children     []Span         `json:"children,omitempty"`
 }
 
-// Trace represents a full trace.
+// Trace - Auto-generated documentation.
+//
+// Summary: Trace represents a full trace.
+//
+// Fields:
+//   - Various fields for Trace.
 type Trace struct {
 	ID            string `json:"id"`
 	RootSpan      Span   `json:"rootSpan"`

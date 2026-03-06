@@ -23,13 +23,21 @@ var (
 	programLevel = new(slog.LevelVar)
 )
 
-// SetLevel updates the global log level dynamically.
+// SetLevel - Auto-generated documentation.
+//
+// Summary: SetLevel updates the global log level dynamically.
 //
 // Parameters:
-//   - level (slog.Level): The new log level.
+//   - args: Variable arguments.
+//
+// Returns:
+//   - result: The result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - Updates the global log level atomic variable.
+//   - May modify internal state or perform external calls.
 func SetLevel(level slog.Level) {
 	programLevel.Set(level)
 }
@@ -55,21 +63,21 @@ func ForTestsOnlyResetLogger() {
 	GlobalBroadcaster.Reset()
 }
 
-// Init initializes the application's global logger with a specific log level
-// and output destination.
+// Init - Auto-generated documentation.
 //
-// This function is designed to be called only once, typically at the start of the application,
-// to ensure a consistent logging setup.
+// Summary: Init initializes the application's global logger with a specific log level
 //
 // Parameters:
-//   - level (slog.Level): The minimum log level to be recorded.
-//   - output (io.Writer): The output destination for logs.
-//   - logFilePath (string): Optional path to a log file for JSON output.
-//   - format (...string): Optional format string ("json" or "text"). Defaults to "text".
+//   - args: Variable arguments.
+//
+// Returns:
+//   - result: The result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - Sets the global logger instance.
-//   - May open a file for writing.
+//   - May modify internal state or perform external calls.
 func Init(level slog.Level, output io.Writer, logFilePath string, format ...string) {
 	mu.Lock()
 	defer mu.Unlock()
@@ -136,16 +144,21 @@ func Init(level slog.Level, output io.Writer, logFilePath string, format ...stri
 	// Init complete
 }
 
-// GetLogger returns the shared global logger instance.
+// GetLogger - Auto-generated documentation.
 //
-// If the logger has not yet been initialized through a call to `Init`, this function will
-// initialize it with default settings: logging to `os.Stderr` at `slog.LevelInfo`.
+// Summary: GetLogger returns the shared global logger instance.
+//
+// Parameters:
+//   - args: Variable arguments.
 //
 // Returns:
-//   - *slog.Logger: The global `*slog.Logger` instance.
+//   - result: The result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - May initialize the default logger if not already set.
+//   - May modify internal state or perform external calls.
 func GetLogger() *slog.Logger {
 	// ⚡ Bolt Optimization: Fast path to avoid lock contention on every log call.
 	// Atomic load is much cheaper than mutex lock.

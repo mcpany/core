@@ -24,9 +24,12 @@ import (
 	"golang.org/x/time/rate"
 )
 
-// GlobalRateLimitMiddleware provides rate limiting functionality for all MCP requests.
+// GlobalRateLimitMiddleware - Auto-generated documentation.
 //
-// Summary: Middleware that enforces global rate limits on MCP requests across the entire server.
+// Summary: GlobalRateLimitMiddleware provides rate limiting functionality for all MCP requests.
+//
+// Fields:
+//   - Various fields for GlobalRateLimitMiddleware.
 type GlobalRateLimitMiddleware struct {
 	mu     sync.RWMutex
 	config *configv1.RateLimitConfig
@@ -55,16 +58,21 @@ func NewGlobalRateLimitMiddleware(config *configv1.RateLimitConfig) *GlobalRateL
 	}
 }
 
-// UpdateConfig updates the rate limit configuration safely.
+// UpdateConfig - Auto-generated documentation.
 //
-// Summary: Updates the rate limit configuration at runtime.
+// Summary: UpdateConfig updates the rate limit configuration safely.
 //
 // Parameters:
-//   - config: *configv1.RateLimitConfig. The new configuration settings.
+//   - args: Variable arguments.
+//
+// Returns:
+//   - result: The result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - Acquires a lock to safely update the configuration.
-//   - Effectively changes rate limiting behavior for subsequent requests.
+//   - May modify internal state or perform external calls.
 func (m *GlobalRateLimitMiddleware) UpdateConfig(config *configv1.RateLimitConfig) {
 	m.mu.Lock()
 	defer m.mu.Unlock()

@@ -21,7 +21,12 @@ const (
 	webhookBatchWait  = 1 * time.Second
 )
 
-// WebhookAuditStore sends audit logs to a configured webhook URL.
+// WebhookAuditStore - Auto-generated documentation.
+//
+// Summary: WebhookAuditStore sends audit logs to a configured webhook URL.
+//
+// Fields:
+//   - Various fields for WebhookAuditStore.
 type WebhookAuditStore struct {
 	webhookURL string
 	headers    map[string]string

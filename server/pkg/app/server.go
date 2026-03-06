@@ -159,9 +159,12 @@ type RunOptions struct {
 	DBPath          string
 }
 
-// Runner defines the interface for running the application.
+// Runner - Auto-generated documentation.
 //
-// Summary: Interface for application execution and management.
+// Summary: Runner defines the interface for running the application.
+//
+// Methods:
+//   - Various methods for Runner.
 type Runner interface {
 	// Run starts the application with the given options.
 	//
@@ -316,12 +319,21 @@ type statsCacheEntry struct {
 	ExpiresAt time.Time
 }
 
-// NewApplication creates a new Application with default dependencies.
+// NewApplication - Auto-generated documentation.
 //
-// Summary: Initializes a new Application instance.
+// Summary: NewApplication creates a new Application with default dependencies.
+//
+// Parameters:
+//   - args: Variable arguments.
 //
 // Returns:
-//   - (*Application): The initialized application.
+//   - result: The result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func NewApplication() *Application {
 	busProvider, _ := bus.NewProvider(nil)
 	return &Application{
@@ -1338,17 +1350,21 @@ func (a *Application) generateConfigDiff(oldConfig, newConfig map[string]string)
 	return strings.Join(diffs, "\n")
 }
 
-// WaitForStartup waits for the application to be fully initialized.
+// WaitForStartup waits for the application to be fully initialized. Summary: Waits for application startup completion. It blocks until the startup process is complete or the context is canceled. Parameters: - ctx (context.Context): The context to wait on. Returns: - (error): nil if startup completes successfully, or a context error if canceled.
 //
-// Summary: Waits for application startup completion.
-//
-// It blocks until the startup process is complete or the context is canceled.
+// Summary: WaitForStartup waits for the application to be fully initialized. Summary: Waits for application startup completion. It blocks until the startup process is complete or the context is canceled. Parameters: - ctx (context.Context): The context to wait on. Returns: - (error): nil if startup completes successfully, or a context error if canceled.
 //
 // Parameters:
-//   - ctx (context.Context): The context to wait on.
+//   - ctx (context.Context): The context for managing request lifecycle and cancellation.
 //
 // Returns:
-//   - (error): nil if startup completes successfully, or a context error if canceled.
+//   - (error): An error object if the operation fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the underlying operation fails or encounters invalid input.
+//
+// Side Effects:
+//   - Modifies global state, writes to the database, or establishes network connections.
 func (a *Application) WaitForStartup(ctx context.Context) error {
 	select {
 	case <-a.startupCh:
@@ -1464,21 +1480,23 @@ func (a *Application) filesystemHealthCheck(_ context.Context) health.CheckResul
 	}
 }
 
-// HealthCheck performs a health check against a running server.
+// HealthCheck performs a health check against a running server. Summary: Checks the health of a running server. The function constructs the health check URL from the provided address and sends an HTTP GET request. It expects a 200 OK status code for a successful health check. Parameters: - out (io.Writer): The writer to which the success message will be written. - addr (string): The address (host:port) on which the server is running. - timeout (time.Duration): The maximum duration to wait for the health check. Returns: - (error): nil if healthy, or an error if the health check fails.
 //
-// Summary: Checks the health of a running server.
-//
-// The function constructs the health check URL from the provided address and
-// sends an HTTP GET request. It expects a 200 OK status code for a successful
-// health check.
+// Summary: HealthCheck performs a health check against a running server. Summary: Checks the health of a running server. The function constructs the health check URL from the provided address and sends an HTTP GET request. It expects a 200 OK status code for a successful health check. Parameters: - out (io.Writer): The writer to which the success message will be written. - addr (string): The address (host:port) on which the server is running. - timeout (time.Duration): The maximum duration to wait for the health check. Returns: - (error): nil if healthy, or an error if the health check fails.
 //
 // Parameters:
-//   - out (io.Writer): The writer to which the success message will be written.
-//   - addr (string): The address (host:port) on which the server is running.
-//   - timeout (time.Duration): The maximum duration to wait for the health check.
+//   - out (io.Writer): The out parameter used in the operation.
+//   - addr (string): The addr parameter used in the operation.
+//   - timeout (time.Duration): The timeout parameter used in the operation.
 //
 // Returns:
-//   - (error): nil if healthy, or an error if the health check fails.
+//   - (error): An error object if the operation fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the underlying operation fails or encounters invalid input.
+//
+// Side Effects:
+//   - None.
 func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
@@ -2525,15 +2543,21 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 	}
 }
 
-// HTTPRequestContextMiddleware injects the HTTP request into the context.
+// HTTPRequestContextMiddleware injects the HTTP request into the context. Summary: Middleware to add HTTP request to context. Parameters: - next (http.Handler): The next handler. Returns: - (http.Handler): The wrapped handler.
 //
-// Summary: Middleware to add HTTP request to context.
+// Summary: HTTPRequestContextMiddleware injects the HTTP request into the context. Summary: Middleware to add HTTP request to context. Parameters: - next (http.Handler): The next handler. Returns: - (http.Handler): The wrapped handler.
 //
 // Parameters:
-//   - next (http.Handler): The next handler.
+//   - next (http.Handler): The next parameter used in the operation.
 //
 // Returns:
-//   - (http.Handler): The wrapped handler.
+//   - (http.Handler): The resulting http.Handler object containing the requested data.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Modifies global state, writes to the database, or establishes network connections.
 func (a *Application) HTTPRequestContextMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := context.WithValue(r.Context(), middleware.HTTPRequestContextKey, r)

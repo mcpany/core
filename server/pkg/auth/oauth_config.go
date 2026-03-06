@@ -3,9 +3,12 @@
 
 package auth
 
-// OAuth2Config holds the configuration for OAuth2 authentication. It is used to
-// configure the OAuth2Authenticator with the necessary parameters to validate
-// JWTs against an OIDC provider.
+// OAuth2Config - Auto-generated documentation.
+//
+// Summary: OAuth2Config holds the configuration for OAuth2 authentication. It is used to
+//
+// Fields:
+//   - Various fields for OAuth2Config.
 type OAuth2Config struct {
 	// IssuerURL is the URL of the OIDC provider's issuer. This is used to
 	// fetch the provider's public keys for token validation.

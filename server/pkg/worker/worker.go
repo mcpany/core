@@ -13,17 +13,23 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// Config holds the configuration for the worker.
+// Config - Auto-generated documentation.
 //
-// Summary: Configuration for worker pool.
+// Summary: Config holds the configuration for the worker.
+//
+// Fields:
+//   - Various fields for Config.
 type Config struct {
 	MaxWorkers   int
 	MaxQueueSize int
 }
 
-// Worker is responsible for processing jobs from the bus.
+// Worker - Auto-generated documentation.
 //
-// Summary: Processes background jobs.
+// Summary: Worker is responsible for processing jobs from the bus.
+//
+// Fields:
+//   - Various fields for Worker.
 type Worker struct {
 	busProvider *bus.Provider
 	pond        pond.Pool
@@ -32,16 +38,22 @@ type Worker struct {
 	wg          sync.WaitGroup
 }
 
-// New creates a new Worker.
+// New creates a new Worker. Summary: Initializes a new Worker. Parameters: - busProvider: *bus.Provider. The bus provider. - cfg: *Config. The worker configuration. Returns: - *Worker: The initialized worker.
 //
-// Summary: Initializes a new Worker.
+// Summary: New creates a new Worker. Summary: Initializes a new Worker. Parameters: - busProvider: *bus.Provider. The bus provider. - cfg: *Config. The worker configuration. Returns: - *Worker: The initialized worker.
 //
 // Parameters:
-//   - busProvider: *bus.Provider. The bus provider.
-//   - cfg: *Config. The worker configuration.
+//   - busProvider (*bus.Provider): The unique identifier used to reference the busProver resource.
+//   - cfg (*Config): The cfg parameter used in the operation.
 //
 // Returns:
-//   - *Worker: The initialized worker.
+//   - (*Worker): The resulting Worker object containing the requested data.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func New(busProvider *bus.Provider, cfg *Config) *Worker {
 	return &Worker{
 		busProvider: busProvider,
@@ -52,12 +64,21 @@ func New(busProvider *bus.Provider, cfg *Config) *Worker {
 	}
 }
 
-// Start starts the worker and its background tasks.
+// Start - Auto-generated documentation.
 //
-// Summary: Starts the worker processing loop.
+// Summary: Start starts the worker and its background tasks.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the worker.
+//   - args: Variable arguments.
+//
+// Returns:
+//   - result: The result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - May modify internal state or perform external calls.
 func (w *Worker) Start(ctx context.Context) {
 	w.wg.Add(1)
 	go w.startToolExecutionWorker(ctx)

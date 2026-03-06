@@ -63,7 +63,12 @@ const (
 	labelStatus          = "status"
 )
 
-// ToolUsageStats represents usage statistics for a tool.
+// ToolUsageStats - Auto-generated documentation.
+//
+// Summary: ToolUsageStats represents usage statistics for a tool.
+//
+// Fields:
+//   - Various fields for ToolUsageStats.
 type ToolUsageStats struct {
 	Name      string `json:"name"`
 	ServiceID string `json:"serviceId"`
@@ -209,7 +214,12 @@ func (a *Application) handleDebugSeedTraffic() http.HandlerFunc {
 	}
 }
 
-// ToolFailureStats represents failure statistics for a tool.
+// ToolFailureStats - Auto-generated documentation.
+//
+// Summary: ToolFailureStats represents failure statistics for a tool.
+//
+// Fields:
+//   - Various fields for ToolFailureStats.
 type ToolFailureStats struct {
 	Name        string  `json:"name"`
 	ServiceID   string  `json:"serviceId"`
@@ -329,7 +339,12 @@ func (a *Application) handleDashboardToolFailures() http.HandlerFunc {
 	}
 }
 
-// ToolAnalytics represents detailed usage analytics for a tool.
+// ToolAnalytics - Auto-generated documentation.
+//
+// Summary: ToolAnalytics represents detailed usage analytics for a tool.
+//
+// Fields:
+//   - Various fields for ToolAnalytics.
 type ToolAnalytics struct {
 	Name        string  `json:"name"`
 	ServiceID   string  `json:"serviceId"`
@@ -443,13 +458,23 @@ func (a *Application) handleDashboardToolUsage() http.HandlerFunc {
 	}
 }
 
-// ServiceHealthResponse represents the response for the health dashboard.
+// ServiceHealthResponse - Auto-generated documentation.
+//
+// Summary: ServiceHealthResponse represents the response for the health dashboard.
+//
+// Fields:
+//   - Various fields for ServiceHealthResponse.
 type ServiceHealthResponse struct {
 	Services []ServiceHealth                 `json:"services"`
 	History  map[string][]health.HistoryPoint `json:"history"`
 }
 
-// ServiceHealth represents the health status of a service.
+// ServiceHealth - Auto-generated documentation.
+//
+// Summary: ServiceHealth represents the health status of a service.
+//
+// Fields:
+//   - Various fields for ServiceHealth.
 type ServiceHealth struct {
 	ID      string `json:"id"`
 	Name    string `json:"name"`

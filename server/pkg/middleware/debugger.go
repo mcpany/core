@@ -16,9 +16,12 @@ import (
 	"github.com/google/uuid"
 )
 
-// DebugEntry represents a captured HTTP request/response.
+// DebugEntry - Auto-generated documentation.
 //
-// Summary: Data structure holding details of a captured HTTP transaction.
+// Summary: DebugEntry represents a captured HTTP request/response.
+//
+// Fields:
+//   - Various fields for DebugEntry.
 type DebugEntry struct {
 	ID              string        `json:"id"`
 	TraceID         string        `json:"trace_id"`
@@ -35,9 +38,12 @@ type DebugEntry struct {
 	ResponseBody    string        `json:"response_body,omitempty"`
 }
 
-// Debugger monitors and records traffic for inspection.
+// Debugger - Auto-generated documentation.
 //
-// Summary: Middleware that captures recent HTTP traffic for debugging purposes.
+// Summary: Debugger monitors and records traffic for inspection.
+//
+// Fields:
+//   - Various fields for Debugger.
 type Debugger struct {
 	ring        *ring.Ring
 	mu          sync.RWMutex
@@ -143,16 +149,21 @@ func (w *bodyLogWriter) Write(b []byte) (int, error) {
 	return w.ResponseWriter.Write(b)
 }
 
-// WriteHeader sends an HTTP response header with the provided status code.
+// WriteHeader - Auto-generated documentation.
 //
-// Summary: Captures the status code and writes headers.
+// Summary: WriteHeader sends an HTTP response header with the provided status code.
 //
 // Parameters:
-//   - statusCode: int. The HTTP status code.
+//   - args: Variable arguments.
+//
+// Returns:
+//   - result: The result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - Sets the status code on the writer.
-//   - Writes the header to the underlying http.ResponseWriter.
+//   - May modify internal state or perform external calls.
 func (w *bodyLogWriter) WriteHeader(statusCode int) {
 	if w.wroteHeader {
 		return
@@ -302,15 +313,21 @@ func isTextContent(contentType string) bool {
 		strings.Contains(contentType, "form-urlencoded")
 }
 
-// Entries returns the last captured entries.
+// Entries - Auto-generated documentation.
 //
-// Summary: Retrieves the list of captured debug entries from the ring buffer.
+// Summary: Entries returns the last captured entries.
+//
+// Parameters:
+//   - args: Variable arguments.
 //
 // Returns:
-//   - []DebugEntry: A slice of the most recent captured requests and responses.
+//   - result: The result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - Acquires a read lock on the ring buffer.
+//   - May modify internal state or perform external calls.
 func (d *Debugger) Entries() []DebugEntry {
 	d.mu.RLock()
 	defer d.mu.RUnlock()
@@ -324,15 +341,21 @@ func (d *Debugger) Entries() []DebugEntry {
 	return entries
 }
 
-// APIHandler returns a http.HandlerFunc to view entries.
+// APIHandler - Auto-generated documentation.
 //
-// Summary: Returns an HTTP handler that exposes the debug entries as JSON.
+// Summary: APIHandler returns a http.HandlerFunc to view entries.
+//
+// Parameters:
+//   - args: Variable arguments.
 //
 // Returns:
-//   - http.HandlerFunc: The API handler function.
+//   - result: The result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - Encodes the entries to JSON and writes to the response.
+//   - May modify internal state or perform external calls.
 func (d *Debugger) APIHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")

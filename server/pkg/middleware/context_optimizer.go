@@ -14,22 +14,31 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-// ContextOptimizer optimises the context size of responses.
+// ContextOptimizer - Auto-generated documentation.
 //
-// Summary: Middleware that truncates excessively long string values in JSON responses to fit within a context window.
+// Summary: ContextOptimizer optimises the context size of responses.
+//
+// Fields:
+//   - Various fields for ContextOptimizer.
 type ContextOptimizer struct {
 	MaxChars int
 }
 
-// NewContextOptimizer creates a new ContextOptimizer.
+// NewContextOptimizer creates a new ContextOptimizer. Summary: Initializes a new ContextOptimizer with a maximum character limit. Parameters: - maxChars: int. The maximum allowed number of characters for string values in the JSON response. Returns: - *ContextOptimizer: The initialized optimizer.
 //
-// Summary: Initializes a new ContextOptimizer with a maximum character limit.
+// Summary: NewContextOptimizer creates a new ContextOptimizer. Summary: Initializes a new ContextOptimizer with a maximum character limit. Parameters: - maxChars: int. The maximum allowed number of characters for string values in the JSON response. Returns: - *ContextOptimizer: The initialized optimizer.
 //
 // Parameters:
-//   - maxChars: int. The maximum allowed number of characters for string values in the JSON response.
+//   - maxChars (int): The max chars parameter used in the operation.
 //
 // Returns:
-//   - *ContextOptimizer: The initialized optimizer.
+//   - (*ContextOptimizer): The resulting ContextOptimizer object containing the requested data.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewContextOptimizer(maxChars int) *ContextOptimizer {
 	return &ContextOptimizer{
 		MaxChars: maxChars,
@@ -216,16 +225,21 @@ func (w *responseBuffer) Write(b []byte) (int, error) {
 	return w.ResponseWriter.Write(b)
 }
 
-// WriteHeader captures the status code and decides whether to buffer based on headers.
+// WriteHeader - Auto-generated documentation.
 //
-// Summary: Writes the HTTP status code.
+// Summary: WriteHeader captures the status code and decides whether to buffer based on headers.
 //
 // Parameters:
-//   - statusCode: int. The HTTP status code.
+//   - args: Variable arguments.
+//
+// Returns:
+//   - result: The result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - Sets the internal status code.
-//   - Checks content-type headers to determine if buffering is needed.
+//   - May modify internal state or perform external calls.
 func (w *responseBuffer) WriteHeader(statusCode int) {
 	if w.wroteHeader {
 		return

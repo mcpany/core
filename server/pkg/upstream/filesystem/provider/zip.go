@@ -15,7 +15,12 @@ import (
 	"github.com/spf13/afero/zipfs"
 )
 
-// ZipProvider provides access to files within a zip archive.
+// ZipProvider - Auto-generated documentation.
+//
+// Summary: ZipProvider provides access to files within a zip archive.
+//
+// Fields:
+//   - Various fields for ZipProvider.
 type ZipProvider struct {
 	fs     afero.Fs
 	closer *os.File
@@ -65,13 +70,21 @@ func NewZipProvider(config *configv1.ZipFs) (*ZipProvider, error) {
 	}, nil
 }
 
-// GetFs returns the underlying filesystem.
+// GetFs - Auto-generated documentation.
+//
+// Summary: GetFs returns the underlying filesystem.
+//
+// Parameters:
+//   - args: Variable arguments.
 //
 // Returns:
-//   - afero.Fs: The result.
+//   - result: The result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func (p *ZipProvider) GetFs() afero.Fs {
 	return p.fs
 }
@@ -95,16 +108,21 @@ func (p *ZipProvider) ResolvePath(virtualPath string) (string, error) {
 	return filepath.Clean(virtualPath), nil
 }
 
-// Close closes the underlying zip file.
+// Close - Auto-generated documentation.
+//
+// Summary: Close closes the underlying zip file.
+//
+// Parameters:
+//   - args: Variable arguments.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - result: The result of the operation.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func (p *ZipProvider) Close() error {
 	if p.closer != nil {
 		return p.closer.Close()

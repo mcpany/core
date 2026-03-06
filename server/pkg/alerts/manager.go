@@ -17,7 +17,12 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// ManagerInterface defines the interface for managing alerts.
+// ManagerInterface - Auto-generated documentation.
+//
+// Summary: ManagerInterface defines the interface for managing alerts.
+//
+// Methods:
+//   - Various methods for ManagerInterface.
 type ManagerInterface interface {
 	// ListAlerts returns a list of all alerts.
 	ListAlerts() []*Alert
@@ -51,7 +56,12 @@ type ManagerInterface interface {
 	DeleteRule(id string) error
 }
 
-// Manager implements ManagerInterface using in-memory storage.
+// Manager - Auto-generated documentation.
+//
+// Summary: Manager implements ManagerInterface using in-memory storage.
+//
+// Fields:
+//   - Various fields for Manager.
 type Manager struct {
 	mu         sync.RWMutex
 	alerts     map[string]*Alert

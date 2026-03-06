@@ -1,70 +1,8 @@
-# Copyright (C) 2025 Author(s) of MCP Any
-# SPDX-License-Identifier: Apache-2.0
-
-# Generated protobuf files
-# **/*.pb.go
-coverage*.out
-coverage.html
-
-# Build artifacts
-/build/
-
-/vendor/
-
-# Node
-node_modules/
-
-/bazel-*
-
-# Gemini CLI
-.gemini/
-
-# Log files
-*.log
-*.log.json
-
-# Python cache
-__pycache__/
-coverage.html
-.cache/
 build/
-
-# Jules Agent
-.[Jj][Uu][Ll][Ee][Ss]/
-
-# Database
-*.db
-*.db-shm
-*.db-wal
-data/
-mcpany.db
-
-.audits/
-.audit/
-*.txt
-
-# Lint reports
-lint_report.*
-.last-run
-**/.last-run.json
-
-# Secrets
-ui/secrets-master.key
-ui/secrets-store.json
-.build-context/
-proto/node_modules/
-proto/node_modules
-server/pkg/tool/testdata/jsonecho/jsonecho
-server/examples/demo/stdio/my-tool-bin
-/skills/
-
-# Test binaries
-*.test
-package-lock.json
-proto/**/*.ts
-proto/google
-client_info.json
-oauth_env.sh
-AUDIT_REPORT.md
-package.json
-.github/scripts/check-results-and-comment.sh
+docker/
+node_modules/
+__pycache__/
+.pytest_cache/
+target/
+coverage/
+*.pyc

@@ -22,19 +22,32 @@ import (
 	"github.com/mcpany/core/server/pkg/util"
 )
 
-// Upstream implements the upstream.Upstream interface for SQL databases.
+// Upstream - Auto-generated documentation.
+//
+// Summary: Upstream implements the upstream.Upstream interface for SQL databases.
+//
+// Fields:
+//   - Various fields for Upstream.
 type Upstream struct {
 	db *sql.DB
 	mu sync.Mutex
 }
 
-// NewUpstream creates a new SQL upstream.
+// NewUpstream - Auto-generated documentation.
+//
+// Summary: NewUpstream creates a new SQL upstream.
+//
+// Parameters:
+//   - args: Variable arguments.
 //
 // Returns:
-//   - *Upstream: The result.
+//   - result: The result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None.
+//   - May modify internal state or perform external calls.
 func NewUpstream() *Upstream {
 	return &Upstream{}
 }

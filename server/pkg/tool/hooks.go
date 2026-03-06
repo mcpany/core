@@ -28,9 +28,12 @@ type compiledRule struct {
 	rule          *configv1.CallPolicyRule
 }
 
-// PolicyHook implements PreCallHook using CallPolicy.
+// PolicyHook - Auto-generated documentation.
 //
-// Summary: Pre-call hook that enforces call policies defined in configuration.
+// Summary: PolicyHook implements PreCallHook using CallPolicy.
+//
+// Fields:
+//   - Various fields for PolicyHook.
 type PolicyHook struct {
 	policy        *configv1.CallPolicy
 	compiledRules []compiledRule
@@ -151,9 +154,12 @@ func (h *PolicyHook) ExecutePre(
 
 // (Deprecated hooks removed)
 
-// WebhookClient handles the communication with an external webhook.
+// WebhookClient - Auto-generated documentation.
 //
-// Summary: Client for sending CloudEvents to external webhooks.
+// Summary: WebhookClient handles the communication with an external webhook.
+//
+// Fields:
+//   - Various fields for WebhookClient.
 type WebhookClient struct {
 	url     string
 	timeout time.Duration
@@ -261,22 +267,31 @@ func (c *WebhookClient) Call(ctx context.Context, eventType string, data any) (*
 	return respEvent, nil
 }
 
-// WebhookHook supports modification of requests and responses via external webhook using CloudEvents.
+// WebhookHook - Auto-generated documentation.
 //
-// Summary: Hook implementation that delegates logic to an external webhook.
+// Summary: WebhookHook supports modification of requests and responses via external webhook using CloudEvents.
+//
+// Fields:
+//   - Various fields for WebhookHook.
 type WebhookHook struct {
 	client *WebhookClient
 }
 
-// NewWebhookHook creates a new WebhookHook.
+// NewWebhookHook creates a new WebhookHook. Summary: Initializes a new WebhookHook. Parameters: - config: *configv1.WebhookConfig. The webhook configuration. Returns: - *WebhookHook: The initialized hook.
 //
-// Summary: Initializes a new WebhookHook.
+// Summary: NewWebhookHook creates a new WebhookHook. Summary: Initializes a new WebhookHook. Parameters: - config: *configv1.WebhookConfig. The webhook configuration. Returns: - *WebhookHook: The initialized hook.
 //
 // Parameters:
-//   - config: *configv1.WebhookConfig. The webhook configuration.
+//   - config (*configv1.WebhookConfig): The configuration settings to be applied.
 //
 // Returns:
-//   - *WebhookHook: The initialized hook.
+//   - (*WebhookHook): The resulting WebhookHook object containing the requested data.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewWebhookHook(config *configv1.WebhookConfig) *WebhookHook {
 	return &WebhookHook{
 		client: NewWebhookClient(config),
@@ -431,9 +446,12 @@ func (h *WebhookHook) ExecutePost(
 	return result, nil
 }
 
-// WebhookStatus represents the status returned by the webhook.
+// WebhookStatus - Auto-generated documentation.
 //
-// Summary: Status information included in the webhook response.
+// Summary: WebhookStatus represents the status returned by the webhook.
+//
+// Fields:
+//   - Various fields for WebhookStatus.
 type WebhookStatus struct {
 	// Code is the status code returned by the webhook.
 	Code    int    `json:"code"`
@@ -441,9 +459,12 @@ type WebhookStatus struct {
 	Message string `json:"message"`
 }
 
-// SigningRoundTripper signs the request using the webhook signer.
+// SigningRoundTripper - Auto-generated documentation.
 //
-// Summary: HTTP Transport that adds HMAC signatures to outgoing requests.
+// Summary: SigningRoundTripper signs the request using the webhook signer.
+//
+// Fields:
+//   - Various fields for SigningRoundTripper.
 type SigningRoundTripper struct {
 	signer *webhook.Webhook
 	base   http.RoundTripper

@@ -28,10 +28,12 @@ import (
 // Pre-allocated to avoid allocation on every request.
 var metricRateLimitRequestsTotal = []string{"rate_limit", "requests_total"}
 
-// RateLimitMiddleware is a tool execution middleware that provides rate limiting
-// functionality for upstream services.
+// RateLimitMiddleware - Auto-generated documentation.
 //
-// Summary: Middleware for rate limiting tool execution.
+// Summary: RateLimitMiddleware is a tool execution middleware that provides rate limiting
+//
+// Fields:
+//   - Various fields for RateLimitMiddleware.
 type RateLimitMiddleware struct {
 	toolManager tool.ManagerInterface
 	tokenizer   tokenizer.Tokenizer
@@ -46,31 +48,43 @@ type RateLimitMiddleware struct {
 // Summary: Functional option for RateLimitMiddleware.
 type Option func(*RateLimitMiddleware)
 
-// WithTokenizer sets a custom tokenizer for the middleware.
+// WithTokenizer sets a custom tokenizer for the middleware. Summary: Configures a custom tokenizer. Parameters: - t (tokenizer.Tokenizer): The tokenizer to use. Returns: - (Option): The configured option.
 //
-// Summary: Configures a custom tokenizer.
+// Summary: WithTokenizer sets a custom tokenizer for the middleware. Summary: Configures a custom tokenizer. Parameters: - t (tokenizer.Tokenizer): The tokenizer to use. Returns: - (Option): The configured option.
 //
 // Parameters:
-//   - t (tokenizer.Tokenizer): The tokenizer to use.
+//   - t (tokenizer.Tokenizer): The t parameter used in the operation.
 //
 // Returns:
-//   - (Option): The configured option.
+//   - (Option): The resulting Option object containing the requested data.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func WithTokenizer(t tokenizer.Tokenizer) Option {
 	return func(m *RateLimitMiddleware) {
 		m.tokenizer = t
 	}
 }
 
-// NewRateLimitMiddleware creates a new RateLimitMiddleware.
+// NewRateLimitMiddleware creates a new RateLimitMiddleware. Summary: Initializes the rate limit middleware. Parameters: - toolManager (tool.ManagerInterface): The tool manager. - opts (...Option): Optional configuration settings. Returns: - (*RateLimitMiddleware): The initialized middleware.
 //
-// Summary: Initializes the rate limit middleware.
+// Summary: NewRateLimitMiddleware creates a new RateLimitMiddleware. Summary: Initializes the rate limit middleware. Parameters: - toolManager (tool.ManagerInterface): The tool manager. - opts (...Option): Optional configuration settings. Returns: - (*RateLimitMiddleware): The initialized middleware.
 //
 // Parameters:
-//   - toolManager (tool.ManagerInterface): The tool manager.
-//   - opts (...Option): Optional configuration settings.
+//   - toolManager (tool.ManagerInterface): The tool manager parameter used in the operation.
+//   - opts (...Option): The opts parameter used in the operation.
 //
 // Returns:
-//   - (*RateLimitMiddleware): The initialized middleware.
+//   - (*RateLimitMiddleware): The resulting RateLimitMiddleware object containing the requested data.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewRateLimitMiddleware(toolManager tool.ManagerInterface, opts ...Option) *RateLimitMiddleware {
 	m := &RateLimitMiddleware{
 		toolManager: toolManager,

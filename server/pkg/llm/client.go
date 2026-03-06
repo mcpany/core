@@ -14,7 +14,12 @@ import (
 	"time"
 )
 
-// Client is the interface for an LLM client.
+// Client - Auto-generated documentation.
+//
+// Summary: Client is the interface for an LLM client.
+//
+// Methods:
+//   - Various methods for Client.
 type Client interface {
 	// ChatCompletion sends a chat request to the LLM and returns the response.
 	//
@@ -37,24 +42,44 @@ type Client interface {
 	ChatCompletion(ctx context.Context, req ChatRequest) (*ChatResponse, error)
 }
 
-// ChatRequest represents a chat completion request.
+// ChatRequest - Auto-generated documentation.
+//
+// Summary: ChatRequest represents a chat completion request.
+//
+// Fields:
+//   - Various fields for ChatRequest.
 type ChatRequest struct {
 	Model    string    `json:"model"`
 	Messages []Message `json:"messages"`
 }
 
-// Message represents a chat message.
+// Message - Auto-generated documentation.
+//
+// Summary: Message represents a chat message.
+//
+// Fields:
+//   - Various fields for Message.
 type Message struct {
 	Role    string `json:"role"`
 	Content string `json:"content"`
 }
 
-// ChatResponse represents a chat completion response.
+// ChatResponse - Auto-generated documentation.
+//
+// Summary: ChatResponse represents a chat completion response.
+//
+// Fields:
+//   - Various fields for ChatResponse.
 type ChatResponse struct {
 	Content string `json:"content"`
 }
 
-// OpenAIClient implements Client for OpenAI.
+// OpenAIClient - Auto-generated documentation.
+//
+// Summary: OpenAIClient implements Client for OpenAI.
+//
+// Fields:
+//   - Various fields for OpenAIClient.
 type OpenAIClient struct {
 	apiKey  string
 	baseURL string

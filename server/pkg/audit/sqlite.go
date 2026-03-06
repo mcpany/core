@@ -17,9 +17,12 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-// SQLiteAuditStore writes audit logs to a SQLite database.
+// SQLiteAuditStore - Auto-generated documentation.
 //
-// Summary: Stores audit logs in a local SQLite database with tamper-evident hashing.
+// Summary: SQLiteAuditStore writes audit logs to a SQLite database.
+//
+// Fields:
+//   - Various fields for SQLiteAuditStore.
 type SQLiteAuditStore struct {
 	db *sql.DB
 	mu sync.Mutex
@@ -311,19 +314,21 @@ func (s *SQLiteAuditStore) Read(ctx context.Context, filter Filter) ([]Entry, er
 	return entries, nil
 }
 
-// Verify checks the integrity of the audit logs.
+// Verify - Auto-generated documentation.
 //
-// Summary: Validates the cryptographic hash chain of all audit entries.
+// Summary: Verify checks the integrity of the audit logs.
+//
+// Parameters:
+//   - args: Variable arguments.
 //
 // Returns:
-//   - bool: True if the chain is valid, false otherwise.
-//   - error: An error if verification fails or data is corrupted.
+//   - result: The result of the operation.
 //
 // Errors:
-//   - Returns error if a hash mismatch is detected.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - Scans the entire audit_logs table.
+//   - May modify internal state or perform external calls.
 func (s *SQLiteAuditStore) Verify() (bool, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -371,15 +376,21 @@ func (s *SQLiteAuditStore) Verify() (bool, error) {
 	return true, nil
 }
 
-// Close closes the database connection.
+// Close - Auto-generated documentation.
 //
-// Summary: Closes the SQLite database connection.
+// Summary: Close closes the database connection.
+//
+// Parameters:
+//   - args: Variable arguments.
 //
 // Returns:
-//   - error: An error if closing fails.
+//   - result: The result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - Closes the DB connection.
+//   - May modify internal state or perform external calls.
 func (s *SQLiteAuditStore) Close() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

@@ -11,23 +11,32 @@ import (
 	"github.com/mcpany/core/server/pkg/tool"
 )
 
-// ResilienceMiddleware provides circuit breaker and retry functionality for tool executions.
+// ResilienceMiddleware - Auto-generated documentation.
 //
-// Summary: Middleware that wraps tool executions with circuit breakers, retries, and timeouts.
+// Summary: ResilienceMiddleware provides circuit breaker and retry functionality for tool executions.
+//
+// Fields:
+//   - Various fields for ResilienceMiddleware.
 type ResilienceMiddleware struct {
 	toolManager tool.ManagerInterface
 	managers    sync.Map // map[string]*resilience.Manager (serviceID -> Manager)
 }
 
-// NewResilienceMiddleware creates a new ResilienceMiddleware.
+// NewResilienceMiddleware creates a new ResilienceMiddleware. Summary: Initializes the ResilienceMiddleware with a tool manager. Parameters: - toolManager: tool.ManagerInterface. The manager for retrieving tool and service information. Returns: - *ResilienceMiddleware: The initialized middleware.
 //
-// Summary: Initializes the ResilienceMiddleware with a tool manager.
+// Summary: NewResilienceMiddleware creates a new ResilienceMiddleware. Summary: Initializes the ResilienceMiddleware with a tool manager. Parameters: - toolManager: tool.ManagerInterface. The manager for retrieving tool and service information. Returns: - *ResilienceMiddleware: The initialized middleware.
 //
 // Parameters:
-//   - toolManager: tool.ManagerInterface. The manager for retrieving tool and service information.
+//   - toolManager (tool.ManagerInterface): The tool manager parameter used in the operation.
 //
 // Returns:
-//   - *ResilienceMiddleware: The initialized middleware.
+//   - (*ResilienceMiddleware): The resulting ResilienceMiddleware object containing the requested data.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewResilienceMiddleware(toolManager tool.ManagerInterface) *ResilienceMiddleware {
 	return &ResilienceMiddleware{
 		toolManager: toolManager,

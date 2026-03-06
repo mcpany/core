@@ -14,7 +14,12 @@ import (
 	"golang.org/x/oauth2"
 )
 
-// OIDCConfig holds the configuration for the OIDC provider.
+// OIDCConfig - Auto-generated documentation.
+//
+// Summary: OIDCConfig holds the configuration for the OIDC provider.
+//
+// Fields:
+//   - Various fields for OIDCConfig.
 type OIDCConfig struct {
 	Issuer       string
 	ClientID     string
@@ -22,7 +27,12 @@ type OIDCConfig struct {
 	RedirectURL  string
 }
 
-// OIDCProvider handles OIDC authentication flow.
+// OIDCProvider - Auto-generated documentation.
+//
+// Summary: OIDCProvider handles OIDC authentication flow.
+//
+// Fields:
+//   - Various fields for OIDCProvider.
 type OIDCProvider struct {
 	config       OIDCConfig
 	provider     *oidc.Provider
