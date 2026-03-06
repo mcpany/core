@@ -456,6 +456,7 @@ else
 	@echo "Running lint (using pre-commit)..."
 	@mkdir -p $(BUILD_DIR)/.cache/pre-commit $(BUILD_DIR)/.cache/golangci-lint
 	@export PATH=$(TOOL_INSTALL_DIR):$(BUILD_DIR)/venv/bin:$$PATH && \
+	git config --global --add safe.directory "*" && \
 	export PRE_COMMIT_HOME=$${PRE_COMMIT_HOME:-$(BUILD_DIR)/.cache/pre-commit} && \
 	export GOLANGCI_LINT_CACHE=$(BUILD_DIR)/.cache/golangci-lint && \
 	export GOWORK=off && \
