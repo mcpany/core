@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-06 Evolution)
+*   **[P0] Authenticated Localhost**: Implement mandatory token-based handshakes for local connections. (Added: 2026-03-06)
+*   **[P0] Semantic Sanitizer Middleware**: SLM-based intent inspection for A2A and tool calls. (Added: 2026-03-06)
+*   **[P1] Agent Hook API**: Standardized hooks for third-party security and compliance tools. (Added: 2026-03-06)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

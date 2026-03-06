@@ -59,3 +59,12 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-06:** Evolving to "Authenticated Localhost" to mitigate browser-based hijacking exploits (OpenClaw-style).
+
+### Update: 2026-03-06 - Transition to Authenticated Localhost
+**Context:** Today's market sync revealed a critical vulnerability in OpenClaw where malicious websites could hijack local agents via browser-based WebSocket brute-forcing.
+**Architecture Adjustment:**
+*   Moving beyond simple `127.0.0.1` binding to **Authenticated Localhost**.
+*   All local listeners (WebSocket, gRPC, HTTP) will now require a `X-MCP-Local-Token` or a cryptographic challenge-response handshake.
+*   The token is generated on startup and stored in a file accessible only by the local user (`~/.mcpany/local_secret`).
+**Security Impact:** Prevents Cross-Site Request Forgery (CSRF) and Cross-Origin hijacking of the MCP gateway from the user's browser, even if the service is bound to localhost.

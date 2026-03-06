@@ -46,3 +46,12 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-03-06:** Adding "Semantic Sanitization" to prevent A2A Contagion across the agent mesh.
+
+### Update: 2026-03-06 - Immune-System Middleware for A2A
+**Context:** Emergence of "A2A Contagion" where malicious intent is propagated between agents via poisoned "Agent Cards" or task payloads.
+**Architecture Adjustment:**
+*   Introducing a **Semantic Sanitization Layer** in the `A2ABridgeMiddleware`.
+*   Every inter-agent message is passed through a "Small Language Model" (SLM) filter trained to detect recursive exfiltration and unauthorized capability-escalation prompts.
+*   Implementation of "Agent Fingerprinting" to track the lineage and reputation of A2A nodes.
+**Security Impact:** Mitigates lateral movement of malicious intent across heterogeneous agent swarms.
