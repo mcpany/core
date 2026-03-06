@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-06]
+### Focus: Zero-Trust Origin Validation & Intent-Scoped Tooling
+**Context**: Today's research on the OpenClaw "ClawJacked" exploit (CVE-2026-2256) confirms that local-only binding is insufficient. We must validate the *origin* of every request, even those arriving on localhost, to prevent browser-based agent hijacking.
+**Strategic Pivot**:
+- **Origin-Aware Authorization**: MCP Any will implement mandatory origin validation for all tool calls. Requests must originate from a signed binary or an authenticated local session, blocking silent hijacking from rogue websites.
+- **Intent-Scoped Discovery (Lazy-Discovery 2.0)**: Transitioning from simple keyword-based discovery to "Intent-Aware" discovery. Tools are only "visible" to the agent if they align with a user-confirmed intent, minimizing the attack surface and token bloat.
+- **Independent Agent Identities**: Moving away from shared API keys towards unique, short-lived certificates for every agent instance. This enables granular auditing and immediate revocation of compromised agents without impacting the entire swarm.

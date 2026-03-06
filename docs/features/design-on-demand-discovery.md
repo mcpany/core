@@ -57,3 +57,6 @@ As the number of available MCP tools grows, agents face "context pollution"—wh
 
 ## 7. Evolutionary Changelog
 *   **2026-02-25:** Initial Document Creation.
+*   **2026-03-06:** Evolution to **Lazy-MCP 2.0**.
+    - **Context**: Market sync reveals that simple search is insufficient; agents need "Intent-Aware" discovery to minimize attack surface and token usage.
+    - **Update**: Introducing semantic intent-matching for discovery. Tools are only "hydrated" into the agent's context if they align with the high-level intent verified by the User/Policy Engine.
