@@ -46,3 +46,4 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-03-06:** Integrated ISA (Intent-Scoped Attestation) into the A2A handoff flow. A2A messages now carry signed "Intent Tokens" to prevent unauthorized escalation during cross-agent delegation.
