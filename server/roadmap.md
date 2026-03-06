@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-06 Evolution)
+*   **[P0] Adaptive Security Sandbox**: Heuristic-based throttling and intent-drift detection to block rapid-fire adaptive exploits. (Added: 2026-03-06)
+*   **[P1] CLI-Native Protocol Adapter**: Advanced terminal tool support for Gemini CLI and Claude Code (streaming/scripting). (Added: 2026-03-06)
+*   **[P1] Intent-Scoped Sub-Network Isolation**: Dynamically restrict tool network/FS access based on session intent. (Added: 2026-03-06)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

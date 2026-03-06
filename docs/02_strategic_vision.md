@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-06]
+### Focus: Adaptive Runtime Security & Deep CLI-Agent Integration
+**Context**: The 255% surge in agentic AI vulnerabilities, specifically the emergence of "Adaptive Runtime Exploits" where agents autonomously re-engineer payloads in milliseconds, requires a fundamental shift in defense. Simultaneously, the maturity of terminal-based agents like Gemini CLI and Claude Code demands a more native integration layer.
+**Strategic Pivot**:
+- **Adaptive Runtime Defense**: MCP Any will evolve its Policy Firewall to include "Heuristic Rate-Throttling" and "Intent-Drift Detection" to mitigate rapid-fire autonomous exploit attempts.
+- **Deep CLI Protocol Bridging**: Moving beyond simple command-line execution to a "CLI-Native" adapter that supports the advanced features of Gemini CLI (e.g., streaming and non-interactive script modes) as first-class MCP tools.
+- **Autonomous Reconnaissance Mitigation**: Implementing "Sub-Network Isolation" for tools, ensuring that an agent cannot perform network or filesystem discovery beyond its immediate intent-scoped requirement.
