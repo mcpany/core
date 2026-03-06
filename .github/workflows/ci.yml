@@ -39,7 +39,7 @@ jobs:
   changes:
     runs-on: oci-runner
     container:
-      image: mirror.gcr.io/iowoi/mcp-runner:latest
+      image: iowoi/mcp-runner:latest
       options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     outputs:
       src: ${{ steps.filter.outputs.src }}
@@ -97,7 +97,7 @@ jobs:
     if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: oci-runner
     container:
-      image: mirror.gcr.io/iowoi/mcp-runner:latest
+      image: iowoi/mcp-runner:latest
       options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 90
     steps:
@@ -146,7 +146,7 @@ jobs:
       #     cache: "pip"
 
       - name: Install Python dependencies
-        run: pip install --break-system-packages -r server/requirements.txt
+        run: pip install -r server/requirements.txt
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -182,7 +182,7 @@ jobs:
   unit-test:
     runs-on: oci-runner
     container:
-      image: mirror.gcr.io/iowoi/mcp-runner:latest
+      image: iowoi/mcp-runner:latest
       options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 60
     needs: [changes, build-images]
@@ -230,7 +230,7 @@ jobs:
       #     cache: "pip"
 
       - name: Install Python dependencies
-        run: pip install --break-system-packages -r server/requirements.txt
+        run: pip install -r server/requirements.txt
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -317,7 +317,7 @@ jobs:
     runs-on: ubuntu-latest
     # runs-on: oci-runner
     # container:
-    #   image: mirror.gcr.io/iowoi/mcp-runner:latest
+    #   image: iowoi/mcp-runner:latest
     #   options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 180
     needs: [changes, build-images]
@@ -370,7 +370,7 @@ jobs:
           cache: "pip"
 
       - name: Install Python dependencies
-        run: pip install --break-system-packages -r server/requirements.txt
+        run: pip install -r server/requirements.txt
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -492,7 +492,7 @@ jobs:
     runs-on: ubuntu-latest
     # runs-on: oci-runner
     # container:
-    #   image: mirror.gcr.io/iowoi/mcp-runner:latest
+    #   image: iowoi/mcp-runner:latest
     #   options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     strategy:
       fail-fast: false
@@ -625,7 +625,7 @@ jobs:
   e2e-sequential:
     runs-on: oci-runner
     container:
-      image: mirror.gcr.io/iowoi/mcp-runner:latest
+      image: iowoi/mcp-runner:latest
       options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 180
     needs: [changes, build-images]
@@ -673,7 +673,7 @@ jobs:
           cache: "pip"
 
       - name: Install Python dependencies
-        run: pip install --break-system-packages -r server/requirements.txt
+        run: pip install -r server/requirements.txt
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -776,7 +776,7 @@ jobs:
   e2e-public-api:
     runs-on: oci-runner
     container:
-      image: mirror.gcr.io/iowoi/mcp-runner:latest
+      image: iowoi/mcp-runner:latest
       options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 180
     needs: [changes, build-images]
@@ -825,7 +825,7 @@ jobs:
           cache: "pip"
 
       - name: Install Python dependencies
-        run: pip install --break-system-packages -r server/requirements.txt
+        run: pip install -r server/requirements.txt
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -908,7 +908,7 @@ jobs:
   docker-smoke-test:
     runs-on: oci-runner
     container:
-      image: mirror.gcr.io/iowoi/mcp-runner:latest
+      image: iowoi/mcp-runner:latest
       options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 15
     needs: [changes, build-images]
@@ -962,7 +962,7 @@ jobs:
     # runs-on: ubuntu-latest
     runs-on: oci-runner
     container:
-      image: mirror.gcr.io/iowoi/mcp-runner:latest
+      image: iowoi/mcp-runner:latest
       options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 180
     needs: [changes, build-images]
@@ -1049,7 +1049,7 @@ jobs:
     runs-on: ubuntu-latest
     # runs-on: oci-runner
     # container:
-    #   image: mirror.gcr.io/iowoi/mcp-runner:latest
+    #   image: iowoi/mcp-runner:latest
     #   options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 360 # Increased timeout for k8s tests
     needs: [changes, build-images]
@@ -1151,23 +1151,12 @@ jobs:
           docker load -i image.tar
           rm -f image.tar
 
-      - name: Download HTTP Echo Image
-        uses: actions/download-artifact@v4
-        with:
-          name: image-http-echo-${{ steps.detect-arch.outputs.slug }}
-
-      - name: Load HTTP Echo Image
-        run: |
-          docker load -i image.tar
-          rm -f image.tar
-
       - name: Load Docker Images into Kind
         run: |
           # Now load specific images into Kind
           kind load docker-image mcpany/server:latest --name mcp-e2e
           kind load docker-image mcpany/operator:latest --name mcp-e2e
           kind load docker-image mcpany/ui:latest --name mcp-e2e
-          kind load docker-image mcpany/http-echo-server:latest --name mcp-e2e
 
       - name: Run K8s E2E Tests
         run: |
@@ -1176,7 +1165,7 @@ jobs:
   ci-success:
     runs-on: oci-runner
     container:
-      image: mirror.gcr.io/iowoi/mcp-runner:latest
+      image: iowoi/mcp-runner:latest
       options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     needs:
       [
