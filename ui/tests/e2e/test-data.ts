@@ -258,3 +258,26 @@ export const seedCollection = async (requestContext?: APIRequestContext) => {
 export const cleanupCollection = async (requestContext?: APIRequestContext) => {
     // No-op
 };
+
+export const seedTrace = async (requestContext?: APIRequestContext, traceData?: any) => {
+    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    const trace = traceData || {
+        id: 'trace-1',
+        rootSpan: { name: 'calculate_sum', serviceName: 'math-service', type: 'tool', status: 'success', startTime: Date.now(), endTime: Date.now() + 150 },
+        timestamp: new Date().toISOString(),
+        totalDuration: 150,
+        status: 'success',
+        trigger: 'user'
+    };
+    try {
+        const res = await context.post('/api/v1/debug/traces', { data: trace, headers: HEADERS });
+        if (!res.ok()) {
+            const text = await res.text();
+            throw new Error(`Failed to seed trace: ${res.status()} ${text}`);
+        }
+        console.log("Trace seeded successfully.");
+    } catch (e) {
+        console.log(`Failed to seed trace: ${e}`);
+        throw e;
+    }
+};

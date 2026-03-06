@@ -4,23 +4,19 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { seedTrace, seedUser } from './test-data';
 
 test.describe('Trace Viewer', () => {
-  test.beforeEach(async ({ page }) => {
-    // Mock Traces API for all tests in this suite
-    await page.route('/api/traces', async route => {
-        await route.fulfill({
-            json: [
-                {
-                    id: 'trace-1',
-                    rootSpan: { name: 'calculate_sum', serviceName: 'math-service', type: 'tool' },
-                    timestamp: new Date().toISOString(),
-                    totalDuration: 150,
-                    status: 'success',
-                    trigger: 'user'
-                }
-            ]
-        });
+  test.beforeEach(async ({ request }) => {
+    // Seed test trace to backend
+    await seedUser(request, 'e2e-admin');
+    await seedTrace(request, {
+        id: 'trace-1',
+        rootSpan: { name: 'calculate_sum', serviceName: 'math-service', type: 'tool', status: 'success', startTime: Date.now(), endTime: Date.now() + 150 },
+        timestamp: new Date().toISOString(),
+        totalDuration: 150,
+        status: 'success',
+        trigger: 'user'
     });
   });
 
@@ -74,7 +70,16 @@ test.describe('Trace Viewer', () => {
     await expect(page.locator('text=Root Input')).toBeVisible();
   });
 
-  test('should filter traces', async ({ page }) => {
+  test('should filter traces', async ({ page, request }) => {
+    // We already seeded one in beforeEach, let's wait and see
+    await page.goto('/login');
+    await page.fill('input[name="username"]', 'e2e-admin');
+    await page.fill('input[name="password"]', 'password');
+    await Promise.all([
+      page.waitForURL('/', { timeout: 30000 }),
+      page.click('button[type="submit"]', { force: true })
+    ]);
+
     await page.goto('/traces');
 
     // Wait for traces
@@ -89,6 +94,14 @@ test.describe('Trace Viewer', () => {
   });
 
   test('should replay trace in playground', async ({ page }) => {
+    await page.goto('/login');
+    await page.fill('input[name="username"]', 'e2e-admin');
+    await page.fill('input[name="password"]', 'password');
+    await Promise.all([
+      page.waitForURL('/', { timeout: 30000 }),
+      page.click('button[type="submit"]', { force: true })
+    ]);
+
     await page.goto('/traces');
 
     // Ensure we have a trace to click
