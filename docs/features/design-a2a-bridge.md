@@ -46,3 +46,10 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-03-06:** Evolving toward Persistent Agent Residency.
+    - **Context**: Today's market sync revealed a shift in the ecosystem (e.g., OpenAgents) toward "persistent agent networks" rather than transient task-based swarms.
+    - **Architecture Adjustment**:
+        - Deprecating transient A2A sessions in Section 4.
+        - Introducing "Agent Presence Residency" where MCP Any maintains a persistent mailbox and network identity for agents even when they are offline or dormant.
+        - Adding "Economical Reasoning" metadata to the A2A tool schemas to help agents mitigate the "Token Tax" observed in recent benchmarks (OpenClaw vs. Claude Code).
+    - **Strategic Alignment**: Positions MCP Any as a core node in the persistent agent mesh rather than just a pass-through gateway.
