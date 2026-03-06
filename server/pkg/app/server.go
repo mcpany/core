@@ -1715,8 +1715,10 @@ func (a *Application) runServerMode(
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}
+
+		// Encode proto message properly
 		w.Header().Set("Content-Type", "application/json")
-		_ = json.NewEncoder(w).Encode(resp)
+		_ = json.NewEncoder(w).Encode(resp.GetServices())
 	})))
 
 	logging.GetLogger().Info("DEBUG: Registering /mcp/u/ handler")

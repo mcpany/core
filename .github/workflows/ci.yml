@@ -99,7 +99,6 @@ jobs:
     container:
       image: iowoi/mcp-runner:latest
       options: --user root -v /var/run/docker.sock:/var/run/docker.sock
-      options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 90
     steps:
       # - name: Free Disk Space (Fast)
@@ -143,11 +142,11 @@ jobs:
       # - name: Set up Python
       #   uses: actions/setup-python@v6
       #   with:
-      #     python-version: "3.13"
+      #     python-version: "3.12"
       #     cache: "pip"
 
       - name: Install Python dependencies
-        run: pip install -r server/requirements.txt
+        run: pip install -r server/requirements.txt --break-system-packages
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -184,7 +183,6 @@ jobs:
     runs-on: oci-runner
     container:
       image: iowoi/mcp-runner:latest
-      options: --user root -v /var/run/docker.sock:/var/run/docker.sock
       options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 60
     needs: [changes, build-images]
@@ -228,11 +226,11 @@ jobs:
       # - name: Set up Python
       #   uses: actions/setup-python@v6
       #   with:
-      #     python-version: "3.13"
+      #     python-version: "3.12"
       #     cache: "pip"
 
       - name: Install Python dependencies
-        run: pip install -r server/requirements.txt
+        run: pip install -r server/requirements.txt --break-system-packages
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -297,7 +295,7 @@ jobs:
 
       - name: Load Time Server Image
         run: |
-          docker load -i image.tar
+          if docker load -i image.tar; then echo "Loaded via docker"; elif sudo docker load -i image.tar; then echo "Loaded via sudo"; else echo "Failed to load" && exit 1; fi
           rm -f image.tar
 
       - name: Prepare environment
@@ -368,11 +366,11 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: "3.13"
+          python-version: "3.12"
           cache: "pip"
 
       - name: Install Python dependencies
-        run: pip install -r server/requirements.txt
+        run: pip install -r server/requirements.txt --break-system-packages
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -439,7 +437,7 @@ jobs:
 
       - name: Load HTTP Echo Image
         run: |
-          docker load -i image.tar
+          if docker load -i image.tar; then echo "Loaded via docker"; elif sudo docker load -i image.tar; then echo "Loaded via sudo"; else echo "Failed to load" && exit 1; fi
           rm -f image.tar
 
       - name: Download Time Server Image
@@ -449,7 +447,7 @@ jobs:
 
       - name: Load Time Server Image
         run: |
-          docker load -i image.tar
+          if docker load -i image.tar; then echo "Loaded via docker"; elif sudo docker load -i image.tar; then echo "Loaded via sudo"; else echo "Failed to load" && exit 1; fi
           rm -f image.tar
 
       - name: Download Cowsay Image
@@ -459,7 +457,7 @@ jobs:
 
       - name: Load Cowsay Image
         run: |
-          docker load -i image.tar
+          if docker load -i image.tar; then echo "Loaded via docker"; elif sudo docker load -i image.tar; then echo "Loaded via sudo"; else echo "Failed to load" && exit 1; fi
           rm -f image.tar
 
       - name: Download Everything Image
@@ -469,7 +467,7 @@ jobs:
 
       - name: Load Everything Image
         run: |
-          docker load -i image.tar
+          if docker load -i image.tar; then echo "Loaded via docker"; elif sudo docker load -i image.tar; then echo "Loaded via sudo"; else echo "Failed to load" && exit 1; fi
           rm -f image.tar
 
       - name: Prepare environment
@@ -629,7 +627,6 @@ jobs:
     container:
       image: iowoi/mcp-runner:latest
       options: --user root -v /var/run/docker.sock:/var/run/docker.sock
-      options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 180
     needs: [changes, build-images]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -672,11 +669,11 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: "3.13"
+          python-version: "3.12"
           cache: "pip"
 
       - name: Install Python dependencies
-        run: pip install -r server/requirements.txt
+        run: pip install -r server/requirements.txt --break-system-packages
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -718,7 +715,7 @@ jobs:
 
       - name: Load Server Image
         run: |
-          docker load -i image.tar
+          if docker load -i image.tar; then echo "Loaded via docker"; elif sudo docker load -i image.tar; then echo "Loaded via sudo"; else echo "Failed to load" && exit 1; fi
           rm -f image.tar
 
       - name: Download HTTP Echo Image
@@ -728,7 +725,7 @@ jobs:
 
       - name: Load HTTP Echo Image
         run: |
-          docker load -i image.tar
+          if docker load -i image.tar; then echo "Loaded via docker"; elif sudo docker load -i image.tar; then echo "Loaded via sudo"; else echo "Failed to load" && exit 1; fi
           rm -f image.tar
 
       - name: Download Time Server Image
@@ -738,7 +735,7 @@ jobs:
 
       - name: Load Time Server Image
         run: |
-          docker load -i image.tar
+          if docker load -i image.tar; then echo "Loaded via docker"; elif sudo docker load -i image.tar; then echo "Loaded via sudo"; else echo "Failed to load" && exit 1; fi
           rm -f image.tar
 
       - name: Download Cowsay Image
@@ -748,7 +745,7 @@ jobs:
 
       - name: Load Cowsay Image
         run: |
-          docker load -i image.tar
+          if docker load -i image.tar; then echo "Loaded via docker"; elif sudo docker load -i image.tar; then echo "Loaded via sudo"; else echo "Failed to load" && exit 1; fi
           rm -f image.tar
 
       - name: Download Everything Image
@@ -758,7 +755,7 @@ jobs:
 
       - name: Load Everything Image
         run: |
-          docker load -i image.tar
+          if docker load -i image.tar; then echo "Loaded via docker"; elif sudo docker load -i image.tar; then echo "Loaded via sudo"; else echo "Failed to load" && exit 1; fi
           rm -f image.tar
 
       - name: Prepare environment
@@ -780,7 +777,6 @@ jobs:
     runs-on: oci-runner
     container:
       image: iowoi/mcp-runner:latest
-      options: --user root -v /var/run/docker.sock:/var/run/docker.sock
       options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 180
     needs: [changes, build-images]
@@ -825,11 +821,11 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: "3.13"
+          python-version: "3.12"
           cache: "pip"
 
       - name: Install Python dependencies
-        run: pip install -r server/requirements.txt
+        run: pip install -r server/requirements.txt --break-system-packages
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -914,7 +910,6 @@ jobs:
     container:
       image: iowoi/mcp-runner:latest
       options: --user root -v /var/run/docker.sock:/var/run/docker.sock
-      options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 15
     needs: [changes, build-images]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -955,7 +950,7 @@ jobs:
 
       - name: Load Docker Image
         run: |
-          docker load -i image.tar
+          if docker load -i image.tar; then echo "Loaded via docker"; elif sudo docker load -i image.tar; then echo "Loaded via sudo"; else echo "Failed to load" && exit 1; fi
           rm image.tar
 
       - name: Smoke Test
@@ -968,7 +963,6 @@ jobs:
     runs-on: oci-runner
     container:
       image: iowoi/mcp-runner:latest
-      options: --user root -v /var/run/docker.sock:/var/run/docker.sock
       options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 180
     needs: [changes, build-images]
@@ -1024,7 +1018,7 @@ jobs:
 
       - name: Load Server Image
         run: |
-          docker load -i image.tar
+          if docker load -i image.tar; then echo "Loaded via docker"; elif sudo docker load -i image.tar; then echo "Loaded via sudo"; else echo "Failed to load" && exit 1; fi
           rm -f image.tar
 
       - name: Download UI Test Image
@@ -1034,7 +1028,7 @@ jobs:
 
       - name: Load UI Test Image
         run: |
-          docker load -i image.tar
+          if docker load -i image.tar; then echo "Loaded via docker"; elif sudo docker load -i image.tar; then echo "Loaded via sudo"; else echo "Failed to load" && exit 1; fi
           rm -f image.tar
 
       - name: Download HTTP Echo Image
@@ -1044,7 +1038,7 @@ jobs:
 
       - name: Load HTTP Echo Image
         run: |
-          docker load -i image.tar
+          if docker load -i image.tar; then echo "Loaded via docker"; elif sudo docker load -i image.tar; then echo "Loaded via sudo"; else echo "Failed to load" && exit 1; fi
           rm -f image.tar
 
       - name: Test UI
@@ -1134,7 +1128,7 @@ jobs:
 
       - name: Load Server Image
         run: |
-          docker load -i image.tar
+          if docker load -i image.tar; then echo "Loaded via docker"; elif sudo docker load -i image.tar; then echo "Loaded via sudo"; else echo "Failed to load" && exit 1; fi
           rm -f image.tar
 
       - name: Download Operator Image
@@ -1144,7 +1138,7 @@ jobs:
 
       - name: Load Operator Image
         run: |
-          docker load -i image.tar
+          if docker load -i image.tar; then echo "Loaded via docker"; elif sudo docker load -i image.tar; then echo "Loaded via sudo"; else echo "Failed to load" && exit 1; fi
           rm -f image.tar
 
       - name: Download UI Image
@@ -1154,7 +1148,7 @@ jobs:
 
       - name: Load UI Image
         run: |
-          docker load -i image.tar
+          if docker load -i image.tar; then echo "Loaded via docker"; elif sudo docker load -i image.tar; then echo "Loaded via sudo"; else echo "Failed to load" && exit 1; fi
           rm -f image.tar
 
       - name: Load Docker Images into Kind
@@ -1172,7 +1166,6 @@ jobs:
     runs-on: oci-runner
     container:
       image: iowoi/mcp-runner:latest
-      options: --user root -v /var/run/docker.sock:/var/run/docker.sock
       options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     needs:
       [
