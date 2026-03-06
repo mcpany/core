@@ -7,7 +7,6 @@ import (
 	"bytes"
 	"io"
 	"net/http"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -29,6 +28,13 @@ type GuardrailsConfig struct {
 // Returns:
 //   - gin.HandlerFunc: The Gin middleware handler.
 func NewGuardrailsMiddleware(config GuardrailsConfig) gin.HandlerFunc {
+	// ⚡ BOLT: Pre-compute lowercase byte slices to avoid repetitive conversion and allocations.
+	// Randomized Selection from Top 5 High-Impact Targets
+	blockedPhrasesLower := make([][]byte, len(config.BlockedPhrases))
+	for i, phrase := range config.BlockedPhrases {
+		blockedPhrasesLower[i] = bytes.ToLower([]byte(phrase))
+	}
+
 	return func(c *gin.Context) {
 		// Only check POST requests (likely prompt submissions)
 		if c.Request.Method != "POST" {
@@ -48,10 +54,12 @@ func NewGuardrailsMiddleware(config GuardrailsConfig) gin.HandlerFunc {
 
 		// Check for blocked phrases
 		// Convert to lower case for case-insensitive matching logic MVP
-		bodyLower := strings.ToLower(string(bodyBytes))
+		// ⚡ BOLT: Use bytes.ToLower to avoid string allocation.
+		// Randomized Selection from Top 5 High-Impact Targets
+		bodyLower := bytes.ToLower(bodyBytes)
 
-		for _, phrase := range config.BlockedPhrases {
-			if strings.Contains(bodyLower, strings.ToLower(phrase)) {
+		for _, phraseLower := range blockedPhrasesLower {
+			if bytes.Contains(bodyLower, phraseLower) {
 				c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 					"error":  "Prompt Injection Detected: Request blocked by validation policy.",
 					"policy": "no-jailbreak",
