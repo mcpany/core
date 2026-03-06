@@ -50,8 +50,8 @@ upstream_services:
 			Fs:          afero.NewOsFs(),
 			ConfigPaths: []string{tmpFile.Name()},
 			// Use random ports to avoid conflicts
-			JSONRPCPort: "127.0.0.1:0",
-			GRPCPort:    "127.0.0.1:0",
+			JSONRPCPort: "localhost:0",
+			GRPCPort:    "localhost:0",
 		})
 	}()
 
@@ -59,7 +59,7 @@ upstream_services:
 	select {
 	case <-app.startupCh:
 		// Startup complete
-	case <-time.After(15 * time.Second):
+	case <-time.After(5 * time.Second):
 		t.Fatal("Startup timed out")
 	}
 

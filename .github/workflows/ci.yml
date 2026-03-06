@@ -139,9 +139,14 @@ jobs:
       #     go-version: "1.24"
       #     cache: true
 
+      # - name: Set up Python
+      #   uses: actions/setup-python@v6
+      #   with:
+      #     python-version: "3.13"
+      #     cache: "pip"
 
       - name: Install Python dependencies
-        run: pip install --break-system-packages -r server/requirements.txt
+        run: pip install -r server/requirements.txt
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -160,12 +165,19 @@ jobs:
             ${{ runner.os }}-build-env-bin-v3-
 
       # Cache Lint (golangci-lint, pre-commit)
+      - name: Cache Lint
+        uses: actions/cache@v4
+        with:
+          path: build/.cache
+          key: ${{ runner.os }}-lint-cache-v3-${{ hashFiles('server/go.sum', 'server/.pre-commit-config.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-lint-cache-v3-
 
       - name: Prepare environment
-        run: git config --global --add safe.directory "$GITHUB_WORKSPACE" && make prepare
+        run: make prepare
 
       - name: Lint
-        run: git config --global --add safe.directory "$GITHUB_WORKSPACE" && make lint
+        run: make lint
 
   unit-test:
     runs-on: oci-runner
@@ -211,9 +223,14 @@ jobs:
       #     go-version: "1.24"
       #     cache: true
 
+      # - name: Set up Python
+      #   uses: actions/setup-python@v6
+      #   with:
+      #     python-version: "3.13"
+      #     cache: "pip"
 
       - name: Install Python dependencies
-        run: pip install --break-system-packages -r server/requirements.txt
+        run: pip install -r server/requirements.txt
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -282,7 +299,7 @@ jobs:
           rm -f image.tar
 
       - name: Prepare environment
-        run: git config --global --add safe.directory "$GITHUB_WORKSPACE" && make prepare CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache
+        run: make prepare CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache
 
       - name: Test (Short)
         run: |
@@ -346,9 +363,14 @@ jobs:
           go-version: "1.24"
           cache: true
 
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+          cache: "pip"
 
       - name: Install Python dependencies
-        run: pip install --break-system-packages -r server/requirements.txt
+        run: pip install -r server/requirements.txt
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -449,11 +471,11 @@ jobs:
           rm -f image.tar
 
       - name: Prepare environment
-        run: git config --global --add safe.directory "$GITHUB_WORKSPACE" && make prepare
+        run: make prepare
 
       - name: run parallel e2e
         run: |
-          git config --global --add safe.directory "$GITHUB_WORKSPACE" && make e2e-parallel SHARD=${{ matrix.shard }} SKIP_DOCKER_REBUILD=true CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-e2e-parallel.out
+          make e2e-parallel SHARD=${{ matrix.shard }} SKIP_DOCKER_REBUILD=true CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-e2e-parallel.out
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
@@ -644,9 +666,14 @@ jobs:
           go-version: "1.24"
           cache: true
 
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+          cache: "pip"
 
       - name: Install Python dependencies
-        run: pip install --break-system-packages -r server/requirements.txt
+        run: pip install -r server/requirements.txt
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -732,11 +759,11 @@ jobs:
           rm -f image.tar
 
       - name: Prepare environment
-        run: git config --global --add safe.directory "$GITHUB_WORKSPACE" && make prepare
+        run: make prepare
 
       - name: run sequential e2e
         run: |
-          git config --global --add safe.directory "$GITHUB_WORKSPACE" && make e2e-sequential SKIP_DOCKER_REBUILD=true CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-e2e-sequential.out
+          make e2e-sequential SKIP_DOCKER_REBUILD=true CACHE_TO=type=gha,mode=max CACHE_FROM=type=gha COVERAGE_FILE=coverage-e2e-sequential.out
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
@@ -791,9 +818,14 @@ jobs:
           go-version: "1.24"
           cache: true
 
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+          cache: "pip"
 
       - name: Install Python dependencies
-        run: pip install --break-system-packages -r server/requirements.txt
+        run: pip install -r server/requirements.txt
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -854,7 +886,7 @@ jobs:
       # Intentionally omitting Docker downloads as e2e-public-api doesn't need them
 
       - name: Prepare environment
-        run: git config --global --add safe.directory "$GITHUB_WORKSPACE" && make prepare
+        run: make prepare
 
       - name: Debug Environment
         run: |
