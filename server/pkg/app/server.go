@@ -75,6 +75,7 @@ import (
 	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -1716,7 +1717,13 @@ func (a *Application) runServerMode(
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
-		_ = json.NewEncoder(w).Encode(resp)
+		b, err := protojson.MarshalOptions{UseProtoNames: true}.Marshal(resp)
+		if err != nil {
+			logging.GetLogger().Error("Failed to marshal catalog services response", "error", err)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+		_, _ = w.Write(b)
 	})))
 
 	logging.GetLogger().Info("DEBUG: Registering /mcp/u/ handler")

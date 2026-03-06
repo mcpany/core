@@ -210,6 +210,7 @@ func testFunctionalWeather(t *testing.T, rootDir string) {
 		"-v", fmt.Sprintf("%s:/config.yaml", translatePath(configPath)),
 		"-e", "MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES=true",
 		"-e", "MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true",
+		"-e", "MCPANY_ATTESTATION_TOKEN=e2e-test-token",
 		"mcpany/server:latest",
 		"run", "--config-path", "/config.yaml", "--mcp-listen-address", ":50050", "--api-key", "demo-key",
 	)
@@ -576,7 +577,7 @@ func createDynamicCompose(t *testing.T, rootDir, originalPath string) string {
 	})
 
 	// Inject SSRF allow-lists into mcpany-server environment (first environment block)
-	s = strings.Replace(s, "environment:", "environment:\n      - MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES=true\n      - MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true", 1)
+	s = strings.Replace(s, "environment:", "environment:\n      - MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES=true\n      - MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true\n      - MCPANY_ATTESTATION_TOKEN=e2e-test-token", 1)
 
 	// Inject MCPANY_ENABLE_FILE_CONFIG=true into services
 	if !strings.Contains(s, "MCPANY_ENABLE_FILE_CONFIG") {
@@ -608,17 +609,4 @@ func createDynamicCompose(t *testing.T, rootDir, originalPath string) string {
 	tmpFile.Close()
 
 	return tmpFile.Name()
-}
-
-// translatePath translates a container path to a host path for Docker-in-Docker
-func translatePath(p string) string {
-	hostRoot := os.Getenv("HOST_WORKSPACE_ROOT")
-	if hostRoot == "" {
-		return p
-	}
-	abs, _ := filepath.Abs(p)
-	if strings.HasPrefix(abs, "/workspace") {
-		return strings.Replace(abs, "/workspace", hostRoot, 1)
-	}
-	return p
 }
