@@ -10,19 +10,18 @@
 7. `server/pkg/middleware/audit.go` (Subscriptions and history tracking)
 8. `server/pkg/middleware/semantic_cache_postgres.go` (Closing/opening connection pools)
 9. `server/pkg/app/server.go` (Run and reconcile loops)
-10. `server/pkg/upstream/grpc/grpc_pool.go` (Closing operations on the connection pools)
+10. `server/pkg/middleware/trace.go` (Trace context utility functions)
 
-**Target:** `server/pkg/middleware/global_ratelimit.go`
+**Target:** `server/pkg/middleware/trace.go`
 
 **Risk Profile:**
-This component manages global rate limiting for incoming MCP requests. It relies on caching, handles context propagation for different user identity signals (API Key, User ID, HTTP Headers), and connects dynamically to Redis. Prior to intervention, key methods handling configuration updates, caching layer integration, partitioned key resolution, and configuration hash calculations had zero or extremely low test coverage. Because this is the primary edge defense for preventing DoS/abuse on upstream tools, any untested regressions in routing logic could lead to service disruption or incorrect limit enforcement.
+This component manages context propagation for tracing identifiers (trace ID, span ID, and parent ID) throughout the MCP request lifecycle. Prior to intervention, key methods reading the IDs from context (`GetTraceID`, `GetSpanID`, `GetParentID`) had very low test coverage (0-66%), leaving the foundational tracing system at risk of unobserved regressions. If the identifiers are mismanaged or incorrectly read, debugging complex request flows, tracing latency bottlenecks, and attributing logs across boundaries would break, making the system unobservable during incidents.
 
 **New Coverage:**
-*   `UpdateConfig`: Added coverage to ensure that changing rate limiting properties at runtime propagates to the middleware state correctly (100% coverage).
-*   `getPartitionKey`: Added robust table-driven tests evaluating the context extraction logic. It now verifies correct resolution of IP, User ID, and API keys sourced both via typical Context patterns and directly off incoming HTTP Request headers (100% coverage).
-*   `calculateConfigHash`: Confirmed that structurally identical vs distinct Redis configuration sets are mapped properly to avoid colliding cached client pools (100% coverage).
-*   `getRedisClient`: Validated the cache lookups for Redis connections to assure we are returning active cached clients on identical configs, preventing leakages from excessive redundant client spawning (81.8% coverage).
-*   `getLimiter`: Tested retrieval, fallback logic without Redis configs, and caching behaviors, ensuring we accurately clamp invalid burst inputs (83.3% coverage).
+*   `WithTraceContext`: Added coverage to ensure all IDs (including handling empty parent IDs explicitly) are correctly appended into a context and later retrievable via getters (100% coverage).
+*   `GetTraceID`: Verified that missing properties and properties initialized with incorrect datatypes are safely handled, defaulting to empty strings correctly (100% coverage).
+*   `GetSpanID`: Verified safe extraction and fallback to an empty string on invalid/missing properties (100% coverage).
+*   `GetParentID`: Validated extraction behavior mirroring trace and span ID validation logic, returning empty strings smoothly instead of panicking on invalid types (100% coverage).
 
 **Verification:**
-Confirmed that `go test` specific to the middleware package passes cleanly and coverage has drastically improved (>86%). Linting is passing.
+Confirmed that `go test` specific to the middleware package passes cleanly and coverage for `server/pkg/middleware/trace.go` improved to 100%. `make lint` and `make test` are passing cleanly with zero regressions.
