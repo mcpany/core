@@ -59,3 +59,7 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-07:** Update: Local WebSocket Origin Guard.
+    - **Context**: "ClawJacked" vulnerability demonstrated that `localhost` is not a security boundary when accessed via browser-side WebSockets.
+    - **Architecture Adjustment**: Implementing mandatory `Origin` header validation for all WebSocket listeners.
+    - **Pairing Protocol**: Introducing a CLI-driven pairing flow (e.g., `mcpany pair`) that generates a short-lived token required for any new local connection, ensuring human-in-the-loop verification for new client apps.

@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-07]
+### Focus: Semantic Security & Local Boundary Integrity
+**Context**: The discovery of "ClawJacked" (localhost WebSocket hijacking) and "A2A Contagion" (semantic payload propagation) necessitates a move beyond transport-layer security toward deep intent validation and strict boundary enforcement.
+**Strategic Pivot**:
+- **Boundary-Aware Connectivity**: MCP Any will implement "Origin-Locked" listeners. Even on `localhost`, connections will be rejected unless they provide a cryptographic "Session Handshake" or match a strictly-defined application origin, mitigating browser-based hijacking.
+- **Semantic Intent Firewall**: Moving from capability-based security to "Intent-Locked" security. For A2A handoffs, MCP Any will use a lightweight "Guardian LLM" or Policy Engine (CEL) to verify that a sub-task's intent is a logical descendant of the root authorized task.
+- **Parallel Team Coordination**: Adapting the multi-agent middleware to support "Parallel Swarms" (inspired by Claude Agent Teams), ensuring that state consistency is maintained across concurrent tool executions and agent handoffs.

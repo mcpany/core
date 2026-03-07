@@ -34,6 +34,12 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-07 Evolution)
+*   **[P0] Local WebSocket Origin Guard**: Strict `Origin` header validation and cryptographic pairing for localhost listeners. (Added: 2026-03-07)
+*   **[P0] Semantic Firewall (A2A)**: Intent-based verification for agent-to-agent task delegation. (Added: 2026-03-07)
+*   **[P0] Parallel Swarm Coordination**: Middleware support for concurrent execution in Claude-style "Agent Teams." (Added: 2026-03-07)
+*   **[P1] MCP Metadata v2 Support**: Implementation of icons and website URLs in tool/resource schemas. (Added: 2026-03-07)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
