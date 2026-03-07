@@ -88,4 +88,38 @@ test.describe('Alerts Page', () => {
     // Verify status changes to "resolved"
     await expect(row.getByText('resolved')).toBeVisible();
   });
+
+  test('should bulk acknowledge alerts', async ({ page }) => {
+    await page.goto('/alerts');
+
+    // Wait for the alerts table to be populated
+    await expect(page.getByText('High CPU Usage')).toBeVisible();
+    await expect(page.getByText('API Latency Spike')).toBeVisible();
+
+    // Select the first alert row using the checkbox
+    const firstRow = page.getByRole('row').filter({ hasText: 'High CPU Usage' });
+    await firstRow.getByRole('checkbox').click();
+
+    // Select the second alert row using the checkbox
+    const secondRow = page.getByRole('row').filter({ hasText: 'API Latency Spike' });
+    await secondRow.getByRole('checkbox').click();
+
+    // Verify that the bulk action bar is visible
+    const actionBarText = page.getByText('2 selected');
+    await expect(actionBarText).toBeVisible();
+
+    // Click the bulk "Acknowledge" button
+    const acknowledgeButton = page.getByRole('button', { name: 'Acknowledge', exact: true });
+    await acknowledgeButton.click();
+
+    // Verify toast notification appears
+    await expect(page.getByText('Bulk Update Successful')).toBeVisible();
+
+    // Verify that the selected alerts' statuses changed to "acknowledged"
+    await expect(firstRow.getByText('acknowledged')).toBeVisible();
+    await expect(secondRow.getByText('acknowledged')).toBeVisible();
+
+    // Verify the bulk action bar is hidden after success
+    await expect(actionBarText).toBeHidden();
+  });
 });
