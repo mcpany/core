@@ -83,9 +83,8 @@ test.describe('Alerts Page', () => {
     // Verify toast appears indicating success
     await expect(page.getByText('Status Updated')).toBeVisible();
 
-    // Wait until the 'active' state changes, relying on Playwright retries
-    // Using string matching across the whole row to avoid strict selector issues
-    await expect(row).toContainText('acknowledged', { timeout: 5000 });
+    // The entire row contents may be re-rendered on update. Let's wait for a cell with text 'acknowledged'.
+    await expect(row.getByRole('cell', { name: 'acknowledged' })).toBeVisible({ timeout: 5000 });
   });
 
   test('should resolve alert via dropdown', async ({ page }) => {
@@ -97,7 +96,7 @@ test.describe('Alerts Page', () => {
     await expect(row).toBeVisible();
 
     // Verify it doesn't already say resolved before we click
-    await expect(row.getByText('resolved')).toBeHidden();
+    await expect(row.getByRole('cell', { name: 'resolved' })).toBeHidden();
 
     // Click "More Actions"
     await row.getByRole('button', { name: 'Open menu' }).click();
@@ -111,7 +110,7 @@ test.describe('Alerts Page', () => {
     await expect(page.getByText('Status Updated')).toBeVisible();
 
     // Verify status changes to "resolved"
-    await expect(row).toContainText('resolved', { timeout: 5000 });
+    await expect(row.getByRole('cell', { name: 'resolved' })).toBeVisible({ timeout: 5000 });
   });
 
   test('should bulk acknowledge alerts', async ({ page }) => {
@@ -139,6 +138,10 @@ test.describe('Alerts Page', () => {
 
     // Verify toast notification appears (checking for specific text or role)
     await expect(page.getByText('Bulk Update Successful', { exact: true })).toBeVisible();
+
+    // Verify that the selected alerts' statuses changed to "acknowledged"
+    await expect(firstRow.getByRole('cell', { name: 'acknowledged' })).toBeVisible({ timeout: 5000 });
+    await expect(secondRow.getByRole('cell', { name: 'acknowledged' })).toBeVisible({ timeout: 5000 });
 
     // Verify the bulk action bar is hidden after success
     await expect(actionBarText).toBeHidden();
