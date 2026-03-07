@@ -10,6 +10,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -266,6 +267,11 @@ func TestOpenAPITool_Execute_PathTraversal(t *testing.T) {
 
 func TestOpenAPITool_Execute_InfoLeak(t *testing.T) {
 	t.Parallel()
+
+	// Temporarily unset MCPANY_DEBUG to ensure error masking is active
+	originalDebug := os.Getenv("MCPANY_DEBUG")
+	os.Setenv("MCPANY_DEBUG", "false")
+	defer os.Setenv("MCPANY_DEBUG", originalDebug)
 
 	// Test 1: JSON body should be redacted and truncated (or shown up to max len)
 	serverJSON := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
