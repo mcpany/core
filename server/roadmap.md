@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-07 Evolution)
+*   **[P1] OpenCode-Compatible SDK (Type-Safe)**: Implement Go-based core for a type-safe TypeScript/Python SDK. (Added: 2026-03-07)
+*   **[P1] Visual Diffing Middleware**: Middleware to track and diff resource changes (filesystem, DB) post-tool-execution. (Added: 2026-03-07)
+*   **[P1] CI/CD Agent Trigger Protocol**: Standardized ingestion of CI/CD events to trigger MCP flows. (Added: 2026-03-07)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

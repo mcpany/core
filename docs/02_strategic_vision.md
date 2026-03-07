@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-07]
+### Focus: Programmatic Agency & Visual Traceability
+**Context**: Today's findings indicate a shift from interactive chat agents to programmatic "OpenCode" style SDKs and automated CI/CD triggers. Simultaneously, there is a rising demand for "Visual Diffing" to verify tool side-effects.
+**Strategic Pivot**:
+- **SDK-First Infrastructure**: MCP Any will evolve from a gateway to a "Library + Gateway" model, providing type-safe SDKs that allow developers to embed MCP Any capabilities directly into programmatic workflows.
+- **Visual Traceability Middleware**: Implementing a middleware layer that automatically generates visual diffs for tool calls that modify state (files, DBs, APIs), providing high-fidelity verification for both humans and agents.
+- **Trigger-Based Orchestration**: Expanding the A2A protocol to support "Event-Driven Triggers" from external systems (CI/CD, Webhooks), allowing MCP Any to act as the primary entry point for autonomous automation.
