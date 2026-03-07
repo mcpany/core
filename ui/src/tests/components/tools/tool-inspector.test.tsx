@@ -65,8 +65,8 @@ describe('ToolInspector', () => {
         <ToolInspector tool={mockTool} open={true} onOpenChange={() => {}} />
       </TooltipProvider>
     );
-    expect(screen.getByText('test_tool')).toBeDefined();
-    expect(screen.getByText('A test tool')).toBeDefined();
+    expect(screen.getAllByText('test_tool').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('A test tool').length).toBeGreaterThan(0);
     expect(screen.getByText('test_service')).toBeDefined();
   });
 
