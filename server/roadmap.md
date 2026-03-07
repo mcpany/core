@@ -189,3 +189,7 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Core Middleware Pipeline**: The middleware architecture is robust and extensible.
 - **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates protocol details from business logic.
 - **Documentation**: The project has excellent documentation coverage for most features.
+
+#### Upcoming (2026-03-03 Evolution)
+*   **[P0] Malicious Site Protection for Gateway**: Strengthened security against browser-initiated WebSocket attacks (Origin verification, rate limiting).
+*   **[P0] Verified Local Execution Boundaries**: Mandatory attestation for local loopback connections when administrative capabilities are requested.

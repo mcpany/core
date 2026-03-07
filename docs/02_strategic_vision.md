@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-03]
+### Focus: Hardened Gateway Security & Universal Agent Connectivity
+**Context**: The 0-click exploit in OpenClaw and the GA release of Claude's Tool Search demonstrate that agent infrastructure is both a prime target and an rapidly evolving standard. We must secure our local boundaries while expanding our interoperability.
+**Strategic Pivot**:
+- **Verified Local Execution Boundaries**: Shifting from "Local-is-Trusted" to "Zero Trust Localhost." Implementing mandatory Origin verification and loopback rate limiting for all incoming gateway connections.
+- **Universal Agent Connectivity**: Elevating agent-to-agent coordination as a first-class citizen. MCP Any will act as the universal bridge for standardized inter-agent communication protocols (e.g., A2A), allowing heterogeneous agent teams to share state and tasks.
+- **GA-Grade Discovery**: Transitioning Lazy-Discovery from an experimental feature to a core service, ensuring seamless compatibility with high-performance tool search patterns introduced by Anthropic and Google.

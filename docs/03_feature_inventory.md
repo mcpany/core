@@ -81,3 +81,16 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-03] Updates
+
+### Proposed Additions
+- **Malicious Site Protection for Gateway**: (P0) Strengthened security against browser-initiated WebSocket attacks (Origin verification, rate limiting).
+- **Verified Local Execution Boundaries**: (P0) Mandatory attestation for local loopback connections when administrative capabilities are requested.
+- **Standardized Inter-Agent Communication Bridge**: (P1) Native support for A2A and other emerging inter-agent coordination protocols.
+
+### Priority Shifts
+- **"Safe-by-Default" Network Hardening**: Re-affirmed as **P0** and expanded to include Origin-Header verification for loopback.
+- **On-Demand Discovery Middleware (Lazy-MCP)**: Promoted to **P0 GA Ready** to match Claude's Tool Search rollout.
