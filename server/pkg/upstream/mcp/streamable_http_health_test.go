@@ -31,11 +31,11 @@ func (m *mockChecker) Start() {
 }
 
 func (m *mockChecker) GetRunningPeriodicCheckCount() int {
-    return 0
+	return 0
 }
 
 func (m *mockChecker) IsStarted() bool {
-    return true
+	return true
 }
 
 func TestUpstream_CheckHealth(t *testing.T) {
