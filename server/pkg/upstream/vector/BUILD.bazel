@@ -13,7 +13,7 @@ go_library(
     importpath = "github.com/mcpany/core/server/pkg/upstream/vector",
     visibility = ["//visibility:public"],
     deps = [
-        "//proto/config/v1:v1_go_proto",
+        "//proto/config/v1:config",
         "//server/pkg/logging",
         "//server/pkg/prompt",
         "//server/pkg/resource",
@@ -41,7 +41,7 @@ go_test(
     ],
     embed = [":vector"],
     deps = [
-        "//proto/config/v1:v1_go_proto",
+        "//proto/config/v1:config",
         "//server/pkg/tool",
         "@com_github_milvus_io_milvus_sdk_go_v2//client",
         "@com_github_milvus_io_milvus_sdk_go_v2//entity",

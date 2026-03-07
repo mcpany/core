@@ -62,6 +62,11 @@ func NewDB(path string) (*DB, error) {
 		return nil, fmt.Errorf("failed to set busy_timeout: %w", err)
 	}
 
+	// Set max open connections to 1 to serialize access and avoid SQLITE_BUSY errors.
+	// This is especially recommended for SQLite when using WAL mode and the modernc.org/sqlite driver
+	// to ensure that only one writer is active at a time, avoiding concurrency issues in the driver layer.
+	db.SetMaxOpenConns(1)
+
 	return &DB{db}, nil
 }
 

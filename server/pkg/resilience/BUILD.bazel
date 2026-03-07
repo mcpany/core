@@ -16,7 +16,7 @@ go_library(
     importpath = "github.com/mcpany/core/server/pkg/resilience",
     visibility = ["//visibility:public"],
     deps = [
-        "//proto/config/v1:v1_go_proto",
+        "//proto/config/v1:config",
         "//server/pkg/util",
         "@org_golang_google_protobuf//types/known/durationpb",
     ],
@@ -37,7 +37,7 @@ go_test(
     ],
     embed = [":resilience"],
     deps = [
-        "//proto/config/v1:v1_go_proto",
+        "//proto/config/v1:config",
         "@com_github_stretchr_testify//assert",
         "@com_github_stretchr_testify//require",
         "@org_golang_google_protobuf//types/known/durationpb",

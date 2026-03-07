@@ -18,12 +18,12 @@ go_proto_library(
     importpath = "github.com/mcpany/core/pkg/upstream/grpc/client",
     proto = ":client_proto",
     visibility = ["//visibility:public"],
-
     deps = [
         "@org_golang_google_grpc//:grpc",
         "@org_golang_google_grpc//codes",
         "@org_golang_google_grpc//status",
-    ],)
+    ],
+)
 
 go_library(
     name = "client",

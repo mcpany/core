@@ -23,6 +23,12 @@ go_deps.gazelle_override(
     ],
     path = "github.com/cncf/xds/go",
 )
+go_deps.gazelle_override(
+    directives = [
+        "gazelle:proto disable_global",
+    ],
+    path = "github.com/bufbuild/protocompile",
+)
 
 # Add required direct dependencies from go.mod manually or via use_repo
 # For now, let's let Gazelle handle it.

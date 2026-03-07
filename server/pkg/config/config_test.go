@@ -9,8 +9,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/mcpany/core/server/pkg/logging"
 	v1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
@@ -124,7 +124,7 @@ func TestGlobalSettings(t *testing.T) {
 	assert.NoError(t, err)
 
 	assert.Equal(t, "", s.GRPCPort())
-	assert.Equal(t, "127.0.0.1:50050", s.MCPListenAddress())
+	assert.Equal(t, ":50050", s.MCPListenAddress())
 	assert.False(t, s.IsDebug())
 	assert.False(t, s.Stdio())
 
@@ -162,7 +162,7 @@ func TestBindRootFlags_Comprehensive(t *testing.T) {
 	}{
 		{
 			flag:     "mcp-listen-address",
-			defVal:   "127.0.0.1:50050",
+			defVal:   ":50050",
 			setVal:   "9000",
 			envVar:   "MCPANY_MCP_LISTEN_ADDRESS",
 			envVal:   "9999",

@@ -9,8 +9,8 @@ go_library(
     importpath = "github.com/mcpany/core/server/pkg/upstream/grpc/protobufparser",
     visibility = ["//visibility:public"],
     deps = [
-        "//proto/config/v1:v1_go_proto",
-        "//proto/mcp_options/v1:v1_go_proto",
+        "//proto/config/v1:config",
+        "//proto/mcp_options/v1:mcp_options",
         "@com_github_bufbuild_protocompile//:protocompile",
         "@org_golang_google_grpc//:grpc",
         "@org_golang_google_grpc//credentials/insecure",
@@ -31,9 +31,9 @@ go_test(
     ],
     embed = [":protobufparser"],
     deps = [
-        "//proto/config/v1:v1_go_proto",
+        "//proto/config/v1:config",
         "//proto/examples/weather/v1:v1_go_proto",
-        "//proto/mcp_options/v1:v1_go_proto",
+        "//proto/mcp_options/v1:mcp_options",
         "@com_github_stretchr_testify//assert",
         "@com_github_stretchr_testify//mock",
         "@com_github_stretchr_testify//require",

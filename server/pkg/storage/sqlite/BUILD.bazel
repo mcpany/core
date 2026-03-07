@@ -13,7 +13,7 @@ go_library(
     importpath = "github.com/mcpany/core/server/pkg/storage/sqlite",
     visibility = ["//visibility:public"],
     deps = [
-        "//proto/config/v1:v1_go_proto",
+        "//proto/config/v1:config",
         "//server/pkg/logging",
         "@org_golang_google_protobuf//encoding/protojson",
         "@org_modernc_sqlite//:sqlite",
@@ -29,7 +29,7 @@ go_test(
     ],
     embed = [":sqlite"],
     deps = [
-        "//proto/config/v1:v1_go_proto",
+        "//proto/config/v1:config",
         "//server/pkg/logging",
         "@com_github_stretchr_testify//assert",
         "@com_github_stretchr_testify//require",

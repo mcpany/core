@@ -90,6 +90,7 @@ PRE_COMMIT_BIN := $(TOOL_INSTALL_DIR)/pre-commit
 HELM_BIN := $(TOOL_INSTALL_DIR)/helm
 SHELLCHECK_BIN := $(TOOL_INSTALL_DIR)/shellcheck
 NATS_SERVER_BIN := $(TOOL_INSTALL_DIR)/nats-server
+BAZELISK_BIN := $(TOOL_INSTALL_DIR)/bazelisk
 
 # Helm installation variables
 HELM_VERSION ?= v3.19.0
@@ -109,12 +110,11 @@ endif
 RELEASE_DIR := $(BUILD_DIR)/release
 # PLATFORMS variable will be used to define the target platforms for the build.
 # Example: PLATFORMS := linux/amd64 linux/arm64
-# PLATFORMS ?= linux/amd64 linux/arm64
 
 # Find all .proto files, excluding vendor/cache directories
 PROTO_FILES := $(shell find ../proto -path ./vendor -prune -o -name "*.proto" -print)
 
-.PHONY: all gen build test e2e clean run build-docker run-docker gen build test e2e-local check-local release release-local release-docker
+.PHONY: all gen build test e2e clean run build-docker run-docker e2e-local check-local release release-local release-docker bazel-build bazel-test bazel-test-fast
 
 all: build
 
@@ -357,11 +357,41 @@ prepare:
 			exit 1; \
 		fi; \
 	fi
+	@# Install Bazelisk
+	@echo "Checking for Bazelisk..."
+	@if test -f "$(BAZELISK_BIN)"; then \
+		echo "Bazelisk is already installed."; \
+	else \
+		echo "Installing Bazelisk to $(TOOL_INSTALL_DIR)..."; \
+		GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install github.com/bazelbuild/bazelisk@latest; \
+		if test -f "$(BAZELISK_BIN)"; then \
+			echo "Bazelisk installed successfully."; \
+		else \
+			echo "Bazelisk installation failed."; \
+			exit 1; \
+		fi; \
+	fi
 	@echo "Downloading go modules..." && \
 	go mod download
 	@echo "Preparation complete."
 
 
+# ==============================================================================
+# Bazel Targets (fast, cached builds and tests)
+# ==============================================================================
+BAZELISK := $(BAZELISK_BIN)
+
+bazel-build:
+	@echo "Building server with Bazel..."
+	@$(BAZELISK) build //server/cmd/server:server
+
+bazel-test-fast:
+	@echo "Running fast unit tests with Bazel (cached)..."
+	@$(BAZELISK) test //server/pkg/... --test_tag_filters=-e2e,-integration
+
+bazel-test:
+	@echo "Running all Bazel tests..."
+	@$(BAZELISK) test //server/pkg/... //server/cmd/...
 
 
 # Delegate gen to root Makefile

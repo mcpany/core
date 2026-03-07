@@ -6,6 +6,7 @@ load("@rules_go//go:def.bzl", "go_library", "go_test")
 go_library(
     name = "middleware",
     srcs = [
+        "a2a_bridge.go",
         "audit.go",
         "auth.go",
         "binary_utils.go",
@@ -54,8 +55,8 @@ go_library(
     importpath = "github.com/mcpany/core/server/pkg/middleware",
     visibility = ["//visibility:public"],
     deps = [
-        "//proto/bus:bus_go_proto",
-        "//proto/config/v1:v1_go_proto",
+        "//proto/bus:bus",
+        "//proto/config/v1:config",
         "//server/pkg/audit",
         "//server/pkg/auth",
         "//server/pkg/config",
@@ -92,6 +93,7 @@ go_library(
 go_test(
     name = "middleware_test",
     srcs = [
+        "a2a_bridge_test.go",
         "audit_export_test.go",
         "audit_test.go",
         "auth_benchmark_test.go",
@@ -157,9 +159,9 @@ go_test(
     ],
     embed = [":middleware"],
     deps = [
-        "//proto/bus:bus_go_proto",
-        "//proto/config/v1:v1_go_proto",
-        "//proto/mcp_router/v1:v1_go_proto",
+        "//proto/bus:bus",
+        "//proto/config/v1:config",
+        "//proto/mcp_router/v1:mcp_router",
         "//server/pkg/audit",
         "//server/pkg/auth",
         "//server/pkg/consts",

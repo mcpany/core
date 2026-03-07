@@ -23,4 +23,5 @@ go_binary(
 go_test(
     name = "webhooks_test",
     srcs = ["main_test.go"],
+    data = [":webhooks"],
 )

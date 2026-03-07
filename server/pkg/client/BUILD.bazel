@@ -14,7 +14,7 @@ go_library(
     importpath = "github.com/mcpany/core/server/pkg/client",
     visibility = ["//visibility:public"],
     deps = [
-        "//proto/config/v1:v1_go_proto",
+        "//proto/config/v1:config",
         "//server/pkg/health",
         "@com_github_alexliesenfeld_health//:health",
         "@com_github_gorilla_websocket//:websocket",
@@ -29,7 +29,7 @@ go_test(
     srcs = ["client_test.go"],
     embed = [":client"],
     deps = [
-        "//proto/config/v1:v1_go_proto",
+        "//proto/config/v1:config",
         "@com_github_gorilla_websocket//:websocket",
         "@com_github_samber_lo//:lo",
         "@com_github_stretchr_testify//assert",

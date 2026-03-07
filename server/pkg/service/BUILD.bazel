@@ -9,7 +9,7 @@ go_library(
     importpath = "github.com/mcpany/core/server/pkg/service",
     visibility = ["//visibility:public"],
     deps = [
-        "//proto/config/v1:v1_go_proto",
+        "//proto/config/v1:config",
         "@com_github_cenkalti_backoff_v4//:backoff",
         "@org_golang_google_grpc//:grpc",
         "@org_golang_google_grpc//codes",
@@ -22,7 +22,7 @@ go_test(
     srcs = ["resilience_test.go"],
     embed = [":service"],
     deps = [
-        "//proto/config/v1:v1_go_proto",
+        "//proto/config/v1:config",
         "@com_github_stretchr_testify//assert",
         "@org_golang_google_grpc//:grpc",
         "@org_golang_google_grpc//codes",

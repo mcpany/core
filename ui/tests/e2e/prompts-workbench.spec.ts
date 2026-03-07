@@ -39,7 +39,7 @@ test.describe('Prompts Workbench', () => {
 
     // Handle potential empty state or populated list
     const noPrompts = page.getByText('No prompts found');
-    const firstPrompt = page.locator("div[class*='border-r'] button").first();
+    const firstPrompt = page.locator("button[class*='transition-colors']").first();
 
     // Wait for either no prompts functionality or the list to populate
     await Promise.race([

@@ -16,7 +16,7 @@ go_library(
     importpath = "github.com/mcpany/core/server/pkg/upstream/filesystem",
     visibility = ["//visibility:public"],
     deps = [
-        "//proto/config/v1:v1_go_proto",
+        "//proto/config/v1:config",
         "//server/pkg/health",
         "//server/pkg/logging",
         "//server/pkg/prompt",
@@ -49,7 +49,7 @@ go_test(
     ],
     embed = [":filesystem"],
     deps = [
-        "//proto/config/v1:v1_go_proto",
+        "//proto/config/v1:config",
         "//server/pkg/bus",
         "//server/pkg/health",
         "//server/pkg/tool",

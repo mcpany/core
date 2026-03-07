@@ -9,8 +9,8 @@ go_library(
     importpath = "github.com/mcpany/core/server/cmd/worker",
     visibility = ["//visibility:private"],
     deps = [
-        "//proto/bus:bus_go_proto",
-        "//proto/config/v1:v1_go_proto",
+        "//proto/bus:bus",
+        "//proto/config/v1:config",
         "//server/pkg/bus",
         "//server/pkg/config",
         "//server/pkg/worker",
@@ -28,7 +28,7 @@ go_test(
     srcs = ["main_test.go"],
     embed = [":worker_lib"],
     deps = [
-        "//proto/bus:bus_go_proto",
+        "//proto/bus:bus",
         "@com_github_stretchr_testify//assert",
         "@com_github_stretchr_testify//suite",
     ],

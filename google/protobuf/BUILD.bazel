@@ -1,0 +1,21 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+# This package provides the go_features.proto needed for protobuf editions support.
+# The proto file is sourced from the protobuf project's Go support.
+
+load("@rules_proto//proto:defs.bzl", "proto_library")
+
+proto_library(
+    name = "go_features_proto",
+    srcs = ["go_features.proto"],
+    visibility = ["//visibility:public"],
+    deps = ["@com_google_protobuf//:descriptor_proto"],
+)
+
+# Alias to the external gofeaturespb package to avoid duplicate package conflicts.
+alias(
+    name = "go_features_go_proto",
+    actual = "@org_golang_google_protobuf//types/gofeaturespb",
+    visibility = ["//visibility:public"],
+)

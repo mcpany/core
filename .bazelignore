@@ -10,3 +10,4 @@ server/docker/
 server/docs/
 server/examples/
 server/tests/integration/upstream/node_modules/
+server/.build-context/
