@@ -9,7 +9,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { UpstreamServiceConfig, ToolDefinition } from "@/lib/types";
-import { apiClient } from "@/lib/client";
+import { apiClient, ToolAnalytics } from "@/lib/client";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Wrench, AlertTriangle, TrendingUp, Braces } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -28,6 +28,7 @@ export function ToolDetail({ serviceId, toolName }: { serviceId: string, toolNam
   const [tool, setTool] = useState<ToolDefinition | null>(null);
   const [service, setService] = useState<UpstreamServiceConfig | null>(null);
   const [metrics, setMetrics] = useState<Record<string, number> | null>(null);
+  const [toolUsage, setToolUsage] = useState<ToolAnalytics | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
@@ -39,9 +40,10 @@ export function ToolDetail({ serviceId, toolName }: { serviceId: string, toolNam
       try {
         // ⚡ Bolt Optimization: Fetch service details and status (metrics) in parallel
         // This removes the waterfall where we waited for service details before fetching metrics.
-        const [serviceRes, statusRes] = await Promise.allSettled([
+        const [serviceRes, statusRes, usageRes] = await Promise.allSettled([
           apiClient.getService(serviceId),
-          apiClient.getServiceStatus(serviceId)
+          apiClient.getServiceStatus(serviceId),
+          apiClient.getToolUsage()
         ]);
 
         if (serviceRes.status === 'rejected') {
@@ -69,6 +71,16 @@ export function ToolDetail({ serviceId, toolName }: { serviceId: string, toolNam
              setMetrics(statusRes.value.metrics);
           } else {
              console.warn("Failed to fetch service metrics", statusRes.reason);
+          }
+
+          if (usageRes.status === 'fulfilled') {
+              const usageData = usageRes.value;
+              if (Array.isArray(usageData)) {
+                  const stat = usageData.find(s => s.name === toolName && s.serviceId === serviceId);
+                  if (stat) {
+                      setToolUsage(stat);
+                  }
+              }
           }
         } else {
           throw new Error(`Tool "${toolName}" not found in service "${serviceDetails.name}".`);
@@ -163,6 +175,22 @@ export function ToolDetail({ serviceId, toolName }: { serviceId: string, toolNam
                         <dt className="text-muted-foreground">Total Calls</dt>
                         <dd className="text-right font-mono text-sm">{usageCount.toLocaleString()}</dd>
                     </div>
+                    {toolUsage && (
+                        <>
+                            <div className="flex justify-between items-start pt-2 border-t">
+                                <dt className="text-muted-foreground">Success Rate</dt>
+                                <dd className="text-right font-mono text-sm">{(toolUsage.successRate * 100).toFixed(1)}%</dd>
+                            </div>
+                            <div className="flex justify-between items-start pt-2 border-t">
+                                <dt className="text-muted-foreground">Avg Latency</dt>
+                                <dd className="text-right font-mono text-sm">{toolUsage.avgLatencyMs.toFixed(0)} ms</dd>
+                            </div>
+                            <div className="flex justify-between items-start pt-2 border-t">
+                                <dt className="text-muted-foreground">Error Count</dt>
+                                <dd className="text-right font-mono text-sm">{toolUsage.errorCount}</dd>
+                            </div>
+                        </>
+                    )}
                  </dl>
             </CardContent>
         </Card>
