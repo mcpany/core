@@ -1,6 +1,4 @@
 FROM docker.io/library/python:3.10-alpine
-WORKDIR /app
-COPY timeserver_patch/requirements.txt ./
-RUN pip install --break-system-packages -r requirements.txt
-COPY timeserver_patch/main.py ./
-CMD ["python", "-u", "main.py", "--mcp-stdio"]
+RUN pip install --no-cache-dir mcp fastmcp || true
+COPY timeserver_patch/main.py /main.py
+CMD ["python", "-u", "/main.py", "--mcp-stdio"]
