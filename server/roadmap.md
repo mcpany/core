@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-07 Evolution)
+*   **[P0] Anti-Hijacking WebSocket Guard**: Origin-filtering and handshake tickets for local listeners. (Added: 2026-03-07)
+*   **[P0] Project Configuration Attestation**: Secure ingestion and user-approval flow for project-local configs. (Added: 2026-03-07)
+*   **[P1] Ephemeral Tool Sandboxing**: Automated Docker-isolated execution for unverified MCP servers. (Added: 2026-03-07)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

@@ -14,6 +14,8 @@
 - [ ] **[P0] Connectivity & Security Dashboard**: Visualize local-only vs remote exposure, attestation status, and active MFA sessions. (Added: 2026-02-28)
 - [ ] **[P0] Stateful A2A Mailbox**: UI for viewing queued and delivered A2A messages across the agent mesh. (Added: 2026-02-28)
 - [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
+- [ ] **[P0] Project Attestation Manager**: UI for auditing and approving project-local configurations. (Added: 2026-03-07)
+- [ ] **[P0] Origin & Hijack Monitor**: Security dashboard for monitoring and managing WebSocket handshake tickets and origin whitelists. (Added: 2026-03-07)
 - [x] **[P1] Tool Playground & Explorer**:
   - [x] Auto-generated forms from Tool JSON Schemas.
   - [x] "Execute" button with history and result visualization.

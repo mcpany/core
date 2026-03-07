@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-07] Updates
+
+### Proposed Additions
+- **Anti-Hijacking WebSocket Guard**: (P0) Implements Origin-filtering and "Pre-flight Handshake" for local WebSocket listeners to prevent browser-based cross-protocol attacks.
+- **Project Configuration Attestation**: (P0) A security middleware that requires user approval or cryptographic signatures for MCP configurations found in project directories (e.g., .mcpany/config).
+- **Ephemeral Tool Sandboxing**: (P1) Automatic execution of MCP servers within isolated Docker/Podman containers with zero network access by default.
+
+### Priority Shifts
+- **Safe-by-Default Hardening**: Re-affirmed as **P0**. Essential to mitigate the "Exposed Server" and "Localhost Hijacking" trends.
+- **A2A Stateful Residency**: Promoted to **P0**. Critical for resilient agent swarms as the ecosystem moves towards multi-node federations.
+
+### Deprecations / Monitoring
+- **Unsigned Project Configs**: Monitoring for future deprecation. Project-local configurations should not be trusted by default.

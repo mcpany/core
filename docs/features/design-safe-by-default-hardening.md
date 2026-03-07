@@ -59,3 +59,10 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+
+### Update: 2026-03-07 - Mitigating Localhost Hijacking
+**Context:** Today's market sync revealed a critical exploit in OpenClaw where browsers could hijack local agent listeners.
+**Architecture Adjustment:**
+*   **Origin Enforcement**: Updating Section 4 to include mandatory `Origin` and `Host` header validation for all listeners.
+*   **WebSocket Ticket System**: Introducing a short-lived "Handshake Ticket" required for initial WebSocket connection, preventing silent browser-initiated connections.
+**Security Impact:** Prevents cross-protocol hijacking from malicious websites while maintaining local tool accessibility.
