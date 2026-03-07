@@ -109,7 +109,7 @@ export function useTraces(options: UseTracesOptions = {}) {
 
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
         const host = window.location.host;
-        let wsUrl = `${protocol}//${host}/api/v1/ws/traces`;
+        let wsUrl = `${protocol}//${host}/ws/traces`;
 
         // Inject auth token from localStorage if available
         const token = localStorage.getItem('mcp_auth_token');
