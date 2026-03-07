@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-07]
+### Focus: Active Defense & Taint-Aware Tool Orchestration
+**Context**: Recent exploits (CVE-2026-0757, CVE-2026-21852) and the "Zero-Click" flaw in Claude Desktop extensions have highlighted a critical gap: agents lack "Taint Awareness." Malicious data from low-trust sources (email, calendar) is being passed directly to high-trust tools (shell, filesystem) without a security boundary.
+**Strategic Pivot**:
+- **Tool Taint Tracking**: MCP Any will implement a "Taint Engine" that metadata-tags all tool outputs based on the tool's trust level. High-trust tools will require an explicit "De-Taint" policy check before accepting tainted data as input.
+- **Repository-Level Config Sandboxing**: Moving from global configurations to "Ephemeral Project Contexts." MCP Any will isolate and sanitize repository-level settings (e.g., `.claude/settings.json`) before they are merged into the active agent runtime.
+- **Active Defense Gateway**: Transitioning from a passive proxy to an active security layer that intercepts and inspects tool-call payloads for injection patterns and sensitive data leakage in real-time.
