@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-07]
+### Focus: Browser-Origin Security & A2A Routing Orchestration
+**Context**: The "Localhost Hijack" vulnerability in OpenClaw has exposed a critical flaw in how local agent gateways interact with the browser. Simultaneously, the explosive growth of OpenClaw and Gemini's "Generalist Agent" signifies that routing is becoming an infrastructure-level concern.
+**Strategic Pivot**:
+- **Origin-Locked Gateway**: Implementing strict Cross-Origin Resource Sharing (CORS) and WebSocket origin verification to prevent malicious websites from hijacking the local MCP Any instance.
+- **Autonomous Routing Layer**: MCP Any will evolve from a tool provider to an "In-Mesh Router." It will handle tool-to-agent and agent-to-agent task routing natively, reducing the cognitive load and token cost for LLMs.
+- **Zero Trust A2A Tokens**: Every agent-to-agent interaction via the MCP Any bus will require short-lived, task-scoped capability tokens to prevent "cascading compromise" if one subagent is hijacked.
