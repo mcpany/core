@@ -133,17 +133,17 @@ jobs:
              $SUDO apk add --no-cache make xz curl unzip build-base
           fi
 
-      # - name: Set up Go
-      #   uses: actions/setup-go@v6
-      #   with:
-      #     go-version: "1.24"
-      #     cache: true
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: "1.24"
+          cache: true
 
-      # - name: Set up Python
-      #   uses: actions/setup-python@v6
-      #   with:
-      #     python-version: "3.12"
-      #     cache: "pip"
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: "pip"
 
       - name: Install Python dependencies
         run: pip install -r server/requirements.txt --break-system-packages
@@ -217,17 +217,17 @@ jobs:
              $SUDO apk add --no-cache make xz curl unzip build-base
           fi
 
-      # - name: Set up Go
-      #   uses: actions/setup-go@v6
-      #   with:
-      #     go-version: "1.24"
-      #     cache: true
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: "1.24"
+          cache: true
 
-      # - name: Set up Python
-      #   uses: actions/setup-python@v6
-      #   with:
-      #     python-version: "3.12"
-      #     cache: "pip"
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: "pip"
 
       - name: Install Python dependencies
         run: pip install -r server/requirements.txt --break-system-packages
