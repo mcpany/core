@@ -59,3 +59,10 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+
+### Update: 2026-03-07 - Skill Execution Isolation
+**Context**: The ClawHub supply-chain crisis (340+ malicious skills identified) confirms that executable tools must be isolated by default.
+**Architecture Adjustment**:
+*   **Mandatory Skill Sandboxing**: All third-party executable tools and "skills" must now run in an isolated `Skill Execution Sandbox` (containerized or micro-VM environment).
+*   **Default Deny for Host Access**: Sandboxed skills will have no access to the host filesystem, network, or secrets unless explicitly granted via a Policy Firewall rule.
+*   **Provenance Verification**: Tool discovery will automatically block any skill not matching a known, trusted cryptographic signature unless the user provides an override with attestation.
