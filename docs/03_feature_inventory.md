@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-03] Updates
+
+### Proposed Additions
+- **Dynamic Permission Escalation Middleware**: (P0) Implements JIT permission requests for high-risk tools. Integrates with HITL and cryptographic intent signatures.
+- **Tool Metadata Sanitizer (Injection Guard)**: (P0) Mandatory middleware that sanitizes tool descriptions, schemas, and outputs for prompt injection and terminal escapes.
+- **Contextual Anchor Tool (Mission Verification)**: (P1) A specialized tool that allows agents to verify their current execution context against a cryptographically signed mission statement.
+
+### Priority Shifts
+- **Safe-by-Default Network Hardening**: Promoted to **P0** (Already P0, but re-affirming criticality due to metadata poisoning risks).
+- **A2A Stateful Residency**: Promoted to **P0** as it provides the infrastructure for persistent mission anchors.
+
+### Deprecations / Monitoring
+- **Unsanitized Metadata Exposure**: Deprecate the direct exposure of raw tool descriptions to LLMs without sanitization.

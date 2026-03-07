@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-03]
+### Focus: Just-in-Time Agency & Metadata Integrity
+**Context**: Today's findings reveal a critical shift from static permissions to dynamic, "Just-in-Time" elevation. Simultaneously, the rise of "Metadata Poisoning" attacks proves that the metadata layer is the new primary attack vector for agents.
+**Strategic Pivot**:
+- **Dynamic Trust Elevation**: MCP Any will move beyond static capability tokens to a "Dynamic Escalation" model. Agents will start with minimal permissions and must request "Intent-Validated" elevation for high-risk tools.
+- **Metadata Integrity Guard**: We will implement a mandatory "Metadata Sanitizer" that treats tool descriptions, schemas, and outputs as untrusted input, stripping potential injection patterns and ANSI escapes.
+- **Contextual Anchoring**: To combat "Swarm Drift," MCP Any will introduce "Anchor Tools" that allow agents to cryptographically verify their current state against the original mission intent stored in the gateway.
