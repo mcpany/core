@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-07] Updates
+
+### Proposed Additions
+- **Quarantine-First Configuration Controller**: (P0) A security middleware that holds any imported or discovered configuration in a "Quarantined" state until a user manually "Releases" it via a secure session.
+- **Asynchronous Task Middleware (ATM)**: (P1) Implementation of SEP-1686, allowing long-running tool execution (e.g., training a model, large data processing) to be managed asynchronously.
+- **Identity-Bound Tool Signing**: (P0) Cryptographic signature requirement for all tool requests, binding an agent's request to a human user's verified session.
+
+### Priority Shifts
+- **HITL Middleware**: Re-affirmed as **P0** and expanded to include "Config Release" workflows to mitigate Claude Code-style hook exploits.
+- **Provenance-First Discovery**: Promoted to **P0** as a foundational requirement for the "Quarantine" workflow.
+
+### Deprecations / Monitoring
+- **Auto-Loading Configuration Hooks**: Deprecated in favor of "Explicit User Release" for all hooks.
