@@ -75,6 +75,15 @@
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
+---
+
+## Evolution: [2026-03-04] Updates
+
+### Proposed Additions
+- **On-Demand Catalog Indexing (Lazy-MCP v2)**: (P0) Automated background indexing of large tool catalogs with semantic search. Enables "Claude Code style" dynamic tool loading for 1,000+ tools.
+- **Context Compaction Middleware**: (P1) Middleware that automatically summarizes or compacts agent conversation history to maintain reasoning quality in large context windows (1M+ tokens).
+- **Deterministic Sub-Agent Spawn Protocol**: (P1) Standardized MCP extension for parent agents to spawn sub-agents with fixed capabilities and session parameters.
+
 ### Priority Shifts
 - **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
 - **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.

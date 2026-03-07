@@ -53,3 +53,7 @@ As agentic workflows evolve from single-agent tasks to multi-agent swarms (e.g.,
 
 ## 7. Evolutionary Changelog
 * **2026-02-23:** Initial Document Creation. Standardizing Recursive Context Protocol for multi-agent swarm orchestration.
+*   **2026-03-04:** Evolutionary Update - Compaction-Aware Context.
+    - **Context**: With OpenClaw supporting 1M token windows, context "noise" becomes a significant bottleneck for reasoning quality.
+    - **Adjustment**: Adding support for "Context Compaction" headers.
+    - **Feature**: The Recursive Context Protocol now includes a `X-MCP-Compaction-Strategy` header, allowing parent agents to specify if inherited context should be summarized, truncated, or passed raw to sub-agents.
