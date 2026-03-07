@@ -13,6 +13,9 @@
 - [ ] **[P1] Resource Cost/Latency Overlay**: Real-time performance metrics displayed directly on tool cards. (Added: 2026-02-26)
 - [ ] **[P0] Connectivity & Security Dashboard**: Visualize local-only vs remote exposure, attestation status, and active MFA sessions. (Added: 2026-02-28)
 - [ ] **[P0] Stateful A2A Mailbox**: UI for viewing queued and delivered A2A messages across the agent mesh. (Added: 2026-02-28)
+- [ ] **[P0] WebSocket Origin Manager**: UI for authorizing and managing cross-origin WebSocket connections via OOB confirmation. (Added: 2026-03-02)
+- [ ] **[P1] Swarm Risk Dashboard**: Real-time visualization of coordinated agent activities and "Swarm Risk Scores". (Added: 2026-03-02)
+- [ ] **[P1] Intent Attestation Viewer**: UI for agents to present and users to verify high-level task intent. (Added: 2026-03-02)
 - [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
 - [x] **[P1] Tool Playground & Explorer**:
   - [x] Auto-generated forms from Tool JSON Schemas.
