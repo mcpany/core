@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-07 Evolution)
+*   **[P1] Cost-Aware Tool Routing**: Implement budget-based interceptors and cost-estimation headers. (Added: 2026-03-07)
+*   **[P1] Semantic Cache Middleware**: Embedding-based storage for tool outputs to reduce redundant calls. (Added: 2026-03-07)
+*   **[P0] Enhanced Blackboard Persistence**: Hardened session storage to ensure state durability. (Added: 2026-03-07)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

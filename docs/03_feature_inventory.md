@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-07] Updates
+
+### Proposed Additions
+- **Cost-Aware Tool Routing**: (P1) Middleware that estimates tool call costs and enforces budget-based policies.
+- **Semantic Cache Middleware**: (P1) Embedding-based storage for tool outputs, allowing agents to "remember" previous results via similarity search.
+- **Enhanced Blackboard Persistence**: (P0) Hardened SQLite-based session storage to ensure state durability across model resets.
+
+### Priority Shifts
+- **Cost & Latency Telemetry Middleware**: Promoted to **P0** (from P1) as a prerequisite for Cost-Aware Tool Routing.
+- **Shared KV Store (Blackboard)**: Re-affirmed as **P0** to support enhanced local-first persistence.
+
+### Deprecations / Monitoring
+- **Transient Session State**: Moving towards "Persistent-by-Default" session management.
