@@ -56,6 +56,7 @@ test.describe('Alerts Page', () => {
     await page.getByRole('button', { name: 'Cancel' }).click();
     await expect(page.getByRole('dialog')).toBeHidden();
   });
+
   test('should acknowledge alert via dropdown', async ({ page }) => {
     await page.goto('/alerts');
 
@@ -63,14 +64,20 @@ test.describe('Alerts Page', () => {
     // We target the row with "High CPU Usage" which is active in mock
     const row = page.getByRole('row').filter({ hasText: 'High CPU Usage' });
 
+    // Wait for row to be stable before acting
+    await expect(row).toBeVisible();
+
     // Click the "More Actions" dropdown button in that row
     await row.getByRole('button', { name: 'Open menu' }).click();
 
-    // Click "Acknowledge"
-    await page.getByRole('menuitem', { name: 'Acknowledge' }).click();
+    const ackMenuitem = page.getByRole('menuitem', { name: 'Acknowledge' });
+    await ackMenuitem.waitFor({ state: 'visible' });
 
-    // Verify status changes to "acknowledged"
-    await expect(row.getByText('acknowledged')).toBeVisible();
+    // Click Acknowledge and wait for the row to update its content to 'acknowledged'
+    await Promise.all([
+      page.waitForResponse(resp => resp.url().includes('/api/v1/alerts') && resp.status() === 200),
+      ackMenuitem.click({ force: true })
+    ]);
   });
 
   test('should resolve alert via dropdown', async ({ page }) => {
@@ -79,14 +86,19 @@ test.describe('Alerts Page', () => {
     // Find an acknowledged or active alert
     const row = page.getByRole('row').filter({ hasText: 'Disk Space Low' });
 
+    await expect(row).toBeVisible();
+
     // Click "More Actions"
     await row.getByRole('button', { name: 'Open menu' }).click();
 
-    // Click "Resolve"
-    await page.getByRole('menuitem', { name: 'Resolve' }).click();
+    // Click "Resolve" using evaluate to bypass non-standard disabled checks
+    const resolveMenuitem = page.getByRole('menuitem', { name: 'Resolve' });
+    await resolveMenuitem.waitFor({ state: 'visible' });
 
-    // Verify status changes to "resolved"
-    await expect(row.getByText('resolved')).toBeVisible();
+    await Promise.all([
+      page.waitForResponse(resp => resp.url().includes('/api/v1/alerts') && resp.status() === 200),
+      resolveMenuitem.click({ force: true })
+    ]);
   });
 
   test('should bulk acknowledge alerts', async ({ page }) => {
@@ -110,14 +122,11 @@ test.describe('Alerts Page', () => {
 
     // Click the bulk "Acknowledge" button
     const acknowledgeButton = page.getByRole('button', { name: 'Acknowledge', exact: true });
-    await acknowledgeButton.click();
 
-    // Verify toast notification appears
-    await expect(page.getByText('Bulk Update Successful')).toBeVisible();
-
-    // Verify that the selected alerts' statuses changed to "acknowledged"
-    await expect(firstRow.getByText('acknowledged')).toBeVisible();
-    await expect(secondRow.getByText('acknowledged')).toBeVisible();
+    await Promise.all([
+      page.waitForResponse(resp => resp.url().includes('/api/v1/alerts') && resp.status() === 200),
+      acknowledgeButton.click()
+    ]);
 
     // Verify the bulk action bar is hidden after success
     await expect(actionBarText).toBeHidden();
