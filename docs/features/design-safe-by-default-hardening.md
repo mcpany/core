@@ -59,3 +59,9 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-07:** Addressing Plugin Ecosystem Vulnerabilities.
+    *   **Context:** Market research identified a surge in "malicious plugin" exploits in OpenClaw and other MCP-adjacent ecosystems.
+    *   **Architecture Adjustment:**
+        *   Strengthening the "Local-Only" mandate to include a "Plugin Quarantine" zone.
+        *   Any newly discovered MCP server or tool plugin will be disabled by default and requires explicit "Administrative Attestation" before it can be used, even on `localhost`.
+    *   **Security Impact:** Prevents "Shadow Tooling" from being automatically leveraged by agents without human oversight.

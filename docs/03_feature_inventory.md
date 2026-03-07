@@ -75,9 +75,18 @@
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
+---
+
+## Evolution: [2026-03-07] Updates
+
+### Proposed Additions
+- **MCP App Native Hosting (Universal Bridge)**: (P0) Ability to host and serve interactive MCP App components (SEP-1865) for clients without native support.
+- **Cross-Framework Coordination Persistence**: (P1) A stateful middleware for exchanging handoff objects between disparate agent frameworks (OpenClaw, AutoGen, etc.).
+- **Async Reasoning Traces**: (P1) Middleware to stream intermediate "adaptive thinking" steps from models to MCP clients during tool execution.
+
 ### Priority Shifts
-- **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
-- **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.
+- **"Safe-by-Default" Network Hardening**: Re-affirmed as **P0**. High priority following recent plugin ecosystem vulnerabilities.
+- **A2A Stateful Residency**: Promoted to **P0**. Critical for reliable multi-agent orchestration in OpenClaw 2026.2.17.
 
 ### Deprecations / Monitoring
-- **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+- **Stateless A2A Bridging**: Monitoring for deprecation in favor of Stateful Residency to prevent message loss during agent handoffs.
