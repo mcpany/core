@@ -75,6 +75,15 @@
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
+---
+
+## Evolution: [2026-03-07] Updates
+
+### Proposed Additions
+- **Docker-Bound Named Pipe Transport**: (P0) A secure, OS-level transport mechanism for inter-agent communication, replacing vulnerable local HTTP listeners.
+- **Inter-Agent Exploit Guard**: (P0) Active monitoring and blocking of unauthorized local port access attempts by subagents.
+- **Port-Less Discovery Protocol**: (P1) Discovery mechanism that uses Unix domain sockets instead of network scanning.
+
 ### Priority Shifts
 - **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
 - **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.

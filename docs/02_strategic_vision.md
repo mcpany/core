@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-07]
+### Focus: Hardened Inter-Agent Transport & OS-Level Isolation
+**Context**: Recent discoveries of local HTTP tunneling exploits in subagent routing (OpenClaw) have exposed a critical vulnerability where rogue subagents can bypass boundaries and access host files via exposed local ports.
+**Strategic Pivot**:
+- **OS-Level Isolation for A2A**: Moving away from local HTTP listeners for inter-agent communication. MCP Any will implement Docker-bound named pipes and Unix domain sockets as the primary transport for A2A handoffs.
+- **Port-Less Architecture**: Transitioning to a "Port-Less" model for local agent swarms to eliminate the attack surface created by exposed network ports.
+- **Zero-Trust Transport**: Ensuring all inter-agent messages are delivered through authenticated, non-networked channels, preventing cross-talk and unauthorized interception.
