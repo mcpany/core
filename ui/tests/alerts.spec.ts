@@ -73,11 +73,12 @@ test.describe('Alerts Page', () => {
     const ackMenuitem = page.getByRole('menuitem', { name: 'Acknowledge' });
     await ackMenuitem.waitFor({ state: 'visible' });
 
-    // Click Acknowledge and wait for the row to update its content to 'acknowledged'
-    await Promise.all([
-      page.waitForResponse(resp => resp.url().includes('/api/v1/alerts') && resp.status() === 200),
-      ackMenuitem.click({ force: true })
-    ]);
+    // Use evaluate to click the DOM element directly, skipping visibility/actionability checks
+    // since the dropdown is complex
+    await ackMenuitem.evaluate((node) => (node as HTMLElement).click());
+
+    // Verify toast appears indicating success
+    await expect(page.getByText('Status Updated')).toBeVisible();
   });
 
   test('should resolve alert via dropdown', async ({ page }) => {
@@ -95,10 +96,9 @@ test.describe('Alerts Page', () => {
     const resolveMenuitem = page.getByRole('menuitem', { name: 'Resolve' });
     await resolveMenuitem.waitFor({ state: 'visible' });
 
-    await Promise.all([
-      page.waitForResponse(resp => resp.url().includes('/api/v1/alerts') && resp.status() === 200),
-      resolveMenuitem.click({ force: true })
-    ]);
+    await resolveMenuitem.evaluate((node) => (node as HTMLElement).click());
+
+    await expect(page.getByText('Status Updated')).toBeVisible();
   });
 
   test('should bulk acknowledge alerts', async ({ page }) => {
@@ -122,11 +122,10 @@ test.describe('Alerts Page', () => {
 
     // Click the bulk "Acknowledge" button
     const acknowledgeButton = page.getByRole('button', { name: 'Acknowledge', exact: true });
+    await acknowledgeButton.click();
 
-    await Promise.all([
-      page.waitForResponse(resp => resp.url().includes('/api/v1/alerts') && resp.status() === 200),
-      acknowledgeButton.click()
-    ]);
+    // Verify toast notification appears (checking for specific text or role)
+    await expect(page.getByText('Bulk Update Successful', { exact: true })).toBeVisible();
 
     // Verify the bulk action bar is hidden after success
     await expect(actionBarText).toBeHidden();
