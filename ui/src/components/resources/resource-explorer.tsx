@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useState, useEffect, useMemo, memo, useCallback, useRef } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
     FileText,
     Database,
@@ -51,133 +51,6 @@ interface ResourceExplorerProps {
     initialResources?: ResourceDefinition[];
 }
 
-// ⚡ BOLT: Memoized resource items to prevent O(n) re-renders when selection changes
-// Randomized Selection from Top 5 High-Impact Targets
-const ResourceListItem = memo(({
-    res,
-    isSelected,
-    Icon,
-    setSelectedUri,
-    handleDragStart,
-    setPreviewResource,
-    handleCopyUri,
-    handleCopyName,
-    handleDownload
-}: {
-    res: ResourceDefinition;
-    isSelected: boolean;
-    Icon: any;
-    setSelectedUri: (uri: string) => void;
-    handleDragStart: (e: React.DragEvent, res: ResourceDefinition) => void;
-    setPreviewResource: (res: ResourceDefinition) => void;
-    handleCopyUri: (uri: string) => void;
-    handleCopyName: (name: string) => void;
-    handleDownload: (uri: string) => void;
-}) => (
-    <ContextMenu>
-        <ContextMenuTrigger asChild>
-            <div
-                className={cn(
-                    "flex items-center gap-3 p-3 px-4 cursor-pointer hover:bg-accent/50 transition-colors text-sm group",
-                    isSelected ? "bg-accent text-accent-foreground border-l-4 border-l-primary pl-3" : "border-l-4 border-l-transparent"
-                )}
-                onClick={() => setSelectedUri(res.uri)}
-                draggable
-                onDragStart={(e) => handleDragStart(e, res)}
-            >
-                <Icon className={cn("h-4 w-4 text-muted-foreground group-hover:text-primary", isSelected && "text-primary")} />
-                <div className="flex-1 min-w-0">
-                    <div className="font-medium truncate">{res.name}</div>
-                    <div className="text-[10px] text-muted-foreground truncate opacity-70" title={res.uri}>{res.uri}</div>
-                </div>
-                {isSelected && <ChevronRight className="h-3 w-3 text-muted-foreground" />}
-            </div>
-        </ContextMenuTrigger>
-        <ContextMenuContent>
-            <ContextMenuItem onClick={() => setSelectedUri(res.uri)}>
-                <Eye className="mr-2 h-4 w-4" /> View Details
-            </ContextMenuItem>
-            <ContextMenuItem onClick={() => setPreviewResource(res)}>
-                <Expand className="mr-2 h-4 w-4" /> Preview in Modal
-            </ContextMenuItem>
-            <ContextMenuSeparator />
-            <ContextMenuItem onClick={() => handleCopyUri(res.uri)}>
-                <Copy className="mr-2 h-4 w-4" /> Copy URI
-            </ContextMenuItem>
-            <ContextMenuItem onClick={() => handleCopyName(res.name)}>
-                <FileText className="mr-2 h-4 w-4" /> Copy Name
-            </ContextMenuItem>
-            <ContextMenuSeparator />
-            <ContextMenuItem onClick={() => handleDownload(res.uri)} disabled={!isSelected}>
-                <Download className="mr-2 h-4 w-4" /> Download
-            </ContextMenuItem>
-        </ContextMenuContent>
-    </ContextMenu>
-));
-ResourceListItem.displayName = 'ResourceListItem';
-
-const ResourceGridItem = memo(({
-    res,
-    isSelected,
-    Icon,
-    setSelectedUri,
-    setPreviewResource,
-    handleCopyUri,
-    handleCopyName,
-    handleDownload
-}: {
-    res: ResourceDefinition;
-    isSelected: boolean;
-    Icon: any;
-    setSelectedUri: (uri: string) => void;
-    setPreviewResource: (res: ResourceDefinition) => void;
-    handleCopyUri: (uri: string) => void;
-    handleCopyName: (name: string) => void;
-    handleDownload: (uri: string) => void;
-}) => (
-    <ContextMenu>
-        <ContextMenuTrigger asChild>
-            <Card
-                className={cn(
-                    "cursor-pointer hover:border-primary/50 transition-all",
-                    isSelected ? "border-primary ring-1 ring-primary" : ""
-                )}
-                onClick={() => setSelectedUri(res.uri)}
-            >
-                <CardContent className="p-3 flex flex-col items-center text-center gap-2">
-                    <div className="p-2 bg-muted rounded-full">
-                        <Icon className="h-6 w-6 text-muted-foreground" />
-                    </div>
-                    <div className="w-full">
-                        <div className="font-medium text-xs truncate" title={res.name}>{res.name}</div>
-                        <div className="text-[10px] text-muted-foreground truncate mt-0.5">{res.mimeType || "unknown"}</div>
-                    </div>
-                </CardContent>
-            </Card>
-        </ContextMenuTrigger>
-        <ContextMenuContent>
-            <ContextMenuItem onClick={() => setSelectedUri(res.uri)}>
-                <Eye className="mr-2 h-4 w-4" /> View Details
-            </ContextMenuItem>
-            <ContextMenuItem onClick={() => setPreviewResource(res)}>
-                <Expand className="mr-2 h-4 w-4" /> Preview in Modal
-            </ContextMenuItem>
-            <ContextMenuSeparator />
-            <ContextMenuItem onClick={() => handleCopyUri(res.uri)}>
-                <Copy className="mr-2 h-4 w-4" /> Copy URI
-            </ContextMenuItem>
-            <ContextMenuItem onClick={() => handleCopyName(res.name)}>
-                <FileText className="mr-2 h-4 w-4" /> Copy Name
-            </ContextMenuItem>
-            <ContextMenuSeparator />
-            <ContextMenuItem onClick={() => handleDownload(res.uri)} disabled={!isSelected}>
-                <Download className="mr-2 h-4 w-4" /> Download
-            </ContextMenuItem>
-        </ContextMenuContent>
-    </ContextMenu>
-));
-ResourceGridItem.displayName = 'ResourceGridItem';
-
 /**
  * ResourceExplorer.
  *
@@ -196,18 +69,6 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
     const [previewResource, setPreviewResource] = useState<ResourceDefinition | null>(null);
 
     const { toast } = useToast();
-
-    // Refs to avoid passing selectedUri and resources to memoized callback dependencies
-    const selectedUriRef = useRef(selectedUri);
-    const resourcesRef = useRef(resources);
-
-    useEffect(() => {
-        selectedUriRef.current = selectedUri;
-    }, [selectedUri]);
-
-    useEffect(() => {
-        resourcesRef.current = resources;
-    }, [resources]);
 
     useEffect(() => {
         if (initialResources.length === 0) {
@@ -302,11 +163,11 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
         }
     };
 
-    const handleDownload = useCallback(async (uri?: string) => {
-        const targetUri = uri || selectedUriRef.current;
+    const handleDownload = async (uri?: string) => {
+        const targetUri = uri || selectedUri;
         if (!targetUri) return;
 
-        const targetRes = resourcesRef.current.find(r => r.uri === targetUri);
+        const targetRes = resources.find(r => r.uri === targetUri);
         if (!targetRes) {
             toast({ title: "Error", description: "Resource definition not found." });
             return;
@@ -349,19 +210,19 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
             console.error("Failed to download resource", e);
             toast({ title: "Error", description: "Failed to download resource.", variant: "destructive" });
         }
-    }, [toast]);
+    };
 
-    const handleCopyUri = useCallback((uri: string) => {
+    const handleCopyUri = (uri: string) => {
         navigator.clipboard.writeText(uri);
         toast({ title: "Copied", description: "Resource URI copied to clipboard." });
-    }, [toast]);
+    };
 
-    const handleCopyName = useCallback((name: string) => {
+    const handleCopyName = (name: string) => {
         navigator.clipboard.writeText(name);
         toast({ title: "Copied", description: "Resource name copied to clipboard." });
-    }, [toast]);
+    };
 
-    const handleDragStart = useCallback((e: React.DragEvent, res: ResourceDefinition) => {
+    const handleDragStart = (e: React.DragEvent, res: ResourceDefinition) => {
         // Sets the data to be dragged as the URI
         // This allows dragging to apps that accept text/uri-list
         e.dataTransfer.setData("text/plain", res.uri);
@@ -376,7 +237,7 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
         e.dataTransfer.setData("DownloadURL", downloadData);
 
         e.dataTransfer.effectAllowed = "copy";
-    }, []);
+    };
 
     const navigateSibling = (direction: 'next' | 'prev') => {
         const currentIndex = filteredResources.findIndex(r => r.uri === selectedUri);
@@ -453,36 +314,100 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
                             </div>
                         ) : viewMode === "list" ? (
                             <div className="divide-y">
-                                {filteredResources.map(res => (
-                                    <ResourceListItem
-                                        key={res.uri}
-                                        res={res}
-                                        isSelected={selectedUri === res.uri}
-                                        Icon={getIcon(res.mimeType)}
-                                        setSelectedUri={setSelectedUri}
-                                        handleDragStart={handleDragStart}
-                                        setPreviewResource={setPreviewResource}
-                                        handleCopyUri={handleCopyUri}
-                                        handleCopyName={handleCopyName}
-                                        handleDownload={handleDownload}
-                                    />
-                                ))}
+                                {filteredResources.map(res => {
+                                    const Icon = getIcon(res.mimeType);
+                                    const isSelected = selectedUri === res.uri;
+                                    return (
+                                        <ContextMenu key={res.uri}>
+                                            <ContextMenuTrigger asChild>
+                                                <div
+                                                    className={cn(
+                                                        "flex items-center gap-3 p-3 px-4 cursor-pointer hover:bg-accent/50 transition-colors text-sm group",
+                                                        isSelected ? "bg-accent text-accent-foreground border-l-4 border-l-primary pl-3" : "border-l-4 border-l-transparent"
+                                                    )}
+                                                    onClick={() => setSelectedUri(res.uri)}
+                                                    draggable
+                                                    onDragStart={(e) => handleDragStart(e, res)}
+                                                >
+                                                    <Icon className={cn("h-4 w-4 text-muted-foreground group-hover:text-primary", isSelected && "text-primary")} />
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="font-medium truncate">{res.name}</div>
+                                                        <div className="text-[10px] text-muted-foreground truncate opacity-70" title={res.uri}>{res.uri}</div>
+                                                    </div>
+                                                    {isSelected && <ChevronRight className="h-3 w-3 text-muted-foreground" />}
+                                                </div>
+                                            </ContextMenuTrigger>
+                                            <ContextMenuContent>
+                                                <ContextMenuItem onClick={() => setSelectedUri(res.uri)}>
+                                                    <Eye className="mr-2 h-4 w-4" /> View Details
+                                                </ContextMenuItem>
+                                                <ContextMenuItem onClick={() => setPreviewResource(res)}>
+                                                    <Expand className="mr-2 h-4 w-4" /> Preview in Modal
+                                                </ContextMenuItem>
+                                                <ContextMenuSeparator />
+                                                <ContextMenuItem onClick={() => handleCopyUri(res.uri)}>
+                                                    <Copy className="mr-2 h-4 w-4" /> Copy URI
+                                                </ContextMenuItem>
+                                                <ContextMenuItem onClick={() => handleCopyName(res.name)}>
+                                                    <FileText className="mr-2 h-4 w-4" /> Copy Name
+                                                </ContextMenuItem>
+                                                <ContextMenuSeparator />
+                                                <ContextMenuItem onClick={() => handleDownload(res.uri)} disabled={!isSelected}>
+                                                    <Download className="mr-2 h-4 w-4" /> Download
+                                                </ContextMenuItem>
+                                            </ContextMenuContent>
+                                        </ContextMenu>
+                                    );
+                                })}
                             </div>
                         ) : (
                             <div className="grid grid-cols-2 gap-2 p-3">
-                                {filteredResources.map(res => (
-                                    <ResourceGridItem
-                                        key={res.uri}
-                                        res={res}
-                                        isSelected={selectedUri === res.uri}
-                                        Icon={getIcon(res.mimeType)}
-                                        setSelectedUri={setSelectedUri}
-                                        setPreviewResource={setPreviewResource}
-                                        handleCopyUri={handleCopyUri}
-                                        handleCopyName={handleCopyName}
-                                        handleDownload={handleDownload}
-                                    />
-                                ))}
+                                {filteredResources.map(res => {
+                                    const Icon = getIcon(res.mimeType);
+                                    const isSelected = selectedUri === res.uri;
+                                    return (
+                                        <ContextMenu key={res.uri}>
+                                            <ContextMenuTrigger asChild>
+                                                <Card
+                                                    className={cn(
+                                                        "cursor-pointer hover:border-primary/50 transition-all",
+                                                        isSelected ? "border-primary ring-1 ring-primary" : ""
+                                                    )}
+                                                    onClick={() => setSelectedUri(res.uri)}
+                                                >
+                                                    <CardContent className="p-3 flex flex-col items-center text-center gap-2">
+                                                        <div className="p-2 bg-muted rounded-full">
+                                                            <Icon className="h-6 w-6 text-muted-foreground" />
+                                                        </div>
+                                                        <div className="w-full">
+                                                            <div className="font-medium text-xs truncate" title={res.name}>{res.name}</div>
+                                                            <div className="text-[10px] text-muted-foreground truncate mt-0.5">{res.mimeType || "unknown"}</div>
+                                                        </div>
+                                                    </CardContent>
+                                                </Card>
+                                            </ContextMenuTrigger>
+                                            <ContextMenuContent>
+                                                <ContextMenuItem onClick={() => setSelectedUri(res.uri)}>
+                                                    <Eye className="mr-2 h-4 w-4" /> View Details
+                                                </ContextMenuItem>
+                                                <ContextMenuItem onClick={() => setPreviewResource(res)}>
+                                                    <Expand className="mr-2 h-4 w-4" /> Preview in Modal
+                                                </ContextMenuItem>
+                                                <ContextMenuSeparator />
+                                                <ContextMenuItem onClick={() => handleCopyUri(res.uri)}>
+                                                    <Copy className="mr-2 h-4 w-4" /> Copy URI
+                                                </ContextMenuItem>
+                                                <ContextMenuItem onClick={() => handleCopyName(res.name)}>
+                                                    <FileText className="mr-2 h-4 w-4" /> Copy Name
+                                                </ContextMenuItem>
+                                                <ContextMenuSeparator />
+                                                <ContextMenuItem onClick={() => handleDownload(res.uri)} disabled={!isSelected}>
+                                                    <Download className="mr-2 h-4 w-4" /> Download
+                                                </ContextMenuItem>
+                                            </ContextMenuContent>
+                                        </ContextMenu>
+                                    );
+                                })}
                             </div>
                         )}
                     </ScrollArea>

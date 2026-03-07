@@ -133,17 +133,17 @@ jobs:
              $SUDO apk add --no-cache make xz curl unzip build-base
           fi
 
-      # - name: Set up Go
-      #   uses: actions/setup-go@v6
-      #   with:
-      #     go-version: "1.24"
-      #     cache: true
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: "1.24"
+          cache: true
 
-      # - name: Set up Python
-      #   uses: actions/setup-python@v6
-      #   with:
-      #     python-version: "3.12"
-      #     cache: "pip"
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: "pip"
 
       - name: Install Python dependencies
         run: pip install --break-system-packages -r server/requirements.txt
@@ -176,11 +176,11 @@ jobs:
       - name: Prepare environment
         run: |
           git config --global --add safe.directory "*"
-          rm -rf build/.cache/pre-commit
           make prepare
 
       - name: Lint
         run: |
+          rm -rf build/.cache/pre-commit
           git config --global --add safe.directory "*"
           make lint
 
@@ -222,17 +222,17 @@ jobs:
              $SUDO apk add --no-cache make xz curl unzip build-base
           fi
 
-      # - name: Set up Go
-      #   uses: actions/setup-go@v6
-      #   with:
-      #     go-version: "1.24"
-      #     cache: true
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: "1.24"
+          cache: true
 
-      # - name: Set up Python
-      #   uses: actions/setup-python@v6
-      #   with:
-      #     python-version: "3.12"
-      #     cache: "pip"
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: "pip"
 
       - name: Install Python dependencies
         run: pip install --break-system-packages -r server/requirements.txt
