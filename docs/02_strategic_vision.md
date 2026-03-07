@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-04]
+### Focus: Universal State Handover & Output Sanitization
+**Context**: Today's research in the OpenClaw and Claude Code ecosystems reveals a shift towards "High-Fidelity Handovers" and "Safe Ingestion." Agents need more than just tools; they need a way to pass their internal life-cycle state and protect their context windows from data-heavy tool returns.
+**Strategic Pivot**:
+- **Universal State Handover (USH)**: MCP Any will implement a USH-compliant header protocol, allowing agents to "deep-link" their execution state. This transforms MCP Any from a tool-bus into a "State-Aware Bus."
+- **Intelligent Output Sanitization**: Moving beyond simple truncation, MCP Any will integrate a local, low-latency "Summarization Hook." This hook will automatically clean and compress tool outputs based on the caller's intent and remaining context window.
+- **State-on-Demand (Lazy-State)**: Implementing a registry for "State References" where large agent states are stored in MCP Any's Shared KV Store and only "paged in" to the LLM context when specifically addressed by a subagent.

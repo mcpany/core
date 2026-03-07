@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-04] Updates
+
+### Proposed Additions
+- **Universal State Handover (USH) Bridge**: (P0) Header-based protocol for deep-linking and transferring fine-grained agent state (variables, stack) between swarms.
+- **Intelligent Tool-Output Sanitizer**: (P1) Local middleware that uses small LLMs or heuristic rules to summarize tool outputs, preventing context window bloat.
+- **Lazy-State Registry (State-on-Demand)**: (P1) Offloads large agent state objects to the Shared KV Store, providing only a reference pointer to subagents to save tokens.
+
+### Priority Shifts
+- **Shared KV Store**: Re-affirmed as **P0** as it now serves as the backing store for USH and Lazy-State.
+- **A2A Stateful Residency**: Promoted to **P0** to support the persistence required for USH handovers.
+
+### Deprecations / Monitoring
+- **Manual State Summarization**: Monitoring for deprecation as USH and Sanitization automate the process of passing state between agents.
