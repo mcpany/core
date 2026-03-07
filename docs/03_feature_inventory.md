@@ -75,9 +75,18 @@
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
+---
+
+## Evolution: [2026-03-07] Updates
+
+### Proposed Additions
+- **Type-Safe Agentic SDK Bridge**: (P1) A high-level, type-safe SDK (TypeScript/Go) that allows agents to interact with MCP Any as a library, bypassing network overhead for local execution.
+- **Docker-Bound Named Pipe Transport**: (P0) A cryptographically isolated transport mechanism for inter-agent communication within containerized environments, mitigating local port exposure risks.
+- **Local-First Discovery Cache**: (P1) A specialized, high-performance cache for tool discovery specifically tuned for local LLM (e.g., Ollama) latency profiles.
+
 ### Priority Shifts
-- **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
-- **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.
+- **"Safe-by-Default" Network Hardening**: Promoted to **P0** and expanded to include automatic migration from TCP to Named Pipes for local swarms.
+- **A2A Stateful Residency**: Promoted to **P0** to support persistent state in programmatic, non-interactive agent workflows.
 
 ### Deprecations / Monitoring
-- **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+- **Local HTTP Tunneling for Inter-Agent Comms**: Monitoring for deprecation in favor of Named Pipes and Unix Domain Sockets.

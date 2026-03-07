@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-07]
+### Focus: Programmable Agency & Isolated Local Transport
+**Context**: The shift from human-in-the-loop CLI usage to programmatic, script-based agent interaction (OpenCode SDK) and the discovery of session-hijacking vulnerabilities in local HTTP tunnels have redefined the security and performance requirements for the Universal Agent Bus.
+**Strategic Pivot**:
+- **Programmable Adapter Framework**: MCP Any will introduce a first-class, type-safe SDK for direct, low-latency integration into non-interactive agentic workflows. This allows developers to treat MCP servers as native modules.
+- **Isolatable Transport (Named Pipe Bridge)**: Moving away from vulnerable TCP listeners for local inter-agent communication. MCP Any will implement Docker-bound named pipes and Unix domain sockets to provide cryptographically isolated channels for multi-agent swarms.
+- **Resource-Optimized Local Discovery**: Implementing specialized, lightweight tool discovery protocols for local execution environments (e.g., Ollama) that bypass the overhead of cloud-scale registries.
