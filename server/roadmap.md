@@ -189,3 +189,9 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Core Middleware Pipeline**: The middleware architecture is robust and extensible.
 - **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates protocol details from business logic.
 - **Documentation**: The project has excellent documentation coverage for most features.
+
+#### Upcoming (2026-03-07 Evolution)
+*   **[P0] P2P Mesh Discovery**: mDNS and DHT-based node discovery for the Federated Agentic Mesh. (Added: 2026-03-07)
+*   **[P0] Subagent Intent Verification (SIV)**: Cryptographic signing and validation of subagent task intents. (Added: 2026-03-07)
+*   **[P1] Predictive Context Pre-warming**: Early tool schema fetching based on initial prompt analysis. (Added: 2026-03-07)
+*   **[P1] VEX-Aware Discovery**: Vulnerability-aware tool filtering during discovery. (Added: 2026-03-07)
