@@ -134,4 +134,24 @@ describe("UniversalSchemaForm", () => {
 
         expect(onChange).toHaveBeenCalledWith({ image: "base64data" });
     });
+
+    it("renders file input for binary format", () => {
+        const schema: Schema = {
+            type: "object",
+            properties: {
+                file: {
+                    type: "string",
+                    title: "File",
+                    format: "binary"
+                }
+            }
+        };
+        const onChange = vi.fn();
+        render(<UniversalSchemaForm schema={schema} value={{}} onChange={onChange} />);
+
+        const input = screen.getByTestId("file-input");
+        fireEvent.change(input, { target: { value: "base64data" } });
+
+        expect(onChange).toHaveBeenCalledWith({ file: "base64data" });
+    });
 });

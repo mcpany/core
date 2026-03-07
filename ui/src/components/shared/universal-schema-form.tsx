@@ -226,7 +226,7 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
 
     if (type === "string") {
         // Handle Base64 File Upload
-        if (schema.contentEncoding === "base64") {
+        if (schema.contentEncoding === "base64" || schema.format === "binary") {
              return (
                 <div className="w-full">
                     <FieldLabel label={label} required={isRequired} description={description} error={errors?.[path]} htmlFor={path} />
