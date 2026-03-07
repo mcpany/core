@@ -81,3 +81,20 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-07] Updates
+
+### Proposed Additions
+- **MCP Protected Resource Metadata (PRM) Support**: (P0) Standardized discovery and negotiation of authorization requirements for upstream MCP servers (MCP Spec 2025-11-25).
+- **Teammate-Protocol Bridge**: (P0) Implementation of Anthropic-style Teammate orchestration tools within the A2A Bridge.
+- **Action Cascade Prevention Middleware**: (P1) Detection and mitigation of runaway agent feedback loops and "Action Cascades" (inspired by OpenClaw updates).
+- **Icon & UI Metadata Aggregator**: (P1) Automatic extraction and serving of icon/website metadata from MCP servers to enhance the Dashboard UI.
+
+### Priority Shifts
+- **Policy Firewall**: Re-affirmed as **P0**. Adding "Wildcard Pattern" and "Annotation Matching" to the specification for Gemini CLI compatibility.
+- **A2A Interop Bridge**: Promoted to include **Teammate-Protocol** support as a P0 requirement.
+
+### Deprecations / Monitoring
+- **Legacy Auth Mapping**: Monitoring for deprecation in favor of PRM-based discovery.
