@@ -18,10 +18,14 @@ vi.mock("@/components/dashboard/lazy-charts", () => ({
   LazyRequestVolumeChart: () => <div data-testid="widget-request-volume">Request Volume Widget</div>,
   LazyTopToolsWidget: () => <div data-testid="widget-top-tools">Top Tools Widget</div>,
   LazyHealthHistoryChart: () => <div data-testid="widget-uptime">System Uptime Widget</div>,
-  LazyRecentActivityWidget: () => <div data-testid="widget-recent-activity">Recent Activity Widget</div>
+  LazyRecentActivityWidget: () => <div data-testid="widget-recent-activity">Recent Activity Widget</div>,
+  LazyAuditLogWidget: () => <div data-testid="widget-audit-log">Audit Log Widget</div>
 }));
 vi.mock("@/components/dashboard/tool-failure-rate-widget", () => ({
   ToolFailureRateWidget: () => <div data-testid="widget-failure-rate">Tool Failure Rate Widget</div>
+}));
+vi.mock("@/components/dashboard/network-graph-widget", () => ({
+  NetworkGraphWidget: () => <div data-testid="widget-network-graph">Network Graph Widget</div>
 }));
 
 // Mock Drag and Drop
@@ -50,14 +54,26 @@ describe("DashboardGrid", () => {
     beforeEach(() => {
         vi.useFakeTimers();
         localStorage.clear();
+        global.fetch = vi.fn(() =>
+          Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({}),
+          })
+        ) as any;
       });
 
       afterEach(() => {
         vi.useRealTimers();
       });
 
-  it("renders all default widgets initially", () => {
+  it("renders all default widgets initially", async () => {
     render(<DashboardGrid />);
+
+    // Resolve any outstanding promises like fetch
+    await act(async () => {
+        await Promise.resolve();
+    });
+
     act(() => {
         vi.runAllTimers();
     });
@@ -66,7 +82,7 @@ describe("DashboardGrid", () => {
     expect(screen.getByTestId("widget-uptime")).toBeInTheDocument();
   });
 
-  it("loads layout from localStorage", () => {
+  it("loads layout from localStorage", async () => {
     // Note: The DashboardGrid expects instanceId, but handles legacy format where id=type
     const savedLayout = [
         { instanceId: "1", type: "metrics", title: "Metrics Overview", size: "full", hidden: true }, // Hidden
@@ -75,6 +91,12 @@ describe("DashboardGrid", () => {
     localStorage.setItem("dashboard-layout", JSON.stringify(savedLayout));
 
     render(<DashboardGrid />);
+
+    // Resolve any outstanding promises like fetch
+    await act(async () => {
+        await Promise.resolve();
+    });
+
     act(() => {
         vi.runAllTimers();
     });
@@ -84,7 +106,7 @@ describe("DashboardGrid", () => {
     expect(screen.getByTestId("widget-recent-activity")).toBeInTheDocument();
   });
 
-  it("migrates old layout schema", () => {
+  it("migrates old layout schema", async () => {
     // Old schema: type="wide" (mapped to full), missing hidden
     const oldLayout = [
         { id: "metrics", title: "Metrics Overview", type: "wide" }
@@ -92,6 +114,12 @@ describe("DashboardGrid", () => {
     localStorage.setItem("dashboard-layout", JSON.stringify(oldLayout));
 
     render(<DashboardGrid />);
+
+    // Resolve any outstanding promises like fetch
+    await act(async () => {
+        await Promise.resolve();
+    });
+
     act(() => {
         vi.runAllTimers();
     });
@@ -205,6 +233,12 @@ describe("DashboardGrid", () => {
 
   it("opens customization menu", async () => {
     render(<DashboardGrid />);
+
+    // Resolve any outstanding promises like fetch
+    await act(async () => {
+        await Promise.resolve();
+    });
+
     act(() => {
         vi.runAllTimers();
     });
@@ -223,6 +257,11 @@ describe("DashboardGrid", () => {
     vi.useRealTimers();
 
     render(<DashboardGrid />);
+
+    // Resolve any outstanding promises like fetch
+    await act(async () => {
+        await Promise.resolve();
+    });
 
     // Initially visible
     expect(screen.getByTestId("widget-metrics")).toBeInTheDocument();
@@ -249,6 +288,11 @@ describe("DashboardGrid", () => {
 
   it("debounces localStorage writes", async () => {
     render(<DashboardGrid />);
+
+    // Resolve any outstanding promises like fetch
+    await act(async () => {
+        await Promise.resolve();
+    });
 
     // Initial load should trigger effect, but skipped by isFirstRun.
     // However, if migration runs, setWidgets is called, which might trigger it?
@@ -281,8 +325,9 @@ describe("DashboardGrid", () => {
     expect(localStorage.setItem).not.toHaveBeenCalled();
 
     // Fast forward time
-    act(() => {
-      vi.advanceTimersByTime(500);
+    await act(async () => {
+      vi.advanceTimersByTime(2000);
+      await Promise.resolve();
     });
 
     // Now it should be called ONCE (for the latest state)
