@@ -59,3 +59,7 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-07:** Update: Resolving Project-Level Configuration Hijacking.
+    *   **Context**: Today's research on Claude Code CVEs shows that attackers can override global settings (like `BASE_URL`) via local project files.
+    *   **Architecture Adjustment**: Introducing **Config-Guard Attestation**. Critical system parameters are now marked as "Global Immutables" and cannot be shadowed by project-level configs without a cryptographic MFA signature.
+    *   **Security Impact**: Prevents API key exfiltration via malicious repository-controlled proxies.

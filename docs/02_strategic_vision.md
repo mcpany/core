@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-07]
+### Focus: Project-Bound Tool Sandboxing & Context-Scoped Least-Privilege
+**Context**: Recent CVEs in Claude Code (RCE and API Key theft via untrusted project settings) reveal a major gap: tools must be isolated not just by "server," but by "project context."
+**Strategic Pivot**:
+- **Project-Level Sandboxing**: MCP Any will introduce "Project-Specific Adapter Environments," where tools are dynamically scoped to the current working directory, preventing cross-project contamination and unauthorized setting overrides.
+- **Immutable Context Guard**: Transitioning to a model where high-level system configurations (e.g., `BASE_URL`) cannot be modified by low-level tool calls or project-specific configs without explicit admin-level cryptographic attestation.
+- **Dynamic Skill Isolation**: In line with the MolTHub ecosystem shifts, third-party skills and MCP servers will be executed in ephemeral, resource-constrained sandboxes (gVisor or WASM) to mitigate RCE risks from untrusted tool code.

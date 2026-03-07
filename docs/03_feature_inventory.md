@@ -81,3 +81,16 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-07] Updates
+
+### Proposed Additions
+- **Project-Aware Adapter Isolation**: (P0) Scopes tool availability and configuration to a verified project directory. Prevents untrusted repositories from hijacking global settings.
+- **Ephemeral Tool Sandboxing (WASM/gVisor)**: (P1) Automatic isolation for third-party MCP servers to prevent RCE during initialization.
+- **Config-Guard Attestation Middleware**: (P0) Requires cryptographic proof to modify "Immutables" (e.g., API Base URLs, Security Policies).
+
+### Priority Shifts
+- **"Safe-by-Default" Network Hardening**: Promoted to **P0** (Already P0, but re-affirming criticality for mitigating hijacked listeners).
+- **Policy Firewall**: Expanded to include "Project-Bound Context" rules.

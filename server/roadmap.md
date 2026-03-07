@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-07 Evolution)
+*   **[P0] Project-Aware Adapter Isolation**: Dynamically scope tools and config to the calling agent's working directory. (Added: 2026-03-07)
+*   **[P0] Config-Guard Attestation**: Cryptographic protection for immutable system settings (e.g. `BASE_URL`). (Added: 2026-03-07)
+*   **[P1] Ephemeral Tool Sandboxing**: Isolate third-party MCP servers in WASM/gVisor during initialization and execution. (Added: 2026-03-07)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
