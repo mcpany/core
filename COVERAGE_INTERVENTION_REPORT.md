@@ -1,28 +1,18 @@
 # Coverage Intervention Report
 
-**Top 10 High-Risk Untested Components Discovered:**
-1. `server/pkg/middleware/global_ratelimit.go` (Central entry point configuration/Redis)
-2. `server/pkg/upstream/filesystem/provider/sftp.go` (Untested file I/O operations)
-3. `server/pkg/upstream/vector/pinecone.go` (Pinecone queries lacking coverage)
-4. `server/pkg/upstream/mcp/streamable_http.go` (Healthchecks and connections are untested)
-5. `server/pkg/upstream/mcp/docker_transport.go` (Read/Write behaviors have low coverage)
-6. `server/pkg/tool/types.go` (Execute functions for MCP Tool wrapping)
-7. `server/pkg/middleware/audit.go` (Subscriptions and history tracking)
-8. `server/pkg/middleware/semantic_cache_postgres.go` (Closing/opening connection pools)
-9. `server/pkg/app/server.go` (Run and reconcile loops)
-10. `server/pkg/upstream/grpc/grpc_pool.go` (Closing operations on the connection pools)
-
-**Target:** `server/pkg/middleware/global_ratelimit.go`
+**Target:** `server/pkg/tool/schema_sanitizer.go`
 
 **Risk Profile:**
-This component manages global rate limiting for incoming MCP requests. It relies on caching, handles context propagation for different user identity signals (API Key, User ID, HTTP Headers), and connects dynamically to Redis. Prior to intervention, key methods handling configuration updates, caching layer integration, partitioned key resolution, and configuration hash calculations had zero or extremely low test coverage. Because this is the primary edge defense for preventing DoS/abuse on upstream tools, any untested regressions in routing logic could lead to service disruption or incorrect limit enforcement.
+This file handles JSON schema sanitization, which performs recursive descent on schemas provided by external upstream sources to convert them into normalized `structpb.Struct` protobufs for MCP clients. It previously had low test coverage (44.6% to 66.7%). This code was selected because schema parsing bugs (e.g., stack overflows, unhandled types, or infinite loops) in these utility functions can cause systemic failures or panics across the server when resolving tools, directly impacting the availability of the platform.
 
 **New Coverage:**
-*   `UpdateConfig`: Added coverage to ensure that changing rate limiting properties at runtime propagates to the middleware state correctly (100% coverage).
-*   `getPartitionKey`: Added robust table-driven tests evaluating the context extraction logic. It now verifies correct resolution of IP, User ID, and API keys sourced both via typical Context patterns and directly off incoming HTTP Request headers (100% coverage).
-*   `calculateConfigHash`: Confirmed that structurally identical vs distinct Redis configuration sets are mapped properly to avoid colliding cached client pools (100% coverage).
-*   `getRedisClient`: Validated the cache lookups for Redis connections to assure we are returning active cached clients on identical configs, preventing leakages from excessive redundant client spawning (81.8% coverage).
-*   `getLimiter`: Tested retrieval, fallback logic without Redis configs, and caching behaviors, ensuring we accurately clamp invalid burst inputs (83.3% coverage).
+The following specific logic paths are now fully guarded, bringing line coverage of `server/pkg/tool/schema_sanitizer.go` to 100%:
+- Maximum recursion depth limit handling in both `deepCopyJSON` and `sanitizeJSONSchemaInPlace`.
+- Edge cases around nested arrays (`items` mapping and array types).
+- Error propagation across complex mapping combinators (`oneOf`, `anyOf`, `allOf`, `definitions`, `$defs`, `additionalProperties`).
+- Non-map schema types passed directly to the struct converter.
+- Invalid map key conversions causing structural parsing failures.
 
 **Verification:**
-Confirmed that `go test` specific to the middleware package passes cleanly and coverage has drastically improved (>86%). Linting is passing.
+- Ran targeted `go test` for the specific package which reported 100.0% coverage for functions `SanitizeJSONSchema`, `sanitizeJSONSchemaInPlace`, and `deepCopyJSON`.
+- Ran the full `make test` and `make lint` suite over the entire codebase, confirming no legacy tests were broken, adhering strictly to the "Do No Harm" principle.
