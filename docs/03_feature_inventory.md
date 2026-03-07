@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-07] Updates
+
+### Proposed Additions
+- **Universal Task Bus (UTB) Protocol**: (P0) A standardized interface for sharing task state, progress, and handoffs across different agent frameworks (e.g., Claude Code, OpenClaw).
+- **Isolated Git Worktree Middleware**: (P1) Automatically spawns and manages temporary git worktrees for filesystem-based tool executions, preventing direct corruption of the main branch.
+- **Attested Inter-Agent Messaging (AIAM)**: (P1) Cryptographically signed messages for A2A communication, ensuring the authenticity and provenance of every request within a swarm.
+
+### Priority Shifts
+- **A2A Stateful Residency**: Promoted from **P1** to **P0**. Critical for supporting the Universal Task Bus and asynchronous multi-agent coordination.
+- **Supply Chain Integrity Guard**: Re-affirmed as **P0**. Increasing frequency of subagent-based exploits makes this non-negotiable for enterprise deployments.
+
+### Deprecations / Monitoring
+- **Direct Filesystem Tool Access**: Moving towards mandatory "Isolated Worktree" or "Containerized" execution for all file-modifying tools.

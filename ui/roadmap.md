@@ -107,3 +107,8 @@
 - [ ] **Log Source Color Coding**: Assign distinct colors to different log sources automatically for better visual separation.
 - [ ] **Context Usage History**: Track total context usage over time to identify growth trends (requires backend metrics persistence).
 - [ ] **Tool Schema Optimizer**: Analyze tool schemas and suggest removing unused properties or compacting descriptions to save context tokens.
+
+### Universal Agent Bus (New Strategic Priorities: 2026-03-07)
+- [ ] **[P0] Universal Task Board (UTB) Dashboard**: A unified view for tracking tasks, progress, and handoffs across multiple agent frameworks. (Added: 2026-03-07)
+- [ ] **[P1] Isolated Worktree Explorer**: UI for visualizing and managing temporary git worktrees created for tool execution. (Added: 2026-03-07)
+- [ ] **[P1] A2A Authenticity Badge**: Visual indicators in the message stream showing the cryptographic attestation status of agent requests. (Added: 2026-03-07)

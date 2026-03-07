@@ -59,3 +59,10 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+
+### Update: 2026-03-07 - Isolated Worktree Enforcement
+**Context**: Today's market sync revealed that "Vibe Coding" agents like Claude Code and OpenClaw are moving toward isolated worktree execution to prevent main branch corruption.
+**Architecture Adjustment**:
+* **Enforced Worktree Isolation**: Introducing a mandatory middleware for any tool with `filesystem` capabilities. It automatically clones the current branch into a temporary worktree.
+* **Commit-on-Approval**: Tool-generated changes are only committed to the main branch after explicit HITL (Human-in-the-Loop) approval, preventing "blind" agent commits.
+**Security Impact**: Eliminates the risk of an agent accidentally deleting or corrupting the primary development branch during a complex refactor or exploit attempt.
