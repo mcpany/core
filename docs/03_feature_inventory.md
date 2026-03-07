@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-07] Updates
+
+### Proposed Additions
+- **Token-Enforced Local API Middleware**: (P0) Requires a non-guessable session token for all local loopback requests to mitigate "0.0.0.0-day" browser-based attacks.
+- **A2A Mesh Health & Circuit Breaker**: (P1) Proactive monitoring for A2A-connected agents. Automatically quarantines degraded nodes from the swarm to maintain system reliability.
+- **Intent-Scoped Tool Filtering**: (P1) Extends Lazy-MCP discovery to filter results based on high-level agent intent meta-data, reducing context noise for subagents.
+
+### Priority Shifts
+- **Safe-by-Default Network Hardening**: Promoted to **P0+**. The 0.0.0.0-day exploit makes this the highest priority architectural change.
+- **A2A Stateful Residency**: Re-affirmed as **P0** to support reliable mesh communications in unstable environments.
+
+### Deprecations / Monitoring
+- **Unauthenticated Local Access**: Monitoring for complete removal. All local APIs will eventually require token-based attestation.

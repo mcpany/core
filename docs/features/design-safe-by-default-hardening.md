@@ -59,3 +59,7 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-07:** **Hardening against 0.0.0.0-day Browser Attacks.**
+    *   **Context**: CVE-2025-49596 demonstrated that local-only binding is insufficient if a malicious website can trigger requests to `localhost` via the user's browser.
+    *   **Architecture Adjustment**: Introducing `Token-Enforced Local API Middleware`. All local loopback requests (`127.0.0.1`, `::1`) now require a `X-MCP-Local-Token` header.
+    *   **Security Impact**: Effectively neutralizes "0.0.0.0-day" RCE vectors by ensuring only authorized local clients (like the MCP Any CLI or UI) can communicate with the gateway.
