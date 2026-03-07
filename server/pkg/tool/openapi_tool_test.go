@@ -242,3 +242,67 @@ func TestOpenAPITool_Execute_Extended(t *testing.T) {
 		require.NoError(t, err)
 	})
 }
+
+func TestOpenAPITool_Execute_PathTraversal(t *testing.T) {
+	t.Parallel()
+	toolProto := v1.Tool_builder{
+		Name: proto.String("getUser"),
+	}.Build()
+	parameterDefs := map[string]string{
+		"userId": "path",
+	}
+
+	callDef := configv1.OpenAPICallDefinition_builder{}.Build()
+	openAPITool := tool.NewOpenAPITool(toolProto, &mockHTTPClient{}, parameterDefs, "GET", "http://example.com/users/{{userId}}", nil, callDef)
+
+	req := &tool.ExecutionRequest{
+		ToolInputs: json.RawMessage(`{"userId": "../../../etc/passwd"}`),
+	}
+
+	_, err := openAPITool.Execute(context.Background(), req)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "path traversal attempt detected")
+}
+
+func TestOpenAPITool_Execute_InfoLeak(t *testing.T) {
+	t.Parallel()
+
+	// Test 1: JSON body should be redacted and truncated (or shown up to max len)
+	serverJSON := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusInternalServerError)
+		_, _ = w.Write([]byte(`{"error": "db connection failed", "password": "supersecret"}`))
+	}))
+	defer serverJSON.Close()
+
+	mockClientJSON := &mockHTTPClient{
+		doFunc: serverJSON.Client().Do,
+	}
+
+	toolProto := v1.Tool_builder{}.Build()
+	openAPIToolJSON := tool.NewOpenAPITool(toolProto, mockClientJSON, nil, "GET", serverJSON.URL, nil, configv1.OpenAPICallDefinition_builder{}.Build())
+
+	reqJSON := &tool.ExecutionRequest{ToolInputs: json.RawMessage(`{}`)}
+	_, errJSON := openAPIToolJSON.Execute(context.Background(), reqJSON)
+	assert.Error(t, errJSON)
+	assert.Contains(t, errJSON.Error(), "[REDACTED]")
+	assert.NotContains(t, errJSON.Error(), "supersecret")
+
+	// Test 2: Non-JSON body (like HTML) should be completely hidden
+	serverHTML := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusInternalServerError)
+		_, _ = w.Write([]byte(`<html><body>Stack trace: NullPointerException at xyz</body></html>`))
+	}))
+	defer serverHTML.Close()
+
+	mockClientHTML := &mockHTTPClient{
+		doFunc: serverHTML.Client().Do,
+	}
+
+	openAPIToolHTML := tool.NewOpenAPITool(toolProto, mockClientHTML, nil, "GET", serverHTML.URL, nil, configv1.OpenAPICallDefinition_builder{}.Build())
+
+	reqHTML := &tool.ExecutionRequest{ToolInputs: json.RawMessage(`{}`)}
+	_, errHTML := openAPIToolHTML.Execute(context.Background(), reqHTML)
+	assert.Error(t, errHTML)
+	assert.Contains(t, errHTML.Error(), "[Body hidden for security. Enable debug mode to view.]")
+	assert.NotContains(t, errHTML.Error(), "NullPointerException")
+}

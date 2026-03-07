@@ -1672,10 +1672,19 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
 	}
 
-	url := t.url
+	urlStr := t.url
 	for paramName, paramValue := range inputs {
 		if t.parameterDefs[paramName] == "path" {
-			url = strings.ReplaceAll(url, "{{"+paramName+"}}", util.ToString(paramValue))
+			valStr := util.ToString(paramValue)
+			if err := checkForPathTraversal(valStr); err != nil {
+				return nil, fmt.Errorf("path traversal attempt detected in parameter %q: %w", paramName, err)
+			}
+			if decodedVal, err := url.QueryUnescape(valStr); err == nil && decodedVal != valStr {
+				if err := checkForPathTraversal(decodedVal); err != nil {
+					return nil, fmt.Errorf("path traversal attempt detected in parameter %q (decoded): %w", paramName, err)
+				}
+			}
+			urlStr = strings.ReplaceAll(urlStr, "{{"+paramName+"}}", url.PathEscape(valStr))
 			delete(inputs, paramName)
 		}
 	}
@@ -1720,11 +1729,11 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		}
 	}
 
-	if err := validation.IsSafeURL(url); err != nil {
+	if err := validation.IsSafeURL(urlStr); err != nil {
 		return nil, fmt.Errorf("unsafe url: %w", err)
 	}
 
-	httpReq, err := http.NewRequestWithContext(ctx, t.method, url, body)
+	httpReq, err := http.NewRequestWithContext(ctx, t.method, urlStr, body)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create http request: %w", err)
 	}
@@ -1773,7 +1782,22 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	}
 
 	if resp.StatusCode >= 400 {
-		return nil, fmt.Errorf("upstream OpenAPI request failed with status %d: %s", resp.StatusCode, string(respBody))
+		bodyBytes := util.RedactJSON(respBody)
+		bodyStr := string(bodyBytes)
+		logging.GetLogger().DebugContext(ctx, "Upstream OpenAPI error", "status", resp.StatusCode, "body", bodyStr)
+
+		displayBody := bodyStr
+		const maxErrorBodyLen = 200
+		if len(displayBody) > maxErrorBodyLen {
+			displayBody = displayBody[:maxErrorBodyLen] + "... (truncated)"
+		}
+
+		isDebug := os.Getenv("MCPANY_DEBUG") == trueStr
+		if !isDebug && !stdjson.Valid(bodyBytes) {
+			displayBody = "[Body hidden for security. Enable debug mode to view.]"
+		}
+
+		return nil, fmt.Errorf("upstream OpenAPI request failed with status %d: %s", resp.StatusCode, displayBody)
 	}
 
 	if t.outputTransformer != nil {
