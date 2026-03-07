@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-03]
+### Focus: Context Compaction & Embedding-First Discovery
+**Context**: Modern swarms (OpenClaw v2.26, Claude Code) are moving toward "Session Compaction" to handle long-running workflows without hitting token limits. At the same time, massive tool libraries (1,000+ tools) require embedding-based retrieval rather than simple list-based discovery.
+**Strategic Pivot**:
+- **Native Context Compaction**: MCP Any will implement a background compaction engine that automatically summarizes and caches conversation history and session state, significantly extending the effective context window for subagents.
+- **Embedding-First Registry**: Shifting from a "List-Then-Search" model to an "Embedding-First" registry where tool discovery is primarily driven by semantic similarity search, integrated directly into the LLM's tool-calling loop.
+- **Hierarchical Tool Scoping**: Implementing "Tool Workspaces" that align with OpenClaw's hierarchical delegation, ensuring subagents only see tools relevant to their specific workspace.
