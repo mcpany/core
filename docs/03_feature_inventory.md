@@ -81,3 +81,20 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-07] Updates
+
+### Proposed Additions
+- **Origin-Aware Security Middleware**: (P0) Implements Host Header Pinning and strict CORS validation for all WebSocket/HTTP listeners to prevent browser-based hijacks.
+- **ACP Swarm Adapter**: (P0) A specialized adapter that implements the Agentic Content Protection (ACP) protocol for secure context handoffs between subagents.
+- **ClawHub Reputation Bridge**: (P1) Integration with the community-driven reputation database to automatically flag or block high-risk tools from the ClawHub ecosystem.
+- **Native Multi-Modal Primitives**: (P1) Standardized MCP tools for PDF and image analysis to reduce dependency on external specialized servers.
+
+### Priority Shifts
+- **"Safe-by-Default" Network Hardening**: Promoted to **P0** and expanded to include Origin-Aware validation.
+- **A2A Stateful Residency**: Promoted to **P0** to support high-reliability swarms as observed in recent market trends.
+
+### Deprecations / Monitoring
+- **Unvalidated Localhost Trust**: Deprecating the assumption that all `127.0.0.1` traffic is safe.

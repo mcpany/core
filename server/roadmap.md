@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-07 Evolution)
+*   **[P0] Origin-Aware Security Middleware**: Implement Host Header Pinning and strict CORS validation to prevent browser-based agent hijacking. (Added: 2026-03-07)
+*   **[P0] ACP Swarm Adapter**: Implement the Agentic Content Protection protocol for secure multi-agent context handoffs. (Added: 2026-03-07)
+*   **[P1] ClawHub Reputation Bridge**: Real-time integration with community-driven tool reputation databases. (Added: 2026-03-07)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
