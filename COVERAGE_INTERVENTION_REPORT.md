@@ -12,17 +12,14 @@
 9. `server/pkg/app/server.go` (Run and reconcile loops)
 10. `server/pkg/upstream/grpc/grpc_pool.go` (Closing operations on the connection pools)
 
-**Target:** `server/pkg/middleware/global_ratelimit.go`
+**Target:** `server/pkg/upstream/mcp/streamable_http.go`
 
 **Risk Profile:**
-This component manages global rate limiting for incoming MCP requests. It relies on caching, handles context propagation for different user identity signals (API Key, User ID, HTTP Headers), and connects dynamically to Redis. Prior to intervention, key methods handling configuration updates, caching layer integration, partitioned key resolution, and configuration hash calculations had zero or extremely low test coverage. Because this is the primary edge defense for preventing DoS/abuse on upstream tools, any untested regressions in routing logic could lead to service disruption or incorrect limit enforcement.
+This component manages connection health checking and shutdown routines for `streamable_http` MCP tool upstreams. Prior to intervention, `CheckHealth` and `Shutdown` lacked coverage. Because this deals with managing service liveliness (status up/down states) and performing lifecycle cleanup (like properly removing large temporary bundle directories off the disk when services unregister), any regressions could lead to zombie connections, failure to register/unregister MCP resources safely, and unchecked disk leakage from unremoved directories.
 
 **New Coverage:**
-*   `UpdateConfig`: Added coverage to ensure that changing rate limiting properties at runtime propagates to the middleware state correctly (100% coverage).
-*   `getPartitionKey`: Added robust table-driven tests evaluating the context extraction logic. It now verifies correct resolution of IP, User ID, and API keys sourced both via typical Context patterns and directly off incoming HTTP Request headers (100% coverage).
-*   `calculateConfigHash`: Confirmed that structurally identical vs distinct Redis configuration sets are mapped properly to avoid colliding cached client pools (100% coverage).
-*   `getRedisClient`: Validated the cache lookups for Redis connections to assure we are returning active cached clients on identical configs, preventing leakages from excessive redundant client spawning (81.8% coverage).
-*   `getLimiter`: Tested retrieval, fallback logic without Redis configs, and caching behaviors, ensuring we accurately clamp invalid burst inputs (83.3% coverage).
+*   `CheckHealth`: Added coverage checking the proxy to `checker.Check()`. Verified scenarios for when the checker is absent, when it reports `StatusUp`, and when it reports `StatusDown` with an error message. (100% coverage achieved).
+*   `Shutdown`: Added coverage testing cleanup loops and graceful stops. Verified `checker.Stop()` invocation and asserted the successful teardown of the temporary `bundle_dir` using `os.RemoveAll()` when specific `serviceIDs` untrack themselves. (Achieved 93.3% coverage).
 
 **Verification:**
-Confirmed that `go test` specific to the middleware package passes cleanly and coverage has drastically improved (>86%). Linting is passing.
+Confirmed that `go test` specific to the streamable package passed cleanly, test coverage is high, and the global tests pass via `make test-fast`. Linting via `make lint` is passing cleanly.
