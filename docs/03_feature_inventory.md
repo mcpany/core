@@ -81,3 +81,20 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-07] Updates
+
+### Proposed Additions
+- **Local WebSocket Origin Guard**: (P0) Mandatory `Origin` header validation and cryptographic pairing for all local WebSocket listeners to prevent "ClawJacked" style hijacking.
+- **Semantic Firewall for A2A**: (P0) LLM/CEL-based intent verification for task delegation. Ensures sub-tasks align with the parent's authorized scope (prevents "A2A Contagion").
+- **MCP Icon & Metadata Support**: (P1) Full support for icon metadata in `tools/list` and `resources/list` as per the 2025-11-25 MCP spec.
+- **Parallel Swarm State Manager**: (P0) Enhancements to the multi-agent middleware to handle concurrent task execution and shared blackboard state for "Agent Teams."
+
+### Priority Shifts
+- **Multi-Agent Session Management**: Re-affirmed as **P0** and expanded to include Parallel Swarm support.
+- **Safe-by-Default Hardening**: Re-affirmed as **P0**; expanded to include Origin-locking for localhost.
+
+### Deprecations / Monitoring
+- **Implicit Local Trust**: Monitoring for deprecation. All local connections should eventually require a handshake or origin check.

@@ -46,3 +46,7 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-03-07:** Update: Semantic Firewall for Contagion Prevention.
+    - **Context**: Recent "A2A Contagion" threats show that malicious intent can propagate laterally through agent swarms.
+    - **Architecture Adjustment**: Integrating a "Semantic Firewall" into the `A2ABridgeMiddleware`.
+    - **Verification Logic**: Before a task is delegated to an A2A agent, the firewall compares the sub-task description against the parent's authorized "Primary Goal" using a fast LLM or CEL policy. If the sub-task deviates significantly (e.g., parent says "Research" but sub-task says "Delete Database"), it triggers a P0 HITL approval.
