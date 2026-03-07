@@ -46,3 +46,9 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+
+### Update: 2026-03-07 - A2A Contagion Mitigation
+**Context**: Recent findings on the "A2A Contagion" threat show that malicious intent can propagate laterally through agent swarms.
+**Architecture Adjustment**:
+*   **A2A Contagion Mitigation**: Introducing a mandatory intent analysis layer in the `A2ABridgeMiddleware`. Before a task is handed off to an external agent, its semantic payload is evaluated against the originating user's authorized intent.
+*   **Lateral Propagation Detection**: Implementing a lineage-tracking system that monitors how tasks are delegated, alerting on unusual "task chains" that might indicate a compromised agent spreading malicious instructions.

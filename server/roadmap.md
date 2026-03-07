@@ -30,6 +30,11 @@
 *   **[P1] Resource Telemetry Middleware**: Inject latency/cost metrics into tool schemas. (Added: 2026-02-26)
 
 #### Upcoming (2026-02-28 Evolution)
+
+#### Upcoming (2026-03-07 Evolution)
+*   **[P0] A2A Contagion Mitigation Tool**: Intent-aware analysis of inter-agent semantic payloads. (Added: 2026-03-07)
+*   **[P1] Skill Execution Sandbox**: Isolated environment for third-party OpenClaw-compatible executable skills. (Added: 2026-03-07)
+*   **[P2] Gemini Config Importer**: Automated sync bridge for Gemini CLI settings.json. (Added: 2026-03-07)
 *   **[P0] Safe-by-Default Hardening**: Transition all listeners to `localhost` by default. Implement mandatory Attestation for remote exposure. (Added: 2026-02-28)
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)

@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-07]
+### Focus: A2A Contagion Mitigation & Skill Execution Isolation
+**Context**: Research into OpenClaw (Moltbot) and the "A2A Contagion" threat has shifted the security landscape. AI agents are no longer just exposed to individual prompt injections; they are now part of a lateral propagation mesh where a single compromised agent or "skill" can infect an entire swarm.
+**Strategic Pivot**:
+- **A2A Contagion Mitigation**: MCP Any must evolve into a "Semantic Firewall" that inspects the intent of inter-agent handoffs. We will prioritize the analysis of semantic payloads to detect lateral propagation of malicious tasks.
+- **Skill Execution Isolation**: As executable "skills" (OpenClaw-style) become more popular, MCP Any will implement mandatory sandboxed execution for any third-party or non-native skill. This ensures that even if a skill is compromised (as seen in ClawHub), the underlying host remains protected.
+- **Cross-CLI Configuration Bridge**: To solve the "Configuration Fragmentation" pain point, MCP Any will act as a unified configuration hub, capable of importing and synchronizing MCP settings from other major CLIs like Gemini and Claude.

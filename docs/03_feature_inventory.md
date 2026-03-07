@@ -81,3 +81,18 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-07] Updates
+
+### Proposed Additions
+- **A2A Contagion Mitigation Tool**: (P0) A security middleware that analyzes semantic payloads during inter-agent handoffs to detect lateral propagation of malicious intent.
+- **Skill Execution Sandbox**: (P1) An isolated environment (e.g., containerized or micro-VM) for running third-party, OpenClaw-compatible executable "skills" securely.
+- **Gemini Config Importer**: (P2) A bridge tool that automatically imports and synchronizes MCP server configurations from Gemini CLI's `settings.json`.
+
+### Priority Shifts
+- **A2A Interop Bridge**: (Already P0) Re-prioritized to include built-in intent inspection as a mandatory default.
+
+### Deprecations / Monitoring
+- **Unsandboxed Stdio Skills**: Monitoring for deprecation. All local executable tools should eventually migrate to the Skill Execution Sandbox.
