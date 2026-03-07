@@ -67,6 +67,9 @@ test.describe('Alerts Page', () => {
     // Wait for row to be stable before acting
     await expect(row).toBeVisible();
 
+    // The status text is within the row, let's verify it says 'active'
+    await expect(row.getByText('active')).toBeVisible();
+
     // Click the "More Actions" dropdown button in that row
     await row.getByRole('button', { name: 'Open menu' }).click();
 
@@ -75,10 +78,14 @@ test.describe('Alerts Page', () => {
 
     // Use evaluate to click the DOM element directly, skipping visibility/actionability checks
     // since the dropdown is complex
-    await ackMenuitem.evaluate((node) => (node as HTMLElement).click());
+    await ackMenuitem.evaluate((node) => node.click());
 
     // Verify toast appears indicating success
     await expect(page.getByText('Status Updated')).toBeVisible();
+
+    // Wait until the 'active' state changes, relying on Playwright retries
+    // Using string matching across the whole row to avoid strict selector issues
+    await expect(row).toContainText('acknowledged', { timeout: 5000 });
   });
 
   test('should resolve alert via dropdown', async ({ page }) => {
@@ -89,16 +96,22 @@ test.describe('Alerts Page', () => {
 
     await expect(row).toBeVisible();
 
+    // Verify it doesn't already say resolved before we click
+    await expect(row.getByText('resolved')).toBeHidden();
+
     // Click "More Actions"
     await row.getByRole('button', { name: 'Open menu' }).click();
 
-    // Click "Resolve" using evaluate to bypass non-standard disabled checks
+    // Click "Resolve"
     const resolveMenuitem = page.getByRole('menuitem', { name: 'Resolve' });
     await resolveMenuitem.waitFor({ state: 'visible' });
 
-    await resolveMenuitem.evaluate((node) => (node as HTMLElement).click());
+    await resolveMenuitem.evaluate((node) => node.click());
 
     await expect(page.getByText('Status Updated')).toBeVisible();
+
+    // Verify status changes to "resolved"
+    await expect(row).toContainText('resolved', { timeout: 5000 });
   });
 
   test('should bulk acknowledge alerts', async ({ page }) => {
