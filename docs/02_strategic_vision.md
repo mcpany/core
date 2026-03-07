@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-07]
+### Focus: Browser-to-Local Security & A2A Mesh Resilience
+**Context**: Today's findings reveal a critical RCE vector (CVE-2025-49596) that bypasses local-only protections via browser-based attacks on the `0.0.0.0-day`. Simultaneously, the growth of A2A meshes requires more robust node health management.
+**Strategic Pivot**:
+- **Browser-Safe Listener Isolation**: Shifting from simple `localhost` binding to a "Token-Enforced Local Protocol." Even local requests must provide a session-bound, non-guessable token to protect against malicious websites triggering local tool execution.
+- **A2A Mesh Health & Circuit Breaking**: Implementing proactive health monitoring for A2A nodes. MCP Any will automatically circuit-break connections to degraded agents, ensuring the swarm remains resilient even when individual subagents fail or become unreachable.
+- **Intent-Aligned Tool Search**: Enhancing the on-demand discovery engine to use high-level "Intent Meta-Data" for ranking tool results, ensuring subagents receive tools that are strictly relevant to their current task scope.

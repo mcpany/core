@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-07 Evolution)
+*   **[P0] Token-Enforced Local API**: Mitigation for CVE-2025-49596 (0.0.0.0-day). All loopback requests require session-bound tokens. (Added: 2026-03-07)
+*   **[P1] A2A Mesh Health Monitor**: Periodic L7 health probes for registered A2A agents with automatic circuit breaking. (Added: 2026-03-07)
+*   **[P1] Intent-Scoped Discovery Filtering**: Use high-level task intent to rank and filter Lazy-MCP tool results. (Added: 2026-03-07)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
