@@ -46,3 +46,11 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+
+### Update: 2026-03-07 - Standardizing on ACP (Agentic Communication Protocol)
+**Context:** OpenClaw 2026.3.2 has enabled ACP subagents by default, effectively establishing ACP as the primary inter-agent transport standard.
+**Architecture Adjustment:**
+- **ACP Native Integration**: The bridge is being renamed to the **ACP/A2A Gateway**.
+- **OpenClaw-Compatible Handshakes**: Implementing the specific handshake and delegation lifecycle used by OpenClaw to ensure zero-config interoperability.
+- **Asynchronous Callback Buffer**: Adding a dedicated message queue for ACP-native agents to post results back to MCP Any without holding open a long-lived HTTP connection.
+**Technical Impact:** Ensures MCP Any remains the central coordinator for the most popular agent swarms in the ecosystem.
