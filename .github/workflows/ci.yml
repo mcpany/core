@@ -37,10 +37,10 @@ defaults:
 
 jobs:
   changes:
-    runs-on: oci-runner
-    container:
-      image: iowoi/mcp-runner:latest
-      options: --user root -v /var/run/docker.sock:/var/run/docker.sock
+    runs-on: ubuntu-latest
+    # container:
+      # image: iowoi/mcp-runner:latest
+      # options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     outputs:
       src: ${{ steps.filter.outputs.src }}
     steps:
@@ -95,10 +95,10 @@ jobs:
   lint:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
-    runs-on: oci-runner
-    container:
-      image: iowoi/mcp-runner:latest
-      options: --user root -v /var/run/docker.sock:/var/run/docker.sock
+    runs-on: ubuntu-latest
+    # container:
+      # image: iowoi/mcp-runner:latest
+      # options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 90
     steps:
       # - name: Free Disk Space (Fast)
@@ -176,6 +176,7 @@ jobs:
       - name: Prepare environment
         run: |
           git config --global --add safe.directory "*"
+          rm -rf build/.cache/pre-commit
           make prepare
 
       - name: Lint
@@ -184,10 +185,10 @@ jobs:
           make lint
 
   unit-test:
-    runs-on: oci-runner
-    container:
-      image: iowoi/mcp-runner:latest
-      options: --user root -v /var/run/docker.sock:/var/run/docker.sock
+    runs-on: ubuntu-latest
+    # container:
+      # image: iowoi/mcp-runner:latest
+      # options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 60
     needs: [changes, build-images]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -321,7 +322,7 @@ jobs:
 
   e2e-parallel:
     runs-on: ubuntu-latest
-    # runs-on: oci-runner
+    # runs-on: ubuntu-latest
     # container:
     #   image: iowoi/mcp-runner:latest
     #   options: --user root -v /var/run/docker.sock:/var/run/docker.sock
@@ -498,7 +499,7 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: ubuntu-latest
-    # runs-on: oci-runner
+    # runs-on: ubuntu-latest
     # container:
     #   image: iowoi/mcp-runner:latest
     #   options: --user root -v /var/run/docker.sock:/var/run/docker.sock
@@ -631,10 +632,10 @@ jobs:
           retention-days: 1
 
   e2e-sequential:
-    runs-on: oci-runner
-    container:
-      image: iowoi/mcp-runner:latest
-      options: --user root -v /var/run/docker.sock:/var/run/docker.sock
+    runs-on: ubuntu-latest
+    # container:
+      # image: iowoi/mcp-runner:latest
+      # options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 180
     needs: [changes, build-images]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -784,10 +785,10 @@ jobs:
           verbose: true
 
   e2e-public-api:
-    runs-on: oci-runner
-    container:
-      image: iowoi/mcp-runner:latest
-      options: --user root -v /var/run/docker.sock:/var/run/docker.sock
+    runs-on: ubuntu-latest
+    # container:
+      # image: iowoi/mcp-runner:latest
+      # options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 180
     needs: [changes, build-images]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -918,10 +919,10 @@ jobs:
           verbose: true
 
   docker-smoke-test:
-    runs-on: oci-runner
-    container:
-      image: iowoi/mcp-runner:latest
-      options: --user root -v /var/run/docker.sock:/var/run/docker.sock
+    runs-on: ubuntu-latest
+    # container:
+      # image: iowoi/mcp-runner:latest
+      # options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 15
     needs: [changes, build-images]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -972,10 +973,10 @@ jobs:
 
   ui-test:
     # runs-on: ubuntu-latest
-    runs-on: oci-runner
-    container:
-      image: iowoi/mcp-runner:latest
-      options: --user root -v /var/run/docker.sock:/var/run/docker.sock
+    runs-on: ubuntu-latest
+    # container:
+      # image: iowoi/mcp-runner:latest
+      # options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 180
     needs: [changes, build-images]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -1059,7 +1060,7 @@ jobs:
 
   k8s-e2e:
     runs-on: ubuntu-latest
-    # runs-on: oci-runner
+    # runs-on: ubuntu-latest
     # container:
     #   image: iowoi/mcp-runner:latest
     #   options: --user root -v /var/run/docker.sock:/var/run/docker.sock
@@ -1186,10 +1187,10 @@ jobs:
           make k8s-e2e SKIP_IMAGE_BUILD=true IMAGE_TAG=latest
 
   ci-success:
-    runs-on: oci-runner
-    container:
-      image: iowoi/mcp-runner:latest
-      options: --user root -v /var/run/docker.sock:/var/run/docker.sock
+    runs-on: ubuntu-latest
+    # container:
+      # image: iowoi/mcp-runner:latest
+      # options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     needs:
       [
         changes,
