@@ -74,7 +74,7 @@ const getTableData = (data: unknown, smartTable: boolean) => {
  * @param props.maxHeight - Max height before collapsing (only applies to Raw/Table views, Tree handles its own).
  * @returns The rendered component.
  */
-export function JsonView({ data, className, smartTable = false, maxHeight = 400 }: JsonViewProps) {
+export function JsonView({ data, className, smartTable = true, maxHeight = 400 }: JsonViewProps) {
   // Calculate initial state lazily
   const [viewMode, setViewMode] = useState<"smart" | "tree" | "raw" | "image">(() => {
       const parsed = tryParse(data);
