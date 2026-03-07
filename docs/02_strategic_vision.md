@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-07]
+### Focus: Agent-Centric Origin Security & Swarm Resilience
+**Context**: The recent OpenClaw hijacking vulnerability and the rise of AI "Hivenet" swarm attacks have shifted the security landscape. Origin verification is no longer optional, and rate limiting must evolve to handle coordinated, machine-speed actions.
+**Strategic Pivot**:
+- **Cross-Origin Agent Protection (COAP)**: Implementing strict cryptographic origin verification for every tool request. Tools will only be executed if the request is signed by a known, authorized agent binary or process, preventing browser-based hijacking.
+- **Swarm-Aware Rate Limiting**: Moving from per-client/per-key rate limiting to "Global Behavioral Throttling." MCP Any will analyze the aggregate tool frequency across the entire mesh to detect and mitigate coordinated swarm attacks in real-time.
+- **Policy-Enforced Adaptive Thinking**: Gemini and Claude's "Adaptive Thinking" capabilities require MCP Any to implement "Cognitive Quotas," ensuring that models don't enter expensive, runaway reasoning loops when calling complex tools.

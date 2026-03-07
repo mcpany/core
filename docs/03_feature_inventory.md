@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-07] Updates
+
+### Proposed Additions
+- **Cross-Origin Agent Protection (COAP)**: (P0) Middleware that enforces cryptographic origin verification for all tool requests, mitigating hijacking via browser side-channels.
+- **Swarm-Aware Rate Limiting (SARL)**: (P1) Global behavioral analysis that throttles coordinated tool calls from multiple agents to mitigate swarm-style hivenet attacks.
+- **Cognitive Quota Enforcement**: (P1) Policy engine integration for models with "Adaptive Thinking" to prevent runaway reasoning costs during tool execution.
+
+### Priority Shifts
+- **"Safe-by-Default" Network Hardening**: Promoted to **Core Architecture Requirement** (P0+). This must be the foundation for COAP.
+- **Policy Firewall**: Expanded to include **Origin-Aware Polices** (P0).
+
+### Deprecations / Monitoring
+- **Legacy JSON-RPC Origin Looseness**: Monitoring for complete deprecation once COAP is implemented.
