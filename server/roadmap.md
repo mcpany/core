@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-07 Evolution)
+*   **[P0] Privacy Masking Middleware**: Implement a PII detection and tokenization layer for tool outputs. (Added: 2026-03-07)
+*   **[P0] A2A Atomic Handoff Protocol (v1.2)**: Support for transaction-like agent handoffs with automatic rollback on failure. (Added: 2026-03-07)
+*   **[P1] Goal-Verification (Intent Checkpointing)**: Integrated progress monitoring to prevent "Swarm Drift." (Added: 2026-03-07)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

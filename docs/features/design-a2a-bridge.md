@@ -46,3 +46,4 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-03-07:** Update to A2A v1.2. Introducing **Atomic Handoffs** to ensure transaction-like task transfers between agents. Implementing automatic state rollback if a subagent fails to acknowledge or process a delegated task.
