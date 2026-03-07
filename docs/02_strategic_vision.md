@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-07]
+### Focus: Origin-Verified Tooling & Delegation-Centric Coordination
+**Context**: Today's research on the OpenClaw "Origin Hijacking" exploit and the rise of "ACP subagents" highlights the need for MCP Any to become a secure, delegation-aware gateway.
+**Strategic Pivot**:
+- **Cross-Origin Security Hardening**: MCP Any must move beyond simple local binding to strict "Origin Validation" for all incoming JSON-RPC calls. This prevents malicious websites from leveraging the developer's agent.
+- **Delegation-Aware Switchboard**: Moving from a "Passive Proxy" to an "Active Delegation Switchboard" that understands the relationship between parent agents and subagents, managing context handoffs securely.
+- **Blackboard-as-a-Service (BaaS)**: Formalizing the "Shared KV Store" into a robust, event-driven blackboard that allows swarms to synchronize state without context bloating.

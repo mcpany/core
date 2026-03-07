@@ -59,3 +59,10 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+
+### Update: 2026-03-07 - Addressing Origin Hijacking
+**Context:** Today's market sync revealed a critical vulnerability in OpenClaw that allowed malicious websites to hijack local agents via unauthenticated local endpoints.
+**Architecture Adjustment:**
+*   Adding `Origin-Locked RPC Gateway` as a prerequisite for any local listener.
+*   Mandating `Origin` header validation for all non-Stdio JSON-RPC transport layers.
+**Security Impact:** Prevents cross-origin attacks where a malicious website (running in the user's browser) attempts to communicate with the local MCP Any server on port 50050.

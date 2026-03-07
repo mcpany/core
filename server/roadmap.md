@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-07 Evolution)
+*   **[P0] Origin-Locked RPC Gateway**: Mandate `Origin` and `Referer` header validation for all HTTP listeners. (Added: 2026-03-07)
+*   **[P0] Event-Driven Blackboard (BaaS)**: Transition the KV store to a pub-sub model for real-time agent coordination. (Added: 2026-03-07)
+*   **[P1] ACP Delegation Proxy**: Direct support for the Agent Control Protocol to standardize subagent tasking. (Added: 2026-03-07)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
