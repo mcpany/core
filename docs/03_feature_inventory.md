@@ -81,3 +81,17 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-06] Updates
+
+### Proposed Additions
+- **WebSocket Origin Filtering Middleware**: (P0) Restrict WebSocket connections to known/trusted origins. Essential to prevent browser-based localhost hijacking.
+- **Local Rate-Limiting Guard**: (P0) Implement brute-force protection for the local administrative gateway, even when accessed via `127.0.0.1`.
+- **A2A Identity Attestation (Standardized Handshake)**: (P0) Support for authenticated agent discovery and task handoffs, aligning with Gemini CLI's HTTP auth patterns.
+- **Persistent Blackboard (Stateful Swarm Buffer)**: (P1) Enhancing the Shared KV Store to act as a long-lived state repository for parallel agent swarms.
+
+### Priority Shifts
+- **"Safe-by-Default" Network Hardening**: Re-affirmed as **P0** with added scope for Origin Filtering.
+- **A2A Interop Bridge**: Re-affirmed as **P0** with added scope for Identity Attestation.

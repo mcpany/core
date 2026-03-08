@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-06]
+### Focus: Local-First Security Posture & Standardized A2A Handshake
+**Context**: The OpenClaw localhost hijacking exploit has exposed the myth of "Local Trust." Simultaneously, Gemini CLI's update on A2A HTTP auth signals a shift toward standardized, authenticated agent discovery.
+**Strategic Pivot**:
+- **Localhost-is-not-a-Boundary**: MCP Any will pivot to a "Zero Trust Localhost" model. This includes mandatory WebSocket origin filtering and rate-limiting for all local administrative interfaces to prevent browser-based side-channel attacks.
+- **Standardized A2A Handshake**: We will align our A2A implementation with the emerging patterns seen in Gemini CLI and Claude Swarms, ensuring MCP Any can handle authenticated agent card discovery and secure task delegation.
+- **The "Stateful Blackboard" for Swarms**: Positioning MCP Any as the persistent "Memory Backbone" for parallel agent swarms (like Claude Code teams), ensuring state consistency across the entire agent chain even when individual agents are ephemeral.

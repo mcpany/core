@@ -46,3 +46,10 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+### Update: 2026-03-06 - Standardized A2A Identity Handshake
+**Context:** Gemini CLI v0.33.0-preview.3 and Claude Code Swarms have introduced new patterns for authenticated agent discovery and parallel task coordination.
+**Architecture Adjustment:**
+*   Aligning Section 4 with Gemini CLI v0.33.0 patterns for A2A HTTP authentication and authenticated agent card discovery.
+*   Introducing "Identity Attestation" requirement for all inter-agent handoffs.
+*   Added "Persistent Blackboard" integration (via Shared KV Store) to ensure state consistency for parallel swarms.
+**Security Impact:** Ensures that agent-to-agent task delegation is cryptographically verified, preventing unauthorized "Confused Deputy" exploits in multi-agent swarms.
