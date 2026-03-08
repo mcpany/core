@@ -32,7 +32,12 @@
 #### Upcoming (2026-02-28 Evolution)
 *   **[P0] Safe-by-Default Hardening**: Transition all listeners to `localhost` by default. Implement mandatory Attestation for remote exposure. (Added: 2026-02-28)
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
-*   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
+*   **[P0] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28, Priority Upgraded: 2026-03-08)
+
+#### Upcoming (2026-03-08 Evolution)
+*   **[P0] JIT Capability Negotiator**: Just-in-time permission requests for agents with HITL integration. (Added: 2026-03-08)
+*   **[P0] WASM Tool Sandbox**: Isolated execution for untrusted command-based tools discovered in project configs. (Added: 2026-03-08)
+*   **[P1] ZKP-A2A Delegation Proofs**: Privacy-preserving inter-agent authorization using Zero-Knowledge Proofs. (Added: 2026-03-08)
 
 ## 2. Top 10 Recommended Features
 
