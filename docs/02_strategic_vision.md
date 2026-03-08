@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-08]
+### Focus: Browser-to-Local Security & Policy-Governed Hook Execution
+**Context**: March 2026 market shifts (OpenClaw's localhost hijacking and Claude Code's hook injection) demonstrate that even "Local-Only" agents are vulnerable to browser-based attacks and malicious project configurations.
+**Strategic Pivot**:
+- **Local Origin Isolation**: MCP Any must evolve from simple "Local-Only" binding to "Origin-Aware" local isolation. This involves enforcing strict CORS/WebSocket origin validation and Host header checks to prevent cross-origin hijacking of the agent gateway from a browser tab.
+- **Policy-Governed Hook Execution**: Shifting from trust-on-launch for `.mcp.json` or `.claude/settings.json` hooks to a "Mandatory Policy Review" phase. All project-level hooks must be verified against a global "Safe Hooks" policy before they are allowed to execute.
+- **Swarm Observability Layer**: As agents transition from single-agent to "Swarm" orchestration (as seen in Gemini's Plan Mode), MCP Any will prioritize a "Swarm Trace" middleware that provides deterministic routing and full-stack observability for inter-agent messaging.

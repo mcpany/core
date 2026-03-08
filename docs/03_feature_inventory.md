@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-08] Updates
+
+### Proposed Additions
+- **Local Origin Isolation Middleware**: (P0) Mandatory CORS, Host header, and WebSocket origin validation for all local gateways.
+- **Hook Policy Validator**: (P0) Middleware that scans project-local configs (`.mcp.json`, `.claude/settings.json`) and blocks unverified hooks/scripts.
+- **Swarm Trace Explorer (A2A Observability)**: (P1) A visual timeline for tracking hierarchical agent calls and state handoffs in a swarm.
+
+### Priority Shifts
+- **Policy Firewall**: Promoted from P0 to **P0+ (Foundational)**. Critical for preventing both tool poisoning and hook injection.
+- **Supply Chain Integrity Guard**: Re-affirmed as **P0**. Essential to combat "Weaponized Config Files" in shared repositories.
+
+### Deprecations / Monitoring
+- **Implicit Local Trust**: Deprecate the assumption that `localhost` is a secure boundary for unauthenticated requests.
