@@ -75,9 +75,18 @@
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
+---
+
+## Evolution: [2026-03-06] Updates
+
+### Proposed Additions
+- **Adaptive Security Sandbox (Adaptive Firewall)**: (P0) Heuristic-based throttling and intent-drift detection to block rapid-fire adaptive exploits.
+- **CLI-Native Protocol Adapter (Gemini/Claude)**: (P1) Advanced terminal tool support including session streaming and non-interactive scripting modes.
+- **Intent-Scoped Sub-Network Isolation**: (P1) Restricting tool network/FS access to only what is explicitly required for the current intent-scope.
+
 ### Priority Shifts
-- **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
-- **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.
+- **Policy Firewall**: Re-affirmed as **P0** and expanded to include Adaptive Runtime Defense.
+- **MCP Provenance Attestation**: Remains **P0** as a prerequisite for secure tool execution.
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
