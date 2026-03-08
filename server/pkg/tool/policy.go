@@ -12,7 +12,22 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-var exportRegexCache sync.Map
+var (
+	exportRegexCache     sync.Map
+	evalPolicyRegexCache sync.Map
+)
+
+func getCompiledRegex(pattern string) (*regexp.Regexp, error) {
+	if cached, ok := evalPolicyRegexCache.Load(pattern); ok {
+		return cached.(*regexp.Regexp), nil
+	}
+	re, err := regexp.Compile(pattern)
+	if err != nil {
+		return nil, err
+	}
+	evalPolicyRegexCache.Store(pattern, re)
+	return re, nil
+}
 
 // ShouldExport determines whether a named item (tool, prompt, or resource) should be exported.
 //
@@ -92,13 +107,16 @@ func EvaluateCallPolicy(policies []*configv1.CallPolicy, toolName, callID string
 		matchedRule := false
 		for _, rule := range policy.GetRules() {
 			matched := true
+
+			// ⚡ BOLT: Replaced dynamic regexp.MatchString with cached compiled regexes for O(1) compilation overhead.
+			// Randomized Selection from Top 5 High-Impact Targets (CPU/Regex)
 			if rule.GetNameRegex() != "" {
-				if matchedTool, _ := regexp.MatchString(rule.GetNameRegex(), toolName); !matchedTool {
+				if re, err := getCompiledRegex(rule.GetNameRegex()); err != nil || !re.MatchString(toolName) {
 					matched = false
 				}
 			}
 			if matched && rule.GetCallIdRegex() != "" {
-				if matchedCall, _ := regexp.MatchString(rule.GetCallIdRegex(), callID); !matchedCall {
+				if re, err := getCompiledRegex(rule.GetCallIdRegex()); err != nil || !re.MatchString(callID) {
 					matched = false
 				}
 			}
@@ -107,7 +125,7 @@ func EvaluateCallPolicy(policies []*configv1.CallPolicy, toolName, callID string
 					// Cannot match argument regex at registration time
 					matched = false
 				} else {
-					if matchedArgs, _ := regexp.Match(rule.GetArgumentRegex(), arguments); !matchedArgs {
+					if re, err := getCompiledRegex(rule.GetArgumentRegex()); err != nil || !re.Match(arguments) {
 						matched = false
 					}
 				}
