@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-06 Evolution)
+*   **[P0] Agent Presence Residency**: Maintain a persistent mailbox and network identity for A2A agents (Added: 2026-03-06).
+*   **[P0] Economical Reasoning Middleware**: Inject token-cost and efficiency metadata into tool schemas to mitigate "Token Tax" (Added: 2026-03-06).
+*   **[P1] Unified Discovery Middleware**: Aggregate and normalize discovery results from both MCP and A2A protocols (Added: 2026-03-06).
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

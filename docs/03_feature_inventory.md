@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-06] Updates
+
+### Proposed Additions
+- **Economical Reasoning Middleware (Token Optimizer)**: (P1) Automatic injection of token-cost estimates and efficiency metadata into tool schemas to allow LLMs to make cost-aware tool selections.
+- **Agent Presence Residency (A2A Identity Provider)**: (P0) Expansion of A2A Bridge to maintain a persistent network presence and mailbox for agents even when offline.
+- **Protocol-Native Unified Discovery**: (P1) Unified middleware that aggregates discovery results from both MCP and A2A protocols into a single, searchable tool/agent directory.
+
+### Priority Shifts
+- **A2A Interop Bridge**: Re-affirmed as **P0** and expanded with "Agent Presence Residency" to align with "Persistent Agent Networks" (e.g., OpenAgents).
+- **Resource Cost/Latency Middleware**: Promoted to **P0** due to increasing user sensitivity to agentic session costs (Token Tax).
+
+### Deprecations / Monitoring
+- **Transient A2A Sessions**: Monitoring for deprecation in favor of Resident/Persistent sessions.

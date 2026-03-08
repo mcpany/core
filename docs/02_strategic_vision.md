@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-06]
+### Focus: Persistent Agent Presence & Economical Reasoning
+**Context**: Today's findings show a shift from "One-Shot" agent task pipelines to "Persistent Agent Networks" (e.g., OpenAgents). Furthermore, "Token Tax" is becoming a critical friction point as agent swarms scale.
+**Strategic Pivot**:
+- **Agent Presence Residency**: MCP Any will evolve from a simple A2A bridge to a "Resident Mesh Node" that maintains an agent's network presence, mailbox, and identity even when the underlying agent process is dormant or offline.
+- **Economical Reasoning Middleware**: Integrating cost and token-efficiency metadata into the tool discovery process. This allows LLMs to reason not just about "can I do this?" but "what is the most cost-effective way to do this?".
+- **Protocol-Native Discovery**: Moving towards first-class support for both MCP and A2A discovery protocols, ensuring MCP Any is the universal directory for all agentic resources.
