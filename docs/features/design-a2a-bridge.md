@@ -46,3 +46,9 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-03-07:** Update - Resolving Local Port Exposure
+    *   **Context**: Today's market sync revealed a new exploit pattern in OpenClaw subagent routing where local HTTP tunneling is bypassed.
+    *   **Architecture Adjustment**:
+        *   Deprecating local HTTP tunneling for inter-agent communication in Section 4.
+        *   Introducing isolated Docker-bound named pipes and Unix domain sockets for inter-agent transport.
+    *   **Security Impact**: Mitigates unauthorized host-level file access by rogue subagents by eliminating exposed network ports for A2A handoffs.
