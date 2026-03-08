@@ -34,6 +34,12 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-04 Evolution)
+*   **[P0] PITTO Output Sanitizer**: Active middleware to prevent prompt injection via tool outputs. (Added: 2026-03-04)
+*   **[P0] Agent Identity Provider (OIDC Bridge)**: Native agent-specific identity and OBO authentication. (Added: 2026-03-04)
+*   **[P1] ClawMesh Discovery Bridge**: P2P tool discovery for decentralized agent swarms. (Added: 2026-03-04)
+*   **[P1] Batch Execution API**: Optimized endpoint for high-frequency tool calls. (Added: 2026-03-04)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
