@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-08] Updates
+
+### Proposed Additions
+- **Ephemeral Tool Scoping Middleware**: (P0) Cryptographically bound, short-lived tool capabilities that expire upon task completion. Prevents privilege escalation in subagents.
+- **Streaming Tool Result Proxy**: (P1) Real-time streaming of tool outputs (logs, progress) to the LLM with built-in injection sanitization for streams.
+- **Distributed State Locking (Blackboard Mutex)**: (P0) A mutex/locking system for the Shared KV Store to prevent state desync in concurrent agent swarms.
+
+### Priority Shifts
+- **Shared KV Store**: Re-affirmed as **P0** and expanded to include Distributed State Locking requirements.
+- **"Safe-by-Default" Network Hardening**: Promoted to **P0** (Critical) due to increased reports of insecure MCP server exposures.
+
+### Deprecations / Monitoring
+- **Static Token Scoping**: Monitoring for deprecation in favor of Ephemeral Tool Scoping.
