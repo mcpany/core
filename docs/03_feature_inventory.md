@@ -75,6 +75,15 @@
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
+---
+
+## Evolution: [2026-03-07] Updates
+
+### Proposed Additions
+- **Tool Taint Tracking Engine**: (P0) A system to tag tool outputs with trust levels and prevent tainted data from reaching sensitive tools (e.g., shell, filesystem) without explicit de-tainting policies.
+- **Repository-Level Config Sandbox**: (P1) Isolation and sanitization for repository-local configurations (like `.claude/settings.json`) to prevent RCE during project initialization.
+- **Real-Time Tool-Call Interceptor**: (P1) Active inspection of tool payloads for prompt injection patterns and sensitive data leakage.
+
 ### Priority Shifts
 - **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
 - **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.
