@@ -59,3 +59,12 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-07:** Incorporating Origin-Aware Validation.
+
+### Update: 2026-03-07 - Mitigating Browser-Based Hijacks
+**Context:** Market research revealed a high-severity exploit pattern in OpenClaw where malicious websites could connect to local agents via WebSockets.
+**Architecture Adjustment:**
+*   **Host Header Pinning**: All HTTP/WebSocket listeners will now strictly validate the `Host` header against an allowlist (defaulting to `localhost` and `127.0.0.1`).
+*   **Origin Validation**: Implementing strict CORS/Origin checks. Requests from browser origins (e.g., `http://malicious.com`) will be rejected unless explicitly allowlisted by the user.
+*   **Transition from Host-Trust to Origin-Trust**: Section 4 updated to include a "Local Origin Verification" stage during the TLS/Connection handshake.
+**Security Impact:** Prevents "Silent Browser Takeover" where a website uses the user's browser as a bridge to execute tools on the local machine.
