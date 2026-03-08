@@ -61,6 +61,18 @@ func (a *Application) handleWebhookDetail() http.HandlerFunc {
 			}
 			w.Header().Set("Content-Type", "application/json")
 			_ = json.NewEncoder(w).Encode(wh)
+		case http.MethodPut:
+			var cfg webhooks.WebhookConfig
+			if err := json.NewDecoder(r.Body).Decode(&cfg); err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
+			if err := a.WebhooksManager.UpdateWebhook(id, &cfg); err != nil {
+				http.NotFound(w, r)
+				return
+			}
+			w.Header().Set("Content-Type", "application/json")
+			_ = json.NewEncoder(w).Encode(cfg)
 		case http.MethodDelete:
 			a.WebhooksManager.DeleteWebhook(id)
 			w.WriteHeader(http.StatusNoContent)
