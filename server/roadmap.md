@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-08 Evolution)
+*   **[P0] Anti-Shadow Local Discovery Scanner**: Detect unmanaged MCP servers on localhost (Added: 2026-03-08).
+*   **[P0] Intent-Aware Tool Routing (JIT Scoping)**: Middleware to filter tool lists by high-level task intent (Added: 2026-03-08).
+*   **[P1] A2A Native SSE Transport**: Implement Server-Sent Events for asynchronous A2A message delivery (Added: 2026-03-08).
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

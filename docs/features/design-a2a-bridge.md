@@ -46,3 +46,7 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-03-08:** **Update: SSE-Native Transport for A2A Reliability**
+    *   **Context:** Market sync and swarm testing revealed that traditional polling for A2A task status is inefficient and leads to high latency in multi-agent handoffs.
+    *   **Architecture Adjustment:** Transitioning to SSE (Server-Sent Events) as the primary transport for A2A message delivery. This allows for real-time status updates (e.g., "Agent Thinking," "Agent Calling Tool") to be streamed back to the orchestrator.
+    *   **Security Impact:** Reduces the time window for "State Hijacking" during polling cycles and ensures that session-aware headers are maintained in a persistent stream.

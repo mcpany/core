@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-08] Updates
+
+### Proposed Additions
+- **Anti-Shadow Local Discovery Scanner**: (P0) Automated scanning of common local MCP ports (e.g. from Gemini CLI/FastMCP) to identify unmanaged tool services.
+- **Intent-Aware Tool Routing (JIT Scoping)**: (P0) Middleware to filter tool lists based on high-level task descriptions. Essential for multi-agent swarm stability.
+- **A2A Native SSE Transport**: (P1) High-performance Server-Sent Events implementation for A2A message delivery and status updates.
+
+### Priority Shifts
+- **On-Demand Discovery Middleware (Lazy-MCP)**: Promoted to **P0** and expanded to include Intent-Aware Routing.
+- **Provenance-First Discovery**: Promoted to **P0** due to rising "Shadow MCP" threats.
+
+### Deprecations / Monitoring
+- **Pure-Polling for A2A**: Monitor for deprecation in favor of SSE-based transport.
