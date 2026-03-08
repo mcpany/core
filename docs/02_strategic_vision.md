@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-06]
+### Focus: Eliminating Loopback Trust & Hardening Inter-Agent IPC
+**Context**: The "ClawJacked" (CVE-2026-25253) exploit in OpenClaw has exposed a fundamental flaw in local agent architecture: the implicit trust of `localhost`. Malicious websites can bypass cross-origin protections to brute-force local TCP ports.
+**Strategic Pivot**:
+- **Zero-Trust Loopback**: MCP Any will treat `127.0.0.1` as an untrusted network. All connections, regardless of origin, will be subject to strict rate-limiting, mandatory token-based authentication, and cryptographic attestation.
+- **IPC Shift (UDS/Named Pipes)**: For local inter-agent communication, MCP Any will prioritize Unix Domain Sockets (UDS) and Windows Named Pipes over TCP loopback. This removes the attack surface from the browser's reach entirely.
+- **Kernel-Level Origin Verification**: Implementing OS-specific checks (e.g., `SO_PEERCRED` on Linux) to verify the identity of the process connecting to the MCP gateway before any data is exchanged.

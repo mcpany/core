@@ -59,3 +59,9 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-06:** **Critical Update: Addressing "ClawJacked" (CVE-2026-25253)**.
+    - **Context**: Today's market sync revealed a critical vulnerability in local agent gateways where malicious websites bypass cross-origin policies to brute-force local ports.
+    - **Architecture Adjustment**:
+        - **Deprecating Unauthenticated Loopback**: Localhost is no longer a "trusted" zone. All local requests must now include a `Short-Lived Loopback Token` (SLLT).
+        - **Mandatory Rate-Limiting**: No IP, including `127.0.0.1`, will be exempted from throttling.
+        - **UDS Priority**: Shifting the primary recommended local transport from TCP loopback to Unix Domain Sockets (UDS) to completely isolate the gateway from browser-based attacks.

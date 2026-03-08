@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-06] Updates
+
+### Proposed Additions
+- **Non-TCP Transport (UDS/Named Pipes)**: (P0) High-priority implementation of Unix Domain Sockets for local IPC to mitigate "ClawJacked"-style browser attacks.
+- **Loopback Rate-Limit Enforcer**: (P0) Middleware to ensure that `127.0.0.1` is never exempted from authentication or throttling.
+- **Peer-Process Attestation**: (P1) Capability to verify the binary signature and PID of the calling agent process.
+
+### Priority Shifts
+- **"Safe-by-Default" Network Hardening**: Promoted to **Critical P0**. This is no longer a "good to have" but a survival requirement after the OpenClaw incident.
+- **A2A Interop Bridge**: Shifted focus to prioritize UDS-based A2A communication over WebSocket-based.
+
+### Deprecations / Monitoring
+- **Unauthenticated Localhost Access**: Monitoring for immediate deprecation. All local access must require a `Short-Lived Loopback Token`.
