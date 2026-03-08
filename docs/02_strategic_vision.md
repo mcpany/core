@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-08]
+### Focus: Localhost Isolation & Egress Sandboxing
+**Context**: The "Localhost Trust Flaw" and widespread SSRF vulnerabilities in the OpenClaw ecosystem have redefined the "Safe-by-Default" standard. Even local connections must now be treated as potentially hostile if initiated from a browser.
+**Strategic Pivot**:
+- **Strict Origin Enforcement (SOE)**: MCP Any will mandate cryptographic origin validation for all WebSocket upgrades, effectively neutralizing browser-based exfiltration.
+- **Egress-Controlled Tool Sandboxing**: Every tool execution will now run within a transient, network-isolated container or be routed through a "Zero Trust Egress Proxy" that enforces tool-specific domain allow-lists, preventing SSRF.
+- **Reputation-Based "Poison" Detection**: Integrating real-time threat intelligence to identify and block "Sugar-Coated Poison" (SCP) tools before they are registered in the discovery layer.

@@ -81,3 +81,16 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-08] Updates
+
+### Proposed Additions
+- **WebSocket Strict Origin Enforcer (SOE)**: (P0) Cryptographically validates the `Origin` header for all incoming WebSocket requests to prevent browser-based exfiltration.
+- **Zero-Trust Egress Proxy for Tools**: (P0) A mandatory proxy for all tool-initiated network requests, enforcing per-tool allow-lists to mitigate SSRF.
+- **Threat-Intel Tool Scanner**: (P1) Real-time scanning of tool metadata against known "Sugar-Coated Poison" (SCP) signatures.
+
+### Priority Shifts
+- **Safe-by-Default Hardening**: Re-prioritized as **P0 Immediate** due to the Localhost Trust Flaw.
+- **Provenance-First Discovery**: Promoted to **P0** to combat the rise of SCP attacks.
