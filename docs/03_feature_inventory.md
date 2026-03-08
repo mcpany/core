@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-01] Updates
+
+### Proposed Additions
+- **Nano-Isolation Middleware**: (P0) Sandboxes every tool call in an ephemeral, per-execution WASM module or micro-container. Matches NanoClaw security standards.
+- **Conductor Spec-Sync Middleware**: (P1) Synchronizes with Google Conductor Markdown specs to enforce formal alignment between agent plans and tool execution.
+- **Headless Task Attestation**: (P0) A protocol for autonomous subagents to provide cryptographic proofs of task integrity (e.g., "I am currently executing Task ID 123 from a verified parent") before accessing sensitive tools.
+
+### Priority Shifts
+- **"Safe-by-Default" Network Hardening**: Promoted to **P0** (Critical) due to escalating headless trust deficit.
+- **Provenance-First Discovery**: Promoted to **P0** to support Spec-Driven Governance.
+
+### Deprecations / Monitoring
+- **Persistent Tool Runtimes**: Monitoring for deprecation in favor of Ephemeral Nano-Isolation.

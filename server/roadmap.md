@@ -32,7 +32,12 @@
 #### Upcoming (2026-02-28 Evolution)
 *   **[P0] Safe-by-Default Hardening**: Transition all listeners to `localhost` by default. Implement mandatory Attestation for remote exposure. (Added: 2026-02-28)
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
-*   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
+*   **[P0] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Promoted: 2026-03-01)
+
+#### Upcoming (2026-03-01 Evolution)
+*   **[P0] Nano-Isolation Middleware**: Per-call ephemeral tool runtimes (WASM/Micro-containers) for zero-persistence execution. (Added: 2026-03-01)
+*   **[P0] Headless Task Attestation**: Cryptographic task-integrity proofs for autonomous subagents. (Added: 2026-03-01)
+*   **[P1] Conductor Spec-Sync**: Integration with formal Markdown specifications for spec-aware policy enforcement. (Added: 2026-03-01)
 
 ## 2. Top 10 Recommended Features
 
