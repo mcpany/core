@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-01] Updates
+
+### Proposed Additions
+- **Automatic Argument Sanitization (Safety Schema)**: (P0) A middleware that validates and sanitizes tool arguments against known "dangerous patterns" (e.g., shell metasymbols) before execution.
+- **Provenance-Aware Blackboard**: (P0) Extension of the Shared KV Store to include writer identity and trust metadata for every entry.
+- **Shadow Server Discovery (Quarantine)**: (P1) Background service that scans for non-MCP Any managed servers on localhost and offers to wrap them in our security policy.
+
+### Priority Shifts
+- **Policy Firewall**: Re-affirming **P0**. The "Audit-First" requirement makes the firewall the most critical component.
+- **Shared KV Store**: Promoted to "Provenance-Aware Blackboard" and maintained at **P0**.
+
+### Deprecations / Monitoring
+- **Unsanitized Pass-through**: Monitoring for deprecation. All tool calls should eventually pass through the Safety Schema.

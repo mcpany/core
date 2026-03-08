@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-01]
+### Focus: Provenance-Aware State & Audit-First Execution
+**Context**: Today's research highlights the rise of "Prompt-to-RCE" via unsanitized tool arguments and the "Shadow MCP" problem where unauthenticated local servers expose host systems. Swarms are also vulnerable to "Context Poisoning" where one agent corrupts the shared state.
+**Strategic Pivot**:
+- **Audit-First Pipeline**: MCP Any will transition to a pipeline where *every* tool call argument is sanitized against a set of "Safety Schemas" before reaching the upstream server, mitigating command injection at the gateway level.
+- **Provenance-Aware State (Blackboard 2.0)**: The Shared KV Store will evolve to include mandatory ownership and attestation metadata for every key-value pair. Agents will be able to filter state based on the "Trust Score" of the agent that wrote it.
+- **Shadow-Server Quarantine**: Implementing an automated "Local Network Scan" that identifies and alerts users to unauthenticated MCP servers running on their machine, bringing them under the MCP Any management umbrella.
