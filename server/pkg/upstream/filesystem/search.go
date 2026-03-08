@@ -140,8 +140,10 @@ func searchFilesTool(prov provider.Provider, fs afero.Fs) filesystemToolDef {
 						return ctx.Err()
 					}
 					lineNum++
-					line := scanner.Text()
-					if re.MatchString(line) {
+					// ⚡ BOLT: Replaced scanner.Text() with scanner.Bytes() to prevent an O(lines) string allocation overhead per file.
+					// Randomized Selection from Top 5 High-Impact Targets
+					lineBytes := scanner.Bytes()
+					if re.Match(lineBytes) {
 						// Relativize path
 						relPath, _ := filepath.Rel(resolvedPath, filePath)
 						if relPath == "" {
@@ -155,7 +157,7 @@ func searchFilesTool(prov provider.Provider, fs afero.Fs) filesystemToolDef {
 						matches = append(matches, map[string]interface{}{
 							"file":         fullPath,
 							"line_number":  lineNum,
-							"line_content": strings.TrimSpace(line),
+							"line_content": strings.TrimSpace(string(lineBytes)),
 						})
 						matchCount++
 						if matchCount >= maxMatches {

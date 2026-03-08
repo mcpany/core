@@ -30,6 +30,7 @@ env:
   # GOMAXPROCS allowed to default to max cores available to speed up unit tests
   GOGC: 50 # Balanced GC to avoid excessive CPU usage while keeping memory in check
   GO_RACE: "" # Disable race detector in CI due to OOM on constrained runners
+  GOFLAGS: "-buildvcs=false" # Prevent dubious ownership git errors during golangci-lint
 
 defaults:
   run:
@@ -142,11 +143,11 @@ jobs:
       # - name: Set up Python
       #   uses: actions/setup-python@v6
       #   with:
-      #     python-version: "3.13"
+      #     python-version: "3.11"
       #     cache: "pip"
 
       - name: Install Python dependencies
-        run: pip install -r server/requirements.txt
+        run: pip install --break-system-packages -r server/requirements.txt
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -172,6 +173,9 @@ jobs:
           key: ${{ runner.os }}-lint-cache-v3-${{ hashFiles('server/go.sum', 'server/.pre-commit-config.yaml') }}
           restore-keys: |
             ${{ runner.os }}-lint-cache-v3-
+
+      - name: Fix git safe directory
+        run: git config --global --add safe.directory '*'
 
       - name: Prepare environment
         run: make prepare
@@ -226,11 +230,11 @@ jobs:
       # - name: Set up Python
       #   uses: actions/setup-python@v6
       #   with:
-      #     python-version: "3.13"
+      #     python-version: "3.11"
       #     cache: "pip"
 
       - name: Install Python dependencies
-        run: pip install -r server/requirements.txt
+        run: pip install --break-system-packages -r server/requirements.txt
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -366,11 +370,11 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: "3.13"
+          python-version: "3.11"
           cache: "pip"
 
       - name: Install Python dependencies
-        run: pip install -r server/requirements.txt
+        run: pip install --break-system-packages -r server/requirements.txt
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -669,11 +673,11 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: "3.13"
+          python-version: "3.11"
           cache: "pip"
 
       - name: Install Python dependencies
-        run: pip install -r server/requirements.txt
+        run: pip install --break-system-packages -r server/requirements.txt
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -821,11 +825,11 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: "3.13"
+          python-version: "3.11"
           cache: "pip"
 
       - name: Install Python dependencies
-        run: pip install -r server/requirements.txt
+        run: pip install --break-system-packages -r server/requirements.txt
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
