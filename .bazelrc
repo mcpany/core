@@ -39,3 +39,10 @@ test --test_env=MCPANY_DANGEROUS_ALLOW_LOCAL_IPS
 build --action_env=GEMINI_API_KEY
 build --action_env=MCP_BUNDLE_DIR
 build --action_env=CI
+
+build --remote_cache=grpcs://nativelink.cubectl.com
+build --remote_executor=grpc://nativelink.cubectl.com
+build --remote_timeout=3600
+# build --remote_instance_name=main
+#build --bes_backend=grpcs://nativelink.cubectl.com
+#build --bes_results_url=https://nativelink.cubectl.com/results/

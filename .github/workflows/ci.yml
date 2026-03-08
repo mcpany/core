@@ -181,9 +181,9 @@ jobs:
 
   unit-test:
     runs-on: oci-runner
-    container:
-      image: iowoi/mcp-runner:latest
-      options: --user root -v /var/run/docker.sock:/var/run/docker.sock
+    # container:
+    #   image: iowoi/mcp-runner:latest
+    #   options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 60
     needs: [changes, build-images]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -204,18 +204,18 @@ jobs:
 
       - uses: actions/checkout@v5
 
-      - name: Install dependencies (Idempotent)
-        run: |
-          if command -v make >/dev/null && command -v curl >/dev/null; then
-            echo "Dependencies already installed in container, skipping apt-get."
-            exit 0
-          fi
-          if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
-          if command -v apt-get > /dev/null 2>&1; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils curl unzip build-essential
-          elif command -v apk > /dev/null 2>&1; then
-             $SUDO apk add --no-cache make xz curl unzip build-base
-          fi
+      # - name: Install dependencies (Idempotent)
+      #   run: |
+      #     if command -v make >/dev/null && command -v curl >/dev/null; then
+      #       echo "Dependencies already installed in container, skipping apt-get."
+      #       exit 0
+      #     fi
+      #     if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
+      #     if command -v apt-get > /dev/null 2>&1; then
+      #       $SUDO apt-get update && $SUDO apt-get install -y make xz-utils curl unzip build-essential
+      #     elif command -v apk > /dev/null 2>&1; then
+      #        $SUDO apk add --no-cache make xz curl unzip build-base
+      #     fi
 
       # - name: Set up Go
       #   uses: actions/setup-go@v6
@@ -229,89 +229,101 @@ jobs:
       #     python-version: "3.13"
       #     cache: "pip"
 
-      - name: Install Python dependencies
-        run: pip install -r server/requirements.txt
+      # - name: Install Python dependencies
+      #   run: pip install -r server/requirements.txt
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v6
+      # - name: Set up Node.js
+      #   uses: actions/setup-node@v6
+      #   with:
+      #     node-version: "24"
+      #     cache: "npm"
+      #     cache-dependency-path: server/tests/integration/upstream/package-lock.json
+
+      # - name: Set up QEMU
+      #   uses: docker/setup-qemu-action@v3
+
+      # - name: Set up Docker Buildx
+      #   uses: docker/setup-buildx-action@v3
+      #   with:
+      #     buildkitd-config-inline: |
+      #       [registry."docker.io"]
+      #         mirrors = ["mirror.gcr.io"]
+
+      # - name: Login to Docker Hub
+      #   uses: docker/login-action@v3
+      #   with:
+      #     username: ${{ secrets.DOCKERHUB_USERNAME }}
+      #     password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # - name: Login to GitHub Container Registry
+      #   uses: docker/login-action@v3
+      #   with:
+      #     registry: ghcr.io
+      #     username: ${{ github.actor }}
+      #     password: ${{ secrets.GITHUB_TOKEN }}
+
+      # - name: Get Date
+      #   id: get-date
+      #   run: |
+      #     echo "week=$(/bin/date -u "+%V")" >> $GITHUB_OUTPUT
+      #   shell: bash
+
+      # - name: Detect Architecture
+      #   id: detect-arch
+      #   run: |
+      #     ARCH=$(uname -m)
+      #     case $ARCH in
+      #       x86_64) SLUG="amd64" ;;
+      #       aarch64) SLUG="arm64" ;;
+      #       *) echo "Unsupported arch: $ARCH"; exit 1 ;;
+      #     esac
+      #     echo "slug=$SLUG" >> $GITHUB_OUTPUT
+
+      # - name: Cache Tools
+      #   uses: actions/cache@v4
+      #   with:
+      #     path: build/env/bin
+      #     key: ${{ runner.os }}-build-env-bin-v3-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-build-env-bin-v3-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
+      #       ${{ runner.os }}-build-env-bin-v3-${{ steps.get-date.outputs.week }}-
+
+      # - name: Download Time Server Image
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #     name: image-time-server-${{ steps.detect-arch.outputs.slug }}
+
+      # - name: Load Time Server Image
+      #   run: |
+      #     docker load -i image.tar
+      #     rm -f image.tar
+
+      # - name: Prepare environment
+      #   run: make prepare CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache
+      - uses: bazel-contrib/setup-bazel@0.18.0
         with:
-          node-version: "24"
-          cache: "npm"
-          cache-dependency-path: server/tests/integration/upstream/package-lock.json
+          # Avoid downloading Bazel every time.
+          bazelisk-cache: true
+          # Store build cache per workflow.
+          disk-cache: ${{ github.workflow }}
+          # Share repository cache between workflows.
+          repository-cache: true
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-        with:
-          buildkitd-config-inline: |
-            [registry."docker.io"]
-              mirrors = ["mirror.gcr.io"]
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Get Date
-        id: get-date
+      - name: Test
         run: |
-          echo "week=$(/bin/date -u "+%V")" >> $GITHUB_OUTPUT
-        shell: bash
+          bazelisk test //... --test_output=errors --test_summary=terse --test_timeout=300,600,900,1800 --test_size_filters=-enormous
 
-      - name: Detect Architecture
-        id: detect-arch
-        run: |
-          ARCH=$(uname -m)
-          case $ARCH in
-            x86_64) SLUG="amd64" ;;
-            aarch64) SLUG="arm64" ;;
-            *) echo "Unsupported arch: $ARCH"; exit 1 ;;
-          esac
-          echo "slug=$SLUG" >> $GITHUB_OUTPUT
+      # - name: Test (Short)
+      #   run: |
+      #     make test-fast SKIP_DOCKER_REBUILD=true CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache COVERAGE_FILE=coverage-fast.out
 
-      - name: Cache Tools
-        uses: actions/cache@v4
-        with:
-          path: build/env/bin
-          key: ${{ runner.os }}-build-env-bin-v3-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}
-          restore-keys: |
-            ${{ runner.os }}-build-env-bin-v3-${{ steps.get-date.outputs.week }}-${{ hashFiles('Makefile') }}-
-            ${{ runner.os }}-build-env-bin-v3-${{ steps.get-date.outputs.week }}-
-
-      - name: Download Time Server Image
-        uses: actions/download-artifact@v4
-        with:
-          name: image-time-server-${{ steps.detect-arch.outputs.slug }}
-
-      - name: Load Time Server Image
-        run: |
-          docker load -i image.tar
-          rm -f image.tar
-
-      - name: Prepare environment
-        run: make prepare CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache
-
-      - name: Test (Short)
-        run: |
-          make test-fast SKIP_DOCKER_REBUILD=true CACHE_TO=type=local,dest=build/buildx-cache CACHE_FROM=type=local,src=build/buildx-cache COVERAGE_FILE=coverage-fast.out
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          fail_ci_if_error: false
-          files: coverage-fast.out
-          token: ${{ secrets.CODECOV_TOKEN }}
-          verbose: true
+      # - name: Upload coverage to Codecov
+      #   uses: codecov/codecov-action@v5
+      #   with:
+      #     fail_ci_if_error: false
+      #     files: coverage-fast.out
+      #     token: ${{ secrets.CODECOV_TOKEN }}
+      #     verbose: true
 
   e2e-parallel:
     runs-on: ubuntu-latest
