@@ -81,3 +81,16 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-08] Updates
+
+### Proposed Additions
+- **Agent Skill Secure Runtime**: (P0) A containerized (Docker/Wasm) runtime for executing "Agent Skills" from marketplaces (ClawHub). Exposes skill capabilities as standard MCP tools.
+- **Progressive Disclosure Middleware**: (P1) A security gate that limits tool disclosure to LLMs based on the "intent-scope" and progressive depth defined in the Agent Skill standard.
+- **Skill Provenance Filter**: (P1) Automatic quarantine of Agent Skills that do not have an attested cryptographic signature or are from unknown providers.
+
+### Priority Shifts
+- **Provenance-First Discovery**: Promoted to **P0** (from P1) due to the "ClawHavoc" crisis in the OpenClaw ecosystem.
+- **Supply Chain Integrity Guard**: Re-affirmed as **P0**.

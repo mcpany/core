@@ -32,7 +32,12 @@
 #### Upcoming (2026-02-28 Evolution)
 *   **[P0] Safe-by-Default Hardening**: Transition all listeners to `localhost` by default. Implement mandatory Attestation for remote exposure. (Added: 2026-02-28)
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
-*   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
+*   **[P0] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Upgraded to P0: 2026-03-08)
+
+#### Upcoming (2026-03-08 Evolution)
+*   **[P0] Agent Skill Secure Runtime**: Isolated execution environment (Docker/Wasm) for dynamic skill scripts to mitigate "ClawHavoc" style attacks. (Added: 2026-03-08)
+*   **[P1] Progressive Disclosure Middleware**: Tiered disclosure of skill details to LLMs based on intent and security policy. (Added: 2026-03-08)
+*   **[P1] Skill Provenance Filter**: Automated quarantine for un-attested or suspicious agent skills. (Added: 2026-03-08)
 
 ## 2. Top 10 Recommended Features
 

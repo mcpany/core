@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-08]
+### Focus: Secure "Agent Skills" Lifecycle & Isolated Execution
+**Context**: The rapid adoption of the "Agent Skills" standard by OpenClaw and Anthropic, coupled with the "ClawHavoc" supply chain attacks, creates a massive security gap. Agents are executing unverified scripts from open marketplaces.
+**Strategic Pivot**:
+- **Skills-to-MCP Bridge**: MCP Any will natively ingest "Agent Skill" folders, converting them into standard MCP tools. This allows un-modified agents to benefit from the Skill ecosystem while being mediated by MCP Any.
+- **Progressive Disclosure Enforcement**: Implementing a middleware that enforces the "Progressive Disclosure" security model. Tool definitions are exposed first, with full code execution and deep context access granted only after explicit policy verification and (optionally) HITL approval.
+- **Isolated Skill Sandbox**: Moving toward mandatory isolation (Docker/Wasm) for all dynamic skill scripts, ensuring that malicious "Agent Skills" from marketplaces like ClawHub cannot access the host filesystem or network.
