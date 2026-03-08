@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-07]
+### Focus: Agentic UI (MCP Apps) & Cross-Framework Persistence
+**Context**: The emergence of the MCP Apps standard (SEP-1865) and the continued fragmentation in A2A coordination (OpenClaw vs. AutoGen) present a dual opportunity for MCP Any to solidify its role as the "Agentic OS" kernel.
+**Strategic Pivot**:
+- **MCP App Native Hosting**: MCP Any will evolve to not just proxy tool calls, but to natively host and serve the sandboxed UI components defined in SEP-1865. This ensures that any client (even those without native MCP App support) can render these interfaces via an MCP Any-provided bridge.
+- **Cross-Framework Coordination Layer**: We will implement a "Stateful Persistence Layer" that acts as a neutral ground for agents from different frameworks to exchange structured "Handoff Objects" and shared state, solving the coordination gap identified in today's research.
+- **Thought-Adaptive Tooling**: Adapting to models with "Adaptive Thinking" (Opus 4.6), MCP Any will support asynchronous tool responses that can provide "Reasoning Traces" back to the client while the tool is still executing.
