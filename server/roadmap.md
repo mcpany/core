@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-08 Evolution)
+*   **[P0] Deterministic Sub-agent Router**: Lineage-aware routing for swarm sub-agents (Added: 2026-03-08)
+*   **[P1] Semantic Slash-Command Bridge**: Native CLI parity for MCP Prompts (Added: 2026-03-08)
+*   **[P1] WASM Tool Runtime**: Sandboxed tool execution via WebAssembly (Added: 2026-03-08)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
