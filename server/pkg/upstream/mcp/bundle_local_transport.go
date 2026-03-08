@@ -5,8 +5,10 @@ package mcp
 
 import (
 	"context"
+	"fmt"
 	"os/exec"
 
+	"github.com/mcpany/core/server/pkg/validation"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
@@ -33,6 +35,12 @@ type BundleLocalTransport struct {
 // Side Effects:
 //   - Starts a local process.
 func (t *BundleLocalTransport) Connect(ctx context.Context) (mcp.Connection, error) {
+	if t.WorkingDir != "" {
+		if err := validation.IsAllowedPath(t.WorkingDir); err != nil {
+			return nil, fmt.Errorf("invalid working directory %q: %w", t.WorkingDir, err)
+		}
+	}
+
 	cmd := exec.CommandContext(ctx, t.Command, t.Args...) //nolint:gosec // Trusted configuration
 	cmd.Env = t.Env
 	cmd.Dir = t.WorkingDir

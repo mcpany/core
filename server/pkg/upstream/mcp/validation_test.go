@@ -15,6 +15,17 @@ import (
 func TestBuildCommandFromStdioConfig_Validation(t *testing.T) {
 	ctx := context.Background()
 
+	t.Run("Validation failed - invalid working directory", func(t *testing.T) {
+		stdio := configv1.McpStdioConnection_builder{
+			Command:          proto.String("echo"),
+			WorkingDirectory: proto.String("../../../../../../../../../../../../../../../../../../../../etc"),
+		}.Build()
+
+		_, err := buildCommandFromStdioConfig(ctx, stdio, false)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "invalid working directory")
+	})
+
 	t.Run("Validation passed", func(t *testing.T) {
 		stdio := configv1.McpStdioConnection_builder{
 			Command: proto.String("echo"),
