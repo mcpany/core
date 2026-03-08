@@ -42,8 +42,13 @@ export default function DashboardPage() {
 
   if (loading) {
       return (
-          <div className="flex h-screen items-center justify-center">
-              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          <div className="flex flex-1 items-center justify-center h-[calc(100vh-4rem)]">
+              <div className="flex flex-col items-center gap-4 animate-pulse">
+                  <div className="h-12 w-12 rounded-xl bg-primary/20 flex items-center justify-center">
+                      <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                  </div>
+                  <div className="h-4 w-24 bg-muted rounded"></div>
+              </div>
           </div>
       );
   }

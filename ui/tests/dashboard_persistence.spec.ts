@@ -23,7 +23,7 @@ test('dashboard layout persistence', async ({ page, request }) => {
 
   await page.reload();
   await expect(page.locator('.animate-spin')).not.toBeVisible();
-  await expect(page.getByText('Your dashboard is empty')).toBeVisible();
+  await expect(page.getByText('Design your view')).toBeVisible();
 
   // 2. Add a widget
   await page.getByRole('button', { name: 'Add Widget' }).first().click();
