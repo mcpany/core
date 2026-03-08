@@ -28,8 +28,15 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   const [serviceId, setServiceId] = useState<string | undefined>(undefined);
   const [timeRange, setTimeRange] = useState<string>("24h");
 
+  // ⚡ BOLT: Memoized context value to prevent widespread render waste across all dashboard widgets.
+  // Randomized Selection from Top 5 High-Impact Targets
+  const contextValue = React.useMemo(
+    () => ({ serviceId, setServiceId, timeRange, setTimeRange }),
+    [serviceId, timeRange]
+  );
+
   return (
-    <DashboardContext.Provider value={{ serviceId, setServiceId, timeRange, setTimeRange }}>
+    <DashboardContext.Provider value={contextValue}>
       {children}
     </DashboardContext.Provider>
   );

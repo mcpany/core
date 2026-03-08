@@ -93,20 +93,20 @@ export function WizardProvider({ children }: { children: ReactNode }) {
         }
     }, [state, isHydrated]);
 
-    const setStep = (step: WizardStep) => setState(prev => ({ ...prev, currentStep: step }));
+    const setStep = React.useCallback((step: WizardStep) => setState(prev => ({ ...prev, currentStep: step })), []);
 
-    const updateConfig = (updates: Partial<UpstreamServiceConfig>) => {
+    const updateConfig = React.useCallback((updates: Partial<UpstreamServiceConfig>) => {
         setState(prev => ({
             ...prev,
             config: { ...prev.config, ...updates }
         }));
-    };
+    }, []);
 
-    const updateState = (updates: Partial<WizardState>) => {
+    const updateState = React.useCallback((updates: Partial<WizardState>) => {
         setState(prev => ({ ...prev, ...updates }));
-    };
+    }, []);
 
-    const validateStep = (step: WizardStep): { valid: boolean; error?: string } => {
+    const validateStep = React.useCallback((step: WizardStep): { valid: boolean; error?: string } => {
         switch (step) {
             case WizardStep.SERVICE_TYPE:
                 if (!state.config.name) return { valid: false, error: "Service name is required" };
@@ -134,9 +134,9 @@ export function WizardProvider({ children }: { children: ReactNode }) {
             default:
                 return { valid: true };
         }
-    };
+    }, [state.config.name, state.config.commandLineService, state.config.httpService, state.config.grpcService, state.config.mcpService, state.config.openapiService, state.webhooks]);
 
-    const nextStep = () => {
+    const nextStep = React.useCallback(() => {
         const validation = validateStep(state.currentStep);
         if (!validation.valid) {
             // caller should handle error display, or we throw?
@@ -156,19 +156,26 @@ export function WizardProvider({ children }: { children: ReactNode }) {
             const next = prev.currentStep + 1;
             return { ...prev, currentStep: next > WizardStep.REVIEW ? WizardStep.REVIEW : next };
         });
-    };
+    }, [validateStep, state.currentStep]);
 
-    const prevStep = () => {
+    const prevStep = React.useCallback(() => {
         setState(prev => {
             const next = prev.currentStep - 1;
             return { ...prev, currentStep: next < 0 ? 0 : next };
         });
-    };
+    }, []);
 
-    const reset = () => setState(defaultState);
+    const reset = React.useCallback(() => setState(defaultState), []);
+
+    // ⚡ BOLT: Memoized context value to prevent widespread render waste across all wizard steps.
+    // Randomized Selection from Top 5 High-Impact Targets
+    const contextValue = React.useMemo(
+        () => ({ state, setStep, updateConfig, updateState, nextStep, prevStep, reset, validateStep }),
+        [state, setStep, updateConfig, updateState, nextStep, prevStep, reset, validateStep]
+    );
 
     return (
-        <WizardContext.Provider value={{ state, setStep, updateConfig, updateState, nextStep, prevStep, reset, validateStep }}>
+        <WizardContext.Provider value={contextValue}>
             {children}
         </WizardContext.Provider>
     );
