@@ -40,6 +40,9 @@ jobs:
     runs-on: oci-runner
     container:
       image: iowoi/mcp-runner:latest
+      credentials:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
       options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     outputs:
       src: ${{ steps.filter.outputs.src }}
@@ -98,6 +101,9 @@ jobs:
     runs-on: oci-runner
     container:
       image: iowoi/mcp-runner:latest
+      credentials:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
       options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 90
     steps:
@@ -183,6 +189,9 @@ jobs:
     runs-on: oci-runner
     container:
       image: iowoi/mcp-runner:latest
+      credentials:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
       options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 60
     needs: [changes, build-images]
@@ -318,6 +327,9 @@ jobs:
     # runs-on: oci-runner
     # container:
     #   image: iowoi/mcp-runner:latest
+      credentials:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
     #   options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 180
     needs: [changes, build-images]
@@ -493,6 +505,9 @@ jobs:
     # runs-on: oci-runner
     # container:
     #   image: iowoi/mcp-runner:latest
+      credentials:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
     #   options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     strategy:
       fail-fast: false
@@ -626,6 +641,9 @@ jobs:
     runs-on: oci-runner
     container:
       image: iowoi/mcp-runner:latest
+      credentials:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
       options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 180
     needs: [changes, build-images]
@@ -777,6 +795,9 @@ jobs:
     runs-on: oci-runner
     container:
       image: iowoi/mcp-runner:latest
+      credentials:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
       options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 180
     needs: [changes, build-images]
@@ -909,6 +930,9 @@ jobs:
     runs-on: oci-runner
     container:
       image: iowoi/mcp-runner:latest
+      credentials:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
       options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 15
     needs: [changes, build-images]
@@ -963,6 +987,9 @@ jobs:
     runs-on: oci-runner
     container:
       image: iowoi/mcp-runner:latest
+      credentials:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
       options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 180
     needs: [changes, build-images]
@@ -1050,6 +1077,9 @@ jobs:
     # runs-on: oci-runner
     # container:
     #   image: iowoi/mcp-runner:latest
+      credentials:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
     #   options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 360 # Increased timeout for k8s tests
     needs: [changes, build-images]
@@ -1166,6 +1196,9 @@ jobs:
     runs-on: oci-runner
     container:
       image: iowoi/mcp-runner:latest
+      credentials:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
       options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     needs:
       [
