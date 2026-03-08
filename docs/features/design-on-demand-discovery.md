@@ -57,3 +57,7 @@ As the number of available MCP tools grows, agents face "context pollution"—wh
 
 ## 7. Evolutionary Changelog
 *   **2026-02-25:** Initial Document Creation.
+*   **2026-03-08: Aligning with Claude Code "Tool Search" Standard**
+    *   **Architecture Adjustment**: Introducing the **"10% Threshold rule"**. Tools are no longer statically "Lazy" or "Eager". MCP Any will calculate the percentage of the specific model's context window consumed by tool schemas. If `>10%`, it switches to Search mode automatically.
+    *   **New API Feature**: Added `mcpany_get_context_usage` tool to allow agents to inspect their own "schema debt".
+    *   **Security Enhancement**: Search index now supports "Encrypted Search" for tools containing sensitive metadata.

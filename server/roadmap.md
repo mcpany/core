@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-08 Evolution)
+*   **[P0] Dynamic Context Tiering (10% Rule)**: Implement automated lazy loading based on context window thresholds (Claude Code Parity). (Added: 2026-03-08)
+*   **[P0] Obfuscated Execution Guard**: Detect and pause execution for obfuscated shell commands in tool calls (OpenClaw Parity). (Added: 2026-03-08)
+*   **[P1] Intent-Signature Middleware**: Cryptographically bind tool calls to verified user intents. (Added: 2026-03-08)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

@@ -75,9 +75,18 @@
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
+---
+
+## Evolution: [2026-03-08] Updates
+
+### Proposed Additions
+- **Obfuscated Execution Guard**: (P0) Middleware that detects and blocks/pauses obfuscated commands (base64, hex-encoded scripts) in tool calls.
+- **Dynamic Context Tiering (10% Rule)**: (P0) Implementation of Claude-style lazy loading that triggers based on model context window percentage.
+
 ### Priority Shifts
 - **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
 - **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.
+- **Lazy-Discovery Middleware**: Elevated to **Critical P0** to align with Claude Code's "Tool Search" standard.
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.

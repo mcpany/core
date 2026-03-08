@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-08]
+### Focus: Defensive Agency & Dynamic Context Thresholds
+**Context**: The explosive growth of OpenClaw has highlighted severe security gaps in "unsupervised" agent execution. Simultaneously, Claude Code has standardized "Lazy Loading" as the primary way to scale MCP connectivity.
+**Strategic Pivot**:
+- **Defensive Middleware**: Integrating "Intent-Signature" verification where every tool call is checked against a cryptographic signature of the original user intent.
+- **Dynamic Context Tiering**: MCP Any will automatically move tool definitions between "Core" (always loaded) and "Searchable" (loaded on-demand) based on a 10% context threshold, matching the Claude Code standard.
+- **Safety-First Routing**: Implementing "Obfuscated Command Detection" as a native middleware that pauses execution for any tool call attempting to hide its true parameters.
