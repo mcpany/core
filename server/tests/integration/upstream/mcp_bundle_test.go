@@ -259,12 +259,9 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 	bundleBaseDir := filepath.Join(t.TempDir(), "bundles")
 
 	// Allow the bundle base directory for validation in tests
-	oldIsAllowedPath := validation.IsAllowedPath
-	validation.IsAllowedPath = func(path string) error {
-		return nil
-	}
+	validation.SetAllowedPaths([]string{bundleBaseDir})
 	t.Cleanup(func() {
-		validation.IsAllowedPath = oldIsAllowedPath
+		validation.SetAllowedPaths(nil)
 	})
 
 	toolManager := tool.NewManager(nil)
