@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-08]
+### Focus: Zero-Trust Configuration Sandboxing & Intent-Aware Multi-Agent OS
+**Context**: Recent critical RCE and API theft vulnerabilities in Claude Code (prior to v2.0.65) underscore the danger of project-level configuration files. Simultaneously, OpenClaw's explosive growth and transition to a multi-agent "OS" architecture require MCP Any to handle explicit agent spawning and deterministic inter-agent messaging.
+**Strategic Pivot**:
+- **Config-as-a-Sandbox**: MCP Any will implement a virtualized execution environment for project-level configurations (`.mcp.json`, `.claude/settings.json`), ensuring that "hooks" and "commands" are executed in a Zero-Trust container by default.
+- **Deterministic Agent Spawning Proxy**: Aligning with OpenClaw's slash-command spawning, MCP Any will act as the orchestrator for agent lifecycle management, ensuring state and security policies are inherited across spawns.
+- **Intent-Bound Credential Guard**: Preventing API key theft by proxying all sensitive base URLs through MCP Any, where credentials are never exposed to the agent-controlled project configuration.

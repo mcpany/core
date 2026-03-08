@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-08] Updates
+
+### Proposed Additions
+- **Virtualized Configuration Sandbox (Config-Jail)**: (P0) Executes all project-level hooks and commands defined in `.mcp.json` or `.claude/settings.json` within an isolated, ephemeral container.
+- **Credential Proxy Guard**: (P0) A middleware that intercepts and proxies API requests to sensitive base URLs, ensuring that actual API keys never reside in the agent-controlled project environment.
+- **Deterministic Agent Lifecycle Proxy**: (P1) Provides standardized endpoints for spawning, tracking, and messaging sub-agents, ensuring security policies are inherited across the swarm.
+
+### Priority Shifts
+- **"Safe-by-Default" Network Hardening**: Promoted to "Foundation" status (P0+). Non-negotiable for all new installs given the current RCE climate.
+- **On-Demand Discovery Middleware (Lazy-MCP)**: Re-prioritized to include "Signature Verification" as a hard requirement for discovery.
+
+### Deprecations / Monitoring
+- **Auto-execution of Unverified Hooks**: Monitoring for complete deprecation. All hooks must move to the Virtualized Sandbox.

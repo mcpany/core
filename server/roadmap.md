@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-08 Evolution)
+*   **[P0] Virtualized Configuration Sandbox (Config-Jail)**: Isolated execution for project-level hooks and commands to prevent RCE. (Added: 2026-03-08)
+*   **[P0] Credential Proxy Guard**: Middleware to intercept and proxy API requests, preventing credential theft via malicious base URLs. (Added: 2026-03-08)
+*   **[P1] Deterministic Agent Lifecycle Proxy**: Standardized lifecycle management for OpenClaw-style sub-agent spawning. (Added: 2026-03-08)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
