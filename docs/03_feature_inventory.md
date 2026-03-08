@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-08] Updates
+
+### Proposed Additions
+- **Isolated Named-Pipe Transport**: (P0) High-security inter-agent communication mechanism using Docker-bound named pipes/Unix sockets to replace local HTTP tunneling.
+- **Swarm Accountability Audit Log**: (P0) Cryptographically signed "Chain of Custody" for multi-agent handoffs, providing full visibility into swarm actions.
+- **Deterministic Sub-agent Spawning Guard**: (P1) Middleware to enforce rate-limiting and permission inheritance for agents that spawn their own sub-agents.
+
+### Priority Shifts
+- **A2A Stateful Residency**: Re-affirmed as **P0**. Essential for handling the state of large, asynchronous swarms.
+- **Agent Chain Tracer (UI)**: Promoted to **P0**. Critical for solving the "Accountability" pain point in massive swarms.
+
+### Deprecations / Monitoring
+- **Local HTTP Tunneling for Inter-Agent Comms**: Deprecating in favor of Named-Pipe/Unix Socket transport due to security risks.

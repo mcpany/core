@@ -43,3 +43,7 @@ As AI agent ecosystems evolve from single-agent monoliths to multi-agent swarms 
 
 ## 7. Evolutionary Changelog
 * **2026-02-24**: Initial Document Creation.
+* **2026-03-08**: **Hardening Inter-Agent Transport & Accountability.**
+    * **Architecture Adjustment:** Deprecating local HTTP tunneling for inter-agent communication (handoffs) due to host-level exposure risks discovered in OpenClaw.
+    * **New Transport:** Introducing isolated, Docker-bound named pipes and Unix domain sockets for secure, low-latency state transfer.
+    * **Audit Integration:** Every handoff now generates a cryptographically signed "Chain of Custody" entry in the Swarm Accountability Audit Log.
