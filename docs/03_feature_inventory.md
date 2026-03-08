@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-08] Updates
+
+### Proposed Additions
+- **Automated Path Traversal Guard**: (P0) Gateway-level middleware that sanitizes all file paths and archive extraction calls to prevent CVE-2026-28486 style exploits.
+- **Self-Healing Tool Loop (Resilience Middleware)**: (P1) A "Second-Chance" middleware that intercepts tool errors and uses a local model to suggest corrected arguments.
+- **External Secrets Connector**: (P1) Integration with HashiCorp Vault, AWS Secrets Manager, and Azure Key Vault for JIT (Just-In-Time) secret injection.
+
+### Priority Shifts
+- **"Safe-by-Default" Network Hardening**: (P0) Re-prioritized to include the Path Traversal Guard as a mandatory component of the "Safe" baseline.
+- **Machine-Checkable Security Contracts**: (P1) Promoted to **P0** to support the automated verification required for the Path Traversal Guard.
+
+### Deprecations / Monitoring
+- **Plain-Text Secret Storage**: Monitoring for deprecation in favor of the External Secrets Connector.

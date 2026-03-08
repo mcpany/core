@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-08 Evolution)
+*   **[P0] Automated Path Traversal Guard**: Gateway-level middleware to sanitize filesystem tool calls. (Added: 2026-03-08)
+*   **[P1] Self-Healing Tool Loop**: "Retry-with-Correction" middleware using local models for tool error recovery. (Added: 2026-03-08)
+*   **[P1] External Secrets Connector**: JIT secret injection from Vault/AWS/Azure. (Added: 2026-03-08)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

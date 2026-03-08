@@ -59,3 +59,7 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-08:** **Critical Security Update: Path Traversal Mitigation**.
+    *   **Context:** Market sync revealed CVE-2026-28486 (OpenClaw path traversal).
+    *   **Adjustment:** "Safe-by-Default" now includes the **Automated Path Traversal Guard** as a mandatory baseline component.
+    *   **Impact:** New installations will have `sandbox_root` enforcement enabled by default to prevent malicious tool-driven filesystem access.

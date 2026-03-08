@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-08]
+### Focus: Hardened Tool Execution & Autonomous Resilience
+**Context**: Today's findings reveal a critical path traversal vulnerability (CVE-2026-28486) in OpenClaw and a maturing market for "External Secrets Orchestration." Simultaneously, the ecosystem is shifting toward "Agent Survivability" where agents must self-heal from failures.
+**Strategic Pivot**:
+- **Gateway-Level Path Sanitization**: MCP Any will pivot to include mandatory filesystem sandboxing at the middleware layer. This ensures that even if an upstream MCP server is vulnerable to path traversal, the gateway intercepts and prevents unauthorized file access.
+- **Agent Self-Healing (Resilience)**: Introducing a "Retry-with-Correction" loop where MCP Any uses a lightweight local model to analyze tool errors and suggest parameter corrections to the calling agent, increasing autonomous success rates.
+- **Externalized Secrets Architecture**: Moving secrets management from static configuration to dynamic orchestration. MCP Any will act as a "Secret Proxy," fetching credentials from secure vaults (e.g., HashiCorp Vault) only at the moment of tool execution.
