@@ -14,6 +14,7 @@ import (
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	_ "google.golang.org/protobuf/types/gofeaturespb"
 	reflect "reflect"
 	unsafe "unsafe"
 )
@@ -147,13 +148,13 @@ var File_proto_api_v1_catalog_service_proto protoreflect.FileDescriptor
 
 const file_proto_api_v1_catalog_service_proto_rawDesc = "" +
 	"\n" +
-	"\"proto/api/v1/catalog_service.proto\x12\rmcpany.api.v1\x1a\x1cgoogle/api/annotations.proto\x1a&proto/config/v1/upstream_service.proto\"0\n" +
+	"\"proto/api/v1/catalog_service.proto\x12\rmcpany.api.v1\x1a\x1cgoogle/api/annotations.proto\x1a&proto/config/v1/upstream_service.proto\x1a!google/protobuf/go_features.proto\"0\n" +
 	"\x1aListCatalogServicesRequest\x12\x12\n" +
 	"\x04tags\x18\x01 \x03(\tR\x04tags\"b\n" +
 	"\x1bListCatalogServicesResponse\x12C\n" +
 	"\bservices\x18\x01 \x03(\v2'.mcpany.config.v1.UpstreamServiceConfigR\bservices2\x96\x01\n" +
 	"\x0eCatalogService\x12\x83\x01\n" +
-	"\fListServices\x12).mcpany.api.v1.ListCatalogServicesRequest\x1a*.mcpany.api.v1.ListCatalogServicesResponse\"\x1c\x82\xd3\xe4\x93\x02\x16\x12\x14/v1/catalog/servicesB:B\x13CatalogServiceProtoZ#github.com/mcpany/core/proto/api/v1b\beditionsp\xe8\a"
+	"\fListServices\x12).mcpany.api.v1.ListCatalogServicesRequest\x1a*.mcpany.api.v1.ListCatalogServicesResponse\"\x1c\x82\xd3\xe4\x93\x02\x16\x12\x14/v1/catalog/servicesBBB\x13CatalogServiceProtoZ#github.com/mcpany/core/proto/api/v1\x92\x03\x05\xd2>\x02\x10\x03b\beditionsp\xe8\a"
 
 var file_proto_api_v1_catalog_service_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_proto_api_v1_catalog_service_proto_goTypes = []any{

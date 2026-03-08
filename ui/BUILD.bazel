@@ -1,0 +1,83 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+load("@npm//ui:next/package_json.bzl", next_bin = "bin")
+load("@npm//ui:vitest/package_json.bzl", vitest_bin = "bin")
+load("@npm//ui:playwright/package_json.bzl", playwright_bin = "bin")
+load("@npm//ui:typescript/package_json.bzl", tsc_bin = "bin")
+load("@npm//:defs.bzl", "npm_link_all_packages")
+load("@rules_js//js:defs.bzl", "js_library")
+
+npm_link_all_packages(name = "node_modules")
+
+filegroup(
+    name = "srcs",
+    srcs = glob(
+        include = [
+            "src/**",
+            "next.config.ts",
+            "package.json",
+            "tsconfig.json",
+            "postcss.config.mjs",
+            "tailwind.config.ts",
+            "components.json",
+        ],
+        exclude = ["node_modules/**"],
+        allow_empty = True,
+    ),
+    visibility = ["//visibility:public"],
+)
+
+# Build target
+next_bin.next(
+    name = "build",
+    srcs = [
+        ":node_modules",
+        ":srcs",
+    ],
+    args = ["build"],
+    chdir = package_name(),
+    out_dirs = [".next"],
+)
+
+# Vitest unit tests
+vitest_bin.vitest_test(
+    name = "vitest",
+    chdir = package_name(),
+    data = [
+        ":node_modules",
+        ":srcs",
+    ],
+)
+
+# Playwright E2E tests
+playwright_bin.playwright_test(
+    name = "playwright",
+    chdir = package_name(),
+    data = [
+        ":node_modules",
+        ":srcs",
+    ],
+)
+
+# Linting
+next_bin.next_test(
+    name = "lint",
+    args = ["lint"],
+    chdir = package_name(),
+    data = [
+        ":node_modules",
+        ":srcs",
+    ],
+)
+
+# Typecheck
+tsc_bin.tsc_test(
+    name = "typecheck",
+    args = ["--noEmit"],
+    chdir = package_name(),
+    data = [
+        ":node_modules",
+        ":srcs",
+    ],
+)

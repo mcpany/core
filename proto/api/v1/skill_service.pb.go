@@ -690,7 +690,7 @@ const file_proto_api_v1_skill_service_proto_rawDesc = "" +
 	"\vCreateSkill\x12!.mcpany.api.v1.CreateSkillRequest\x1a\".mcpany.api.v1.CreateSkillResponse\"\x19\x82\xd3\xe4\x93\x02\x13:\x05skill\"\n" +
 	"/v1/skills\x12v\n" +
 	"\vUpdateSkill\x12!.mcpany.api.v1.UpdateSkillRequest\x1a\".mcpany.api.v1.UpdateSkillResponse\" \x82\xd3\xe4\x93\x02\x1a:\x05skill\x1a\x11/v1/skills/{name}\x12o\n" +
-	"\vDeleteSkill\x12!.mcpany.api.v1.DeleteSkillRequest\x1a\".mcpany.api.v1.DeleteSkillResponse\"\x19\x82\xd3\xe4\x93\x02\x13*\x11/v1/skills/{name}B=B\x11SkillServiceProtoZ#github.com/mcpany/core/proto/api/v1\x92\x03\x02\b\x02b\beditionsp\xe8\a"
+	"\vDeleteSkill\x12!.mcpany.api.v1.DeleteSkillRequest\x1a\".mcpany.api.v1.DeleteSkillResponse\"\x19\x82\xd3\xe4\x93\x02\x13*\x11/v1/skills/{name}BBB\x11SkillServiceProtoZ#github.com/mcpany/core/proto/api/v1\x92\x03\a\xd2>\x02\x10\x03\b\x02b\beditionsp\xe8\a"
 
 var file_proto_api_v1_skill_service_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
 var file_proto_api_v1_skill_service_proto_goTypes = []any{
