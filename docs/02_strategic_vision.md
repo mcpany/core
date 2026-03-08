@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-08]
+### Focus: Secure Origin Validation & Isolated Execution Environments
+**Context**: Recent exploits (OpenClaw hijacking, MS-Agent RCE) demonstrate that the "Localhost Trust" and "Regex-based Sanitization" models are broken. MCP Any must evolve to protect against cross-origin attacks and provide true isolation for high-risk tools.
+**Strategic Pivot**:
+- **Loopback Origin Enforcement**: MCP Any will move to a "Zero-Trust Localhost" model where even loopback connections must provide a valid, pre-authorized `Origin` header. This prevents browser-based hijacking of local agent gateways.
+- **Isolated Shell Architecture**: Moving away from host-native shell execution. MCP Any will implement a "Sandbox-First" approach where tools requiring shell access (like terminal controllers) are executed within ephemeral, resource-constrained OCI containers by default.
+- **Durable Task State**: Adopting the "Task" abstraction for long-running agentic operations, ensuring that state is persisted and retrievable even across agent restarts or handoffs, aligning with the latest MCP SDK standards.

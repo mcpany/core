@@ -59,3 +59,9 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-08: Loopback Origin Verification**
+    *   **Context**: Today's market sync revealed a critical exploit in OpenClaw where malicious websites hijack agents via localhost WebSockets.
+    *   **Architecture Adjustment**:
+        *   Implementing mandatory `Origin` header validation in Section 4 for all loopback listeners.
+        *   Introducing an "Allowed Origins" allowlist (defaulting to known local agent IDs/Extensions).
+    *   **Security Impact**: Effectively blocks cross-origin requests from browsers to the local MCP gateway, preventing "Zero-Click" hijacking.

@@ -75,6 +75,15 @@
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
+---
+
+## Evolution: [2026-03-08] Updates
+
+### Proposed Additions
+- **Origin-Enforced Loopback Gateway**: (P0) Mandatory `Origin` header verification for all loopback/localhost connections to mitigate browser-based agent hijacking.
+- **Sandboxed Shell Middleware**: (P0) Executes shell-based tools within ephemeral OCI containers (Docker/Podman) instead of the host system.
+- **Durable Task Lifecycle Manager**: (P1) Implementation of the MCP "Tasks" specification for tracking and resuming long-running agentic workflows.
+
 ### Priority Shifts
 - **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
 - **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.
