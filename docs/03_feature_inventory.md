@@ -75,6 +75,21 @@
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
+---
+
+## Evolution: [2026-03-06] Updates
+
+### Proposed Additions
+- **Cross-Origin Connection Guard**: (P0) Hardened middleware that verifies the `Origin` and `Host` headers of incoming JSON-RPC/gRPC requests to prevent browser-based hijacking.
+- **Agent-to-Host Attestation (AHA)**: (P1) A local handshake protocol where the CLI client provides a one-time token (nonce) to the MCP Any server to prove local process ownership.
+- **Origin-Based Capability Scoping**: (P1) Dynamic filtering of available tools based on the trust level of the calling origin.
+
+### Priority Shifts
+- **"Safe-by-Default" Network Hardening**: Re-affirmed as **P0**. The OpenClaw incident highlights that `localhost` binding is only the first step; origin validation must follow.
+
+### Deprecations / Monitoring
+- **Unvalidated Local Connections**: Monitor for deprecation of connections that do not provide an `Origin` header or a valid AHA token.
+
 ### Priority Shifts
 - **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
 - **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.
