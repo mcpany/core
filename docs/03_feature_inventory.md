@@ -75,9 +75,18 @@
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
+---
+
+## Evolution: [2026-03-08] Updates
+
+### Proposed Additions
+- **Intent-Bound Governance Middleware**: (P0) Cryptographically links tool calls to a verified "Mission Intent," preventing sub-agent authority escalation.
+- **Ephemeral Node "Resume-State" Protocol**: (P0) Standardized mechanism for transient agent sandboxes to inherit context and tool permissions from MCP Any.
+- **ATS (Autonomous Tool Synthesis) Sandbox**: (P1) Isolated, low-privilege environment for executing agent-generated tool wrappers safely.
+
 ### Priority Shifts
-- **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
-- **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.
+- **Environment Bridging Middleware**: Re-affirmed as **P0**. Critical for bridging cloud sandboxes to local intent-governed tools.
+- **Provenance-First Discovery**: Promoted to **P0** to combat "Shadow MCP" deployments.
 
 ### Deprecations / Monitoring
-- **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+- **Role-Based Tool Permissions**: Monitoring for deprecation in favor of more granular "Intent-Bound" permissions.

@@ -43,3 +43,10 @@ As AI agent ecosystems evolve from single-agent monoliths to multi-agent swarms 
 
 ## 7. Evolutionary Changelog
 * **2026-02-24**: Initial Document Creation.
+
+### Update: 2026-03-08 - Ephemeral State & Resume-State Protocol
+**Context**: Modern agent sandboxes (Claude Code, Gemini CLI) are increasingly ephemeral. Session state must survive sandbox recycling without manual re-injection.
+**Architecture Adjustment**:
+* **Resume-State Protocol**: In Section 4, adding a `/session/{id}/resume` endpoint that allows a new agent instance to fetch the full "World State" (cached tool results, shared KV, and context headers) in a single optimized bundle.
+* **State Checkpointing**: Automatically creating "State Snapshots" after every 5 tool calls or a successful handoff.
+**Security Impact**: Ensures that "Resume" calls require the same `X-MCP-Intent` signature as the original session, preventing state hijacking by unauthorized ephemeral nodes.

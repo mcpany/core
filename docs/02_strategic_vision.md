@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-08]
+### Focus: Intent-Locked Governance & Ephemeral State Persistence
+**Context**: The rise of "Autonomous Tool Synthesis" (ATS) in OpenClaw and "Ephemeral Sandboxes" in Claude/Gemini has created a new security-performance paradox. Agents now generate their own tools, but these tools lack governance. Simultaneously, the fleeting nature of sandboxes leads to "State Amnesia."
+**Strategic Pivot**:
+- **Intent-Bound Governance**: MCP Any will move from "Role-Based" to "Intent-Bound" access control. Every tool call must be cryptographically linked to a parent "Mission Intent" which limits the scope of any synthesized or discovered tool.
+- **Ephemeral State Bridge**: Transitioning MCP Any to serve as the "Durable Backbone" for ephemeral agent nodes. It will provide a standardized "Resume-State" protocol that allows new sandboxes to instantly inherit the context and tool-permissions of their predecessors.
+- **Synthesized Tool Sandboxing**: Implementing a dedicated, low-privilege execution environment for agent-generated (ATS) tools, ensuring they can only interact with the world through MCP Any's filtered gateway.
