@@ -23,7 +23,12 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// Manifest represents the structure of the manifest.json file in an MCP bundle.
+// Manifest defines the core structure for manifest within the system.
+//
+// Summary: Manifest defines the core structure for manifest within the system.
+//
+// Fields:
+//   - Contains the configuration and state properties required for Manifest functionality.
 type Manifest struct {
 	// ManifestVersion is the version of the manifest format.
 	ManifestVersion string `json:"manifest_version"`
@@ -39,7 +44,12 @@ type Manifest struct {
 	UserConfig json.RawMessage `json:"user_config"`
 }
 
-// ManifestServer represents the server configuration in the manifest.
+// ManifestServer defines the core structure for manifest server within the system.
+//
+// Summary: ManifestServer defines the core structure for manifest server within the system.
+//
+// Fields:
+//   - Contains the configuration and state properties required for ManifestServer functionality.
 type ManifestServer struct {
 	// Type is the type of the server (e.g., "node", "python").
 	Type string `json:"type"`
@@ -49,7 +59,12 @@ type ManifestServer struct {
 	McpConfig ManifestMcpConfig `json:"mcp_config"`
 }
 
-// ManifestMcpConfig represents the MCP configuration in the manifest.
+// ManifestMcpConfig defines the core structure for manifest mcp config within the system.
+//
+// Summary: ManifestMcpConfig defines the core structure for manifest mcp config within the system.
+//
+// Fields:
+//   - Contains the configuration and state properties required for ManifestMcpConfig functionality.
 type ManifestMcpConfig struct {
 	// Command is the command to run the server.
 	Command string `json:"command"`

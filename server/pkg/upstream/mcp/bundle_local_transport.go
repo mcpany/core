@@ -11,6 +11,11 @@ import (
 )
 
 // BundleLocalTransport implements mcp.Transport for running a bundle locally via exec.
+//
+// Summary: BundleLocalTransport implements mcp.Transport for running a bundle locally via exec.
+//
+// Fields:
+//   - Contains the configuration and state properties required for BundleLocalTransport functionality.
 type BundleLocalTransport struct {
 	Command    string
 	Args       []string

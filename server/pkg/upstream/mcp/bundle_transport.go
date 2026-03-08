@@ -30,10 +30,18 @@ type transportError struct {
 	Data    any    `json:"data,omitempty"`
 }
 
-// Error returns the error message.
+// Error returns the error message. Returns: - string: The result. Side Effects: - None.
+//
+// Summary: Error returns the error message. Returns: - string: The result. Side Effects: - None.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - string: The result.
+//   - (string): A string value representing the operation's result.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -41,8 +49,12 @@ func (e *transportError) Error() string {
 	return e.Message
 }
 
-// BundleDockerTransport implements the mcp.Transport interface to connect to a service
-// running inside a Docker container from a bundle. It supports mounts and environment variables.
+// BundleDockerTransport implements the mcp.Transport interface to connect to a service running inside a Docker container from a bundle. It supports mounts and environment variables.
+//
+// Summary: BundleDockerTransport implements the mcp.Transport interface to connect to a service running inside a Docker container from a bundle. It supports mounts and environment variables.
+//
+// Fields:
+//   - Contains the configuration and state properties required for BundleDockerTransport functionality.
 type BundleDockerTransport struct {
 	Image      string
 	Command    string
@@ -455,13 +467,18 @@ func fixIDExtracted(val interface{}) interface{} {
 	return fixID(val)
 }
 
-// Close closes the connection.
+// Close closes the connection. Returns: - error: An error if the operation fails. Errors: - Returns an error if ... Side Effects: - None.
+//
+// Summary: Close closes the connection. Returns: - error: An error if the operation fails. Errors: - Returns an error if ... Side Effects: - None.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - (error): An error object if the operation fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Returns an error if the underlying operation fails or encounters invalid input.
 //
 // Side Effects:
 //   - None.
@@ -469,10 +486,18 @@ func (c *bundleDockerConn) Close() error {
 	return c.rwc.Close()
 }
 
-// SessionID returns the session ID of the connection.
+// SessionID returns the session ID of the connection. Returns: - string: The result. Side Effects: - None.
+//
+// Summary: SessionID returns the session ID of the connection. Returns: - string: The result. Side Effects: - None.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - string: The result.
+//   - (string): A string value representing the operation's result.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.

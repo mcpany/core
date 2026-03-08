@@ -11,10 +11,12 @@ import (
 	"github.com/mcpany/core/server/pkg/util"
 )
 
-// TemporaryToolManager is a tool manager that stores service info and tools temporarily.
+// TemporaryToolManager is a tool manager that stores service info and tools temporarily. It is intended for use in ValidateService where we need to store service info and discovered tools for the duration of the validation request but discard them afterwards.
 //
-// It is intended for use in ValidateService where we need to store service info
-// and discovered tools for the duration of the validation request but discard them afterwards.
+// Summary: TemporaryToolManager is a tool manager that stores service info and tools temporarily. It is intended for use in ValidateService where we need to store service info and discovered tools for the duration of the validation request but discard them afterwards.
+//
+// Fields:
+//   - Contains the configuration and state properties required for TemporaryToolManager functionality.
 type TemporaryToolManager struct {
 	NoOpToolManager
 	mu          sync.RWMutex
@@ -22,10 +24,18 @@ type TemporaryToolManager struct {
 	tools       map[string]tool.Tool
 }
 
-// NewTemporaryToolManager creates a new TemporaryToolManager.
+// NewTemporaryToolManager creates a new TemporaryToolManager. Returns: - *TemporaryToolManager: A new instance of TemporaryToolManager. Side Effects: - None.
+//
+// Summary: NewTemporaryToolManager creates a new TemporaryToolManager. Returns: - *TemporaryToolManager: A new instance of TemporaryToolManager. Side Effects: - None.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - *TemporaryToolManager: A new instance of TemporaryToolManager.
+//   - (*TemporaryToolManager): The resulting TemporaryToolManager object containing the requested data.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -36,14 +46,22 @@ func NewTemporaryToolManager() *TemporaryToolManager {
 	}
 }
 
-// AddServiceInfo implements tool.ManagerInterface.
+// AddServiceInfo implements tool.ManagerInterface. Parameters: - serviceID (string): The ID of the service. - info (*tool.ServiceInfo): The service information. Side Effects: - Updates the internal service info map.
+//
+// Summary: AddServiceInfo implements tool.ManagerInterface. Parameters: - serviceID (string): The ID of the service. - info (*tool.ServiceInfo): The service information. Side Effects: - Updates the internal service info map.
 //
 // Parameters:
-//   - serviceID (string): The ID of the service.
-//   - info (*tool.ServiceInfo): The service information.
+//   - serviceID (string): The unique identifier used to reference the service resource.
+//   - info (*tool.ServiceInfo): The info parameter used in the operation.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Updates the internal service info map.
+//   - None.
 func (m *TemporaryToolManager) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -127,10 +145,18 @@ func (m *TemporaryToolManager) GetTool(toolName string) (tool.Tool, bool) {
 	return t, ok
 }
 
-// ListTools implements tool.ManagerInterface.
+// ListTools implements tool.ManagerInterface. Returns: - []tool.Tool: A list of all tools. Side Effects: - None.
+//
+// Summary: ListTools implements tool.ManagerInterface. Returns: - []tool.Tool: A list of all tools. Side Effects: - None.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - []tool.Tool: A list of all tools.
+//   - ([]tool.Tool): The resulting []tool.Tool object containing the requested data.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.

@@ -16,12 +16,22 @@ import (
 )
 
 // Seeder seeds the database with service templates.
+//
+// Summary: Seeder seeds the database with service templates.
+//
+// Fields:
+//   - Contains the configuration and state properties required for Seeder functionality.
 type Seeder struct {
 	Store       storage.Storage
 	ExamplesDir string
 }
 
-// ConfigFile represents the structure of the config.yaml in examples.
+// ConfigFile defines the core structure for config file within the system.
+//
+// Summary: ConfigFile defines the core structure for config file within the system.
+//
+// Fields:
+//   - Contains the configuration and state properties required for ConfigFile functionality.
 type ConfigFile struct {
 	UpstreamServices []map[string]any `yaml:"upstream_services"`
 }

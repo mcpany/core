@@ -23,15 +23,28 @@ import (
 )
 
 // Upstream implements the upstream.Upstream interface for SQL databases.
+//
+// Summary: Upstream implements the upstream.Upstream interface for SQL databases.
+//
+// Fields:
+//   - Contains the configuration and state properties required for Upstream functionality.
 type Upstream struct {
 	db *sql.DB
 	mu sync.Mutex
 }
 
-// NewUpstream creates a new SQL upstream.
+// NewUpstream creates a new SQL upstream. Returns: - *Upstream: The result. Side Effects: - None.
+//
+// Summary: NewUpstream creates a new SQL upstream. Returns: - *Upstream: The result. Side Effects: - None.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - *Upstream: The result.
+//   - (*Upstream): The resulting Upstream object containing the requested data.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.

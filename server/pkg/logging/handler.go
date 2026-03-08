@@ -13,8 +13,12 @@ import (
 	"github.com/google/uuid"
 )
 
-// LogEntry is the structure for logs sent over WebSocket.
-// It matches the frontend expectation.
+// LogEntry is the structure for logs sent over WebSocket. It matches the frontend expectation.
+//
+// Summary: LogEntry is the structure for logs sent over WebSocket. It matches the frontend expectation.
+//
+// Fields:
+//   - Contains the configuration and state properties required for LogEntry functionality.
 type LogEntry struct {
 	ID        string         `json:"id"`
 	Timestamp string         `json:"timestamp"`
@@ -25,6 +29,11 @@ type LogEntry struct {
 }
 
 // BroadcastHandler implements slog.Handler and sends logs to the Broadcaster.
+//
+// Summary: BroadcastHandler implements slog.Handler and sends logs to the Broadcaster.
+//
+// Fields:
+//   - Contains the configuration and state properties required for BroadcastHandler functionality.
 type BroadcastHandler struct {
 	broadcaster *Broadcaster
 	attrs       []slog.Attr
@@ -218,6 +227,11 @@ func (h *BroadcastHandler) WithGroup(name string) slog.Handler {
 }
 
 // TeeHandler is a slog.Handler that writes to multiple handlers.
+//
+// Summary: TeeHandler is a slog.Handler that writes to multiple handlers.
+//
+// Fields:
+//   - Contains the configuration and state properties required for TeeHandler functionality.
 type TeeHandler struct {
 	handlers []slog.Handler
 }

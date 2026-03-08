@@ -59,12 +59,21 @@ func New[T any](config *bus.NatsBus) (*Bus[T], error) {
 	}, nil
 }
 
-// Close closes the NATS bus connection and shuts down the embedded server if applicable.
+// Close closes the NATS bus connection and shuts down the embedded server if applicable. Summary: Closes the NATS connection. Returns: None.
 //
-// Summary: Closes the NATS connection.
+// Summary: Close closes the NATS bus connection and shuts down the embedded server if applicable. Summary: Closes the NATS connection. Returns: None.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   None.
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (b *Bus[T]) Close() {
 	if b.nc != nil {
 		b.nc.Close()
@@ -74,17 +83,23 @@ func (b *Bus[T]) Close() {
 	}
 }
 
-// Publish sends a message to a NATS topic.
+// Publish sends a message to a NATS topic. The message is marshaled to JSON before being published. Parameters: - _: context.Context. The context (unused in NATS publish). - topic: string. The topic to publish to. - msg: T. The message payload. Returns: - error: An error if marshaling or publishing fails.
 //
-// The message is marshaled to JSON before being published.
+// Summary: Publish sends a message to a NATS topic. The message is marshaled to JSON before being published. Parameters: - _: context.Context. The context (unused in NATS publish). - topic: string. The topic to publish to. - msg: T. The message payload. Returns: - error: An error if marshaling or publishing fails.
 //
 // Parameters:
-//   - _: context.Context. The context (unused in NATS publish).
-//   - topic: string. The topic to publish to.
-//   - msg: T. The message payload.
+//   - _ (context.Context): The _ parameter used in the operation.
+//   - topic (string): The topic parameter used in the operation.
+//   - msg (T): The msg parameter used in the operation.
 //
 // Returns:
-//   - error: An error if marshaling or publishing fails.
+//   - (error): An error object if the operation fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the underlying operation fails or encounters invalid input.
+//
+// Side Effects:
+//   - None.
 func (b *Bus[T]) Publish(_ context.Context, topic string, msg T) error {
 	data, err := json.Marshal(msg)
 	if err != nil {
@@ -93,17 +108,23 @@ func (b *Bus[T]) Publish(_ context.Context, topic string, msg T) error {
 	return b.nc.Publish(topic, data)
 }
 
-// Subscribe registers a handler for a NATS topic.
+// Subscribe registers a handler for a NATS topic. The handler will be invoked for each message received on the topic. Parameters: - _: context.Context. The context (unused in NATS subscribe). - topic: string. The topic to subscribe to. - handler: func(T). The callback function invoked for each message. Returns: - func(): A function that unsubscribes the handler when called.
 //
-// The handler will be invoked for each message received on the topic.
+// Summary: Subscribe registers a handler for a NATS topic. The handler will be invoked for each message received on the topic. Parameters: - _: context.Context. The context (unused in NATS subscribe). - topic: string. The topic to subscribe to. - handler: func(T). The callback function invoked for each message. Returns: - func(): A function that unsubscribes the handler when called.
 //
 // Parameters:
-//   - _: context.Context. The context (unused in NATS subscribe).
-//   - topic: string. The topic to subscribe to.
-//   - handler: func(T). The callback function invoked for each message.
+//   - _ (context.Context): The _ parameter used in the operation.
+//   - topic (string): The topic parameter used in the operation.
+//   - handler (func(T): The handler parameter used in the operation.
 //
 // Returns:
-//   - func(): A function that unsubscribes the handler when called.
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (b *Bus[T]) Subscribe(_ context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	sub, _ := b.nc.Subscribe(topic, func(m *natsgo.Msg) {
 		var msg T
@@ -116,18 +137,23 @@ func (b *Bus[T]) Subscribe(_ context.Context, topic string, handler func(T)) (un
 	}
 }
 
-// SubscribeOnce registers a one-time handler for a NATS topic.
+// SubscribeOnce registers a one-time handler for a NATS topic. The handler will be invoked only once for the next message received on the topic. The subscription is automatically removed after one message. Parameters: - _: context.Context. The context (unused in NATS subscribe). - topic: string. The topic to subscribe to. - handler: func(T). The callback function invoked for the single message. Returns: - func(): A function that unsubscribes the handler if called before the message is received.
 //
-// The handler will be invoked only once for the next message received on the topic.
-// The subscription is automatically removed after one message.
+// Summary: SubscribeOnce registers a one-time handler for a NATS topic. The handler will be invoked only once for the next message received on the topic. The subscription is automatically removed after one message. Parameters: - _: context.Context. The context (unused in NATS subscribe). - topic: string. The topic to subscribe to. - handler: func(T). The callback function invoked for the single message. Returns: - func(): A function that unsubscribes the handler if called before the message is received.
 //
 // Parameters:
-//   - _: context.Context. The context (unused in NATS subscribe).
-//   - topic: string. The topic to subscribe to.
-//   - handler: func(T). The callback function invoked for the single message.
+//   - _ (context.Context): The _ parameter used in the operation.
+//   - topic (string): The topic parameter used in the operation.
+//   - handler (func(T): The handler parameter used in the operation.
 //
 // Returns:
-//   - func(): A function that unsubscribes the handler if called before the message is received.
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (b *Bus[T]) SubscribeOnce(_ context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	sub, err := b.nc.Subscribe(topic, func(m *natsgo.Msg) {
 		var msg T

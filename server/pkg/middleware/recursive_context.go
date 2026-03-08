@@ -14,7 +14,12 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// SessionState represents the shared state for a recursive context session.
+// SessionState defines the core structure for session state within the system.
+//
+// Summary: SessionState defines the core structure for session state within the system.
+//
+// Fields:
+//   - Contains the configuration and state properties required for SessionState functionality.
 type SessionState struct {
 	ID        string                 `json:"id"`
 	Data      map[string]interface{} `json:"data"`
@@ -23,6 +28,11 @@ type SessionState struct {
 }
 
 // RecursiveContextManager manages the shared context sessions (Blackboard).
+//
+// Summary: RecursiveContextManager manages the shared context sessions (Blackboard).
+//
+// Fields:
+//   - Contains the configuration and state properties required for RecursiveContextManager functionality.
 type RecursiveContextManager struct {
 	mu       sync.RWMutex
 	sessions map[string]*SessionState

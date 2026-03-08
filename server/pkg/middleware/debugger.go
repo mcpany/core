@@ -16,9 +16,12 @@ import (
 	"github.com/google/uuid"
 )
 
-// DebugEntry represents a captured HTTP request/response.
+// DebugEntry defines the core structure for debug entry within the system.
 //
-// Summary: Data structure holding details of a captured HTTP transaction.
+// Summary: DebugEntry defines the core structure for debug entry within the system.
+//
+// Fields:
+//   - Contains the configuration and state properties required for DebugEntry functionality.
 type DebugEntry struct {
 	ID              string        `json:"id"`
 	TraceID         string        `json:"trace_id"`
@@ -35,9 +38,12 @@ type DebugEntry struct {
 	ResponseBody    string        `json:"response_body,omitempty"`
 }
 
-// Debugger monitors and records traffic for inspection.
+// Debugger monitors and records traffic for inspection. Summary: Middleware that captures recent HTTP traffic for debugging purposes.
 //
-// Summary: Middleware that captures recent HTTP traffic for debugging purposes.
+// Summary: Debugger monitors and records traffic for inspection. Summary: Middleware that captures recent HTTP traffic for debugging purposes.
+//
+// Fields:
+//   - Contains the configuration and state properties required for Debugger functionality.
 type Debugger struct {
 	ring        *ring.Ring
 	mu          sync.RWMutex
@@ -143,16 +149,21 @@ func (w *bodyLogWriter) Write(b []byte) (int, error) {
 	return w.ResponseWriter.Write(b)
 }
 
-// WriteHeader sends an HTTP response header with the provided status code.
+// WriteHeader stores the header into the persistent storage.
 //
-// Summary: Captures the status code and writes headers.
+// Summary: Stores the header into the persistent storage.
 //
 // Parameters:
-//   - statusCode: int. The HTTP status code.
+//   - statusCode (int): The status code parameter used in the operation.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Sets the status code on the writer.
-//   - Writes the header to the underlying http.ResponseWriter.
+//   - Modifies global state, writes to the database, or establishes network connections.
 func (w *bodyLogWriter) WriteHeader(statusCode int) {
 	if w.wroteHeader {
 		return
@@ -302,15 +313,21 @@ func isTextContent(contentType string) bool {
 		strings.Contains(contentType, "form-urlencoded")
 }
 
-// Entries returns the last captured entries.
+// Entries returns the last captured entries. Summary: Retrieves the list of captured debug entries from the ring buffer. Returns: - []DebugEntry: A slice of the most recent captured requests and responses. Side Effects: - Acquires a read lock on the ring buffer.
 //
-// Summary: Retrieves the list of captured debug entries from the ring buffer.
+// Summary: Entries returns the last captured entries. Summary: Retrieves the list of captured debug entries from the ring buffer. Returns: - []DebugEntry: A slice of the most recent captured requests and responses. Side Effects: - Acquires a read lock on the ring buffer.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - []DebugEntry: A slice of the most recent captured requests and responses.
+//   - ([]DebugEntry): The resulting []DebugEntry object containing the requested data.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Acquires a read lock on the ring buffer.
+//   - None.
 func (d *Debugger) Entries() []DebugEntry {
 	d.mu.RLock()
 	defer d.mu.RUnlock()
@@ -324,15 +341,21 @@ func (d *Debugger) Entries() []DebugEntry {
 	return entries
 }
 
-// APIHandler returns a http.HandlerFunc to view entries.
+// APIHandler returns a http.HandlerFunc to view entries. Summary: Returns an HTTP handler that exposes the debug entries as JSON. Returns: - http.HandlerFunc: The API handler function. Side Effects: - Encodes the entries to JSON and writes to the response.
 //
-// Summary: Returns an HTTP handler that exposes the debug entries as JSON.
+// Summary: APIHandler returns a http.HandlerFunc to view entries. Summary: Returns an HTTP handler that exposes the debug entries as JSON. Returns: - http.HandlerFunc: The API handler function. Side Effects: - Encodes the entries to JSON and writes to the response.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - http.HandlerFunc: The API handler function.
+//   - (http.HandlerFunc): The resulting http.HandlerFunc object containing the requested data.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Encodes the entries to JSON and writes to the response.
+//   - None.
 func (d *Debugger) APIHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")

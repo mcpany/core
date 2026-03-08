@@ -22,6 +22,11 @@ const (
 )
 
 // WebhookAuditStore sends audit logs to a configured webhook URL.
+//
+// Summary: WebhookAuditStore sends audit logs to a configured webhook URL.
+//
+// Fields:
+//   - Contains the configuration and state properties required for WebhookAuditStore functionality.
 type WebhookAuditStore struct {
 	webhookURL string
 	headers    map[string]string

@@ -13,15 +13,21 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// VerifyIntegrity checks if the tool definition matches its expected hash.
+// VerifyIntegrity checks if the tool definition matches its expected hash. Summary: Verifies runtime tool integrity. Parameters: - t: *v1.Tool. The tool to verify. Returns: - error: An error if integrity check fails.
 //
-// Summary: Verifies runtime tool integrity.
+// Summary: VerifyIntegrity checks if the tool definition matches its expected hash. Summary: Verifies runtime tool integrity. Parameters: - t: *v1.Tool. The tool to verify. Returns: - error: An error if integrity check fails.
 //
 // Parameters:
-//   - t: *v1.Tool. The tool to verify.
+//   - t (*v1.Tool): The t parameter used in the operation.
 //
 // Returns:
-//   - error: An error if integrity check fails.
+//   - (error): An error object if the operation fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the underlying operation fails or encounters invalid input.
+//
+// Side Effects:
+//   - None.
 func VerifyIntegrity(t *v1.Tool) error {
 	if !t.HasIntegrity() {
 		return nil // No integrity check required
@@ -43,15 +49,21 @@ func VerifyIntegrity(t *v1.Tool) error {
 	return nil
 }
 
-// VerifyConfigIntegrity checks if the config tool definition matches its expected hash.
+// VerifyConfigIntegrity checks if the config tool definition matches its expected hash. Summary: Verifies configuration tool integrity. Parameters: - t: *configv1.ToolDefinition. The tool definition to verify. Returns: - error: An error if integrity check fails.
 //
-// Summary: Verifies configuration tool integrity.
+// Summary: VerifyConfigIntegrity checks if the config tool definition matches its expected hash. Summary: Verifies configuration tool integrity. Parameters: - t: *configv1.ToolDefinition. The tool definition to verify. Returns: - error: An error if integrity check fails.
 //
 // Parameters:
-//   - t: *configv1.ToolDefinition. The tool definition to verify.
+//   - t (*configv1.ToolDefinition): The t parameter used in the operation.
 //
 // Returns:
-//   - error: An error if integrity check fails.
+//   - (error): An error object if the operation fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the underlying operation fails or encounters invalid input.
+//
+// Side Effects:
+//   - None.
 func VerifyConfigIntegrity(t *configv1.ToolDefinition) error {
 	if t.GetIntegrity() == nil {
 		return nil // No integrity check required
@@ -73,16 +85,22 @@ func VerifyConfigIntegrity(t *configv1.ToolDefinition) error {
 	return nil
 }
 
-// CalculateHash computes the SHA256 hash of a runtime tool definition.
+// CalculateHash computes the SHA256 hash of a runtime tool definition. Summary: Calculates hash for runtime tool. Parameters: - t: *v1.Tool. The tool to hash. Returns: - string: The hex-encoded SHA256 hash. - error: An error if marshaling fails.
 //
-// Summary: Calculates hash for runtime tool.
+// Summary: CalculateHash computes the SHA256 hash of a runtime tool definition. Summary: Calculates hash for runtime tool. Parameters: - t: *v1.Tool. The tool to hash. Returns: - string: The hex-encoded SHA256 hash. - error: An error if marshaling fails.
 //
 // Parameters:
-//   - t: *v1.Tool. The tool to hash.
+//   - t (*v1.Tool): The t parameter used in the operation.
 //
 // Returns:
-//   - string: The hex-encoded SHA256 hash.
-//   - error: An error if marshaling fails.
+//   - (string): A string value representing the operation's result.
+//   - (error): An error object if the operation fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the underlying operation fails or encounters invalid input.
+//
+// Side Effects:
+//   - None.
 func CalculateHash(t *v1.Tool) (string, error) {
 	// Create a copy of the tool without the integrity field to calculate the hash
 	toolCopy := proto.Clone(t).(*v1.Tool)
@@ -101,16 +119,22 @@ func CalculateHash(t *v1.Tool) (string, error) {
 	return hex.EncodeToString(hash[:]), nil
 }
 
-// CalculateConfigHash computes the SHA256 hash of a configuration tool definition.
+// CalculateConfigHash computes the SHA256 hash of a configuration tool definition. Summary: Calculates hash for configuration tool. Parameters: - t: *configv1.ToolDefinition. The tool definition to hash. Returns: - string: The hex-encoded SHA256 hash. - error: An error if marshaling fails.
 //
-// Summary: Calculates hash for configuration tool.
+// Summary: CalculateConfigHash computes the SHA256 hash of a configuration tool definition. Summary: Calculates hash for configuration tool. Parameters: - t: *configv1.ToolDefinition. The tool definition to hash. Returns: - string: The hex-encoded SHA256 hash. - error: An error if marshaling fails.
 //
 // Parameters:
-//   - t: *configv1.ToolDefinition. The tool definition to hash.
+//   - t (*configv1.ToolDefinition): The t parameter used in the operation.
 //
 // Returns:
-//   - string: The hex-encoded SHA256 hash.
-//   - error: An error if marshaling fails.
+//   - (string): A string value representing the operation's result.
+//   - (error): An error object if the operation fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the underlying operation fails or encounters invalid input.
+//
+// Side Effects:
+//   - None.
 func CalculateConfigHash(t *configv1.ToolDefinition) (string, error) {
 	// Create a copy of the tool to calculate the hash
 	toolCopy := proto.Clone(t).(*configv1.ToolDefinition)

@@ -15,6 +15,11 @@ import (
 )
 
 // Client is the interface for an LLM client.
+//
+// Summary: Client is the interface for an LLM client.
+//
+// Methods:
+//   - Defines the required contract and behavior for implementations of Client.
 type Client interface {
 	// ChatCompletion sends a chat request to the LLM and returns the response.
 	//
@@ -37,24 +42,44 @@ type Client interface {
 	ChatCompletion(ctx context.Context, req ChatRequest) (*ChatResponse, error)
 }
 
-// ChatRequest represents a chat completion request.
+// ChatRequest defines the core structure for chat request within the system.
+//
+// Summary: ChatRequest defines the core structure for chat request within the system.
+//
+// Fields:
+//   - Contains the configuration and state properties required for ChatRequest functionality.
 type ChatRequest struct {
 	Model    string    `json:"model"`
 	Messages []Message `json:"messages"`
 }
 
-// Message represents a chat message.
+// Message defines the core structure for message within the system.
+//
+// Summary: Message defines the core structure for message within the system.
+//
+// Fields:
+//   - Contains the configuration and state properties required for Message functionality.
 type Message struct {
 	Role    string `json:"role"`
 	Content string `json:"content"`
 }
 
-// ChatResponse represents a chat completion response.
+// ChatResponse defines the core structure for chat response within the system.
+//
+// Summary: ChatResponse defines the core structure for chat response within the system.
+//
+// Fields:
+//   - Contains the configuration and state properties required for ChatResponse functionality.
 type ChatResponse struct {
 	Content string `json:"content"`
 }
 
 // OpenAIClient implements Client for OpenAI.
+//
+// Summary: OpenAIClient implements Client for OpenAI.
+//
+// Fields:
+//   - Contains the configuration and state properties required for OpenAIClient functionality.
 type OpenAIClient struct {
 	apiKey  string
 	baseURL string

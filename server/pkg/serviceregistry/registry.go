@@ -27,10 +27,12 @@ import (
 // ErrServiceAlreadyRegistered is returned when attempting to register a service that is already active.
 var ErrServiceAlreadyRegistered = errors.New("service already registered")
 
-// ServiceRegistryInterface defines the interface for a service registry.
+// ServiceRegistryInterface defines the interface for a service registry. It manages the registration, lifecycle, and discovery of upstream services and their associated capabilities (tools, resources, prompts).
 //
-// It manages the registration, lifecycle, and discovery of upstream services
-// and their associated capabilities (tools, resources, prompts).
+// Summary: ServiceRegistryInterface defines the interface for a service registry. It manages the registration, lifecycle, and discovery of upstream services and their associated capabilities (tools, resources, prompts).
+//
+// Methods:
+//   - Defines the required contract and behavior for implementations of ServiceRegistryInterface.
 type ServiceRegistryInterface interface { //nolint:revive
 	// RegisterService registers a new upstream service based on the provided configuration.
 	//
@@ -97,10 +99,12 @@ type ServiceRegistryInterface interface { //nolint:revive
 	GetServiceError(serviceID string) (string, bool)
 }
 
-// ServiceRegistry is the concrete implementation of ServiceRegistryInterface.
+// ServiceRegistry is the concrete implementation of ServiceRegistryInterface. It serves as the central hub for managing upstream services, coordinating with tool, prompt, and resource managers.
 //
-// It serves as the central hub for managing upstream services, coordinating
-// with tool, prompt, and resource managers.
+// Summary: ServiceRegistry is the concrete implementation of ServiceRegistryInterface. It serves as the central hub for managing upstream services, coordinating with tool, prompt, and resource managers.
+//
+// Fields:
+//   - Contains the configuration and state properties required for ServiceRegistry functionality.
 type ServiceRegistry struct {
 	mu              sync.RWMutex
 	serviceConfigs  map[string]*config.UpstreamServiceConfig
@@ -300,14 +304,22 @@ func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *co
 	return serviceID, discoveredTools, discoveredResources, nil
 }
 
-// AddServiceInfo stores metadata about a service.
+// AddServiceInfo stores metadata about a service. Parameters: - serviceID (string): The service identifier. - info (*tool.ServiceInfo): The service metadata. Side Effects: - Updates the internal service info map.
+//
+// Summary: AddServiceInfo stores metadata about a service. Parameters: - serviceID (string): The service identifier. - info (*tool.ServiceInfo): The service metadata. Side Effects: - Updates the internal service info map.
 //
 // Parameters:
-//   - serviceID (string): The service identifier.
-//   - info (*tool.ServiceInfo): The service metadata.
+//   - serviceID (string): The unique identifier used to reference the service resource.
+//   - info (*tool.ServiceInfo): The info parameter used in the operation.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Updates the internal service info map.
+//   - None.
 func (r *ServiceRegistry) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -439,14 +451,22 @@ func (r *ServiceRegistry) GetServiceError(serviceID string) (string, bool) {
 	return err, ok
 }
 
-// StartHealthChecks initiates a background loop to periodically check the health of services.
+// StartHealthChecks initiates a background loop to periodically check the health of services. Parameters: - ctx (context.Context): The context to control the loop. - interval (time.Duration): The frequency of health checks. Side Effects: - Starts a background goroutine.
+//
+// Summary: StartHealthChecks initiates a background loop to periodically check the health of services. Parameters: - ctx (context.Context): The context to control the loop. - interval (time.Duration): The frequency of health checks. Side Effects: - Starts a background goroutine.
 //
 // Parameters:
-//   - ctx (context.Context): The context to control the loop.
-//   - interval (time.Duration): The frequency of health checks.
+//   - ctx (context.Context): The context for managing request lifecycle and cancellation.
+//   - interval (time.Duration): The interval parameter used in the operation.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Starts a background goroutine.
+//   - Modifies global state, writes to the database, or establishes network connections.
 func (r *ServiceRegistry) StartHealthChecks(ctx context.Context, interval time.Duration) {
 	go func() {
 		ticker := time.NewTicker(interval)
@@ -550,11 +570,19 @@ func (r *ServiceRegistry) Close(ctx context.Context) error {
 	return nil
 }
 
-// GetAllServices returns a list of all registered services.
+// GetAllServices returns a list of all registered services. Returns: - []*config.UpstreamServiceConfig: A list of all registered service configurations. - error: An error if retrieval fails. Side Effects: - None.
+//
+// Summary: GetAllServices returns a list of all registered services. Returns: - []*config.UpstreamServiceConfig: A list of all registered service configurations. - error: An error if retrieval fails. Side Effects: - None.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - []*config.UpstreamServiceConfig: A list of all registered service configurations.
-//   - error: An error if retrieval fails.
+//   - ([]*config.UpstreamServiceConfig): The resulting []config.UpstreamServiceConfig object containing the requested data.
+//   - (error): An error object if the operation fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the underlying operation fails or encounters invalid input.
 //
 // Side Effects:
 //   - None.

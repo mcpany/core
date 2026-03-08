@@ -12,14 +12,24 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// JSONRPCError represents a JSON-RPC 2.0 error object.
+// JSONRPCError defines the core structure for jsonrpc error within the system.
+//
+// Summary: JSONRPCError defines the core structure for jsonrpc error within the system.
+//
+// Fields:
+//   - Contains the configuration and state properties required for JSONRPCError functionality.
 type JSONRPCError struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
 	Data    any    `json:"data,omitempty"`
 }
 
-// JSONRPCResponse represents a JSON-RPC 2.0 response object.
+// JSONRPCResponse defines the core structure for jsonrpc response within the system.
+//
+// Summary: JSONRPCResponse defines the core structure for jsonrpc response within the system.
+//
+// Fields:
+//   - Contains the configuration and state properties required for JSONRPCResponse functionality.
 type JSONRPCResponse struct {
 	JSONRPC string        `json:"jsonrpc"`
 	ID      any           `json:"id"`
@@ -91,22 +101,40 @@ type smartResponseWriter struct {
 	passThrough bool
 }
 
-// Header returns the header map that will be sent by WriteHeader.
+// Header returns the header map that will be sent by WriteHeader. Summary: Returns the response headers. Returns: - http.Header: The header map.
 //
-// Summary: Returns the response headers.
+// Summary: Header returns the header map that will be sent by WriteHeader. Summary: Returns the response headers. Returns: - http.Header: The header map.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - http.Header: The header map.
+//   - (http.Header): The resulting http.Header object containing the requested data.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (w *smartResponseWriter) Header() http.Header {
 	return w.header
 }
 
-// WriteHeader sends an HTTP response header with the provided status code.
+// WriteHeader sends an HTTP response header with the provided status code. Summary: Writes the status code to the response. Parameters: - code: int. The HTTP status code.
 //
-// Summary: Writes the status code to the response.
+// Summary: WriteHeader sends an HTTP response header with the provided status code. Summary: Writes the status code to the response. Parameters: - code: int. The HTTP status code.
 //
 // Parameters:
-//   - code: int. The HTTP status code.
+//   - code (int): The code parameter used in the operation.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Modifies global state, writes to the database, or establishes network connections.
 func (w *smartResponseWriter) WriteHeader(code int) {
 	if w.committed {
 		return
@@ -129,16 +157,22 @@ func (w *smartResponseWriter) WriteHeader(code int) {
 	}
 }
 
-// Write writes the data to the connection as part of an HTTP reply.
+// Write writes the data to the connection as part of an HTTP reply. Summary: Writes data to the response body, buffering if necessary. Parameters: - b: []byte. The data to write. Returns: - int: The number of bytes written. - error: An error if the write fails.
 //
-// Summary: Writes data to the response body, buffering if necessary.
+// Summary: Write writes the data to the connection as part of an HTTP reply. Summary: Writes data to the response body, buffering if necessary. Parameters: - b: []byte. The data to write. Returns: - int: The number of bytes written. - error: An error if the write fails.
 //
 // Parameters:
-//   - b: []byte. The data to write.
+//   - b ([]byte): The b parameter used in the operation.
 //
 // Returns:
-//   - int: The number of bytes written.
-//   - error: An error if the write fails.
+//   - (int): The resulting int object containing the requested data.
+//   - (error): An error object if the operation fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the underlying operation fails or encounters invalid input.
+//
+// Side Effects:
+//   - Modifies global state, writes to the database, or establishes network connections.
 func (w *smartResponseWriter) Write(b []byte) (int, error) {
 	if !w.committed {
 		w.WriteHeader(http.StatusOK)
@@ -175,13 +209,21 @@ func (w *smartResponseWriter) flushHeader() {
 	w.w.WriteHeader(w.statusCode)
 }
 
-// Flush implements http.Flusher to support streaming.
+// Flush implements http.Flusher to support streaming. Summary: Flushes the response buffer to the client. Returns: None.
 //
-// Summary: Flushes the response buffer to the client.
+// Summary: Flush implements http.Flusher to support streaming. Summary: Flushes the response buffer to the client. Returns: None.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
+//   - None.
 //
-//	None.
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (w *smartResponseWriter) Flush() {
 	if w.passThrough {
 		if f, ok := w.w.(http.Flusher); ok {

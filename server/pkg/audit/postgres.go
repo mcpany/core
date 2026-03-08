@@ -14,9 +14,12 @@ import (
 	_ "github.com/lib/pq" // Register postgres driver
 )
 
-// PostgresAuditStore writes audit logs to a PostgreSQL database.
+// PostgresAuditStore writes audit logs to a PostgreSQL database. Summary: Stores audit log entries in a PostgreSQL database with tamper-evident hashing.
 //
-// Summary: Stores audit log entries in a PostgreSQL database with tamper-evident hashing.
+// Summary: PostgresAuditStore writes audit logs to a PostgreSQL database. Summary: Stores audit log entries in a PostgreSQL database with tamper-evident hashing.
+//
+// Fields:
+//   - Contains the configuration and state properties required for PostgresAuditStore functionality.
 type PostgresAuditStore struct {
 	db *sql.DB
 	mu sync.Mutex
@@ -189,35 +192,43 @@ func (s *PostgresAuditStore) Write(ctx context.Context, entry Entry) error {
 	return tx.Commit()
 }
 
-// Read implements the Store interface.
+// Read implements the Store interface. Summary: Reads audit entries (Not implemented). Parameters: - _: context.Context. Unused. - _: Filter. Unused. Returns: - []Entry: Nil. - error: Always returns "not implemented".
 //
-// Summary: Reads audit entries (Not implemented).
+// Summary: Read implements the Store interface. Summary: Reads audit entries (Not implemented). Parameters: - _: context.Context. Unused. - _: Filter. Unused. Returns: - []Entry: Nil. - error: Always returns "not implemented".
 //
 // Parameters:
-//   - _: context.Context. Unused.
-//   - _: Filter. Unused.
+//   - _ (context.Context): The _ parameter used in the operation.
+//   - _ (Filter): The _ parameter used in the operation.
 //
 // Returns:
-//   - []Entry: Nil.
-//   - error: Always returns "not implemented".
+//   - ([]Entry): The resulting []Entry object containing the requested data.
+//   - (error): An error object if the operation fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the underlying operation fails or encounters invalid input.
+//
+// Side Effects:
+//   - None.
 func (s *PostgresAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for postgres audit store")
 }
 
-// Verify checks the integrity of the audit logs.
+// Verify checks the integrity of the audit logs. Summary: Verifies the cryptographic chain of the audit logs. Returns: - bool: True if the chain is valid, false otherwise. - error: An error if verification logic fails (e.g. database error) or integrity is compromised. Errors: - Returns error if database query fails. - Returns error if hash mismatch or chain break is detected. Side Effects: - Reads all rows from the audit_logs table.
 //
-// Summary: Verifies the cryptographic chain of the audit logs.
+// Summary: Verify checks the integrity of the audit logs. Summary: Verifies the cryptographic chain of the audit logs. Returns: - bool: True if the chain is valid, false otherwise. - error: An error if verification logic fails (e.g. database error) or integrity is compromised. Errors: - Returns error if database query fails. - Returns error if hash mismatch or chain break is detected. Side Effects: - Reads all rows from the audit_logs table.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - bool: True if the chain is valid, false otherwise.
-//   - error: An error if verification logic fails (e.g. database error) or integrity is compromised.
+//   - (bool): A boolean indicating the success or status of the operation.
+//   - (error): An error object if the operation fails, otherwise nil.
 //
 // Errors:
-//   - Returns error if database query fails.
-//   - Returns error if hash mismatch or chain break is detected.
+//   - Returns an error if the underlying operation fails or encounters invalid input.
 //
 // Side Effects:
-//   - Reads all rows from the audit_logs table.
+//   - None.
 func (s *PostgresAuditStore) Verify() (bool, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -281,15 +292,21 @@ func (s *PostgresAuditStore) Verify() (bool, error) {
 	return true, nil
 }
 
-// Close closes the database connection.
+// Close closes the database connection. Summary: Closes the PostgreSQL database connection. Returns: - error: An error if closing fails. Side Effects: - Closes the DB connection.
 //
-// Summary: Closes the PostgreSQL database connection.
+// Summary: Close closes the database connection. Summary: Closes the PostgreSQL database connection. Returns: - error: An error if closing fails. Side Effects: - Closes the DB connection.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - error: An error if closing fails.
+//   - (error): An error object if the operation fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the underlying operation fails or encounters invalid input.
 //
 // Side Effects:
-//   - Closes the DB connection.
+//   - None.
 func (s *PostgresAuditStore) Close() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

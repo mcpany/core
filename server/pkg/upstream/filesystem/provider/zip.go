@@ -16,6 +16,11 @@ import (
 )
 
 // ZipProvider provides access to files within a zip archive.
+//
+// Summary: ZipProvider provides access to files within a zip archive.
+//
+// Fields:
+//   - Contains the configuration and state properties required for ZipProvider functionality.
 type ZipProvider struct {
 	fs     afero.Fs
 	closer *os.File
@@ -65,10 +70,18 @@ func NewZipProvider(config *configv1.ZipFs) (*ZipProvider, error) {
 	}, nil
 }
 
-// GetFs returns the underlying filesystem.
+// GetFs returns the underlying filesystem. Returns: - afero.Fs: The result. Side Effects: - None.
+//
+// Summary: GetFs returns the underlying filesystem. Returns: - afero.Fs: The result. Side Effects: - None.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - afero.Fs: The result.
+//   - (afero.Fs): The resulting afero.Fs object containing the requested data.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -95,13 +108,18 @@ func (p *ZipProvider) ResolvePath(virtualPath string) (string, error) {
 	return filepath.Clean(virtualPath), nil
 }
 
-// Close closes the underlying zip file.
+// Close closes the underlying zip file. Returns: - error: An error if the operation fails. Errors: - Returns an error if ... Side Effects: - None.
+//
+// Summary: Close closes the underlying zip file. Returns: - error: An error if the operation fails. Errors: - Returns an error if ... Side Effects: - None.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - (error): An error object if the operation fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Returns an error if the underlying operation fails or encounters invalid input.
 //
 // Side Effects:
 //   - None.

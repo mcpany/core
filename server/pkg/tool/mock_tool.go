@@ -11,9 +11,12 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// MockTool is a mock implementation of the Tool interface for testing purposes.
+// MockTool is a mock implementation of the Tool interface for testing purposes. Summary: Mock tool for testing.
 //
-// Summary: Mock tool for testing.
+// Summary: MockTool is a mock implementation of the Tool interface for testing purposes. Summary: Mock tool for testing.
+//
+// Fields:
+//   - Contains the configuration and state properties required for MockTool functionality.
 type MockTool struct {
 	ToolFunc           func() *v1.Tool
 	MCPToolFunc        func() *mcp.Tool
@@ -21,12 +24,21 @@ type MockTool struct {
 	GetCacheConfigFunc func() *configv1.CacheConfig
 }
 
-// Tool returns the protobuf definition of the mock tool.
+// Tool returns the protobuf definition of the mock tool. Summary: Retrieves the mock tool definition. Returns: - *v1.Tool: The tool definition.
 //
-// Summary: Retrieves the mock tool definition.
+// Summary: Tool returns the protobuf definition of the mock tool. Summary: Retrieves the mock tool definition. Returns: - *v1.Tool: The tool definition.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - *v1.Tool: The tool definition.
+//   - (*v1.Tool): The resulting v1.Tool object containing the requested data.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *MockTool) Tool() *v1.Tool {
 	if m.ToolFunc != nil {
 		return m.ToolFunc()
@@ -34,12 +46,21 @@ func (m *MockTool) Tool() *v1.Tool {
 	return &v1.Tool{}
 }
 
-// MCPTool returns the MCP tool definition.
+// MCPTool returns the MCP tool definition. Summary: Retrieves the MCP tool definition. Returns: - *mcp.Tool: The MCP tool definition.
 //
-// Summary: Retrieves the MCP tool definition.
+// Summary: MCPTool returns the MCP tool definition. Summary: Retrieves the MCP tool definition. Returns: - *mcp.Tool: The MCP tool definition.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - *mcp.Tool: The MCP tool definition.
+//   - (*mcp.Tool): The resulting mcp.Tool object containing the requested data.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *MockTool) MCPTool() *mcp.Tool {
 	if m.MCPToolFunc != nil {
 		return m.MCPToolFunc()
@@ -47,17 +68,23 @@ func (m *MockTool) MCPTool() *mcp.Tool {
 	return nil
 }
 
-// Execute calls the mock ExecuteFunc if set, otherwise returns nil.
+// Execute calls the mock ExecuteFunc if set, otherwise returns nil. Summary: Executes the mock tool. Parameters: - ctx: context.Context. The execution context. - req: *ExecutionRequest. The execution request. Returns: - any: The execution result. - error: An error if execution fails.
 //
-// Summary: Executes the mock tool.
+// Summary: Execute calls the mock ExecuteFunc if set, otherwise returns nil. Summary: Executes the mock tool. Parameters: - ctx: context.Context. The execution context. - req: *ExecutionRequest. The execution request. Returns: - any: The execution result. - error: An error if execution fails.
 //
 // Parameters:
-//   - ctx: context.Context. The execution context.
-//   - req: *ExecutionRequest. The execution request.
+//   - ctx (context.Context): The context for managing request lifecycle and cancellation.
+//   - req (*ExecutionRequest): The request object containing specific parameters.
 //
 // Returns:
-//   - any: The execution result.
-//   - error: An error if execution fails.
+//   - (any): The resulting any object containing the requested data.
+//   - (error): An error object if the operation fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the underlying operation fails or encounters invalid input.
+//
+// Side Effects:
+//   - None.
 func (m *MockTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if m.ExecuteFunc != nil {
 		return m.ExecuteFunc(ctx, req)
@@ -65,12 +92,21 @@ func (m *MockTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	return nil, nil
 }
 
-// GetCacheConfig calls the mock GetCacheConfigFunc if set, otherwise returns nil.
+// GetCacheConfig calls the mock GetCacheConfigFunc if set, otherwise returns nil. Summary: Retrieves the cache configuration. Returns: - *configv1.CacheConfig: The cache configuration.
 //
-// Summary: Retrieves the cache configuration.
+// Summary: GetCacheConfig calls the mock GetCacheConfigFunc if set, otherwise returns nil. Summary: Retrieves the cache configuration. Returns: - *configv1.CacheConfig: The cache configuration.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - *configv1.CacheConfig: The cache configuration.
+//   - (*configv1.CacheConfig): The resulting configv1.CacheConfig object containing the requested data.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Modifies global state, writes to the database, or establishes network connections.
 func (m *MockTool) GetCacheConfig() *configv1.CacheConfig {
 	if m.GetCacheConfigFunc != nil {
 		return m.GetCacheConfigFunc()

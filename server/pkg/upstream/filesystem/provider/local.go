@@ -14,6 +14,11 @@ import (
 )
 
 // LocalProvider provides access to the local filesystem.
+//
+// Summary: LocalProvider provides access to the local filesystem.
+//
+// Fields:
+//   - Contains the configuration and state properties required for LocalProvider functionality.
 type LocalProvider struct {
 	fs           afero.Fs
 	rootPaths    map[string]string
@@ -46,10 +51,18 @@ func NewLocalProvider(_ *configv1.OsFs, rootPaths map[string]string, allowedPath
 	}
 }
 
-// GetFs returns the underlying filesystem.
+// GetFs returns the underlying filesystem. Returns: - afero.Fs: The result. Side Effects: - None.
+//
+// Summary: GetFs returns the underlying filesystem. Returns: - afero.Fs: The result. Side Effects: - None.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - afero.Fs: The result.
+//   - (afero.Fs): The resulting afero.Fs object containing the requested data.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -320,13 +333,18 @@ func (p *LocalProvider) containsSymlink(virtualPath, bestMatchVirtual, bestMatch
 	return false, nil
 }
 
-// Close closes the provider.
+// Close closes the provider. Returns: - error: An error if the operation fails. Errors: - Returns an error if ... Side Effects: - None.
+//
+// Summary: Close closes the provider. Returns: - error: An error if the operation fails. Errors: - Returns an error if ... Side Effects: - None.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - (error): An error object if the operation fails, otherwise nil.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Returns an error if the underlying operation fails or encounters invalid input.
 //
 // Side Effects:
 //   - None.

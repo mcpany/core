@@ -13,19 +13,31 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// MockTool is a mock implementation of the tool.Tool interface for testing.
+// MockTool is a mock implementation of the tool.Tool interface for testing. Summary: Mock tool for unit testing.
 //
-// Summary: Mock tool for unit testing.
+// Summary: MockTool is a mock implementation of the tool.Tool interface for testing. Summary: Mock tool for unit testing.
+//
+// Fields:
+//   - Contains the configuration and state properties required for MockTool functionality.
 type MockTool struct {
 	ExecuteFunc func(ctx context.Context, req *tool.ExecutionRequest) (any, error)
 }
 
-// Tool returns a basic tool definition for the mock tool.
+// Tool returns a basic tool definition for the mock tool. Summary: Returns the tool definition. Returns: - *v1.Tool: A minimal tool definition.
 //
-// Summary: Returns the tool definition.
+// Summary: Tool returns a basic tool definition for the mock tool. Summary: Returns the tool definition. Returns: - *v1.Tool: A minimal tool definition.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - *v1.Tool: A minimal tool definition.
+//   - (*v1.Tool): The resulting v1.Tool object containing the requested data.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *MockTool) Tool() *v1.Tool {
 	return v1.Tool_builder{
 		Name: proto.String("mock-tool"),
@@ -53,12 +65,21 @@ func (m *MockTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any
 	return nil, nil
 }
 
-// GetCacheConfig returns nil for the mock tool.
+// GetCacheConfig returns nil for the mock tool. Summary: Returns cache configuration (nil for mock). Returns: - *configv1.CacheConfig: Always nil.
 //
-// Summary: Returns cache configuration (nil for mock).
+// Summary: GetCacheConfig returns nil for the mock tool. Summary: Returns cache configuration (nil for mock). Returns: - *configv1.CacheConfig: Always nil.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - *configv1.CacheConfig: Always nil.
+//   - (*configv1.CacheConfig): The resulting configv1.CacheConfig object containing the requested data.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Modifies global state, writes to the database, or establishes network connections.
 func (m *MockTool) GetCacheConfig() *configv1.CacheConfig {
 	return nil
 }

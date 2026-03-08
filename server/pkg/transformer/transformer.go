@@ -14,25 +14,32 @@ import (
 	"text/template"
 )
 
-// Transformer provides functionality to transform a map of data into a
-// structured string using a Go template. It supports multiple output formats
-// specified by the template, such as JSON, XML, or plain text.
+// Transformer provides functionality to transform a map of data into a structured string using a Go template. It supports multiple output formats specified by the template, such as JSON, XML, or plain text. Summary: Data transformation engine using Go templates with caching and pooling optimization.
 //
-// Summary: Data transformation engine using Go templates with caching and pooling optimization.
+// Summary: Transformer provides functionality to transform a map of data into a structured string using a Go template. It supports multiple output formats specified by the template, such as JSON, XML, or plain text. Summary: Data transformation engine using Go templates with caching and pooling optimization.
+//
+// Fields:
+//   - Contains the configuration and state properties required for Transformer functionality.
 type Transformer struct {
 	cache sync.Map
 	pool  sync.Pool
 }
 
-// NewTransformer creates and returns a new instance of Transformer.
+// NewTransformer creates and returns a new instance of Transformer. Summary: Initializes a new Transformer. Returns: - *Transformer: The initialized transformer. Side Effects: - Initializes a sync.Pool for bytes.Buffer.
 //
-// Summary: Initializes a new Transformer.
+// Summary: NewTransformer creates and returns a new instance of Transformer. Summary: Initializes a new Transformer. Returns: - *Transformer: The initialized transformer. Side Effects: - Initializes a sync.Pool for bytes.Buffer.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - *Transformer: The initialized transformer.
+//   - (*Transformer): The resulting Transformer object containing the requested data.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Initializes a sync.Pool for bytes.Buffer.
+//   - None.
 func NewTransformer() *Transformer {
 	return &Transformer{
 		pool: sync.Pool{

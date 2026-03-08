@@ -13,11 +13,12 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
-// Upstream defines the standard interface for all backend service integrations.
+// Upstream defines the standard interface for all backend service integrations. Each implementation of this interface is responsible for discovering and registering its capabilities, such as tools, prompts, and resources, with the appropriate managers.
 //
-// Each implementation of this interface is responsible for discovering and
-// registering its capabilities, such as tools, prompts, and resources, with the
-// appropriate managers.
+// Summary: Upstream defines the standard interface for all backend service integrations. Each implementation of this interface is responsible for discovering and registering its capabilities, such as tools, prompts, and resources, with the appropriate managers.
+//
+// Methods:
+//   - Defines the required contract and behavior for implementations of Upstream.
 type Upstream interface {
 	// Shutdown gracefully terminates the upstream service.
 	//
@@ -67,8 +68,12 @@ type Upstream interface {
 	) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error)
 }
 
-// HealthChecker is an optional interface that Upstreams can implement to provide
-// runtime health status.
+// HealthChecker is an optional interface that Upstreams can implement to provide runtime health status.
+//
+// Summary: HealthChecker is an optional interface that Upstreams can implement to provide runtime health status.
+//
+// Methods:
+//   - Defines the required contract and behavior for implementations of HealthChecker.
 type HealthChecker interface {
 	// CheckHealth performs a health check on the upstream service.
 	//

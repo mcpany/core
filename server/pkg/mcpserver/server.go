@@ -53,11 +53,12 @@ var fastJSON = jsoniter.Config{
 //   - When set, this function is called synchronously during Server() access.
 var AddReceivingMiddlewareHook func(name string)
 
-// Server is the core of the MCP Any application.
+// Server is the core of the MCP Any application. It orchestrates the handling of MCP (Model Context Protocol) requests by managing various components such as tools, prompts, resources, and services. It uses an internal router to delegate requests to the appropriate handlers and communicates with backend workers via an event bus.
 //
-// It orchestrates the handling of MCP (Model Context Protocol) requests by managing various components such as
-// tools, prompts, resources, and services. It uses an internal router to delegate requests to the appropriate
-// handlers and communicates with backend workers via an event bus.
+// Summary: Server is the core of the MCP Any application. It orchestrates the handling of MCP (Model Context Protocol) requests by managing various components such as tools, prompts, resources, and services. It uses an internal router to delegate requests to the appropriate handlers and communicates with backend workers via an event bus.
+//
+// Fields:
+//   - Contains the configuration and state properties required for Server functionality.
 type Server struct {
 	server          *mcp.Server
 	router          *Router
@@ -72,16 +73,21 @@ type Server struct {
 	debug           bool
 }
 
-// Server returns the underlying *mcp.Server instance.
+// Server returns the underlying *mcp.Server instance. It provides access to the core MCP server functionality, which can be used for advanced configurations or direct interaction with the MCP server. Returns: - *mcp.Server: The underlying server instance. Side Effects: - Executes the middleware hook if configured.
 //
-// It provides access to the core MCP server functionality, which can be used for advanced
-// configurations or direct interaction with the MCP server.
+// Summary: Server returns the underlying *mcp.Server instance. It provides access to the core MCP server functionality, which can be used for advanced configurations or direct interaction with the MCP server. Returns: - *mcp.Server: The underlying server instance. Side Effects: - Executes the middleware hook if configured.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - *mcp.Server: The underlying server instance.
+//   - (*mcp.Server): The resulting mcp.Server object containing the requested data.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Executes the middleware hook if configured.
+//   - None.
 func (s *Server) Server() *mcp.Server {
 	if AddReceivingMiddlewareHook != nil {
 		// This is a test hook to allow inspection of the middleware chain.
@@ -575,13 +581,18 @@ func (s *Server) ReadResource(
 	return r.Read(ctx)
 }
 
-// AuthManager returns the server's authentication manager.
+// AuthManager returns the server's authentication manager. It provides access to the authentication manager, which is responsible for handling authentication for incoming requests. Returns: - *auth.Manager: The authentication manager instance. Side Effects: - None.
 //
-// It provides access to the authentication manager, which is responsible for handling
-// authentication for incoming requests.
+// Summary: AuthManager returns the server's authentication manager. It provides access to the authentication manager, which is responsible for handling authentication for incoming requests. Returns: - *auth.Manager: The authentication manager instance. Side Effects: - None.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - *auth.Manager: The authentication manager instance.
+//   - (*auth.Manager): The resulting auth.Manager object containing the requested data.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -589,13 +600,18 @@ func (s *Server) AuthManager() *auth.Manager {
 	return s.authManager
 }
 
-// ToolManager returns the server's tool manager.
+// ToolManager returns the server's tool manager. It provides access to the tool manager, which is responsible for managing the lifecycle and access to tools. Returns: - tool.ManagerInterface: The tool manager interface. Side Effects: - None.
 //
-// It provides access to the tool manager, which is responsible for managing the lifecycle
-// and access to tools.
+// Summary: ToolManager returns the server's tool manager. It provides access to the tool manager, which is responsible for managing the lifecycle and access to tools. Returns: - tool.ManagerInterface: The tool manager interface. Side Effects: - None.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - tool.ManagerInterface: The tool manager interface.
+//   - (tool.ManagerInterface): The resulting tool.ManagerInterface object containing the requested data.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -603,13 +619,18 @@ func (s *Server) ToolManager() tool.ManagerInterface {
 	return s.toolManager
 }
 
-// PromptManager returns the server's prompt manager.
+// PromptManager returns the server's prompt manager. It provides access to the prompt manager, which is responsible for managing the lifecycle and access to prompts. Returns: - prompt.ManagerInterface: The prompt manager interface. Side Effects: - None.
 //
-// It provides access to the prompt manager, which is responsible for managing the lifecycle
-// and access to prompts.
+// Summary: PromptManager returns the server's prompt manager. It provides access to the prompt manager, which is responsible for managing the lifecycle and access to prompts. Returns: - prompt.ManagerInterface: The prompt manager interface. Side Effects: - None.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - prompt.ManagerInterface: The prompt manager interface.
+//   - (prompt.ManagerInterface): The resulting prompt.ManagerInterface object containing the requested data.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -617,13 +638,18 @@ func (s *Server) PromptManager() prompt.ManagerInterface {
 	return s.promptManager
 }
 
-// ResourceManager returns the server's resource manager.
+// ResourceManager returns the server's resource manager. It provides access to the resource manager, which is responsible for managing the lifecycle and access to resources. Returns: - resource.ManagerInterface: The resource manager interface. Side Effects: - None.
 //
-// It provides access to the resource manager, which is responsible for managing the lifecycle
-// and access to resources.
+// Summary: ResourceManager returns the server's resource manager. It provides access to the resource manager, which is responsible for managing the lifecycle and access to resources. Returns: - resource.ManagerInterface: The resource manager interface. Side Effects: - None.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - resource.ManagerInterface: The resource manager interface.
+//   - (resource.ManagerInterface): The resulting resource.ManagerInterface object containing the requested data.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -631,12 +657,18 @@ func (s *Server) ResourceManager() resource.ManagerInterface {
 	return s.resourceManager
 }
 
-// ServiceRegistry returns the server's service registry.
+// ServiceRegistry returns the server's service registry. It provides access to the service registry, which keeps track of all registered upstream services. Returns: - *serviceregistry.ServiceRegistry: The service registry instance. Side Effects: - None.
 //
-// It provides access to the service registry, which keeps track of all registered upstream services.
+// Summary: ServiceRegistry returns the server's service registry. It provides access to the service registry, which keeps track of all registered upstream services. Returns: - *serviceregistry.ServiceRegistry: The service registry instance. Side Effects: - None.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - *serviceregistry.ServiceRegistry: The service registry instance.
+//   - (*serviceregistry.ServiceRegistry): The resulting serviceregistry.ServiceRegistry object containing the requested data.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -644,14 +676,22 @@ func (s *Server) ServiceRegistry() *serviceregistry.ServiceRegistry {
 	return s.serviceRegistry
 }
 
-// AddServiceInfo adds information about a service to the tool manager.
+// AddServiceInfo adds information about a service to the tool manager. Parameters: - serviceID (string): The unique identifier of the service. - info (*tool.ServiceInfo): The service information to add. Side Effects: - Updates the tool manager with service information.
+//
+// Summary: AddServiceInfo adds information about a service to the tool manager. Parameters: - serviceID (string): The unique identifier of the service. - info (*tool.ServiceInfo): The service information to add. Side Effects: - Updates the tool manager with service information.
 //
 // Parameters:
-//   - serviceID (string): The unique identifier of the service.
-//   - info (*tool.ServiceInfo): The service information to add.
+//   - serviceID (string): The unique identifier used to reference the service resource.
+//   - info (*tool.ServiceInfo): The info parameter used in the operation.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Updates the tool manager with service information.
+//   - None.
 func (s *Server) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
 	s.toolManager.AddServiceInfo(serviceID, info)
 }
@@ -671,14 +711,21 @@ func (s *Server) GetTool(toolName string) (tool.Tool, bool) {
 	return s.toolManager.GetTool(toolName)
 }
 
-// ListTools returns a list of all available tools.
+// ListTools returns a list of all available tools. Returns: - []tool.Tool: A slice of all available tools. Side Effects: - Logs the listing action. - Increments metrics counter.
+//
+// Summary: ListTools returns a list of all available tools. Returns: - []tool.Tool: A slice of all available tools. Side Effects: - Logs the listing action. - Increments metrics counter.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - []tool.Tool: A slice of all available tools.
+//   - ([]tool.Tool): The resulting []tool.Tool object containing the requested data.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Logs the listing action.
-//   - Increments metrics counter.
+//   - None.
 func (s *Server) ListTools() []tool.Tool {
 	logging.GetLogger().Info("Listing tools...")
 	metrics.IncrCounter(metricToolsListTotal, 1)
@@ -841,13 +888,21 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 	return finalResult, nil
 }
 
-// SetMCPServer sets the MCP server provider for the tool manager.
+// SetMCPServer stores the mcp server into the persistent storage.
+//
+// Summary: Stores the mcp server into the persistent storage.
 //
 // Parameters:
-//   - mcpServer (tool.MCPServerProvider): The MCP server provider to set.
+//   - mcpServer (tool.MCPServerProvider): The mcp server parameter used in the operation.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Sets the MCP server provider in the tool manager.
+//   - Modifies global state, writes to the database, or establishes network connections.
 func (s *Server) SetMCPServer(mcpServer tool.MCPServerProvider) {
 	s.toolManager.SetMCPServer(mcpServer)
 }
@@ -885,24 +940,40 @@ func (s *Server) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
 // This logic is removed as we moved to centralized profile management where loaded services are implicit.
 // If we need RBAC, it should be a separate concern.
 
-// ClearToolsForService removes all tools associated with a specific service.
+// ClearToolsForService removes all tools associated with a specific service. Parameters: - serviceKey (string): The identifier of the service whose tools should be cleared. Side Effects: - Removes tools associated with the service from the tool manager.
+//
+// Summary: ClearToolsForService removes all tools associated with a specific service. Parameters: - serviceKey (string): The identifier of the service whose tools should be cleared. Side Effects: - Removes tools associated with the service from the tool manager.
 //
 // Parameters:
-//   - serviceKey (string): The identifier of the service whose tools should be cleared.
+//   - serviceKey (string): The service key parameter used in the operation.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Removes tools associated with the service from the tool manager.
+//   - None.
 func (s *Server) ClearToolsForService(serviceKey string) {
 	s.toolManager.ClearToolsForService(serviceKey)
 }
 
-// SetReloadFunc sets the function to be called when a configuration reload is triggered.
+// SetReloadFunc sets the function to be called when a configuration reload is triggered. Parameters: - f (func(context.Context) error): The function to execute on reload. Side Effects: - Stores the reload callback.
+//
+// Summary: SetReloadFunc sets the function to be called when a configuration reload is triggered. Parameters: - f (func(context.Context) error): The function to execute on reload. Side Effects: - Stores the reload callback.
 //
 // Parameters:
-//   - f (func(context.Context) error): The function to execute on reload.
+//   - f (func(context.Context): The f parameter used in the operation.
+//
+// Returns:
+//   - (error)): The resulting error) object containing the requested data.
+//
+// Errors:
+//   - Returns an error if the underlying operation fails or encounters invalid input.
 //
 // Side Effects:
-//   - Stores the reload callback.
+//   - Modifies global state, writes to the database, or establishes network connections.
 func (s *Server) SetReloadFunc(f func(context.Context) error) {
 	s.reloadFunc = f
 }
@@ -1029,36 +1100,50 @@ func convertMapToCallToolResult(m map[string]any) (*mcp.CallToolResult, error) {
 // its JSON content only when logged.
 type LazyRedact []byte
 
-// LogValue implements slog.LogValuer.
+// LogValue implements slog.LogValuer. It returns a redacted log value. Returns: - slog.Value: The redacted value. Side Effects: - Performs JSON redaction on the byte slice.
 //
-// It returns a redacted log value.
+// Summary: LogValue implements slog.LogValuer. It returns a redacted log value. Returns: - slog.Value: The redacted value. Side Effects: - Performs JSON redaction on the byte slice.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - slog.Value: The redacted value.
+//   - (slog.Value): The resulting slog.Value object containing the requested data.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Performs JSON redaction on the byte slice.
+//   - None.
 func (l LazyRedact) LogValue() slog.Value {
 	return slog.StringValue(util.BytesToString(util.RedactJSON(l)))
 }
 
-// LazyLogResult wraps a tool execution result for efficient logging.
+// LazyLogResult wraps a tool execution result for efficient logging. It avoids expensive serialization of large payloads (e.g. images, huge text) and lazily computes the string representation only when logging is enabled.
 //
-// It avoids expensive serialization of large payloads (e.g. images, huge text)
-// and lazily computes the string representation only when logging is enabled.
+// Summary: LazyLogResult wraps a tool execution result for efficient logging. It avoids expensive serialization of large payloads (e.g. images, huge text) and lazily computes the string representation only when logging is enabled.
+//
+// Fields:
+//   - Contains the configuration and state properties required for LazyLogResult functionality.
 type LazyLogResult struct {
 	Value any
 }
 
-// LogValue implements slog.LogValuer.
+// LogValue implements slog.LogValuer. It returns a summarized or redacted log value. Returns: - slog.Value: The log value. Side Effects: - May serialize or redact the result value.
 //
-// It returns a summarized or redacted log value.
+// Summary: LogValue implements slog.LogValuer. It returns a summarized or redacted log value. Returns: - slog.Value: The log value. Side Effects: - May serialize or redact the result value.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - slog.Value: The log value.
+//   - (slog.Value): The resulting slog.Value object containing the requested data.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - May serialize or redact the result value.
+//   - None.
 func (r LazyLogResult) LogValue() slog.Value {
 	if r.Value == nil {
 		return slog.StringValue("<nil>")

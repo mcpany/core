@@ -27,7 +27,12 @@ const (
 	StatusResolved Status = "resolved"
 )
 
-// Alert represents a system alert.
+// Alert defines the core structure for alert within the system.
+//
+// Summary: Alert defines the core structure for alert within the system.
+//
+// Fields:
+//   - Contains the configuration and state properties required for Alert functionality.
 type Alert struct {
 	ID        string    `json:"id"`
 	Title     string    `json:"title"`
@@ -40,6 +45,11 @@ type Alert struct {
 }
 
 // AlertRule defines a condition for triggering an alert.
+//
+// Summary: AlertRule defines a condition for triggering an alert.
+//
+// Fields:
+//   - Contains the configuration and state properties required for AlertRule functionality.
 type AlertRule struct {
 	ID          string    `json:"id"`
 	Name        string    `json:"name"`
@@ -52,7 +62,12 @@ type AlertRule struct {
 	LastUpdated time.Time `json:"last_updated"`
 }
 
-// AlertStats represents aggregated statistics for alerts.
+// AlertStats defines the core structure for alert stats within the system.
+//
+// Summary: AlertStats defines the core structure for alert stats within the system.
+//
+// Fields:
+//   - Contains the configuration and state properties required for AlertStats functionality.
 type AlertStats struct {
 	ActiveCritical int    `json:"activeCritical"`
 	ActiveWarning  int    `json:"activeWarning"`

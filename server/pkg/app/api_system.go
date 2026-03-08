@@ -13,7 +13,12 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// SystemStatusResponse represents the response from the system status API.
+// SystemStatusResponse defines the core structure for system status response within the system.
+//
+// Summary: SystemStatusResponse defines the core structure for system status response within the system.
+//
+// Fields:
+//   - Contains the configuration and state properties required for SystemStatusResponse functionality.
 type SystemStatusResponse struct {
 	UptimeSeconds     int64    `json:"uptime_seconds"`
 	ActiveConnections int32    `json:"active_connections"`

@@ -28,6 +28,11 @@ import (
 )
 
 // Server implements the AdminServiceServer interface.
+//
+// Summary: Server implements the AdminServiceServer interface.
+//
+// Fields:
+//   - Contains the configuration and state properties required for Server functionality.
 type Server struct {
 	pb.UnimplementedAdminServiceServer
 	cache            *middleware.CachingMiddleware

@@ -48,18 +48,23 @@ func New[T any]() *DefaultBus[T] {
 	}
 }
 
-// Publish sends a message to all handlers subscribed to the specified topic.
-// It sends the message to a channel for each subscriber, where it will be
-// processed by the subscriber's dedicated goroutine.
+// Publish sends a message to all handlers subscribed to the specified topic. It sends the message to a channel for each subscriber, where it will be processed by the subscriber's dedicated goroutine. To prevent a slow subscriber from blocking the publisher indefinitely, this call will time out after a configurable duration if a subscriber's channel is full. If a timeout occurs, the message is dropped for that subscriber, and a warning is logged. Parameters: - topic: The topic to publish the message to. - msg: The message to be sent.
 //
-// To prevent a slow subscriber from blocking the publisher indefinitely, this
-// call will time out after a configurable duration if a subscriber's channel is
-// full. If a timeout occurs, the message is dropped for that subscriber, and a
-// warning is logged.
+// Summary: Publish sends a message to all handlers subscribed to the specified topic. It sends the message to a channel for each subscriber, where it will be processed by the subscriber's dedicated goroutine. To prevent a slow subscriber from blocking the publisher indefinitely, this call will time out after a configurable duration if a subscriber's channel is full. If a timeout occurs, the message is dropped for that subscriber, and a warning is logged. Parameters: - topic: The topic to publish the message to. - msg: The message to be sent.
 //
 // Parameters:
-//   - topic: The topic to publish the message to.
-//   - msg: The message to be sent.
+//   - _ (context.Context): The _ parameter used in the operation.
+//   - topic (string): The topic parameter used in the operation.
+//   - msg (T): The msg parameter used in the operation.
+//
+// Returns:
+//   - (error): An error object if the operation fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the underlying operation fails or encounters invalid input.
+//
+// Side Effects:
+//   - None.
 func (b *DefaultBus[T]) Publish(_ context.Context, topic string, msg T) error {
 	b.mu.RLock()
 	defer b.mu.RUnlock()
@@ -91,21 +96,23 @@ func (b *DefaultBus[T]) Publish(_ context.Context, topic string, msg T) error {
 	return nil
 }
 
-// Subscribe registers a handler function for a given topic. It starts a new
-// goroutine for each subscription to process messages from a buffered channel,
-// ensuring that subscribers handle messages independently and do not block each
-// other.
+// Subscribe registers a handler function for a given topic. It starts a new goroutine for each subscription to process messages from a buffered channel, ensuring that subscribers handle messages independently and do not block each other. Each subscriber is assigned a unique ID, and its channel is added to the list of subscribers for the given topic. Parameters: - topic: The topic to subscribe to. - handler: The function to execute when a message is received. Returns an `unsubscribe` function that can be called to remove the subscription. When called, it removes the subscriber from the bus and closes its channel, terminating the associated goroutine.
 //
-// Each subscriber is assigned a unique ID, and its channel is added to the list
-// of subscribers for the given topic.
+// Summary: Subscribe registers a handler function for a given topic. It starts a new goroutine for each subscription to process messages from a buffered channel, ensuring that subscribers handle messages independently and do not block each other. Each subscriber is assigned a unique ID, and its channel is added to the list of subscribers for the given topic. Parameters: - topic: The topic to subscribe to. - handler: The function to execute when a message is received. Returns an `unsubscribe` function that can be called to remove the subscription. When called, it removes the subscriber from the bus and closes its channel, terminating the associated goroutine.
 //
 // Parameters:
-//   - topic: The topic to subscribe to.
-//   - handler: The function to execute when a message is received.
+//   - _ (context.Context): The _ parameter used in the operation.
+//   - topic (string): The topic parameter used in the operation.
+//   - handler (func(T): The handler parameter used in the operation.
 //
-// Returns an `unsubscribe` function that can be called to remove the
-// subscription. When called, it removes the subscriber from the bus and closes
-// its channel, terminating the associated goroutine.
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (b *DefaultBus[T]) Subscribe(_ context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
@@ -148,19 +155,23 @@ func (b *DefaultBus[T]) Subscribe(_ context.Context, topic string, handler func(
 	}
 }
 
-// SubscribeOnce registers a handler for a topic that will be executed only
-// once. After the handler is invoked for the first time, the subscription is
-// automatically removed.
+// SubscribeOnce registers a handler for a topic that will be executed only once. After the handler is invoked for the first time, the subscription is automatically removed. This is useful for scenarios where a component needs to wait for a specific event to occur once and then stop listening. Parameters: - topic: The topic to subscribe to. - handler: The function to execute. Returns a function that can be used to unsubscribe before the handler is invoked.
 //
-// This is useful for scenarios where a component needs to wait for a specific
-// event to occur once and then stop listening.
+// Summary: SubscribeOnce registers a handler for a topic that will be executed only once. After the handler is invoked for the first time, the subscription is automatically removed. This is useful for scenarios where a component needs to wait for a specific event to occur once and then stop listening. Parameters: - topic: The topic to subscribe to. - handler: The function to execute. Returns a function that can be used to unsubscribe before the handler is invoked.
 //
 // Parameters:
-//   - topic: The topic to subscribe to.
-//   - handler: The function to execute.
+//   - ctx (context.Context): The context for managing request lifecycle and cancellation.
+//   - topic (string): The topic parameter used in the operation.
+//   - handler (func(T): The handler parameter used in the operation.
 //
-// Returns a function that can be used to unsubscribe before the handler is
-// invoked.
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (b *DefaultBus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	var once sync.Once
 	var unsub func()

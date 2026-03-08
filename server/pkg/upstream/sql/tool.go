@@ -23,6 +23,11 @@ import (
 )
 
 // Tool implements the Tool interface for a tool that executes a SQL query.
+//
+// Summary: Tool implements the Tool interface for a tool that executes a SQL query.
+//
+// Fields:
+//   - Contains the configuration and state properties required for Tool functionality.
 type Tool struct {
 	tool        *v1.Tool
 	mcpTool     *mcp.Tool
@@ -63,10 +68,18 @@ func NewTool(t *v1.Tool, db *sql.DB, callDef *configv1.SqlCallDefinition, polici
 	return to
 }
 
-// Tool returns the protobuf definition of the tool.
+// Tool returns the protobuf definition of the tool. Returns: - *v1.Tool: The result. Side Effects: - None.
+//
+// Summary: Tool returns the protobuf definition of the tool. Returns: - *v1.Tool: The result. Side Effects: - None.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - *v1.Tool: The result.
+//   - (*v1.Tool): The resulting v1.Tool object containing the requested data.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -74,10 +87,18 @@ func (t *Tool) Tool() *v1.Tool {
 	return t.tool
 }
 
-// MCPTool returns the MCP tool definition.
+// MCPTool returns the MCP tool definition. Returns: - *mcp.Tool: The result. Side Effects: - None.
+//
+// Summary: MCPTool returns the MCP tool definition. Returns: - *mcp.Tool: The result. Side Effects: - None.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - *mcp.Tool: The result.
+//   - (*mcp.Tool): The resulting mcp.Tool object containing the requested data.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -92,13 +113,21 @@ func (t *Tool) MCPTool() *mcp.Tool {
 	return t.mcpTool
 }
 
-// GetCacheConfig returns the cache configuration for the tool.
+// GetCacheConfig returns the cache configuration for the tool. Returns: - *configv1.CacheConfig: The result. Side Effects: - None.
+//
+// Summary: GetCacheConfig returns the cache configuration for the tool. Returns: - *configv1.CacheConfig: The result. Side Effects: - None.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - *configv1.CacheConfig: The result.
+//   - (*configv1.CacheConfig): The resulting configv1.CacheConfig object containing the requested data.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - None.
+//   - Modifies global state, writes to the database, or establishes network connections.
 func (t *Tool) GetCacheConfig() *configv1.CacheConfig {
 	if t.callDef == nil {
 		return nil

@@ -8,9 +8,12 @@ import (
 	"time"
 )
 
-// EmbeddingProvider defines the interface for fetching text embeddings.
+// EmbeddingProvider defines the interface for fetching text embeddings. Summary: Interface for services that can generate vector embeddings from text.
 //
-// Summary: Interface for services that can generate vector embeddings from text.
+// Summary: EmbeddingProvider defines the interface for fetching text embeddings. Summary: Interface for services that can generate vector embeddings from text.
+//
+// Methods:
+//   - Defines the required contract and behavior for implementations of EmbeddingProvider.
 type EmbeddingProvider interface {
 	// Embed generates an embedding vector for the given text.
 	//
@@ -24,9 +27,12 @@ type EmbeddingProvider interface {
 	Embed(ctx context.Context, text string) ([]float32, error)
 }
 
-// VectorStore defines the interface for storing and searching vectors.
+// VectorStore defines the interface for storing and searching vectors. Summary: Interface for storage backends that support vector similarity search.
 //
-// Summary: Interface for storage backends that support vector similarity search.
+// Summary: VectorStore defines the interface for storing and searching vectors. Summary: Interface for storage backends that support vector similarity search.
+//
+// Methods:
+//   - Defines the required contract and behavior for implementations of VectorStore.
 type VectorStore interface {
 	// Add adds a new entry to the vector store.
 	//
@@ -62,9 +68,12 @@ type VectorStore interface {
 	Prune(ctx context.Context, key string)
 }
 
-// SemanticCache implements a semantic cache using embeddings and cosine similarity.
+// SemanticCache implements a semantic cache using embeddings and cosine similarity. Summary: A cache implementation that uses semantic similarity rather than exact key matching.
 //
-// Summary: A cache implementation that uses semantic similarity rather than exact key matching.
+// Summary: SemanticCache implements a semantic cache using embeddings and cosine similarity. Summary: A cache implementation that uses semantic similarity rather than exact key matching.
+//
+// Fields:
+//   - Contains the configuration and state properties required for SemanticCache functionality.
 type SemanticCache struct {
 	provider  EmbeddingProvider
 	store     VectorStore

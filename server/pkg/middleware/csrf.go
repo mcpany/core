@@ -13,9 +13,12 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// CSRFMiddleware protects against Cross-Site Request Forgery attacks.
+// CSRFMiddleware protects against Cross-Site Request Forgery attacks. Summary: Middleware that blocks unauthorized cross-origin requests.
 //
-// Summary: Middleware that blocks unauthorized cross-origin requests.
+// Summary: CSRFMiddleware protects against Cross-Site Request Forgery attacks. Summary: Middleware that blocks unauthorized cross-origin requests.
+//
+// Fields:
+//   - Contains the configuration and state properties required for CSRFMiddleware functionality.
 type CSRFMiddleware struct {
 	allowedOrigins map[string]bool
 	mu             sync.RWMutex
@@ -41,15 +44,21 @@ func NewCSRFMiddleware(allowedOrigins []string) *CSRFMiddleware {
 	return m
 }
 
-// Update updates the allowed origins.
+// Update updates the allowed origins. Summary: Updates the list of allowed origins at runtime. Parameters: - origins: []string. The new list of allowed origins. Side Effects: - Replaces the existing allowed origins map in a thread-safe manner.
 //
-// Summary: Updates the list of allowed origins at runtime.
+// Summary: Update updates the allowed origins. Summary: Updates the list of allowed origins at runtime. Parameters: - origins: []string. The new list of allowed origins. Side Effects: - Replaces the existing allowed origins map in a thread-safe manner.
 //
 // Parameters:
-//   - origins: []string. The new list of allowed origins.
+//   - origins ([]string): The origins parameter used in the operation.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Replaces the existing allowed origins map in a thread-safe manner.
+//   - Modifies global state, writes to the database, or establishes network connections.
 func (m *CSRFMiddleware) Update(origins []string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()

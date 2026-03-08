@@ -12,10 +12,12 @@ import (
 	"github.com/valyala/fasttemplate"
 )
 
-// TextTemplate provides a simple wrapper around Go's standard text/template
-// for rendering strings with dynamic data.
+// TextTemplate provides a simple wrapper around Go's standard text/template for rendering strings with dynamic data. Summary: High-performance template engine using fasttemplate.
 //
-// Summary: High-performance template engine using fasttemplate.
+// Summary: TextTemplate provides a simple wrapper around Go's standard text/template for rendering strings with dynamic data. Summary: High-performance template engine using fasttemplate.
+//
+// Fields:
+//   - Contains the configuration and state properties required for TextTemplate functionality.
 type TextTemplate struct {
 	template *fasttemplate.Template
 	raw      string

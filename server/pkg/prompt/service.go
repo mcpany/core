@@ -11,23 +11,32 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// Service handles the business logic for the prompts feature. It provides
-// methods for listing available prompts and retrieving a specific prompt by
-// name.
+// Service handles the business logic for the prompts feature. It provides methods for listing available prompts and retrieving a specific prompt by name.
+//
+// Summary: Service handles the business logic for the prompts feature. It provides methods for listing available prompts and retrieving a specific prompt by name.
+//
+// Fields:
+//   - Contains the configuration and state properties required for Service functionality.
 type Service struct {
 	promptManager ManagerInterface
 	mcpServer     *mcp.Server
 }
 
-// NewService creates and returns a new Service instance.
+// NewService creates and returns a new Service instance. Summary: Initializes a new Prompt Service. Parameters: - promptManager: ManagerInterface. The manager handling prompt lifecycle. Returns: - *Service: The initialized service.
 //
-// Summary: Initializes a new Prompt Service.
+// Summary: NewService creates and returns a new Service instance. Summary: Initializes a new Prompt Service. Parameters: - promptManager: ManagerInterface. The manager handling prompt lifecycle. Returns: - *Service: The initialized service.
 //
 // Parameters:
-//   - promptManager: ManagerInterface. The manager handling prompt lifecycle.
+//   - promptManager (ManagerInterface): The prompt manager parameter used in the operation.
 //
 // Returns:
-//   - *Service: The initialized service.
+//   - (*Service): The resulting Service object containing the requested data.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewService(promptManager ManagerInterface) *Service {
 	s := &Service{
 		promptManager: promptManager,
@@ -36,15 +45,21 @@ func NewService(promptManager ManagerInterface) *Service {
 	return s
 }
 
-// SetMCPServer sets the MCP server instance for the service.
+// SetMCPServer sets the MCP server instance for the service. Summary: Configures the underlying MCP server. Parameters: - mcpServer: *mcp.Server. The MCP server instance. Returns: None.
 //
-// Summary: Configures the underlying MCP server.
+// Summary: SetMCPServer sets the MCP server instance for the service. Summary: Configures the underlying MCP server. Parameters: - mcpServer: *mcp.Server. The MCP server instance. Returns: None.
 //
 // Parameters:
-//   - mcpServer: *mcp.Server. The MCP server instance.
+//   - mcpServer (*mcp.Server): The mcp server parameter used in the operation.
 //
 // Returns:
-//   None.
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Modifies global state, writes to the database, or establishes network connections.
 func (s *Service) SetMCPServer(mcpServer *mcp.Server) {
 	s.mcpServer = mcpServer
 	s.promptManager.SetMCPServer(NewMCPServerProvider(mcpServer))

@@ -18,22 +18,33 @@ import (
 	"github.com/spf13/afero"
 )
 
-// Updater handles the self-update process.
+// Updater handles the self-update process. It manages checking for updates on GitHub and applying them to the local executable.
 //
-// It manages checking for updates on GitHub and applying them to the local executable.
+// Summary: Updater handles the self-update process. It manages checking for updates on GitHub and applying them to the local executable.
+//
+// Fields:
+//   - Contains the configuration and state properties required for Updater functionality.
 type Updater struct {
 	client     *github.Client
 	httpClient *http.Client
 }
 
-// NewUpdater creates a new Updater.
+// NewUpdater creates a new Updater. Parameters: - httpClient: *http.Client. The HTTP client to use for network requests. If nil, http.DefaultClient is used. - githubAPIURL: string. Optional URL for the GitHub API (useful for Enterprise GitHub). Returns: - *Updater: A new Updater instance.
+//
+// Summary: NewUpdater creates a new Updater. Parameters: - httpClient: *http.Client. The HTTP client to use for network requests. If nil, http.DefaultClient is used. - githubAPIURL: string. Optional URL for the GitHub API (useful for Enterprise GitHub). Returns: - *Updater: A new Updater instance.
 //
 // Parameters:
-//   - httpClient: *http.Client. The HTTP client to use for network requests. If nil, http.DefaultClient is used.
-//   - githubAPIURL: string. Optional URL for the GitHub API (useful for Enterprise GitHub).
+//   - httpClient (*http.Client): The http client parameter used in the operation.
+//   - githubAPIURL (string): The github apiurl parameter used in the operation.
 //
 // Returns:
-//   - *Updater: A new Updater instance.
+//   - (*Updater): The resulting Updater object containing the requested data.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Modifies global state, writes to the database, or establishes network connections.
 func NewUpdater(httpClient *http.Client, githubAPIURL string) *Updater {
 	if httpClient == nil {
 		httpClient = http.DefaultClient
@@ -51,20 +62,26 @@ func NewUpdater(httpClient *http.Client, githubAPIURL string) *Updater {
 	return &Updater{client: client, httpClient: httpClient}
 }
 
-// CheckForUpdate checks for a new release on GitHub.
+// CheckForUpdate checks for a new release on GitHub. It compares the provided current version tag with the latest release tag on the repository. Parameters: - ctx: context.Context. The context for the request. - owner: string. The GitHub repository owner (e.g., "mcpany"). - repo: string. The GitHub repository name (e.g., "core"). - currentVersion: string. The current version tag of the application. Returns: - *github.RepositoryRelease: The release information if an update is available, nil otherwise. - bool: True if a newer version is available, false otherwise. - error: An error if the check fails (e.g., network error, API rate limit).
 //
-// It compares the provided current version tag with the latest release tag on the repository.
+// Summary: CheckForUpdate checks for a new release on GitHub. It compares the provided current version tag with the latest release tag on the repository. Parameters: - ctx: context.Context. The context for the request. - owner: string. The GitHub repository owner (e.g., "mcpany"). - repo: string. The GitHub repository name (e.g., "core"). - currentVersion: string. The current version tag of the application. Returns: - *github.RepositoryRelease: The release information if an update is available, nil otherwise. - bool: True if a newer version is available, false otherwise. - error: An error if the check fails (e.g., network error, API rate limit).
 //
 // Parameters:
-//   - ctx: context.Context. The context for the request.
-//   - owner: string. The GitHub repository owner (e.g., "mcpany").
-//   - repo: string. The GitHub repository name (e.g., "core").
-//   - currentVersion: string. The current version tag of the application.
+//   - ctx (context.Context): The context for managing request lifecycle and cancellation.
+//   - _ (owner): An unnamed parameter of type owner.
+//   - _ (repo): An unnamed parameter of type repo.
+//   - currentVersion (string): The current version parameter used in the operation.
 //
 // Returns:
-//   - *github.RepositoryRelease: The release information if an update is available, nil otherwise.
-//   - bool: True if a newer version is available, false otherwise.
-//   - error: An error if the check fails (e.g., network error, API rate limit).
+//   - (*github.RepositoryRelease): The resulting github.RepositoryRelease object containing the requested data.
+//   - (bool): A boolean indicating the success or status of the operation.
+//   - (error): An error object if the operation fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the underlying operation fails or encounters invalid input.
+//
+// Side Effects:
+//   - Modifies global state, writes to the database, or establishes network connections.
 func (u *Updater) CheckForUpdate(ctx context.Context, owner, repo, currentVersion string) (*github.RepositoryRelease, bool, error) {
 	release, _, err := u.client.Repositories.GetLatestRelease(ctx, owner, repo)
 	if err != nil {

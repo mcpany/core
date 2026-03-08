@@ -12,10 +12,12 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
-// HTTPClientWrapper wraps an `*http.Client` to adapt it to the
-// `pool.ClosableClient` interface. This allows HTTP clients to be managed by a
-// connection pool, which can help control the number of concurrent connections
-// and reuse them where appropriate.
+// HTTPClientWrapper wraps an `*http.Client` to adapt it to the `pool.ClosableClient` interface. This allows HTTP clients to be managed by a connection pool, which can help control the number of concurrent connections and reuse them where appropriate.
+//
+// Summary: HTTPClientWrapper wraps an `*http.Client` to adapt it to the `pool.ClosableClient` interface. This allows HTTP clients to be managed by a connection pool, which can help control the number of concurrent connections and reuse them where appropriate.
+//
+// Fields:
+//   - Contains the configuration and state properties required for HTTPClientWrapper functionality.
 type HTTPClientWrapper struct {
 	*http.Client
 	config *configv1.UpstreamServiceConfig

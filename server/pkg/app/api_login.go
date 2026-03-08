@@ -13,12 +13,22 @@ import (
 )
 
 // LoginRequest is the request body for login.
+//
+// Summary: LoginRequest is the request body for login.
+//
+// Fields:
+//   - Contains the configuration and state properties required for LoginRequest functionality.
 type LoginRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
 
 // LoginResponse is the response body for login.
+//
+// Summary: LoginResponse is the response body for login.
+//
+// Fields:
+//   - Contains the configuration and state properties required for LoginResponse functionality.
 type LoginResponse struct {
 	Token string `json:"token"`
 }

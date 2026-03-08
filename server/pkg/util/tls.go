@@ -14,19 +14,22 @@ import (
 	"github.com/mcpany/core/server/pkg/validation"
 )
 
-// NewHTTPClientWithTLS creates a new *http.Client configured with the specified
-// TLS settings. It supports setting a custom CA certificate, a client
-// certificate and key, the server name for SNI, and skipping verification.
+// NewHTTPClientWithTLS creates a new *http.Client configured with the specified TLS settings. It supports setting a custom CA certificate, a client certificate and key, the server name for SNI, and skipping verification. It also configures the client with a SafeDialer to prevent SSRF attacks against cloud metadata services (LinkLocal addresses) and optionally private networks. Parameters: - tlsConfig: The TLS settings to apply to the HTTP client's transport. Returns: - *http.Client: A configured *http.Client. - error: An error if the TLS configuration is invalid or files cannot be read.
 //
-// It also configures the client with a SafeDialer to prevent SSRF attacks against
-// cloud metadata services (LinkLocal addresses) and optionally private networks.
+// Summary: NewHTTPClientWithTLS creates a new *http.Client configured with the specified TLS settings. It supports setting a custom CA certificate, a client certificate and key, the server name for SNI, and skipping verification. It also configures the client with a SafeDialer to prevent SSRF attacks against cloud metadata services (LinkLocal addresses) and optionally private networks. Parameters: - tlsConfig: The TLS settings to apply to the HTTP client's transport. Returns: - *http.Client: A configured *http.Client. - error: An error if the TLS configuration is invalid or files cannot be read.
 //
 // Parameters:
-//   - tlsConfig: The TLS settings to apply to the HTTP client's transport.
+//   - tlsConfig (*configv1.TLSConfig): The configuration settings to be applied.
 //
 // Returns:
-//   - *http.Client: A configured *http.Client.
-//   - error: An error if the TLS configuration is invalid or files cannot be read.
+//   - (*http.Client): The resulting http.Client object containing the requested data.
+//   - (error): An error object if the operation fails, otherwise nil.
+//
+// Errors:
+//   - Returns an error if the underlying operation fails or encounters invalid input.
+//
+// Side Effects:
+//   - Modifies global state, writes to the database, or establishes network connections.
 func NewHTTPClientWithTLS(tlsConfig *configv1.TLSConfig) (*http.Client, error) {
 	var tlsClientConfig *tls.Config
 

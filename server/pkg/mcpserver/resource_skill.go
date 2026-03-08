@@ -20,10 +20,12 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// SkillResource adapts a Skill (or its asset) to the Resource interface.
+// SkillResource adapts a Skill (or its asset) to the Resource interface. It provides a way to expose skill documentation and associated assets (like images or text files) as MCP resources, making them accessible to clients.
 //
-// It provides a way to expose skill documentation and associated assets (like images or text files)
-// as MCP resources, making them accessible to clients.
+// Summary: SkillResource adapts a Skill (or its asset) to the Resource interface. It provides a way to expose skill documentation and associated assets (like images or text files) as MCP resources, making them accessible to clients.
+//
+// Fields:
+//   - Contains the configuration and state properties required for SkillResource functionality.
 type SkillResource struct {
 	skill     *skill.Skill
 	assetPath string // Relative path to asset. If empty, represents the main SKILL.md
@@ -75,10 +77,18 @@ func NewSkillAssetResource(s *skill.Skill, assetPath string) *SkillResource {
 	}
 }
 
-// URI returns the URI of the resource.
+// URI returns the URI of the resource. Returns: - string: The resource URI. Side Effects: - None.
+//
+// Summary: URI returns the URI of the resource. Returns: - string: The resource URI. Side Effects: - None.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - string: The resource URI.
+//   - (string): A string value representing the operation's result.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -89,10 +99,18 @@ func (r *SkillResource) URI() string {
 	return fmt.Sprintf("skills://%s/%s", r.skill.Name, r.assetPath)
 }
 
-// Name returns the human-readable name of the resource.
+// Name returns the human-readable name of the resource. Returns: - string: The resource name. Side Effects: - None.
+//
+// Summary: Name returns the human-readable name of the resource. Returns: - string: The resource name. Side Effects: - None.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - string: The resource name.
+//   - (string): A string value representing the operation's result.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -103,10 +121,18 @@ func (r *SkillResource) Name() string {
 	return fmt.Sprintf("Skill Asset: %s (%s)", r.assetPath, r.skill.Name)
 }
 
-// Service returns the service identifier associated with the resource.
+// Service returns the service identifier associated with the resource. Returns: - string: The service identifier ("skills"). Side Effects: - None.
+//
+// Summary: Service returns the service identifier associated with the resource. Returns: - string: The service identifier ("skills"). Side Effects: - None.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - string: The service identifier ("skills").
+//   - (string): A string value representing the operation's result.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -114,10 +140,18 @@ func (r *SkillResource) Service() string {
 	return "skills"
 }
 
-// Resource returns the underlying MCP resource definition.
+// Resource returns the underlying MCP resource definition. Returns: - *mcp.Resource: The MCP resource definition. Side Effects: - None.
+//
+// Summary: Resource returns the underlying MCP resource definition. Returns: - *mcp.Resource: The MCP resource definition. Side Effects: - None.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - *mcp.Resource: The MCP resource definition.
+//   - (*mcp.Resource): The resulting mcp.Resource object containing the requested data.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
