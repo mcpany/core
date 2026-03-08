@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-06] Updates
+
+### Proposed Additions
+- **Trusted App Attestation (Local Security Bridge)**: (P0) Cryptographic process identification for local agents (OpenClaw, Claude Code) to prevent browser-based hijack.
+- **Dynamic Capability Handshake (A2A+)**: (P0) Just-in-time tool permissioning for sub-agents during A2A delegation flows.
+- **Progressive Tool Discovery Middleware**: (P1) Serves tool metadata in stages (Lazy Loading) to improve startup performance for massive toolsets.
+
+### Priority Shifts
+- **"Safe-by-Default" Network Hardening**: Re-affirmed as **P0** and expanded to include local origin validation.
+- **A2A Interop Bridge**: Re-affirmed as **P0** with new focus on capability negotiation.
+
+### Deprecations / Monitoring
+- **Static App Trust**: Monitoring for deprecation in favor of per-process attestation.

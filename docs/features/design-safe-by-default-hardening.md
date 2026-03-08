@@ -59,3 +59,7 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-06: Origin-Validation & Browser Hijack Mitigation**
+    *   **Context**: Today's market sync revealed a browser-origin hijack exploit pattern in OpenClaw.
+    *   **Architecture Adjustment**: Extending Section 4 to include "Local App Attestation." MCP Any will now validate the process ID and executable path of local clients via a new `TrustedApp` middleware.
+    *   **Security Impact**: Mitigates unauthorized tool access by malicious websites running in the user's browser.

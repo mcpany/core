@@ -46,3 +46,7 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-03-06: Sub-agent Tool Delegation & Stateful Residency**
+    *   **Context**: Claude Code v2.1.30 and OpenClaw 2026.2.25 shifts emphasize sub-agent tool access and A2A delegation security.
+    *   **Architecture Adjustment**: Introducing "Dynamic Capability Handshake" in Section 4. MCP Any will now serve a filtered tool manifest to sub-agents based on the A2A delegation token.
+    *   **Security Impact**: Prevents sub-agents from over-reaching and accessing sensitive parent-level tools.
