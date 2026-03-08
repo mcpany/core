@@ -62,17 +62,29 @@ func TestDockerConn_ReadWrite(t *testing.T) {
 		encoder: json.NewEncoder(rwc),
 	}
 
-	// Test Write
+	// Test Write Request
 	testMsg := &jsonrpc.Request{
 		Method: "test",
 	}
 	err := conn.Write(ctx, testMsg)
 	assert.NoError(t, err)
 
-	// Test Read
+	// Test Read Request
 	readMsg, err := conn.Read(ctx)
 	assert.NoError(t, err)
 	assert.NotNil(t, readMsg)
+
+	// Test Write Response
+	testResp := &jsonrpc.Response{
+		Result: json.RawMessage(`"hello"`),
+	}
+	err = conn.Write(ctx, testResp)
+	assert.NoError(t, err)
+
+	// Test Read Response
+	readRespMsg, err := conn.Read(ctx)
+	assert.NoError(t, err)
+	assert.NotNil(t, readRespMsg)
 
 	// Test Close
 	err = conn.Close()
@@ -111,6 +123,55 @@ func TestDockerConn_Read_UnmarshalError(t *testing.T) {
 
 		_, err := conn.Read(ctx)
 		assert.Error(t, err)
+	})
+
+	t.Run("invalid request payload", func(t *testing.T) {
+		rwc := &mockReadWriteCloser{}
+		conn := &dockerConn{
+			rwc:     rwc,
+			decoder: json.NewDecoder(rwc),
+			encoder: json.NewEncoder(rwc),
+		}
+		// Invalid ID type that fails unmarshaling to jsonrpc.Request which expects string or int.
+		invalidReqMsg := `{"method": "test", "id": {}}`
+		_, _ = rwc.WriteString(invalidReqMsg + "\n")
+
+		// It will fallback to the "requestAnyID" unmarshal and map it to Any
+		msg, err := conn.Read(ctx)
+		assert.NoError(t, err)
+		assert.NotNil(t, msg)
+	})
+
+	t.Run("invalid response payload", func(t *testing.T) {
+		rwc := &mockReadWriteCloser{}
+		conn := &dockerConn{
+			rwc:     rwc,
+			decoder: json.NewDecoder(rwc),
+			encoder: json.NewEncoder(rwc),
+		}
+		invalidRespMsg := `{"result": "success", "id": {}}`
+		_, _ = rwc.WriteString(invalidRespMsg + "\n")
+
+		msg, err := conn.Read(ctx)
+		assert.NoError(t, err)
+		assert.NotNil(t, msg)
+	})
+
+	t.Run("EOF with stderr", func(t *testing.T) {
+		rwc := &mockReadWriteCloser{}
+		tb := &tailBuffer{limit: 1024}
+		tb.Write([]byte("some error occurred"))
+		conn := &dockerConn{
+			rwc:           rwc,
+			decoder:       json.NewDecoder(rwc),
+			encoder:       json.NewEncoder(rwc),
+			stderrCapture: tb,
+		}
+
+		_, err := conn.Read(ctx)
+		if assert.Error(t, err) {
+			assert.Contains(t, err.Error(), "connection closed. Stderr: some error occurred")
+		}
 	})
 }
 
@@ -299,4 +360,63 @@ func TestDockerReadWriteCloser_Close_Error(t *testing.T) {
 	assert.Contains(t, logOutput, "stop error")
 	assert.Contains(t, logOutput, "Failed to remove container")
 	assert.Contains(t, logOutput, "remove error")
+}
+
+func TestDockerConn_Read_UnmarshalError_Failback(t *testing.T) {
+	ctx := context.Background()
+	rwc := &mockReadWriteCloser{}
+	conn := &dockerConn{
+		rwc:     rwc,
+		decoder: json.NewDecoder(rwc),
+		encoder: json.NewEncoder(rwc),
+	}
+	invalidReqMsg := `{"method": "test", "id": "1", "params": 123}` // Invalid json struct
+	_, _ = rwc.WriteString(invalidReqMsg + "\n")
+	_, err := conn.Read(ctx)
+	assert.NoError(t, err)
+}
+
+func TestDockerConn_Read_UnmarshalError_Failback_Response(t *testing.T) {
+	ctx := context.Background()
+	rwc := &mockReadWriteCloser{}
+	conn := &dockerConn{
+		rwc:     rwc,
+		decoder: json.NewDecoder(rwc),
+		encoder: json.NewEncoder(rwc),
+	}
+	invalidReqMsg := `{"result": 123, "id": "1", "error": {}}` // Invalid json struct
+	_, _ = rwc.WriteString(invalidReqMsg + "\n")
+	_, err := conn.Read(ctx)
+	assert.NoError(t, err)
+}
+
+func TestDockerConn_Read_UnmarshalError_Failback_Response_Error(t *testing.T) {
+	ctx := context.Background()
+	rwc := &mockReadWriteCloser{}
+	conn := &dockerConn{
+		rwc:     rwc,
+		decoder: json.NewDecoder(rwc),
+		encoder: json.NewEncoder(rwc),
+	}
+	invalidReqMsg := `{"result": 123, "id": "1", "error": []}` // error must be an object but here we provide a list, so even fallback will fail
+	_, _ = rwc.WriteString(invalidReqMsg + "\n")
+	_, err := conn.Read(ctx)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "failed to unmarshal response")
+}
+
+func TestDockerConn_Read_UnmarshalError_Failback_Request_Error(t *testing.T) {
+	ctx := context.Background()
+	rwc := &mockReadWriteCloser{}
+	conn := &dockerConn{
+		rwc:     rwc,
+		decoder: json.NewDecoder(rwc),
+		encoder: json.NewEncoder(rwc),
+	}
+	// "method" must be string, but provided int. the fallback struct requestAnyID also needs "method" to be string.
+	invalidReqMsg := `{"method": 123, "id": {}}`
+	_, _ = rwc.WriteString(invalidReqMsg + "\n")
+	_, err := conn.Read(ctx)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "failed to unmarshal message header")
 }
