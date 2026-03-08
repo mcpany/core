@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-03 Evolution)
+*   **[P0] Semantic Intent Firewall**: Deep-packet inspection middleware for JSON-RPC to evaluate intent against safety policies.
+*   **[P0] Localhost Mutual Attestation (LMA)**: Mandatory cryptographic handshake for all local clients to mitigate CSWH/DNS rebinding.
+*   **[P1] Agent Card Validator**: Validation of "Agent Cards" during A2A handoffs to ensure capability attestation.
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

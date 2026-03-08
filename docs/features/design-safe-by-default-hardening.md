@@ -59,3 +59,10 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+* **2026-03-03:** **Update: Resolving Localhost Trust & CSWH Vulnerabilities**
+    - **Context:** The OpenClaw crisis (CVE-2026-25253) revealed that "Local-only" bindings are vulnerable to Cross-Site WebSocket Hijacking (CSWH) and DNS Rebinding.
+    - **Architecture Adjustment:**
+        - Deprecating unauthenticated localhost access. All local connections must now use **Localhost Mutual Attestation (LMA)**.
+        - **LMA Mechanism:** Clients must provide a ephemeral session token generated during the `mcpany start` process or present a valid OIDC identity.
+        - Introducing **Origin Verification Middleware** to strictly enforce `Host` and `Origin` headers on all incoming JSON-RPC/WebSocket requests.
+    - **Security Impact:** Mitigates the risk of a malicious website in the user's browser hijacking the local MCP Any instance to execute tool calls.

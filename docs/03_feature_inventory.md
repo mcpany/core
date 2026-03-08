@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-03] Updates
+
+### Proposed Additions
+- **Semantic Intent Firewall**: (P0) A deep-packet inspection middleware for JSON-RPC that evaluates "Semantic Intent" against high-level safety policies.
+- **Localhost Mutual Attestation (mTLS/OIDC)**: (P0) Mandatory cryptographic handshake for all local clients to mitigate cross-site WebSocket/HTTP hijacking.
+- **Agent Card Validator**: (P1) Automatic validation of "Agent Cards" during A2A handoffs to ensure capability attestation.
+
+### Priority Shifts
+- **"Safe-by-Default" Network Hardening**: Elevated to **Critical P0** following the OpenClaw crisis.
+- **A2A Interop Bridge**: Re-prioritized to include "Semantic Intent" checks to prevent "A2A Contagion."
+
+### Deprecations / Monitoring
+- **Unauthenticated Localhost Access**: Marking for immediate deprecation. All local connections must provide a valid session token or cryptographic proof.
