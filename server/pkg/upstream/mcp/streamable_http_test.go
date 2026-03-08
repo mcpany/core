@@ -17,6 +17,7 @@ import (
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
 	"github.com/mcpany/core/server/pkg/tool"
+	"github.com/alexliesenfeld/health"
 	"github.com/mcpany/core/server/pkg/util"
 	"github.com/modelcontextprotocol/go-sdk/jsonrpc"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -941,4 +942,82 @@ func TestUpstream_Register_InvalidHTTPAddress(t *testing.T) {
 	_, _, _, err := u.Register(ctx, serviceConfig, newMockToolManager(), newMockPromptManager(), newMockResourceManager(), false)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "invalid mcp http service address scheme")
+}
+
+func TestUpstream_CheckHealth(t *testing.T) {
+	ctx := context.Background()
+
+	// Test with no health checker
+	u := &Upstream{}
+	err := u.CheckHealth(ctx)
+	assert.NoError(t, err)
+
+	// Test with successful health check
+	u.checker = &mockHealthChecker{
+		status: health.StatusUp,
+	}
+	err = u.CheckHealth(ctx)
+	assert.NoError(t, err)
+
+	// Test with failed health check
+	u.checker = &mockHealthChecker{
+		status: health.StatusDown,
+	}
+	err = u.CheckHealth(ctx)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "health check failed")
+}
+
+type mockHealthChecker struct {
+	status health.AvailabilityStatus
+}
+
+func (m *mockHealthChecker) GetRunningPeriodicCheckCount() int { return 0 }
+
+func (m *mockHealthChecker) Start() {}
+func (m *mockHealthChecker) IsStarted() bool { return false }
+func (m *mockHealthChecker) Stop() {}
+func (m *mockHealthChecker) Check(ctx context.Context) health.CheckerResult {
+	return health.CheckerResult{
+		Status: m.status,
+	}
+}
+
+func TestMcpPrompt_Definition(t *testing.T) {
+	p := &mcpPrompt{
+		mcpPrompt: &mcp.Prompt{
+			Name:        "test-prompt",
+			Description: "A test prompt",
+			Arguments: []*mcp.PromptArgument{
+				{
+					Name:        "arg1",
+					Description: "First argument",
+					Required:    true,
+				},
+				{
+					Name:        "arg2",
+					Description: "Second argument",
+					Required:    false,
+				},
+			},
+		},
+	}
+
+	def := p.Definition()
+
+	assert.NotNil(t, def)
+	assert.Equal(t, "test-prompt", def.GetName())
+	assert.Equal(t, "A test prompt", def.GetDescription())
+
+	// Check the schema
+	schema := def.GetInputSchema()
+	assert.NotNil(t, schema)
+
+	properties := schema.GetFields()["properties"].GetStructValue().GetFields()
+	assert.Contains(t, properties, "arg1")
+	assert.Contains(t, properties, "arg2")
+
+	required := schema.GetFields()["required"].GetListValue().GetValues()
+	assert.Len(t, required, 1)
+	assert.Equal(t, "arg1", required[0].GetStringValue())
 }
