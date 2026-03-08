@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-08]
+### Focus: Strict Path Validation & Remote-First Policy Verification
+**Context**: Today's findings (CVE-2026-25593 in OpenClaw) highlight that configuration-as-a-service is a critical attack vector. MCP Any must evolve to treat all configuration changes as "High-Privilege" events requiring attestation.
+**Strategic Pivot**:
+- **Strict Path Sandboxing**: MCP Any will implement a non-bypassable "Virtual Path Root" for all command-based upstreams. Any configuration attempting to execute binaries outside the `/usr/bin` or `/opt/mcpany/bin` whitelists will be rejected by the Core.
+- **Config-as-Attestation**: Moving towards a model where configuration changes themselves (via API or UI) must be signed by a trusted identity (e.g., a local user's SSH key or OIDC token). This prevents "Config-Injection" attacks.
+- **Lazy-Load Validation**: Integrating our Lazy-MCP middleware with a real-time policy check that validates the reputation of a tool *before* it's even added to the discovery index.

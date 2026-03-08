@@ -59,3 +59,6 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-08:** Promotion to P0; Integrating Strict Path Sandboxing.
+    - **Context**: Today's market sync revealed the OpenClaw CVE-2026-25593 exploit.
+    - **Adjustment**: Promoting Safe-by-Default to P0. Added requirement for signed configuration updates to prevent unauthorized listener/path changes.

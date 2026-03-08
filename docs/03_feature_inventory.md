@@ -75,9 +75,18 @@
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
+---
+
+## Evolution: [2026-03-08] Updates
+
+### Proposed Additions
+- **Non-Bypassable Path Sandboxing**: (P0) Hardened `Command` adapter that enforces a strict binary whitelist and virtual path root. (Direct mitigation for OpenClaw-style exploits).
+- **Signed Configuration API**: (P1) API endpoints for configuration updates that require a cryptographic signature (JWS/SSH) from an authorized admin.
+- **Pre-Discovery Security Hooks**: (P1) Extensible hooks that allow external security scanners to inspect a tool's capabilities *before* it's made available in MCP discovery.
+
 ### Priority Shifts
-- **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
-- **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.
+- **Safe-by-Default Hardening**: Promoted to **P0** with accelerated timeline. Security must take precedence over ease of use in the current climate.
+- **Supply Chain Integrity Guard**: Re-affirmed as **P0** with added focus on configuration-as-a-service.
 
 ### Deprecations / Monitoring
-- **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+- **Unauthenticated Configuration APIs**: Plan for deprecation of all config endpoints that do not require explicit attestation.
