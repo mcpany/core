@@ -59,3 +59,7 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-08:** Resolving Localhost Trust Flaw.
+    - **Context**: Recent market sync revealed a critical exploit pattern where malicious websites can interact with local agent gateways via WebSockets.
+    - **Architecture Adjustment**: Mandating Strict Origin Enforcement (SOE) for all WebSocket upgrades.
+    - **Security Impact**: Neutralizes browser-based exfiltration and unauthorized tool execution from untrusted web contexts.
