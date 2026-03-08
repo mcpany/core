@@ -28,6 +28,7 @@ import (
 	bus "github.com/mcpany/core/proto/bus"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
+	natsserver "github.com/nats-io/nats-server/v2/server"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/connectivity"
@@ -212,7 +213,7 @@ var (
 	findRootOnce sync.Once
 )
 
-// GetProjectRoot returns the absolute path to the project root.
+// GetProjectRoot returns the absolute path to the project root (the server/ directory).
 //
 // Returns the result.
 // Returns an error if the operation fails.
@@ -223,6 +224,15 @@ func GetProjectRoot() (string, error) {
 		if envRoot := os.Getenv("MCPANY_PROJECT_ROOT"); envRoot != "" {
 			projectRoot = envRoot
 			return
+		}
+
+		// Under Bazel, the server directory is available in the runfiles tree.
+		if runsDir := os.Getenv("RUNFILES_DIR"); runsDir != "" {
+			candidate := filepath.Join(runsDir, "_main", "server")
+			if _, statErr := os.Stat(filepath.Join(candidate, "go.mod")); statErr == nil {
+				projectRoot = candidate
+				return
+			}
 		}
 
 		// Find the project root by looking for the go.mod file
@@ -247,6 +257,36 @@ func GetProjectRoot() (string, error) {
 		return "", err
 	}
 	return filepath.Abs(projectRoot)
+}
+
+// ServerBinary returns the path to the mcpany server binary.
+// Under Bazel it resolves from runfiles; otherwise it falls back to ../build/bin/server
+// relative to the project root.
+func ServerBinary(t *testing.T) string {
+	t.Helper()
+	if runsDir := os.Getenv("RUNFILES_DIR"); runsDir != "" {
+		bin := filepath.Join(runsDir, "_main", "server", "cmd", "server", "server_", "server")
+		if _, err := os.Stat(bin); err == nil {
+			return bin
+		}
+	}
+	root := ProjectRoot(t)
+	return filepath.Join(root, "../build/bin/server")
+}
+
+// MockBinary returns the path to a mock test binary by name.
+// Under Bazel it resolves from runfiles; otherwise it falls back to ../build/test/bin/<name>
+// relative to the project root.
+func MockBinary(t *testing.T, name string) string {
+	t.Helper()
+	if runsDir := os.Getenv("RUNFILES_DIR"); runsDir != "" {
+		bin := filepath.Join(runsDir, "_main", "server", "tests", "integration", "cmd", "mocks", name, name+"_", name)
+		if _, err := os.Stat(bin); err == nil {
+			return bin
+		}
+	}
+	root := ProjectRoot(t)
+	return filepath.Join(root, "../build/test/bin", name)
 }
 
 // --- Helper: Find Free Port ---.
@@ -572,6 +612,32 @@ func WaitForHTTPHealth(t *testing.T, url string, timeout time.Duration) {
 		defer func() { _ = resp.Body.Close() }()
 		return resp.StatusCode == http.StatusOK
 	}, timeout, 250*time.Millisecond, "URL %s did not become healthy in time", url)
+}
+
+// EnsureServerImageLoaded ensures that the mcpany/server:latest Docker image is
+// available for tests. When running under Bazel, it loads the image from the
+// Bazel-built oci_load runfile (//server/cmd/server:server_tarball). Outside
+// Bazel it is a no-op — the caller is responsible for having the image pre-built.
+func EnsureServerImageLoaded(t *testing.T) {
+	t.Helper()
+	runfilesDir := os.Getenv("RUNFILES_DIR")
+	if runfilesDir == "" {
+		// Not running under Bazel; assume image is pre-built.
+		return
+	}
+	loader := filepath.Join(runfilesDir, "_main", "server", "cmd", "server", "server_tarball.sh")
+	if _, err := os.Stat(loader); err != nil {
+		t.Logf("Bazel server_tarball.sh not found at %s (skipping image load): %v", loader, err)
+		return
+	}
+	t.Logf("Loading Bazel-built mcpany/server image via %s", loader)
+	cmd := exec.Command(loader)
+	cmd.Env = os.Environ()
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		t.Fatalf("Failed to load Bazel-built server image: %v\n%s", err, string(out))
+	}
+	t.Logf("mcpany/server image loaded: %s", strings.TrimSpace(string(out)))
 }
 
 // IsDockerSocketAccessible checks if the Docker daemon is accessible.
@@ -949,84 +1015,31 @@ func StartInProcessMCPANYServer(t *testing.T, _ string, apiKey ...string) *MCPAN
 	}
 }
 
-// StartNatsServer starts a NATS server for testing.
-//
-// t is the t.
-//
-// Returns the result.
-// Returns the result.
+// StartNatsServer starts an embedded NATS server for testing.
 func StartNatsServer(t *testing.T) (string, func()) {
 	t.Helper()
 
-	var natsServerBin string
-	// Try to find nats-server in PATH first
-	pathBin, err := exec.LookPath("nats-server")
-	if err == nil {
-		natsServerBin = pathBin
-	} else {
-		// Check /tools/nats-server (Docker)
-		if _, err := os.Stat("/tools/nats-server"); err == nil {
-			natsServerBin = "/tools/nats-server"
-		} else {
-			root, err := GetProjectRoot()
-			require.NoError(t, err)
-			natsServerBin = filepath.Join(root, "../build/env/bin/nats-server")
-			if info, err := os.Stat(natsServerBin); err == nil {
-				t.Logf("DEBUG: Using nats-server binary at: %s (ModTime: %s)", natsServerBin, info.ModTime())
-			} else {
-				t.Logf("DEBUG: nats-server binary not found at: %s", natsServerBin)
-			}
-			_, err = os.Stat(natsServerBin)
-			require.NoError(t, err, "nats-server binary not found at %s or /tools/nats-server. Run 'make prepare'.", natsServerBin)
-		}
+	opts := &natsserver.Options{
+		Host:     loopbackIP,
+		Port:     -1, // random port
+		NoLog:    true,
+		NoSigs:   true,
+		MaxPending: 64 << 20,
+	}
+	ns, err := natsserver.NewServer(opts)
+	require.NoError(t, err, "Failed to create embedded NATS server")
+
+	ns.Start()
+	if !ns.ReadyForConnections(10 * time.Second) {
+		t.Fatal("Embedded NATS server not ready for connections within timeout")
 	}
 
-	// Use -p -1 to let NATS pick a random free port
-	cmd := exec.CommandContext(context.Background(), natsServerBin, "-p", "-1", "-a", loopbackIP)
-
-	// Capture output to find the port
-	// We need a thread-safe buffer because we might read while it writes (though wait loop handles this?)
-	// Actually, we can just use a pipe reading approach or shared buffer
-	// Use threadSafeBuffer to avoid race conditions when reading logs while process writes
-	var stdout, stderr threadSafeBuffer
-	cmd.Stdout = &stdout
-	cmd.Stderr = &stderr
-
-	err = cmd.Start()
-	require.NoError(t, err, "Failed to start nats-server")
-
-	// Wait for port log
-	var natsPort int
-	// NATS logs: "Listening for client connections on 127.0.0.1:4222"
-	// Or sometimes on stderr depending on config/version? Usually stdout.
-	regexPort := regexp.MustCompile(`Listening for client connections on [^:]+:(\d+)`)
-
-	start := time.Now()
-	found := false
-	for time.Since(start) < 10*time.Second {
-		output := stdout.String() + stderr.String()
-		matches := regexPort.FindStringSubmatch(output)
-		if len(matches) >= 2 {
-			if _, err := fmt.Sscanf(matches[1], "%d", &natsPort); err != nil {
-				t.Logf("failed to parse nats port: %v", err)
-				continue
-			}
-			found = true
-			break
-		}
-		// Also check if process exited
-		if cmd.ProcessState != nil && cmd.ProcessState.Exited() {
-			require.Fail(t, "nats-server exited unexpectedly", "Output:\n%s", output)
-		}
-		time.Sleep(100 * time.Millisecond)
-	}
-	require.True(t, found, "Failed to find NATS port in logs within timeout. Output:\n%s\nStderr:\n%s", stdout.String(), stderr.String())
-
-	natsURL := fmt.Sprintf("nats://%s:%d", loopbackIP, natsPort)
-	WaitForTCPPort(t, natsPort, 5*time.Second) // Double check availability
+	natsURL := ns.ClientURL()
+	t.Logf("Embedded NATS server started at %s", natsURL)
 
 	cleanup := func() {
-		_ = cmd.Process.Kill()
+		ns.Shutdown()
+		ns.WaitForShutdown()
 	}
 	return natsURL, cleanup
 }
@@ -1122,8 +1135,7 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 
 	root, err := GetProjectRoot()
 	require.NoError(t, err, "Failed to get project root")
-	mcpanyBinary := filepath.Join(root, "../build/bin/server")
-
+	mcpanyBinary := ServerBinary(t)
 	fmt.Printf("DEBUG: Using MCPANY binary from: %s\n", mcpanyBinary)
 
 	// Use port 0 to let the OS assign free ports

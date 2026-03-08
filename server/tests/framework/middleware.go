@@ -10,7 +10,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"path/filepath"
 	"testing"
 	"time"
 
@@ -44,9 +43,7 @@ func TestE2ECaching(t *testing.T) {
 // Returns the result.
 func BuildCachingServer(t *testing.T) *integration.ManagedProcess {
 	port := integration.FindFreePort(t)
-	root, err := integration.GetProjectRoot()
-	require.NoError(t, err)
-	proc := integration.NewManagedProcess(t, "http_caching_server", filepath.Join(root, "../build/test/bin/http_caching_server"), []string{"--port", fmt.Sprintf("%d", port)}, nil)
+	proc := integration.NewManagedProcess(t, "http_caching_server", integration.MockBinary(t, "http_caching_server"), []string{"--port", fmt.Sprintf("%d", port)}, nil)
 	proc.Port = port
 	return proc
 }

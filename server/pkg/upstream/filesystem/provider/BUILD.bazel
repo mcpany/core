@@ -17,7 +17,7 @@ go_library(
     importpath = "github.com/mcpany/core/server/pkg/upstream/filesystem/provider",
     visibility = ["//visibility:public"],
     deps = [
-        "//proto/config/v1:v1_go_proto",
+        "//proto/config/v1:config",
         "//server/pkg/validation",
         "@com_github_aws_aws_sdk_go//aws",
         "@com_github_aws_aws_sdk_go//aws/credentials",
@@ -55,7 +55,7 @@ go_test(
     ],
     embed = [":provider"],
     deps = [
-        "//proto/config/v1:v1_go_proto",
+        "//proto/config/v1:config",
         "//server/pkg/validation",
         "@com_github_pkg_sftp//:sftp",
         "@com_github_spf13_afero//:afero",

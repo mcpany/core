@@ -3,7 +3,7 @@
 
 load("@rules_go//go:def.bzl", "go_library")
 load("@rules_go//proto:def.bzl", "go_proto_library")
-load("@rules_proto//proto:defs.bzl", "proto_library")
+load("@protobuf//bazel:proto_library.bzl", "proto_library")
 
 proto_library(
     name = "v1_proto",
@@ -14,25 +14,25 @@ proto_library(
     ],
     visibility = ["//visibility:public"],
     deps = [
-        "//google/protobuf:go_features_proto",
         "//proto/config/v1:v1_proto",
+        "@protobuf//:go_features_proto",
         "@googleapis//google/api:annotations_proto",
     ],
 )
 
 go_proto_library(
     name = "v1_go_proto",
-    compilers = ["//:go_proto_editions", "//:go_grpc_editions"],
+    compilers = [
+        "@rules_go//proto:go_proto",
+        "@rules_go//proto:go_grpc_v2",
+    ],
     importpath = "github.com/mcpany/core/proto/api/v1",
     proto = ":v1_proto",
     visibility = ["//visibility:public"],
     deps = [
-        "@org_golang_google_grpc//:grpc",
-        "@org_golang_google_grpc//codes",
-        "@org_golang_google_grpc//status",
-        "//google/protobuf:go_features_go_proto",
         "//proto/config/v1:config",
         "@org_golang_google_genproto_googleapis_api//annotations",
+        "@org_golang_google_protobuf//types/gofeaturespb",
     ],
 )
 

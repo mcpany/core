@@ -1,5 +1,5 @@
 # Copyright 2026 Author(s) of MCP Any
 # SPDX-License-Identifier: Apache-2.0
 
-# gazelle:go_proto_compilers //:go_proto_editions
-# gazelle:go_grpc_compilers //:go_grpc_editions
+# gazelle:go_proto_compilers @rules_go//proto:go_proto
+# gazelle:go_grpc_compilers @rules_go//proto:go_grpc_v2

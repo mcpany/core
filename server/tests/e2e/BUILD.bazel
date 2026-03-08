@@ -11,8 +11,8 @@ go_test(
         "user_mgmt_test.go",
     ],
     deps = [
-        "//proto/admin/v1:v1_go_proto",
-        "//proto/config/v1:v1_go_proto",
+        "//proto/admin/v1:admin",
+        "//proto/config/v1:config",
         "//server/pkg/app",
         "//server/pkg/middleware",
         "//server/tests/integration",

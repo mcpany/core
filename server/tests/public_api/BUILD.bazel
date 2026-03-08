@@ -6,6 +6,7 @@ load("@rules_go//go:def.bzl", "go_test")
 go_test(
     name = "public_api_test",
     srcs = ["policy_test.go"],
+    tags = ["integration"],
     deps = [
         "//server/tests/integration",
         "@com_github_modelcontextprotocol_go_sdk//mcp",

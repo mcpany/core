@@ -4,7 +4,7 @@ load("@rules_go//go:def.bzl", "go_library")
 # SPDX-License-Identifier: Apache-2.0
 
 load("@rules_go//proto:def.bzl", "go_proto_library")
-load("@rules_proto//proto:defs.bzl", "proto_library")
+load("@protobuf//bazel:proto_library.bzl", "proto_library")
 
 proto_library(
     name = "client_proto",
@@ -14,16 +14,14 @@ proto_library(
 
 go_proto_library(
     name = "client_go_proto",
-    compilers = ["//:go_proto_editions", "//:go_grpc_editions"],
+    compilers = [
+        "@rules_go//proto:go_proto",
+        "@rules_go//proto:go_grpc_v2",
+    ],
     importpath = "github.com/mcpany/core/pkg/upstream/grpc/client",
     proto = ":client_proto",
     visibility = ["//visibility:public"],
-
-    deps = [
-        "@org_golang_google_grpc//:grpc",
-        "@org_golang_google_grpc//codes",
-        "@org_golang_google_grpc//status",
-    ],)
+)
 
 go_library(
     name = "client",

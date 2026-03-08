@@ -2,6 +2,9 @@
 # SPDX-License-Identifier: Apache-2.0
 
 load("@rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
+load("@rules_oci//oci:defs.bzl", "oci_image", "oci_load")
+load("@rules_pkg//pkg:mappings.bzl", "pkg_files")
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
 
 go_library(
     name = "worker_lib",
@@ -9,8 +12,8 @@ go_library(
     importpath = "github.com/mcpany/core/server/cmd/worker",
     visibility = ["//visibility:private"],
     deps = [
-        "//proto/bus:bus_go_proto",
-        "//proto/config/v1:v1_go_proto",
+        "//proto/bus",
+        "//proto/config/v1:config",
         "//server/pkg/bus",
         "//server/pkg/config",
         "//server/pkg/worker",
@@ -23,12 +26,36 @@ go_binary(
     visibility = ["//visibility:public"],
 )
 
+pkg_files(
+    name = "worker_binary_files",
+    srcs = [":worker"],
+    prefix = "/app",
+)
+
+pkg_tar(
+    name = "worker_layer",
+    srcs = [":worker_binary_files"],
+)
+
+oci_image(
+    name = "worker_image",
+    base = "@debian_bookworm_slim",
+    entrypoint = ["/app/worker"],
+    tars = [":worker_layer"],
+)
+
+oci_load(
+    name = "worker_tarball",
+    image = ":worker_image",
+    repo_tags = ["mcpany/worker:latest"],
+)
+
 go_test(
     name = "worker_test",
     srcs = ["main_test.go"],
     embed = [":worker_lib"],
     deps = [
-        "//proto/bus:bus_go_proto",
+        "//proto/bus",
         "@com_github_stretchr_testify//assert",
         "@com_github_stretchr_testify//suite",
     ],

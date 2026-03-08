@@ -194,9 +194,7 @@ func RunE2ETest(t *testing.T, testCase *E2ETestCase) {
 // Returns the result.
 func BuildGRPCWeatherServer(t *testing.T) *integration.ManagedProcess {
 	port := 0
-	root, err := integration.GetProjectRoot()
-	require.NoError(t, err)
-	proc := integration.NewManagedProcess(t, "grpc_weather_server", filepath.Join(root, "../build/test/bin/grpc_weather_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
+	proc := integration.NewManagedProcess(t, "grpc_weather_server", integration.MockBinary(t, "grpc_weather_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
 	proc.Port = port
 	return proc
 }
@@ -218,9 +216,7 @@ func RegisterGRPCWeatherService(t *testing.T, registrationClient apiv1.Registrat
 // Returns the result.
 func BuildGRPCAuthedWeatherServer(t *testing.T) *integration.ManagedProcess {
 	port := 0
-	root, err := integration.GetProjectRoot()
-	require.NoError(t, err)
-	proc := integration.NewManagedProcess(t, "grpc_authed_weather_server", filepath.Join(root, "../build/test/bin/grpc_authed_weather_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
+	proc := integration.NewManagedProcess(t, "grpc_authed_weather_server", integration.MockBinary(t, "grpc_authed_weather_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
 	proc.Port = port
 	return proc
 }
@@ -341,9 +337,7 @@ func RegisterWebsocketWeatherService(t *testing.T, registrationClient apiv1.Regi
 // Returns the result.
 func BuildWebrtcWeatherServer(t *testing.T) *integration.ManagedProcess {
 	port := integration.FindFreePort(t)
-	root, err := integration.GetProjectRoot()
-	require.NoError(t, err)
-	proc := integration.NewManagedProcess(t, "webrtc_weather_server", filepath.Join(root, "../build/test/bin/webrtc_weather_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
+	proc := integration.NewManagedProcess(t, "webrtc_weather_server", integration.MockBinary(t, "webrtc_weather_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
 	proc.Port = port
 	return proc
 }
@@ -418,9 +412,7 @@ func RegisterStdioDockerService(t *testing.T, registrationClient apiv1.Registrat
 // Returns the result.
 func BuildOpenAPIWeatherServer(t *testing.T) *integration.ManagedProcess {
 	port := integration.FindFreePort(t)
-	root, err := integration.GetProjectRoot()
-	require.NoError(t, err)
-	proc := integration.NewManagedProcess(t, "openapi_weather_server", filepath.Join(root, "../build/test/bin/openapi_weather_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
+	proc := integration.NewManagedProcess(t, "openapi_weather_server", integration.MockBinary(t, "openapi_weather_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
 	proc.Port = port
 	return proc
 }
@@ -457,9 +449,7 @@ func RegisterOpenAPIWeatherService(t *testing.T, registrationClient apiv1.Regist
 // Returns the result.
 func BuildOpenAPIAuthedServer(t *testing.T) *integration.ManagedProcess {
 	port := integration.FindFreePort(t)
-	root, err := integration.GetProjectRoot()
-	require.NoError(t, err)
-	proc := integration.NewManagedProcess(t, "http_authed_echo_server_openapi", filepath.Join(root, "../build/test/bin/http_authed_echo_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
+	proc := integration.NewManagedProcess(t, "http_authed_echo_server_openapi", integration.MockBinary(t, "http_authed_echo_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
 	proc.Port = port
 	return proc
 }

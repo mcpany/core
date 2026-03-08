@@ -13,7 +13,7 @@ test.describe('Trace Viewer', () => {
             json: [
                 {
                     id: 'trace-1',
-                    rootSpan: { name: 'calculate_sum', serviceName: 'math-service', type: 'tool' },
+                    rootSpan: { name: 'calculate_sum', serviceName: 'Math', type: 'tool' },
                     timestamp: new Date().toISOString(),
                     totalDuration: 150,
                     status: 'success',

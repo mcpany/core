@@ -654,7 +654,7 @@ func TestRun_BusProviderError(t *testing.T) {
 func TestRun_EmptyConfig(t *testing.T) {
 	fs := afero.NewMemMapFs()
 	// Create an empty config file
-	err := afero.WriteFile(fs, "/config.yaml", []byte(""), 0o644)
+	err := afero.WriteFile(fs, "/config.yaml", []byte("{}"), 0o644)
 	require.NoError(t, err)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
@@ -687,7 +687,7 @@ func TestRun_StdioMode(t *testing.T) {
 
 	fs := afero.NewMemMapFs()
 	// Create an empty config file to prevent deadline exceeded error
-	err := afero.WriteFile(fs, "/config.yaml", []byte(""), 0o644)
+	err := afero.WriteFile(fs, "/config.yaml", []byte("{}"), 0o644)
 	require.NoError(t, err)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
@@ -1600,7 +1600,7 @@ func Test_runStdioMode_real(t *testing.T) {
 func TestRun_InMemoryBus(t *testing.T) {
 	fs := afero.NewMemMapFs()
 	// An empty config will result in an in-memory bus.
-	err := afero.WriteFile(fs, "/config.yaml", []byte(""), 0o644)
+	err := afero.WriteFile(fs, "/config.yaml", []byte("{}"), 0o644)
 	require.NoError(t, err)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
@@ -1618,7 +1618,7 @@ func TestRun_InMemoryBus(t *testing.T) {
 
 func TestRun_CachingMiddleware(t *testing.T) {
 	fs := afero.NewMemMapFs()
-	err := afero.WriteFile(fs, "/config.yaml", []byte(""), 0o644)
+	err := afero.WriteFile(fs, "/config.yaml", []byte("{}"), 0o644)
 	require.NoError(t, err)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)

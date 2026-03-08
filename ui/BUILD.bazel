@@ -1,0 +1,83 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+load("@npm//ui:next/package_json.bzl", next_bin = "bin")
+load("@npm//ui:vitest/package_json.bzl", vitest_bin = "bin")
+load("@npm//ui:eslint/package_json.bzl", eslint_bin = "bin")
+load("@npm//ui:typescript/package_json.bzl", tsc_bin = "bin")
+load("@npm//:defs.bzl", "npm_link_all_packages")
+load("@rules_js//js:defs.bzl", "js_library")
+load("@rules_oci//oci:defs.bzl", "oci_image")
+
+npm_link_all_packages(name = "node_modules")
+
+filegroup(
+    name = "srcs",
+    srcs = glob(
+        include = [
+            "src/**",
+            "next.config.ts",
+            "package.json",
+            "tsconfig.json",
+            "postcss.config.mjs",
+            "tailwind.config.ts",
+            "components.json",
+            "vitest.config.mts",
+            "eslint.config.mjs",
+            ".eslintrc.json",
+            "playwright.config.ts",
+            "playwright.screenshots.config.ts",
+        ],
+        exclude = ["node_modules/**"],
+        allow_empty = True,
+    ),
+    visibility = ["//visibility:public"],
+)
+
+# Build target
+next_bin.next(
+    name = "build",
+    srcs = [
+        ":node_modules",
+        ":srcs",
+    ],
+    args = ["build"],
+    chdir = package_name(),
+    out_dirs = [".next"],
+)
+
+# Vitest unit tests
+vitest_bin.vitest_test(
+    name = "vitest",
+    args = ["run"],
+    chdir = package_name(),
+    data = [
+        ":node_modules",
+        ":srcs",
+    ],
+)
+
+# Linting
+eslint_bin.eslint_test(
+    name = "lint",
+    args = [
+        "src/",
+    ],
+    chdir = package_name(),
+    data = [
+        ":node_modules",
+        ":srcs",
+    ],
+    env = {"ESLINT_USE_FLAT_CONFIG": "false"},
+)
+
+# Typecheck
+tsc_bin.tsc_test(
+    name = "typecheck",
+    args = ["--noEmit"],
+    chdir = package_name(),
+    data = [
+        ":node_modules",
+        ":srcs",
+    ],
+)

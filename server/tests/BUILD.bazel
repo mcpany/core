@@ -3,6 +3,12 @@
 
 load("@rules_go//go:def.bzl", "go_test")
 
+filegroup(
+    name = "tls_certs",
+    srcs = glob(["tls/**"]),
+    visibility = ["//server/tests/integration:__pkg__"],
+)
+
 go_test(
     name = "tests_test",
     srcs = [
@@ -10,7 +16,7 @@ go_test(
         "service_retry_test.go",
     ],
     deps = [
-        "//proto/config/v1:v1_go_proto",
+        "//proto/config/v1:config",
         "//server/pkg/app",
         "//server/pkg/logging",
         "//server/pkg/util",
