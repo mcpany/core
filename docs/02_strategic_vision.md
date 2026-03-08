@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-06]
+### Focus: Identity-First Agency & Deep Runtime Inspection
+**Context**: While agent adoption is surging (81%), only 14% of enterprises have full security approval (Gravitee). The major barrier is a lack of independent agent identities (only 22% of teams use them) and the absence of runtime enforcement at the tool-call level.
+**Strategic Pivot**:
+- **Agent Identity Management (AIM)**: MCP Any must transition from generic "API Key" authorization to unique, cryptographic "Agent Identities" for every subagent. This enables per-agent capability tokens and granular auditing.
+- **Deep Packet Inspection for MCP (MCP-DPI)**: Moving beyond simple tool allow-lists. MCP Any will implement an inline policy engine that inspects the *arguments* and *payloads* of tool calls in real-time, preventing prompt injection or unauthorized data exfiltration.
+- **Runtime Enforcement Engine**: Shifting the gateway from a "Passive Router" to an "Active Guard" that can block or redact tool calls based on dynamic, identity-aware policies.

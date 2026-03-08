@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-06] Updates
+
+### Proposed Additions
+- **Agent Identity Management (AIM)**: (P0) A system for assigning and verifying unique, cryptographic UIDs to AI agents. Essential for granular auditing and per-agent capability tokens.
+- **Runtime Tool Inspection (MCP-DPI)**: (P0) An inline policy engine that performs Deep Packet Inspection on tool call payloads to prevent injection and data exfiltration.
+- **Identity-Linked Audit Trails**: (P1) Enhancing audit logs to include cryptographic proof of agent identity for every tool call.
+
+### Priority Shifts
+- **Provenance-First Discovery (Attested Discovery)**: Promoted to **P0**. With the rise in "Shadow AI," cryptographically verified tool sources are now a baseline requirement.
+- **MCP Provenance Attestation**: Re-affirmed as **P0**.
+
+### Deprecations / Monitoring
+- **Shared API Key Authorization**: Monitoring for deprecation in favor of Identity-based (AIM) authorization.
