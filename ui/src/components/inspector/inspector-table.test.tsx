@@ -53,7 +53,8 @@ describe('InspectorTable', () => {
     render(<InspectorTable traces={[mockTrace]} />);
 
     expect(screen.getByText('test-span')).toBeInTheDocument();
-    expect(screen.getByText('test-trace-1')).toBeInTheDocument();
+    // In our new TableVirtuoso rendering, we actually display the span ID (span-1), not the trace ID in the row
+    expect(screen.getByText('span-1')).toBeInTheDocument();
     expect(screen.getByText('100ms')).toBeInTheDocument();
   });
 
@@ -62,9 +63,13 @@ describe('InspectorTable', () => {
     expect(screen.getByText('No traces found.')).toBeInTheDocument();
   });
 
-  it('renders loading state correctly', () => {
-    render(<InspectorTable traces={[]} loading={true} />);
-    expect(screen.getByText('Loading traces...')).toBeInTheDocument();
+  it('renders skeleton loading state correctly', () => {
+    const { container } = render(<InspectorTable traces={[]} loading={true} />);
+    // The skeleton rows should have the animate-pulse class
+    const skeletons = container.querySelectorAll('.animate-pulse');
+    expect(skeletons.length).toBeGreaterThan(0);
+    // Should NOT show "No traces found"
+    expect(screen.queryByText('No traces found.')).not.toBeInTheDocument();
   });
 
   it('opens details on click', () => {

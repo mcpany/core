@@ -24,6 +24,7 @@ import { CheckCircle2, AlertCircle, Clock, Terminal, Globe, Database, ChevronRig
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import { TableVirtuoso } from "react-virtuoso";
+import { Skeleton } from "@/components/ui/skeleton";
 
 /**
  * Props for the InspectorTable component.
@@ -132,8 +133,16 @@ export function InspectorTable({ traces, loading }: InspectorTableProps) {
                 No traces found.
              </div>
         ) : loading && traces.length === 0 ? (
-             <div className="flex items-center justify-center h-24 text-muted-foreground text-sm">
-                Loading traces...
+             <div className="flex flex-col gap-2 p-4">
+                {[...Array(5)].map((_, i) => (
+                    <div key={i} className="flex items-center space-x-4 w-full">
+                        <Skeleton className="h-10 w-[180px]" />
+                        <Skeleton className="h-10 w-[50px]" />
+                        <Skeleton className="h-10 flex-1" />
+                        <Skeleton className="h-10 w-[100px]" />
+                        <Skeleton className="h-10 w-[100px]" />
+                    </div>
+                ))}
              </div>
         ) : (
             <TableVirtuoso
