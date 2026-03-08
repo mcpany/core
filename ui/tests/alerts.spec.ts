@@ -88,4 +88,55 @@ test.describe('Alerts Page', () => {
     // Verify status changes to "resolved"
     await expect(row.getByText('resolved')).toBeVisible();
   });
+
+  test('should support bulk actions for alerts', async ({ page }) => {
+    await page.goto('/alerts');
+
+    // Wait for alerts to load
+    await expect(page.getByText('High CPU Usage')).toBeVisible();
+    await expect(page.getByText('High Memory Usage')).toBeVisible();
+
+    // Get rows for the two alerts we want to bulk update
+    const row1 = page.getByRole('row').filter({ hasText: 'High CPU Usage' });
+    const row2 = page.getByRole('row').filter({ hasText: 'High Memory Usage' });
+
+    // Select the checkboxes
+    await row1.getByRole('checkbox').check();
+    await row2.getByRole('checkbox').check();
+
+    // Verify the bulk action toolbar appears
+    await expect(page.getByText('2 alerts selected')).toBeVisible();
+
+    // Click Bulk Acknowledge
+    await page.getByRole('button', { name: 'Acknowledge' }).click();
+
+    // Verify both rows now say "acknowledged"
+    await expect(row1.getByText('acknowledged')).toBeVisible();
+    await expect(row2.getByText('acknowledged')).toBeVisible();
+
+    // The toolbar should disappear after action
+    await expect(page.getByText('2 alerts selected')).toBeHidden();
+
+    // Re-select them to test Bulk Resolve
+    await row1.getByRole('checkbox').check();
+    await row2.getByRole('checkbox').check();
+
+    await expect(page.getByText('2 alerts selected')).toBeVisible();
+
+    // Click Bulk Resolve
+    await page.getByRole('button', { name: 'Resolve' }).click();
+
+    // Verify both rows now say "resolved"
+    await expect(row1.getByText('resolved')).toBeVisible();
+    await expect(row2.getByText('resolved')).toBeVisible();
+
+    // Test the "Select All" checkbox
+    await page.getByRole('checkbox', { name: 'Select all alerts' }).check();
+    // Assuming we have at least 5 alerts seeded
+    await expect(page.getByText(/alerts selected/)).toBeVisible();
+
+    // Uncheck "Select All"
+    await page.getByRole('checkbox', { name: 'Select all alerts' }).uncheck();
+    await expect(page.getByText(/alerts selected/)).toBeHidden();
+  });
 });

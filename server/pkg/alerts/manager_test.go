@@ -70,12 +70,12 @@ func TestManager_GetAlertStats(t *testing.T) {
 		t.Error("expected non-nil stats")
 	}
 
-	// With the seeded data, we should have 1 active critical, 1 active warning, and at least some total today
-	if stats.ActiveCritical != 1 {
-		t.Errorf("expected 1 active critical alert, got %d", stats.ActiveCritical)
+	// With the seeded data, we should have 3 active critical, 2 active warning, and at least some total today
+	if stats.ActiveCritical != 3 {
+		t.Errorf("expected 3 active critical alert, got %d", stats.ActiveCritical)
 	}
-	if stats.ActiveWarning != 1 {
-		t.Errorf("expected 1 active warning alert, got %d", stats.ActiveWarning)
+	if stats.ActiveWarning != 2 {
+		t.Errorf("expected 2 active warning alert, got %d", stats.ActiveWarning)
 	}
 	if stats.TotalToday < 1 {
 		t.Errorf("expected >0 total today, got %d", stats.TotalToday)
