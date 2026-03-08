@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-05]
+### Focus: Post-Localhost Zero Trust & Cross-Vendor Swarm Orchestration
+**Context**: The OpenClaw localhost hijacking exploit and the surge in malicious MCP marketplace skills (ClawHub) have shattered the "local is safe" myth. Simultaneously, the rise of Gemini's Generalist Agent and Claude's Cowork mode signals a shift toward complex, multi-agent swarms that span vendors.
+**Strategic Pivot**:
+- **Origin-Bound Zero Trust**: MCP Any will move to an "Always-Verify" model for all incoming requests, including those from `localhost`. Implementation of cryptographic origin attestation to prevent browser-based hijacking.
+- **Marketplace Reputation Firewall**: Expanding the gateway to include a reputation-aware filtering layer. MCP Any will automatically cross-reference tool provenance against community-driven audit logs to prevent supply chain injection.
+- **Cross-Vendor Swarm Bus**: Moving beyond vendor-specific coordination. MCP Any will act as the "Universal Swarm Bus," facilitating intent-bound handoffs and shared state between heterogeneous agents (e.g., a Gemini Generalist Agent delegating to a Claude-backed coding subagent).

@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-05] Updates
+
+### Proposed Additions
+- **Origin-Bound Request Validation**: (P0) Middleware that enforces cryptographic origin checks for all incoming gateway requests (WebSocket/HTTP), mitigating browser-based "localhost hijacking."
+- **Marketplace Reputation & Audit Middleware**: (P1) Automatic filtering of MCP servers based on real-time reputation scores and community security audits from known marketplaces (e.g., ClawHub, MCP Market).
+- **Cross-Vendor Handoff Protocol**: (P1) Standardized state-transfer mechanism to allow different vendor models (Gemini, Claude, GPT) to participate in the same swarm session without losing context.
+
+### Priority Shifts
+- **Provenance-First Discovery (Attested Discovery)**: Promoted from **P1** to **P0**. High urgency to counter the 1,000+ malicious skills found in community marketplaces.
+- **Supply Chain Integrity Guard**: Re-affirmed as **P0**. Essential for validating the cryptographic signatures of connected tools.
+
+### Deprecations / Monitoring
+- **Unverified Tool Discovery**: Monitor for deprecation. Move toward a "Secure-by-Default" mode where only attested tools are visible without manual override.
