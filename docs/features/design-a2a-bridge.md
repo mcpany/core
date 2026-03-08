@@ -46,3 +46,10 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+
+### Update: 2026-03-06 - Marketplace Agent Integration
+**Context:** Today's market sync revealed that both Claude Code and OpenClaw are introducing centralized marketplaces for discovering specialized agents and tools.
+**Architecture Adjustment:**
+*   Integrating the A2A Bridge with the `Universal Marketplace Discovery Adapter` in Section 4.
+*   Allowing the Bridge to automatically instantiate A2A tool wrappers for agents discovered in marketplace registries.
+**Security Impact:** Marketplace-sourced agents will undergo an extra "Provenance Attestation" step before being exposed via the A2A Bridge.

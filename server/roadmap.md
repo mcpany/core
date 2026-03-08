@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-06 Evolution)
+*   **[P0] Project Grounding Tool (Agentic Search)**: High-fidelity code/doc search tool for agents to ground reasoning in project context. (Added: 2026-03-06)
+*   **[P1] Universal Marketplace Discovery Adapter**: Proxy for Anthropic/Claude and OpenClaw/ClawHub plugin registries. (Added: 2026-03-06)
+*   **[P2] Gossip-Sub Context Middleware**: Eventually-consistent context sharing for large-scale decentralized agent swarms. (Added: 2026-03-06)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
