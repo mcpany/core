@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-05]
+### Focus: Swarm Consistency & Cross-Framework State Handoff
+**Context**: Emerging decentralized swarms (OpenClaw) are facing "Consistency Gaps" and "Gossip Injection" attacks. Meanwhile, framework-specific state handoff (Gemini) is creating vendor lock-in.
+**Strategic Pivot**:
+- **Swarm Consistency Guard**: MCP Any will act as the "Consensus Provider" for decentralized swarms, ensuring all agents operate on synchronized tool versions and verified schemas, mitigating gossip-based exploits.
+- **Open State Handoff Protocol**: Implementing a framework-agnostic state handoff mechanism that allows seamless transition of complex execution state between different agent frameworks (e.g., OpenClaw to AutoGen).
+- **Warm Sandboxing Service**: Providing high-performance, persistent secure execution environments that bridge the gap between ephemeral cloud sandboxes and insecure local execution.
