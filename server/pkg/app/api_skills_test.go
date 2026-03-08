@@ -119,3 +119,214 @@ type skillErrorReader struct{}
 func (e *skillErrorReader) Read(p []byte) (n int, err error) {
 	return 0, io.ErrUnexpectedEOF
 }
+
+func TestHandleSkills_Get(t *testing.T) {
+	manager, _ := setupSkillManagerForHTTPTest(t)
+	app := &Application{SkillManager: manager}
+
+	// Create a dummy skill
+	err := manager.CreateSkill(&skill.Skill{Frontmatter: skill.Frontmatter{Name: "test-skill-get"}})
+	require.NoError(t, err)
+
+	req, _ := http.NewRequest(http.MethodGet, "/api/v1/skills", nil)
+	rr := httptest.NewRecorder()
+
+	app.handleSkills().ServeHTTP(rr, req)
+
+	assert.Equal(t, http.StatusOK, rr.Code)
+	assert.Contains(t, rr.Body.String(), `"name":"test-skill-get"`)
+}
+
+func TestHandleSkills_Post(t *testing.T) {
+	manager, _ := setupSkillManagerForHTTPTest(t)
+	app := &Application{SkillManager: manager}
+
+	body := []byte(`{"name":"test-skill-post"}`)
+	req, _ := http.NewRequest(http.MethodPost, "/api/v1/skills", bytes.NewReader(body))
+	rr := httptest.NewRecorder()
+
+	app.handleSkills().ServeHTTP(rr, req)
+
+	assert.Equal(t, http.StatusCreated, rr.Code)
+
+	// Verify it was created
+	s, err := manager.GetSkill("test-skill-post")
+	require.NoError(t, err)
+	assert.Equal(t, "test-skill-post", s.Name)
+}
+
+func TestHandleSkillDetail_Get(t *testing.T) {
+	manager, _ := setupSkillManagerForHTTPTest(t)
+	app := &Application{SkillManager: manager}
+
+	// Create a dummy skill
+	err := manager.CreateSkill(&skill.Skill{Frontmatter: skill.Frontmatter{Name: "test-skill-detail-get"}})
+	require.NoError(t, err)
+
+	req, _ := http.NewRequest(http.MethodGet, "/skills/test-skill-detail-get", nil)
+	rr := httptest.NewRecorder()
+
+	app.handleSkillDetail().ServeHTTP(rr, req)
+
+	assert.Equal(t, http.StatusOK, rr.Code)
+	assert.Contains(t, rr.Body.String(), `"name":"test-skill-detail-get"`)
+}
+
+func TestHandleSkillDetail_Put(t *testing.T) {
+	manager, _ := setupSkillManagerForHTTPTest(t)
+	app := &Application{SkillManager: manager}
+
+	// Create a dummy skill
+	err := manager.CreateSkill(&skill.Skill{Frontmatter: skill.Frontmatter{Name: "test-skill-detail-put"}})
+	require.NoError(t, err)
+
+	body := []byte(`{"name":"test-skill-detail-put", "description":"updated desc"}`)
+	req, _ := http.NewRequest(http.MethodPut, "/skills/test-skill-detail-put", bytes.NewReader(body))
+	rr := httptest.NewRecorder()
+
+	app.handleSkillDetail().ServeHTTP(rr, req)
+
+	assert.Equal(t, http.StatusOK, rr.Code)
+
+	// Verify it was updated
+	s, err := manager.GetSkill("test-skill-detail-put")
+	require.NoError(t, err)
+	assert.Equal(t, "updated desc", s.Description)
+}
+
+func TestHandleSkillDetail_Delete(t *testing.T) {
+	manager, _ := setupSkillManagerForHTTPTest(t)
+	app := &Application{SkillManager: manager}
+
+	// Create a dummy skill
+	err := manager.CreateSkill(&skill.Skill{Frontmatter: skill.Frontmatter{Name: "test-skill-detail-del"}})
+	require.NoError(t, err)
+
+	req, _ := http.NewRequest(http.MethodDelete, "/skills/test-skill-detail-del", nil)
+	rr := httptest.NewRecorder()
+
+	app.handleSkillDetail().ServeHTTP(rr, req)
+
+	assert.Equal(t, http.StatusNoContent, rr.Code)
+
+	// Verify it was deleted
+	_, err = manager.GetSkill("test-skill-detail-del")
+	assert.Error(t, err) // Should not be found
+}
+
+func TestHandleSkills_Methods(t *testing.T) {
+	manager, _ := setupSkillManagerForHTTPTest(t)
+	app := &Application{SkillManager: manager}
+
+	req, _ := http.NewRequest(http.MethodPut, "/api/v1/skills", nil)
+	rr := httptest.NewRecorder()
+
+	app.handleSkills().ServeHTTP(rr, req)
+
+	assert.Equal(t, http.StatusMethodNotAllowed, rr.Code)
+}
+
+func TestHandleSkills_PostInvalid(t *testing.T) {
+	manager, _ := setupSkillManagerForHTTPTest(t)
+	app := &Application{SkillManager: manager}
+
+	body := []byte(`{"name":`) // invalid json
+	req, _ := http.NewRequest(http.MethodPost, "/api/v1/skills", bytes.NewReader(body))
+	rr := httptest.NewRecorder()
+
+	app.handleSkills().ServeHTTP(rr, req)
+
+	assert.Equal(t, http.StatusBadRequest, rr.Code)
+}
+
+func TestHandleSkillDetail_NotFound(t *testing.T) {
+	manager, _ := setupSkillManagerForHTTPTest(t)
+	app := &Application{SkillManager: manager}
+
+	req, _ := http.NewRequest(http.MethodGet, "/skills/not-found", nil)
+	rr := httptest.NewRecorder()
+
+	app.handleSkillDetail().ServeHTTP(rr, req)
+
+	assert.Equal(t, http.StatusNotFound, rr.Code)
+}
+
+func TestHandleSkillDetail_MissingName(t *testing.T) {
+	manager, _ := setupSkillManagerForHTTPTest(t)
+	app := &Application{SkillManager: manager}
+
+	req, _ := http.NewRequest(http.MethodGet, "/skills/", nil)
+	rr := httptest.NewRecorder()
+
+	app.handleSkillDetail().ServeHTTP(rr, req)
+
+	assert.Equal(t, http.StatusBadRequest, rr.Code)
+}
+
+func TestHandleSkillDetail_Methods(t *testing.T) {
+	manager, _ := setupSkillManagerForHTTPTest(t)
+	app := &Application{SkillManager: manager}
+
+	err := manager.CreateSkill(&skill.Skill{Frontmatter: skill.Frontmatter{Name: "test-skill-detail-methods"}})
+	require.NoError(t, err)
+
+	req, _ := http.NewRequest(http.MethodPatch, "/skills/test-skill-detail-methods", nil)
+	rr := httptest.NewRecorder()
+
+	app.handleSkillDetail().ServeHTTP(rr, req)
+
+	assert.Equal(t, http.StatusMethodNotAllowed, rr.Code)
+}
+
+func TestHandleSkillDetail_PutInvalid(t *testing.T) {
+	manager, _ := setupSkillManagerForHTTPTest(t)
+	app := &Application{SkillManager: manager}
+
+	err := manager.CreateSkill(&skill.Skill{Frontmatter: skill.Frontmatter{Name: "test-skill-detail-put-inv"}})
+	require.NoError(t, err)
+
+	body := []byte(`{"name":`) // invalid json
+	req, _ := http.NewRequest(http.MethodPut, "/skills/test-skill-detail-put-inv", bytes.NewReader(body))
+	rr := httptest.NewRecorder()
+
+	app.handleSkillDetail().ServeHTTP(rr, req)
+
+	assert.Equal(t, http.StatusBadRequest, rr.Code)
+}
+
+
+func TestHandleUploadSkillAsset_InvalidMethod(t *testing.T) {
+	manager, _ := setupSkillManagerForHTTPTest(t)
+	app := &Application{SkillManager: manager}
+
+	req, _ := http.NewRequest(http.MethodGet, "/api/v1/skills/test-skill/assets", nil)
+	rr := httptest.NewRecorder()
+
+	app.handleUploadSkillAsset().ServeHTTP(rr, req)
+
+	assert.Equal(t, http.StatusMethodNotAllowed, rr.Code)
+}
+
+func TestHandleUploadSkillAsset_NoPath(t *testing.T) {
+	manager, _ := setupSkillManagerForHTTPTest(t)
+	app := &Application{SkillManager: manager}
+
+	req, _ := http.NewRequest(http.MethodPost, "/api/v1/skills/test-skill/assets", bytes.NewReader([]byte("test")))
+	rr := httptest.NewRecorder()
+
+	app.handleUploadSkillAsset().ServeHTTP(rr, req)
+
+	assert.Equal(t, http.StatusBadRequest, rr.Code)
+}
+
+func TestHandleUploadSkillAsset_MissingSkill(t *testing.T) {
+	manager, _ := setupSkillManagerForHTTPTest(t)
+	app := &Application{SkillManager: manager}
+
+	req, _ := http.NewRequest(http.MethodPost, "/api/v1/skills/non-existent-skill/assets?path=test.txt", bytes.NewReader([]byte("test")))
+	rr := httptest.NewRecorder()
+
+	app.handleUploadSkillAsset().ServeHTTP(rr, req)
+
+	assert.Equal(t, http.StatusInternalServerError, rr.Code)
+}
