@@ -59,3 +59,7 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-08:** Evolutionary Update - Origin-Strict Binding.
+    - **Context**: The OpenClaw crisis revealed that local agents can be hijacked via malicious browser-based requests.
+    - **Architecture Adjustment**: Implementing `Origin-Strict Binding` for the MCP Gateway. All incoming WebSocket/HTTP requests must match a list of trusted browser origins or authenticated CLI clients.
+    - **Security Impact**: Prevents "Cross-Site Agent Hijacking" (CSAH) where a malicious website makes background calls to the local MCP Any service.

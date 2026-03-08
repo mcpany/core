@@ -75,7 +75,21 @@
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
+---
+
+## Evolution: [2026-03-08] Updates
+
+### Proposed Additions
+- **Air-Gapped Tool Runner (WASM/Docker)**: (P0) Executes tools in a network-restricted, ephemeral sandbox to prevent host RCE and data exfiltration.
+- **Intent-Aware OOB MFA Middleware**: (P0) Requires a second-factor (e.g., mobile notification) for high-impact tool calls (e.g., `git push`, `rm -rf`).
+- **Origin-Strict Connection Guard**: (P1) Enforces strict browser-origin validation for agents connecting to MCP Any's gateway.
+
 ### Priority Shifts
+- **Provenance-First Discovery**: Promoted from **P1** to **P0**. Urgent due to OpenClaw marketplace poisoning.
+- **"Safe-by-Default" Network Hardening**: Re-affirmed as **P0** to mitigate local-to-cloud hijacking.
+
+### Deprecations / Monitoring
+- **Direct Local CLI Execution**: Monitoring for deprecation in favor of Sandboxed Runners.
 - **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
 - **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.
 
