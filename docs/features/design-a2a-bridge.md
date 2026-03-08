@@ -46,3 +46,10 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+
+### Update: 2026-03-01 - Enabling Transactional Endurance
+**Context:** Today's market sync revealed the rise of "Agentic Endurance" and the "Agentic Commerce Protocol" (ACP).
+**Architecture Adjustment:**
+*   Integrating "Transactional Handoffs" into the A2ABridgeMiddleware to support ACP.
+*   Extending session management to support "Endurance-Aware Sessions" for long-horizon tasks (5+ hours).
+**Security Impact:** Requires higher-integrity attestation for transactional handoffs to prevent unauthorized payments during autonomous work.

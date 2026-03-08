@@ -57,3 +57,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-01]
+### Focus: Endurance-First Infrastructure & Transactional Agency
+**Context**: The shift from "Smart Models" to "Endurance-First Autonomy" (Prosus State of AI Agents 2026) marks the next frontier. Agents are now working in hour-long autonomous sessions, necessitating a shift from simple request-response gateways to stateful, reliable infrastructure.
+**Strategic Pivot**:
+- **Endurance-Aware Infrastructure**: MCP Any will evolve to monitor agent "session health," providing persistence and error-recovery mechanisms for long-horizon tasks (5+ hours).
+- **Thinking-Token Native Protocol**: Explicitly supporting the separation of "Thinking" and "Output" tokens in the middleware to allow for deep-reasoning inspection and planning-phase intervention.
+- **Transactional Gateway (ACP)**: Implementing the Agentic Commerce Protocol (ACP) to allow agents to perform secure, high-integrity transactions (payments, contracts) via the universal bus.
+- **Universal Autonomy Interface**: Re-affirming the terminal and filesystem as first-class citizens in the MCP Any ecosystem, providing the "Agentic Harness" required for sustained independent work.

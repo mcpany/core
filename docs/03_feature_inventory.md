@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-01] Updates
+
+### Proposed Additions
+- **Autonomous Endurance Monitor**: (P0) Middleware to track agent session health, detect compounding errors, and provide "checkpoints" for long-horizon tasks (5+ hours).
+- **Agentic Commerce Protocol (ACP) Adapter**: (P1) Secure gateway for handling transactional agent actions (payments, identity attestation) via the universal bus.
+- **Thinking-Token Passthrough & Inspector**: (P1) Native support for streaming and visualizing model reasoning/planning tokens, separate from final outputs.
+
+### Priority Shifts
+- **A2A Stateful Residency**: Re-affirmed as **P0**. Essential for sustaining long-horizon multi-agent tasks.
+- **Supply Chain Integrity Guard**: Re-affirmed as **P0**. Critical for transactional security in the ACP ecosystem.
+
+### Deprecations / Monitoring
+- **Short-Lived Session Defaults**: Moving towards "Durable Sessions" as the default for all orchestration-level tool calls.
