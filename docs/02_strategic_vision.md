@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-08]
+### Focus: Intelligent Deduplication & Scoped Plugin Governance
+**Context**: Recent updates in Claude Code (v2.1.70) and user feedback from the OpenClaw community highlight "Tool Collision" and "Configuration Bloat" as the next major friction points. As agent swarms grow, the "Universal Bus" must move from simple connectivity to "Intelligent Governance."
+**Strategic Pivot**:
+- **Smart MCP Deduplicator**: MCP Any will implement a sophisticated fingerprinting engine that detects and merges duplicate toolsets across multiple MCP servers, preventing LLM confusion and reducing prompt overhead.
+- **Hierarchical Project Scoping**: Moving from "Global Configuration" to a "Layered Context" model where local project settings (`.mcpany/local.yaml`) override global policies without leaking into shared team repositories.
+- **Stability-First Late-Binding**: Introducing a "Tool Warmup" phase that ensures all MCP servers are connected and their schemas verified before the first LLM token is generated, preventing expensive prompt-cache misses.
