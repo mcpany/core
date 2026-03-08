@@ -29,6 +29,7 @@ import (
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/upstream"
 	"github.com/mcpany/core/server/pkg/util"
+	"github.com/mcpany/core/server/pkg/validation"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -667,6 +668,13 @@ func buildCommandFromStdioConfig(ctx context.Context, stdio *configv1.McpStdioCo
 		return nil, err
 	}
 
+	workingDir := stdio.GetWorkingDirectory()
+	if workingDir != "" {
+		if err := validation.IsAllowedPath(workingDir); err != nil {
+			return nil, fmt.Errorf("invalid working directory %q: %w", workingDir, err)
+		}
+	}
+
 	// Pre-flight check: Ensure the command exists.
 	// We only do this check if it's not a docker command, because "docker"
 	// is generally assumed to be in PATH, and we might be prepending "sudo" later.
@@ -687,7 +695,7 @@ func buildCommandFromStdioConfig(ctx context.Context, stdio *configv1.McpStdioCo
 			args = newArgs
 		}
 		cmd := exec.CommandContext(ctx, command, args...)
-		cmd.Dir = stdio.GetWorkingDirectory()
+		cmd.Dir = workingDir
 		cmd.Env = buildSafeEnv(resolvedEnv)
 		env := cmd.Env // For validation below
 
@@ -707,7 +715,7 @@ func buildCommandFromStdioConfig(ctx context.Context, stdio *configv1.McpStdioCo
 	// This avoids shell injection risks and is safer.
 	if len(setupCommands) == 0 {
 		cmd := exec.CommandContext(ctx, command, args...)
-		cmd.Dir = stdio.GetWorkingDirectory()
+		cmd.Dir = workingDir
 		cmd.Env = buildSafeEnv(resolvedEnv)
 		env := cmd.Env // For validation below
 
@@ -737,7 +745,7 @@ func buildCommandFromStdioConfig(ctx context.Context, stdio *configv1.McpStdioCo
 	script := strings.Join(scriptCommands, " && ")
 
 	cmd := exec.CommandContext(ctx, "/bin/sh", "-c", script)
-	cmd.Dir = stdio.GetWorkingDirectory()
+	cmd.Dir = workingDir
 	cmd.Env = buildSafeEnv(resolvedEnv)
 	env := cmd.Env // For validation below
 
