@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { apiClient, ServiceHealth, HealthHistoryPoint } from "@/lib/client";
 import { usePolling } from "@/hooks/use-polling";
 
@@ -49,5 +49,10 @@ export function useServiceHealthHistory() {
   // Randomized Selection from Top 5 High-Impact Targets (Network Category)
   usePolling(fetchHealth, 10000);
 
-  return { services, history, isLoading };
+  // ⚡ BOLT: Memoized return values to prevent unnecessary re-renders.
+  // Randomized Selection from Top 5 High-Impact Targets
+  return useMemo(
+    () => ({ services, history, isLoading }),
+    [services, history, isLoading]
+  );
 }

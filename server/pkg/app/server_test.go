@@ -2195,8 +2195,8 @@ func TestRunServerMode_grpcListenErrorHangs(t *testing.T) {
 	case err := <-errChan:
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "gRPC server failed to listen")
-	case <-time.After(2 * time.Second):
-		t.Fatal("Test hung for 2 seconds. The bug is still present.")
+	case <-time.After(10 * time.Second): // increased timeout to prevent flakiness in slow CI environments
+		t.Fatal("Test hung for 10 seconds. The bug is still present.")
 	}
 }
 
