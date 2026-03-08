@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-05]
+### Focus: Delegation Trust & Adaptive Compute Allocation
+**Context**: Today's findings (ClawJacked exploit, Gemini's Generalist Agent, and Claude's Adaptive Thinking) underscore that the primary challenge is no longer just tool connectivity, but the security and efficiency of *task delegation*.
+**Strategic Pivot**:
+- **Delegation Trust Framework**: MCP Any will introduce "Delegation Scopes" that allow parents to grant time-limited, single-use capabilities to subagents, verified via cryptographic attestation to prevent "ClawJacked"-style session hijacks.
+- **Adaptive Resource Telemetry**: Integrating "Reasoning Token" and "Thinking Time" metrics into the tool bus. This allows agents (and their human overseers) to make cost-aware decisions about when to engage high-effort models.
+- **Provenance-as-a-Service**: Moving beyond simple attestation to a "Reputation & Verification" model where MCP servers are assigned trust scores based on their historical behavior and community-verified signatures.
