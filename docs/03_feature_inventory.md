@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-08] Updates
+
+### Proposed Additions
+- **Loopback Origin Verification (P0)**: Origin/Referer checking and rate limiting for localhost connections to prevent cross-origin hijacking (responding to the OpenClaw exploit).
+- **Adaptive Reasoning Middleware (P1)**: Protocol support for "Adaptive thinking" metadata and thinking-budget controls.
+- **SessionContext State Persistence (P1)**: Standardized persistence and sharing of session-bound context across multiple model interactions.
+
+### Priority Shifts
+- **"Safe-by-Default" Network Hardening**: Promoted to **Urgent P0** following the OpenClaw localhost hijacking incident.
+- **A2A Stateful Residency**: Promoted to **P0** to support maturing multi-agent session management.
+
+### Deprecations / Monitoring
+- **Unauthenticated Loopback Trust**: Immediate deprecation of implicit trust for `127.0.0.1` / `::1` connections.
