@@ -5,10 +5,11 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertTriangle, WifiOff, AlertCircle } from "lucide-react";
 import { apiClient, DoctorReport } from "@/lib/client";
+import { usePolling } from "@/hooks/use-polling";
 
 /**
  * SystemStatusBanner component.
@@ -18,24 +19,26 @@ export function SystemStatusBanner() {
   const [report, setReport] = useState<DoctorReport | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchHealth = async () => {
-      try {
-        const data = await apiClient.getDoctorStatus();
-        setReport(data);
-        setError(null);
-      } catch (err) {
-        // Fail silently for network errors to avoid spamming the user if the server is just restarting
-        // But if we want to show connection error like before:
-        setError(err instanceof Error ? err.message : "Unknown error");
-        setReport(null);
-      }
-    };
-
-    fetchHealth();
-    const interval = setInterval(fetchHealth, 5000); // 30s might be too slow for config updates, using 5s like ConfigBanner
-    return () => clearInterval(interval);
+  const fetchHealth = useCallback(async () => {
+    try {
+      const data = await apiClient.getDoctorStatus();
+      setReport(data);
+      setError(null);
+    } catch (err) {
+      // Fail silently for network errors to avoid spamming the user if the server is just restarting
+      // But if we want to show connection error like before:
+      setError(err instanceof Error ? err.message : "Unknown error");
+      setReport(null);
+    }
   }, []);
+
+  useEffect(() => {
+    fetchHealth();
+  }, [fetchHealth]);
+
+  // ⚡ BOLT: [Network/Resource Optimization] Standardized on usePolling to pause polling when tab is hidden, reducing network waste.
+  // Randomized Selection from Top 5 High-Impact Targets
+  usePolling(fetchHealth, 5000);
 
   if (error) {
     return (
