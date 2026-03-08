@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-07] Updates
+
+### Proposed Additions
+- **Sanctioned Gateway Audit & Policy Layer**: (P0) Mandatory interceptor for all tool calls to enforce enterprise-grade governance and audit trails.
+- **Stateful A2A Mailbox (Resident State)**: (P0) Persistent storage for A2A messages, ensuring delivery across intermittent connections.
+- **MFA-Attestation for Remote Access**: (P1) Cryptographic multi-factor attestation required before any service can be exposed outside `localhost`.
+
+### Priority Shifts
+- **A2A Interop Bridge**: Re-affirmed as **P0** and expanded to integrate with the Stateful Mailbox for mesh reliability.
+- **Safe-by-Default Hardening**: Promoted to **P0** as it's the primary defense against the "Shadow Server" crisis.
+
+### Deprecations / Monitoring
+- **Unauthenticated Remote Tool Exposure**: Moving to deprecate any tool exposure without explicit MFA/Attestation.
