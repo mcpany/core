@@ -75,6 +75,15 @@
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
+---
+
+## Evolution: [2026-03-07] Updates
+
+### Proposed Additions
+- **Privacy Masking Middleware (Tokenized Context)**: (P0) A PII redaction layer that masks sensitive data before it reaches the LLM, replacing it with temporary tokens.
+- **A2A Atomic Handoff Protocol (v1.2)**: (P0) Ensures multi-agent handoffs are transaction-like (commit or rollback), preventing partial execution failures in swarms.
+- **Goal-Verification (Intent Checkpointing)**: (P1) Integrated tool that checkpoints swarm progress against initial goals to prevent "Swarm Drift."
+
 ### Priority Shifts
 - **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
 - **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.
