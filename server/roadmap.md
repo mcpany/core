@@ -34,6 +34,12 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-05 Evolution)
+*   **[P0] Origin-Locked Gateway Middleware**: Mandatory origin verification for all local endpoints to prevent browser-based hijacks (ClawJacked mitigation). (Added: 2026-03-05)
+*   **[P0] Unix Domain Socket Support**: Enabling UDS for local IPC to bypass TCP-based attack vectors. (Added: 2026-03-05)
+*   **[P1] Swarm Multi-Tenant Registry**: Support for multiple isolated agent swarm sessions with independent state. (Added: 2026-03-05)
+*   **[P1] Vendor Marketplace Bridge**: Aggregator for Anthropic and Google MCP marketplaces. (Added: 2026-03-05)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
