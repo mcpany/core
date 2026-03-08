@@ -23,6 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, AlertCircle, AlertTriangle, Search, Filter, MoreHorizontal, Clock, RefreshCw, Activity, Loader2 } from "lucide-react";
 import {
@@ -48,6 +49,7 @@ export function AlertList() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterSeverity, setFilterSeverity] = useState<string>("all");
   const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [selectedAlerts, setSelectedAlerts] = useState<Set<string>>(new Set());
   const { toast } = useToast();
 
   const fetchAlerts = async () => {
@@ -84,6 +86,47 @@ export function AlertList() {
       return matchesSearch && matchesSeverity && matchesStatus;
     });
   }, [alerts, searchQuery, filterSeverity, filterStatus]);
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedAlerts(new Set(filteredAlerts.map(a => a.id)));
+    } else {
+      setSelectedAlerts(new Set());
+    }
+  };
+
+  const handleSelectAlert = (id: string, checked: boolean) => {
+    const next = new Set(selectedAlerts);
+    if (checked) {
+      next.add(id);
+    } else {
+      next.delete(id);
+    }
+    setSelectedAlerts(next);
+  };
+
+  const handleBulkStatusChange = async (newStatus: AlertStatus) => {
+    try {
+        const promises = Array.from(selectedAlerts).map(id => apiClient.updateAlertStatus(id, newStatus));
+        await Promise.all(promises);
+
+        // Optimistic update
+        setAlerts(prev => prev.map(a => selectedAlerts.has(a.id) ? { ...a, status: newStatus } : a));
+        setSelectedAlerts(new Set());
+
+        toast({
+            title: "Bulk Status Updated",
+            description: `${selectedAlerts.size} alerts marked as ${newStatus}`,
+        });
+    } catch (error) {
+        console.error(error);
+        toast({
+            title: "Error",
+            description: "Failed to update bulk status",
+            variant: "destructive",
+        });
+    }
+  };
 
   const handleStatusChange = async (id: string, newStatus: AlertStatus) => {
     try {
@@ -172,6 +215,13 @@ export function AlertList() {
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead className="w-[40px]">
+                <Checkbox
+                  checked={filteredAlerts.length > 0 && selectedAlerts.size === filteredAlerts.length}
+                  onCheckedChange={handleSelectAll}
+                  aria-label="Select all"
+                />
+              </TableHead>
               <TableHead className="w-[100px]">Severity</TableHead>
               <TableHead className="w-[100px]">Status</TableHead>
               <TableHead>Summary</TableHead>
@@ -183,7 +233,7 @@ export function AlertList() {
           <TableBody>
             {loading && alerts.length === 0 ? (
                  <TableRow>
-                    <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
+                    <TableCell colSpan={7} className="h-24 text-center text-muted-foreground">
                         <div className="flex items-center justify-center gap-2">
                             <Loader2 className="h-4 w-4 animate-spin" />
                             Loading alerts...
@@ -192,13 +242,20 @@ export function AlertList() {
                 </TableRow>
             ) : filteredAlerts.length === 0 ? (
                 <TableRow>
-                    <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
+                    <TableCell colSpan={7} className="h-24 text-center text-muted-foreground">
                         No alerts match your filters.
                     </TableCell>
                 </TableRow>
             ) : (
                 filteredAlerts.map((alert) => (
-                <TableRow key={alert.id} className="group">
+                <TableRow key={alert.id} className="group" data-state={selectedAlerts.has(alert.id) ? "selected" : undefined}>
+                    <TableCell>
+                      <Checkbox
+                        checked={selectedAlerts.has(alert.id)}
+                        onCheckedChange={(checked) => handleSelectAlert(alert.id, !!checked)}
+                        aria-label={`Select ${alert.title}`}
+                      />
+                    </TableCell>
                     <TableCell>{getSeverityBadge(alert.severity)}</TableCell>
                     <TableCell>
                     <div className="flex items-center gap-2" title={alert.status}>
@@ -250,6 +307,22 @@ export function AlertList() {
           </TableBody>
         </Table>
       </div>
+
+      {selectedAlerts.size > 0 && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-4 bg-background/80 backdrop-blur-md border shadow-lg rounded-full px-6 py-3 animate-in slide-in-from-bottom-10">
+          <span className="text-sm font-medium">
+            {selectedAlerts.size} selected
+          </span>
+          <div className="flex items-center gap-2 border-l pl-4">
+            <Button size="sm" variant="outline" onClick={() => handleBulkStatusChange('acknowledged')}>
+              <AlertTriangle className="mr-2 h-4 w-4" /> Acknowledge Selected
+            </Button>
+            <Button size="sm" variant="default" onClick={() => handleBulkStatusChange('resolved')}>
+              <CheckCircle2 className="mr-2 h-4 w-4" /> Resolve Selected
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
