@@ -46,3 +46,7 @@ build --remote_timeout=3600
 # build --remote_instance_name=main
 #build --bes_backend=grpcs://nativelink.cubectl.com
 #build --bes_results_url=https://nativelink.cubectl.com/results/
+
+# Local config to disable remote execution
+build:local --remote_cache=
+build:local --remote_executor=
