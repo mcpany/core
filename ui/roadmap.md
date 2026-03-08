@@ -107,3 +107,8 @@
 - [ ] **Log Source Color Coding**: Assign distinct colors to different log sources automatically for better visual separation.
 - [ ] **Context Usage History**: Track total context usage over time to identify growth trends (requires backend metrics persistence).
 - [ ] **Tool Schema Optimizer**: Analyze tool schemas and suggest removing unused properties or compacting descriptions to save context tokens.
+
+#### Upcoming (2026-03-05 Evolution)
+*   **[P0] Security Origin Manager**: Dashboard for managing authorized browser origins and viewing blocked hijacking attempts. (Added: 2026-03-05)
+*   **[P0] A2A Swarm Topology**: Visual map of interconnected agents using the A2A protocol, showing task delegation and state sync. (Added: 2026-03-05)
+*   **[P1] Sanitization Audit Log**: UI for inspecting content that was flagged or sanitized by the Inbound Tool-Data Sanitizer. (Added: 2026-03-05)

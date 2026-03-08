@@ -57,3 +57,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-05]
+### Focus: The Localhost-is-Untrusted Paradigm & Standardizing the A2A Mesh
+**Context**: The "ClawJacked" exploit and Zenity's browser-hijacking research have shattered the "Localhost is Trusted" and "Tools provide safe content" assumptions. Simultaneously, the formalization of the A2A protocol provides a clear path for agentic interoperability.
+**Strategic Pivot**:
+- **Trust-Verify Architecture**: MCP Any will pivot from "Local-Only-by-Default" to "Explicit-Authorization-Required" for all listeners, including localhost. This includes mandatory Origin/CORS validation for all WebSocket handshakes.
+- **Inbound Content Isolation**: Implementing a middleware that isolates and sanitizes tool-provided content to prevent indirect prompt injections. Tool data will be treated as "Untrusted" by default.
+- **Standardized A2A Mesh Backbone**: Aligning the "A2A Interop Bridge" with Google's A2A standard to become the official "Interoperability Layer" for cross-framework agent swarms.
+- **Intent-Aware Tooling**: Moving from static tool-schemas to "Contextual-Capability-Tokens" where a tool is only visible or executable if it aligns with a high-level, human-approved intent trace.

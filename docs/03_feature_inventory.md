@@ -81,3 +81,20 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-05] Updates
+
+### Proposed Additions
+- **WebSocket Origin & CORS Enforcement Middleware**: (P0) Strict validation of all incoming connections to prevent cross-site hijacking of local MCP gateways. (Direct response to "ClawJacked").
+- **A2A (Agent-to-Agent) Standard Adapter**: (P0) A native adapter for the Google/IBM A2A protocol, allowing MCP Any to act as a stateful buffer and coordinator for heterogeneous agent swarms.
+- **Inbound Tool-Data Sanitizer**: (P1) Middleware that intercepts and cleans data returned from tools to prevent "Indirect Prompt Injection" via external sources (e.g., email/calendar).
+- **Challenge-Response Local Attestation**: (P1) A security handshake for local-only clients to verify they are running with legitimate developer authority.
+
+### Priority Shifts
+- **A2A Interop Bridge**: Promoted to **P0** and renamed to **A2A Standard Adapter** to reflect alignment with industry standards.
+- **Safe-by-Default Hardening**: Expanded to include **Strict Origin/CORS Validation** as a core P0 requirement.
+
+### Deprecations / Monitoring
+- **Untrusted Localhost Handshakes**: Monitoring for full removal of "Implicit Local Trust" in all listeners.
