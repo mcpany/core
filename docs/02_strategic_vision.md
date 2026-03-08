@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-05]
+### Focus: Dynamic Capability Negotiation & Ephemeral Tooling
+**Context**: Today's market sync reveals a shift towards more dynamic, just-in-time agent interactions (OpenClaw's negotiation) and a surge in ephemeral, task-specific tools.
+**Strategic Pivot**:
+- **JIT Capability Negotiation**: MCP Any will evolve its Policy Firewall to support runtime "Capability Requests," allowing agents to escalate permissions without full context restarts.
+- **Ephemeral Tool Registry**: Implementing a high-speed, in-memory registry for "short-lived" tools that bypass the heavy file-based configuration reload cycle.
+- **Multi-Tenant Resource Multiplexing**: To solve the "MCP Lock-in" observed in Claude Code, MCP Any will implement a fair-share scheduler for shared stdio-based servers, ensuring multiple agent instances can coexist gracefully.
