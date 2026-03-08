@@ -3,7 +3,7 @@
 
 load("@npm//ui:next/package_json.bzl", next_bin = "bin")
 load("@npm//ui:vitest/package_json.bzl", vitest_bin = "bin")
-load("@npm//ui:playwright/package_json.bzl", playwright_bin = "bin")
+load("@npm//ui:eslint/package_json.bzl", eslint_bin = "bin")
 load("@npm//ui:typescript/package_json.bzl", tsc_bin = "bin")
 load("@npm//:defs.bzl", "npm_link_all_packages")
 load("@rules_js//js:defs.bzl", "js_library")
@@ -22,6 +22,11 @@ filegroup(
             "postcss.config.mjs",
             "tailwind.config.ts",
             "components.json",
+            "vitest.config.mts",
+            "eslint.config.mjs",
+            ".eslintrc.json",
+            "playwright.config.ts",
+            "playwright.screenshots.config.ts",
         ],
         exclude = ["node_modules/**"],
         allow_empty = True,
@@ -44,16 +49,7 @@ next_bin.next(
 # Vitest unit tests
 vitest_bin.vitest_test(
     name = "vitest",
-    chdir = package_name(),
-    data = [
-        ":node_modules",
-        ":srcs",
-    ],
-)
-
-# Playwright E2E tests
-playwright_bin.playwright_test(
-    name = "playwright",
+    args = ["run"],
     chdir = package_name(),
     data = [
         ":node_modules",
@@ -62,14 +58,17 @@ playwright_bin.playwright_test(
 )
 
 # Linting
-next_bin.next_test(
+eslint_bin.eslint_test(
     name = "lint",
-    args = ["lint"],
+    args = [
+        "src/",
+    ],
     chdir = package_name(),
     data = [
         ":node_modules",
         ":srcs",
     ],
+    env = {"ESLINT_USE_FLAT_CONFIG": "false"},
 )
 
 # Typecheck

@@ -59,7 +59,10 @@ oci_image(
 oci_load(
     name = "server_tarball",
     image = ":server_image",
-    repo_tags = ["mcpany/server:latest"],
+    repo_tags = [
+        "mcpany/server:latest",
+        "mcpany/server:1.0.0",
+    ],
     visibility = ["//visibility:public"],
 )
 
