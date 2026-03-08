@@ -37,10 +37,10 @@ defaults:
 
 jobs:
   changes:
-    runs-on: oci-runner
+    runs-on: ubuntu-latest
     container:
-      image: iowoi/mcp-runner:latest
-      options: --user root -v /var/run/docker.sock:/var/run/docker.sock
+      # image: iowoi/mcp-runner:latest
+      # options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     outputs:
       src: ${{ steps.filter.outputs.src }}
     steps:
@@ -95,10 +95,10 @@ jobs:
   lint:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
-    runs-on: oci-runner
+    runs-on: ubuntu-latest
     container:
-      image: iowoi/mcp-runner:latest
-      options: --user root -v /var/run/docker.sock:/var/run/docker.sock
+      # image: iowoi/mcp-runner:latest
+      # options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 90
     steps:
       # - name: Free Disk Space (Fast)
@@ -133,17 +133,17 @@ jobs:
              $SUDO apk add --no-cache make xz curl unzip build-base
           fi
 
-      # - name: Set up Go
-      #   uses: actions/setup-go@v6
-      #   with:
-      #     go-version: "1.24"
-      #     cache: true
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: "1.24"
+          cache: true
 
-      # - name: Set up Python
-      #   uses: actions/setup-python@v6
-      #   with:
-      #     python-version: "3.13"
-      #     cache: "pip"
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+          cache: "pip"
 
       - name: Install Python dependencies
         run: pip install -r server/requirements.txt
@@ -180,10 +180,10 @@ jobs:
         run: make lint
 
   unit-test:
-    runs-on: oci-runner
+    runs-on: ubuntu-latest
     container:
-      image: iowoi/mcp-runner:latest
-      options: --user root -v /var/run/docker.sock:/var/run/docker.sock
+      # image: iowoi/mcp-runner:latest
+      # options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 60
     needs: [changes, build-images]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -217,17 +217,17 @@ jobs:
              $SUDO apk add --no-cache make xz curl unzip build-base
           fi
 
-      # - name: Set up Go
-      #   uses: actions/setup-go@v6
-      #   with:
-      #     go-version: "1.24"
-      #     cache: true
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: "1.24"
+          cache: true
 
-      # - name: Set up Python
-      #   uses: actions/setup-python@v6
-      #   with:
-      #     python-version: "3.13"
-      #     cache: "pip"
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+          cache: "pip"
 
       - name: Install Python dependencies
         run: pip install -r server/requirements.txt
@@ -315,10 +315,10 @@ jobs:
 
   e2e-parallel:
     runs-on: ubuntu-latest
-    # runs-on: oci-runner
+    # runs-on: ubuntu-latest
     # container:
-    #   image: iowoi/mcp-runner:latest
-    #   options: --user root -v /var/run/docker.sock:/var/run/docker.sock
+    #   # image: iowoi/mcp-runner:latest
+    #   # options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 180
     needs: [changes, build-images]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -490,10 +490,10 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: ubuntu-latest
-    # runs-on: oci-runner
+    # runs-on: ubuntu-latest
     # container:
-    #   image: iowoi/mcp-runner:latest
-    #   options: --user root -v /var/run/docker.sock:/var/run/docker.sock
+    #   # image: iowoi/mcp-runner:latest
+    #   # options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     strategy:
       fail-fast: false
       matrix:
@@ -623,10 +623,10 @@ jobs:
           retention-days: 1
 
   e2e-sequential:
-    runs-on: oci-runner
+    runs-on: ubuntu-latest
     container:
-      image: iowoi/mcp-runner:latest
-      options: --user root -v /var/run/docker.sock:/var/run/docker.sock
+      # image: iowoi/mcp-runner:latest
+      # options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 180
     needs: [changes, build-images]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -774,10 +774,10 @@ jobs:
           verbose: true
 
   e2e-public-api:
-    runs-on: oci-runner
+    runs-on: ubuntu-latest
     container:
-      image: iowoi/mcp-runner:latest
-      options: --user root -v /var/run/docker.sock:/var/run/docker.sock
+      # image: iowoi/mcp-runner:latest
+      # options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 180
     needs: [changes, build-images]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -906,10 +906,10 @@ jobs:
           verbose: true
 
   docker-smoke-test:
-    runs-on: oci-runner
+    runs-on: ubuntu-latest
     container:
-      image: iowoi/mcp-runner:latest
-      options: --user root -v /var/run/docker.sock:/var/run/docker.sock
+      # image: iowoi/mcp-runner:latest
+      # options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 15
     needs: [changes, build-images]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -960,10 +960,10 @@ jobs:
 
   ui-test:
     # runs-on: ubuntu-latest
-    runs-on: oci-runner
+    runs-on: ubuntu-latest
     container:
-      image: iowoi/mcp-runner:latest
-      options: --user root -v /var/run/docker.sock:/var/run/docker.sock
+      # image: iowoi/mcp-runner:latest
+      # options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 180
     needs: [changes, build-images]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -1047,10 +1047,10 @@ jobs:
 
   k8s-e2e:
     runs-on: ubuntu-latest
-    # runs-on: oci-runner
+    # runs-on: ubuntu-latest
     # container:
-    #   image: iowoi/mcp-runner:latest
-    #   options: --user root -v /var/run/docker.sock:/var/run/docker.sock
+    #   # image: iowoi/mcp-runner:latest
+    #   # options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 360 # Increased timeout for k8s tests
     needs: [changes, build-images]
     if: ${{ needs.changes.outputs.src == 'true' }}
@@ -1151,22 +1151,33 @@ jobs:
           docker load -i image.tar
           rm -f image.tar
 
+      - name: Download HTTP Echo Image
+        uses: actions/download-artifact@v4
+        with:
+          name: image-http-echo-${{ steps.detect-arch.outputs.slug }}
+
+      - name: Load HTTP Echo Image
+        run: |
+          docker load -i image.tar
+          rm -f image.tar
+
       - name: Load Docker Images into Kind
         run: |
           # Now load specific images into Kind
           kind load docker-image mcpany/server:latest --name mcp-e2e
           kind load docker-image mcpany/operator:latest --name mcp-e2e
           kind load docker-image mcpany/ui:latest --name mcp-e2e
+          kind load docker-image mcpany/http-echo-server:latest --name mcp-e2e
 
       - name: Run K8s E2E Tests
         run: |
           make k8s-e2e SKIP_IMAGE_BUILD=true IMAGE_TAG=latest
 
   ci-success:
-    runs-on: oci-runner
+    runs-on: ubuntu-latest
     container:
-      image: iowoi/mcp-runner:latest
-      options: --user root -v /var/run/docker.sock:/var/run/docker.sock
+      # image: iowoi/mcp-runner:latest
+      # options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     needs:
       [
         changes,

@@ -217,7 +217,7 @@ func TestHelmChart(t *testing.T) {
 
 func TestK8sFullStack(t *testing.T) {
 	if os.Getenv("E2E") != "true" {
-		// t.Skip("Skipping K8s E2E test (E2E=true not set)")
+		t.Skip("Skipping K8s E2E test (E2E=true not set)")
 	}
 	if os.Getenv("CI") != "" {
 		t.Skip("Skipping K8s E2E test in CI (run as separate step)")
