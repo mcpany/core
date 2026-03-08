@@ -7,6 +7,9 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
+import { fileURLToPath } from 'url'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig({
   plugins: [react()],
@@ -15,8 +18,10 @@ export default defineConfig({
     globals: true,
     setupFiles: ['./src/tests/setup.ts'],
     exclude: ['**/node_modules/**', '**/dist/**', '**/*.spec.ts'],
+    pool: 'vmThreads',
   },
   resolve: {
+    dedupe: ['react', 'react-dom'],
     alias: {
       '@': path.resolve(__dirname, './src'),
       '@proto/api/v1/registration': path.resolve(__dirname, './src/mocks/proto/mock-proto.ts'),

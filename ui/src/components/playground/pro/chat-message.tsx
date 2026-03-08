@@ -24,7 +24,17 @@ import { unwrapMcpResult, deepParseJson } from "@/lib/mcp-unwrap";
 // ⚡ BOLT: Lazy load heavy dependencies to improve initial bundle size and TTI.
 // Randomized Selection from Top 5 High-Impact Targets
 const SyntaxHighlighter = dynamic(
-    () => import("react-syntax-highlighter").then((mod) => mod.Prism),
+    () => import('react-syntax-highlighter/dist/esm/prism-light').then(async (mod) => {
+        const jsonLang = await import('react-syntax-highlighter/dist/esm/languages/prism/json');
+        const jsLang = await import('react-syntax-highlighter/dist/esm/languages/prism/javascript');
+        const pythonLang = await import('react-syntax-highlighter/dist/esm/languages/prism/python');
+        const bashLang = await import('react-syntax-highlighter/dist/esm/languages/prism/bash');
+        mod.default.registerLanguage('json', jsonLang.default);
+        mod.default.registerLanguage('javascript', jsLang.default);
+        mod.default.registerLanguage('python', pythonLang.default);
+        mod.default.registerLanguage('bash', bashLang.default);
+        return mod.default;
+    }),
     {
         ssr: false,
         loading: () => <div className="p-4 bg-[rgba(0,0,0,0.4)] h-12 animate-pulse rounded" />,

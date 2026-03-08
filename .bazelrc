@@ -39,3 +39,18 @@ test --test_env=MCPANY_DANGEROUS_ALLOW_LOCAL_IPS
 build --action_env=GEMINI_API_KEY
 build --action_env=MCP_BUNDLE_DIR
 build --action_env=CI
+
+build:remote --remote_cache=grpcs://nativelink.cubectl.com
+build:remote --remote_executor=grpcs://nativelink.cubectl.com
+build:remote --remote_timeout=3600s
+# build --remote_instance_name=main
+#build --bes_backend=grpcs://nativelink.cubectl.com
+#build --bes_results_url=https://nativelink.cubectl.com/results/
+
+# Temporarily disable remote to fix SSL issues
+# build --remote_cache_insecure=true
+# build --remote_executor_insecure=true
+
+# Local config to disable remote execution
+build:local --remote_cache=
+build:local --remote_executor=

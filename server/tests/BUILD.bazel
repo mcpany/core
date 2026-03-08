@@ -3,6 +3,12 @@
 
 load("@rules_go//go:def.bzl", "go_test")
 
+filegroup(
+    name = "tls_certs",
+    srcs = glob(["tls/**"]),
+    visibility = ["//server/tests/integration:__pkg__"],
+)
+
 go_test(
     name = "tests_test",
     srcs = [

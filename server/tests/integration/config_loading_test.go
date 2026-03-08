@@ -54,7 +54,6 @@ func TestConfigLoading(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			t.Setenv("MCPANY_BINARY_PATH", filepath.Join(root, "../build/bin/server"))
 			absConfigFile := filepath.Join(root, "tests", "integration", tc.configFile)
 
 
@@ -88,7 +87,6 @@ func TestDisabledHierarchyConfig(t *testing.T) {
 	root, err := GetProjectRoot()
 	require.NoError(t, err)
 
-	t.Setenv("MCPANY_BINARY_PATH", filepath.Join(root, "../build/bin/server"))
 	absConfigFile := filepath.Join(root, "tests", "integration", "testdata", "disabled_hierarchy_config.yaml")
 
 	mcpAny := StartMCPANYServer(t, "config-loading-hierarchy", "--config-path", absConfigFile)
