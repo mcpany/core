@@ -12,7 +12,7 @@ go_library(
     importpath = "github.com/mcpany/core/server/pkg/doctor",
     visibility = ["//visibility:public"],
     deps = [
-        "//proto/config/v1:v1_go_proto",
+        "//proto/config/v1:config",
         "//server/pkg/util",
         "//server/pkg/validation",
         "@com_github_go_sql_driver_mysql//:mysql",
@@ -33,7 +33,7 @@ go_test(
     ],
     embed = [":doctor"],
     deps = [
-        "//proto/config/v1:v1_go_proto",
+        "//proto/config/v1:config",
         "@com_github_stretchr_testify//assert",
         "@com_github_stretchr_testify//require",
         "@org_golang_google_protobuf//proto",

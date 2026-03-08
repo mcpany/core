@@ -92,8 +92,16 @@ export function GlobalSearch() {
   React.useEffect(() => {
     if (open) {
       // Load recent tools from localStorage
-      const saved = JSON.parse(localStorage.getItem("recent_tools") || "[]") as ToolDefinition[]
-      setRecentTools(saved)
+      let saved: ToolDefinition[] = [];
+      try {
+        const stored = localStorage.getItem("recent_tools");
+        if (stored) {
+          saved = JSON.parse(stored);
+        }
+      } catch (e) {
+        console.warn("Failed to parse recent tools from localStorage", e);
+      }
+      setRecentTools(Array.isArray(saved) ? saved : []);
 
       // ⚡ Bolt Optimization: Prevent redundant API calls if data was fetched recently (< 1 min)
       // This reduces 4 concurrent requests every time the search dialog is opened.

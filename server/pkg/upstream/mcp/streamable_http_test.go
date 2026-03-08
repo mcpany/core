@@ -396,7 +396,7 @@ func TestUpstream_Register(t *testing.T) {
 		config.SetName("test-service-no-docker")
 		mcpService := configv1.McpUpstreamService_builder{}.Build()
 		stdioConnection := configv1.McpStdioConnection_builder{}.Build()
-		stdioConnection.SetCommand("node") // A command that would normally use a container
+		stdioConnection.SetCommand("sh") // A command that would normally use a container
 		mcpService.SetStdioConnection(stdioConnection)
 		config.SetMcpService(mcpService)
 
@@ -405,10 +405,10 @@ func TestUpstream_Register(t *testing.T) {
 
 		wg.Wait()
 
-		// cmd.Path resolves to the absolute path of "node"
-		assert.Contains(t, capturedCmd, "node")
-		// Direct execution, so args are just ["node"] (or absolute path)
-		assert.Contains(t, capturedArgs[0], "node")
+		// cmd.Path resolves to the absolute path of "sh"
+		assert.Contains(t, capturedCmd, "sh")
+		// Direct execution, so args are just ["sh"] (or absolute path)
+		assert.Contains(t, capturedArgs[0], "sh")
 	})
 
 	t.Run("successful registration with http", func(t *testing.T) {

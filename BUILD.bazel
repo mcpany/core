@@ -11,64 +11,49 @@ load("@rules_go//go:def.bzl", "go_binary", "go_library")
 # gazelle:exclude tests/integration/upstream/node_modules
 
 # Resolve local proto imports to go_proto_library targets
-# gazelle:resolve go github.com/mcpany/core/proto/config/v1 //proto/config/v1:v1_go_proto
-# gazelle:resolve go github.com/mcpany/core/proto/api/v1 //proto/api/v1:v1_go_proto
-# gazelle:resolve go github.com/mcpany/core/proto/bus //proto/bus:bus_go_proto
-# gazelle:resolve go github.com/mcpany/core/proto/mcp_options/v1 //proto/mcp_options/v1:v1_go_proto
-# gazelle:resolve go github.com/mcpany/core/proto/mcp_router/v1 //proto/mcp_router/v1:v1_go_proto
-# gazelle:resolve go github.com/mcpany/core/proto/topology/v1 //proto/topology/v1:v1_go_proto
-# gazelle:resolve go github.com/mcpany/core/proto/admin/v1 //proto/admin/v1:v1_go_proto
-# gazelle:resolve go github.com/mcpany/core/proto/examples/weather/v1 //proto/examples/weather/v1:v1_go_proto
+# gazelle:resolve go github.com/mcpany/core/proto/config/v1 //proto/config/v1:config
+# gazelle:resolve go github.com/mcpany/core/proto/api/v1 //proto/api/v1:api
+# gazelle:resolve go github.com/mcpany/core/proto/bus //proto/bus:bus
+# gazelle:resolve go github.com/mcpany/core/proto/mcp_options/v1 //proto/mcp_options/v1:mcp_options
+# gazelle:resolve go github.com/mcpany/core/proto/mcp_router/v1 //proto/mcp_router/v1:mcp_router
+# gazelle:resolve go github.com/mcpany/core/proto/topology/v1 //proto/topology/v1:topology
+# gazelle:resolve go github.com/mcpany/core/proto/admin/v1 //proto/admin/v1:admin
+# gazelle:resolve go github.com/mcpany/core/proto/examples/weather/v1 //proto/examples/weather/v1:weather
 
-# gazelle:resolve proto google/protobuf/go_features.proto //google/protobuf:go_features_proto
 # gazelle:resolve proto google/api/annotations.proto @googleapis//google/api:annotations_proto
 # gazelle:resolve proto google/api/http.proto @googleapis//google/api:http_proto
 # gazelle:resolve proto google/api/resource.proto @googleapis//google/api:resource_proto
 # gazelle:resolve proto google/api/field_behavior.proto @googleapis//google/api:field_behavior_proto
+# gazelle:resolve proto google/protobuf/go_features.proto @protobuf//:go_features_proto
 
 # Resolve standard rules_go targets
 # gazelle:resolve proto go google/protobuf/descriptor.proto @org_golang_google_protobuf//types/descriptorpb
-# gazelle:resolve proto go google/protobuf/go_features.proto //google/protobuf:go_features_go_proto
-# gazelle:resolve proto go google/api/annotations.proto @org_golang_google_genproto_googleapis_api//annotations
-# gazelle:resolve proto go google/api/http.proto @org_golang_google_genproto_googleapis_api//annotations
-# gazelle:resolve proto go google/api/resource.proto @org_golang_google_genproto_googleapis_api//annotations
-# gazelle:resolve proto go google/api/field_behavior.proto @org_golang_google_genproto_googleapis_api//annotations
+# gazelle:resolve proto go google/protobuf/go_features.proto @org_golang_google_protobuf//types/gofeaturespb
+# gazelle:resolve proto go google/api/annotations.proto @googleapis//google/api:annotations_go_proto
+# gazelle:resolve proto go google/api/http.proto @googleapis//google/api:annotations_go_proto
+# gazelle:resolve proto go google/api/resource.proto @googleapis//google/api:annotations_go_proto
+# gazelle:resolve proto go google/api/field_behavior.proto @googleapis//google/api:annotations_go_proto
 
-# gazelle:resolve go google.golang.org/protobuf/types/descriptorpb @org_golang_google_protobuf//types/descriptorpb
-# gazelle:resolve go google.golang.org/protobuf/types/gofeaturespb @org_golang_google_protobuf//types/gofeaturespb
 # gazelle:resolve go google.golang.org/protobuf/types/known/anypb @org_golang_google_protobuf//types/known/anypb
 # gazelle:resolve go google.golang.org/protobuf/types/known/structpb @org_golang_google_protobuf//types/known/structpb
 # gazelle:resolve go google.golang.org/protobuf/types/known/timestamppb @org_golang_google_protobuf//types/known/timestamppb
 # gazelle:resolve go google.golang.org/protobuf/types/known/durationpb @org_golang_google_protobuf//types/known/durationpb
 # gazelle:resolve go google.golang.org/protobuf/types/known/wrapperspb @org_golang_google_protobuf//types/known/wrapperspb
-# gazelle:resolve go google.golang.org/genproto/googleapis/api/annotations @org_golang_google_genproto_googleapis_api//annotations
+# gazelle:resolve go google.golang.org/genproto/googleapis/api/annotations @googleapis//google/api:annotations_go_proto
 
-# gazelle:go_proto_compilers //:go_proto_editions
-# gazelle:go_grpc_compilers //:go_grpc_editions
+# gazelle:go_proto_compilers @rules_go//proto:go_proto
+# gazelle:go_grpc_compilers @rules_go//proto:go_grpc_v2
 
 load("@rules_go//proto:compiler.bzl", "go_proto_compiler")
 
 go_proto_compiler(
-    name = "go_proto_editions",
-    plugin = "@org_golang_google_protobuf//cmd/protoc-gen-go",
-    suffix = ".pb.go",
+    name = "go_grpc_gateway",
+    plugin = "@com_github_grpc_ecosystem_grpc_gateway_v2//protoc-gen-grpc-gateway:protoc-gen-grpc-gateway",
+    suffix = ".pb.gw.go",
     visibility = ["//visibility:public"],
     deps = [
         "@org_golang_google_protobuf//reflect/protoreflect",
         "@org_golang_google_protobuf//runtime/protoimpl",
-        "@org_golang_google_protobuf//types/descriptorpb",
-    ],
-)
-
-go_proto_compiler(
-    name = "go_grpc_editions",
-    plugin = "@org_golang_google_grpc_cmd_protoc_gen_go_grpc//:protoc-gen-go-grpc",
-    suffix = "_grpc.pb.go",
-    visibility = ["//visibility:public"],
-    deps = [
-        "@org_golang_google_protobuf//reflect/protoreflect",
-        "@org_golang_google_protobuf//runtime/protoimpl",
-        "@org_golang_google_protobuf//types/descriptorpb",
     ],
 )
 
@@ -95,4 +80,23 @@ go_binary(
     name = "core",
     embed = [":core_lib"],
     visibility = ["//visibility:public"],
+)
+
+sh_binary(
+    name = "lint",
+    srcs = ["scripts/lint.sh"],
+    data = [
+        "//server:go.mod",
+        "//server:go.sum",
+    ],
+)
+
+alias(
+    name = "buildifier",
+    actual = "@buildifier_prebuilt//:buildifier",
+)
+
+alias(
+    name = "buildozer",
+    actual = "@buildozer//:buildozer",
 )

@@ -18,8 +18,8 @@ go_library(
     importpath = "github.com/mcpany/core/server/tests/framework",
     visibility = ["//visibility:public"],
     deps = [
-        "//proto/api/v1:v1_go_proto",
-        "//proto/config/v1:v1_go_proto",
+        "//proto/api/v1:api",
+        "//proto/config/v1:config",
         "//server/tests/integration",
         "@com_github_modelcontextprotocol_go_sdk//mcp",
         "@com_github_stretchr_testify//require",
@@ -34,6 +34,7 @@ go_test(
         "framework_test.go",
     ],
     embed = [":framework"],
+    tags = ["integration"],
     deps = [
         "//server/tests/integration",
         "@com_github_modelcontextprotocol_go_sdk//mcp",

@@ -10,7 +10,7 @@ go_test(
         "service_retry_test.go",
     ],
     deps = [
-        "//proto/config/v1:v1_go_proto",
+        "//proto/config/v1:config",
         "//server/pkg/app",
         "//server/pkg/logging",
         "//server/pkg/util",

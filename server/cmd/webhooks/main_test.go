@@ -9,21 +9,32 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"testing"
 	"time"
 )
 
 func TestMain(m *testing.M) {
-	// Build the binary
-	// We assume we are running from server/cmd/webhooks directory or with correct relative path
-	// But `go test ./server/cmd/webhooks` runs inside a temp dir? No, usually in package dir.
-	// Let's rely on `go build` with absolute path or relative to module root if possible.
-	// Safer: Build explicitly targeting the package.
-
-	// Check if we are in the right directory
 	wd, _ := os.Getwd()
 	fmt.Printf("Running tests in: %s\n", wd)
 
+	// In Bazel, use the pre-built binary from runfiles.
+	if srcDir := os.Getenv("TEST_SRCDIR"); srcDir != "" {
+		workspace := os.Getenv("TEST_WORKSPACE")
+		if workspace == "" {
+			workspace = "_main"
+		}
+		bazelBin := filepath.Join(srcDir, workspace, "server", "cmd", "webhooks", "webhooks")
+		if _, err := os.Stat(bazelBin); err == nil {
+			// Symlink/copy to expected name
+			_ = os.Symlink(bazelBin, "webhook-sidecar")
+			code := m.Run()
+			os.Remove("webhook-sidecar")
+			os.Exit(code)
+		}
+	}
+
+	// Fallback: build with go build (for non-Bazel runs)
 	build := exec.Command("go", "build", "-o", "webhook-sidecar", ".")
 	if out, err := build.CombinedOutput(); err != nil {
 		fmt.Fprintf(os.Stderr, "failed to build webhook-sidecar: %s\n%s", err, out)
@@ -31,8 +42,6 @@ func TestMain(m *testing.M) {
 	}
 
 	code := m.Run()
-
-	// Clean up
 	os.Remove("webhook-sidecar")
 	os.Exit(code)
 }

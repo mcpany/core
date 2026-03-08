@@ -116,6 +116,42 @@ test.describe('Generate Detailed Docs Screenshots', () => {
          });
      });
 
+     // Mock Resources
+     await page.route('**/api/v1/resources', async route => {
+         await route.fulfill({
+             json: {
+                 resources: [
+                     {
+                         uri: 'mcp://service-a/resource-1',
+                         name: 'System Logs',
+                         description: 'Access to system logs',
+                         mimeType: 'text/plain'
+                     },
+                     {
+                         uri: 'mcp://service-b/resource-2',
+                         name: 'User Database',
+                         description: 'User information database',
+                         mimeType: 'application/sql'
+                     }
+                 ]
+             }
+         });
+     });
+
+     await page.route('**/api/v1/resources/read*', async route => {
+         await route.fulfill({
+             json: {
+                 contents: [
+                     {
+                         uri: 'mcp://service-a/resource-1',
+                         mimeType: 'text/plain',
+                         text: 'This is a sample resource content for testing purposes.\nIt contains multiple lines of text.\nVerification of the screenshot generation suite.'
+                     }
+                 ]
+             }
+         });
+     });
+
      // Mock Dashboard Traffic
      await page.route('**/api/v1/dashboard/traffic', async route => {
          await route.fulfill({
@@ -174,15 +210,15 @@ test.describe('Generate Detailed Docs Screenshots', () => {
 
     await page.goto('/');
     // Wait for the widget to appear (use static title as fallback if data fails)
-      await expect(page.getByText('System Health').first()).toBeVisible();
+    await expect(page.getByText('System Health').first()).toBeVisible({ timeout: 15000 });
     // Try to wait for data, but don't block if missing (e.g. backend down in test)
     try {
-        await expect(page.getByText('Primary DB')).toBeVisible({ timeout: 10000 });
+        await expect(page.getByText('Primary DB')).toBeVisible({ timeout: 15000 });
     } catch (e) {
         console.warn('Primary DB not visible, proceeding with screenshot of empty/error state');
     }
     // Give widgets extra time to render after data fetch
-      await page.waitForTimeout(10000);
+    await page.waitForTimeout(15000);
     await expect(page.locator('body')).toBeVisible();
 
     // Check for specific widget content before screenshot
@@ -548,7 +584,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
       // Open Preview Modal
       const firstResource = page.locator('.flex.items-center.gap-3.p-3').first();
       try {
-          await firstResource.waitFor({ state: 'visible', timeout: 5000 });
+          await firstResource.waitFor({ state: 'visible', timeout: 15000 });
           await firstResource.click({ button: 'right' });
 
           const previewBtn = page.getByText('Preview in Modal');

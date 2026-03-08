@@ -90,6 +90,7 @@ PRE_COMMIT_BIN := $(TOOL_INSTALL_DIR)/pre-commit
 HELM_BIN := $(TOOL_INSTALL_DIR)/helm
 SHELLCHECK_BIN := $(TOOL_INSTALL_DIR)/shellcheck
 NATS_SERVER_BIN := $(TOOL_INSTALL_DIR)/nats-server
+BAZELISK_BIN := $(TOOL_INSTALL_DIR)/bazelisk
 
 # Helm installation variables
 HELM_VERSION ?= v3.19.0
@@ -109,12 +110,11 @@ endif
 RELEASE_DIR := $(BUILD_DIR)/release
 # PLATFORMS variable will be used to define the target platforms for the build.
 # Example: PLATFORMS := linux/amd64 linux/arm64
-# PLATFORMS ?= linux/amd64 linux/arm64
 
 # Find all .proto files, excluding vendor/cache directories
 PROTO_FILES := $(shell find ../proto -path ./vendor -prune -o -name "*.proto" -print)
 
-.PHONY: all gen build test e2e clean run build-docker run-docker gen build test e2e-local check-local release release-local release-docker
+.PHONY: all gen build test e2e clean run build-docker run-docker e2e-local check-local release release-local release-docker bazel-build bazel-build-images bazel-test bazel-test-fast
 
 all: build
 
@@ -357,11 +357,45 @@ prepare:
 			exit 1; \
 		fi; \
 	fi
+	@# Install Bazelisk
+	@echo "Checking for Bazelisk..."
+	@if test -f "$(BAZELISK_BIN)"; then \
+		echo "Bazelisk is already installed."; \
+	else \
+		echo "Installing Bazelisk to $(TOOL_INSTALL_DIR)..."; \
+		GOBIN=$(TOOL_INSTALL_DIR) $(GO_CMD) install github.com/bazelbuild/bazelisk@latest; \
+		if test -f "$(BAZELISK_BIN)"; then \
+			echo "Bazelisk installed successfully."; \
+		else \
+			echo "Bazelisk installation failed."; \
+			exit 1; \
+		fi; \
+	fi
 	@echo "Downloading go modules..." && \
 	go mod download
 	@echo "Preparation complete."
 
 
+# ==============================================================================
+# Bazel Targets (fast, cached builds and tests)
+# ==============================================================================
+BAZELISK := $(shell if [ -f $(BAZELISK_BIN) ]; then echo $(BAZELISK_BIN); else which bazelisk 2>/dev/null || echo bazelisk; fi)
+
+bazel-build:
+	@echo "Building server with Bazel..."
+	@$(BAZELISK) build //server/cmd/server:server //server/cmd/worker:worker //server/cmd/webhooks:webhooks
+
+bazel-build-images:
+	@echo "Building Docker images with Bazel..."
+	@$(BAZELISK) build //server/cmd/server:server_image //server/cmd/worker:worker_image //server/cmd/webhooks:webhooks_image
+
+bazel-test-fast:
+	@echo "Running fast unit tests with Bazel (cached)..."
+	@$(BAZELISK) test //server/...
+
+bazel-test:
+	@echo "Running all Bazel tests..."
+	@$(BAZELISK) test //server/...
 
 
 # Delegate gen to root Makefile
@@ -383,7 +417,8 @@ else
 test-server: test-fast e2e-local test-public-api
 endif
 
-test: test-server
+test:
+	@$(BAZELISK) test //server/...
 
 COVERAGE_FILE ?= coverage.out
 
@@ -401,13 +436,8 @@ e2e-sequential: build-test-images build build-examples build-e2e-mocks
 	@echo "Running sequential E2E Go tests locally with a 1800s timeout..."
 	@GEMINI_API_KEY=$(GEMINI_API_KEY) CI=$(CI) MCP_BUNDLE_DIR=$(MCP_BUNDLE_DIR) MCPANY_DEBUG=true MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) E2E_DOCKER=true MCPANY_PROJECT_ROOT=$(CURDIR) $(GO_CMD) test -p 1 -parallel 1 $(GO_RACE) -count=1 -timeout 1800s -tags=e2e -cover -coverprofile=$(BUILD_DIR)/coverage.e2e-sequential.out ./tests/e2e_sequential/... $(TEST_ARGS)
 
-test-fast: build build-examples build-e2e-mocks build-e2e-timeserver-docker
-	@echo "Running fast Go tests locally with a 3600s timeout..."
-	@TEST_PKGS=$$(go list ./... | grep -v /tests/e2e | grep -v /tests/e2e_sequential | grep -v /tests/integration | grep -v /tests/public_api | grep -v /build | grep -v /vendor | grep -v /proto); \
-	echo "Testing packages: $$TEST_PKGS"; \
-	if [ -z "$$TEST_PKGS" ]; then echo "No packages to test!"; exit 1; fi; \
-	mkdir -p $(BUILD_DIR)/bundles; \
-	GEMINI_API_KEY=$(GEMINI_API_KEY) MCP_BUNDLE_DIR=$(MCP_BUNDLE_DIR) MCPANY_DEBUG=true MCPANY_DANGEROUS_ALLOW_LOCAL_IPS=true CGO_ENABLED=1 USE_SUDO_FOR_DOCKER=$(NEEDS_SUDO_FOR_DOCKER) $(GO_CMD) test $(GO_RACE) -count=1 -timeout 3600s -cover -coverprofile=$(COVERAGE_FILE) $$TEST_PKGS
+test-fast:
+	@$(BAZELISK) test //server/...
 
 .PHONY: test-public-api
 test-public-api: build build-mock-server
@@ -453,14 +483,7 @@ lint:
 ifdef SHOULD_PROXY_TO_DOCKER
 	@$(DOCKER_PROXY_CMD) lint
 else
-	@echo "Running lint (using pre-commit)..."
-	@mkdir -p $(BUILD_DIR)/.cache/pre-commit $(BUILD_DIR)/.cache/golangci-lint
-	@export PATH=$(TOOL_INSTALL_DIR):$(BUILD_DIR)/venv/bin:$$PATH && \
-	export PRE_COMMIT_HOME=$${PRE_COMMIT_HOME:-$(BUILD_DIR)/.cache/pre-commit} && \
-	export GOLANGCI_LINT_CACHE=$(BUILD_DIR)/.cache/golangci-lint && \
-	export GOWORK=off && \
-	$(GOLANGCI_LINT_BIN) run --timeout 20m --fix ./cmd/... ./pkg/... ./tests/... ./examples/... && \
-	cd .. && pre-commit run --config server/.pre-commit-config.yaml --all-files
+	@$(BAZELISK) run //:lint
 endif
 
 clean-pre-commit:

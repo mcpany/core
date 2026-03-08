@@ -9,7 +9,7 @@ go_library(
     importpath = "github.com/mcpany/core/server/pkg/bus/redis",
     visibility = ["//visibility:public"],
     deps = [
-        "//proto/bus:bus_go_proto",
+        "//proto/bus",
         "//server/pkg/logging",
         "@com_github_redis_go_redis_v9//:go-redis",
     ],
@@ -25,7 +25,7 @@ go_test(
     ],
     embed = [":redis"],
     deps = [
-        "//proto/bus:bus_go_proto",
+        "//proto/bus",
         "//server/pkg/logging",
         "@com_github_alicebob_miniredis_v2//:miniredis",
         "@com_github_go_redis_redismock_v9//:redismock",

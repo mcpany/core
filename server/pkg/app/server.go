@@ -2115,7 +2115,7 @@ func (a *Application) runServerMode(
 		if envAddr := os.Getenv("MCPANY_DEFAULT_HTTP_ADDR"); envAddr != "" {
 			httpBindAddress = envAddr
 		} else {
-			httpBindAddress = "localhost:8070"
+			httpBindAddress = ":8070"
 		}
 	} else if !strings.Contains(httpBindAddress, ":") {
 		httpBindAddress = ":" + httpBindAddress

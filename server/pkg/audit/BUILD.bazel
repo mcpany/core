@@ -18,7 +18,7 @@ go_library(
     importpath = "github.com/mcpany/core/server/pkg/audit",
     visibility = ["//visibility:public"],
     deps = [
-        "//proto/config/v1:v1_go_proto",
+        "//proto/config/v1:config",
         "//server/pkg/validation",
         "@com_github_lib_pq//:pq",
         "@org_modernc_sqlite//:sqlite",
@@ -40,7 +40,7 @@ go_test(
     ],
     embed = [":audit"],
     deps = [
-        "//proto/config/v1:v1_go_proto",
+        "//proto/config/v1:config",
         "//server/pkg/validation",
         "@com_github_data_dog_go_sqlmock//:go-sqlmock",
         "@com_github_stretchr_testify//assert",

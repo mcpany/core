@@ -24,6 +24,20 @@ func TestBrowserProvider(t *testing.T) {
 		t.Skipf("skipping test, could not install playwright: %v", err)
 	}
 
+	// Verify the browser can actually launch (system deps like libnspr4 may be missing).
+	pw, err := playwright.Run()
+	if err != nil {
+		t.Skipf("skipping test, could not start playwright: %v", err)
+	}
+	launchBrowser, launchErr := pw.Chromium.Launch(playwright.BrowserTypeLaunchOptions{Headless: playwright.Bool(true)})
+	if launchErr == nil {
+		_ = launchBrowser.Close()
+	}
+	_ = pw.Stop()
+	if launchErr != nil {
+		t.Skipf("skipping test, could not launch browser (missing system dependencies?): %v", launchErr)
+	}
+
 	p := NewProvider()
 
 	def := p.ToolDefinition()

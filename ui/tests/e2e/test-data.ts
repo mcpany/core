@@ -52,9 +52,23 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
             name: "Math",
             version: "v1.0",
             http_service: {
-                address: "http://math-service.local:8080", // Dummy
+                address: "http://ui-http-echo-server:5678", // Use echo server instead of non-existent .local
                 tools: [
                     { name: "calculator", description: "calc", call_id: "calc_call" }
+                ],
+                prompts: [
+                    {
+                        name: "Calculate Sum",
+                        description: "Adds two numbers together",
+                        inputSchema: {
+                            type: "object",
+                            properties: {
+                                a: { type: "number", description: "First number" },
+                                b: { type: "number", description: "Second number" }
+                            },
+                            required: ["a", "b"]
+                        }
+                    }
                 ],
                 calls: {
                     calc_call: {
@@ -231,7 +245,7 @@ export const cleanupServices = async (requestContext?: APIRequestContext) => {
     // No-op
 };
 
-export const cleanupUser = async (requestContext?: APIRequestContext, username: string) => {
+export const cleanupUser = async (requestContext: APIRequestContext | undefined, username: string) => {
     // No-op
 };
 

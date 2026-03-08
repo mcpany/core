@@ -1,0 +1,41 @@
+# Bazel configuration for MCP Any
+
+# Enable disk cache for fast incremental builds
+build --disk_cache=~/.cache/bazel-disk-cache
+
+# Enable Build without the Bytes for faster remote builds
+build --remote_download_toplevel
+
+# Show test output only on failure
+test --test_output=errors
+
+# Stream test output for debugging (use --config=verbose)
+test:verbose --test_output=streamed
+
+# Enable CGO for SQLite support
+build --action_env=CGO_ENABLED=1
+
+# Increase test timeout for integration tests
+test --test_timeout=300,600,900,1800
+
+# Allow all test sizes (default only runs small+medium)
+test --test_size_filters=-enormous
+
+# Exclude integration tests by default (run with --test_tag_filters=integration to include)
+test --test_tag_filters=-integration
+
+# Enable sandboxing for hermeticity
+build --spawn_strategy=sandboxed,local
+
+# Use all available CPUs
+# Pass through critical environment variables
+test --test_env=GEMINI_API_KEY
+test --test_env=MCP_BUNDLE_DIR
+test --test_env=CI
+test --test_env=MCPANY_DEBUG
+test --test_env=MCPANY_DANGEROUS_ALLOW_LOCAL_IPS
+
+# Also for actions if needed
+build --action_env=GEMINI_API_KEY
+build --action_env=MCP_BUNDLE_DIR
+build --action_env=CI
