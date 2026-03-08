@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-08] Updates
+
+### Proposed Additions
+- **A2A Identity & DID Resolver**: (P0) A middleware that resolves Agent DIDs and validates request signatures, enabling secure A2A Mesh coordination.
+- **Tool Output Sanitization (TOS) Guard**: (P0) Heuristic and LLM-based filter to detect prompt injection attempts within tool responses.
+- **Immutable Blackboard (Ledger-Backed KV)**: (P1) An append-only version of the Shared KV store with cryptographic integrity checks.
+
+### Priority Shifts
+- **A2A Stateful Residency**: Re-affirmed as **P0**. Critical for the reliability of the A2A Trust Mesh.
+- **Provenance-First Discovery**: Re-affirmed as **P0** (Already P1, now critical for Identity Mesh).
+
+### Deprecations / Monitoring
+- **Unsigned A2A Messages**: Monitoring for deprecation in favor of DID-signed payloads.

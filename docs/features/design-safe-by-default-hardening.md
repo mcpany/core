@@ -59,3 +59,7 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-08:** **Update: Attestation-as-a-Service Integration.**
+    - Today's market sync revealed that "Attestation Tokens" need to be ephemeral and backed by a centralized policy server for enterprise use cases.
+    - **Architecture Adjustment**: Introducing an optional `AttestationProvider` interface that delegates to a remote OIDC or SPIFFE authority.
+    - **Security Impact**: Enables organization-wide revocation of remote access rights from a single control plane.

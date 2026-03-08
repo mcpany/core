@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-08]
+### Focus: Trust-Aware Agent Mesh & Verified Tool Outputs
+**Context**: As the ecosystem moves from standalone agents to complex agent meshes, the trust model must evolve. Today's findings on "Agent DIDs" and "Tool Output Poisoning" highlight the need for a protocol-level security layer that validates both the identity of the agent and the integrity of the tool's response.
+**Strategic Pivot**:
+- **A2A Identity Mesh**: MCP Any will integrate with emerging DID (Decentralized Identifier) standards to provide a "Verifiable Agency" layer. Every agent interaction on the bus will be cryptographically signed and attributed.
+- **Tool Output Sanitization (TOS)**: Implementing a "System-Instruction Guard" middleware that inspects tool outputs for prompt-injection patterns before they reach the parent LLM.
+- **Immutable Blackboard**: Transitioning the Shared KV Store to an "Append-Only Immutable Ledger" with per-key cryptographic proofs to prevent "Blackboard Poisoning" by malicious subagents.
