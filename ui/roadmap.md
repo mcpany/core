@@ -107,3 +107,9 @@
 - [ ] **Log Source Color Coding**: Assign distinct colors to different log sources automatically for better visual separation.
 - [ ] **Context Usage History**: Track total context usage over time to identify growth trends (requires backend metrics persistence).
 - [ ] **Tool Schema Optimizer**: Analyze tool schemas and suggest removing unused properties or compacting descriptions to save context tokens.
+
+### Universal Agent Bus (2026-03-07 Evolution)
+- [ ] **[P0] P2P Mesh Explorer**: Visual dashboard for discovering and managing Peer-to-Peer agentic mesh nodes. (Added: 2026-03-07)
+- [ ] **[P0] Intent Verification Dashboard**: Security interface for reviewing and signing subagent intents and task scopes. (Added: 2026-03-07)
+- [ ] **[P1] Context Pre-warming Metrics**: Real-time performance tracking for predictive context pre-warming. (Added: 2026-03-07)
+- [ ] **[P1] VEX Security Viewer**: Security dashboard for visualizing vulnerabilities (VEX) associated with discovered MCP tools. (Added: 2026-03-07)

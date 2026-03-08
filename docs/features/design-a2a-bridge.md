@@ -46,3 +46,11 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+
+### Update: 2026-03-07 - P2P Mesh Integration & Stateful Handoffs
+**Context**: The shift toward an "Agentic Mesh" requires the A2A Bridge to support decentralized discovery and more robust, asynchronous task handoffs between mesh nodes.
+**Architecture Adjustment**:
+* **Mesh Node Discovery**: Integrating with the `P2P Mesh Discovery (mDNS/DHT)` engine to automatically find A2A-capable agents on the network.
+* **Stateful Handoff Residency**: Leveraging the `A2A Stateful Residency` feature to buffer messages for A2A agents that are intermittently connected to the mesh.
+* **Intent-Bound Handoffs**: Implementing `Subagent Intent Verification (SIV)` to sign and validate the task descriptions passed during A2A handoffs.
+**Security Impact**: Ensures that inter-agent delegation within the mesh is cryptographically verified and restricted to the original user intent.

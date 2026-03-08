@@ -81,3 +81,20 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-07] Updates
+
+### Proposed Additions
+- **Predictive Context Pre-warming Engine**: (P1) Middleware that analyzes the initial LLM prompt to pre-fetch and cache tool schemas, reducing tool discovery latency.
+- **P2P Mesh Discovery (mDNS/DHT)**: (P0) Allows MCP Any nodes to discover each other on local networks or via distributed hash tables, forming a decentralized agent mesh.
+- **Subagent Intent Verification (SIV)**: (P0) Cryptographically signs parent agent intents and validates subagent tool calls against those signed intents.
+- **VEX-Aware Discovery**: (P1) Integration with Vulnerability Exploitability eXchange (VEX) to filter or disable tools with unpatched security vulnerabilities.
+
+### Priority Shifts
+- **Environment Bridging Middleware**: Re-affirmed as **P0**. Critical for the "Bridged Sandbox" architecture.
+- **Federated MCP Node Peering**: Promoted to **P0** as it forms the basis for the Federated Agentic Mesh.
+
+### Deprecations / Monitoring
+- **Centralized MCP Registry Support**: Monitoring for deprecation in favor of P2P Mesh Discovery.
