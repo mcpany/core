@@ -15,7 +15,8 @@ import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { useState, useEffect } from "react";
 import { SmartResultRenderer } from "./smart-result-renderer";
 import { estimateTokens, formatTokenCount } from "@/lib/tokens";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { DiffViewer } from "@/components/services/editor/diff-viewer";
 import { useTheme } from "next-themes";
 import { defineDraculaTheme } from "@/lib/monaco-theme";
 import dynamic from "next/dynamic";
@@ -254,29 +255,30 @@ export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
                             <GitCompare className="size-5" />
                             Output Difference
                         </DialogTitle>
+                        <DialogDescription>
+                            Review the changes between the previous and current output of <strong>{message.toolName}</strong>.
+                        </DialogDescription>
                     </DialogHeader>
-                    <div className="flex-1 border rounded-md overflow-hidden bg-[#1e1e1e]">
-                        <DiffEditor
-                            original={JSON.stringify(prevUnwrapped, null, 2)}
-                            modified={JSON.stringify(currUnwrapped, null, 2)}
-                            language="json"
-                            theme={theme === "dark" ? "dracula" : "light"}
-                            onMount={(editor, monaco) => {
-                                if (theme === "dark") {
-                                    defineDraculaTheme(monaco);
-                                    monaco.editor.setTheme("dracula");
-                                }
-                            }}
-                            options={{
-                                readOnly: true,
-                                minimap: { enabled: false },
-                                scrollBeyondLastLine: false,
-                                fontSize: 12,
-                                diffCodeLens: true,
-                                renderSideBySide: true,
-                            }}
-                        />
+
+                    <div className="flex-1 min-h-0 py-4 flex flex-col gap-4">
+                        <div className="flex-1 border rounded-md overflow-hidden bg-muted/10 flex flex-col">
+                            <div className="flex items-center justify-between px-4 py-2 border-b bg-muted/20 text-xs font-medium text-muted-foreground">
+                                <span>Previous Output</span>
+                                <span>Current Output</span>
+                            </div>
+                            <div className="flex-1 relative">
+                                <DiffViewer
+                                    original={JSON.stringify(prevUnwrapped, null, 2)}
+                                    modified={JSON.stringify(currUnwrapped, null, 2)}
+                                    language="json"
+                                />
+                            </div>
+                        </div>
                     </div>
+
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setShowDiff(false)}>Close</Button>
+                    </DialogFooter>
                 </DialogContent>
             </Dialog>
             </>

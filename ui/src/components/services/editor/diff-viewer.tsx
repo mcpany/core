@@ -29,7 +29,7 @@ export function DiffViewer({ original, modified, language = "yaml" }: DiffViewer
     const { theme } = useTheme();
 
     return (
-        <div className="h-[500px] border rounded-md overflow-hidden">
+        <div className="h-full min-h-[500px] border rounded-md overflow-hidden flex flex-col">
             <DiffEditor
                 height="100%"
                 language={language}

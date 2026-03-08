@@ -103,16 +103,18 @@ export function ReplayDiffDialog({ open, onOpenChange, trace }: ReplayDiffDialog
                         </Alert>
                     )}
 
-                    <div className="flex-1 border rounded-md overflow-hidden bg-muted/10">
+                    <div className="flex-1 border rounded-md overflow-hidden bg-muted/10 flex flex-col">
                         <div className="flex items-center justify-between px-4 py-2 border-b bg-muted/20 text-xs font-medium text-muted-foreground">
                             <span>Original Output ({new Date(trace.timestamp).toLocaleTimeString()})</span>
                             <span>Replay Output (Now)</span>
                         </div>
-                        <DiffViewer
-                            original={originalOutput}
-                            modified={newOutput}
-                            language="json"
-                        />
+                        <div className="flex-1 relative">
+                            <DiffViewer
+                                original={originalOutput}
+                                modified={newOutput}
+                                language="json"
+                            />
+                        </div>
                     </div>
                 </div>
 
