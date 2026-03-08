@@ -57,3 +57,11 @@ As the number of available MCP tools grows, agents face "context pollution"—wh
 
 ## 7. Evolutionary Changelog
 *   **2026-02-25:** Initial Document Creation.
+
+### Update: 2026-03-03 - Semantic Embedding Migration
+**Context:** Recent Claude Cookbook updates emphasize "Tool Search with Embeddings" as the only way to scale to thousands of tools. Simple FTS/BM25 is no longer sufficient for nuanced intent matching.
+**Architecture Adjustment:**
+*   **Vector Registry**: Replacing the Bleve-based FTS index with a local vector database (e.g., ChromaDB or SQLite-VEC).
+*   **Hierarchical Workspace Scoping**: Integrating workspace-aware tool filtering into the vector retrieval process, aligning with OpenClaw v2.26 subagent isolation policies.
+*   **Attested Discovery**: Embedding the tool's provenance metadata directly in the vector space, allowing for "security-weighted" search results.
+**Impact:** Enables seamless discovery across 10,000+ tools with <50ms latency.

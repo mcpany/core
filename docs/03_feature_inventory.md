@@ -81,3 +81,20 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-03] Updates
+
+### Proposed Additions
+- **Background Context Compaction Engine**: (P0) Automated summarization and caching of session state to mitigate context bloat in deep swarms.
+- **Semantic Embedding Tool Registry**: (P0) Replaces the list-based registry with a vector-indexed discovery system for massive tool sets.
+- **Hierarchical Workspace Scoping**: (P1) Tool visibility restricted by agent workspace (inspired by OpenClaw v2.23+).
+- **Decoupled External Secrets Provider**: (P1) Integration with external secret managers (Vault, 1Password) to align with OpenClaw v2.26.
+
+### Priority Shifts
+- **On-Demand Discovery Middleware (Lazy-MCP)**: Re-affirmed as **P0** and upgraded to use semantic embeddings.
+- **Recursive Context Protocol**: Promoted to **P0** with mandatory Compaction support.
+
+### Deprecations / Monitoring
+- **List-Based Tool Discovery**: Deprecating `tools/list` for sessions with >100 tools in favor of semantic search.
