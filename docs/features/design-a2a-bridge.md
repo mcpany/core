@@ -46,3 +46,6 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-03-07:** Evolution to Stateful Residency.
+    - **Context**: Today's findings show a need for A2A communication to survive client-side session resets.
+    - **Architecture Adjustment**: Implementing "A2A Mailboxing" in Section 4. MCP Any now acts as a durable buffer for A2A messages, persisting them in the Blackboard until the target agent is online and ready.
