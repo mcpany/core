@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-04] Updates
+
+### Proposed Additions
+- **Reasoning Trace Redaction Middleware**: (P1) Automatically detects and redacts sensitive data encoded in internal agent reasoning traces (e.g., steganographic CoT).
+- **Unified HITL Approval Gateway**: (P0) A central governance hub that standardizes "Human-in-the-Loop" approval flows across all connected agent frameworks.
+- **Label-Aware Information Flow Controller**: (P0) Middleware that tracks security labels through the agent session and enforces tool access policies based on context sensitivity.
+
+### Priority Shifts
+- **HITL Middleware**: Promoted from **P0** (already P0) to **Strategic Anchor**. It is now the foundation of our Governance layer.
+- **A2A Stateful Residency**: Promoted to **P0** (already P0) and integrated with the Reasoning Trace Scrutiny features.
+
+### Deprecations / Monitoring
+- **Uninspected Reasoning Logs**: Deprecating the practice of logging raw reasoning traces without security scrubbing.
