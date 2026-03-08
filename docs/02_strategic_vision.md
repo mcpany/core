@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-07]
+### Focus: Secure Orchestration & Parallel Swarm Coordination
+**Context**: The massive vulnerability spree in OpenClaw (Zip Slip, Localhost Trust Flaw) and the release of Claude Agent Teams highlight a critical architectural requirement: MCP Any must transition from a "Passive Tool Gateway" to an "Active Orchestration Guard."
+**Strategic Pivot**:
+- **Secure Skill Isolation (Sandboxed Installation)**: To prevent OpenClaw-style path traversal, MCP Any will implement a "Virtual File System" layer for MCP server installations. No MCP server will be allowed to touch the host filesystem directly; all "local" installs will be directed into isolated, content-addressed storage (CAS) with strictly limited entry points.
+- **Swarm Message Bus (A2A+)**: Expanding the A2A bridge to support "Parallel Team Messaging." MCP Any will provide a shared blackboard and message-passing interface that handles context partitioning, ensuring that parallel agents in a swarm can coordinate without state collisions or context leakage.
+- **Metadata-Driven Policy Enforcement**: Leveraging the annotation standards emerging in Gemini CLI to implement "Attribute-Based Access Control" (ABAC). Security policies will no longer just be about "Tool X can run," but "Tool X can run only if it has the 'Safe-For-Swarm' annotation and the caller is in the 'Team Lead' role."

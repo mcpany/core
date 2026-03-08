@@ -81,3 +81,16 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-07] Updates
+
+### Proposed Additions
+- **CAS-Based Skill Installer**: (P0) Content-Addressed Storage installation mechanism for MCP servers to prevent path traversal (Zip Slip) attacks.
+- **Parallel Swarm Bus**: (P0) Middleware for handling direct agent-to-agent messaging and task status synchronization for swarms (Claude Agent Teams compatible).
+- **Attribute-Based Access Control (ABAC) Engine**: (P1) Policy engine extension that evaluates tool metadata (annotations) and caller roles before tool execution.
+
+### Priority Shifts
+- **A2A Stateful Residency**: Promoted to **P0** (Already P0, but re-prioritized for immediate implementation to support Parallel Swarm Bus).
+- **Policy Firewall**: Expanded to include ABAC capabilities.

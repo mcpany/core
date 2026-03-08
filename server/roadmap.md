@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-07 Evolution)
+*   **[P0] CAS-Based Skill Installer**: Secure Content-Addressed Storage for local MCP servers to mitigate path traversal risks. (Added: 2026-03-07)
+*   **[P0] Parallel Swarm Bus**: Middleware for inter-agent messaging and state sync for parallel agent teams. (Added: 2026-03-07)
+*   **[P1] ABAC Policy Extension**: Attribute-Based Access Control using tool annotations and caller roles. (Added: 2026-03-07)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
