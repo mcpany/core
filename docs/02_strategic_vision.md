@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-05]
+### Focus: Agent-Aware Identity & Non-Human Identity (NHI) Orchestration
+**Context**: Today's findings show that agents (e.g., OpenClaw, Gemini CLI) are increasingly acting autonomously but lack a standardized, secure way to manage their own identities and credentials. The "GTG-1002" swarm attack highlights the dangers of agents sharing credentials without granular oversight.
+**Strategic Pivot**:
+- **Agent Identity Provider (AIdP)**: MCP Any will evolve to become the primary Identity Provider for agents. It will issue short-lived, task-bound "Capability Tokens" (based on the Non-Human Identity (NHI) standard) that agents use to authenticate with tools and other agents.
+- **Task-Scoped Credential Injection**: Instead of agents managing long-lived API keys, MCP Any will inject task-scoped, ephemeral credentials into the tool execution environment on-the-fly, based on the verified intent of the agent.
+- **Swarm Policy Enforcement**: Implementing policies that detect and mitigate "Swarm-like" patterns (e.g., coordinated micro-exfiltration) across multiple agent sessions, moving beyond per-tool limits to collective behavioral analysis.

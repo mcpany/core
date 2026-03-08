@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-05 Evolution)
+*   **[P0] Agent Identity Provider (AIdP)**: Implement JWT-based NHI (Non-Human Identity) token issuance for task-scoped agent authentication. (Added: 2026-03-05)
+*   **[P0] Task-Scoped Credential Injection**: Middleware to inject ephemeral secrets into tool environments based on active NHI tokens. (Added: 2026-03-05)
+*   **[P1] Swarm Behavioral Policy Engine**: Collective analysis of tool call patterns to detect coordinated agent swarm attacks (e.g., micro-exfiltration). (Added: 2026-03-05)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

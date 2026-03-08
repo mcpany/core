@@ -81,3 +81,16 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-05] Updates
+
+### Proposed Additions
+- **Agent Identity Provider (AIdP)**: (P0) Implementation of Non-Human Identity (NHI) tokens for agents to use for tool-to-tool and agent-to-agent authentication.
+- **Dynamic Credential Injection Middleware**: (P0) Middleware that injects ephemeral, task-scoped API keys into tool environments, reducing the need for long-lived secrets in agent config.
+- **Collective Behavioral Analysis Engine**: (P1) Advanced monitoring to detect coordinated "swarm" patterns across multiple, seemingly unrelated agent sessions.
+
+### Priority Shifts
+- **Policy Firewall**: Re-affirmed as **P0**. Essential for enforcing the granular "Task-Scoped" permissions needed for NHI.
+- **Provenance-First Discovery**: Promoted from **P1** to **P0** to prevent "Shadow Agents" from introducing unverified tools into the corporate ecosystem.
