@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-04]
+### Focus: Origin Security & Hook Portability
+**Context**: The "OpenClaw WebSocket Hijack" incident has exposed a critical vulnerability in how local agent gateways trust browser-originated traffic. Simultaneously, Claude Code's move to HTTP hooks signal a shift towards more portable and isolated extension mechanisms.
+**Strategic Pivot**:
+- **Origin-Aware Enforcement**: MCP Any will implement mandatory WebSocket Origin verification and CORS-like policies for all local listeners. This prevents "Silent Hijacks" from malicious websites.
+- **Hook Portability Standard**: Moving beyond shell-based hooks to a standardized HTTP-based hook interface. This allows security-conscious users to run hooks in isolated "sidecar" containers rather than the host shell.
+- **Repository-Scale Context Memory**: Shifting state management from "Session-Bound" to "Repository-Bound," ensuring that agents maintain consistent memory across different worktrees and branches, matching the latest trends in professional coding agents.

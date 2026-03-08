@@ -46,3 +46,10 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+
+### Update: 2026-03-04 - Standardizing on HTTP Callback Hooks
+**Context:** Claude Code 2.1.63 has introduced a shift towards HTTP-based hooks for better isolation. Multi-agent workflows require a more portable way to handle callbacks than local shell scripts.
+**Architecture Adjustment:**
+*   Adding support for HTTP POST JSON callback hooks in the A2A translation layer.
+*   Deprecating local shell execution for A2A handoff callbacks in favor of container-friendly webhooks.
+**Security Impact:** Reduces the host-level attack surface and enables agents to operate in more restrictive, isolated environments without losing the ability to coordinate.
