@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-05]
+### Focus: Autonomous Scheduling & Semantic Tool Discovery
+**Context**: Today's findings show that OpenClaw's autonomous "heartbeat scheduler" and Claude's "Tool Search" standard have reached critical mass. MCP Any must evolve to support autonomous, scheduled tool execution and lazy, semantic tool loading to prevent context pollution in massive (100+) tool libraries.
+**Strategic Pivot**:
+- **Autonomous Heartbeat Middleware**: MCP Any will provide a scheduler component that can trigger tool calls based on time-based "heartbeats," mimicking OpenClaw's autonomous behavior.
+- **Universal Tool Search (Semantic Discovery)**: Aligning with the Anthropic standard, MCP Any will pivot its "Lazy-MCP" implementation to be a semantic-search-first gateway. This will allow agents to "search" for tools by description, loading only the relevant ones into context.
+- **Messaging-Bound Persistence**: MCP Any will act as a stateful "mailbox" for agents running on messaging platforms (WhatsApp/Telegram), providing a stable residence for tasks and results even when local agents are offline.

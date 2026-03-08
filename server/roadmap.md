@@ -34,6 +34,12 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-05 Evolution)
+*   **[P1] OpenClaw Messaging Bridge**: Native adapter for messaging-triggered tools (WhatsApp, Telegram, Slack). (Added: 2026-03-05)
+*   **[P0] Claude-Compatible Tool Search**: Alignment with the Anthropic `ToolSearchTool` standard for lazy tool loading. (Added: 2026-03-05)
+*   **[P1] Message-Bound Agent Buffer**: Persistent mailbox for A2A agents on messaging platforms with intermittent connectivity. (Added: 2026-03-05)
+*   **[P1] Autonomous Heartbeat Scheduler**: Middleware for autonomous tool triggering at set intervals. (Added: 2026-03-05)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
