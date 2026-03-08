@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-08] Updates
+
+### Proposed Additions
+- **Smart MCP Server Deduplicator**: (P0) A fingerprinting-based middleware that detects and merges identical MCP servers and tools to prevent context pollution and tool shadowing.
+- **Hierarchical Project-Scoped Configuration**: (P1) Support for local project-level configuration (`.mcpany/local.yaml`) that seamlessly overrides global settings without compromising team-shared configs.
+- **Pre-Prompt "Warmup" Protocol**: (P1) Ensures all MCP tool sources are synchronized and schemas verified before an agent turn begins, optimizing prompt-cache performance.
+
+### Priority Shifts
+- **Lazy-MCP Tool Search**: Re-affirmed as **P0**. Essential for scaling to 100+ tools while maintaining high-performance deduplication.
+- **Safe-by-Default Network Hardening**: Promoted to **P0**. Prerequisite for secure project-scoped plugin isolation.
+
+### Deprecations / Monitoring
+- **Global-Only Configuration**: Moving towards deprecation in favor of hierarchical, scoped configuration models.
