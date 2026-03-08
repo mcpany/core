@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-02]
+### Focus: Origin-Aware Security & Prompt-Hardened Tooling
+**Context**: The disclosure of a hijacking vulnerability in OpenClaw and the MS-Agent command injection flaw (CVE-2026-2256) have exposed critical weaknesses in how agents handle untrusted origins and malicious prompts. Ease-of-integration has become a liability without robust defensive layers.
+**Strategic Pivot**:
+- **Origin-Aware Execution (CORV)**: MCP Any will implement Cross-Origin Request Verification (CORV), ensuring that every tool call is cryptographically bound to a verified, local origin. This prevents "Ambient Hijacking" from malicious websites.
+- **Prompt-Injection Firewall (PIF)**: Moving beyond regex denylists to a multi-layered firewall that uses "Intent-Verification" LLM loops to validate tool arguments against the high-level task.
+- **Deny-by-Default Shell Tools**: All shell-like or arbitrary code execution tools will be moved to a strict "Opt-In" allowlist with mandatory human-in-the-loop (HITL) approval, regardless of the agent's autonomous level.
