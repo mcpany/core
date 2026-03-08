@@ -53,6 +53,7 @@ go_test(
         "bundle_cleanup_test.go",
         "bundle_coverage_test.go",
         "bundle_gc_test.go",
+        "bundle_local_transport_test.go",
         "bundle_test.go",
         "bundle_transport_robustness_test.go",
         "bundle_transport_test.go",

@@ -1,21 +1,10 @@
 # Coverage Intervention Report
 
-**Target:** `server/pkg/tokenizer/tokenizer.go`
-**Function:** `countTokensInValueSimpleFast`
-
-**Risk Profile:**
-This utility function handles rate-limiting and billing token calculations across various map, slice, and primitive inputs. It has a high cyclomatic complexity (35) due to its switch statements and optimizations, yet it was missing tests for many of its critical paths, posing a high risk for billing or API limits bugs in edge cases. This function was selected based on its core utility nature combined with its 59.8% test coverage before intervention.
-
-**New Coverage:**
-The following logic paths are now guarded by the new table-driven tests:
-- `map[string]int`, `map[string]int64`, `map[string]float64`, `map[string]bool`
-- `[]byte` (empty and non-empty)
-- Primitives (`int`, `int64`, `bool`)
-- `float64` (integer and fractional variants)
-- Slices (`[]string`, `[]int`, `[]int64`, `[]bool`, `[]float64`)
-- `map[string]string`
-- Edge cases (`nil`, unhandled types)
-The function's test coverage increased from **59.8% to 97.7%**.
-
-**Verification:**
-Confirmed that `go test ./pkg/tokenizer/...` passes cleanly. The implementation adheres to the existing `SimpleTokenizer` mocking and testing patterns, utilizing a Go table-driven test style matching `server/pkg/tokenizer/tokenizer_test.go`. The test logic preserves "Do No Harm" by introducing tests seamlessly alongside existing ones.
+* **Target:** `server/pkg/upstream/mcp/bundle_local_transport.go` (and `server/pkg/upstream/mcp/bundle_local_transport_test.go`)
+* **Risk Profile:** This code is part of the core tool registration and command execution flow, acting as a gateway that spawns local processes via `exec.CommandContext`. Because it directly executes processes on the host based on configuration, the consequences of bugs here (such as unhandled errors, process leaks, or failures to capture stdio appropriately) represent a high risk. It had 0% test coverage before this intervention.
+* **New Coverage:** The following logic paths are now guarded with proper test assertions:
+  * **Success Path (`Connect`):** Verifies that `Connect()` correctly instantiates a `StdioTransport`, spawns the desired process, and successfully establishes a two-way JSON-RPC connection over Stdio.
+  * **Error Handling (Process startup failure):** Verifies that if a non-existent executable is specified, `Connect()` gracefully fails with an "executable file not found" error rather than crashing or hanging.
+  * **Error Handling (Stderr capture on failure):** Verifies that if the target process prints to `stderr` and exits with an error code, the returned error captures and includes the `stderr` output (mimicking the `StdioTransport` behavior).
+  * **Edge Case (Early exit):** Tests the case where the target process exits immediately (e.g., executing `ls` on a nonexistent file) to ensure early termination is correctly handled.
+* **Verification:** Confirmed that `make test` and `make lint` both passed cleanly without regressions to the broader test suite.
