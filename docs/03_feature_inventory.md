@@ -81,3 +81,16 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-06] Updates
+
+### Proposed Additions
+- **Event-Driven Streaming Adapter (FastMCP+)**: (P0) A bi-directional, persistent adapter for real-time data streaming and event subscription.
+- **Federated Identity Attestation**: (P0) Cryptographic framework for verifying the identity of agents and tools across federated boundaries.
+- **Reactive Agent Coordination Middleware**: (P1) High-performance middleware to enable agents to orchestrate actions on event streams with sub-second latency.
+
+### Priority Shifts
+- **Unified Discovery Manager**: Promoted from **P1** to **P0**. Critical for discovery in federated environments.
+- **Provenance-First Discovery**: Promoted from **P1** to **P0**. Re-affirmed as essential for verified federated identity.
