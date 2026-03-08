@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-05] Updates
+
+### Proposed Additions
+- **Autonomous Tool Refinement (ATR) Proxy**: (P0) A middleware that captures agent feedback/errors and proposes schema refinements. Includes HITL approval workflow.
+- **Dynamic Swarm State Buffer (DSB)**: (P0) Infrastructure-level state persistence for A2A messages, preventing state loss during subagent failures ("Zombie Sessions").
+- **Multi-Modal Context Indexer**: (P1) Ability to ingest screenshots and UI metadata to enhance tool discovery and relevance.
+
+### Priority Shifts
+- **A2A Stateful Residency**: (Already P0) Renamed to **Dynamic Swarm State Buffer** to reflect broader swarm stability goals.
+- **HITL Middleware**: Re-affirmed as **P0** as it's a prerequisite for Autonomous Tool Refinement approvals.
+
+### Deprecations / Monitoring
+- **Static Schema Enforcement**: Moving towards "Evolutionary Schemas" where the server can negotiate tool signatures with the agent.
