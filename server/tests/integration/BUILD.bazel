@@ -56,7 +56,7 @@ go_test(
     ],
     data = glob(["testdata/**"]) + [
         "//server:go.mod",
-        "//server/cmd/server:server",
+        "//server/cmd/server",
         "//server/cmd/server:server_tarball",
         "//server/tests:tls_certs",
         "//server/tests/integration/cmd/mocks/grpc_authed_weather_server",
