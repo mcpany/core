@@ -14,7 +14,9 @@ import type {
 } from "@/components/ui/toast"
 
 const TOAST_LIMIT = 1
-const TOAST_REMOVE_DELAY = 1000000
+// ⚡ BOLT: [Memory] Reduced toast retention delay from 16m to 5s to prevent state/DOM memory leaks.
+// Randomized Selection from Top 5 High-Impact Targets
+const TOAST_REMOVE_DELAY = 5000
 
 type ToasterToast = ToastProps & {
   id: string
