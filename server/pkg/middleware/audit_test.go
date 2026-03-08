@@ -264,3 +264,107 @@ func TestAuditMiddleware_WriteError(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, "success", res)
 }
+
+func TestAuditMiddleware_Broadcaster(t *testing.T) {
+	mockStore := &MockAuditStore{}
+	cfg := configv1.AuditConfig_builder{
+		Enabled:      proto.Bool(true),
+	}.Build()
+	mw, err := NewAuditMiddleware(cfg)
+	require.NoError(t, err)
+	mw.SetStore(mockStore)
+
+	ch, history := mw.SubscribeWithHistory()
+	assert.Empty(t, history)
+
+	ctx := context.Background()
+	req := &tool.ExecutionRequest{
+		ToolName:   "test-tool-broadcast",
+	}
+
+	next := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+		return "success", nil
+	}
+
+	_, err = mw.Execute(ctx, req, next)
+	assert.NoError(t, err)
+
+	// Receive from channel with a timeout
+	select {
+	case entry := <-ch:
+		auditEntry, ok := entry.(audit.Entry)
+		require.True(t, ok)
+		assert.Equal(t, "test-tool-broadcast", auditEntry.ToolName)
+	case <-time.After(1 * time.Second):
+		t.Fatal("timeout waiting for broadcast entry")
+	}
+
+	history = mw.GetHistory()
+	assert.Len(t, history, 1)
+	auditEntry, ok := history[0].(audit.Entry)
+	require.True(t, ok)
+	assert.Equal(t, "test-tool-broadcast", auditEntry.ToolName)
+
+	mw.Unsubscribe(ch)
+
+	// Drain any remaining messages in the channel to prevent false positives
+	for len(ch) > 0 {
+		<-ch
+	}
+
+	_, err = mw.Execute(ctx, req, next)
+	assert.NoError(t, err)
+
+	// Since we unsubscribed, there shouldn't be anything coming in (or it panics if closed)
+	// We just need to assert the channel is closed or empty
+	select {
+	case msg, ok := <-ch:
+		if ok {
+			t.Fatalf("received unexpected message on unsubscribed channel: %v", msg)
+		}
+		// If not ok, channel is closed, which is expected behavior
+	case <-time.After(10 * time.Millisecond):
+		// Expected if channel is not closed but just unsubscribed (though Unsubscribe closes it)
+	}
+}
+
+func TestAuditMiddleware_WriteDirect(t *testing.T) {
+	mockStore := &MockAuditStore{}
+	cfg := configv1.AuditConfig_builder{
+		Enabled:      proto.Bool(true),
+	}.Build()
+	mw, err := NewAuditMiddleware(cfg)
+	require.NoError(t, err)
+	mw.SetStore(mockStore)
+
+	ctx := context.Background()
+	entry := audit.Entry{
+		ToolName: "direct-write-tool",
+		Result:   "direct-result",
+	}
+
+	err = mw.Write(ctx, entry)
+	assert.NoError(t, err)
+
+	assert.Len(t, mockStore.Entries, 1)
+	assert.Equal(t, "direct-write-tool", mockStore.Entries[0].ToolName)
+	assert.Equal(t, "direct-result", mockStore.Entries[0].Result)
+
+	mw.SetStore(nil)
+	err = mw.Write(ctx, entry)
+	assert.Error(t, err)
+	assert.Equal(t, "audit store not initialized", err.Error())
+}
+
+func TestAuditMiddleware_ReadDirectError(t *testing.T) {
+	cfg := configv1.AuditConfig_builder{
+		Enabled:      proto.Bool(true),
+	}.Build()
+	mw, err := NewAuditMiddleware(cfg)
+	require.NoError(t, err)
+
+	mw.SetStore(nil)
+	_, err = mw.Read(context.Background(), audit.Filter{})
+	assert.Error(t, err)
+	assert.Equal(t, "audit store not initialized", err.Error())
+}
