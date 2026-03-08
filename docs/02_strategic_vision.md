@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-08]
+### Focus: Swarm Governance & A2A Observability
+**Context**: Today's findings show a massive shift toward "Agentic Swarms" (Gemini's Generalist Agent, Claude's Agent Teams). However, with 100+ agents coordinating, the primary bottlenecks are "Observability Blind Spots" and "Delegated Decision Risks." The BoryptGrab threat also highlights the danger of unverified "Agentic Software."
+**Strategic Pivot**:
+- **Swarm Governance Framework**: MCP Any will introduce a "Critic Agent" middleware that acts as an automated auditor for all inter-agent messages. This ensures that subagent actions align with the parent agent's original intent.
+- **Observability-First A2A Routing**: Shifting from simple message bridging to "Deterministic Traceable Routing," where every handoff between agents is logged with a cryptographic "Lineage Token" to provide full accountability for swarm decisions.
+- **Hardened Agent-to-Agent Mesh**: Integrating project-level policies and wildcards (following Gemini CLI's v0.32.0 lead) to ensure that agent teams are isolated by default and can only share tools through explicit, policy-verified connections.

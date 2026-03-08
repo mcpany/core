@@ -75,6 +75,15 @@
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
+---
+
+## Evolution: [2026-03-08] Updates
+
+### Proposed Additions
+- **Swarm Governance Middleware (Critic Agent)**: (P0) Automated auditor that intercepts and validates inter-agent messages against parent intent.
+- **Model-Steering Context Propagation**: (P1) Middleware to propagate "Steering Hints" (from Gemini CLI) through the MCP stack to specialized subagents.
+- **A2A Interaction Observability Dashboard**: (P0) Real-time visualization of multi-agent handoffs, message lineages, and decision-tree audits.
+
 ### Priority Shifts
 - **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
 - **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.
