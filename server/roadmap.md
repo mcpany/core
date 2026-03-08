@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-07 Evolution)
+*   **[P0] Quarantine-First Config Controller**: Securely quarantine imported/discovered configs until human "Release." (Added: 2026-03-07)
+*   **[P0] Identity-Bound Tool Signing**: Cryptographically bind tool calls to human user sessions. (Added: 2026-03-07)
+*   **[P1] Asynchronous Task Middleware (ATM)**: Support for long-running MCP tool execution (SEP-1686). (Added: 2026-03-07)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

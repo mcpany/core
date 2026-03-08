@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-07]
+### Focus: Quarantine-First Security & Asynchronous Task Orchestration
+**Context**: Recent critical exploits in Claude Code (CVE-2025-59536) and the shift towards asynchronous operations in the official MCP roadmap have fundamentally changed the risk and capability profile of agent infrastructure.
+**Strategic Pivot**:
+- **Quarantine-First Configuration**: MCP Any will move to a "Quarantine-First" model for all discovered or imported configurations (e.g., `.mcp/config.yaml`). No tool, hook, or transport will be active until explicitly "Released" by a verified user session.
+- **Asynchronous Task Middleware (ATM)**: As MCP moves towards SEP-1686, MCP Any will evolve to handle long-running tool execution (minutes to hours) by implementing a robust status-polling and callback gateway, preventing "Blocking-by-Default" in agent swarms.
+- **Identity-First Tooling**: Shifting focus from "Tool Access" to "Identity-Bound Tooling," where every tool call is cryptographically signed by both the agent and the human user, mitigating the risk of "Secret Exfiltration" seen in recent industry attacks.
