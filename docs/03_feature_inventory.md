@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-07] Updates
+
+### Proposed Additions
+- **Origin-Locked RPC Gateway**: (P0) Strict verification of `Origin` and `Referer` headers for incoming JSON-RPC calls. Prevents website-based agent hijacking.
+- **Event-Driven Blackboard Middleware**: (P0) Transition the "Shared KV Store" to a pub-sub model, enabling agents to react to state changes in real-time.
+- **Delegation Proxy (ACP-Compatible)**: (P1) Automatic support for the emerging "ACP" (Agent Control Protocol) for secure task delegation.
+
+### Priority Shifts
+- **Safe-by-Default Hardening**: Re-affirmed as **P0**. High urgency following the OpenClaw exploit.
+- **Policy Firewall Engine**: Promoted to **P0** (Prerequisite for secure origin-based tool gating).
+
+### Deprecations / Monitoring
+- **Unverified Local HTTP Calls**: Monitor for future deprecation of any local HTTP interface that doesn't implement origin-based validation.

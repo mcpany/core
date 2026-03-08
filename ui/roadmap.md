@@ -14,6 +14,9 @@
 - [ ] **[P0] Connectivity & Security Dashboard**: Visualize local-only vs remote exposure, attestation status, and active MFA sessions. (Added: 2026-02-28)
 - [ ] **[P0] Stateful A2A Mailbox**: UI for viewing queued and delivered A2A messages across the agent mesh. (Added: 2026-02-28)
 - [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
+- [ ] **[P0] Origin Whitelist Manager**: UI for reviewing and managing trusted web origins. (Added: 2026-03-07)
+- [ ] **[P0] Event-Driven Blackboard Monitor**: Real-time visualization of Blackboard state changes and event streams. (Added: 2026-03-07)
+- [ ] **[P1] ACP Delegation Tracer**: Sequence diagrams for subagent tasking via ACP protocol. (Added: 2026-03-07)
 - [x] **[P1] Tool Playground & Explorer**:
   - [x] Auto-generated forms from Tool JSON Schemas.
   - [x] "Execute" button with history and result visualization.
