@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-07] Updates
+
+### Proposed Additions
+- **A2A Trust Attestation Middleware**: (P0) Cryptographically verify the identity and reputation of agents before allowing task delegation or tool access. Essential for multi-framework swarms.
+- **Local-to-Cloud "Secure Tunnel" Adapter**: (P1) Provides an authenticated, zero-trust tunnel bridging local development tools to cloud-sandboxed agents (e.g., Claude Code, Gemini CLI).
+- **Session-Bound Identity Tokens (Agent-ID)**: (P1) Issuance of short-lived, verifiable identity tokens for all agents participating in the MCP Any mesh.
+
+### Priority Shifts
+- **Provenance-First Discovery (Attested Discovery)**: Promoted from **P1** to **P0**. With the "8000 Exposed Servers" crisis, tool discovery must be provenance-verified by default.
+- **Supply Chain Integrity Guard**: Re-affirmed as **P0** and linked to the Trust Attestation framework.
+
+### Deprecations / Monitoring
+- **Unauthenticated Stdio Over HTTP**: Monitoring for deprecation in favor of the Secure Tunnel Adapter for remote tool access.

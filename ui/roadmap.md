@@ -107,3 +107,8 @@
 - [ ] **Log Source Color Coding**: Assign distinct colors to different log sources automatically for better visual separation.
 - [ ] **Context Usage History**: Track total context usage over time to identify growth trends (requires backend metrics persistence).
 - [ ] **Tool Schema Optimizer**: Analyze tool schemas and suggest removing unused properties or compacting descriptions to save context tokens.
+
+#### Universal Agent Bus (2026-03-07 Evolution)
+- [ ] **[P0] Agent Trust Scorecard**: UI for viewing the reputation and attestation status of agents in the swarm. (Added: 2026-03-07)
+- [ ] **[P1] Secure Tunnel Monitor**: Real-time status and traffic visualization for Local-to-Cloud tunnels. (Added: 2026-03-07)
+- [ ] **[P1] Agent-ID Token Manager**: Dashboard for managing and revoking short-lived identity tokens. (Added: 2026-03-07)

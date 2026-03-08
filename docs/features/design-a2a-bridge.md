@@ -46,3 +46,10 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+
+### Update: 2026-03-07 - Integrating the Trust Attestation Layer
+**Context:** Today's market sync revealed a critical need for verifiable agent identity due to the "8000 Exposed Servers" crisis and increased multi-framework delegation.
+**Architecture Adjustment:**
+* **Middleware Interception**: The `A2ABridgeMiddleware` now delegates identity verification to the `A2ATrustAttestationMiddleware` before processing any messages.
+* **Agent-ID Token Injection**: All outgoing A2A messages from MCP Any now include a short-lived `Agent-ID` token for downstream verification.
+**Security Impact:** Prevents "Agent-in-the-Middle" attacks and ensures that only high-trust agents from authorized frameworks can call sensitive local tools.

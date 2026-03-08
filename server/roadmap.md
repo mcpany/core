@@ -189,3 +189,8 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Core Middleware Pipeline**: The middleware architecture is robust and extensible.
 - **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates protocol details from business logic.
 - **Documentation**: The project has excellent documentation coverage for most features.
+
+#### Upcoming (2026-03-07 Evolution)
+*   **[P0] A2A Trust Attestation Middleware**: Cryptographically verify agent identity and reputation for multi-framework delegation. (Added: 2026-03-07)
+*   **[P1] Local-to-Cloud "Secure Tunnel" Adapter**: Authenticated, zero-trust tunnel bridging local tools to cloud agents. (Added: 2026-03-07)
+*   **[P1] Session-Bound Agent Identity (Agent-ID)**: Short-lived identity token issuance for the A2A mesh. (Added: 2026-03-07)
