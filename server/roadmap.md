@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-05 Evolution)
+*   **[P0] Origin-Locked Local Bus**: Mandatory CORS/Origin validation and cryptographic challenge-response for local bus security. (Added: 2026-03-05)
+*   **[P0] A2A Task Lifecycle Manager**: Core middleware for managing stateful, long-running agentic tasks. (Added: 2026-03-05)
+*   **[P1] Semantic Annotation Firewall**: Metadata-driven security policies for tool execution. (Added: 2026-03-05)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
