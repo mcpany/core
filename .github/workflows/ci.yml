@@ -146,7 +146,7 @@ jobs:
       #     cache: "pip"
 
       - name: Install Python dependencies
-        run: pip install -r server/requirements.txt
+        run: pip install --break-system-packages -r server/requirements.txt
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -230,7 +230,7 @@ jobs:
       #     cache: "pip"
 
       - name: Install Python dependencies
-        run: pip install -r server/requirements.txt
+        run: pip install --break-system-packages -r server/requirements.txt
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -366,11 +366,11 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: "3.13"
+          python-version: "3.11"
           cache: "pip"
 
       - name: Install Python dependencies
-        run: pip install -r server/requirements.txt
+        run: pip install --break-system-packages -r server/requirements.txt
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -669,11 +669,11 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: "3.13"
+          python-version: "3.11"
           cache: "pip"
 
       - name: Install Python dependencies
-        run: pip install -r server/requirements.txt
+        run: pip install --break-system-packages -r server/requirements.txt
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -821,11 +821,11 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: "3.13"
+          python-version: "3.11"
           cache: "pip"
 
       - name: Install Python dependencies
-        run: pip install -r server/requirements.txt
+        run: pip install --break-system-packages -r server/requirements.txt
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -1141,6 +1141,16 @@ jobs:
           docker load -i image.tar
           rm -f image.tar
 
+      - name: Download HTTP Echo Image
+        uses: actions/download-artifact@v4
+        with:
+          name: image-http-echo-${{ steps.detect-arch.outputs.slug }}
+
+      - name: Load HTTP Echo Image
+        run: |
+          docker load -i image.tar
+          rm -f image.tar
+
       - name: Download UI Image
         uses: actions/download-artifact@v4
         with:
@@ -1157,6 +1167,7 @@ jobs:
           kind load docker-image mcpany/server:latest --name mcp-e2e
           kind load docker-image mcpany/operator:latest --name mcp-e2e
           kind load docker-image mcpany/ui:latest --name mcp-e2e
+          kind load docker-image mcpany/http-echo-server:latest --name mcp-e2e
 
       - name: Run K8s E2E Tests
         run: |
