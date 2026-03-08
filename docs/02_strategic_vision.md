@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-08]
+### Focus: Verifiable Agent Sandboxing & Dynamic Capability Negotiation
+**Context**: Recent RCEs in Claude Code and the rise of "Shadow Tool" supply chain attacks demand a shift from passive observation to active, verifiable isolation. Agent swarms now require not just communication, but *negotiated* trust.
+**Strategic Pivot**:
+- **Verifiable Execution Sandboxes**: MCP Any will evolve to support "One-Click Sandbox Injection," where MCP servers can be forced into WASM or gVisor-based isolation layers with zero configuration changes.
+- **Dynamic Capability Negotiation**: Moving beyond static API keys to a "Just-in-Time" (JIT) permission model. Agents must negotiate specific tool-access capabilities for each session, signed by the user's policy engine.
+- **A2A Proof-of-Authorization**: Integrating A2A with Zero-Knowledge Proofs (ZKP) to allow Agent A to prove it has authorization from a user to delegate a task to Agent B without revealing the user's identity or full credentials.

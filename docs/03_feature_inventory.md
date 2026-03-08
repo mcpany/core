@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-08] Updates
+
+### Proposed Additions
+- **JIT Capability Negotiator**: (P0) Middleware that handles just-in-time permission requests from agents, requiring cryptographic signatures from the user's Policy Engine.
+- **WASM Tool Sandbox**: (P0) High-performance, isolated execution environment for untrusted or "Shadow" MCP servers.
+- **ZKP-A2A Delegation Proofs**: (P1) Implementation of Zero-Knowledge Proofs for inter-agent task delegation, ensuring privacy and authorization.
+
+### Priority Shifts
+- **Provenance-First Discovery**: Promoted to **P0**. Essential to mitigate "Shadow Tool" supply chain attacks identified in March 2026.
+- **HITL Middleware**: Re-affirmed as **P0**. Critical for the user to approve JIT capability requests.
+
+### Deprecations / Monitoring
+- **Static API Key Tooling**: Monitoring for deprecation in favor of JIT capability tokens.

@@ -59,3 +59,10 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+
+### Update: 2026-03-08 - Hardening against Malicious Project Configs
+**Context:** Today's market sync revealed RCE exploits in Claude Code (CVE-2025-59536) where malicious project-level config files were used to exfiltrate keys and execute shell commands.
+**Architecture Adjustment:**
+* **Sandbox-First Policy**: All command-based MCP servers discovered via project-local config files (e.g., `.mcpany/config.yaml`) MUST run in a WASM or gVisor sandbox by default.
+* **Config Attestation**: Project-level configurations now require a `.mcpany/signature` file that matches a trusted developer's public key or a manual "Trust this Project" user action.
+**Security Impact:** Prevents "Zero-Click" exfiltration of environment variables when opening untrusted repositories.
