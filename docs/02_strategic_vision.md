@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-06]
+### Focus: Intent-Aware Governance & Orchestration Resiliency
+**Context**: Modern swarms (OpenClaw) are moving towards layered orchestration, and major players (Claude Code) are finding hundreds of zero-days. This scale of autonomous action requires a shift from "Identity-based Security" to "Behavioral Intent Analysis."
+**Strategic Pivot**:
+- **Intent-Aware Policy Engine**: MCP Any will evolve its Policy Firewall to not just check "Who" is calling "What," but "Why" (Intent). This involves analyzing the chain of thought/context preceding a tool call to ensure it aligns with the user-authorized mission.
+- **Sandboxed Execution Integrity**: To mitigate the risk of kernel escapes and malicious plugins, MCP Any will support "Isolated Tool Runtimes," where high-risk tools (e.g., code execution) are executed in ephemeral, resource-constrained containers.
+- **Unified Swarm Observability**: Providing a "Single Pane of Glass" for multi-agent swarms, tracing intent and state inheritance across heterogeneous frameworks (OpenClaw, Gemini, Claude).

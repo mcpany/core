@@ -75,6 +75,15 @@
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
+---
+
+## Evolution: [2026-03-06] Updates
+
+### Proposed Additions
+- **Intent-Aware Policy Middleware**: (P0) Analyzes preceding context/thought-chain to verify tool call intent against authorized goals.
+- **Isolated Tool Runtimes (Sandboxed Execution)**: (P0) Ability to launch high-risk tools (like code interpreters) in ephemeral gVisor/Wasm sandboxes managed by MCP Any.
+- **Multi-Framework Swarm Tracer**: (P1) A unified tracing header and collector for monitoring tasks as they hop between OpenClaw, Gemini CLI, and Claude Code.
+
 ### Priority Shifts
 - **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
 - **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.
