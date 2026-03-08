@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-06] Updates
+
+### Proposed Additions
+- **Origin-Aware Middleware**: (P0) Mandatory validation of the caller's origin (binary signature or session token) for all tool calls, preventing cross-origin hijacks.
+- **Intent-Scoped Discovery (Lazy-MCP 2.0)**: (P0) Filters tool availability based on user-confirmed intent to reduce attack surface and token usage.
+- **Short-Lived Agent Identity Service (SLAIS)**: (P1) Automatic issuance of unique certificates for every agent instance in a swarm for granular audit and revocation.
+
+### Priority Shifts
+- **Safe-by-Default Hardening**: Re-affirmed as **P0** and expanded to include Origin-Aware Middleware as a core requirement.
+- **Provenance-First Discovery**: Promoted from **P1** to **P0** following increase in malicious tool skills in the ecosystem.
+
+### Deprecations / Monitoring
+- **Shared API Key Auth**: Deprecate shared keys for agent swarms. Monitoring for phase-out in favor of SLAIS.
