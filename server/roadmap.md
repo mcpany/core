@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-08 Evolution)
+*   **[P0] Local Origin Isolation Middleware**: Mandatory CORS, Host header, and WebSocket origin validation for all local gateways. (Added: 2026-03-08)
+*   **[P0] Hook Policy Validator**: Middleware that scans project-local configs (`.mcp.json`, `.claude/settings.json`) and blocks unverified hooks/scripts. (Added: 2026-03-08)
+*   **[P1] Swarm Trace Explorer**: A visual timeline for tracking hierarchical agent calls and state handoffs in a swarm. (Added: 2026-03-08)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

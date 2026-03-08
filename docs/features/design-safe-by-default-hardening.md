@@ -59,3 +59,9 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-08: Addressing Browser-to-Local Hijacking**
+    *   **Context:** Market sync revealed OpenClaw's "Trust Localhost" vulnerability where malicious websites hijack agents via WebSockets.
+    *   **Architecture Adjustment:**
+        *   **Origin Enforcement:** Adding mandatory `Origin` and `Sec-WebSocket-Origin` header validation in Section 4. Only trusted origins (e.g., `mcp-any.local`, `app.mcpany.com`) or a user-approved "Local App allowlist" are permitted.
+        *   **Host Header Pinning:** Enforcing strict `Host` header validation to prevent DNS Rebinding attacks.
+    *   **Security Impact:** Prevents a rogue browser tab from interacting with the local MCP Any gateway, even when bound to `localhost`.
