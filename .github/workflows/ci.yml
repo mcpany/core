@@ -146,7 +146,7 @@ jobs:
           cache: "pip"
 
       - name: Install Python dependencies
-        run: pip install -r server/requirements.txt --break-system-packages
+        run: pip install -r server/requirements.txt
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -230,7 +230,7 @@ jobs:
           cache: "pip"
 
       - name: Install Python dependencies
-        run: pip install -r server/requirements.txt --break-system-packages
+        run: pip install -r server/requirements.txt
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -370,7 +370,7 @@ jobs:
           cache: "pip"
 
       - name: Install Python dependencies
-        run: pip install -r server/requirements.txt --break-system-packages
+        run: pip install -r server/requirements.txt
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -673,7 +673,7 @@ jobs:
           cache: "pip"
 
       - name: Install Python dependencies
-        run: pip install -r server/requirements.txt --break-system-packages
+        run: pip install -r server/requirements.txt
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -825,7 +825,7 @@ jobs:
           cache: "pip"
 
       - name: Install Python dependencies
-        run: pip install -r server/requirements.txt --break-system-packages
+        run: pip install -r server/requirements.txt
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
