@@ -81,3 +81,16 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-08] Updates
+
+### Proposed Additions
+- **Contract-Based Delegation Middleware**: (P0) Implements dynamic "Capability Contracts" for inter-agent handoffs, restricting subagent tool access to the task-at-hand.
+- **PITM Sanitization Firewall**: (P1) Automatic sanitization of tool metadata (names/descriptions) during discovery to prevent Prompt Injection Through Metadata.
+- **Universal Memory Bridge (UMB)**: (P1) Standardized API for agents to share and persist "Long-term Memory" (LTM) across different frameworks and sessions.
+
+### Priority Shifts
+- **A2A Stateful Residency**: Promoted to **P0** as it is a core prerequisite for the Universal Memory Bridge.
+- **On-Demand Discovery (Lazy-MCP)**: Updated to include PITM sanitization as a mandatory component.

@@ -57,3 +57,6 @@ As the number of available MCP tools grows, agents face "context pollution"—wh
 
 ## 7. Evolutionary Changelog
 *   **2026-02-25:** Initial Document Creation.
+*   **2026-03-08:** Addressing PITM (Prompt Injection through Tool Metadata) risk.
+    - **Update**: Introducing a mandatory sanitization step in the `Indexing` and `Search API` flows.
+    - **Mechanism**: Every tool description and name will be passed through a regex-based `Sanitization Middleware` to strip LLM system-prompt-overriding instructions.

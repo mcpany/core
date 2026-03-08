@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-08]
+### Focus: Contract-First Delegation & Sanitized Discovery
+**Context**: Today's findings emphasize the move from simple "Permissioning" to "Contractual Delegation" (OpenClaw) and the emergence of PITM (Prompt Injection through Tool Metadata) attacks. MCP Any must ensure that delegated tasks are not just "authorized" but "governed" by a strict capability contract.
+**Strategic Pivot**:
+- **Contractual Delegation**: Moving beyond binary allow/deny lists to "Capability Contracts" where a subagent's tool access is dynamically restricted to the minimum required for a specific handoff.
+- **Metadata Sanitization Pipeline**: All tool discovery and lazy-loading flows will now include a mandatory sanitization step to strip potential prompt injections from descriptions and schemas.
+- **Unified Memory Bus**: Shifting focus towards a standardized way to manage agent "Long-term Memory" (LTM) across disparate frameworks, preventing state fragmentation.
