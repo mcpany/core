@@ -13,6 +13,7 @@ import (
 	"os"
 	"regexp"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -26,6 +27,8 @@ import (
 )
 
 const maxSecretRecursionDepth = 10
+
+var validationRegexCache sync.Map
 
 // ResolveSecret resolves a SecretValue configuration object into a concrete string value.
 // It handles various secret types including plain text, environment variables, file paths,
@@ -51,10 +54,20 @@ func resolveSecretRecursive(ctx context.Context, secret *configv1.SecretValue, d
 	}
 
 	if secret != nil && secret.GetValidationRegex() != "" {
-		re, err := regexp.Compile(secret.GetValidationRegex())
-		if err != nil {
-			return "", fmt.Errorf("invalid validation regex %q: %w", secret.GetValidationRegex(), err)
+		var re *regexp.Regexp
+		// ⚡ BOLT: Cached regex compilation for ResolveSecret to eliminate O(n) regex compilation overhead during frequent secret evaluations.
+		// Randomized Selection from Top 5 High-Impact Targets (CPU/Regex)
+		if cached, ok := validationRegexCache.Load(secret.GetValidationRegex()); ok {
+			re = cached.(*regexp.Regexp)
+		} else {
+			var err error
+			re, err = regexp.Compile(secret.GetValidationRegex())
+			if err != nil {
+				return "", fmt.Errorf("invalid validation regex %q: %w", secret.GetValidationRegex(), err)
+			}
+			validationRegexCache.Store(secret.GetValidationRegex(), re)
 		}
+
 		if !re.MatchString(val) {
 			return "", fmt.Errorf("secret value does not match validation regex %q", secret.GetValidationRegex())
 		}
