@@ -43,3 +43,10 @@ As AI agent ecosystems evolve from single-agent monoliths to multi-agent swarms 
 
 ## 7. Evolutionary Changelog
 * **2026-02-24**: Initial Document Creation.
+
+### Update: 2026-03-04 - Integration with Agentic Identity
+**Context:** Today's research into "Identity Crises" in nested swarms has revealed a critical need for verified identity during session transitions.
+**Architecture Adjustment:**
+* All session handoffs MUST now be accompanied by a valid `X-MCP-Agent-ID` token.
+* Shared state access is restricted to agents whose `Agent-ID` matches the authorized session participants.
+**Security Impact:** Prevents "State Spoofing" where an unauthorized sub-agent attempts to resume a privileged session.

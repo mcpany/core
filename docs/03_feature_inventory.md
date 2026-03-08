@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-04] Updates
+
+### Proposed Additions
+- **Zero-Trust Config Sandbox**: (P0) A security layer that validates and sandboxes repository-level configurations (like `.mcpany`) using cryptographic signatures. Prevents RCE from untrusted repos.
+- **X-MCP-Agent-ID Identity Propagator**: (P0) Middleware that injects and verifies agent-specific identity tokens across tool calls, enabling granular sub-agent permissions.
+- **Swarm Residency Manager**: (P1) Persistent state management for multi-level agent swarms, ensuring session continuity across agent lifecycle events.
+
+### Priority Shifts
+- **Policy Firewall**: Re-affirmed as **P0**. Now requires integration with `X-MCP-Agent-ID` for identity-aware filtering.
+- **Machine-Checkable Security Contracts**: Promoted to **P0**. Essential for automated sub-agents to verify tool safety before execution.
+
+### Deprecations / Monitoring
+- **Unsigned Local Configs**: Monitoring for deprecation. Moving towards a model where all repo-level configs must be signed or explicitly approved by the human user.
