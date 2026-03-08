@@ -1,28 +1,25 @@
-# Coverage Intervention Report
+* **Target:** `server/pkg/alerts/manager.go` (`CreateAlert` and `UpdateAlert` functions)
 
-**Top 10 High-Risk Untested Components Discovered:**
-1. `server/pkg/middleware/global_ratelimit.go` (Central entry point configuration/Redis)
-2. `server/pkg/upstream/filesystem/provider/sftp.go` (Untested file I/O operations)
-3. `server/pkg/upstream/vector/pinecone.go` (Pinecone queries lacking coverage)
-4. `server/pkg/upstream/mcp/streamable_http.go` (Healthchecks and connections are untested)
-5. `server/pkg/upstream/mcp/docker_transport.go` (Read/Write behaviors have low coverage)
-6. `server/pkg/tool/types.go` (Execute functions for MCP Tool wrapping)
-7. `server/pkg/middleware/audit.go` (Subscriptions and history tracking)
-8. `server/pkg/middleware/semantic_cache_postgres.go` (Closing/opening connection pools)
-9. `server/pkg/app/server.go` (Run and reconcile loops)
-10. `server/pkg/upstream/grpc/grpc_pool.go` (Closing operations on the connection pools)
+### Phase 1: Risk-Based Discovery (The Heatmap)
 
-**Target:** `server/pkg/middleware/global_ratelimit.go`
+Based on a test coverage check (`go test -cover ./...`), there were several untested high-risk areas identified, out of which the Top 10 High-Risk Untested Components include:
 
-**Risk Profile:**
-This component manages global rate limiting for incoming MCP requests. It relies on caching, handles context propagation for different user identity signals (API Key, User ID, HTTP Headers), and connects dynamically to Redis. Prior to intervention, key methods handling configuration updates, caching layer integration, partitioned key resolution, and configuration hash calculations had zero or extremely low test coverage. Because this is the primary edge defense for preventing DoS/abuse on upstream tools, any untested regressions in routing logic could lead to service disruption or incorrect limit enforcement.
+1. `server/pkg/alerts/manager.go` (35% coverage on specific methods like `CreateAlert` and `UpdateAlert` regarding the webhook firing mechanisms).
+2. `server/pkg/audit/postgres.go` (11.8% coverage).
+3. `server/pkg/audit/datadog.go` (50.0% coverage).
+4. `server/pkg/audit/splunk.go` (50.0% coverage).
+5. `server/pkg/audit/webhook.go` (50.0% coverage).
+6. `server/pkg/auth/oauth.go` (59.3% coverage).
+7. `server/pkg/config/store.go` (Various un-covered loading methods).
+8. `server/pkg/auth/oidc.go` (71.4% coverage).
+9. `server/pkg/tool/management.go` (Some subroutines with un-covered logic paths).
+10. `server/pkg/mcpserver/noop_managers.go` (0% coverage).
 
-**New Coverage:**
-*   `UpdateConfig`: Added coverage to ensure that changing rate limiting properties at runtime propagates to the middleware state correctly (100% coverage).
-*   `getPartitionKey`: Added robust table-driven tests evaluating the context extraction logic. It now verifies correct resolution of IP, User ID, and API keys sourced both via typical Context patterns and directly off incoming HTTP Request headers (100% coverage).
-*   `calculateConfigHash`: Confirmed that structurally identical vs distinct Redis configuration sets are mapped properly to avoid colliding cached client pools (100% coverage).
-*   `getRedisClient`: Validated the cache lookups for Redis connections to assure we are returning active cached clients on identical configs, preventing leakages from excessive redundant client spawning (81.8% coverage).
-*   `getLimiter`: Tested retrieval, fallback logic without Redis configs, and caching behaviors, ensuring we accurately clamp invalid burst inputs (83.3% coverage).
+We selected `server/pkg/alerts/manager.go` because the alerting manager is central to incident notification and response within the system. Prior to this intervention, the asynchronous delivery path for webhooks triggered upon alert creation or updates had zero test coverage. Because this is an external network call (`http.DefaultClient.Do`), it presents a high risk for edge-case errors, such as connection failures, HTTP 500s from the destination server, or invalid URLs. Without coverage, the failure of a webhook could go unnoticed, or a malformed alerting payload could crash the system logic unexpectedly.
 
-**Verification:**
-Confirmed that `go test` specific to the middleware package passes cleanly and coverage has drastically improved (>86%). Linting is passing.
+* **New Coverage:**
+  * **Happy Path:** Validates that `CreateAlert` triggers a POST request to a configured URL containing a correctly marshaled alert payload with the correct `application/json` content type. Validates that `UpdateAlert` similarly triggers an update webhook payload.
+  * **Edge Cases:** Validates that if the webhook target returns an HTTP 500 internal server error, the process correctly skips without crashing the application. Validates that an un-routable / un-resolvable webhook URL correctly completes its path without crashing the alert generator routine.
+  * The test coverage for the `server/pkg/alerts` package increased from ~71.3% to ~91.9%.
+
+* **Verification:** `make lint` passes successfully. `go test -cover -race ./pkg/alerts/...` passes with green assertions on all new coverage and checks.
