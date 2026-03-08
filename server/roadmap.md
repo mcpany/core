@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-04 Evolution)
+*   **[P0] Origin-Locked Local Gateway**: Enforce strict Origin/Host validation and OTT handshake for browser-originated connections. (Added: 2026-03-04)
+*   **[P0] Trusted Project Boundary Isolation**: Implementation of a trust registry and local config sandboxing for repositories. (Added: 2026-03-04)
+*   **[P1] A2A "Critic" Verification Headers**: Protocol support for peer-verification of tool outputs. (Added: 2026-03-04)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

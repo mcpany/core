@@ -75,6 +75,15 @@
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
+---
+
+## Evolution: [2026-03-04] Updates
+
+### Proposed Additions
+- **Origin-Locked Local Gateway**: (P0) Strict validation of Host/Origin headers and cryptographic handshakes for localhost connections to prevent "ClawJacked"-style browser hijacks.
+- **Trusted Project Boundary Isolation**: (P0) A security middleware that sandboxes or ignores project-local configurations unless the workspace is explicitly marked as "Trusted."
+- **A2A "Critic" Verification Protocol**: (P1) Extension to A2A Bridge allowing agents to request peer-validation of tool results before finalizing execution.
+
 ### Priority Shifts
 - **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
 - **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.

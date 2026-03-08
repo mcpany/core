@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-04]
+### Focus: Browser-Origin Security & Project Boundary Isolation
+**Context**: The "ClawJacked" exploit and Claude Code configuration flaws have identified a new attack surface: the local developer machine as a bridge for browser-based or repository-based attacks. MCP Any must protect the "Local Perimeter."
+**Strategic Pivot**:
+- **Browser-Proof Local Gateway**: Implementing strict cryptographic handshake for any local WebSocket/HTTP connection originating from a browser. "Localhost" is no longer a proxy for "Trust."
+- **Project Boundary Enforcement**: Introducing a "Trust Tier" for project directories. MCP Any will strictly ignore local `.mcpany/config` or `.env` files in untrusted directories, preventing "Configuration-as-Attack-Vector."
+- **Validation-Centric A2A**: Expanding the A2A protocol to include "Peer-Verification" headers, enabling swarms to implement "Critic" loops where tool outputs are validated by a second, independent agent before state is committed.
