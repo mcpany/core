@@ -81,3 +81,20 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-06] Updates
+
+### Proposed Additions
+- **Authenticated Localhost Handshake**: (P0) Mandatory cryptographic handshake for all local WebSocket/IPC connections to prevent browser-based hijacking.
+- **A2A Contagion Filter (Semantic Sanitizer)**: (P0) Middleware that inspects inter-agent payloads for known "semantic contagion" patterns (e.g., recursive exfiltration prompts).
+- **Agent Hook Middleware**: (P1) Standardized interface for plugging in external security scanners and compliance engines into the tool execution loop.
+- **MFA-Bound Tool Execution**: (P1) Optional requirement for physical MFA attestation (e.g., WebAuthn) for high-sensitivity tool calls.
+
+### Priority Shifts
+- **"Safe-by-Default" Network Hardening**: Promoted to **P0+** (Critical) in light of the OpenClaw breach.
+- **A2A Interop Bridge**: Priority maintained at **P0**, with new requirement for Semantic Sanitization.
+
+### Deprecations / Monitoring
+- **Unauthenticated Localhost**: Deprecate reliance on `127.0.0.1` as an implicit trust boundary.

@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-06]
+### Focus: Immune-System Architecture & Authenticated Localhost
+**Context**: The disclosure of the OpenClaw "Localhost Hijack" vulnerability and the rise of "A2A Contagion" semantic payloads have redefined the threat model for agentic infrastructure. A "Safe-by-Default" posture that only binds to localhost is no longer sufficient if local services can be reached via a user's browser.
+**Strategic Pivot**:
+- **Authenticated Localhost**: MCP Any will transition from "Trusted Localhost" to "Authenticated Localhost." All local connections, including WebSockets and IPC, will require a cryptographic handshake or a "local-token" to prevent cross-origin hijacking from browsers.
+- **Immune-System Middleware**: Implementing "Semantic Sanitization" for all agent-to-agent and agent-to-tool communications. MCP Any will act as an "immune system" that inspects the intent of payloads for contagion patterns before they are ingested by downstream models.
+- **Hook-Driven Governance**: Adopting the "Agent Hook" pattern (pioneered by Gemini CLI) to allow third-party security scanners and compliance engines to plug directly into the MCP Any tool execution lifecycle.
