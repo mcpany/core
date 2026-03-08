@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-06]
+### Focus: Autonomous Task Delegation & Adaptive Tool Scoping
+**Context**: Today's findings show a major shift toward "Generalist Agents" (Gemini) and specialized swarms (OpenClaw). Furthermore, the GA status of "MCP Tool Search" in Claude Code confirms that dynamic tool discovery is now the industry standard for production agents.
+**Strategic Pivot**:
+- **Autonomous Delegation Framework**: MCP Any will introduce a middleware layer that manages "Generalist Agent" routing, allowing it to autonomously delegate tasks to specialized MCP-connected subagents with unified state management.
+- **Adaptive Tool Scoping**: Moving from static tool lists to "Context-Aware Availability." Tools will be dynamically loaded/unloaded based on the active task and intent, mimicking the "MCP Tool Search" pattern to prevent context bloat and improve security.
+- **Hardened Plugin Registry**: Following OpenClaw's security lead, all internal plugins and routes will be transitioned to an explicit, authenticated registry model to mitigate unauthorized tool injection.
