@@ -81,3 +81,16 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-08] Updates
+
+### Proposed Additions
+- **Mandatory Origin Attestation (Localhost-Zero-Trust)**: (P0) Implements cryptographic handshakes for all connections, including localhost, to prevent browser-based hijacking (OpenClaw-style).
+- **Wasm Tool Runtime Sandbox**: (P1) Isolation layer for third-party MCP tools/skills to prevent host filesystem/credential access.
+- **Signed Policy Bundles**: (P1) Implementation of immutable, signed governance files to prevent configuration-level hijacking of agent hooks.
+
+### Priority Shifts
+- **Provenance-First Discovery**: Promoted to **P0**. With 20% of marketplaces containing malware, discovery without attestation is no longer viable.
+- **"Safe-by-Default" Network Hardening**: Expanded to include mandatory browser-origin validation.

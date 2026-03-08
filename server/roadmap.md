@@ -32,7 +32,12 @@
 #### Upcoming (2026-02-28 Evolution)
 *   **[P0] Safe-by-Default Hardening**: Transition all listeners to `localhost` by default. Implement mandatory Attestation for remote exposure. (Added: 2026-02-28)
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
-*   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
+*   **[P0] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Promoted to P0: 2026-03-08)
+
+#### Upcoming (2026-03-08 Evolution)
+*   **[P0] Mandatory Origin Attestation**: Cryptographic handshakes for all connections (including localhost) to prevent browser-based hijacking. (Added: 2026-03-08)
+*   **[P1] Wasm Tool Runtime Sandbox**: Isolation layer for third-party MCP tools to prevent host filesystem/credential access. (Added: 2026-03-08)
+*   **[P1] Signed Policy Bundles**: Immutable, signed governance files to prevent configuration-level hijacking. (Added: 2026-03-08)
 
 ## 2. Top 10 Recommended Features
 

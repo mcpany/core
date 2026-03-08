@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-08]
+### Focus: Localhost Hardening & Skill-Chain Integrity
+**Context**: The OpenClaw security crisis (CVE-2026-25253) and the ClawHavoc supply-chain attack have exposed critical weaknesses in the "Local AI Agent" model. Localhost is no longer a safe haven, and decentralized marketplaces are prime targets for malware.
+**Strategic Pivot**:
+- **Host-Agnostic Zero Trust**: MCP Any will implement mandatory cryptographic handshake and origin validation for ALL connections, including localhost, to prevent browser-side hijacking.
+- **Wasm-Based Tool Isolation**: Moving towards a model where "untrusted" or "third-party" MCP tools/skills are executed within a restricted WebAssembly sandbox by default, preventing host-level AMOS/malware execution.
+- **Immutable Policy Enforcement**: Shifting from local, mutable configuration files to signed, versioned policy bundles that cannot be manipulated by unauthorized commits or scripts.
