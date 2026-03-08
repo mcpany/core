@@ -46,3 +46,10 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+
+    ### Update: 2026-03-04 - SDK-Native Session Parity
+    **Context:** Gemini CLI v0.31.0 introduced `SessionContext`, a standard for SDK-level state management. MCP Any must ensure its `Recursive Context Protocol` is compatible with these native structures.
+    **Architecture Adjustment:**
+    *   **Context Driver Layer:** Implement a driver-based architecture for context serialization.
+    *   **Gemini Driver:** Mapping MCP context headers to `SessionContext` JSON structures.
+    *   **Stateful Mapping:** Ensuring that tool-call metadata (e.g., `intent_id`) is persisted in the SDK session to maintain lineage across multi-turn A2A handoffs.

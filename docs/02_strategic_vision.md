@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-04]
+### Focus: Beyond Localhost & SDK-Native Session Bridges
+**Context**: The OpenClaw CSWSH incident confirms that "Localhost-Only" is no longer a viable security perimeter for agents. Simultaneously, the introduction of native `SessionContext` in SDKs like Gemini CLI signals a shift towards platform-specific state management.
+**Strategic Pivot**:
+- **Hardened Perimeters**: MCP Any will pivot from simple port binding to "Protocol-Bound Secrets." All local adapters and gateways will require an `Authorization` header even on localhost, and will validate the `Origin` and `Host` headers to prevent browser-based hijacking.
+- **SDK-Native Bridges**: Instead of just standardizing context within the MCP layer, MCP Any will implement "Adaptable Context Drivers" that can translate its `Recursive Context` headers directly into SDK-native objects (e.g., Gemini's `SessionContext`), ensuring zero-loss state persistence across model providers.
+- **Policy Wildcarding**: To maintain competitive ease-of-use with Gemini CLI, our Policy Firewall will implement wildcard matching for MCP servers and tool namespaces, allowing for more flexible, scalable security rules.

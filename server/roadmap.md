@@ -189,3 +189,8 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Core Middleware Pipeline**: The middleware architecture is robust and extensible.
 - **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates protocol details from business logic.
 - **Documentation**: The project has excellent documentation coverage for most features.
+
+#### Upcoming (2026-03-04 Evolution)
+*   **[P0] WebSocket CSRF/Hijacking Protection**: Enforce Origin/Host header validation and mandatory Bearer tokens for all listeners. (Added: 2026-03-04)
+*   **[P1] SDK-Native Session Bridge**: Map Recursive Context to Gemini `SessionContext` and other provider-specific state objects. (Added: 2026-03-04)
+*   **[P1] Policy Engine Wildcards**: Support for wildcard matching in tool and server-level policies. (Added: 2026-03-04)

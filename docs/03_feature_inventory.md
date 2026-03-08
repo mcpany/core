@@ -81,3 +81,16 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-04] Updates
+
+### Proposed Additions
+- **WebSocket CSRF/Hijacking Protection (Origin Validation)**: (P0) Prevents browser-based hijacking of local agent ports by enforcing Origin/Host header checks and Bearer tokens for all connections.
+- **SDK-Native Session Persistence Bridge**: (P1) Mapping of `Recursive Context Protocol` to provider-specific SDK state (e.g., Gemini's `SessionContext`).
+- **Policy Engine Wildcard Support**: (P1) Enable wildcarding (`*`) for MCP server and tool name matching in the Policy Firewall.
+
+### Priority Shifts
+- **"Safe-by-Default" Network Hardening**: Promoted to **P0** and expanded to include Origin validation as a non-negotiable requirement.
+- **Recursive Context Protocol**: Re-affirmed as **P0** as it is the foundation for SDK-native session mapping.
