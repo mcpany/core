@@ -59,3 +59,10 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-08:** **Update: Resolving Localhost Hijacking Vulnerability**.
+    *   **Context**: The March 2026 OpenClaw exploit demonstrated that browser-based cross-origin attacks can hijack agents via localhost listeners if loopback is implicitly trusted.
+    *   **Architecture Adjustment**:
+        *   Deprecating unauthenticated loopback trust.
+        *   Mandating Origin and Referer header verification for all local WebSocket and HTTP listeners.
+        *   Extending rate-limiting to loopback connections to prevent brute-force attacks.
+    *   **Security Impact**: Mitigates the risk of malicious websites hijacking the local MCP Any instance.

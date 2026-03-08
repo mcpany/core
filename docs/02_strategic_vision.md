@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-08]
+### Focus: Hardening Loopback Security & Orchestrating Adaptive Reasoning
+**Context**: The "OpenClaw Localhost Hijacking" incident has demonstrated that "localhost" is no longer a trusted boundary. Simultaneously, the introduction of "Adaptive Thinking" (Claude Opus 4.6) and "SessionContext" (Gemini CLI) points toward a need for more nuanced control over agent reasoning and context.
+**Strategic Pivot**:
+- **Zero Trust on Loopback**: MCP Any will immediately transition to a "Zero Trust" model for all local listeners. Loopback connections will no longer be implicitly trusted; they will require authentication, rate limiting, and origin verification (Origin/Referer checking) to prevent cross-origin hijacking.
+- **Adaptive Reasoning Middleware**: We will implement support for "Adaptive Thinking" metadata. MCP Any will act as the orchestrator that manages reasoning budgets and thinking-effort parameters, providing a unified interface for models to negotiate their reasoning depth.
+- **Context-Aware Session Management**: Leveraging the "SessionContext" pattern, MCP Any will enhance its state management to support more complex, long-running agent interactions that require consistent identity and state across multiple tool calls and model transitions.

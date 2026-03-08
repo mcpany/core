@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-08 Evolution)
+*   **[P0] Loopback Origin Verification**: Implement Origin/Referer verification for localhost listeners. (Added: 2026-03-08)
+*   **[P1] Adaptive Reasoning Middleware**: Support for "Adaptive Thinking" metadata and budget controls. (Added: 2026-03-08)
+*   **[P1] SessionContext State Management**: Enhanced state persistence for long-running agent sessions. (Added: 2026-03-08)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
