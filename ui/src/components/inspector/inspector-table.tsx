@@ -178,13 +178,41 @@ export function InspectorTable({ traces, loading }: InspectorTableProps) {
                         <TypeIcon type={row.span.type} className="h-4 w-4 text-muted-foreground" />
                     </TableCell>
                     <TableCell>
-                        <div className="flex items-center gap-2" style={{ paddingLeft: `${row.depth * 1.5}rem` }}>
+                        <div className="flex items-center gap-2 relative" style={{ paddingLeft: `${row.depth * 1.5}rem` }}>
+                            {/* Tree structural lines */}
+                            {row.depth > 0 && (
+                                <>
+                                    <div
+                                        className="absolute border-l-2 border-muted-foreground/30 z-0"
+                                        style={{
+                                            left: `${(row.depth - 1) * 1.5 + 0.6}rem`,
+                                            top: '-50%',
+                                            bottom: row.hasChildren ? '0' : '50%'
+                                        }}
+                                    />
+                                    <div
+                                        className="absolute border-t-2 border-muted-foreground/30 z-0"
+                                        style={{
+                                            left: `${(row.depth - 1) * 1.5 + 0.6}rem`,
+                                            top: '50%',
+                                            width: '0.9rem'
+                                        }}
+                                    />
+                                </>
+                            )}
                             {row.hasChildren ? (
-                                <div className="cursor-pointer p-1 hover:bg-muted rounded-md -ml-1" onClick={(e) => { e.stopPropagation(); toggleExpand(row.span.id); }}>
-                                    {row.isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                                <div
+                                    className="cursor-pointer p-1 hover:bg-muted rounded-md -ml-1 relative z-10 bg-card border shadow-sm transition-colors"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        toggleExpand(row.span.id);
+                                    }}
+                                >
+                                    {row.isExpanded ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
                                 </div>
-                            ) : <div className="w-5" />}
-                            <div className="flex flex-col">
+                            ) : <div className="w-5 relative z-10" />}
+                            <div className="flex flex-col relative z-10 pl-1">
                                 <span className="font-medium">{row.span.name}</span>
                                 <span className="text-xs text-muted-foreground font-mono">{row.span.id}</span>
                             </div>

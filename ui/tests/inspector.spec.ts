@@ -29,14 +29,27 @@ test.describe('Inspector Page', () => {
     const row = page.locator('text=orchestrator-task').first();
     await expect(row).toBeVisible({ timeout: 10000 });
 
-    // Click the row to open the details sheet
-    await row.click();
+    // The child span (e.g., 'search-tool') should not be visible initially
+    const childSpan = page.locator('text=search-tool').first();
+    await expect(childSpan).not.toBeVisible();
 
-    // Verify the details sheet opens. It contains the trace ID which starts with "trace-seed-"
+    // Find the expand chevron for the row
+    // The chevron is placed inside a div with class 'cursor-pointer' within the table cell
+    const expandIcon = page.locator('tr').filter({ hasText: 'orchestrator-task' }).locator('.cursor-pointer').first();
+    await expect(expandIcon).toBeVisible();
+
+    // Click the expand icon to reveal children
+    await expandIcon.click();
+
+    // Verify the child span is now visible
+    await expect(childSpan).toBeVisible();
+
+    // Verify the details sheet does NOT open (this is the bug we fixed)
     const sheet = page.getByRole('dialog');
-    await expect(sheet).toBeVisible();
+    await expect(sheet).not.toBeVisible();
 
-    // Check that we see some details of the trace
-    await expect(sheet.locator('text=orchestrator-task').first()).toBeVisible();
+    // Now click the text of the row itself to verify the details sheet STILL opens correctly
+    await row.click();
+    await expect(sheet).toBeVisible();
   });
 });
