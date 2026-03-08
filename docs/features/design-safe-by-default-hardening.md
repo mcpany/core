@@ -59,3 +59,9 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+
+### Update: 2026-03-07 - Mitigating Localhost Browser Hijacking
+**Context:** Today's market sync revealed the "Localhost Hijack" vulnerability pattern where malicious websites can interact with local agent gateways.
+**Architecture Adjustment:** * Integrated "Browser-Origin Lockdown" (Design Doc: docs/features/design-browser-origin-lockdown.md) as a mandatory component.
+* Enforcing strict CORS and WebSocket origin verification across all local listeners.
+**Security Impact:** Prevents cross-origin browser-based attacks from executing unauthorized tool calls on the local workstation.

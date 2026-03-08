@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-07] Updates
+
+### Proposed Additions
+- **Browser-Origin Lockdown (Cross-Origin Protection)**: (P0) Implements strict CORS and WebSocket origin verification to prevent browser-based "localhost hijacks" as seen in OpenClaw.
+- **Autonomous A2A Routing Engine**: (P1) Offloads task routing and delegation from the LLM to the MCP Any gateway, following the "Generalist Agent" pattern.
+- **Task-Scoped A2A Capability Tokens**: (P1) Introduces short-lived tokens for inter-agent communication, ensuring subagents can only access tools required for their specific delegated task.
+
+### Priority Shifts
+- **"Safe-by-Default" Network Hardening**: Re-affirmed as **P0**. Adding "Browser-Origin Lockdown" as a mandatory component of this feature.
+- **A2A Interop Bridge**: Promoted to **P0**. The massive adoption of OpenClaw makes A2A interoperability the highest priority for ecosystem growth.
+
+### Deprecations / Monitoring
+- **Unverified Localhost Access**: Monitoring for full deprecation. Moving towards mandatory token-based or origin-verified access even for local connections.
