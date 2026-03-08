@@ -34,6 +34,12 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-06 Evolution)
+*   **[P0] Intent-Aware Policy Engine**: Integrate LLM-based intent classification into the Policy Firewall to validate tool calls against stated high-level goals. (Added: 2026-03-06)
+*   **[P0] Cryptographic Session Binding**: Implement mandatory per-request session binding to ensure tool calls are part of a verified, human-initiated flow. (Added: 2026-03-06)
+*   **[P1] Hivenet Coordination Monitor (IPS)**: Middleware for detecting malicious "swarm attack" signatures in inter-agent traffic. (Added: 2026-03-06)
+*   **[P1] Automated SDK Schema Compaction**: Middleware to automatically compress tool schemas for large catalogs (10% context window threshold). (Added: 2026-03-06)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
