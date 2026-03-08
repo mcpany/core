@@ -42,6 +42,8 @@ export interface LogEntry {
   source?: string
   metadata?: Record<string, unknown>
   formattedTime?: string
+  _lowerMessage?: string
+  _lowerSource?: string
 }
 
 interface LogViewerProps {

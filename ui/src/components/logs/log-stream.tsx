@@ -155,6 +155,12 @@ export function LogStream({
             ? timeFormatter.format(new Date(newLog.timestamp))
             : new Date(newLog.timestamp).toLocaleTimeString()
 
+          // ⚡ BOLT: Pre-calculate lowercase properties upon log arrival to avoid
+          // redundant O(N * L) string operations on every filter update.
+          // Randomized Selection from Top 5 High-Impact Targets (Algorithmic)
+          if (newLog.message) newLog._lowerMessage = newLog.message.toLowerCase()
+          if (newLog.source) newLog._lowerSource = newLog.source.toLowerCase()
+
           // Optimization: Add to buffer instead of calling setLogs directly
           logBufferRef.current.push(newLog)
         } catch (e) {
@@ -230,12 +236,10 @@ export function LogStream({
       const matchesLevel = filterLevel === "ALL" || log.level === filterLevel
       const matchesSource = filterSource === "ALL" || log.source === filterSource
 
-      // ⚡ BOLT: Optimized memory usage by removing eager search string allocation.
-      // Randomized Selection from Top 5 High-Impact Targets
-      // We calculate matches on demand to avoid O(N) memory overhead for search strings.
+      // ⚡ BOLT: Utilize pre-calculated lowercase strings for O(N) search without string allocations per render.
       const matchesSearch = !deferredSearchQuery ||
-        log.message.toLowerCase().includes(lowerSearchQuery) ||
-        log.source?.toLowerCase().includes(lowerSearchQuery)
+        (log._lowerMessage && log._lowerMessage.includes(lowerSearchQuery)) ||
+        (log._lowerSource && log._lowerSource.includes(lowerSearchQuery))
 
       return matchesLevel && matchesSource && matchesSearch
     })
