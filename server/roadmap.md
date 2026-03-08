@@ -189,3 +189,8 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Core Middleware Pipeline**: The middleware architecture is robust and extensible.
 - **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates protocol details from business logic.
 - **Documentation**: The project has excellent documentation coverage for most features.
+
+#### Upcoming (2026-03-07 Evolution)
+*   **[P0] Origin-Aware Request Firewall**: Implement OS-level process verification (PID/Origin) for all incoming requests.
+*   **[P0] ACP Native Adapter**: Full support for Agentic Communication Protocol (ACP) handshakes and asynchronous callbacks.
+*   **[P1] Immutable Instance Identity**: Non-exportable Ed25519 identity generation and TPM/Secure Enclave integration.

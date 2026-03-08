@@ -59,3 +59,10 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+
+### Update: 2026-03-07 - Mitigating Cross-Origin Hijacking
+**Context:** The March 2 OpenClaw vulnerability demonstrated that "localhost-only" binding is insufficient if a local agent can be accessed by a browser tab without origin verification.
+**Architecture Adjustment:**
+- **Origin Fingerprinting**: Introducing a mandatory `Origin-Validation` hook that checks the `User-Agent` and `Origin` headers for all incoming JSON-RPC requests.
+- **Local Process Verification**: For CLI-based interactions, the server will now verify the `pid` of the calling process via `lsof`/`procfs` to ensure it is a trusted local application.
+**Security Impact:** Prevents "Silent Takeover" where a malicious website triggers tool calls via a user's local MCP Any instance.

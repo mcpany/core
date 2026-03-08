@@ -107,3 +107,6 @@
 - [ ] **Log Source Color Coding**: Assign distinct colors to different log sources automatically for better visual separation.
 - [ ] **Context Usage History**: Track total context usage over time to identify growth trends (requires backend metrics persistence).
 - [ ] **Tool Schema Optimizer**: Analyze tool schemas and suggest removing unused properties or compacting descriptions to save context tokens.
+- [ ] **[P0] Origin Trust Dashboard**: Visualize the source process and origin of all incoming tool requests. (Added: 2026-03-07)
+- [ ] **[P0] ACP Swarm Coordinator**: UI for managing multi-agent handoffs using the ACP standard. (Added: 2026-03-07)
+- [ ] **[P1] Secure Identity Manager**: Manage and rotate the instance's cryptographic identity and attestation tokens. (Added: 2026-03-07)

@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-07] Updates
+
+### Proposed Additions
+- **Origin-Aware Request Firewall (Origin Fingerprinting)**: (P0) A security middleware that validates the source of incoming JSON-RPC requests using OS-level process identification to prevent browser-based hijacking.
+- **ACP Native Adapter (OpenClaw-Compatible)**: (P0) Implements first-class support for the Agentic Communication Protocol (ACP), allowing seamless tool/task delegation between MCP Any and OpenClaw swarms.
+- **Hardware-Backed Instance Attestation**: (P1) Integration with TPM/Secure Enclave for storing the Ed25519 instance identity.
+
+### Priority Shifts
+- **"Safe-by-Default" Network Hardening**: Promoted to **P0** and expanded to include Origin Validation. Essential for mitigating the "Silent Takeover" threat vector.
+- **A2A Interop Bridge**: Renamed to **ACP/A2A Gateway** and promoted to **P0** to reflect industry standardization on ACP.
+
+### Deprecations / Monitoring
+- **Unauthenticated Local Listeners**: Monitoring for deprecation in favor of mandatory local session tokens.
