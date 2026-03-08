@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-06 Evolution)
+*   **[P0] Signed Configuration Manifests**: Cryptographic signing requirement for project-level configurations to prevent RCE. (Added: 2026-03-06)
+*   **[P0] Immutable System Overrides**: Protection layer to prevent local configs from overriding critical system environment variables/endpoints. (Added: 2026-03-06)
+*   **[P1] Verified Context Bus**: Tamper-proof audit log for swarm state changes, ensuring integrity during agent handoffs. (Added: 2026-03-06)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-06] Updates
+
+### Proposed Additions
+- **Signed Configuration Manifests**: (P0) Cryptographic signing of project-level configs to prevent RCE via malicious configuration hijacking.
+- **Immutable System Overrides**: (P0) A security layer that prevents project-local configs from overriding critical system environment variables (e.g., API Base URLs).
+- **Verified Context Bus**: (P1) A tamper-proof audit log for multi-agent state changes, ensuring swarm integrity during handoffs.
+
+### Priority Shifts
+- **Provenance-First Discovery**: Promoted to **P0** (from P1). Essential to combat the increasing trend of configuration-based supply chain attacks.
+- **Shared KV Store**: Integrating with **Verified Context Bus** to ensure state changes are signed and attributable.
+
+### Deprecations / Monitoring
+- **Unsigned Project Configs**: Monitoring for transition to "ReadOnly" mode by default.
