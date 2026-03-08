@@ -57,3 +57,7 @@ As the number of available MCP tools grows, agents face "context pollution"—wh
 
 ## 7. Evolutionary Changelog
 *   **2026-02-25:** Initial Document Creation.
+*   **2026-03-08:** **Update: Intent-Aware Tool Routing (JIT Scoping)**
+    *   **Context:** Market sync revealed "Discovery Exhaustion" where LLMs still hallucinate even with similarity search if too many "similar" but irrelevant tools are returned.
+    *   **Architecture Adjustment:** Introducing a "Task-Intent Filter" that cross-references the similarity search results against the high-level task description provided by the agent.
+    *   **Security Impact:** Prevents "Intent Flow Subversion" by ensuring tools from different domains (e.g., "Financials") are not exposed during "Debugging" tasks.

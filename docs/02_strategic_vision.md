@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-08]
+### Focus: Counter-Shadow MCP & Intent-Aware Security
+**Context**: Today's market sync reveals a growing threat from "Shadow MCP Servers" (unmanaged local servers) and "Intent Flow Subversion" in agent swarms. Gemini CLI and FastMCP's easy installation further accelerate this fragmentation.
+**Strategic Pivot**:
+- **Anti-Shadow Monitoring**: MCP Any will implement a "Local Discovery Scanner" that detects unmanaged MCP servers running on the host and brings them under central security policy oversight.
+- **Intent-Aware Tool Routing**: Moving from simple similarity search (Lazy-MCP) to "Intent-Verification," where tool schemas are only exposed if the agent's current high-level task (e.g., "debugging") aligns with the tool's capabilities (e.g., "read_file").
+- **A2A SSE Native Support**: Fully embracing SSE as the default for A2A handoffs to handle long-running multi-agent tasks more efficiently.
