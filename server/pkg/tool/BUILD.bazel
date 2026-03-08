@@ -204,10 +204,11 @@ go_test(
         "zip_security_test.go",
     ],
     embed = [":tool"],
+    tags = ["integration"],
     deps = [
-        "//proto/bus:bus",
+        "//proto/bus",
         "//proto/config/v1:config",
-        "//proto/examples/weather/v1:v1_go_proto",
+        "//proto/examples/weather/v1:weather",
         "//proto/mcp_router/v1:mcp_router",
         "//server/pkg/auth",
         "//server/pkg/bus",

@@ -34,6 +34,7 @@ go_test(
         "framework_test.go",
     ],
     embed = [":framework"],
+    tags = ["integration"],
     deps = [
         "//server/tests/integration",
         "@com_github_modelcontextprotocol_go_sdk//mcp",

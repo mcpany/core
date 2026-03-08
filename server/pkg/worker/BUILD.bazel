@@ -36,7 +36,7 @@ go_test(
     ],
     embed = [":worker"],
     deps = [
-        "//proto/bus:bus",
+        "//proto/bus",
         "//proto/config/v1:config",
         "//server/pkg/bus",
         "//server/pkg/serviceregistry",

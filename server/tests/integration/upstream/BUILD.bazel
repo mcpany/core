@@ -37,6 +37,7 @@ go_test(
         "webhooks_e2e_test.go",
     ],
     embed = [":upstream"],
+    tags = ["integration"],
     deps = [
         "//proto/api/v1:api",
         "//proto/config/v1:config",

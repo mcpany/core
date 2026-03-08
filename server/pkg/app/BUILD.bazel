@@ -157,9 +157,12 @@ go_test(
         "validator_api_test.go",
     ],
     embed = [":app"],
+    env = {
+        "MCPANY_DANGEROUS_ALLOW_LOCAL_IPS": "true",
+    },
     deps = [
         "//proto/api/v1:api",
-        "//proto/bus:bus",
+        "//proto/bus",
         "//proto/config/v1:config",
         "//proto/mcp_router/v1:mcp_router",
         "//proto/topology/v1:topology",

@@ -147,7 +147,7 @@ go_test(
     ],
     embed = [":config"],
     deps = [
-        "//proto/bus:bus",
+        "//proto/bus",
         "//proto/config/v1:config",
         "//server/pkg/logging",
         "//server/pkg/util",

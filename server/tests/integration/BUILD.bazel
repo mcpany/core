@@ -14,7 +14,7 @@ go_library(
     visibility = ["//visibility:public"],
     deps = [
         "//proto/api/v1:api",
-        "//proto/bus:bus",
+        "//proto/bus",
         "//proto/config/v1:config",
         "//server/pkg/app",
         "@com_github_gorilla_websocket//:websocket",
@@ -53,11 +53,14 @@ go_test(
         "redis_test.go",
         "transformer_e2e_test.go",
     ],
-    data = glob(["testdata/**"]),
+    data = glob(["testdata/**"]) + [
+        "//server/cmd/server:server_tarball",
+    ],
     embed = [":integration"],
+    tags = ["integration"],
     deps = [
         "//proto/api/v1:api",
-        "//proto/bus:bus",
+        "//proto/bus",
         "//proto/config/v1:config",
         "//server/pkg/auth",
         "//server/pkg/bus",

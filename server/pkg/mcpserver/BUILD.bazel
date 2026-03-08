@@ -89,9 +89,9 @@ go_test(
     embed = [":mcpserver"],
     deps = [
         "//proto/api/v1:api",
-        "//proto/bus:bus",
+        "//proto/bus",
         "//proto/config/v1:config",
-        "//proto/examples/weather/v1:v1_go_proto",
+        "//proto/examples/weather/v1:weather",
         "//proto/mcp_router/v1:mcp_router",
         "//server/pkg/auth",
         "//server/pkg/bus",

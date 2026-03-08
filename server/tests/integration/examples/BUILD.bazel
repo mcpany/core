@@ -6,6 +6,7 @@ load("@rules_go//go:def.bzl", "go_test")
 go_test(
     name = "examples_test",
     srcs = ["examples_test.go"],
+    tags = ["integration"],
     deps = [
         "//server/pkg/config",
         "@com_github_spf13_afero//:afero",

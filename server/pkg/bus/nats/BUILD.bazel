@@ -9,7 +9,7 @@ go_library(
     importpath = "github.com/mcpany/core/server/pkg/bus/nats",
     visibility = ["//visibility:public"],
     deps = [
-        "//proto/bus:bus",
+        "//proto/bus",
         "@com_github_nats_io_nats_go//:nats_go",
         "@com_github_nats_io_nats_server_v2//server",
     ],
@@ -23,7 +23,7 @@ go_test(
     ],
     embed = [":nats"],
     deps = [
-        "//proto/bus:bus",
+        "//proto/bus",
         "@com_github_nats_io_nats_server_v2//server",
         "@com_github_stretchr_testify//assert",
         "@com_github_stretchr_testify//require",

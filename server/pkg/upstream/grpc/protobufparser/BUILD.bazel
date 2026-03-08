@@ -30,9 +30,10 @@ go_test(
         "parser_test.go",
     ],
     embed = [":protobufparser"],
+    tags = ["integration"],
     deps = [
         "//proto/config/v1:config",
-        "//proto/examples/weather/v1:v1_go_proto",
+        "//proto/examples/weather/v1:weather",
         "//proto/mcp_options/v1:mcp_options",
         "@com_github_stretchr_testify//assert",
         "@com_github_stretchr_testify//mock",

@@ -56,9 +56,10 @@ go_test(
         "grpc_test.go",
     ],
     embed = [":grpc"],
+    tags = ["integration"],
     deps = [
         "//proto/config/v1:config",
-        "//proto/examples/weather/v1:v1_go_proto",
+        "//proto/examples/weather/v1:weather",
         "//proto/mcp_router/v1:mcp_router",
         "//server/pkg/client",
         "//server/pkg/pool",

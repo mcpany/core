@@ -574,6 +574,32 @@ func WaitForHTTPHealth(t *testing.T, url string, timeout time.Duration) {
 	}, timeout, 250*time.Millisecond, "URL %s did not become healthy in time", url)
 }
 
+// EnsureServerImageLoaded ensures that the mcpany/server:latest Docker image is
+// available for tests. When running under Bazel, it loads the image from the
+// Bazel-built oci_load runfile (//server/cmd/server:server_tarball). Outside
+// Bazel it is a no-op — the caller is responsible for having the image pre-built.
+func EnsureServerImageLoaded(t *testing.T) {
+	t.Helper()
+	runfilesDir := os.Getenv("RUNFILES_DIR")
+	if runfilesDir == "" {
+		// Not running under Bazel; assume image is pre-built.
+		return
+	}
+	loader := filepath.Join(runfilesDir, "_main", "server", "cmd", "server", "server_tarball.sh")
+	if _, err := os.Stat(loader); err != nil {
+		t.Logf("Bazel server_tarball.sh not found at %s (skipping image load): %v", loader, err)
+		return
+	}
+	t.Logf("Loading Bazel-built mcpany/server image via %s", loader)
+	cmd := exec.Command(loader)
+	cmd.Env = os.Environ()
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		t.Fatalf("Failed to load Bazel-built server image: %v\n%s", err, string(out))
+	}
+	t.Logf("mcpany/server image loaded: %s", strings.TrimSpace(string(out)))
+}
+
 // IsDockerSocketAccessible checks if the Docker daemon is accessible.
 //
 // Returns true if successful.

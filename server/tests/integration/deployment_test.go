@@ -52,15 +52,11 @@ func TestDockerCompose(t *testing.T) {
 	rootDir := integration.ProjectRoot(t)
 	dockerComposeFile := filepath.Join(rootDir, "examples/docker-compose-demo/docker-compose.yml")
 
-	dockerCmd := getDockerCommand(t)
+	// Load the Bazel-built server image when running under Bazel.
+	// Outside Bazel the compose file's image (mcpany/server:latest) must be pre-built.
+	integration.EnsureServerImageLoaded(t)
 
-	// Build the images first to avoid race conditions
-	buildCmdArgs := dockerCmd
-	buildCmdArgs = append(buildCmdArgs, "compose", "-f", dockerComposeFile, "build")
-	buildCmd := exec.Command(buildCmdArgs[0], buildCmdArgs[1:]...) //nolint:gosec
-	buildCmd.Dir = rootDir
-	buildOutput, err := buildCmd.CombinedOutput()
-	require.NoError(t, err, "docker compose build should not fail: %s", string(buildOutput))
+	dockerCmd := getDockerCommand(t)
 
 	// Run in detached mode
 	upCmdArgs := dockerCmd
@@ -265,17 +261,10 @@ func TestK8sFullStack(t *testing.T) {
 	// Use the cluster context
 	kubectlCtx := "kind-" + clusterName
 
-	// Build Images
-	t.Log("Building Docker images...")
-	// Assuming make is available and works from root
-	// We might need to run specific make targets or direct docker build commands
-	// For simplicity calling 'make docker-build-all' from root might be heavy/slow
-	// Let's build server and ui specifically or assume they are pre-built?
-	// Better to build them here to ensure latest code is tested
-	buildCmd := exec.Command("make", "-C", filepath.Join(rootDir, ".."), "docker-build-all")
-	if out, err := buildCmd.CombinedOutput(); err != nil {
-		t.Fatalf("Failed to build images: %v\nOutput: %s", err, string(out))
-	}
+	// Load the Bazel-built server image when running under Bazel; otherwise
+	// rely on mcpany/server:latest being pre-built on the host.
+	t.Log("Ensuring mcpany/server Docker image is available...")
+	integration.EnsureServerImageLoaded(t)
 
 	// Load Images into Kind
 	// images := []string{"mcpany/server:latest", "mcpany/ui:latest", "redis:7", "postgres:15"}

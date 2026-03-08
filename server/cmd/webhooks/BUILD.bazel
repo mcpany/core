@@ -2,6 +2,9 @@
 # SPDX-License-Identifier: Apache-2.0
 
 load("@rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
+load("@rules_oci//oci:defs.bzl", "oci_image", "oci_load")
+load("@rules_pkg//pkg:mappings.bzl", "pkg_files")
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
 
 go_library(
     name = "webhooks_lib",
@@ -20,8 +23,33 @@ go_binary(
     visibility = ["//visibility:public"],
 )
 
+pkg_files(
+    name = "webhooks_binary_files",
+    srcs = [":webhooks"],
+    prefix = "/app",
+)
+
+pkg_tar(
+    name = "webhooks_layer",
+    srcs = [":webhooks_binary_files"],
+)
+
+oci_image(
+    name = "webhooks_image",
+    base = "@debian_bookworm_slim",
+    entrypoint = ["/app/webhooks"],
+    tars = [":webhooks_layer"],
+)
+
+oci_load(
+    name = "webhooks_tarball",
+    image = ":webhooks_image",
+    repo_tags = ["mcpany/webhooks:latest"],
+)
+
 go_test(
     name = "webhooks_test",
     srcs = ["main_test.go"],
     data = [":webhooks"],
+    tags = ["integration"],
 )

@@ -80,21 +80,21 @@ func (a *Application) handleDebugSeed() http.HandlerFunc {
 func withRetry(ctx context.Context, log *slog.Logger, fn func() error) error {
 	var lastErr error
 	for i := 0; i < 5; i++ {
-		if err := fn(); err == nil {
+		err := fn()
+		if err == nil {
 			return nil
-		} else {
-			lastErr = err
-			if strings.Contains(strings.ToLower(err.Error()), "database is locked") || strings.Contains(strings.ToLower(err.Error()), "sqlite_busy") {
-				log.Warn("Database is locked, retrying...", "attempt", i+1, "error", err)
-				select {
-				case <-ctx.Done():
-					return ctx.Err()
-				case <-time.After(time.Duration(100*(i+1)) * time.Millisecond):
-					continue
-				}
-			}
-			return err
 		}
+		lastErr = err
+		if strings.Contains(strings.ToLower(err.Error()), "database is locked") || strings.Contains(strings.ToLower(err.Error()), "sqlite_busy") {
+			log.Warn("Database is locked, retrying...", "attempt", i+1, "error", err)
+			select {
+			case <-ctx.Done():
+				return ctx.Err()
+			case <-time.After(time.Duration(100*(i+1)) * time.Millisecond):
+				continue
+			}
+		}
+		return err
 	}
 	return fmt.Errorf("max retries reached: %w", lastErr)
 }
