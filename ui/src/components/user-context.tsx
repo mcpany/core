@@ -58,7 +58,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchUser = async () => {
+  const fetchUser = React.useCallback(async () => {
     try {
       const u = await apiClient.getCurrentUser();
       if (u) {
@@ -78,30 +78,37 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchUser();
   }, []);
 
-  const login = async (role: UserRole) => {
+  const login = React.useCallback(async (role: UserRole) => {
     // In a real app, this would trigger an OAuth flow or redirect to login page.
     // For development/testing with Basic Auth or API Key, the client is pre-configured via headers/localStorage.
     // We simulate a login by refreshing the user state from the backend.
     console.log(`[UserContext] Simulating login for role: ${role}`);
     await fetchUser();
-  };
+  }, [fetchUser]);
 
-  const logout = () => {
+  const logout = React.useCallback(() => {
     setUser(null);
     localStorage.removeItem('mcp_auth_token');
     localStorage.removeItem('mcp_user_role');
     // Force reload to clear client state
     window.location.reload();
-  };
+  }, []);
+
+  // ⚡ BOLT: Memoized context value to prevent widespread render waste across all consumers.
+  // Randomized Selection from Top 5 High-Impact Targets
+  const contextValue = React.useMemo(
+    () => ({ user, loading, login, logout, refresh: fetchUser }),
+    [user, loading, login, logout, fetchUser]
+  );
 
   return (
-    <UserContext.Provider value={{ user, loading, login, logout, refresh: fetchUser }}>
+    <UserContext.Provider value={contextValue}>
       {children}
     </UserContext.Provider>
   );
