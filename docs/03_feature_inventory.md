@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-07] Updates
+
+### Proposed Additions
+- **OpenCode-Compatible SDK (Type-Safe)**: (P1) A TypeScript/Python SDK that allows developers to interact with MCP Any tools programmatically with full type safety.
+- **Visual Diffing Middleware**: (P1) Automatic generation of visual diffs (side-by-side) for tool outputs that modify files or database records.
+- **CI/CD Agent Trigger Protocol**: (P1) Standardized webhook and event-bus ingestion to trigger MCP tool flows from external automation systems (GitHub Actions, Jenkins).
+
+### Priority Shifts
+- **A2A Stateful Residency**: Re-affirmed as **P0**. Essential for reliable handoffs in triggered CI/CD workflows.
+- **Lazy-MCP Tool Search**: Promoted to **P0** as SDK-based programmatic access will likely involve much larger tool-sets.
+
+### Deprecations / Monitoring
+- **Untyped JSON-RPC Tool Calls**: Monitoring for deprecation in favor of the Type-Safe SDK.

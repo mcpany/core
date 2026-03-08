@@ -46,3 +46,7 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-03-07:** Standardizing Handoff Triggers.
+    - **Context**: Market shift towards automated agent triggers in CI/CD (OpenClaw).
+    - **Update**: Added support for "Incoming Event Triggers" to Section 4. MCP Any can now listen for webhooks and automatically initiate an A2A handoff to a registered agent based on payload matching.
+    - **Interface Adjustment**: Added `triggers/register` and `triggers/execute` endpoints.
