@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-07]
+### Focus: Universal Task Bus & Hardened Execution
+**Context**: Today's research reveals a growing need for "Agentic Kanban" and "Isolated Execution" as agent swarms become the primary way to build software. MCP Any must evolve from a tool gateway to a comprehensive task and execution bus.
+**Strategic Pivot**:
+- **Universal Task Bus (UTB)**: MCP Any will provide a standardized task-state interface, allowing disparate agents (Claude Code, OpenClaw, AutoGen) to share a single, verifiable source of truth for task progress and handoffs.
+- **Isolated Execution Middleware**: Implementing native support for temporary git worktrees and containerized tool execution, ensuring that all filesystem-touching tool calls are isolated from the primary codebase until explicitly merged.
+- **Attested Inter-Agent Routing**: Strengthening the A2A protocol to include cryptographic attestation for every message, preventing subagent spoofing and unauthorized capability escalation.

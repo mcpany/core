@@ -189,3 +189,8 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Core Middleware Pipeline**: The middleware architecture is robust and extensible.
 - **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates protocol details from business logic.
 - **Documentation**: The project has excellent documentation coverage for most features.
+
+#### Upcoming (2026-03-07 Evolution)
+*   **[P0] Universal Task Bus (UTB)**: A standardized interface for sharing task state, progress, and handoffs across different agent frameworks (e.g., Claude Code, OpenClaw). (Added: 2026-03-07)
+*   **[P1] Isolated Git Worktree Middleware**: Automatically spawns and manages temporary git worktrees for filesystem-based tool executions. (Added: 2026-03-07)
+*   **[P1] Attested Inter-Agent Messaging (AIAM)**: Cryptographically signed messages for A2A communication, ensuring authenticity and provenance. (Added: 2026-03-07)
