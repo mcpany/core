@@ -25,8 +25,8 @@ import { format } from "date-fns";
 import { CalendarIcon, Search, RefreshCw, Eye, AlertTriangle, Download } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { JsonView } from '@/components/ui/json-view';
+
 
 interface AuditLogEntry {
     timestamp: string;
@@ -39,6 +39,16 @@ interface AuditLogEntry {
     duration: string;
     durationMs: number;
 }
+
+
+const tryParse = (data: string) => {
+    try {
+        return JSON.parse(data);
+    } catch {
+        return data;
+    }
+};
+
 
 /**
  * AuditLogViewer component.
@@ -119,15 +129,7 @@ export function AuditLogViewer() {
         }
     };
 
-    const formatJson = (jsonStr: string) => {
-        if (!jsonStr) return null;
-        try {
-            const obj = JSON.parse(jsonStr);
-            return JSON.stringify(obj, null, 2);
-        } catch (e) {
-            return jsonStr;
-        }
-    };
+
 
     return (
         <div className="space-y-4 h-full flex flex-col">
@@ -308,26 +310,14 @@ export function AuditLogViewer() {
                             <div>
                                 <h4 className="text-sm font-medium mb-2">Arguments</h4>
                                 <div className="rounded-md overflow-hidden border">
-                                    <SyntaxHighlighter
-                                        language="json"
-                                        style={vscDarkPlus}
-                                        customStyle={{ margin: 0, fontSize: '12px' }}
-                                    >
-                                        {formatJson(selectedLog.arguments) || "{}"}
-                                    </SyntaxHighlighter>
+                                    <JsonView data={tryParse(selectedLog.arguments) || {}} maxHeight={300} />
                                 </div>
                             </div>
 
                             <div>
                                 <h4 className="text-sm font-medium mb-2">Result</h4>
                                 <div className="rounded-md overflow-hidden border">
-                                    <SyntaxHighlighter
-                                        language="json"
-                                        style={vscDarkPlus}
-                                        customStyle={{ margin: 0, fontSize: '12px', maxHeight: '300px' }}
-                                    >
-                                        {formatJson(selectedLog.result) || (selectedLog.error ? "null" : "{}")}
-                                    </SyntaxHighlighter>
+                                    <JsonView data={selectedLog.error ? "null" : (tryParse(selectedLog.result) || {})} maxHeight={300} />
                                 </div>
                             </div>
                         </div>
