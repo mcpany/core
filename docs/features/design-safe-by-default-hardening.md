@@ -59,3 +59,8 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-05:** Update - Mitigating ClawJacked & Public IP Exposure.
+    *   **Context**: The ClawJacked exploit demonstrated that unauthenticated local port exposure is a viable attack vector via malicious websites. Simultaneously, nearly 500 MCP servers were found exposed globally.
+    *   **Architecture Adjustment**:
+        *   Introducing **Origin-Locked Agent Sessions** in Section 4. This ensures that even on `localhost`, requests must originate from a verified client host (e.g., Cursor, Claude Desktop) via cryptographic challenge-response.
+        *   **Automatic Auth Elevation**: Listeners detected on non-loopback interfaces (e.g., Ethernet, Wi-Fi) will now ignore the `disable_auth` config flag and force MFA.

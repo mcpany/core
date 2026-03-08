@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-05 Evolution)
+*   **[P0] Origin-Locked Agent Session**: Cryptographic binding of agent sessions to verified host origins (ClawJacked mitigation). (Added: 2026-03-05)
+*   **[P1] Verified Skill Proxy (VSP)**: Middleware to scan and sandbox untrusted MCP tool definitions. (Added: 2026-03-05)
+*   **[P0] Automatic Auth-Enforcement**: Non-bypassable MFA for non-loopback interface listeners. (Added: 2026-03-05)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

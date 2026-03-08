@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-05] Updates
+
+### Proposed Additions
+- **Origin-Locked Agent Session**: (P0) Cryptographic binding of agent sessions to verified host origins. Prevents cross-site hijacking (ClawJacked mitigation).
+- **Verified Skill Proxy (VSP)**: (P1) Middleware that scans tool definitions against a real-time database of known malicious skills and patterns.
+- **Automatic Auth-Enforcement for Public IPs**: (P0) Non-bypassable multi-factor attestation for any listener exposed on a non-loopback interface.
+
+### Priority Shifts
+- **"Safe-by-Default" Network Hardening**: Re-affirmed as **P0** with increased urgency following the "Great Exposure" crisis.
+- **MCP Provenance Attestation**: Re-affirmed as **P0** as it forms the basis for VSP validation.
+
+### Deprecations / Monitoring
+- **Transparent Tool Proxying**: Monitoring for deprecation in favor of the Verified Skill Proxy (VSP) model.
