@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-06] Updates
+
+### Proposed Additions
+- **Intent-Scoped Attestation (ISA)**: (P0) A dynamic policy engine that requires a signed "Intent Token" for high-privilege tool calls, mitigating "Confused Deputy" risks.
+- **Secure Code-Interpreter Bridge (SCIB)**: (P0) An ephemeral, sandboxed execution environment for agents using Programmatic Tool Calling (PTC) against local resources.
+- **Federated Policy Sync**: (P1) Synchronizes Rego/CEL policies across peered MCP Any nodes to ensure security consistency during task delegation.
+
+### Priority Shifts
+- **A2A Interop Bridge**: Re-affirmed as **P0**. The market move toward "Generalist Agents" (Gemini) makes A2A bridging a core necessity.
+- **Lazy-MCP Middleware**: Re-affirmed as **P0**. Semantic tool search is now a standard requirement for large-scale agent deployments.
+
+### Deprecations / Monitoring
+- **Static Token Scoping**: Monitoring for deprecation in favor of Intent-Scoped Attestation for all non-read-only tool calls.

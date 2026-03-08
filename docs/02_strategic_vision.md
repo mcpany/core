@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-06]
+### Focus: Intent-Based Attestation & Delegated Agency
+**Context**: Gemini v0.32.0's "Generalist Agent" and Claude's "Programmatic Tool Calling" increase the risk of the "Confused Deputy" problem. Agents are now delegating tasks to sub-entities with higher privileges, creating a gap in intent-verification.
+**Strategic Pivot**:
+- **Intent-Based Attestation**: MCP Any will evolve its security model to include "Intent-Scoped Policy." A tool call is not just validated against a static capability, but against a dynamically signed "Intent Token" provided by the orchestrator.
+- **Programmatic Execution Sandboxing**: To support PTC (Programmatic Tool Calling), MCP Any will provide a "Secure Code-Interpreter Bridge" that allows agents to execute code against local tools within an ephemeral, attested environment.
+- **Federated Policy Propagation**: Moving from local-only policies to a federated model where security policies can be shared across the agent mesh, ensuring consistent "Zero-Trust" enforcement during cross-node delegation.
