@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-04]
+### Focus: Anti-Hijack Gateways & Team-Scoped Context
+**Context**: The "ClawJacked" incident and recent RCEs in tool-specific MCP servers (mcp-atlassian) highlight that `localhost` is no longer a sufficient security boundary. Simultaneously, the rise of "Claude Agent Teams" demands more flexible context sharing than simple parent-child inheritance.
+**Strategic Pivot**:
+- **Origin-Verified Gateway**: MCP Any will transition from simple token auth to a mandatory "Origin-Verification" handshake. Any request originating from a browser (or non-trusted process) to the local MCP gateway must pass a cryptographically signed challenge, effectively neutralizing 0-click WebSocket hijacking.
+- **Team-Scoped Context Mesh**: Moving beyond linear context inheritance to a "Team Mesh" model. This allows multiple agents to share a "Team Blackboard" while maintaining total isolation from other concurrent agent teams on the same infrastructure.
+- **Path-Confined Tooling (Sandboxing by Proxy)**: MCP Any will implement a middleware that enforces directory confinement and path-traversal checks on *all* tool calls, even if the underlying MCP server is vulnerable (defense-in-depth).

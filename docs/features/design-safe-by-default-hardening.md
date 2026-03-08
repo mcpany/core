@@ -59,3 +59,4 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-04:** Added Origin-Verified Gateway requirement to mitigate "ClawJacked" WebSocket hijacking. `localhost` is no longer considered a trusted origin for browser-initiated requests.
