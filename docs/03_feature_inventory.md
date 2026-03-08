@@ -19,9 +19,6 @@
 - **Recursive Context Protocol**: Promoted from **P1** to **P0**. Essential for modern agent swarms to prevent state loss.
 - **Shared KV Store**: Promoted from **P1** to **P0**. Critical for coordinating multi-agent actions in complex workflows.
 
-### Deprecations / Monitoring
-- *None today.*
-
 ---
 
 ## Evolution: [2026-02-24] Updates
@@ -81,3 +78,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-02] Updates
+
+### Proposed Additions
+- **Cross-Origin Security Middleware**: (P0) Mandatory origin validation for all incoming connections, specifically targeting browser-to-local bridge vulnerabilities.
+- **Project-Level Policy Scoping**: (P1) Middleware that dynamically switches security and tool visibility based on the calling agent's working directory/project context.
+- **Prompt Suggestion Bridge**: (P2) Automated generation of prompt suggestions based on local tool history and repository structure.
+
+### Priority Shifts
+- **Provenance-First Discovery**: Promoted from **P1** to **P0**. The "Agent-Hijack" and "Clinejection" patterns make attested discovery a non-negotiable requirement.
+- **Slash-Command Bridge for Gemini**: Promoted from **P1** to **P0**. With the release of Gemini v0.30.0, this is now a competitive priority.
+
+### Deprecations / Monitoring
+- **Anonymous/Origin-Less Inbound Requests**: Monitoring for deprecation. All requests must provide a verified identity or origin header.

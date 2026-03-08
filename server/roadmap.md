@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-02 Evolution)
+*   **[P0] Cross-Origin Security Middleware**: Implement mandatory `Origin` and `Host` header validation for all listeners to prevent CORF/Agent-Hijacking. (Added: 2026-03-02)
+*   **[P1] Project-Level Policy Scoping**: Middleware to dynamically adjust security policies based on the agent's current working project context. (Added: 2026-03-02)
+*   **[P1] Slash-Command Bridge (Gemini v0.30+)**: Native support for Gemini's new productivity commands and prompt suggestions. (Added: 2026-03-02)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
