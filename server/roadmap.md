@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-07 Evolution)
+*   **[P0] Cross-Origin Agent Protection (COAP)**: Cryptographic origin verification for all tool requests to prevent hijacking. (Added: 2026-03-07)
+*   **[P1] Swarm-Aware Rate Limiting (SARL)**: Global behavioral analysis to detect and throttle coordinated swarm attacks. (Added: 2026-03-07)
+*   **[P1] Cognitive Quota Enforcement**: Prevent runaway reasoning costs for models with Adaptive Thinking. (Added: 2026-03-07)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

@@ -59,3 +59,10 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+
+### Update: 2026-03-07 - Mitigating Browser-Based Hijacking (OpenClaw Incident)
+**Context:** Today's market sync revealed that `localhost` binding alone is insufficient if the browser can still issue requests.
+**Architecture Adjustment:**
+* Deprecating local HTTP tunneling without origin verification in Section 4.
+* Explicitly linking Safe-by-Default with **Cross-Origin Agent Protection (COAP)**. Safe-by-Default now mandates that all local listeners must enforce COAP identity verification to prevent "Same-Origin" cross-protocol attacks.
+**Security Impact:** Prevents malicious websites from communicating with local listeners via the developer's browser, even if the listeners are bound to `127.0.0.1`.
