@@ -34,6 +34,12 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-05 Evolution)
+*   **[P0] Automated MCP Vulnerability Scanner**: Background service that scans connected MCP servers for known exploit patterns (Added: 2026-03-05).
+*   **[P1] Intent-Scoped A2A Attestation**: Middleware that attaches a parent-signed intent manifest to all subagent A2A messages (Added: 2026-03-05).
+*   **[P1] Protocol-Agnostic "Pseudo-MCP" Wrappers**: Adapters for Cord and Smolagents protocols to be exposed as standard MCP tools (Added: 2026-03-05).
+*   **[P0] Credential Masking Middleware**: Redacts sensitive keys from all tool responses by default to prevent accidental leaks (Added: 2026-03-05).
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

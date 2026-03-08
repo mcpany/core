@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-05] Updates
+
+### Proposed Additions
+- **Automated MCP Vulnerability Scanner**: (P0) Background service that scans connected MCP servers for known exploit patterns (e.g., CVE-2026-25253-like endpoints).
+- **Intent-Scoped A2A Attestation**: (P1) Middleware that attaches a parent-signed intent manifest to all subagent A2A messages, restricting tool usage to the specific task scope.
+- **Protocol-Agnostic "Pseudo-MCP" Wrappers**: (P1) Adapters for Cord and Smolagents protocols to be exposed as standard MCP tools.
+
+### Priority Shifts
+- **Safe-by-Default Hardening**: Promoted to **Core P0**. Must be the absolute prerequisite for any external connectivity.
+- **Provenance-First Discovery**: Promoted to **P0**. Essential to prevent "Skill Marketplace" poisoning seen in recent OpenClaw attacks.
+
+### Deprecations / Monitoring
+- **Unauthenticated Auth Export**: Monitoring for deprecation of any functionality that could lead to credential leakage.

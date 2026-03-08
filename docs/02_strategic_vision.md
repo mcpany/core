@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-05]
+### Focus: Immune-System Architecture & Protocol-Agnostic Agency
+**Context**: The OpenClaw security crisis (CVE-2026-25253) and the emergence of marketplace-driven tool discovery require MCP Any to evolve from a "Gateway" to an "Immune System." The gateway must not only route traffic but actively defend the host from agentic vulnerabilities.
+**Strategic Pivot**:
+- **Immune-System Architecture**: Implementing "Self-Healing" security policies where MCP Any automatically detects and quarantines tools exhibiting malicious patterns (e.g., unauthorized auth export) or non-standard behavior.
+- **Intent-Scoped A2A Attestation**: Moving beyond simple A2A bridging to "Intent-Scoped" handoffs, where a parent agent's cryptographic signature explicitly limits what a subagent can do with the tools it inherits.
+- **Protocol-Agnostic Registry**: Expanding the tool registry to support non-MCP protocols (Cord, Smolagents) via a unified "Pseudo-MCP" abstraction, ensuring MCP Any remains the universal bus regardless of the underlying protocol.

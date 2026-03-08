@@ -59,3 +59,9 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-05: Addressing OpenClaw Token Export Vulnerability**
+    - **Context**: The OpenClaw breach (CVE-2026-25253) was caused by an unauthenticated `/api/export-auth` endpoint.
+    - **Architecture Adjustment**:
+        - Explicitly banning "Authentication Export" tools or endpoints in the core gateway.
+        - Implementing "Credential Masking" middleware that redacts sensitive keys from all tool responses by default.
+        - All management endpoints (including diagnostics) now require Local-Only MFA, even when the gateway is authorized for remote tool access.
