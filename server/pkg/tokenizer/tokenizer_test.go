@@ -428,3 +428,253 @@ func TestFloatConsistency(t *testing.T) {
 		}
 	}
 }
+
+func TestCountTokensInValueSimpleFast_Maps(t *testing.T) {
+	tokenizer := NewSimpleTokenizer()
+
+	t.Run("map[string]int", func(t *testing.T) {
+		m := map[string]int{"k1": 1, "k222": 10000} // k1(1) + 1(1) = 2, k222(1) + 10000(1) = 2 -> Total 4 (because simpleTokenizeInt(10000) < 10000000 => 1)
+		got, err := CountTokensInValue(tokenizer, m)
+		if err != nil {
+			t.Fatalf("Unexpected error: %v", err)
+		}
+		if got != 4 {
+			t.Errorf("map[string]int: got %d, want 4", got)
+		}
+	})
+
+	t.Run("map[string]int64", func(t *testing.T) {
+		m := map[string]int64{"k1": 1, "k222": 100000000} // k1(1) + 1(1) = 2, k222(1) + 100000000(2) = 3 -> Total 5 (100000000 length=9 -> 9/4=2)
+		got, err := CountTokensInValue(tokenizer, m)
+		if err != nil {
+			t.Fatalf("Unexpected error: %v", err)
+		}
+		if got != 5 {
+			t.Errorf("map[string]int64: got %d, want 5", got)
+		}
+	})
+
+	t.Run("map[string]float64", func(t *testing.T) {
+		m := map[string]float64{"k1": 1.0, "k222": 1.2345678} // k1(1) + 1.0(1) = 2, k222(1) + 1.2345678(2) = 3 -> Total 5
+		got, err := CountTokensInValue(tokenizer, m)
+		if err != nil {
+			t.Fatalf("Unexpected error: %v", err)
+		}
+		if got != 5 {
+			t.Errorf("map[string]float64: got %d, want 5", got)
+		}
+	})
+
+	t.Run("map[string]bool", func(t *testing.T) {
+		m := map[string]bool{"k1": true, "k222": false} // k1(1) + true(1) = 2, k222(1) + false(1) = 2 -> Total 4
+		got, err := CountTokensInValue(tokenizer, m)
+		if err != nil {
+			t.Fatalf("Unexpected error: %v", err)
+		}
+		if got != 4 {
+			t.Errorf("map[string]bool: got %d, want 4", got)
+		}
+	})
+
+	t.Run("[]byte", func(t *testing.T) {
+		b := []byte("12345678") // 8 chars -> 2 tokens
+		got, err := CountTokensInValue(tokenizer, b)
+		if err != nil {
+			t.Fatalf("Unexpected error: %v", err)
+		}
+		if got != 2 {
+			t.Errorf("[]byte: got %d, want 2", got)
+		}
+
+		bEmpty := []byte("") // 0 chars -> 0 tokens
+		gotEmpty, _ := CountTokensInValue(tokenizer, bEmpty)
+		if gotEmpty != 0 {
+			t.Errorf("[]byte empty: got %d, want 0", gotEmpty)
+		}
+	})
+}
+
+func TestCountWordsInValueFast_Maps(t *testing.T) {
+	tokenizer := NewWordTokenizer()
+
+	t.Run("map[string]int", func(t *testing.T) {
+		m := map[string]int{"k1": 1, "k222": 10000} // k1(1) + 1(1) = 2 words * 1.3 -> 2 tokens, total words 4 -> 4*1.3 = 5
+		got, err := CountTokensInValue(tokenizer, m)
+		if err != nil {
+			t.Fatalf("Unexpected error: %v", err)
+		}
+		if got != 5 { // 4 words * 1.3 = 5
+			t.Errorf("map[string]int: got %d, want 5", got)
+		}
+	})
+
+	t.Run("map[string]int64", func(t *testing.T) {
+		m := map[string]int64{"k1": 1, "k222": 100000000}
+		got, err := CountTokensInValue(tokenizer, m)
+		if err != nil {
+			t.Fatalf("Unexpected error: %v", err)
+		}
+		if got != 5 { // 4 words * 1.3 = 5
+			t.Errorf("map[string]int64: got %d, want 5", got)
+		}
+	})
+
+	t.Run("map[string]float64", func(t *testing.T) {
+		m := map[string]float64{"k1": 1.0, "k222": 1.2345678}
+		got, err := CountTokensInValue(tokenizer, m)
+		if err != nil {
+			t.Fatalf("Unexpected error: %v", err)
+		}
+		if got != 5 { // 4 words * 1.3 = 5
+			t.Errorf("map[string]float64: got %d, want 5", got)
+		}
+	})
+
+	t.Run("map[string]bool", func(t *testing.T) {
+		m := map[string]bool{"k1": true, "k222": false}
+		got, err := CountTokensInValue(tokenizer, m)
+		if err != nil {
+			t.Fatalf("Unexpected error: %v", err)
+		}
+		if got != 5 { // 4 words * 1.3 = 5
+			t.Errorf("map[string]bool: got %d, want 5", got)
+		}
+	})
+
+	t.Run("[]byte", func(t *testing.T) {
+		b := []byte("hello world test") // 3 words -> 3 * 1.3 = 3.9 -> 3 tokens
+		got, err := CountTokensInValue(tokenizer, b)
+		if err != nil {
+			t.Fatalf("Unexpected error: %v", err)
+		}
+		if got != 3 {
+			t.Errorf("[]byte: got %d, want 3", got)
+		}
+	})
+}
+
+type CyclicStruct struct {
+	Name string
+	Self *CyclicStruct
+}
+
+func TestCountTokensReflect_CycleDetection(t *testing.T) {
+	tokenizer := NewSimpleTokenizer()
+
+	t.Run("Struct Cycle", func(t *testing.T) {
+		s := &CyclicStruct{Name: "abcd"}
+		s.Self = s
+
+		_, err := CountTokensInValue(tokenizer, s)
+		if err == nil {
+			t.Errorf("expected cycle detection error")
+		}
+	})
+
+	t.Run("Slice Cycle", func(t *testing.T) {
+		// Can't trivially create self-referential slice without pointers, but we can do it with an array pointer wrapper.
+		type sliceWrapper struct {
+			S []interface{}
+		}
+		w := &sliceWrapper{}
+		w.S = []interface{}{w}
+
+		_, err := CountTokensInValue(tokenizer, w)
+		if err == nil {
+			t.Errorf("expected cycle detection error")
+		}
+	})
+
+	t.Run("Map Cycle", func(t *testing.T) {
+		m := make(map[string]interface{})
+		m["self"] = m
+
+		_, err := CountTokensInValue(tokenizer, m)
+		if err == nil {
+			t.Errorf("expected cycle detection error")
+		}
+	})
+}
+
+func TestCountSliceInterface_Variations(t *testing.T) {
+	t.Run("SimpleTokenizer", func(t *testing.T) {
+		tokenizer := NewSimpleTokenizer()
+
+		s := []interface{}{
+			"abcd",          // 1
+			1234,            // 1
+			int64(1234),     // 1
+			true,            // 1
+			nil,             // 1
+			[]interface{}{"efgh"}, // 1
+			map[string]interface{}{"k": "v"}, // 2
+			1.23, // 1
+		}
+		got, err := CountTokensInValue(tokenizer, s)
+		if err != nil {
+			t.Fatalf("Unexpected error: %v", err)
+		}
+		if got != 9 {
+			t.Errorf("got %d, want 9", got)
+		}
+	})
+
+	t.Run("WordTokenizer", func(t *testing.T) {
+		tokenizer := NewWordTokenizer()
+
+		s := []interface{}{
+			"hello world",    // 2 words
+			1234,             // 1 word
+			int64(1234),      // 1 word
+			true,             // 1 word
+			nil,              // 1 word
+			[]interface{}{"test word"}, // 2 words
+			1.23,             // 1 word
+		}
+		// total words = 9
+		// 9 * 1.3 = 11.7 -> 11
+		got, err := CountTokensInValue(tokenizer, s)
+		if err != nil {
+			t.Fatalf("Unexpected error: %v", err)
+		}
+		if got != 11 {
+			t.Errorf("got %d, want 11", got)
+		}
+	})
+}
+
+func TestSimpleTokenizeInt64Branches(t *testing.T) {
+	tokenizer := NewSimpleTokenizer()
+
+	tests := []struct {
+		input int64
+		want  int
+	}{
+		{1, 1},
+		{-1, 1},
+		{123, 1},
+		{1234567, 1},
+		{12345678, 2},
+		{123456789, 2},
+		{1234567890, 2},
+		{12345678901, 2},
+		{123456789012, 3},
+		{1234567890123, 3},
+		{12345678901234, 3},
+		{123456789012345, 3},
+		{1234567890123456, 4},
+		{12345678901234567, 4},
+		{123456789012345678, 4},
+		{-9223372036854775808, 5},
+	}
+
+	for _, tt := range tests {
+		got, err := CountTokensInValue(tokenizer, tt.input)
+		if err != nil {
+			t.Fatalf("Unexpected error: %v", err)
+		}
+		if got != tt.want {
+			t.Errorf("CountTokensInValue(%d) = %d, want %d", tt.input, got, tt.want)
+		}
+	}
+}
