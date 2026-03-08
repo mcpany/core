@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-08]
+### Focus: Origin-Aware Security & Universal Native Bridges
+**Context**: Today's research on the OpenClaw "Origin Hijacking" vulnerability and Gemini's FastMCP integration highlights a critical evolution: security must move from simple "Who" to "Where-from" (Origin-Aware), and usability must bridge the gap between "Universal Protocols" and "Native Experience."
+**Strategic Pivot**:
+- **Origin-Aware Tool Isolation**: MCP Any will implement strict Origin-based access control, ensuring that tool calls are only executed if they originate from an attested, local process, preventing web-based hijacking of the Universal Agent Bus.
+- **Universal Slash Bridge**: Mapping all MCP prompts to platform-specific "Native Commands" (e.g., Gemini CLI /slash commands, Claude Skills), allowing any MCP server to feel like a native part of any agent framework.
+- **Thread-Isolated Session State**: Moving from simple session management to "Channel-Bound Isolation," ensuring that multi-agent swarms (e.g., Discord/Telegram threads) have cryptographically separated context and state buffers.

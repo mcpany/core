@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-08 Evolution)
+*   **[P0] Origin-Aware Policy Extension**: Source-process and Origin-header attestation for tool calls. (Added: 2026-03-08)
+*   **[P1] Universal Slash Bridge**: Automatic mapping of MCP prompts to native agent slash commands. (Added: 2026-03-08)
+*   **[P1] Channel-Bound Isolation**: Session state separation based on messaging channel (Discord/Telegram threads). (Added: 2026-03-08)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
