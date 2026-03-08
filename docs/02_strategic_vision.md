@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-05]
+### Focus: Dynamic Capability Negotiation & Verifiable Authorization Chains
+**Context**: Today's findings show a shift towards reducing "Context Window Bloat" through on-the-fly negotiation and a need for solving inter-agent trust via cryptographic "Authorization Chains."
+**Strategic Pivot**:
+- **Just-in-Time (JIT) Tool Provisioning**: Transitioning from static tool schemas to a JIT model where tool definitions are negotiated dynamically based on the agent's current intent, drastically reducing context pollution.
+- **Cryptographic Capability Delegation**: Implementing a protocol for verifiable "Authorization Chains" where parent agents can securely delegate a subset of their capabilities to sub-agents via signed tokens.
+- **Cloud-Local WebSocket Bridge**: Implementing a secure, WebSocket-based bridge to allow agents in cloud sandboxes to seamlessly interact with local developer environments without complex networking overhead.
