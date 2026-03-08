@@ -59,3 +59,11 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+
+### Update: 2026-03-06 - Addressing "PleaseFix" Context Injection
+**Context**: Today's findings revealed a new "Context Injection" exploit (PleaseFix) that uses routine tools (e.g., Calendar, Browser) to inject malicious prompts into the LLM's reasoning loop.
+**Architecture Adjustment**:
+*   **Input Firewall (Shield)**: Adding a new middleware layer (Contextual Input Guard) that intercepts tool results (e.g., HTML, Calendar events) before they reach the LLM.
+*   **Pattern Matching & Sanitization**: This middleware will scan for known prompt injection patterns and "high-risk" instructions (e.g., "forget previous instructions", "exfiltrate files").
+*   **Tool-Level Sanitization Policies**: Allowing administrators to define "Sanitization Rules" per tool (e.g., `browser: read_url` must be stripped of script tags and prompt-like text).
+**Security Impact**: Mitigates the "PleaseFix" vulnerability by ensuring that an LLM cannot be manipulated by untrusted content retrieved through standard tools.
