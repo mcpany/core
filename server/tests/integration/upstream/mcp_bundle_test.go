@@ -18,6 +18,7 @@ import (
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/upstream/mcp"
 	"github.com/mcpany/core/server/pkg/util"
+	"github.com/mcpany/core/server/pkg/validation"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -256,6 +257,15 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 	tempDir := t.TempDir()
 	bundlePath := createE2EBundle(t, tempDir)
 	bundleBaseDir := filepath.Join(t.TempDir(), "bundles")
+
+	// Allow the bundle base directory for validation in tests
+	oldIsAllowedPath := validation.IsAllowedPath
+	validation.IsAllowedPath = func(path string) error {
+		return nil
+	}
+	t.Cleanup(func() {
+		validation.IsAllowedPath = oldIsAllowedPath
+	})
 
 	toolManager := tool.NewManager(nil)
 	promptManager := prompt.NewManager()
