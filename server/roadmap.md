@@ -30,6 +30,9 @@
 *   **[P1] Resource Telemetry Middleware**: Inject latency/cost metrics into tool schemas. (Added: 2026-02-26)
 
 #### Upcoming (2026-02-28 Evolution)
+*   **[P0] Ephemeral Scoping Middleware**: Extends Policy Firewall for per-turn permissions. (Added: 2026-03-05)
+*   **[P0] Discovery-Time Attestation Guard**: Prevents unverified tool discovery (PITD mitigation). (Added: 2026-03-05)
+*   **[P1] Streaming Tool Output Adapter**: Native support for Gemini-style tool streaming. (Added: 2026-03-05)
 *   **[P0] Safe-by-Default Hardening**: Transition all listeners to `localhost` by default. Implement mandatory Attestation for remote exposure. (Added: 2026-02-28)
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
