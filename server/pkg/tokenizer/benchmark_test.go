@@ -31,17 +31,17 @@ func BenchmarkStructTokenization(b *testing.B) {
 	}
 
 	s := BenchStruct{
-		Name: "Test Struct",
+		Name:        "Test Struct",
 		Description: "A description that is somewhat long to count tokens for.",
-		Tags: []string{"tag1", "tag2", "tag3", "tag4", "tag5"},
+		Tags:        []string{"tag1", "tag2", "tag3", "tag4", "tag5"},
 		Meta: map[string]string{
 			"key1": "value1",
 			"key2": "value2",
 			"key3": "value3",
 		},
-		Count: 12345,
+		Count:  12345,
 		Active: true,
-		Sub: deep,
+		Sub:    deep,
 	}
 
 	b.ResetTimer()
