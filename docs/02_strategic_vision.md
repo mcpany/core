@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-06]
+### Focus: Hardened Configuration Governance & Universal Credential Isolation
+**Context**: Recent critical vulnerabilities in Claude Code (RCE via malicious hooks, API key exfiltration via URL overrides) have exposed "Project-Local Configuration" as a massive security liability. Simultaneously, the rise of 100+ agent swarms (Kimi K2.5) requires automated governance to prevent coordination failure and runaway costs.
+**Strategic Pivot**:
+- **Config Integrity Attestation**: MCP Any will move to a "Signed-Configuration" model. Any configuration file (YAML, JSON, .env) loaded from a project directory must be cryptographically attested or manually "Allowed" via a secure out-of-band flow.
+- **Universal Credential Isolation**: Shifting from "Injecting" environment variables to "Proxying" them. MCP Any will act as a secure credential vault, providing sub-agents with ephemeral, task-scoped access tokens rather than raw API keys, preventing exfiltration via configuration overrides.
+- **Swarm Governance Framework**: Integrating "Economic Guardrails" into the A2A protocol. MCP Any will enforce hard limits on tool-call recursion and token spend per-swarm-session, providing the accountability layer needed for massive multi-agent deployments.
