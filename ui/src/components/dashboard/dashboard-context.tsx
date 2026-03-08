@@ -5,7 +5,7 @@
 
 "use client";
 
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, { createContext, useContext, useState, ReactNode, useMemo } from "react";
 
 interface DashboardContextType {
   serviceId: string | undefined;
@@ -28,8 +28,17 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   const [serviceId, setServiceId] = useState<string | undefined>(undefined);
   const [timeRange, setTimeRange] = useState<string>("24h");
 
+  // ⚡ BOLT: Memoized context value to prevent unnecessary re-renders in consumers
+  // Randomized Selection from Top 5 High-Impact Targets
+  const value = useMemo(() => ({
+    serviceId,
+    setServiceId,
+    timeRange,
+    setTimeRange
+  }), [serviceId, timeRange]);
+
   return (
-    <DashboardContext.Provider value={{ serviceId, setServiceId, timeRange, setTimeRange }}>
+    <DashboardContext.Provider value={value}>
       {children}
     </DashboardContext.Provider>
   );
