@@ -46,3 +46,10 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+
+### Update: 2026-03-07 - Teammate Protocol Integration
+**Context:** Today's research on Claude Code "Swarm Mode" revealed the implementation of `TeammateTool` for multi-agent orchestration.
+**Architecture Adjustment:**
+*   **Teammate-Compatible Interface**: Extending the `A2ABridgeMiddleware` to support a subset of `TeammateTool` operations (e.g., `TeammateCreate`, `SendMessage`).
+*   **Stateful Residency for Teammates**: Utilizing the `Shared KV Store` to buffer messages between the Team Lead and Teammates, allowing for asynchronous task completion even when the Lead is busy or disconnected.
+**Security Impact:** Teammates are scoped to the `TeamID` and inherit the Lead's intent-based permissions via the `Recursive Context Protocol`.

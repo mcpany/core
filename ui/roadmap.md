@@ -107,3 +107,8 @@
 - [ ] **Log Source Color Coding**: Assign distinct colors to different log sources automatically for better visual separation.
 - [ ] **Context Usage History**: Track total context usage over time to identify growth trends (requires backend metrics persistence).
 - [ ] **Tool Schema Optimizer**: Analyze tool schemas and suggest removing unused properties or compacting descriptions to save context tokens.
+
+#### Upcoming (2026-03-07 Evolution)
+- [ ] **[P0] Teammate Orchestration Dashboard**: Visualize and manage "Team Lead" and "Teammate" session hierarchies. (Added: 2026-03-07)
+- [ ] **[P0] PRM Discovery Console**: UI for monitoring and completing upstream authorization requirements via PRM. (Added: 2026-03-07)
+- [ ] **[P1] Action Cascade Monitor**: Real-time alerts and visualization of high-frequency tool call loops. (Added: 2026-03-07)

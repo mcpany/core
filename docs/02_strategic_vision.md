@@ -57,3 +57,11 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+## Strategic Evolution: [2026-03-07]
+### Focus: Teammate Orchestration & Spec-Level Auth Discovery
+**Context**: The official launch of Claude Code "Agent Teams" and the MCP C# SDK 1.0 (Spec 2025-11-25) marks a shift toward standardized multi-agent coordination and formalized authorization discovery.
+**Strategic Pivot**:
+- **Teammate-First Orchestration**: MCP Any will adapt its A2A Bridge to implement a "Teammate-Compatible" protocol, allowing it to act as the coordination hub for agents using Anthropic's team patterns.
+- **PRM-Native Discovery**: Implementing full support for Protected Resource Metadata (PRM). MCP Any will become the first universal adapter to automatically discover and negotiate authorization requirements for upstream services.
+- **Wildcard Policy Enforcement**: Evolving the Policy Firewall to support wildcard-based tool scoping and annotation matching, mirroring the advanced policy capabilities seen in Gemini CLI v0.32.0.

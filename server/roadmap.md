@@ -189,3 +189,8 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Core Middleware Pipeline**: The middleware architecture is robust and extensible.
 - **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates protocol details from business logic.
 - **Documentation**: The project has excellent documentation coverage for most features.
+
+#### Upcoming (2026-03-07 Evolution)
+*   **[P0] MCP Protected Resource Metadata (PRM) Support**: Standardized auth discovery for upstream servers. (Added: 2026-03-07)
+*   **[P0] Teammate-Protocol Bridge**: Support for Claude Code "Agent Teams" orchestration tools. (Added: 2026-03-07)
+*   **[P1] Action Cascade Prevention Middleware**: Safety mechanism to detect and block runaway agent loops. (Added: 2026-03-07)
