@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-05 Evolution)
+*   **[P0] Localhost Handshake Protocol (Anti-ClawJack)**: Mandatory cryptographic handshake for all WebSocket/HTTP connections on localhost. (Added: 2026-03-05)
+*   **[P0] Config Integrity Sandboxing**: Treat repository-local configuration files as untrusted. Require HITL attestation for high-risk settings (hooks, base URLs). (Added: 2026-03-05)
+*   **[P0] Deep Argument Sanitization Middleware**: Proactive shell-injection detection and strict schema enforcement for all tool call parameters. (Added: 2026-03-05)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

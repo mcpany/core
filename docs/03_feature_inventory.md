@@ -81,3 +81,16 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-05] Updates
+
+### Proposed Additions
+- **Localhost Handshake Protocol (Anti-ClawJack)**: (P0) Mandatory cryptographic handshake for all WebSocket/HTTP connections on localhost to prevent unauthorized access from malicious browser tabs.
+- **Config Integrity Sandboxing**: (P0) Treatment of repository-level configuration files as untrusted. Requires explicit user approval for high-risk settings (hooks, base URLs).
+- **Deep Argument Sanitization Middleware**: (P0) Proactive shell-injection detection and strict schema enforcement for all tool call parameters.
+
+### Priority Shifts
+- **Safe-by-Default Network Hardening**: Promoted to include Localhost Handshake as a core requirement for "Safety."
+- **Policy Firewall**: Re-affirmed as **P0** with new focus on validating repository-level configuration overrides.

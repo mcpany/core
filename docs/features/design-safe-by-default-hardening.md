@@ -59,3 +59,4 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-05:** Update - Localhost Handshake. Added requirement for mandatory cryptographic handshake for localhost connections to mitigate "ClawJacked" exploit vector.
