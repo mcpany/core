@@ -57,3 +57,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-04]
+### Focus: Runtime Policy Enforcement & Confidential Execution
+**Context**: Today's findings reveal a critical shift from "Boundary Security" to "Runtime Security." The "8,000 Exposed Servers" and "Claude Code RCE" incidents prove that static tool definitions are insufficient. Security must be attached to the AI's *intent* at execution time.
+**Strategic Pivot**:
+- **Intent-Based Policy Enforcement**: MCP Any will evolve to inspect the *intent* of a tool call before it reaches the server. This moves policy from "Can I call this tool?" to "Can I call this tool *for this specific purpose*?".
+- **Contextual Tool-Level MFA**: Implementing a "Step-Up" authentication protocol where sensitive tools (e.g., `filesystem:delete`, `aws:terminate_instance`) trigger a real-time, out-of-band user approval (Mobile Push/MFA) even if the agent is otherwise authorized.
+- **Confidential MCP Runtime**: Researching the integration of Trusted Execution Environments (TEEs) for MCP adapters, ensuring that tool parameters and results are encrypted end-to-end, protecting against host-level "Shadow AI" data leakage.
+- **Economical Reasoning Middleware**: Incorporating real-time token and API cost estimation into the tool discovery process, allowing agents to choose the most cost-effective tool for a given task.

@@ -34,6 +34,12 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-04 Evolution)
+*   **[P0] Intent-Aware Policy Engine**: Middleware for verifying tool call "Intent" to prevent agent hijacking. (Added: 2026-03-04)
+*   **[P0] Contextual Tool-Level MFA (Step-Up Auth)**: Real-time MFA approval protocol for sensitive tool calls. (Added: 2026-03-04)
+*   **[P1] Tool Cost-Reasoning Middleware**: Real-time token and API cost estimation during tool discovery. (Added: 2026-03-04)
+*   **[P2] MCP TEE Adapter**: Support for running MCP server logic in Trusted Execution Environments. (Added: 2026-03-04)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
