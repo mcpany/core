@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-05]
+### Focus: Origin-Aware Security & Agentic Identity Governance
+**Context**: The "OpenClaw WebSocket Crisis" has demonstrated that local-only bindings are insufficient if browser-based hijacking is possible. Simultaneously, the maturation of Claude Code suggests that MCP Any must pivot from being a "Proxy" to a "Governance Gateway."
+**Strategic Pivot**:
+- **Origin-Aware Middleware**: Implementing mandatory `Origin` and `Sec-Fetch-Site` header validation for all WebSocket and HTTP adapters. MCP Any will block all non-same-origin requests unless explicitly whitelisted via a cryptographically signed policy.
+- **Agentic Identity Governance**: Expanding the "Policy Firewall" to include "Persona Management." MCP Any will track not just *what* tool is called, but *who* (which specific agent/subagent identity) is calling it, attaching an immutable "Agentic Audit Trail" to every side-effect.
+- **Dynamic Context Pruning (Deferred Search)**: Adopting the industry-standard "10% Context Threshold" for tool schemas. MCP Any will automatically pivot to "Lazy-Discovery" mode when the cumulative size of available tool schemas threatens context efficiency.

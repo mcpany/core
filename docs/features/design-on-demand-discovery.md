@@ -57,3 +57,9 @@ As the number of available MCP tools grows, agents face "context pollution"—wh
 
 ## 7. Evolutionary Changelog
 *   **2026-02-25:** Initial Document Creation.
+*   **2026-03-05: Alignment with Claude Code GA (Deferred Search Pattern)**
+    *   **Context**: Claude Code GA introduced a 10% context threshold for automatic tool schema deferral.
+    *   **Architecture Adjustment**:
+        *   Implementing a `ContextMonitor` middleware that calculates the cumulative token size of registered tool schemas.
+        *   Adding a dynamic `auto_lazy` mode: when tool schemas exceed 10% of the target LLM's context window (or a fixed 4k token limit), MCP Any will automatically strip schemas from `tools/list` and inject the `mcpany_search_tools` capability.
+        *   Standardizing the search output to match the "Schema-on-Demand" format recognized by modern agentic explorers.
