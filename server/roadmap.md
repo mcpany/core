@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-06 Evolution)
+*   **[P0] Origin-Aware Request Gating (OARG)**: Prevent browser-based hijacking of local agents via strict origin validation and pairing flows. (Added: 2026-03-06)
+*   **[P0] Generic Filesystem Jail Middleware**: Implement kernel-style path sandboxing for all tool calls to protect downstream services from path traversal. (Added: 2026-03-06)
+*   **[P1] Universal Search Proxy**: Native support for tool discovery/search on behalf of clients that lack built-in search capabilities. (Added: 2026-03-06)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
