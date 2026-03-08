@@ -134,7 +134,7 @@ export function WizardProvider({ children }: { children: ReactNode }) {
             default:
                 return { valid: true };
         }
-    }, [state.config.name, state.config.commandLineService, state.config.httpService, state.config.grpcService, state.config.mcpService, state.config.openapiService, state.webhooks]);
+    }, [state]);
 
     const nextStep = React.useCallback(() => {
         const validation = validateStep(state.currentStep);
