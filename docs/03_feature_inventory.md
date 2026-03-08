@@ -75,9 +75,18 @@
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
+---
+
+## Evolution: [2026-03-06] Updates
+
+### Proposed Additions
+- **OpenClaw Security Sandbox**: (P0) A dedicated middleware preset that enforces strict filesystem (chroot) and shell (sandboxed) limits specifically for OpenClaw-type agents.
+- **RAG-Augmented Tool Schemas**: (P1) Middleware that automatically retrieves and injects safety guidelines or documentation into tool descriptions using local vector search.
+- **Verified Marketplace Gateway**: (P0) Enforcement layer that only allows tools from "Verified" marketplace sources (e.g., Anthropic, Trusted Enterprise Repos).
+
 ### Priority Shifts
-- **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
-- **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.
+- **Safe-by-Default Hardening**: Promoted to **P0** (Critical) due to the 135,000+ exposed instances crisis.
+- **Provenance-First Discovery**: Promoted to **P0**. Mandatory to combat "ClawHavoc" poisoned packages.
 
 ### Deprecations / Monitoring
-- **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+- **Unsigned Tool Packages**: Monitoring for deprecation. Future versions will require at least a developer-signed manifest for all tools.
