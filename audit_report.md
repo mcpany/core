@@ -1,36 +1,38 @@
-# Truth Reconciliation Audit Report
+## Executive Summary
 
-## 1. Executive Summary
-An extensive "Truth Reconciliation Audit" was performed, sampling 10 distinct documentation files (spanning UI, Configuration, Security, and Core Server capabilities). The codebase was mapped against the `roadmap.md` files for both `server` and `ui` to ensure strict alignment. Overall, the codebase health is excellent with a 90% alignment out-of-the-box. One discrepancy was identified and remediated in the UI Inspector feature where the implementation drifted from the intended verification state. All other features (Playground, Context Optimizer, DLP, Audit Logging, etc.) exhibit perfect synchronization between documentation, roadmap, and implementation.
+A "Truth Reconciliation Audit" was performed against 10 sampled features across the documentation and codebase to ensure perfect alignment with the Product Roadmap. Overall health is strong, with 8 out of 10 sampled features functioning exactly as designed and documented.
 
-## 2. Verification Matrix
+Two discrepancies were found and remediated during this audit:
+1. **Documentation Drift:** A UI documentation file was incorrectly placed in the server documentation directory.
+2. **Roadmap Debt:** The "Performance & Analytics" metrics (Success Rate, Avg Latency, Error Count) described in the documentation for the Tool Inspector were missing from the UI implementation.
+
+Both issues have been engineered and resolved according to Google Engineering Standards. Tests were added for all new code.
+
+## Verification Matrix
 
 | Document Name | Status | Action Taken | Evidence |
 | :--- | :--- | :--- | :--- |
-| `ui/docs/features/playground.md` | ALIGNED | Verified "Native File Upload" (base64) & "Copy as Code" exist in `file-input.tsx` & `tool-runner.tsx` | Found in codebase. |
-| `ui/docs/features/traces.md` | DEBT | Engineered fix for `SelectValue` text mismatch ("All Statuses" instead of "All Types") | Code refactored & UI Test passed. |
-| `ui/docs/features/logs.md` | ALIGNED | Verified "Structured Log Viewer" & Syntax Highlighting exist | Found in `log-viewer.tsx`. |
-| `ui/docs/features/marketplace.md` | ALIGNED | Verified Export/Share logic (Redact, Template Variables) | Found in `share-collection-dialog.tsx`. |
-| `ui/docs/features/test_connection.md` | ALIGNED | Verified Connection Diagnostic tool flows | Found in `connection-diagnostic.tsx`. |
-| `server/docs/features/context_optimizer.md` | ALIGNED | Verified `max_chars` truncation logic & 32000 default | Found in `context_optimizer.go`. |
-| `server/docs/features/health-checks.md` | ALIGNED | Verified HTTP, gRPC, WebSocket, FS, CLI health checks | Found in `health/health.go`. |
-| `server/docs/features/dlp.md` | ALIGNED | Verified tool input/output PII redaction | Found in `middleware/dlp.go`. |
-| `server/docs/features/dynamic_registration.md` | ALIGNED | Verified GraphQL & OpenAPI introspection | Found in `upstream/graphql.go` & `openapi.go`. |
-| `server/docs/features/audit_logging.md` | ALIGNED | Verified SQLite, File, Postgres, Webhook, Splunk sinks | Found in `audit/*`. |
+| `server/docs/features/kafka.md` | Match | None | `server/pkg/bus/kafka` matches documentation |
+| `ui/docs/features/prompts.md` | Match | None | `ui/src/app/prompts` contains expected functionality |
+| `ui/docs/features/native_file_upload_playground.md` | Match | None | UI components like `SchemaForm` correctly process `base64` inputs |
+| `server/docs/features/authentication/README.md` | Match | None | Implemented in `server/pkg/auth` as per docs |
+| `server/docs/monitoring.md` | Match | None | `server/pkg/metrics` correctly exposes monitoring hooks |
+| `ui/docs/features/services.md` | Match | None | Services UI workflow matches expected behavior |
+| `ui/docs/features/network.md` | Match | None | Network Graph topology visualization is present |
+| `ui/docs/features/resource_preview_modal.md` | Match | None | Resource Modal preview correctly implemented |
+| `server/docs/features/theme_builder.md` | **Documentation Drift** | Moved file to UI documentation directory | Moved from `server/docs` to `ui/docs` |
+| `ui/docs/features/tool_analytics.md` | **Roadmap Debt** | Engineered missing UI metrics in the Tool Inspector | Updated `ui/src/components/tool-detail.tsx` and added tests |
 
-## 3. Remediation Log
+## Remediation Log
 
-*   **Code Fixes (Case B: Roadmap Debt):**
-    *   **Feature:** Inspector (Live Traces) Dashboard Filtering.
-    *   **Discrepancy:** The filter dropdown for trace types was incorrectly displaying the placeholder "All Statuses" instead of the intended "All Types". This caused a failure in the Playwright UI verification script (`verify_inspector.py`) which acts as the operational contract.
-    *   **Action:** Modified `ui/src/app/inspector/page.tsx` to correctly display `<SelectValue placeholder="All Types" />`.
-    *   **Testing:** Reran the Playwright test `verify_inspector.py` which successfully matched the locator and captured `verification_inspector.png`. No new tests needed as the existing verification script covers this line of code.
+*   **Case A: Documentation Drift**
+    *   **Finding:** The file `server/docs/features/theme_builder.md` details a frontend Dashboard theme feature (`next-themes`, toggle buttons), which conceptually belongs in the UI repository.
+    *   **Fix:** Moved the file from `server/docs/features/theme_builder.md` to `ui/docs/features/theme_builder.md`.
+*   **Case B: Roadmap Debt**
+    *   **Finding:** The `ui/docs/features/tool_analytics.md` document claims the Tool Inspector displays "Success Rate", "Avg Latency", and "Error Count". The implementation in `ui/src/components/tool-detail.tsx` only displayed "Total Calls".
+    *   **Fix:** Updated `ToolDetail` component to fetch `apiClient.getToolUsage()` in parallel with existing `apiClient.getServiceStatus()` data. Handled the data correctly and updated the React UI logic to render the missing stats under the Usage Metrics card.
+    *   **Testing:** Wrote robust unit tests in `ui/src/components/tool-detail.test.tsx` using `vitest` and `@testing-library/react` to enforce strict verification of these stats rendering. Tests passed (`make test` compliance met).
 
-*   **Documentation Updates (Case A: Documentation Drift):**
-    *   None required. The documentation accurately reflected the Roadmap, and the code was the source of the drift in the single issue found.
+## Security Scrub
 
-## 4. Security Scrub
-*   No PII was exposed during the audit.
-*   No raw secrets or API keys are included in this report.
-*   No internal Google IPs or proprietary infrastructure details are present.
-*   The `docker-compose.yml` was used strictly for isolated topology analysis.
+I have reviewed this report and the corresponding pull request changes. No Personally Identifiable Information (PII), sensitive secrets, or internal IP addresses are present in the report or the code diffs.
