@@ -75,6 +75,15 @@
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
+---
+
+## Evolution: [2026-03-08] Updates
+
+### Proposed Additions
+- **Deterministic Sub-agent Router**: (P0) A specialized middleware that manages the lifecycle and identity of sub-agents spawned by parent frameworks (e.g., OpenClaw).
+- **Semantic Slash-Command Bridge**: (P1) Maps MCP Prompts to native CLI slash commands (e.g., Gemini CLI, Claude Code), enabling better agent usability.
+- **WASM Tool Runtime (Sandboxed Tools)**: (P1) Experimental support for executing MCP tools in WASM sandboxes to mitigate "plugin injection" vulnerabilities.
+
 ### Priority Shifts
 - **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
 - **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.
