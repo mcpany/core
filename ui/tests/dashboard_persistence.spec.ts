@@ -23,6 +23,34 @@ test('dashboard layout persistence', async ({ page, request }) => {
 
   await page.reload();
   await expect(page.locator('.animate-spin')).not.toBeVisible();
+
+  // We need a resilient selector because we might be on OnboardingHero OR DashboardGrid
+  // Wait for either the 'Your dashboard is empty' OR the 'Connect Your First Service' link
+  // If we are on onboarding hero, we need to add a dummy service to reach the dashboard.
+
+  const welcome = page.getByText('Welcome to MCP Any');
+  const dashboard = page.getByRole('heading', { name: /Dashboard/i });
+
+  await Promise.race([
+    welcome.waitFor({ state: 'visible', timeout: 5000 }).catch(() => { }),
+    dashboard.waitFor({ state: 'visible', timeout: 5000 }).catch(() => { })
+  ]);
+
+  if (await welcome.isVisible()) {
+    // If we're on the welcome screen, we don't have services.
+    // The previous run might have cleared them. Let's create a minimal test service using the API.
+    await request.post('/api/v1/services', {
+        data: {
+             id: "dummy-service",
+             name: "dummy-service",
+             version: "1.0",
+             httpService: { address: "http://localhost:8080" }
+        }
+    });
+    await page.reload();
+    await expect(page.locator('.animate-spin')).not.toBeVisible();
+  }
+
   await expect(page.getByText('Your dashboard is empty')).toBeVisible();
 
   // 2. Add a widget
@@ -38,7 +66,7 @@ test('dashboard layout persistence', async ({ page, request }) => {
   await expect(page.getByText('Recent Activity').first()).toBeVisible();
 
   // 4. Wait for debounce save (1s + buffer)
-  await page.waitForTimeout(4000);
+  await page.waitForTimeout(2000);
 
   // 5. Reload page
   await page.reload();
@@ -54,4 +82,9 @@ test('dashboard layout persistence', async ({ page, request }) => {
   const data = await response.json();
   expect(data['dashboard-layout']).toBeDefined();
   expect(data['dashboard-layout']).toContain('Recent Activity');
+
+  // Cleanup dummy service if we created it
+  if (await welcome.isVisible()) {
+      await request.delete('/api/v1/services/dummy-service');
+  }
 });
