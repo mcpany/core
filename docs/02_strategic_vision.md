@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-04]
+### Focus: Context Integrity Attestation & Multi-Protocol Negotiation
+**Context**: Today's findings identify a shift in agent orchestration (OpenClaw's Subagent Pinning) and the emergence of "Context Smuggling" vulnerabilities. Furthermore, Gemini CLI's move toward dynamic capability negotiation requires a more flexible gateway handshake.
+**Strategic Pivot**:
+- **Context Integrity Attestation**: Moving from passive context inheritance to "Verified Lineage." MCP Any will cryptographically sign and verify every context block in the `Recursive Context Protocol` to prevent subagents from "smuggling" unauthorized instructions via malicious tool outputs.
+- **Protocol-Neutral Negotiation**: Implementing a "Dynamic Negotiation Middleware" that allows MCP Any to broker capability handshakes (streaming, progress, etc.) between modern agents (Gemini CLI) and legacy MCP servers.
+- **Locality-Aware Tool Discovery**: Enhancing the "Unified Discovery Service" to support locality hints, allowing agents to prioritize "pinned" or low-latency tool nodes in decentralized swarms.
