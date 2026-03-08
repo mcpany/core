@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-06]
+### Focus: Configuration Sandbox & Hybrid Identity Bridging
+**Context**: Recent disclosures of RCE via project-level config files in tools like Claude Code (GHSA-ph6w-f82w-28w6, CVE-2025-59536) and the rise of remote-managed MCP servers from Google Cloud mark a new era. MCP Any must protect users from "shadow" configurations while providing a bridge to enterprise-grade remote tools.
+**Strategic Pivot**:
+- **Configuration Sandbox (Shadow Guard)**: MCP Any will treat all project-local `.mcp.json` or `.claude/settings.json` files as "Untrusted" by default. A dedicated "Config Sandbox" will parse and validate these files before they can influence the tool execution environment.
+- **Identity Bridging & IAM Passthrough**: As agents interact more with managed remote MCP servers, MCP Any will act as an identity bridge, securely mapping local agent "intent tokens" to cloud IAM roles for tool execution, ensuring a seamless local-to-cloud security posture.
+- **Orchestration Interop**: Aligning with the "Generalist Agent" model from Gemini CLI v0.32.0, MCP Any will provide standardized "Agent Task Tokens" that can be used across disparate agent routing engines to ensure task consistency and context retention.
