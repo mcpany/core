@@ -67,6 +67,10 @@ export function DashboardGrid() {
     const [widgets, setWidgets] = useState<WidgetInstance[]>([]);
     const [isMounted, setIsMounted] = useState(false);
     const [loading, setLoading] = useState(true);
+    const latestWidgets = useRef<WidgetInstance[]>([]);
+    useEffect(() => {
+        latestWidgets.current = widgets;
+    }, [widgets]);
 
     const migrateLayout = (parsed: any): WidgetInstance[] => {
         // Migration Logic
@@ -182,15 +186,16 @@ export function DashboardGrid() {
 
         const timer = setTimeout(async () => {
             try {
+                const widgetsToSave = latestWidgets.current;
                 await fetch('/api/v1/user/preferences', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        'dashboard-layout': JSON.stringify(widgets)
+                        'dashboard-layout': JSON.stringify(widgetsToSave)
                     })
                 });
                 // Sync to local storage as backup/cache
-                localStorage.setItem("dashboard-layout", JSON.stringify(widgets));
+                localStorage.setItem("dashboard-layout", JSON.stringify(widgetsToSave));
             } catch (err) {
                 console.error("Failed to save layout", err);
             }
