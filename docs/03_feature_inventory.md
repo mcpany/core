@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-09] Updates
+
+### Proposed Additions
+- **CEL-Based Policy Engine**: (P0) A policy engine that supports the Common Expression Language (CEL) for high-performance, context-aware tool access control.
+- **Runtime Sandbox Attestation**: (P1) Verifies the integrity of the execution environment for local and remote tools, preventing RCE.
+- **OpenClaw Personal Agent Adapter**: (P1) Dedicated adapter for the OpenClaw framework, providing secure, stateful interop for personal digital assistants.
+
+### Priority Shifts
+- **MCP Provenance Attestation**: Promoted to **P0**. Critical for mitigating supply chain and RCE attacks in the current ecosystem.
+- **Policy Firewall**: Re-aligned to use **CEL/Rego** as the core engine (P0).
+
+### Deprecations / Monitoring
+- **Simple Boolean Tool Allow-Lists**: Deprecate in favor of Policy-as-Code (CEL).

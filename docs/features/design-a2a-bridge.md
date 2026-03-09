@@ -46,3 +46,10 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+
+### Update: 2026-03-09 - OpenClaw Integration & Stateful Residency
+**Context:** The explosion of OpenClaw "personal agents" requires a more robust A2A bridge that can handle long-running, asynchronous tasks across cloud and local boundaries.
+**Architecture Adjustment:**
+- **Stateful Residency (Mailbox Pattern)**: MCP Any will now act as a "Resident Stateful Buffer" for A2A messages. If a cloud-hosted OpenClaw agent sends a callback to a local MCP-native agent that is currently offline, MCP Any will queue the message.
+- **OpenClaw-Specific Handlers**: Introducing specialized logic to handle OpenClaw's unique session management and multi-platform (WhatsApp/Discord) routing.
+**Security Impact:** Prevents "Callback Hijacking" by ensuring that only attested OpenClaw agents can push messages into the residency buffer.

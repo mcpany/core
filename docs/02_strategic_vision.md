@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-09]
+### Focus: Policy-as-Code & Attested Discovery
+**Context**: Today's ecosystem scan reveals a critical shift towards "Policy-as-Code" (pioneered by Gemini CLI v0.31.0) and a rise in RCE/Path-Traversal vulnerabilities (CVE-2026-23744, CVE-2026-27735).
+**Strategic Pivot**:
+- **Policy-as-Code (CEL/Rego)**: MCP Any will adopt CEL (Common Expression Language) and Rego as the standard for defining tool access policies, ensuring compatibility with major ecosystem players and enabling complex, context-aware rules.
+- **Attested Discovery & Sandbox Integrity**: Beyond source provenance, MCP Any will implement "Runtime Attestation" to verify the integrity of the environment where a tool executes, mitigating the risk of RCE in local or sandboxed tools.
+- **OpenClaw Multi-Platform Bridging**: With OpenClaw's rapid expansion into cloud-hosted personal agents, MCP Any will prioritize its "Personal Agent Adapter" to bridge local user data securely with cloud-hosted agent instances.

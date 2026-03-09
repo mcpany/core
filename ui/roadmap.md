@@ -107,3 +107,8 @@
 - [ ] **Log Source Color Coding**: Assign distinct colors to different log sources automatically for better visual separation.
 - [ ] **Context Usage History**: Track total context usage over time to identify growth trends (requires backend metrics persistence).
 - [ ] **Tool Schema Optimizer**: Analyze tool schemas and suggest removing unused properties or compacting descriptions to save context tokens.
+
+### Evolution (2026-03-09)
+- [ ] **[P0] Policy-as-Code Editor**: CEL/Rego editor with live validation and policy simulation.
+- [ ] **[P0] Runtime Integrity Shield**: Visual indicators and detailed reports for attested tool environments.
+- [ ] **[P1] OpenClaw Session Manager**: UI for tracking OpenClaw agent handoffs and messaging channel status.
