@@ -43,6 +43,17 @@ export default function InspectorPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [typeFilter, setTypeFilter] = useState("all");
+  const [methodFilter, setMethodFilter] = useState("all");
+
+  const uniqueMethods = useMemo(() => {
+    const methods = new Set<string>();
+    traces.forEach((trace) => {
+        if (trace.rootSpan && trace.rootSpan.name) {
+            methods.add(trace.rootSpan.name);
+        }
+    });
+    return Array.from(methods).sort();
+  }, [traces]);
 
   const handleSeedTrace = async () => {
       setSeeding(true);
@@ -66,6 +77,9 @@ export default function InspectorPage() {
         // Filter by Type (root span type)
         if (typeFilter !== "all" && trace.rootSpan.type !== typeFilter) return false;
 
+        // Filter by Method (root span name)
+        if (methodFilter !== "all" && trace.rootSpan.name !== methodFilter) return false;
+
         // Filter by Search (ID or Name)
         if (searchQuery) {
             const query = searchQuery.toLowerCase();
@@ -77,7 +91,7 @@ export default function InspectorPage() {
 
         return true;
       });
-  }, [traces, statusFilter, typeFilter, searchQuery]);
+  }, [traces, statusFilter, typeFilter, methodFilter, searchQuery]);
 
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)] p-4 md:p-8 space-y-4">
@@ -170,6 +184,19 @@ export default function InspectorPage() {
                       <SelectItem value="service">Service</SelectItem>
                       <SelectItem value="core">Core</SelectItem>
                       <SelectItem value="resource">Resource</SelectItem>
+                  </SelectContent>
+              </Select>
+
+              <Select value={methodFilter} onValueChange={setMethodFilter}>
+                  <SelectTrigger className="w-[180px] bg-background">
+                      <Filter className="mr-2 h-4 w-4 text-muted-foreground" />
+                      <SelectValue placeholder="All Methods" />
+                  </SelectTrigger>
+                  <SelectContent>
+                      <SelectItem value="all">All Methods</SelectItem>
+                      {uniqueMethods.map(method => (
+                          <SelectItem key={method} value={method}>{method}</SelectItem>
+                      ))}
                   </SelectContent>
               </Select>
           </div>
