@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-09]
+### Focus: Universal Authentication Proxying & Generalist Delegation Architecture
+**Context**: Market trends from Gemini CLI v0.32.0 and Claude Code's advanced auth guides highlight the growing complexity of authentication (IAM, OAuth) and the rise of multi-agent delegation. MCP Any must bridge these auth gaps while enabling performant, parallelized discovery.
+**Strategic Pivot**:
+- **Universal Authentication Proxy**: MCP Any will evolve to act as a centralized, secure credential vault and auth proxy, allowing agents to access tools across different trust boundaries (e.g., local to AWS/GCP) without manual credential management for each agent.
+- **Parallel Hydration Architecture**: Matching the performance benchmarks set by Gemini CLI, MCP Any will implement parallel extension/tool hydration to ensure that even with thousands of tools, startup and discovery remain instantaneous.
+- **Generalist Delegation Hub**: Positioning MCP Any as the "Stateful Router" for generalist agents, enabling reliable handoffs and shared authentication context between specialized subagents or disparate agent frameworks.

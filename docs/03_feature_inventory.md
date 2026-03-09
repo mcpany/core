@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-09] Updates
+
+### Proposed Additions
+- **Universal MCP Auth Proxy**: (P0) Secure, centralized proxying for complex upstream authentication flows (OAuth, IAM, mTLS). Prevents LLMs/Agents from needing direct secret handling.
+- **Parallel MCP Hydration Engine**: (P1) Concurrent tool discovery and schema fetching across all registered upstreams to match Gemini CLI performance.
+- **Intent-Based Routing Middleware**: (P1) Dynamic routing and tool filtering based on high-level agent "intent" tokens, preventing irrelevant tool exposure.
+
+### Priority Shifts
+- **On-Demand Discovery Middleware (Lazy-MCP)**: Re-affirmed as **P0**. High urgency to mitigate context exhaustion in multi-agent swarms.
+- **A2A Interop Bridge**: Expanded to include "Generalist Delegation" support (P0).
+
+### Deprecations / Monitoring
+- **Sequential Tool Discovery**: Deprecate sequential loading in favor of the Parallel Hydration Engine.

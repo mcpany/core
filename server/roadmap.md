@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-09 Evolution)
+*   **[P0] Universal MCP Auth Proxy**: Centralized middleware for handling complex upstream auth (OAuth, IAM). (Added: 2026-03-09)
+*   **[P1] Parallel MCP Hydration Engine**: Concurrent tool discovery and schema fetching across upstreams. (Added: 2026-03-09)
+*   **[P1] Intent-Based Routing Middleware**: Dynamic tool filtering based on high-level agent intent tokens. (Added: 2026-03-09)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
@@ -42,6 +47,7 @@ These features represent the next logical steps for the product, focusing on Ent
 | :--- | :--- | :--- | :--- |
 | **P0** | **Policy Firewall** | **Security:** Critical for "Zero Trust" agent execution. | High |
 | **P0** | **HITL Middleware** | **Safety:** Prevents catastrophic agent actions. | High |
+| **P0** | **Universal Auth Proxy** | **Security:** Simplifies IAM/OAuth for agent fleets. | High |
 | **P1** | **Recursive Context** | **Usability:** Solves subagent configuration pain. | Medium |
 | **P1** | **Shared KV Store** | **Reliability:** Prevents multi-agent hallucinations. | Medium |
 | 1 | **Team Configuration Sync** | **Collaboration**: Allow teams to synchronize `mcpany` configurations and secrets securely, ensuring consistent dev environments. | Medium |

@@ -3,6 +3,9 @@
 ## Status: Active Development
 
 ### Universal Agent Bus (New Strategic Priorities)
+- [ ] **[P0] Universal Auth Proxy Dashboard**: Manage upstream credentials, OAuth flows, and IAM role mapping. (Added: 2026-03-09)
+- [ ] **[P1] Intent-Based Routing Configurator**: Define rules and intent-tokens for dynamic tool exposure. (Added: 2026-03-09)
+- [ ] **[P1] Hydration Performance Monitor**: Visualize parallel tool loading times and discovery latency. (Added: 2026-03-09)
 - [ ] **[P0] Recursive Context Dashboard**: Visualize state inheritance and session tokens across agent swarms. (Added: 2026-02-23)
 - [ ] **[P0] Multi-Agent Session Timeline**: Visual tracking of agent handoffs and shared tool state. (Added: 2026-02-24)
 - [ ] **[P1] Unified Discovery Manager**: UI for managing and auto-discovering MCP servers across transports. (Added: 2026-02-24)

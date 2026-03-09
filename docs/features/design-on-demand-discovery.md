@@ -57,3 +57,10 @@ As the number of available MCP tools grows, agents face "context pollution"—wh
 
 ## 7. Evolutionary Changelog
 *   **2026-02-25:** Initial Document Creation.
+
+### Update: 2026-03-09 - Parallel Indexing & Hydration Alignment
+**Context:** Market shifts (Gemini CLI v0.32.0) emphasize parallel extension loading for performance.
+**Architecture Adjustment:**
+- Transitioning the Discovery Middleware to use a concurrent worker pool for crawling upstreams.
+- Deprecating sequential loading in favor of the Parallel Hydration Engine.
+**Impact:** Reduces total discovery time from O(N) to O(log N) or constant time, enabling "Instant Discovery" for 100+ servers.
