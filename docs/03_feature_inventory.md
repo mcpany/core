@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-09] Updates
+
+### Proposed Additions
+- **AID (Agent Identity) Resolver**: (P0) Middleware to verify and resolve agent DIDs based on the OpenClaw AID spec. Essential for cross-framework trust.
+- **Ephemeral Tool Lifecycle Manager**: (P1) Implementation of "Recursive Tool Discovery," allowing tools to spawn temporary, session-bound sub-tools.
+- **Signed Discovery Protocol (Anti-Ghosting)**: (P0) A security extension that requires MCP servers to sign their discovery responses to prevent "Ghost Tooling" exfiltration.
+
+### Priority Shifts
+- **Safe-by-Default Hardening**: Re-affirmed as **P0**. High urgency due to the "Ghost Tooling" exploit patterns.
+- **Recursive Context Protocol**: Promoted to **P0**. Prerequisite for managing Ephemeral Tool lifecycles.
+
+### Deprecations / Monitoring
+- **Unsigned Tool Discovery**: Monitoring for deprecation in favor of Signed Discovery Protocol.

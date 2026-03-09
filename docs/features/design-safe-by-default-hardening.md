@@ -59,3 +59,10 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+
+### Update: 2026-03-09 - Mitigating Ghost Tooling via Signed Discovery
+**Context:** The "Ghost Tooling" exploit revealed that malicious MCP servers can exfiltrate environment variables during the discovery phase by abusing unauthenticated pre-flight checks.
+**Architecture Adjustment:**
+*   **Signed Discovery Requirement**: Section 4 updated to require a `Discovery-Attestation` signature from MCP servers.
+*   **Isolation of Discovery Process**: Discovery calls are now executed in a restricted "Shadow Sandbox" that has zero access to system environment variables until the server's identity is verified.
+**Security Impact:** Prevents "Zero-Day" exfiltration during the initial connection phase of an MCP server.

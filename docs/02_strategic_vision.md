@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-09]
+### Focus: Identity-First Agency & Dynamic Capability Expansion
+**Context**: Today's research on OpenClaw's AID (Agent Identity) and Claude Code's "Recursive Tool Discovery" indicates that MCP Any must move beyond being a "Tool Gateway" to becoming an "Identity & Capability Broker." The emergence of the "Ghost Tooling" exploit highlights that even discovery is a high-stakes security boundary.
+**Strategic Pivot**:
+- **Identity-First Brokerage**: MCP Any will adopt the AID (DID-based) standard, allowing it to verify agent identity across swarms and handle cryptographically secure delegation of tool access.
+- **Dynamic Capability Expansion**: Moving from static tool registries to supporting "Ephemeral Tooling." MCP Any will manage the lifecycle of sub-tools discovered during execution, ensuring they inherit the correct security context and are pruned upon task completion.
+- **Discovery Attestation (Anti-Ghosting)**: Discovery and pre-flight phases will be treated as sensitive operations, requiring signed attestation for even "read-only" tool listings.
