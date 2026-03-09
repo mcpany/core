@@ -86,3 +86,15 @@ upstream_services:
       calls:
         verified_tool:
           args: ['{"status": "verified"}']
+
+  - id: "database-test-service"
+    name: "database-test-service"
+    command_line_service:
+      command: "echo"
+      tools:
+        - name: "get_database_users"
+          description: "Fetch a list of users from the database"
+          call_id: "get_database_users"
+      calls:
+        get_database_users:
+          args: ['{"content": [{"type": "text", "text": "[{\"id\": 101, \"username\": \"admin_jane\", \"role\": \"SuperAdmin\", \"last_login\": \"2023-10-01\"}, {\"id\": 102, \"username\": \"dev_bob\", \"role\": \"Developer\", \"last_login\": \"2023-10-02\"}, {\"id\": 103, \"username\": \"support_alice\", \"role\": \"Support\", \"last_login\": \"2023-10-03\"}]"}], "isError": false}']

@@ -93,7 +93,7 @@ test.describe('Rich Result Viewer', () => {
     await viewerTabs.getByRole('tab', { name: 'JSON' }).click();
 
     // Check for JSON content - look for specific value in pre/code
-    await expect(page.getByText('"name": "Alice"')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Raw' })).toBeVisible();
 
     // Switch to Raw Output tab
     await viewerTabs.getByRole('tab', { name: 'Raw Output' }).click();

@@ -40,6 +40,70 @@ function McpContentRenderer({ content }: McpContentRendererProps) {
         <div className="space-y-6 p-4">
             {content.map((item, index) => {
                 if (item.type === "text") {
+                    // Detect if text is a JSON array of objects
+                    let isTable = false;
+                    let tableData: any[] = [];
+                    let columns: string[] = [];
+
+                    try {
+                        const parsed = JSON.parse(item.text);
+                        if (Array.isArray(parsed) && parsed.length > 0 && typeof parsed[0] === 'object' && parsed[0] !== null) {
+                            isTable = true;
+                            tableData = parsed;
+                            // Extract columns from the first 50 rows
+                            const keys = new Set<string>();
+                            parsed.slice(0, 50).forEach((row: any) => {
+                                if (typeof row === 'object' && row !== null) {
+                                    Object.keys(row).forEach(k => keys.add(k));
+                                }
+                            });
+                            columns = Array.from(keys);
+                        }
+                    } catch (e) {
+                        // Not valid JSON or not an array of objects
+                    }
+
+                    if (isTable) {
+                        const renderCell = (value: any) => {
+                            if (value === null || value === undefined) return <span className="text-muted-foreground">-</span>;
+                            if (typeof value === 'object') return <span className="font-mono text-[10px] text-muted-foreground truncate max-w-[200px] block" title={JSON.stringify(value)}>{JSON.stringify(value)}</span>;
+                            if (typeof value === 'boolean') return <span className={value ? "text-green-500 font-medium" : "text-red-500 font-medium"}>{String(value)}</span>;
+                            return <span className="truncate max-w-[300px] block text-sm" title={String(value)}>{String(value)}</span>;
+                        };
+
+                        return (
+                            <div key={index} className="rounded-xl border shadow-sm overflow-hidden bg-background">
+                                <ScrollArea className="max-h-[400px]">
+                                    <Table>
+                                        <TableHeader className="bg-muted/30 sticky top-0 z-10 backdrop-blur-md">
+                                            <TableRow className="hover:bg-transparent">
+                                                {columns.map(col => (
+                                                    <TableHead key={col} className="whitespace-nowrap font-semibold text-xs h-9 text-muted-foreground tracking-wider uppercase">
+                                                        {col}
+                                                    </TableHead>
+                                                ))}
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {tableData.map((row: any, i: number) => (
+                                                <TableRow key={i} className="transition-colors hover:bg-muted/50 border-b border-border/50 last:border-0">
+                                                    {columns.map(col => (
+                                                        <TableCell key={col} className="py-2">
+                                                            {renderCell(row[col])}
+                                                        </TableCell>
+                                                    ))}
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </ScrollArea>
+                                <div className="bg-muted/10 px-3 py-1.5 border-t text-[10px] text-muted-foreground flex justify-between items-center">
+                                    <span>{tableData.length} records</span>
+                                </div>
+                            </div>
+                        );
+                    }
+
                     return (
                         <div key={index} className="prose prose-sm dark:prose-invert max-w-none break-words">
                             <ReactMarkdown remarkPlugins={[remarkGfm]}>
@@ -49,7 +113,7 @@ function McpContentRenderer({ content }: McpContentRendererProps) {
                     );
                 } else if (item.type === "image") {
                      return (
-                        <div key={index} className="rounded-lg overflow-hidden border bg-muted/20 inline-block max-w-full">
+                        <div key={index} className="rounded-xl overflow-hidden border bg-muted/20 inline-block max-w-full shadow-sm ring-1 ring-border/50">
                             <img
                                 src={`data:${item.mimeType};base64,${item.data}`}
                                 alt="Tool Result Image"
