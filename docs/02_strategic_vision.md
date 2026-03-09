@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-09]
+### Focus: Universal Skill Sandboxing & Context Harmonization
+**Context**: The rapid rise of OpenClaw and its "ClawHub" registry (5,000+ skills) has exposed a critical security gap: skills inherit full system permissions by default. Simultaneously, the proliferation of tool-specific instruction files (`CLAUDE.md`, `.cursorrules`, etc.) is creating "Context Fragmentation."
+**Strategic Pivot**:
+- **Universal Skill Sandbox**: MCP Any will evolve into a mandatory "Interception Layer" for agent skills. By wrapping tool calls in a Zero-Trust perimeter, we can enforce least-privilege even for unverified skills from public registries.
+- **Cross-Framework Context Harmonization**: MCP Any will act as the single source of truth for agent instructions, automatically synchronizing and translating context between `CLAUDE.md`, `.cursorrules`, and other tool-specific formats.
+- **Omni-Interface Mapping**: Following the Gemini CLI / FastMCP pattern, MCP Any will provide a "Command Translation Engine" that maps any MCP tool to native interface patterns (Slash Commands, Hooks, or Hotkeys) across all supported agent clients.

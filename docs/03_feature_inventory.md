@@ -75,9 +75,18 @@
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
+---
+
+## Evolution: [2026-03-09] Updates
+
+### Proposed Additions
+- **Universal Skill Sandboxing (OpenClaw compatible)**: (P0) A secure interceptor for agent-launched sub-tasks. Ensures skills from "ClawHub" and similar registries are strictly sandboxed and require explicit tool-call approval.
+- **Multi-Framework Context Sync (Omni-Context)**: (P1) A daemon that synchronizes agent instructions across `CLAUDE.md`, `.cursorrules`, and `.aider.conf.yml`, mapping them to a single MCP Any source of truth.
+- **MCP-to-Slash Command Transformer**: (P1) Extends the gateway to automatically map any registered MCP tool into a native slash command format for Gemini CLI and other terminal-based agents.
+
 ### Priority Shifts
-- **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
-- **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.
+- **Policy Firewall**: Promoted from **P0** to **Critical (Pre-Flight)**. As registry-driven skill adoption (like OpenClaw) explodes, a hardened interception layer is the only way to ensure system integrity.
+- **"Safe-by-Default" Network Hardening**: Promoted to **P0**. Essential to prevent further "Exposed Server" exploits in the wild.
 
 ### Deprecations / Monitoring
-- **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+- **Direct System Access for Skills**: Monitoring for full deprecation. All skills MUST route through the MCP Any Interception Layer by 2026-Q3.
