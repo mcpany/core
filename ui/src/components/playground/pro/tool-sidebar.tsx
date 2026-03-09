@@ -30,9 +30,13 @@ export function ToolSidebar({ tools, onSelectTool, className }: ToolSidebarProps
     const [selectedService, setSelectedService] = useState<string | null>(null);
 
     const filteredTools = useMemo(() => {
+        // ⚡ BOLT: Prevent O(N) redundant string allocations by hoisting toLowerCase() outside the loop.
+        // Randomized Selection from Top 5 High-Impact Targets
+        const lowerSearchQuery = searchQuery.toLowerCase();
+
         return tools.filter(tool => {
-            const matchesSearch = tool.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                                  tool.description?.toLowerCase().includes(searchQuery.toLowerCase());
+            const matchesSearch = tool.name.toLowerCase().includes(lowerSearchQuery) ||
+                                  tool.description?.toLowerCase().includes(lowerSearchQuery);
             const matchesService = selectedService ? tool.serviceId === selectedService : true;
             return matchesSearch && matchesService;
         });
