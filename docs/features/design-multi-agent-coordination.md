@@ -43,3 +43,10 @@ As AI agent ecosystems evolve from single-agent monoliths to multi-agent swarms 
 
 ## 7. Evolutionary Changelog
 * **2026-02-24**: Initial Document Creation.
+
+### Update: 2026-03-09 - Generalist-to-Specialist Routing
+**Context**: Gemini CLI v0.32.0 introduced a Generalist Agent for improved task delegation.
+**Architecture Adjustment**:
+* **Hierarchical Routing**: Updated to support "Generalist" nodes that can spawn and monitor multiple "Specialist" sub-sessions.
+* **Stateful Plan Buffering**: Introducing a "Plan" entity in the Shared KV Store to allow Generalist agents to track long-running multi-step tasks across specialist handoffs.
+**Security Impact**: Ensures that specialists only have access to the "Plan" segments relevant to their specific task.

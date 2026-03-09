@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-09]
+### Focus: Identity-Aware Handoffs & Cross-Cloud Tool Bridging
+**Context**: Today's findings show Claude Code and Gemini CLI are diverging in how they handle tool-annotation-based security. Simultaneously, Google's Managed MCP launch highlights a need for bridging local agents with enterprise cloud tools without losing security context.
+**Strategic Pivot**:
+- **IAM-Integrated Bridge**: MCP Any will evolve to act as a "Credential Reflector," allowing local subagents to securely assume the IAM roles of parent agents running in managed cloud environments (GCP, Anthropic).
+- **Annotation-Based Security (ABS)**: Moving the Policy Firewall from static Rego rules to "Dynamic Annotation Matching," aligning with the new Gemini CLI policy engine updates.
+- **Stateful Plan Buffering**: Leveraging the A2A Mesh Residency to store and version "Agent Plans," allowing for the asynchronous multi-select and external editing workflows observed in the latest Gemini CLI releases.

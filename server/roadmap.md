@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-09 Evolution)
+*   **[P0] IAM-Integrated Cloud-to-Local Bridge**: EPhemeral identity reflection for cloud-to-local tool calls. (Added: 2026-03-09)
+*   **[P1] Annotation-Based Policy Matching**: Support for dynamic tool annotation matching in the Policy Firewall. (Added: 2026-03-09)
+*   **[P1] Stateful Plan Persistence**: Versioned storage for multi-step "Agent Plans" in the Shared KV Store. (Added: 2026-03-09)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

@@ -81,3 +81,20 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-09] Updates
+
+### Proposed Additions
+- **IAM-Integrated Cloud-to-Local Bridge**: (P0) Enables local subagents to inherit and use the IAM identity/credentials of a parent agent running in a managed cloud sandbox (GCP, Anthropic).
+- **Annotation-Based Policy Matching**: (P1) Extends the Policy Firewall to support dynamic tool annotation matching, aligning with NIST and Gemini CLI's latest security standards.
+- **Stateful Plan Persistence & Versioning**: (P1) Stores and versions high-level "Agent Plans" in the Shared KV Store, enabling asynchronous handoffs and external editing of multi-step plans.
+- **Claude-Native MCP Compatibility Layer**: (P1) Specialized middleware for perfect parity with Anthropic-specific MCP extensions (e.g., specific metadata or error handling patterns).
+
+### Priority Shifts
+- **A2A Stateful Residency**: Re-affirmed as **P0**. It is now the critical path for supporting asynchronous "Plan Mode" workflows.
+- **Multi-Agent Session Management**: Re-affirmed as **P0**. Essential for "Generalist-to-Specialist" agent routing seen in the latest Gemini releases.
+
+### Deprecations / Monitoring
+- **Static Rego-only Policies**: Moving towards a hybrid model that includes dynamic annotation matching.
