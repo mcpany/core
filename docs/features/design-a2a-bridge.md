@@ -46,3 +46,4 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-03-09:** Updated to include **Generalist Delegation** patterns. Added the `DelegatedRoutingMiddleware` to Section 4. Transitioned A2A session state to use **Aggressive State Pruning** (GC) to prevent memory leaks observed in large agent swarms.

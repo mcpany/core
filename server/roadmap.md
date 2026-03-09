@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-09 Evolution)
+*   **[P0] Agent Worktree Isolation Provider**: Ephemeral workspace management for autonomous agents (Added: 2026-03-09).
+*   **[P1] Delegated Routing Middleware**: Generalist-model based task routing for sub-agent swarms (Added: 2026-03-09).
+*   **[P1] Tool Result Garbage Collection**: Automated memory management for long-running agent sessions (Added: 2026-03-09).
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

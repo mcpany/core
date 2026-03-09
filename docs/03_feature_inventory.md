@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-09] Updates
+
+### Proposed Additions
+- **Agent Worktree Isolation Provider**: (P0) Allows agents to request, manage, and execute within ephemeral, isolated git worktrees or Docker containers.
+- **Delegated Routing Middleware**: (P1) A specialized router that uses a "Generalist" model to delegate tasks to the most appropriate sub-agent or tool-set.
+- **Tool Result Garbage Collection (GC)**: (P1) Automated pruning of large tool results and session metadata to prevent memory leaks and performance decay in long sessions.
+
+### Priority Shifts
+- **A2A Interop Bridge**: Re-affirmed as **P0**. Essential for implementing Delegated Routing patterns.
+- **Environment Bridging Middleware**: Re-affirmed as **P0**. Necessary for managing state across isolated workspaces.
+
+### Deprecations / Monitoring
+- **Unmanaged Local Execution**: Monitoring for deprecation in favor of Isolated Workspace execution.

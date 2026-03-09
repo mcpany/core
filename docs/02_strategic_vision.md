@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-09]
+### Focus: Isolated Autonomous Environments & Delegated Agency Routing
+**Context**: Today's analysis reveals a shift towards ephemeral, isolated agent environments (Claude Worktree Isolation) and specialized delegation layers (Gemini Generalist Agent). MCP Any must move from simple tool proxying to managing the "Safe Spaces" where agents operate.
+**Strategic Pivot**:
+- **Isolated Workspace as a Tool**: MCP Any will pivot to treat "Workspaces" (e.g., git worktrees, Docker containers) as first-class resources that can be requested, snapshotted, and destroyed by agents via MCP tools.
+- **Delegated Agency Middleware**: Implementing a "Generalist Router" that automatically classifies tasks and suggests the optimal specialist agent (A2A) or tool set, preventing context bloat and improving agent efficiency.
+- **Aggressive State Pruning**: Introducing a "Garbage Collection" protocol for tool results and session memory, ensuring that long-running agent swarms do not suffer from the memory leaks and performance degradation observed in the latest Claude Code release.
