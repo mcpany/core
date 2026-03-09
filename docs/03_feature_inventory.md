@@ -75,9 +75,19 @@
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
+---
+
+## Evolution: [2026-03-09] Updates
+
+### Proposed Additions
+- **Runtime Attestation Manifest (RAM)**: (P0) A cryptographically signed manifest of the server's tools and environment that can be verified by external agent clients.
+- **AOTUI Semantic Projection Engine**: (P0) Renders tool results as model-optimized Markdown (per AOTUI spec) to improve agent reasoning.
+- **Reasoned-Intent Policy Middleware (RIV)**: (P1) Policy firewall that verifies tool calls against the session's high-level intent, mitigating multi-step exploits.
+- **Asynchronous Tool Callbacks**: (P1) Infrastructure for long-running tool execution with asynchronous status updates.
+
 ### Priority Shifts
-- **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
-- **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.
+- **Policy Firewall**: Promoted to **P0+** (Mission Critical) to incorporate intent-driven reasoning and anti-ghosting checks.
+- **Tool Execution Timeline**: Promoted to **P1** to support "Asynchronous Rollout" visualization in the UI.
 
 ### Deprecations / Monitoring
-- **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+- **Raw JSON Tool Outputs**: Monitoring for deprecation in favor of "Semantic Projections" (Markdown).

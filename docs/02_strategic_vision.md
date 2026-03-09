@@ -57,3 +57,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-09]
+### Focus: Agent-Optimized Semantics & Verified Agent Runtime
+**Context**: Recent ecosystem shifts like OpenClaw's AOTUI (Agent-Oriented TUI) and Anthropic's "Claude Code Security" emphasize that agents are the primary users of tool outputs and that security must reason about "intent-driven" dataflow.
+**Strategic Pivot**:
+- **AOTUI (Agent-Optimized TUI) Support**: MCP Any will develop a "Semantic Projection" layer that renders tool outputs as structured, model-optimized Markdown, reducing token noise and improving agent reasoning.
+- **Verified Runtime Attestation**: Implementing a "Trusted Execution" mode where the server provides a signed manifest (RAM) of its tools, allowing security-first clients (Gemini CLI, Claude Code) to verify server integrity.
+- **Anti-Ghosting Policy Firewall**: Evolving the Policy Engine to perform "Reasoned-Intent Validation" (RIV). Before a tool call is executed, it must be verified against the high-level intent context of the agent's session, mitigating multi-step "Ghost-Tool" exploits.
+- **Asynchronous Tool Callbacks**: Shifting from a strictly synchronous model to an "Asynchronous Rollout" pattern, allowing agents to initiate long-running tasks and receive background updates without blocking their reasoning loop.
