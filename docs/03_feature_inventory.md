@@ -75,6 +75,23 @@
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
+---
+
+## Evolution: [2026-03-09] Updates
+
+### Proposed Additions
+- **Wasm Runtime for Tool Execution**: (P0) High-performance, isolated sandbox for executing MCP tool logic safely. Prevents host-level compromise from malicious tools (Response to OpenClaw CVE-2026-25253).
+- **Global Intent Buffer Middleware**: (P0) Ensures high-level user intent is persisted and injected into all subagent swarm tool calls. Prevents "Intent Drift" in complex workflows.
+- **Multi-Cloud Discovery Aggregator**: (P1) Unified interface for discovering and proxying MCP tools across AWS, Azure, and GCP.
+
+### Priority Shifts
+- **Safe-by-Default Network Hardening**: Re-affirmed as **P0**. The 42,000+ exposed OpenClaw instances found online make local-only defaults a non-negotiable requirement.
+- **MCP Provenance Attestation**: Promoted to **P0**. Prerequisite for secure tool discovery in unverified marketplaces like ClawHub.
+- **A2A Interop Bridge**: Re-affirmed as **P0**. Essential for cross-framework agent coordination and reliable swarms.
+
+### Deprecations / Monitoring
+- **Native Host-Level Tool Execution**: Monitoring for deprecation in favor of Wasm-isolated execution for all tools from unverified sources.
+
 ### Priority Shifts
 - **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
 - **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.

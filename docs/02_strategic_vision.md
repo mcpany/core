@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-09]
+### Focus: Wasm-Isolated Tool Execution & Intent-Scoped Security
+**Context**: The OpenClaw security crisis (CVE-2026-25253) and the emergence of malicious skill marketplaces (ClawHub) have shifted the "Zero Trust" requirements for agentic infrastructure. Tool isolation is no longer a luxury but a fundamental necessity for secure agent swarms. Simultaneously, the need for environment parity across multi-cloud discovery (Gemini v0.31.0) is increasing.
+**Strategic Pivot**:
+- **Wasm-First Tooling Execution**: MCP Any will prioritize **WebAssembly (Wasm)** as the native, high-performance isolation layer for executing tool logic. This creates a "Secure Boundary" that prevents malicious tools from escalating host permissions or leaking secrets, even if the tool originates from an unverified source.
+- **"Global Intent" Context Buffer**: Evolve beyond simple context inheritance into a persistent **Global Intent Buffer**. This ensures that high-level user goals are immutable and injected into every subagent tool call, mitigating "Intent Drift" in deep recursive swarms.
+- **Multi-Cloud Tool Aggregation**: Evolve the discovery service to provide a unified, metadata-rich interface for tools hosted across heterogeneous cloud providers (AWS, Azure, GCP), aligning with the trend towards federated agency.

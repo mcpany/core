@@ -13,6 +13,9 @@
 - [ ] **[P1] Resource Cost/Latency Overlay**: Real-time performance metrics displayed directly on tool cards. (Added: 2026-02-26)
 - [ ] **[P0] Connectivity & Security Dashboard**: Visualize local-only vs remote exposure, attestation status, and active MFA sessions. (Added: 2026-02-28)
 - [ ] **[P0] Stateful A2A Mailbox**: UI for viewing queued and delivered A2A messages across the agent mesh. (Added: 2026-02-28)
+- [ ] **[P0] Wasm Sandbox Monitor**: Real-time visualization of Wasm runtime metrics (fuel, memory) and isolation status. (Added: 2026-03-09)
+- [ ] **[P0] Global Intent Viewer**: Integrated UI component for monitoring and setting the "Global Intent" for active sessions. (Added: 2026-03-09)
+- [ ] **[P1] Multi-Cloud Tool Explorer**: Unified interface for browsing tools across heterogeneous cloud providers. (Added: 2026-03-09)
 - [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
 - [x] **[P1] Tool Playground & Explorer**:
   - [x] Auto-generated forms from Tool JSON Schemas.

@@ -53,3 +53,7 @@ As agentic workflows evolve from single-agent tasks to multi-agent swarms (e.g.,
 
 ## 7. Evolutionary Changelog
 * **2026-02-23:** Initial Document Creation. Standardizing Recursive Context Protocol for multi-agent swarm orchestration.
+* **2026-03-09:** **Integrating Global Intent Buffer & Security Hardening.**
+    - RCP now includes a mandatory `X-Global-Intent` header in all propagated tool calls to prevent "Intent Drift."
+    - Subagents can query the `X-Global-Intent` via the RCP without re-triggering parent LLM loops.
+    - Added support for "Intent-Scoped" capability tokens, where permissions are only valid for calls matching the current session's Global Intent.
