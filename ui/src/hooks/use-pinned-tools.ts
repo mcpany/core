@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 const STORAGE_KEY = "mcpany-pinned-tools";
 
@@ -62,9 +62,9 @@ export function usePinnedTools() {
     });
   };
 
-  const isPinned = (toolName: string) => {
+  const isPinned = useCallback((toolName: string) => {
     return pinnedTools.includes(toolName);
-  };
+  }, [pinnedTools]);
 
   return { pinnedTools, togglePin, bulkPin, bulkUnpin, isPinned, isLoaded };
 }
