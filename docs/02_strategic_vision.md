@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-09]
+### Focus: Loopback Immunity & Verifiable Agent Delegation
+**Context**: The OpenClaw "localhost hijack" exploit (CVE-2026-27485) and the rise of first-class swarms in Claude Code (TeammateTool) have redefined the perimeter. "Local" is no longer synonymous with "Safe," and "Agency" must be verifiable.
+**Strategic Pivot**:
+- **Zero-Trust Loopback**: MCP Any will treat all loopback connections (`127.0.0.1`, `::1`) with the same rigor as remote traffic. This includes mandatory origin validation for browser-based clients and non-exempt rate limiting for all local listeners.
+- **Verifiable Delegation (Agent-Chain Attestation)**: As swarms become standard, MCP Any will implement "Chain Attestation." Every tool call must carry a verifiable cryptographic trace of the delegation path (e.g., Lead -> Teammate A -> Tool), preventing "Excessive Agency" and unauthorized lateral movement between subagents.
+- **Decision-Pathway Observability**: Aligning with OWASP ASI Top 10, MCP Any will evolve its logging to capture "Intent Context"—recording not just the tool call, but the LLM's reasoning trace that led to it, providing a tamper-proof audit trail for autonomous actions.

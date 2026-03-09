@@ -13,6 +13,9 @@
 - [ ] **[P1] Resource Cost/Latency Overlay**: Real-time performance metrics displayed directly on tool cards. (Added: 2026-02-26)
 - [ ] **[P0] Connectivity & Security Dashboard**: Visualize local-only vs remote exposure, attestation status, and active MFA sessions. (Added: 2026-02-28)
 - [ ] **[P0] Stateful A2A Mailbox**: UI for viewing queued and delivered A2A messages across the agent mesh. (Added: 2026-02-28)
+- [ ] **[P0] Agent Handoff Provenance Viewer**: Visual timeline of signed delegation chains across agent swarms. (Added: 2026-03-09)
+- [ ] **[P0] Origin Security Dashboard**: Monitor and manage allowed browser origins for loopback connections. (Added: 2026-03-09)
+- [ ] **[P1] Decision Trace Inspector**: UI for reviewing the LLM reasoning traces associated with specific tool calls (ASI Compliance). (Added: 2026-03-09)
 - [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
 - [x] **[P1] Tool Playground & Explorer**:
   - [x] Auto-generated forms from Tool JSON Schemas.

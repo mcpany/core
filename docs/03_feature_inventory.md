@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-09] Updates
+
+### Proposed Additions
+- **Loopback Rate-Limiting & Browser-Auth Bridge**: (P0) Extends the "Safe-by-Default" hardening to localhost. Prevents browser-based cross-origin attacks by requiring explicit origin validation and non-exempt rate limiting for loopback traffic.
+- **Agent Chain Provenance (Trace Attestation)**: (P0) Implements cryptographic signatures for multi-agent delegation. Ensures every tool call can be traced back through the swarm's lineage to the original user intent.
+- **Decision Trace Logger (ASI Compliance)**: (P1) A specialized logger that captures the "Thought/Action" loop preceding a tool call, providing the observability required by the OWASP ASI Top 10.
+
+### Priority Shifts
+- **"Safe-by-Default" Network Hardening**: Promoted to include **Zero-Trust Loopback** as a mandatory P0 component.
+- **Shared KV Store**: Priority re-affirmed as **P0** for managing the state of Agent Chain Provenance traces.
+
+### Deprecations / Monitoring
+- **Exempt Loopback (Trust-by-Default)**: Deprecate any logic that exempts `127.0.0.1` from authentication or rate limiting.

@@ -46,3 +46,9 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-03-09: Supporting Verifiable Swarm Delegation**
+    *   **Context**: Claude Code's "TeammateTool" and Gemini's "Generalist Agent" show a clear shift toward lead-subagent delegation.
+    *   **Architecture Adjustment**:
+        *   **Agent Chain Attestation**: The A2A Bridge will now inject a cryptographic `X-Agent-Chain` header. This header contains a signed list of agent identities in the delegation chain.
+        *   **Provenance Verification**: Downstream tools/agents can verify this chain against the MCP Any `Policy Firewall` to ensure the subagent is operating within the "Intent-Scope" authorized for the lead agent.
+        *   **Inbox-Style Handoffs**: Support for asynchronous, inbox-based communication patterns observed in modern swarms.

@@ -59,3 +59,9 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-09: Hardening Loopback against Browser-Based Attacks**
+    *   **Context**: OpenClaw (CVE-2026-27485) demonstrated that malicious websites can hijack local AI gateways by abusing the "trusted localhost" assumption.
+    *   **Architecture Adjustment**:
+        *   **Origin Validation**: Mandatory `Origin` and `Referer` header validation for all WebSocket and HTTP requests on loopback interfaces.
+        *   **Non-Exempt Rate Limiting**: All loopback connections are now subject to the same rate-limiting and brute-force protection as remote traffic.
+        *   **Pairing Prompts**: Any new device pairing from localhost now requires a manual user confirmation (Human-In-The-Loop) via the local CLI or UI, preventing silent registration by malicious scripts.
