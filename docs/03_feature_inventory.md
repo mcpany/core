@@ -81,3 +81,17 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-09] Updates
+
+### Proposed Additions
+- **Automated Vulnerability Shield (AVS)**: (P0) Active middleware that performs mandatory path-scrubbing and symlink validation for all filesystem-based tools. Mitigates CVE-2026-28486 style attacks.
+- **Swarm Pulse Telemetry**: (P1) Real-time monitoring of agent swarm health, tracking "intent-drift" and providing automated kill-switches for rogue subagents.
+- **Background Tool Scheduler (Cron-MCP)**: (P1) Native support for recurring tool calls (e.g., `/loop 5m`), enabling persistent background automation within the MCP Any bus.
+- **Origin-Strict WebSocket Gateway**: (P0) Mandatory Origin validation and CSRF-protection for all local WebSocket listeners to prevent CSWH (CVE-2026-25253).
+
+### Priority Shifts
+- **"Safe-by-Default" Network Hardening**: Promoted to **P0** and expanded to include mandatory WebSocket Origin validation.
+- **A2A Stateful Residency**: Promoted to **P0** as it is a prerequisite for reliable Swarm Pulse Telemetry.

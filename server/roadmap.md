@@ -34,6 +34,12 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-09 Evolution)
+*   **[P0] Automated Vulnerability Shield (AVS)**: Middleware for path-scrubbing and symlink validation to prevent Path Traversal. (Added: 2026-03-09)
+*   **[P0] Origin-Strict WebSocket Gateway**: Mandatory Origin validation and CSRF protection for local listeners. (Added: 2026-03-09)
+*   **[P1] Swarm Pulse Telemetry**: Intent-drift tracking and automated kill-switches for agent swarms. (Added: 2026-03-09)
+*   **[P1] Background Tool Scheduler**: Native support for recurring/cron tool execution. (Added: 2026-03-09)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

@@ -59,3 +59,10 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-09: Resolving CSWH & Path Traversal Vulnerabilities**
+    - **Context**: Recent exploits in OpenClaw (CVE-2026-25253, CVE-2026-28486) revealed that `localhost` binding alone is insufficient. Attackers can still use Cross-Site WebSocket Hijacking to control local agents.
+    - **Architecture Adjustment**:
+        - **Origin Strictness**: Implementing mandatory `Origin` header validation for all WebSocket-based gateways. Requests from non-authorized web origins are rejected.
+        - **CSRF Tokens for Webhooks**: For any HTTP-based local control APIs, mandatory CSRF tokens are now required.
+        - **AVS Middleware Integration**: All filesystem-based tools (e.g., `fs:read`, `shell:exec`) must now pass through the Automated Vulnerability Shield (AVS) for path normalization and recursive symlink checks.
+    - **Security Impact**: Closes the gap for remote-to-local agent hijacking and prevents unauthorized host-level file access by malicious subagent skills.
