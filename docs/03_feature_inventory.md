@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-09] Updates
+
+### Proposed Additions
+- **SSRF Guard Middleware**: (P0) Automated protection for tools that make network requests. Enforces private/internal IP blocking and hostname allow-lists at the gateway level.
+- **Attested Tunneling Service**: (P1) Secure, end-to-end encrypted tunnels for cloud-to-local agent communication without public port exposure.
+- **Intent-Aware Policy Hook**: (P0) CEL/Rego based policy that validates tool arguments against the "Task Intent" (e.g., "Why is this tool calling this specific URL?").
+
+### Priority Shifts
+- **HITL Middleware**: Re-affirmed as **P0**. Critical for mitigating autonomous agent risk in sensitive environments.
+- **Safe-by-Default Hardening**: Re-affirmed as **P0** and expanded to include network-level fetch guards.
+
+### Deprecations / Monitoring
+- **Unprotected Tool Network Fetching**: Monitoring for deprecation. All tool-driven network requests must pass through the SSRF Guard.

@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-09 Evolution)
+*   **[P0] SSRF Guard Middleware**: Automated protection for tool network requests. Enforces private IP blocking and DNS pinning. (Added: 2026-03-09)
+*   **[P0] Intent-Aware Policy Hook**: CEL/Rego based policy that validates tool arguments against the "Task Intent." (Added: 2026-03-09)
+*   **[P1] Attested Tunneling Service**: Secure cloud-to-local agent communication without public ports. (Added: 2026-03-09)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

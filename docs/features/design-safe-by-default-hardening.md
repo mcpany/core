@@ -59,3 +59,9 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-09:** **Evolution: SSRF Guard & Network Fetch Isolation**
+    *   **Context:** Today's market sync revealed GHSA-56f2-hvwg-5743 (OpenClaw SSRF) where standard tool inputs (image URLs) were weaponized.
+    *   **Architecture Adjustment:**
+        *   **Middleware Addition**: Introducing `SSRFGuardMiddleware` into the tool execution pipeline. It automatically parses and validates any `http(s)://` or `file://` arguments against an environment-aware blocklist (Private/Internal IPs, Cloud Metadata URLs).
+        *   **Intent-Aware Validation**: Adding `intent_scope` to tool call headers, allowing the `PolicyFirewall` to verify if a network fetch matches the user-authorized task boundary.
+    *   **Security Impact:** Prevents "Image Fetch" tools from being used as scanners for internal network infrastructure.
