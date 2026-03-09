@@ -81,3 +81,20 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-09] Updates
+
+### Proposed Additions
+- **Origin-Bound Listener Validation**: (P0) Middleware to enforce strict `Origin` and `Host` header checks for all local listeners. Mitigates browser-based hijacking exploits (e.g., OpenClaw incident).
+- **Unified Discovery Tool Search**: (P0) A standard `mcpany_search_tools` tool that implements the Lazy-Discovery architecture, providing on-demand tool loading for all agent frameworks (GA alignment with Claude Code).
+- **Project-Level Policy Wildcards**: (P1) Enhancing the Policy Firewall to support wildcard-based tool matching and project-scoped rules (Alignment with Gemini CLI v0.32.0).
+- **Thread-Isolated Session Middleware**: (P1) Ensures context isolation between different user threads or conversations, preventing state leakage (Alignment with OpenClaw v2026.2.26).
+
+### Priority Shifts
+- **On-Demand Discovery Middleware (Lazy-MCP)**: Re-affirmed as **P0**. Now a core requirement for universal tool scalability.
+- **A2A Stateful Residency**: Promoted to **P0**. Essential for reliable multi-agent handoffs as A2A adoption accelerates.
+
+### Deprecations / Monitoring
+- **Global Policy Hooks**: Monitoring for replacement by granular Project-Level/Thread-Level policies.

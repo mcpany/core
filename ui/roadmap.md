@@ -13,6 +13,9 @@
 - [ ] **[P1] Resource Cost/Latency Overlay**: Real-time performance metrics displayed directly on tool cards. (Added: 2026-02-26)
 - [ ] **[P0] Connectivity & Security Dashboard**: Visualize local-only vs remote exposure, attestation status, and active MFA sessions. (Added: 2026-02-28)
 - [ ] **[P0] Stateful A2A Mailbox**: UI for viewing queued and delivered A2A messages across the agent mesh. (Added: 2026-02-28)
+- [ ] **[P0] Origin & Host Validation Status**: UI indicator for strict listener security status. (Added: 2026-03-09)
+- [ ] **[P0] Unified Search Explorer**: Integrated tool search bar in the Playground for lazy-loaded discovery. (Added: 2026-03-09)
+- [ ] **[P1] Project-Scoped Policy Editor**: UI for managing wildcard-based tool permissions. (Added: 2026-03-09)
 - [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
 - [x] **[P1] Tool Playground & Explorer**:
   - [x] Auto-generated forms from Tool JSON Schemas.

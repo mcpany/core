@@ -34,6 +34,12 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-09 Evolution)
+*   **[P0] Origin-Bound Listener Validation**: Enforce strict `Origin` and `Host` header checks to prevent cross-site hijacking of local tool gateways. (Added: 2026-03-09)
+*   **[P0] Unified Discovery Tool Search**: Implement the standard `mcpany_search_tools` tool for cross-client lazy-loading. (Added: 2026-03-09)
+*   **[P1] Project-Level Policy Wildcards**: Extend the Policy Firewall to support Gemini-style wildcard matching for tool permissions. (Added: 2026-03-09)
+*   **[P1] Thread-Isolated Context Middleware**: Mandatory context isolation for concurrent agent conversations. (Added: 2026-03-09)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

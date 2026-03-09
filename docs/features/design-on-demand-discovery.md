@@ -57,3 +57,9 @@ As the number of available MCP tools grows, agents face "context pollution"—wh
 
 ## 7. Evolutionary Changelog
 *   **2026-02-25:** Initial Document Creation.
+*   **2026-03-09: Universal Search Tool & GA Alignment**
+    *   **Context**: Claude Code's "MCP Tool Search" has moved to General Availability, validating the "Lazy Loading" approach. Gemini CLI (v0.32.0) has also introduced a "Generalist Agent" routing layer that benefits from dynamic tool discovery.
+    *   **Architecture Adjustment**:
+        *   Transitioning from internal similarity search to a standardized `mcpany_search_tools` tool that any MCP-native agent can call.
+        *   The middleware now supports an "Implicit-to-Explicit" promotion model, where tools discovered via search are temporarily added to the active schema for the duration of the session.
+    *   **Cross-Compatibility**: This allows non-Claude agents (e.g., Gemini, local OpenClaw instances) to achieve the same context efficiency as Claude Code.
