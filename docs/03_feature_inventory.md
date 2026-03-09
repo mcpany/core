@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-09] Updates
+
+### Proposed Additions
+- **WebSocket Origin-Strict Middleware**: (P0) Hardened middleware for local gateways that validates `Origin` and `Host` headers to prevent browser-based localhost brute-forcing.
+- **Ephemeral Session Token Service**: (P0) Generates short-lived, single-use tokens for UI-to-Gateway WebSocket authentication, replacing static passwords.
+- **Agent Lifecycle Lifecycle Hooks**: (P1) Standardized hooks for initializing and tearing down multi-agent swarms, integrated with the Coordination Hub.
+
+### Priority Shifts
+- **Safe-by-Default Hardening**: Re-affirmed as **P0** with increased urgency due to localhost trust exploits.
+- **Advanced Multi-Agent Session Management**: Promoted to **P0** to support native OpenClaw-style multi-agent workflows.
+
+### Deprecations / Monitoring
+- **Static WebSocket Passwords**: Monitoring for deprecation in favor of Ephemeral Session Tokens.

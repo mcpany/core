@@ -59,3 +59,9 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-09:** **Update: Resolving Localhost Trust Flaw**
+    *   **Context**: Today's market sync revealed a "Localhost Trust Flaw" where malicious browser scripts could brute-force the Gateway on `127.0.0.1`.
+    *   **Architecture Adjustment**:
+        *   Implementing **Origin-Strict Middleware** in Section 4 to validate `Origin` and `Host` headers.
+        *   Replacing static WebSocket passwords with **Ephemeral Session Tokens** (short-lived, single-use).
+    *   **Security Impact**: Neutralizes browser-based CSRF/brute-force attacks against local MCP services.

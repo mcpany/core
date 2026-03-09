@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-09 Evolution)
+*   **[P0] WebSocket Origin-Strict Middleware**: Hardened validation of `Origin` and `Host` headers for local gateways. (Added: 2026-03-09)
+*   **[P0] Ephemeral Session Token Service**: Implementation of short-lived, single-use tokens for local UI-to-Gateway auth. (Added: 2026-03-09)
+*   **[P1] Agent Lifecycle Hooks**: Standardized hooks for swarm initialization, state sync, and teardown. (Added: 2026-03-09)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

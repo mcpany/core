@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-09]
+### Focus: Hardened Localhost Boundary & Native Multi-Agent Coordination
+**Context**: The discovery of the "Localhost Trust Flaw" in March 2026 demonstrates that even `127.0.0.1` is not a safe haven if malicious browser-based scripts can interact with local services. Furthermore, OpenClaw's evolution towards an "Agent OS" necessitates native coordination primitives within MCP Any.
+**Strategic Pivot**:
+- **Origin-Aware WebSocket Security**: Implementing strict `Origin` and `Host` header validation for all local gateways. Moving beyond simple passwords to "Short-Lived Ephemeral Session Tokens" for local UI-to-Gateway communication.
+- **Agent Lifecycle Coordination**: MCP Any will evolve to support native "Agent Lifecycle" hooks, allowing the gateway to manage the startup, state synchronization, and shutdown of multi-agent swarms.
+- **Cross-Origin Defense-in-Depth**: Every tool call from a non-CLI source will require a cryptographic "Intent Manifest," ensuring that actions triggered by browser-based agents are explicitly authorized for the current session.
