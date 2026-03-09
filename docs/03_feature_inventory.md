@@ -75,7 +75,20 @@
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
+---
+
+## Evolution: [2026-03-09] Updates
+
+### Proposed Additions
+- **Universal "Tool Search" Middleware**: (P0) Implements the `defer_loading` pattern for MCP Any, allowing clients to search and load tools on-demand from massive libraries.
+- **Threadbound Session Isolation**: (P0) High-integrity isolation for multi-user chat environments. Ensures state is cryptographically bound to a unique thread ID.
+- **MCP Any Agent CA (ACA)**: (P1) Built-in Agent Certificate Authority for issuing and verifying agent-specific credentials.
+
 ### Priority Shifts
+- **Lazy-MCP Middleware**: Re-prioritized to **P0** and renamed to **Universal Tool Search Middleware** to align with industry standard naming conventions (e.g., Claude Code).
+- **"Safe-by-Default" Network Hardening**: Promoted to **P0** following major OpenClaw vulnerability reports.
+
+### Deprecations / Monitoring
 - **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
 - **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.
 

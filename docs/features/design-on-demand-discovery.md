@@ -57,3 +57,4 @@ As the number of available MCP tools grows, agents face "context pollution"—wh
 
 ## 7. Evolutionary Changelog
 *   **2026-02-25:** Initial Document Creation.
+*   **2026-03-09:** Aligned with the "Universal Tool Search" pattern and the `defer_loading: true` flag standard observed in Claude Code. Renamed internal middleware to **Universal Tool Search Middleware** to match industry naming conventions for better agentic discoverability.

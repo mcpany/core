@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-09]
+### Focus: Infinite Tooling & Secure Multi-User Isolation
+**Context**: Today's research on OpenClaw's growth and Claude Code's "Tool Search Tool" shows that agents now need to handle thousands of tools while strictly isolating state in multi-user environments (WhatsApp/Discord/Slack).
+**Strategic Pivot**:
+- **Lazy-Loading Protocol Standard**: MCP Any will adopt the `defer_loading` pattern, providing a unified "Tool Search" middleware that abstracts away the complexity of managing thousands of MCP servers from different vendors.
+- **Threadbound State Isolation**: Implementing a "Kernel-Level" isolation for agent sessions, ensuring that context, tools, and secrets are cryptographically bound to a specific user thread to prevent cross-contamination in multi-user chat environments.
+- **Agent Identity & Attestation (ACA)**: Moving beyond simple API keys to a formal "Agent Certificate Authority" (ACA) model for inter-agent communication, aligning with emerging IETF security drafts.

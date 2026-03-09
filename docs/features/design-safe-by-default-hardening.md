@@ -59,3 +59,4 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-09:** **Update: Resolving Local Port Exposure**. Today's market sync revealed a new exploit pattern in OpenClaw subagent routing. **Architecture Adjustment**: Deprecating local HTTP tunneling for inter-agent communication in Section 4. Introducing isolated Docker-bound named pipes for inter-agent comms to mitigate unauthorized host-level file access by rogue subagents.
