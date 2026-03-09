@@ -75,6 +75,15 @@
 - **A2A Stateful Residency (Stateful Buffer)**: (P0) MCP Any acts as a persistent mailbox for A2A messages, enabling reliable communication between agents with intermittent connectivity.
 - **Provenance-First Discovery (Attested Discovery)**: (P1) Automatic filtering of MCP servers based on cryptographic signatures and community reputation scores.
 
+---
+
+## Evolution: [2026-03-09] Updates
+
+### Proposed Additions
+- **Agent Cost-Control Middleware**: (P0) A budget-aware gateway that monitors real-time token usage and enforces soft/hard limits per agent session.
+- **A2A Mesh Discovery Protocol**: (P0) A peer-to-peer capability discovery mechanism that allows agents to find tools and other agents across a distributed MCP Any mesh.
+- **OpenCode SDK Adapter**: (P1) Native support for the OpenCode SDK, allowing programmatic agent control with built-in cost and security hooks.
+
 ### Priority Shifts
 - **MCP Provenance Attestation**: Re-affirmed as **P0** to support Provenance-First Discovery.
 - **A2A Interop Bridge**: Promoted to **P0** and expanded to include Stateful Residency features.
