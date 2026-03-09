@@ -59,3 +59,11 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+
+### Update: 2026-03-09 - Addressing A2A Contagion & Mass Exposure
+**Context**: Following the confirmation of the "8,000 Exposed Servers" mass exposure and the discovery of "A2A Contagion" (semantic payloads in agent handoffs), the Safe-by-Default strategy must be expanded.
+**Architecture Adjustment**:
+* **Identity-Bound Listeners**: Listeners will now require a valid "Agent Card" (cryptographic identity) for all connections, even on localhost.
+* **Semantic Firewall**: Integrating the "Policy Firewall" with intent-aware routing to scan A2A payloads for "Semantic Injection" patterns.
+* **Automatic Quarantining**: Any tool from an unverified or "Shadow" MCP server is automatically quarantined until an administrator provides an Attestation Token.
+**Security Impact**: Protects against both network-level exposure and the logic-level propagation of malicious agent intent.

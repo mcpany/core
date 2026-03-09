@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-09]
+### Focus: Intelligent Intent-Based Routing & Resilient Multi-Agent Mesh
+**Context**: Today's findings show a shift from simple tool search to "Intelligent Routing" (Claude Code's Lazy-Loading and Gemini's Generalist Agent). Simultaneously, the "A2A Contagion" and "8,000 Exposed Servers" issues highlight that security must be rooted in decentralized identity.
+**Strategic Pivot**:
+- **Intelligent Intent Router**: MCP Any will evolve from a tool gateway to an "Intent-Aware Router" that dynamically activates only the tools relevant to the current conversation's intent, further reducing context bloat and improving tool accuracy.
+- **Resilient Multi-Agent Mesh**: To counter cascading failures, MCP Any will implement a "Fallback-First" architecture, where every primary agentic task has a pre-defined "MicroClaw" or local fallback tool.
+- **A2A Identity Attestation**: We will implement a cryptographic identity layer where every agent handoff must be accompanied by an "Identity Card" that is verified by the Gateway, preventing lateral contagion.

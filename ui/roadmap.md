@@ -107,3 +107,6 @@
 - [ ] **Log Source Color Coding**: Assign distinct colors to different log sources automatically for better visual separation.
 - [ ] **Context Usage History**: Track total context usage over time to identify growth trends (requires backend metrics persistence).
 - [ ] **Tool Schema Optimizer**: Analyze tool schemas and suggest removing unused properties or compacting descriptions to save context tokens.
+- [ ] **[P0] Intent Router Analytics**: Visualize intent-to-tool mapping and activation scores. (Added: 2026-03-09)
+- [ ] **[P0] Agent Card Manager**: UI for managing cryptographic identities and attestation tokens. (Added: 2026-03-09)
+- [ ] **[P1] Fallback Orchestration Viewer**: Dashboard for monitoring tool failovers and Micro-MCP status. (Added: 2026-03-09)

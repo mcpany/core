@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-09] Updates
+
+### Proposed Additions
+- **Intelligent Tool Router (Intent-Aware Discovery)**: (P0) Extends Lazy-MCP by using LLM-guided intent analysis to activate a subset of relevant tools, minimizing context bloat even further than keyword-based search.
+- **Micro-MCP Fallback Service**: (P1) Automatic redirection to lightweight, local, or alternative MCP tools when the primary tool fails or the upstream model is unreachable.
+- **A2A Identity Attestation (Agent Cards)**: (P0) Implements cryptographic "Agent Cards" for verifying identity and authorization during cross-agent handoffs, mitigating "A2A Contagion."
+
+### Priority Shifts
+- **"Safe-by-Default" Network Hardening**: Re-affirmed as **P0** and accelerated due to the "8,000 Exposed Servers" mass exposure event.
+- **Policy Firewall**: Expanded to include "Intent Matching" as a primary gating mechanism for tool calls.
+
+### Deprecations / Monitoring
+- **Manual Tool Discovery**: Monitoring for deprecation in favor of Intelligent Tool Routing.

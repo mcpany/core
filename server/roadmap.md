@@ -189,3 +189,8 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Core Middleware Pipeline**: The middleware architecture is robust and extensible.
 - **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates protocol details from business logic.
 - **Documentation**: The project has excellent documentation coverage for most features.
+
+#### Upcoming (2026-03-09 Evolution)
+*   **[P0] Intelligent Tool Router**: Implement LLM-guided intent analysis for tool activation. (Added: 2026-03-09)
+*   **[P0] A2A Identity Attestation**: Cryptographic "Agent Cards" for cross-agent verification. (Added: 2026-03-09)
+*   **[P1] Micro-MCP Fallback Service**: Automated tool redirection for resilient failover. (Added: 2026-03-09)
