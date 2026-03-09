@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-09] Updates
+
+### Proposed Additions
+- **Attested Shared State Middleware**: (P0) Extends the Shared KV Store with cryptographic attestation of the writer's identity and intent. Prevents XAS.
+- **Intent Hash Verification Hook**: (P0) A hook that validates the "Intent Hash" in the Recursive Context Protocol during swarm handoffs.
+- **Strict Schema Enforcement (Argument Hardening)**: (P1) Middleware that strictly validates tool arguments against a predefined schema to prevent injection-based path traversal.
+
+### Priority Shifts
+- **Shared KV Store**: Priority remains **P0**, but redirected towards "Attested State" to mitigate XAS risks discovered today.
+- **Recursive Context Protocol**: Re-affirmed as **P0** with the addition of the "Intent Hash" requirement for multi-swarm continuity.
+
+### Deprecations / Monitoring
+- **Unattested Shared Memory**: Marked for deprecation in favor of Attested Shared State to prevent Cross-Agent Scripting.

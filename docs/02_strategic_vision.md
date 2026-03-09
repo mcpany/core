@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-09]
+### Focus: Cross-Agent Scripting (XAS) Mitigation & Multi-Swarm Intent Continuity
+**Context**: Today's research on OpenClaw and recent "Prompt-Induced Path Traversal" findings highlights two major architectural threats: Context Fragmentation between swarms and Cross-Agent Scripting (XAS) via shared state.
+**Strategic Pivot**:
+- **XAS-Resistant Shared State**: Moving beyond a simple "Shared KV Store" to an "Attested State" model. All writes to shared memory must include the writing agent's identity and intent-scope. This prevents a subagent from writing data that another agent might blindly execute as an instruction.
+- **Intent Persistence Protocol**: The "Recursive Context Protocol" will now explicitly include an "Intent Hash." This ensures that when a task moves between swarms (MSO), the target swarm can verify the original intent hasn't been corrupted or "hijacked" during the handoff.
+- **Static Argument Hardening**: Upstream Adapters will implement strict "Schema-Bound Argument Filtering" for local command and filesystem tools to mitigate "Path Traversal" attempts that use LLM-generated string manipulation.
