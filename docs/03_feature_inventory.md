@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-09] Updates
+
+### Proposed Additions
+- **Instruction Provenance Middleware**: (P0) A system to tag and track the origin of instructions (user vs. untrusted data) to prevent indirect prompt injection exploits.
+- **Swarm-Level Intent Monitor**: (P1) Sequences-based analysis of tool calls across multiple agents to detect coordinated "Hivenet" attack patterns.
+- **Global Governance Kill-Switch**: (P1) Federated protocol to instantly revoke capabilities or pause specific swarms across all peered MCP Any nodes.
+
+### Priority Shifts
+- **"Safe-by-Default" Network Hardening**: (Re-affirmed P0) Critical given the increasing sophistication of autonomous agent exploits.
+- **Provenance-First Discovery**: Promoted to **P0**. Knowing *what* a tool is isn't enough; we must know *who* vetted it and *where* the instructions to use it came from.
+
+### Deprecations / Monitoring
+- **Unlabeled Instruction Passing**: Monitoring for deprecation. All instructions should ideally carry metadata about their source by EOY 2026.

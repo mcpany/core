@@ -46,3 +46,7 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-03-09:** **Update: Swarm Intent Mitigation**.
+    *   **Context**: Today's market sync revealed the rise of "Hivenet" attacks using coordinated agent swarms.
+    *   **Architecture Adjustment**: Integrating with the `Swarm-Level Intent Monitor` in Section 4 to detect coordinated sequences across multiple A2A handoffs.
+    *   **Security Impact**: Prevents "Low-and-Slow" data exfiltration where no single agent call is suspicious, but the aggregate behavior of the swarm indicates a breach.

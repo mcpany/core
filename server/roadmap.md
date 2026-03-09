@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-09 Evolution)
+*   **[P0] Instruction Provenance Middleware**: Implement tagging and tracking of instruction origins to mitigate indirect prompt injection. (Added: 2026-03-09)
+*   **[P1] Swarm-Level Intent Monitor**: Sequence analysis for detecting coordinated "Hivenet" attack patterns. (Added: 2026-03-09)
+*   **[P1] Global Governance Kill-Switch**: Federated protocol for instant capability revocation across peered nodes. (Added: 2026-03-09)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

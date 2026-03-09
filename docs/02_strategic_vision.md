@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-09]
+### Focus: Intent-Aware Provenance & Swarm Governance
+**Context**: The rise of "AI Swarm Attacks" and the "Agents Obey Anyone" vulnerability (OpenClaw red-teaming) necessitates a shift from identity-based security to "Intent + Provenance" based security. Agents are being exploited via indirect prompt injection from untrusted data sources.
+**Strategic Pivot**:
+- **Instruction Provenance Tracking**: MCP Any will implement a middleware that tags every instruction with its source provenance (e.g., "User Input," "Email Content," "Web Scrape"). Tools will require "Provenance-Cleared" status to execute sensitive operations (shell, write).
+- **Swarm Intent Firewall**: Moving beyond per-tool policies to "Aggregate Intent" monitoring. MCP Any will analyze the sequence of tool calls across a swarm to detect patterns indicative of a coordinated attack (e.g., distributed mapping + exfiltration).
+- **Federated Governance Tokens**: Implementing a cross-node token system that allows a central security authority to "Kill-Switch" specific swarms or behaviors across all peered MCP Any instances instantly.
