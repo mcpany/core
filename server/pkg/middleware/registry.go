@@ -126,6 +126,7 @@ type StandardMiddlewares struct {
 	SmartRecovery    *SmartRecoveryMiddleware
 	RecursiveContext *RecursiveContextManager
 	A2ABridge        *A2ABridgeMiddleware
+	MultiAgentSession *MultiAgentSessionManager
 	Cleanup          func() error
 }
 
@@ -371,6 +372,8 @@ func InitStandardMiddlewares(
 		}
 	})
 
+	multiAgentSession := NewMultiAgentSessionManager(recursiveContext)
+
 	return &StandardMiddlewares{
 		Audit:            audit,
 		GlobalRateLimit:  globalRateLimit,
@@ -379,6 +382,7 @@ func InitStandardMiddlewares(
 		SmartRecovery:    smartRecovery,
 		RecursiveContext: recursiveContext,
 		A2ABridge:        a2aBridge,
+		MultiAgentSession: multiAgentSession,
 		Cleanup:          audit.Close,
 	}, nil
 }

@@ -2108,6 +2108,9 @@ func (a *Application) runServerMode(
 	if standardMiddlewares != nil {
 		mux.Handle("/context/session", authMiddleware(standardMiddlewares.RecursiveContext.APIHandler()))
 		mux.Handle("/context/session/", authMiddleware(standardMiddlewares.RecursiveContext.APIHandler()))
+
+		mux.Handle("/session/init", authMiddleware(standardMiddlewares.MultiAgentSession.APIHandler()))
+		mux.Handle("/session/", authMiddleware(standardMiddlewares.MultiAgentSession.APIHandler()))
 	}
 
 	httpBindAddress := bindAddress

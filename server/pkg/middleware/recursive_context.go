@@ -20,6 +20,7 @@ type SessionState struct {
 	Data      map[string]interface{} `json:"data"`
 	CreatedAt time.Time              `json:"created_at"`
 	ExpiresAt time.Time              `json:"expires_at"`
+	Mu        sync.RWMutex           `json:"-"`
 }
 
 // RecursiveContextManager manages the shared context sessions (Blackboard).
