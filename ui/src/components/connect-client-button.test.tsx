@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { ConnectClientButton } from './connect-client-button';
 import React from 'react';
 import { vi } from 'vitest';
@@ -49,21 +49,22 @@ describe('ConnectClientButton', () => {
     expect(screen.getByText('Claude Desktop Configuration')).toBeInTheDocument();
   });
 
-  it('allows API key input', () => {
+  it('allows API key input', async () => {
     render(<ConnectClientButton />);
     fireEvent.click(screen.getByText('Connect'));
     const input = screen.getByPlaceholderText('Optional (if configured)');
     fireEvent.change(input, { target: { value: 'my-secret-key' } });
     expect(input).toHaveValue('my-secret-key');
 
-    // Check if JSON updated (approximate check)
-    // The JsonView renders a pre tag.
-    // We expect the text to contain the api key in the URL.
-    // Since JsonView renders JSON string, we can look for the string.
-    // "http://localhost/sse?api_key=my-secret-key" (localhost is default in JSDOM)
-    // Actually window.location.origin is "http://localhost" in JSDOM.
+    // Switch to Cursor tab where the URL is rendered as a read-only input
+    // Radix UI Tabs uses onMouseDown to switch tabs, not onClick
+    const cursorTab = screen.getByText('Cursor');
+    fireEvent.mouseDown(cursorTab, { button: 0 });
 
-    // Simpler: search for the text in the document
-    expect(screen.getByText(/api_key=my-secret-key/)).toBeInTheDocument();
+    // Check if the URL contains the api key (wait for Cursor tab content to mount)
+    await waitFor(() => {
+      const urlInput = screen.getByDisplayValue(/api_key=my-secret-key/);
+      expect(urlInput).toBeInTheDocument();
+    });
   });
 });

@@ -11,6 +11,23 @@ import { SidebarProvider } from '../components/ui/sidebar';
 import { KeyboardShortcutsProvider } from '../contexts/keyboard-shortcuts-context';
 import { UserProvider } from '../components/user-context';
 
+// Mock user context to return admin user synchronously (avoids async fetch)
+vi.mock('../components/user-context', () => ({
+  UserProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  useUser: () => ({
+    user: {
+      id: 'admin-user',
+      name: 'Admin',
+      email: 'admin@test.com',
+      roles: ['admin'],
+    },
+    loading: false,
+    login: vi.fn(),
+    logout: vi.fn(),
+    refresh: vi.fn(),
+  }),
+}));
+
 // Mock ResizeObserver
 class ResizeObserver {
   observe() {}

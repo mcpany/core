@@ -35,6 +35,7 @@ interface Message {
   from: string;
   to: string;
   label: string;
+  description?: string;
   type: 'request' | 'response';
   payload: any;
   status: string;
@@ -97,7 +98,7 @@ export function SequenceDiagram({ trace }: SequenceDiagramProps) {
     };
 
     // Add User and Core by default
-    actorMap.set('user', { id: 'user', label: 'User', type: 'user', icon: User });
+    actorMap.set('user', { id: 'user', label: 'Client', type: 'user', icon: User });
     actorMap.set('core', { id: 'core', label: 'MCP Core', type: 'core', icon: Cpu });
 
     let msgId = 0;
@@ -105,12 +106,17 @@ export function SequenceDiagram({ trace }: SequenceDiagramProps) {
     const traverse = (span: Span, callerId: string) => {
         const calleeId = getActorId(span, 'callee');
 
+        // Use "Access" prefix for service-type spans, "Call" for others
+        const requestLabel = span.type === 'service'
+            ? `Access ${span.name}`
+            : `Call ${span.name}`;
+
         // Request
         msgs.push({
             id: `msg-${msgId++}`,
             from: callerId,
             to: calleeId,
-            label: span.name,
+            label: requestLabel,
             type: 'request',
             payload: span.input,
             status: 'pending', // Initial status
@@ -127,7 +133,7 @@ export function SequenceDiagram({ trace }: SequenceDiagramProps) {
             id: `msg-${msgId++}`,
             from: calleeId,
             to: callerId,
-            label: `Return`,
+            label: `Result`,
             type: 'response',
             payload: span.output,
             status: span.status,
@@ -145,7 +151,8 @@ export function SequenceDiagram({ trace }: SequenceDiagramProps) {
         id: `msg-${msgId++}`,
         from: 'user',
         to: 'core',
-        label: trace.rootSpan.name,
+        label: 'Execute Request',
+        description: 'Client requests execution',
         type: 'request',
         payload: trace.rootSpan.input,
         status: 'pending',
@@ -326,8 +333,15 @@ export function SequenceDiagram({ trace }: SequenceDiagramProps) {
                         {selectedMessage?.label}
                     </DialogTitle>
                     <DialogDescription className="flex items-center gap-2 text-xs">
-                        <Clock className="h-3 w-3" />
-                        {selectedMessage && new Date(selectedMessage.timestamp).toLocaleTimeString()}
+                        {selectedMessage?.description && (
+                            <span>{selectedMessage.description}</span>
+                        )}
+                        {!selectedMessage?.description && (
+                            <>
+                                <Clock className="h-3 w-3" />
+                                {selectedMessage && new Date(selectedMessage.timestamp).toLocaleTimeString()}
+                            </>
+                        )}
                         {selectedMessage?.status === 'error' && <Badge variant="destructive" className="ml-2 h-5">Error</Badge>}
                     </DialogDescription>
                 </DialogHeader>

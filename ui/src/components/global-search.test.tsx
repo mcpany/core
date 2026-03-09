@@ -48,16 +48,25 @@ vi.mock('@/hooks/use-toast', () => ({
 }));
 
 // Mock window location and clipboard
-const originalLocation = window.location;
 const mockReload = vi.fn();
 const mockWriteText = vi.fn();
 
-Object.defineProperty(window, 'location', {
-  configurable: true,
-  value: { ...originalLocation, reload: mockReload, href: 'http://localhost/' },
+// In JSDOM, we cannot delete or redefine window.location directly
+// Instead we spy on the reload method using Object.defineProperty on the prototype
+beforeAll(() => {
+  try {
+    Object.defineProperty(window.location, 'reload', {
+      configurable: true,
+      writable: true,
+      value: mockReload,
+    });
+  } catch {
+    // Fallback: some JSDOM versions don't allow this either
+  }
 });
 
 Object.defineProperty(navigator, 'clipboard', {
+  configurable: true,
   value: { writeText: mockWriteText },
 });
 

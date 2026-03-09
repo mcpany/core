@@ -3,19 +3,70 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import React from "react";
 import { render, screen, fireEvent, act } from "@testing-library/react";
 import { LogStream } from "./log-stream";
 import { vi } from "vitest";
 
-// Mock react-virtuoso
-vi.mock("react-virtuoso", () => ({
-  Virtuoso: ({ data, itemContent }: any) => (
-    <div data-testid="virtuoso-mock">
-      {data.map((item: any, index: number) => itemContent(index, item))}
-    </div>
-  ),
-  VirtuosoHandle: {},
-}));
+// Mock log-viewer module to avoid next/dynamic issues with Virtuoso in tests
+vi.mock("./log-viewer", () => {
+  const React = require('react');
+  const HighlightText = ({ text, regex }: { text: string; regex: RegExp | null }) => {
+    if (!regex || !text) return React.createElement(React.Fragment, null, text);
+    const parts = text.split(regex);
+    return React.createElement(
+      React.Fragment,
+      null,
+      parts.map((part: string, i: number) =>
+        i % 2 === 1
+          ? React.createElement('mark', { key: i, className: 'bg-yellow-500/40' }, part)
+          : part
+      )
+    );
+  };
+
+  const isLikelyJson = (str: string) => {
+    const trimmed = (str || '').trim();
+    return (trimmed.startsWith('{') && trimmed.endsWith('}')) ||
+           (trimmed.startsWith('[') && trimmed.endsWith(']'));
+  };
+
+  const LogRowComponent = ({ log, highlightRegex }: any) => {
+    const [isExpanded, setIsExpanded] = React.useState(false);
+    const isPotentialJson = isLikelyJson(log.message);
+    let jsonContent = null;
+    if (isExpanded && isPotentialJson) {
+      try { jsonContent = JSON.parse(log.message); } catch { jsonContent = null; }
+    }
+    return React.createElement(
+      'div',
+      { 'data-testid': `log-row-${log.id}` },
+      isPotentialJson && React.createElement(
+        'button',
+        {
+          'aria-label': isExpanded ? 'Collapse JSON' : 'Expand JSON',
+          onClick: () => setIsExpanded(!isExpanded)
+        }
+      ),
+      React.createElement('span', null, React.createElement(HighlightText, { text: log.message, regex: highlightRegex })),
+      isExpanded && isPotentialJson && !jsonContent &&
+        React.createElement('div', null, 'Invalid JSON')
+    );
+  };
+
+  return {
+    LogViewer: ({ logs, highlightRegex }: any) =>
+      React.createElement(
+        'div',
+        { 'data-testid': 'log-viewer' },
+        logs.map((log: any) =>
+          React.createElement(LogRowComponent, { key: log.id, log, highlightRegex })
+        )
+      ),
+    timeFormatter: null,
+    LogEntry: {},
+  };
+});
 
 // Mock next/navigation
 vi.mock("next/navigation", () => ({

@@ -5,40 +5,82 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { ConfigEditor } from "./config-editor";
 import { StackVisualizer } from "./stack-visualizer";
 import { ServicePalette } from "./service-palette";
 import { Button } from "@/components/ui/button";
-import { Loader2, Save, X, PanelLeftClose, PanelLeftOpen, Columns, Maximize2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Loader2, Save, X, PanelLeftClose, PanelLeftOpen, Columns, Maximize2, FileCode, CheckCircle, XCircle } from "lucide-react";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import * as yaml from "js-yaml";
+import { apiClient } from "@/lib/client";
 
 interface StackEditorProps {
-  initialValue: string;
-  onSave: (value: string) => Promise<void>;
-  onCancel: () => void;
+  /** Stack ID to load from API. When provided, fetches and saves via apiClient. */
+  stackId?: string;
+  /** Initial YAML value (used when stackId is not provided). */
+  initialValue?: string;
+  /** Save callback (used when stackId is not provided). */
+  onSave?: (value: string) => Promise<void>;
+  /** Cancel callback (used when stackId is not provided). */
+  onCancel?: () => void;
 }
 
 /**
  * StackEditor component for editing stack configurations with visual feedback.
  *
  * @param props - Component properties
- * @param props.initialValue - Initial YAML content
- * @param props.onSave - Callback when saving
+ * @param props.stackId - Optional stack ID to load from API
+ * @param props.initialValue - Initial YAML content (when stackId not provided)
+ * @param props.onSave - Callback when saving (when stackId not provided)
  * @param props.onCancel - Callback when cancelling
  * @returns The rendered StackEditor
  */
-export function StackEditor({ initialValue, onSave, onCancel }: StackEditorProps) {
+export function StackEditor({ stackId, initialValue = "", onSave, onCancel }: StackEditorProps) {
   const [value, setValue] = useState(initialValue);
   const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(!!stackId);
   const [showPalette, setShowPalette] = useState(true);
   const [showVisualizer, setShowVisualizer] = useState(true);
+
+  // Load config from API when stackId is provided
+  useEffect(() => {
+    if (!stackId) return;
+    setLoading(true);
+    apiClient.getCollection(stackId)
+      .then((collection: any) => {
+        if (collection) {
+          setValue(yaml.dump(collection, { indent: 2, lineWidth: -1 }));
+        }
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, [stackId]);
+
+  // YAML validation
+  const yamlValidation = useMemo(() => {
+    if (!value) return null;
+    try {
+      yaml.load(value);
+      return 'valid';
+    } catch {
+      return 'invalid';
+    }
+  }, [value]);
 
   const handleSave = async () => {
     setSaving(true);
     try {
-      await onSave(value);
+      if (stackId) {
+        // Parse YAML and save as collection
+        const collection = yaml.load(value) as any;
+        if (collection) {
+          await apiClient.saveCollection({ ...collection, name: collection.name || stackId });
+        }
+      } else if (onSave) {
+        await onSave(value);
+      }
     } finally {
       setSaving(false);
     }
@@ -76,6 +118,14 @@ export function StackEditor({ initialValue, onSave, onCancel }: StackEditorProps
       }
   };
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <Loader2 className="animate-spin" />
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col h-full bg-background">
       <div className="flex items-center justify-between p-2 border-b bg-muted/40 shrink-0">
@@ -83,16 +133,33 @@ export function StackEditor({ initialValue, onSave, onCancel }: StackEditorProps
              <Button variant="ghost" size="icon" onClick={() => setShowPalette(!showPalette)} title="Toggle Palette">
                 {showPalette ? <PanelLeftClose className="h-4 w-4" /> : <PanelLeftOpen className="h-4 w-4" />}
             </Button>
-            <span className="text-sm font-medium text-muted-foreground ml-2">Stack Composer</span>
+            <div className="flex items-center gap-1 ml-2 text-sm font-medium text-muted-foreground">
+              <FileCode className="h-4 w-4" />
+              <span>config.yaml</span>
+            </div>
+            {yamlValidation === 'valid' && (
+              <Badge variant="outline" className="gap-1 text-green-600 border-green-200">
+                <CheckCircle className="h-3 w-3" />
+                Valid YAML
+              </Badge>
+            )}
+            {yamlValidation === 'invalid' && (
+              <Badge variant="destructive" className="gap-1">
+                <XCircle className="h-3 w-3" />
+                Invalid YAML
+              </Badge>
+            )}
         </div>
         <div className="flex items-center gap-2">
            <Button variant="ghost" size="icon" onClick={() => setShowVisualizer(!showVisualizer)} title="Toggle Visualizer">
                 {showVisualizer ? <Maximize2 className="h-4 w-4" /> : <Columns className="h-4 w-4" />}
             </Button>
           <div className="w-px h-4 bg-border mx-2" />
-          <Button variant="ghost" size="sm" onClick={onCancel}>
-            <X className="mr-2 h-4 w-4" /> Cancel
-          </Button>
+          {onCancel && (
+            <Button variant="ghost" size="sm" onClick={onCancel}>
+              <X className="mr-2 h-4 w-4" /> Cancel
+            </Button>
+          )}
           <Button size="sm" onClick={handleSave} disabled={saving}>
             {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
             Save & Deploy

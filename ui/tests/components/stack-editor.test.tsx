@@ -10,13 +10,25 @@ import { StackEditor } from "../../src/components/stacks/stack-editor";
 import { apiClient } from "../../src/lib/client";
 
 // Mock the ConfigEditor component because Monaco is hard to test in JSDOM
-vi.mock('./config-editor', () => ({
+vi.mock('../../src/components/stacks/config-editor', () => ({
   ConfigEditor: ({ value, onChange }: { value: string, onChange: (v: string) => void }) => (
     <textarea
+      data-testid="config-editor-mock"
       role="textbox"
       value={value}
       onChange={(e) => onChange(e.target.value)}
     />
+  ),
+}));
+
+// Mock StackVisualizer and ServicePalette to avoid complex dependencies
+vi.mock('../../src/components/stacks/stack-visualizer', () => ({
+  StackVisualizer: () => <div data-testid="stack-visualizer" />,
+}));
+
+vi.mock('../../src/components/stacks/service-palette', () => ({
+  ServicePalette: ({ onTemplateSelect }: any) => (
+    <div data-testid="service-palette">Service Palette</div>
   ),
 }));
 
@@ -48,7 +60,9 @@ describe('StackEditor', () => {
   it('renders correctly and loads config', async () => {
     render(<StackEditor stackId={mockStackId} />);
 
-    expect(screen.getByText('config.yaml')).toBeDefined();
+    await waitFor(() => {
+      expect(screen.getByText('config.yaml')).toBeDefined();
+    });
     await waitFor(() => {
         // The component dumps the object to YAML, so we just check if it contains the image
         expect(screen.getByText(/test\/image/)).toBeDefined();

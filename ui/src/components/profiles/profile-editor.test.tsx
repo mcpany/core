@@ -8,6 +8,18 @@ import { ProfileEditor } from "./profile-editor";
 import { apiClient } from "@/lib/client";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
+// Mock react-virtuoso to render items in tests
+vi.mock("react-virtuoso", () => ({
+    Virtuoso: ({ data, itemContent, context }: any) => (
+        <div data-testid="virtuoso-list">
+            {(data || []).map((item: any, index: number) => (
+                <div key={index}>{itemContent(index, item, context)}</div>
+            ))}
+        </div>
+    ),
+    VirtuosoHandle: {},
+}));
+
 // Mock apiClient
 vi.mock("@/lib/client", () => ({
     apiClient: {

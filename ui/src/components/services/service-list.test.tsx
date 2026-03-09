@@ -7,6 +7,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { ServiceList } from "./service-list";
 import { UpstreamServiceConfig } from "@/lib/client";
 import { ServiceHealthProvider } from "@/contexts/service-health-context";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 const mockServices: UpstreamServiceConfig[] = [
   {
@@ -62,9 +63,11 @@ const mockServices: UpstreamServiceConfig[] = [
 describe("ServiceList", () => {
   const renderWithProvider = (component: React.ReactNode) => {
     return render(
-      <ServiceHealthProvider>
-        {component}
-      </ServiceHealthProvider>
+      <TooltipProvider>
+        <ServiceHealthProvider>
+          {component}
+        </ServiceHealthProvider>
+      </TooltipProvider>
     );
   };
 
