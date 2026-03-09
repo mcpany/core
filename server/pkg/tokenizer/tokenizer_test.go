@@ -429,6 +429,49 @@ func TestFloatConsistency(t *testing.T) {
 	}
 }
 
+func TestCountWordsInValueFast(t *testing.T) {
+	tests := []struct {
+		name      string
+		input     interface{}
+		wantCount int
+		wantBool  bool
+	}{
+		{"string", "hello world", 2, true},
+		{"int", int(42), 1, true},
+		{"int64", int64(1234567890), 1, true},
+		{"bool_true", true, 1, true},
+		{"bool_false", false, 1, true},
+		{"nil", nil, 1, true},
+		{"float64_int", float64(42), 1, true},
+		{"float64_frac", float64(3.14159), 1, true},
+		{"slice_string", []string{"hello", "world"}, 2, true},
+		{"slice_int", []int{1, 2, 3}, 3, true},
+		{"slice_int64", []int64{1000, 2000}, 2, true},
+		{"slice_bool", []bool{true, false, true}, 3, true},
+		{"slice_float64", []float64{1.1, 2.2}, 2, true},
+		{"map_string_string", map[string]string{"key1": "value 1", "key2": "value 2"}, 6, true},
+		{"map_string_int", map[string]int{"key1": 10, "key 2": 20}, 5, true},
+		{"map_string_int64", map[string]int64{"key1": 100, "key 2": 200}, 5, true},
+		{"map_string_float64", map[string]float64{"key1": 1.1, "key 2": 2.2}, 5, true},
+		{"map_string_bool", map[string]bool{"key1": true, "key 2": false}, 5, true},
+		{"byte_slice", []byte("hello world byte"), 3, true},
+		{"unhandled_struct", struct{ A string }{"test"}, 0, false},
+		{"unhandled_map", map[int]string{1: "test"}, 0, false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotCount, gotBool := countWordsInValueFast(tt.input)
+			if gotCount != tt.wantCount {
+				t.Errorf("countWordsInValueFast() gotCount = %v, want %v", gotCount, tt.wantCount)
+			}
+			if gotBool != tt.wantBool {
+				t.Errorf("countWordsInValueFast() gotBool = %v, want %v", gotBool, tt.wantBool)
+			}
+		})
+	}
+}
+
 func TestCountTokensInValueSimpleFast(t *testing.T) {
 	st := NewSimpleTokenizer()
 
