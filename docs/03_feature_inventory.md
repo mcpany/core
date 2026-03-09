@@ -81,3 +81,16 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-09] Updates
+
+### Proposed Additions
+- **Process Tree Visibility Middleware**: (P0) Captures and logs full process trees for command-based tool executions. Vital for detecting "Shadow Agent" behavior.
+- **Isolated Workspace Adapter (Worktree-MCP)**: (P1) Automatically provisions ephemeral, isolated filesystems/git worktrees for agent tasks.
+- **Unified Agent Audit Logger**: (P0) A high-performance, tamper-proof logging service for all tool calls and A2A messages, supporting cryptographic attestation.
+
+### Priority Shifts
+- **Policy Firewall**: Re-affirmed as **P0**. Essential for enforcing "Sandbox-First" policies in conjunction with the new Workspace Adapter.
+- **A2A Interop Bridge**: Expanded to include mandatory Audit Logging hooks.

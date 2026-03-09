@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-09 Evolution)
+*   **[P0] Process Tree Visibility Middleware**: Deep process-level auditing for tool execution to detect "Shadow Agent" sub-processes. (Added: 2026-03-09)
+*   **[P0] Unified Agent Audit Logger**: High-performance, tamper-proof logging for all tool calls and A2A communications. (Added: 2026-03-09)
+*   **[P1] Isolated Workspace Adapter**: Support for ephemeral, isolated environments (e.g., git worktrees) for agent tasks. (Added: 2026-03-09)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

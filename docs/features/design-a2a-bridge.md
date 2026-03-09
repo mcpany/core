@@ -46,3 +46,6 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-03-09: Mandatory Audit Logging Integration**
+    *   **Context**: New research indicates that inter-agent handoffs are a primary vector for "Shadow Agent" state manipulation.
+    *   **Update**: All A2A messages must now be routed through the `Unified Agent Audit Logger`. This ensures a tamper-proof record of every delegation and response between agents.

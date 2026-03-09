@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-09]
+### Focus: Execution-Level Observability & Dynamic Workspace Isolation
+**Context**: Today's research into OpenClaw and AI Swarm highlights a critical need for deeper visibility into agent actions and stronger environment isolation. The "Shadow Agent" risk is no longer theoretical; autonomous systems require a "Sandbox-First" approach combined with deep process-level auditing.
+**Strategic Pivot**:
+- **Execution-Level Observability**: MCP Any will evolve to capture and log the full process trees of tools executed by agents. This bridges the gap between high-level tool calls and low-level system actions.
+- **Dynamic Workspace Isolation**: Implementing a "Workspace-as-a-Service" model where each agent or task is automatically provisioned an isolated environment (inspired by AI Swarm's worktree model) to prevent cross-contamination.
+- **Unified Agent Audit Mesh**: Moving towards a federated audit log where all inter-agent (A2A) communications and tool executions are cryptographically signed and stored in a tamper-proof ledger.
