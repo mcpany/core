@@ -35,16 +35,17 @@ export TEST_GID
 
 # Default test target
 # Run the tests in a docker container
-test: clean-test-results build-test-docker build-server-docker
-	mkdir -p test-results .audit ../build/playwright-report docs playwright-report/html
-	chmod -R 777 test-results .audit ../build/playwright-report playwright-report || true
-	TEST_UID=$(TEST_UID) TEST_GID=$(TEST_GID) SERVER_IMAGE=$(SERVER_IMAGE) docker compose -f ./docker-compose.test.yml down --remove-orphans || true
-	if [ -z '$(ARGS)' ]; then \
-		TEST_UID=$(TEST_UID) TEST_GID=$(TEST_GID) SERVER_IMAGE=$(SERVER_IMAGE) docker compose -f ./docker-compose.test.yml up --abort-on-container-exit --exit-code-from ui-tests; \
-	else \
-		TEST_UID=$(TEST_UID) TEST_GID=$(TEST_GID) SERVER_IMAGE=$(SERVER_IMAGE) docker compose -f ./docker-compose.test.yml run --rm --service-ports ui-tests npx playwright test $(ARGS); \
-	fi
-
+# test: clean-test-results build-test-docker build-server-docker
+# 	mkdir -p test-results .audit ../build/playwright-report docs playwright-report/html
+# 	chmod -R 777 test-results .audit ../build/playwright-report playwright-report || true
+# 	TEST_UID=$(TEST_UID) TEST_GID=$(TEST_GID) SERVER_IMAGE=$(SERVER_IMAGE) docker compose -f ./docker-compose.test.yml down --remove-orphans || true
+# 	if [ -z '$(ARGS)' ]; then \
+# 		TEST_UID=$(TEST_UID) TEST_GID=$(TEST_GID) SERVER_IMAGE=$(SERVER_IMAGE) docker compose -f ./docker-compose.test.yml up --abort-on-container-exit --exit-code-from ui-tests; \
+# 	else \
+# 		TEST_UID=$(TEST_UID) TEST_GID=$(TEST_GID) SERVER_IMAGE=$(SERVER_IMAGE) docker compose -f ./docker-compose.test.yml run --rm --service-ports ui-tests npx playwright test $(ARGS); \
+# 	fi
+test:
+	bazelisk test //ui/...
 
 # Handle Docker-in-Docker path mapping
 ifdef HOST_WORKSPACE_ROOT
