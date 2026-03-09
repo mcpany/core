@@ -81,3 +81,20 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-01] Updates
+
+### Proposed Additions
+- **Ephemeral Tool Sandbox (MCP-Sandbox)**: (P0) A middleware that spawns disposable `containerd` or WASM environments for high-risk tools.
+- **Subagent Lifecycle Reaper**: (P1) An automated service that tracks subagent TTLs and proactively reclaims resources from idle sessions.
+- **Binary Stream Gateway**: (P1) Support for streaming multi-modal returns (image/audio) directly in MCP responses.
+- **Context TTL Scoping**: (P1) Tool-level configuration to automatically purge outputs from LLM context after X turns to prevent bloat.
+
+### Priority Shifts
+- **Resource Telemetry Middleware**: Promoted to **P0**. Critical for the "Reaper" to identify resource-heavy subagents.
+- **Safe-by-Default Hardening**: Re-affirmed as **P0** as it is a prerequisite for secure tool sandboxing.
+
+### Deprecations / Monitoring
+- **Persistent Local Tool Execution**: Monitoring for deprecation in favor of "Ephemeral by Default" for all command-line and script-based tools.

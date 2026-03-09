@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-01]
+### Focus: Dynamic Lifecycle Orchestration & Sandboxed Tool Execution
+**Context**: Today's findings indicate a major shift towards ephemeral agent environments (OpenClaw's containerized tools) and the need for proactive lifecycle management (subagent reaping). The risk has moved from "Connectivity" to "Resource Isolation."
+**Strategic Pivot**:
+- **Ephemeral Tool Orchestration**: MCP Any will pivot to support "Ephemeral Workloads." High-risk tool calls will automatically trigger a disposable sandboxed container (e.g., via `containerd` or WASM) to execute the task, ensuring host isolation.
+- **Active Lifecycle Management (The Reaper)**: Implementing an "Agent Reaper" that tracks subagent sessions and automatically reclaims resources for idle or completed tasks, preventing OOM and CPU exhaustion in swarm environments.
+- **Rich-Media Tool Streams**: Expanding the gateway to support "Streaming Binary Returns," allowing multi-modal models to consume audio/video outputs from tools in real-time, matching Gemini's new capability.

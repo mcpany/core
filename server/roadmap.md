@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-01 Evolution)
+*   **[P0] Ephemeral Tool Sandbox (MCP-Sandbox)**: Integration with `containerd` for disposable tool execution environments. (Added: 2026-03-01)
+*   **[P1] Subagent Lifecycle Reaper**: Automated daemon to reclaim resources from zombie/idle agent sessions. (Added: 2026-03-01)
+*   **[P1] Binary Stream Gateway**: Support for streaming multi-modal returns in MCP responses. (Added: 2026-03-01)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

@@ -59,3 +59,10 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+
+### Update: 2026-03-01 - Sandboxed Tool Execution
+**Context:** Integration with OpenClaw's containerized tool pattern to further harden the default security posture.
+**Architecture Adjustment:**
+*   Introducing `isolation_level: "host" | "sandbox"` to service definitions.
+*   Defaulting all command-line tools to `sandbox`.
+**Security Impact:** Mitigates unauthorized host-level file access and potential RCE by isolating tool execution in ephemeral `containerd` environments.

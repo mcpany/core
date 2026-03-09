@@ -46,3 +46,10 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+
+### Update: 2026-03-01 - Lifecycle Hooking & Resource Reclamation
+**Context:** Resolving "Shadow Subagent" OOM issues observed in large-scale swarm deployments.
+**Architecture Adjustment:**
+*   Introducing `handoff_ttl` and `on_complete: "reap"` metadata for A2A tool calls.
+*   Registering A2A sessions with the global Subagent Lifecycle Reaper.
+**Security Impact:** Prevents resource-exhaustion Denial of Service (DoS) attacks by ensuring delegated agent tasks are cleaned up post-execution.
