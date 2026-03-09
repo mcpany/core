@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-09]
+### Focus: Parallel Agent Teams & Origin-Locked Local Security
+**Context**: The shift toward "Agent Teams" (parallel execution) and the discovery of cross-site hijacking vulnerabilities in local agent gateways (OpenClaw) demand a pivot toward concurrency-safe state management and stricter local transport security.
+**Strategic Pivot**:
+- **Multi-Agent Concurrency Orchestration**: MCP Any will evolve from sequential handoffs to a parallel coordination model, managing shared state (Blackboards) and resolving tool contention for simultaneous agent access.
+- **Origin-Locked Gateway**: Implementing mandatory `Origin` and `Host` header validation for all WebSocket/HTTP adapters. MCP Any will reject any connection not explicitly whitelisted, preventing browser-based "hijacking" of local agents.
+- **Context Synchronization for Teams**: Extending the Context Protocol to support "Broadcast" and "Subscribe" patterns, ensuring all agents in a parallel team maintain a synchronized view of the objective without redundant context injection.

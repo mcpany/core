@@ -59,3 +59,10 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+
+### Update: 2026-03-09 - Mitigating Local Origin Hijacking
+**Context:** The OpenClaw 2026.2.25 patch revealed a major exploit where malicious websites could hijack local agents via unauthenticated loopback connections.
+**Architecture Adjustment:**
+*   **Mandatory Origin Validation**: All WebSocket and HTTP adapters must now validate the `Origin` and `Host` headers against a strict whitelist.
+*   **Loopback Rate Limiting**: Removing loopback exemptions from the rate limiter to prevent brute-force attacks on local agent credentials.
+**Security Impact:** Blocks browser-based cross-site hijacking attempts (CSRF/WebSocket Hijacking) against the local MCP Any instance.

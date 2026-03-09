@@ -81,3 +81,16 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-09] Updates
+
+### Proposed Additions
+- **Parallel Agent Coordination Middleware**: (P0) Extends session management to support concurrent agent tool calls and shared task blackboard state.
+- **Strict Origin-Header Guard**: (P0) Middleware for WebSocket/HTTP adapters to validate `Origin` and `Host` headers, mitigating cross-site agent hijacking (OpenClaw exploit fix).
+- **Team-Wide Context Synchronization**: (P1) Pub/Sub mechanism for context updates across parallel agent teams.
+
+### Priority Shifts
+- **Safe-by-Default Hardening**: Re-affirmed as **P0** and expanded to include mandatory Origin Validation.
+- **Shared KV Store**: Priority maintained at **P0**; scope expanded to support high-concurrency "Blackboard" access for parallel teams.
