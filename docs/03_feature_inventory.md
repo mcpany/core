@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-09] Updates
+
+### Proposed Additions
+- **Origin-Bound Security Middleware**: (P0) Cryptographically validates the `Origin` of incoming requests to prevent cross-origin hijacking (OpenClaw mitigation).
+- **Sanitized Hook Sandbox**: (P0) A secure runtime for agent lifecycle hooks that prevents shell command injection and enforces resource limits (Claude Code mitigation).
+- **Planning Checkpoint API**: (P1) High-performance state persistence specifically for long-lived agent planning sessions (Claude Opus 4.6 optimization).
+
+### Priority Shifts
+- **"Safe-by-Default" Network Hardening**: Re-affirmed as **P0**. The recent OpenClaw exploits increase the urgency of local-only defaults.
+- **Supply Chain Integrity Guard**: Re-affirmed as **P0**. Hook injection via compromised configurations is a form of supply chain attack.
+
+### Deprecations / Monitoring
+- **Unsanitized Lifecycle Hooks**: Deprecate support for raw shell execution in hooks in favor of the Sanitized Sandbox.

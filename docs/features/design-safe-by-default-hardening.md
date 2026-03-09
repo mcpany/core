@@ -59,3 +59,6 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-09:** **Expansion: Hook Sanitization & Origin Binding.**
+    *   Added requirement for "Sanitized Hook Sandbox" to prevent Command Injection via agent lifecycle hooks (Claude Code vulnerability).
+    *   Integrated "Origin-Bound Security" requirements into the default listener configuration to prevent cross-origin hijacking (OpenClaw vulnerability).

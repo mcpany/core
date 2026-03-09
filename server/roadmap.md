@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-09 Evolution)
+*   **[P0] Origin-Bound Security Middleware**: Cryptographically validate `Origin` and `X-MCP-Session-Token` for local gateway requests. (Added: 2026-03-09)
+*   **[P0] Sanitized Hook Sandbox**: Implement a constrained execution environment for agent lifecycle hooks using WASM or gVisor-based isolation. (Added: 2026-03-09)
+*   **[P1] Planning Checkpoint API**: High-frequency state persistence for Opus 4.6's 1M context long-lived sessions. (Added: 2026-03-09)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
