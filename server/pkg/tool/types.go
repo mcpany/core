@@ -3669,8 +3669,20 @@ func checkGdbInjection(val, base string, quoteLevel int) error {
 		return fmt.Errorf("gdb injection detected: dangerous command %q at start", firstWord)
 	}
 
-	// Note: We intentionally do NOT block "!" because it breaks "print !var".
-	// This leaves a gap (!ls), but usability tradeoff is required.
+	// Block shell execution via !command
+	if strings.HasPrefix(firstWord, "!") {
+		// Allow logical NOT expressions like !var or !(cond) by checking the next character.
+		// A shell command usually starts with an alphabetical character after the bang (e.g. !ls).
+		if len(firstWord) > 1 {
+			nextChar := firstWord[1]
+			if (nextChar >= 'a' && nextChar <= 'z') || (nextChar >= 'A' && nextChar <= 'Z') || nextChar == '/' || nextChar == '.' || nextChar == '-' || nextChar == '_' {
+				return fmt.Errorf("gdb injection detected: shell execution via bang command at start")
+			}
+		} else {
+			// A standalone "!" might be followed by a space and a command, e.g. "! ls"
+			return fmt.Errorf("gdb injection detected: shell execution via bang command at start")
+		}
+	}
 
 	return nil
 }
@@ -3720,8 +3732,8 @@ func checkTarInjection(val, base string) error {
 	isTar := base == "tar" || base == "gtar" || base == "bsdtar"
 	if isTar {
 		valLower := strings.ToLower(val)
-		// Check for execution directives commonly used in --checkpoint-action and --to-command
-		if strings.Contains(valLower, "exec=") || strings.Contains(valLower, "command=") {
+		// Check for execution directives commonly used in --checkpoint-action, --to-command, and --use-compress-program
+		if strings.Contains(valLower, "exec=") || strings.Contains(valLower, "command=") || strings.Contains(valLower, "--use-compress-program") {
 			return fmt.Errorf("tar injection detected: value contains execution directive")
 		}
 		// Also block checkpoint-action keyword itself if it somehow appears in value
@@ -3746,7 +3758,7 @@ func checkFindInjection(val, base string) error {
 	parts := strings.Fields(val)
 	for _, part := range parts {
 		lowerPart := strings.ToLower(part)
-		if lowerPart == "-exec" || lowerPart == "-execdir" || lowerPart == "-ok" || lowerPart == "-okdir" || lowerPart == "-delete" {
+		if strings.HasPrefix(lowerPart, "-exec") || strings.HasPrefix(lowerPart, "-ok") || lowerPart == "-delete" {
 			return fmt.Errorf("find injection detected: value contains dangerous flag %q", part)
 		}
 	}
@@ -3878,6 +3890,12 @@ func checkPythonInjection(val, template, base string) error {
 		if hasFString {
 			if strings.ContainsAny(val, "{}") {
 				return fmt.Errorf("python f-string injection detected: value contains '{' or '}'")
+			}
+		}
+		// Also block .format() injections by checking if the template uses .format() and the value has {}
+		if strings.Contains(template, ".format(") {
+			if strings.ContainsAny(val, "{}") {
+				return fmt.Errorf("python format string injection detected: value contains '{' or '}'")
 			}
 		}
 	}
