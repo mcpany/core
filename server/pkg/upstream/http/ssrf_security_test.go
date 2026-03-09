@@ -59,6 +59,53 @@ func TestSSRFProtection(t *testing.T) {
 	}
 }
 
+func TestSSRFRedirectProtection(t *testing.T) {
+	// 1. Start a local server (target for SSRF)
+	targetServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte("secret data"))
+	}))
+	defer targetServer.Close()
+
+	// 2. Start a redirector server (which simulates a malicious external site)
+	redirector := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, targetServer.URL, http.StatusFound)
+	}))
+	defer redirector.Close()
+
+	// 3. Configure pool to point to redirector
+	config := configv1.UpstreamServiceConfig_builder{
+		HttpService: configv1.HttpUpstreamService_builder{
+			Address: proto.String(redirector.URL),
+		}.Build(),
+	}.Build()
+
+	// 4. Ensure env vars are cleared so we test default secure behavior
+	t.Setenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS", "")
+	t.Setenv("MCPANY_ALLOW_LOOPBACK_RESOURCES", "")
+	t.Setenv("MCPANY_ALLOW_PRIVATE_NETWORK_RESOURCES", "")
+
+	p, err := NewHTTPPool(1, 1, 10, config)
+	require.NoError(t, err)
+	defer func() { _ = p.Close() }()
+
+	clientWrapper, err := p.Get(context.Background())
+	require.NoError(t, err)
+
+	// 5. Try to make a request to the redirector
+	req, _ := http.NewRequest("GET", redirector.URL, nil)
+	resp, err := clientWrapper.Do(req)
+
+	// 6. Assert failure due to redirect to unsafe loopback URL
+	assert.Error(t, err)
+	if err != nil {
+		assert.Contains(t, err.Error(), "unsafe redirect url")
+	}
+	if resp != nil {
+		_ = resp.Body.Close()
+	}
+}
+
 func TestSSRFProtection_Allowed(t *testing.T) {
 	// 1. Start a local server (target for SSRF)
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

@@ -132,6 +132,15 @@ var NewHTTPPool = func(
 	sharedClient := &http.Client{
 		Transport: otelhttp.NewTransport(baseTransport),
 		Timeout:   clientTimeout,
+		CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			if err := validation.IsSafeURL(req.URL.String()); err != nil {
+				return fmt.Errorf("unsafe redirect url: %w", err)
+			}
+			if len(via) >= 10 {
+				return fmt.Errorf("stopped after 10 redirects")
+			}
+			return nil
+		},
 	}
 
 	// Create a shared health checker for all clients in this pool
