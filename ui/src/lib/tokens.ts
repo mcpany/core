@@ -3,6 +3,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+// ⚡ BOLT: [Performance Cache]
+// Randomized Selection from Top 5 High-Impact Targets
+// Caches token estimates for object references to avoid repeated expensive JSON.stringify and string calculations.
+const tokenCache = new WeakMap<object, number>();
+
 /**
  * Estimates the number of tokens in a string or object using a simple heuristic.
  * This is meant for UI estimation only, not for precision.
@@ -12,8 +17,26 @@
 export function estimateTokens(input: any): number {
     if (!input) return 0;
 
-    const text = typeof input === 'string' ? input : JSON.stringify(input);
+    if (typeof input === 'object' && input !== null) {
+        if (tokenCache.has(input)) {
+            return tokenCache.get(input)!;
+        }
 
+        const text = JSON.stringify(input);
+        const tokens = calculateTokenHeuristic(text);
+        tokenCache.set(input, tokens);
+        return tokens;
+    }
+
+    const text = typeof input === 'string' ? input : String(input);
+    return calculateTokenHeuristic(text);
+}
+
+/**
+ * Internal helper to calculate token count based on string length and word count.
+ * @param text The string to calculate tokens for.
+ */
+function calculateTokenHeuristic(text: string): number {
     // Simple heuristic used by many LLM providers for estimation:
     // Approximately 4 characters per token for English text.
     // We add some overhead for whitespace and special characters.

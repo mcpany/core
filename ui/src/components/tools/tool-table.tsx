@@ -198,9 +198,9 @@ export const ToolTable = memo(function ToolTable({
                   })()}
               </TableCell>
               <TableCell className={isCompact ? "py-0 px-2" : ""}>
-                  <div className="flex items-center text-muted-foreground text-xs" title={`${estimateTokens(JSON.stringify(tool))} tokens`}>
+                  <div className="flex items-center text-muted-foreground text-xs" title={`${estimateTokens(tool)} tokens`}>
                       <Info className="w-3 h-3 mr-1 opacity-50" />
-                      {formatTokenCount(estimateTokens(JSON.stringify(tool)))}
+                      {formatTokenCount(estimateTokens(tool))}
                   </div>
               </TableCell>
               <TableCell className={isCompact ? "py-0 px-2" : ""}>
