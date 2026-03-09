@@ -171,6 +171,8 @@ export function InspectorTable({ traces, loading }: InspectorTableProps) {
                             <span className="opacity-50 text-[10px]">
                                 {formatDistanceToNow(new Date(row.trace.timestamp), { addSuffix: true })}
                             </span>
+                            <br />
+                            <span className="opacity-50 text-[10px] font-mono">{row.trace.id}</span>
                             </>
                         ) : null}
                     </TableCell>

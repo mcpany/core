@@ -8,6 +8,7 @@ import userEvent from '@testing-library/user-event';
 import { ServiceList } from '@/components/services/service-list';
 import { UpstreamServiceConfig } from '@/lib/client';
 import { ServiceHealthProvider } from "@/contexts/service-health-context";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { vi } from 'vitest';
 
 // Mock ResizeObserver
@@ -55,15 +56,17 @@ describe('ServiceList', () => {
         const onDelete = vi.fn();
 
         render(
-            <ServiceHealthProvider>
-                <ServiceList
-                    services={[mockService]}
-                    onEdit={onEdit}
-                    onDuplicate={onDuplicate}
-                    onExport={onExport}
-                    onDelete={onDelete}
-                />
-            </ServiceHealthProvider>
+            <TooltipProvider>
+                <ServiceHealthProvider>
+                    <ServiceList
+                        services={[mockService]}
+                        onEdit={onEdit}
+                        onDuplicate={onDuplicate}
+                        onExport={onExport}
+                        onDelete={onDelete}
+                    />
+                </ServiceHealthProvider>
+            </TooltipProvider>
         );
 
         // Find the "MoreHorizontal" button (trigger)
@@ -84,11 +87,13 @@ describe('ServiceList', () => {
     it('renders without actions if not provided', async () => {
         const user = userEvent.setup();
         render(
-            <ServiceHealthProvider>
-                <ServiceList
-                    services={[mockService]}
-                />
-            </ServiceHealthProvider>
+            <TooltipProvider>
+                <ServiceHealthProvider>
+                    <ServiceList
+                        services={[mockService]}
+                    />
+                </ServiceHealthProvider>
+            </TooltipProvider>
         );
 
         expect(screen.getByText('test-service')).toBeInTheDocument();

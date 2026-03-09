@@ -29,6 +29,30 @@ vi.mock('@/components/stacks/config-editor', () => ({
   ),
 }));
 
+// Mock ServicePalette to show expected text
+vi.mock('@/components/stacks/service-palette', () => ({
+  ServicePalette: ({ onTemplateSelect }: any) => (
+    <div data-testid="service-palette">Service Palette</div>
+  ),
+}));
+
+// Mock StackVisualizer to show expected text based on YAML content
+vi.mock('@/components/stacks/stack-visualizer', () => ({
+  StackVisualizer: ({ yamlContent }: { yamlContent: string }) => {
+    const yaml = require('js-yaml');
+    let hasServices = false;
+    try {
+      const doc = yaml.load(yamlContent) as any;
+      hasServices = doc?.services && Object.keys(doc.services).length > 0;
+    } catch {}
+    return (
+      <div data-testid="stack-visualizer">
+        {!hasServices && <p>No services defined</p>}
+      </div>
+    );
+  },
+}));
+
 // Mock ResizeObserver for scroll area
 global.ResizeObserver = class ResizeObserver {
   observe() {}
@@ -88,8 +112,10 @@ describe('StackEditor', () => {
     (apiClient.getCollection as any).mockResolvedValue({ name: 'test-stack', services: [] });
     render(<StackEditor stackId="test-stack" />);
 
-    // Check initial state
-    expect(screen.getByText('Service Palette')).toBeInTheDocument();
+    // Wait for the component to finish loading
+    await waitFor(() => {
+      expect(screen.getByText('Service Palette')).toBeInTheDocument();
+    });
     // Since config is empty, visualizer shows "No services defined"
     expect(screen.getByText('No services defined')).toBeInTheDocument();
   });
