@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-09 Evolution)
+*   **[P0] Sandboxed Hook Execution**: Secure runtime for configuration-defined lifecycle hooks to prevent RCE. (Added: 2026-03-09)
+*   **[P1] Semantic Policy Engine**: Metadata-aware tool governance using tool annotations and categories. (Added: 2026-03-09)
+*   **[P1] Interactive Tool Proxy**: Middleware for managing interactive CLI terminal state via MCP. (Added: 2026-03-09)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

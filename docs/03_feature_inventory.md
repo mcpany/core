@@ -81,3 +81,19 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-09] Updates
+
+### Proposed Additions
+- **Sandboxed Hook Execution Runtime**: (P0) A secure, isolated environment for running MCP server/adapter hooks. Prevents RCE via configuration files.
+- **Annotation-Aware Semantic Policy Engine**: (P1) Extends the Policy Firewall to filter tools based on their semantic metadata (e.g., `@destructive`, `@reads_secrets`) instead of just names.
+- **Interactive Tool Proxying Middleware**: (P1) Standardizes the handling of interactive terminal tools (e.g., `git add -p`, `npm init`) through the MCP protocol.
+
+### Priority Shifts
+- **Policy Firewall**: Re-affirmed as **P0**. Focus expanded to include semantic matching to counter "Silent Helpfulness" attacks.
+- **HITL Middleware**: Re-affirmed as **P0**. Crucial for the new Interactive Tool Proxying flow.
+
+### Deprecations / Monitoring
+- **Name-Only Tool Policies**: Monitoring for transition to Semantic-first policies.

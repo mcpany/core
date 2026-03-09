@@ -13,6 +13,9 @@
 - [ ] **[P1] Resource Cost/Latency Overlay**: Real-time performance metrics displayed directly on tool cards. (Added: 2026-02-26)
 - [ ] **[P0] Connectivity & Security Dashboard**: Visualize local-only vs remote exposure, attestation status, and active MFA sessions. (Added: 2026-02-28)
 - [ ] **[P0] Stateful A2A Mailbox**: UI for viewing queued and delivered A2A messages across the agent mesh. (Added: 2026-02-28)
+- [ ] **[P0] Hook Sandbox Monitor**: Real-time visualization of sandboxed hook execution and security violations. (Added: 2026-03-09)
+- [ ] **[P1] Semantic Policy Designer**: UI for creating policies based on tool annotations and semantic categories. (Added: 2026-03-09)
+- [ ] **[P1] Interactive Terminal Proxy**: Web-based terminal component for interacting with proxied CLI tools. (Added: 2026-03-09)
 - [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
 - [x] **[P1] Tool Playground & Explorer**:
   - [x] Auto-generated forms from Tool JSON Schemas.
