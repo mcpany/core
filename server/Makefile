@@ -334,7 +334,7 @@ prepare:
 		echo "nats-server is already installed."; \
 	else \
 		echo "Installing nats-server to $(TOOL_INSTALL_DIR)..."; \
-		GOBIN=$(TOOL_INSTALL_DIR) go install github.com/nats-io/nats-server/v2@v2.10.22; \
+		GOBIN=$(TOOL_INSTALL_DIR) go install github.com/nats-io/nats-server/v2@latest; \
 		if test -f "$(NATS_SERVER_BIN)"; then \
 			echo "nats-server installed successfully."; \
 		else \

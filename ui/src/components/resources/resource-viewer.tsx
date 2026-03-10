@@ -9,19 +9,19 @@ import { Eye, Loader2 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ResourceContent } from "@/lib/client";
 
-import ReactSyntaxHighlighter from 'react-syntax-highlighter/dist/esm/light';
-import json from 'react-syntax-highlighter/dist/esm/languages/hljs/json';
-import yaml from 'react-syntax-highlighter/dist/esm/languages/hljs/yaml';
-import xml from 'react-syntax-highlighter/dist/esm/languages/hljs/xml';
-import markdown from 'react-syntax-highlighter/dist/esm/languages/hljs/markdown';
-import plaintext from 'react-syntax-highlighter/dist/esm/languages/hljs/plaintext';
-import { vs2015 } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+import { PrismLight } from 'react-syntax-highlighter';
+import json from 'react-syntax-highlighter/dist/esm/languages/prism/json';
+import yaml from 'react-syntax-highlighter/dist/esm/languages/prism/yaml';
+import markdown from 'react-syntax-highlighter/dist/esm/languages/prism/markdown';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
-ReactSyntaxHighlighter.registerLanguage('json', json);
-ReactSyntaxHighlighter.registerLanguage('yaml', yaml);
-ReactSyntaxHighlighter.registerLanguage('xml', xml);
-ReactSyntaxHighlighter.registerLanguage('markdown', markdown);
-ReactSyntaxHighlighter.registerLanguage('text', plaintext);
+const SyntaxHighlighter = PrismLight as any;
+
+SyntaxHighlighter.registerLanguage('json', json);
+SyntaxHighlighter.registerLanguage('yaml', yaml);
+SyntaxHighlighter.registerLanguage('xml', yaml);
+SyntaxHighlighter.registerLanguage('markdown', markdown);
+SyntaxHighlighter.registerLanguage('text', yaml);
 
 interface ResourceViewerProps {
     content: ResourceContent | null;
@@ -85,14 +85,14 @@ export function ResourceViewer({ content, loading }: ResourceViewerProps) {
     if (mimeType.includes("json") || mimeType.includes("yaml") || mimeType.includes("xml")) {
          return (
             <ScrollArea className="h-full">
-                <ReactSyntaxHighlighter
+                <SyntaxHighlighter
                     language={mimeType.includes("json") ? "json" : "yaml"}
-                    style={vs2015}
+                    style={vscDarkPlus as any}
                     customStyle={{ margin: 0, borderRadius: 0, height: "100%", fontSize: '0.875rem' }}
                     showLineNumbers={true}
                 >
                     {text || ""}
-                </ReactSyntaxHighlighter>
+                </SyntaxHighlighter>
             </ScrollArea>
         );
     }
@@ -102,14 +102,14 @@ export function ResourceViewer({ content, loading }: ResourceViewerProps) {
          return (
             <ScrollArea className="h-full p-6">
                 <div className="prose dark:prose-invert max-w-none">
-                     <ReactSyntaxHighlighter
+                     <SyntaxHighlighter
                         language="markdown"
-                        style={vs2015}
+                        style={vscDarkPlus as any}
                         customStyle={{ background: 'transparent', padding: 0 }}
                         wrapLines={true}
                     >
                         {text || ""}
-                    </ReactSyntaxHighlighter>
+                    </SyntaxHighlighter>
                 </div>
             </ScrollArea>
         );
@@ -118,14 +118,14 @@ export function ResourceViewer({ content, loading }: ResourceViewerProps) {
     // Code / Plain Text
     return (
          <ScrollArea className="h-full">
-             <ReactSyntaxHighlighter
+             <SyntaxHighlighter
                 language="text" // generic
-                style={vs2015}
+                style={vscDarkPlus as any}
                 customStyle={{ margin: 0, borderRadius: 0, height: "100%", fontSize: '0.875rem' }}
                 showLineNumbers={true}
             >
                 {text || ""}
-            </ReactSyntaxHighlighter>
+            </SyntaxHighlighter>
         </ScrollArea>
     );
 }

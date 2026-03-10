@@ -24,16 +24,16 @@ import { unwrapMcpResult, deepParseJson } from "@/lib/mcp-unwrap";
 // ⚡ BOLT: Lazy load heavy dependencies to improve initial bundle size and TTI.
 // Randomized Selection from Top 5 High-Impact Targets
 const SyntaxHighlighter = dynamic(
-    () => import('react-syntax-highlighter/dist/esm/prism-light').then(async (mod) => {
+    () => import('react-syntax-highlighter').then(async (mod) => {
         const jsonLang = await import('react-syntax-highlighter/dist/esm/languages/prism/json');
         const jsLang = await import('react-syntax-highlighter/dist/esm/languages/prism/javascript');
         const pythonLang = await import('react-syntax-highlighter/dist/esm/languages/prism/python');
         const bashLang = await import('react-syntax-highlighter/dist/esm/languages/prism/bash');
-        mod.default.registerLanguage('json', jsonLang.default);
-        mod.default.registerLanguage('javascript', jsLang.default);
-        mod.default.registerLanguage('python', pythonLang.default);
-        mod.default.registerLanguage('bash', bashLang.default);
-        return mod.default;
+        mod.PrismLight.registerLanguage('json', jsonLang.default);
+        mod.PrismLight.registerLanguage('javascript', jsLang.default);
+        mod.PrismLight.registerLanguage('python', pythonLang.default);
+        mod.PrismLight.registerLanguage('bash', bashLang.default);
+        return mod.PrismLight as any;
     }),
     {
         ssr: false,
@@ -188,7 +188,7 @@ export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
                          <div className="relative group/code">
                             <SyntaxHighlighter
                                 language="json"
-                                style={vscDarkPlus}
+                                style={vscDarkPlus as any}
                                 customStyle={{ margin: 0, padding: '1rem', fontSize: '12px', background: 'rgba(0,0,0,0.4)' }}
                                 wrapLines={true}
                                 wrapLongLines={true}
