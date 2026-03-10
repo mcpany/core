@@ -10,15 +10,15 @@ set -e
 if [ -n "$BUILD_WORKSPACE_DIRECTORY" ]; then
     PROJECT_ROOT="$BUILD_WORKSPACE_DIRECTORY"
 else
-    PROJECT_ROOT=$(bazel info workspace)
+    PROJECT_ROOT=$(/app/build/env/bin/bazelisk info workspace)
 fi
 cd "$PROJECT_ROOT"
 
 echo "Running Gazelle..."
-bazel run //:gazelle
+/app/build/env/bin/bazelisk run //:gazelle
 
 echo "Running Buildifier..."
-bazel run //:buildifier -- -r .
+/app/build/env/bin/bazelisk run //:buildifier -- -r .
 
 echo "Running golangci-lint..."
 # We assume golangci-lint is already installed/available in the expected path or in PATH.
