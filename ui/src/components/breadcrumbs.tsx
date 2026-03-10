@@ -55,22 +55,12 @@ export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
 
         // Save current path to history
         const lastItem = items[items.length - 1];
-        let savedHistory: BreadcrumbItem[] = [];
-        try {
-            const stored = localStorage.getItem("breadcrumb_history");
-            if (stored) {
-                savedHistory = JSON.parse(stored);
-            }
-        } catch (e) {
-            console.warn("Failed to parse breadcrumb history from localStorage", e);
-        }
-
-        if (!Array.isArray(savedHistory)) savedHistory = [];
+        const savedHistory = JSON.parse(localStorage.getItem("breadcrumb_history") || "[]") as BreadcrumbItem[];
 
         // Filter out existing and keep only unique hrefs
         const updatedHistory = [
             lastItem,
-            ...savedHistory.filter(h => h && h.href !== lastItem.href)
+            ...savedHistory.filter(h => h.href !== lastItem.href)
         ].slice(0, 10); // Keep last 10
 
         localStorage.setItem("breadcrumb_history", JSON.stringify(updatedHistory));

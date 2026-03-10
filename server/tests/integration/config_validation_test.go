@@ -12,8 +12,10 @@ import (
 )
 
 func TestConfigValidationFailures(t *testing.T) {
-	root := ProjectRoot(t)
-	mcpanyBinary := ServerBinary(t)
+	root, err := GetProjectRoot()
+	require.NoError(t, err)
+
+	mcpanyBinary := filepath.Join(root, "../build/bin/server")
 
 	tests := []struct {
 		name          string

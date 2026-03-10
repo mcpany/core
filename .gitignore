@@ -1,9 +1,8 @@
 # Copyright (C) 2025 Author(s) of MCP Any
 # SPDX-License-Identifier: Apache-2.0
 
-# Generated protobuf files (built by Bazel go_proto_library)
-proto/**/*.pb.go
-!proto/**/*.pb.gw.go
+# Generated protobuf files
+# **/*.pb.go
 coverage*.out
 coverage.html
 

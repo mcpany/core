@@ -117,8 +117,8 @@ test.describe('Services Feature', () => {
     // Click on the row to open details
     await paymentRow.click();
 
-    // Tools are now in the General tab by default
-    await expect(page.getByText('Tools', { exact: true }).first()).toBeVisible();
+    // Click on tools tab
+    await page.getByRole('tab', { name: 'Tools' }).click();
 
     // Should see process_payment tool
     await expect(page.getByText('process_payment')).toBeVisible();

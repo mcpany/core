@@ -39,7 +39,7 @@ const dummyGoFileContent = `// Copyright 2025
 package main
 `
 
-func TestRemoveLicenseHeaders(t *testing.T) {
+func TestMain(t *testing.T) {
 	tmpDir := t.TempDir()
 
 	// Create a dummy go file with a license header

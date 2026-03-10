@@ -1,4 +1,5 @@
 build/
+ui/
 node_modules/
 docker/
 k8s/
@@ -9,8 +10,3 @@ server/docker/
 server/docs/
 server/examples/
 server/tests/integration/upstream/node_modules/
-ui/node_modules/
-ui/.next/
-ui/test-results/
-ui/playwright-report/
-server/.build-context/

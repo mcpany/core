@@ -6,11 +6,13 @@ package framework
 import (
 	"fmt"
 	"net/http"
+	"path/filepath"
 	"testing"
 
 	apiv1 "github.com/mcpany/core/proto/api/v1"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/tests/integration"
+	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -21,7 +23,9 @@ import (
 // Returns the result.
 func BuildHTTPEchoServer(t *testing.T) *integration.ManagedProcess {
 	port := integration.FindFreePort(t)
-	proc := integration.NewManagedProcess(t, "http_echo_server", integration.MockBinary(t, "http_echo_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
+	root, err := integration.GetProjectRoot()
+	require.NoError(t, err)
+	proc := integration.NewManagedProcess(t, "http_echo_server", filepath.Join(root, "../build/test/bin/http_echo_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
 	proc.Port = port
 	return proc
 }
@@ -43,7 +47,9 @@ func RegisterHTTPEchoService(t *testing.T, registrationClient apiv1.Registration
 // Returns the result.
 func BuildHTTPAuthedEchoServer(t *testing.T) *integration.ManagedProcess {
 	port := integration.FindFreePort(t)
-	proc := integration.NewManagedProcess(t, "http_authed_echo_server", integration.MockBinary(t, "http_authed_echo_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
+	root, err := integration.GetProjectRoot()
+	require.NoError(t, err)
+	proc := integration.NewManagedProcess(t, "http_authed_echo_server", filepath.Join(root, "../build/test/bin/http_authed_echo_server"), []string{fmt.Sprintf("--port=%d", port)}, nil)
 	proc.Port = port
 	return proc
 }

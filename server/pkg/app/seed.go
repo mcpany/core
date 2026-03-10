@@ -10,9 +10,6 @@ import (
 	"log/slog"
 	"net/http"
 
-	"strings"
-	"time"
-
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/logging"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -77,28 +74,6 @@ func (a *Application) handleDebugSeed() http.HandlerFunc {
 	}
 }
 
-func withRetry(ctx context.Context, log *slog.Logger, fn func() error) error {
-	var lastErr error
-	for i := 0; i < 5; i++ {
-		err := fn()
-		if err == nil {
-			return nil
-		}
-		lastErr = err
-		if strings.Contains(strings.ToLower(err.Error()), "database is locked") || strings.Contains(strings.ToLower(err.Error()), "sqlite_busy") {
-			log.Warn("Database is locked, retrying...", "attempt", i+1, "error", err)
-			select {
-			case <-ctx.Done():
-				return ctx.Err()
-			case <-time.After(time.Duration(100*(i+1)) * time.Millisecond):
-				continue
-			}
-		}
-		return err
-	}
-	return fmt.Errorf("max retries reached: %w", lastErr)
-}
-
 func (a *Application) clearData(ctx context.Context, log *slog.Logger) error {
 	// Services
 	services, err := a.Storage.ListServices(ctx)
@@ -106,10 +81,7 @@ func (a *Application) clearData(ctx context.Context, log *slog.Logger) error {
 		return fmt.Errorf("failed to list services: %w", err)
 	}
 	for _, s := range services {
-		err := withRetry(ctx, log, func() error {
-			return a.Storage.DeleteService(ctx, s.GetName())
-		})
-		if err != nil {
+		if err := a.Storage.DeleteService(ctx, s.GetName()); err != nil {
 			log.Error("Failed to delete service", "name", s.GetName(), "error", err)
 		}
 	}
@@ -120,10 +92,7 @@ func (a *Application) clearData(ctx context.Context, log *slog.Logger) error {
 		log.Error("Failed to list credentials for clearing", "error", err)
 	} else {
 		for _, c := range creds {
-			err := withRetry(ctx, log, func() error {
-				return a.Storage.DeleteCredential(ctx, c.GetId())
-			})
-			if err != nil {
+			if err := a.Storage.DeleteCredential(ctx, c.GetId()); err != nil {
 				log.Error("Failed to delete credential", "id", c.GetId(), "error", err)
 			}
 		}
@@ -135,10 +104,7 @@ func (a *Application) clearData(ctx context.Context, log *slog.Logger) error {
 		log.Error("Failed to list secrets for clearing", "error", err)
 	} else {
 		for _, s := range secrets {
-			err := withRetry(ctx, log, func() error {
-				return a.Storage.DeleteSecret(ctx, s.GetId())
-			})
-			if err != nil {
+			if err := a.Storage.DeleteSecret(ctx, s.GetId()); err != nil {
 				log.Error("Failed to delete secret", "id", s.GetId(), "error", err)
 			}
 		}
@@ -150,10 +116,7 @@ func (a *Application) clearData(ctx context.Context, log *slog.Logger) error {
 		log.Error("Failed to list profiles for clearing", "error", err)
 	} else {
 		for _, p := range profiles {
-			err := withRetry(ctx, log, func() error {
-				return a.Storage.DeleteProfile(ctx, p.GetName())
-			})
-			if err != nil {
+			if err := a.Storage.DeleteProfile(ctx, p.GetName()); err != nil {
 				log.Error("Failed to delete profile", "name", p.GetName(), "error", err)
 			}
 		}
@@ -165,10 +128,7 @@ func (a *Application) clearData(ctx context.Context, log *slog.Logger) error {
 		log.Error("Failed to list users for clearing", "error", err)
 	} else {
 		for _, u := range users {
-			err := withRetry(ctx, log, func() error {
-				return a.Storage.DeleteUser(ctx, u.GetId())
-			})
-			if err != nil {
+			if err := a.Storage.DeleteUser(ctx, u.GetId()); err != nil {
 				log.Error("Failed to delete user", "id", u.GetId(), "error", err)
 			}
 		}
@@ -180,10 +140,7 @@ func (a *Application) clearData(ctx context.Context, log *slog.Logger) error {
 		log.Error("Failed to list service templates for clearing", "error", err)
 	} else {
 		for _, t := range templates {
-			err := withRetry(ctx, log, func() error {
-				return a.Storage.DeleteServiceTemplate(ctx, t.GetId())
-			})
-			if err != nil {
+			if err := a.Storage.DeleteServiceTemplate(ctx, t.GetId()); err != nil {
 				log.Error("Failed to delete service template", "id", t.GetId(), "error", err)
 			}
 		}
@@ -198,10 +155,7 @@ func (a *Application) seedData(ctx context.Context, req SeedRequest) error {
 		if err := protojson.Unmarshal(raw, s); err != nil {
 			return fmt.Errorf("invalid json")
 		}
-		err := withRetry(ctx, logging.GetLogger(), func() error {
-			return a.Storage.SaveService(ctx, s)
-		})
-		if err != nil {
+		if err := a.Storage.SaveService(ctx, s); err != nil {
 			return fmt.Errorf("failed to save service %s: %w", s.GetName(), err)
 		}
 	}
@@ -210,10 +164,7 @@ func (a *Application) seedData(ctx context.Context, req SeedRequest) error {
 		if err := protojson.Unmarshal(raw, c); err != nil {
 			return fmt.Errorf("invalid json")
 		}
-		err := withRetry(ctx, logging.GetLogger(), func() error {
-			return a.Storage.SaveCredential(ctx, c)
-		})
-		if err != nil {
+		if err := a.Storage.SaveCredential(ctx, c); err != nil {
 			return fmt.Errorf("failed to save credential %s: %w", c.GetId(), err)
 		}
 	}
@@ -222,10 +173,7 @@ func (a *Application) seedData(ctx context.Context, req SeedRequest) error {
 		if err := protojson.Unmarshal(raw, s); err != nil {
 			return fmt.Errorf("invalid json")
 		}
-		err := withRetry(ctx, logging.GetLogger(), func() error {
-			return a.Storage.SaveSecret(ctx, s)
-		})
-		if err != nil {
+		if err := a.Storage.SaveSecret(ctx, s); err != nil {
 			return fmt.Errorf("failed to save secret %s: %w", s.GetId(), err)
 		}
 	}
@@ -234,10 +182,7 @@ func (a *Application) seedData(ctx context.Context, req SeedRequest) error {
 		if err := protojson.Unmarshal(raw, p); err != nil {
 			return fmt.Errorf("invalid json")
 		}
-		err := withRetry(ctx, logging.GetLogger(), func() error {
-			return a.Storage.SaveProfile(ctx, p)
-		})
-		if err != nil {
+		if err := a.Storage.SaveProfile(ctx, p); err != nil {
 			return fmt.Errorf("failed to save profile %s: %w", p.GetName(), err)
 		}
 	}
@@ -246,10 +191,7 @@ func (a *Application) seedData(ctx context.Context, req SeedRequest) error {
 		if err := protojson.Unmarshal(raw, u); err != nil {
 			return fmt.Errorf("invalid json")
 		}
-		err := withRetry(ctx, logging.GetLogger(), func() error {
-			return a.Storage.CreateUser(ctx, u)
-		})
-		if err != nil {
+		if err := a.Storage.CreateUser(ctx, u); err != nil {
 			return fmt.Errorf("failed to create user %s: %w", u.GetId(), err)
 		}
 	}
@@ -258,10 +200,7 @@ func (a *Application) seedData(ctx context.Context, req SeedRequest) error {
 		if err := protojson.Unmarshal(raw, t); err != nil {
 			return fmt.Errorf("invalid json")
 		}
-		err := withRetry(ctx, logging.GetLogger(), func() error {
-			return a.Storage.SaveServiceTemplate(ctx, t)
-		})
-		if err != nil {
+		if err := a.Storage.SaveServiceTemplate(ctx, t); err != nil {
 			return fmt.Errorf("failed to save service template %s: %w", t.GetId(), err)
 		}
 	}
