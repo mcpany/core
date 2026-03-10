@@ -37,7 +37,12 @@
 #### Upcoming (2026-03-09 Evolution)
 *   **[P0] Project Configuration Security Guard**: Validating proxy for project-local agent configs (e.g., `.claude/settings.json`) to prevent RCE. (Added: 2026-03-09)
 *   **[P0] Agent-Aware Blackboard Isolation**: Row-level security for Shared KV Store to prevent cross-agent state injection. (Added: 2026-03-09)
-*   **[P1] Detached Sandbox for Automated Hooks**: Isolated runtime for tool sequences with zero host access by default. (Added: 2026-03-09)
+*   **[P0] Detached Sandbox for Automated Hooks**: Isolated runtime for tool sequences with zero host access by default. (Added: 2026-03-09, Promoted: 2026-03-10)
+
+#### Upcoming (2026-03-10 Evolution)
+*   **[P0] Identity-Aware Tool Policy Engine**: JWT-based agent identity verification and role-scoped permissions. (Added: 2026-03-10)
+*   **[P0] Containerized Skill Execution**: Native support for ephemeral Docker/Podman sandboxing for all MCP servers. (Added: 2026-03-10)
+*   **[P1] Swarm Peer-Review Protocol**: Multi-agent cryptographic attestation flow for high-risk actions. (Added: 2026-03-10)
 
 ## 2. Top 10 Recommended Features
 

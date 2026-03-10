@@ -67,3 +67,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project Configuration Guard**: MCP Any will evolve into a "Validating Proxy" for all project-local agent configurations. It will intercept and sanitize any "auto-execute" or "hook" definitions before they reach the agent runtime, requiring explicit user attestation.
 - **Agent-Aware Blackboard Isolation**: The Shared KV Store (Blackboard) must implement mandatory "Agent-Bound" isolation. Data written by one agent will be read-only or invisible to others unless a specific "Shared Intent" is established.
 - **Zero-Trust Hook Execution**: Any executable hook or automated tool sequence must run in a "Detached Sandbox" managed by MCP Any, with zero access to the host filesystem unless explicitly granted via a capability-based token.
+
+---
+
+## Strategic Evolution: [2026-03-10]
+### Focus: Identity-Aware Tool Policies & Hardened Skill Attestation
+**Context**: Today's findings reveal a "Sociality Illusion" vulnerability where agents in a swarm can be socially engineered by malicious subagents to bypass local policies. Furthermore, "Poisoned Skills" in the OpenClaw ecosystem are actively targeting host environment variables.
+**Strategic Pivot**:
+- **Identity-Aware Authorization**: MCP Any will transition from "Global Policies" to "Identity-Bound Policies." Every tool call must be accompanied by a verifiable Agent Identity, and permissions will be scoped to that specific agent's role within the swarm.
+- **Ephemeral Skill Sandboxing**: Moving towards a "Container-First" execution model for all MCP servers. Tools will no longer run as bare processes on the host but in ephemeral, network-isolated sandboxes by default.
+- **Social Scope Validation**: Implementing a "Peer-Review" mechanism for high-risk tool calls where multiple agents in the swarm must attest to the necessity of a tool call before it is authorized, mitigating "Sociality Illusion" attacks.
