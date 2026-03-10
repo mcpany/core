@@ -49,3 +49,7 @@ As agents increasingly rely on project-local configuration files (e.g., `.claude
 
 ## 7. Evolutionary Changelog
 * **2026-03-09:** Initial Document Creation.
+* **2026-03-10:** **Strategic Update: Config Signed Provenance**.
+    * **Context**: Research into CVE-2026-24887 (Claude Code RCE) confirms that malicious repo-level settings are a primary infection vector.
+    * **Adjustment**: Adding **Mandatory Signature Verification** to the Analysis phase. Configurations in untrusted directories (e.g., just cloned from GitHub) will be blocked until the user cryptographically "Blesses" the configuration hash or a valid signature from a trusted contributor is found.
+    * **Impact**: Mitigates zero-click takeover from malicious repositories.

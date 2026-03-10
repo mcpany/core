@@ -59,3 +59,7 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+* **2026-03-10:** **Strategic Update: Origin-Aware Trust**.
+    * **Context**: The March 2026 OpenClaw vulnerability demonstrated that `localhost` binding alone is insufficient if a malicious website can trigger local agent calls via the browser.
+    * **Adjustment**: Section 4 updated to include **Origin-Aware Filtering**. All JSON-RPC requests over HTTP/WebSocket must include a valid `Origin` and `User-Agent` header matching a pre-approved list. Unrecognized origins will be blocked by default.
+    * **Impact**: Prevents CSRF-style hijacking of local agents by malicious websites.

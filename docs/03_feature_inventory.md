@@ -84,6 +84,15 @@
 - **Agent-Aware Blackboard Isolation**: (P0) Implements row-level security for the Shared KV Store, ensuring agents can only access state within their assigned "Intent Scope."
 - **Detached Sandbox for Automated Hooks**: (P1) Isolated execution environment for automated tool sequences, preventing unauthorized host access.
 
+---
+
+## Evolution: [2026-03-10] Updates
+
+### Proposed Additions
+- **Origin-Aware Connection Filtering**: (P0) Mandatory `Origin` and `User-Agent` verification for incoming JSON-RPC connections to prevent web-to-local agent hijacking.
+- **Signed Configuration Provenance**: (P0) Cryptographic signature validation for project-local configurations (e.g., `.claude/settings.json`) to prevent RCE from malicious repositories.
+- **Low-Latency Mesh Gossip (LLMG)**: (P1) Sub-100ms tool discovery across federated MCP Any meshes using a push-gossip protocol instead of polling.
+
 ### Priority Shifts
 - **Shared KV Store (Blackboard)**: Re-affirmed as **P0** with new mandatory security isolation requirements.
 - **Policy Firewall**: Promoted to **P0** (Already P0, but expanded to include "Project-Local Config Validation").

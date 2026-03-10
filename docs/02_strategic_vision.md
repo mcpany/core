@@ -67,3 +67,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project Configuration Guard**: MCP Any will evolve into a "Validating Proxy" for all project-local agent configurations. It will intercept and sanitize any "auto-execute" or "hook" definitions before they reach the agent runtime, requiring explicit user attestation.
 - **Agent-Aware Blackboard Isolation**: The Shared KV Store (Blackboard) must implement mandatory "Agent-Bound" isolation. Data written by one agent will be read-only or invisible to others unless a specific "Shared Intent" is established.
 - **Zero-Trust Hook Execution**: Any executable hook or automated tool sequence must run in a "Detached Sandbox" managed by MCP Any, with zero access to the host filesystem unless explicitly granted via a capability-based token.
+
+---
+
+## Strategic Evolution: [2026-03-10]
+### Focus: Origin-Aware Trust & Signed Configuration Integrity
+**Context**: Recent exploits in OpenClaw (Web-to-Local hijacking) and Claude Code (Config RCE via malicious repos) have shifted the "Safe-by-Default" requirement. It is no longer enough to just bind to `localhost`; we must now verify *who* on `localhost` is calling us and *what* configuration we are ingesting from untrusted repositories.
+**Strategic Pivot**:
+- **Origin-Aware Filtering**: MCP Any will implement mandatory `Origin` and `User-Agent` verification for all incoming JSON-RPC connections, preventing malicious websites from using a developer's browser as a proxy to local agents.
+- **Signed Configuration Provenance**: Moving beyond simple validation to a "Signed Config" model. Project-local configurations (e.g., `.claude/settings.json`) will be treated as untrusted unless they carry a cryptographic signature from a known collaborator or are explicitly "Blessed" by the user into a local trust store.
+- **Low-Latency Federated Discovery**: To support high-speed agentic swarms, MCP Any will transition its Federated Mesh from a polling-based discovery to a "Push-Gossip" protocol, ensuring tool availability is propagated in sub-100ms across the mesh.
