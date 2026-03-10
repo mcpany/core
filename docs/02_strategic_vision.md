@@ -67,3 +67,11 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project Configuration Guard**: MCP Any will evolve into a "Validating Proxy" for all project-local agent configurations. It will intercept and sanitize any "auto-execute" or "hook" definitions before they reach the agent runtime, requiring explicit user attestation.
 - **Agent-Aware Blackboard Isolation**: The Shared KV Store (Blackboard) must implement mandatory "Agent-Bound" isolation. Data written by one agent will be read-only or invisible to others unless a specific "Shared Intent" is established.
 - **Zero-Trust Hook Execution**: Any executable hook or automated tool sequence must run in a "Detached Sandbox" managed by MCP Any, with zero access to the host filesystem unless explicitly granted via a capability-based token.
+
+## Strategic Evolution: [2026-03-10]
+### Focus: Cross-Origin Hijacking Protection & Ecosystem Skill Interop
+**Context**: Today's findings reveal a critical hijacking vulnerability in OpenClaw caused by missing origin validation. Simultaneously, the market has standardized on `SKILL.md` for agent playbooks across Claude Code, Gemini CLI, and Cursor.
+**Strategic Pivot**:
+- **Strict Origin & Transport Security**: MCP Any will mandate cryptographic origin validation for all local connections. We will prioritize "Named Pipes" and "Authenticated Unix Domain Sockets" over standard Loopback HTTP to eliminate browser-based hijacking vectors.
+- **Skill-to-Tool Synthesis**: MCP Any will act as a bridge for the `SKILL.md` ecosystem, dynamically synthesizing MCP tool definitions from `.skill` directories. This allows any agent (even those without native skill support) to benefit from the universal playbook standard.
+- **Fail-Safe Session Residency**: Leveraging the Antigravity stability crisis, MCP Any will implement "Session Heartbeats" to ensure that tool state remains consistent even if the primary agent process crashes or restarts.

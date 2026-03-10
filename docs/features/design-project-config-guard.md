@@ -49,3 +49,6 @@ As agents increasingly rely on project-local configuration files (e.g., `.claude
 
 ## 7. Evolutionary Changelog
 * **2026-03-09:** Initial Document Creation.
+* **2026-03-10:** Update: Origin Validation Integration.
+    * **Context**: OpenClaw hijacking vulnerability revealed that file-based configs are not the only vector; the transport itself must be secured.
+    * **Adjustment**: The Config Guard now mandates that any `.claude/settings.json` or equivalent file that defines "Remote Hooks" must also specify an `allowed_origins` list, which MCP Any will enforce at the transport layer.

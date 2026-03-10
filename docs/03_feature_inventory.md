@@ -83,6 +83,8 @@
 - **Project Configuration Security Guard**: (P0) Validating proxy for project-local agent configurations (e.g., `.claude/settings.json`) to prevent RCE via malicious hooks.
 - **Agent-Aware Blackboard Isolation**: (P0) Implements row-level security for the Shared KV Store, ensuring agents can only access state within their assigned "Intent Scope."
 - **Detached Sandbox for Automated Hooks**: (P1) Isolated execution environment for automated tool sequences, preventing unauthorized host access.
+- **SKILL.md Interop Bridge**: (P1) Synthesizes MCP tool definitions from the universal `SKILL.md` playbook format.
+- **Strict Origin Validation Layer**: (P0) Mandatory authentication and origin checks for all local API/Socket connections to prevent browser-based hijacking.
 
 ### Priority Shifts
 - **Shared KV Store (Blackboard)**: Re-affirmed as **P0** with new mandatory security isolation requirements.
