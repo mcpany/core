@@ -49,3 +49,9 @@ As agents increasingly rely on project-local configuration files (e.g., `.claude
 
 ## 7. Evolutionary Changelog
 * **2026-03-09:** Initial Document Creation.
+* **2026-03-10: Mitigating Confused Deputy Hooks**
+    * **Context**: Research indicates that malicious hooks can be used to perform "Confused Deputy" attacks where a trusted agent executes harmful commands under the guise of project setup.
+    * **Architecture Adjustment**:
+        * Hooks must now include a `required_intent` field.
+        * MCP Any will verify that the current session's `Intent Scope` matches the hook's required intent before execution.
+        * Added a "Dry Run & Explain" step for hooks, where an internal LLM explains the side effects of a hook to the user before they attest to it.

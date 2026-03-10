@@ -90,3 +90,19 @@
 
 ### Deprecations / Monitoring
 - **Unvalidated Project-Local Configs**: Monitoring for total deprecation. All local configs must be attested via MCP Any before ingestion by agents.
+
+---
+
+## Evolution: [2026-03-10] Updates
+
+### Proposed Additions
+- **Memory Integrity Scanner (Immune System)**: (P0) Heuristic and LLM-based scanner for the Shared KV Store to detect memory poisoning or unauthorized state manipulation.
+- **Confused Deputy Guard**: (P0) Intent-aware validation middleware that ensures tool calls align with human-attested session goals.
+- **Encrypted Local Persistence**: (P1) Standardized, encrypted SQLite backend for all internal agent state and conversation history.
+
+### Priority Shifts
+- **Project Configuration Security Guard**: Re-affirmed as **P0**. Critical for preventing RCE via malicious project hooks.
+- **Detached Sandbox for Automated Hooks**: Promoted to **P0**. Essential for safe execution of attested hooks.
+
+### Deprecations / Monitoring
+- **Non-Encrypted Local State**: Monitoring for deprecation. All persistent agent state must be encrypted by default to ensure privacy and integrity.

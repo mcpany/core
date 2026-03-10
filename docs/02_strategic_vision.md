@@ -67,3 +67,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project Configuration Guard**: MCP Any will evolve into a "Validating Proxy" for all project-local agent configurations. It will intercept and sanitize any "auto-execute" or "hook" definitions before they reach the agent runtime, requiring explicit user attestation.
 - **Agent-Aware Blackboard Isolation**: The Shared KV Store (Blackboard) must implement mandatory "Agent-Bound" isolation. Data written by one agent will be read-only or invisible to others unless a specific "Shared Intent" is established.
 - **Zero-Trust Hook Execution**: Any executable hook or automated tool sequence must run in a "Detached Sandbox" managed by MCP Any, with zero access to the host filesystem unless explicitly granted via a capability-based token.
+
+---
+
+## Strategic Evolution: [2026-03-10]
+### Focus: Memory Integrity & Confused Deputy Mitigation
+**Context**: The industry is shifting from passive chat to autonomous agents that manage their own state (Memory) and act on enterprise infrastructure. Today's research highlights "Memory Poisoning" and the "Confused Deputy" problem as the primary threats to agentic swarms.
+**Strategic Pivot**:
+- **Immune-System Memory Architecture**: MCP Any will introduce active "Integrity Scanning" for the Shared KV Store (Blackboard). It will use heuristic and LLM-based "Immune Response" to flag and quarantine suspicious state changes that deviate from established agent behavior patterns.
+- **Confused Deputy Guard**: Implementing "High-Level Intent Validation." MCP Any will not only check if an agent has permission to call a tool, but will also verify if the tool call aligns with the high-level, human-attested task assigned to the session.
+- **Local-First Persistence Standard**: MCP Any will standardize its internal state management on an encrypted, locally-stored SQLite backend, aligning with the privacy-first shift seen in tools like OpenCode and ensuring zero-knowledge persistence for sensitive agent conversations.

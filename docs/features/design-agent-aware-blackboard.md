@@ -47,3 +47,10 @@ The `Shared KV Store` (Blackboard) is a core tool in MCP Any that allows multipl
 
 ## 7. Evolutionary Changelog
 * **2026-03-09:** Initial Document Creation.
+* **2026-03-10 - Memory Integrity Scanning**
+    * **Context**: Memory poisoning has been identified as a critical risk for long-running agent sessions.
+    * **Architecture Adjustment**:
+        * Introducing the `Immune System Middleware` for the Blackboard.
+        * Every `set` operation now triggers an asynchronous integrity check.
+        * If a write deviates significantly from the session's historical "State Schema" or "Intent Path," it is flagged for manual review or automatically quarantined.
+        * Added `Blackboard.verify(key)` tool for agents to self-audit critical state.
