@@ -439,7 +439,7 @@ func (a *Application) Run(opts RunOptions) error {
 	stores = append(stores, storageStore)
 
 	enableFileConfig := os.Getenv("MCPANY_ENABLE_FILE_CONFIG") == "true"
-	if len(opts.ConfigPaths) > 0 {
+	if (enableFileConfig || len(opts.ConfigPaths) > 0) && len(opts.ConfigPaths) > 0 {
 		// Always load config files if they are explicitly provided
 		log.Info("Loading config from files (overrides database)", "paths", opts.ConfigPaths)
 		stores = append(stores, config.NewFileStore(fs, opts.ConfigPaths))
@@ -992,7 +992,7 @@ func (a *Application) loadConfig(ctx context.Context, fs afero.Fs, configPaths [
 	}
 
 	enableFileConfig := os.Getenv("MCPANY_ENABLE_FILE_CONFIG") == "true"
-	if enableFileConfig && len(configPaths) > 0 {
+	if (enableFileConfig || len(configPaths) > 0) && len(configPaths) > 0 {
 		stores = append(stores, config.NewFileStore(fs, configPaths))
 	}
 
