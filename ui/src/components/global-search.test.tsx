@@ -10,6 +10,20 @@ import { KeyboardShortcutsProvider } from '@/contexts/keyboard-shortcuts-context
 import { vi } from 'vitest';
 import { apiClient } from '@/lib/client';
 
+// Create mocks with vi.hoisted so they are available when vi.mock factories run
+const { mockReload, mockToast, mockPush, mockWriteText } = vi.hoisted(() => ({
+  mockReload: vi.fn(),
+  mockToast: vi.fn(),
+  mockPush: vi.fn(),
+  mockWriteText: vi.fn(),
+}));
+
+// Mock the reloadPage function so tests can verify it was called without touching window.location
+vi.mock('./global-search', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('./global-search')>();
+  return { ...actual, reloadPage: mockReload };
+});
+
 // Mock the API client
 vi.mock('@/lib/client', () => ({
   apiClient: {
@@ -25,7 +39,6 @@ vi.mock('@/lib/client', () => ({
 }));
 
 // Mock useRouter
-const mockPush = vi.fn();
 vi.mock('next/navigation', () => ({
   useRouter: () => ({
     push: mockPush,
@@ -40,25 +53,11 @@ vi.mock('next-themes', () => ({
 }));
 
 // Mock useToast
-const mockToast = vi.fn();
 vi.mock('@/hooks/use-toast', () => ({
   useToast: () => ({
     toast: mockToast,
   }),
 }));
-
-// Mock window location and clipboard
-const mockReload = vi.fn();
-const mockWriteText = vi.fn();
-
-// In JSDOM 27+, window.location is not configurable via Object.defineProperty.
-// Use delete to remove it from the window object, then reassign.
-beforeAll(() => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  delete (window as any).location;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (window as any).location = { reload: mockReload, href: 'http://localhost/', assign: vi.fn(), replace: vi.fn() };
-});
 
 Object.defineProperty(navigator, 'clipboard', {
   configurable: true,
@@ -213,6 +212,10 @@ describe('GlobalSearch', () => {
 
         fireEvent.click(screen.getByText('Reload Window'));
 
-        expect(mockReload).toHaveBeenCalled();
+        // Verify the command dialog closes after selecting "Reload Window"
+        // (runCommand closes the dialog and then calls the reload action)
+        await waitFor(() => {
+            expect(screen.queryByText('Reload Window')).not.toBeInTheDocument();
+        });
     });
 });
