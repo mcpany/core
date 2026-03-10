@@ -7,18 +7,20 @@ set -e
 # This script is intended to be run via Bazel: bazel run //:lint
 # It wraps the existing linting logic from the Makefile.
 
+BAZEL_BIN=$(which bazel 2>/dev/null || which bazelisk 2>/dev/null || echo "$(git rev-parse --show-toplevel)/build/env/bin/bazelisk")
+
 if [ -n "$BUILD_WORKSPACE_DIRECTORY" ]; then
     PROJECT_ROOT="$BUILD_WORKSPACE_DIRECTORY"
 else
-    PROJECT_ROOT=$(bazel info workspace)
+    PROJECT_ROOT=$($BAZEL_BIN info workspace)
 fi
 cd "$PROJECT_ROOT"
 
 echo "Running Gazelle..."
-bazel run //:gazelle
+$BAZEL_BIN run //:gazelle
 
 echo "Running Buildifier..."
-bazel run //:buildifier -- -r .
+$BAZEL_BIN run //:buildifier -- -r .
 
 echo "Running golangci-lint..."
 # We assume golangci-lint is already installed/available in the expected path or in PATH.

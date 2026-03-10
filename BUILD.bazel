@@ -82,15 +82,6 @@ go_binary(
     visibility = ["//visibility:public"],
 )
 
-sh_binary(
-    name = "lint",
-    srcs = ["scripts/lint.sh"],
-    data = [
-        "//server:go.mod",
-        "//server:go.sum",
-    ],
-)
-
 alias(
     name = "buildifier",
     actual = "@buildifier_prebuilt//:buildifier",

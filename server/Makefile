@@ -483,7 +483,7 @@ lint:
 ifdef SHOULD_PROXY_TO_DOCKER
 	@$(DOCKER_PROXY_CMD) lint
 else
-	@$(BAZELISK) run //:lint
+	@bash ../scripts/lint.sh
 endif
 
 clean-pre-commit:
