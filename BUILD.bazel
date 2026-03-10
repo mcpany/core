@@ -69,21 +69,6 @@ gazelle(
     command = "update-repos",
 )
 
-load("@rules_go//go:def.bzl", "go_binary", "go_library")
-
-go_library(
-    name = "core_lib",
-    srcs = [],
-    importpath = "github.com/mcpany/core",
-    visibility = ["//visibility:private"],
-)
-
-go_binary(
-    name = "core",
-    embed = [":core_lib"],
-    visibility = ["//visibility:public"],
-)
-
 sh_binary(
     name = "lint",
     srcs = ["scripts/lint.sh"],
