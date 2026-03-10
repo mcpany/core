@@ -1,3 +1,6 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
 # Design Doc: Multi-Agent Coordination System
 **Status:** Draft
 **Created:** 2026-02-24
