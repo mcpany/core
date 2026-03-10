@@ -1,9 +1,9 @@
 # Copyright 2026 Author(s) of MCP Any
 # SPDX-License-Identifier: Apache-2.0
 
+load("@protobuf//bazel:proto_library.bzl", "proto_library")
 load("@rules_go//go:def.bzl", "go_library")
 load("@rules_go//proto:def.bzl", "go_proto_library")
-load("@protobuf//bazel:proto_library.bzl", "proto_library")
 
 proto_library(
     name = "v1_proto",
@@ -15,23 +15,20 @@ proto_library(
     visibility = ["//visibility:public"],
     deps = [
         "//proto/config/v1:v1_proto",
-        "@protobuf//:go_features_proto",
         "@googleapis//google/api:annotations_proto",
+        "@protobuf//:go_features_proto",
     ],
 )
 
 go_proto_library(
     name = "v1_go_proto",
-    compilers = [
-        "@rules_go//proto:go_proto",
-        "@rules_go//proto:go_grpc_v2",
-    ],
+    compilers = ["@rules_go//proto:go_grpc_v2"],
     importpath = "github.com/mcpany/core/proto/api/v1",
     proto = ":v1_proto",
     visibility = ["//visibility:public"],
     deps = [
         "//proto/config/v1:config",
-        "@org_golang_google_genproto_googleapis_api//annotations",
+        "@googleapis//google/api:annotations_go_proto",
         "@org_golang_google_protobuf//types/gofeaturespb",
     ],
 )
