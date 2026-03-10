@@ -1,3 +1,6 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
 # Design Doc: Agent Cost-Control Middleware
 **Status:** Draft
 **Created:** 2026-03-09
