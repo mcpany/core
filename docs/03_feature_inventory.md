@@ -90,3 +90,19 @@
 
 ### Deprecations / Monitoring
 - **Unvalidated Project-Local Configs**: Monitoring for total deprecation. All local configs must be attested via MCP Any before ingestion by agents.
+
+---
+
+## Evolution: [2026-03-10] Updates
+
+### Proposed Additions
+- **Universal SKILL.md Interop Layer**: (P0) Native parser and executor for `SKILL.md` files. Translates templates and commands into standardized MCP tools.
+- **Survivability Heartbeat Middleware**: (P0) Real-time monitoring of agent tool calls against high-level safety invariants. Includes automatic session suspension/termination.
+- **Verified Skill Registry**: (P1) A decentralized registry for attested `SKILL.md` packages with cryptographic provenance verification.
+
+### Priority Shifts
+- **Project Configuration Security Guard**: Re-affirmed as **P0** and expanded to include `SKILL.md` validation.
+- **Policy Firewall**: Promoted to **P0** (Already P0, but adding "Safety Invariant Enforcement" as a core requirement).
+
+### Deprecations / Monitoring
+- **Non-Attested Project Skills**: Moving towards a "Quarantine-by-Default" model for any `SKILL.md` or configuration found in untrusted project directories.

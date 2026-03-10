@@ -67,3 +67,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project Configuration Guard**: MCP Any will evolve into a "Validating Proxy" for all project-local agent configurations. It will intercept and sanitize any "auto-execute" or "hook" definitions before they reach the agent runtime, requiring explicit user attestation.
 - **Agent-Aware Blackboard Isolation**: The Shared KV Store (Blackboard) must implement mandatory "Agent-Bound" isolation. Data written by one agent will be read-only or invisible to others unless a specific "Shared Intent" is established.
 - **Zero-Trust Hook Execution**: Any executable hook or automated tool sequence must run in a "Detached Sandbox" managed by MCP Any, with zero access to the host filesystem unless explicitly granted via a capability-based token.
+
+---
+
+## Strategic Evolution: [2026-03-10]
+### Focus: Universal Skill Interoperability & Survivability Certification
+**Context**: The emergence of the `SKILL.md` standard as a cross-framework capability layer (Claude Code, Gemini CLI, Cursor) and the devastating OpenClaw RCE crisis (CVE-2026-25253) have redefined the requirements for agent infrastructure. MCP Any must now pivot to be both a "Universal Skill Bridge" and a "Survivability Sentinel."
+**Strategic Pivot**:
+- **SKILL.md Native Bridge**: MCP Any will natively ingest and translate `SKILL.md` definitions into executable MCP toolsets. This allows any agent connected via MCP Any to benefit from the global "Vibe Coding" skill ecosystem without framework-specific lock-in.
+- **Survivability Heartbeats & Invariants**: Moving beyond passive audit logs to active "Invariant Monitoring." MCP Any will enforce real-time "Safety Heartbeats" where an agent session is terminated or suspended if it attempts to violate high-level safety invariants (e.g., "Never modify `.ssh/`", "Never exfiltrate data to unverified domains").
+- **Supply Chain Attestation for Skills**: Implementing a "Verified Skill" registry. Skills sourced from project-local directories will be quarantined and require explicit user attestation (HITL) before their templates or commands are allowed to influence the agent's reasoning.

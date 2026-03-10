@@ -15,6 +15,9 @@
 - [ ] **[P0] Stateful A2A Mailbox**: UI for viewing queued and delivered A2A messages across the agent mesh. (Added: 2026-02-28)
 - [ ] **[P0] Project Config Attestation Dashboard**: UI for reviewing and approving project-local configuration blocks (hooks/auto-execute). (Added: 2026-03-09)
 - [ ] **[P0] Blackboard Isolation Inspector**: Visualize and debug Agent-Bound Blackboard data across different "Intent Scopes." (Added: 2026-03-09)
+- [ ] **[P0] SKILL.md Bridge Dashboard**: UI for managing and previewing `SKILL.md` library and its translation status. (Added: 2026-03-10)
+- [ ] **[P0] Survivability Heartbeat Monitor**: Real-time status board for safety invariant enforcement and session health. (Added: 2026-03-10)
+- [ ] **[P1] Skill Attestation Viewer**: UI for reviewing and cryptographically verifying the provenance of third-party agent skills. (Added: 2026-03-10)
 - [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
 - [x] **[P1] Tool Playground & Explorer**:
   - [x] Auto-generated forms from Tool JSON Schemas.

@@ -47,3 +47,9 @@ The `Shared KV Store` (Blackboard) is a core tool in MCP Any that allows multipl
 
 ## 7. Evolutionary Changelog
 * **2026-03-09:** Initial Document Creation.
+* **2026-03-10:** **Hardening with Survivability Invariants**.
+    * **Context**: Security findings suggest that simple row-level isolation is insufficient if an agent is coerced into "Data Dumping" its own state.
+    * **Architecture Adjustment**:
+        * Introducing "Survivability Invariants" for Blackboard access.
+        * Adding a "Rate-Limit by Intent" policy to prevent rapid state exfiltration.
+        * Implementing "Transient-Only" keys that automatically expire after a session ends, reducing the surface area for long-term state injection.

@@ -49,3 +49,9 @@ As agents increasingly rely on project-local configuration files (e.g., `.claude
 
 ## 7. Evolutionary Changelog
 * **2026-03-09:** Initial Document Creation.
+* **2026-03-10:** **Expanding to SKILL.md and Mitigating OpenClaw Exploits**.
+    * **Context**: The OpenClaw crisis (CVE-2026-25253) demonstrated how unvalidated UI parameters and project configs can lead to RCE. Simultaneously, `SKILL.md` has emerged as a universal standard for agent playbooks.
+    * **Architecture Adjustment**:
+        * Expanding the `Config Validator` to include native `SKILL.md` parsing.
+        * Implementing "Quarantine-by-Default" for any skill or config discovered in a non-attested directory.
+        * Adding mandatory hash-verification for known safe `SKILL.md` templates.
