@@ -1,12 +1,17 @@
 # Copyright 2026 Author(s) of MCP Any
 # SPDX-License-Identifier: Apache-2.0
 
-load("@aspect_bazel_lib//lib:directory_path.bzl", "directory_path")
 load("@protobuf//bazel:proto_library.bzl", "proto_library")
-load("@aspect_rules_js//js:defs.bzl", "js_binary", "js_library")
 load("@rules_go//go:def.bzl", "go_library")
 load("@rules_go//proto:def.bzl", "go_proto_library")
-load("@aspect_rules_ts//ts/private:ts_proto_library.bzl", ts_proto_library_rule = "ts_proto_library")
+load("@aspect_rules_js//js:defs.bzl", "js_library")
+load("@aspect_rules_ts//ts:proto.bzl", "ts_proto_library")
+
+js_library(
+    name = "ts_decls",
+    srcs = glob(["*.d.ts"], allow_empty = True),
+    visibility = ["//visibility:public"],
+)
 
 proto_library(
     name = "v1_proto",
@@ -36,43 +41,11 @@ proto_library(
     ],
 )
 
-directory_path(
-    name = "_v1_ts_proto.gen_es__entry_point",
-    tags = ["manual"],
-    directory = "//ui:node_modules/@bufbuild/protoc-gen-es/dir",
-    path = "bin/protoc-gen-es",
-)
-
-js_binary(
-    name = "_v1_ts_proto.gen_es",
-    data = ["//ui:node_modules/@bufbuild/protoc-gen-es"],
-    entry_point = ":_v1_ts_proto.gen_es__entry_point",
-)
-
-directory_path(
-    name = "_v1_ts_proto.gen_connect_es__entry_point",
-    tags = ["manual"],
-    directory = "//ui:node_modules/@connectrpc/protoc-gen-connect-es/dir",
-    path = "bin/protoc-gen-connect-es",
-)
-
-js_binary(
-    name = "_v1_ts_proto.gen_connect_es",
-    data = ["//ui:node_modules/@connectrpc/protoc-gen-connect-es"],
-    entry_point = ":_v1_ts_proto.gen_connect_es__entry_point",
-)
-
-ts_proto_library_rule(
-    name = "_v1_ts_proto_protoc",
-    proto = ":v1_proto",
-    protoc_gen_connect_es = ":_v1_ts_proto.gen_connect_es",
-    protoc_gen_es = ":_v1_ts_proto.gen_es",
-)
-
-js_library(
+ts_proto_library(
     name = "v1_ts_proto",
-    srcs = [":_v1_ts_proto_protoc"],
-    deps = ["//ui:node_modules/@bufbuild/protobuf"],
+    node_modules = "//ui:node_modules",
+    proto = ":v1_proto",
+    copy_files = False,
     visibility = ["//visibility:public"],
 )
 
