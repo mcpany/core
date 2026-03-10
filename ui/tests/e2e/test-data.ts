@@ -213,7 +213,7 @@ export const seedServices = async (requestContext?: APIRequestContext) => {
     await seedGlobalState(requestContext);
 };
 
-export const seedUser = async (requestContext: APIRequestContext | undefined, username: string) => {
+export const seedUser = async (requestContext?: APIRequestContext, username?: string) => {
     // We create a specific user if requested, in addition to the core user.
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     const user = {
@@ -245,7 +245,7 @@ export const cleanupServices = async (requestContext?: APIRequestContext) => {
     // No-op
 };
 
-export const cleanupUser = async (requestContext: APIRequestContext | undefined, username: string) => {
+export const cleanupUser = async (requestContext?: APIRequestContext, username?: string) => {
     // No-op
 };
 
@@ -270,5 +270,13 @@ export const seedCollection = async (requestContext?: APIRequestContext) => {
 };
 
 export const cleanupCollection = async (requestContext?: APIRequestContext) => {
+    // No-op
+};
+
+export const seedWebhooks = async (requestContext?: APIRequestContext) => {
+    // No-op
+};
+
+export const cleanupWebhooks = async (requestContext?: APIRequestContext) => {
     // No-op
 };
