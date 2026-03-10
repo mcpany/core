@@ -39,6 +39,12 @@
 *   **[P0] Agent-Aware Blackboard Isolation**: Row-level security for Shared KV Store to prevent cross-agent state injection. (Added: 2026-03-09)
 *   **[P1] Detached Sandbox for Automated Hooks**: Isolated runtime for tool sequences with zero host access by default. (Added: 2026-03-09)
 
+#### Upcoming (2026-03-10 Evolution)
+*   **[P0] Swarm Attestation Headers**: Standardized cryptographic chain-of-custody for tool calls in decentralized swarms. (Added: 2026-03-10)
+*   **[P0] Ephemeral Policy Engine**: JIT-compiled policy runtime for dynamic, LLM-generated tool schemas. (Added: 2026-03-10)
+*   **[P1] Context Integrity Firewall**: Sanitization of subagent responses to prevent "Recursive Context Poisoning." (Added: 2026-03-10)
+*   **[P1] Decentralized Discovery Validator**: Validating proxy for tools advertised via decentralized discovery protocols. (Added: 2026-03-10)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

@@ -90,3 +90,17 @@
 
 ### Deprecations / Monitoring
 - **Unvalidated Project-Local Configs**: Monitoring for total deprecation. All local configs must be attested via MCP Any before ingestion by agents.
+
+---
+
+## Evolution: [2026-03-10] Updates
+
+### Proposed Additions
+- **Swarm Attestation Headers**: (P0) Cryptographic chain-of-custody headers for tool calls, ensuring every subagent action is authorized by the root orchestrator.
+- **Ephemeral Policy Engine**: (P0) JIT-compiled policy runtime for evaluating dynamic, LLM-generated tool schemas without latency penalties.
+- **Context Integrity Firewall**: (P1) Sanitization layer for subagent responses to prevent "Recursive Context Poisoning."
+- **Decentralized Discovery Validator**: (P1) Proxy layer to validate and sanitize tools advertised via decentralized discovery protocols (e.g., OpenClaw Swarm v2).
+
+### Priority Shifts
+- **Detached Sandbox for Automated Hooks**: Promoted to **P0** due to the rise of ephemeral, LLM-generated tools.
+- **MCP Provenance Attestation**: Promoted to **P0** (Already P0, but expanded to include Attestation Headers).

@@ -67,3 +67,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project Configuration Guard**: MCP Any will evolve into a "Validating Proxy" for all project-local agent configurations. It will intercept and sanitize any "auto-execute" or "hook" definitions before they reach the agent runtime, requiring explicit user attestation.
 - **Agent-Aware Blackboard Isolation**: The Shared KV Store (Blackboard) must implement mandatory "Agent-Bound" isolation. Data written by one agent will be read-only or invisible to others unless a specific "Shared Intent" is established.
 - **Zero-Trust Hook Execution**: Any executable hook or automated tool sequence must run in a "Detached Sandbox" managed by MCP Any, with zero access to the host filesystem unless explicitly granted via a capability-based token.
+
+---
+
+## Strategic Evolution: [2026-03-10]
+### Focus: Ephemeral Policy Enforcement & Multi-Agent Attestation
+**Context**: Today's findings show a shift towards "Shadow MCP" (decentralized tool discovery) and "Ephemeral Tooling" (runtime-defined tools). Traditional static policy models are failing to keep up with the dynamic nature of agent swarms. Additionally, "Recursive Context Poisoning" has emerged as a critical vulnerability.
+**Strategic Pivot**:
+- **Ephemeral Policy Runtime**: MCP Any must implement a high-performance, JIT-compiled policy engine that can evaluate dynamic tool schemas and runtime-defined instructions without introducing latency.
+- **Attestation Headers for Swarms**: Standardizing a cryptographic "Chain of Custody" for tool calls. Every tool call must carry an attestation header that proves it was authorized by the root orchestrator, preventing unauthorized "Shadow" calls.
+- **Context Integrity Guard**: Implementing a "Context Firewall" that sanitizes subagent responses before they are ingested by the parent agent, specifically targeting "Recursive Context Poisoning" patterns.
+- **Decentralized Discovery Sanitizer**: Acting as a "Validating Proxy" for decentralized tool advertisements. MCP Any will intercept and verify any tool advertised within a swarm before allowing agents to interact with it.
