@@ -47,3 +47,11 @@ The `Shared KV Store` (Blackboard) is a core tool in MCP Any that allows multipl
 
 ## 7. Evolutionary Changelog
 * **2026-03-09:** Initial Document Creation.
+* **2026-03-10: Autonomous Security Profiles**
+    * **Context**: Research into OpenClaw highlights the need for a "Security vs. Flexibility" toggle in local autonomous execution.
+    * **Evolution**:
+        * **Security Profiles**: The Blackboard now supports selectable security profiles:
+            * `Strict`: Mandatory `IntentScope` isolation. Cross-agent reads are blocked.
+            * `Collaborative`: Default sharing within the same `SessionID`.
+            * `Autonomous (OpenClaw)`: Allows raw system-state access for attested local agents.
+        * **Attested State Writing**: Agents in `Autonomous` mode must provide a cryptographic signature of their tool definition to perform system-level writes to the Blackboard.

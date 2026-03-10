@@ -49,3 +49,9 @@ As agents increasingly rely on project-local configuration files (e.g., `.claude
 
 ## 7. Evolutionary Changelog
 * **2026-03-09:** Initial Document Creation.
+* **2026-03-10: Layered Merging & Shell Wildcards**
+    * **Context**: Research into Claude Code reveals a layered configuration model (`.settings.json` vs `.local.json`) and granular shell wildcards.
+    * **Evolution**:
+        * **Prioritized Merging**: The `Config Validator` now implements a 3-tier merging strategy: Global User Settings < Committed Project Settings < Local Gitignored Overrides.
+        * **Shell Wildcard Engine**: The Policy Engine is updated to support wildcard matching for `Bash()` and `Command()` hooks (e.g., `Bash(git checkout *)` matches any checkout but blocks other git commands).
+        * **Settings Poisoning Protection**: Any change to the "Committed" project layer (e.g., via a git pull) triggers a mandatory re-attestation if it modifies executable hooks.

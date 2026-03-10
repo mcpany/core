@@ -67,3 +67,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project Configuration Guard**: MCP Any will evolve into a "Validating Proxy" for all project-local agent configurations. It will intercept and sanitize any "auto-execute" or "hook" definitions before they reach the agent runtime, requiring explicit user attestation.
 - **Agent-Aware Blackboard Isolation**: The Shared KV Store (Blackboard) must implement mandatory "Agent-Bound" isolation. Data written by one agent will be read-only or invisible to others unless a specific "Shared Intent" is established.
 - **Zero-Trust Hook Execution**: Any executable hook or automated tool sequence must run in a "Detached Sandbox" managed by MCP Any, with zero access to the host filesystem unless explicitly granted via a capability-based token.
+
+---
+
+## Strategic Evolution: [2026-03-10]
+### Focus: Layered Configuration Security & Inter-Framework Compliance
+**Context**: Research into Claude Code's security model and OpenClaw's local execution trade-offs highlights a critical need for standardized configuration layering. Malicious project-local settings (`.claude/settings.json`) are a major RCE vector, while OpenClaw's raw power requires a bridge to Zero-Trust policies.
+**Strategic Pivot**:
+- **Layered Config Merging**: MCP Any will implement a prioritized merging strategy (Global < Project < Local Override) for all agent configurations, mirroring the Claude Code standard to prevent settings poisoning.
+- **Shell-Command Wildcarding**: The Policy Engine must natively support wildcard patterns for executable tools (e.g., `Bash(git *)`), enabling granular, "low-friction" allow-lists that maintain high security.
+- **Inter-Framework Security Profiles**: Providing pre-vetted security "profiles" that allow MCP Any to act as a compliance layer for disparate frameworks (e.g., ensuring an OpenClaw subagent adheres to the same Zero-Trust standards as a cloud-hosted Claude subagent).

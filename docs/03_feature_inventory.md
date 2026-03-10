@@ -90,3 +90,19 @@
 
 ### Deprecations / Monitoring
 - **Unvalidated Project-Local Configs**: Monitoring for total deprecation. All local configs must be attested via MCP Any before ingestion by agents.
+
+---
+
+## Evolution: [2026-03-10] Updates
+
+### Proposed Additions
+- **Layered Configuration Merging Engine**: (P0) Implements the standard prioritized merging (Global < Committed < Local) for agent configuration files to prevent settings poisoning.
+- **Shell-Command Wildcard Validator**: (P0) Native support in the Policy Firewall for wildcard-based executable allow-lists (e.g., `Bash(npm *)`).
+- **Framework-Specific Security Profiles**: (P1) Pre-defined, "One-Click" security templates for OpenClaw, Claude Code, and AutoGen to ensure inter-framework policy compliance.
+
+### Priority Shifts
+- **Project Configuration Security Guard**: Re-affirmed as **P0**. Complexity increased due to layered merging requirements.
+- **Policy Firewall**: Expanded to include **Wildcard Pattern Matching** for all executable tool hooks.
+
+### Deprecations / Monitoring
+- **Flat Configuration Models**: Monitoring for deprecation in favor of layered, prioritized configuration merging.
