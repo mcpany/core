@@ -39,6 +39,11 @@
 *   **[P0] Agent-Aware Blackboard Isolation**: Row-level security for Shared KV Store to prevent cross-agent state injection. (Added: 2026-03-09)
 *   **[P1] Detached Sandbox for Automated Hooks**: Isolated runtime for tool sequences with zero host access by default. (Added: 2026-03-09)
 
+#### Upcoming (2026-03-10 Evolution)
+*   **[P0] Cryptographic Agent Attestation (CAA)**: Identity registry and Ed25519 signature verification for all tool/state operations. (Added: 2026-03-10)
+*   **[P0] Atomic Handoff Protocol (AHP)**: Secure state-transfer handshake for multi-agent coordination. (Added: 2026-03-10)
+*   **[P1] Ephemeral Micro-Container Sandbox**: Just-in-time isolated execution environments for tool calls. (Added: 2026-03-10)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

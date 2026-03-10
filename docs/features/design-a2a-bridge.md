@@ -46,3 +46,7 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-03-10:** **Strategic Update - Mandatory Attestation**.
+    *   **Context**: Identity spoofing in swarms necessitates stronger verification.
+    *   **Architecture Adjustment**: Integrating `Cryptographic Agent Attestation (CAA)` into the bridge. All A2A messages must now be signed by the originating agent.
+    *   **Security Impact**: Prevents "Man-in-the-Middle" agent spoofing where one agent intercepts and modifies another's task delegation.

@@ -90,3 +90,16 @@
 
 ### Deprecations / Monitoring
 - **Unvalidated Project-Local Configs**: Monitoring for total deprecation. All local configs must be attested via MCP Any before ingestion by agents.
+
+---
+
+## Evolution: [2026-03-10] Updates
+
+### Proposed Additions
+- **Cryptographic Agent Attestation (CAA)**: (P0) Implements a registry and verification layer for agent identities. Every tool call must be signed.
+- **Atomic Handoff Middleware (AHP)**: (P0) A protocol for "State Handshakes" during agent-to-agent task transfers to prevent state corruption.
+- **Ephemeral Micro-Container Sandbox**: (P1) Just-in-time containerization for tool execution, ensuring zero-residual state.
+
+### Priority Shifts
+- **A2A Interop Bridge**: Re-affirmed as **P0**. Now requires CAA for all inter-agent messages.
+- **Shared KV Store (Blackboard)**: Re-affirmed as **P0**. Integrating AHP to ensure atomic updates during handoffs.

@@ -47,3 +47,9 @@ The `Shared KV Store` (Blackboard) is a core tool in MCP Any that allows multipl
 
 ## 7. Evolutionary Changelog
 * **2026-03-09:** Initial Document Creation.
+* **2026-03-10:** **Strategic Update - Atomic Handoffs & CAA Integration**.
+    *   **Context**: Handoff friction and identity spoofing (CVE-2026-AGENT-01) detected in OpenClaw swarms.
+    *   **Architecture Adjustment**:
+        *   Implementing **Atomic Handoff Protocol (AHP)**: Blackboard keys can now be "locked" during an agent handoff, ensuring only the new owner can write.
+        *   Mandatory **CAA Verification**: `AgentID` in the Blackboard RLS is now verified via cryptographic signature, not just headers.
+    *   **Security Impact**: Eliminates identity spoofing and ensures state consistency during high-frequency agent transitions.

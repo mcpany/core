@@ -67,3 +67,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project Configuration Guard**: MCP Any will evolve into a "Validating Proxy" for all project-local agent configurations. It will intercept and sanitize any "auto-execute" or "hook" definitions before they reach the agent runtime, requiring explicit user attestation.
 - **Agent-Aware Blackboard Isolation**: The Shared KV Store (Blackboard) must implement mandatory "Agent-Bound" isolation. Data written by one agent will be read-only or invisible to others unless a specific "Shared Intent" is established.
 - **Zero-Trust Hook Execution**: Any executable hook or automated tool sequence must run in a "Detached Sandbox" managed by MCP Any, with zero access to the host filesystem unless explicitly granted via a capability-based token.
+
+---
+
+## Strategic Evolution: [2026-03-10]
+### Focus: Cryptographic Agent Identity & Atomic State Handoffs
+**Context**: Today's findings identify "Identity Spoofing" and "Handoff Friction" as critical failures in multi-agent swarms (OpenClaw). As agents move from single-taskers to collaborative swarms, the "Trust Boundary" must shift from the connection to the agent's identity itself.
+**Strategic Pivot**:
+- **Cryptographic Agent Attestation (CAA)**: MCP Any will implement a CAA protocol where every tool call or state transition must be signed by the agent's unique private key, verified against a local "Registry of Trusted Agents."
+- **Atomic Handoff Protocol (AHP)**: Developing a "State Handshake" mechanism that ensures context and blackboard state are only transferred when both the sending and receiving agents acknowledge the transition, preventing state corruption.
+- **Ephemeral Tool Sandboxing (ETS)**: Moving towards a "Just-in-Time" tool execution model where tool environments are spun up in isolated micro-containers and destroyed immediately after use, reducing the attack surface.
