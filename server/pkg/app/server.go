@@ -1086,9 +1086,13 @@ func (a *Application) reconcileServices(ctx context.Context, cfg *config_v1.McpA
 				t := tools[i]
 				if !seen[t.GetName()] {
 					seen[t.GetName()] = true
-					// Prepend to keep original order with overrides
-					deduplicated = append([]*config_v1.ToolDefinition{t}, deduplicated...)
+					// ⚡ BOLT: O(n^2) prepend replaced with O(n) append + reverse
+					// Randomized Selection from Top 5 High-Impact Targets
+					deduplicated = append(deduplicated, t)
 				}
+			}
+			for i, j := 0, len(deduplicated)-1; i < j; i, j = i+1, j-1 {
+				deduplicated[i], deduplicated[j] = deduplicated[j], deduplicated[i]
 			}
 			cmd.SetTools(deduplicated)
 		}
@@ -1101,8 +1105,13 @@ func (a *Application) reconcileServices(ctx context.Context, cfg *config_v1.McpA
 				t := tools[i]
 				if !seen[t.GetName()] {
 					seen[t.GetName()] = true
-					deduplicated = append([]*config_v1.ToolDefinition{t}, deduplicated...)
+					// ⚡ BOLT: O(n^2) prepend replaced with O(n) append + reverse
+					// Randomized Selection from Top 5 High-Impact Targets
+					deduplicated = append(deduplicated, t)
 				}
+			}
+			for i, j := 0, len(deduplicated)-1; i < j; i, j = i+1, j-1 {
+				deduplicated[i], deduplicated[j] = deduplicated[j], deduplicated[i]
 			}
 			http.SetTools(deduplicated)
 		}
