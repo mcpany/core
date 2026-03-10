@@ -2226,6 +2226,43 @@ export const apiClient = {
     },
 
     /**
+     * Retrieves the user preferences.
+     *
+     * Summary: Retrieves user preferences.
+     *
+     * @returns A promise that resolves to the user preferences object.
+     * @throws {Error} If the request fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/user/preferences.
+     */
+    getUserPreferences: async () => {
+        const res = await fetchWithAuth('/api/v1/user/preferences');
+        if (!res.ok) throw new Error('Failed to fetch user preferences');
+        return res.json();
+    },
+
+    /**
+     * Saves the user preferences.
+     *
+     * Summary: Saves user preferences.
+     *
+     * @param preferences - The user preferences object to save.
+     * @returns A promise that resolves when the preferences are saved.
+     * @throws {Error} If the request fails.
+     *
+     * Side Effects: Makes a POST request to /api/v1/user/preferences.
+     */
+    saveUserPreferences: async (preferences: Record<string, any>) => {
+        const res = await fetchWithAuth('/api/v1/user/preferences', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(preferences)
+        });
+        if (!res.ok) throw new Error('Failed to save user preferences');
+        return true;
+    },
+
+    /**
      * Saves a service collection (stack).
      *
      * Summary: Saves a collection.

@@ -32,6 +32,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { WIDGET_DEFINITIONS, getWidgetDefinition, WidgetSize } from "@/components/dashboard/widget-registry";
 import { AddWidgetSheet } from "@/components/dashboard/add-widget-sheet";
+import { apiClient } from "@/lib/client";
 
 /**
  * Represents a specific instance of a widget on the dashboard.
@@ -108,10 +109,9 @@ export function DashboardGrid() {
 
         const loadLayout = async () => {
             try {
-                // Fetch from API
-                const res = await fetch('/api/v1/user/preferences');
-                if (res.ok) {
-                    const data = await res.json();
+                // Fetch from API using apiClient
+                try {
+                    const data = await apiClient.getUserPreferences();
                     if (data && data['dashboard-layout']) {
                          try {
                             const parsed = JSON.parse(data['dashboard-layout']);
@@ -137,7 +137,7 @@ export function DashboardGrid() {
                              setWidgets(DEFAULT_LAYOUT);
                          }
                     }
-                } else {
+                } catch (err) {
                      console.warn("Failed to fetch preferences, falling back to local/default");
                      // Fallback to local storage or default
                      const local = localStorage.getItem("dashboard-layout");
@@ -182,12 +182,8 @@ export function DashboardGrid() {
 
         const timer = setTimeout(async () => {
             try {
-                await fetch('/api/v1/user/preferences', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        'dashboard-layout': JSON.stringify(widgets)
-                    })
+                await apiClient.saveUserPreferences({
+                    'dashboard-layout': JSON.stringify(widgets)
                 });
                 // Sync to local storage as backup/cache
                 localStorage.setItem("dashboard-layout", JSON.stringify(widgets));
