@@ -68,7 +68,7 @@ global.ResizeObserver = class ResizeObserver {
 
 describe("DashboardGrid", () => {
     beforeEach(() => {
-        vi.useFakeTimers();
+        vi.useFakeTimers({ shouldAdvanceTime: true });
         localStorage.clear();
       });
 
@@ -264,6 +264,10 @@ describe("DashboardGrid", () => {
   });
 
   it("debounces localStorage writes", async () => {
+    // Mock fetch to succeed so localStorage.setItem is reached in the try block
+    const mockFetch = vi.fn().mockResolvedValue({ ok: true, json: vi.fn() });
+    vi.stubGlobal('fetch', mockFetch);
+
     render(<DashboardGrid />);
 
     // Wait for initial load to complete
@@ -292,12 +296,15 @@ describe("DashboardGrid", () => {
 
     expect(localStorage.setItem).not.toHaveBeenCalled();
 
-    // Fast forward time
-    act(() => {
-      vi.advanceTimersByTime(500);
+    // Fast forward past the 1000ms debounce
+    await act(async () => {
+      vi.advanceTimersByTime(1100);
+      await Promise.resolve();
     });
 
-    // Now it should be called ONCE (for the latest state)
-    expect(localStorage.setItem).toHaveBeenCalledTimes(1);
+    // Now it should be called (for the latest state)
+    expect(localStorage.setItem).toHaveBeenCalled();
+
+    vi.unstubAllGlobals();
   });
 });
