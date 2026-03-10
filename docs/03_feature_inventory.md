@@ -90,3 +90,19 @@
 
 ### Deprecations / Monitoring
 - **Unvalidated Project-Local Configs**: Monitoring for total deprecation. All local configs must be attested via MCP Any before ingestion by agents.
+
+---
+
+## Evolution: [2026-03-10] Updates
+
+### Proposed Additions
+- **Universal Skill Orchestrator (`SKILL.md` Adapter)**: (P0) A new upstream adapter that parses project-local `SKILL.md` files and exposes them as high-level, composite MCP tools.
+- **Threadbound Session Middleware**: (P0) Implements strict session-level isolation for agent tool calls and blackboard state, ensuring no cross-user context mixing in multi-user environments.
+- **WebSocket-First Transport Wrapper**: (P1) High-performance, reliable transport layer for long-lived agent connections with automatic health monitoring and fallback to SSE.
+
+### Priority Shifts
+- **A2A Interop Bridge (Pseudo-MCP)**: Promoted to **P0** as it becomes the primary coordination layer for "Threadbound Agents."
+- **Policy Firewall**: Expanded to include "Skill Execution Policies" – granular control over which `SKILL.md` playbooks an agent can invoke based on context.
+
+### Deprecations / Monitoring
+- **Stateless Agent Connections**: Monitoring for deprecation in multi-user environments. All agent-to-gateway connections should be "Threadbound" by default.

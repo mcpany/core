@@ -15,6 +15,9 @@
 - [ ] **[P0] Stateful A2A Mailbox**: UI for viewing queued and delivered A2A messages across the agent mesh. (Added: 2026-02-28)
 - [ ] **[P0] Project Config Attestation Dashboard**: UI for reviewing and approving project-local configuration blocks (hooks/auto-execute). (Added: 2026-03-09)
 - [ ] **[P0] Blackboard Isolation Inspector**: Visualize and debug Agent-Bound Blackboard data across different "Intent Scopes." (Added: 2026-03-09)
+- [ ] **[P0] Skill Orchestration Manager**: UI for viewing and managing discovered `SKILL.md` files and their mapped MCP tools. (Added: 2026-03-10)
+- [ ] **[P0] Threadbound Session Monitor**: Real-time visualization of active threads, sessions, and isolated blackboard state. (Added: 2026-03-10)
+- [ ] **[P1] WebSocket Connectivity Health**: Real-time health status and connection metrics for the WebSocket-first transport layer. (Added: 2026-03-10)
 - [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
 - [x] **[P1] Tool Playground & Explorer**:
   - [x] Auto-generated forms from Tool JSON Schemas.

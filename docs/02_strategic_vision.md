@@ -67,3 +67,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project Configuration Guard**: MCP Any will evolve into a "Validating Proxy" for all project-local agent configurations. It will intercept and sanitize any "auto-execute" or "hook" definitions before they reach the agent runtime, requiring explicit user attestation.
 - **Agent-Aware Blackboard Isolation**: The Shared KV Store (Blackboard) must implement mandatory "Agent-Bound" isolation. Data written by one agent will be read-only or invisible to others unless a specific "Shared Intent" is established.
 - **Zero-Trust Hook Execution**: Any executable hook or automated tool sequence must run in a "Detached Sandbox" managed by MCP Any, with zero access to the host filesystem unless explicitly granted via a capability-based token.
+
+---
+
+## Strategic Evolution: [2026-03-10]
+### Focus: Universal Skill Orchestration & Threadbound A2A Transport
+**Context**: Today's market sync reveals a massive shift towards `SKILL.md` as the universal playbook for agentic capabilities (Claude Code, Cursor, Gemini CLI). Simultaneously, OpenClaw's move to "Threadbound Agents" and WebSocket-first transport highlights the need for strict session-level isolation and reliability in multi-user environments.
+**Strategic Pivot**:
+- **Universal Skill Orchestrator**: MCP Any will ingest and expose `SKILL.md` definitions as "Super-Tools" (composite tools). This allows agents to invoke complex, project-local playbooks through the standard MCP interface, bridging the gap between raw tools and high-level skills.
+- **Threadbound Session Isolation**: Evolving the A2A Gateway to implement strict thread/session-level isolation at the transport layer. This ensures that agents running in multi-user environments (Discord, Telegram) cannot leak state or context between independent conversations.
+- **WebSocket-First Reliability**: Standardizing on WebSocket-based transport for the Universal Agent Bus, with automatic fallback to SSE and integrated health checking to handle intermittent agent connectivity.
