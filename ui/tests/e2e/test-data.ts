@@ -113,8 +113,8 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
                 upstream_auth: {
                     oauth2: {
                         token_url: "https://oauth2.googleapis.com/token",
-                        client_id: { plainText: "" },
-                        client_secret: { plainText: "" },
+                        client_id: { plain_text: "" },
+                        client_secret: { plain_text: "" },
                         scopes: "https://www.googleapis.com/auth/calendar"
                     }
                 },
@@ -132,7 +132,7 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
             service_config: {
                 name: "github",
                 upstream_auth: {
-                    bearer_token: { token: { plainText: "" } }
+                    bearer_token: { token: { plain_text: "" } }
                 },
                 openapi_service: {
                     address: "https://api.github.com",
@@ -149,7 +149,7 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
             service_config: {
                 name: "linear",
                 upstream_auth: {
-                    api_key: { value: { plainText: "" } }
+                    api_key: { value: { plain_text: "" } }
                 },
                 openapi_service: {
                     spec_url: "https://raw.githubusercontent.com/linear/linear/master/api/openapi.yaml"
