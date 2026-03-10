@@ -117,8 +117,8 @@ const nodeTypes = {
  * Visualizes the stack configuration as a graph.
  */
 export function StackGraph({ yamlContent }: StackGraphProps) {
-    const [nodes, setNodes, onNodesChange] = useNodesState([]);
-    const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+    const [nodes, setNodes, onNodesChange] = useNodesState([] as Node[]);
+    const [edges, setEdges, onEdgesChange] = useEdgesState([] as Edge[]);
 
     const { services, error } = useMemo(() => {
         try {

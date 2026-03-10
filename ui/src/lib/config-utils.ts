@@ -35,7 +35,7 @@ export function sanitizeServiceConfig(service: UpstreamServiceConfig, mode: Secr
 
     // Process commandLineService.env
     if (clone.commandLineService && clone.commandLineService.env) {
-        const env = clone.commandLineService.env;
+        const env = clone.commandLineService.env as Record<string, any>;
         for (const key in env) {
             if (Object.prototype.hasOwnProperty.call(env, key)) {
                 if (isSecretKey(key)) {
@@ -54,18 +54,19 @@ export function sanitizeServiceConfig(service: UpstreamServiceConfig, mode: Secr
     // Looking at proto/config/v1/auth.proto (implied), it might have apiKey, basicAuth etc.
     // If upstreamAuth exists and has fields like 'apiKey', 'token', we should redact them.
     if (clone.upstreamAuth) {
-        if (clone.upstreamAuth.apiKey) {
-             if (mode === 'redact') clone.upstreamAuth.apiKey = '<REDACTED>';
-             else if (mode === 'template') clone.upstreamAuth.apiKey = '${API_KEY}';
+        const auth = clone.upstreamAuth as any;
+        if (auth.apiKey) {
+             if (mode === 'redact') auth.apiKey = '<REDACTED>';
+             else if (mode === 'template') auth.apiKey = '${API_KEY}';
         }
-        if (clone.upstreamAuth.token) {
-             if (mode === 'redact') clone.upstreamAuth.token = '<REDACTED>';
-             else if (mode === 'template') clone.upstreamAuth.token = '${TOKEN}';
+        if (auth.token) {
+             if (mode === 'redact') auth.token = '<REDACTED>';
+             else if (mode === 'template') auth.token = '${TOKEN}';
         }
-        if (clone.upstreamAuth.basicAuth) {
-             if (clone.upstreamAuth.basicAuth.password) {
-                 if (mode === 'redact') clone.upstreamAuth.basicAuth.password = '<REDACTED>';
-                 else if (mode === 'template') clone.upstreamAuth.basicAuth.password = '${PASSWORD}';
+        if (auth.basicAuth) {
+             if (auth.basicAuth.password) {
+                 if (mode === 'redact') auth.basicAuth.password = '<REDACTED>';
+                 else if (mode === 'template') auth.basicAuth.password = '${PASSWORD}';
              }
         }
     }

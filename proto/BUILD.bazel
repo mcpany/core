@@ -3,3 +3,12 @@
 
 # gazelle:go_proto_compilers @rules_go//proto:go_proto
 # gazelle:go_grpc_compilers @rules_go//proto:go_proto,@rules_go//proto:go_grpc_v2
+
+filegroup(
+	name = "ts_proto",
+	srcs = [
+		"//proto/api/v1:ts_decls",
+		"//proto/config/v1:ts_decls",
+	],
+	visibility = ["//visibility:public"],
+)

@@ -13,9 +13,9 @@ import { UpstreamServiceConfig } from "@/lib/types";
 import { File } from "lucide-react";
 import yaml from 'js-yaml';
 import SyntaxHighlighter from 'react-syntax-highlighter/dist/esm/prism-light';
-import json from 'react-syntax-highlighter/dist/esm/languages/prism/json';
-import yamlLang from 'react-syntax-highlighter/dist/esm/languages/prism/yaml';
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import json from 'react-syntax-highlighter/dist/esm/languages/hljs/json';
+import yamlLang from 'react-syntax-highlighter/dist/esm/languages/hljs/yaml';
+import vs2015 from 'react-syntax-highlighter/dist/esm/styles/hljs/vs2015';
 import { ScrollArea } from "./ui/scroll-area";
 
 SyntaxHighlighter.registerLanguage('json', json);
@@ -69,7 +69,7 @@ function objectToTextProto(obj: any, indent = 0): string {
 function CodeBlock({ language, code }: { language: string; code: string }) {
     return (
         <ScrollArea className="h-72 w-full rounded-md border bg-background/50">
-             <SyntaxHighlighter language={language} style={vscDarkPlus} showLineNumbers customStyle={{ background: 'transparent', margin: 0, padding: '1rem' }}>
+             <SyntaxHighlighter language={language} style={vs2015} showLineNumbers customStyle={{ background: 'transparent', margin: 0, padding: '1rem' }}>
                 {code}
             </SyntaxHighlighter>
         </ScrollArea>
@@ -86,7 +86,7 @@ function CodeBlock({ language, code }: { language: string; code: string }) {
 export const FileConfigCard = memo(function FileConfigCard({ service }: { service: UpstreamServiceConfig }) {
     const { jsonConfig, yamlConfig, textProtoConfig } = useMemo(() => {
         const tempService = structuredClone(service);
-        delete tempService.id;
+        delete (tempService as { id?: string }).id;
 
         return {
             jsonConfig: JSON.stringify(tempService, null, 2),

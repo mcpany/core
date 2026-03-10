@@ -55,13 +55,17 @@ export function InstantiateDialog({ open, onOpenChange, templateConfig, onComple
             setName(`${templateConfig.name}-copy`);
             setAuthId("none");
 
+            // Declare at outer scope so schema parsing block can reference them
+            let newEnv: Record<string, SecretValue> = {};
+            let initialSchemaValues: Record<string, string> = {};
+
             if (templateConfig.commandLineService) {
                 // Initialize command
                 setCommand(templateConfig.commandLineService.command || "");
 
                 // Initialize env vars
-                const newEnv: Record<string, SecretValue> = {};
-                const initialSchemaValues: Record<string, string> = {};
+                newEnv = {};
+                initialSchemaValues = {};
 
                 if (templateConfig.commandLineService.env) {
                     Object.entries(templateConfig.commandLineService.env).forEach(([k, v]) => {

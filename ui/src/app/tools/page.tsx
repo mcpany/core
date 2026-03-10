@@ -63,15 +63,15 @@ export default function ToolsPage() {
 
   const fetchToolUsage = async () => {
     try {
-        const stats = await apiClient.getToolUsage();
+      const stats = await apiClient.getToolUsage();
       if (!stats || !Array.isArray(stats)) return;
-        const statsMap: Record<string, ToolAnalytics> = {};
-        stats.forEach(s => {
-            statsMap[`${s.name}@${s.serviceId}`] = s;
-        });
-        setToolUsage(statsMap);
+      const statsMap: Record<string, ToolAnalytics> = {};
+      stats.forEach(s => {
+        statsMap[`${s.name}@${s.serviceId}`] = s;
+      });
+      setToolUsage(statsMap);
     } catch (e) {
-        console.error("Failed to fetch tool usage", e);
+      console.error("Failed to fetch tool usage", e);
     }
   };
 
@@ -120,10 +120,10 @@ export default function ToolsPage() {
     setTools(tools.map(t => t.name === name ? { ...t, disable: currentStatus } : t));
 
     try {
-        await apiClient.setToolStatus(name, !currentStatus);
+      await apiClient.setToolStatus(name, !currentStatus);
     } catch (e) {
-        console.error("Failed to toggle tool", e);
-        fetchTools(); // Revert
+      console.error("Failed to toggle tool", e);
+      fetchTools(); // Revert
     }
   };
 
@@ -132,32 +132,32 @@ export default function ToolsPage() {
     setTools(tools.map(t => names.includes(t.name) ? { ...t, disable: !enabled } : t));
 
     try {
-        await Promise.all(names.map(name => apiClient.setToolStatus(name, !enabled)));
-        toast({
-            title: enabled ? "Tools Enabled" : "Tools Disabled",
-            description: `${names.length} tools have been ${enabled ? "enabled" : "disabled"}.`
-        });
+      await Promise.all(names.map(name => apiClient.setToolStatus(name, !enabled)));
+      toast({
+        title: enabled ? "Tools Enabled" : "Tools Disabled",
+        description: `${names.length} tools have been ${enabled ? "enabled" : "disabled"}.`
+      });
     } catch (e) {
-        console.error("Failed to bulk toggle tools", e);
-        fetchTools(); // Revert
-        toast({
-            variant: "destructive",
-            title: "Error",
-            description: "Failed to update some tools."
-        });
+      console.error("Failed to bulk toggle tools", e);
+      fetchTools(); // Revert
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to update some tools."
+      });
     }
   };
 
   const handleBulkPin = (names: string[], pinned: boolean) => {
-      if (pinned) {
-          bulkPin(names);
-      } else {
-          bulkUnpin(names);
-      }
-      toast({
-            title: pinned ? "Tools Pinned" : "Tools Unpinned",
-            description: `${names.length} tools have been ${pinned ? "pinned" : "unpinned"}.`
-      });
+    if (pinned) {
+      bulkPin(names);
+    } else {
+      bulkUnpin(names);
+    }
+    toast({
+      title: pinned ? "Tools Pinned" : "Tools Unpinned",
+      description: `${names.length} tools have been ${pinned ? "pinned" : "unpinned"}.`
+    });
   };
 
   const toggleCompact = () => {
@@ -167,8 +167,8 @@ export default function ToolsPage() {
   };
 
   const openInspector = (tool: ToolDefinition) => {
-      setSelectedTool(tool);
-      setInspectorOpen(true);
+    setSelectedTool(tool);
+    setInspectorOpen(true);
   };
 
   const filteredTools = tools
@@ -206,11 +206,11 @@ export default function ToolsPage() {
 
 
   if (!isLoaded) {
-      return (
-          <div className="flex-1 p-8 animate-pulse text-muted-foreground">
-              Loading tools...
-          </div>
-      );
+    return (
+      <div className="flex-1 p-8 animate-pulse text-muted-foreground">
+        Loading tools...
+      </div>
+    );
   }
 
   return (
@@ -218,59 +218,59 @@ export default function ToolsPage() {
       <div className="flex items-center justify-between">
         <h2 className="text-3xl font-bold tracking-tight">Tools</h2>
         <div className="flex items-center space-x-4">
-            <SmartToolSearch
-                tools={tools}
-                searchQuery={searchQuery}
-                setSearchQuery={setSearchQuery}
-                onToolSelect={openInspector}
+          <SmartToolSearch
+            tools={tools}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            onToolSelect={openInspector}
+          />
+          <div className="flex items-center space-x-2">
+            <Select value={groupBy} onValueChange={(v: any) => setGroupBy(v)}>
+              <SelectTrigger className="w-[180px] backdrop-blur-sm bg-background/50">
+                <Layers className="mr-2 h-4 w-4" />
+                <SelectValue placeholder="Group By" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">No Grouping</SelectItem>
+                <SelectItem value="service">Group by Service</SelectItem>
+                <SelectItem value="category">Group by Category</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Select value={selectedService} onValueChange={setSelectedService}>
+              <SelectTrigger className="w-[200px] backdrop-blur-sm bg-background/50">
+                <SelectValue placeholder="Filter by Service" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Services</SelectItem>
+                {services.map((service) => (
+                  <SelectItem key={service.id} value={service.id}>
+                    {service.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Switch
+              id="show-pinned"
+              checked={showPinnedOnly}
+              onCheckedChange={setShowPinnedOnly}
             />
-            <div className="flex items-center space-x-2">
-                <Select value={groupBy} onValueChange={(v: any) => setGroupBy(v)}>
-                    <SelectTrigger className="w-[180px] backdrop-blur-sm bg-background/50">
-                        <Layers className="mr-2 h-4 w-4" />
-                        <SelectValue placeholder="Group By" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="none">No Grouping</SelectItem>
-                        <SelectItem value="service">Group by Service</SelectItem>
-                        <SelectItem value="category">Group by Category</SelectItem>
-                    </SelectContent>
-                </Select>
-            </div>
-            <div className="flex items-center space-x-2">
-                <Select value={selectedService} onValueChange={setSelectedService}>
-                    <SelectTrigger className="w-[200px] backdrop-blur-sm bg-background/50">
-                        <SelectValue placeholder="Filter by Service" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="all">All Services</SelectItem>
-                        {services.map((service) => (
-                            <SelectItem key={service.id} value={service.id}>
-                                {service.name}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-            </div>
-            <div className="flex items-center space-x-2">
-                <Switch
-                    id="show-pinned"
-                    checked={showPinnedOnly}
-                    onCheckedChange={setShowPinnedOnly}
-                />
-                <label htmlFor="show-pinned" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                    Show Pinned Only
-                </label>
-            </div>
-            <Button
-                variant="ghost"
-                size="icon"
-                onClick={toggleCompact}
-                title={isCompact ? "Comfortable View" : "Compact View"}
-                className="h-9 w-9"
-            >
-                {isCompact ? <LayoutList className="h-4 w-4" /> : <List className="h-4 w-4" />}
-            </Button>
+            <label htmlFor="show-pinned" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+              Show Pinned Only
+            </label>
+          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleCompact}
+            title={isCompact ? "Comfortable View" : "Compact View"}
+            className="h-9 w-9"
+          >
+            {isCompact ? <LayoutList className="h-4 w-4" /> : <List className="h-4 w-4" />}
+          </Button>
         </div>
       </div>
 
@@ -294,7 +294,7 @@ export default function ToolsPage() {
             />
           ) : (
             <Accordion type="multiple" defaultValue={Object.keys(groupedTools)} className="w-full">
-              {Object.entries(groupedTools).map(([groupName, groupTools]) => (
+              {(Object.entries(groupedTools) as Array<[string, ToolDefinition[]]>).map(([groupName, groupTools]) => (
                 <AccordionItem key={groupName} value={groupName}>
                   <AccordionTrigger className="hover:no-underline px-2">
                     <span className="font-medium text-lg flex items-center">

@@ -82,7 +82,7 @@ export function CollectionDetailsDialog({
                                     </CardDescription>
                                     {service.tools && service.tools.length > 0 && (
                                         <div className="mt-2 text-xs text-muted-foreground">
-                                            Tools: {service.tools.map(t => t.name).join(", ")}
+                                            Tools: {service.tools.map((t: { name?: string }) => t.name).join(", ")}
                                         </div>
                                     )}
                                 </CardContent>

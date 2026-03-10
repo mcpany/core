@@ -26,8 +26,8 @@ import { CalendarIcon, Search, RefreshCw, Eye, AlertTriangle, Download } from "l
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import SyntaxHighlighter from 'react-syntax-highlighter/dist/esm/prism-light';
-import json from 'react-syntax-highlighter/dist/esm/languages/prism/json';
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import json from 'react-syntax-highlighter/dist/esm/languages/hljs/json';
+import vs2015 from 'react-syntax-highlighter/dist/esm/styles/hljs/vs2015';
 
 interface AuditLogEntry {
     timestamp: string;
@@ -312,7 +312,7 @@ export function AuditLogViewer() {
                                 <div className="rounded-md overflow-hidden border">
                                     <SyntaxHighlighter
                                         language="json"
-                                        style={vscDarkPlus}
+                                        style={vs2015}
                                         customStyle={{ margin: 0, fontSize: '12px' }}
                                     >
                                         {formatJson(selectedLog.arguments) || "{}"}
@@ -325,7 +325,7 @@ export function AuditLogViewer() {
                                 <div className="rounded-md overflow-hidden border">
                                     <SyntaxHighlighter
                                         language="json"
-                                        style={vscDarkPlus}
+                                        style={vs2015}
                                         customStyle={{ margin: 0, fontSize: '12px', maxHeight: '300px' }}
                                     >
                                         {formatJson(selectedLog.result) || (selectedLog.error ? "null" : "{}")}

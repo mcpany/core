@@ -78,7 +78,7 @@ export function InputTransformerEditor({ transformer, onChange, parameters = [] 
                     className="h-[500px]"
                 />
             </div>
-             {transformer?.webhook && (
+             {!!transformer?.webhook && (
                 <Card className="bg-muted/50">
                     <CardContent className="pt-6">
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">

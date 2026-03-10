@@ -129,7 +129,7 @@ export function HttpToolManager({ service, onChange }: HttpToolManagerProps) {
              // This shouldn't happen in normal flow, but good to be safe.
              // We generally keep callId constant.
         }
-        newCalls[updatedCall.id] = updatedCall;
+        newCalls[updatedCall.id ?? ''] = updatedCall;
 
         onChange({
             ...service,
@@ -142,7 +142,7 @@ export function HttpToolManager({ service, onChange }: HttpToolManagerProps) {
     };
 
     const getCallForTool = (tool: ToolDefinition): HttpCallDefinition => {
-        return calls[tool.callId] || {
+        return calls[tool.callId ?? ''] || {
             id: tool.callId,
             method: HttpCallDefinition_HttpMethod.HTTP_METHOD_GET,
             endpointPath: "/",
@@ -194,15 +194,15 @@ export function HttpToolManager({ service, onChange }: HttpToolManagerProps) {
                         </Button>
                     </div>
                 )}
-                {tools.map((tool, index) => {
+                {tools.map((tool: ToolDefinition, index: number) => {
                     const call = getCallForTool(tool);
                     return (
                         <Card key={index} className="flex items-center justify-between p-4">
                             <div className="flex flex-col gap-1">
                                 <div className="flex items-center gap-2">
                                     <span className="font-semibold">{tool.name}</span>
-                                    <Badge variant="outline" className={getMethodColor(call.method)}>
-                                        {getMethodName(call.method)}
+                                    <Badge variant="outline" className={getMethodColor(call.method ?? 0)}>
+                                        {getMethodName(call.method ?? 0)}
                                     </Badge>
                                 </div>
                                 <div className="text-sm text-muted-foreground font-mono">

@@ -366,39 +366,39 @@ export function ServiceDetail({ serviceId }: { serviceId: string }) {
             <TabsContent value="configuration" className="mt-4 grid gap-6">
                  {service.grpcService && (
                     <ServicePropertyCard title="gRPC Config" data={{
-                        "Address": service.grpcService.address,
+                        "Address": service.grpcService.address ?? '',
                         "Reflection Enabled": service.grpcService.useReflection ? "Yes" : "No",
                     }} />
                 )}
                  {service.httpService && (
                     <ServicePropertyCard title="HTTP Config" data={{
-                        "Address": service.httpService.address,
+                        "Address": service.httpService.address ?? '',
                     }} />
                 )}
                  {service.commandLineService && (
                     <ServicePropertyCard title="CLI Config" data={{
-                        "Command": service.commandLineService.command,
+                        "Command": service.commandLineService.command ?? '',
                     }} />
                 )}
                 {service.openapiService && (
                     <ServicePropertyCard title="OpenAPI Config" data={{
-                        "Address": service.openapiService.address,
+                        "Address": service.openapiService.address ?? '',
                         "Spec URL": service.openapiService.specUrl || "N/A",
                     }} />
                 )}
                 {service.websocketService && (
                     <ServicePropertyCard title="WebSocket Config" data={{
-                        "Address": service.websocketService.address,
+                        "Address": service.websocketService.address ?? '',
                     }} />
                 )}
                 {service.webrtcService && (
                     <ServicePropertyCard title="WebRTC Config" data={{
-                        "Address": service.webrtcService.address,
+                        "Address": service.webrtcService.address ?? '',
                     }} />
                 )}
                 {service.graphqlService && (
                     <ServicePropertyCard title="GraphQL Config" data={{
-                        "Address": service.graphqlService.address,
+                        "Address": service.graphqlService.address ?? '',
                     }} />
                 )}
                 {service.mcpService && (
