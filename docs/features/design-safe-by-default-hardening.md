@@ -59,3 +59,10 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-10:** **Critical Update: Addressing Localhost WebSocket Hijacking (Oasis-2026-004)**
+    *   **Context**: Today's research revealed that `localhost` is not a secure boundary for WebSockets, as browsers allow cross-origin connections to loopback addresses.
+    *   **Architecture Adjustment**:
+        *   Mandatory `Origin` header validation for all WebSocket upgrade requests.
+        *   Implementation of a "Pairing Secret" for any browser-based origin not explicitly allow-listed.
+        *   Removal of all rate-limiting exemptions for `localhost` connections.
+    *   **Security Impact**: Prevents "One-Click Agent Hijacking" from malicious websites in a user's browser.

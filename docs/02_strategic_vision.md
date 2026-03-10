@@ -67,3 +67,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project Configuration Guard**: MCP Any will evolve into a "Validating Proxy" for all project-local agent configurations. It will intercept and sanitize any "auto-execute" or "hook" definitions before they reach the agent runtime, requiring explicit user attestation.
 - **Agent-Aware Blackboard Isolation**: The Shared KV Store (Blackboard) must implement mandatory "Agent-Bound" isolation. Data written by one agent will be read-only or invisible to others unless a specific "Shared Intent" is established.
 - **Zero-Trust Hook Execution**: Any executable hook or automated tool sequence must run in a "Detached Sandbox" managed by MCP Any, with zero access to the host filesystem unless explicitly granted via a capability-based token.
+
+---
+
+## Strategic Evolution: [2026-03-10]
+### Focus: Hardened Local Isolation & Anti-Hijack Middleware
+**Context**: Today's research uncovered a critical "Localhost Hijack" vulnerability (Oasis-2026-004) affecting OpenClaw and similar agent gateways. Malicious websites can bypass CORS for WebSockets to `localhost`, allowing for brute-force attacks and unauthorized device registration. This shatters the myth that "local is inherently safe."
+**Strategic Pivot**:
+- **Anti-Hijack WebSocket Middleware**: MCP Any will implement mandatory `Origin` header validation for all WebSocket connections, even on loopback interfaces. Any connection from a browser-based origin must be explicitly allow-listed.
+- **Zero-Exemption Rate Limiting**: All security-sensitive operations (authentication, registration, tool execution) will be subject to strict rate limiting, with no exemptions for `localhost` or `127.0.0.1`.
+- **Cryptographic Device Pairing**: Moving away from password-only authentication for local nodes. MCP Any will require a "Physical-Presence" or "Local-Secret" cryptographic handshake for any new device pairing, preventing silent background registration by malicious scripts.

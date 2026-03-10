@@ -84,7 +84,17 @@
 - **Agent-Aware Blackboard Isolation**: (P0) Implements row-level security for the Shared KV Store, ensuring agents can only access state within their assigned "Intent Scope."
 - **Detached Sandbox for Automated Hooks**: (P1) Isolated execution environment for automated tool sequences, preventing unauthorized host access.
 
+---
+
+## Evolution: [2026-03-10] Updates
+
+### Proposed Additions
+- **Anti-Hijack WebSocket Middleware**: (P0) Mandatory `Origin` validation and rate limiting for all WebSocket connections, including `localhost`.
+- **Cryptographic Device Handshake**: (P0) Physical-presence-backed registration for all new devices and agents to prevent unauthorized background pairing.
+- **WebSocket Security Attestation API**: (P1) Allows tools to check if their current transport is "Attested" (secure/verified) before performing high-risk actions.
+
 ### Priority Shifts
+- **"Safe-by-Default" Network Hardening**: Promoted to **P0** (Critical) to mitigate local-origin bypass attacks.
 - **Shared KV Store (Blackboard)**: Re-affirmed as **P0** with new mandatory security isolation requirements.
 - **Policy Firewall**: Promoted to **P0** (Already P0, but expanded to include "Project-Local Config Validation").
 
