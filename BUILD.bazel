@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 load("@gazelle//:def.bzl", "gazelle")
+load("@rules_go//go:def.bzl", "go_binary", "go_library")
 load("@rules_shell//shell:sh_binary.bzl", "sh_binary")
 
 # gazelle:prefix github.com/mcpany/core
@@ -67,6 +68,19 @@ gazelle(
         "-prune",
     ],
     command = "update-repos",
+)
+
+go_library(
+    name = "core_lib",
+    srcs = ["fix_url_test_script.go"],
+    importpath = "github.com/mcpany/core",
+    visibility = ["//visibility:private"],
+)
+
+go_binary(
+    name = "core",
+    embed = [":core_lib"],
+    visibility = ["//visibility:public"],
 )
 
 sh_binary(
