@@ -49,3 +49,11 @@ As agents increasingly rely on project-local configuration files (e.g., `.claude
 
 ## 7. Evolutionary Changelog
 * **2026-03-09:** Initial Document Creation.
+
+### Update: 2026-03-10 - Session-Bound Attestation & Overrides
+**Context:** Today's market sync revealed "Verification Fatigue" as a major pain point. Users are overwhelmed by static attestation requests for every project-local config change.
+**Architecture Adjustment:**
+* Introducing **Session-Bound Attestation**: Users can now approve a configuration block for the duration of a single `session_id`.
+* Deprecating global-only approvals for non-standard hooks.
+* Added support for **OpenClaw Config Overrides**: The middleware now handles dynamic config injections from the OpenClaw CLI without requiring a full file-system write/read cycle.
+**Security Impact:** Reduces "Click-Through" risk by narrowing the window of exposure for potentially dangerous but "intended" local hooks.

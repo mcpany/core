@@ -67,3 +67,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project Configuration Guard**: MCP Any will evolve into a "Validating Proxy" for all project-local agent configurations. It will intercept and sanitize any "auto-execute" or "hook" definitions before they reach the agent runtime, requiring explicit user attestation.
 - **Agent-Aware Blackboard Isolation**: The Shared KV Store (Blackboard) must implement mandatory "Agent-Bound" isolation. Data written by one agent will be read-only or invisible to others unless a specific "Shared Intent" is established.
 - **Zero-Trust Hook Execution**: Any executable hook or automated tool sequence must run in a "Detached Sandbox" managed by MCP Any, with zero access to the host filesystem unless explicitly granted via a capability-based token.
+
+---
+
+## Strategic Evolution: [2026-03-10]
+### Focus: Standardized Thinking Chains & Real-Time Event Streaming
+**Context**: Today's findings show a massive ecosystem shift toward "Thinking Blocks" (OpenClaw's Adaptive Thinking) and real-time WebSocket (WS) streaming for multi-agent coordination. MCP Any must evolve from a "JSON-RPC Tool Proxy" to a "Transparent Reasoning Hub" that can stream and interpret these thinking chains in real-time.
+**Strategic Pivot**:
+- **Reasoning Chain Middleware**: MCP Any will implement a protocol for capturing, standardizing, and exposing "Thinking Blocks" from any model (Claude, Gemini, OpenAI) to the end user and subagents.
+- **Low-Latency Event Proxying**: Enhancing the transport layer to support stateful WebSocket streaming for subagent events (spawn, handoff, terminate), ensuring zero-latency state synchronization in complex swarms.
+- **Attestation Consolidation**: Moving from "File-Based Attestation" to "Context-Bound Session Attestation," where project-local configuration changes are only active for a specific, verified session, reducing "Verification Fatigue."

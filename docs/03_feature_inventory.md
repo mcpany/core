@@ -90,3 +90,19 @@
 
 ### Deprecations / Monitoring
 - **Unvalidated Project-Local Configs**: Monitoring for total deprecation. All local configs must be attested via MCP Any before ingestion by agents.
+
+---
+
+## Evolution: [2026-03-10] Updates
+
+### Proposed Additions
+- **Thinking Protocol Middleware**: (P0) Standardizes and exposes "Thinking Blocks" from models (Claude 3.7/4.x, Gemini 2.x) to the user and subagents. Includes real-time streaming support.
+- **Subagent WS Event Streamer**: (P1) High-speed WebSocket proxy for subagent lifecycle events (spawn, handoff, termination) within a multi-agent session.
+- **Context-Bound Session Attestation**: (P1) Allows users to approve project-local configurations for a specific "Session Duration" rather than globally, reducing verification fatigue.
+
+### Priority Shifts
+- **Project Configuration Security Guard**: Re-affirmed as **P0** with added support for Session-Bound attestation.
+- **Multi-Agent Session Management**: Promoted from **P1** to **P0** (Already P0, but expanded to include real-time event streaming).
+
+### Deprecations / Monitoring
+- **Static Thinking Representation**: Monitoring for deprecation in favor of streaming "Thinking Blocks."

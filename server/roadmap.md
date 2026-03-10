@@ -194,3 +194,8 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Core Middleware Pipeline**: The middleware architecture is robust and extensible.
 - **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates protocol details from business logic.
 - **Documentation**: The project has excellent documentation coverage for most features.
+
+#### Upcoming (2026-03-10 Evolution)
+*   **[P0] Thinking Protocol Middleware**: Standardize and stream "Thinking Blocks" for real-time reasoning transparency. (Added: 2026-03-10)
+*   **[P1] Subagent WS Event Streamer**: Low-latency WebSocket proxy for swarm coordination events. (Added: 2026-03-10)
+*   **[P1] Session-Bound Attestation**: Context-aware security approvals for project configs to reduce verification fatigue. (Added: 2026-03-10)
