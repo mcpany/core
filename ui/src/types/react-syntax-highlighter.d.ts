@@ -55,6 +55,7 @@ declare module 'react-syntax-highlighter/dist/esm/languages/hljs/yaml' { const v
 declare module 'react-syntax-highlighter/dist/esm/languages/hljs/xml' { const v: unknown; export default v; }
 declare module 'react-syntax-highlighter/dist/esm/languages/hljs/markdown' { const v: unknown; export default v; }
 declare module 'react-syntax-highlighter/dist/esm/languages/hljs/javascript' { const v: unknown; export default v; }
+declare module 'react-syntax-highlighter/dist/esm/languages/hljs/plaintext' { const v: unknown; export default v; }
 
 declare module 'react-syntax-highlighter/dist/esm/styles/prism' {
   export const vscDarkPlus: Record<string, unknown>;
@@ -66,6 +67,7 @@ declare module 'react-syntax-highlighter/dist/esm/styles/prism' {
 declare module 'react-syntax-highlighter/dist/esm/styles/hljs' {
   export const docco: Record<string, unknown>;
   export const dark: Record<string, unknown>;
+  export const vs2015: Record<string, unknown>;
   const styles: Record<string, Record<string, unknown>>;
   export default styles;
 }
