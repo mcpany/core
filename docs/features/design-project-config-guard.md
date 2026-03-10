@@ -49,3 +49,9 @@ As agents increasingly rely on project-local configuration files (e.g., `.claude
 
 ## 7. Evolutionary Changelog
 * **2026-03-09:** Initial Document Creation.
+* **2026-03-10:** **ClawHavoc Countermeasures Integration**.
+    * **Context:** The ClawHavoc incident revealed that malicious configurations often bypass detection by obfuscating executable hooks within seemingly harmless JSON keys.
+    * **Architecture Adjustment:**
+        * Implementing **Deep Content Inspection (DCI)** in Section 4: All JSON/YAML configuration files are now recursively scanned for "Executable Patterns" (e.g., shell command structures, base64-encoded binary strings) even if they are not labelled as `hooks`.
+        * Introducing **Attestation-Chain-of-Custody**: The `attestations.db` now tracks the *git author* and *commit hash* associated with a configuration block, allowing for "Author-Based Trust" policies.
+    * **Security Impact:** Prevents "Hidden RCE" where malicious commands are stashed in standard fields like `description` or `summary` and later executed by a compromised or overly-helpful agent skill.

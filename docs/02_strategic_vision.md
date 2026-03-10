@@ -67,3 +67,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project Configuration Guard**: MCP Any will evolve into a "Validating Proxy" for all project-local agent configurations. It will intercept and sanitize any "auto-execute" or "hook" definitions before they reach the agent runtime, requiring explicit user attestation.
 - **Agent-Aware Blackboard Isolation**: The Shared KV Store (Blackboard) must implement mandatory "Agent-Bound" isolation. Data written by one agent will be read-only or invisible to others unless a specific "Shared Intent" is established.
 - **Zero-Trust Hook Execution**: Any executable hook or automated tool sequence must run in a "Detached Sandbox" managed by MCP Any, with zero access to the host filesystem unless explicitly granted via a capability-based token.
+
+---
+
+## Strategic Evolution: [2026-03-10]
+### Focus: Tool Egress Proxying & Supply Chain Attestation
+**Context**: Today's research on the "ClawHavoc" incident and the widespread SSRF vulnerabilities in MCP servers (36.7% exposure) mandates a shift from "Simple Proxy" to "Hardened Egress Gateway." Agents are now losing trust in tool registries, and MCP Any must fill the trust gap.
+**Strategic Pivot**:
+- **Tool-Specific Egress Firewall**: MCP Any will implement a tool-bound network proxy. Every MCP tool call will have its network requests intercepted and matched against a "Network Capability" manifest. Tools without explicit network permissions will be blocked from making any external requests.
+- **Post-ClawHub Attestation Service**: MCP Any will host a "Local Attestation Cache" that stores cryptographic proofs of tool integrity. This prevents the "Clawinjection" vector where a legitimate tool is replaced by a malicious one.
+- **Binary Sidecar Protocol**: Aligning with Claude Code's new binary handling, MCP Any will manage "Ephemeral File Assets" for tool outputs (PDFs, Logs, Audio), ensuring they are stored in a secure, agent-bound scratch space rather than being leaked into global context.
