@@ -32,10 +32,8 @@ proto_library(
     ],
     visibility = ["//visibility:public"],
     deps = [
-        "//proto/bus:bus_proto",
         "@protobuf//:duration_proto",
         "@protobuf//:go_features_proto",
-        "@protobuf//:struct_proto",
         "@protobuf//:timestamp_proto",
     ],
 )
@@ -47,7 +45,6 @@ go_proto_library(
     proto = ":v1_proto",
     visibility = ["//visibility:public"],
     deps = [
-        "//proto/bus",
         "@org_golang_google_protobuf//types/gofeaturespb",
     ],
 )
