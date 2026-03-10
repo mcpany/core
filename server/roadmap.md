@@ -189,3 +189,8 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Core Middleware Pipeline**: The middleware architecture is robust and extensible.
 - **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates protocol details from business logic.
 - **Documentation**: The project has excellent documentation coverage for most features.
+
+#### Upcoming (2026-03-10 Evolution)
+*   **[P0] Context Isolation Zones (CIZ) Middleware**: Implement cryptographically isolated context buffers for tool calls.
+*   **[P1] Semantic Tool Sanitizer**: AI-driven middleware to prevent tool-name prompt injection.
+*   **[P1] On-Demand MCP Lifecycle Manager**: Automatic lifecycle management (spin-up/tear-down) for local MCP providers.

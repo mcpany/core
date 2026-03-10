@@ -107,3 +107,6 @@
 - [ ] **Log Source Color Coding**: Assign distinct colors to different log sources automatically for better visual separation.
 - [ ] **Context Usage History**: Track total context usage over time to identify growth trends (requires backend metrics persistence).
 - [ ] **Tool Schema Optimizer**: Analyze tool schemas and suggest removing unused properties or compacting descriptions to save context tokens.
+- [ ] **[P0] CIZ Isolation Map**: Visual representation of active context isolation zones and data flow boundaries. (Added: 2026-03-10)
+- [ ] **[P1] Semantic Security Dashboard**: Monitoring view for blocked "Instruction-Heavy" tool names and suspicious tool patterns. (Added: 2026-03-10)
+- [ ] **[P1] Ephemeral Lifecycle Monitor**: Real-time status of on-demand MCP server instances. (Added: 2026-03-10)

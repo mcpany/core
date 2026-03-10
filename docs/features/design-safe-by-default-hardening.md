@@ -59,3 +59,10 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+
+### Update: 2026-03-10 - Preventing Attestation Bypass via Local IPC
+**Context**: Today's research into ephemeral MCP lifecycles revealed a potential bypass where subagents could use local Unix sockets or named pipes to communicate with tools, bypassing the network-level attestation.
+**Architecture Adjustment**:
+* Extending "Safe-by-Default" to include IPC listeners.
+* All local sockets must now be created within a protected directory with restricted permissions (`0700`), owned by the `mcpany` service account.
+**Security Impact**: Ensures that the Zero Trust boundary remains intact even when network interfaces are not used.

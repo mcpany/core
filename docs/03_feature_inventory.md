@@ -81,3 +81,20 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-10] Updates
+
+### Proposed Additions
+- **Context Isolation Zones (CIZ) Middleware**: (P0) Cryptographically isolated execution environments for tool calls to prevent state leakage.
+- **Semantic Tool Sanitizer**: (P1) AI-driven middleware to detect and block instruction-heavy tool names and descriptions (anti-prompt injection).
+- **On-Demand MCP Lifecycle Manager**: (P1) Automatic spin-up/tear-down of local MCP servers based on real-time agent demand.
+- **State Desync Monitor**: (P2) Real-time telemetry to detect and alert on state divergence in distributed agent swarms.
+
+### Priority Shifts
+- **Lazy-MCP Middleware**: Re-affirmed as **P0** to support semantic indexing discovered today.
+- **Policy Firewall**: Re-affirmed as **P0** as it is the host for CIZ and Semantic Sanitization.
+
+### Deprecations / Monitoring
+- **Persistent Local MCP Connections**: Monitoring for replacement by On-Demand Lifecycles for non-critical tools.

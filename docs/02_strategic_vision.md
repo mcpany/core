@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-10]
+### Focus: Context Isolation Zones & Semantic Tool Security
+**Context**: Today's research into OpenClaw's Isolation Zones and the rise of "Tool-Name Prompt Injection" necessitates a deeper commitment to cryptographic tool identity and runtime isolation.
+**Strategic Pivot**:
+- **Context Isolation Zones (CIZ)**: MCP Any will evolve to support "CIZ" natively, ensuring that every tool call execution is wrapped in a dedicated, ephemeral context sandbox that prevents state bleeding between subagents.
+- **Semantic Security Layer**: Beyond simple regex, we will implement "Semantic Sanitization" for tool definitions. This involves using local models to detect "instruction-heavy" tool names or descriptions that could be used for prompt injection.
+- **Ephemeral Tooling Fabric**: Transitioning from static server connections to an "On-Demand Fabric" where MCP Any manages the full lifecycle (spin-up, execution, tear-down) of local tool providers to minimize persistent attack surfaces.
