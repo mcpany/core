@@ -401,18 +401,11 @@ export function DashboardGrid() {
 
             {/* Empty State / Onboarding */}
             {visibleWidgets.length === 0 && (
-                <div className="flex flex-col items-center justify-center py-24 border border-border/50 rounded-2xl bg-background/50 backdrop-blur-xl shadow-sm relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-b from-muted/20 to-transparent pointer-events-none" />
-                    <div className="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 relative z-10 border border-primary/20 shadow-inner">
-                        <LayoutGrid className="h-8 w-8 text-primary opacity-80" />
-                    </div>
-                    <h3 className="text-2xl font-semibold tracking-tight mb-2 relative z-10">Design your view</h3>
-                    <p className="text-muted-foreground text-center max-w-sm mb-8 relative z-10">
-                        Your dashboard is a blank canvas. Add widgets to monitor services, track traces, and view live metrics.
-                    </p>
-                    <div className="relative z-10">
-                        <AddWidgetSheet onAdd={addWidget} />
-                    </div>
+                <div className="flex flex-col items-center justify-center py-20 border-2 border-dashed rounded-lg bg-muted/20">
+                    <LayoutGrid className="h-10 w-10 text-muted-foreground mb-4 opacity-50" />
+                    <h3 className="text-lg font-medium">Your dashboard is empty</h3>
+                    <p className="text-sm text-muted-foreground mb-4">Add widgets to customize your view.</p>
+                    <AddWidgetSheet onAdd={addWidget} />
                 </div>
             )}
         </div>
