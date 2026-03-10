@@ -38,5 +38,16 @@ test.describe('Inspector Page', () => {
 
     // Check that we see some details of the trace
     await expect(sheet.locator('text=orchestrator-task').first()).toBeVisible();
+
+    // Check that the new visual duration Timeline header is visible
+    await expect(page.getByRole('columnheader', { name: 'Timeline' })).toBeVisible();
+
+    // Wait a moment for the bar animations to appear
+    await page.waitForTimeout(500);
+
+    // Verify that duration bars are rendered (they use bg-blue-500/70, bg-red-500/70, bg-amber-500/70 or bg-primary/50)
+    const timelineBars = page.locator('td .relative.w-full.h-4.bg-muted\\/30.rounded-sm.overflow-hidden.flex.items-center.group\\/timeline > div');
+    const barCount = await timelineBars.count();
+    expect(barCount).toBeGreaterThan(0);
   });
 });

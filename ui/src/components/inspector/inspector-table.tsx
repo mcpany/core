@@ -158,10 +158,38 @@ export function InspectorTable({ traces, loading }: InspectorTableProps) {
                     <TableHead className="w-[50px] bg-card z-10">Type</TableHead>
                     <TableHead className="bg-card z-10">Method / Name</TableHead>
                     <TableHead className="w-[100px] bg-card z-10">Status</TableHead>
+                    <TableHead className="w-[200px] bg-card z-10">Timeline</TableHead>
                     <TableHead className="w-[100px] text-right bg-card z-10">Duration</TableHead>
                     </TableRow>
                 )}
-                itemContent={(index, row: VisibleRow) => (
+                itemContent={(index, row: VisibleRow) => {
+                    const traceDuration = row.trace.totalDuration || (row.trace.rootSpan.endTime - row.trace.rootSpan.startTime) || 1;
+                    const traceStart = row.trace.rootSpan.startTime;
+
+                    const spanDuration = row.span.endTime - row.span.startTime;
+                    const spanStartOffset = row.span.startTime - traceStart;
+
+                    const leftPercent = Math.max(0, Math.min(100, (spanStartOffset / traceDuration) * 100));
+                    let widthPercent = Math.max(0.5, Math.min(100, (spanDuration / traceDuration) * 100));
+
+                    // Cap width so it doesn't overflow container
+                    if (leftPercent + widthPercent > 100) {
+                        widthPercent = 100 - leftPercent;
+                    }
+
+                    const durationRatio = spanDuration / traceDuration;
+                    let barColor = "bg-blue-500/70";
+                    if (row.span.status === "error") {
+                        barColor = "bg-destructive/80";
+                    } else if (durationRatio > 0.8 && row.depth > 0) {
+                        barColor = "bg-red-500/70";
+                    } else if (durationRatio > 0.5 && row.depth > 0) {
+                        barColor = "bg-amber-500/70";
+                    } else if (row.depth === 0) {
+                        barColor = "bg-primary/50";
+                    }
+
+                    return (
                     <>
                     <TableCell className="font-mono text-xs text-muted-foreground">
                         {row.depth === 0 ? (
@@ -198,11 +226,25 @@ export function InspectorTable({ traces, loading }: InspectorTableProps) {
                             {row.span.status}
                         </Badge>
                     </TableCell>
+                    <TableCell>
+                        <div className="relative w-full h-4 bg-muted/30 rounded-sm overflow-hidden flex items-center group/timeline border border-border/50">
+                            <div
+                                className={cn("absolute h-full rounded-sm transition-all shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]", barColor)}
+                                style={{
+                                    left: `${leftPercent}%`,
+                                    width: `${widthPercent}%`,
+                                    minWidth: '2px'
+                                }}
+                            />
+                            {/* Hover tooltip logic could be added here if needed */}
+                        </div>
+                    </TableCell>
                     <TableCell className="text-right font-mono text-xs">
-                        {row.span.endTime - row.span.startTime < 1000 ? `${row.span.endTime - row.span.startTime}ms` : `${((row.span.endTime - row.span.startTime) / 1000).toFixed(2)}s`}
+                        {spanDuration < 1000 ? `${spanDuration}ms` : `${(spanDuration / 1000).toFixed(2)}s`}
                     </TableCell>
                     </>
-                )}
+                );
+                }}
             />
         )}
       </div>
