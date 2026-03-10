@@ -72,6 +72,7 @@ export function LogStream({
   const [filterLevel, setFilterLevel] = React.useState<string>(initialLevel)
   const [filterSource, setFilterSource] = React.useState<string>(initialSource)
   const [searchQuery, setSearchQuery] = React.useState("")
+  const [useRegex, setUseRegex] = React.useState(false)
   const [isConnected, setIsConnected] = React.useState(false)
   // Optimization: Defer the search query to keep the UI responsive while filtering large lists
   const deferredSearchQuery = React.useDeferredValue(searchQuery)
@@ -79,9 +80,18 @@ export function LogStream({
   // Optimization: Pre-compile regex for highlighting to avoid repeated RegExp creation in render loop
   const highlightRegex = React.useMemo(() => {
     if (!deferredSearchQuery) return null;
-    const escaped = deferredSearchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    return new RegExp(`(${escaped})`, 'gi');
-  }, [deferredSearchQuery]);
+    try {
+        if (useRegex) {
+            // User provided a regex, wrap it in capturing group for highlighting
+            return new RegExp(`(${deferredSearchQuery})`, 'gi');
+        }
+        const escaped = deferredSearchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        return new RegExp(`(${escaped})`, 'gi');
+    } catch (e) {
+        // If regex is invalid, fallback to no highlighting or string match
+        return null;
+    }
+  }, [deferredSearchQuery, useRegex]);
 
   const wsRef = React.useRef<WebSocket | null>(null)
   // Optimization: Buffer for incoming logs to support batch processing
@@ -233,13 +243,21 @@ export function LogStream({
       // ⚡ BOLT: Optimized memory usage by removing eager search string allocation.
       // Randomized Selection from Top 5 High-Impact Targets
       // We calculate matches on demand to avoid O(N) memory overhead for search strings.
-      const matchesSearch = !deferredSearchQuery ||
-        log.message.toLowerCase().includes(lowerSearchQuery) ||
-        log.source?.toLowerCase().includes(lowerSearchQuery)
+      let matchesSearch = true;
+      if (deferredSearchQuery) {
+          if (useRegex && highlightRegex) {
+              matchesSearch = highlightRegex.test(log.message) || (log.source ? highlightRegex.test(log.source) : false);
+              // reset lastIndex since it's global
+              highlightRegex.lastIndex = 0;
+          } else {
+              matchesSearch = log.message.toLowerCase().includes(lowerSearchQuery) ||
+                (log.source ? log.source.toLowerCase().includes(lowerSearchQuery) : false);
+          }
+      }
 
       return matchesLevel && matchesSource && matchesSearch
     })
-  }, [logs, filterLevel, filterSource, deferredSearchQuery, traceId, traceStartTime, traceEndTime])
+  }, [logs, filterLevel, filterSource, deferredSearchQuery, useRegex, highlightRegex, traceId, traceStartTime, traceEndTime])
 
   const clearLogs = () => setLogs([])
 
@@ -319,14 +337,24 @@ export function LogStream({
       <Card className={cn("flex-1 flex flex-col overflow-hidden border-muted/50 shadow-sm bg-background/50 backdrop-blur-sm", isEmbedded && "border-0 shadow-none bg-transparent")}>
         <CardHeader className={cn("p-4 border-b bg-muted/20", isEmbedded && "p-2 bg-transparent border-b")}>
              <div className="flex flex-col md:flex-row gap-4 justify-between">
-                <div className="relative flex-1 max-w-sm w-full">
+                <div className="relative flex-1 max-w-sm w-full flex items-center">
                     <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                     <Input
-                    placeholder={isEmbedded ? "Search within correlated logs..." : "Search logs..."}
-                    className="pl-8 bg-background w-full"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder={isEmbedded ? "Search within correlated logs..." : "Search logs..."}
+                        className="pl-8 pr-12 bg-background w-full"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
                     />
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className={cn("absolute right-1 h-7 px-2 text-[10px] font-mono", useRegex ? "bg-primary/20 text-primary hover:bg-primary/30" : "text-muted-foreground")}
+                        onClick={() => setUseRegex(!useRegex)}
+                        title="Use Regular Expression"
+                    >
+                        .*
+                    </Button>
                 </div>
                 {isEmbedded && (
                     <div className="text-[10px] text-muted-foreground flex items-center justify-end px-2 italic">

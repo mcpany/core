@@ -88,7 +88,7 @@
 - [x] **Recent Tools in Search**: Show recently used or searched tools in the search dropdown.
 - [ ] **Visual Connection Graph**: View how services interact with agents.
 - [x] **Dashboard Layout Customization**: Ability for users to rearrange and resize dashboard widgets.
-- [ ] **Dashboard Widget Gallery**: Allow users to add multiple instances of widgets (e.g., multiple "Metric" cards for different queries).
+- [x] **Dashboard Widget Gallery**: Allow users to add multiple instances of widgets (e.g., multiple "Metric" cards for different queries).
 - [ ] **Compact Density Mode**: A toggle to reduce padding and font sizes for high-information-density dashboards.
 - [x] **Tool Failure Rate Widget**: A dashboard widget showing tools with the highest error rates.
 - [x] **Recent Activity Widget**: A dashboard widget showing real-time tool executions with status and duration, linking to trace details.
@@ -99,13 +99,13 @@
 - [x] **Native File Upload Support in Playground**: Automatically detect base64 encoded fields in tool schemas and provide a native file picker.
 - [ ] **Playground File Drag-and-Drop**: Drag and drop files onto the Playground to automatically fill matching inputs.
 - [ ] **Image Preview in Playground Forms**: Display a preview of the selected image in the form before submission.
-- [ ] **Dashboard Widget Persistence**: Allow users to configure which widgets are shown and their order/size, persisting this preference to the backend (currently local storage).
+- [x] **Dashboard Widget Persistence**: Allow users to configure which widgets are shown and their order/size, persisting this preference to the backend (currently local storage).
 - [ ] **Refactor Metrics Testing**: Inject Prometheus Registry/Gatherer into Application struct to allow isolated testing without global state side effects.
 - [ ] **Log Persistence**: Backend support to persist logs so they can be viewed after page reload (currently transient).
 - [x] **Structured Log Viewer**: Parse JSON logs in the message field and display them as an expandable tree object for better readability.
 - [x] **Log Search Highlighting**: Highlight the search term within the log message for better visibility.
 - [ ] **Filter Logs by Time Range**: Add a date/time picker to filter logs (e.g. "Last 1 hour", "Custom Range").
-- [ ] **Regex Support in Log Search**: Allow advanced searching using regex patterns.
+- [x] **Regex Support in Log Search**: Allow advanced searching using regex patterns.
 - [ ] **Log Source Color Coding**: Assign distinct colors to different log sources automatically for better visual separation.
 - [ ] **Context Usage History**: Track total context usage over time to identify growth trends (requires backend metrics persistence).
 - [ ] **Tool Schema Optimizer**: Analyze tool schemas and suggest removing unused properties or compacting descriptions to save context tokens.

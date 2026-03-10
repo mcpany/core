@@ -353,6 +353,16 @@ describe("LogStream", () => {
     expect(highlighted.tagName).toBe("MARK");
     expect(highlighted).toHaveClass("bg-yellow-500/40");
 
+    // Test regex search
+    const regexButton = screen.getByTitle("Use Regular Expression");
+    fireEvent.click(regexButton);
+    fireEvent.change(searchInput, { target: { value: "e[rR]{2}o[rR]" } });
+    act(() => {
+        vi.advanceTimersByTime(500);
+    });
+    const regexHighlighted = screen.getByText("error");
+    expect(regexHighlighted.tagName).toBe("MARK");
+
     vi.useRealTimers();
   });
 
