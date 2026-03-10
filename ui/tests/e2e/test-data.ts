@@ -195,6 +195,10 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
     }
 };
 
+export const seedWebhooks = async (requestContext?: APIRequestContext) => {
+    // No-op for now to fix the undefined error
+};
+
 export const seedTraffic = async (requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     const points = [
