@@ -46,3 +46,7 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-03-10:** Update: Secure Origin Binding for A2A Callbacks.
+    *   **Context**: Today's findings (Glic Jack patterns) highlight vulnerabilities in cross-agent browser-based callbacks.
+    *   **Architecture Adjustment**: All A2A callback URLs must now include an "Origin-Attestation" token verified by the `Strict WebView Policy Enforcer`.
+    *   **Security Impact**: Mitigates "Callback Hijacking" where a malicious subagent or extension redirects an A2A message to an unauthorized origin.

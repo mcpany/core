@@ -39,6 +39,11 @@
 *   **[P0] Agent-Aware Blackboard Isolation**: Row-level security for Shared KV Store to prevent cross-agent state injection. (Added: 2026-03-09)
 *   **[P1] Detached Sandbox for Automated Hooks**: Isolated runtime for tool sequences with zero host access by default. (Added: 2026-03-09)
 
+#### Upcoming (2026-03-10 Evolution)
+*   **[P1] Strict WebView Policy Enforcer**: Security middleware for browser-based agent interfaces (e.g., Glic panels) to prevent extension hijacking. (Added: 2026-03-10)
+*   **[P1] Native Agent Cron & Loop Support**: Infrastructure-level task scheduler for recurring tool execution loops. (Added: 2026-03-10)
+*   **[P1] Hardened Cloud Deployment Blueprints**: Secure terraform/cloud-init templates for AWS/GCP managed instances. (Added: 2026-03-10)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

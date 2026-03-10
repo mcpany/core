@@ -67,3 +67,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project Configuration Guard**: MCP Any will evolve into a "Validating Proxy" for all project-local agent configurations. It will intercept and sanitize any "auto-execute" or "hook" definitions before they reach the agent runtime, requiring explicit user attestation.
 - **Agent-Aware Blackboard Isolation**: The Shared KV Store (Blackboard) must implement mandatory "Agent-Bound" isolation. Data written by one agent will be read-only or invisible to others unless a specific "Shared Intent" is established.
 - **Zero-Trust Hook Execution**: Any executable hook or automated tool sequence must run in a "Detached Sandbox" managed by MCP Any, with zero access to the host filesystem unless explicitly granted via a capability-based token.
+
+---
+
+## Strategic Evolution: [2026-03-10]
+### Focus: Secure WebView Isolation & Scheduled Agentic Persistence
+**Context**: Today's findings identify a critical intersection between browser-embedded agents and security. The "Glic Jack" (CVE-2026-0628) vulnerability highlights that AI panels within browsers (like Gemini Live) are vulnerable to privilege escalation via WebView misconfiguration. Simultaneously, Claude Code's introduction of `/loop` and cron commands marks a shift from reactive agents to persistent, scheduled swarms.
+**Strategic Pivot**:
+- **Strict WebView Policy Binding**: MCP Any will introduce a "Policy-Enforced WebView" middleware. This ensures that any web-based agent interface interacting with MCP tools is bound by a strict, non-bypassable origin and capability policy, preventing extension-based hijacking.
+- **Native Persistence & Scheduling**: Moving beyond real-time tool calls, MCP Any will implement a native "Task Scheduler" (Cron/Loop support) at the infrastructure layer. This allows agents to delegate recurring background tasks (e.g., "monitor this deploy every 5m") to MCP Any, which handles the execution and provides state updates to the agent.
+- **Verified Managed Deployment**: Following the OpenClaw on Lightsail trend, MCP Any will prioritize "One-Click Hardened" deployment profiles for cloud providers, ensuring the infrastructure layer is safe-by-default when moving from local to cloud environments.

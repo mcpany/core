@@ -90,3 +90,16 @@
 
 ### Deprecations / Monitoring
 - **Unvalidated Project-Local Configs**: Monitoring for total deprecation. All local configs must be attested via MCP Any before ingestion by agents.
+
+---
+
+## Evolution: [2026-03-10] Updates
+
+### Proposed Additions
+- **Strict WebView Policy Enforcer**: (P1) Security middleware that enforces origin-bound capability policies for browser-based AI panels, mitigating "Glic Jack"-style escalation.
+- **Native Agent Cron & Loop Support**: (P1) Infrastructure-level task scheduler allowing agents to register recurring tool execution loops with persistent state.
+- **Hardened Cloud Deployment Blueprints**: (P1) Pre-configured terraform/cloud-init templates for secure, managed MCP Any instances on AWS/GCP (inspired by OpenClaw's Lightsail launch).
+
+### Priority Shifts
+- **Policy Firewall**: Re-affirmed as **P0**. Essential for cross-origin security enforcement.
+- **A2A Stateful Residency**: Re-affirmed as **P0**. Prerequisite for persistent task scheduling across agent sessions.
