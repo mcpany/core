@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { vs2015 } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { useState, useEffect } from "react";
 import { SmartResultRenderer } from "./smart-result-renderer";
 import { estimateTokens, formatTokenCount } from "@/lib/tokens";
@@ -25,10 +25,10 @@ import { unwrapMcpResult, deepParseJson } from "@/lib/mcp-unwrap";
 // Randomized Selection from Top 5 High-Impact Targets
 const SyntaxHighlighter = dynamic(
     () => import('react-syntax-highlighter/dist/esm/prism-light').then(async (mod) => {
-        const jsonLang = await import('react-syntax-highlighter/dist/esm/languages/prism/json');
-        const jsLang = await import('react-syntax-highlighter/dist/esm/languages/prism/javascript');
-        const pythonLang = await import('react-syntax-highlighter/dist/esm/languages/prism/python');
-        const bashLang = await import('react-syntax-highlighter/dist/esm/languages/prism/bash');
+        const jsonLang = await import('react-syntax-highlighter/dist/esm/languages/hljs/json');
+        const jsLang = await import('react-syntax-highlighter/dist/esm/languages/hljs/javascript');
+        const pythonLang = await import('react-syntax-highlighter/dist/esm/languages/hljs/python');
+        const bashLang = await import('react-syntax-highlighter/dist/esm/languages/hljs/bash');
         mod.default.registerLanguage('json', jsonLang.default);
         mod.default.registerLanguage('javascript', jsLang.default);
         mod.default.registerLanguage('python', pythonLang.default);
@@ -188,7 +188,7 @@ export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
                          <div className="relative group/code">
                             <SyntaxHighlighter
                                 language="json"
-                                style={vscDarkPlus}
+                                style={vs2015}
                                 customStyle={{ margin: 0, padding: '1rem', fontSize: '12px', background: 'rgba(0,0,0,0.4)' }}
                                 wrapLines={true}
                                 wrapLongLines={true}

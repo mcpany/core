@@ -15,7 +15,7 @@ import yaml from 'react-syntax-highlighter/dist/esm/languages/hljs/yaml';
 import xml from 'react-syntax-highlighter/dist/esm/languages/hljs/xml';
 import markdown from 'react-syntax-highlighter/dist/esm/languages/hljs/markdown';
 import plaintext from 'react-syntax-highlighter/dist/esm/languages/hljs/plaintext';
-import { vs2015 } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+import vs2015 from 'react-syntax-highlighter/dist/esm/styles/hljs/vs2015';
 
 ReactSyntaxHighlighter.registerLanguage('json', json);
 ReactSyntaxHighlighter.registerLanguage('yaml', yaml);
@@ -83,7 +83,7 @@ export function ResourceViewer({ content, loading }: ResourceViewerProps) {
     }
 
     if (mimeType.includes("json") || mimeType.includes("yaml") || mimeType.includes("xml")) {
-         return (
+        return (
             <ScrollArea className="h-full">
                 <ReactSyntaxHighlighter
                     language={mimeType.includes("json") ? "json" : "yaml"}
@@ -98,11 +98,11 @@ export function ResourceViewer({ content, loading }: ResourceViewerProps) {
     }
 
     // Markdown
-     if (mimeType.includes("markdown") || uri?.endsWith(".md")) {
-         return (
+    if (mimeType.includes("markdown") || uri?.endsWith(".md")) {
+        return (
             <ScrollArea className="h-full p-6">
                 <div className="prose dark:prose-invert max-w-none">
-                     <ReactSyntaxHighlighter
+                    <ReactSyntaxHighlighter
                         language="markdown"
                         style={vs2015}
                         customStyle={{ background: 'transparent', padding: 0 }}
@@ -117,8 +117,8 @@ export function ResourceViewer({ content, loading }: ResourceViewerProps) {
 
     // Code / Plain Text
     return (
-         <ScrollArea className="h-full">
-             <ReactSyntaxHighlighter
+        <ScrollArea className="h-full">
+            <ReactSyntaxHighlighter
                 language="text" // generic
                 style={vs2015}
                 customStyle={{ margin: 0, borderRadius: 0, height: "100%", fontSize: '0.875rem' }}

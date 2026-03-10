@@ -15,6 +15,12 @@ importers:
         specifier: ^7.28.6
         version: 7.28.6
       '@bufbuild/protobuf':
+        specifier: ^1.10.1
+        version: 1.10.1
+      '@bufbuild/protoc-gen-es':
+        specifier: ^1.10.1
+        version: 1.10.1
+      '@bufbuild/protoplugin':
         specifier: ^2.10.2
         version: 2.11.0
       '@genkit-ai/google-genai':
@@ -347,6 +353,22 @@ importers:
         version: 4.0.18(@opentelemetry/api@1.9.0)(@types/node@20.19.37)(jiti@1.21.7)(jsdom@27.4.0)(tsx@4.21.0)(yaml@2.8.2)
 
 packages:
+  '@bufbuild/protoc-gen-es@1.10.1':
+    resolution: {integrity: sha512-9pIovEaM0lEonp69T4yq6A2S7YI/D/sUvO1U1F6f55465vH4p29NfU14YmlyYsc30y34jO1W0AAnw7458Q6VpA==}
+    engines: {node: '>=14'}
+    hasBin: true
+    dependencies:
+      '@bufbuild/protobuf': 2.11.0
+      '@bufbuild/protoplugin': 1.10.1
+    dev: false
+
+  '@bufbuild/protoplugin@1.10.1':
+    resolution: {integrity: sha512-88iV0MvSodm7vV9/K94sSj9f6V27Y7TqndK6C/i692gq+M6BId90Pz/c/bX6tY7+T31v6eI+I6Xb7O8v7w==}
+    engines: {node: '>=14'}
+    dependencies:
+      '@bufbuild/protobuf': 2.11.0
+    dev: false
+
 
   '@acemir/cssom@0.9.31':
     resolution: {integrity: sha512-ZnR3GSaH+/vJ0YlHau21FjfLYjMpYVIzTD8M8vIEQvIGxeOXyXdzCI140rrCY862p/C/BbzWsjc1dgnM9mkoTA==}
@@ -7033,6 +7055,19 @@ packages:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
 
 snapshots:
+  '@bufbuild/protoc-gen-es@1.10.1':
+    dependencies:
+      '@bufbuild/protobuf': 2.11.0
+      '@bufbuild/protoplugin': 1.10.1
+      typescript: 5.9.3
+    dev: false
+
+  '@bufbuild/protoplugin@1.10.1':
+    dependencies:
+      '@bufbuild/protobuf': 2.11.0
+      typescript: 5.9.3
+    dev: false
+
 
   '@acemir/cssom@0.9.31': {}
 
@@ -14606,10 +14641,22 @@ snapshots:
   ts-proto-descriptors@2.1.0:
     dependencies:
       '@bufbuild/protobuf': 2.11.0
+      '@bufbuild/protoc-gen-es':
+        specifier: ^1.10.1
+        version: 1.10.1
+      '@bufbuild/protoplugin':
+        specifier: ^1.10.1
+        version: 1.10.1
 
   ts-proto@2.11.1:
     dependencies:
       '@bufbuild/protobuf': 2.11.0
+      '@bufbuild/protoc-gen-es':
+        specifier: ^1.10.1
+        version: 1.10.1
+      '@bufbuild/protoplugin':
+        specifier: ^1.10.1
+        version: 1.10.1
       case-anything: 2.1.13
       ts-poet: 6.12.0
       ts-proto-descriptors: 2.1.0

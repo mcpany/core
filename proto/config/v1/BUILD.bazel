@@ -4,6 +4,7 @@
 load("@protobuf//bazel:proto_library.bzl", "proto_library")
 load("@rules_go//go:def.bzl", "go_library")
 load("@rules_go//proto:def.bzl", "go_proto_library")
+load("@rules_ts//ts:proto.bzl", "ts_proto_library")
 
 proto_library(
     name = "v1_proto",
@@ -31,6 +32,14 @@ proto_library(
         "@protobuf//:struct_proto",
         "@protobuf//:timestamp_proto",
     ],
+)
+
+ts_proto_library(
+    name = "v1_ts_proto",
+    node_modules = "//ui:node_modules",
+    proto = ":v1_proto",
+    copy_files = False,
+    visibility = ["//visibility:public"],
 )
 
 go_proto_library(

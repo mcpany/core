@@ -40,6 +40,7 @@ next_bin.next(
     srcs = [
         ":node_modules",
         ":srcs",
+        "//proto:ts_proto",
     ],
     args = ["build"],
     chdir = package_name(),
@@ -54,6 +55,7 @@ vitest_bin.vitest_test(
     data = [
         ":node_modules",
         ":srcs",
+        "//proto:ts_proto",
     ],
 )
 
@@ -67,6 +69,7 @@ eslint_bin.eslint_test(
     data = [
         ":node_modules",
         ":srcs",
+        "//proto:ts_proto",
     ],
 )
 
@@ -78,5 +81,6 @@ tsc_bin.tsc_test(
     data = [
         ":node_modules",
         ":srcs",
+        "//proto:ts_proto",
     ],
 )
