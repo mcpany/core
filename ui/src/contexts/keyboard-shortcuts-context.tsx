@@ -86,7 +86,17 @@ export function KeyboardShortcutsProvider({ children }: { children: React.ReactN
 
   const register = React.useCallback((def: ShortcutDefinition) => {
     setShortcuts((prev) => {
-      if (JSON.stringify(prev[def.id]) === JSON.stringify(def)) {
+      const existing = prev[def.id]
+      // ⚡ BOLT: Replaced slow JSON.stringify comparison with direct property comparison to avoid serialization overhead during frequent keyboard shortcut registrations.
+      // Randomized Selection from Top 5 High-Impact Targets
+      if (
+        existing &&
+        existing.id === def.id &&
+        existing.label === def.label &&
+        existing.category === def.category &&
+        existing.defaultKeys.length === def.defaultKeys.length &&
+        existing.defaultKeys.every((k, i) => k === def.defaultKeys[i])
+      ) {
         return prev
       }
       return { ...prev, [def.id]: def }
