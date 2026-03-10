@@ -84,9 +84,18 @@
 - **Agent-Aware Blackboard Isolation**: (P0) Implements row-level security for the Shared KV Store, ensuring agents can only access state within their assigned "Intent Scope."
 - **Detached Sandbox for Automated Hooks**: (P1) Isolated execution environment for automated tool sequences, preventing unauthorized host access.
 
+---
+
+## Evolution: [2026-03-10] Updates
+
+### Proposed Additions
+- **Runtime IPI Guard (Output Sanitizer)**: (P0) A validation middleware that scans tool outputs for Indirect Prompt Injection patterns before returning them to the LLM.
+- **Shadow MCP Audit & Quarantine**: (P1) Automated discovery and cryptographic attestation for all connected MCP servers to prevent unmanaged "Shadow" tools.
+- **Cost-Optimized Tool Routing**: (P1) Middleware that uses token-usage telemetry to suggest the most cost-effective tool/service for a given intent.
+
 ### Priority Shifts
-- **Shared KV Store (Blackboard)**: Re-affirmed as **P0** with new mandatory security isolation requirements.
-- **Policy Firewall**: Promoted to **P0** (Already P0, but expanded to include "Project-Local Config Validation").
+- **Policy Firewall**: Re-affirmed as **P0**. Essential for enforcing IPI and Shadow MCP policies.
+- **Lazy-MCP Middleware**: Re-affirmed as **P0**. Critical for reducing context bloat and associated costs.
 
 ### Deprecations / Monitoring
-- **Unvalidated Project-Local Configs**: Monitoring for total deprecation. All local configs must be attested via MCP Any before ingestion by agents.
+- **Unattested Remote MCP Servers**: Monitoring for total deprecation. All remote tools must provide a verifiable provenance signature.

@@ -67,3 +67,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project Configuration Guard**: MCP Any will evolve into a "Validating Proxy" for all project-local agent configurations. It will intercept and sanitize any "auto-execute" or "hook" definitions before they reach the agent runtime, requiring explicit user attestation.
 - **Agent-Aware Blackboard Isolation**: The Shared KV Store (Blackboard) must implement mandatory "Agent-Bound" isolation. Data written by one agent will be read-only or invisible to others unless a specific "Shared Intent" is established.
 - **Zero-Trust Hook Execution**: Any executable hook or automated tool sequence must run in a "Detached Sandbox" managed by MCP Any, with zero access to the host filesystem unless explicitly granted via a capability-based token.
+
+---
+
+## Strategic Evolution: [2026-03-10]
+### Focus: Runtime Security & IPI Defense
+**Context**: The "Autonomy Paradox" is real: rapid deployment of agents without comprehensive security. Indirect Prompt Injection (IPI) is now the primary threat, as agents ingest malicious content from the web or local project files. Additionally, "Shadow MCP" use is leading to unmonitored data exfiltration.
+**Strategic Pivot**:
+- **Runtime IPI Guard**: MCP Any will introduce a "Validation Layer" that inspects tool outputs for "malicious intent markers" before they are passed back to the LLM context. This prevents IPI from hijacking the agent's next action.
+- **Shadow MCP Discovery & Audit**: Implementing proactive scanning and attestation for all connected MCP servers. Any "Shadow" (unverified) server will be automatically quarantined.
+- **Cost-Aware Execution Refinement**: Integrating token-usage telemetry directly into the routing logic to help agents choose the most cost-effective tool path, addressing the "Binary Fatigue" and cost concerns in the ecosystem.

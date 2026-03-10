@@ -47,3 +47,7 @@ The `Shared KV Store` (Blackboard) is a core tool in MCP Any that allows multipl
 
 ## 7. Evolutionary Changelog
 * **2026-03-09:** Initial Document Creation.
+* **2026-03-10:** RLS Enforcement for IPI Mitigation.
+    * **Context**: Today's findings show that IPI can be used to trick agents into leaking Blackboard state.
+    * **Architecture Adjustment**: Implementing mandatory "Read-Only" scopes for subagents by default, unless the parent explicitly grants "Write" permissions for a specific `IntentScope`.
+    * **Security Impact**: Reduces the blast radius if a subagent is compromised via IPI.

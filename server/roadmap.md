@@ -34,6 +34,11 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-10 Evolution)
+*   **[P0] Runtime IPI Guard**: Middleware to scan and sanitize tool outputs for Indirect Prompt Injection. (Added: 2026-03-10)
+*   **[P1] Shadow MCP Audit & Quarantine**: Proactive discovery and cryptographic attestation for all connected MCP servers. (Added: 2026-03-10)
+*   **[P1] Cost-Optimized Tool Routing**: Middleware to suggest cost-effective tool paths using token-usage telemetry. (Added: 2026-03-10)
+
 #### Upcoming (2026-03-09 Evolution)
 *   **[P0] Project Configuration Security Guard**: Validating proxy for project-local agent configs (e.g., `.claude/settings.json`) to prevent RCE. (Added: 2026-03-09)
 *   **[P0] Agent-Aware Blackboard Isolation**: Row-level security for Shared KV Store to prevent cross-agent state injection. (Added: 2026-03-09)
