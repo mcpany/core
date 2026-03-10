@@ -67,3 +67,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project Configuration Guard**: MCP Any will evolve into a "Validating Proxy" for all project-local agent configurations. It will intercept and sanitize any "auto-execute" or "hook" definitions before they reach the agent runtime, requiring explicit user attestation.
 - **Agent-Aware Blackboard Isolation**: The Shared KV Store (Blackboard) must implement mandatory "Agent-Bound" isolation. Data written by one agent will be read-only or invisible to others unless a specific "Shared Intent" is established.
 - **Zero-Trust Hook Execution**: Any executable hook or automated tool sequence must run in a "Detached Sandbox" managed by MCP Any, with zero access to the host filesystem unless explicitly granted via a capability-based token.
+
+---
+
+## Strategic Evolution: [2026-03-10]
+### Focus: Secure Transport Hardening & Economical Model Orchestration
+**Context**: The massive OpenClaw security crisis (CSWSH/RCE) and the rapid adoption of model orchestration layers like `ClawRouter` indicate that MCP Any must evolve into both a "Hardened Gateway" and an "Economical Reasoning" hub.
+**Strategic Pivot**:
+- **Strict Transport Validation (Zero Trust Comms)**: MCP Any will implement mandatory Origin and Protocol validation for all control-plane communication, preventing Cross-Site WebSocket Hijacking (CSWSH) even for localhost-bound instances.
+- **Economical Model Routing Middleware**: Integrating "Cost-Aware" logic into the tool discovery and execution pipeline. MCP Any will automatically suggest or route tasks to the most cost-effective model based on historical complexity metrics.
+- **Automated Skill Attestation**: Shifting from "manual approval" to "Automated Verification" by integrating specialized security scanners (e.g., Cisco's Skill Scanner) into the MCP server onboarding process.

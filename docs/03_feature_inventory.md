@@ -84,9 +84,22 @@
 - **Agent-Aware Blackboard Isolation**: (P0) Implements row-level security for the Shared KV Store, ensuring agents can only access state within their assigned "Intent Scope."
 - **Detached Sandbox for Automated Hooks**: (P1) Isolated execution environment for automated tool sequences, preventing unauthorized host access.
 
-### Priority Shifts
-- **Shared KV Store (Blackboard)**: Re-affirmed as **P0** with new mandatory security isolation requirements.
-- **Policy Firewall**: Promoted to **P0** (Already P0, but expanded to include "Project-Local Config Validation").
+---
+
+## Evolution: [2026-03-10] Updates
+
+### Proposed Additions
+- **WebSocket Origin Enforcement Middleware**: (P0) Mandatory validation of `Origin` and `Sec-WebSocket-Protocol` headers for all incoming control connections to prevent CSWSH.
+- **Cost-Aware Model Router (ClawRouter Interop)**: (P0) A routing middleware that intelligently maps agent tasks to the most cost-effective model (e.g., GPT-4o-mini for simple tools, Claude 3.7 Opus for reasoning).
+- **Automated Skill Scanner Integration**: (P1) Automatic submission of newly connected MCP tools to specialized security scanners (e.g., Cisco's Skill Scanner) to identify malicious hooks or exploits.
+
+### Priority Shifts (2026-03-10)
+- **Safe-by-Default Network Hardening**: Promoted to **P0** (Critical urgency due to OpenClaw 21k exposure).
+- **Project Configuration Security Guard**: Re-affirmed as **P0** with new focus on CSWSH mitigation.
+
+### Historical Priority Shifts
+- **Shared KV Store (Blackboard)**: [2026-03-09] Re-affirmed as **P0** with new mandatory security isolation requirements.
+- **Policy Firewall**: [2026-03-09] Promoted to **P0** (Already P0, but expanded to include "Project-Local Config Validation").
 
 ### Deprecations / Monitoring
 - **Unvalidated Project-Local Configs**: Monitoring for total deprecation. All local configs must be attested via MCP Any before ingestion by agents.

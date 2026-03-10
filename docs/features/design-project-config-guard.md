@@ -45,7 +45,15 @@ As agents increasingly rely on project-local configuration files (e.g., `.claude
 
 ## 6. Cross-Cutting Concerns
 * **Security (Zero Trust)**: All hooks are treated as untrusted until attested. Approved hooks are executed in a `Detached Sandbox` (cgroups/Docker) with restricted network and disk access.
+    * **CSWSH Mitigation**: The proxy layer now enforces strict `Origin` and `Sec-WebSocket-Protocol` validation for all agent-to-gateway connections to prevent hijacking from malicious browser tabs.
 * **Observability**: Every intercepted config and its attestation status is logged to the `Audit Log`.
 
 ## 7. Evolutionary Changelog
 * **2026-03-09:** Initial Document Creation.
+
+### Update: 2026-03-10 - Mitigating Cross-Site WebSocket Hijacking
+**Context:** Today's market sync revealed a major CSWSH/RCE exploit pattern in the OpenClaw ecosystem affecting over 21k instances.
+**Architecture Adjustment:**
+* Introducing mandatory `Origin` and `Sec-WebSocket-Protocol` header validation in the Transport Middleware.
+* Enforcing `localhost-only` binding by default for all control-plane listeners.
+**Security Impact:** Prevents malicious browser tabs from hijacking the agent gateway via unauthenticated WebSocket connections.

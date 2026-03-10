@@ -39,6 +39,11 @@
 *   **[P0] Agent-Aware Blackboard Isolation**: Row-level security for Shared KV Store to prevent cross-agent state injection. (Added: 2026-03-09)
 *   **[P1] Detached Sandbox for Automated Hooks**: Isolated runtime for tool sequences with zero host access by default. (Added: 2026-03-09)
 
+#### Upcoming (2026-03-10 Evolution)
+*   **[P0] WebSocket Origin Enforcement Middleware**: Mandatory validation of `Origin` and `Sec-WebSocket-Protocol` headers for control connections to prevent CSWSH. (Added: 2026-03-10)
+*   **[P0] Cost-Aware Model Router**: A routing middleware that intelligently maps agent tasks to the most cost-effective model based on task complexity. (Added: 2026-03-10)
+*   **[P1] Automated Skill Scanner Integration**: Background scanner that analyzes newly connected MCP tools for malicious hooks or exploits. (Added: 2026-03-10)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
