@@ -11,13 +11,20 @@ export declare enum ToolDefinition_MergeStrategy {
 }
 
 export interface ToolDefinition {
-  name?: string;
-  description?: string;
+  name: string;
+  description: string;
   title?: string;
-  serviceId?: string;
+  serviceId: string;
   inputSchema?: Record<string, unknown>;
   isStream?: boolean;
   readOnlyHint?: boolean;
   destructiveHint?: boolean;
+  idempotentHint?: boolean;
+  openWorldHint?: boolean;
+  callId?: string;
   disable?: boolean;
+  profiles?: string[];
+  tags: string[];
+  mergeStrategy?: ToolDefinition_MergeStrategy;
+  integrity?: unknown;
 }

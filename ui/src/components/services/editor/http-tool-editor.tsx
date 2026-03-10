@@ -162,7 +162,7 @@ export function HttpToolEditor({ tool, call, serviceName, onChange }: HttpToolEd
                     <div className="space-y-2">
                         <Label htmlFor="http-method">Method</Label>
                         <Select
-                            value={localCall.method.toString()}
+                            value={(localCall.method ?? 0).toString()}
                             onValueChange={(val) => updateCall({ method: parseInt(val) })}
                         >
                             <SelectTrigger id="http-method">
@@ -206,7 +206,7 @@ export function HttpToolEditor({ tool, call, serviceName, onChange }: HttpToolEd
                         </Button>
                     </div>
 
-                    {localCall.parameters?.map((param, index) => (
+                    {localCall.parameters?.map((param: HttpParameterMapping, index: number) => (
                         <Card key={index} className="relative">
                             <Button
                                 variant="ghost"
@@ -229,7 +229,7 @@ export function HttpToolEditor({ tool, call, serviceName, onChange }: HttpToolEd
                                 <div className="col-span-3 space-y-2">
                                     <Label htmlFor={`param-type-${index}`}>Type</Label>
                                     <Select
-                                        value={param.schema?.type.toString()}
+                                        value={(param.schema?.type ?? 0).toString()}
                                         onValueChange={(val) => updateParameterSchema(index, { type: parseInt(val) })}
                                     >
                                         <SelectTrigger id={`param-type-${index}`}>

@@ -57,7 +57,7 @@ export default function SkillWizard() {
   };
 
   const handleChange = (field: keyof Skill, value: any) => {
-    setSkill((prev) => ({ ...prev, [field]: value }));
+    setSkill((prev: Skill) => ({ ...prev, [field]: value }));
   };
 
   const handleNext = () => {
@@ -188,7 +188,7 @@ export default function SkillWizard() {
                   <h3 className="font-medium mb-2">Existing Assets</h3>
                   {skill.assets && skill.assets.length > 0 ? (
                       <ul className="list-disc pl-5">
-                          {skill.assets.map(a => <li key={a}>{a}</li>)}
+                          {skill.assets.map((a: string) => <li key={a}>{a}</li>)}
                       </ul>
                   ) : <p className="text-sm text-muted-foreground">No assets uploaded.</p>}
                </div>

@@ -27,7 +27,7 @@ import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import SyntaxHighlighter from 'react-syntax-highlighter/dist/esm/prism-light';
 import json from 'react-syntax-highlighter/dist/esm/languages/hljs/json';
-import { vs2015 } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import vs2015 from 'react-syntax-highlighter/dist/esm/styles/hljs/vs2015';
 
 interface AuditLogEntry {
     timestamp: string;

@@ -87,7 +87,7 @@ const ItemContent = (_: number, svc: UpstreamServiceConfig, context: VirtuosoCon
                         )}
                     </div>
                     <div className="flex flex-wrap gap-1 mt-1">
-                        {svc.tags && svc.tags.map(tag => (
+                        {svc.tags && svc.tags.map((tag: string) => (
                             <Badge key={tag} variant="outline" className="text-[9px] h-3 px-1">{tag}</Badge>
                         ))}
                     </div>
@@ -346,7 +346,7 @@ export function ProfileEditor({ profile, open, onOpenChange, onSave }: ProfileEd
         const implicitSet = new Set<string>();
 
         availableServices.forEach(svc => {
-            if (svc.tags && svc.tags.some(t => allProfileTags.has(t))) {
+            if (svc.tags && svc.tags.some((t: string) => allProfileTags.has(t))) {
                 implicitSet.add(svc.name);
             }
         });

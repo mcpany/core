@@ -6,7 +6,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
-import { HttpCallDefinition, HttpCallDefinition_HttpMethod, ParameterType } from "@proto/config/v1/call";
+import { HttpCallDefinition, HttpCallDefinition_HttpMethod, HttpParameterMapping, ParameterType } from "@proto/config/v1/call";
 import { ToolDefinition } from "@proto/config/v1/tool";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -63,7 +63,7 @@ export function RequestPreview({ call, tool, serviceName, onExecute, executionRe
     useEffect(() => {
         if (argsJson === "{}" && call.parameters && call.parameters.length > 0) {
             const defaults: Record<string, any> = {};
-            call.parameters.forEach(p => {
+            call.parameters.forEach((p: HttpParameterMapping) => {
                 if (p.schema?.name) {
                     if (p.schema.type === ParameterType.STRING) defaults[p.schema.name] = "value";
                     else if (p.schema.type === ParameterType.NUMBER || p.schema.type === ParameterType.INTEGER) defaults[p.schema.name] = 0;
@@ -92,7 +92,7 @@ export function RequestPreview({ call, tool, serviceName, onExecute, executionRe
 
         // 1. Path Substitution
         let path = call.endpointPath || "/";
-        path = path.replace(/{{([\w.-]+)}}/g, (_, key) => {
+        path = path.replace(/{{([\w.-]+)}}/g, (_: string, key: string) => {
             return args[key] !== undefined ? String(args[key]) : `{{${key}}}`;
         });
 
@@ -107,7 +107,7 @@ export function RequestPreview({ call, tool, serviceName, onExecute, executionRe
         // If no explicit mapping, it might dump args to body or query.
 
         return {
-            method: getMethodName(call.method),
+            method: getMethodName(call.method ?? 0),
             url: path,
             body: args, // Simplified: Assume body receives all args for non-GET
         };
@@ -146,7 +146,7 @@ export function RequestPreview({ call, tool, serviceName, onExecute, executionRe
                             {preview ? (
                                 <>
                                     <div className="flex items-center gap-2 font-mono text-sm break-all">
-                                        <Badge variant="outline" className={getMethodColor(call.method)}>
+                                        <Badge variant="outline" className={getMethodColor(call.method ?? 0)}>
                                             {preview.method}
                                         </Badge>
                                         <span className="text-muted-foreground">{preview.url}</span>

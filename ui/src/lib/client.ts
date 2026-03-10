@@ -1168,7 +1168,7 @@ export const apiClient = {
      *
      * Side Effects: Makes a POST request to /api/v1/auth/oauth/initiate.
      */
-    initiateOAuth: async (serviceId: string, credentialId: string, redirectUrl: string) => {
+    initiateOAuth: async (serviceId: string, redirectUrl: string, credentialId = "") => {
         const res = await fetchWithAuth('/api/v1/auth/oauth/initiate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

@@ -7,13 +7,20 @@
 import type { ToolDefinition } from './tool';
 import type { ResourceDefinition } from './resource';
 import type { PromptDefinition } from './prompt';
-import type { Authentication } from './auth';
+import type { Authentication, SecretValue } from './auth';
 
 export interface ServiceProvenance {
   verified?: boolean;
   signerIdentity?: string;
   attestationTime?: unknown;
   signatureAlgorithm?: string;
+}
+
+export declare enum LoadBalancingStrategy {
+  ROUND_ROBIN = 0,
+  LEAST_CONNECTIONS = 1,
+  RANDOM = 2,
+  IP_HASH = 3,
 }
 
 export declare enum CallPolicy_Action {
@@ -70,6 +77,7 @@ export interface ResilienceConfig {
 
 export interface HttpUpstreamService {
   address?: string;
+  url?: string;
   tools?: ToolDefinition[];
   calls?: Record<string, unknown>;
   healthCheck?: unknown;
@@ -84,17 +92,97 @@ export declare namespace HttpUpstreamService {
   function toJSON(message: HttpUpstreamService): unknown;
 }
 
+export interface GrpcUpstreamService {
+  address?: string;
+  useReflection?: boolean;
+  tlsConfig?: unknown;
+  healthCheck?: unknown;
+  tools?: ToolDefinition[];
+  resources?: ResourceDefinition[];
+  prompts?: PromptDefinition[];
+  calls?: Record<string, unknown>;
+  protoCollection?: unknown;
+  protoDefinitions?: unknown;
+}
+
+export interface CommandLineUpstreamService {
+  command?: string;
+  workingDirectory?: string;
+  tools?: ToolDefinition[];
+  healthCheck?: unknown;
+  cache?: unknown;
+  containerEnvironment?: unknown;
+  timeout?: unknown;
+  resources?: ResourceDefinition[];
+  calls?: Record<string, unknown>;
+  prompts?: PromptDefinition[];
+  local?: boolean;
+  env?: Record<string, SecretValue>;
+  communicationProtocol?: number;
+}
+
+export interface OpenapiUpstreamService {
+  address?: string;
+  specContent?: string;
+  specUrl?: string;
+  healthCheck?: unknown;
+  tlsConfig?: unknown;
+  tools?: ToolDefinition[];
+  resources?: ResourceDefinition[];
+  calls?: Record<string, unknown>;
+  prompts?: PromptDefinition[];
+}
+
+export interface McpUpstreamService {
+  address?: string;
+  tools?: ToolDefinition[];
+  resources?: ResourceDefinition[];
+  prompts?: PromptDefinition[];
+  calls?: Record<string, unknown>;
+  toolAutoDiscovery?: boolean;
+  httpConnection?: {
+    httpAddress?: string;
+    tlsConfig?: unknown;
+  };
+  stdioConnection?: {
+    command?: string;
+  };
+  bundleConnection?: {
+    bundlePath?: string;
+  };
+}
+
 export interface UpstreamServiceConfig {
-  id?: string;
-  name?: string;
-  namespace?: string;
-  enabled?: boolean;
-  serviceType?: string;
+  id: string;
+  name: string;
+  sanitizedName: string;
+  version: string;
+  priority: number;
+  disable: boolean;
+  autoDiscoverTool?: boolean;
+  configError?: string;
+  readOnly?: boolean;
+  lastError?: string;
+  toolCount?: number;
+  description?: string;
+  templateId?: string;
+  tags: string[];
+  configurationSchema?: string;
+  loadBalancingStrategy?: LoadBalancingStrategy;
   httpService?: HttpUpstreamService;
-  grpcService?: unknown;
-  commandLineService?: unknown;
-  mcpService?: unknown;
+  grpcService?: GrpcUpstreamService;
+  commandLineService?: CommandLineUpstreamService;
+  mcpService?: McpUpstreamService;
+  openapiService?: OpenapiUpstreamService;
+  websocketService?: { address?: string; tools?: ToolDefinition[]; resources?: ResourceDefinition[]; prompts?: PromptDefinition[]; calls?: Record<string, unknown> };
+  webrtcService?: { address?: string };
+  graphqlService?: { address?: string };
+  sqlService?: unknown;
+  filesystemService?: unknown;
+  vectorService?: unknown;
+  tools?: ToolDefinition[];
   upstreamAuth?: Authentication;
+  authentication?: Authentication;
   provenance?: ServiceProvenance;
   callPolicies?: CallPolicy[];
   toolExportPolicy?: ExportPolicy;
@@ -104,6 +192,5 @@ export interface UpstreamServiceConfig {
   connectionPool?: unknown;
   preCallHooks?: unknown[];
   postCallHooks?: unknown[];
-  lastError?: string;
-  toolCount?: number;
+  prompts?: PromptDefinition[];
 }

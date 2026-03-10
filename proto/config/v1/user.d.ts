@@ -7,9 +7,9 @@
 import type { Authentication } from './auth';
 
 export interface User {
-  id?: string;
+  id: string;
   authentication?: Authentication;
   profileIds?: string[];
-  roles?: string[];
+  roles: string[];
   preferences?: Record<string, string>;
 }

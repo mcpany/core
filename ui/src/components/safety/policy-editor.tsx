@@ -98,7 +98,7 @@ export function PolicyEditor({ policies = [], onUpdate }: PolicyEditorProps) {
         setCurrentPolicy({
             ...currentPolicy,
             rules: [
-                ...currentPolicy.rules,
+                ...(currentPolicy.rules ?? []),
                 {
                     action: CallPolicy_Action.ALLOW,
                     nameRegex: "",
@@ -111,13 +111,13 @@ export function PolicyEditor({ policies = [], onUpdate }: PolicyEditorProps) {
     };
 
     const updateRule = (index: number, field: keyof CallPolicyRule, value: any) => {
-        const newRules = [...currentPolicy.rules];
+        const newRules = [...(currentPolicy.rules ?? [])];
         newRules[index] = { ...newRules[index], [field]: value };
         setCurrentPolicy({ ...currentPolicy, rules: newRules });
     };
 
     const deleteRule = (index: number) => {
-        const newRules = [...currentPolicy.rules];
+        const newRules = [...(currentPolicy.rules ?? [])];
         newRules.splice(index, 1);
         setCurrentPolicy({ ...currentPolicy, rules: newRules });
     };
@@ -154,21 +154,21 @@ export function PolicyEditor({ policies = [], onUpdate }: PolicyEditorProps) {
                                             ) : (
                                                 <ShieldAlert className="h-6 w-6 text-red-500" />
                                             )}
-                                            <span className="text-xs font-bold mt-1">{ACTION_LABELS[policy.defaultAction]}</span>
+                                            <span className="text-xs font-bold mt-1">{ACTION_LABELS[policy.defaultAction ?? 0]}</span>
                                         </div>
                                         <Separator orientation="vertical" className="h-10" />
                                         <div>
-                                            <div className="font-medium">{policy.rules.length} Rule{policy.rules.length !== 1 ? 's' : ''}</div>
+                                            <div className="font-medium">{(policy.rules ?? []).length} Rule{(policy.rules ?? []).length !== 1 ? 's' : ''}</div>
                                             <div className="text-sm text-muted-foreground">
-                                                {policy.rules.slice(0, 2).map((r, i) => (
+                                                {(policy.rules ?? []).slice(0, 2).map((r: CallPolicyRule, i: number) => (
                                                     <div key={i} className="flex items-center gap-1 mt-1">
-                                                        <Badge variant="outline" className="text-[10px] py-0 h-4">{ACTION_LABELS[r.action]}</Badge>
+                                                        <Badge variant="outline" className="text-[10px] py-0 h-4">{ACTION_LABELS[r.action ?? 0]}</Badge>
                                                         <span className="font-mono text-xs truncate max-w-[200px]">
                                                             {r.nameRegex ? `Name: /${r.nameRegex}/` : r.argumentRegex ? `Args: /${r.argumentRegex}/` : "Match All"}
                                                         </span>
                                                     </div>
                                                 ))}
-                                                {policy.rules.length > 2 && <div className="text-xs mt-1">+{policy.rules.length - 2} more...</div>}
+                                                {(policy.rules ?? []).length > 2 && <div className="text-xs mt-1">+{(policy.rules ?? []).length - 2} more...</div>}
                                             </div>
                                         </div>
                                     </div>
@@ -200,7 +200,7 @@ export function PolicyEditor({ policies = [], onUpdate }: PolicyEditorProps) {
                         <div className="grid gap-2">
                             <Label>Default Action</Label>
                             <Select
-                                value={currentPolicy.defaultAction.toString()}
+                                value={(currentPolicy.defaultAction ?? 0).toString()}
                                 onValueChange={(v) => setCurrentPolicy({ ...currentPolicy, defaultAction: parseInt(v) })}
                             >
                                 <SelectTrigger>
@@ -226,13 +226,13 @@ export function PolicyEditor({ policies = [], onUpdate }: PolicyEditorProps) {
                                 </Button>
                             </div>
 
-                            {currentPolicy.rules.length === 0 && (
+                            {(currentPolicy.rules ?? []).length === 0 && (
                                 <div className="text-center py-4 text-sm text-muted-foreground border border-dashed rounded">
                                     No rules defined.
                                 </div>
                             )}
 
-                            {currentPolicy.rules.map((rule, idx) => (
+                            {(currentPolicy.rules ?? []).map((rule: CallPolicyRule, idx: number) => (
                                 <div key={idx} className="border rounded-md p-4 space-y-4 relative group bg-muted/5">
                                     <Button
                                         variant="ghost"
@@ -247,7 +247,7 @@ export function PolicyEditor({ policies = [], onUpdate }: PolicyEditorProps) {
                                         <div className="space-y-2">
                                             <Label className="text-xs">Action</Label>
                                             <Select
-                                                value={rule.action.toString()}
+                                                value={(rule.action ?? 0).toString()}
                                                 onValueChange={(v) => updateRule(idx, "action", parseInt(v))}
                                             >
                                                 <SelectTrigger className="h-8">

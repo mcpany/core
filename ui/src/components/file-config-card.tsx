@@ -15,7 +15,7 @@ import yaml from 'js-yaml';
 import SyntaxHighlighter from 'react-syntax-highlighter/dist/esm/prism-light';
 import json from 'react-syntax-highlighter/dist/esm/languages/hljs/json';
 import yamlLang from 'react-syntax-highlighter/dist/esm/languages/hljs/yaml';
-import { vs2015 } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import vs2015 from 'react-syntax-highlighter/dist/esm/styles/hljs/vs2015';
 import { ScrollArea } from "./ui/scroll-area";
 
 SyntaxHighlighter.registerLanguage('json', json);
@@ -86,7 +86,7 @@ function CodeBlock({ language, code }: { language: string; code: string }) {
 export const FileConfigCard = memo(function FileConfigCard({ service }: { service: UpstreamServiceConfig }) {
     const { jsonConfig, yamlConfig, textProtoConfig } = useMemo(() => {
         const tempService = structuredClone(service);
-        delete tempService.id;
+        delete (tempService as { id?: string }).id;
 
         return {
             jsonConfig: JSON.stringify(tempService, null, 2),

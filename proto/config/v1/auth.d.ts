@@ -12,6 +12,8 @@ export interface SecretValue {
   vault?: VaultSecret;
   awsSecretManager?: AwsSecretManagerSecret;
   validationRegex?: string;
+  /** @deprecated UI-only field for referencing a secret by ID */
+  secretId?: string;
 }
 
 export interface RemoteContent {
@@ -90,7 +92,7 @@ export interface TrustedHeaderAuth {
 export interface Authentication {
   apiKey?: APIKeyAuth;
   bearerToken?: BearerTokenAuth;
-  basic?: BasicAuth;
+  basicAuth?: BasicAuth;
   oauth2?: OAuth2Auth;
   oidc?: OIDCAuth;
   mtls?: MTLSAuth;
@@ -108,8 +110,8 @@ export interface UserToken {
 }
 
 export interface Credential {
-  id?: string;
-  name?: string;
+  id: string;
+  name: string;
   authentication?: Authentication;
   token?: UserToken;
 }

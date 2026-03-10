@@ -222,7 +222,7 @@ export default function ServicesPage() {
           setConfiguringTemplate(template);
       } else {
           const newService = initServiceFromConfig(template.config);
-          setSelectedService(newService);
+          setSelectedService(newService as UpstreamServiceConfig);
       }
   };
 
@@ -232,7 +232,7 @@ export default function ServicesPage() {
       const configuredConfig = applyTemplateFields(configuringTemplate, values);
       const newService = initServiceFromConfig(configuredConfig);
 
-      setSelectedService(newService);
+      setSelectedService(newService as UpstreamServiceConfig);
       setConfiguringTemplate(null); // Clear the configuration step
   };
 

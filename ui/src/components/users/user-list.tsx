@@ -62,7 +62,7 @@ export function UserList({ users, isLoading, onEdit, onDelete }: UserListProps) 
         const query = searchQuery.toLowerCase();
         return users.filter(user =>
             user.id.toLowerCase().includes(query) ||
-            user.roles.some(role => role.toLowerCase().includes(query))
+            user.roles.some((role: string) => role.toLowerCase().includes(query))
         );
     }, [users, searchQuery]);
 
@@ -141,7 +141,7 @@ export function UserList({ users, isLoading, onEdit, onDelete }: UserListProps) 
                                     </TableCell>
                                     <TableCell>
                                         <div className="flex flex-wrap gap-1">
-                                            {user.roles?.map((role) => (
+                                            {user.roles?.map((role: string) => (
                                                 <Badge
                                                     key={role}
                                                     variant={role === "admin" ? "default" : "secondary"}

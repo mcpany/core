@@ -80,7 +80,9 @@ vi.mock('@/components/ui/tabs', () => ({
 describe('HttpToolEditor', () => {
     const mockTool: ToolDefinition = {
         name: 'test-tool',
-        description: 'Test Description'
+        description: 'Test Description',
+        serviceId: '',
+        tags: [],
     };
 
     const mockCall: HttpCallDefinition = {

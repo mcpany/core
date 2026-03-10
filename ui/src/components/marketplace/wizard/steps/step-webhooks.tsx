@@ -46,7 +46,7 @@ export function StepWebhooks() {
 
   const updateWebhook = (type: 'preCallHooks' | 'postCallHooks', index: number, field: string, value: string) => {
       const hooks = config[type] ? [...config[type]] : [];
-      const hook = { ...hooks[index] };
+      const hook = { ...(hooks[index] as Record<string, unknown>) };
 
       if (field === 'name') {
           hook.name = value;

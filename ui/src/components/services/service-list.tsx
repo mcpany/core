@@ -65,7 +65,7 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
 
   const filteredServices = useMemo(() => {
     if (!tagFilter) return services;
-    return services.filter(s => s.tags?.some(tag => tag.toLowerCase().includes(tagFilter.toLowerCase())));
+    return services.filter(s => s.tags?.some((tag: string) => tag.toLowerCase().includes(tagFilter.toLowerCase())));
   }, [services, tagFilter]);
 
   // Reset selection when filtering changes or services change
@@ -377,7 +377,7 @@ const ServiceRow = memo(function ServiceRow({ service, isSelected, onSelect, onT
              </TableCell>
              <TableCell>
                  <div className="flex flex-wrap gap-1">
-                     {service.tags?.map((tag) => (
+                     {service.tags?.map((tag: string) => (
                          <Badge key={tag} variant="secondary" className="text-xs px-1 py-0 h-5">
                              {tag}
                          </Badge>

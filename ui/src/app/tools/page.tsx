@@ -294,7 +294,7 @@ export default function ToolsPage() {
             />
           ) : (
             <Accordion type="multiple" defaultValue={Object.keys(groupedTools)} className="w-full">
-              {Object.entries(groupedTools).map(([groupName, groupTools]: [string, ToolDefinition[]]) => (
+              {(Object.entries(groupedTools) as Array<[string, ToolDefinition[]]>).map(([groupName, groupTools]) => (
                 <AccordionItem key={groupName} value={groupName}>
                   <AccordionTrigger className="hover:no-underline px-2">
                     <span className="font-medium text-lg flex items-center">

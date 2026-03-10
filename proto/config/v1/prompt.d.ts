@@ -16,7 +16,7 @@ export interface PromptMessage {
 }
 
 export interface PromptDefinition {
-  name?: string;
+  name: string;
   title?: string;
   description?: string;
   inputSchema?: Record<string, unknown>;

@@ -64,7 +64,7 @@ export function OutputTransformerEditor({ transformer, onChange }: OutputTransfo
             <div className="space-y-2">
                 <Label htmlFor="output-format">Output Format</Label>
                 <Select
-                    value={localTransformer.format.toString()}
+                    value={(localTransformer.format ?? 0).toString()}
                     onValueChange={(val) => updateTransformer({ format: parseInt(val) })}
                 >
                     <SelectTrigger id="output-format">
@@ -122,7 +122,7 @@ export function OutputTransformerEditor({ transformer, onChange }: OutputTransfo
                 <SmartTemplateEditor
                     label="Result Template (Optional)"
                     description="Use Jinja2 syntax to format the final output using extracted fields. If empty, the structured result is returned."
-                    value={localTransformer.template}
+                    value={localTransformer.template ?? ''}
                     onChange={(val) => updateTransformer({ template: val })}
                     placeholder="Weather in {{ location }} is {{ temperature }}."
                     variables={variables}

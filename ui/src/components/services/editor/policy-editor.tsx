@@ -75,7 +75,7 @@ export function PolicyEditor({ title, description, policy, onChange }: PolicyEdi
                 <div className="flex items-center justify-between">
                     <Label className="text-sm font-medium">Default Action</Label>
                     <Select
-                        value={currentPolicy.defaultAction.toString()}
+                        value={(currentPolicy.defaultAction ?? 0).toString()}
                         onValueChange={handleDefaultActionChange}
                     >
                         <SelectTrigger className="w-[200px]">
@@ -102,7 +102,7 @@ export function PolicyEditor({ title, description, policy, onChange }: PolicyEdi
                         </div>
                     )}
 
-                    {currentPolicy.rules?.map((rule, index) => (
+                    {currentPolicy.rules?.map((rule: ExportRule, index: number) => (
                         <div key={index} className="flex gap-2 items-start">
                             <div className="flex-1">
                                 <Input
@@ -113,7 +113,7 @@ export function PolicyEditor({ title, description, policy, onChange }: PolicyEdi
                                 />
                             </div>
                             <Select
-                                value={rule.action.toString()}
+                                value={(rule.action ?? 0).toString()}
                                 onValueChange={(val) => updateRule(index, { action: parseInt(val) as ExportPolicy_Action })}
                             >
                                 <SelectTrigger className="w-[120px]">

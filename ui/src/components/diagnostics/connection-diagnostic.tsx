@@ -83,7 +83,7 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
     let url = "";
 
     if (service.httpService) {
-        url = service.httpService.address;
+        url = service.httpService.address ?? '';
         if (!url.startsWith("http")) {
             addLog("config", "Error: HTTP address must start with http:// or https://");
             isValid = false;
@@ -91,7 +91,7 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
             addLog("config", `Validating HTTP address: ${url}`);
         }
     } else if (service.grpcService) {
-        url = service.grpcService.address;
+        url = service.grpcService.address ?? '';
         addLog("config", `Validating gRPC address: ${url}`);
     } else if (service.commandLineService) {
         addLog("config", `Validating Command: ${service.commandLineService.command}`);
@@ -100,7 +100,7 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
              isValid = false;
         }
     } else if (service.websocketService) {
-        url = service.websocketService.address;
+        url = service.websocketService.address ?? '';
         addLog("config", `Validating WebSocket address: ${url}`);
         if (!url.startsWith("ws://") && !url.startsWith("wss://")) {
             addLog("config", "Error: WebSocket address must start with ws:// or wss://");
@@ -151,7 +151,7 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
         }
     } else if (service.httpService) {
         updateStep("browser_connectivity", { status: "running" });
-        const httpUrl = service.httpService.address;
+        const httpUrl = service.httpService.address ?? '';
         addLog("browser_connectivity", `Attempting to connect to ${httpUrl} from browser...`);
 
         try {

@@ -27,6 +27,7 @@ export interface ParameterSchema {
   description?: string;
   type?: ParameterType;
   required?: boolean;
+  isRequired?: boolean;
   defaultValue?: string;
   enum?: string[];
 }
@@ -41,6 +42,7 @@ export interface HttpParameterMapping {
 export interface InputTransformer {
   template?: string;
   parameters?: HttpParameterMapping[];
+  webhook?: unknown;
 }
 
 export declare namespace OutputTransformer {
@@ -65,6 +67,9 @@ export interface OutputTransformer {
   format?: OutputTransformer_OutputFormat;
   expression?: string;
   resultTemplate?: string;
+  template?: string;
+  extractionRules?: Record<string, string>;
+  jqQuery?: string;
 }
 
 export interface HttpCallDefinition {
@@ -73,8 +78,12 @@ export interface HttpCallDefinition {
   description?: string;
   method?: HttpCallDefinition_HttpMethod;
   urlTemplate?: string;
+  endpointPath?: string;
   headers?: Record<string, string>;
   parameters?: HttpParameterMapping[];
   inputTransformer?: InputTransformer;
   outputTransformer?: OutputTransformer;
+  cache?: unknown;
+  inputSchema?: unknown;
+  outputSchema?: unknown;
 }

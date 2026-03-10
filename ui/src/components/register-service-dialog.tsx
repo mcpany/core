@@ -186,7 +186,7 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
                   // Find the value at key path
                   // We handle specific paths for now to be safe
                   if (field.key === "commandLineService.command" && config.commandLineService) {
-                      config.commandLineService.command = config.commandLineService.command.replace(field.replaceToken, value);
+                      config.commandLineService.command = (config.commandLineService.command ?? '').replace(field.replaceToken, value);
                   }
                   // Add other paths as needed
               } else {
@@ -195,7 +195,7 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
                       const envKey = field.key.split(".").pop();
                       if (envKey) {
                           if (!config.commandLineService.env) config.commandLineService.env = {};
-                          config.commandLineService.env[envKey] = value;
+                          config.commandLineService.env[envKey] = value as any;
                       }
                   } else if (field.key === "httpService.address" && config.httpService) {
                       config.httpService.address = value;
@@ -269,7 +269,7 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
               try {
                   const jsonConfig = JSON.parse(values.configJson);
                   if (jsonConfig.commandLineService?.env) {
-                      config.commandLineService.env = jsonConfig.commandLineService.env;
+                      config.commandLineService!.env = jsonConfig.commandLineService.env;
                   }
               } catch (e) {
                   // Ignore JSON parse errors here
@@ -570,7 +570,7 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
                                 </SelectTrigger>
                                 <SelectContent>
                                     {credentials.map((cred) => (
-                                        <SelectItem key={cred.id} value={cred.id}>{cred.name}</SelectItem>
+                                        <SelectItem key={cred.id ?? ''} value={cred.id ?? ''}>{cred.name}</SelectItem>
                                     ))}
                                 </SelectContent>
                             </Select>

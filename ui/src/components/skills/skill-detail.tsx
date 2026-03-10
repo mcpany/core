@@ -81,7 +81,7 @@ export default function SkillDetail() {
                 <span className="font-semibold block mb-2">Allowed Tools:</span>
                 <div className="flex gap-2 flex-wrap">
                     {skill.allowedTools && skill.allowedTools.length > 0 ? (
-                        skill.allowedTools.map(t => <Badge key={t} variant="secondary">{t}</Badge>)
+                        skill.allowedTools.map((t: string) => <Badge key={t} variant="secondary">{t}</Badge>)
                     ) : (
                         <span className="text-muted-foreground italic">None allowed (default)</span>
                     )}
@@ -108,7 +108,7 @@ export default function SkillDetail() {
           <CardContent>
               {skill.assets && skill.assets.length > 0 ? (
                   <ul className="list-disc pl-5">
-                      {skill.assets.map(a => <li key={a} className="font-mono">{a}</li>)}
+                      {skill.assets.map((a: string) => <li key={a} className="font-mono">{a}</li>)}
                   </ul>
               ) : (
                   <p className="text-muted-foreground">No assets.</p>

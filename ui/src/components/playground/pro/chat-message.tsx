@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { vs2015 } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import vs2015 from 'react-syntax-highlighter/dist/esm/styles/hljs/vs2015';
 import { useState, useEffect } from "react";
 import { SmartResultRenderer } from "./smart-result-renderer";
 import { estimateTokens, formatTokenCount } from "@/lib/tokens";
