@@ -49,3 +49,8 @@ As agents increasingly rely on project-local configuration files (e.g., `.claude
 
 ## 7. Evolutionary Changelog
 * **2026-03-09:** Initial Document Creation.
+* **2026-03-10:** Update: Secure Delegate Mode & Split Environments
+    - **Context:** Claude Code 2.0.71's "Delegate Mode" and split cloud/local environments increase the surface area for config-based RCE.
+    - **Architecture Adjustment:**
+        - **Identity-Aware Config Scoping:** Configuration files are now scoped by the **MCP Identity Bridge**. A "Delegate" agent only inherits a restricted subset of the parent's approved project-local settings.
+        - **Remote-Origin Attestation:** For agents running in cloud sandboxes, configuration changes must be attested via the local user's terminal, even if the request originated from a remote agent node.

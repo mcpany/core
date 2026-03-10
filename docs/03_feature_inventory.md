@@ -90,3 +90,19 @@
 
 ### Deprecations / Monitoring
 - **Unvalidated Project-Local Configs**: Monitoring for total deprecation. All local configs must be attested via MCP Any before ingestion by agents.
+
+---
+
+## Evolution: [2026-03-10] Updates
+
+### Proposed Additions
+- **Autonomous Loop Governor**: (P0) Infrastructure-level "Circuit Breaker" to prevent token/cost runaway in autonomous loops (e.g., ralph-loop). Enforces budgets and requires heartbeat attestations.
+- **MCP Identity Bridge**: (P1) Lightweight, session-bound proxy that maps cloud agent identities to local "Shadow Users," simplifying secure cloud-to-local tool access.
+- **Intent-Aware Tool Pruning**: (P0) Dynamic filtering of tool discovery results based on the high-level intent of the session to prevent LLM selection hallucinations.
+
+### Priority Shifts
+- **Lazy-MCP Middleware**: Priority maintained at **P0**, now expanded with "Intent-Aware Pruning."
+- **Policy Firewall**: Re-affirmed as **P0**, now including "Loop Budget Enforcement" policies.
+
+### Deprecations / Monitoring
+- **Passthrough Tool Discovery**: Monitoring for deprecation. All tool discovery should ideally be mediated by Intent-Aware Pruning in high-density environments.

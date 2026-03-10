@@ -67,3 +67,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project Configuration Guard**: MCP Any will evolve into a "Validating Proxy" for all project-local agent configurations. It will intercept and sanitize any "auto-execute" or "hook" definitions before they reach the agent runtime, requiring explicit user attestation.
 - **Agent-Aware Blackboard Isolation**: The Shared KV Store (Blackboard) must implement mandatory "Agent-Bound" isolation. Data written by one agent will be read-only or invisible to others unless a specific "Shared Intent" is established.
 - **Zero-Trust Hook Execution**: Any executable hook or automated tool sequence must run in a "Detached Sandbox" managed by MCP Any, with zero access to the host filesystem unless explicitly granted via a capability-based token.
+
+---
+
+## Strategic Evolution: [2026-03-10]
+### Focus: Autonomous Governance & Identity Bridging
+**Context**: Modern agents are transitioning from "Tools-on-a-Leash" to "Autonomous Loops" (e.g., Claude Code's ralph-loop) and "Split Environments" where LLMs are in the cloud while tools are local. This requires a leap from passive gatewaying to active governance and identity management.
+**Strategic Pivot**:
+- **Autonomous Loop Governance**: MCP Any will transition from a passive tool executor to an active "Circuit Breaker" for autonomous loops. It will enforce strict token and time budgets, requiring manual "Heartbeat" attestations before allowing loops to persist beyond safety thresholds.
+- **MCP Identity Bridge**: To bridge the cloud-to-local identity gap, MCP Any will implement a session-bound "Identity Proxy." This maps cloud-originated agent identities to local "Shadow Users" with restricted capabilities, eliminating the friction of managing complex IAM for transient agent tasks.
+- **Intent-Aware Tool Pruning**: Evolving Lazy-MCP discovery from simple similarity search to "Intent-Aware" filtering. MCP Any will dynamically prune the tool list based on the high-level intent of the session, preventing "Selection Hallucinations" in massive tool libraries.
