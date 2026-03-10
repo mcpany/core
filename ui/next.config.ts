@@ -129,6 +129,10 @@ const nextConfig: NextConfig = {
       ...config.resolve.alias,
       '@proto': protoPath,
       '@google': path.join(protoPath, 'google'),
+      // highlight.js v11 removed deprecated language aliases used by react-syntax-highlighter v16
+      'highlight.js/lib/languages/c-like': false,
+      'highlight.js/lib/languages/htmlbars': false,
+      'highlight.js/lib/languages/sql_more': false,
     };
     // Important: Disable symlink resolution to prevent Webpack from resolving symlinks to their real path (which is outside the project)
     config.resolve.symlinks = false;

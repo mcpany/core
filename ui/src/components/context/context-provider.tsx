@@ -82,7 +82,7 @@ export function ContextProvider({ children }: { children: React.ReactNode }) {
 
     const getToolCost = (tool: ToolDefinition) => {
         // Memoize if needed, but estimateTokens is fast enough for now
-        return estimateTokens(tool);
+        return estimateTokens(JSON.stringify(tool));
     };
 
     const toggleTool = (serviceId: string, toolName: string) => {

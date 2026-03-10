@@ -50,7 +50,7 @@ export function OptimizationTab({ tools, toolUsage, onToggleTool }: Optimization
         tools.forEach((tool) => {
             if (tool.disable) return; // Skip already disabled tools
 
-            const tokens = estimateTokens(tool);
+            const tokens = estimateTokens(JSON.stringify(tool));
             const usageKey = `${tool.name}@${tool.serviceId}`;
             const stats = toolUsage[usageKey];
             const calls = stats ? stats.totalCalls : 0;

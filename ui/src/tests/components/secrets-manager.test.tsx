@@ -7,10 +7,10 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SecretsManager } from '../../components/settings/secrets-manager';
-import { apiClient } from '../../lib/client';
+import { apiClient } from '@/lib/client';
 
 // Mock the apiClient
-vi.mock('../../lib/client', () => ({
+vi.mock('@/lib/client', () => ({
   apiClient: {
     listSecrets: vi.fn(),
     saveSecret: vi.fn(),

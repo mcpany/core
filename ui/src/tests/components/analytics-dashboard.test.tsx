@@ -8,7 +8,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AnalyticsDashboard } from '../../components/stats/analytics-dashboard';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { apiClient } from '../../lib/client';
+import { apiClient } from '@/lib/client';
 
 // Mock Recharts
 vi.mock('recharts', async () => {
@@ -34,7 +34,7 @@ vi.mock('recharts', async () => {
 });
 
 // Mock apiClient
-vi.mock('../../lib/client', () => ({
+vi.mock('@/lib/client', () => ({
     apiClient: {
         getDashboardTraffic: vi.fn(),
         getTopTools: vi.fn(),

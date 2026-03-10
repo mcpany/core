@@ -10,7 +10,7 @@ on:
 
 jobs:
   delete-stale-branches:
-    runs-on: oci-runner # ubuntu-slim
+    runs-on: ubuntu-latest
     permissions:
       contents: write
       pull-requests: read
