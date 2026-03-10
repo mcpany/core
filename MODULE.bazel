@@ -22,7 +22,7 @@ bazel_dep(name = "aspect_rules_js", version = "2.1.0", repo_name = "rules_js")
 bazel_dep(name = "aspect_rules_ts", version = "2.1.0", repo_name = "rules_ts")
 
 go_sdk = use_extension("@rules_go//go:extensions.bzl", "go_sdk")
-go_sdk.download(version = "1.24.0")
+go_sdk.download(version = "1.25.0")
 
 go_deps = use_extension("@gazelle//:extensions.bzl", "go_deps")
 go_deps.from_file(go_mod = "//server:go.mod")

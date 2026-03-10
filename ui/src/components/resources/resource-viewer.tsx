@@ -9,13 +9,17 @@ import { Eye, Loader2 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ResourceContent } from "@/lib/client";
 
-import ReactSyntaxHighlighter from 'react-syntax-highlighter/dist/esm/light';
-import json from 'react-syntax-highlighter/dist/esm/languages/hljs/json';
-import yaml from 'react-syntax-highlighter/dist/esm/languages/hljs/yaml';
-import xml from 'react-syntax-highlighter/dist/esm/languages/hljs/xml';
-import markdown from 'react-syntax-highlighter/dist/esm/languages/hljs/markdown';
-import plaintext from 'react-syntax-highlighter/dist/esm/languages/hljs/plaintext';
-import { vs2015 } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+import ReactSyntaxHighlighter from 'react-syntax-highlighter/dist/esm/prism-light';
+import json from 'react-syntax-highlighter/dist/esm/languages/prism/json';
+import yaml from 'react-syntax-highlighter/dist/esm/languages/prism/yaml';
+import markdown from 'react-syntax-highlighter/dist/esm/languages/prism/markdown';
+import plaintext from 'react-syntax-highlighter/dist/esm/languages/prism/markup';
+
+
+import xml from 'react-syntax-highlighter/dist/esm/languages/prism/markup';
+
+
+import { vscDarkPlus as vs2015 } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 ReactSyntaxHighlighter.registerLanguage('json', json);
 ReactSyntaxHighlighter.registerLanguage('yaml', yaml);

@@ -10,7 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button";
 import { Code, Table as TableIcon, Copy, Check, ChevronDown, ChevronUp, ListTree, Image as ImageIcon } from "lucide-react";
 import dynamic from "next/dynamic";
-import { vs2015 } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+import { vscDarkPlus as vs2015 } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { JsonTree } from "./json-tree";

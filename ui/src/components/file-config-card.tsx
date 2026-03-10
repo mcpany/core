@@ -12,7 +12,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UpstreamServiceConfig } from "@/lib/types";
 import { File } from "lucide-react";
 import yaml from 'js-yaml';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import SyntaxHighlighter from 'react-syntax-highlighter/dist/esm/prism-light';
+import yamlLang from 'react-syntax-highlighter/dist/esm/languages/prism/yaml';
+import jsonLang from 'react-syntax-highlighter/dist/esm/languages/prism/json';
+import protobufLang from 'react-syntax-highlighter/dist/esm/languages/prism/protobuf';
+
+SyntaxHighlighter.registerLanguage('yaml', yamlLang);
+SyntaxHighlighter.registerLanguage('json', jsonLang);
+SyntaxHighlighter.registerLanguage('protobuf', protobufLang);
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { ScrollArea } from "./ui/scroll-area";
 

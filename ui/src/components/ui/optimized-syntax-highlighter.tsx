@@ -5,8 +5,10 @@
 
 "use client";
 
-import SyntaxHighlighter from 'react-syntax-highlighter/dist/esm/light';
-import json from 'react-syntax-highlighter/dist/esm/languages/hljs/json';
+import SyntaxHighlighter from 'react-syntax-highlighter/dist/esm/prism-light';
+import json from 'react-syntax-highlighter/dist/esm/languages/prism/json';
+
+
 
 // ⚡ BOLT: Optimized imports to reduce bundle size.
 // Only register the 'json' language for highlighting, avoiding the heavy full bundle.
