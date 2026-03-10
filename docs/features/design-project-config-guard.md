@@ -49,3 +49,7 @@ As agents increasingly rely on project-local configuration files (e.g., `.claude
 
 ## 7. Evolutionary Changelog
 * **2026-03-09:** Initial Document Creation.
+* **2026-03-10: Proactive Sanitization & Consent Integrity**
+    * **Context:** Recent exploits in Claude Code (CVE-2026-21852) showed that malicious configs can bypass user consent prompts.
+    * **Adjustment:** Upgrading from "Validating Proxy" to "Proactive Sanitizer." All project configs are now scanned for `consent_override` and `auto_init` flags upon directory entry.
+    * **Security Impact:** Prevents RCE and unauthorized tool initialization by enforcing "Immutable Consent" policies that cannot be modified by local configuration files.

@@ -67,3 +67,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project Configuration Guard**: MCP Any will evolve into a "Validating Proxy" for all project-local agent configurations. It will intercept and sanitize any "auto-execute" or "hook" definitions before they reach the agent runtime, requiring explicit user attestation.
 - **Agent-Aware Blackboard Isolation**: The Shared KV Store (Blackboard) must implement mandatory "Agent-Bound" isolation. Data written by one agent will be read-only or invisible to others unless a specific "Shared Intent" is established.
 - **Zero-Trust Hook Execution**: Any executable hook or automated tool sequence must run in a "Detached Sandbox" managed by MCP Any, with zero access to the host filesystem unless explicitly granted via a capability-based token.
+
+---
+
+## Strategic Evolution: [2026-03-10]
+### Focus: Immutable Consent Integrity & Proactive Config Sanitization
+**Context**: Recent exploits in Claude Code (CVE-2026-21852) and OpenClaw have demonstrated that project-local configurations can be weaponized to override user consent prompts and initialize unauthorized tools. This "Consent Bypass" is a foundational threat to the Agentic Mesh.
+**Strategic Pivot**:
+- **Immutable Consent Middleware**: MCP Any will implement a "Hardware-Rooted" or "User-Rooted" consent layer that exists outside the agent's runtime. No configuration file, local or remote, will be able to downgrade the security posture or bypass a user approval requirement.
+- **Proactive Configuration Scanning**: Moving from "Validating Proxy" to "Proactive Sanitizer." MCP Any will scan all project-local agent configurations (e.g., `.claude/settings.json`) upon project entry, flagging and neutralizing any "consent-override" or "auto-init" instructions before they are processed by the agent.
+- **Root-of-Trust for Tools**: Implementing a "Consent Anchor" where every tool initialization must be matched against a user-signed policy. Tools initialized via "shadow" configuration paths will be blocked by default.

@@ -84,9 +84,18 @@
 - **Agent-Aware Blackboard Isolation**: (P0) Implements row-level security for the Shared KV Store, ensuring agents can only access state within their assigned "Intent Scope."
 - **Detached Sandbox for Automated Hooks**: (P1) Isolated execution environment for automated tool sequences, preventing unauthorized host access.
 
+---
+
+## Evolution: [2026-03-10] Updates
+
+### Proposed Additions
+- **Immutable Consent Enforcement Middleware**: (P0) A security layer that ensures user consent requirements cannot be overridden by configuration files.
+- **Project Config Vulnerability Scanner**: (P0) Proactive analyzer that detects and neutralizes malicious "auto-init" or "consent-bypass" instructions in agent configs.
+- **Hardware-Rooted Consent Anchor**: (P1) Optional integration with hardware security keys for multi-factor tool attestation.
+
 ### Priority Shifts
-- **Shared KV Store (Blackboard)**: Re-affirmed as **P0** with new mandatory security isolation requirements.
-- **Policy Firewall**: Promoted to **P0** (Already P0, but expanded to include "Project-Local Config Validation").
+- **Project Configuration Security Guard**: Promoted to **P0** (Already P0, but expanded with proactive scanning and sanitization).
+- **Detached Sandbox for Automated Hooks**: Promoted to **P0**. Essential for neutralizing malicious hooks identified by the proactive scanner.
 
 ### Deprecations / Monitoring
-- **Unvalidated Project-Local Configs**: Monitoring for total deprecation. All local configs must be attested via MCP Any before ingestion by agents.
+- **Soft Consent Overrides**: All mechanisms that allow configuration-based consent bypass are marked for immediate deprecation.

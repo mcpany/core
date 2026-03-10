@@ -37,7 +37,12 @@
 #### Upcoming (2026-03-09 Evolution)
 *   **[P0] Project Configuration Security Guard**: Validating proxy for project-local agent configs (e.g., `.claude/settings.json`) to prevent RCE. (Added: 2026-03-09)
 *   **[P0] Agent-Aware Blackboard Isolation**: Row-level security for Shared KV Store to prevent cross-agent state injection. (Added: 2026-03-09)
-*   **[P1] Detached Sandbox for Automated Hooks**: Isolated runtime for tool sequences with zero host access by default. (Added: 2026-03-09)
+*   **[P0] Detached Sandbox for Automated Hooks**: Isolated runtime for tool sequences with zero host access by default. (Promoted: 2026-03-10)
+
+#### Upcoming (2026-03-10 Evolution)
+*   **[P0] Immutable Consent Enforcement**: Middleware that blocks configuration-based bypass of user approval prompts. (Added: 2026-03-10)
+*   **[P0] Project Config Proactive Scanner**: Proactive analyzer for agent configs that neutralizes malicious instructions. (Added: 2026-03-10)
+*   **[P0] Tainted State Marking for Blackboard**: Implementation of state isolation for sessions initialized from unverified configs. (Added: 2026-03-10)
 
 ## 2. Top 10 Recommended Features
 

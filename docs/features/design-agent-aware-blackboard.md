@@ -47,3 +47,7 @@ The `Shared KV Store` (Blackboard) is a core tool in MCP Any that allows multipl
 
 ## 7. Evolutionary Changelog
 * **2026-03-09:** Initial Document Creation.
+* **2026-03-10: State Integrity during Untrusted Sessions**
+    * **Context:** Identified risk of "State Poisoning" when an agent session is initialized via a malicious project config (CVE-2026-21852).
+    * **Adjustment:** Implementing "Tainted State" marking. Any data written to the Blackboard during a session initialized from an un-attested config is marked as `TAINTED` and cannot be read by agents in "Trusted" intent-scopes.
+    * **Security Impact:** Prevents malicious project configs from poisoning the shared state used by other, trusted agent swarms.
