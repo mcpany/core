@@ -315,9 +315,8 @@ export function AuditLogViewer() {
                                         language="json"
                                         style={vscDarkPlus as any}
                                         customStyle={{ margin: 0, fontSize: '12px' }}
-                                    >
-                                        {formatJson(selectedLog.arguments) || "{}"}
-                                    </SyntaxHighlighter>
+                                        children={formatJson(selectedLog.arguments) || "{}"}
+                                    />
                                 </div>
                             </div>
 
@@ -328,9 +327,8 @@ export function AuditLogViewer() {
                                         language="json"
                                         style={vscDarkPlus as any}
                                         customStyle={{ margin: 0, fontSize: '12px', maxHeight: '300px' }}
-                                    >
-                                        {formatJson(selectedLog.result) || (selectedLog.error ? "null" : "{}")}
-                                    </SyntaxHighlighter>
+                                        children={formatJson(selectedLog.result) || (selectedLog.error ? "null" : "{}")}
+                                    />
                                 </div>
                             </div>
                         </div>

@@ -90,9 +90,8 @@ export function ResourceViewer({ content, loading }: ResourceViewerProps) {
                     style={vscDarkPlus as any}
                     customStyle={{ margin: 0, borderRadius: 0, height: "100%", fontSize: '0.875rem' }}
                     showLineNumbers={true}
-                >
-                    {text || ""}
-                </SyntaxHighlighter>
+                    children={text || ""}
+                />
             </ScrollArea>
         );
     }
@@ -107,9 +106,8 @@ export function ResourceViewer({ content, loading }: ResourceViewerProps) {
                         style={vscDarkPlus as any}
                         customStyle={{ background: 'transparent', padding: 0 }}
                         wrapLines={true}
-                    >
-                        {text || ""}
-                    </SyntaxHighlighter>
+                        children={text || ""}
+                    />
                 </div>
             </ScrollArea>
         );
@@ -123,9 +121,8 @@ export function ResourceViewer({ content, loading }: ResourceViewerProps) {
                 style={vscDarkPlus as any}
                 customStyle={{ margin: 0, borderRadius: 0, height: "100%", fontSize: '0.875rem' }}
                 showLineNumbers={true}
-            >
-                {text || ""}
-            </SyntaxHighlighter>
+                children={text || ""}
+            />
         </ScrollArea>
     );
 }

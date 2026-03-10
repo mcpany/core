@@ -192,9 +192,8 @@ export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
                                 customStyle={{ margin: 0, padding: '1rem', fontSize: '12px', background: 'rgba(0,0,0,0.4)' }}
                                 wrapLines={true}
                                 wrapLongLines={true}
-                            >
-                                {JSON.stringify(message.toolArgs, null, 2)}
-                            </SyntaxHighlighter>
+                                children={JSON.stringify(message.toolArgs, null, 2)}
+                            />
                             <Button
                                 size="icon"
                                 variant="ghost"
