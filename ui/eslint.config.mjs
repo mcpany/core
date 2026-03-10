@@ -27,9 +27,7 @@ export default [
        ...nextPlugin.configs.recommended.rules,
        "no-undef": "off",
        "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_", "caughtErrorsIgnorePattern": "^_" }],
-       "@typescript-eslint/no-explicit-any": "warn",
-       "react-hooks/exhaustive-deps": "off",
-       "react-hooks/rules-of-hooks": "off"
+       "@typescript-eslint/no-explicit-any": "warn"
     }
   },
   {

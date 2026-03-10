@@ -2,4 +2,4 @@
 # SPDX-License-Identifier: Apache-2.0
 
 # gazelle:go_proto_compilers @rules_go//proto:go_proto
-# gazelle:go_grpc_compilers @rules_go//proto:go_grpc_v2
+# gazelle:go_grpc_compilers @rules_go//proto:go_proto,@rules_go//proto:go_grpc_v2

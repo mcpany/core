@@ -29,33 +29,20 @@ load("@rules_shell//shell:sh_binary.bzl", "sh_binary")
 # Resolve standard rules_go targets
 # gazelle:resolve proto go google/protobuf/descriptor.proto @org_golang_google_protobuf//types/descriptorpb
 # gazelle:resolve proto go google/protobuf/go_features.proto @org_golang_google_protobuf//types/gofeaturespb
-# gazelle:resolve proto go google/api/annotations.proto @googleapis//google/api:annotations_go_proto
-# gazelle:resolve proto go google/api/http.proto @googleapis//google/api:annotations_go_proto
-# gazelle:resolve proto go google/api/resource.proto @googleapis//google/api:annotations_go_proto
-# gazelle:resolve proto go google/api/field_behavior.proto @googleapis//google/api:annotations_go_proto
+# gazelle:resolve proto go google/api/annotations.proto @org_golang_google_genproto_googleapis_api//annotations
+# gazelle:resolve proto go google/api/http.proto @org_golang_google_genproto_googleapis_api//annotations
+# gazelle:resolve proto go google/api/resource.proto @org_golang_google_genproto_googleapis_api//annotations
+# gazelle:resolve proto go google/api/field_behavior.proto @org_golang_google_genproto_googleapis_api//annotations
 
 # gazelle:resolve go google.golang.org/protobuf/types/known/anypb @org_golang_google_protobuf//types/known/anypb
 # gazelle:resolve go google.golang.org/protobuf/types/known/structpb @org_golang_google_protobuf//types/known/structpb
 # gazelle:resolve go google.golang.org/protobuf/types/known/timestamppb @org_golang_google_protobuf//types/known/timestamppb
 # gazelle:resolve go google.golang.org/protobuf/types/known/durationpb @org_golang_google_protobuf//types/known/durationpb
 # gazelle:resolve go google.golang.org/protobuf/types/known/wrapperspb @org_golang_google_protobuf//types/known/wrapperspb
-# gazelle:resolve go google.golang.org/genproto/googleapis/api/annotations @googleapis//google/api:annotations_go_proto
+# gazelle:resolve go google.golang.org/genproto/googleapis/api/annotations @org_golang_google_genproto_googleapis_api//annotations
 
 # gazelle:go_proto_compilers @rules_go//proto:go_proto
-# gazelle:go_grpc_compilers @rules_go//proto:go_grpc_v2
-
-load("@rules_go//proto:compiler.bzl", "go_proto_compiler")
-
-go_proto_compiler(
-    name = "go_grpc_gateway",
-    plugin = "@com_github_grpc_ecosystem_grpc_gateway_v2//protoc-gen-grpc-gateway:protoc-gen-grpc-gateway",
-    suffix = ".pb.gw.go",
-    visibility = ["//visibility:public"],
-    deps = [
-        "@org_golang_google_protobuf//reflect/protoreflect",
-        "@org_golang_google_protobuf//runtime/protoimpl",
-    ],
-)
+# gazelle:go_grpc_compilers @rules_go//proto:go_proto,@rules_go//proto:go_grpc_v2
 
 gazelle(name = "gazelle")
 
@@ -67,21 +54,6 @@ gazelle(
         "-prune",
     ],
     command = "update-repos",
-)
-
-load("@rules_go//go:def.bzl", "go_binary", "go_library")
-
-go_library(
-    name = "core_lib",
-    srcs = [],
-    importpath = "github.com/mcpany/core",
-    visibility = ["//visibility:private"],
-)
-
-go_binary(
-    name = "core",
-    embed = [":core_lib"],
-    visibility = ["//visibility:public"],
 )
 
 sh_binary(
