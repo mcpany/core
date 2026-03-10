@@ -59,3 +59,7 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-10:** Update: Port-Level Zero Trust & Local MFA.
+    * **Context**: Today's market sync revealed a resurgence of "GhostTool" attacks targeting exposed local ports in dev containers.
+    * **Hardening**: Introducing mandatory "Port-Level Isolation" where MCP Any will only accept tool calls from pids/uids that have been explicitly whitelisted.
+    * **MFA Enhancement**: Local tool calls that modify the filesystem now require a "Local-Only MFA" (e.g., a physical button press or biometric check via the host OS) to prevent headless RCE.

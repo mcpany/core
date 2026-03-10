@@ -67,3 +67,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project Configuration Guard**: MCP Any will evolve into a "Validating Proxy" for all project-local agent configurations. It will intercept and sanitize any "auto-execute" or "hook" definitions before they reach the agent runtime, requiring explicit user attestation.
 - **Agent-Aware Blackboard Isolation**: The Shared KV Store (Blackboard) must implement mandatory "Agent-Bound" isolation. Data written by one agent will be read-only or invisible to others unless a specific "Shared Intent" is established.
 - **Zero-Trust Hook Execution**: Any executable hook or automated tool sequence must run in a "Detached Sandbox" managed by MCP Any, with zero access to the host filesystem unless explicitly granted via a capability-based token.
+
+---
+
+## Strategic Evolution: [2026-03-10]
+### Focus: Observability-Driven Resilience & Supply Chain Provenance
+**Context**: Today's research highlights a growing threat of "Cascading Failures" in agent swarms and the vulnerability of project-local configurations (CVE-2026-25725). As agents become more interconnected, the system must survive even when individual nodes are compromised or malfunctioning.
+**Strategic Pivot**:
+- **Observability-Driven Resilience**: MCP Any will introduce "Agentic Circuit Breakers." These are intelligent middleware that monitor the health and "intent-alignment" of inter-agent handoffs, automatically halting execution if a cascading failure pattern is detected.
+- **Universal Tool Attestation**: We are moving from "Local Provenance" to a "Universal Attestation Mesh." MCP Any will provide a registry for cryptographically signed MCP tools, ensuring that agents only execute tools from verified, non-poisoned sources.
+- **Project-Local Zero Trust**: Hardening the "Project Configuration Guard" to include mandatory hashing and comparison against a "Known Good" configuration repository, preventing "Shadow Hook" injections.

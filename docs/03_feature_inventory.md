@@ -84,9 +84,18 @@
 - **Agent-Aware Blackboard Isolation**: (P0) Implements row-level security for the Shared KV Store, ensuring agents can only access state within their assigned "Intent Scope."
 - **Detached Sandbox for Automated Hooks**: (P1) Isolated execution environment for automated tool sequences, preventing unauthorized host access.
 
+---
+
+## Evolution: [2026-03-10] Updates
+
+### Proposed Additions
+- **Cascading Failure Circuit Breaker**: (P0) Intelligent middleware that detects and halts recursive agent failures or "infinite tool loops" across swarms.
+- **Universal Tool Attestation Service**: (P0) A centralized registry and verification engine for cryptographically signed MCP tools.
+- **Agentic "Black Box" Recorder**: (P1) High-fidelity logging of inter-agent state transfers for post-mortem failure analysis.
+
 ### Priority Shifts
-- **Shared KV Store (Blackboard)**: Re-affirmed as **P0** with new mandatory security isolation requirements.
-- **Policy Firewall**: Promoted to **P0** (Already P0, but expanded to include "Project-Local Config Validation").
+- **Detached Sandbox for Automated Hooks**: Promoted to **P0**. Essential for mitigating CVE-2026-25725 style configuration exploits.
+- **Supply Chain Integrity Guard**: Re-affirmed as **P0**. Transitioning to "Universal Attestation Mesh" model.
 
 ### Deprecations / Monitoring
-- **Unvalidated Project-Local Configs**: Monitoring for total deprecation. All local configs must be attested via MCP Any before ingestion by agents.
+- **Manual Hook Approval**: Monitoring for deprecation in favor of "Policy-Based Auto-Attestation" for known safe hook patterns.
