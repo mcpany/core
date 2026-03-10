@@ -44,7 +44,6 @@ next_bin.next(
     ],
     args = ["build"],
     chdir = package_name(),
-    no_copy_to_bin = ["//proto:ts_proto"],
     out_dirs = [".next"],
 )
 
@@ -58,7 +57,6 @@ vitest_bin.vitest_test(
         ":srcs",
         "//proto:ts_proto",
     ],
-    no_copy_to_bin = ["//proto:ts_proto"],
 )
 
 # Linting
@@ -73,7 +71,6 @@ eslint_bin.eslint_test(
         ":srcs",
         "//proto:ts_proto",
     ],
-    no_copy_to_bin = ["//proto:ts_proto"],
 )
 
 # Typecheck
@@ -86,5 +83,4 @@ tsc_bin.tsc_test(
         ":srcs",
         "//proto:ts_proto",
     ],
-    no_copy_to_bin = ["//proto:ts_proto"],
 )

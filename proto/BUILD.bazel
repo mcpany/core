@@ -6,6 +6,6 @@
 
 filegroup(
 	name = "ts_proto",
-	srcs = glob(["**/*.ts"]),
+	srcs = glob(["**/*.ts"], allow_empty = True),
 	visibility = ["//visibility:public"],
 )
