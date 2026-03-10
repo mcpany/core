@@ -10,7 +10,7 @@ on:
 
 jobs:
   manage-prs:
-    runs-on: oci-runner # ubuntu-slim
+    runs-on: ubuntu-latest
     permissions:
       pull-requests: write
       contents: write

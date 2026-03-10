@@ -42,20 +42,7 @@ load("@rules_shell//shell:sh_binary.bzl", "sh_binary")
 # gazelle:resolve go google.golang.org/genproto/googleapis/api/annotations @googleapis//google/api:annotations_go_proto
 
 # gazelle:go_proto_compilers @rules_go//proto:go_proto
-# gazelle:go_grpc_compilers @rules_go//proto:go_grpc_v2
-
-load("@rules_go//proto:compiler.bzl", "go_proto_compiler")
-
-go_proto_compiler(
-    name = "go_grpc_gateway",
-    plugin = "@com_github_grpc_ecosystem_grpc_gateway_v2//protoc-gen-grpc-gateway:protoc-gen-grpc-gateway",
-    suffix = ".pb.gw.go",
-    visibility = ["//visibility:public"],
-    deps = [
-        "@org_golang_google_protobuf//reflect/protoreflect",
-        "@org_golang_google_protobuf//runtime/protoimpl",
-    ],
-)
+# gazelle:go_grpc_compilers @rules_go//proto:go_proto,@rules_go//proto:go_grpc_v2
 
 gazelle(name = "gazelle")
 
@@ -67,21 +54,6 @@ gazelle(
         "-prune",
     ],
     command = "update-repos",
-)
-
-load("@rules_go//go:def.bzl", "go_binary", "go_library")
-
-go_library(
-    name = "core_lib",
-    srcs = [],
-    importpath = "github.com/mcpany/core",
-    visibility = ["//visibility:private"],
-)
-
-go_binary(
-    name = "core",
-    embed = [":core_lib"],
-    visibility = ["//visibility:public"],
 )
 
 sh_binary(
