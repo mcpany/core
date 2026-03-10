@@ -57,3 +57,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Safe-by-Default Hardening**: MCP Any will move to a "Local-Only by Default" binding for all adapters and gateways. Remote access will require explicit, cryptographic multi-factor attestation.
 - **A2A Mesh Residency**: Shifting from a "Bridge" to a "Resident" model where MCP Any is the native home for A2A state, allowing it to act as a "Stateful Buffer" between intermittent agent connections.
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
+
+---
+
+## Strategic Evolution: [2026-03-09]
+### Focus: Secure Tool Sovereignty & Intent-Verified Execution
+**Context**: The massive security crisis in the OpenClaw ecosystem and the subsequent corporate bans highlight a critical "Trust Gap." While Claude Code's Sandbox Mode and Gemini's Policy Engine show progress, there's no universal way to ensure an agent's tool execution is both autonomous and secure across diverse environments.
+**Strategic Pivot**:
+- **Secure Tool Sovereignty**: MCP Any will evolve to provide "Sovereign Tool Proxies." This ensures that tools are always executed in a secure, isolated environment (e.g., gVisor, Firecracker) regardless of the agent calling them.
+- **Intent-Verified Execution**: Moving beyond simple capability tokens to a "Plan-First" verification model. MCP Any will require agents (like Claude's Plan Mode) to submit their intended execution plan for validation against security policies BEFORE tool access is granted.
+- **Multi-Model Tool Consistency**: Standardizing how different models (Gemini 3.1 Pro, Claude 3.5 Sonnet) prioritize and discover tools, ensuring that "MCP Tool Search" behaviors are consistent and cost-effective across the entire fleet.

@@ -34,6 +34,12 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-09 Evolution)
+*   **[P0] Security-Hardened Tool Proxy (Sovereign Proxy)**: Ephemeral sandbox execution for high-risk tools (gVisor/Firecracker). (Added: 2026-03-09)
+*   **[P0] Intent-Verification Middleware (Plan-Check)**: Automated policy verification of agent-submitted execution plans. (Added: 2026-03-09)
+*   **[P0] Dynamic Tool Filtering (Scope-Aware)**: Task-based tool availability to reduce context bloat and attack surface. (Added: 2026-03-09)
+*   **[P1] Unified Discovery for Multi-Model Fleet**: Standardized tool discovery adapting to model-specific endpoints (Gemini, Claude). (Added: 2026-03-09)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

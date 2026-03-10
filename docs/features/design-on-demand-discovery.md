@@ -57,3 +57,9 @@ As the number of available MCP tools grows, agents face "context pollution"—wh
 
 ## 7. Evolutionary Changelog
 *   **2026-02-25:** Initial Document Creation.
+
+### Update: 2026-03-09 - Multi-Model Discovery & Prioritization
+**Context:** Gemini 3.1 Pro introduced specialized endpoints for custom tools, and Claude Code refined its Tool Search logic. MCP Any must adapt its discovery to support these varied model-side expectations.
+**Architecture Adjustment:**
+* **Model-Aware Discovery**: The `SearchMiddleware` will now detect the calling model (via headers) and format the tool results to match its optimal discovery pattern (e.g., prioritizing `customtools` for Gemini).
+* **Lazy Loading Toggles**: Introducing a more granular "Lazy" threshold (e.g., "Always Lazy," "Lazy if > 20 tools," "Never Lazy") to support the 85% token reduction seen in Claude's implementation.

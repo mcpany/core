@@ -81,3 +81,20 @@
 
 ### Deprecations / Monitoring
 - **Public Default Bindings**: Deprecate `0.0.0.0` as a default listener for any adapter or gateway.
+
+---
+
+## Evolution: [2026-03-09] Updates
+
+### Proposed Additions
+- **Security-Hardened Tool Proxy (Sovereign Proxy)**: (P0) Executes tools in isolated micro-VMs or sandboxes (Firecracker/gVisor). Direct response to OpenClaw RCE vulnerabilities.
+- **Intent-Verification Middleware (Plan-Check)**: (P0) A hook that requires an agent to submit a "Plan" (e.g., from Claude's Plan Mode) for automated policy verification before executing risky tools.
+- **Dynamic Tool Filtering (Scope-Aware)**: (P0) Real-time filtering of available tools based on the agent's current task and subagent scope, minimizing context bloat and attack surface.
+- **Unified Discovery for Multi-Model Fleet**: (P1) Standardized tool discovery protocol that adapts to different model behaviors (e.g., Gemini's custom tool endpoint vs Claude's tool search).
+
+### Priority Shifts
+- **On-Demand Discovery Middleware (Lazy-MCP)**: Re-affirmed as **P0**. Critical for scaling enterprise toolsets without context pollution.
+- **Environment Bridging Middleware**: Re-affirmed as **P0** to support secure "Local-to-Cloud" transitions for sandboxed agents.
+
+### Deprecations / Monitoring
+- **Direct Local Command Execution**: Monitoring for deprecation in favor of Sovereign Proxy execution for all non-trivial tool calls.
