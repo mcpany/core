@@ -39,6 +39,11 @@
 *   **[P0] Agent-Aware Blackboard Isolation**: Row-level security for Shared KV Store to prevent cross-agent state injection. (Added: 2026-03-09)
 *   **[P1] Detached Sandbox for Automated Hooks**: Isolated runtime for tool sequences with zero host access by default. (Added: 2026-03-09)
 
+#### Upcoming (2026-03-10 Evolution)
+*   **[P0] Annotation-Driven Policy Engine**: Metadata-first access control for tools. (Added: 2026-03-10)
+*   **[P0] Transactional Blackboard**: Atomic CAS and row-level locking for shared state. (Added: 2026-03-10)
+*   **[P1] Heartbeat & Event Buffer Middleware**: Async buffer for persistent agent events. (Added: 2026-03-10)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

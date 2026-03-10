@@ -15,6 +15,9 @@
 - [ ] **[P0] Stateful A2A Mailbox**: UI for viewing queued and delivered A2A messages across the agent mesh. (Added: 2026-02-28)
 - [ ] **[P0] Project Config Attestation Dashboard**: UI for reviewing and approving project-local configuration blocks (hooks/auto-execute). (Added: 2026-03-09)
 - [ ] **[P0] Blackboard Isolation Inspector**: Visualize and debug Agent-Bound Blackboard data across different "Intent Scopes." (Added: 2026-03-09)
+- [ ] **[P0] Transactional State Debugger**: Visualize row-level locks and atomic operation history on the Blackboard. (Added: 2026-03-10)
+- [ ] **[P0] Semantic Policy Visualizer**: UI for managing metadata-based tool access (e.g., "Allow tools with tag 'stable'"). (Added: 2026-03-10)
+- [ ] **[P1] Agent Heartbeat Monitor**: Status dashboard for "Always-On" agents and their buffered event queues. (Added: 2026-03-10)
 - [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
 - [x] **[P1] Tool Playground & Explorer**:
   - [x] Auto-generated forms from Tool JSON Schemas.

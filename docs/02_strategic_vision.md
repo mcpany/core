@@ -67,3 +67,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project Configuration Guard**: MCP Any will evolve into a "Validating Proxy" for all project-local agent configurations. It will intercept and sanitize any "auto-execute" or "hook" definitions before they reach the agent runtime, requiring explicit user attestation.
 - **Agent-Aware Blackboard Isolation**: The Shared KV Store (Blackboard) must implement mandatory "Agent-Bound" isolation. Data written by one agent will be read-only or invisible to others unless a specific "Shared Intent" is established.
 - **Zero-Trust Hook Execution**: Any executable hook or automated tool sequence must run in a "Detached Sandbox" managed by MCP Any, with zero access to the host filesystem unless explicitly granted via a capability-based token.
+
+---
+
+## Strategic Evolution: [2026-03-10]
+### Focus: Annotation-Driven Governance & Swarm Concurrency
+**Context**: Latest updates in Gemini CLI (Annotation Matching) and OpenClaw (Persistent Agent Profiles) confirm that the "Agent Bus" must move beyond simple name-based routing. Swarms are also hitting race conditions in shared state.
+**Strategic Pivot**:
+- **Semantic/Annotation Governance**: MCP Any will implement a "Metadata-First" policy engine. Access to tools will be granted based on semantic annotations (e.g., `stability:production`, `impact:low`) rather than fragile naming conventions.
+- **Transactional Blackboard (Atomic Swarm State)**: The Shared KV Store will evolve from a simple key-value store to a "Transactional Blackboard" with row-level locking and atomic operations to prevent state corruption in high-concurrency swarms.
+- **Heartbeat & Event-Driven Tooling**: Extending the MCP protocol to support "Liveness Tools" and asynchronous events, allowing MCP Any to act as a buffer for heartbeat-driven agents.

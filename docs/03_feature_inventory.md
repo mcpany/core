@@ -90,3 +90,16 @@
 
 ### Deprecations / Monitoring
 - **Unvalidated Project-Local Configs**: Monitoring for total deprecation. All local configs must be attested via MCP Any before ingestion by agents.
+
+---
+
+## Evolution: [2026-03-10] Updates
+
+### Proposed Additions
+- **Annotation-Driven Policy Engine**: (P0) Extends the Policy Firewall to use tool metadata/annotations for access control, aligning with Gemini CLI's latest standards.
+- **Transactional Blackboard (Atomic State)**: (P0) Row-level locking and atomic "compare-and-swap" (CAS) operations for the Shared KV Store to prevent swarm race conditions.
+- **Heartbeat & Event Buffer Middleware**: (P1) Buffer for asynchronous agent events and "Liveness" checks, supporting OpenClaw-style heartbeat automation.
+
+### Priority Shifts
+- **Policy Firewall**: Re-affirmed as **P0**. Scope expanded to include "Semantic/Annotation matching."
+- **Shared KV Store**: Re-affirmed as **P0**. Scope expanded to "Transactional/Atomic operations."

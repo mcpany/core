@@ -46,3 +46,6 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-03-10:** Update - Heartbeat & Event Support.
+    * **Context:** Today's market sync with OpenClaw reveals agents are moving to "Always-On" heartbeats.
+    * **Adjustment:** Extending the bridge to support `message/subscribe` patterns. MCP Any will now act as a persistent event buffer, allowing agents to "check in" for queued A2A messages even after long periods of inactivity.

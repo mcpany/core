@@ -43,3 +43,6 @@ As AI agent ecosystems evolve from single-agent monoliths to multi-agent swarms 
 
 ## 7. Evolutionary Changelog
 * **2026-02-24**: Initial Document Creation.
+* **2026-03-10**: Update - Persistence & Profile Mapping.
+    * **Context:** Market research shows agents (OpenClaw) now use dedicated "Staff Profiles" with unique auth.
+    * **Adjustment:** The Coordination Hub now maps `Session ID` to a set of `Agent Profiles`. Each handoff can now include a profile swap, ensuring that the Writing Agent uses its own secrets while maintaining the Research Agent's session context.
