@@ -1,0 +1,5525 @@
+{
+  "total_count": 30,
+  "jobs": [
+    {
+      "id": 66397494560,
+      "run_id": 22885571524,
+      "workflow_name": "CI",
+      "head_branch": "feat/alerts-bulk-actions-8770349541949571325",
+      "run_url": "https://api.github.com/repos/mcpany/core/actions/runs/22885571524",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOP7bFkc8AAAAPdZldIA",
+      "head_sha": "5f4bb3f604de94f5cb32f9749eb178a7ddd48259",
+      "url": "https://api.github.com/repos/mcpany/core/actions/jobs/66397494560",
+      "html_url": "https://github.com/mcpany/core/actions/runs/22885571524/job/66397494560",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-03-10T03:22:33Z",
+      "started_at": "2026-03-10T03:36:24Z",
+      "completed_at": "2026-03-10T03:36:31Z",
+      "name": "changes",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-03-10T03:36:24Z",
+          "completed_at": "2026-03-10T03:36:25Z"
+        },
+        {
+          "name": "Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-03-10T03:36:25Z",
+          "completed_at": "2026-03-10T03:36:30Z"
+        },
+        {
+          "name": "Install dependencies (Idempotent)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-03-10T03:36:30Z",
+          "completed_at": "2026-03-10T03:36:30Z"
+        },
+        {
+          "name": "Check for changes",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-03-10T03:36:30Z",
+          "completed_at": "2026-03-10T03:36:30Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-03-10T03:36:30Z",
+          "completed_at": "2026-03-10T03:36:30Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-03-10T03:36:30Z",
+          "completed_at": "2026-03-10T03:36:30Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/mcpany/core/check-runs/66397494560",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000254656,
+      "runner_name": "GitHub Actions 1000254656",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 66398428108,
+      "run_id": 22885571524,
+      "workflow_name": "CI",
+      "head_branch": "feat/alerts-bulk-actions-8770349541949571325",
+      "run_url": "https://api.github.com/repos/mcpany/core/actions/runs/22885571524",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOP7bFkc8AAAAPdaebzA",
+      "head_sha": "5f4bb3f604de94f5cb32f9749eb178a7ddd48259",
+      "url": "https://api.github.com/repos/mcpany/core/actions/jobs/66398428108",
+      "html_url": "https://github.com/mcpany/core/actions/runs/22885571524/job/66398428108",
+      "status": "completed",
+      "conclusion": "failure",
+      "created_at": "2026-03-10T03:36:31Z",
+      "started_at": "2026-03-10T03:58:31Z",
+      "completed_at": "2026-03-10T04:06:33Z",
+      "name": "lint",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-03-10T03:58:31Z",
+          "completed_at": "2026-03-10T03:58:33Z"
+        },
+        {
+          "name": "Debug Environment",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-03-10T03:58:33Z",
+          "completed_at": "2026-03-10T03:58:33Z"
+        },
+        {
+          "name": "Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-03-10T03:58:33Z",
+          "completed_at": "2026-03-10T03:58:35Z"
+        },
+        {
+          "name": "Install dependencies (Idempotent)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-03-10T03:58:35Z",
+          "completed_at": "2026-03-10T03:58:35Z"
+        },
+        {
+          "name": "Set up Go",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-03-10T03:58:35Z",
+          "completed_at": "2026-03-10T03:58:38Z"
+        },
+        {
+          "name": "Set up Python",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-03-10T03:58:38Z",
+          "completed_at": "2026-03-10T03:58:41Z"
+        },
+        {
+          "name": "Install Python dependencies",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-03-10T03:58:41Z",
+          "completed_at": "2026-03-10T03:58:51Z"
+        },
+        {
+          "name": "Set up Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-03-10T03:58:51Z",
+          "completed_at": "2026-03-10T03:58:58Z"
+        },
+        {
+          "name": "Cache Tools",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-03-10T03:58:58Z",
+          "completed_at": "2026-03-10T03:58:59Z"
+        },
+        {
+          "name": "Cache Lint",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-03-10T03:58:59Z",
+          "completed_at": "2026-03-10T03:59:01Z"
+        },
+        {
+          "name": "Prepare environment",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-03-10T03:59:01Z",
+          "completed_at": "2026-03-10T04:00:25Z"
+        },
+        {
+          "name": "Lint",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "number": 12,
+          "started_at": "2026-03-10T04:00:25Z",
+          "completed_at": "2026-03-10T04:06:31Z"
+        },
+        {
+          "name": "Post Cache Lint",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 19,
+          "started_at": "2026-03-10T04:06:31Z",
+          "completed_at": "2026-03-10T04:06:31Z"
+        },
+        {
+          "name": "Post Cache Tools",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 20,
+          "started_at": "2026-03-10T04:06:31Z",
+          "completed_at": "2026-03-10T04:06:31Z"
+        },
+        {
+          "name": "Post Set up Node.js",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 21,
+          "started_at": "2026-03-10T04:06:31Z",
+          "completed_at": "2026-03-10T04:06:31Z"
+        },
+        {
+          "name": "Post Set up Python",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 22,
+          "started_at": "2026-03-10T04:06:31Z",
+          "completed_at": "2026-03-10T04:06:31Z"
+        },
+        {
+          "name": "Post Set up Go",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 23,
+          "started_at": "2026-03-10T04:06:31Z",
+          "completed_at": "2026-03-10T04:06:31Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 24,
+          "started_at": "2026-03-10T04:06:31Z",
+          "completed_at": "2026-03-10T04:06:31Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 25,
+          "started_at": "2026-03-10T04:06:31Z",
+          "completed_at": "2026-03-10T04:06:31Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/mcpany/core/check-runs/66398428108",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000254743,
+      "runner_name": "GitHub Actions 1000254743",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 66398428174,
+      "run_id": 22885571524,
+      "workflow_name": "CI",
+      "head_branch": "feat/alerts-bulk-actions-8770349541949571325",
+      "run_url": "https://api.github.com/repos/mcpany/core/actions/runs/22885571524",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOP7bFkc8AAAAPdaecDg",
+      "head_sha": "5f4bb3f604de94f5cb32f9749eb178a7ddd48259",
+      "url": "https://api.github.com/repos/mcpany/core/actions/jobs/66398428174",
+      "html_url": "https://github.com/mcpany/core/actions/runs/22885571524/job/66398428174",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-03-10T03:36:31Z",
+      "started_at": "2026-03-10T04:01:19Z",
+      "completed_at": "2026-03-10T04:04:01Z",
+      "name": "Build Docker Image (http-echo, arm64)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-03-10T04:01:20Z",
+          "completed_at": "2026-03-10T04:01:25Z"
+        },
+        {
+          "name": "Free Disk Space (Fast)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-03-10T04:01:25Z",
+          "completed_at": "2026-03-10T04:02:07Z"
+        },
+        {
+          "name": "Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-03-10T04:02:07Z",
+          "completed_at": "2026-03-10T04:02:09Z"
+        },
+        {
+          "name": "Install dependencies (Idempotent)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-03-10T04:02:09Z",
+          "completed_at": "2026-03-10T04:02:09Z"
+        },
+        {
+          "name": "Set up Go",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-03-10T04:02:09Z",
+          "completed_at": "2026-03-10T04:02:14Z"
+        },
+        {
+          "name": "Set up Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-03-10T04:02:14Z",
+          "completed_at": "2026-03-10T04:02:21Z"
+        },
+        {
+          "name": "Install UI Dependencies",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 7,
+          "started_at": "2026-03-10T04:02:21Z",
+          "completed_at": "2026-03-10T04:02:21Z"
+        },
+        {
+          "name": "Generate Protobufs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-03-10T04:02:21Z",
+          "completed_at": "2026-03-10T04:03:18Z"
+        },
+        {
+          "name": "Set up QEMU",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-03-10T04:03:18Z",
+          "completed_at": "2026-03-10T04:03:26Z"
+        },
+        {
+          "name": "Set up Docker Buildx",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-03-10T04:03:26Z",
+          "completed_at": "2026-03-10T04:03:31Z"
+        },
+        {
+          "name": "Build and Save Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-03-10T04:03:31Z",
+          "completed_at": "2026-03-10T04:03:53Z"
+        },
+        {
+          "name": "Upload Image Artifact",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-03-10T04:03:53Z",
+          "completed_at": "2026-03-10T04:03:56Z"
+        },
+        {
+          "name": "Post Set up Docker Buildx",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20,
+          "started_at": "2026-03-10T04:03:56Z",
+          "completed_at": "2026-03-10T04:03:57Z"
+        },
+        {
+          "name": "Post Set up QEMU",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21,
+          "started_at": "2026-03-10T04:03:57Z",
+          "completed_at": "2026-03-10T04:03:58Z"
+        },
+        {
+          "name": "Post Set up Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-03-10T04:03:58Z",
+          "completed_at": "2026-03-10T04:03:58Z"
+        },
+        {
+          "name": "Post Set up Go",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-03-10T04:03:58Z",
+          "completed_at": "2026-03-10T04:03:58Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 24,
+          "started_at": "2026-03-10T04:03:58Z",
+          "completed_at": "2026-03-10T04:03:58Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 25,
+          "started_at": "2026-03-10T04:03:58Z",
+          "completed_at": "2026-03-10T04:03:58Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/mcpany/core/check-runs/66398428174",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000254751,
+      "runner_name": "GitHub Actions 1000254751",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 66398428175,
+      "run_id": 22885571524,
+      "workflow_name": "CI",
+      "head_branch": "feat/alerts-bulk-actions-8770349541949571325",
+      "run_url": "https://api.github.com/repos/mcpany/core/actions/runs/22885571524",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOP7bFkc8AAAAPdaecDw",
+      "head_sha": "5f4bb3f604de94f5cb32f9749eb178a7ddd48259",
+      "url": "https://api.github.com/repos/mcpany/core/actions/jobs/66398428175",
+      "html_url": "https://github.com/mcpany/core/actions/runs/22885571524/job/66398428175",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-03-10T03:36:31Z",
+      "started_at": "2026-03-10T04:09:20Z",
+      "completed_at": "2026-03-10T04:12:02Z",
+      "name": "Build Docker Image (http-echo, amd64)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-03-10T04:09:21Z",
+          "completed_at": "2026-03-10T04:09:25Z"
+        },
+        {
+          "name": "Free Disk Space (Fast)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-03-10T04:09:25Z",
+          "completed_at": "2026-03-10T04:10:06Z"
+        },
+        {
+          "name": "Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-03-10T04:10:06Z",
+          "completed_at": "2026-03-10T04:10:08Z"
+        },
+        {
+          "name": "Install dependencies (Idempotent)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-03-10T04:10:08Z",
+          "completed_at": "2026-03-10T04:10:08Z"
+        },
+        {
+          "name": "Set up Go",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-03-10T04:10:08Z",
+          "completed_at": "2026-03-10T04:10:12Z"
+        },
+        {
+          "name": "Set up Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-03-10T04:10:12Z",
+          "completed_at": "2026-03-10T04:10:19Z"
+        },
+        {
+          "name": "Install UI Dependencies",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 7,
+          "started_at": "2026-03-10T04:10:19Z",
+          "completed_at": "2026-03-10T04:10:19Z"
+        },
+        {
+          "name": "Generate Protobufs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-03-10T04:10:19Z",
+          "completed_at": "2026-03-10T04:11:17Z"
+        },
+        {
+          "name": "Set up QEMU",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-03-10T04:11:17Z",
+          "completed_at": "2026-03-10T04:11:28Z"
+        },
+        {
+          "name": "Set up Docker Buildx",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-03-10T04:11:28Z",
+          "completed_at": "2026-03-10T04:11:32Z"
+        },
+        {
+          "name": "Build and Save Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-03-10T04:11:32Z",
+          "completed_at": "2026-03-10T04:11:54Z"
+        },
+        {
+          "name": "Upload Image Artifact",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-03-10T04:11:54Z",
+          "completed_at": "2026-03-10T04:11:57Z"
+        },
+        {
+          "name": "Post Set up Docker Buildx",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20,
+          "started_at": "2026-03-10T04:11:57Z",
+          "completed_at": "2026-03-10T04:11:58Z"
+        },
+        {
+          "name": "Post Set up QEMU",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21,
+          "started_at": "2026-03-10T04:11:58Z",
+          "completed_at": "2026-03-10T04:11:59Z"
+        },
+        {
+          "name": "Post Set up Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-03-10T04:11:59Z",
+          "completed_at": "2026-03-10T04:11:59Z"
+        },
+        {
+          "name": "Post Set up Go",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-03-10T04:11:59Z",
+          "completed_at": "2026-03-10T04:11:59Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 24,
+          "started_at": "2026-03-10T04:11:59Z",
+          "completed_at": "2026-03-10T04:11:59Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 25,
+          "started_at": "2026-03-10T04:11:59Z",
+          "completed_at": "2026-03-10T04:11:59Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/mcpany/core/check-runs/66398428175",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000254783,
+      "runner_name": "GitHub Actions 1000254783",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 66398428177,
+      "run_id": 22885571524,
+      "workflow_name": "CI",
+      "head_branch": "feat/alerts-bulk-actions-8770349541949571325",
+      "run_url": "https://api.github.com/repos/mcpany/core/actions/runs/22885571524",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOP7bFkc8AAAAPdaecEQ",
+      "head_sha": "5f4bb3f604de94f5cb32f9749eb178a7ddd48259",
+      "url": "https://api.github.com/repos/mcpany/core/actions/jobs/66398428177",
+      "html_url": "https://github.com/mcpany/core/actions/runs/22885571524/job/66398428177",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-03-10T03:36:31Z",
+      "started_at": "2026-03-10T04:13:01Z",
+      "completed_at": "2026-03-10T04:42:14Z",
+      "name": "Build Docker Image (server, arm64)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-03-10T04:13:02Z",
+          "completed_at": "2026-03-10T04:13:05Z"
+        },
+        {
+          "name": "Free Disk Space (Fast)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-03-10T04:13:05Z",
+          "completed_at": "2026-03-10T04:13:28Z"
+        },
+        {
+          "name": "Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-03-10T04:13:28Z",
+          "completed_at": "2026-03-10T04:13:30Z"
+        },
+        {
+          "name": "Install dependencies (Idempotent)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-03-10T04:13:30Z",
+          "completed_at": "2026-03-10T04:13:30Z"
+        },
+        {
+          "name": "Set up Go",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-03-10T04:13:30Z",
+          "completed_at": "2026-03-10T04:13:32Z"
+        },
+        {
+          "name": "Set up Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-03-10T04:13:32Z",
+          "completed_at": "2026-03-10T04:13:36Z"
+        },
+        {
+          "name": "Install UI Dependencies",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 7,
+          "started_at": "2026-03-10T04:13:36Z",
+          "completed_at": "2026-03-10T04:13:36Z"
+        },
+        {
+          "name": "Generate Protobufs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-03-10T04:13:36Z",
+          "completed_at": "2026-03-10T04:14:31Z"
+        },
+        {
+          "name": "Set up QEMU",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-03-10T04:14:31Z",
+          "completed_at": "2026-03-10T04:14:37Z"
+        },
+        {
+          "name": "Set up Docker Buildx",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-03-10T04:14:37Z",
+          "completed_at": "2026-03-10T04:14:41Z"
+        },
+        {
+          "name": "Build and Save Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-03-10T04:14:41Z",
+          "completed_at": "2026-03-10T04:42:00Z"
+        },
+        {
+          "name": "Upload Image Artifact",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-03-10T04:42:00Z",
+          "completed_at": "2026-03-10T04:42:06Z"
+        },
+        {
+          "name": "Post Set up Docker Buildx",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20,
+          "started_at": "2026-03-10T04:42:06Z",
+          "completed_at": "2026-03-10T04:42:11Z"
+        },
+        {
+          "name": "Post Set up QEMU",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21,
+          "started_at": "2026-03-10T04:42:11Z",
+          "completed_at": "2026-03-10T04:42:11Z"
+        },
+        {
+          "name": "Post Set up Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-03-10T04:42:11Z",
+          "completed_at": "2026-03-10T04:42:11Z"
+        },
+        {
+          "name": "Post Set up Go",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-03-10T04:42:11Z",
+          "completed_at": "2026-03-10T04:42:12Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 24,
+          "started_at": "2026-03-10T04:42:12Z",
+          "completed_at": "2026-03-10T04:42:12Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 25,
+          "started_at": "2026-03-10T04:42:12Z",
+          "completed_at": "2026-03-10T04:42:12Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/mcpany/core/check-runs/66398428177",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000254801,
+      "runner_name": "GitHub Actions 1000254801",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 66398428179,
+      "run_id": 22885571524,
+      "workflow_name": "CI",
+      "head_branch": "feat/alerts-bulk-actions-8770349541949571325",
+      "run_url": "https://api.github.com/repos/mcpany/core/actions/runs/22885571524",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOP7bFkc8AAAAPdaecEw",
+      "head_sha": "5f4bb3f604de94f5cb32f9749eb178a7ddd48259",
+      "url": "https://api.github.com/repos/mcpany/core/actions/jobs/66398428179",
+      "html_url": "https://github.com/mcpany/core/actions/runs/22885571524/job/66398428179",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-03-10T03:36:31Z",
+      "started_at": "2026-03-10T04:13:03Z",
+      "completed_at": "2026-03-10T04:15:35Z",
+      "name": "Build Docker Image (time-server, amd64)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-03-10T04:13:03Z",
+          "completed_at": "2026-03-10T04:13:07Z"
+        },
+        {
+          "name": "Free Disk Space (Fast)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-03-10T04:13:07Z",
+          "completed_at": "2026-03-10T04:13:28Z"
+        },
+        {
+          "name": "Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-03-10T04:13:28Z",
+          "completed_at": "2026-03-10T04:13:30Z"
+        },
+        {
+          "name": "Install dependencies (Idempotent)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-03-10T04:13:30Z",
+          "completed_at": "2026-03-10T04:13:30Z"
+        },
+        {
+          "name": "Set up Go",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-03-10T04:13:30Z",
+          "completed_at": "2026-03-10T04:13:34Z"
+        },
+        {
+          "name": "Set up Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-03-10T04:13:34Z",
+          "completed_at": "2026-03-10T04:13:40Z"
+        },
+        {
+          "name": "Install UI Dependencies",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 7,
+          "started_at": "2026-03-10T04:13:40Z",
+          "completed_at": "2026-03-10T04:13:40Z"
+        },
+        {
+          "name": "Generate Protobufs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-03-10T04:13:40Z",
+          "completed_at": "2026-03-10T04:14:37Z"
+        },
+        {
+          "name": "Set up QEMU",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-03-10T04:14:37Z",
+          "completed_at": "2026-03-10T04:14:42Z"
+        },
+        {
+          "name": "Set up Docker Buildx",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-03-10T04:14:42Z",
+          "completed_at": "2026-03-10T04:14:47Z"
+        },
+        {
+          "name": "Build and Save Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-03-10T04:14:47Z",
+          "completed_at": "2026-03-10T04:15:21Z"
+        },
+        {
+          "name": "Upload Image Artifact",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-03-10T04:15:21Z",
+          "completed_at": "2026-03-10T04:15:29Z"
+        },
+        {
+          "name": "Post Set up Docker Buildx",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20,
+          "started_at": "2026-03-10T04:15:29Z",
+          "completed_at": "2026-03-10T04:15:30Z"
+        },
+        {
+          "name": "Post Set up QEMU",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21,
+          "started_at": "2026-03-10T04:15:30Z",
+          "completed_at": "2026-03-10T04:15:31Z"
+        },
+        {
+          "name": "Post Set up Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-03-10T04:15:31Z",
+          "completed_at": "2026-03-10T04:15:31Z"
+        },
+        {
+          "name": "Post Set up Go",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-03-10T04:15:31Z",
+          "completed_at": "2026-03-10T04:15:31Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 24,
+          "started_at": "2026-03-10T04:15:31Z",
+          "completed_at": "2026-03-10T04:15:32Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 25,
+          "started_at": "2026-03-10T04:15:32Z",
+          "completed_at": "2026-03-10T04:15:32Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/mcpany/core/check-runs/66398428179",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000254802,
+      "runner_name": "GitHub Actions 1000254802",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 66398428215,
+      "run_id": 22885571524,
+      "workflow_name": "CI",
+      "head_branch": "feat/alerts-bulk-actions-8770349541949571325",
+      "run_url": "https://api.github.com/repos/mcpany/core/actions/runs/22885571524",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOP7bFkc8AAAAPdaecNw",
+      "head_sha": "5f4bb3f604de94f5cb32f9749eb178a7ddd48259",
+      "url": "https://api.github.com/repos/mcpany/core/actions/jobs/66398428215",
+      "html_url": "https://github.com/mcpany/core/actions/runs/22885571524/job/66398428215",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-03-10T03:36:31Z",
+      "started_at": "2026-03-10T04:35:55Z",
+      "completed_at": "2026-03-10T04:38:44Z",
+      "name": "Build Docker Image (time-server, arm64)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-03-10T04:35:56Z",
+          "completed_at": "2026-03-10T04:35:59Z"
+        },
+        {
+          "name": "Free Disk Space (Fast)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-03-10T04:35:59Z",
+          "completed_at": "2026-03-10T04:36:45Z"
+        },
+        {
+          "name": "Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-03-10T04:36:45Z",
+          "completed_at": "2026-03-10T04:36:47Z"
+        },
+        {
+          "name": "Install dependencies (Idempotent)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-03-10T04:36:47Z",
+          "completed_at": "2026-03-10T04:36:47Z"
+        },
+        {
+          "name": "Set up Go",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-03-10T04:36:47Z",
+          "completed_at": "2026-03-10T04:36:49Z"
+        },
+        {
+          "name": "Set up Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-03-10T04:36:49Z",
+          "completed_at": "2026-03-10T04:36:54Z"
+        },
+        {
+          "name": "Install UI Dependencies",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 7,
+          "started_at": "2026-03-10T04:36:54Z",
+          "completed_at": "2026-03-10T04:36:54Z"
+        },
+        {
+          "name": "Generate Protobufs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-03-10T04:36:54Z",
+          "completed_at": "2026-03-10T04:37:50Z"
+        },
+        {
+          "name": "Set up QEMU",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-03-10T04:37:50Z",
+          "completed_at": "2026-03-10T04:38:00Z"
+        },
+        {
+          "name": "Set up Docker Buildx",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-03-10T04:38:00Z",
+          "completed_at": "2026-03-10T04:38:03Z"
+        },
+        {
+          "name": "Build and Save Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-03-10T04:38:03Z",
+          "completed_at": "2026-03-10T04:38:31Z"
+        },
+        {
+          "name": "Upload Image Artifact",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-03-10T04:38:31Z",
+          "completed_at": "2026-03-10T04:38:39Z"
+        },
+        {
+          "name": "Post Set up Docker Buildx",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20,
+          "started_at": "2026-03-10T04:38:39Z",
+          "completed_at": "2026-03-10T04:38:40Z"
+        },
+        {
+          "name": "Post Set up QEMU",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21,
+          "started_at": "2026-03-10T04:38:40Z",
+          "completed_at": "2026-03-10T04:38:41Z"
+        },
+        {
+          "name": "Post Set up Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-03-10T04:38:41Z",
+          "completed_at": "2026-03-10T04:38:41Z"
+        },
+        {
+          "name": "Post Set up Go",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-03-10T04:38:41Z",
+          "completed_at": "2026-03-10T04:38:41Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 24,
+          "started_at": "2026-03-10T04:38:41Z",
+          "completed_at": "2026-03-10T04:38:41Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 25,
+          "started_at": "2026-03-10T04:38:41Z",
+          "completed_at": "2026-03-10T04:38:41Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/mcpany/core/check-runs/66398428215",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000254871,
+      "runner_name": "GitHub Actions 1000254871",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 66398428217,
+      "run_id": 22885571524,
+      "workflow_name": "CI",
+      "head_branch": "feat/alerts-bulk-actions-8770349541949571325",
+      "run_url": "https://api.github.com/repos/mcpany/core/actions/runs/22885571524",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOP7bFkc8AAAAPdaecOQ",
+      "head_sha": "5f4bb3f604de94f5cb32f9749eb178a7ddd48259",
+      "url": "https://api.github.com/repos/mcpany/core/actions/jobs/66398428217",
+      "html_url": "https://github.com/mcpany/core/actions/runs/22885571524/job/66398428217",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-03-10T03:36:31Z",
+      "started_at": "2026-03-10T04:11:55Z",
+      "completed_at": "2026-03-10T04:14:08Z",
+      "name": "Build Docker Image (cowsay, amd64)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-03-10T04:11:55Z",
+          "completed_at": "2026-03-10T04:11:58Z"
+        },
+        {
+          "name": "Free Disk Space (Fast)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-03-10T04:11:58Z",
+          "completed_at": "2026-03-10T04:12:38Z"
+        },
+        {
+          "name": "Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-03-10T04:12:38Z",
+          "completed_at": "2026-03-10T04:12:40Z"
+        },
+        {
+          "name": "Install dependencies (Idempotent)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-03-10T04:12:40Z",
+          "completed_at": "2026-03-10T04:12:40Z"
+        },
+        {
+          "name": "Set up Go",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-03-10T04:12:40Z",
+          "completed_at": "2026-03-10T04:12:42Z"
+        },
+        {
+          "name": "Set up Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-03-10T04:12:42Z",
+          "completed_at": "2026-03-10T04:12:45Z"
+        },
+        {
+          "name": "Install UI Dependencies",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 7,
+          "started_at": "2026-03-10T04:12:45Z",
+          "completed_at": "2026-03-10T04:12:45Z"
+        },
+        {
+          "name": "Generate Protobufs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-03-10T04:12:45Z",
+          "completed_at": "2026-03-10T04:13:34Z"
+        },
+        {
+          "name": "Set up QEMU",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-03-10T04:13:34Z",
+          "completed_at": "2026-03-10T04:13:41Z"
+        },
+        {
+          "name": "Set up Docker Buildx",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-03-10T04:13:41Z",
+          "completed_at": "2026-03-10T04:13:52Z"
+        },
+        {
+          "name": "Build and Save Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-03-10T04:13:52Z",
+          "completed_at": "2026-03-10T04:13:59Z"
+        },
+        {
+          "name": "Upload Image Artifact",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-03-10T04:13:59Z",
+          "completed_at": "2026-03-10T04:14:04Z"
+        },
+        {
+          "name": "Post Set up Docker Buildx",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20,
+          "started_at": "2026-03-10T04:14:04Z",
+          "completed_at": "2026-03-10T04:14:05Z"
+        },
+        {
+          "name": "Post Set up QEMU",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21,
+          "started_at": "2026-03-10T04:14:05Z",
+          "completed_at": "2026-03-10T04:14:05Z"
+        },
+        {
+          "name": "Post Set up Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-03-10T04:14:05Z",
+          "completed_at": "2026-03-10T04:14:05Z"
+        },
+        {
+          "name": "Post Set up Go",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-03-10T04:14:05Z",
+          "completed_at": "2026-03-10T04:14:05Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 24,
+          "started_at": "2026-03-10T04:14:05Z",
+          "completed_at": "2026-03-10T04:14:06Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 25,
+          "started_at": "2026-03-10T04:14:06Z",
+          "completed_at": "2026-03-10T04:14:06Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/mcpany/core/check-runs/66398428217",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000254793,
+      "runner_name": "GitHub Actions 1000254793",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 66398428228,
+      "run_id": 22885571524,
+      "workflow_name": "CI",
+      "head_branch": "feat/alerts-bulk-actions-8770349541949571325",
+      "run_url": "https://api.github.com/repos/mcpany/core/actions/runs/22885571524",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOP7bFkc8AAAAPdaecRA",
+      "head_sha": "5f4bb3f604de94f5cb32f9749eb178a7ddd48259",
+      "url": "https://api.github.com/repos/mcpany/core/actions/jobs/66398428228",
+      "html_url": "https://github.com/mcpany/core/actions/runs/22885571524/job/66398428228",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-03-10T03:36:31Z",
+      "started_at": "2026-03-10T04:42:17Z",
+      "completed_at": "2026-03-10T04:44:16Z",
+      "name": "Build Docker Image (everything, amd64)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-03-10T04:42:18Z",
+          "completed_at": "2026-03-10T04:42:19Z"
+        },
+        {
+          "name": "Free Disk Space (Fast)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-03-10T04:42:19Z",
+          "completed_at": "2026-03-10T04:42:39Z"
+        },
+        {
+          "name": "Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-03-10T04:42:39Z",
+          "completed_at": "2026-03-10T04:42:41Z"
+        },
+        {
+          "name": "Install dependencies (Idempotent)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-03-10T04:42:41Z",
+          "completed_at": "2026-03-10T04:42:41Z"
+        },
+        {
+          "name": "Set up Go",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-03-10T04:42:41Z",
+          "completed_at": "2026-03-10T04:42:43Z"
+        },
+        {
+          "name": "Set up Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-03-10T04:42:43Z",
+          "completed_at": "2026-03-10T04:42:48Z"
+        },
+        {
+          "name": "Install UI Dependencies",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 7,
+          "started_at": "2026-03-10T04:42:48Z",
+          "completed_at": "2026-03-10T04:42:48Z"
+        },
+        {
+          "name": "Generate Protobufs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-03-10T04:42:48Z",
+          "completed_at": "2026-03-10T04:43:43Z"
+        },
+        {
+          "name": "Set up QEMU",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-03-10T04:43:43Z",
+          "completed_at": "2026-03-10T04:43:47Z"
+        },
+        {
+          "name": "Set up Docker Buildx",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-03-10T04:43:47Z",
+          "completed_at": "2026-03-10T04:43:52Z"
+        },
+        {
+          "name": "Build and Save Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-03-10T04:43:52Z",
+          "completed_at": "2026-03-10T04:44:06Z"
+        },
+        {
+          "name": "Upload Image Artifact",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-03-10T04:44:06Z",
+          "completed_at": "2026-03-10T04:44:12Z"
+        },
+        {
+          "name": "Post Set up Docker Buildx",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20,
+          "started_at": "2026-03-10T04:44:12Z",
+          "completed_at": "2026-03-10T04:44:13Z"
+        },
+        {
+          "name": "Post Set up QEMU",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21,
+          "started_at": "2026-03-10T04:44:13Z",
+          "completed_at": "2026-03-10T04:44:14Z"
+        },
+        {
+          "name": "Post Set up Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-03-10T04:44:14Z",
+          "completed_at": "2026-03-10T04:44:14Z"
+        },
+        {
+          "name": "Post Set up Go",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-03-10T04:44:14Z",
+          "completed_at": "2026-03-10T04:44:14Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 24,
+          "started_at": "2026-03-10T04:44:14Z",
+          "completed_at": "2026-03-10T04:44:14Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 25,
+          "started_at": "2026-03-10T04:44:14Z",
+          "completed_at": "2026-03-10T04:44:14Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/mcpany/core/check-runs/66398428228",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000254880,
+      "runner_name": "GitHub Actions 1000254880",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 66398428234,
+      "run_id": 22885571524,
+      "workflow_name": "CI",
+      "head_branch": "feat/alerts-bulk-actions-8770349541949571325",
+      "run_url": "https://api.github.com/repos/mcpany/core/actions/runs/22885571524",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOP7bFkc8AAAAPdaecSg",
+      "head_sha": "5f4bb3f604de94f5cb32f9749eb178a7ddd48259",
+      "url": "https://api.github.com/repos/mcpany/core/actions/jobs/66398428234",
+      "html_url": "https://github.com/mcpany/core/actions/runs/22885571524/job/66398428234",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-03-10T03:36:31Z",
+      "started_at": "2026-03-10T04:23:57Z",
+      "completed_at": "2026-03-10T04:26:21Z",
+      "name": "Build Docker Image (cowsay, arm64)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-03-10T04:23:58Z",
+          "completed_at": "2026-03-10T04:24:00Z"
+        },
+        {
+          "name": "Free Disk Space (Fast)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-03-10T04:24:00Z",
+          "completed_at": "2026-03-10T04:24:48Z"
+        },
+        {
+          "name": "Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-03-10T04:24:48Z",
+          "completed_at": "2026-03-10T04:24:50Z"
+        },
+        {
+          "name": "Install dependencies (Idempotent)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-03-10T04:24:50Z",
+          "completed_at": "2026-03-10T04:24:50Z"
+        },
+        {
+          "name": "Set up Go",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-03-10T04:24:50Z",
+          "completed_at": "2026-03-10T04:24:52Z"
+        },
+        {
+          "name": "Set up Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-03-10T04:24:52Z",
+          "completed_at": "2026-03-10T04:24:57Z"
+        },
+        {
+          "name": "Install UI Dependencies",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 7,
+          "started_at": "2026-03-10T04:24:57Z",
+          "completed_at": "2026-03-10T04:24:57Z"
+        },
+        {
+          "name": "Generate Protobufs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-03-10T04:24:57Z",
+          "completed_at": "2026-03-10T04:25:52Z"
+        },
+        {
+          "name": "Set up QEMU",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-03-10T04:25:52Z",
+          "completed_at": "2026-03-10T04:26:00Z"
+        },
+        {
+          "name": "Set up Docker Buildx",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-03-10T04:26:00Z",
+          "completed_at": "2026-03-10T04:26:04Z"
+        },
+        {
+          "name": "Build and Save Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-03-10T04:26:04Z",
+          "completed_at": "2026-03-10T04:26:13Z"
+        },
+        {
+          "name": "Upload Image Artifact",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-03-10T04:26:13Z",
+          "completed_at": "2026-03-10T04:26:18Z"
+        },
+        {
+          "name": "Post Set up Docker Buildx",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20,
+          "started_at": "2026-03-10T04:26:18Z",
+          "completed_at": "2026-03-10T04:26:19Z"
+        },
+        {
+          "name": "Post Set up QEMU",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21,
+          "started_at": "2026-03-10T04:26:19Z",
+          "completed_at": "2026-03-10T04:26:19Z"
+        },
+        {
+          "name": "Post Set up Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-03-10T04:26:19Z",
+          "completed_at": "2026-03-10T04:26:19Z"
+        },
+        {
+          "name": "Post Set up Go",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-03-10T04:26:19Z",
+          "completed_at": "2026-03-10T04:26:19Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 24,
+          "started_at": "2026-03-10T04:26:19Z",
+          "completed_at": "2026-03-10T04:26:20Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 25,
+          "started_at": "2026-03-10T04:26:20Z",
+          "completed_at": "2026-03-10T04:26:20Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/mcpany/core/check-runs/66398428234",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000254833,
+      "runner_name": "GitHub Actions 1000254833",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 66398428240,
+      "run_id": 22885571524,
+      "workflow_name": "CI",
+      "head_branch": "feat/alerts-bulk-actions-8770349541949571325",
+      "run_url": "https://api.github.com/repos/mcpany/core/actions/runs/22885571524",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOP7bFkc8AAAAPdaecUA",
+      "head_sha": "5f4bb3f604de94f5cb32f9749eb178a7ddd48259",
+      "url": "https://api.github.com/repos/mcpany/core/actions/jobs/66398428240",
+      "html_url": "https://github.com/mcpany/core/actions/runs/22885571524/job/66398428240",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-03-10T03:36:31Z",
+      "started_at": "2026-03-10T04:24:26Z",
+      "completed_at": "2026-03-10T04:29:10Z",
+      "name": "Build Docker Image (operator, arm64)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-03-10T04:24:26Z",
+          "completed_at": "2026-03-10T04:24:29Z"
+        },
+        {
+          "name": "Free Disk Space (Fast)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-03-10T04:24:29Z",
+          "completed_at": "2026-03-10T04:26:25Z"
+        },
+        {
+          "name": "Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-03-10T04:26:25Z",
+          "completed_at": "2026-03-10T04:26:26Z"
+        },
+        {
+          "name": "Install dependencies (Idempotent)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-03-10T04:26:26Z",
+          "completed_at": "2026-03-10T04:26:26Z"
+        },
+        {
+          "name": "Set up Go",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-03-10T04:26:26Z",
+          "completed_at": "2026-03-10T04:26:29Z"
+        },
+        {
+          "name": "Set up Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-03-10T04:26:29Z",
+          "completed_at": "2026-03-10T04:26:34Z"
+        },
+        {
+          "name": "Install UI Dependencies",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 7,
+          "started_at": "2026-03-10T04:26:34Z",
+          "completed_at": "2026-03-10T04:26:34Z"
+        },
+        {
+          "name": "Generate Protobufs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-03-10T04:26:34Z",
+          "completed_at": "2026-03-10T04:27:29Z"
+        },
+        {
+          "name": "Set up QEMU",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-03-10T04:27:29Z",
+          "completed_at": "2026-03-10T04:27:38Z"
+        },
+        {
+          "name": "Set up Docker Buildx",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-03-10T04:27:38Z",
+          "completed_at": "2026-03-10T04:27:43Z"
+        },
+        {
+          "name": "Build and Save Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-03-10T04:27:43Z",
+          "completed_at": "2026-03-10T04:29:02Z"
+        },
+        {
+          "name": "Upload Image Artifact",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-03-10T04:29:02Z",
+          "completed_at": "2026-03-10T04:29:05Z"
+        },
+        {
+          "name": "Post Set up Docker Buildx",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20,
+          "started_at": "2026-03-10T04:29:05Z",
+          "completed_at": "2026-03-10T04:29:07Z"
+        },
+        {
+          "name": "Post Set up QEMU",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21,
+          "started_at": "2026-03-10T04:29:07Z",
+          "completed_at": "2026-03-10T04:29:08Z"
+        },
+        {
+          "name": "Post Set up Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-03-10T04:29:08Z",
+          "completed_at": "2026-03-10T04:29:08Z"
+        },
+        {
+          "name": "Post Set up Go",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-03-10T04:29:08Z",
+          "completed_at": "2026-03-10T04:29:08Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 24,
+          "started_at": "2026-03-10T04:29:08Z",
+          "completed_at": "2026-03-10T04:29:08Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 25,
+          "started_at": "2026-03-10T04:29:08Z",
+          "completed_at": "2026-03-10T04:29:08Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/mcpany/core/check-runs/66398428240",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000254836,
+      "runner_name": "GitHub Actions 1000254836",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 66398428244,
+      "run_id": 22885571524,
+      "workflow_name": "CI",
+      "head_branch": "feat/alerts-bulk-actions-8770349541949571325",
+      "run_url": "https://api.github.com/repos/mcpany/core/actions/runs/22885571524",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOP7bFkc8AAAAPdaecVA",
+      "head_sha": "5f4bb3f604de94f5cb32f9749eb178a7ddd48259",
+      "url": "https://api.github.com/repos/mcpany/core/actions/jobs/66398428244",
+      "html_url": "https://github.com/mcpany/core/actions/runs/22885571524/job/66398428244",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-03-10T03:36:31Z",
+      "started_at": "2026-03-10T04:48:11Z",
+      "completed_at": "2026-03-10T04:51:44Z",
+      "name": "Build Docker Image (operator, amd64)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-03-10T04:48:12Z",
+          "completed_at": "2026-03-10T04:48:14Z"
+        },
+        {
+          "name": "Free Disk Space (Fast)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-03-10T04:48:14Z",
+          "completed_at": "2026-03-10T04:49:00Z"
+        },
+        {
+          "name": "Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-03-10T04:49:00Z",
+          "completed_at": "2026-03-10T04:49:02Z"
+        },
+        {
+          "name": "Install dependencies (Idempotent)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-03-10T04:49:02Z",
+          "completed_at": "2026-03-10T04:49:02Z"
+        },
+        {
+          "name": "Set up Go",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-03-10T04:49:02Z",
+          "completed_at": "2026-03-10T04:49:04Z"
+        },
+        {
+          "name": "Set up Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-03-10T04:49:04Z",
+          "completed_at": "2026-03-10T04:49:09Z"
+        },
+        {
+          "name": "Install UI Dependencies",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 7,
+          "started_at": "2026-03-10T04:49:09Z",
+          "completed_at": "2026-03-10T04:49:09Z"
+        },
+        {
+          "name": "Generate Protobufs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-03-10T04:49:09Z",
+          "completed_at": "2026-03-10T04:50:04Z"
+        },
+        {
+          "name": "Set up QEMU",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-03-10T04:50:04Z",
+          "completed_at": "2026-03-10T04:50:12Z"
+        },
+        {
+          "name": "Set up Docker Buildx",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-03-10T04:50:12Z",
+          "completed_at": "2026-03-10T04:50:16Z"
+        },
+        {
+          "name": "Build and Save Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-03-10T04:50:16Z",
+          "completed_at": "2026-03-10T04:51:37Z"
+        },
+        {
+          "name": "Upload Image Artifact",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-03-10T04:51:37Z",
+          "completed_at": "2026-03-10T04:51:39Z"
+        },
+        {
+          "name": "Post Set up Docker Buildx",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20,
+          "started_at": "2026-03-10T04:51:39Z",
+          "completed_at": "2026-03-10T04:51:42Z"
+        },
+        {
+          "name": "Post Set up QEMU",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21,
+          "started_at": "2026-03-10T04:51:42Z",
+          "completed_at": "2026-03-10T04:51:42Z"
+        },
+        {
+          "name": "Post Set up Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-03-10T04:51:42Z",
+          "completed_at": "2026-03-10T04:51:43Z"
+        },
+        {
+          "name": "Post Set up Go",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-03-10T04:51:43Z",
+          "completed_at": "2026-03-10T04:51:43Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 24,
+          "started_at": "2026-03-10T04:51:43Z",
+          "completed_at": "2026-03-10T04:51:43Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 25,
+          "started_at": "2026-03-10T04:51:43Z",
+          "completed_at": "2026-03-10T04:51:43Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/mcpany/core/check-runs/66398428244",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000254894,
+      "runner_name": "GitHub Actions 1000254894",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 66398428245,
+      "run_id": 22885571524,
+      "workflow_name": "CI",
+      "head_branch": "feat/alerts-bulk-actions-8770349541949571325",
+      "run_url": "https://api.github.com/repos/mcpany/core/actions/runs/22885571524",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOP7bFkc8AAAAPdaecVQ",
+      "head_sha": "5f4bb3f604de94f5cb32f9749eb178a7ddd48259",
+      "url": "https://api.github.com/repos/mcpany/core/actions/jobs/66398428245",
+      "html_url": "https://github.com/mcpany/core/actions/runs/22885571524/job/66398428245",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-03-10T03:36:31Z",
+      "started_at": "2026-03-10T04:29:13Z",
+      "completed_at": "2026-03-10T04:35:52Z",
+      "name": "Build Docker Image (ui-test, amd64)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-03-10T04:29:13Z",
+          "completed_at": "2026-03-10T04:29:15Z"
+        },
+        {
+          "name": "Free Disk Space (Fast)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-03-10T04:29:15Z",
+          "completed_at": "2026-03-10T04:29:34Z"
+        },
+        {
+          "name": "Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-03-10T04:29:34Z",
+          "completed_at": "2026-03-10T04:29:35Z"
+        },
+        {
+          "name": "Install dependencies (Idempotent)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-03-10T04:29:35Z",
+          "completed_at": "2026-03-10T04:29:35Z"
+        },
+        {
+          "name": "Set up Go",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-03-10T04:29:35Z",
+          "completed_at": "2026-03-10T04:29:37Z"
+        },
+        {
+          "name": "Set up Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-03-10T04:29:37Z",
+          "completed_at": "2026-03-10T04:29:43Z"
+        },
+        {
+          "name": "Install UI Dependencies",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-03-10T04:29:43Z",
+          "completed_at": "2026-03-10T04:30:09Z"
+        },
+        {
+          "name": "Generate Protobufs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-03-10T04:30:09Z",
+          "completed_at": "2026-03-10T04:30:35Z"
+        },
+        {
+          "name": "Set up QEMU",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-03-10T04:30:35Z",
+          "completed_at": "2026-03-10T04:30:41Z"
+        },
+        {
+          "name": "Set up Docker Buildx",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-03-10T04:30:41Z",
+          "completed_at": "2026-03-10T04:30:45Z"
+        },
+        {
+          "name": "Build and Save Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-03-10T04:30:45Z",
+          "completed_at": "2026-03-10T04:33:57Z"
+        },
+        {
+          "name": "Upload Image Artifact",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-03-10T04:33:57Z",
+          "completed_at": "2026-03-10T04:35:42Z"
+        },
+        {
+          "name": "Post Set up Docker Buildx",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20,
+          "started_at": "2026-03-10T04:35:42Z",
+          "completed_at": "2026-03-10T04:35:49Z"
+        },
+        {
+          "name": "Post Set up QEMU",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21,
+          "started_at": "2026-03-10T04:35:49Z",
+          "completed_at": "2026-03-10T04:35:50Z"
+        },
+        {
+          "name": "Post Set up Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-03-10T04:35:50Z",
+          "completed_at": "2026-03-10T04:35:50Z"
+        },
+        {
+          "name": "Post Set up Go",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-03-10T04:35:50Z",
+          "completed_at": "2026-03-10T04:35:50Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 24,
+          "started_at": "2026-03-10T04:35:50Z",
+          "completed_at": "2026-03-10T04:35:50Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 25,
+          "started_at": "2026-03-10T04:35:50Z",
+          "completed_at": "2026-03-10T04:35:50Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/mcpany/core/check-runs/66398428245",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000254854,
+      "runner_name": "GitHub Actions 1000254854",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 66398428249,
+      "run_id": 22885571524,
+      "workflow_name": "CI",
+      "head_branch": "feat/alerts-bulk-actions-8770349541949571325",
+      "run_url": "https://api.github.com/repos/mcpany/core/actions/runs/22885571524",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOP7bFkc8AAAAPdaecWQ",
+      "head_sha": "5f4bb3f604de94f5cb32f9749eb178a7ddd48259",
+      "url": "https://api.github.com/repos/mcpany/core/actions/jobs/66398428249",
+      "html_url": "https://github.com/mcpany/core/actions/runs/22885571524/job/66398428249",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-03-10T03:36:31Z",
+      "started_at": "2026-03-10T04:22:07Z",
+      "completed_at": "2026-03-10T04:27:01Z",
+      "name": "Build Docker Image (ui, arm64)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-03-10T04:22:08Z",
+          "completed_at": "2026-03-10T04:22:11Z"
+        },
+        {
+          "name": "Free Disk Space (Fast)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-03-10T04:22:11Z",
+          "completed_at": "2026-03-10T04:22:32Z"
+        },
+        {
+          "name": "Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-03-10T04:22:32Z",
+          "completed_at": "2026-03-10T04:22:34Z"
+        },
+        {
+          "name": "Install dependencies (Idempotent)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-03-10T04:22:34Z",
+          "completed_at": "2026-03-10T04:22:34Z"
+        },
+        {
+          "name": "Set up Go",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-03-10T04:22:34Z",
+          "completed_at": "2026-03-10T04:22:37Z"
+        },
+        {
+          "name": "Set up Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-03-10T04:22:37Z",
+          "completed_at": "2026-03-10T04:22:41Z"
+        },
+        {
+          "name": "Install UI Dependencies",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-03-10T04:22:41Z",
+          "completed_at": "2026-03-10T04:23:08Z"
+        },
+        {
+          "name": "Generate Protobufs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-03-10T04:23:08Z",
+          "completed_at": "2026-03-10T04:23:36Z"
+        },
+        {
+          "name": "Set up QEMU",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-03-10T04:23:36Z",
+          "completed_at": "2026-03-10T04:23:42Z"
+        },
+        {
+          "name": "Set up Docker Buildx",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-03-10T04:23:42Z",
+          "completed_at": "2026-03-10T04:23:46Z"
+        },
+        {
+          "name": "Build and Save Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-03-10T04:23:46Z",
+          "completed_at": "2026-03-10T04:26:42Z"
+        },
+        {
+          "name": "Upload Image Artifact",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-03-10T04:26:42Z",
+          "completed_at": "2026-03-10T04:26:50Z"
+        },
+        {
+          "name": "Post Set up Docker Buildx",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20,
+          "started_at": "2026-03-10T04:26:50Z",
+          "completed_at": "2026-03-10T04:26:58Z"
+        },
+        {
+          "name": "Post Set up QEMU",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21,
+          "started_at": "2026-03-10T04:26:58Z",
+          "completed_at": "2026-03-10T04:26:59Z"
+        },
+        {
+          "name": "Post Set up Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-03-10T04:26:59Z",
+          "completed_at": "2026-03-10T04:26:59Z"
+        },
+        {
+          "name": "Post Set up Go",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-03-10T04:26:59Z",
+          "completed_at": "2026-03-10T04:26:59Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 24,
+          "started_at": "2026-03-10T04:26:59Z",
+          "completed_at": "2026-03-10T04:26:59Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 25,
+          "started_at": "2026-03-10T04:26:59Z",
+          "completed_at": "2026-03-10T04:26:59Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/mcpany/core/check-runs/66398428249",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000254828,
+      "runner_name": "GitHub Actions 1000254828",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 66398428253,
+      "run_id": 22885571524,
+      "workflow_name": "CI",
+      "head_branch": "feat/alerts-bulk-actions-8770349541949571325",
+      "run_url": "https://api.github.com/repos/mcpany/core/actions/runs/22885571524",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOP7bFkc8AAAAPdaecXQ",
+      "head_sha": "5f4bb3f604de94f5cb32f9749eb178a7ddd48259",
+      "url": "https://api.github.com/repos/mcpany/core/actions/jobs/66398428253",
+      "html_url": "https://github.com/mcpany/core/actions/runs/22885571524/job/66398428253",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-03-10T03:36:31Z",
+      "started_at": "2026-03-10T04:24:09Z",
+      "completed_at": "2026-03-10T04:28:58Z",
+      "name": "Build Docker Image (server, amd64)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-03-10T04:24:10Z",
+          "completed_at": "2026-03-10T04:24:13Z"
+        },
+        {
+          "name": "Free Disk Space (Fast)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-03-10T04:24:13Z",
+          "completed_at": "2026-03-10T04:25:12Z"
+        },
+        {
+          "name": "Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-03-10T04:25:12Z",
+          "completed_at": "2026-03-10T04:25:14Z"
+        },
+        {
+          "name": "Install dependencies (Idempotent)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-03-10T04:25:14Z",
+          "completed_at": "2026-03-10T04:25:14Z"
+        },
+        {
+          "name": "Set up Go",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-03-10T04:25:14Z",
+          "completed_at": "2026-03-10T04:25:17Z"
+        },
+        {
+          "name": "Set up Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-03-10T04:25:17Z",
+          "completed_at": "2026-03-10T04:25:24Z"
+        },
+        {
+          "name": "Install UI Dependencies",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 7,
+          "started_at": "2026-03-10T04:25:24Z",
+          "completed_at": "2026-03-10T04:25:24Z"
+        },
+        {
+          "name": "Generate Protobufs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-03-10T04:25:24Z",
+          "completed_at": "2026-03-10T04:26:19Z"
+        },
+        {
+          "name": "Set up QEMU",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-03-10T04:26:19Z",
+          "completed_at": "2026-03-10T04:26:29Z"
+        },
+        {
+          "name": "Set up Docker Buildx",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-03-10T04:26:29Z",
+          "completed_at": "2026-03-10T04:26:33Z"
+        },
+        {
+          "name": "Build and Save Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-03-10T04:26:33Z",
+          "completed_at": "2026-03-10T04:28:45Z"
+        },
+        {
+          "name": "Upload Image Artifact",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-03-10T04:28:45Z",
+          "completed_at": "2026-03-10T04:28:52Z"
+        },
+        {
+          "name": "Post Set up Docker Buildx",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20,
+          "started_at": "2026-03-10T04:28:52Z",
+          "completed_at": "2026-03-10T04:28:56Z"
+        },
+        {
+          "name": "Post Set up QEMU",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21,
+          "started_at": "2026-03-10T04:28:56Z",
+          "completed_at": "2026-03-10T04:28:56Z"
+        },
+        {
+          "name": "Post Set up Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-03-10T04:28:56Z",
+          "completed_at": "2026-03-10T04:28:57Z"
+        },
+        {
+          "name": "Post Set up Go",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-03-10T04:28:57Z",
+          "completed_at": "2026-03-10T04:28:57Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 24,
+          "started_at": "2026-03-10T04:28:57Z",
+          "completed_at": "2026-03-10T04:28:57Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 25,
+          "started_at": "2026-03-10T04:28:57Z",
+          "completed_at": "2026-03-10T04:28:57Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/mcpany/core/check-runs/66398428253",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000254835,
+      "runner_name": "GitHub Actions 1000254835",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 66398428258,
+      "run_id": 22885571524,
+      "workflow_name": "CI",
+      "head_branch": "feat/alerts-bulk-actions-8770349541949571325",
+      "run_url": "https://api.github.com/repos/mcpany/core/actions/runs/22885571524",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOP7bFkc8AAAAPdaecYg",
+      "head_sha": "5f4bb3f604de94f5cb32f9749eb178a7ddd48259",
+      "url": "https://api.github.com/repos/mcpany/core/actions/jobs/66398428258",
+      "html_url": "https://github.com/mcpany/core/actions/runs/22885571524/job/66398428258",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-03-10T03:36:31Z",
+      "started_at": "2026-03-10T04:15:08Z",
+      "completed_at": "2026-03-10T04:20:23Z",
+      "name": "Build Docker Image (ui, amd64)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-03-10T04:15:09Z",
+          "completed_at": "2026-03-10T04:15:12Z"
+        },
+        {
+          "name": "Free Disk Space (Fast)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-03-10T04:15:12Z",
+          "completed_at": "2026-03-10T04:16:00Z"
+        },
+        {
+          "name": "Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-03-10T04:16:00Z",
+          "completed_at": "2026-03-10T04:16:02Z"
+        },
+        {
+          "name": "Install dependencies (Idempotent)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-03-10T04:16:02Z",
+          "completed_at": "2026-03-10T04:16:02Z"
+        },
+        {
+          "name": "Set up Go",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-03-10T04:16:02Z",
+          "completed_at": "2026-03-10T04:16:06Z"
+        },
+        {
+          "name": "Set up Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-03-10T04:16:06Z",
+          "completed_at": "2026-03-10T04:16:11Z"
+        },
+        {
+          "name": "Install UI Dependencies",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-03-10T04:16:11Z",
+          "completed_at": "2026-03-10T04:16:38Z"
+        },
+        {
+          "name": "Generate Protobufs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-03-10T04:16:38Z",
+          "completed_at": "2026-03-10T04:17:02Z"
+        },
+        {
+          "name": "Set up QEMU",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-03-10T04:17:02Z",
+          "completed_at": "2026-03-10T04:17:10Z"
+        },
+        {
+          "name": "Set up Docker Buildx",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-03-10T04:17:10Z",
+          "completed_at": "2026-03-10T04:17:14Z"
+        },
+        {
+          "name": "Build and Save Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-03-10T04:17:14Z",
+          "completed_at": "2026-03-10T04:20:03Z"
+        },
+        {
+          "name": "Upload Image Artifact",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-03-10T04:20:03Z",
+          "completed_at": "2026-03-10T04:20:11Z"
+        },
+        {
+          "name": "Post Set up Docker Buildx",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20,
+          "started_at": "2026-03-10T04:20:11Z",
+          "completed_at": "2026-03-10T04:20:19Z"
+        },
+        {
+          "name": "Post Set up QEMU",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21,
+          "started_at": "2026-03-10T04:20:19Z",
+          "completed_at": "2026-03-10T04:20:20Z"
+        },
+        {
+          "name": "Post Set up Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-03-10T04:20:20Z",
+          "completed_at": "2026-03-10T04:20:20Z"
+        },
+        {
+          "name": "Post Set up Go",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-03-10T04:20:20Z",
+          "completed_at": "2026-03-10T04:20:20Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 24,
+          "started_at": "2026-03-10T04:20:20Z",
+          "completed_at": "2026-03-10T04:20:20Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 25,
+          "started_at": "2026-03-10T04:20:20Z",
+          "completed_at": "2026-03-10T04:20:20Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/mcpany/core/check-runs/66398428258",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000254805,
+      "runner_name": "GitHub Actions 1000254805",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 66398428268,
+      "run_id": 22885571524,
+      "workflow_name": "CI",
+      "head_branch": "feat/alerts-bulk-actions-8770349541949571325",
+      "run_url": "https://api.github.com/repos/mcpany/core/actions/runs/22885571524",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOP7bFkc8AAAAPdaecbA",
+      "head_sha": "5f4bb3f604de94f5cb32f9749eb178a7ddd48259",
+      "url": "https://api.github.com/repos/mcpany/core/actions/jobs/66398428268",
+      "html_url": "https://github.com/mcpany/core/actions/runs/22885571524/job/66398428268",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-03-10T03:36:31Z",
+      "started_at": "2026-03-10T05:06:18Z",
+      "completed_at": "2026-03-10T05:08:51Z",
+      "name": "Build Docker Image (everything, arm64)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-03-10T05:06:18Z",
+          "completed_at": "2026-03-10T05:06:21Z"
+        },
+        {
+          "name": "Free Disk Space (Fast)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-03-10T05:06:21Z",
+          "completed_at": "2026-03-10T05:07:13Z"
+        },
+        {
+          "name": "Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-03-10T05:07:13Z",
+          "completed_at": "2026-03-10T05:07:15Z"
+        },
+        {
+          "name": "Install dependencies (Idempotent)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-03-10T05:07:15Z",
+          "completed_at": "2026-03-10T05:07:15Z"
+        },
+        {
+          "name": "Set up Go",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-03-10T05:07:15Z",
+          "completed_at": "2026-03-10T05:07:17Z"
+        },
+        {
+          "name": "Set up Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-03-10T05:07:17Z",
+          "completed_at": "2026-03-10T05:07:23Z"
+        },
+        {
+          "name": "Install UI Dependencies",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 7,
+          "started_at": "2026-03-10T05:07:23Z",
+          "completed_at": "2026-03-10T05:07:23Z"
+        },
+        {
+          "name": "Generate Protobufs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-03-10T05:07:23Z",
+          "completed_at": "2026-03-10T05:08:18Z"
+        },
+        {
+          "name": "Set up QEMU",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-03-10T05:08:18Z",
+          "completed_at": "2026-03-10T05:08:24Z"
+        },
+        {
+          "name": "Set up Docker Buildx",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-03-10T05:08:24Z",
+          "completed_at": "2026-03-10T05:08:27Z"
+        },
+        {
+          "name": "Build and Save Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-03-10T05:08:27Z",
+          "completed_at": "2026-03-10T05:08:42Z"
+        },
+        {
+          "name": "Upload Image Artifact",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-03-10T05:08:42Z",
+          "completed_at": "2026-03-10T05:08:48Z"
+        },
+        {
+          "name": "Post Set up Docker Buildx",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20,
+          "started_at": "2026-03-10T05:08:48Z",
+          "completed_at": "2026-03-10T05:08:49Z"
+        },
+        {
+          "name": "Post Set up QEMU",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21,
+          "started_at": "2026-03-10T05:08:49Z",
+          "completed_at": "2026-03-10T05:08:49Z"
+        },
+        {
+          "name": "Post Set up Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-03-10T05:08:49Z",
+          "completed_at": "2026-03-10T05:08:50Z"
+        },
+        {
+          "name": "Post Set up Go",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-03-10T05:08:50Z",
+          "completed_at": "2026-03-10T05:08:50Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 24,
+          "started_at": "2026-03-10T05:08:50Z",
+          "completed_at": "2026-03-10T05:08:50Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 25,
+          "started_at": "2026-03-10T05:08:50Z",
+          "completed_at": "2026-03-10T05:08:50Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/mcpany/core/check-runs/66398428268",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000254943,
+      "runner_name": "GitHub Actions 1000254943",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 66398428296,
+      "run_id": 22885571524,
+      "workflow_name": "CI",
+      "head_branch": "feat/alerts-bulk-actions-8770349541949571325",
+      "run_url": "https://api.github.com/repos/mcpany/core/actions/runs/22885571524",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOP7bFkc8AAAAPdaeciA",
+      "head_sha": "5f4bb3f604de94f5cb32f9749eb178a7ddd48259",
+      "url": "https://api.github.com/repos/mcpany/core/actions/jobs/66398428296",
+      "html_url": "https://github.com/mcpany/core/actions/runs/22885571524/job/66398428296",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-03-10T03:36:31Z",
+      "started_at": "2026-03-10T05:06:23Z",
+      "completed_at": "2026-03-10T05:13:35Z",
+      "name": "Build Docker Image (ui-test, arm64)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-03-10T05:06:24Z",
+          "completed_at": "2026-03-10T05:06:28Z"
+        },
+        {
+          "name": "Free Disk Space (Fast)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-03-10T05:06:28Z",
+          "completed_at": "2026-03-10T05:07:07Z"
+        },
+        {
+          "name": "Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-03-10T05:07:07Z",
+          "completed_at": "2026-03-10T05:07:09Z"
+        },
+        {
+          "name": "Install dependencies (Idempotent)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-03-10T05:07:09Z",
+          "completed_at": "2026-03-10T05:07:09Z"
+        },
+        {
+          "name": "Set up Go",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-03-10T05:07:09Z",
+          "completed_at": "2026-03-10T05:07:12Z"
+        },
+        {
+          "name": "Set up Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-03-10T05:07:12Z",
+          "completed_at": "2026-03-10T05:07:18Z"
+        },
+        {
+          "name": "Install UI Dependencies",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-03-10T05:07:18Z",
+          "completed_at": "2026-03-10T05:07:47Z"
+        },
+        {
+          "name": "Generate Protobufs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-03-10T05:07:47Z",
+          "completed_at": "2026-03-10T05:08:14Z"
+        },
+        {
+          "name": "Set up QEMU",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-03-10T05:08:14Z",
+          "completed_at": "2026-03-10T05:08:21Z"
+        },
+        {
+          "name": "Set up Docker Buildx",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-03-10T05:08:21Z",
+          "completed_at": "2026-03-10T05:08:25Z"
+        },
+        {
+          "name": "Build and Save Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-03-10T05:08:25Z",
+          "completed_at": "2026-03-10T05:11:40Z"
+        },
+        {
+          "name": "Upload Image Artifact",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-03-10T05:11:40Z",
+          "completed_at": "2026-03-10T05:13:24Z"
+        },
+        {
+          "name": "Post Set up Docker Buildx",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20,
+          "started_at": "2026-03-10T05:13:24Z",
+          "completed_at": "2026-03-10T05:13:31Z"
+        },
+        {
+          "name": "Post Set up QEMU",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21,
+          "started_at": "2026-03-10T05:13:31Z",
+          "completed_at": "2026-03-10T05:13:32Z"
+        },
+        {
+          "name": "Post Set up Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-03-10T05:13:32Z",
+          "completed_at": "2026-03-10T05:13:32Z"
+        },
+        {
+          "name": "Post Set up Go",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-03-10T05:13:32Z",
+          "completed_at": "2026-03-10T05:13:32Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 24,
+          "started_at": "2026-03-10T05:13:32Z",
+          "completed_at": "2026-03-10T05:13:32Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 25,
+          "started_at": "2026-03-10T05:13:32Z",
+          "completed_at": "2026-03-10T05:13:33Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/mcpany/core/check-runs/66398428296",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000254944,
+      "runner_name": "GitHub Actions 1000254944",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 66405588678,
+      "run_id": 22885571524,
+      "workflow_name": "CI",
+      "head_branch": "feat/alerts-bulk-actions-8770349541949571325",
+      "run_url": "https://api.github.com/repos/mcpany/core/actions/runs/22885571524",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOP7bFkc8AAAAPdhTexg",
+      "head_sha": "5f4bb3f604de94f5cb32f9749eb178a7ddd48259",
+      "url": "https://api.github.com/repos/mcpany/core/actions/jobs/66405588678",
+      "html_url": "https://github.com/mcpany/core/actions/runs/22885571524/job/66405588678",
+      "status": "completed",
+      "conclusion": "failure",
+      "created_at": "2026-03-10T05:13:35Z",
+      "started_at": "2026-03-10T05:24:19Z",
+      "completed_at": "2026-03-10T05:28:12Z",
+      "name": "unit-test",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-03-10T05:24:20Z",
+          "completed_at": "2026-03-10T05:24:22Z"
+        },
+        {
+          "name": "Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-03-10T05:24:22Z",
+          "completed_at": "2026-03-10T05:24:24Z"
+        },
+        {
+          "name": "Set up Bazel",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-03-10T05:24:24Z",
+          "completed_at": "2026-03-10T05:24:29Z"
+        },
+        {
+          "name": "Test",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 4,
+          "started_at": "2026-03-10T05:24:29Z",
+          "completed_at": "2026-03-10T05:28:08Z"
+        },
+        {
+          "name": "Post Set up Bazel",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-03-10T05:28:08Z",
+          "completed_at": "2026-03-10T05:28:09Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-03-10T05:28:09Z",
+          "completed_at": "2026-03-10T05:28:09Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-03-10T05:28:09Z",
+          "completed_at": "2026-03-10T05:28:09Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/mcpany/core/check-runs/66405588678",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000254998,
+      "runner_name": "GitHub Actions 1000254998",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 66405588679,
+      "run_id": 22885571524,
+      "workflow_name": "CI",
+      "head_branch": "feat/alerts-bulk-actions-8770349541949571325",
+      "run_url": "https://api.github.com/repos/mcpany/core/actions/runs/22885571524",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOP7bFkc8AAAAPdhTexw",
+      "head_sha": "5f4bb3f604de94f5cb32f9749eb178a7ddd48259",
+      "url": "https://api.github.com/repos/mcpany/core/actions/jobs/66405588679",
+      "html_url": "https://github.com/mcpany/core/actions/runs/22885571524/job/66405588679",
+      "status": "completed",
+      "conclusion": "failure",
+      "created_at": "2026-03-10T05:13:35Z",
+      "started_at": "2026-03-10T05:21:31Z",
+      "completed_at": "2026-03-10T05:23:58Z",
+      "name": "e2e-sequential",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-03-10T05:21:32Z",
+          "completed_at": "2026-03-10T05:21:36Z"
+        },
+        {
+          "name": "Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-03-10T05:21:36Z",
+          "completed_at": "2026-03-10T05:21:38Z"
+        },
+        {
+          "name": "Install dependencies (Idempotent)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-03-10T05:21:38Z",
+          "completed_at": "2026-03-10T05:21:39Z"
+        },
+        {
+          "name": "Set up Go",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-03-10T05:21:39Z",
+          "completed_at": "2026-03-10T05:21:41Z"
+        },
+        {
+          "name": "Set up Python",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-03-10T05:21:41Z",
+          "completed_at": "2026-03-10T05:21:44Z"
+        },
+        {
+          "name": "Install Python dependencies",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-03-10T05:21:44Z",
+          "completed_at": "2026-03-10T05:21:56Z"
+        },
+        {
+          "name": "Set up Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-03-10T05:21:56Z",
+          "completed_at": "2026-03-10T05:21:59Z"
+        },
+        {
+          "name": "Get Date",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-03-10T05:21:59Z",
+          "completed_at": "2026-03-10T05:21:59Z"
+        },
+        {
+          "name": "Detect Architecture",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-03-10T05:21:59Z",
+          "completed_at": "2026-03-10T05:21:59Z"
+        },
+        {
+          "name": "Cache Tools",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-03-10T05:21:59Z",
+          "completed_at": "2026-03-10T05:22:00Z"
+        },
+        {
+          "name": "Download Server Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-03-10T05:22:00Z",
+          "completed_at": "2026-03-10T05:22:04Z"
+        },
+        {
+          "name": "Load Server Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-03-10T05:22:04Z",
+          "completed_at": "2026-03-10T05:22:09Z"
+        },
+        {
+          "name": "Download HTTP Echo Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-03-10T05:22:09Z",
+          "completed_at": "2026-03-10T05:22:10Z"
+        },
+        {
+          "name": "Load HTTP Echo Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14,
+          "started_at": "2026-03-10T05:22:10Z",
+          "completed_at": "2026-03-10T05:22:11Z"
+        },
+        {
+          "name": "Download Time Server Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-03-10T05:22:11Z",
+          "completed_at": "2026-03-10T05:22:15Z"
+        },
+        {
+          "name": "Load Time Server Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-03-10T05:22:15Z",
+          "completed_at": "2026-03-10T05:22:21Z"
+        },
+        {
+          "name": "Download Cowsay Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-03-10T05:22:21Z",
+          "completed_at": "2026-03-10T05:22:24Z"
+        },
+        {
+          "name": "Load Cowsay Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-03-10T05:22:24Z",
+          "completed_at": "2026-03-10T05:22:25Z"
+        },
+        {
+          "name": "Download Everything Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-03-10T05:22:25Z",
+          "completed_at": "2026-03-10T05:22:28Z"
+        },
+        {
+          "name": "Load Everything Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20,
+          "started_at": "2026-03-10T05:22:28Z",
+          "completed_at": "2026-03-10T05:22:32Z"
+        },
+        {
+          "name": "Prepare environment",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 21,
+          "started_at": "2026-03-10T05:22:32Z",
+          "completed_at": "2026-03-10T05:23:56Z"
+        },
+        {
+          "name": "run sequential e2e",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 22,
+          "started_at": "2026-03-10T05:23:56Z",
+          "completed_at": "2026-03-10T05:23:56Z"
+        },
+        {
+          "name": "Upload coverage to Codecov",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 23,
+          "started_at": "2026-03-10T05:23:56Z",
+          "completed_at": "2026-03-10T05:23:56Z"
+        },
+        {
+          "name": "Post Cache Tools",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 42,
+          "started_at": "2026-03-10T05:23:56Z",
+          "completed_at": "2026-03-10T05:23:56Z"
+        },
+        {
+          "name": "Post Set up Node.js",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 43,
+          "started_at": "2026-03-10T05:23:56Z",
+          "completed_at": "2026-03-10T05:23:56Z"
+        },
+        {
+          "name": "Post Set up Python",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 44,
+          "started_at": "2026-03-10T05:23:56Z",
+          "completed_at": "2026-03-10T05:23:56Z"
+        },
+        {
+          "name": "Post Set up Go",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 45,
+          "started_at": "2026-03-10T05:23:56Z",
+          "completed_at": "2026-03-10T05:23:56Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 46,
+          "started_at": "2026-03-10T05:23:56Z",
+          "completed_at": "2026-03-10T05:23:56Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 47,
+          "started_at": "2026-03-10T05:23:56Z",
+          "completed_at": "2026-03-10T05:23:56Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/mcpany/core/check-runs/66405588679",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000254985,
+      "runner_name": "GitHub Actions 1000254985",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 66405588680,
+      "run_id": 22885571524,
+      "workflow_name": "CI",
+      "head_branch": "feat/alerts-bulk-actions-8770349541949571325",
+      "run_url": "https://api.github.com/repos/mcpany/core/actions/runs/22885571524",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOP7bFkc8AAAAPdhTeyA",
+      "head_sha": "5f4bb3f604de94f5cb32f9749eb178a7ddd48259",
+      "url": "https://api.github.com/repos/mcpany/core/actions/jobs/66405588680",
+      "html_url": "https://github.com/mcpany/core/actions/runs/22885571524/job/66405588680",
+      "status": "completed",
+      "conclusion": "failure",
+      "created_at": "2026-03-10T05:13:35Z",
+      "started_at": "2026-03-10T05:31:18Z",
+      "completed_at": "2026-03-10T05:58:13Z",
+      "name": "k8s-e2e",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-03-10T05:31:19Z",
+          "completed_at": "2026-03-10T05:31:24Z"
+        },
+        {
+          "name": "Free Disk Space (Fast)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-03-10T05:31:24Z",
+          "completed_at": "2026-03-10T05:32:08Z"
+        },
+        {
+          "name": "Prune Docker",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-03-10T05:32:08Z",
+          "completed_at": "2026-03-10T05:32:14Z"
+        },
+        {
+          "name": "Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-03-10T05:32:14Z",
+          "completed_at": "2026-03-10T05:32:16Z"
+        },
+        {
+          "name": "Install dependencies (Idempotent)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-03-10T05:32:16Z",
+          "completed_at": "2026-03-10T05:32:16Z"
+        },
+        {
+          "name": "Set up Go",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-03-10T05:32:16Z",
+          "completed_at": "2026-03-10T05:32:20Z"
+        },
+        {
+          "name": "Set up Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-03-10T05:32:20Z",
+          "completed_at": "2026-03-10T05:32:22Z"
+        },
+        {
+          "name": "Install UI Dependencies",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-03-10T05:32:22Z",
+          "completed_at": "2026-03-10T05:33:02Z"
+        },
+        {
+          "name": "Set up Helm",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-03-10T05:33:02Z",
+          "completed_at": "2026-03-10T05:33:02Z"
+        },
+        {
+          "name": "Create k8s Kind Cluster",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-03-10T05:33:02Z",
+          "completed_at": "2026-03-10T05:33:45Z"
+        },
+        {
+          "name": "Detect Architecture",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-03-10T05:33:45Z",
+          "completed_at": "2026-03-10T05:33:45Z"
+        },
+        {
+          "name": "Download Server Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-03-10T05:33:45Z",
+          "completed_at": "2026-03-10T05:33:50Z"
+        },
+        {
+          "name": "Load Server Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-03-10T05:33:50Z",
+          "completed_at": "2026-03-10T05:33:54Z"
+        },
+        {
+          "name": "Download Operator Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14,
+          "started_at": "2026-03-10T05:33:54Z",
+          "completed_at": "2026-03-10T05:33:56Z"
+        },
+        {
+          "name": "Load Operator Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-03-10T05:33:56Z",
+          "completed_at": "2026-03-10T05:33:57Z"
+        },
+        {
+          "name": "Download UI Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-03-10T05:33:57Z",
+          "completed_at": "2026-03-10T05:34:01Z"
+        },
+        {
+          "name": "Load UI Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-03-10T05:34:01Z",
+          "completed_at": "2026-03-10T05:34:05Z"
+        },
+        {
+          "name": "Load Docker Images into Kind",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-03-10T05:34:05Z",
+          "completed_at": "2026-03-10T05:34:18Z"
+        },
+        {
+          "name": "Run K8s E2E Tests",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 19,
+          "started_at": "2026-03-10T05:34:18Z",
+          "completed_at": "2026-03-10T05:58:08Z"
+        },
+        {
+          "name": "Post Create k8s Kind Cluster",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 35,
+          "started_at": "2026-03-10T05:58:08Z",
+          "completed_at": "2026-03-10T05:58:10Z"
+        },
+        {
+          "name": "Post Set up Node.js",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 36,
+          "started_at": "2026-03-10T05:58:10Z",
+          "completed_at": "2026-03-10T05:58:10Z"
+        },
+        {
+          "name": "Post Set up Go",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 37,
+          "started_at": "2026-03-10T05:58:10Z",
+          "completed_at": "2026-03-10T05:58:10Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 38,
+          "started_at": "2026-03-10T05:58:10Z",
+          "completed_at": "2026-03-10T05:58:10Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 39,
+          "started_at": "2026-03-10T05:58:10Z",
+          "completed_at": "2026-03-10T05:58:10Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/mcpany/core/check-runs/66405588680",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000255017,
+      "runner_name": "GitHub Actions 1000255017",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 66405588682,
+      "run_id": 22885571524,
+      "workflow_name": "CI",
+      "head_branch": "feat/alerts-bulk-actions-8770349541949571325",
+      "run_url": "https://api.github.com/repos/mcpany/core/actions/runs/22885571524",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOP7bFkc8AAAAPdhTeyg",
+      "head_sha": "5f4bb3f604de94f5cb32f9749eb178a7ddd48259",
+      "url": "https://api.github.com/repos/mcpany/core/actions/jobs/66405588682",
+      "html_url": "https://github.com/mcpany/core/actions/runs/22885571524/job/66405588682",
+      "status": "completed",
+      "conclusion": "failure",
+      "created_at": "2026-03-10T05:13:35Z",
+      "started_at": "2026-03-10T05:32:29Z",
+      "completed_at": "2026-03-10T05:34:43Z",
+      "name": "e2e-public-api",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-03-10T05:32:29Z",
+          "completed_at": "2026-03-10T05:32:33Z"
+        },
+        {
+          "name": "Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-03-10T05:32:33Z",
+          "completed_at": "2026-03-10T05:32:35Z"
+        },
+        {
+          "name": "Install dependencies (Idempotent)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-03-10T05:32:35Z",
+          "completed_at": "2026-03-10T05:32:35Z"
+        },
+        {
+          "name": "Set up Go",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-03-10T05:32:35Z",
+          "completed_at": "2026-03-10T05:32:37Z"
+        },
+        {
+          "name": "Set up Python",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-03-10T05:32:37Z",
+          "completed_at": "2026-03-10T05:32:40Z"
+        },
+        {
+          "name": "Install Python dependencies",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-03-10T05:32:40Z",
+          "completed_at": "2026-03-10T05:32:51Z"
+        },
+        {
+          "name": "Set up Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-03-10T05:32:51Z",
+          "completed_at": "2026-03-10T05:32:57Z"
+        },
+        {
+          "name": "Set up QEMU",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-03-10T05:32:57Z",
+          "completed_at": "2026-03-10T05:33:06Z"
+        },
+        {
+          "name": "Set up Docker Buildx",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-03-10T05:33:06Z",
+          "completed_at": "2026-03-10T05:33:10Z"
+        },
+        {
+          "name": "Login to Docker Hub",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-03-10T05:33:10Z",
+          "completed_at": "2026-03-10T05:33:10Z"
+        },
+        {
+          "name": "Login to GitHub Container Registry",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-03-10T05:33:10Z",
+          "completed_at": "2026-03-10T05:33:11Z"
+        },
+        {
+          "name": "Get Date",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-03-10T05:33:11Z",
+          "completed_at": "2026-03-10T05:33:11Z"
+        },
+        {
+          "name": "Detect Architecture",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-03-10T05:33:11Z",
+          "completed_at": "2026-03-10T05:33:11Z"
+        },
+        {
+          "name": "Cache Tools",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14,
+          "started_at": "2026-03-10T05:33:11Z",
+          "completed_at": "2026-03-10T05:33:11Z"
+        },
+        {
+          "name": "Prepare environment",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 15,
+          "started_at": "2026-03-10T05:33:11Z",
+          "completed_at": "2026-03-10T05:34:36Z"
+        },
+        {
+          "name": "Debug Environment",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 16,
+          "started_at": "2026-03-10T05:34:36Z",
+          "completed_at": "2026-03-10T05:34:36Z"
+        },
+        {
+          "name": "test public api",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 17,
+          "started_at": "2026-03-10T05:34:36Z",
+          "completed_at": "2026-03-10T05:34:36Z"
+        },
+        {
+          "name": "Upload coverage to Codecov",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 18,
+          "started_at": "2026-03-10T05:34:36Z",
+          "completed_at": "2026-03-10T05:34:36Z"
+        },
+        {
+          "name": "Post Cache Tools",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 28,
+          "started_at": "2026-03-10T05:34:36Z",
+          "completed_at": "2026-03-10T05:34:36Z"
+        },
+        {
+          "name": "Post Login to GitHub Container Registry",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 29,
+          "started_at": "2026-03-10T05:34:36Z",
+          "completed_at": "2026-03-10T05:34:37Z"
+        },
+        {
+          "name": "Post Login to Docker Hub",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 30,
+          "started_at": "2026-03-10T05:34:37Z",
+          "completed_at": "2026-03-10T05:34:37Z"
+        },
+        {
+          "name": "Post Set up Docker Buildx",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 31,
+          "started_at": "2026-03-10T05:34:37Z",
+          "completed_at": "2026-03-10T05:34:41Z"
+        },
+        {
+          "name": "Post Set up QEMU",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 32,
+          "started_at": "2026-03-10T05:34:41Z",
+          "completed_at": "2026-03-10T05:34:41Z"
+        },
+        {
+          "name": "Post Set up Node.js",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 33,
+          "started_at": "2026-03-10T05:34:41Z",
+          "completed_at": "2026-03-10T05:34:41Z"
+        },
+        {
+          "name": "Post Set up Python",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 34,
+          "started_at": "2026-03-10T05:34:41Z",
+          "completed_at": "2026-03-10T05:34:41Z"
+        },
+        {
+          "name": "Post Set up Go",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 35,
+          "started_at": "2026-03-10T05:34:41Z",
+          "completed_at": "2026-03-10T05:34:41Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 36,
+          "started_at": "2026-03-10T05:34:41Z",
+          "completed_at": "2026-03-10T05:34:42Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 37,
+          "started_at": "2026-03-10T05:34:42Z",
+          "completed_at": "2026-03-10T05:34:42Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/mcpany/core/check-runs/66405588682",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000255023,
+      "runner_name": "GitHub Actions 1000255023",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 66405588689,
+      "run_id": 22885571524,
+      "workflow_name": "CI",
+      "head_branch": "feat/alerts-bulk-actions-8770349541949571325",
+      "run_url": "https://api.github.com/repos/mcpany/core/actions/runs/22885571524",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOP7bFkc8AAAAPdhTe0Q",
+      "head_sha": "5f4bb3f604de94f5cb32f9749eb178a7ddd48259",
+      "url": "https://api.github.com/repos/mcpany/core/actions/jobs/66405588689",
+      "html_url": "https://github.com/mcpany/core/actions/runs/22885571524/job/66405588689",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-03-10T05:13:35Z",
+      "started_at": "2026-03-10T05:39:25Z",
+      "completed_at": "2026-03-10T05:39:53Z",
+      "name": "docker-smoke-test",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-03-10T05:39:26Z",
+          "completed_at": "2026-03-10T05:39:29Z"
+        },
+        {
+          "name": "Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-03-10T05:39:29Z",
+          "completed_at": "2026-03-10T05:39:31Z"
+        },
+        {
+          "name": "Install dependencies (Idempotent)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-03-10T05:39:31Z",
+          "completed_at": "2026-03-10T05:39:31Z"
+        },
+        {
+          "name": "Set up Docker Buildx",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-03-10T05:39:31Z",
+          "completed_at": "2026-03-10T05:39:36Z"
+        },
+        {
+          "name": "Detect Architecture",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-03-10T05:39:36Z",
+          "completed_at": "2026-03-10T05:39:36Z"
+        },
+        {
+          "name": "Download Server Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-03-10T05:39:36Z",
+          "completed_at": "2026-03-10T05:39:40Z"
+        },
+        {
+          "name": "Load Docker Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-03-10T05:39:40Z",
+          "completed_at": "2026-03-10T05:39:44Z"
+        },
+        {
+          "name": "Smoke Test",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-03-10T05:39:44Z",
+          "completed_at": "2026-03-10T05:39:50Z"
+        },
+        {
+          "name": "Post Set up Docker Buildx",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-03-10T05:39:50Z",
+          "completed_at": "2026-03-10T05:39:50Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-03-10T05:39:50Z",
+          "completed_at": "2026-03-10T05:39:50Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-03-10T05:39:50Z",
+          "completed_at": "2026-03-10T05:39:51Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/mcpany/core/check-runs/66405588689",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000255045,
+      "runner_name": "GitHub Actions 1000255045",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 66405588690,
+      "run_id": 22885571524,
+      "workflow_name": "CI",
+      "head_branch": "feat/alerts-bulk-actions-8770349541949571325",
+      "run_url": "https://api.github.com/repos/mcpany/core/actions/runs/22885571524",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOP7bFkc8AAAAPdhTe0g",
+      "head_sha": "5f4bb3f604de94f5cb32f9749eb178a7ddd48259",
+      "url": "https://api.github.com/repos/mcpany/core/actions/jobs/66405588690",
+      "html_url": "https://github.com/mcpany/core/actions/runs/22885571524/job/66405588690",
+      "status": "completed",
+      "conclusion": "failure",
+      "created_at": "2026-03-10T05:13:35Z",
+      "started_at": "2026-03-10T05:28:05Z",
+      "completed_at": "2026-03-10T05:58:45Z",
+      "name": "ui-test (2/2)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-03-10T05:28:06Z",
+          "completed_at": "2026-03-10T05:28:07Z"
+        },
+        {
+          "name": "Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-03-10T05:28:07Z",
+          "completed_at": "2026-03-10T05:28:09Z"
+        },
+        {
+          "name": "Install dependencies (Idempotent)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-03-10T05:28:09Z",
+          "completed_at": "2026-03-10T05:28:09Z"
+        },
+        {
+          "name": "Detect Architecture",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-03-10T05:28:09Z",
+          "completed_at": "2026-03-10T05:28:09Z"
+        },
+        {
+          "name": "Download Server Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-03-10T05:28:09Z",
+          "completed_at": "2026-03-10T05:28:12Z"
+        },
+        {
+          "name": "Load Server Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-03-10T05:28:12Z",
+          "completed_at": "2026-03-10T05:28:15Z"
+        },
+        {
+          "name": "Download UI Test Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-03-10T05:28:15Z",
+          "completed_at": "2026-03-10T05:28:44Z"
+        },
+        {
+          "name": "Load UI Test Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-03-10T05:28:44Z",
+          "completed_at": "2026-03-10T05:29:47Z"
+        },
+        {
+          "name": "Download HTTP Echo Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-03-10T05:29:47Z",
+          "completed_at": "2026-03-10T05:29:48Z"
+        },
+        {
+          "name": "Load HTTP Echo Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-03-10T05:29:48Z",
+          "completed_at": "2026-03-10T05:29:49Z"
+        },
+        {
+          "name": "Test UI",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 11,
+          "started_at": "2026-03-10T05:29:49Z",
+          "completed_at": "2026-03-10T05:58:38Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-03-10T05:58:38Z",
+          "completed_at": "2026-03-10T05:58:38Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-03-10T05:58:38Z",
+          "completed_at": "2026-03-10T05:58:38Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/mcpany/core/check-runs/66405588690",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000255010,
+      "runner_name": "GitHub Actions 1000255010",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 66405588699,
+      "run_id": 22885571524,
+      "workflow_name": "CI",
+      "head_branch": "feat/alerts-bulk-actions-8770349541949571325",
+      "run_url": "https://api.github.com/repos/mcpany/core/actions/runs/22885571524",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOP7bFkc8AAAAPdhTe2w",
+      "head_sha": "5f4bb3f604de94f5cb32f9749eb178a7ddd48259",
+      "url": "https://api.github.com/repos/mcpany/core/actions/jobs/66405588699",
+      "html_url": "https://github.com/mcpany/core/actions/runs/22885571524/job/66405588699",
+      "status": "completed",
+      "conclusion": "failure",
+      "created_at": "2026-03-10T05:13:35Z",
+      "started_at": "2026-03-10T05:34:01Z",
+      "completed_at": "2026-03-10T05:36:12Z",
+      "name": "e2e-parallel (1/4)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-03-10T05:34:01Z",
+          "completed_at": "2026-03-10T05:34:05Z"
+        },
+        {
+          "name": "Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-03-10T05:34:05Z",
+          "completed_at": "2026-03-10T05:34:07Z"
+        },
+        {
+          "name": "Install dependencies (Idempotent)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-03-10T05:34:07Z",
+          "completed_at": "2026-03-10T05:34:07Z"
+        },
+        {
+          "name": "Set up Go",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-03-10T05:34:07Z",
+          "completed_at": "2026-03-10T05:34:09Z"
+        },
+        {
+          "name": "Set up Python",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-03-10T05:34:09Z",
+          "completed_at": "2026-03-10T05:34:11Z"
+        },
+        {
+          "name": "Install Python dependencies",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-03-10T05:34:11Z",
+          "completed_at": "2026-03-10T05:34:22Z"
+        },
+        {
+          "name": "Set up Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-03-10T05:34:22Z",
+          "completed_at": "2026-03-10T05:34:26Z"
+        },
+        {
+          "name": "Set up QEMU",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-03-10T05:34:26Z",
+          "completed_at": "2026-03-10T05:34:30Z"
+        },
+        {
+          "name": "Set up Docker Buildx",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-03-10T05:34:30Z",
+          "completed_at": "2026-03-10T05:34:35Z"
+        },
+        {
+          "name": "Login to Docker Hub",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-03-10T05:34:35Z",
+          "completed_at": "2026-03-10T05:34:35Z"
+        },
+        {
+          "name": "Login to GitHub Container Registry",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-03-10T05:34:35Z",
+          "completed_at": "2026-03-10T05:34:36Z"
+        },
+        {
+          "name": "Get Date",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-03-10T05:34:36Z",
+          "completed_at": "2026-03-10T05:34:36Z"
+        },
+        {
+          "name": "Detect Architecture",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-03-10T05:34:36Z",
+          "completed_at": "2026-03-10T05:34:36Z"
+        },
+        {
+          "name": "Cache Tools",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14,
+          "started_at": "2026-03-10T05:34:36Z",
+          "completed_at": "2026-03-10T05:34:36Z"
+        },
+        {
+          "name": "Download HTTP Echo Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-03-10T05:34:36Z",
+          "completed_at": "2026-03-10T05:34:37Z"
+        },
+        {
+          "name": "Load HTTP Echo Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-03-10T05:34:37Z",
+          "completed_at": "2026-03-10T05:34:37Z"
+        },
+        {
+          "name": "Download Time Server Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-03-10T05:34:37Z",
+          "completed_at": "2026-03-10T05:34:40Z"
+        },
+        {
+          "name": "Load Time Server Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-03-10T05:34:40Z",
+          "completed_at": "2026-03-10T05:34:46Z"
+        },
+        {
+          "name": "Download Cowsay Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-03-10T05:34:46Z",
+          "completed_at": "2026-03-10T05:34:47Z"
+        },
+        {
+          "name": "Load Cowsay Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20,
+          "started_at": "2026-03-10T05:34:47Z",
+          "completed_at": "2026-03-10T05:34:48Z"
+        },
+        {
+          "name": "Download Everything Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21,
+          "started_at": "2026-03-10T05:34:48Z",
+          "completed_at": "2026-03-10T05:34:50Z"
+        },
+        {
+          "name": "Load Everything Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-03-10T05:34:50Z",
+          "completed_at": "2026-03-10T05:34:54Z"
+        },
+        {
+          "name": "Prepare environment",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 23,
+          "started_at": "2026-03-10T05:34:54Z",
+          "completed_at": "2026-03-10T05:36:05Z"
+        },
+        {
+          "name": "run parallel e2e",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 24,
+          "started_at": "2026-03-10T05:36:05Z",
+          "completed_at": "2026-03-10T05:36:05Z"
+        },
+        {
+          "name": "Upload coverage to Codecov",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 25,
+          "started_at": "2026-03-10T05:36:05Z",
+          "completed_at": "2026-03-10T05:36:05Z"
+        },
+        {
+          "name": "Post Cache Tools",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 42,
+          "started_at": "2026-03-10T05:36:05Z",
+          "completed_at": "2026-03-10T05:36:05Z"
+        },
+        {
+          "name": "Post Login to GitHub Container Registry",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 43,
+          "started_at": "2026-03-10T05:36:05Z",
+          "completed_at": "2026-03-10T05:36:05Z"
+        },
+        {
+          "name": "Post Login to Docker Hub",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 44,
+          "started_at": "2026-03-10T05:36:05Z",
+          "completed_at": "2026-03-10T05:36:06Z"
+        },
+        {
+          "name": "Post Set up Docker Buildx",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 45,
+          "started_at": "2026-03-10T05:36:06Z",
+          "completed_at": "2026-03-10T05:36:10Z"
+        },
+        {
+          "name": "Post Set up QEMU",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 46,
+          "started_at": "2026-03-10T05:36:10Z",
+          "completed_at": "2026-03-10T05:36:10Z"
+        },
+        {
+          "name": "Post Set up Node.js",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 47,
+          "started_at": "2026-03-10T05:36:10Z",
+          "completed_at": "2026-03-10T05:36:10Z"
+        },
+        {
+          "name": "Post Set up Python",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 48,
+          "started_at": "2026-03-10T05:36:10Z",
+          "completed_at": "2026-03-10T05:36:10Z"
+        },
+        {
+          "name": "Post Set up Go",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 49,
+          "started_at": "2026-03-10T05:36:10Z",
+          "completed_at": "2026-03-10T05:36:10Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 50,
+          "started_at": "2026-03-10T05:36:10Z",
+          "completed_at": "2026-03-10T05:36:11Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 51,
+          "started_at": "2026-03-10T05:36:11Z",
+          "completed_at": "2026-03-10T05:36:11Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/mcpany/core/check-runs/66405588699",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000255028,
+      "runner_name": "GitHub Actions 1000255028",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 66405588701,
+      "run_id": 22885571524,
+      "workflow_name": "CI",
+      "head_branch": "feat/alerts-bulk-actions-8770349541949571325",
+      "run_url": "https://api.github.com/repos/mcpany/core/actions/runs/22885571524",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOP7bFkc8AAAAPdhTe3Q",
+      "head_sha": "5f4bb3f604de94f5cb32f9749eb178a7ddd48259",
+      "url": "https://api.github.com/repos/mcpany/core/actions/jobs/66405588701",
+      "html_url": "https://github.com/mcpany/core/actions/runs/22885571524/job/66405588701",
+      "status": "completed",
+      "conclusion": "failure",
+      "created_at": "2026-03-10T05:13:35Z",
+      "started_at": "2026-03-10T05:39:56Z",
+      "completed_at": "2026-03-10T05:58:26Z",
+      "name": "ui-test (1/2)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-03-10T05:39:56Z",
+          "completed_at": "2026-03-10T05:39:57Z"
+        },
+        {
+          "name": "Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-03-10T05:39:57Z",
+          "completed_at": "2026-03-10T05:39:59Z"
+        },
+        {
+          "name": "Install dependencies (Idempotent)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-03-10T05:39:59Z",
+          "completed_at": "2026-03-10T05:39:59Z"
+        },
+        {
+          "name": "Detect Architecture",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-03-10T05:39:59Z",
+          "completed_at": "2026-03-10T05:39:59Z"
+        },
+        {
+          "name": "Download Server Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-03-10T05:39:59Z",
+          "completed_at": "2026-03-10T05:40:01Z"
+        },
+        {
+          "name": "Load Server Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-03-10T05:40:01Z",
+          "completed_at": "2026-03-10T05:40:05Z"
+        },
+        {
+          "name": "Download UI Test Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-03-10T05:40:05Z",
+          "completed_at": "2026-03-10T05:40:32Z"
+        },
+        {
+          "name": "Load UI Test Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-03-10T05:40:32Z",
+          "completed_at": "2026-03-10T05:41:37Z"
+        },
+        {
+          "name": "Download HTTP Echo Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-03-10T05:41:37Z",
+          "completed_at": "2026-03-10T05:41:38Z"
+        },
+        {
+          "name": "Load HTTP Echo Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-03-10T05:41:38Z",
+          "completed_at": "2026-03-10T05:41:38Z"
+        },
+        {
+          "name": "Test UI",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 11,
+          "started_at": "2026-03-10T05:41:38Z",
+          "completed_at": "2026-03-10T05:58:24Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-03-10T05:58:24Z",
+          "completed_at": "2026-03-10T05:58:25Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-03-10T05:58:25Z",
+          "completed_at": "2026-03-10T05:58:25Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/mcpany/core/check-runs/66405588701",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000255046,
+      "runner_name": "GitHub Actions 1000255046",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 66405588704,
+      "run_id": 22885571524,
+      "workflow_name": "CI",
+      "head_branch": "feat/alerts-bulk-actions-8770349541949571325",
+      "run_url": "https://api.github.com/repos/mcpany/core/actions/runs/22885571524",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOP7bFkc8AAAAPdhTe4A",
+      "head_sha": "5f4bb3f604de94f5cb32f9749eb178a7ddd48259",
+      "url": "https://api.github.com/repos/mcpany/core/actions/jobs/66405588704",
+      "html_url": "https://github.com/mcpany/core/actions/runs/22885571524/job/66405588704",
+      "status": "completed",
+      "conclusion": "failure",
+      "created_at": "2026-03-10T05:13:35Z",
+      "started_at": "2026-03-10T05:29:36Z",
+      "completed_at": "2026-03-10T05:32:40Z",
+      "name": "e2e-parallel (2/4)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-03-10T05:29:37Z",
+          "completed_at": "2026-03-10T05:29:43Z"
+        },
+        {
+          "name": "Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-03-10T05:29:43Z",
+          "completed_at": "2026-03-10T05:29:46Z"
+        },
+        {
+          "name": "Install dependencies (Idempotent)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-03-10T05:29:46Z",
+          "completed_at": "2026-03-10T05:29:46Z"
+        },
+        {
+          "name": "Set up Go",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-03-10T05:29:46Z",
+          "completed_at": "2026-03-10T05:29:50Z"
+        },
+        {
+          "name": "Set up Python",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-03-10T05:29:50Z",
+          "completed_at": "2026-03-10T05:29:55Z"
+        },
+        {
+          "name": "Install Python dependencies",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-03-10T05:29:55Z",
+          "completed_at": "2026-03-10T05:30:05Z"
+        },
+        {
+          "name": "Set up Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-03-10T05:30:05Z",
+          "completed_at": "2026-03-10T05:30:12Z"
+        },
+        {
+          "name": "Set up QEMU",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-03-10T05:30:12Z",
+          "completed_at": "2026-03-10T05:30:20Z"
+        },
+        {
+          "name": "Set up Docker Buildx",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-03-10T05:30:20Z",
+          "completed_at": "2026-03-10T05:30:24Z"
+        },
+        {
+          "name": "Login to Docker Hub",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-03-10T05:30:24Z",
+          "completed_at": "2026-03-10T05:30:25Z"
+        },
+        {
+          "name": "Login to GitHub Container Registry",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-03-10T05:30:25Z",
+          "completed_at": "2026-03-10T05:30:26Z"
+        },
+        {
+          "name": "Get Date",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-03-10T05:30:26Z",
+          "completed_at": "2026-03-10T05:30:26Z"
+        },
+        {
+          "name": "Detect Architecture",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-03-10T05:30:26Z",
+          "completed_at": "2026-03-10T05:30:26Z"
+        },
+        {
+          "name": "Cache Tools",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14,
+          "started_at": "2026-03-10T05:30:26Z",
+          "completed_at": "2026-03-10T05:30:26Z"
+        },
+        {
+          "name": "Download HTTP Echo Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-03-10T05:30:26Z",
+          "completed_at": "2026-03-10T05:30:29Z"
+        },
+        {
+          "name": "Load HTTP Echo Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-03-10T05:30:29Z",
+          "completed_at": "2026-03-10T05:30:29Z"
+        },
+        {
+          "name": "Download Time Server Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-03-10T05:30:29Z",
+          "completed_at": "2026-03-10T05:30:35Z"
+        },
+        {
+          "name": "Load Time Server Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-03-10T05:30:35Z",
+          "completed_at": "2026-03-10T05:30:41Z"
+        },
+        {
+          "name": "Download Cowsay Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-03-10T05:30:41Z",
+          "completed_at": "2026-03-10T05:30:45Z"
+        },
+        {
+          "name": "Load Cowsay Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20,
+          "started_at": "2026-03-10T05:30:45Z",
+          "completed_at": "2026-03-10T05:30:45Z"
+        },
+        {
+          "name": "Download Everything Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21,
+          "started_at": "2026-03-10T05:30:45Z",
+          "completed_at": "2026-03-10T05:30:50Z"
+        },
+        {
+          "name": "Load Everything Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-03-10T05:30:50Z",
+          "completed_at": "2026-03-10T05:30:54Z"
+        },
+        {
+          "name": "Prepare environment",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 23,
+          "started_at": "2026-03-10T05:30:54Z",
+          "completed_at": "2026-03-10T05:32:31Z"
+        },
+        {
+          "name": "run parallel e2e",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 24,
+          "started_at": "2026-03-10T05:32:31Z",
+          "completed_at": "2026-03-10T05:32:31Z"
+        },
+        {
+          "name": "Upload coverage to Codecov",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 25,
+          "started_at": "2026-03-10T05:32:31Z",
+          "completed_at": "2026-03-10T05:32:31Z"
+        },
+        {
+          "name": "Post Cache Tools",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 42,
+          "started_at": "2026-03-10T05:32:31Z",
+          "completed_at": "2026-03-10T05:32:31Z"
+        },
+        {
+          "name": "Post Login to GitHub Container Registry",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 43,
+          "started_at": "2026-03-10T05:32:31Z",
+          "completed_at": "2026-03-10T05:32:31Z"
+        },
+        {
+          "name": "Post Login to Docker Hub",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 44,
+          "started_at": "2026-03-10T05:32:31Z",
+          "completed_at": "2026-03-10T05:32:32Z"
+        },
+        {
+          "name": "Post Set up Docker Buildx",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 45,
+          "started_at": "2026-03-10T05:32:32Z",
+          "completed_at": "2026-03-10T05:32:35Z"
+        },
+        {
+          "name": "Post Set up QEMU",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 46,
+          "started_at": "2026-03-10T05:32:35Z",
+          "completed_at": "2026-03-10T05:32:36Z"
+        },
+        {
+          "name": "Post Set up Node.js",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 47,
+          "started_at": "2026-03-10T05:32:36Z",
+          "completed_at": "2026-03-10T05:32:36Z"
+        },
+        {
+          "name": "Post Set up Python",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 48,
+          "started_at": "2026-03-10T05:32:36Z",
+          "completed_at": "2026-03-10T05:32:36Z"
+        },
+        {
+          "name": "Post Set up Go",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 49,
+          "started_at": "2026-03-10T05:32:36Z",
+          "completed_at": "2026-03-10T05:32:36Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 50,
+          "started_at": "2026-03-10T05:32:36Z",
+          "completed_at": "2026-03-10T05:32:36Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 51,
+          "started_at": "2026-03-10T05:32:36Z",
+          "completed_at": "2026-03-10T05:32:36Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/mcpany/core/check-runs/66405588704",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000255014,
+      "runner_name": "GitHub Actions 1000255014",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 66405588718,
+      "run_id": 22885571524,
+      "workflow_name": "CI",
+      "head_branch": "feat/alerts-bulk-actions-8770349541949571325",
+      "run_url": "https://api.github.com/repos/mcpany/core/actions/runs/22885571524",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOP7bFkc8AAAAPdhTe7g",
+      "head_sha": "5f4bb3f604de94f5cb32f9749eb178a7ddd48259",
+      "url": "https://api.github.com/repos/mcpany/core/actions/jobs/66405588718",
+      "html_url": "https://github.com/mcpany/core/actions/runs/22885571524/job/66405588718",
+      "status": "completed",
+      "conclusion": "failure",
+      "created_at": "2026-03-10T05:13:35Z",
+      "started_at": "2026-03-10T05:39:25Z",
+      "completed_at": "2026-03-10T05:41:32Z",
+      "name": "e2e-parallel (4/4)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-03-10T05:39:25Z",
+          "completed_at": "2026-03-10T05:39:30Z"
+        },
+        {
+          "name": "Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-03-10T05:39:30Z",
+          "completed_at": "2026-03-10T05:39:31Z"
+        },
+        {
+          "name": "Install dependencies (Idempotent)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-03-10T05:39:31Z",
+          "completed_at": "2026-03-10T05:39:31Z"
+        },
+        {
+          "name": "Set up Go",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-03-10T05:39:31Z",
+          "completed_at": "2026-03-10T05:39:33Z"
+        },
+        {
+          "name": "Set up Python",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-03-10T05:39:33Z",
+          "completed_at": "2026-03-10T05:39:36Z"
+        },
+        {
+          "name": "Install Python dependencies",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-03-10T05:39:36Z",
+          "completed_at": "2026-03-10T05:39:45Z"
+        },
+        {
+          "name": "Set up Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-03-10T05:39:45Z",
+          "completed_at": "2026-03-10T05:39:48Z"
+        },
+        {
+          "name": "Set up QEMU",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-03-10T05:39:48Z",
+          "completed_at": "2026-03-10T05:39:55Z"
+        },
+        {
+          "name": "Set up Docker Buildx",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-03-10T05:39:55Z",
+          "completed_at": "2026-03-10T05:39:58Z"
+        },
+        {
+          "name": "Login to Docker Hub",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-03-10T05:39:58Z",
+          "completed_at": "2026-03-10T05:39:59Z"
+        },
+        {
+          "name": "Login to GitHub Container Registry",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-03-10T05:39:59Z",
+          "completed_at": "2026-03-10T05:39:59Z"
+        },
+        {
+          "name": "Get Date",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-03-10T05:39:59Z",
+          "completed_at": "2026-03-10T05:39:59Z"
+        },
+        {
+          "name": "Detect Architecture",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-03-10T05:39:59Z",
+          "completed_at": "2026-03-10T05:39:59Z"
+        },
+        {
+          "name": "Cache Tools",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14,
+          "started_at": "2026-03-10T05:39:59Z",
+          "completed_at": "2026-03-10T05:40:00Z"
+        },
+        {
+          "name": "Download HTTP Echo Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-03-10T05:40:00Z",
+          "completed_at": "2026-03-10T05:40:00Z"
+        },
+        {
+          "name": "Load HTTP Echo Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-03-10T05:40:00Z",
+          "completed_at": "2026-03-10T05:40:01Z"
+        },
+        {
+          "name": "Download Time Server Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-03-10T05:40:01Z",
+          "completed_at": "2026-03-10T05:40:03Z"
+        },
+        {
+          "name": "Load Time Server Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-03-10T05:40:03Z",
+          "completed_at": "2026-03-10T05:40:08Z"
+        },
+        {
+          "name": "Download Cowsay Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-03-10T05:40:08Z",
+          "completed_at": "2026-03-10T05:40:09Z"
+        },
+        {
+          "name": "Load Cowsay Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20,
+          "started_at": "2026-03-10T05:40:09Z",
+          "completed_at": "2026-03-10T05:40:10Z"
+        },
+        {
+          "name": "Download Everything Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21,
+          "started_at": "2026-03-10T05:40:10Z",
+          "completed_at": "2026-03-10T05:40:12Z"
+        },
+        {
+          "name": "Load Everything Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-03-10T05:40:12Z",
+          "completed_at": "2026-03-10T05:40:16Z"
+        },
+        {
+          "name": "Prepare environment",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 23,
+          "started_at": "2026-03-10T05:40:16Z",
+          "completed_at": "2026-03-10T05:41:25Z"
+        },
+        {
+          "name": "run parallel e2e",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 24,
+          "started_at": "2026-03-10T05:41:25Z",
+          "completed_at": "2026-03-10T05:41:25Z"
+        },
+        {
+          "name": "Upload coverage to Codecov",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 25,
+          "started_at": "2026-03-10T05:41:25Z",
+          "completed_at": "2026-03-10T05:41:25Z"
+        },
+        {
+          "name": "Post Cache Tools",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 42,
+          "started_at": "2026-03-10T05:41:25Z",
+          "completed_at": "2026-03-10T05:41:25Z"
+        },
+        {
+          "name": "Post Login to GitHub Container Registry",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 43,
+          "started_at": "2026-03-10T05:41:25Z",
+          "completed_at": "2026-03-10T05:41:25Z"
+        },
+        {
+          "name": "Post Login to Docker Hub",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 44,
+          "started_at": "2026-03-10T05:41:25Z",
+          "completed_at": "2026-03-10T05:41:26Z"
+        },
+        {
+          "name": "Post Set up Docker Buildx",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 45,
+          "started_at": "2026-03-10T05:41:26Z",
+          "completed_at": "2026-03-10T05:41:29Z"
+        },
+        {
+          "name": "Post Set up QEMU",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 46,
+          "started_at": "2026-03-10T05:41:29Z",
+          "completed_at": "2026-03-10T05:41:30Z"
+        },
+        {
+          "name": "Post Set up Node.js",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 47,
+          "started_at": "2026-03-10T05:41:30Z",
+          "completed_at": "2026-03-10T05:41:30Z"
+        },
+        {
+          "name": "Post Set up Python",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 48,
+          "started_at": "2026-03-10T05:41:30Z",
+          "completed_at": "2026-03-10T05:41:30Z"
+        },
+        {
+          "name": "Post Set up Go",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 49,
+          "started_at": "2026-03-10T05:41:30Z",
+          "completed_at": "2026-03-10T05:41:30Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 50,
+          "started_at": "2026-03-10T05:41:30Z",
+          "completed_at": "2026-03-10T05:41:30Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 51,
+          "started_at": "2026-03-10T05:41:30Z",
+          "completed_at": "2026-03-10T05:41:30Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/mcpany/core/check-runs/66405588718",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000255044,
+      "runner_name": "GitHub Actions 1000255044",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 66405588721,
+      "run_id": 22885571524,
+      "workflow_name": "CI",
+      "head_branch": "feat/alerts-bulk-actions-8770349541949571325",
+      "run_url": "https://api.github.com/repos/mcpany/core/actions/runs/22885571524",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOP7bFkc8AAAAPdhTe8Q",
+      "head_sha": "5f4bb3f604de94f5cb32f9749eb178a7ddd48259",
+      "url": "https://api.github.com/repos/mcpany/core/actions/jobs/66405588721",
+      "html_url": "https://github.com/mcpany/core/actions/runs/22885571524/job/66405588721",
+      "status": "completed",
+      "conclusion": "failure",
+      "created_at": "2026-03-10T05:13:35Z",
+      "started_at": "2026-03-10T05:42:12Z",
+      "completed_at": "2026-03-10T05:44:47Z",
+      "name": "e2e-parallel (3/4)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-03-10T05:42:13Z",
+          "completed_at": "2026-03-10T05:42:18Z"
+        },
+        {
+          "name": "Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-03-10T05:42:18Z",
+          "completed_at": "2026-03-10T05:42:19Z"
+        },
+        {
+          "name": "Install dependencies (Idempotent)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-03-10T05:42:19Z",
+          "completed_at": "2026-03-10T05:42:19Z"
+        },
+        {
+          "name": "Set up Go",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-03-10T05:42:19Z",
+          "completed_at": "2026-03-10T05:42:22Z"
+        },
+        {
+          "name": "Set up Python",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-03-10T05:42:22Z",
+          "completed_at": "2026-03-10T05:42:26Z"
+        },
+        {
+          "name": "Install Python dependencies",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-03-10T05:42:26Z",
+          "completed_at": "2026-03-10T05:42:36Z"
+        },
+        {
+          "name": "Set up Node.js",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-03-10T05:42:36Z",
+          "completed_at": "2026-03-10T05:42:41Z"
+        },
+        {
+          "name": "Set up QEMU",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-03-10T05:42:41Z",
+          "completed_at": "2026-03-10T05:42:49Z"
+        },
+        {
+          "name": "Set up Docker Buildx",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-03-10T05:42:49Z",
+          "completed_at": "2026-03-10T05:42:53Z"
+        },
+        {
+          "name": "Login to Docker Hub",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-03-10T05:42:53Z",
+          "completed_at": "2026-03-10T05:42:53Z"
+        },
+        {
+          "name": "Login to GitHub Container Registry",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-03-10T05:42:53Z",
+          "completed_at": "2026-03-10T05:42:54Z"
+        },
+        {
+          "name": "Get Date",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-03-10T05:42:54Z",
+          "completed_at": "2026-03-10T05:42:54Z"
+        },
+        {
+          "name": "Detect Architecture",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-03-10T05:42:54Z",
+          "completed_at": "2026-03-10T05:42:54Z"
+        },
+        {
+          "name": "Cache Tools",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14,
+          "started_at": "2026-03-10T05:42:54Z",
+          "completed_at": "2026-03-10T05:42:54Z"
+        },
+        {
+          "name": "Download HTTP Echo Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-03-10T05:42:54Z",
+          "completed_at": "2026-03-10T05:42:55Z"
+        },
+        {
+          "name": "Load HTTP Echo Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-03-10T05:42:55Z",
+          "completed_at": "2026-03-10T05:42:55Z"
+        },
+        {
+          "name": "Download Time Server Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-03-10T05:42:55Z",
+          "completed_at": "2026-03-10T05:42:58Z"
+        },
+        {
+          "name": "Load Time Server Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-03-10T05:42:58Z",
+          "completed_at": "2026-03-10T05:43:04Z"
+        },
+        {
+          "name": "Download Cowsay Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-03-10T05:43:04Z",
+          "completed_at": "2026-03-10T05:43:06Z"
+        },
+        {
+          "name": "Load Cowsay Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20,
+          "started_at": "2026-03-10T05:43:06Z",
+          "completed_at": "2026-03-10T05:43:07Z"
+        },
+        {
+          "name": "Download Everything Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21,
+          "started_at": "2026-03-10T05:43:07Z",
+          "completed_at": "2026-03-10T05:43:09Z"
+        },
+        {
+          "name": "Load Everything Image",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-03-10T05:43:09Z",
+          "completed_at": "2026-03-10T05:43:13Z"
+        },
+        {
+          "name": "Prepare environment",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 23,
+          "started_at": "2026-03-10T05:43:13Z",
+          "completed_at": "2026-03-10T05:44:40Z"
+        },
+        {
+          "name": "run parallel e2e",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 24,
+          "started_at": "2026-03-10T05:44:40Z",
+          "completed_at": "2026-03-10T05:44:40Z"
+        },
+        {
+          "name": "Upload coverage to Codecov",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 25,
+          "started_at": "2026-03-10T05:44:40Z",
+          "completed_at": "2026-03-10T05:44:40Z"
+        },
+        {
+          "name": "Post Cache Tools",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 42,
+          "started_at": "2026-03-10T05:44:40Z",
+          "completed_at": "2026-03-10T05:44:40Z"
+        },
+        {
+          "name": "Post Login to GitHub Container Registry",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 43,
+          "started_at": "2026-03-10T05:44:40Z",
+          "completed_at": "2026-03-10T05:44:40Z"
+        },
+        {
+          "name": "Post Login to Docker Hub",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 44,
+          "started_at": "2026-03-10T05:44:40Z",
+          "completed_at": "2026-03-10T05:44:41Z"
+        },
+        {
+          "name": "Post Set up Docker Buildx",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 45,
+          "started_at": "2026-03-10T05:44:41Z",
+          "completed_at": "2026-03-10T05:44:44Z"
+        },
+        {
+          "name": "Post Set up QEMU",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 46,
+          "started_at": "2026-03-10T05:44:44Z",
+          "completed_at": "2026-03-10T05:44:45Z"
+        },
+        {
+          "name": "Post Set up Node.js",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 47,
+          "started_at": "2026-03-10T05:44:45Z",
+          "completed_at": "2026-03-10T05:44:45Z"
+        },
+        {
+          "name": "Post Set up Python",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 48,
+          "started_at": "2026-03-10T05:44:45Z",
+          "completed_at": "2026-03-10T05:44:45Z"
+        },
+        {
+          "name": "Post Set up Go",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 49,
+          "started_at": "2026-03-10T05:44:45Z",
+          "completed_at": "2026-03-10T05:44:45Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 50,
+          "started_at": "2026-03-10T05:44:45Z",
+          "completed_at": "2026-03-10T05:44:45Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 51,
+          "started_at": "2026-03-10T05:44:45Z",
+          "completed_at": "2026-03-10T05:44:45Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/mcpany/core/check-runs/66405588721",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000255052,
+      "runner_name": "GitHub Actions 1000255052",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 66408910251,
+      "run_id": 22885571524,
+      "workflow_name": "CI",
+      "head_branch": "feat/alerts-bulk-actions-8770349541949571325",
+      "run_url": "https://api.github.com/repos/mcpany/core/actions/runs/22885571524",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOP7bFkc8AAAAPdkeNqw",
+      "head_sha": "5f4bb3f604de94f5cb32f9749eb178a7ddd48259",
+      "url": "https://api.github.com/repos/mcpany/core/actions/jobs/66408910251",
+      "html_url": "https://github.com/mcpany/core/actions/runs/22885571524/job/66408910251",
+      "status": "completed",
+      "conclusion": "failure",
+      "created_at": "2026-03-10T05:58:45Z",
+      "started_at": "2026-03-10T06:01:28Z",
+      "completed_at": "2026-03-10T06:01:35Z",
+      "name": "ci-success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-03-10T06:01:28Z",
+          "completed_at": "2026-03-10T06:01:29Z"
+        },
+        {
+          "name": "Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-03-10T06:01:29Z",
+          "completed_at": "2026-03-10T06:01:31Z"
+        },
+        {
+          "name": "Install dependencies (Idempotent)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-03-10T06:01:31Z",
+          "completed_at": "2026-03-10T06:01:31Z"
+        },
+        {
+          "name": "Auto-Squash",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-03-10T06:01:31Z",
+          "completed_at": "2026-03-10T06:01:32Z"
+        },
+        {
+          "name": "Check Results and Comment",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 5,
+          "started_at": "2026-03-10T06:01:32Z",
+          "completed_at": "2026-03-10T06:01:34Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-03-10T06:01:34Z",
+          "completed_at": "2026-03-10T06:01:34Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-03-10T06:01:34Z",
+          "completed_at": "2026-03-10T06:01:34Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/mcpany/core/check-runs/66408910251",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000255120,
+      "runner_name": "GitHub Actions 1000255120",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    }
+  ]
+}
