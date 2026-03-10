@@ -67,3 +67,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project Configuration Guard**: MCP Any will evolve into a "Validating Proxy" for all project-local agent configurations. It will intercept and sanitize any "auto-execute" or "hook" definitions before they reach the agent runtime, requiring explicit user attestation.
 - **Agent-Aware Blackboard Isolation**: The Shared KV Store (Blackboard) must implement mandatory "Agent-Bound" isolation. Data written by one agent will be read-only or invisible to others unless a specific "Shared Intent" is established.
 - **Zero-Trust Hook Execution**: Any executable hook or automated tool sequence must run in a "Detached Sandbox" managed by MCP Any, with zero access to the host filesystem unless explicitly granted via a capability-based token.
+
+---
+
+## Strategic Evolution: [2026-03-10]
+### Focus: Cross-Origin Agent Attestation & MAS State Streaming
+**Context**: Recent exploits in OpenClaw and MS-Agent highlight that identity and sanitization are the weakest links in the agentic chain. Simultaneously, the rise of parallel agents in Claude Code demands a more robust way to handle shared state.
+**Strategic Pivot**:
+- **Trusted Origin Handshake**: MCP Any will implement a mandatory handshake protocol that verifies the identity and origin of the calling agent (e.g., verifying it's a signed Claude Code or Gemini binary) before exposing sensitive tools.
+- **MAS State Streaming (Pub/Sub)**: Moving the "Shared KV Store" from a polling model to a real-time streaming bus. This allows parallel agents to receive instant "state-change" events, preventing the "stale context" problem in swarms.
+- **Deep Inspection Policy Firewall**: The Policy Engine will be upgraded to perform "Behavioral Analysis" on tool inputs, looking for command injection patterns (e.g., obfuscated shell syntax) that bypass traditional regex-based filters.

@@ -39,6 +39,11 @@
 *   **[P0] Agent-Aware Blackboard Isolation**: Row-level security for Shared KV Store to prevent cross-agent state injection. (Added: 2026-03-09)
 *   **[P1] Detached Sandbox for Automated Hooks**: Isolated runtime for tool sequences with zero host access by default. (Added: 2026-03-09)
 
+#### Upcoming (2026-03-10 Evolution)
+*   **[P0] Cross-Origin Handshake Middleware**: Mandatory identity verification for incoming agent connections to prevent hijacking. (Added: 2026-03-10)
+*   **[P0] Real-time State Streaming (Pub/Sub)**: Event-driven update mechanism for the Shared KV Store to sync parallel agent swarms. (Added: 2026-03-10)
+*   **[P1] Behavioral Injection Guard**: Deep inspection middleware to detect obfuscated command injection patterns (CVE-2026-2256). (Added: 2026-03-10)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

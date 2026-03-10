@@ -84,9 +84,18 @@
 - **Agent-Aware Blackboard Isolation**: (P0) Implements row-level security for the Shared KV Store, ensuring agents can only access state within their assigned "Intent Scope."
 - **Detached Sandbox for Automated Hooks**: (P1) Isolated execution environment for automated tool sequences, preventing unauthorized host access.
 
+---
+
+## Evolution: [2026-03-10] Updates
+
+### Proposed Additions
+- **Cross-Origin Handshake Middleware**: (P0) Mandatory identity verification for incoming agent connections. Prevents malicious browser-based hijacking of local tools.
+- **Real-time State Streaming (Pub/Sub)**: (P0) Event-driven update mechanism for the Shared KV Store. Enables parallel agent swarms to stay in sync without polling.
+- **Behavioral Injection Guard**: (P1) Deep inspection middleware that detects obfuscated command injection patterns in tool arguments.
+
 ### Priority Shifts
-- **Shared KV Store (Blackboard)**: Re-affirmed as **P0** with new mandatory security isolation requirements.
-- **Policy Firewall**: Promoted to **P0** (Already P0, but expanded to include "Project-Local Config Validation").
+- **Shared KV Store (Blackboard)**: Re-affirmed as **P0**. Focus shifts from "Storage" to "Real-time Coordination."
+- **Policy Firewall**: Promoted to **P0**. Integration of "Deep Inspection" capabilities to counter CVE-2026-2256.
 
 ### Deprecations / Monitoring
-- **Unvalidated Project-Local Configs**: Monitoring for total deprecation. All local configs must be attested via MCP Any before ingestion by agents.
+- **Polling-based State Sync**: Monitoring for deprecation in favor of Real-time Streaming.
