@@ -118,6 +118,7 @@ go_test(
         "api_logs_test.go",
         "api_restart_test.go",
         "api_secret_test.go",
+        "api_secrets_test.go",
         "api_security_extra_test.go",
         "api_skill_grpc_test.go",
         "api_skills_dos_test.go",
