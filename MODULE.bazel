@@ -8,18 +8,18 @@ module(
 
 bazel_dep(name = "rules_go", version = "0.60.0")
 bazel_dep(name = "gazelle", version = "0.47.0")
-bazel_dep(name = "protobuf", version = "33.5")
+bazel_dep(name = "protobuf", version = "34.0.bcr.1")
 bazel_dep(name = "googleapis", version = "0.0.0-20260223-edfe7983")
 bazel_dep(name = "googleapis-go", version = "1.0.0")
 bazel_dep(name = "buildifier_prebuilt", version = "8.2.1.2")
-bazel_dep(name = "buildozer", version = "8.2.1")
+bazel_dep(name = "buildozer", version = "8.5.1")
 bazel_dep(name = "rules_oci", version = "2.2.7")
 bazel_dep(name = "aspect_bazel_lib", version = "2.22.5")
-bazel_dep(name = "rules_pkg", version = "1.0.1")
+bazel_dep(name = "rules_pkg", version = "1.2.0")
 bazel_dep(name = "rules_shell", version = "0.6.1")
-bazel_dep(name = "rules_nodejs", version = "6.3.3")
-bazel_dep(name = "aspect_rules_js", version = "2.1.0", repo_name = "rules_js")
-bazel_dep(name = "aspect_rules_ts", version = "2.1.0", repo_name = "rules_ts")
+bazel_dep(name = "rules_nodejs", version = "6.7.3")
+bazel_dep(name = "aspect_rules_js", version = "3.0.2")
+bazel_dep(name = "aspect_rules_ts", version = "3.8.6")
 
 go_sdk = use_extension("@rules_go//go:extensions.bzl", "go_sdk")
 go_sdk.download(version = "1.24.0")
@@ -161,7 +161,7 @@ oci.pull(
 )
 use_repo(oci, "debian_bookworm_slim", "debian_bookworm_slim_linux_amd64", "debian_bookworm_slim_linux_arm64")
 
-npm = use_extension("@rules_js//npm:extensions.bzl", "npm")
+npm = use_extension("@aspect_rules_js//npm:extensions.bzl", "npm")
 npm.npm_translate_lock(
     name = "npm",
     npmrc = "//ui:.npmrc",

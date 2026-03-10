@@ -3,3 +3,9 @@
 
 # gazelle:go_proto_compilers @rules_go//proto:go_proto
 # gazelle:go_grpc_compilers @rules_go//proto:go_proto,@rules_go//proto:go_grpc_v2
+
+filegroup(
+	name = "ts_proto",
+	srcs = glob(["**/*.ts"]),
+	visibility = ["//visibility:public"],
+)
