@@ -5,12 +5,12 @@ package skill
 
 // Frontmatter represents the YAML frontmatter of a SKILL.md file.
 type Frontmatter struct {
-	Name         string            `yaml:"name" json:"name"`
-	Description  string            `yaml:"description" json:"description"`
-	License      string            `yaml:"license,omitempty" json:"license,omitempty"`
-	Compatibility string           `yaml:"compatibility,omitempty" json:"compatibility,omitempty"`
-	Metadata     map[string]string `yaml:"metadata,omitempty" json:"metadata,omitempty"`
-	AllowedTools []string          `yaml:"allowed-tools,omitempty" json:"allowedTools,omitempty"`
+	Name          string            `yaml:"name" json:"name"`
+	Description   string            `yaml:"description" json:"description"`
+	License       string            `yaml:"license,omitempty" json:"license,omitempty"`
+	Compatibility string            `yaml:"compatibility,omitempty" json:"compatibility,omitempty"`
+	Metadata      map[string]string `yaml:"metadata,omitempty" json:"metadata,omitempty"`
+	AllowedTools  []string          `yaml:"allowed-tools,omitempty" json:"allowedTools,omitempty"`
 }
 
 // Skill represents a complete Agent Skill.
