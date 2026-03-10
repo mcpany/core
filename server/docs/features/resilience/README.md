@@ -13,13 +13,16 @@ Resilience is configured within the `resilience` block.
 | `number_of_retries`      | `int32`  | The maximum number of retry attempts before failing.                      |
 | `base_backoff`           | `string` | The initial backoff duration between retries (e.g., "1s").                |
 | `max_backoff`            | `string` | The maximum backoff duration for exponential backoff (e.g., "30s").       |
+| `max_elapsed_time`       | `string` | The maximum total time to spend retrying (e.g., "60s").                   |
 
 ### Circuit Breaker Fields
 
 | Field                    | Type     | Description                                                               |
 | ------------------------ | -------- | ------------------------------------------------------------------------- |
+| `failure_rate_threshold` | `double` | If the failure rate exceeds this threshold, the circuit opens.            |
 | `consecutive_failures`   | `int32`  | The number of consecutive failures that causes the circuit to open.       |
 | `open_duration`          | `string` | How long the circuit remains open before trying to recover (e.g., "10s"). |
+| `half_open_requests`     | `int32`  | The number of requests to allow in the half-open state.                   |
 
 ### Configuration Snippet
 
