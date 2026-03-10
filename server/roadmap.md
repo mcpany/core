@@ -39,6 +39,11 @@
 *   **[P0] Agent-Aware Blackboard Isolation**: Row-level security for Shared KV Store to prevent cross-agent state injection. (Added: 2026-03-09)
 *   **[P1] Detached Sandbox for Automated Hooks**: Isolated runtime for tool sequences with zero host access by default. (Added: 2026-03-09)
 
+#### Upcoming (2026-03-10 Evolution)
+*   **[P0] WebSocket Anti-Hijacking Guard**: Mandatory Origin validation and Anti-CSRF token exchange for all Gateway connections. (Added: 2026-03-10)
+*   **[P0] Inter-Agent Message Bus**: High-performance asynchronous messaging layer for Agent Teams and swarms. (Added: 2026-03-10)
+*   **[P1] Cross-Framework Delegation Tool**: Bridge for delegating tasks between different agent frameworks (Claude Code, OpenClaw). (Added: 2026-03-10)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

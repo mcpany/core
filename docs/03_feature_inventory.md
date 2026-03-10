@@ -84,6 +84,15 @@
 - **Agent-Aware Blackboard Isolation**: (P0) Implements row-level security for the Shared KV Store, ensuring agents can only access state within their assigned "Intent Scope."
 - **Detached Sandbox for Automated Hooks**: (P1) Isolated execution environment for automated tool sequences, preventing unauthorized host access.
 
+---
+
+## Evolution: [2026-03-10] Updates
+
+### Proposed Additions
+- **WebSocket Anti-Hijacking Guard**: (P0) Mandatory Origin validation and Anti-CSRF token exchange for all Gateway connections to prevent cross-site hijacking.
+- **Inter-Agent Message Bus (Orchestration Bus)**: (P0) A high-performance, asynchronous messaging layer that allows "Agent Teams" to coordinate tasks and share state updates.
+- **Cross-Framework Delegation Tool**: (P1) A specialized tool that allows a Claude Code agent to delegate sub-tasks to an OpenClaw swarm (and vice versa) through MCP Any.
+
 ### Priority Shifts
 - **Shared KV Store (Blackboard)**: Re-affirmed as **P0** with new mandatory security isolation requirements.
 - **Policy Firewall**: Promoted to **P0** (Already P0, but expanded to include "Project-Local Config Validation").

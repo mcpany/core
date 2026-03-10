@@ -59,3 +59,10 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-10: Update - Hardening Against WebSocket Hijacking (CVE-2026-25253 Mitigation)**
+    - **Context**: Today's market sync revealed a critical RCE in OpenClaw via WebSocket hijacking. MCP Any must protect against "Hostile Browser" attacks even when running on localhost.
+    - **Architecture Adjustment**:
+        - **Mandatory Origin Validation**: The Gateway will now reject any WebSocket connection that does not have a matching `Origin` header (configurable whitelist, defaults to `localhost`).
+        - **Anti-CSRF Handshake**: Introducing a mandatory `x-mcp-csrf-token` header for the initial HTTP upgrade request. This token must be retrieved via a local-only authenticated endpoint before the WebSocket can be established.
+        - **Signed Session Cookies**: All Gateway sessions will be bound to an encrypted, httpOnly cookie with `SameSite=Strict`.
+    - **Security Impact**: Mitigates one-click RCE exploits where a malicious website attempts to communicate with the local MCP Any gateway via the user's browser.

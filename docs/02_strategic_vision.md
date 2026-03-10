@@ -67,3 +67,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project Configuration Guard**: MCP Any will evolve into a "Validating Proxy" for all project-local agent configurations. It will intercept and sanitize any "auto-execute" or "hook" definitions before they reach the agent runtime, requiring explicit user attestation.
 - **Agent-Aware Blackboard Isolation**: The Shared KV Store (Blackboard) must implement mandatory "Agent-Bound" isolation. Data written by one agent will be read-only or invisible to others unless a specific "Shared Intent" is established.
 - **Zero-Trust Hook Execution**: Any executable hook or automated tool sequence must run in a "Detached Sandbox" managed by MCP Any, with zero access to the host filesystem unless explicitly granted via a capability-based token.
+
+---
+
+## Strategic Evolution: [2026-03-10]
+### Focus: Team Orchestration & Transport Hardening
+**Context**: The emergence of "Agent Teams" in Claude Code and the catastrophic WebSocket hijacking vulnerability in OpenClaw (CVE-2026-25253) have redefined the requirements for agentic infrastructure. We are moving from single-agent tool use to multi-agent team coordination in a hostile environment.
+**Strategic Pivot**:
+- **Anti-Hijacking Transport Layer**: MCP Any will implement mandatory Anti-CSRF tokens and strict Origin validation for all WebSocket and HTTP Gateway connections. Even for local-only bindings, we will assume a "Hostile Browser" environment.
+- **Multi-Agent Orchestration Bus**: Evolving the Shared Blackboard into a "Message-Oriented Agent Bus" that natively supports Claude Code's experimental Agent Teams and OpenClaw's specialized swarms, allowing for cross-framework task delegation.
+- **Framework-Agnostic State Sync**: Implementing a "State Convergence" protocol that allows independent agent sessions to synchronize their world-view without sharing full context windows, reducing token costs while maintaining consistency.
