@@ -49,3 +49,10 @@ As agents increasingly rely on project-local configuration files (e.g., `.claude
 
 ## 7. Evolutionary Changelog
 * **2026-03-09:** Initial Document Creation.
+* **2026-03-10:** **Update: Defensive Configuration Layer (Configuration Firewall)**
+    * **Context:** Today's research into CVE-2025-59536 and CVE-2026-21852 (Claude Code) confirms that project-local configuration files are a critical RCE vector.
+    * **Architecture Adjustment:**
+        * Adding a `Static Analysis` phase to the `Config Validator`.
+        * Introducing `Trusted Capability Profiles` (e.g., `baseline-safe`, `net-restricted`) that local configs must match.
+        * Deprecating support for un-vetted "hooks" in favor of "Attested Hooks."
+    * **Security Impact:** Mitigates RCE via malicious repo-local settings by ensuring no executable code runs without explicit user attestation and capability-matching.

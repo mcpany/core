@@ -46,3 +46,9 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-03-10:** **Update: Durable A2A Task Buffer**
+    *   **Context:** Integration with OpenClaw's durable execution patterns (Temporal-style) requires the A2A bridge to handle long-lived tasks that survive agent crashes.
+    *   **Architecture Adjustment:**
+        *   Transitioning from ephemeral session tokens to a `Durable Task Buffer` in the Shared KV Store.
+        *   Implementing "Residency" logic where MCP Any maintains task state even when agents are disconnected.
+    *   **Security Impact:** Prevents state-injection attacks during task resumption by validating task provenance signatures.

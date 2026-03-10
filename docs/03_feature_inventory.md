@@ -84,9 +84,18 @@
 - **Agent-Aware Blackboard Isolation**: (P0) Implements row-level security for the Shared KV Store, ensuring agents can only access state within their assigned "Intent Scope."
 - **Detached Sandbox for Automated Hooks**: (P1) Isolated execution environment for automated tool sequences, preventing unauthorized host access.
 
+---
+
+## Evolution: [2026-03-10] Updates
+
+### Proposed Additions
+- **Defensive Configuration Layer (Configuration Firewall)**: (P0) Static analysis and capability-matching for all project-local agent configurations to prevent RCE.
+- **Durable A2A Task Buffer**: (P1) Persistent storage for agent-to-agent task state, ensuring durability across restarts or failures.
+- **Machine-Readable Safety Contracts**: (P1) Standardized schema for tools to declare their safety boundaries (e.g., net:none, fs:read-only).
+
 ### Priority Shifts
-- **Shared KV Store (Blackboard)**: Re-affirmed as **P0** with new mandatory security isolation requirements.
-- **Policy Firewall**: Promoted to **P0** (Already P0, but expanded to include "Project-Local Config Validation").
+- **Project Configuration Security Guard**: Re-affirmed as **P0**. High urgency due to Claude Code RCE findings.
+- **A2A Stateful Residency**: Promoted to **P0** to support durable task handoffs.
 
 ### Deprecations / Monitoring
-- **Unvalidated Project-Local Configs**: Monitoring for total deprecation. All local configs must be attested via MCP Any before ingestion by agents.
+- **Plain-text Project-Local Hooks**: Deprecating support for un-vetted project-local hooks. All hooks must now explicitly declare a capability profile.

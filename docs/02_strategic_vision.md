@@ -67,3 +67,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project Configuration Guard**: MCP Any will evolve into a "Validating Proxy" for all project-local agent configurations. It will intercept and sanitize any "auto-execute" or "hook" definitions before they reach the agent runtime, requiring explicit user attestation.
 - **Agent-Aware Blackboard Isolation**: The Shared KV Store (Blackboard) must implement mandatory "Agent-Bound" isolation. Data written by one agent will be read-only or invisible to others unless a specific "Shared Intent" is established.
 - **Zero-Trust Hook Execution**: Any executable hook or automated tool sequence must run in a "Detached Sandbox" managed by MCP Any, with zero access to the host filesystem unless explicitly granted via a capability-based token.
+
+---
+
+## Strategic Evolution: [2026-03-10]
+### Focus: Defensive Configuration Ingestion & Durable Multi-Agent Handoffs
+**Context**: Recent critical RCE vulnerabilities in Claude Code (via project-local settings) and the evolution of OpenClaw's "Mission Control" have redefined the trust boundary. Agents can no longer blindly trust the repositories they operate in.
+**Strategic Pivot**:
+- **Defensive Configuration Layer**: MCP Any will introduce a "Configuration Firewall." Any tool or hook defined in project-local files (.claude, .mcp, etc.) must be statically analyzed and match a "Trusted Capability Profile" before being exposed to the agent.
+- **Durable A2A Mesh**: Leveraging the "Stateful Buffer" concept to provide Temporal-style durability for agent-to-agent task handoffs. This ensures that if a subagent (or the parent) crashes or hits a rate limit, the task state is preserved and can be resumed by the next available specialist.
+- **Machine-Readable Safety Contracts**: Implementing a standardized "Safety Schema" for all MCP tools. Instead of relying solely on LLM judgment, MCP Any will enforce hard-coded constraints defined in these contracts (e.g., "This tool never touches the network," "This tool only writes to /tmp").
