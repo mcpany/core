@@ -16,15 +16,15 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// BlackboardStore represents a persistent SQLite key-value store.
-type BlackboardStore struct {
+// Store represents a persistent SQLite key-value store.
+type Store struct {
 	db   *sql.DB
 	path string
 	mu   sync.RWMutex
 }
 
-// NewBlackboardStore creates a new BlackboardStore backed by SQLite.
-func NewBlackboardStore(path string) (*BlackboardStore, error) {
+// NewBlackboardStore creates a new Store backed by SQLite.
+func NewBlackboardStore(path string) (*Store, error) {
 	if path == "" {
 		return nil, fmt.Errorf("sqlite path is required")
 	}
@@ -35,10 +35,10 @@ func NewBlackboardStore(path string) (*BlackboardStore, error) {
 	}
 
 	// Optimize SQLite performance
-	db.Exec("PRAGMA journal_mode=WAL;")
-	db.Exec("PRAGMA synchronous=NORMAL;")
+	_, _ = db.Exec("PRAGMA journal_mode=WAL;")
+	_, _ = db.Exec("PRAGMA synchronous=NORMAL;")
 
-	store := &BlackboardStore{
+	store := &Store{
 		db:   db,
 		path: path,
 	}
@@ -51,7 +51,7 @@ func NewBlackboardStore(path string) (*BlackboardStore, error) {
 	return store, nil
 }
 
-func (s *BlackboardStore) initDB() error {
+func (s *Store) initDB() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -72,7 +72,7 @@ func (s *BlackboardStore) initDB() error {
 }
 
 // Set stores a key-value pair in the blackboard.
-func (s *BlackboardStore) Set(ctx context.Context, namespace, key string, value interface{}) error {
+func (s *Store) Set(ctx context.Context, namespace, key string, value interface{}) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -98,7 +98,7 @@ func (s *BlackboardStore) Set(ctx context.Context, namespace, key string, value 
 }
 
 // Get retrieves a value from the blackboard.
-func (s *BlackboardStore) Get(ctx context.Context, namespace, key string) (interface{}, bool, error) {
+func (s *Store) Get(ctx context.Context, namespace, key string) (interface{}, bool, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
@@ -124,7 +124,7 @@ func (s *BlackboardStore) Get(ctx context.Context, namespace, key string) (inter
 }
 
 // Delete removes a key from the blackboard.
-func (s *BlackboardStore) Delete(ctx context.Context, namespace, key string) error {
+func (s *Store) Delete(ctx context.Context, namespace, key string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -139,7 +139,7 @@ func (s *BlackboardStore) Delete(ctx context.Context, namespace, key string) err
 }
 
 // Close closes the SQLite database connection.
-func (s *BlackboardStore) Close() error {
+func (s *Store) Close() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	return s.db.Close()
