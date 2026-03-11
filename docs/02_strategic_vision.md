@@ -67,3 +67,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project Configuration Guard**: MCP Any will evolve into a "Validating Proxy" for all project-local agent configurations. It will intercept and sanitize any "auto-execute" or "hook" definitions before they reach the agent runtime, requiring explicit user attestation.
 - **Agent-Aware Blackboard Isolation**: The Shared KV Store (Blackboard) must implement mandatory "Agent-Bound" isolation. Data written by one agent will be read-only or invisible to others unless a specific "Shared Intent" is established.
 - **Zero-Trust Hook Execution**: Any executable hook or automated tool sequence must run in a "Detached Sandbox" managed by MCP Any, with zero access to the host filesystem unless explicitly granted via a capability-based token.
+
+---
+
+## Strategic Evolution: [2026-03-11]
+### Focus: Secure Inter-Agent Transport & Intent-Centric Auditing
+**Context**: Today's research highlights the shift toward parallel agent execution (Claude Code) and the emergence of "Context Siphoning" exploits in subagent routing. The industry is moving toward more secure, local transport primitives and the need for standardized auditing across agent handoffs.
+**Strategic Pivot**:
+- **OS-Level Inter-Agent Channels**: MCP Any will introduce support for Named Pipes (Windows) and Unix Domain Sockets (Linux/macOS) as the primary transport for A2A communication, moving away from local HTTP ports to mitigate cross-origin and network-level eavesdropping.
+- **Global Intent-Tracing (GIT)**: We will implement a "Global Intent ID" standard that is injected into every MCP request. This allows the Policy Engine to correlate tool calls across an entire swarm back to the original user intent, even after multiple agent-to-agent handoffs.
+- **DLP for Subagent Handoffs**: The gateway will implement specialized Data Loss Prevention (DLP) filters specifically designed to detect and block the leakage of high-privilege environment variables or secrets during parent-to-subagent context transfers.

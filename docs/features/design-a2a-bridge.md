@@ -46,3 +46,9 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-03-11:** Evolution to OS-Native Transport.
+    *   **Context:** Market sync revealed exploits targeting local HTTP ports used for inter-agent communication.
+    *   **Architecture Adjustment:**
+        *   Added support for **Unix Domain Sockets** and **Windows Named Pipes** in Section 4 (System Flow).
+        *   Deprecating local HTTP tunneling as the primary transport.
+    *   **Security Impact:** Prevents cross-origin and network-level eavesdropping on agent-to-agent messages.

@@ -90,3 +90,19 @@
 
 ### Deprecations / Monitoring
 - **Unvalidated Project-Local Configs**: Monitoring for total deprecation. All local configs must be attested via MCP Any before ingestion by agents.
+
+---
+
+## Evolution: [2026-03-11] Updates
+
+### Proposed Additions
+- **OS-Native A2A Transport**: (P0) Support for Unix Domain Sockets and Named Pipes for secure inter-agent communication, bypassing the network stack to prevent cross-origin exploits.
+- **Global Intent-Tracing (GIT) Middleware**: (P0) Implements a universal Intent ID across the MCP request chain to correlate swarm actions and enforce intent-based policies.
+- **Subagent Context DLP**: (P1) Automated filtering of high-privilege environment variables and secrets during context inheritance between parent and subagents.
+
+### Priority Shifts
+- **A2A Interop Bridge (Pseudo-MCP)**: Re-affirmed as **P0** and expanded to include OS-native transport primitives.
+- **Policy Firewall**: Promoted to **P0** (Already P0) with new requirements for "Global Intent" validation.
+
+### Deprecations / Monitoring
+- **Local HTTP Ports for A2A**: Monitoring for deprecation in favor of OS-native sockets for improved security in multi-tenant or shared-host environments.

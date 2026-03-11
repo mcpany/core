@@ -39,6 +39,11 @@
 *   **[P0] Agent-Aware Blackboard Isolation**: Row-level security for Shared KV Store to prevent cross-agent state injection. (Added: 2026-03-09)
 *   **[P1] Detached Sandbox for Automated Hooks**: Isolated runtime for tool sequences with zero host access by default. (Added: 2026-03-09)
 
+#### Upcoming (2026-03-11 Evolution)
+*   **[P0] OS-Native A2A Transport**: Support for Unix Domain Sockets and Named Pipes for secure inter-agent communication, bypassing the network stack. (Added: 2026-03-11)
+*   **[P0] Global Intent-Tracing (GIT) Middleware**: Implement a universal Intent ID across the MCP request chain to correlate swarm actions. (Added: 2026-03-11)
+*   **[P1] Subagent Context DLP**: Automated filtering of high-privilege environment variables and secrets during context inheritance. (Added: 2026-03-11)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
