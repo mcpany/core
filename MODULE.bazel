@@ -208,6 +208,7 @@ npm.npm_translate_lock(
         "markdown-table": ["ui"],
         "mdast-util-from-markdown": ["ui"],
         "mdast-util-find-and-replace": ["ui"],
+        "ms@2.1.3": ["ui"],
         "mdast-util-gfm": ["ui"],
         "mdast-util-gfm-autolink-literal": ["ui"],
         "mdast-util-gfm-footnote": ["ui"],
