@@ -46,3 +46,9 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+### Update: 2026-03-11 - Session Visibility Scoping
+**Context:** The OpenClaw CVE-2026-27004 has exposed a design flaw where agent-to-agent session tools allowed unauthorized targeting.
+**Architecture Adjustment:**
+* Introducing **Session Shadowing** in Section 4 & 6.
+* Implementing cryptographic handoff tokens to explicitly authorize session visibility.
+**Security Impact:** Prevents "Cross-Session Injection" and unauthorized session discovery by rogue or misconfigured agents.

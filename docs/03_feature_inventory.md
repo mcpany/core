@@ -90,3 +90,19 @@
 
 ### Deprecations / Monitoring
 - **Unvalidated Project-Local Configs**: Monitoring for total deprecation. All local configs must be attested via MCP Any before ingestion by agents.
+
+---
+
+## Evolution: [2026-03-11] Updates
+
+### Proposed Additions
+- **Session Shadowing Middleware**: (P0) Implements cryptographic isolation for agent sessions. Prevents unauthorized session targeting and "Cross-Session Injection" (Mitigates CVE-2026-27004).
+- **Standardized Binary Artifact Vault**: (P1) Secure middleware that intercepts binary tool outputs, stores them in a sandboxed vault, and provides agents with safe reference URIs.
+- **Generalist Routing Engine**: (P1) Metadata-driven router that delegates tasks to specialized subagents based on real-time capability scores (inspired by Gemini CLI v0.32.0).
+
+### Priority Shifts
+- **Project Configuration Security Guard**: Re-affirmed as **P0**. Criticality increased due to community reports of un-permissioned `.env` access.
+- **A2A Interop Bridge (Pseudo-MCP)**: Promoted to **P0**. Must incorporate the new Session Shadowing requirements for secure A2A.
+
+### Deprecations / Monitoring
+- **Base64 Binary Passing**: Monitoring for deprecation in favor of Vault-Reference URI passing to prevent context poisoning and security risks.

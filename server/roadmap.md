@@ -39,6 +39,11 @@
 *   **[P0] Agent-Aware Blackboard Isolation**: Row-level security for Shared KV Store to prevent cross-agent state injection. (Added: 2026-03-09)
 *   **[P1] Detached Sandbox for Automated Hooks**: Isolated runtime for tool sequences with zero host access by default. (Added: 2026-03-09)
 
+#### Upcoming (2026-03-11 Evolution)
+*   **[P0] Session Shadowing Middleware**: Cryptographic isolation for agent sessions to prevent unauthorized targeting. (Added: 2026-03-11)
+*   **[P1] Standardized Binary Artifact Vault**: Secure middleware for sandboxing binary tool outputs. (Added: 2026-03-11)
+*   **[P1] Generalist Routing Engine**: Metadata-driven task delegation to specialized subagents. (Added: 2026-03-11)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

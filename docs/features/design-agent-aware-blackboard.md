@@ -47,3 +47,9 @@ The `Shared KV Store` (Blackboard) is a core tool in MCP Any that allows multipl
 
 ## 7. Evolutionary Changelog
 * **2026-03-09:** Initial Document Creation.
+### Update: 2026-03-11 - Intent-Bound Session Visibility
+**Context:** Multi-agent coordination requires shared state that respects the new Session Shadowing boundaries.
+**Architecture Adjustment:**
+* Integrating Blackboard state with A2A session tokens.
+* Shared state is now explicitly linked to an "Authorized Intent," allowing for secure cross-agent collaboration.
+**Security Impact:** Ensures that shared data is only accessible to agents that are part of the same authorized session chain.

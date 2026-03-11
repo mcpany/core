@@ -67,3 +67,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project Configuration Guard**: MCP Any will evolve into a "Validating Proxy" for all project-local agent configurations. It will intercept and sanitize any "auto-execute" or "hook" definitions before they reach the agent runtime, requiring explicit user attestation.
 - **Agent-Aware Blackboard Isolation**: The Shared KV Store (Blackboard) must implement mandatory "Agent-Bound" isolation. Data written by one agent will be read-only or invisible to others unless a specific "Shared Intent" is established.
 - **Zero-Trust Hook Execution**: Any executable hook or automated tool sequence must run in a "Detached Sandbox" managed by MCP Any, with zero access to the host filesystem unless explicitly granted via a capability-based token.
+
+---
+
+## Strategic Evolution: [2026-03-11]
+### Focus: Session Visibility Scoping & Binary Artifact Sanitization
+**Context**: The OpenClaw CVE-2026-27004 has exposed a critical design flaw in how agent-to-agent session tools are scoped, allowing unauthorized session targeting. Concurrently, the proliferation of binary MCP outputs (Claude Code's PDF/Office support) creates a new data leakage and injection surface.
+**Strategic Pivot**:
+- **Session Visibility Scoping**: MCP Any will implement "Cryptographic Session Shadowing." Agents will only be aware of sessions they explicitly created or were invited to via a signed handoff token. All other sessions will be invisible to the agent's `sessions_list` or `sessions_send` tools.
+- **Binary Artifact Vaulting**: Shifting from raw base64 passing to a "Vault-Reference" model. Binary outputs from tools are stored in a secure, sandboxed vault within MCP Any. The agent receives a safe, text-based summary and a restricted reference URI, preventing context poisoning and unauthorized file writes.
+- **Capability-Driven Routing**: Evolving the gateway into an "Intelligent Router" that uses tool capability metadata (performance, cost, safety score) to automatically select the best subagent/specialist for a delegated task, matching the trend seen in Gemini CLI's Generalist Agent.
