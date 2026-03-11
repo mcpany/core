@@ -84,6 +84,15 @@
 - **Agent-Aware Blackboard Isolation**: (P0) Implements row-level security for the Shared KV Store, ensuring agents can only access state within their assigned "Intent Scope."
 - **Detached Sandbox for Automated Hooks**: (P1) Isolated execution environment for automated tool sequences, preventing unauthorized host access.
 
+---
+
+## Evolution: [2026-03-11] Updates
+
+### Proposed Additions
+- **WebMCP Browser Adapter**: (P1) Allows agents to interact with tools registered by websites via the browser's WebMCP standard.
+- **ACP-to-MCP Translation Bridge**: (P1) Native support for OpenClaw's Agent Client Protocol, allowing IDEs to use MCP Any as their backend.
+- **Behavioral RCE Detection Middleware**: (P0) Real-time analysis of tool call sequences to identify and block "one-click" RCE attack patterns.
+
 ### Priority Shifts
 - **Shared KV Store (Blackboard)**: Re-affirmed as **P0** with new mandatory security isolation requirements.
 - **Policy Firewall**: Promoted to **P0** (Already P0, but expanded to include "Project-Local Config Validation").

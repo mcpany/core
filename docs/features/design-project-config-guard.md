@@ -49,3 +49,12 @@ As agents increasingly rely on project-local configuration files (e.g., `.claude
 
 ## 7. Evolutionary Changelog
 * **2026-03-09:** Initial Document Creation.
+* **2026-03-11:** Added Active Defense against "One-Click RCE" patterns.
+
+### Update: 2026-03-11 - Active Defense & Behavioral Analysis
+**Context:** Recent ecosystem exploits (e.g., in `gemini-mcp-tool`) demonstrate that simple static validation is insufficient. Attackers are using multi-step "behavioral" chains where a benign-looking hook triggers a sequence of tool calls that eventually leads to RCE.
+**Architecture Adjustment:**
+* **Behavioral Heuristics Engine**: Integrating a new analysis layer that tracks the *sequence* of tool calls initiated by a project-local hook.
+* **Quarantine State**: Hooks that match "Suspicious Sequential Patterns" (e.g., `git clone` followed immediately by `chmod +x` and `shell_exec`) are automatically quarantined, regardless of previous attestation.
+* **Token-Bound Execution**: Automated hooks no longer use the parent agent's session token; they receive a "Hook-Scoped" token with zero network access by default.
+**Security Impact:** Mitigates "one-click" RCE attacks where the initial trigger is obfuscated or split across multiple configuration files.

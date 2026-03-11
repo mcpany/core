@@ -39,6 +39,11 @@
 *   **[P0] Agent-Aware Blackboard Isolation**: Row-level security for Shared KV Store to prevent cross-agent state injection. (Added: 2026-03-09)
 *   **[P1] Detached Sandbox for Automated Hooks**: Isolated runtime for tool sequences with zero host access by default. (Added: 2026-03-09)
 
+#### Upcoming (2026-03-11 Evolution)
+*   **[P0] Behavioral RCE Detection Middleware**: Stateful tracer for tool call sequences to identify multi-step attack patterns. (Added: 2026-03-11)
+*   **[P1] WebMCP Browser Adapter**: Native support for website-registered tool discovery via the WebMCP standard. (Added: 2026-03-11)
+*   **[P1] ACP-to-MCP Translation Bridge**: Protocol-neutral bridge for OpenClaw's Agent Client Protocol (ACP). (Added: 2026-03-11)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

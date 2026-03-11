@@ -67,3 +67,11 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project Configuration Guard**: MCP Any will evolve into a "Validating Proxy" for all project-local agent configurations. It will intercept and sanitize any "auto-execute" or "hook" definitions before they reach the agent runtime, requiring explicit user attestation.
 - **Agent-Aware Blackboard Isolation**: The Shared KV Store (Blackboard) must implement mandatory "Agent-Bound" isolation. Data written by one agent will be read-only or invisible to others unless a specific "Shared Intent" is established.
 - **Zero-Trust Hook Execution**: Any executable hook or automated tool sequence must run in a "Detached Sandbox" managed by MCP Any, with zero access to the host filesystem unless explicitly granted via a capability-based token.
+
+## Strategic Evolution: [2026-03-11]
+### Focus: Web-Scale Tooling & Protocol-Neutral Bridging
+**Context**: The emergence of WebMCP (website-registered tools) and OpenClaw's ACP (Agent Client Protocol) bridge signals a shift towards protocol-neutral, web-scale agency. Agents are no longer just local scripts; they are browser-resident and IDE-integrated. Simultaneously, the RCE crisis in agent tooling demands a move beyond "passive security" to "active defense."
+**Strategic Pivot**:
+- **WebMCP Gateway**: MCP Any will implement a WebMCP adapter, allowing agents to discover and call tools registered by websites via the browser, while maintaining strict Zero-Trust boundaries.
+- **Protocol-Neutral Bridge (ACP/MCP/A2A)**: Expanding MCP Any to act as a multi-protocol translator, specifically bridging OpenClaw's ACP sessions into the universal MCP bus.
+- **Active Defense Proxy**: Moving from sanitization to "active defense," where MCP Any performs real-time behavioral analysis of tool call sequences to detect "One-Click RCE" patterns before execution.
