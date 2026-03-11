@@ -67,3 +67,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project Configuration Guard**: MCP Any will evolve into a "Validating Proxy" for all project-local agent configurations. It will intercept and sanitize any "auto-execute" or "hook" definitions before they reach the agent runtime, requiring explicit user attestation.
 - **Agent-Aware Blackboard Isolation**: The Shared KV Store (Blackboard) must implement mandatory "Agent-Bound" isolation. Data written by one agent will be read-only or invisible to others unless a specific "Shared Intent" is established.
 - **Zero-Trust Hook Execution**: Any executable hook or automated tool sequence must run in a "Detached Sandbox" managed by MCP Any, with zero access to the host filesystem unless explicitly granted via a capability-based token.
+
+---
+
+## Strategic Evolution: [2026-03-11]
+### Focus: Universal Skill Governance & Autonomous Installation Control
+**Context**: Today's findings reveal the rapid adoption of the `SKILL.md` universal format and the rise of "Autonomous Tool Installation" in agents like OpenClaw. This creates a governance gap where agents can self-evolve their capabilities beyond human oversight.
+**Strategic Pivot**:
+- **Universal Skill Bridge**: MCP Any will implement a native adapter for the `SKILL.md` format, allowing it to serve as the central repository and validator for cross-platform agent skills.
+- **Autonomous Installation Guard**: Implementing a "Request-to-Install" interception layer. When an agent attempts to self-configure a new tool or skill, MCP Any will quarantine the change until it is validated against the Policy Engine and explicitly attested by the user.
+- **Reasoning-Optimized Tooling**: Developing "Condensed Output" middleware to support agents using large (1M+) context windows, ensuring that tool responses are optimized for reasoning rather than just raw data dumping.

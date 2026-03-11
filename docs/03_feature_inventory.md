@@ -90,3 +90,19 @@
 
 ### Deprecations / Monitoring
 - **Unvalidated Project-Local Configs**: Monitoring for total deprecation. All local configs must be attested via MCP Any before ingestion by agents.
+
+---
+
+## Evolution: [2026-03-11] Updates
+
+### Proposed Additions
+- **Universal Skill Adapter (`SKILL.md`)**: (P0) Native support for the cross-platform skill format, allowing MCP Any to serve skills as tools and vice-versa.
+- **Autonomous Installation Guard**: (P0) Interception layer for agents attempting to self-modify configuration or install new tools. Integrates with HITL.
+- **Reasoning-Aware Response Condenser**: (P1) Middleware that automatically summarizes large tool outputs for agents with 1M+ context windows to preserve reasoning quality.
+
+### Priority Shifts
+- **Project Configuration Security Guard**: Re-affirmed as **P0**. Essential for governing the new `SKILL.md` ingestion flow.
+- **HITL Middleware**: Promoted to **P0**. Critical for the "Request-to-Install" flow required by the Autonomous Installation Guard.
+
+### Deprecations / Monitoring
+- **Direct `SKILL.md` Ingestion**: Monitoring for deprecation of agents reading skills directly from disk. All skills should be mediated via MCP Any for safety.

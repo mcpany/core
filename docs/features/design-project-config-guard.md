@@ -49,3 +49,4 @@ As agents increasingly rely on project-local configuration files (e.g., `.claude
 
 ## 7. Evolutionary Changelog
 * **2026-03-09:** Initial Document Creation.
+* **2026-03-11:** Added support for `SKILL.md` validation and "Autonomous Installation Guard" integration.
