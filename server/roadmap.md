@@ -39,6 +39,11 @@
 *   **[P0] Agent-Aware Blackboard Isolation**: Row-level security for Shared KV Store to prevent cross-agent state injection. (Added: 2026-03-09)
 *   **[P1] Detached Sandbox for Automated Hooks**: Isolated runtime for tool sequences with zero host access by default. (Added: 2026-03-09)
 
+#### Upcoming (2026-03-11 Evolution)
+*   **[P0] Caller Attestation Middleware**: Cryptographically verify the identity of local and remote gateway clients to prevent localhost hijacking. (Added: 2026-03-11)
+*   **[P1] Delta-Sync Context Protocol**: Optimize Shared KV Store sync for specialized subagents, reducing context bloat. (Added: 2026-03-11)
+*   **[P1] Project Configuration Security Hash**: Implement MFA-backed verification for changes to project-local executable hooks. (Added: 2026-03-11)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

@@ -84,9 +84,18 @@
 - **Agent-Aware Blackboard Isolation**: (P0) Implements row-level security for the Shared KV Store, ensuring agents can only access state within their assigned "Intent Scope."
 - **Detached Sandbox for Automated Hooks**: (P1) Isolated execution environment for automated tool sequences, preventing unauthorized host access.
 
+---
+
+## Evolution: [2026-03-11] Updates
+
+### Proposed Additions
+- **Caller Attestation Middleware**: (P0) Cryptographically verify the identity of local and remote clients (IDEs, CLIs, Browsers) connecting to the gateway to prevent "Localhost Hijacking."
+- **Delta-Sync Context Protocol**: (P1) Optimization for the Shared KV Store that allows agents to subscribe to state changes, reducing context window bloat during swarming.
+- **Project Configuration Security Hash**: (P1) Implements MFA-backed verification for any changes to project-local settings or executable hooks.
+
 ### Priority Shifts
-- **Shared KV Store (Blackboard)**: Re-affirmed as **P0** with new mandatory security isolation requirements.
-- **Policy Firewall**: Promoted to **P0** (Already P0, but expanded to include "Project-Local Config Validation").
+- **"Safe-by-Default" Network Hardening**: Re-affirmed as **P0**. Urgent requirement to deprecate implicit localhost trust.
+- **Policy Firewall**: Expanded to include "Caller Identity Attestation" as a mandatory pre-condition for tool execution.
 
 ### Deprecations / Monitoring
-- **Unvalidated Project-Local Configs**: Monitoring for total deprecation. All local configs must be attested via MCP Any before ingestion by agents.
+- **Implicit Localhost Trust**: Scheduled for deprecation. All local connections will eventually require a signed attestation token.

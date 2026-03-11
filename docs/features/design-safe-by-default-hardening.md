@@ -59,3 +59,4 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-11:** Added mandatory Caller Attestation as a prerequisite for remote exposure to mitigate localhost hijacking (CVE-2026-25253).

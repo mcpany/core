@@ -67,3 +67,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project Configuration Guard**: MCP Any will evolve into a "Validating Proxy" for all project-local agent configurations. It will intercept and sanitize any "auto-execute" or "hook" definitions before they reach the agent runtime, requiring explicit user attestation.
 - **Agent-Aware Blackboard Isolation**: The Shared KV Store (Blackboard) must implement mandatory "Agent-Bound" isolation. Data written by one agent will be read-only or invisible to others unless a specific "Shared Intent" is established.
 - **Zero-Trust Hook Execution**: Any executable hook or automated tool sequence must run in a "Detached Sandbox" managed by MCP Any, with zero access to the host filesystem unless explicitly granted via a capability-based token.
+
+---
+
+## Strategic Evolution: [2026-03-11]
+### Focus: Caller Attestation & Delta-Based Context Sync
+**Context**: The OpenClaw security crisis (CVE-2026-25253) has highlighted that `localhost` is not a security boundary. Simultaneously, the proliferation of specialized agent swarms is causing context bloat and fragmentation.
+**Strategic Pivot**:
+- **Caller Attestation (Universal Identity)**: MCP Any will move beyond IP-based trust to a "Caller Attestation" model. Every client connecting to the gateway must provide a cryptographically signed identity (e.g., via a short-lived OIDC token or local OS-level PID verification).
+- **Delta-Based Context Sync**: To optimize for specialized subagents, MCP Any will implement a delta-based synchronization for the Shared KV Store, ensuring agents only receive the state changes relevant to their specific "Intent Scope."
+- **Config-as-Verified-Code**: Project-local configurations will be treated as untrusted code. MCP Any will implement a "Security Hash" for project settings, requiring a manual one-time user approval (MFA-backed) for any change in executable hooks.
