@@ -49,3 +49,4 @@ As agents increasingly rely on project-local configuration files (e.g., `.claude
 
 ## 7. Evolutionary Changelog
 * **2026-03-09:** Initial Document Creation.
+* **2026-03-12:** Updated to address CVE-2026-21852. Integrating with the `Base URL Hijacking Guard` to ensure project-local environment overrides (like `ANTHROPIC_BASE_URL`) are sanitized before agent ingestion. Promoted "Detached Sandbox" to P0 for hook execution.

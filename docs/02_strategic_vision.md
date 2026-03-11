@@ -67,3 +67,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project Configuration Guard**: MCP Any will evolve into a "Validating Proxy" for all project-local agent configurations. It will intercept and sanitize any "auto-execute" or "hook" definitions before they reach the agent runtime, requiring explicit user attestation.
 - **Agent-Aware Blackboard Isolation**: The Shared KV Store (Blackboard) must implement mandatory "Agent-Bound" isolation. Data written by one agent will be read-only or invisible to others unless a specific "Shared Intent" is established.
 - **Zero-Trust Hook Execution**: Any executable hook or automated tool sequence must run in a "Detached Sandbox" managed by MCP Any, with zero access to the host filesystem unless explicitly granted via a capability-based token.
+
+---
+
+## Strategic Evolution: [2026-03-12]
+### Focus: Infrastructure-Level API Pinning & Secure Transaction Delegation
+**Context**: The discovery of CVE-2026-21852 (Base URL Hijacking) in Claude Code and the rise of on-chain agent skills (CoinFello/OpenClaw) necessitate a shift in how MCP Any handles external connectivity and high-stakes actions.
+**Strategic Pivot**:
+- **API Destination Pinning**: MCP Any will implement a "Hard-Pinned API Gateway." Agents using MCP Any as a proxy will be restricted to a whitelist of official model endpoints (e.g., `api.anthropic.com`). Any project-local attempts to redirect these base URLs will be blocked and flagged.
+- **Agentic Wallet Delegation**: Evolving the adapter layer to support ERC-4337/7710 primitives. MCP Any will act as the "Security Policy Manager" for delegated wallet permissions, ensuring agents can only execute transactions that fall within their pre-approved "Intent Scope."
+- **Managed Cloud Bridging**: Enhancing the "Environment Bridging" capability to support zero-deployment cloud instances (like Baidu DuClaw), ensuring local tools are securely accessible to remote agents without manual port forwarding.

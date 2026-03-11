@@ -90,3 +90,16 @@
 
 ### Deprecations / Monitoring
 - **Unvalidated Project-Local Configs**: Monitoring for total deprecation. All local configs must be attested via MCP Any before ingestion by agents.
+
+---
+
+## Evolution: [2026-03-12] Updates
+
+### Proposed Additions
+- **Base URL Hijacking Guard (API Pinning)**: (P0) Infrastructure-level protection that prevents agents from connecting to unauthorized model endpoints defined in project-local settings.
+- **Secure Agentic Wallet Adapter**: (P1) Integration with ERC-4337/7710 to allow agents to execute delegated on-chain transactions safely.
+- **DuClaw Cloud Bridge**: (P1) Dedicated adapter for Baidu's DuClaw service to enable secure local tool access for cloud-hosted OpenClaw instances.
+
+### Priority Shifts
+- **Project Configuration Security Guard**: Re-affirmed as **P0** following new CVE-2026-21852 findings.
+- **Detached Sandbox for Automated Hooks**: Promoted to **P0**. Essential for preventing RCE when agents execute local hooks.

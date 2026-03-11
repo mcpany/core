@@ -37,7 +37,12 @@
 #### Upcoming (2026-03-09 Evolution)
 *   **[P0] Project Configuration Security Guard**: Validating proxy for project-local agent configs (e.g., `.claude/settings.json`) to prevent RCE. (Added: 2026-03-09)
 *   **[P0] Agent-Aware Blackboard Isolation**: Row-level security for Shared KV Store to prevent cross-agent state injection. (Added: 2026-03-09)
-*   **[P1] Detached Sandbox for Automated Hooks**: Isolated runtime for tool sequences with zero host access by default. (Added: 2026-03-09)
+*   **[P0] Detached Sandbox for Automated Hooks**: Isolated runtime for tool sequences with zero host access by default. (Promoted to P0: 2026-03-12)
+
+#### Upcoming (2026-03-12 Evolution)
+*   **[P0] Base URL Hijacking Guard**: API destination pinning to prevent exfiltration via malicious project-local base URL overrides. (Added: 2026-03-12)
+*   **[P1] Secure Agentic Wallet Adapter**: ERC-4337/7710 integration for delegated on-chain transactions. (Added: 2026-03-12)
+*   **[P1] DuClaw Cloud Bridge**: Dedicated secure adapter for bridging local tools to Baidu's managed OpenClaw service. (Added: 2026-03-12)
 
 ## 2. Top 10 Recommended Features
 
