@@ -86,7 +86,7 @@
     "@radix-ui/rect": "1.1.1",
     "@types/nunjucks": "^3.2.6",
     "@xyflow/react": "^12.10.0",
-    "@xyflow/system": "^0.0.52",
+    "@xyflow/system": "^0.0.75",
     "a-sync-waterfall": "^1.0.1",
     "ajv": "^8.17.1",
     "ajv-formats": "^3.0.1",

@@ -25,7 +25,7 @@ import { format } from "date-fns";
 import { CalendarIcon, Search, RefreshCw, Eye, AlertTriangle, Download } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
-import SyntaxHighlighter from 'react-syntax-highlighter/dist/esm/prism-light';
+import SyntaxHighlighter from 'react-syntax-highlighter/dist/esm/light';
 import json from 'react-syntax-highlighter/dist/esm/languages/hljs/json';
 import vs2015 from 'react-syntax-highlighter/dist/esm/styles/hljs/vs2015';
 

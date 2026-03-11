@@ -24,7 +24,7 @@ import { unwrapMcpResult, deepParseJson } from "@/lib/mcp-unwrap";
 // ⚡ BOLT: Lazy load heavy dependencies to improve initial bundle size and TTI.
 // Randomized Selection from Top 5 High-Impact Targets
 const SyntaxHighlighter = dynamic(
-    () => import('react-syntax-highlighter/dist/esm/prism-light').then(async (mod) => {
+    () => import('react-syntax-highlighter/dist/esm/light').then(async (mod) => {
         const jsonLang = await import('react-syntax-highlighter/dist/esm/languages/hljs/json');
         const jsLang = await import('react-syntax-highlighter/dist/esm/languages/hljs/javascript');
         const pythonLang = await import('react-syntax-highlighter/dist/esm/languages/hljs/python');

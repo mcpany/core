@@ -7,8 +7,10 @@ import type {NextConfig} from 'next';
 import path from 'path';
 import fs from 'fs';
 
+const isBazelBuild = Boolean(process.env.BAZEL_WORKSPACE || process.env.JS_BINARY__CHDIR);
+
 const nextConfig: NextConfig = {
-  output: 'standalone',
+  output: isBazelBuild ? undefined : 'standalone',
   /* config options here */
   typescript: {
     ignoreBuildErrors: true,
