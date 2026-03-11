@@ -15,6 +15,9 @@
 - [ ] **[P0] Stateful A2A Mailbox**: UI for viewing queued and delivered A2A messages across the agent mesh. (Added: 2026-02-28)
 - [ ] **[P0] Project Config Attestation Dashboard**: UI for reviewing and approving project-local configuration blocks (hooks/auto-execute). (Added: 2026-03-09)
 - [ ] **[P0] Blackboard Isolation Inspector**: Visualize and debug Agent-Bound Blackboard data across different "Intent Scopes." (Added: 2026-03-09)
+- [ ] **[P0] WebSocket Security Guard**: Dashboard for monitoring WebSocket origins, CSRF alerts, and active management sessions. (Added: 2026-03-11)
+- [ ] **[P0] ToxicSkill Threat Map**: Real-time visualization of detected "ToxicSkills" and global signature match alerts. (Added: 2026-03-11)
+- [ ] **[P1] Global Trust Score Explorer**: UI for exploring federated trust scores and submitting tool attestations. (Added: 2026-03-11)
 - [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
 - [x] **[P1] Tool Playground & Explorer**:
   - [x] Auto-generated forms from Tool JSON Schemas.

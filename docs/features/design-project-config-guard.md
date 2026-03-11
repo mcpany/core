@@ -49,3 +49,4 @@ As agents increasingly rely on project-local configuration files (e.g., `.claude
 
 ## 7. Evolutionary Changelog
 * **2026-03-09:** Initial Document Creation.
+* **2026-03-11:** Added "WebSocket Origin Validation" as a critical sub-component to prevent browser-based hijacking of the config attestation flow. Integrated "ToxicSkill" signature matching for automated hook validation.

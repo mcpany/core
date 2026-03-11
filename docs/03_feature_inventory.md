@@ -84,9 +84,18 @@
 - **Agent-Aware Blackboard Isolation**: (P0) Implements row-level security for the Shared KV Store, ensuring agents can only access state within their assigned "Intent Scope."
 - **Detached Sandbox for Automated Hooks**: (P1) Isolated execution environment for automated tool sequences, preventing unauthorized host access.
 
+---
+
+## Evolution: [2026-03-11] Updates
+
+### Proposed Additions
+- **WebSocket Origin Validation Middleware**: (P0) Strict origin and CSRF checking for all WebSocket listeners to prevent "ClawJacked"-style hijacking from browsers.
+- **Cross-Platform Skill Signature Matching**: (P0) Middleware that checks tool definitions against a database of known "ToxicSkills" (e.g., those found in the OpenClaw crisis).
+- **Global Attestation Mesh Protocol**: (P1) A decentralized protocol for MCP Any instances to share and verify tool trust scores.
+
 ### Priority Shifts
-- **Shared KV Store (Blackboard)**: Re-affirmed as **P0** with new mandatory security isolation requirements.
-- **Policy Firewall**: Promoted to **P0** (Already P0, but expanded to include "Project-Local Config Validation").
+- **Supply Chain Integrity Guard**: Re-affirmed as **P0**. Now includes mandatory signature matching for all new tool registrations.
+- **Policy Firewall**: Expanded to include "WebSocket Hijack Protection" rules.
 
 ### Deprecations / Monitoring
-- **Unvalidated Project-Local Configs**: Monitoring for total deprecation. All local configs must be attested via MCP Any before ingestion by agents.
+- **Unauthenticated Local WebSockets**: All local management WebSockets are being deprecated in favor of authenticated, origin-validated connections.

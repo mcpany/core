@@ -67,3 +67,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project Configuration Guard**: MCP Any will evolve into a "Validating Proxy" for all project-local agent configurations. It will intercept and sanitize any "auto-execute" or "hook" definitions before they reach the agent runtime, requiring explicit user attestation.
 - **Agent-Aware Blackboard Isolation**: The Shared KV Store (Blackboard) must implement mandatory "Agent-Bound" isolation. Data written by one agent will be read-only or invisible to others unless a specific "Shared Intent" is established.
 - **Zero-Trust Hook Execution**: Any executable hook or automated tool sequence must run in a "Detached Sandbox" managed by MCP Any, with zero access to the host filesystem unless explicitly granted via a capability-based token.
+
+---
+
+## Strategic Evolution: [2026-03-11]
+### Focus: Portable Skill Security & WebSocket Hijack Mitigation
+**Context**: The "ClawJacked" exploit and the rise of "ToxicSkills" (portable malicious agent skills) have demonstrated that local-only binding is insufficient if management interfaces (WebSockets) can be hijacked via the browser. Furthermore, the portability of malicious skills across OpenClaw, Cursor, and Claude Code requires a unified defense mechanism.
+**Strategic Pivot**:
+- **WebSocket Origin Validation**: MCP Any will implement strict Origin and CSRF validation for all WebSocket connections, ensuring that even local management interfaces cannot be hijacked by malicious websites.
+- **Portable Skill Signature Matching**: Shifting from simple provenance to "Cross-Platform Signature Matching." MCP Any will ingest global "ToxicSkill" databases to identify and block known malicious tool patterns, even if they originate from unverified sources.
+- **Global Attestation Mesh**: Proposing a federated model where MCP Any nodes share "Trust Scores" for MCP servers and skills, creating a collective defense against rapid-fire supply chain attacks.
