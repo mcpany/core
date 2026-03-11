@@ -67,3 +67,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project Configuration Guard**: MCP Any will evolve into a "Validating Proxy" for all project-local agent configurations. It will intercept and sanitize any "auto-execute" or "hook" definitions before they reach the agent runtime, requiring explicit user attestation.
 - **Agent-Aware Blackboard Isolation**: The Shared KV Store (Blackboard) must implement mandatory "Agent-Bound" isolation. Data written by one agent will be read-only or invisible to others unless a specific "Shared Intent" is established.
 - **Zero-Trust Hook Execution**: Any executable hook or automated tool sequence must run in a "Detached Sandbox" managed by MCP Any, with zero access to the host filesystem unless explicitly granted via a capability-based token.
+
+---
+
+## Strategic Evolution: [2026-03-10]
+### Focus: Universal Hook Orchestration & Parallel Agent Safety
+**Context**: The introduction of Gemini CLI Hooks and Claude's Parallel Multi-Agent Code Review has fragmented the agentic middleware landscape. Developers are facing "Hook Fatigue" and increased RCE risks from project-local configurations. MCP Any must consolidate these disparate patterns into a single, secure control plane.
+**Strategic Pivot**:
+- **Universal Hook Abstraction**: MCP Any will introduce a "Universal Hook Interface" (UHI) that translates native vendor hooks (Gemini, Claude, OpenClaw) into a standardized format. This allows developers to "write once, run anywhere" for agent safety and context injection scripts.
+- **Hook Attestation & Signing**: Implementing a cryptographic signing requirement for all executable hooks. MCP Any will refuse to execute any hook that hasn't been explicitly "Attested" by the user or a trusted organization, mitigating the risk of RCE via malicious project-local configs.
+- **Concurrency-Safe Tooling**: Evolving the Tool Gateway to handle high-concurrency requests from parallel agent swarms. This includes implementing "Atomic Tool Sessions" and "Predictive Locking" to prevent state corruption when multiple agents attempt to modify the same resource (e.g., the filesystem) simultaneously.

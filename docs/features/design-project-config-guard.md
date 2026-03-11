@@ -49,3 +49,8 @@ As agents increasingly rely on project-local configuration files (e.g., `.claude
 
 ## 7. Evolutionary Changelog
 * **2026-03-09:** Initial Document Creation.
+
+### Update: 2026-03-10 - Universal Hook Orchestration
+**Context:** Recent market shifts (Gemini CLI Hooks, Claude Parallel Agents) have fragmented the agentic middleware landscape, increasing RCE risks.
+**Architecture Adjustment:** Expanded scope to include translation of native vendor hooks into a standardized "Universal Hook Interface" (UHI).
+**Security Impact:** Centralized attestation and cryptographic signing for all project-local executable hooks, preventing unverified "auto-execute" commands.

@@ -84,6 +84,16 @@
 - **Agent-Aware Blackboard Isolation**: (P0) Implements row-level security for the Shared KV Store, ensuring agents can only access state within their assigned "Intent Scope."
 - **Detached Sandbox for Automated Hooks**: (P1) Isolated execution environment for automated tool sequences, preventing unauthorized host access.
 
+---
+
+## Evolution: [2026-03-10] Updates
+
+### Proposed Additions
+- **Universal Hook Interface (UHI) Adapter**: (P0) Translation layer for Gemini CLI, Claude, and OpenClaw hooks. Allows managing all agent middleware from a single config.
+- **Hook Attestation Service**: (P0) Cryptographic signing and verification for all executable hooks (Project-local or Global) to prevent RCE.
+- **Atomic Tool Session Middleware**: (P1) Concurrency management for parallel agents to ensure state consistency during simultaneous tool access.
+- **Predictive Resource Locking**: (P1) Advanced locking mechanism that prevents agents from deadlocking each other during multi-step file operations.
+
 ### Priority Shifts
 - **Shared KV Store (Blackboard)**: Re-affirmed as **P0** with new mandatory security isolation requirements.
 - **Policy Firewall**: Promoted to **P0** (Already P0, but expanded to include "Project-Local Config Validation").
