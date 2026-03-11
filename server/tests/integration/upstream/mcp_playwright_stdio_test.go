@@ -6,6 +6,7 @@ package upstream
 import (
 	"context"
 	"encoding/json"
+	"os/exec"
 	"testing"
 
 	apiv1 "github.com/mcpany/core/proto/api/v1"
@@ -22,6 +23,14 @@ func TestUpstreamService_MCP_Playwright_Stdio(t *testing.T) {
 		UpstreamServiceType: "stdio",
 		BuildUpstream:       func(_ *testing.T) *integration.ManagedProcess { return nil },
 		RegisterUpstream: func(t *testing.T, registrationClient apiv1.RegistrationServiceClient, _ string) {
+			nodePath, err := exec.LookPath("node")
+			if err != nil {
+				t.Skipf("Skipping Playwright stdio test: node not found in PATH: %v", err)
+			}
+			if _, err := exec.LookPath("npm"); err != nil {
+				t.Skipf("Skipping Playwright stdio test: npm not found in PATH: %v", err)
+			}
+
 			const serviceID = "playwright"
 			env := map[string]string{
 				"HOME":                             "/tmp",
@@ -29,14 +38,12 @@ func TestUpstreamService_MCP_Playwright_Stdio(t *testing.T) {
 				"PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD": "1",
 				"NPM_CONFIG_YES":                   "true",
 			}
-			cmd := "node"
+			cmd := nodePath
 			args := []string{"./node_modules/.bin/mcp-server-playwright"}
 			setupCommands := []string{
 				"npm install --no-optional @playwright/mcp > /dev/null 2>&1",
 			}
 			integration.RegisterStdioServiceWithSetup(t, registrationClient, serviceID, cmd, true, "tests/integration/upstream", "", setupCommands, env, args...)
-
-
 
 		},
 		InvokeAIClient: func(t *testing.T, mcpanyEndpoint string) {

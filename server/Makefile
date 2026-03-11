@@ -114,7 +114,7 @@ RELEASE_DIR := $(BUILD_DIR)/release
 # Find all .proto files, excluding vendor/cache directories
 PROTO_FILES := $(shell find ../proto -path ./vendor -prune -o -name "*.proto" -print)
 
-.PHONY: all gen build test e2e clean run build-docker run-docker e2e-local check-local release release-local release-docker bazel-build bazel-build-images bazel-test bazel-test-fast
+.PHONY: all gen gen-go-proto gen-gateway-proto gen-protoset gen-ts-proto build test e2e clean run build-docker run-docker e2e-local check-local release release-local release-docker bazel-build bazel-build-images bazel-test bazel-test-fast
 
 all: build
 
@@ -401,6 +401,18 @@ bazel-test:
 # Delegate gen to root Makefile
 gen: prepare
 	$(MAKE) -C .. gen
+
+gen-go-proto: prepare
+	$(MAKE) -C .. gen-go-proto
+
+gen-gateway-proto: prepare
+	$(MAKE) -C .. gen-gateway-proto
+
+gen-protoset: prepare
+	$(MAKE) -C .. gen-protoset
+
+gen-ts-proto: prepare
+	$(MAKE) -C .. gen-ts-proto
 
 build: gen
 	@echo "Building Go project locally..."
@@ -773,5 +785,9 @@ help:
 	@echo "  make test           - Run tests"
 	@echo "  make lint           - Run linters"
 	@echo "  make gen            - Generate protobuf files"
+	@echo "  make gen-go-proto   - Generate gateway stubs and descriptor set"
+	@echo "  make gen-gateway-proto - Generate gRPC gateway Go stubs"
+	@echo "  make gen-protoset   - Generate protobuf descriptor set"
+	@echo "  make gen-ts-proto   - Generate TypeScript protobuf files"
 	@echo "  make build-docker   - Build server docker image"
 	@echo "  make run            - Run server locally"

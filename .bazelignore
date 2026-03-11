@@ -1,13 +1,10 @@
 build/
 node_modules/
 docker/
-k8s/
-marketplace/
 docs/
 server/build/
 server/docker/
 server/docs/
-server/examples/
 server/tests/integration/upstream/node_modules/
 ui/node_modules/
 ui/.next/

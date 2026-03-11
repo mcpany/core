@@ -18,6 +18,7 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/upstream/mcp"
+	"github.com/mcpany/core/server/tests/integration"
 	mcpsdk "github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -25,13 +26,51 @@ import (
 	TIMESTAMPCB "google.golang.org/protobuf/types/known/durationpb"
 )
 
-func TestWebhooksE2E(t *testing.T) {
-	// Build the webhook server
-	rootDir := findRootDir(t)
-	webhookBin := filepath.Join(rootDir, "build", "bin", "webhooks")
+func runfileBinary(relParts ...string) string {
+	workspace := os.Getenv("TEST_WORKSPACE")
+	if workspace == "" {
+		workspace = "_main"
+	}
+	for _, base := range []string{os.Getenv("TEST_SRCDIR"), os.Getenv("RUNFILES_DIR")} {
+		if base == "" {
+			continue
+		}
+		candidate := filepath.Join(append([]string{base, workspace}, relParts...)...)
+		if _, err := os.Stat(candidate); err == nil {
+			return candidate
+		}
+	}
+	return ""
+}
+
+func webhookBinary(t *testing.T) string {
+	t.Helper()
+	if bin := runfileBinary("server", "cmd", "webhooks", "webhooks_", "webhooks"); bin != "" {
+		return bin
+	}
+	rootDir := integration.ProjectRoot(t)
+	webhookBin := filepath.Join(t.TempDir(), "webhooks")
 	cmd := exec.Command("go", "build", "-o", webhookBin, "./cmd/webhooks") //nolint:gosec
 	cmd.Dir = rootDir
 	require.NoError(t, cmd.Run(), "Failed to build webhook server")
+	return webhookBin
+}
+
+func mockMCPBinary(t *testing.T) string {
+	t.Helper()
+	if bin := runfileBinary("server", "tests", "integration", "upstream", "testdata", "mock_mcp", "mock_mcp_", "mock_mcp"); bin != "" {
+		return bin
+	}
+	rootDir := integration.ProjectRoot(t)
+	mockBin := filepath.Join(t.TempDir(), "mock_mcp")
+	cmd := exec.Command("go", "build", "-o", mockBin, "./tests/integration/upstream/testdata/mock_mcp") //nolint:gosec
+	cmd.Dir = rootDir
+	require.NoError(t, cmd.Run(), "Failed to build mock MCP server")
+	return mockBin
+}
+
+func TestWebhooksE2E(t *testing.T) {
+	webhookBin := webhookBinary(t)
 
 	// Start webhook server
 	// Start webhook server
@@ -131,18 +170,8 @@ func TestWebhooksE2E(t *testing.T) {
 }
 
 func TestFullSystemWebhooks(t *testing.T) {
-	// 1. Build Webhook Server
-	rootDir := findRootDir(t)
-	webhookBin := filepath.Join(rootDir, "build", "bin", "webhooks")
-	cmd := exec.Command("go", "build", "-o", webhookBin, "./cmd/webhooks") //nolint:gosec
-	cmd.Dir = rootDir
-	require.NoError(t, cmd.Run(), "Failed to build webhook server")
-
-	// 2. Build Mock MCP Server
-	mockMcpBin := filepath.Join(rootDir, "build", "bin", "mock_mcp")
-	cmd = exec.Command("go", "build", "-o", mockMcpBin, "./tests/integration/upstream/testdata/mock_mcp") //nolint:gosec
-	cmd.Dir = rootDir
-	require.NoError(t, cmd.Run(), "Failed to build mock MCP server")
+	webhookBin := webhookBinary(t)
+	mockMcpBin := mockMCPBinary(t)
 
 	// 3. Start Webhook Server
 	port := getFreePort(t)
@@ -256,19 +285,4 @@ func getFreePort(t *testing.T) int {
 	require.NoError(t, err)
 	defer l.Close()
 	return l.Addr().(*net.TCPAddr).Port
-}
-
-func findRootDir(t *testing.T) string {
-	dir, err := os.Getwd()
-	require.NoError(t, err)
-	for {
-		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
-			return dir
-		}
-		parent := filepath.Dir(dir)
-		if parent == dir {
-			t.Fatal("Root directory not found")
-		}
-		dir = parent
-	}
 }

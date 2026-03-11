@@ -303,18 +303,16 @@ func BuildWebsocketWeatherServer(t *testing.T) *integration.ManagedProcess {
 	port := integration.FindFreePort(t)
 	root, err := integration.GetProjectRoot()
 	require.NoError(t, err)
-	binaryPath := filepath.Join(root, "../build/examples/bin/weather-server")
-	if _, err := os.Stat(binaryPath); os.IsNotExist(err) {
-		t.Logf("Binary not found at %s, attempting to build...", binaryPath)
-		sourcePath := filepath.Join(root, "examples/upstream_service_demo/http/server/weather_server/weather_server.go")
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
-		defer cancel()
-		cmd := exec.CommandContext(ctx, "go", "build", "-o", binaryPath, sourcePath)
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		err := cmd.Run()
-		require.NoError(t, err, "Failed to build weather-server")
-	}
+	binaryPath := filepath.Join(t.TempDir(), "weather-server")
+	sourcePath := filepath.Join(root, "examples/upstream_service_demo/http/server/weather_server/weather_server.go")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	cmd := exec.CommandContext(ctx, "go", "build", "-o", binaryPath, sourcePath)
+	cmd.Dir = root
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err = cmd.Run()
+	require.NoError(t, err, "Failed to build weather-server")
 	proc := integration.NewManagedProcess(t, "websocket_weather_server", binaryPath, []string{fmt.Sprintf("--addr=127.0.0.1:%d", port)}, []string{fmt.Sprintf("HTTP_PORT=%d", port)})
 	proc.Port = port
 	return proc

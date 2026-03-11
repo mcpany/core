@@ -13,6 +13,7 @@ import (
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
+	weatherpb "github.com/mcpany/core/proto/examples/weather/v1"
 	mcpopt "github.com/mcpany/core/proto/mcp_options/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -20,6 +21,8 @@ import (
 	"google.golang.org/grpc"
 	reflectpb "google.golang.org/grpc/reflection/grpc_reflection_v1"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/reflect/protodesc"
+	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/descriptorpb"
 )
 
@@ -174,14 +177,22 @@ func TestGetFileDescriptorByFilename(t *testing.T) {
 
 func loadTestFileDescriptorSet(t *testing.T) *descriptorpb.FileDescriptorSet {
 	t.Helper()
-	// This path is relative to the package directory where the test is run.
-	b, err := os.ReadFile("../../../../../build/all.protoset")
-	require.NoError(t, err, "Failed to read protoset file. Ensure 'make gen' has been run.")
-
 	fds := &descriptorpb.FileDescriptorSet{}
-	err = proto.Unmarshal(b, fds)
-	require.NoError(t, err, "Failed to unmarshal protoset file")
-
+	seen := make(map[string]bool)
+	var collect func(fd protoreflect.FileDescriptor)
+	collect = func(fd protoreflect.FileDescriptor) {
+		if fd == nil || seen[fd.Path()] {
+			return
+		}
+		seen[fd.Path()] = true
+		imports := fd.Imports()
+		for i := 0; i < imports.Len(); i++ {
+			collect(imports.Get(i))
+		}
+		fds.File = append(fds.File, protodesc.ToFileDescriptorProto(fd))
+	}
+	collect(weatherpb.File_proto_examples_weather_v1_weather_proto)
+	collect(mcpopt.File_proto_mcp_options_v1_mcp_options_proto)
 	return fds
 }
 

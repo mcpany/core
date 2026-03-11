@@ -16,6 +16,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"runtime"
 	"strconv"
 	"strings"
 	"sync"
@@ -213,6 +214,85 @@ var (
 	findRootOnce sync.Once
 )
 
+func runfilesWorkspaceName() string {
+	if workspace := os.Getenv("TEST_WORKSPACE"); workspace != "" {
+		return workspace
+	}
+	return "_main"
+}
+
+func runfilesRoots() []string {
+	workspace := runfilesWorkspaceName()
+	var roots []string
+	for _, base := range []string{os.Getenv("TEST_SRCDIR"), os.Getenv("RUNFILES_DIR")} {
+		if base == "" {
+			continue
+		}
+		roots = append(roots, filepath.Join(base, workspace))
+	}
+	return roots
+}
+
+func runfilesServerRoot() string {
+	for _, root := range runfilesRoots() {
+		candidate := filepath.Join(root, "server")
+		if isServerProjectRoot(candidate) {
+			return candidate
+		}
+	}
+	return ""
+}
+
+func runfilesBinaryPath(relParts ...string) string {
+	for _, root := range runfilesRoots() {
+		candidate := filepath.Join(append([]string{root}, relParts...)...)
+		if _, err := os.Stat(candidate); err == nil {
+			return candidate
+		}
+	}
+	return ""
+}
+
+func isServerProjectRoot(dir string) bool {
+	if dir == "" {
+		return false
+	}
+	if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+		return true
+	}
+	for _, subdir := range []string{"cmd", "pkg", "tests"} {
+		if info, err := os.Stat(filepath.Join(dir, subdir)); err != nil || !info.IsDir() {
+			return false
+		}
+	}
+	return true
+}
+
+func symlinkIfPresent(src, dst string) error {
+	if _, err := os.Stat(src); err != nil {
+		return nil
+	}
+	return os.Symlink(src, dst)
+}
+
+func prepareRuntimeDir(t *testing.T, root string) string {
+	t.Helper()
+	runtimeDir := filepath.Join(t.TempDir(), "runtime")
+	require.NoError(t, os.MkdirAll(filepath.Join(runtimeDir, "data"), 0755))
+	require.NoError(t, os.MkdirAll(filepath.Join(runtimeDir, "skills"), 0755))
+	for _, link := range []struct {
+		src string
+		dst string
+	}{
+		{src: filepath.Join(root, "examples"), dst: filepath.Join(runtimeDir, "examples")},
+		{src: filepath.Join(root, "tests"), dst: filepath.Join(runtimeDir, "tests")},
+		{src: filepath.Join(filepath.Dir(root), "marketplace"), dst: filepath.Join(runtimeDir, "marketplace")},
+	} {
+		require.NoError(t, symlinkIfPresent(link.src, link.dst))
+	}
+	return runtimeDir
+}
+
 // GetProjectRoot returns the absolute path to the project root (the server/ directory).
 //
 // Returns the result.
@@ -226,32 +306,59 @@ func GetProjectRoot() (string, error) {
 			return
 		}
 
-		// Under Bazel, the server directory is available in the runfiles tree.
-		if runsDir := os.Getenv("RUNFILES_DIR"); runsDir != "" {
-			candidate := filepath.Join(runsDir, "_main", "server")
-			if _, statErr := os.Stat(filepath.Join(candidate, "go.mod")); statErr == nil {
+		for _, candidate := range []string{
+			filepath.Join(os.Getenv("GITHUB_WORKSPACE"), "server"),
+			filepath.Join(os.Getenv("BUILD_WORKSPACE_DIRECTORY"), "server"),
+			runfilesServerRoot(),
+		} {
+			if candidate == "" {
+				continue
+			}
+			if isServerProjectRoot(candidate) {
 				projectRoot = candidate
 				return
 			}
 		}
 
-		// Find the project root by looking for the go.mod file
-		var dir string
-		dir, err = os.Getwd()
-		if err != nil {
-			return
-		}
-		for {
-			if _, statErr := os.Stat(filepath.Join(dir, "go.mod")); statErr == nil {
-				projectRoot = dir
-				return
+		if _, file, _, ok := runtime.Caller(0); ok {
+			dir := filepath.Dir(file)
+			for {
+				if isServerProjectRoot(dir) {
+					projectRoot = dir
+					return
+				}
+				if dir == filepath.Dir(dir) {
+					break
+				}
+				dir = filepath.Dir(dir)
 			}
-			if dir == filepath.Dir(dir) {
-				err = fmt.Errorf("go.mod not found")
-				return
-			}
-			dir = filepath.Dir(dir)
 		}
+
+		for _, start := range func() []string {
+			wd, wdErr := os.Getwd()
+			execPath, execErr := os.Executable()
+			paths := make([]string, 0, 2)
+			if wdErr == nil {
+				paths = append(paths, wd)
+			}
+			if execErr == nil {
+				paths = append(paths, filepath.Dir(execPath))
+			}
+			return paths
+		}() {
+			dir := start
+			for {
+				if isServerProjectRoot(dir) {
+					projectRoot = dir
+					return
+				}
+				if dir == filepath.Dir(dir) {
+					break
+				}
+				dir = filepath.Dir(dir)
+			}
+		}
+		err = fmt.Errorf("go.mod not found")
 	})
 	if err != nil {
 		return "", err
@@ -264,11 +371,8 @@ func GetProjectRoot() (string, error) {
 // relative to the project root.
 func ServerBinary(t *testing.T) string {
 	t.Helper()
-	if runsDir := os.Getenv("RUNFILES_DIR"); runsDir != "" {
-		bin := filepath.Join(runsDir, "_main", "server", "cmd", "server", "server_", "server")
-		if _, err := os.Stat(bin); err == nil {
-			return bin
-		}
+	if bin := runfilesBinaryPath("server", "cmd", "server", "server_", "server"); bin != "" {
+		return bin
 	}
 	root := ProjectRoot(t)
 	return filepath.Join(root, "../build/bin/server")
@@ -279,11 +383,8 @@ func ServerBinary(t *testing.T) string {
 // relative to the project root.
 func MockBinary(t *testing.T, name string) string {
 	t.Helper()
-	if runsDir := os.Getenv("RUNFILES_DIR"); runsDir != "" {
-		bin := filepath.Join(runsDir, "_main", "server", "tests", "integration", "cmd", "mocks", name, name+"_", name)
-		if _, err := os.Stat(bin); err == nil {
-			return bin
-		}
+	if bin := runfilesBinaryPath("server", "tests", "integration", "cmd", "mocks", name, name+"_", name); bin != "" {
+		return bin
 	}
 	root := ProjectRoot(t)
 	return filepath.Join(root, "../build/test/bin", name)
@@ -1176,7 +1277,7 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 	args = append(args, "--api-key", apiKey)
 
 	mcpProcess := NewManagedProcess(t, "MCPANYServer-"+testName, absMcpAnyBinaryPath, args, env)
-	mcpProcess.cmd.Dir = root
+	mcpProcess.cmd.Dir = prepareRuntimeDir(t, root)
 	err = mcpProcess.Start()
 	require.NoError(t, err, "Failed to start MCPANY server. Stderr: %s", mcpProcess.StderrString())
 
@@ -1262,9 +1363,6 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 	var grpcRegConn *grpc.ClientConn
 	var registrationClient apiv1.RegistrationServiceClient
 
-	// Create a random Session ID for this server instance (client side ID)
-	sessionID := fmt.Sprintf("test-session-%d", time.Now().UnixNano())
-
 	if healthCheck && jsonrpcPort != 0 { // Only check health if we have a port
 		t.Logf("MCPANY server health check target URL: %s", mcpRequestURL)
 
@@ -1316,7 +1414,7 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 		mcpProcess.WaitForText(t, "MCPANY server is ready", McpAnyServerStartupTimeout) // Assumption or skipped?
 	}
 
-	t.Logf("MCPANY Server process started. MCP Endpoint Base: %s, gRPC Reg: %s, SessionID: %s, APIKey: %s", jsonrpcEndpoint, grpcRegEndpoint, sessionID, apiKey)
+	t.Logf("MCPANY Server process started. MCP Endpoint Base: %s, gRPC Reg: %s, APIKey: %s", jsonrpcEndpoint, grpcRegEndpoint, apiKey)
 
 	return &MCPANYTestServerInfo{
 		Process:                  mcpProcess,
@@ -1328,7 +1426,7 @@ func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool,
 		GRPCRegConn:              grpcRegConn,
 		RegistrationClient:       registrationClient,
 		NatsURL:                  natsURL,
-		SessionID:                sessionID,
+		SessionID:                "",
 		CleanupFunc: func() {
 			t.Logf("Cleaning up MCPANYTestServerInfo for %s...", testName)
 			if grpcRegConn != nil {

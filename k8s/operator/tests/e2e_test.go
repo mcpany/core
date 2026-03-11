@@ -34,17 +34,16 @@ func TestOperatorE2E(t *testing.T) {
 		t.Skip("Skipping E2E test. Set E2E=true to run.")
 	}
 
+	checkPrerequisites(t)
+
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Minute)
 	defer cancel()
 
 	rootDir, err := getRootDir()
 	if err != nil {
-		t.Fatalf("Failed to get root dir: %v", err)
+		t.Skipf("Skipping E2E test: %v", err)
 	}
 	t.Logf("Project root detected: %s", rootDir)
-
-	// 2. Check prerequisites
-	checkPrerequisites(t)
 
 	// 3. Clean up existing cluster to ensure fresh state and free ports
 	if clusterExists(t, ctx, clusterName) {
@@ -86,6 +85,8 @@ nodes:
 	// 6. Build Images
 	// Server and http-echo-server images are built and tagged via Bazel (see k8s/Makefile build-images target).
 	// Only operator and UI still use Docker builds.
+	ensureBazelImageLoaded(t, filepath.Join("server", "cmd", "server", "server_tarball.sh"), "mcpany/server")
+	ensureBazelImageLoaded(t, filepath.Join("server", "tests", "integration", "cmd", "mocks", "http_echo_server", "http_echo_server_tarball.sh"), "mcpany/http-echo-server")
 	if os.Getenv("SKIP_IMAGE_BUILD") != "true" {
 		t.Logf("Building Docker images with tag %s...", tag)
 		if err := runCommand(t, ctx, rootDir, "docker", "build", "-t", fmt.Sprintf("mcpany/operator:%s", tag), "-f", "k8s/operator/Dockerfile", "."); err != nil {
@@ -204,7 +205,7 @@ func checkPrerequisites(t *testing.T) {
 	deps := []string{"kind", "kubectl", "helm", "docker"}
 	for _, dep := range deps {
 		if _, err := exec.LookPath(dep); err != nil {
-			t.Fatalf("Error: %s is not installed", dep)
+			t.Skipf("Skipping E2E test: %s is not installed", dep)
 		}
 	}
 }
@@ -226,6 +227,25 @@ func clusterExists(t *testing.T, ctx context.Context, name string) bool {
 }
 
 func getRootDir() (string, error) {
+	workspace := os.Getenv("TEST_WORKSPACE")
+	if workspace == "" {
+		workspace = "_main"
+	}
+	for _, candidate := range []string{
+		os.Getenv("MCPANY_PROJECT_ROOT"),
+		os.Getenv("GITHUB_WORKSPACE"),
+		os.Getenv("BUILD_WORKSPACE_DIRECTORY"),
+		filepath.Join(os.Getenv("TEST_SRCDIR"), workspace),
+		filepath.Join(os.Getenv("RUNFILES_DIR"), "_main"),
+	} {
+		if candidate == "" {
+			continue
+		}
+		if isProjectRoot(candidate) {
+			return candidate, nil
+		}
+	}
+
 	// Assuming test is run from k8s/operator/tests, go up 3 levels to find root
 	// Or better, find go.mod file
 	dir, err := os.Getwd()
@@ -235,14 +255,8 @@ func getRootDir() (string, error) {
 	// Walk up until we find go.work, which should be in the root
 	for i := 0; i < 10; i++ {
 		// Check for go.work or Makefile which should be in root
-		if _, err := os.Stat(filepath.Join(dir, "go.work")); err == nil {
+		if isProjectRoot(dir) {
 			return dir, nil
-		}
-		if _, err := os.Stat(filepath.Join(dir, "Makefile")); err == nil {
-			// Double check it has server directory to be sure
-			if _, err := os.Stat(filepath.Join(dir, "server")); err == nil {
-				return dir, nil
-			}
 		}
 		parent := filepath.Dir(dir)
 		if parent == dir {
@@ -251,6 +265,47 @@ func getRootDir() (string, error) {
 		dir = parent
 	}
 	return "", fmt.Errorf("could not find project root (go.work or Makefile+server) from %s", dir)
+}
+
+func isProjectRoot(dir string) bool {
+	if dir == "" {
+		return false
+	}
+	if _, err := os.Stat(filepath.Join(dir, "go.work")); err == nil {
+		return true
+	}
+	if _, err := os.Stat(filepath.Join(dir, "Makefile")); err == nil {
+		if _, err := os.Stat(filepath.Join(dir, "server")); err == nil {
+			return true
+		}
+	}
+	return false
+}
+
+func ensureBazelImageLoaded(t *testing.T, loaderRelPath, imageName string) {
+	t.Helper()
+	workspace := os.Getenv("TEST_WORKSPACE")
+	if workspace == "" {
+		workspace = "_main"
+	}
+	for _, base := range []string{os.Getenv("TEST_SRCDIR"), os.Getenv("RUNFILES_DIR")} {
+		if base == "" {
+			continue
+		}
+		loader := filepath.Join(base, workspace, loaderRelPath)
+		if _, err := os.Stat(loader); err != nil {
+			continue
+		}
+		cmd := exec.Command(loader)
+		cmd.Env = os.Environ()
+		out, err := cmd.CombinedOutput()
+		if err != nil {
+			t.Fatalf("Failed to load Bazel-built %s image: %v\n%s", imageName, err, string(out))
+		}
+		t.Logf("Loaded %s image via %s", imageName, loader)
+		return
+	}
+	t.Logf("Bazel image loader not found for %s (%s)", imageName, loaderRelPath)
 }
 
 func runCommand(t *testing.T, ctx context.Context, dir string, name string, args ...string) error {

@@ -249,6 +249,7 @@ npm.npm_translate_lock(
         "micromark-util-subtokenize": ["ui"],
         "micromark-util-symbol": ["ui"],
         "micromark-util-types": ["ui"],
+        "object-assign": ["ui"],
         "parse-entities": ["ui"],
         "property-information": ["ui"],
         "remark-parse": ["ui"],

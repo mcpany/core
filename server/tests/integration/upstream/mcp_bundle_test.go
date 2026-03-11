@@ -13,12 +13,12 @@ import (
 	"path/filepath"
 	"testing"
 
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/prompt"
 	"github.com/mcpany/core/server/pkg/resource"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/upstream/mcp"
 	"github.com/mcpany/core/server/pkg/util"
-	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
@@ -238,6 +238,9 @@ func TestE2E_Bundle_Filesystem(t *testing.T) {
 		useLocal = true
 	}
 	if os.Getenv("CI") == "true" {
+		useLocal = true
+	}
+	if os.Getenv("TEST_SRCDIR") != "" || os.Getenv("RUNFILES_DIR") != "" {
 		useLocal = true
 	}
 	if err := exec.Command("docker", "info").Run(); err != nil {
