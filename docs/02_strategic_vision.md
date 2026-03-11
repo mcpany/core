@@ -67,3 +67,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project Configuration Guard**: MCP Any will evolve into a "Validating Proxy" for all project-local agent configurations. It will intercept and sanitize any "auto-execute" or "hook" definitions before they reach the agent runtime, requiring explicit user attestation.
 - **Agent-Aware Blackboard Isolation**: The Shared KV Store (Blackboard) must implement mandatory "Agent-Bound" isolation. Data written by one agent will be read-only or invisible to others unless a specific "Shared Intent" is established.
 - **Zero-Trust Hook Execution**: Any executable hook or automated tool sequence must run in a "Detached Sandbox" managed by MCP Any, with zero access to the host filesystem unless explicitly granted via a capability-based token.
+
+---
+
+## Strategic Evolution: [2026-03-11]
+### Focus: Terminal Guarding & Just-in-Time (JIT) Credential Scoping
+**Context**: The OpenClaw security crisis and "Clawdbot" exploits have proven that terminal access and over-privileged OAuth tokens are the "Crown Jewels" of agentic vulnerabilities. Enterprise adoption is stalled by the risk of "Shadow Agency" where unmanaged agents expose production credentials.
+**Strategic Pivot**:
+- **Terminal Guarding Middleware**: MCP Any will implement a "Human-in-the-Loop" terminal proxy that intercepts high-risk commands (e.g., `ssh`, `curl`, `rm -rf`) for manual attestation or automated policy-based blocking.
+- **JIT Credential Scoping**: Secrets will no longer be persistent in agent environments. MCP Any will provide "Ephemeral Tokens" that are minted on-demand for specific tool calls and expire immediately upon completion.
+- **Shadow Agent Discovery**: Implementing a "Network Observer" mode where MCP Any can detect and report on unauthorized agentic traffic (non-MCP) within the environment, acting as a governance layer for "Shadow IT."

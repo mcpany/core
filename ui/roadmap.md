@@ -16,6 +16,9 @@
 - [ ] **[P0] Project Config Attestation Dashboard**: UI for reviewing and approving project-local configuration blocks (hooks/auto-execute). (Added: 2026-03-09)
 - [ ] **[P0] Blackboard Isolation Inspector**: Visualize and debug Agent-Bound Blackboard data across different "Intent Scopes." (Added: 2026-03-09)
 - [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
+- [ ] **[P0] Terminal Guarding Console**: Real-time interception UI for CLI commands with interactive approve/deny/edit controls. (Added: 2026-03-11)
+- [ ] **[P0] JIT Credential Lifecycle Viewer**: Dashboard for monitoring active ephemeral tokens, their scopes, and expiration status. (Added: 2026-03-11)
+- [ ] **[P1] Shadow Agent Observer**: Visualization of non-MCP agentic traffic detected within the managed environment. (Added: 2026-03-11)
 - [x] **[P1] Tool Playground & Explorer**:
   - [x] Auto-generated forms from Tool JSON Schemas.
   - [x] "Execute" button with history and result visualization.

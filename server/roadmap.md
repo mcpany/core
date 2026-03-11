@@ -39,6 +39,11 @@
 *   **[P0] Agent-Aware Blackboard Isolation**: Row-level security for Shared KV Store to prevent cross-agent state injection. (Added: 2026-03-09)
 *   **[P1] Detached Sandbox for Automated Hooks**: Isolated runtime for tool sequences with zero host access by default. (Added: 2026-03-09)
 
+#### Upcoming (2026-03-11 Evolution)
+*   **[P0] Terminal Guarding Middleware**: HITL interception and policy-based validation for high-risk CLI commands (e.g., `ssh`, `curl`, `sudo`). (Added: 2026-03-11)
+*   **[P0] JIT Ephemeral Token Service**: On-demand minting of short-lived credentials for upstream tool calls to eliminate persistent secret storage. (Added: 2026-03-11)
+*   **[P1] Shadow Agent Discovery Engine**: Network-level observation to identify and govern non-MCP agentic traffic. (Added: 2026-03-11)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

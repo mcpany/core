@@ -84,9 +84,19 @@
 - **Agent-Aware Blackboard Isolation**: (P0) Implements row-level security for the Shared KV Store, ensuring agents can only access state within their assigned "Intent Scope."
 - **Detached Sandbox for Automated Hooks**: (P1) Isolated execution environment for automated tool sequences, preventing unauthorized host access.
 
+---
+
+## Evolution: [2026-03-11] Updates
+
+### Proposed Additions
+- **Terminal Guarding Middleware**: (P0) A security-first proxy for the `Command` adapter that intercepts and validates high-risk CLI commands (e.g., `ssh`, `curl`, `sudo`) using HITL or Rego policies.
+- **JIT Ephemeral Token Service**: (P0) On-demand minting of short-lived credentials for upstream tool calls, eliminating persistent secret storage in agent memory.
+- **Shadow Agent Discovery Engine**: (P1) Network-level observation to identify non-MCP agentic traffic and "Shadow IT" agents operating outside the governance perimeter.
+
 ### Priority Shifts
-- **Shared KV Store (Blackboard)**: Re-affirmed as **P0** with new mandatory security isolation requirements.
-- **Policy Firewall**: Promoted to **P0** (Already P0, but expanded to include "Project-Local Config Validation").
+- **HITL Middleware**: Promoted to **P0**. Essential for the "Terminal Guarding" and "Project Config Guard" features to ensure manual attestation of risky actions.
+- **Policy Firewall**: Re-affirmed as **P0**. Scope expanded to include "Credential Scoping" policies.
 
 ### Deprecations / Monitoring
-- **Unvalidated Project-Local Configs**: Monitoring for total deprecation. All local configs must be attested via MCP Any before ingestion by agents.
+- **Persistent OAuth Tokens**: Monitoring for deprecation in favor of JIT Ephemeral Tokens.
+- **Unrestricted Command Adapter**: Moving towards mandatory "Guarded" mode for all CLI-based tools.
