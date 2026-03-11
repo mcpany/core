@@ -49,3 +49,4 @@ As agents increasingly rely on project-local configuration files (e.g., `.claude
 
 ## 7. Evolutionary Changelog
 * **2026-03-09:** Initial Document Creation.
+* **2026-03-10:** Integrated with Deterministic Validation. Hooks can now be configured to trigger a mandatory validation pass before being considered "active."

@@ -90,3 +90,19 @@
 
 ### Deprecations / Monitoring
 - **Unvalidated Project-Local Configs**: Monitoring for total deprecation. All local configs must be attested via MCP Any before ingestion by agents.
+
+---
+
+## Evolution: [2026-03-10] Updates
+
+### Proposed Additions
+- **Deterministic Validation Middleware**: (P0) Intercepts tool calls that modify files or system state and runs automated validation (tests, linters) before committing changes.
+- **Agentic Remediation Pipeline**: (P1) A multi-stage workflow for AI-suggested patches, including staging, automated verification, and human-in-the-loop approval.
+- **Agent Lateral Movement Monitor**: (P1) Real-time tracking and visualization of an agent's "permissions expansion" as it invokes different tools across a session.
+
+### Priority Shifts
+- **HITL Middleware**: Re-affirmed as **P0**. It is now a critical dependency for the Agentic Remediation Pipeline.
+- **Detached Sandbox for Automated Hooks**: Promoted from **P1** to **P0**. Essential for safely running validation suites against AI-generated code.
+
+### Deprecations / Monitoring
+- **Blind Tool Execution**: Monitoring for deprecation. All "high-stakes" tool calls (filesystem, network, system) should move towards mandatory validation or explicit HITL.

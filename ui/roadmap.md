@@ -16,6 +16,8 @@
 - [ ] **[P0] Project Config Attestation Dashboard**: UI for reviewing and approving project-local configuration blocks (hooks/auto-execute). (Added: 2026-03-09)
 - [ ] **[P0] Blackboard Isolation Inspector**: Visualize and debug Agent-Bound Blackboard data across different "Intent Scopes." (Added: 2026-03-09)
 - [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
+- [ ] **[P0] Validation Pipeline Monitor**: Real-time view of staged changes, validation logs (tests/linters), and commit status. (Added: 2026-03-10)
+- [ ] **[P1] Lateral Movement Visualizer**: Interactive graph showing the expansion of agent capabilities and tool access over time. (Added: 2026-03-10)
 - [x] **[P1] Tool Playground & Explorer**:
   - [x] Auto-generated forms from Tool JSON Schemas.
   - [x] "Execute" button with history and result visualization.

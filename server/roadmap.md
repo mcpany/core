@@ -39,6 +39,11 @@
 *   **[P0] Agent-Aware Blackboard Isolation**: Row-level security for Shared KV Store to prevent cross-agent state injection. (Added: 2026-03-09)
 *   **[P1] Detached Sandbox for Automated Hooks**: Isolated runtime for tool sequences with zero host access by default. (Added: 2026-03-09)
 
+#### Upcoming (2026-03-10 Evolution)
+*   **[P0] Deterministic Validation Middleware**: Intercept mutator tools and run automated validation (tests/linters) in a staged workspace. (Added: 2026-03-10)
+*   **[P1] Agentic Remediation Pipeline**: Multi-stage workflow for AI patches including staging, verification, and HITL. (Added: 2026-03-10)
+*   **[P1] Agent Lateral Movement Monitor**: Real-time tracking of agent capability expansion across a session. (Added: 2026-03-10)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
