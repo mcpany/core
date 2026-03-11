@@ -63,8 +63,14 @@ backend_runtime="$runtime_root/backend"
 rm -rf "$runtime_root"
 mkdir -p "$repo_root" "$backend_runtime"
 
-cp -a "$workspace_root/ui" "$repo_root/"
-rm -rf "$ui_runtime/node_modules"
+mkdir -p "$ui_runtime"
+rsync -aL \
+  --exclude 'node_modules' \
+  --exclude '.next' \
+  --exclude 'playwright-report' \
+  --exclude 'test-results' \
+  --exclude '.audit' \
+  "$workspace_root/ui/" "$ui_runtime/"
 ln -s "$workspace_root/ui/node_modules" "$ui_runtime/node_modules"
 ln -s "$workspace_root/proto" "$repo_root/proto"
 
