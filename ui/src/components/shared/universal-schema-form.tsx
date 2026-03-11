@@ -161,7 +161,7 @@ function SchemaField({ path, schema, value, onChange, errors, required, label, l
                 });
                 setSelectedIndex(bestIdx);
             }
-        }, []); // eslint-disable-line react-hooks/exhaustive-deps
+        }, []);
 
         const selectedSchema = options[selectedIndex];
 
