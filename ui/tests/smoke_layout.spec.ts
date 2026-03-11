@@ -11,6 +11,8 @@ test('layout smoke test', async ({ page, request }) => {
   await seedCollection('mcpany-system', request);
 
   await page.goto('/');
+  // Wait for network idle so user/admin fetch completes and sidebar re-renders
+  await page.waitForLoadState('networkidle');
 
   // Check for Sidebar
   const sidebar = page.locator('text=MCP Any').first();
@@ -18,7 +20,7 @@ test('layout smoke test', async ({ page, request }) => {
 
   // Check for Sidebar links
   await expect(page.locator('a[href="/stacks"]').first()).toBeVisible();
-  await expect(page.locator('a[href="/upstream-services"]').first()).toBeVisible();
+  await expect(page.locator('a[href="/upstream-services"]').first()).toBeVisible({ timeout: 15000 });
   await expect(page.locator('a[href="/settings"]').first()).toBeVisible();
 
   // Navigate to Stacks
@@ -27,7 +29,7 @@ test('layout smoke test', async ({ page, request }) => {
   await expect(page.getByRole('heading', { name: 'Stacks' })).toBeVisible({ timeout: 15000 });
 
   // Check for the "mcpany-system" stack
-  await expect(page.locator('text=mcpany-system')).toBeVisible();
+  await expect(page.locator('text=mcpany-system').first()).toBeVisible();
 
   // Navigate to Stack Detail
   await page.getByText('mcpany-system', { exact: true }).first().click();
