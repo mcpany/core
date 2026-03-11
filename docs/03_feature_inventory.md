@@ -84,9 +84,18 @@
 - **Agent-Aware Blackboard Isolation**: (P0) Implements row-level security for the Shared KV Store, ensuring agents can only access state within their assigned "Intent Scope."
 - **Detached Sandbox for Automated Hooks**: (P1) Isolated execution environment for automated tool sequences, preventing unauthorized host access.
 
+---
+
+## Evolution: [2026-03-11] Updates
+
+### Proposed Additions
+- **High-Speed Inter-Agent Bus (HS-A2A)**: (P0) Shared-memory transport layer for low-latency knowledge sharing within agentic swarms.
+- **Tool Egress Firewall (SSRF Guard)**: (P1) Enforces domain-based egress white-listing for all outgoing tool requests.
+- **Virtual Config Injector**: (P0) A security-first mechanism that synthesizes verified project configurations and injects them into the agent environment, bypassing vulnerable on-disk config files.
+
 ### Priority Shifts
-- **Shared KV Store (Blackboard)**: Re-affirmed as **P0** with new mandatory security isolation requirements.
-- **Policy Firewall**: Promoted to **P0** (Already P0, but expanded to include "Project-Local Config Validation").
+- **Project Configuration Security Guard**: Promoted to **P0** (High urgency due to CVE-2026-25725).
+- **A2A Stateful Residency**: Promoted to **P0** to support the HS-A2A bus implementation.
 
 ### Deprecations / Monitoring
-- **Unvalidated Project-Local Configs**: Monitoring for total deprecation. All local configs must be attested via MCP Any before ingestion by agents.
+- **On-Disk Project Configs**: Targeted for deprecation. Agents should move to Virtual Configs provided by MCP Any.

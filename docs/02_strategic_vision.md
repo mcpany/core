@@ -67,3 +67,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project Configuration Guard**: MCP Any will evolve into a "Validating Proxy" for all project-local agent configurations. It will intercept and sanitize any "auto-execute" or "hook" definitions before they reach the agent runtime, requiring explicit user attestation.
 - **Agent-Aware Blackboard Isolation**: The Shared KV Store (Blackboard) must implement mandatory "Agent-Bound" isolation. Data written by one agent will be read-only or invisible to others unless a specific "Shared Intent" is established.
 - **Zero-Trust Hook Execution**: Any executable hook or automated tool sequence must run in a "Detached Sandbox" managed by MCP Any, with zero access to the host filesystem unless explicitly granted via a capability-based token.
+
+---
+
+## Strategic Evolution: [2026-03-11]
+### Focus: High-Speed Swarm Coordination & Egress Integrity
+**Context**: Recent security crises in the Claude Code ecosystem (CVE-2026-25725) and the rise of high-frequency agentic swarms necessitate a shift towards faster, safer inter-agent primitives.
+**Strategic Pivot**:
+- **High-Speed Inter-Agent Bus (HS-A2A)**: MCP Any will introduce a shared-memory transport layer for agents running on the same host, bypassing HTTP/Stdio overhead to support "Machine Speed" knowledge sharing in swarms.
+- **Strict Egress Filtering (Tool-to-Web)**: To prevent SSRF-via-MCP, the gateway will implement a "Default-Deny" egress policy for all tools. Tools must declare their required external domains, which must be approved by the Policy Engine.
+- **Ephemeral Project State**: Moving towards a model where project-local configs are never read from disk by the agent. Instead, MCP Any injects a "Virtual Config" into the agent's environment, synthesized from verified, attested sources.

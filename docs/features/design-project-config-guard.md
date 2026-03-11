@@ -49,3 +49,7 @@ As agents increasingly rely on project-local configuration files (e.g., `.claude
 
 ## 7. Evolutionary Changelog
 * **2026-03-09:** Initial Document Creation.
+* **2026-03-11:** Update: Addressing CVE-2026-25725 (Bubblewrap Escape via Missing Config).
+    * **Context**: Recent findings show that if a config file (like `settings.json`) doesn't exist, malicious code in a sandbox can create it to inject hooks.
+    * **Architecture Adjustment**: Implementing "Shadow Prohibitive Files." MCP Any will now project a read-only, empty virtual file for any known configuration filename if it does not exist on disk, preventing agents or subagents from creating a malicious version.
+    * **Security Impact**: Hardens the project boundary against sandbox-escape-via-config-injection.
