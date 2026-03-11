@@ -90,3 +90,19 @@
 
 ### Deprecations / Monitoring
 - **Unvalidated Project-Local Configs**: Monitoring for total deprecation. All local configs must be attested via MCP Any before ingestion by agents.
+
+---
+
+## Evolution: [2026-03-10] Updates
+
+### Proposed Additions
+- **Dynamic Skill Attestation Service**: (P0) Cryptographic verification for on-the-fly tool installation (e.g., OpenClaw Skills). Prevents unverified "shadow tools" from entering the agent's toolset.
+- **Autonomous Swarm Defense (ASD)**: (P0) Millisecond-latency policy enforcement that identifies and terminates anomalous swarm behavior (e.g., rapid lateral tool movement, unauthorized recursive sub-agent spawning).
+- **Project-Local Config Sanitizer**: (P0) A hardened middleware layer that intercepts project-bound agent settings (like `.claude/settings.json`) and strips non-declarative hooks to prevent RCE.
+
+### Priority Shifts
+- **Detached Sandbox for Automated Hooks**: Promoted to **P0** (from P1). Immediate necessity to mitigate RCE risks identified in the Claude Code ecosystem.
+- **Policy Firewall**: Re-affirmed as **P0** with new "Autonomous Defense" requirements.
+
+### Deprecations / Monitoring
+- **Manual HITL for Swarm Actions**: Monitoring for transition to "Policy-by-Exception" as human intervention is too slow for machine-speed swarm attacks.

@@ -39,6 +39,11 @@
 *   **[P0] Agent-Aware Blackboard Isolation**: Row-level security for Shared KV Store to prevent cross-agent state injection. (Added: 2026-03-09)
 *   **[P1] Detached Sandbox for Automated Hooks**: Isolated runtime for tool sequences with zero host access by default. (Added: 2026-03-09)
 
+#### Upcoming (2026-03-10 Evolution)
+*   **[P0] Autonomous Swarm Defense (ASD)**: Millisecond-latency policy enforcement to identify and terminate malicious swarm behaviors. (Added: 2026-03-10)
+*   **[P0] Dynamic Skill Attestation Service**: Gateway-side cryptographic verification of dynamically installed agent skills. (Added: 2026-03-10)
+*   **[P0] Project-Local Config Sanitizer**: Hardened middleware for strict schema validation of project-bound agent settings. (Added: 2026-03-10)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

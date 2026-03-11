@@ -67,3 +67,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project Configuration Guard**: MCP Any will evolve into a "Validating Proxy" for all project-local agent configurations. It will intercept and sanitize any "auto-execute" or "hook" definitions before they reach the agent runtime, requiring explicit user attestation.
 - **Agent-Aware Blackboard Isolation**: The Shared KV Store (Blackboard) must implement mandatory "Agent-Bound" isolation. Data written by one agent will be read-only or invisible to others unless a specific "Shared Intent" is established.
 - **Zero-Trust Hook Execution**: Any executable hook or automated tool sequence must run in a "Detached Sandbox" managed by MCP Any, with zero access to the host filesystem unless explicitly granted via a capability-based token.
+
+---
+
+## Strategic Evolution: [2026-03-10]
+### Focus: Autonomous Swarm Governance & Dynamic Skill Attestation
+**Context**: The emergence of "AI Swarm Attacks" and the "OpenClaw Skills Library" necessitates a shift from passive gatewaying to active, autonomous governance. The recent Claude Code RCE exploits via project-local configs highlight that the "Configuration Surface" is now a primary attack vector.
+**Strategic Pivot**:
+- **Autonomous Governance Engine**: MCP Any will transition from HITL-reliant policies to an "Autonomous Defense" model. It will use sub-millisecond CEL/Rego evaluation to kill suspicious swarm patterns (e.g., recursive tool execution or lateral movement) before they manifest on the host.
+- **Dynamic Skill Provenance**: Every dynamically discovered "Skill" or tool must undergo "Gateway-Side Attestation." MCP Any will not register a tool unless its origin is cryptographically verified against a trusted registry, preventing the ingestion of malicious OpenClaw templates.
+- **Project-Local Config Shield**: All project-bound agent settings (e.g., `.claude/settings.json`) are now considered "Untrusted Input." MCP Any will act as a sanitizing shim, enforcing a "Strict Schema" that strips all non-declarative or executable hooks unless specifically whitelisted by the global security policy.

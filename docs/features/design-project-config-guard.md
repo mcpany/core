@@ -49,3 +49,8 @@ As agents increasingly rely on project-local configuration files (e.g., `.claude
 
 ## 7. Evolutionary Changelog
 * **2026-03-09:** Initial Document Creation.
+* **2026-03-10:** Update: Addressing Claude Code RCE and Strict Schema Sanitization.
+    * **Context:** Today's research confirmed active RCE exploits in Claude Code via project-local configuration files.
+    * **Architecture Adjustment:** Transitioning from "User Review Only" to "Mandatory Strict Schema Sanitization."
+    * **New Logic:** MCP Any will now strip all non-declarative fields from configuration files by default, even before the user review step. Only a pre-approved whitelist of safe keys (e.g., `theme`, `defaultModel`) will be passed to the agent without explicit sandbox isolation.
+    * **Security Impact:** Eliminates the "Alert Fatigue" of constant user review while ensuring that even if a user accidentally clicks "Approve," the most dangerous fields are already neutralized or sandboxed.
