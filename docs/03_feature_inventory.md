@@ -90,3 +90,16 @@
 
 ### Deprecations / Monitoring
 - **Unvalidated Project-Local Configs**: Monitoring for total deprecation. All local configs must be attested via MCP Any before ingestion by agents.
+
+---
+
+## Evolution: [2026-03-11] Updates
+
+### Proposed Additions
+- **Universal Skill Adapter (SKILL.md Support)**: (P0) Allows MCP Any to ingest, validate, and serve `SKILL.md` files as MCP tools and prompts. Centralizes skill management for swarms.
+- **ContextEngine Bridge for OpenClaw**: (P1) Implements the OpenClaw ContextEngine interface to provide pluggable, infrastructure-managed memory and context compression for agents.
+- **Cognitive Reasoning Telemetry**: (P1) Tracks "Thinking" tokens and "Reasoning Effort" across tool calls to enable cost-optimized agentic flows.
+
+### Priority Shifts
+- **On-Demand Discovery Middleware (Lazy-MCP)**: Re-affirmed as **P0**. Essential for scaling to handle thousands of "Skills" without context bloat.
+- **Agent-Aware Blackboard Isolation**: Re-affirmed as **P0**. Prerequisite for multi-agent "ContextEngine" stability.

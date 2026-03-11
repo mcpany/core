@@ -67,3 +67,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project Configuration Guard**: MCP Any will evolve into a "Validating Proxy" for all project-local agent configurations. It will intercept and sanitize any "auto-execute" or "hook" definitions before they reach the agent runtime, requiring explicit user attestation.
 - **Agent-Aware Blackboard Isolation**: The Shared KV Store (Blackboard) must implement mandatory "Agent-Bound" isolation. Data written by one agent will be read-only or invisible to others unless a specific "Shared Intent" is established.
 - **Zero-Trust Hook Execution**: Any executable hook or automated tool sequence must run in a "Detached Sandbox" managed by MCP Any, with zero access to the host filesystem unless explicitly granted via a capability-based token.
+
+---
+
+## Strategic Evolution: [2026-03-11]
+### Focus: Pluggable Context & Skill-Centric Agency
+**Context**: The emergence of OpenClaw's Pluggable ContextEngine and the industry-wide adoption of the `SKILL.md` format for Claude Code and Gemini CLI signal a shift toward "modular agency." Agents are no longer just tool-users; they are skill-orchestrators.
+**Strategic Pivot**:
+- **Universal Skill Mediation**: MCP Any will pivot to become the central repository and validator for `SKILL.md` definitions. It will serve these skills as executable MCP tools, ensuring cross-platform compatibility and security.
+- **ContextEngine Connectivity**: We will implement a "Memory-as-a-Service" layer that implements the OpenClaw ContextEngine interface, allowing MCP Any to manage long-term agent state and context compression as a shared infrastructure service.
+- **Cognitive Telemetry**: Integrating "Adaptive Thinking" metrics into our observability suite to provide visibility into the reasoning costs of different agentic architectures.

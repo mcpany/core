@@ -47,3 +47,11 @@ The `Shared KV Store` (Blackboard) is a core tool in MCP Any that allows multipl
 
 ## 7. Evolutionary Changelog
 * **2026-03-09:** Initial Document Creation.
+
+### Update: 2026-03-11 - OpenClaw ContextEngine Integration
+**Context:** OpenClaw v2026.3.7 introduced pluggable ContextEngines. The Blackboard must now act as a backing store for these engines.
+**Architecture Adjustment:**
+* **Pluggable Compression Support**: Adding a `compression_type` column to the Blackboard schema to support various ContextEngine summarization strategies.
+* **Context Retrieval API**: Introducing a vector-search capability (via SQLite `vec0` extension) to support semantic retrieval of context by the ContextEngine.
+* **Lease-Based Visibility**: Implementing time-to-live (TTL) on state entries to automatically prune transient context, reducing the "noise" for ContextEngines.
+**Security Impact:** Prevents context bloat from becoming a denial-of-service vector for the reasoning engine.
