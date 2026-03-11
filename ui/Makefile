@@ -84,7 +84,7 @@ test-ci: clean-test-results
 # Local test target (runs natively)
 test-local:
 	@echo "Running UI tests locally..."
-	npm install
+	npm install --legacy-peer-deps
 	BACKEND_URL=http://localhost:50050 NEXT_PUBLIC_API_URL=http://localhost:50050 npx playwright test $(PLAYWRIGHT_ARGS)
 
 # Build the UI test Docker image
@@ -108,7 +108,7 @@ docker-build-ui:
 # Build the UI production build
 build:
 	@echo "Building UI..."
-	npm install && npm run build
+	npm install --legacy-peer-deps && npm run build
 
 update-screenshots:
 	@echo "Updating screenshots..."

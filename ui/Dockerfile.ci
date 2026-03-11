@@ -6,4 +6,4 @@ WORKDIR /work/ui
 COPY ui/package.json ui/package-lock.json* ui/.npmrc* ./
 
 # Install dependencies
-RUN npm install --package-lock=false --registry=https://registry.npmjs.org/
+RUN npm install --package-lock=false --legacy-peer-deps --registry=https://registry.npmjs.org/

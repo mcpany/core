@@ -165,7 +165,7 @@ gen: clean-protos prepare-proto
 	@echo "Generating protobuf files (TypeScript)..."
 	@if ! [ -f "./ui/node_modules/.bin/protoc-gen-ts_proto" ]; then \
 		echo "protoc-gen-ts_proto not found. Installing UI dependencies..."; \
-		cd ui && npm install; \
+		cd ui && npm install --legacy-peer-deps; \
 	fi
 	@if [ -f "./ui/node_modules/.bin/protoc-gen-ts_proto" ]; then \
 		export PATH=$(TOOL_INSTALL_DIR):$$PATH; \
