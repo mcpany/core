@@ -39,6 +39,11 @@
 *   **[P0] Agent-Aware Blackboard Isolation**: Row-level security for Shared KV Store to prevent cross-agent state injection. (Added: 2026-03-09)
 *   **[P1] Detached Sandbox for Automated Hooks**: Isolated runtime for tool sequences with zero host access by default. (Added: 2026-03-09)
 
+#### Upcoming (2026-03-11 Evolution)
+*   **[P0] Identity-Bound Tool Sessions (IBT)**: Cryptographic binding of tool calls to user sessions to prevent credential exfiltration. (Added: 2026-03-11)
+*   **[P0] Cryptographic Configuration Attestation**: Signature requirement for all project-local configuration hooks. (Added: 2026-03-11)
+*   **[P1] Sensitive Sink Middleware**: Auto-redaction of secrets in MCP tool communication streams. (Added: 2026-03-11)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

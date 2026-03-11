@@ -49,3 +49,9 @@ As agents increasingly rely on project-local configuration files (e.g., `.claude
 
 ## 7. Evolutionary Changelog
 * **2026-03-09:** Initial Document Creation.
+* **2026-03-11: Addressing Configuration Injection (CVE-2025-59536)**
+    * **Context:** Today's market sync revealed the specific mechanism used in the Claude Code exploits—abuse of `ANTHROPIC_BASE_URL` and `hooks` in `.claude/settings.json`.
+    * **Architecture Adjustment:**
+        * Implementing "Path-Based Whitelisting" for all environment variable overrides in project configs.
+        * Mandatory "Cryptographic Attestation" for any hook that uses shell execution. Plaintext hooks are disabled by default.
+        * Introduced "Zero-Trust Config Sandboxing" where the config parser itself runs in an unprivileged, memory-isolated thread.

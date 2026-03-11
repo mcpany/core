@@ -90,3 +90,19 @@
 
 ### Deprecations / Monitoring
 - **Unvalidated Project-Local Configs**: Monitoring for total deprecation. All local configs must be attested via MCP Any before ingestion by agents.
+
+---
+
+## Evolution: [2026-03-11] Updates
+
+### Proposed Additions
+- **Identity-Bound Tool Sessions (IBT)**: (P0) Cryptographically binds tool calls to user-attested session tokens. Prevents "Credential Exfiltration" from compromised agents.
+- **Cryptographic Configuration Attestation**: (P0) Requirement for all project-local hooks to be signed or manually approved before proxying to the agent.
+- **Sensitive Sink Middleware (Auto-Redaction)**: (P1) High-performance regex/entropy-based redaction of secrets in the tool communication stream.
+
+### Priority Shifts
+- **Project Configuration Security Guard**: Re-affirmed as **P0**. Criticality increased due to recent CVEs.
+- **Detached Sandbox for Automated Hooks**: Promoted to **P0**. Necessary to contain potential RCE from malicious configurations.
+
+### Deprecations / Monitoring
+- **Plain-text Project Hooks**: Monitoring for deprecation. All hooks must move to the Attested model.

@@ -67,3 +67,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project Configuration Guard**: MCP Any will evolve into a "Validating Proxy" for all project-local agent configurations. It will intercept and sanitize any "auto-execute" or "hook" definitions before they reach the agent runtime, requiring explicit user attestation.
 - **Agent-Aware Blackboard Isolation**: The Shared KV Store (Blackboard) must implement mandatory "Agent-Bound" isolation. Data written by one agent will be read-only or invisible to others unless a specific "Shared Intent" is established.
 - **Zero-Trust Hook Execution**: Any executable hook or automated tool sequence must run in a "Detached Sandbox" managed by MCP Any, with zero access to the host filesystem unless explicitly granted via a capability-based token.
+
+---
+
+## Strategic Evolution: [2026-03-11]
+### Focus: Identity-Bound Tooling & Attested Configuration
+**Context**: The recent "Configuration Injection" vulnerabilities (CVE-2025-59536, CVE-2026-21852) have exposed a massive gap in how agents handle repository-local settings. Trusting a configuration file just because it exists in the project root is no longer viable. Furthermore, "Static Credentials" are the primary target for exfiltration.
+**Strategic Pivot**:
+- **Identity-Bound Tooling (IBT)**: MCP Any will move towards a model where every tool call is cryptographically bound to a short-lived, user-attested session. Credentials will never be exposed to the agent; they will be injected by MCP Any only at the moment of execution, validated against a live session token.
+- **Cryptographic Configuration Attestation**: All project-local hooks and sensitive settings (e.g., `.claude/settings.json`) must be cryptographically signed or manually attested by the user before being enabled in the MCP Any proxy layer.
+- **Protocol-Level Redaction**: Implementing a "Sensitive Sink" middleware that automatically detects and redacts high-entropy strings (API keys, secrets) from agent-to-tool and tool-to-agent communication, even if the tool itself doesn't support redaction.
