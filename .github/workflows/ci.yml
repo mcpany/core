@@ -318,6 +318,9 @@ jobs:
           # This should be shared as much as possible to avoid re-downloading.
           repository-cache: true
 
+      - name: Generate protobufs
+        run: make gen
+
       - name: Test
         env:
           BAZEL_DISK_CACHE: ${{ env.BAZEL_DISK_CACHE }}
@@ -538,8 +541,6 @@ jobs:
             time-server,
             cowsay,
             everything,
-            ui,
-            operator,
             ui-test,
           ]
         platform_slug: [amd64, arm64]
@@ -1075,7 +1076,7 @@ jobs:
     #   image: iowoi/mcp-runner:latest
     #   options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     timeout-minutes: 360 # Increased timeout for k8s tests
-    needs: [changes, build-images]
+    needs: [changes]
     if: ${{ needs.changes.outputs.src == 'true' }}
     continue-on-error: true
     steps:
@@ -1116,11 +1117,21 @@ jobs:
         with:
           node-version: "24"
 
+      - name: Set up Bazel
+        uses: bazel-contrib/setup-bazel@0.18.0
+        with:
+          bazelisk-cache: true
+          disk-cache: ${{ runner.os }}-bazel-disk-${{ hashFiles('**/BUILD', '**/BUILD.bazel', '**/*.bzl', 'WORKSPACE', 'MODULE.bazel') }}
+          repository-cache: true
+
       - name: Install UI Dependencies
         run: |
           cd ui
           npm ci
           npx playwright install chromium
+
+      - name: Generate protobufs
+        run: make gen
 
       - name: Set up Helm
         uses: azure/setup-helm@v4
@@ -1133,57 +1144,9 @@ jobs:
           cluster_name: mcp-e2e
           wait: 120s
 
-      - name: Detect Architecture
-        id: detect-arch
-        run: |
-          ARCH=$(uname -m)
-          case $ARCH in
-            x86_64) SLUG="amd64" ;;
-            aarch64) SLUG="arm64" ;;
-            *) echo "Unsupported arch: $ARCH"; exit 1 ;;
-          esac
-          echo "slug=$SLUG" >> $GITHUB_OUTPUT
-
-      - name: Download Server Image
-        uses: actions/download-artifact@v4
-        with:
-          name: image-server-${{ steps.detect-arch.outputs.slug }}
-
-      - name: Load Server Image
-        run: |
-          docker load -i image.tar
-          rm -f image.tar
-
-      - name: Download Operator Image
-        uses: actions/download-artifact@v4
-        with:
-          name: image-operator-${{ steps.detect-arch.outputs.slug }}
-
-      - name: Load Operator Image
-        run: |
-          docker load -i image.tar
-          rm -f image.tar
-
-      - name: Download UI Image
-        uses: actions/download-artifact@v4
-        with:
-          name: image-ui-${{ steps.detect-arch.outputs.slug }}
-
-      - name: Load UI Image
-        run: |
-          docker load -i image.tar
-          rm -f image.tar
-
-      - name: Load Docker Images into Kind
-        run: |
-          # Now load specific images into Kind
-          kind load docker-image mcpany/server:latest --name mcp-e2e
-          kind load docker-image mcpany/operator:latest --name mcp-e2e
-          kind load docker-image mcpany/ui:latest --name mcp-e2e
-
       - name: Run K8s E2E Tests
         run: |
-          make k8s-e2e SKIP_IMAGE_BUILD=true IMAGE_TAG=latest
+          make k8s-e2e IMAGE_TAG=latest
 
   ci-success:
     runs-on: ubuntu-latest

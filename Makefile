@@ -165,7 +165,7 @@ gen: clean-protos prepare-proto
 	@echo "Generating protobuf files (TypeScript)..."
 	@if ! [ -f "./ui/node_modules/.bin/protoc-gen-ts_proto" ]; then \
 		echo "protoc-gen-ts_proto not found. Installing UI dependencies..."; \
-		cd ui && npm install; \
+		cd ui && if command -v corepack >/dev/null 2>&1; then corepack pnpm install --frozen-lockfile; else npm install; fi; \
 	fi
 	@if [ -f "./ui/node_modules/.bin/protoc-gen-ts_proto" ]; then \
 		export PATH=$(TOOL_INSTALL_DIR):$$PATH; \
@@ -192,6 +192,7 @@ gen: clean-protos prepare-proto
 				--ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web \
 				$$STANDARD_PROTOS; \
 		fi; \
+		python3 scripts/patch_generated_proto_ts.py; \
 		echo "Standard TypeScript Protobuf generation complete."; \
 	else \
 		echo "Error: protoc-gen-ts_proto not found in ./ui/node_modules/.bin/. TypeScript generation cannot proceed."; \
