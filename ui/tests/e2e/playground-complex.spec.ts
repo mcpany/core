@@ -98,7 +98,7 @@ test.describe('Playground Complex UI', () => {
       const toolsRes = await request.get('/api/v1/tools');
       const toolsData = await toolsRes.json();
       const tools = Array.isArray(toolsData) ? toolsData : (toolsData.tools || []);
-      const found = tools.some(t => t.name.includes('create_user'));
+      const found = tools.some((t: { name: string }) => t.name.includes('create_user'));
       if (found) {
         console.log('Service registered and tools available');
         return;

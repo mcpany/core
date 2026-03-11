@@ -266,10 +266,14 @@ export const cleanupPrompts = async (requestContext?: APIRequestContext) => {
     // No-op
 };
 
-export const seedCollection = async (requestContext?: APIRequestContext) => {
+export const seedWebhooks = async (requestContext?: APIRequestContext) => {
     // No-op
 };
 
-export const cleanupCollection = async (requestContext?: APIRequestContext) => {
+export const seedCollection = async (_name?: string, _requestContext?: APIRequestContext) => {
+    // No-op
+};
+
+export const cleanupCollection = async (_name?: string, _requestContext?: APIRequestContext) => {
     // No-op
 };
