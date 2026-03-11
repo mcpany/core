@@ -36,6 +36,11 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
     - **A2A Side**: Implementation of A2A transport (likely SSE or WebSockets).
 *   **Data Storage/State:** A2A session tokens are stored in the `Shared KV Store` (Blackboard) to allow for asynchronous callbacks.
 
+## 4.5. Day 2 Update: Google A2A Protocol Alignment
+*   **Standard Alignment**: MCP Any will transition from a custom A2A wrapper to a native implementation of Google's A2A protocol (March 2026 spec).
+*   **Capabilities**: Support for `capability/negotiate` to ensure inter-agent tool compatibility.
+*   **Stateful Buffer**: MCP Any will act as a "Resident Mesh Node" for A2A, allowing asynchronous task completion and state residency even when parent agents disconnect.
+
 ## 5. Alternatives Considered
 *   **Direct A2A Integration in Agents**: Forcing every agent framework to implement A2A. *Rejected* because it increases complexity for agent developers and lacks centralized security/observability.
 *   **Custom Tool Callbacks**: Building a proprietary callback system. *Rejected* in favor of the emerging A2A industry standard.
@@ -46,3 +51,4 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-03-11:** Alignment with Google's A2A protocol specifications and "Resident Mesh Node" architecture.

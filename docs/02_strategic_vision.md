@@ -67,3 +67,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project Configuration Guard**: MCP Any will evolve into a "Validating Proxy" for all project-local agent configurations. It will intercept and sanitize any "auto-execute" or "hook" definitions before they reach the agent runtime, requiring explicit user attestation.
 - **Agent-Aware Blackboard Isolation**: The Shared KV Store (Blackboard) must implement mandatory "Agent-Bound" isolation. Data written by one agent will be read-only or invisible to others unless a specific "Shared Intent" is established.
 - **Zero-Trust Hook Execution**: Any executable hook or automated tool sequence must run in a "Detached Sandbox" managed by MCP Any, with zero access to the host filesystem unless explicitly granted via a capability-based token.
+
+---
+
+## Strategic Evolution: [2026-03-11]
+### Focus: Managed Security Residency & High-Performance A2A Coordination
+**Context**: The "proprietary loop" moat of managed agents like Claude Code and the security friction of open-source agents like OpenClaw create a divide. Developers need the trust of managed systems with the hackability of open-source. Simultaneously, Google's A2A protocol is maturing into a mandatory standard for cross-framework swarms.
+**Strategic Pivot**:
+- **Managed Security Residency**: MCP Any will position itself as the "Security Resident" for all agent executions. By providing hardware-backed secret management and a mandatory Policy Firewall, we eliminate the trust deficit of open-source agent frameworks.
+- **A2A Mesh Standardization**: Rapid adoption of Google's A2A protocol as the primary transport for inter-agent communication, ensuring MCP Any is the default bridge for multi-agent handoffs.
+- **Transparent Loop Optimization**: Implementing optimized, auditable coordination middleware that matches the performance of proprietary agentic loops while remaining fully customizable by the user.

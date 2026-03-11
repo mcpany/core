@@ -19,9 +19,6 @@
 - **Recursive Context Protocol**: Promoted from **P1** to **P0**. Essential for modern agent swarms to prevent state loss.
 - **Shared KV Store**: Promoted from **P1** to **P0**. Critical for coordinating multi-agent actions in complex workflows.
 
-### Deprecations / Monitoring
-- *None today.*
-
 ---
 
 ## Evolution: [2026-02-24] Updates
@@ -90,3 +87,16 @@
 
 ### Deprecations / Monitoring
 - **Unvalidated Project-Local Configs**: Monitoring for total deprecation. All local configs must be attested via MCP Any before ingestion by agents.
+
+---
+
+## Evolution: [2026-03-11] Updates
+
+### Proposed Additions
+- **Hardware-Backed Secret Storage**: (P0) Integration with TPM/Secure Enclave for encrypted storage of agent API keys, addressing the trust gap in open-source frameworks like OpenClaw.
+- **Native A2A Protocol Adapter**: (P0) First-class support for Google's A2A protocol, enabling seamless interoperability between MCP-native agents and the broader A2A agent mesh.
+- **Auditable Agentic Loop Middleware**: (P1) Provides high-performance, auditable coordination logic that matches the speed of proprietary agent loops.
+
+### Priority Shifts
+- **A2A Interop Bridge**: Re-affirmed as **P0** with new alignment on Google's A2A specification.
+- **Policy Firewall**: Expanded scope (P0) to include "Managed Security Residency" enforcing mandatory Zero-Trust for all open-source agents.
