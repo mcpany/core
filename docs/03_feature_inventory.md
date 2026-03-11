@@ -90,3 +90,15 @@
 
 ### Deprecations / Monitoring
 - **Unvalidated Project-Local Configs**: Monitoring for total deprecation. All local configs must be attested via MCP Any before ingestion by agents.
+
+---
+
+## Evolution: [2026-03-10] Updates
+
+### Proposed Additions
+- **Subagent Identity Attestation**: (P0) Cryptographic "Chain of Custody" for hierarchical agent calls. Ensures subagents operate within parent-authorized boundaries.
+- **Cross-Layer Intent Verification**: (P0) Behavioral validation middleware that matches tool call intent against high-level agent tasks to block "Shadow Config" RCEs.
+- **Path-Normalized Config Validator**: (P1) Security middleware for case-insensitive filesystems to prevent path-bypass attacks (CVE-2025-59944).
+
+### Priority Shifts
+- **Project Configuration Security Guard**: Re-affirmed as **P0**. High urgency due to the "Shadow Config" vulnerability patterns.

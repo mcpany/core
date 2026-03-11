@@ -67,3 +67,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project Configuration Guard**: MCP Any will evolve into a "Validating Proxy" for all project-local agent configurations. It will intercept and sanitize any "auto-execute" or "hook" definitions before they reach the agent runtime, requiring explicit user attestation.
 - **Agent-Aware Blackboard Isolation**: The Shared KV Store (Blackboard) must implement mandatory "Agent-Bound" isolation. Data written by one agent will be read-only or invisible to others unless a specific "Shared Intent" is established.
 - **Zero-Trust Hook Execution**: Any executable hook or automated tool sequence must run in a "Detached Sandbox" managed by MCP Any, with zero access to the host filesystem unless explicitly granted via a capability-based token.
+
+---
+
+## Strategic Evolution: [2026-03-10]
+### Focus: Attested Identity Chains & Cross-Layer Intent Verification
+**Context**: OpenClaw's move to hierarchical delegation and the recent path-sensitivity RCEs (CVE-2025-59944) demonstrate that "who" is calling a tool is now as important as "what" tool is being called. Simple capability tokens are insufficient if the agent's identity itself can be forged via malicious project-local configuration.
+**Strategic Pivot**:
+- **Attested Identity Chains**: MCP Any will implement a "Chain of Custody" for agent requests. Every tool call must carry a cryptographic signature that traces back through the hierarchy (Parent -> Subagent -> Tool), ensuring that a subagent isn't performing actions outside the parent's authorized scope.
+- **Cross-Layer Intent Verification**: Moving beyond static path checks to "Behavioral Attestation." MCP Any will verify that the intent of a tool call (e.g., "write to .git/hooks") matches the high-level task assigned to the agent, blocking "Shadow Config" injections even if path-sensitivity checks are bypassed.
+- **Path-Normalized Security Guard**: Hardening the configuration proxy to perform strict path normalization (case-folding and symlink resolution) to eliminate RCE vectors on case-insensitive filesystems.
