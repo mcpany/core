@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { apiClient, UpstreamServiceConfig, ToolAnalytics } from "@/lib/client";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
@@ -171,38 +171,51 @@ export default function ToolsPage() {
     setInspectorOpen(true);
   };
 
-  const filteredTools = tools
-    .filter((t) => !showPinnedOnly || isPinned(t.name))
-    .filter((t) => selectedService === "all" || t.serviceId === selectedService)
-    .filter((t) =>
-      searchQuery === "" ||
-      t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      t.description.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-    .sort((a, b) => {
-      const aPinned = isPinned(a.name);
-      const bPinned = isPinned(b.name);
-      if (aPinned && !bPinned) return -1;
-      if (!aPinned && bPinned) return 1;
-      return a.name.localeCompare(b.name);
-    });
+  // ⚡ BOLT: [Render Optimization] Memoize filteredTools and groupedTools to avoid heavy O(N*M) calculation on every render.
+  // Randomized Selection from Top 5 High-Impact Targets
+  const filteredTools = useMemo(() => {
+    return tools
+      .filter((t) => !showPinnedOnly || isPinned(t.name))
+      .filter((t) => selectedService === "all" || t.serviceId === selectedService)
+      .filter((t) =>
+        searchQuery === "" ||
+        t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        t.description.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+      .sort((a, b) => {
+        const aPinned = isPinned(a.name);
+        const bPinned = isPinned(b.name);
+        if (aPinned && !bPinned) return -1;
+        if (!aPinned && bPinned) return 1;
+        return a.name.localeCompare(b.name);
+      });
+  }, [tools, showPinnedOnly, isPinned, selectedService, searchQuery]);
 
   // Grouping logic
-  const groupedTools = filteredTools.reduce((acc, tool) => {
-    let key = "Other";
-    if (groupBy === "service") {
-      const service = services.find((s) => s.id === tool.serviceId);
-      key = service ? service.name : tool.serviceId || "Unknown Service";
-    } else if (groupBy === "category") {
-      key = tool.tags && tool.tags.length > 0 ? tool.tags[0] : "Uncategorized";
-    }
+  const groupedTools = useMemo(() => {
+    // ⚡ BOLT: [Render Optimization] Pre-compute service map to change O(N*M) loop inside reduce to O(N+M).
+    // Randomized Selection from Top 5 High-Impact Targets
+    const serviceMap = services.reduce((acc, s) => {
+      acc[s.id] = s.name;
+      return acc;
+    }, {} as Record<string, string>);
 
-    if (!acc[key]) {
-      acc[key] = [];
-    }
-    acc[key].push(tool);
-    return acc;
-  }, {} as Record<string, ToolDefinition[]>);
+    return filteredTools.reduce((acc, tool) => {
+      let key = "Other";
+      if (groupBy === "service") {
+        const serviceName = serviceMap[tool.serviceId || ""];
+        key = serviceName || tool.serviceId || "Unknown Service";
+      } else if (groupBy === "category") {
+        key = tool.tags && tool.tags.length > 0 ? tool.tags[0] : "Uncategorized";
+      }
+
+      if (!acc[key]) {
+        acc[key] = [];
+      }
+      acc[key].push(tool);
+      return acc;
+    }, {} as Record<string, ToolDefinition[]>);
+  }, [filteredTools, groupBy, services]);
 
 
   if (!isLoaded) {
