@@ -273,18 +273,26 @@ export const seedWebhooks = async (requestContext?: APIRequestContext) => {
 export const seedCollection = async (name?: string, requestContext?: APIRequestContext) => {
     if (!name) return;
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
-    await context.fetch(`${BASE_URL}/collections`, {
-        method: 'POST',
-        headers: HEADERS,
-        data: JSON.stringify({ name, description: `Test collection: ${name}`, version: '1.0.0' }),
-    });
+    try {
+        const res = await context.post('/api/v1/collections', {
+            data: { name, description: `Test collection: ${name}`, version: '1.0.0' },
+            headers: HEADERS,
+        });
+        if (!res.ok()) {
+            const text = await res.text();
+            console.log(`seedCollection: POST /api/v1/collections => ${res.status()} ${text}`);
+        }
+    } catch (e) {
+        console.log(`seedCollection failed: ${e}`);
+    }
 };
 
 export const cleanupCollection = async (name?: string, requestContext?: APIRequestContext) => {
     if (!name) return;
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
-    await context.fetch(`${BASE_URL}/collections/${name}`, {
-        method: 'DELETE',
-        headers: HEADERS,
-    }).catch(() => {});
+    try {
+        await context.delete(`/api/v1/collections/${name}`, { headers: HEADERS });
+    } catch (e) {
+        // Ignore cleanup errors (collection may not exist)
+    }
 };
