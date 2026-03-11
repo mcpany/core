@@ -90,3 +90,15 @@
 
 ### Deprecations / Monitoring
 - **Unvalidated Project-Local Configs**: Monitoring for total deprecation. All local configs must be attested via MCP Any before ingestion by agents.
+
+---
+
+## Evolution: [2026-03-11] Updates
+
+### Proposed Additions
+- **Dynamic Policy Arbitration Engine**: (P0) Final authority for runtime permission escalation (DCN), validating requests against immutable policies.
+- **Causal Intent Graph (Blackboard v2)**: (P0) Extension of the Shared KV Store to track causal links and high-level intent across agent swarms.
+- **Response-Stream Sanitizer Middleware**: (P1) Real-time scanning of tool outputs for malicious executable patterns before agent ingestion.
+
+### Priority Shifts
+- **Detached Sandbox for Automated Hooks**: Promoted to **P0**. Essential for mitigating RCE risks from project-local configs and DCN-based escalations.

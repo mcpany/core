@@ -67,3 +67,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project Configuration Guard**: MCP Any will evolve into a "Validating Proxy" for all project-local agent configurations. It will intercept and sanitize any "auto-execute" or "hook" definitions before they reach the agent runtime, requiring explicit user attestation.
 - **Agent-Aware Blackboard Isolation**: The Shared KV Store (Blackboard) must implement mandatory "Agent-Bound" isolation. Data written by one agent will be read-only or invisible to others unless a specific "Shared Intent" is established.
 - **Zero-Trust Hook Execution**: Any executable hook or automated tool sequence must run in a "Detached Sandbox" managed by MCP Any, with zero access to the host filesystem unless explicitly granted via a capability-based token.
+
+---
+
+## Strategic Evolution: [2026-03-11]
+### Focus: Dynamic Policy Arbitration & Causal Intent Traceability
+**Context**: Today's findings show that agents are moving beyond static permissions to "Dynamic Capability Negotiation" (DCN) and suffering from "State Fragmentation" in large swarms. Additionally, "In-Memory Hook Injection" via tool responses is emerging as a new threat.
+**Strategic Pivot**:
+- **Dynamic Policy Arbitration**: MCP Any will act as the final authority for runtime permission escalation requests. It will validate DCN requests against immutable security policies, ensuring that even if a parent agent is compromised, it cannot over-authorize subagents.
+- **Causal Intent Graph**: Expanding the "Blackboard" from a simple KV store into a "Causal Graph" that tracks not just *what* was done, but *why* (intent) across agent handoffs. This ensures auditability and reduces hallucinations in deep swarms.
+- **Response-Stream Sanitization**: Implementing a new middleware layer that scans tool outputs for executable patterns (e.g., shell scripts, hidden hooks) before they are ingested by the agent's action buffer.

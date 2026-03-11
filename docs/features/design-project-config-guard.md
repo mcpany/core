@@ -49,3 +49,8 @@ As agents increasingly rely on project-local configuration files (e.g., `.claude
 
 ## 7. Evolutionary Changelog
 * **2026-03-09:** Initial Document Creation.
+* **2026-03-11:** Update: Integration with Trusted Workspace Certificates & In-Memory Injection Defense.
+    * **Context**: Anthropic's new "Trusted Workspace" certificates provide a baseline for config integrity but do not protect against "In-Memory Hook Injection" where tool responses trick an agent into executing code.
+    * **Architecture Adjustment**:
+        * Adding support for validating Anthropic Trusted Workspace certificates within the `Config Validator`.
+        * Implementing a "Write-Once" lock for critical agent settings after initial attestation to prevent runtime memory injection from altering active security parameters.
