@@ -1,4 +1,0 @@
-const fs = require('fs');
-let code = fs.readFileSync('server/Dockerfile.timeserver', 'utf8');
-code = code.replace('WORKDIR /srv', 'WORKDIR /app/srv');
-fs.writeFileSync('server/Dockerfile.timeserver', code);
