@@ -59,3 +59,9 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-10: Update: Hardening Local Boundaries against CSWSH**
+    **Context:** Today's research on the OpenClaw RCE (CVE-2026-25253) shows that `localhost` is not a sufficient security boundary. Malicious websites can bridge this gap via Cross-Site WebSocket Hijacking.
+    **Architecture Adjustment:**
+    *   Mandating `Origin` header validation in Section 4.
+    *   Introducing a handshake-token mechanism to prevent unauthorized WebSocket upgrades even from local browsers.
+    *   Ensuring that "Local-Only" binding is paired with transport-layer security checks.

@@ -39,6 +39,11 @@
 *   **[P0] Agent-Aware Blackboard Isolation**: Row-level security for Shared KV Store to prevent cross-agent state injection. (Added: 2026-03-09)
 *   **[P1] Detached Sandbox for Automated Hooks**: Isolated runtime for tool sequences with zero host access by default. (Added: 2026-03-09)
 
+#### Upcoming (2026-03-10 Evolution)
+*   **[P0] Cross-Site WebSocket Hijacking (CSWSH) Protection**: Implement mandatory `Origin` validation and handshake-token middleware. (Added: 2026-03-10)
+*   **[P0] CSRF-Protected Local Gateway**: Standardized CSRF mitigations for local RESTful adapters. (Added: 2026-03-10)
+*   **[P1] Agent-Contextual Telemetry**: Metadata-rich audit logs for behavioral anomaly detection. (Added: 2026-03-10)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

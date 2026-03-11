@@ -67,3 +67,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project Configuration Guard**: MCP Any will evolve into a "Validating Proxy" for all project-local agent configurations. It will intercept and sanitize any "auto-execute" or "hook" definitions before they reach the agent runtime, requiring explicit user attestation.
 - **Agent-Aware Blackboard Isolation**: The Shared KV Store (Blackboard) must implement mandatory "Agent-Bound" isolation. Data written by one agent will be read-only or invisible to others unless a specific "Shared Intent" is established.
 - **Zero-Trust Hook Execution**: Any executable hook or automated tool sequence must run in a "Detached Sandbox" managed by MCP Any, with zero access to the host filesystem unless explicitly granted via a capability-based token.
+
+---
+
+## Strategic Evolution: [2026-03-10]
+### Focus: Hardened Local Listeners & Agent-Aware Security Monitoring
+**Context**: Today's research on the OpenClaw RCE (CVE-2026-25253) underscores a major gap: `localhost` is no longer a sufficient security boundary. Cross-Site WebSocket Hijacking (CSWSH) allows malicious websites to bridge the local network gap. Simultaneously, the industry's shift to "Agent Mode" (e.g., Gemini) demands more robust tool connectivity that doesn't compromise security.
+**Strategic Pivot**:
+- **Strict Origin & CSRF Hardening**: MCP Any must implement mandatory Origin validation and CSRF protection for all local gateways and adapters, even when bound to `localhost`. This prevents malicious browser-based bridges.
+- **Agent-Aware Identity**: Moving beyond simple user authentication to "Agent-Specific Identity," where every tool call is tagged with the specific agent and intent context that initiated it, allowing for fine-grained behavioral monitoring.
+- **Adaptive Listener Protection**: Listeners should dynamically scale their security posture based on the "risk-profile" of the tools they expose (e.g., exposing a filesystem tool requires higher attestation than a weather tool).

@@ -90,3 +90,16 @@
 
 ### Deprecations / Monitoring
 - **Unvalidated Project-Local Configs**: Monitoring for total deprecation. All local configs must be attested via MCP Any before ingestion by agents.
+
+---
+
+## Evolution: [2026-03-10] Updates
+
+### Proposed Additions
+- **Cross-Site WebSocket Hijacking (CSWSH) Protection**: (P0) Mandatory `Origin` header validation and handshake-token verification for all WebSocket adapters.
+- **Agent-Contextual Telemetry**: (P1) Extends auditing to include the "Agent Identity" and "Intent Scope" metadata for every tool call, enabling behavioral anomaly detection.
+- **CSRF-Protected Local API Gateway**: (P0) Implementation of standard CSRF mitigations (Double Submit Cookie or Custom Headers) for all RESTful adapters running on `localhost`.
+
+### Priority Shifts
+- **Safe-by-Default Network Hardening**: (Re-affirmed P0) High urgency due to recent OpenClaw RCE exploits bypassing `localhost` boundaries.
+- **Policy Firewall**: (Re-affirmed P0) Expanded to include "Origin Policy" enforcement.
