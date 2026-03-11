@@ -56,7 +56,12 @@ test.describe('Alerts Page', () => {
     await page.getByRole('button', { name: 'Cancel' }).click();
     await expect(page.getByRole('dialog')).toBeHidden();
   });
-  test('should acknowledge alert via dropdown', async ({ page }) => {
+  test('should acknowledge alert via dropdown', async ({ page, request }) => {
+    const resetResponse = await request.patch('/api/v1/alerts/AL-1024', {
+      data: { status: 'active' },
+    });
+    expect(resetResponse.ok()).toBeTruthy();
+
     await page.goto('/alerts');
 
     // Find an active alert row (mock data usually has some)
@@ -67,13 +72,19 @@ test.describe('Alerts Page', () => {
     await row.getByRole('button', { name: 'Open menu' }).click();
 
     // Click "Acknowledge"
+    await expect(page.getByRole('menuitem', { name: 'Acknowledge' })).toBeEnabled();
     await page.getByRole('menuitem', { name: 'Acknowledge' }).click();
 
     // Verify status changes to "acknowledged"
     await expect(row.getByText('acknowledged')).toBeVisible();
   });
 
-  test('should resolve alert via dropdown', async ({ page }) => {
+  test('should resolve alert via dropdown', async ({ page, request }) => {
+    const resetResponse = await request.patch('/api/v1/alerts/AL-1022', {
+      data: { status: 'acknowledged' },
+    });
+    expect(resetResponse.ok()).toBeTruthy();
+
     await page.goto('/alerts');
 
     // Find an acknowledged or active alert
@@ -83,6 +94,7 @@ test.describe('Alerts Page', () => {
     await row.getByRole('button', { name: 'Open menu' }).click();
 
     // Click "Resolve"
+    await expect(page.getByRole('menuitem', { name: 'Resolve' })).toBeEnabled();
     await page.getByRole('menuitem', { name: 'Resolve' }).click();
 
     // Verify status changes to "resolved"
