@@ -67,3 +67,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project Configuration Guard**: MCP Any will evolve into a "Validating Proxy" for all project-local agent configurations. It will intercept and sanitize any "auto-execute" or "hook" definitions before they reach the agent runtime, requiring explicit user attestation.
 - **Agent-Aware Blackboard Isolation**: The Shared KV Store (Blackboard) must implement mandatory "Agent-Bound" isolation. Data written by one agent will be read-only or invisible to others unless a specific "Shared Intent" is established.
 - **Zero-Trust Hook Execution**: Any executable hook or automated tool sequence must run in a "Detached Sandbox" managed by MCP Any, with zero access to the host filesystem unless explicitly granted via a capability-based token.
+
+---
+
+## Strategic Evolution: [2026-03-11]
+### Focus: Semantic Intent Validation & Universal Context Lifecycle
+**Context**: Today's findings show OpenClaw moving towards a pluggable "ContextEngine" and the emergence of "A2A Contagion"—where malicious intent propagates laterally through agent swarms. Additionally, the rise of Agentic Edge AI demands stricter safety for physical-world interactions.
+**Strategic Pivot**:
+- **Semantic Intent Firewall**: We will transition from simple capability tokens to a "Semantic Intent Validator." MCP Any will use high-speed local models to inspect A2A payloads and tool-call sequences for intent that deviates from the established mission profile, blocking "Contagion" at the protocol level.
+- **Universal Context Backend**: MCP Any will position itself as the reference implementation for OpenClaw's "ContextEngine" hooks. By providing a centralized, high-performance backend for `bootstrap`, `ingest`, and `compact` hooks, we ensure context consistency across heterogeneous agent frameworks (OpenClaw, Claude Code, Gemini CLI).
+- **Physical Safety Controller**: For tools classified as having "Physical Side Effects" (Edge AI), MCP Any will enforce a "Hardened Approval Path" that requires multi-factor attestation or out-of-band confirmation, regardless of the agent's autonomous privileges.

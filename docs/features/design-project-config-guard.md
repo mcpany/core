@@ -49,3 +49,4 @@ As agents increasingly rely on project-local configuration files (e.g., `.claude
 
 ## 7. Evolutionary Changelog
 * **2026-03-09:** Initial Document Creation.
+* **2026-03-11:** Updated to include support for Universal `SKILL.md` format. MCP Any will now act as the primary validator and sandboxed executor for Skills across all supported frameworks.

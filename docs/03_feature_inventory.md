@@ -84,6 +84,15 @@
 - **Agent-Aware Blackboard Isolation**: (P0) Implements row-level security for the Shared KV Store, ensuring agents can only access state within their assigned "Intent Scope."
 - **Detached Sandbox for Automated Hooks**: (P1) Isolated execution environment for automated tool sequences, preventing unauthorized host access.
 
+---
+
+## Evolution: [2026-03-11] Updates
+
+### Proposed Additions
+- **Semantic Intent Validator**: (P0) A protocol-level firewall that inspects agent-to-agent payloads for malicious "semantic intent" or lateral privilege escalation.
+- **Universal Context Lifecycle Backend**: (P0) Reference implementation for OpenClaw's ContextEngine hooks, providing centralized context management for swarms.
+- **Hardened Physical Safety Path**: (P1) Multi-factor attestation requirement for tools with physical-world side effects (Edge AI).
+
 ### Priority Shifts
 - **Shared KV Store (Blackboard)**: Re-affirmed as **P0** with new mandatory security isolation requirements.
 - **Policy Firewall**: Promoted to **P0** (Already P0, but expanded to include "Project-Local Config Validation").
