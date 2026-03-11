@@ -90,3 +90,16 @@
 
 ### Deprecations / Monitoring
 - **Unvalidated Project-Local Configs**: Monitoring for total deprecation. All local configs must be attested via MCP Any before ingestion by agents.
+
+---
+
+## Evolution: [2026-03-10] Updates
+
+### Proposed Additions
+- **Zero-Trust Hook Runtime (Detached Sandbox)**: (P0) A secure, isolated environment for executing automated hooks and tool sequences, preventing unauthorized host filesystem access.
+- **Path-Invariant Path Resolution Middleware**: (P1) Middleware that enforces path canonicalization and root-boundary validation to mitigate path traversal attacks (CVE-2026-28453).
+- **Intent-Aware Policy Matching**: (P1) Extension to the Policy Firewall that validates tool calls against a verified "Intent Contract" rather than just tool names.
+
+### Priority Shifts
+- **Policy Firewall**: Re-affirmed as **P0** with new "Intent-Aware" requirements to counter the "Confused Deputy" problem.
+- **Project Configuration Security Guard**: Re-affirmed as **P0**; urgency increased due to mass-exploit patterns in OpenClaw.

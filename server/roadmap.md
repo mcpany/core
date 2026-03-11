@@ -39,6 +39,11 @@
 *   **[P0] Agent-Aware Blackboard Isolation**: Row-level security for Shared KV Store to prevent cross-agent state injection. (Added: 2026-03-09)
 *   **[P1] Detached Sandbox for Automated Hooks**: Isolated runtime for tool sequences with zero host access by default. (Added: 2026-03-09)
 
+#### Upcoming (2026-03-10 Evolution)
+*   **[P0] Zero-Trust Hook Runtime**: Implementation of "Detached Sandbox" using containerized/isolated environments for all executable hooks. (Added: 2026-03-10)
+*   **[P1] Path-Invariant Path Resolution**: Middleware for mandatory path canonicalization and boundary validation for all FS-touching tools. (Added: 2026-03-10)
+*   **[P1] Intent-Aware Policy Engine**: Extension of the Policy Firewall to match high-level agent "Intent Contracts." (Added: 2026-03-10)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

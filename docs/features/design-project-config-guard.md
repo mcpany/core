@@ -49,3 +49,6 @@ As agents increasingly rely on project-local configuration files (e.g., `.claude
 
 ## 7. Evolutionary Changelog
 * **2026-03-09:** Initial Document Creation.
+* **2026-03-10:** Mitigating OpenClaw Path Traversal Exploits.
+    * **Architecture Adjustment**: Integrated `resolvePathWithinRoot` logic into the `Config Validator`. All paths defined in hooks or auto-execute blocks must now be canonicalized and checked against the project root boundary.
+    * **Security Impact**: Directly addresses CVE-2026-28453 pattern by preventing malicious configs from referencing files outside the project scope.

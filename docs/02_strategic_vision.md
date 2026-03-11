@@ -67,3 +67,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project Configuration Guard**: MCP Any will evolve into a "Validating Proxy" for all project-local agent configurations. It will intercept and sanitize any "auto-execute" or "hook" definitions before they reach the agent runtime, requiring explicit user attestation.
 - **Agent-Aware Blackboard Isolation**: The Shared KV Store (Blackboard) must implement mandatory "Agent-Bound" isolation. Data written by one agent will be read-only or invisible to others unless a specific "Shared Intent" is established.
 - **Zero-Trust Hook Execution**: Any executable hook or automated tool sequence must run in a "Detached Sandbox" managed by MCP Any, with zero access to the host filesystem unless explicitly granted via a capability-based token.
+
+---
+
+## Strategic Evolution: [2026-03-10]
+### Focus: Zero-Trust Execution & Path-Invariant Sandboxing
+**Context**: Today's findings reveal a critical vulnerability landscape dominated by the OpenClaw crisis (RCE and Path Traversal). The "Confused Deputy" problem has moved from theoretical to a mass-exploit pattern via project-local config hooks.
+**Strategic Pivot**:
+- **Path-Invariant Path Resolution**: MCP Any will implement a global middleware that enforces path canonicalization and root-boundary validation for all tool calls involving filesystem access, mitigating traversal attacks at the infrastructure layer.
+- **Zero-Trust Hook Runtime**: Moving beyond simple validation, all automated hooks and tool sequences will be executed in a "Detached Sandbox" using Docker-bound named pipes or cgroups, ensuring zero host access even if an agent is tricked.
+- **Intent-Aware Permissioning**: Evolving the policy engine to match Gemini CLI's experimental efforts, where permissions are granted not just based on the tool name, but the high-level intent verified against a secure policy contract.
