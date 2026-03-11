@@ -4,6 +4,7 @@
 //   protoc               v6.33.1
 // source: proto/config/v1/auth.proto
 
+// @ts-nocheck
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 import Long from "long";
@@ -24,7 +25,9 @@ export interface SecretValue {
     | AwsSecretManagerSecret
     | undefined;
   /** Optional: A regex to validate the resolved secret value. */
-  validationRegex: string;
+  validationRegex?: string | undefined;
+  /** UI-only reference for selecting a stored secret. */
+  secretId?: string | undefined;
 }
 
 /** AwsSecretManagerSecret defines the parameters for fetching a secret from AWS Secrets Manager. */

@@ -4,6 +4,7 @@
 //   protoc               v6.33.1
 // source: proto/config/v1/resource.proto
 
+// @ts-nocheck
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 import Long from "long";
@@ -43,19 +44,19 @@ export interface ResourceAnnotation {
 export interface ResourceDefinition {
   uri: string;
   name: string;
-  title: string;
-  description: string;
+  title?: string | undefined;
+  description?: string | undefined;
   mimeType: string;
-  size: Long;
+  size?: Long | undefined;
   annotations?: ResourceAnnotation | undefined;
   static?: StaticResource | undefined;
   dynamic?:
     | DynamicResource
     | undefined;
   /** If true, this resource is disabled. */
-  disable: boolean;
+  disable?: boolean | undefined;
   /** A list of profiles this resource belongs to. */
-  profiles: Profile[];
+  profiles?: Profile[] | undefined;
 }
 
 export interface StaticResource {

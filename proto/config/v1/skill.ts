@@ -4,6 +4,7 @@
 //   protoc               v6.33.1
 // source: proto/config/v1/skill.proto
 
+// @ts-nocheck
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 import Long from "long";
@@ -17,7 +18,7 @@ export interface Skill {
   /** Human-readable description of the skill. */
   description: string;
   /** License information for the skill. */
-  license: string;
+  license?: string | undefined;
   /** Instructions for the agent on how to use this skill (Markdown). */
   instructions: string;
   /** List of tool names that this skill is allowed to use. */
@@ -25,7 +26,7 @@ export interface Skill {
   /** List of asset file paths associated with this skill (relative to skill root). */
   assets: string[];
   /** Arbitrary metadata for the skill. */
-  metadata: { [key: string]: string };
+  metadata?: { [key: string]: string } | undefined;
 }
 
 export interface Skill_MetadataEntry {

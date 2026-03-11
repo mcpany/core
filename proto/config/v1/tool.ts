@@ -4,6 +4,7 @@
 //   protoc               v6.33.1
 // source: proto/config/v1/tool.proto
 
+// @ts-nocheck
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 import Long from "long";
@@ -25,45 +26,45 @@ export interface ToolDefinition {
   /** A human-readable description of what the tool does. */
   description: string;
   /** Indicates if the tool produces a continuous stream of responses. */
-  isStream: boolean;
+  isStream?: boolean | undefined;
   /** A human-readable title for the tool. */
-  title: string;
+  title?: string | undefined;
   /**
    * If true, the tool does not modify its environment.
    * Default: false
    */
-  readOnlyHint: boolean;
+  readOnlyHint?: boolean | undefined;
   /**
    * If true, the tool may perform destructive updates to its environment. If
    * false, the tool performs only additive updates.
    * (This property is meaningful only when ReadOnlyHint == false.)
    * Default: true
    */
-  destructiveHint: boolean;
+  destructiveHint?: boolean | undefined;
   /**
    * If true, calling the tool repeatedly with the same arguments will have no
    * additional effect on its environment.
    * (This property is meaningful only when ReadOnlyHint == false.)
    * Default: false
    */
-  idempotentHint: boolean;
+  idempotentHint?: boolean | undefined;
   /**
    * If true, this tool may interact with an "open world" of external entities. If
    * false, the tool's domain of interaction is closed. For example, the world of
    * a web search tool is open, whereas that of a memory tool is not.
    * Default: true
    */
-  openWorldHint: boolean;
+  openWorldHint?: boolean | undefined;
   /** The ID of the call definition to use for this tool. */
-  callId: string;
+  callId?: string | undefined;
   /** If true, this tool is disabled and will not be exposed. */
-  disable: boolean;
+  disable?: boolean | undefined;
   /** A list of profiles this tool belongs to. */
-  profiles: Profile[];
+  profiles?: Profile[] | undefined;
   /** The strategy to use when merging this tool definition with others. */
-  mergeStrategy: ToolDefinition_MergeStrategy;
+  mergeStrategy?: ToolDefinition_MergeStrategy | undefined;
   /** Tags associated with the tool for filtering and organization. */
-  tags: string[];
+  tags?: string[] | undefined;
   /** Integrity check for the tool definition. */
   integrity?: Integrity | undefined;
 }

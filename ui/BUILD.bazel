@@ -82,7 +82,5 @@ tsc_bin.tsc_test(
         ":node_modules",
         ":srcs",
         "//proto:ts_proto",
-        "//proto/api/v1:ts_decls",
-        "//proto/config/v1:ts_decls",
     ],
 )

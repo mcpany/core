@@ -4,6 +4,7 @@
 //   protoc               v6.33.1
 // source: proto/config/v1/upstream_service.proto
 
+// @ts-nocheck
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 import Long from "long";
@@ -120,7 +121,7 @@ export interface UpstreamServiceConfig {
    * If true, this service configuration is read-only (e.g., loaded from a file).
    * @inject_tag: yaml:"-"
    */
-  readOnly: boolean;
+  readOnly?: boolean | undefined;
   /**
    * The last error message encountered by the service (e.g. health check failure).
    * @inject_tag: yaml:"-"
@@ -188,7 +189,7 @@ export interface UpstreamServiceConfig {
    * JSON Schema string defining the configuration parameters (env vars, args) required by this service.
    * This is used by the UI to generate a configuration form.
    */
-  configurationSchema: string;
+  configurationSchema?: string | undefined;
   /**
    * Provenance information for the service (attestation, signature).
    * @inject_tag: yaml:"-"
@@ -486,13 +487,13 @@ export interface OpenapiUpstreamService {
     | TLSConfig
     | undefined;
   /** Optional: Overrides or specific configurations for calls discovered from the spec. */
-  tools: ToolDefinition[];
+  tools?: ToolDefinition[] | undefined;
   /** A list of resources served by this service. */
-  resources: ResourceDefinition[];
+  resources?: ResourceDefinition[] | undefined;
   /** A map of call definitions, keyed by their unique ID. */
-  calls: { [key: string]: OpenAPICallDefinition };
+  calls?: { [key: string]: OpenAPICallDefinition } | undefined;
   /** A list of prompts served by this service. */
-  prompts: PromptDefinition[];
+  prompts?: PromptDefinition[] | undefined;
 }
 
 export interface OpenapiUpstreamService_CallsEntry {

@@ -4,6 +4,7 @@
 //   protoc               v6.33.1
 // source: proto/config/v1/call.proto
 
+// @ts-nocheck
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 import Long from "long";
@@ -259,17 +260,17 @@ export interface OutputTransformer {
    * - XML: XPath expressions.
    * - TEXT: Regular expressions (first capture group is used).
    */
-  extractionRules: { [key: string]: string };
+  extractionRules?: { [key: string]: string } | undefined;
   /**
    * An optional template to render the extracted data into a final string.
    * If this is not provided, the raw extracted data will be returned.
    */
-  template: string;
+  template?: string | undefined;
   /**
    * The JQ query to transform the output.
    * Only used when format is JQ.
    */
-  jqQuery: string;
+  jqQuery?: string | undefined;
 }
 
 export enum OutputTransformer_OutputFormat {
