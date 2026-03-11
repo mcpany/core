@@ -49,3 +49,12 @@ As agents increasingly rely on project-local configuration files (e.g., `.claude
 
 ## 7. Evolutionary Changelog
 * **2026-03-09:** Initial Document Creation.
+* **2026-03-10:** Added Content-Addressable Attestation and Team Registry integration.
+
+### Update: 2026-03-10 - Content-Addressable Attestation Mesh
+**Context:** Today's market sync revealed that "one-off" user approvals are insufficient for enterprise teams. Malicious configs can be subtly modified to bypass previous attestations.
+**Architecture Adjustment:**
+*   **Hashing Engine**: Implementing a SHA-256 content-addressable hashing system for all intercepted configuration blocks.
+*   **Team Registry**: Introducing an optional integration with a central `mcp-registry.json` (or remote API) that pre-approves known-good configuration hashes for entire organizations.
+*   **Immutable Attestations**: Moving from "File-Path" based trust to "Hash-Based" trust. If a file's content changes by a single byte, it is treated as a new, untrusted entity.
+**Security Impact:** Prevents "Attestation Bypass" attacks where a malicious actor overwrites an approved hook with a similar-looking but harmful one.

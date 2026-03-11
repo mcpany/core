@@ -67,3 +67,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project Configuration Guard**: MCP Any will evolve into a "Validating Proxy" for all project-local agent configurations. It will intercept and sanitize any "auto-execute" or "hook" definitions before they reach the agent runtime, requiring explicit user attestation.
 - **Agent-Aware Blackboard Isolation**: The Shared KV Store (Blackboard) must implement mandatory "Agent-Bound" isolation. Data written by one agent will be read-only or invisible to others unless a specific "Shared Intent" is established.
 - **Zero-Trust Hook Execution**: Any executable hook or automated tool sequence must run in a "Detached Sandbox" managed by MCP Any, with zero access to the host filesystem unless explicitly granted via a capability-based token.
+
+---
+
+## Strategic Evolution: [2026-03-10]
+### Focus: Attestation Mesh & Concurrent Session Isolation
+**Context**: Recent exploits in Claude Code and OpenClaw have redefined the threat model: configuration is now code, and local exposure is a systemic risk. Simultaneously, the rise of parallel agent tasking (Conductor, Verdent AI) requires a more granular approach to state management than simple "Intent Scopes."
+**Strategic Pivot**:
+- **Config-as-Code Attestation Mesh**: MCP Any will treat all project-local configuration (`.mcpany/`, `.claude/`, etc.) as untrusted code. We will implement a "Content-Addressable Attestation Mesh" where configurations are hashed and verified against a global or team-local "Known-Good" registry.
+- **Concurrent Session Isolation (Thread-Binding)**: To support parallel agent execution, the Blackboard and Policy Engine will move to a "Thread-Bound" model. State is isolated not just by `AgentID`, but by `ExecutionThreadID`, preventing race conditions and cross-pollination in high-concurrency swarms.
+- **Orchestrator-Executor Handoff Protocol**: Standardizing the "Secure Handoff" of context and ephemeral secrets between an Orchestrator (e.g., Fetch.ai, AutoGen) and a Local Executor (OpenClaw via MCP Any), ensuring the chain of trust remains unbroken across transport boundaries.

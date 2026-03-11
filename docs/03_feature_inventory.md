@@ -90,3 +90,19 @@
 
 ### Deprecations / Monitoring
 - **Unvalidated Project-Local Configs**: Monitoring for total deprecation. All local configs must be attested via MCP Any before ingestion by agents.
+
+---
+
+## Evolution: [2026-03-10] Updates
+
+### Proposed Additions
+- **Thread-Bound Blackboard Isolation**: (P0) Extends Agent-Aware isolation to support concurrent execution threads within a single agent, preventing race conditions in parallel swarms.
+- **Content-Addressable Config Attestation**: (P0) A hashing mesh that verifies project-local configurations against a "Known-Good" registry (Global/Team).
+- **Secure Handoff Protocol (Orchestrator-Executor)**: (P1) Standardized bridge for transferring ephemeral secrets and context between remote orchestrators (e.g., Fetch.ai) and local MCP Any executors.
+
+### Priority Shifts
+- **Detached Sandbox for Automated Hooks**: Promoted to **P0**. High urgency due to the "Claude Code RCE" patterns discovered in the ecosystem.
+- **Project Configuration Security Guard**: Re-affirmed as **P0** and expanded to include "Content-Addressable Attestation."
+
+### Deprecations / Monitoring
+- **Intent-Only Scoping**: Monitoring for deprecation in favor of more granular **Thread-Bound Scoping** for high-concurrency environments.

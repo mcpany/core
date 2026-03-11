@@ -37,7 +37,12 @@
 #### Upcoming (2026-03-09 Evolution)
 *   **[P0] Project Configuration Security Guard**: Validating proxy for project-local agent configs (e.g., `.claude/settings.json`) to prevent RCE. (Added: 2026-03-09)
 *   **[P0] Agent-Aware Blackboard Isolation**: Row-level security for Shared KV Store to prevent cross-agent state injection. (Added: 2026-03-09)
-*   **[P1] Detached Sandbox for Automated Hooks**: Isolated runtime for tool sequences with zero host access by default. (Added: 2026-03-09)
+*   **[P0] Detached Sandbox for Automated Hooks**: Isolated runtime for tool sequences with zero host access by default. (Added: 2026-03-09; Promoted: 2026-03-10)
+
+#### Upcoming (2026-03-10 Evolution)
+*   **[P0] Thread-Bound Blackboard Isolation**: Extends Blackboard RLS to support concurrent execution threads in parallel swarms. (Added: 2026-03-10)
+*   **[P0] Content-Addressable Config Attestation**: Hashing mesh for verifying project-local configurations against known-good registries. (Added: 2026-03-10)
+*   **[P1] Secure Handoff Protocol**: Cryptographic bridge for transferring ephemeral secrets/context between remote orchestrators and local executors. (Added: 2026-03-10)
 
 ## 2. Top 10 Recommended Features
 

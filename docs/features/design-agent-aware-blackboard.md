@@ -47,3 +47,12 @@ The `Shared KV Store` (Blackboard) is a core tool in MCP Any that allows multipl
 
 ## 7. Evolutionary Changelog
 * **2026-03-09:** Initial Document Creation.
+* **2026-03-10:** Added Thread-Bound Isolation for parallel agent execution.
+
+### Update: 2026-03-10 - Concurrent Session Isolation (Thread-Binding)
+**Context:** The rise of parallel task execution in frameworks like "Conductor" means multiple subagents may operate within the same `AgentID` but different execution branches. Simple `AgentID` isolation is no longer enough to prevent state collisions.
+**Architecture Adjustment:**
+*   **ExecutionThreadID**: Introducing a mandatory `Thread-ID` header in the `Recursive Context Protocol`.
+*   **Hierarchical Scoping**: The Blackboard now implements a hierarchical `IntentScope`: `Session -> Agent -> Thread`.
+*   **Isolation Logic**: SQLite RLS now enforces `WHERE (thread_id = ? AND agent_id = ?) OR (intent_scope = ? AND visibility = 'SHARED')`.
+**Security Impact:** Prevents race conditions and accidental state leakage between parallel sub-tasks, ensuring each thread has its own "Clean Slate" while still allowing shared intent.
