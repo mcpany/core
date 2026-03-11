@@ -90,3 +90,19 @@
 
 ### Deprecations / Monitoring
 - **Unvalidated Project-Local Configs**: Monitoring for total deprecation. All local configs must be attested via MCP Any before ingestion by agents.
+
+---
+
+## Evolution: [2026-03-11] Updates
+
+### Proposed Additions
+- **Tool Input Sanitization Middleware**: (P0) Mandatory regex and behavioral filtering of tool call payloads to prevent command injection (inspired by CVE-2026-0755).
+- **Behavioral Outbound Firewall**: (P1) Policy engine extension that restricts tool execution based on the tool's network and filesystem behavioral profile.
+- **Immutable Tool Identity (Fingerprinting)**: (P1) Cryptographic hashing of tool definitions to prevent "Shadow Tool" replacement.
+
+### Priority Shifts
+- **Detached Sandbox for Automated Hooks**: Promoted from **P1** to **P0**. Essential for mitigating RCE risks identified in recent ecosystem shifts.
+- **A2A Stateful Residency**: Re-affirmed as **P0** due to the increasing maturity and adoption of the A2A protocol.
+
+### Deprecations / Monitoring
+- **Unsanitized Tool Passthrough**: Monitoring for total deprecation. All tool calls must pass through the Sanitization Middleware.

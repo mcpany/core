@@ -37,7 +37,12 @@
 #### Upcoming (2026-03-09 Evolution)
 *   **[P0] Project Configuration Security Guard**: Validating proxy for project-local agent configs (e.g., `.claude/settings.json`) to prevent RCE. (Added: 2026-03-09)
 *   **[P0] Agent-Aware Blackboard Isolation**: Row-level security for Shared KV Store to prevent cross-agent state injection. (Added: 2026-03-09)
-*   **[P1] Detached Sandbox for Automated Hooks**: Isolated runtime for tool sequences with zero host access by default. (Added: 2026-03-09)
+*   **[P0] Detached Sandbox for Automated Hooks**: Isolated runtime for tool sequences with zero host access by default. (Added: 2026-03-09)
+
+#### Upcoming (2026-03-11 Evolution)
+*   **[P0] Tool Input Sanitization Middleware**: Mandatory regex and behavioral filtering of tool call payloads to prevent command injection. (Added: 2026-03-11)
+*   **[P1] Behavioral Outbound Firewall**: Restrict tool execution based on the tool's network and filesystem behavioral profile. (Added: 2026-03-11)
+*   **[P1] Immutable Tool Identity (Fingerprinting)**: Cryptographic hashing of tool definitions to prevent "Shadow Tool" replacement. (Added: 2026-03-11)
 
 ## 2. Top 10 Recommended Features
 

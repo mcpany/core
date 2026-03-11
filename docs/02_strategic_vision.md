@@ -67,3 +67,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project Configuration Guard**: MCP Any will evolve into a "Validating Proxy" for all project-local agent configurations. It will intercept and sanitize any "auto-execute" or "hook" definitions before they reach the agent runtime, requiring explicit user attestation.
 - **Agent-Aware Blackboard Isolation**: The Shared KV Store (Blackboard) must implement mandatory "Agent-Bound" isolation. Data written by one agent will be read-only or invisible to others unless a specific "Shared Intent" is established.
 - **Zero-Trust Hook Execution**: Any executable hook or automated tool sequence must run in a "Detached Sandbox" managed by MCP Any, with zero access to the host filesystem unless explicitly granted via a capability-based token.
+
+---
+
+## Strategic Evolution: [2026-03-11]
+### Focus: Zero-Trust Input Sanitization & Immutable Tool Identities
+**Context**: Recent command injection exploits in MCP adapters (CVE-2026-0755) and the rise of "Shadow Agents" necessitate a shift from "Passive Proxying" to "Active Sanitization." MCP Any must become the final arbiter of tool call safety, regardless of the upstream server's security posture.
+**Strategic Pivot**:
+- **Zero-Trust Input Sanitization**: Implementing a mandatory sanitization layer for all tool calls. MCP Any will use "Behavioral Profiling" and "Deny-by-Default" regex filters to prevent command injection before payloads reach the target server.
+- **Immutable Tool Identities (Tool Fingerprinting)**: Moving towards "Immutable Tool Identities" where every registered tool has a cryptographic fingerprint. This prevents "Identity Hijacking" where an attacker replaces a safe tool with a malicious one in a local registry.
+- **Behavioral Outbound Firewall**: The Policy Engine will now include "Outbound Profiling," restricting tool calls based on the expected network behavior of the tool. If a "Calculator" tool suddenly tries to reach a remote IP, the call is blocked.
