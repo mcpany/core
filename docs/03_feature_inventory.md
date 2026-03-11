@@ -84,7 +84,21 @@
 - **Agent-Aware Blackboard Isolation**: (P0) Implements row-level security for the Shared KV Store, ensuring agents can only access state within their assigned "Intent Scope."
 - **Detached Sandbox for Automated Hooks**: (P1) Isolated execution environment for automated tool sequences, preventing unauthorized host access.
 
+---
+
+## Evolution: [2026-03-11] Updates
+
+### Proposed Additions
+- **Universal SKILL.md Runtime**: (P0) A middleware that parses and executes `SKILL.md` playbooks, exposing them as standard MCP tools to any connected agent.
+- **Secure A2A Transport Layer (mTLS/Named Pipes)**: (P0) Encrypted, identity-verified transport for inter-agent communication, replacing insecure local HTTP tunneling.
+- **Semantic Intent Discovery Engine**: (P1) LLM-powered similarity search for tool discovery, improving accuracy over basic keyword matching.
+
 ### Priority Shifts
+- **A2A Interop Bridge (Pseudo-MCP)**: Promoted to **P0**. Essential for mitigating the routing exploits discovered in the OpenClaw ecosystem.
+- **Detached Sandbox for Automated Hooks**: Promoted to **P0**. Critical for secure execution of project-local hooks and skill-based automation.
+
+### Deprecations / Monitoring
+- **Unauthenticated Local HTTP Tunnels**: Deprecating in favor of Secure A2A Transport. All inter-agent comms must be identity-bound.
 - **Shared KV Store (Blackboard)**: Re-affirmed as **P0** with new mandatory security isolation requirements.
 - **Policy Firewall**: Promoted to **P0** (Already P0, but expanded to include "Project-Local Config Validation").
 

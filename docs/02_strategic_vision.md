@@ -67,3 +67,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project Configuration Guard**: MCP Any will evolve into a "Validating Proxy" for all project-local agent configurations. It will intercept and sanitize any "auto-execute" or "hook" definitions before they reach the agent runtime, requiring explicit user attestation.
 - **Agent-Aware Blackboard Isolation**: The Shared KV Store (Blackboard) must implement mandatory "Agent-Bound" isolation. Data written by one agent will be read-only or invisible to others unless a specific "Shared Intent" is established.
 - **Zero-Trust Hook Execution**: Any executable hook or automated tool sequence must run in a "Detached Sandbox" managed by MCP Any, with zero access to the host filesystem unless explicitly granted via a capability-based token.
+
+---
+
+## Strategic Evolution: [2026-03-11]
+### Focus: SKILL.md Interoperability & Secure Inter-Agent Transport
+**Context**: The emergence of `SKILL.md` as a portable standard across Claude Code and Gemini CLI, combined with new routing exploits in multi-agent swarms (e.g., OpenClaw), necessitates that MCP Any evolves into a secure, cross-platform "Skill Bus."
+**Strategic Pivot**:
+- **SKILL.md Universal Bridge**: MCP Any will act as a runtime for `SKILL.md` files, allowing any connected agent to leverage these playbooks regardless of the native framework.
+- **Identity-Bound Inter-Agent Transport**: Moving away from vulnerable local HTTP tunnels for agent-to-agent (A2A) communication. MCP Any will provide identity-verified, encrypted channels (e.g., named pipes or authenticated mTLS loops) for subagent coordination.
+- **Semantic Intent Discovery**: Upgrading on-demand tool discovery from simple keyword search to "Intent-First" semantic mapping, ensuring agents select the correct tool even when schema descriptions are ambiguous.
