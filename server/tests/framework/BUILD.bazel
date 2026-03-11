@@ -24,6 +24,7 @@ go_library(
         "@com_github_modelcontextprotocol_go_sdk//mcp",
         "@com_github_stretchr_testify//require",
         "@org_golang_google_protobuf//proto",
+        "@org_golang_google_protobuf//types/known/durationpb",
     ],
 )
 
@@ -32,6 +33,16 @@ go_test(
     srcs = [
         "e2e_test.go",
         "framework_test.go",
+    ],
+    data = [
+        "//server/cmd/server",
+        "//server/tests/integration/cmd/mocks/grpc_authed_weather_server",
+        "//server/tests/integration/cmd/mocks/grpc_weather_server",
+        "//server/tests/integration/cmd/mocks/http_authed_echo_server",
+        "//server/tests/integration/cmd/mocks/http_caching_server",
+        "//server/tests/integration/cmd/mocks/http_echo_server",
+        "//server/tests/integration/cmd/mocks/openapi_weather_server",
+        "//server/tests/integration/cmd/mocks/webrtc_weather_server",
     ],
     embed = [":framework"],
     tags = ["integration"],

@@ -6,6 +6,8 @@ package public_api //nolint:revive
 import (
 	"context"
 	"fmt"
+	"os"
+	"os/exec"
 	"path/filepath"
 	"testing"
 	"time"
@@ -17,11 +19,19 @@ import (
 )
 
 func TestCallPolicy_Enforcement(t *testing.T) {
+	nodePath, err := exec.LookPath("node")
+	if err != nil {
+		t.Skipf("Skipping call policy public API test: node not found in PATH: %v", err)
+	}
+
 	// We use the "chrome" config structure (command_line) but use @modelcontextprotocol/server-filesystem
 	// This ensures we have a real MCP server that supports stdio.
 
 	// Path to the filesystem server script
 	fsServerPath, _ := filepath.Abs("../integration/upstream/node_modules/@modelcontextprotocol/server-filesystem/dist/index.js")
+	if _, err := os.Stat(fsServerPath); err != nil {
+		t.Skipf("Skipping call policy public API test: filesystem MCP server not available at %s: %v", fsServerPath, err)
+	}
 
 	// Case 1: Deny All
 	// We configure a policy that DENIES everything by default.
@@ -32,13 +42,13 @@ upstream_services:
     name: "deny-service"
     mcp_service:
       stdio_connection:
-        command: "node"
+		command: %q
         args: ["%s", "."]
     call_policies:
       - default_action: DENY
         rules: []
     auto_discover_tool: true
-`, fsServerPath)
+`, nodePath, fsServerPath)
 
 	t.Run("DenyAll", func(t *testing.T) {
 		serverInfo := integration.StartMCPANYServerWithConfig(t, "PolicyDenyAll", configDenyAll)
@@ -88,7 +98,7 @@ upstream_services:
     name: "fs-service"
     mcp_service:
       stdio_connection:
-        command: "node"
+		command: %q
         args: ["%s", "."]
     call_policies:
       - default_action: ALLOW
@@ -96,7 +106,7 @@ upstream_services:
           - action: DENY
             name_regex: "read_file"
     auto_discover_tool: true
-`, fsServerPath)
+`, nodePath, fsServerPath)
 	t.Run("Filesystem_Policy", func(t *testing.T) {
 		serverInfo := integration.StartMCPANYServerWithConfig(t, "PolicyTestFs", configFs)
 		defer serverInfo.CleanupFunc()

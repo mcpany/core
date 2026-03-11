@@ -23,9 +23,6 @@ test --test_timeout=300,600,900,1800
 # Allow all test sizes (default only runs small+medium)
 test --test_size_filters=-enormous
 
-# Exclude integration tests by default (run with --test_tag_filters=integration to include)
-test --test_tag_filters=-integration
-
 # Enable sandboxing for hermeticity
 build --spawn_strategy=sandboxed,local
 
@@ -34,32 +31,43 @@ build --spawn_strategy=sandboxed,local
 test --test_env=GEMINI_API_KEY
 test --test_env=MCP_BUNDLE_DIR
 test --test_env=CI
+test --test_env=HOME
 test --test_env=MCPANY_DEBUG
 test --test_env=MCPANY_DANGEROUS_ALLOW_LOCAL_IPS
+test --test_env=PATH
 
 # Also for actions if needed
 build --action_env=GEMINI_API_KEY
 build --action_env=MCP_BUNDLE_DIR
 build --action_env=CI
 
-build:nativelink --remote_cache=grpcs://nativelink.cubectl.com
-build:nativelink --remote_executor=grpcs://nativelink.cubectl.com
-build:nativelink --remote_timeout=3600s
+common:nativelink --remote_cache=grpcs://nativelink.cubectl.com
+common:nativelink --remote_executor=grpcs://nativelink.cubectl.com
+common:nativelink --remote_timeout=3600s
 
 # Config for BuildBuddy specifically
-build:buildbuddy --remote_cache=grpcs://buildbuddy.cubectl.com
-build:buildbuddy --remote_executor=grpcs://buildbuddy.cubectl.com
-build:buildbuddy --spawn_strategy=remote
-build:buildbuddy --genrule_strategy=remote
-build:buildbuddy --remote_local_fallback=false
-build:buildbuddy --remote_upload_local_results=true
+build:buildbuddy --bes_results_url=https://buildbuddy.cubectl.com/invocation/
+build:buildbuddy --bes_backend=grpcs://buildbuddy.cubectl.com
+common:buildbuddy --remote_cache=grpcs://buildbuddy.cubectl.com
+common:buildbuddy --remote_executor=grpcs://buildbuddy.cubectl.com
+common:buildbuddy --spawn_strategy=remote
+common:buildbuddy --genrule_strategy=remote
+common:buildbuddy --remote_local_fallback=false
+common:buildbuddy --remote_upload_local_results=true
 build:buildbuddy --remote_default_exec_properties=OSFamily=Linux
 build:buildbuddy --remote_default_exec_properties=Arch=arm64
-build:buildbuddy --remote_timeout=3600s
+build:buildbuddy --remote_timeout=10m
 build:buildbuddy --verbose_failures
 
+build:buildbuddy-official --bes_results_url=https://onehumancorp.buildbuddy.io/invocation/
+build:buildbuddy-official --bes_backend=grpcs://onehumancorp.buildbuddy.io
+common:buildbuddy-official --remote_cache=grpcs://onehumancorp.buildbuddy.io
+common:buildbuddy-official --noremote_upload_local_results
+common:buildbuddy-official --remote_timeout=10m
+common:buildbuddy-official --remote_executor=grpcs://onehumancorp.buildbuddy.io
+
 # Set buildbuddy as the default configuration for all builds
-build:remote --config=buildbuddy
+build:remote --config=buildbuddy-official
 
 # Local config to disable remote execution
 build:local --remote_cache=

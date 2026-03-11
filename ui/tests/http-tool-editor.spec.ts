@@ -5,19 +5,21 @@
 
 import { test, expect } from '@playwright/test';
 
+const ECHO_SERVER_BASE_URL = process.env.UI_HTTP_ECHO_BASE_URL || 'http://ui-http-echo-server:5678';
+
 test.describe('HTTP Tool Editor - Live Preview', () => {
   const serviceName = 'http-tool-editor-test';
 
   test.beforeAll(async ({ request }) => {
     // Seed HTTP service pointing to httpbin
-    await request.delete(`/api/v1/services/${serviceName}`).catch(() => {});
+    await request.delete(`/api/v1/services/${serviceName}`).catch(() => { });
 
     const response = await request.post('/api/v1/services', {
       data: {
         name: serviceName,
         http_service: {
           // Point to local echo server
-          address: "http://ui-http-echo-server:5678"
+          address: ECHO_SERVER_BASE_URL
         }
       }
     });

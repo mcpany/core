@@ -6,7 +6,10 @@ package upstream
 import (
 	"context"
 	"encoding/json"
+	"os"
 	"os/exec"
+	"path/filepath"
+	"runtime"
 	"testing"
 
 	"github.com/mcpany/core/server/pkg/config"
@@ -22,7 +25,7 @@ import (
 func TestFrontendReactCollection(t *testing.T) {
 	// 1. Load config
 	fs := afero.NewOsFs()
-	configPath := "../../../../marketplace/upstream_service_collection/frontend_react.yaml"
+	configPath := filepath.Join(findWorkspaceRoot(t), "marketplace", "upstream_service_collection", "frontend_react.yaml")
 
 	// Verify file exists
 	_, err := fs.Stat(configPath)
@@ -120,4 +123,33 @@ func TestFrontendReactCollection(t *testing.T) {
 	}
 	assert.True(t, foundNpm, "npm-service-wrapper not found in config")
 	assert.True(t, foundNode, "node-service-wrapper not found in config")
+}
+
+func findWorkspaceRoot(t *testing.T) string {
+	t.Helper()
+	if _, file, _, ok := runtime.Caller(0); ok {
+		candidate := filepath.Clean(filepath.Join(filepath.Dir(file), "../../../../.."))
+		if _, err := os.Stat(filepath.Join(candidate, "marketplace")); err == nil {
+			return candidate
+		}
+	}
+	workspace := os.Getenv("TEST_WORKSPACE")
+	if workspace == "" {
+		workspace = "_main"
+	}
+	for _, candidate := range []string{
+		os.Getenv("GITHUB_WORKSPACE"),
+		os.Getenv("BUILD_WORKSPACE_DIRECTORY"),
+		filepath.Join(os.Getenv("TEST_SRCDIR"), workspace),
+		filepath.Join(os.Getenv("RUNFILES_DIR"), workspace),
+	} {
+		if candidate == "" {
+			continue
+		}
+		if _, err := os.Stat(filepath.Join(candidate, "marketplace")); err == nil {
+			return candidate
+		}
+	}
+	t.Fatal("workspace root not found")
+	return ""
 }

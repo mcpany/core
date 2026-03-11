@@ -7,8 +7,11 @@ load("@rules_go//proto:def.bzl", "go_proto_library")
 load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
 
 copy_to_bin(
-    name = "ts_decls",
-    srcs = glob(["*.d.ts"], allow_empty = True),
+    name = "ts_proto_files",
+    srcs = glob([
+        "*.d.ts",
+        "*.ts",
+    ], allow_empty = True),
     visibility = ["//visibility:public"],
 )
 

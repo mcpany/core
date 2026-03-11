@@ -1,0 +1,8 @@
+# Copyright 2026 Author(s) of MCP Any
+# SPDX-License-Identifier: Apache-2.0
+
+filegroup(
+    name = "upstream_service_collection_files",
+    srcs = glob(["upstream_service_collection/**/*"]),
+    visibility = ["//visibility:public"],
+)

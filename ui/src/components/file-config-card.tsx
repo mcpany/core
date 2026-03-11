@@ -12,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UpstreamServiceConfig } from "@/lib/types";
 import { File } from "lucide-react";
 import yaml from 'js-yaml';
-import SyntaxHighlighter from 'react-syntax-highlighter/dist/esm/prism-light';
+import SyntaxHighlighter from 'react-syntax-highlighter/dist/esm/light';
 import json from 'react-syntax-highlighter/dist/esm/languages/hljs/json';
 import yamlLang from 'react-syntax-highlighter/dist/esm/languages/hljs/yaml';
 import vs2015 from 'react-syntax-highlighter/dist/esm/styles/hljs/vs2015';

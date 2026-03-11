@@ -6,6 +6,7 @@ load("@rules_go//go:def.bzl", "go_test")
 go_test(
     name = "examples_test",
     srcs = ["examples_test.go"],
+    data = ["//server/examples:files"],
     tags = ["integration"],
     deps = [
         "//server/pkg/config",

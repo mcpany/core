@@ -24,13 +24,16 @@ func TestMain(m *testing.M) {
 		if workspace == "" {
 			workspace = "_main"
 		}
-		bazelBin := filepath.Join(srcDir, workspace, "server", "cmd", "webhooks", "webhooks")
-		if _, err := os.Stat(bazelBin); err == nil {
-			// Symlink/copy to expected name
-			_ = os.Symlink(bazelBin, "webhook-sidecar")
-			code := m.Run()
-			os.Remove("webhook-sidecar")
-			os.Exit(code)
+		for _, bazelBin := range []string{
+			filepath.Join(srcDir, workspace, "server", "cmd", "webhooks", "webhooks_", "webhooks"),
+			filepath.Join(srcDir, workspace, "server", "cmd", "webhooks", "webhooks"),
+		} {
+			if _, err := os.Stat(bazelBin); err == nil {
+				_ = os.Symlink(bazelBin, "webhook-sidecar")
+				code := m.Run()
+				os.Remove("webhook-sidecar")
+				os.Exit(code)
+			}
 		}
 	}
 

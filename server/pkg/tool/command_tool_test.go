@@ -198,21 +198,18 @@ func TestCommandTool_Execute(t *testing.T) {
 
 	t.Run("json communication protocol", func(t *testing.T) {
 		t.Parallel()
-		// Build the jsonecho binary
-		wd, err := os.Getwd()
-		require.NoError(t, err)
-		jsonechoDir := filepath.Join(wd, "testdata", "jsonecho")
-		jsonechoBin := filepath.Join(jsonechoDir, "jsonecho")
-
-		// Ensure the directory exists
-		err = os.MkdirAll(jsonechoDir, 0755)
-		require.NoError(t, err)
-
-		// Build it
-		cmd := exec.Command("go", "build", "-o", jsonechoBin, "main.go")
-		cmd.Dir = jsonechoDir
-		out, err := cmd.CombinedOutput()
-		require.NoError(t, err, "Failed to build jsonecho: %s", string(out))
+		jsonechoBin := bazelJSonechoBinary(t)
+		if jsonechoBin == "" {
+			// Fallback for non-Bazel runs.
+			wd, err := os.Getwd()
+			require.NoError(t, err)
+			jsonechoDir := filepath.Join(wd, "testdata", "jsonecho")
+			jsonechoBin = filepath.Join(jsonechoDir, "jsonecho")
+			cmd := exec.Command("go", "build", "-o", jsonechoBin, "main.go")
+			cmd.Dir = jsonechoDir
+			out, err := cmd.CombinedOutput()
+			require.NoError(t, err, "Failed to build jsonecho: %s", string(out))
+		}
 
 		cmdTool := newJSONCommandTool(jsonechoBin, nil)
 		inputData := map[string]interface{}{"foo": "bar"}
@@ -252,6 +249,23 @@ func TestCommandTool_Execute(t *testing.T) {
 		assert.Equal(t, "echo", resultMap["command"])
 		assert.Equal(t, "hello\n", resultMap["stdout"])
 	})
+}
+
+func bazelJSonechoBinary(t *testing.T) string {
+	t.Helper()
+	srcDir := os.Getenv("TEST_SRCDIR")
+	if srcDir == "" {
+		return ""
+	}
+	workspace := os.Getenv("TEST_WORKSPACE")
+	if workspace == "" {
+		workspace = "_main"
+	}
+	binary := filepath.Join(srcDir, workspace, "server", "pkg", "tool", "testdata", "jsonecho", "jsonecho_", "jsonecho")
+	if _, err := os.Stat(binary); err == nil {
+		return binary
+	}
+	return ""
 }
 
 func TestCommandTool_GetCacheConfig(t *testing.T) {

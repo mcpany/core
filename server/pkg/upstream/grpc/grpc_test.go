@@ -830,6 +830,22 @@ func TestGRPCUpstream_Register_FromConfig(t *testing.T) {
 	var promptManager prompt.ManagerInterface
 	var resourceManager resource.ManagerInterface
 
+	const weatherProto = `syntax = "proto3";
+
+package examples.weather.v1;
+
+service WeatherService {
+	 rpc GetWeather(GetWeatherRequest) returns (GetWeatherResponse);
+}
+
+message GetWeatherRequest {
+	 string location = 1;
+}
+
+message GetWeatherResponse {
+	 string weather = 1;
+}`
+
 	server, addr := startMockServer(t)
 	defer server.Stop()
 
@@ -846,7 +862,7 @@ func TestGRPCUpstream_Register_FromConfig(t *testing.T) {
 				configv1.ProtoDefinition_builder{
 					ProtoFile: configv1.ProtoFile_builder{
 						FileName: proto.String("weather.proto"),
-						FilePath: proto.String("../../../../proto/examples/weather/v1/weather.proto"),
+						FileContent: proto.String(weatherProto),
 					}.Build(),
 				}.Build(),
 			},

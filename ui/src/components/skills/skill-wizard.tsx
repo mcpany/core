@@ -31,9 +31,11 @@ export default function SkillWizard() {
   const [skill, setSkill] = useState<Skill>({
     name: '',
     description: '',
+    license: '',
     instructions: '# Skill Instructions\n\nProvide step-by-step instructions for the model here.',
     allowedTools: [],
     assets: [],
+    metadata: {},
   });
   const [files, setFiles] = useState<File[]>([]);
 

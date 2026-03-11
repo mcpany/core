@@ -7,6 +7,7 @@ import { request, APIRequestContext } from '@playwright/test';
 
 const BASE_URL = process.env.BACKEND_URL || 'http://localhost:50050';
 const API_KEY = process.env.MCPANY_API_KEY || 'test-token';
+const ECHO_SERVER_BASE_URL = process.env.UI_HTTP_ECHO_BASE_URL || 'http://ui-http-echo-server:5678';
 const HEADERS = { 'X-API-Key': API_KEY, 'Content-Type': 'application/json' };
 
 export const seedGlobalState = async (requestContext?: APIRequestContext) => {
@@ -52,7 +53,7 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
             name: "Math",
             version: "v1.0",
             http_service: {
-                address: "http://ui-http-echo-server:5678", // Use echo server instead of non-existent .local
+                address: ECHO_SERVER_BASE_URL,
                 tools: [
                     { name: "calculator", description: "calc", call_id: "calc_call" }
                 ],
@@ -231,10 +232,10 @@ export const seedUser = async (requestContext: APIRequestContext | undefined, us
     try {
         const res = await context.post('/api/v1/users', { data: user, headers: HEADERS });
         if (!res.ok() && res.status() !== 409) { // Ignore conflict if user exists
-             // If user creation fails, we might create it via seed?
-             // But seed clears everything.
-             // If this is called AFTER seedGlobalState, it adds a user.
-             console.log(`Failed to create user ${username}: ${res.status()}`);
+            // If user creation fails, we might create it via seed?
+            // But seed clears everything.
+            // If this is called AFTER seedGlobalState, it adds a user.
+            console.log(`Failed to create user ${username}: ${res.status()}`);
         }
     } catch (e) {
         console.log(`Error seeding user ${username}: ${e}`);
@@ -265,10 +266,14 @@ export const cleanupPrompts = async (requestContext?: APIRequestContext) => {
     // No-op
 };
 
-export const seedCollection = async (requestContext?: APIRequestContext) => {
+export const seedWebhooks = async (requestContext?: APIRequestContext) => {
     // No-op
 };
 
-export const cleanupCollection = async (requestContext?: APIRequestContext) => {
+export const seedCollection = async (_name?: string, _requestContext?: APIRequestContext) => {
+    // No-op
+};
+
+export const cleanupCollection = async (_name?: string, _requestContext?: APIRequestContext) => {
     // No-op
 };

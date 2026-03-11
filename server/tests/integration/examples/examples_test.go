@@ -5,9 +5,11 @@ package examples_test
 
 import (
 	"context"
+	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 
@@ -20,33 +22,29 @@ import (
 func TestExampleConfigs(t *testing.T) {
 	// Set dummy API key for validation to pass
 	t.Setenv("GEMINI_API_KEY", "dummy-key")
-	// Find the project root
-	wd, err := os.Getwd()
+	projectRoot, err := sourceProjectRoot()
 	require.NoError(t, err)
+	runtimeRoot := filepath.Join(t.TempDir(), "server")
+	examplesDir := filepath.Join(runtimeRoot, "examples")
+	require.NoError(t, copyDir(filepath.Join(projectRoot, "examples"), examplesDir))
 
-	// Assuming we run this from anywhere in the repo, we need to find the root.
-	// Common pattern: look for go.mod
-	projectRoot := findProjectRoot(t, wd)
 	// Change to project root so that relative paths in configs (e.g. "./examples/...") resolve correctly
-	// t.Chdir(projectRoot) is better than os.Chdir as it auto-restores, but check if available in environment.
-	// Assuming Go 1.14+, t.Chdir is available.
-	err = os.Chdir(projectRoot)
+	err = os.Chdir(runtimeRoot)
 	require.NoError(t, err)
 
 	// Ensure stdio example binary is built, as Config validation checks for its existence
 	// This makes the test robust against sharding/environment where build-examples might not have run.
-	stdioBinPath := filepath.Join(projectRoot, "examples", "demo", "stdio", "my-tool-bin")
+	stdioBinPath := filepath.Join(runtimeRoot, "examples", "demo", "stdio", "my-tool-bin")
 	if _, err := os.Stat(stdioBinPath); os.IsNotExist(err) {
 		t.Logf("Building missing stdio example binary: %s", stdioBinPath)
-		cmd := exec.Command("go", "build", "-o", stdioBinPath, filepath.Join(projectRoot, "examples", "demo", "stdio", "my-tool", "main.go"))
+		cmd := exec.Command("go", "build", "-o", stdioBinPath, filepath.Join(runtimeRoot, "examples", "demo", "stdio", "my-tool", "main.go"))
+		cmd.Dir = runtimeRoot
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		if err := cmd.Run(); err != nil {
 			t.Logf("Failed to build stdio example binary (continuing, but validation might fail): %v", err)
 		}
 	}
-
-	examplesDir := filepath.Join(projectRoot, "examples")
 
 	// Walk through examples directory
 	err = filepath.Walk(examplesDir, func(path string, info os.FileInfo, err error) error {
@@ -68,6 +66,55 @@ func TestExampleConfigs(t *testing.T) {
 		return nil
 	})
 	require.NoError(t, err)
+}
+
+func sourceProjectRoot() (string, error) {
+	workspace := os.Getenv("TEST_WORKSPACE")
+	if workspace == "" {
+		workspace = "_main"
+	}
+	for _, base := range []string{os.Getenv("TEST_SRCDIR"), os.Getenv("RUNFILES_DIR")} {
+		if base == "" {
+			continue
+		}
+		candidate := filepath.Join(base, workspace, "server")
+		if _, err := os.Stat(filepath.Join(candidate, "examples")); err == nil {
+			return candidate, nil
+		}
+	}
+	_, file, _, ok := runtime.Caller(0)
+	if !ok {
+		return "", os.ErrNotExist
+	}
+	return filepath.Abs(filepath.Clean(filepath.Join(filepath.Dir(file), "../../..")))
+}
+
+func copyDir(src, dst string) error {
+	return filepath.Walk(src, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		relPath, err := filepath.Rel(src, path)
+		if err != nil {
+			return err
+		}
+		target := filepath.Join(dst, relPath)
+		if info.IsDir() {
+			return os.MkdirAll(target, info.Mode())
+		}
+		in, err := os.Open(path)
+		if err != nil {
+			return err
+		}
+		defer in.Close()
+		out, err := os.OpenFile(target, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, info.Mode())
+		if err != nil {
+			return err
+		}
+		defer out.Close()
+		_, err = io.Copy(out, in)
+		return err
+	})
 }
 
 func validateConfig(t *testing.T, configPath string) {
@@ -117,18 +164,4 @@ func validateConfig(t *testing.T, configPath string) {
 	// Validate
 	validationErrors := config.Validate(context.Background(), configs, config.Server)
 	assert.Empty(t, validationErrors, "Config validation failed for %s", configPath)
-}
-
-func findProjectRoot(t *testing.T, startDir string) string {
-	dir := startDir
-	for {
-		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
-			return dir
-		}
-		parent := filepath.Dir(dir)
-		if parent == dir {
-			t.Fatal("Could not find project root (go.mod)")
-		}
-		dir = parent
-	}
 }

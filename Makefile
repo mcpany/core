@@ -1,5 +1,5 @@
 # Shim Makefile to forward commands to server/Makefile and ui/Makefile
-.PHONY: all test lint build run clean gen prepare-proto clean-protos
+.PHONY: all test lint build run clean gen gen-go-proto gen-gateway-proto gen-protoset gen-ts-proto prepare-proto clean-protos clean-ts-protos clean-gateway-protos
 
 # Variables
 GO = go
@@ -135,15 +135,26 @@ prepare-proto:
 		rm googleapis.zip; \
 	fi
 
-clean-protos:
-	@echo "Cleaning generated protobuf files..."
+clean-ts-protos:
+	@echo "Cleaning generated TypeScript protobuf files..."
 	@-find proto -name "*.ts" -delete
 	@-rm -rf proto/google
-	@-find proto server/pkg server/cmd -name "*.pb.go" -delete
-	@-find proto -name "*.pb.gw.go" -delete
 
-gen: clean-protos prepare-proto
-	@echo "Generating protobuf files (Go)..."
+clean-gateway-protos:
+	@echo "Cleaning generated gRPC gateway protobuf files..."
+	@-find proto -name "*.pb.gw.go" -delete
+	@-rm -f $(BUILD_DIR)/all.protoset
+
+clean-protos: clean-ts-protos clean-gateway-protos
+	@echo "Cleaning generated protobuf files..."
+
+gen: clean-protos gen-gateway-proto gen-protoset gen-ts-proto
+
+gen-go-proto: gen-gateway-proto gen-protoset
+	@echo "gen-go-proto is now an alias for gateway stubs plus descriptor set generation."
+
+gen-protoset: prepare-proto
+	@echo "Generating protobuf descriptor set..."
 	@export PATH=$(TOOL_INSTALL_DIR):$$PATH; \
 		mkdir -p $(BUILD_DIR); \
 		find proto -name "*.proto" -not -path "proto/third_party/*" -not -path "proto/google/*" -exec protoc \
@@ -152,20 +163,24 @@ gen: clean-protos prepare-proto
 			--proto_path=$(BUILD_DIR)/googleapis \
 			--descriptor_set_out=$(BUILD_DIR)/all.protoset \
 			--include_imports \
-			--go_out=. \
-			--go_opt=module=github.com/mcpany/core,default_api_level=API_OPAQUE \
-			--go-grpc_out=. \
-			--go-grpc_opt=module=github.com/mcpany/core \
+			{} +
+
+gen-gateway-proto: prepare-proto
+	@echo "Generating protobuf files (gRPC gateway)..."
+	@export PATH=$(TOOL_INSTALL_DIR):$$PATH; \
+		find proto -name "*.proto" -not -path "proto/third_party/*" -not -path "proto/google/*" -exec protoc \
+			--proto_path=. \
+			--proto_path=$(BUILD_DIR)/grpc-gateway \
+			--proto_path=$(BUILD_DIR)/googleapis \
 			--grpc-gateway_out=. \
 			--grpc-gateway_opt=module=github.com/mcpany/core,use_opaque_api=true \
-			{} +; \
-		rm -rf google
+			{} +
 
-
+gen-ts-proto: clean-ts-protos prepare-proto
 	@echo "Generating protobuf files (TypeScript)..."
 	@if ! [ -f "./ui/node_modules/.bin/protoc-gen-ts_proto" ]; then \
 		echo "protoc-gen-ts_proto not found. Installing UI dependencies..."; \
-		cd ui && npm install; \
+		cd ui && if command -v corepack >/dev/null 2>&1; then corepack pnpm install --frozen-lockfile; else npm install; fi; \
 	fi
 	@if [ -f "./ui/node_modules/.bin/protoc-gen-ts_proto" ]; then \
 		export PATH=$(TOOL_INSTALL_DIR):$$PATH; \
@@ -192,6 +207,7 @@ gen: clean-protos prepare-proto
 				--ts_proto_opt=esModuleInterop=true,forceLong=long,useOptionals=messages,outputClientImpl=grpc-web \
 				$$STANDARD_PROTOS; \
 		fi; \
+		python3 scripts/patch_generated_proto_ts.py; \
 		echo "Standard TypeScript Protobuf generation complete."; \
 	else \
 		echo "Error: protoc-gen-ts_proto not found in ./ui/node_modules/.bin/. TypeScript generation cannot proceed."; \
