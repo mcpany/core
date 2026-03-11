@@ -49,3 +49,9 @@ As agents increasingly rely on project-local configuration files (e.g., `.claude
 
 ## 7. Evolutionary Changelog
 * **2026-03-09:** Initial Document Creation.
+* **2026-03-11: Reputation-Aware Validation Update**
+    * **Context**: Findings from Claude Code repo-driven attack research show that attackers can bypass simple structural checks by using obfuscated shell commands in hooks.
+    * **Architecture Adjustment**:
+        * Integrating the `Skill Reputation Engine` to check the reputation of the repository and the specific configuration block.
+        * Introducing "Deep Inspection" for shell hooks, utilizing a sandboxed LLM to describe the hook's behavior to the user before attestation.
+    * **Security Impact**: Reduces the cognitive load on users during HITL by providing an "Impact Summary" for complex hooks.

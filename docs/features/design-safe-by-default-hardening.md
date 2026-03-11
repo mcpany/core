@@ -59,3 +59,9 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-11: Countering Local Hijacking (CVE-2026.2.25 Mitigation)**
+    *   **Context**: The OpenClaw vulnerability showed that even `127.0.0.1` is not safe if the browser can communicate with the agent port without authentication.
+    *   **Architecture Adjustment**:
+        *   Introducing **Invisible Handshake Middleware**: All local connections must provide a valid Ed25519-signed "Contextual Attestation Token" during the initial handshake.
+        *   Non-authenticated requests (e.g., standard browser GET/POST) are dropped before any MCP logic is processed.
+    *   **Security Impact**: Effectively eliminates cross-origin hijacking and "unauthenticated browser-to-agent" attack vectors.

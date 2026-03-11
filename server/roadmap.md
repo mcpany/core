@@ -39,6 +39,11 @@
 *   **[P0] Agent-Aware Blackboard Isolation**: Row-level security for Shared KV Store to prevent cross-agent state injection. (Added: 2026-03-09)
 *   **[P1] Detached Sandbox for Automated Hooks**: Isolated runtime for tool sequences with zero host access by default. (Added: 2026-03-09)
 
+#### Upcoming (2026-03-11 Evolution)
+*   **[P0] Remote-to-Local Attestation Bridge**: Secure intent bridging from cloud environments to local MCP Any tools. (Added: 2026-03-11)
+*   **[P0] Invisible Handshake Middleware**: Ed25519-signed handshakes for all local connections to prevent hijacking (CVE-2026.2.25 Mitigation). (Added: 2026-03-11)
+*   **[P1] Skill Reputation Engine**: Community-based reputation filtering for tool discovery. (Added: 2026-03-11)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

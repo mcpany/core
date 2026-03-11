@@ -67,3 +67,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project Configuration Guard**: MCP Any will evolve into a "Validating Proxy" for all project-local agent configurations. It will intercept and sanitize any "auto-execute" or "hook" definitions before they reach the agent runtime, requiring explicit user attestation.
 - **Agent-Aware Blackboard Isolation**: The Shared KV Store (Blackboard) must implement mandatory "Agent-Bound" isolation. Data written by one agent will be read-only or invisible to others unless a specific "Shared Intent" is established.
 - **Zero-Trust Hook Execution**: Any executable hook or automated tool sequence must run in a "Detached Sandbox" managed by MCP Any, with zero access to the host filesystem unless explicitly granted via a capability-based token.
+
+---
+
+## Strategic Evolution: [2026-03-11]
+### Focus: Cross-Environment Attestation & Reputation-Based Discovery
+**Context**: The recent OpenClaw hijacking exploit (local origin confusion) and Claude Code's repo-driven "remote control" vulnerabilities confirm that `localhost` is no longer a sufficient trust boundary. Attackers are now targeting the "trust-gap" between local agents and the browsers or cloud sandboxes that control them.
+**Strategic Pivot**:
+- **Cross-Environment Attestation Bridge**: MCP Any must act as the primary "Attestation Broker" for all agent environments. Any intent coming from a cloud sandbox (Claude Code) or a browser-driven app must be signed with a "Contextual Attestation Token" that proves it originated from a verified user action.
+- **Skill Reputation Engine**: Moving beyond binary "Attestation" to "Reputation-Based Discovery." MCP Any will integrate a reputation score for MCP servers and "skills" (inspired by the ClawHub incident), allowing users to define policies like "Only run tools with >4.5 reputation stars."
+- **Invisible-by-Handshake Gateway**: The MCP gateway will be completely invisible and unreachable to local processes (including the browser) unless they perform a cryptographic Ed25519-based handshake. This eliminates the "local hijacking" vector identified in OpenClaw.

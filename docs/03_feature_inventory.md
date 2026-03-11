@@ -90,3 +90,19 @@
 
 ### Deprecations / Monitoring
 - **Unvalidated Project-Local Configs**: Monitoring for total deprecation. All local configs must be attested via MCP Any before ingestion by agents.
+
+---
+
+## Evolution: [2026-03-11] Updates
+
+### Proposed Additions
+- **Skill Reputation Engine**: (P1) Integrates community reputation and safety scores (e.g., from ClawHub or similar) into the tool discovery process.
+- **Remote-to-Local Attestation Bridge**: (P0) Cryptographic handshake protocol to securely bridge intents from cloud/browser environments to local MCP Any tools, preventing hijacking.
+- **Invisible Handshake Middleware**: (P0) Middleware that drops all unauthenticated local connections to the MCP Any gateway unless they provide a valid Ed25519 signature.
+
+### Priority Shifts
+- **Safe-by-Default Network Hardening**: (Re-affirmed P0) Expanded to include "Invisible Gateway" requirements to counter the OpenClaw CVE.
+- **Supply Chain Integrity Guard**: (P0) Priority increased to include "Reputation-Aware Filtering."
+
+### Deprecations / Monitoring
+- **Unsigned Local Connections**: Monitoring for total deprecation. All local clients (browsers, agents) must move to signed handshakes.
