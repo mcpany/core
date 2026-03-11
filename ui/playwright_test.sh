@@ -64,6 +64,10 @@ rm -rf "$runtime_root"
 mkdir -p "$repo_root" "$backend_runtime"
 
 cp -a "$workspace_root/ui" "$repo_root/"
+# Dereference symlinks in tests/ so Playwright's file scanner (which uses
+# Dirent.isFile(), returning false for symlinks) can discover the spec files.
+rm -rf "$ui_runtime/tests"
+cp -rL "$workspace_root/ui/tests" "$ui_runtime/"
 rm -rf "$ui_runtime/node_modules"
 ln -s "$workspace_root/ui/node_modules" "$ui_runtime/node_modules"
 ln -s "$workspace_root/proto" "$repo_root/proto"

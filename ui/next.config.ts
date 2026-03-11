@@ -127,6 +127,13 @@ const nextConfig: NextConfig = {
     const rootProto = path.join(__dirname, '../proto');
     const protoPath = fs.existsSync(localProto) ? localProto : rootProto;
 
+    // In Bazel-managed node_modules, 'ms' (a dependency of 'debug') is nested
+    // under .aspect_rules_js/debug@.../node_modules/ms but not at the top level.
+    // With symlinks=false, webpack can't find it via normal traversal, so we
+    // provide an explicit alias for it.
+    const bazelMsPath = path.join(__dirname, 'node_modules/.aspect_rules_js/ms@2.1.3/node_modules/ms/index.js');
+    const msAlias = fs.existsSync(bazelMsPath) ? { 'ms': bazelMsPath } : {};
+
     config.resolve.alias = {
       ...config.resolve.alias,
       '@proto': protoPath,
@@ -135,6 +142,7 @@ const nextConfig: NextConfig = {
       'highlight.js/lib/languages/c-like': false,
       'highlight.js/lib/languages/htmlbars': false,
       'highlight.js/lib/languages/sql_more': false,
+      ...msAlias,
     };
     // Important: Disable symlink resolution to prevent Webpack from resolving symlinks to their real path (which is outside the project)
     config.resolve.symlinks = false;

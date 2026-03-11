@@ -270,10 +270,21 @@ export const seedWebhooks = async (requestContext?: APIRequestContext) => {
     // No-op
 };
 
-export const seedCollection = async (_name?: string, _requestContext?: APIRequestContext) => {
-    // No-op
+export const seedCollection = async (name?: string, requestContext?: APIRequestContext) => {
+    if (!name) return;
+    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    await context.fetch(`${BASE_URL}/collections`, {
+        method: 'POST',
+        headers: HEADERS,
+        data: JSON.stringify({ name, description: `Test collection: ${name}`, version: '1.0.0' }),
+    });
 };
 
-export const cleanupCollection = async (_name?: string, _requestContext?: APIRequestContext) => {
-    // No-op
+export const cleanupCollection = async (name?: string, requestContext?: APIRequestContext) => {
+    if (!name) return;
+    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    await context.fetch(`${BASE_URL}/collections/${name}`, {
+        method: 'DELETE',
+        headers: HEADERS,
+    }).catch(() => {});
 };
