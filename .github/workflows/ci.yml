@@ -588,7 +588,7 @@ jobs:
         if: matrix.image == 'ui' || matrix.image == 'ui-test'
         run: |
           cd ui
-          npm ci
+          npm ci --legacy-peer-deps
 
       - name: Generate Protobufs
         run: |
@@ -1119,7 +1119,7 @@ jobs:
       - name: Install UI Dependencies
         run: |
           cd ui
-          npm ci
+          npm ci --legacy-peer-deps
           npx playwright install chromium
 
       - name: Set up Helm
