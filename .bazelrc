@@ -41,9 +41,10 @@ build --action_env=GEMINI_API_KEY
 build --action_env=MCP_BUNDLE_DIR
 build --action_env=CI
 
-common:nativelink --remote_cache=grpcs://nativelink.cubectl.com
-common:nativelink --remote_executor=grpcs://nativelink.cubectl.com
-common:nativelink --remote_timeout=3600s
+common:nativelink --remote_cache=grpcs://nativelink-gprc.cubectl.com
+# common:nativelink --remote_executor=grpcs://nativelink.cubectl.com
+build:nativelink --remote_timeout=10m
+build:nativelink --spawn_strategy=remote
 
 # Config for BuildBuddy specifically
 build:buildbuddy --bes_results_url=https://buildbuddy.cubectl.com/invocation/
@@ -65,6 +66,7 @@ common:buildbuddy-official --remote_cache=grpcs://onehumancorp.buildbuddy.io
 common:buildbuddy-official --noremote_upload_local_results
 common:buildbuddy-official --remote_timeout=10m
 common:buildbuddy-official --remote_executor=grpcs://onehumancorp.buildbuddy.io
+common:buildbuddy-official --remote_header=x-buildbuddy-api-key=${BUILDBUDDY_API_KEY}
 
 # Set buildbuddy as the default configuration for all builds
 build:remote --config=buildbuddy-official

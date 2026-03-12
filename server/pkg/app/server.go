@@ -387,6 +387,11 @@ func (a *Application) Run(opts RunOptions) error {
 		case "", "sqlite":
 			dbPath := opts.DBPath
 			if dbPath == "" {
+				if _, ok := opts.Fs.(*afero.MemMapFs); ok {
+					dbPath = ":memory:"
+				}
+			}
+			if dbPath == "" {
 				dbPath = config.GlobalSettings().DBPath()
 			}
 			if dbPath == "" {
