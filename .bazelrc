@@ -43,6 +43,7 @@ build --action_env=CI
 
 common:nativelink --remote_cache=grpcs://nativelink-gprc.cubectl.com
 # common:nativelink --remote_executor=grpcs://nativelink.cubectl.com
+common:nativelink --remote_cache_compression=true
 build:nativelink --remote_timeout=10m
 build:nativelink --spawn_strategy=remote
 
@@ -55,6 +56,8 @@ common:buildbuddy --spawn_strategy=remote
 common:buildbuddy --genrule_strategy=remote
 common:buildbuddy --remote_local_fallback=false
 common:buildbuddy --remote_upload_local_results=true
+common:buildbuddy --remote_cache_compression=true
+common:buildbuddy --jobs=100
 build:buildbuddy --remote_default_exec_properties=OSFamily=Linux
 build:buildbuddy --remote_default_exec_properties=Arch=arm64
 build:buildbuddy --remote_timeout=10m
@@ -66,6 +69,8 @@ common:buildbuddy-official --remote_cache=grpcs://onehumancorp.buildbuddy.io
 common:buildbuddy-official --noremote_upload_local_results
 common:buildbuddy-official --remote_timeout=10m
 common:buildbuddy-official --remote_executor=grpcs://onehumancorp.buildbuddy.io
+common:buildbuddy-official --remote_cache_compression=true
+common:buildbuddy-official --jobs=200
 
 # Set buildbuddy as the default configuration for all builds
 build:remote --config=buildbuddy-official
