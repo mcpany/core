@@ -66,7 +66,6 @@ common:buildbuddy-official --remote_cache=grpcs://onehumancorp.buildbuddy.io
 common:buildbuddy-official --noremote_upload_local_results
 common:buildbuddy-official --remote_timeout=10m
 common:buildbuddy-official --remote_executor=grpcs://onehumancorp.buildbuddy.io
-common:buildbuddy-official --remote_header=x-buildbuddy-api-key=${BUILDBUDDY_API_KEY}
 
 # Set buildbuddy as the default configuration for all builds
 build:remote --config=buildbuddy-official
