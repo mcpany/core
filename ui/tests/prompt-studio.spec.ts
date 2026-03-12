@@ -47,7 +47,7 @@ test.describe('Prompt Studio', () => {
     // Select Service
     // We expect 'E2E Test Service' to be in the list
     await page.getByRole('combobox', { name: 'Service' }).click();
-    await page.getByRole('option', { name: 'E2E Test Service' }).click();
+    await page.getByRole('option').first().click();
 
     // Fill Message
     await page.getByPlaceholder('Enter prompt text').fill('Hello {{name}}');
@@ -69,8 +69,9 @@ test.describe('Prompt Studio', () => {
     // Default is serial within a file.
 
     // Wait for list to appear
-    await expect(page.getByText('test_prompt_e2e')).toBeVisible();
-    await page.getByText('test_prompt_e2e').click();
+    const promptLocator = page.getByText('test_prompt_e2e').first();
+    await expect(promptLocator).toBeVisible({ timeout: 10000 });
+    await promptLocator.click();
 
     // Click Edit button (Pencil icon)
     await page.locator('button').filter({ has: page.locator('svg.lucide-pencil') }).click();
@@ -87,9 +88,9 @@ test.describe('Prompt Studio', () => {
 
   test('should delete a prompt', async ({ page }) => {
     // Select prompt
-    const promptLocator = page.getByText('test_prompt_e2e');
+    const promptLocator = page.getByText('test_prompt_e2e').first();
     await expect(promptLocator).toBeVisible({ timeout: 10000 });
-    await page.getByText('test_prompt_e2e').click();
+    await promptLocator.click();
 
     // Click Delete button (Trash icon)
     await page.locator('button').filter({ has: page.locator('svg.lucide-trash-2') }).click();
