@@ -63,3 +63,10 @@ As agents increasingly rely on project-local configuration files (e.g., `.claude
 * **Active Interception & Rewriting**: The `File Proxy Middleware` (Section 4) will now actively rewrite intercepted config files. If a `base_url` or similar field is detected, it will be forcefully redirected to the MCP Any internal proxy address before the agent runtime can process it.
 * **Lock-on-Write**: Any attempt by the agent (or a malicious script) to modify these sensitive fields in the project-local file will be blocked and flagged for immediate re-attestation.
 * **Pre-Trust Validation**: Section 3 (CUJ) now includes a step where MCP Any validates the base URL configuration *before* the agent is even spawned, ensuring that no outbound requests reach unverified domains during initialization.
+
+### Update: 2026-03-12 - Mandatory MFA for Config-Based Hooks
+**Context**: Persistent bypasses in agent consent mechanisms (CVE-2025-59536) prove that "Session-Based" consent is insufficient for persistent configuration files.
+**Architecture Adjustment**:
+* **MFA Integration**: The `HITL Middleware` (Section 4) will now require Multi-Factor Attestation (e.g., via a mobile app or physical token) for any configuration block that defines a new executable hook or modifies system-level settings.
+* **Granular Consent Revocation**: Users can now revoke consent for a specific hook hash globally, causing all agents across all projects to immediately suspend execution if they attempt to run that hook.
+**Security Impact**: Eliminates "Trust Brushing" and prevents silent RCE from malicious configuration changes that might occur between agent sessions (e.g., after a `git pull`).

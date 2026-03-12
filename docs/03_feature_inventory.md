@@ -117,9 +117,19 @@
 - **Base-URL Hijack Protection (Exfiltration Guard)**: (P0) A middleware that enforces a strict "Allow-List" for LLM base URLs, preventing silent redirection of API traffic.
 - **Active Config Rewriter**: (P1) A daemon that monitors agent configuration files and automatically reverts unauthorized changes to security-critical fields.
 
+---
+
+## Evolution: [2026-03-12] Updates
+
+### Proposed Additions
+- **Verified Skill Registry**: (P0) A security-first marketplace/registry for agent skills, requiring behavioral profiling and cryptographic signing before installation.
+- **Offline-First Resilient Proxy**: (P1) A hardened gateway that handles complex proxy configurations and provides a stable LLM interface for air-gapped or restricted environments.
+- **MFA for Project-Local Hooks**: (P0) Extends the HITL Middleware to require multi-factor attestation for any executable hook found in project configurations.
+
 ### Priority Shifts
-- **Project Configuration Security Guard**: Re-affirmed as **P0**. Expanded scope to include active interception of base URL modifications.
-- **Detached Sandbox for Automated Hooks**: Re-affirmed as **P0**. Critical for safe execution of legacy hooks during the transition to Attested Hooks.
+- **Exfiltration-Resistant Transport**: Re-affirmed as **P0**. High urgency due to confirmed Base URL hijacking vulnerabilities.
+- **Project Configuration Security Guard**: Re-affirmed as **P0**. Expanded to include mandatory MFA for all hooks.
 
 ### Deprecations / Monitoring
 - **Direct Agent-to-LLM Communication**: Monitoring for deprecation in favor of **Exfiltration-Resistant Transport** (Proxied via MCP Any).
+- **Unsigned/Unverified Skills**: Moving towards a default-block policy for any skill not present in the Verified Skill Registry.
