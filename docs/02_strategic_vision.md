@@ -78,3 +78,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Universal Configuration Governance**: MCP Any will pivot from being a simple tool proxy to a "Governance Layer" for all agent-adjacent configurations. It will provide a "Verified View" of project-local settings, ensuring no malicious hooks or exfiltration paths exist before the agent even loads the file.
 - **Hardened Swarm Coordination**: We are moving from "Shared State" to "Isolated State-by-Default." Every agent in a swarm will operate in its own cryptographic "Intent-Scope," and all blackboard interactions must be explicitly authorized by a "Shared Context Policy."
 - **Detached Execution for Hooks**: All automated tool sequences or "hooks" defined in project configs must execute in a resource-isolated, network-restricted sandbox managed natively by MCP Any.
+
+---
+
+## Strategic Evolution: [2026-03-11]
+### Focus: Attested Configurations & Exfiltration-Resistant Transport
+**Context**: Research into CVE-2026-21852 reveals that "Base URL Hijacking" is a catastrophic new vector for API key exfiltration. This reinforces the need for MCP Any to move from a "Validating Proxy" to an "Active Interceptor" that not only sanitizes hooks but also forces all agent outbound traffic through an "Allow-Listed" transport layer.
+**Strategic Pivot**:
+- **Active Configuration Interception**: MCP Any will natively intercept and rewrite agent configuration files (e.g., `.claude/settings.json`) in real-time. Any attempt to modify base URLs or injection hooks will be automatically reverted and flagged for attestation.
+- **Exfiltration-Resistant Transport**: Moving towards a "Locked Transport" model where agents are configured to ONLY communicate with MCP Any's internal proxy. MCP Any will then handle the final routing to Anthropic, OpenAI, or MCP servers, ensuring that traffic cannot be redirected to attacker-controlled domains.
+- **Cryptographic Config Attestation**: Every project-local configuration must be cryptographically signed by a trusted identity (or the user themselves) before it is deemed "Loadable" by the agent runtime.

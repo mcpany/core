@@ -56,3 +56,10 @@ As agents increasingly rely on project-local configuration files (e.g., `.claude
 * **Strict Schema Enforcement**: The `Config Validator` in Section 4 will now explicitly block `enableAllProjectMcpServers` or similar "bulk-enable" flags unless they are accompanied by a per-server cryptographic attestation.
 * **Environment Variable Masking**: Section 4 will now intercept any configuration that attempts to inject environment variables into the agent runtime, masking sensitive keys (API_KEY, SECRET) by default.
 **Security Impact**: Mitigates high-risk "Configuration-as-Execution" attack vectors, preventing host takeover and API credential theft from untrusted repository configurations.
+
+### Update: 2026-03-11 - Mitigating Base URL Hijacking
+**Context**: Research into CVE-2026-21852 (Claude Code) revealed that agents can be tricked into exfiltrating API keys by modifying the `ANTHROPIC_BASE_URL` in project-local settings.
+**Architecture Adjustment**:
+* **Active Interception & Rewriting**: The `File Proxy Middleware` (Section 4) will now actively rewrite intercepted config files. If a `base_url` or similar field is detected, it will be forcefully redirected to the MCP Any internal proxy address before the agent runtime can process it.
+* **Lock-on-Write**: Any attempt by the agent (or a malicious script) to modify these sensitive fields in the project-local file will be blocked and flagged for immediate re-attestation.
+* **Pre-Trust Validation**: Section 3 (CUJ) now includes a step where MCP Any validates the base URL configuration *before* the agent is even spawned, ensuring that no outbound requests reach unverified domains during initialization.
