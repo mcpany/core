@@ -98,3 +98,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Zero-Trust Skill Registry**: MCP Any will move beyond basic tool discovery to a "Verified Registry" model. Skills must undergo automated static analysis and sandboxed behavioral profiling before being promoted to the "Trusted" tier.
 - **Air-Gapped Transport Bridge**: To address the Gemini CLI pain points, MCP Any will implement a "Resilient Offline Proxy" that can buffer agent requests and provide a stable, attested interface for LLM communication in restricted network environments.
 - **Mandatory Attestation for Config Hooks**: Following the Claude Code CVEs, we are mandating that NO project-local hooks execute without a multi-factor user attestation, even if they appear in previously "trusted" repositories.
+
+---
+
+## Strategic Evolution: [2026-03-13]
+### Focus: Modular Context Interop & Prompt Path Defense
+**Context**: The release of OpenClaw's ContextEngine and the rise of "Prompt Path" (indirect injection) attacks mark a shift from "Access Control" to "Content Governance." MCP Any must not only secure the *tools* but also the *data* flowing through them to prevent agent hijacking.
+**Strategic Pivot**:
+- **Modular Context Interop**: MCP Any will implement a "Context Bridge" that allows agents using different frameworks (OpenClaw, Claude Code, etc.) to exchange and persist context via a standardized, pluggable API.
+- **Prompt Path Protection**: Introducing a "Content Validation Middleware" that scans tool outputs and retrieved data for malicious instructions (Indirect Prompt Injection) before they are re-ingested by the agent.
+- **Swarm Integrity Monitoring**: Moving from individual agent security to "Swarm Security," where the collective behavior of a multi-agent system is monitored for anomalies that might indicate a compromised specialist agent.

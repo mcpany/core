@@ -21,6 +21,9 @@
 - [ ] **[P0] Config Attestation Signature Reviewer**: (2026-03-11) UI for verifying and signing project-local configuration blocks.
 - [ ] **[P0] Verified Skill Safety Report**: (2026-03-12) UI for viewing behavioral profiling results and safety scores for agent skills.
 - [ ] **[P0] MFA Attestation Dialog**: (2026-03-12) Secure UI component for multi-factor approval of high-risk configuration changes.
+- [ ] **[P0] Prompt Path Alert Dashboard**: (2026-03-13) UI for visualizing and responding to indirect prompt injection attempts.
+- [ ] **[P1] OpenClaw Context Sync Viewer**: (2026-03-13) Visualize shared context state between MCP Any and OpenClaw agents.
+- [ ] **[P1] Skill Impact Simulator**: (2026-03-13) Interactive "dry-run" interface to preview skill side-effects.
 - [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
 - [x] **[P1] Tool Playground & Explorer**:
   - [x] Auto-generated forms from Tool JSON Schemas.
