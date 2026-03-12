@@ -49,6 +49,11 @@
 *   **[P0] Project-Local Config Attestation Engine**: Cryptographic verification of signatures on agent configuration files. (Added: 2026-03-11)
 *   **[P1] Active Config Rewriter**: Daemon that automatically reverts unauthorized changes to security-critical agent settings. (Added: 2026-03-11)
 
+#### Upcoming (2026-03-12 Evolution)
+*   **[P0] HSM-Rooted Identity Provider**: Secure enclave bridge for hardware-backed agent signatures. (Added: 2026-03-12)
+*   **[P0] Ephemeral Agent Token Exchange**: Task-scoped JWT issuance for subagent swarm security. (Added: 2026-03-12)
+*   **[P1] Security Feed Integration (ClawHub/VirusTotal)**: Real-time skill verification and "Skill Rot" detection. (Added: 2026-03-12)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

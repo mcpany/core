@@ -19,6 +19,9 @@
 - [ ] **[P0] Blackboard Isolation Inspector**: Visualize and debug Agent-Bound Blackboard data across different "Intent Scopes." (Added: 2026-03-09)
 - [ ] **[P0] Outbound Traffic Security Map**: (2026-03-11) Real-time visualization of agent outbound requests, highlighted by attestation status.
 - [ ] **[P0] Config Attestation Signature Reviewer**: (2026-03-11) UI for verifying and signing project-local configuration blocks.
+- [ ] **[P0] HSM Identity Manager**: (2026-03-12) UI for managing TPM/HSM-backed agent keys and viewing attestation status.
+- [ ] **[P0] Ephemeral Token Monitor**: (2026-03-12) Visual tracking of active subagent JWTs, their scopes, and remaining TTL.
+- [ ] **[P1] Skill Security Feed Dashboard**: (2026-03-12) Real-time alerts and verification status for all discovered skills/tools.
 - [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
 - [x] **[P1] Tool Playground & Explorer**:
   - [x] Auto-generated forms from Tool JSON Schemas.

@@ -63,3 +63,10 @@ As agents increasingly rely on project-local configuration files (e.g., `.claude
 * **Active Interception & Rewriting**: The `File Proxy Middleware` (Section 4) will now actively rewrite intercepted config files. If a `base_url` or similar field is detected, it will be forcefully redirected to the MCP Any internal proxy address before the agent runtime can process it.
 * **Lock-on-Write**: Any attempt by the agent (or a malicious script) to modify these sensitive fields in the project-local file will be blocked and flagged for immediate re-attestation.
 * **Pre-Trust Validation**: Section 3 (CUJ) now includes a step where MCP Any validates the base URL configuration *before* the agent is even spawned, ensuring that no outbound requests reach unverified domains during initialization.
+
+### Update: 2026-03-12 - Hardware-Rooted Hook Attestation
+**Context**: OpenClaw v26's "Personal-by-Default" boundary and the shift toward hardware trust require that any project-local hook be tied to a specific, hardware-attested operator.
+**Architecture Adjustment**:
+* **HSM-Rooted Hook Signatures**: The `Config Validator` (Section 4) now requires that any executable hook in a project-local config be accompanied by a signature from a trusted TPM/HSM-backed key.
+* **Verified Feed Integration**: Section 4 (Analysis) will now cross-reference hook command patterns and binary hashes against the **ClawHub / VirusTotal Security Feed** to detect known-malicious "Skill Rot."
+* **Identity-Bound Execution**: Hooks will no longer run as a generic "agent" user. They will execute with an identity bound to the hardware signature of the attestor, providing non-repudiable audit logs.

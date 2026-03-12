@@ -117,9 +117,19 @@
 - **Base-URL Hijack Protection (Exfiltration Guard)**: (P0) A middleware that enforces a strict "Allow-List" for LLM base URLs, preventing silent redirection of API traffic.
 - **Active Config Rewriter**: (P1) A daemon that monitors agent configuration files and automatically reverts unauthorized changes to security-critical fields.
 
+---
+
+## Evolution: [2026-03-12] Updates
+
+### Proposed Additions
+- **Hardware-Rooted Identity Provider (HSM-Bridge)**: (P0) Enables agents to use TPM/HSM-backed keys for signing tool calls and state updates.
+- **Ephemeral Agent Token Exchange (Swarms)**: (P0) Service that issues short-lived, task-scoped JWTs to subagents, reducing credential exposure.
+- **ClawHub / VirusTotal Security Feed Integration**: (P1) Real-time skill verification that blocks "Shadow Skill Injection" and "Skill Rot" by verifying tool signatures against global reputation databases.
+
 ### Priority Shifts
-- **Project Configuration Security Guard**: Re-affirmed as **P0**. Expanded scope to include active interception of base URL modifications.
-- **Detached Sandbox for Automated Hooks**: Re-affirmed as **P0**. Critical for safe execution of legacy hooks during the transition to Attested Hooks.
+- **Project Configuration Security Guard**: Re-affirmed as **P0**. Now incorporates "Hardware-Rooted Attestation" requirements for all project-local hooks.
+- **A2A Interop Bridge**: Re-affirmed as **P0**. Essential for carrying hardware-attested identities across different agent frameworks.
 
 ### Deprecations / Monitoring
-- **Direct Agent-to-LLM Communication**: Monitoring for deprecation in favor of **Exfiltration-Resistant Transport** (Proxied via MCP Any).
+- **Software-Only Agent Identities**: Monitoring for deprecation. All autonomous agent identities should eventually be rooted in hardware or a trusted enclave.
+- **Unsigned Third-Party Skills**: Monitoring for deprecation. Moving towards a "Signed-Only" policy for all external tool/skill discovery.

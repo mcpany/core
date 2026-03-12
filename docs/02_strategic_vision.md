@@ -88,3 +88,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Active Configuration Interception**: MCP Any will natively intercept and rewrite agent configuration files (e.g., `.claude/settings.json`) in real-time. Any attempt to modify base URLs or injection hooks will be automatically reverted and flagged for attestation.
 - **Exfiltration-Resistant Transport**: Moving towards a "Locked Transport" model where agents are configured to ONLY communicate with MCP Any's internal proxy. MCP Any will then handle the final routing to Anthropic, OpenAI, or MCP servers, ensuring that traffic cannot be redirected to attacker-controlled domains.
 - **Cryptographic Config Attestation**: Every project-local configuration must be cryptographically signed by a trusted identity (or the user themselves) before it is deemed "Loadable" by the agent runtime.
+
+---
+
+## Strategic Evolution: [2026-03-12]
+### Focus: Hardware-Rooted Trust & Ephemeral Swarm Identity
+**Context**: Today's findings from OpenClaw v26 and the shift towards TPM/HSM-backed identities confirm that software-only security is reaching its limit for autonomous swarms. As swarms become more distributed, the "Identity of the Agent" must be hardware-attested to prevent impersonation and exfiltration.
+**Strategic Pivot**:
+- **Hardware-Rooted Identity Provider**: MCP Any will evolve to support TPM/HSM-rooted identity for local agents. It will act as a "Secure Enclave Bridge," allowing agents to sign tool calls and state updates with hardware-backed keys.
+- **Ephemeral Swarm Identity (Token Exchange)**: Implementing a "Token Exchange Service" that transforms long-lived parent credentials into short-lived, hardware-attested, task-scoped JWTs for subagents. This minimizes the "Blast Radius" of a compromised subagent.
+- **Skill Provenance Enforcement**: Moving from "Block-list" to "Attestation-list" for skills. MCP Any will integrate with feeds like ClawHub/VirusTotal to enforce that only "Verified and Signed" skills can be discovered and executed by agents.
