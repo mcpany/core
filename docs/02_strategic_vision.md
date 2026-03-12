@@ -158,3 +158,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Holistic Local Zero-Trust**: MCP Any will mandate origin-validation for all listeners and strictly enforce "Sandbox-Only" execution for any automated configuration hooks.
 - **Lineage-Aware Orchestration**: We are moving from "Session Handoffs" to "Verified Lineage." Every subagent request must carry a cryptographic proof of its parentage, ensuring that "Intent" cannot be hijacked by side-channel injections.
 - **UAB-Native Task Verification**: Promoting the Universal Agent Bus (UAB) to the primary orchestration layer, where MCP Any acts as the "Certificate Authority" for agent-to-agent task delegation.
+
+---
+
+## Strategic Evolution: [2026-03-19]
+### Focus: Standardized Task Negotiation & RL-Ready Telemetry
+**Context**: The maturation of the Universal Agent Coordination Protocol (UACO) and the release of OpenClaw-RL v1 signal a shift from simple tool execution to sophisticated agentic negotiation and self-improving swarms. Additionally, the move toward enterprise-managed agent settings demands a centralized governance model.
+**Strategic Pivot**:
+- **UACO-Native Orchestration**: MCP Any will pivot from a "Task Router" to a "Negotiation Hub." We will implement native UACO support to facilitate standardized task bidding and stateful handoffs between disparate agent frameworks.
+- **Unified Feedback Telemetry**: To support the next generation of RL-driven agents, MCP Any will evolve into a "Telemetry Aggregator." We will provide a unified interface for collecting conversation-feedback loops, tool performance metrics, and user sentiment across all connected agents.
+- **Enterprise Policy Synchronization**: Expanding the "Governance Layer" to support remote, centralized policy distribution. This allows organizations to synchronize security guardrails and "Allowed Origin" lists across large fleets of MCP Any instances.

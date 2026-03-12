@@ -44,3 +44,7 @@ The OpenClaw security crisis (CVE-2026-25253) highlighted a critical flaw in "lo
 
 ## 7. Evolutionary Changelog
 * **2026-03-18:** Initial Document Creation.
+* **2026-03-19:** **Update: Enterprise-Managed Origin Policies**.
+    * **Context**: Recent shifts in Claude Code toward "Enterprise Managed Settings" demand that local security policies can be governed centrally.
+    * **Architecture Adjustment**: Introducing a "Policy Sync Hook" in the `Origin Middleware` that allows the gateway to fetch and cache an organization-wide `allowed_origins` list from a remote governance server.
+    * **Security Impact**: Ensures consistent "Zero-Trust" enforcement across large developer fleets, preventing individual users from accidentally weakening the origin-validation guardrails.
