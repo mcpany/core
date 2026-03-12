@@ -136,10 +136,20 @@
 - **Critical Skill Simulation (Dry-Run 2.0)**: (P1) Advanced "what-if" analysis for skills that simulates their impact on sensitive data before they are executed.
 - **Swarm Behavioral Baseline**: (P1) Monitoring tool to establish a "normal" behavior pattern for agent swarms and alert on anomalies.
 
+---
+
+## Evolution: [2026-03-14] Updates
+
+### Proposed Additions
+- **Data Provenance HITL (Taint Tracker)**: (P0) Middleware that tracks "untrusted" strings from MCP resources and forces HITL for tool calls using that data. Mitigates Zero-Click RCE.
+- **Project Config Ghosting Prevention**: (P0) A security layer that ensures project-local settings cannot override global security defaults or hooks without explicit attestation.
+- **Deterministic Tool Namespacing**: (P1) Content-addressable naming for tools to prevent namespacing collisions and "Shadow Tool" injection.
+- **Swarms Framework Adapter**: (P1) Native support for Swarms framework agent lifecycle and memory sync.
+
 ### Priority Shifts
-- **Verified Skill Registry**: Re-affirmed as **P0** following the "ClawHavoc" malicious skill crisis.
-- **A2A Interop Bridge**: Re-affirmed as **P0** to support the industry shift towards "Agentic Swarms."
+- **Policy Firewall**: Re-affirmed as **P0**. Mandatory for enforcing Stateless Configuration Governance.
+- **HITL Middleware**: Re-affirmed as **P0**. Essential for the Data Provenance HITL flow.
 
 ### Deprecations / Monitoring
-- **Direct Agent-to-LLM Communication**: Monitoring for deprecation in favor of **Exfiltration-Resistant Transport** (Proxied via MCP Any).
-- **Unsigned/Unverified Skills**: Moving towards a default-block policy for any skill not present in the Verified Skill Registry.
+- **Implicit Tool Overwrites**: Monitoring for deprecation in favor of **Deterministic Tool Namespacing**.
+- **Unauthenticated Local Config Hooks**: Moving to a "Block-by-Default" policy for any local hook not present in the Global Attestation Registry.

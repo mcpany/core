@@ -24,6 +24,10 @@
 - [ ] **[P0] Prompt Path Alert Dashboard**: (2026-03-13) UI for visualizing and responding to indirect prompt injection attempts.
 - [ ] **[P1] OpenClaw Context Sync Viewer**: (2026-03-13) Visualize shared context state between MCP Any and OpenClaw agents.
 - [ ] **[P1] Skill Impact Simulator**: (2026-03-13) Interactive "dry-run" interface to preview skill side-effects.
+- [ ] **[P0] Data Provenance Report Viewer**: (2026-03-14) Display data origins (e.g., "Source: Google Calendar") during HITL tool approval.
+- [ ] **[P0] Project-Local Config Overlay**: (2026-03-14) UI for visualizing how global security policies override local project settings.
+- [ ] **[P1] Tool Namespace Inspector**: (2026-03-14) Visual explorer for content-addressable tool names and version history.
+- [ ] **[P1] Swarms Lifecycle Dashboard**: (2026-03-14) Real-time monitor for Swarms framework agent activity and memory sync.
 - [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
 - [x] **[P1] Tool Playground & Explorer**:
   - [x] Auto-generated forms from Tool JSON Schemas.

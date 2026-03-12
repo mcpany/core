@@ -59,6 +59,12 @@
 *   **[P1] OpenClaw ContextEngine Bridge**: Middleware to synchronize state with OpenClaw's pluggable context management. (Added: 2026-03-13)
 *   **[P1] Critical Skill Simulation**: Advanced "what-if" analysis for skills, simulating impact on sensitive data. (Added: 2026-03-13)
 
+#### Upcoming (2026-03-14 Evolution)
+*   **[P0] Data Provenance HITL (Taint Tracker)**: Track origins of tool arguments and enforce mandatory HITL for untrusted data triggers. (Added: 2026-03-14)
+*   **[P0] Stateless Configuration Governance**: Enforce global security baseline overrides for project-local configurations. (Added: 2026-03-14)
+*   **[P1] Deterministic Tool Namespacing**: Content-addressable namespacing to prevent "Shadow Tool" injection. (Added: 2026-03-14)
+*   **[P1] Swarms Framework Adapter**: Native integration for the Swarms agent framework lifecycle. (Added: 2026-03-14)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

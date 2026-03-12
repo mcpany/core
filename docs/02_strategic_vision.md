@@ -108,3 +108,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Modular Context Interop**: MCP Any will implement a "Context Bridge" that allows agents using different frameworks (OpenClaw, Claude Code, etc.) to exchange and persist context via a standardized, pluggable API.
 - **Prompt Path Protection**: Introducing a "Content Validation Middleware" that scans tool outputs and retrieved data for malicious instructions (Indirect Prompt Injection) before they are re-ingested by the agent.
 - **Swarm Integrity Monitoring**: Moving from individual agent security to "Swarm Security," where the collective behavior of a multi-agent system is monitored for anomalies that might indicate a compromised specialist agent.
+
+---
+
+## Strategic Evolution: [2026-03-14]
+### Focus: Prompt-to-Tool Provenance & Stateless Configuration Governance
+**Context**: The Claude Desktop zero-click RCE and Claude Code repository-level configuration exploits demonstrate that agents are being hijacked by untrusted data and persistent malicious settings. The trust boundary has shifted from the "User-Agent" link to the "Data-Agent" link.
+**Strategic Pivot**:
+- **Prompt-to-Tool Provenance**: MCP Any will implement "taint tracking" for all strings originating from external MCP resources (e.g., calendar events, web pages). If a tool call's arguments contain tainted data, the policy engine will mandate Human-in-the-Loop (HITL) approval, regardless of previous permissions.
+- **Stateless Configuration Enforcement**: Moving towards a model where project-local agent configurations (e.g., `.claude/settings.json`) are treated as "Ephemeral Hints" rather than "Permanent Commands." MCP Any will enforce a global "Security Baseline" that overrides any dangerous local hooks unless they are explicitly attested in a signed global registry.
+- **Deterministic Namespacing**: To support massive tool growth (seen in Gemini CLI), MCP Any will adopt a deterministic, content-addressable namespacing scheme for all discovered tools, ensuring that "Shadow Tools" cannot silently overwrite established system tools.
