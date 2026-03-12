@@ -98,6 +98,9 @@ export function DashboardGrid() {
             }
         } else if (Array.isArray(parsed)) {
             // Case 2: Already in new format
+            if (parsed.length === 0) {
+                return DEFAULT_LAYOUT;
+            }
             return parsed;
         }
         return DEFAULT_LAYOUT;
@@ -169,14 +172,22 @@ export function DashboardGrid() {
     // ⚡ BOLT: Debounce API writes to prevent server spam during drag/resize operations
     // Randomized Selection from Top 5 High-Impact Targets
     const isFirstRun = useRef(true);
+    const layoutLoaded = useRef(false);
     useEffect(() => {
-        if (!isMounted || loading) return;
+        if (!isMounted || loading) {
+            layoutLoaded.current = true;
+            return;
+        }
 
         // Prevent saving the initial empty state if it's the very first mounted render
         // But we must allow saving if we just loaded/migrated data.
         if (isFirstRun.current) {
             isFirstRun.current = false;
             // If widgets are empty on first run, it's likely the initial state.
+            return;
+        }
+        if (layoutLoaded.current) {
+            layoutLoaded.current = false;
             return;
         }
 
