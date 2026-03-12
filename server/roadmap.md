@@ -70,6 +70,12 @@
 *   **[P0] Signed Context Chain Protocol**: Cryptographic verification of subagent lineage to prevent identity spoofing (CVE-2026-28190). (Added: 2026-03-15)
 *   **[P1] Universal Agent Bus (UAB) Adapter**: Native transport support for the UAB protocol for framework-neutral handoffs. (Added: 2026-03-15)
 
+#### Upcoming (2026-03-16 Evolution)
+*   **[P0] Browser-Origin Validation Middleware**: Mandatory validation of `Origin` and `Sec-Fetch-Site` headers for all local listeners (CVE-2026-25253). (Added: 2026-03-16)
+*   **[P0] Cross-Agent Loop Circuit Breaker**: Real-time monitoring of inter-agent call graphs across framework boundaries. (Added: 2026-03-16)
+*   **[P1] Relational Identity Provider**: Service to map and verify agent identities across disparate frameworks for context continuity. (Added: 2026-03-16)
+*   **[P1] UAB Task Delegation Bridge**: Support for UAB-native task cards and authenticated discovery in the A2A bridge. (Added: 2026-03-16)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

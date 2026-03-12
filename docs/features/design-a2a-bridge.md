@@ -46,3 +46,7 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
 
 ## 7. Evolutionary Changelog
 *   **2026-02-26:** Initial Document Creation.
+*   **2026-03-16: Authenticated Discovery & UAB Task Cards**
+    *   **Context:** Gemini CLI v0.31.0 introduced authenticated A2A agent card discovery.
+    *   **Architecture Adjustment:** The A2ABridge now supports the UAB "Task Card" format. Discovery is no longer anonymous; agents must present a valid `MCPOAuthProvider` token to register or be discovered.
+    *   **Security Impact:** Prevents "Shadow Agents" from silently registering in the swarm and intercepting delegated tasks.
