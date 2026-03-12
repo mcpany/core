@@ -3,6 +3,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+// ⚡ BOLT: Implemented WeakMap cache for token estimation to eliminate redundant JSON.stringify overhead on large objects during renders.
+// Randomized Selection from Top 5 High-Impact Targets
+const tokenCache = new WeakMap<object, number>();
+
 /**
  * Estimates the number of tokens in a string or object using a simple heuristic.
  * This is meant for UI estimation only, not for precision.
@@ -11,6 +15,11 @@
  */
 export function estimateTokens(input: any): number {
     if (!input) return 0;
+
+    const isObject = typeof input === 'object';
+    if (isObject && tokenCache.has(input)) {
+        return tokenCache.get(input)!;
+    }
 
     const text = typeof input === 'string' ? input : JSON.stringify(input);
 
@@ -26,7 +35,13 @@ export function estimateTokens(input: any): number {
     const h1 = Math.ceil(charCount / 4);
     const h2 = Math.ceil(wordCount * 1.3);
 
-    return Math.max(h1, h2);
+    const result = Math.max(h1, h2);
+
+    if (isObject) {
+        tokenCache.set(input, result);
+    }
+
+    return result;
 }
 
 /**
