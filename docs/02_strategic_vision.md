@@ -148,3 +148,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Local Zero-Trust Enforcement**: MCP Any will treat all loopback traffic as potentially hostile. We are mandating rate limiting, mandatory logging, and cryptographic origin validation for all local listeners, eliminating the "Trusted Loopback" loophole.
 - **Behavioral Attestation for Skills**: Moving beyond static analysis to "Behavioral Guardrails." Skills will be subjected to isolated "Burn-In" periods where their activity is profiled against a baseline before gaining access to sensitive resources.
 - **UAB-Native Task Delegation**: We are promoting the Universal Agent Bus (UAB) to a core strategic priority. MCP Any will act as the authoritative "Task Card" validator, ensuring all cross-framework delegations are authenticated and scoped.
+
+---
+
+## Strategic Evolution: [2026-03-18]
+### Focus: Holistic Local Zero-Trust & Lineage-Aware Orchestration
+**Context**: Today's findings from the OpenClaw (CVE-2026-25253) and Claude Code (RCE/Exfiltration) post-mortems confirm that "Local Trust" is dead. The "Universal Agent Infrastructure" must treat even internal loops and project-local files as untrusted inputs.
+**Strategic Pivot**:
+- **Holistic Local Zero-Trust**: MCP Any will mandate origin-validation for all listeners and strictly enforce "Sandbox-Only" execution for any automated configuration hooks.
+- **Lineage-Aware Orchestration**: We are moving from "Session Handoffs" to "Verified Lineage." Every subagent request must carry a cryptographic proof of its parentage, ensuring that "Intent" cannot be hijacked by side-channel injections.
+- **UAB-Native Task Verification**: Promoting the Universal Agent Bus (UAB) to the primary orchestration layer, where MCP Any acts as the "Certificate Authority" for agent-to-agent task delegation.

@@ -237,3 +237,9 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Core Middleware Pipeline**: The middleware architecture is robust and extensible.
 - **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates protocol details from business logic.
 - **Documentation**: The project has excellent documentation coverage for most features.
+
+#### Upcoming (2026-03-18 Evolution)
+*   **[P0] Local Listener Origin Enforcement**: Mandatory validation of Origin/Sec-Fetch-Site headers for local listeners. (Added: 2026-03-18)
+*   **[P0] Recursive Depth-Limit Middleware**: Real-time call-graph monitor to detect and block recursive agent loops. (Added: 2026-03-18)
+*   **[P0] UAB Authenticated Task Delegation**: Implementation of UAB v1.2 task card verification for cross-framework handoffs. (Added: 2026-03-18)
+*   **[P1] Lineage-Aware Context Signing**: Cryptographic context chain signing to prevent subagent identity spoofing. (Added: 2026-03-18)

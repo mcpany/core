@@ -203,3 +203,20 @@
 
 ### Deprecations / Monitoring
 - **Unthrottled Local Access**: All local interfaces must now implement rate limiting. Unthrottled loopback access is now **Deprecated**.
+
+---
+
+## Evolution: [2026-03-18] Updates
+
+### Proposed Additions
+- **Local Listener Origin Enforcement**: (P0) Mandatory `Origin` and `Sec-Fetch-Site` validation for all local API/WebSocket listeners to prevent cross-site hijacking.
+- **Recursive Depth-Limit Middleware**: (P0) Advanced call-graph monitoring to detect and block infinite tool-calling loops across different agents.
+- **UAB Authenticated Task Delegation Core**: (P0) Full implementation of UAB task card verification, ensuring all cross-framework delegations are authenticated.
+- **Lineage-Aware Context Signing**: (P1) Cryptographic signing of the entire context chain to prevent subagent identity spoofing.
+
+### Priority Shifts
+- **Safe-by-Default Network Hardening**: (Re-affirmed P0) Now explicitly includes mandatory Sandbox-Only execution for all configuration hooks.
+- **Universal Agent Bus (UAB) Adapter**: (Re-affirmed P0) Essential for mitigating the "Local Trust" crisis via authenticated delegation.
+
+### Deprecations / Monitoring
+- **Unvalidated Configuration Hooks**: All configuration-based "auto-execute" hooks are now **Deprecated** and will be disabled unless run in a Detached Sandbox.
