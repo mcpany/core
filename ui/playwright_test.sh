@@ -116,13 +116,36 @@ wait_for_http() {
   return 1
 }
 
-echo_port=$(( (RANDOM % 10000) + 20000 ))
+# Find a free port starting from a random base port derived from PID and random value
+# to minimise collision risk when multiple tests run concurrently.
+find_free_port() {
+  local base_port=$(( ( ($$ + RANDOM) % 20000 ) + 20000 ))
+  local port=$base_port
+  local max_tries=200
+  local tries=0
+  while (( tries < max_tries )); do
+    if ! ss -ltn 2>/dev/null | grep -q ":${port} " && \
+       ! ss -ltn 2>/dev/null | grep -q ":${port}$"; then
+      echo "$port"
+      return 0
+    fi
+    port=$(( port + 4 ))
+    if (( port > 59999 )); then
+      port=$(( base_port + (tries * 4) % 20000 ))
+    fi
+    tries=$(( tries + 1 ))
+  done
+  # Fallback: just use the base port
+  echo "$base_port"
+}
+
+echo_port=$(find_free_port)
 echo "Starting HTTP echo server on 127.0.0.1:${echo_port}"
 "$echo_bin" --port="${echo_port}" >"$TEST_TMPDIR/http-echo.log" 2>&1 &
 echo_pid=$!
 wait_for_http "http://127.0.0.1:${echo_port}/health" "HTTP echo server"
 
-backend_http_port=$(( echo_port + 2 ))
+backend_http_port=$(find_free_port)
 backend_grpc_port=$(( backend_http_port + 1 ))
 echo "Starting MCP Any backend on 127.0.0.1:${backend_http_port}"
 (
