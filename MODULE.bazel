@@ -74,6 +74,7 @@ use_repo(
     "io_k8s_api",
     "io_k8s_apimachinery",
     "io_k8s_sigs_controller_runtime",
+
     "com_github_armon_go_metrics",
     "com_github_aws_aws_sdk_go",
     "com_github_aws_aws_sdk_go_v2",
