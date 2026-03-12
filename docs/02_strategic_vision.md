@@ -138,3 +138,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Mandatory Origin Enforcement**: MCP Any will move to a "Verify Everything" model for local transport. All WebSocket and HTTP interfaces will mandate `Origin` and `Sec-Fetch-Site` validation to prevent cross-site hijacking.
 - **Relational Identity Mapping**: We are evolving the Signed Context Chain into a full "Relational Hub." MCP Any will map identities across different frameworks (OpenClaw, AutoGen, Gemini), allowing a "Subagent in Framework A" to securely inherit context and permissions from a "Parent in Framework B."
 - **UAB-First Orchestration**: Positioning UAB as the primary internal transport for inter-agent communication, with MCP Any acting as the universal translator and security enforcement point for all UAB-compliant swarms.
+
+---
+
+## Strategic Evolution: [2026-03-17]
+### Focus: Local Zero-Trust & Behavioral Skill Attestation
+**Context**: The Oasis Security report on OpenClaw's loopback vulnerability and the "Delayed Payload" tactics in ClawHavoc skills demonstrate that the "Local Intranet" is the new frontier for AI agent exploits.
+**Strategic Pivot**:
+- **Local Zero-Trust Enforcement**: MCP Any will treat all loopback traffic as potentially hostile. We are mandating rate limiting, mandatory logging, and cryptographic origin validation for all local listeners, eliminating the "Trusted Loopback" loophole.
+- **Behavioral Attestation for Skills**: Moving beyond static analysis to "Behavioral Guardrails." Skills will be subjected to isolated "Burn-In" periods where their activity is profiled against a baseline before gaining access to sensitive resources.
+- **UAB-Native Task Delegation**: We are promoting the Universal Agent Bus (UAB) to a core strategic priority. MCP Any will act as the authoritative "Task Card" validator, ensuring all cross-framework delegations are authenticated and scoped.

@@ -76,6 +76,12 @@
 *   **[P1] Relational Identity Provider**: Service to map and verify agent identities across disparate frameworks for context continuity. (Added: 2026-03-16)
 *   **[P1] UAB Task Delegation Bridge**: Support for UAB-native task cards and authenticated discovery in the A2A bridge. (Added: 2026-03-16)
 
+#### Upcoming (2026-03-17 Evolution)
+*   **[P0] Local-Loopback Rate Limiter**: Mandatory rate limiting and auditing for all `127.0.0.1` / `::1` traffic to mitigate brute-force attacks. (Added: 2026-03-17)
+*   **[P0] UAB Authenticated Task Delegation**: Core implementation of UAB v1.2 "Authenticated Task Cards" for secure cross-framework handoffs. (Added: 2026-03-17)
+*   **[P1] Behavioral Skill Burn-In Sandbox**: Isolated profiling environment for detecting "Delayed Payload" malicious skills. (Added: 2026-03-17)
+*   **[P1] Local Security Audit Service**: Background service for logging and analyzing local connection attempt patterns. (Added: 2026-03-17)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
