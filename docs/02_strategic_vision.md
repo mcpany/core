@@ -138,3 +138,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Mandatory Origin Enforcement**: MCP Any will move to a "Verify Everything" model for local transport. All WebSocket and HTTP interfaces will mandate `Origin` and `Sec-Fetch-Site` validation to prevent cross-site hijacking.
 - **Relational Identity Mapping**: We are evolving the Signed Context Chain into a full "Relational Hub." MCP Any will map identities across different frameworks (OpenClaw, AutoGen, Gemini), allowing a "Subagent in Framework A" to securely inherit context and permissions from a "Parent in Framework B."
 - **UAB-First Orchestration**: Positioning UAB as the primary internal transport for inter-agent communication, with MCP Any acting as the universal translator and security enforcement point for all UAB-compliant swarms.
+
+---
+
+## Strategic Evolution: [2026-03-17]
+### Focus: Conflict-Aware Arbitration & Process-Isolated Agency
+**Context**: Research into "Context Bleeding" (CVE-2026-30112) and the release of OpenClaw's "Conflict Resolver" indicates that swarms are moving from simple cooperation to complex arbitration. Logical isolation is no longer sufficient; agents require strict process-level boundaries and structured mediation for conflicting states.
+**Strategic Pivot**:
+- **Process-Isolated Execution**: MCP Any will mandate that all subagent tool calls and hooks execute in ephemeral, process-isolated containers or sandboxes, ensuring zero "Context Bleeding" between parent and child identities.
+- **Conflict-Aware Blackboard**: Evolving the Shared KV Store to support "Conflict Resolution Policies." MCP Any will detect and mediate overlapping state updates from multiple agents using customizable arbitration logic.
+- **Dynamic Capability Negotiation**: Supporting the UAB v1.1 spec by allowing agents to "Negotiate" for additional permissions in real-time. MCP Any will act as the Zero-Trust broker for these dynamic escalations, requiring HITL approval for high-risk requests.

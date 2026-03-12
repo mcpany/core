@@ -76,6 +76,11 @@
 *   **[P1] Relational Identity Provider**: Service to map and verify agent identities across disparate frameworks for context continuity. (Added: 2026-03-16)
 *   **[P1] UAB Task Delegation Bridge**: Support for UAB-native task cards and authenticated discovery in the A2A bridge. (Added: 2026-03-16)
 
+#### Upcoming (2026-03-17 Evolution)
+*   **[P0] Process-Isolated Execution Runtime**: Mandatory process-level isolation for all tool and hook executions (CVE-2026-30112). (Added: 2026-03-17)
+*   **[P0] Conflict-Aware Blackboard Mediation**: Advanced arbitration policies for resolving overlapping state updates in the Shared KV Store. (Added: 2026-03-17)
+*   **[P1] UAB Dynamic Negotiation Bridge**: Implementation of the UAB v1.1 Capability Negotiation handshake. (Added: 2026-03-17)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

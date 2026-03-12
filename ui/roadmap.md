@@ -31,6 +31,9 @@
 - [ ] **[P0] Cross-Framework Identity Map**: (2026-03-16) UI for managing and visualizing agent identity mappings between frameworks.
 - [ ] **[P0] Origin Violation Real-time Monitor**: (2026-03-16) Security dashboard for tracking and approving blocked browser-origin requests.
 - [ ] **[P1] UAB Task Card Inspector**: (2026-03-16) Visual tool for inspecting and debugging UAB-native task cards during delegation.
+- [ ] **[P0] Process Isolation Health Monitor**: (2026-03-17) Real-time visualization of sandboxed worker processes and their resource consumption.
+- [ ] **[P0] Blackboard Arbitration Dashboard**: (2026-03-17) UI for configuring and monitoring conflict resolution policies for the Shared KV Store.
+- [ ] **[P1] UAB Negotiation Handshake Debugger**: (2026-03-17) Interactive tool for debugging dynamic capability requests during A2A handoffs.
 - [ ] **[P1] Skill Impact Simulator**: (2026-03-13) Interactive "dry-run" interface to preview skill side-effects.
 - [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
 - [x] **[P1] Tool Playground & Explorer**:

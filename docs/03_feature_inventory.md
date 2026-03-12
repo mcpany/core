@@ -180,9 +180,18 @@
 - **Cross-Agent Loop Circuit Breaker**: (P0) Real-time monitoring of inter-agent call graphs to prevent "Spiral of Death" loops across framework boundaries.
 - **Relational Identity Provider**: (P1) A core service that maps and verifies agent identities between disparate frameworks (e.g., OpenClaw, Gemini CLI).
 
+---
+
+## Evolution: [2026-03-17] Updates
+
+### Proposed Additions
+- **Process-Isolated Execution Runtime**: (P0) Mandatory process-level isolation for all tool and hook executions to prevent "Context Bleeding" (CVE-2026-30112).
+- **Conflict-Aware Blackboard Mediation**: (P0) Advanced arbitration logic for the Shared KV Store to resolve overlapping state updates from multiple agents.
+- **UAB Dynamic Negotiation Bridge**: (P1) Support for the UAB v1.1 Capability Negotiation phase, allowing real-time permission escalation.
+
 ### Priority Shifts
-- **Signed Context Chain Protocol**: Re-affirmed as **P0** with expanded requirements for UAB compatibility.
-- **"Safe-by-Default" Network Hardening**: (Re-affirmed P0) Now includes mandatory Browser-Origin enforcement for all adapters.
+- **Shared KV Store (Blackboard)**: Re-affirmed as **P0** with new requirements for structured conflict resolution and arbitration policies.
+- **Detached Sandbox for Automated Hooks**: Re-affirmed as **P0** and merged into the "Process-Isolated Execution Runtime" initiative.
 
 ### Deprecations / Monitoring
-- **Implicit Local Trust**: All listeners must now explicitly validate request origins. Standard `localhost` binding without header checks is now **Deprecated**.
+- **Logical Context Isolation**: Monitoring for deprecation. Simple logical/memory boundaries are no longer considered sufficient for multi-agent safety.
