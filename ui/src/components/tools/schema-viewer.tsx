@@ -95,24 +95,24 @@ export function SchemaViewer({ schema, name, required = false, depth = 0 }: Sche
   const items = schema.items;
 
   return (
-    <div className={cn("font-mono text-sm", depth > 0 && "ml-3 border-l pl-3 border-border/50")}>
-      <div className="flex items-start py-1 group">
+    <div className={cn("font-mono text-sm", depth > 0 && "ml-3 border-l-2 pl-3 border-border/20 dark:border-border/40")}>
+      <div className="flex items-start py-1.5 group">
         {hasChildren ? (
            <Collapsible open={isOpen} onOpenChange={setIsOpen} className="w-full">
-             <div className="flex items-center gap-2 select-none">
+             <div className="flex items-center gap-2 select-none group-hover:bg-muted/20 p-1 rounded-md transition-colors -ml-1">
                <CollapsibleTrigger className="p-0.5 hover:bg-muted rounded transition-colors focus:outline-none focus:ring-1 focus:ring-ring">
-                 {isOpen ? <ChevronDown className="h-3 w-3 text-muted-foreground" /> : <ChevronRight className="h-3 w-3 text-muted-foreground" />}
+                 {isOpen ? <ChevronDown className="h-3 w-3 text-muted-foreground/70" /> : <ChevronRight className="h-3 w-3 text-muted-foreground/70" />}
                </CollapsibleTrigger>
-               {name && <span className="font-semibold text-foreground">{name}</span>}
-               {required && <span className="text-red-500 text-xs font-bold" title="Required">*</span>}
+               {name && <span className="font-semibold text-foreground/90 tracking-tight">{name}</span>}
+               {required && <span className="text-red-500/80 text-xs font-bold" title="Required">*</span>}
                <TypeBadge type={schema.type} format={schema.format} />
                {schema.description && (
                     <Tooltip delayDuration={300}>
                       <TooltipTrigger asChild>
-                        <Info className="h-3 w-3 text-muted-foreground/70 hover:text-foreground transition-colors cursor-help" />
+                        <Info className="h-3.5 w-3.5 text-muted-foreground/40 hover:text-foreground/80 transition-colors cursor-help" />
                       </TooltipTrigger>
-                      <TooltipContent className="max-w-[300px] text-xs">
-                        <p>{schema.description}</p>
+                      <TooltipContent className="max-w-[300px] text-xs backdrop-blur-md bg-background/80 shadow-lg border-border/50">
+                        <p className="leading-relaxed">{schema.description}</p>
                       </TooltipContent>
                     </Tooltip>
                )}
@@ -132,8 +132,8 @@ export function SchemaViewer({ schema, name, required = false, depth = 0 }: Sche
                  ))}
 
                  {isArray && items && (
-                   <div className="mt-1">
-                     <span className="text-xs text-muted-foreground mb-1 block pl-4">Items:</span>
+                   <div className="mt-2 relative bg-muted/5 dark:bg-muted/10 p-2 rounded-md border border-border/30">
+                     <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-muted-foreground/40 mb-2 block pl-1">ITEMS</span>
                      <SchemaViewer
                        schema={items}
                        depth={depth + 1}
@@ -144,23 +144,25 @@ export function SchemaViewer({ schema, name, required = false, depth = 0 }: Sche
              </CollapsibleContent>
            </Collapsible>
         ) : (
-          <div className="flex items-center gap-2">
-             <span className="w-4"></span> {/* Spacer for alignment */}
-             {name && <span className="font-semibold text-foreground">{name}</span>}
-             {required && <span className="text-red-500 text-xs font-bold" title="Required">*</span>}
+          <div className="flex items-center gap-2 relative group-hover:bg-muted/20 p-1 rounded-md transition-colors -ml-1 w-full">
+             <span className="w-4 flex items-center justify-center shrink-0">
+                 <span className="h-[2px] w-3 bg-border/20 dark:bg-border/40 rounded-full" />
+             </span>
+             {name && <span className="font-semibold text-foreground/80 tracking-tight shrink-0">{name}</span>}
+             {required && <span className="text-red-500/80 text-xs font-bold shrink-0" title="Required">*</span>}
              <TypeBadge type={schema.type} format={schema.format} />
              {schema.enum && (
-                <span className="text-xs text-muted-foreground ml-1">
-                  Enum: [{schema.enum.join(", ")}]
+                <span className="text-[10px] font-mono text-muted-foreground/70 bg-muted/40 px-1.5 py-0.5 rounded border border-border/50 whitespace-nowrap overflow-hidden text-ellipsis max-w-[200px]" title={schema.enum.join(", ")}>
+                  enum: [{schema.enum.join(", ")}]
                 </span>
              )}
               {schema.description && (
                     <Tooltip delayDuration={300}>
                       <TooltipTrigger asChild>
-                        <Info className="h-3 w-3 text-muted-foreground/70 hover:text-foreground transition-colors cursor-help" />
+                        <Info className="h-3.5 w-3.5 text-muted-foreground/40 hover:text-foreground/80 transition-colors cursor-help shrink-0" />
                       </TooltipTrigger>
-                      <TooltipContent className="max-w-[300px] text-xs">
-                        <p>{schema.description}</p>
+                      <TooltipContent className="max-w-[300px] text-xs backdrop-blur-md bg-background/80 shadow-lg border-border/50">
+                        <p className="leading-relaxed">{schema.description}</p>
                       </TooltipContent>
                     </Tooltip>
                )}

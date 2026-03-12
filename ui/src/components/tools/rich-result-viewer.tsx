@@ -144,53 +144,55 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
 
     return (
         <Tabs defaultValue={defaultTab} className="w-full">
-            <div className="flex items-center justify-between mb-2">
-                <TabsList>
+            <div className="flex items-center justify-between mb-3 border-b border-border/40 pb-2">
+                <TabsList className="bg-muted/50 backdrop-blur-sm border border-border/50">
                     {mcpContent && (
-                         <TabsTrigger value="rendered" className="flex items-center gap-2">
-                            <FileText className="h-4 w-4" /> Rendered
+                         <TabsTrigger value="rendered" className="flex items-center gap-2 data-[state=active]:bg-background/80 data-[state=active]:shadow-sm">
+                            <FileText className="h-4 w-4 text-blue-500/80" /> <span className="tracking-tight">Rendered</span>
                         </TabsTrigger>
                     )}
                     {isTableEligible && (
-                        <TabsTrigger value="table" className="flex items-center gap-2">
-                            <TableIcon className="h-4 w-4" /> Table
+                        <TabsTrigger value="table" className="flex items-center gap-2 data-[state=active]:bg-background/80 data-[state=active]:shadow-sm">
+                            <TableIcon className="h-4 w-4 text-emerald-500/80" /> <span className="tracking-tight">Table</span>
                         </TabsTrigger>
                     )}
-                    <TabsTrigger value="json" className="flex items-center gap-2">
-                        <FileJson className="h-4 w-4" /> JSON
+                    <TabsTrigger value="json" className="flex items-center gap-2 data-[state=active]:bg-background/80 data-[state=active]:shadow-sm">
+                        <FileJson className="h-4 w-4 text-amber-500/80" /> <span className="tracking-tight">JSON</span>
                     </TabsTrigger>
                     {isExtracted && (
-                         <TabsTrigger value="raw" className="flex items-center gap-2">
-                            <Terminal className="h-4 w-4" /> Raw Output
+                         <TabsTrigger value="raw" className="flex items-center gap-2 data-[state=active]:bg-background/80 data-[state=active]:shadow-sm">
+                            <Terminal className="h-4 w-4 text-slate-500/80" /> <span className="tracking-tight">Raw Output</span>
                         </TabsTrigger>
                     )}
                 </TabsList>
             </div>
 
             {mcpContent && (
-                <TabsContent value="rendered" className="border rounded-md bg-card">
+                <TabsContent value="rendered" className="border border-border/40 rounded-lg bg-card/40 backdrop-blur-sm shadow-sm overflow-hidden">
                     <ScrollArea className="h-[400px]">
-                        <McpContentRenderer content={mcpContent} />
+                        <div className="p-2">
+                            <McpContentRenderer content={mcpContent} />
+                        </div>
                     </ScrollArea>
                 </TabsContent>
             )}
 
             {isTableEligible && (
-                <TabsContent value="table" className="border rounded-md">
+                <TabsContent value="table" className="border border-border/40 rounded-lg bg-card/40 backdrop-blur-sm shadow-sm overflow-hidden">
                     <ScrollArea className="h-[400px]">
                         <Table>
-                            <TableHeader>
-                                <TableRow>
+                            <TableHeader className="bg-muted/30 sticky top-0 z-10 backdrop-blur-md">
+                                <TableRow className="hover:bg-transparent">
                                     {columns.map(col => (
-                                        <TableHead key={col} className="whitespace-nowrap">{col}</TableHead>
+                                        <TableHead key={col} className="whitespace-nowrap font-semibold tracking-tight text-foreground/80">{col}</TableHead>
                                     ))}
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {content.map((row: any, i: number) => (
-                                    <TableRow key={i}>
+                                    <TableRow key={i} className="hover:bg-muted/20 transition-colors">
                                         {columns.map(col => (
-                                            <TableCell key={col} className="py-2">
+                                            <TableCell key={col} className="py-2.5 border-b border-border/20 last:border-0">
                                                 {renderCell(row[col])}
                                             </TableCell>
                                         ))}
@@ -202,13 +204,17 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
                 </TabsContent>
             )}
 
-            <TabsContent value="json">
-                <JsonView data={content} maxHeight={400} />
+            <TabsContent value="json" className="border border-border/40 rounded-lg overflow-hidden shadow-sm">
+                <div className="bg-[#1e1e1e] p-1">
+                    <JsonView data={content} maxHeight={400} />
+                </div>
             </TabsContent>
 
              {isExtracted && (
-                <TabsContent value="raw">
-                    <JsonView data={result} maxHeight={400} />
+                <TabsContent value="raw" className="border border-border/40 rounded-lg overflow-hidden shadow-sm">
+                    <div className="bg-[#1e1e1e] p-1">
+                        <JsonView data={result} maxHeight={400} />
+                    </div>
                 </TabsContent>
             )}
         </Tabs>
