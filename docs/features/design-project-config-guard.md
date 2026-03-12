@@ -63,3 +63,11 @@ As agents increasingly rely on project-local configuration files (e.g., `.claude
 * **Active Interception & Rewriting**: The `File Proxy Middleware` (Section 4) will now actively rewrite intercepted config files. If a `base_url` or similar field is detected, it will be forcefully redirected to the MCP Any internal proxy address before the agent runtime can process it.
 * **Lock-on-Write**: Any attempt by the agent (or a malicious script) to modify these sensitive fields in the project-local file will be blocked and flagged for immediate re-attestation.
 * **Pre-Trust Validation**: Section 3 (CUJ) now includes a step where MCP Any validates the base URL configuration *before* the agent is even spawned, ensuring that no outbound requests reach unverified domains during initialization.
+
+### Update: 2026-03-12 - Hardening Against Lifecycle Hook Persistence
+**Context**: CVE-2026-25725 revealed a critical sandbox escape in Claude Code via injected `SessionStart` hooks in `.claude/settings.json`. Attackers can gain host privileges by poisoning configuration files that the agent trusts for lifecycle persistence.
+**Architecture Adjustment**:
+* **Active Lifecycle Interception**: The `File Proxy Middleware` (Section 4) is now upgraded to a `Lifecycle Governor`. It will specifically scan for `SessionStart`, `PreExec`, or `AfterTurn` hook definitions in any project-local config.
+* **Redirection to Detached Sandbox**: No hook discovered in a project-local file is permitted to execute on the host. MCP Any will transparently "virtualize" these hooks, executing them in the `Detached Sandbox` with zero host access.
+* **File Integrity Monitoring (FIM)**: MCP Any will implement a background watchdog for `.claude/`, `.openclaw/`, and other agent-specific directories. Any unauthorized creation of configuration files (the primary vector for CVE-2026-25725) will trigger an immediate suspension and HITL attestation request.
+**Security Impact**: Effectively neutralizes "Persistence-via-Hook" attacks, ensuring that even if an agent's sandbox is compromised, it cannot achieve host-level persistence through configuration poisoning.

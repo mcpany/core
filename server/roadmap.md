@@ -49,6 +49,11 @@
 *   **[P0] Project-Local Config Attestation Engine**: Cryptographic verification of signatures on agent configuration files. (Added: 2026-03-11)
 *   **[P1] Active Config Rewriter**: Daemon that automatically reverts unauthorized changes to security-critical agent settings. (Added: 2026-03-11)
 
+#### Upcoming (2026-03-12 Evolution)
+*   **[P0] Secure Hook Lifecycle Validator**: Mitigation for CVE-2026-25725. Force all project-local hooks (e.g. `SessionStart`) into a Detached Sandbox. (Added: 2026-03-12)
+*   **[P1] ContextEngine Lifecycle Adapter**: Standardized bridge for OpenClaw-style context hooks to enable pluggable memory. (Added: 2026-03-12)
+*   **[P2] Threat-Aware Tooling Engine**: Automated risk-rating for tools based on CoSAI's 12 threat categories. (Added: 2026-03-12)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

@@ -16,6 +16,9 @@
 - [ ] **[P0] Config Sandbox Monitor**: Real-time visualization of sandboxed hook execution, logs, and resource limits. (Added: 2026-03-10)
 - [ ] **[P1] Config Drift Alert System**: UI notification and diff viewer for modified project-local configuration files requiring re-attestation. (Added: 2026-03-10)
 - [ ] **[P0] Project Config Attestation Dashboard**: UI for reviewing and approving project-local configuration blocks (hooks/auto-execute). (Added: 2026-03-09)
+- [ ] **[P0] Hook Execution Guard**: (2026-03-12) Visual monitoring of intercepted lifecycle hooks and their sandboxed execution logs.
+- [ ] **[P1] Context Lifecycle Inspector**: (2026-03-12) Debugger for pluggable ContextEngine hooks (assemble, compact, ingest).
+- [ ] **[P2] Risk-Rated Tool Gallery**: (2026-03-12) Visual badges for tools based on CoSAI threat categories (e.g., SSRF-Risk, FS-Write).
 - [ ] **[P0] Blackboard Isolation Inspector**: Visualize and debug Agent-Bound Blackboard data across different "Intent Scopes." (Added: 2026-03-09)
 - [ ] **[P0] Outbound Traffic Security Map**: (2026-03-11) Real-time visualization of agent outbound requests, highlighted by attestation status.
 - [ ] **[P0] Config Attestation Signature Reviewer**: (2026-03-11) UI for verifying and signing project-local configuration blocks.

@@ -88,3 +88,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Active Configuration Interception**: MCP Any will natively intercept and rewrite agent configuration files (e.g., `.claude/settings.json`) in real-time. Any attempt to modify base URLs or injection hooks will be automatically reverted and flagged for attestation.
 - **Exfiltration-Resistant Transport**: Moving towards a "Locked Transport" model where agents are configured to ONLY communicate with MCP Any's internal proxy. MCP Any will then handle the final routing to Anthropic, OpenAI, or MCP servers, ensuring that traffic cannot be redirected to attacker-controlled domains.
 - **Cryptographic Config Attestation**: Every project-local configuration must be cryptographically signed by a trusted identity (or the user themselves) before it is deemed "Loadable" by the agent runtime.
+
+---
+
+## Strategic Evolution: [2026-03-12]
+### Focus: Universal Context Governance & Hardened Lifecycle Security
+**Context**: Today's findings show a major shift toward "Pluggable Context" (OpenClaw's ContextEngine) and a critical new exploit pattern in agent persistence (CVE-2026-25725). Agents are becoming platforms, but their reliance on project-local configuration for "lifecycle hooks" (e.g., `SessionStart`) creates a persistent sandbox-escape vector.
+**Strategic Pivot**:
+- **Universal Context Middleware**: MCP Any will standardize the "ContextEngine" lifecycle (bootstrap, ingest, assemble, compact). We will provide a unified interface for agents to offload memory management to optimized, secure middleware, ensuring context isolation by default.
+- **Hardened Lifecycle Governance**: Moving from "File Proxying" to "Active Lifecycle Interception." MCP Any will natively manage the execution of all lifecycle hooks (SessionStart, AfterTurn). No hook defined in a project-local config will execute on the host; instead, they will be redirected to the "Detached Sandbox" with mandatory File Integrity Monitoring (FIM).
+- **Threat-Aware Tooling**: Integrating CoSAI’s 12 Threat Categories into the MCP Any metadata engine. Tools will be "Risk-Rated" based on their capabilities (e.g., path traversal, code injection), allowing for automated, policy-driven blocking of high-risk operations in untrusted environments.

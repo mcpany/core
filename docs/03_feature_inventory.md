@@ -117,6 +117,15 @@
 - **Base-URL Hijack Protection (Exfiltration Guard)**: (P0) A middleware that enforces a strict "Allow-List" for LLM base URLs, preventing silent redirection of API traffic.
 - **Active Config Rewriter**: (P1) A daemon that monitors agent configuration files and automatically reverts unauthorized changes to security-critical fields.
 
+---
+
+## Evolution: [2026-03-12] Updates
+
+### Proposed Additions
+- **ContextEngine Lifecycle Adapter**: (P1) Standardized bridge for OpenClaw-style context hooks (bootstrap, ingest, assemble, compact). Allows agents to offload memory management to MCP Any.
+- **Secure Hook Lifecycle Validator**: (P0) Targeted mitigation for `SessionStart` injection (CVE-2026-25725). Native interceptor that forces all lifecycle hooks into a Detached Sandbox.
+- **MCP Threat Category Metadata**: (P2) Aligning tool schemas with CoSAI's 12 threat categories to enable risk-based tool filtering and automated policy enforcement.
+
 ### Priority Shifts
 - **Project Configuration Security Guard**: Re-affirmed as **P0**. Expanded scope to include active interception of base URL modifications.
 - **Detached Sandbox for Automated Hooks**: Re-affirmed as **P0**. Critical for safe execution of legacy hooks during the transition to Attested Hooks.
