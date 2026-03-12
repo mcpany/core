@@ -43,11 +43,7 @@ func TestUpstreamService_MCP_Playwright_Stdio(t *testing.T) {
 			setupCommands := []string{
 				"npm install --no-optional @playwright/mcp > /dev/null 2>&1",
 			}
-			// When the test runs, the server's working directory is not the workspace root,
-			// it is `tests/integration/upstream` during `go test`, or a sandbox dir when running via `bazel test`.
-			// Using `.` as the working directory ensures the path is allowed by `IsAllowedPath`
-			// and correctly resolves to wherever the server is executing.
-			integration.RegisterStdioServiceWithSetup(t, registrationClient, serviceID, cmd, true, ".", "", setupCommands, env, args...)
+			integration.RegisterStdioServiceWithSetup(t, registrationClient, serviceID, cmd, true, "tests/integration/upstream", "", setupCommands, env, args...)
 
 		},
 		InvokeAIClient: func(t *testing.T, mcpanyEndpoint string) {
