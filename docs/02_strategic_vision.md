@@ -67,3 +67,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project Configuration Guard**: MCP Any will evolve into a "Validating Proxy" for all project-local agent configurations. It will intercept and sanitize any "auto-execute" or "hook" definitions before they reach the agent runtime, requiring explicit user attestation.
 - **Agent-Aware Blackboard Isolation**: The Shared KV Store (Blackboard) must implement mandatory "Agent-Bound" isolation. Data written by one agent will be read-only or invisible to others unless a specific "Shared Intent" is established.
 - **Zero-Trust Hook Execution**: Any executable hook or automated tool sequence must run in a "Detached Sandbox" managed by MCP Any, with zero access to the host filesystem unless explicitly granted via a capability-based token.
+
+---
+
+## Strategic Evolution: [2026-03-12]
+### Focus: Privacy-First Agency & Dynamic Intent-Bound Authorization
+**Context**: The Meta/OpenClaw fallout has proven that "Security" (Access Control) is no longer enough; "Privacy" (Exposure Control) is the new enterprise mandate. Simultaneously, agents need more fluid, just-in-time permission models to handle complex multi-agent tasks without manual intervention.
+**Strategic Pivot**:
+- **Privacy Shield Middleware**: MCP Any will integrate a mandatory PII Redaction layer that scans and sanitizes all tool outputs. This ensures that sensitive internal data never reaches the LLM provider or external logs.
+- **Dynamic Permission Brokerage**: Moving from static tokens to a "Broker" model where agents can negotiate temporary capability elevations. These elevations are strictly bound to the current "Intent Scope" and expire automatically.
+- **Attestation-as-a-Service**: Expanding the attestation engine to include "Data Privacy Attestation," where a user can verify not just what an agent *does*, but what data it *sees*.

@@ -39,6 +39,11 @@
 *   **[P0] Agent-Aware Blackboard Isolation**: Row-level security for Shared KV Store to prevent cross-agent state injection. (Added: 2026-03-09)
 *   **[P1] Detached Sandbox for Automated Hooks**: Isolated runtime for tool sequences with zero host access by default. (Added: 2026-03-09)
 
+#### Upcoming (2026-03-12 Evolution)
+*   **[P0] PII Redaction Middleware (Privacy Shield)**: High-performance sanitization layer for tool outputs. (Added: 2026-03-12)
+*   **[P1] Intent-Scoped Permission Broker**: Dynamic, just-in-time capability elevation for agent swarms. (Added: 2026-03-12)
+*   **[P1] Privacy Audit Engine**: Specialized logging and hashing service for redacted data. (Added: 2026-03-12)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

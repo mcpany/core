@@ -84,9 +84,18 @@
 - **Agent-Aware Blackboard Isolation**: (P0) Implements row-level security for the Shared KV Store, ensuring agents can only access state within their assigned "Intent Scope."
 - **Detached Sandbox for Automated Hooks**: (P1) Isolated execution environment for automated tool sequences, preventing unauthorized host access.
 
+---
+
+## Evolution: [2026-03-12] Updates
+
+### Proposed Additions
+- **PII Redaction Middleware (Privacy Shield)**: (P0) High-performance sanitization layer that redacts sensitive data from tool outputs before LLM ingestion.
+- **Intent-Scoped Permission Broker**: (P1) Facilitates dynamic, temporary capability elevations between parent and subagents based on the current validated intent.
+- **Privacy Attestation Dashboard**: (P1) UI component for users to audit and verify what sensitive data was redacted during an agent session.
+
 ### Priority Shifts
-- **Shared KV Store (Blackboard)**: Re-affirmed as **P0** with new mandatory security isolation requirements.
-- **Policy Firewall**: Promoted to **P0** (Already P0, but expanded to include "Project-Local Config Validation").
+- **Policy Firewall**: Re-affirmed as **P0** with new requirements to support "Dynamic Permission Negotiation."
+- **Detached Sandbox for Automated Hooks**: Promoted to **P0** as it is a prerequisite for safe execution of non-standard "Privacy-First" hooks.
 
 ### Deprecations / Monitoring
-- **Unvalidated Project-Local Configs**: Monitoring for total deprecation. All local configs must be attested via MCP Any before ingestion by agents.
+- **Unredacted Tool Outputs**: Monitoring for deprecation in enterprise profiles. All tool outputs must pass through the Privacy Shield.

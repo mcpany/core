@@ -49,3 +49,4 @@ As agents increasingly rely on project-local configuration files (e.g., `.claude
 
 ## 7. Evolutionary Changelog
 * **2026-03-09:** Initial Document Creation.
+* **2026-03-12:** Integrated with PII Redaction Middleware. All automated hooks now pass through the Privacy Shield to prevent accidental leakage of local environment variables during hook execution.
