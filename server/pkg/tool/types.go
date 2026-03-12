@@ -3346,6 +3346,8 @@ func checkInterpreterFunctionCalls(val, language string) error {
 	if isStrict {
 		// For strict languages, ALL dangerous keywords are blocked if they appear as unquoted words.
 		statementKeywords = universal
+		// We also need them as function keywords to catch occurrences without parentheses and separated by space/quotes (e.g. system "id")
+		functionKeywords = universal
 	} else {
 		// For standard languages (Python, Node, Java, etc.), we differentiate.
 		statementKeywords = []string{"import", "require"} // Blocked as words
@@ -3383,7 +3385,9 @@ func checkInterpreterFunctionCalls(val, language string) error {
 		// We do NOT block . (method access) on functions usually, but some might be objects too.
 		// For safety, we block ( and = and :.
 		// Sentinel Security Update: Also block if followed by space or quotes to prevent unparenthesized calls (e.g. exec "cmd", system 'cmd')
-		if err := checkContextualKeywords(val, functionKeywords, []rune{'(', '=', ':', ' ', '\'', '"'}); err != nil {
+		// For python2, exec is a statement, so we block it if it's followed by quotes.
+		// Also block backtick which can be used to quote string/execute
+		if err := checkContextualKeywords(val, functionKeywords, []rune{'(', '=', ':', ' ', '\'', '"', '`'}); err != nil {
 			return err
 		}
 	}
