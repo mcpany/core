@@ -25,6 +25,12 @@ import (
 	"github.com/pion/webrtc/v3"
 )
 
+var (
+	// ⚡ BOLT: Reusing jsoniter config to avoid reallocation on every tool execution.
+	// Randomized Selection from Top 5 High-Impact Targets
+	standardJSON = jsoniter.ConfigCompatibleWithStandardLibrary
+)
+
 type peerConnectionWrapper struct {
 	*webrtc.PeerConnection
 }
@@ -228,9 +234,8 @@ func (t *WebrtcTool) executeWithoutPool(ctx context.Context, req *ExecutionReque
 }
 
 func (t *WebrtcTool) executeWithPeerConnection(ctx context.Context, req *ExecutionRequest, pc *webrtc.PeerConnection) (any, error) {
-	var json = jsoniter.ConfigCompatibleWithStandardLibrary
 	var inputs map[string]any
-	if err := json.Unmarshal(req.ToolInputs, &inputs); err != nil {
+	if err := standardJSON.Unmarshal(req.ToolInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
 	}
 
