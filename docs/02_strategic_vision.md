@@ -88,3 +88,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Active Configuration Interception**: MCP Any will natively intercept and rewrite agent configuration files (e.g., `.claude/settings.json`) in real-time. Any attempt to modify base URLs or injection hooks will be automatically reverted and flagged for attestation.
 - **Exfiltration-Resistant Transport**: Moving towards a "Locked Transport" model where agents are configured to ONLY communicate with MCP Any's internal proxy. MCP Any will then handle the final routing to Anthropic, OpenAI, or MCP servers, ensuring that traffic cannot be redirected to attacker-controlled domains.
 - **Cryptographic Config Attestation**: Every project-local configuration must be cryptographically signed by a trusted identity (or the user themselves) before it is deemed "Loadable" by the agent runtime.
+
+---
+
+## Strategic Evolution: [2026-03-12]
+### Focus: Hardened Egress & Zero-Trust A2A Communication
+**Context**: Today's identification of CVE-2026-21852 (Base URL Hijacking) and the high prevalence of "Shadow IT" agents in enterprises necessitate a shift from being an optional proxy to a mandatory security gateway. Agents can no longer be trusted to manage their own outbound connections.
+**Strategic Pivot**:
+- **Mandatory Egress Proxying**: MCP Any will move towards a model where all agent traffic (to LLM providers and MCP servers) MUST be routed through its hardened proxy. Direct outbound connections from agents will be considered a policy violation.
+- **Dynamic Allow-Listing**: Implementing real-time, context-aware allow-listing for API endpoints. If an agent attempts to call a domain not explicitly tied to its current "Intent-Scope," the connection is severed.
+- **Mutual TLS (mTLS) for A2A**: To prevent "Shadow IT" risks, all Agent-to-Agent (A2A) communications managed by MCP Any will require mTLS with short-lived, identity-bound certificates.

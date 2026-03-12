@@ -117,6 +117,15 @@
 - **Base-URL Hijack Protection (Exfiltration Guard)**: (P0) A middleware that enforces a strict "Allow-List" for LLM base URLs, preventing silent redirection of API traffic.
 - **Active Config Rewriter**: (P1) A daemon that monitors agent configuration files and automatically reverts unauthorized changes to security-critical fields.
 
+---
+
+## Evolution: [2026-03-12] Updates
+
+### Proposed Additions
+- **Mutual TLS (mTLS) for A2A**: (P0) Mandatory mTLS for all inter-agent communications managed by MCP Any, utilizing short-lived certificates.
+- **Context-Aware Egress Allow-Listing**: (P0) Dynamic firewall that only allows outbound traffic to domains that match the agent's current authorized "Intent-Scope."
+- **Agent Identity Attestation Service**: (P1) A service to verify the integrity and identity of the agent binary itself before allowing it to connect to the gateway.
+
 ### Priority Shifts
 - **Project Configuration Security Guard**: Re-affirmed as **P0**. Expanded scope to include active interception of base URL modifications.
 - **Detached Sandbox for Automated Hooks**: Re-affirmed as **P0**. Critical for safe execution of legacy hooks during the transition to Attested Hooks.
