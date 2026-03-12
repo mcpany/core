@@ -67,3 +67,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project Configuration Guard**: MCP Any will evolve into a "Validating Proxy" for all project-local agent configurations. It will intercept and sanitize any "auto-execute" or "hook" definitions before they reach the agent runtime, requiring explicit user attestation.
 - **Agent-Aware Blackboard Isolation**: The Shared KV Store (Blackboard) must implement mandatory "Agent-Bound" isolation. Data written by one agent will be read-only or invisible to others unless a specific "Shared Intent" is established.
 - **Zero-Trust Hook Execution**: Any executable hook or automated tool sequence must run in a "Detached Sandbox" managed by MCP Any, with zero access to the host filesystem unless explicitly granted via a capability-based token.
+
+---
+
+## Strategic Evolution: [2026-03-11]
+### Focus: Swarm Governance & Cross-Skill Orchestration
+**Context**: The rapid emergence of "Agent Teams" (parallel execution) and the universal `.SKILL.md` standard requires MCP Any to move beyond protocol bridging into active swarm governance. Managing "Agent Storms" (DDoS-like tool exhaustion) and ensuring state integrity across parallel agents are the new critical frontiers.
+**Strategic Pivot**:
+- **Swarm-Aware Rate Limiting**: MCP Any will implement "Intent-Based Quotas" that govern how many parallel tool calls a single swarm can issue, preventing backend exhaustion.
+- **Universal Skill Ingestion**: Transitioning from a tool-centric registry to a "Playbook-First" architecture. MCP Any will natively ingest `.SKILL.md` files, automatically configuring the necessary MCP toolchains and security policies defined in the playbook.
+- **Parallelism-Hardened Blackboard**: The Shared KV Store (Blackboard) must evolve to support lock-free concurrency and optimistic state merging to prevent "State Stalls" in large agent swarms.

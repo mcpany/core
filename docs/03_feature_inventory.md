@@ -90,3 +90,16 @@
 
 ### Deprecations / Monitoring
 - **Unvalidated Project-Local Configs**: Monitoring for total deprecation. All local configs must be attested via MCP Any before ingestion by agents.
+
+---
+
+## Evolution: [2026-03-11] Updates
+
+### Proposed Additions
+- **Swarm-Aware Rate Limiter**: (P0) Prevents "Agent Storms" by enforcing per-swarm tool call quotas and concurrency limits.
+- **Universal Skill Adapter (`.SKILL.md`)**: (P1) Middleware that parses standardized agent playbooks and automatically wires up the required MCP servers and security filters.
+- **Parallel-Safe Blackboard (Shared KV)**: (P0) High-concurrency implementation of the Shared KV store using optimistic locking or CRDTs to support parallel agent teams.
+
+### Priority Shifts
+- **Policy Firewall**: Re-affirmed as **P0**. Must now include "Swarm-Level Quota" enforcement.
+- **Shared KV Store (Blackboard)**: Re-affirmed as **P0**. Focus shifts to lock-free parallelism for swarm support.
