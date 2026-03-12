@@ -186,3 +186,20 @@
 
 ### Deprecations / Monitoring
 - **Implicit Local Trust**: All listeners must now explicitly validate request origins. Standard `localhost` binding without header checks is now **Deprecated**.
+
+---
+
+## Evolution: [2026-03-17] Updates
+
+### Proposed Additions
+- **Mandatory Browser-Origin Validation**: (P0) Hardening of all local listeners to enforce `Origin` and `Sec-Fetch-Site` validation (CVE-2026-25253).
+- **UAB-Native Task Delegation**: (P0) Support for Universal Agent Bus (UAB) "Task Cards" in the A2A Bridge for verified inter-agent handoffs.
+- **Attested Hook Sandbox**: (P0) Isolated, resource-limited runtime for all automated commands triggered by project-local configurations.
+- **Credential Exfiltration Interceptor**: (P1) Active monitoring of agent outbound traffic to detect and block unauthorized redirects of API keys to shadow base URLs.
+
+### Priority Shifts
+- **Call-Graph Loop Monitor**: Re-affirmed as **P0**. Critical for preventing "Spiral of Death" loops in autonomous swarms.
+- **Signed Context Chain Protocol**: Re-affirmed as **P0**. Essential for maintaining identity provenance in deep UAB delegations.
+
+### Deprecations / Monitoring
+- **Unsandboxed Project Hooks**: All project-local "hooks" or "auto-exec" commands that run outside of the Attested Sandbox are now **Deprecated**.

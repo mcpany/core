@@ -138,3 +138,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Mandatory Origin Enforcement**: MCP Any will move to a "Verify Everything" model for local transport. All WebSocket and HTTP interfaces will mandate `Origin` and `Sec-Fetch-Site` validation to prevent cross-site hijacking.
 - **Relational Identity Mapping**: We are evolving the Signed Context Chain into a full "Relational Hub." MCP Any will map identities across different frameworks (OpenClaw, AutoGen, Gemini), allowing a "Subagent in Framework A" to securely inherit context and permissions from a "Parent in Framework B."
 - **UAB-First Orchestration**: Positioning UAB as the primary internal transport for inter-agent communication, with MCP Any acting as the universal translator and security enforcement point for all UAB-compliant swarms.
+
+---
+
+## Strategic Evolution: [2026-03-17]
+### Focus: Hardened Local Transport & UAB-Native Governance
+**Context**: Today's findings confirm that "Local Trust" is a dead paradigm due to browser-based bridge attacks (CVE-2026-25253). Additionally, the rise of "Configuration-as-Execution" vulnerabilities in Claude Code emphasizes that MCP Any must move from a tool proxy to a "Secure Execution Gateway" for all project-local agent configurations and hooks.
+**Strategic Pivot**:
+- **Mandatory Browser-Origin Verification**: MCP Any will enforce strict `Origin` and `Sec-Fetch-Site` validation for all local listeners, preventing malicious websites from hijacking the local gateway.
+- **UAB-First Task Delegation**: Transitioning to Universal Agent Bus (UAB) "Task Cards" as the primary method for inter-agent delegation, ensuring cryptographically verified handoffs.
+- **Attested Hook Execution**: All automated commands or "hooks" defined in project-local settings must be executed in a detached, resource-limited sandbox managed by MCP Any, requiring explicit user attestation for any host-level access.

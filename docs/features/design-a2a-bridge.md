@@ -50,3 +50,10 @@ As AI agent ecosystems diversify, models are no longer just interacting with sta
     *   **Context:** Gemini CLI v0.31.0 introduced authenticated A2A agent card discovery.
     *   **Architecture Adjustment:** The A2ABridge now supports the UAB "Task Card" format. Discovery is no longer anonymous; agents must present a valid `MCPOAuthProvider` token to register or be discovered.
     *   **Security Impact:** Prevents "Shadow Agents" from silently registering in the swarm and intercepting delegated tasks.
+
+### Update: 2026-03-17 - UAB Task Card Integration
+**Context:** Today's market sync confirms the Universal Agent Bus (UAB) is the definitive standard for inter-agent delegation.
+**Architecture Adjustment:**
+*   **Task Card Serialization**: Implementing native support for UAB "Task Cards" within the A2A bridge.
+*   **Lineage Verification**: The bridge now strictly verifies the `ParentIdentity` field in UAB cards against the `Signed Context Chain`.
+**Security Impact:** Mitigates "Identity Spoofing" where a subagent tries to execute tasks using the parent's elevated permissions without a valid signature.
