@@ -49,3 +49,7 @@ The "ClawHavoc" crisis demonstrated that open-source agent marketplaces are vuln
 ## 7. Evolutionary Changelog
 * **2026-03-12:** Initial Document Creation.
 * **2026-03-13:** Addressing the "ClawHavoc" crisis by adding details on automated behavioral profiling. Skills now undergo a mandatory "Isolation Test" where they are executed with a mocked filesystem and network to verify their declared permissions.
+* **2026-03-17: Behavioral Profiling & Burn-In Periods**
+    * **Context:** "ClawHavoc" malicious skills are using "Delayed Payloads" to bypass initial static analysis.
+    * **Architecture Adjustment:** Skills now undergo a "Burn-In" period in an isolated sandbox. Their network and filesystem access patterns are profiled against a known baseline for 24 hours (simulated) before being promoted to "Trusted."
+    * **Security Impact:** Detects malicious exfiltration attempts that only trigger after a skill has been "vetted" by basic static checks.
