@@ -71,6 +71,7 @@ cp -rL "$workspace_root/ui/tests" "$ui_runtime/"
 rm -rf "$ui_runtime/node_modules"
 ln -s "$workspace_root/ui/node_modules" "$ui_runtime/node_modules"
 ln -s "$workspace_root/proto" "$repo_root/proto"
+ln -s "$workspace_root/ui/node_modules" "$repo_root/node_modules"
 
 mkdir -p \
   "$ui_runtime/.next" \
@@ -79,7 +80,6 @@ mkdir -p \
   "$ui_runtime/playwright-report" \
   "$ui_runtime/test-results/artifacts"
 
-test_port="${TEST_PORT:-$(( (RANDOM % 10000) + 10000 ))}"
 export HOME="${HOME:-$TEST_TMPDIR/home}"
 export PLAYWRIGHT_BROWSERS_PATH="$TEST_TMPDIR/playwright-browsers"
 export BAZEL_BINDIR="."
@@ -116,12 +116,27 @@ wait_for_http() {
   return 1
 }
 
-echo "Starting HTTP echo server on 127.0.0.1:5678"
-"$echo_bin" --port=5678 >"$TEST_TMPDIR/http-echo.log" 2>&1 &
-echo_pid=$!
-wait_for_http "http://127.0.0.1:5678/health" "HTTP echo server"
+find_free_port() {
+  python3 - <<'PY'
+import socket
 
-echo "Starting MCP Any backend on 127.0.0.1:50050"
+with socket.socket() as sock:
+    sock.bind(("127.0.0.1", 0))
+    print(sock.getsockname()[1])
+PY
+}
+
+test_port="${TEST_PORT:-$(find_free_port)}"
+backend_port="${BACKEND_PORT:-$(find_free_port)}"
+backend_grpc_port="${BACKEND_GRPC_PORT:-$(find_free_port)}"
+echo_port="${UI_HTTP_ECHO_PORT:-$(find_free_port)}"
+
+echo "Starting HTTP echo server on 127.0.0.1:${echo_port}"
+"$echo_bin" --port="${echo_port}" >"$TEST_TMPDIR/http-echo.log" 2>&1 &
+echo_pid=$!
+wait_for_http "http://127.0.0.1:${echo_port}/health" "HTTP echo server"
+
+echo "Starting MCP Any backend on 127.0.0.1:${backend_port}"
 (
   cd "$backend_runtime"
   MCPANY_API_KEY=test-token \
@@ -131,20 +146,20 @@ echo "Starting MCP Any backend on 127.0.0.1:50050"
   MCPANY_ADMIN_INIT_PASSWORD=password \
   "$server_bin" run \
     --config-path="$config_path" \
-    --mcp-listen-address=127.0.0.1:50050 \
-    --grpc-port=127.0.0.1:50051
+    --mcp-listen-address="127.0.0.1:${backend_port}" \
+    --grpc-port="127.0.0.1:${backend_grpc_port}"
 ) >"$TEST_TMPDIR/mcpany-ui-backend.log" 2>&1 &
 backend_pid=$!
-wait_for_http "http://127.0.0.1:50050/healthz?api_key=test-token" "MCP Any backend"
+wait_for_http "http://127.0.0.1:${backend_port}/healthz?api_key=test-token" "MCP Any backend"
 
 cd "$ui_runtime"
 
 export CI=true
 export TEST_PORT="$test_port"
-export BACKEND_URL="http://127.0.0.1:50050"
+export BACKEND_URL="http://127.0.0.1:${backend_port}"
 export NEXT_PUBLIC_API_URL="$BACKEND_URL"
 export MCPANY_API_KEY="test-token"
-export UI_HTTP_ECHO_BASE_URL="http://127.0.0.1:5678"
+export UI_HTTP_ECHO_BASE_URL="http://127.0.0.1:${echo_port}"
 
 next_cli_js="$ui_runtime/node_modules/next/dist/bin/next"
 playwright_cli_js="$ui_runtime/node_modules/@playwright/test/cli.js"
@@ -155,6 +170,7 @@ if [[ ! -f "$next_cli_js" || ! -f "$playwright_cli_js" ]]; then
 fi
 
 export PATH="$(dirname "$node_bin"):$PATH"
+export NODE_PATH="$ui_runtime/node_modules${NODE_PATH:+:$NODE_PATH}"
 export NEXT_DEV_COMMAND="$node_bin $next_cli_js dev -p $test_port"
 
 if [[ -n "$spec_path" ]]; then

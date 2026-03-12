@@ -39,7 +39,7 @@ test.describe('Prompts Workbench', () => {
 
     // Handle potential empty state or populated list
     const noPrompts = page.getByText('No prompts found');
-    const firstPrompt = page.locator("button[class*='transition-colors']").first();
+    const firstPrompt = page.locator('div.flex.flex-col.p-2.gap-1 > button').first();
 
     // Wait for either no prompts functionality or the list to populate
     await Promise.race([
@@ -50,7 +50,7 @@ test.describe('Prompts Workbench', () => {
     if (await firstPrompt.isVisible()) {
         await firstPrompt.click();
         // Check for details view
-        await expect(page.getByTestId('prompt-details').getByText('Configuration').first()).toBeVisible();
+        await expect(page.getByTestId('prompt-details')).toContainText('Configuration');
     } else {
         await expect(noPrompts).toBeVisible();
     }

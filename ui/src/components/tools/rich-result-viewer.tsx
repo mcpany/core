@@ -102,6 +102,16 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
     }, [result]);
 
     const mcpContent = useMemo<McpContent[] | null>(() => {
+        if (Array.isArray(content)) {
+            const isValidArray = content.every((item: any) =>
+                (item.type === 'text' && typeof item.text === 'string') ||
+                (item.type === 'image' && typeof item.data === 'string' && typeof item.mimeType === 'string')
+            );
+            if (isValidArray) {
+                return content as McpContent[];
+            }
+        }
+
         if (content && typeof content === 'object' && Array.isArray(content.content)) {
             // Check if it looks like MCP content
             const isValid = content.content.every((item: any) =>
