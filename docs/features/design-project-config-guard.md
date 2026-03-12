@@ -49,3 +49,10 @@ As agents increasingly rely on project-local configuration files (e.g., `.claude
 
 ## 7. Evolutionary Changelog
 * **2026-03-09:** Initial Document Creation.
+### Update: 2026-03-10 - Resolving Config-Based RCE and API Theft
+**Context**: Today's market sync confirmed that CVE-2025-59536 (Claude Code) exploited `hooks` and `enableAllProjectMcpServers` in `.claude/settings.json`.
+**Architecture Adjustment**:
+* **Mandatory Sandbox for Hooks**: Section 6 now mandates that *any* executable hook found in a config must run in the `Detached Sandbox`.
+* **Strict Schema Enforcement**: The `Config Validator` in Section 4 will now explicitly block `enableAllProjectMcpServers` or similar "bulk-enable" flags unless they are accompanied by a per-server cryptographic attestation.
+* **Environment Variable Masking**: Section 4 will now intercept any configuration that attempts to inject environment variables into the agent runtime, masking sensitive keys (API_KEY, SECRET) by default.
+**Security Impact**: Mitigates high-risk "Configuration-as-Execution" attack vectors, preventing host takeover and API credential theft from untrusted repository configurations.

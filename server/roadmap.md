@@ -34,10 +34,15 @@
 *   **[P0] A2A Stateful Residency**: Resident state for A2A messages, enabling asynchronous, reliable multi-agent handoffs. (Added: 2026-02-28)
 *   **[P1] Provenance-First Discovery**: Cryptographic signature verification during tool discovery. (Added: 2026-02-28)
 
+#### Upcoming (2026-03-10 Evolution)
+*   **[P0] Sandbox-as-a-Service for Config Hooks**: Natively managed, ultra-lightweight execution environment for approved hooks found in project-local settings. (Added: 2026-03-10)
+*   **[P0] Intent-Bound Context Isolation**: Cryptographic enforcement that prevents subagents from accessing state or tools outside their explicitly assigned "Intent-Scope." (Added: 2026-03-10)
+*   **[P1] Project Configuration Drift Detection**: Background monitor that alerts the user if a project-local configuration file is modified (e.g., via `git pull`), requiring re-attestation of any hooks. (Added: 2026-03-10)
+
 #### Upcoming (2026-03-09 Evolution)
 *   **[P0] Project Configuration Security Guard**: Validating proxy for project-local agent configs (e.g., `.claude/settings.json`) to prevent RCE. (Added: 2026-03-09)
 *   **[P0] Agent-Aware Blackboard Isolation**: Row-level security for Shared KV Store to prevent cross-agent state injection. (Added: 2026-03-09)
-*   **[P1] Detached Sandbox for Automated Hooks**: Isolated runtime for tool sequences with zero host access by default. (Added: 2026-03-09)
+*   **[P0] Detached Sandbox for Automated Hooks**: Isolated runtime for tool sequences with zero host access by default. (Added: 2026-03-09 - Promoted to P0 on 2026-03-10)
 
 ## 2. Top 10 Recommended Features
 
