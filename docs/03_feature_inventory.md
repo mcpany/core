@@ -90,3 +90,19 @@
 
 ### Deprecations / Monitoring
 - **Unvalidated Project-Local Configs**: Monitoring for total deprecation. All local configs must be attested via MCP Any before ingestion by agents.
+
+---
+
+## Evolution: [2026-03-12] Updates
+
+### Proposed Additions
+- **Browser-Hardened Gateway (Host/Origin Guard)**: (P0) Mandatory Host-header and Origin validation for all local listeners to prevent Cross-Site WebSocket Hijacking (CSWH). Inspired by OpenClaw CVE-2026-25253.
+- **Intent-Centric Policy Middleware**: (P0) Cryptographically links tool calls to a verified "Master Intent" to prevent specialized subagents from being redirected by malicious injections.
+- **Config Attestation UI & Workflow**: (P1) Seamless user approval flow for project-local configurations, ensuring no "auto-execute" hooks run without explicit consent.
+
+### Priority Shifts
+- **Safe-by-Default Hardening**: Re-affirmed as **P0** and expanded to include browser-security (Host/Origin validation) as a core requirement.
+- **Policy Firewall**: Promoted to include **Intent-Verification** as a mandatory P0 component.
+
+### Deprecations / Monitoring
+- **Implicit Local Trust**: Deprecating the assumption that `localhost` connections are inherently safe. All connections must now pass Host/Origin validation.

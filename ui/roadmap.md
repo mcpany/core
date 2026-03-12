@@ -15,6 +15,8 @@
 - [ ] **[P0] Stateful A2A Mailbox**: UI for viewing queued and delivered A2A messages across the agent mesh. (Added: 2026-02-28)
 - [ ] **[P0] Project Config Attestation Dashboard**: UI for reviewing and approving project-local configuration blocks (hooks/auto-execute). (Added: 2026-03-09)
 - [ ] **[P0] Blackboard Isolation Inspector**: Visualize and debug Agent-Bound Blackboard data across different "Intent Scopes." (Added: 2026-03-09)
+- [ ] **[P0] Intent Signing Workflow**: UI for reviewing and cryptographically signing high-level "Master Intents" for agent sessions. (Added: 2026-03-12)
+- [ ] **[P0] Security Guardrails Monitor**: Real-time visualization of Host/Origin validation hits and CSWH protection events. (Added: 2026-03-12)
 - [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
 - [x] **[P1] Tool Playground & Explorer**:
   - [x] Auto-generated forms from Tool JSON Schemas.

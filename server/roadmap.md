@@ -39,6 +39,11 @@
 *   **[P0] Agent-Aware Blackboard Isolation**: Row-level security for Shared KV Store to prevent cross-agent state injection. (Added: 2026-03-09)
 *   **[P1] Detached Sandbox for Automated Hooks**: Isolated runtime for tool sequences with zero host access by default. (Added: 2026-03-09)
 
+#### Upcoming (2026-03-12 Evolution)
+*   **[P0] Browser-Hardened Gateway (CSWH Guard)**: Implement mandatory Host/Origin validation for all local listeners to prevent Cross-Site WebSocket Hijacking. (Added: 2026-03-12)
+*   **[P0] Intent-Centric Policy Middleware**: Cryptographically link tool calls to user-signed "Master Intents" to prevent subagent redirection. (Added: 2026-03-12)
+*   **[P1] Config Attestation Flow**: Integrated workflow for user-approval of project-local agent configurations. (Added: 2026-03-12)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

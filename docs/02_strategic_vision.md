@@ -67,3 +67,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project Configuration Guard**: MCP Any will evolve into a "Validating Proxy" for all project-local agent configurations. It will intercept and sanitize any "auto-execute" or "hook" definitions before they reach the agent runtime, requiring explicit user attestation.
 - **Agent-Aware Blackboard Isolation**: The Shared KV Store (Blackboard) must implement mandatory "Agent-Bound" isolation. Data written by one agent will be read-only or invisible to others unless a specific "Shared Intent" is established.
 - **Zero-Trust Hook Execution**: Any executable hook or automated tool sequence must run in a "Detached Sandbox" managed by MCP Any, with zero access to the host filesystem unless explicitly granted via a capability-based token.
+
+---
+
+## Strategic Evolution: [2026-03-12]
+### Focus: Browser-Bound Security & Intent-Centric Orchestration
+**Context**: The OpenClaw incident (CVE-2026-25253) has exposed a critical flaw in the "local-only" trust model. Browser-based attacks can bridge the gap to local services via Cross-Site WebSocket Hijacking. Additionally, the proliferation of specialized subagents requires a shift from simple "Access Control" to "Intent-Centric" verification to prevent subagent manipulation.
+**Strategic Pivot**:
+- **Browser-Hardened Gateway**: MCP Any will implement mandatory Host-header and Origin verification for all local endpoints. This prevents malicious websites from interacting with the MCP Any gateway even if it's bound to localhost.
+- **Intent-Centric Policy Engine**: Shifting from simple capability-based permissions to "Intent-Verification." Tool calls must be cryptographically linked to a user-signed "Master Intent" (e.g., "Refactor this module") to prevent specialized subagents from being redirected to unauthorized tasks (e.g., "Exfiltrate env vars").
+- **Config Attestation Workflow**: Implementing a "Secure Ingestion" flow for project-local configurations. Agents cannot access local `.json` or `.yaml` settings (like `.claude/settings.json`) without an explicit user attestation mediated by MCP Any.

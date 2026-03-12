@@ -59,3 +59,9 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+
+### Update: 2026-03-12 - Evolution to Browser-Hardened Gateway
+**Context:** OpenClaw CVE-2026-25253 revealed that localhost binding is insufficient due to Cross-Site WebSocket Hijacking.
+**Architecture Adjustment:** * Mandatory `Host` and `Origin` header validation for all local listeners in Section 4.
+* Rejection of requests with mismatching Host headers or unauthorized Origins before protocol upgrade.
+**Security Impact:** Mitigates Cross-Site WebSocket Hijacking (CSWH) attacks from malicious websites targeting the local gateway.
