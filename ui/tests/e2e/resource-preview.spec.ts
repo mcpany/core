@@ -44,9 +44,10 @@ test.describe('Resource Preview Modal', () => {
     // Click on the resource to select it
     await resourceItem.click();
 
-    // Wait for content to load in Explorer first
-    // This ensures resourceContent is populated so we test the "pass initialContent" flow
-    await expect(page.locator('text=content to test modal view')).toBeVisible();
+    // Wait for the inline preview to render before opening the modal.
+    const inlinePreview = page.locator('pre').first();
+    await expect(inlinePreview).toBeVisible();
+    await expect(inlinePreview).toContainText('content to test modal view');
 
     // Wait for "Maximize" button and click it
     await page.click('button[title="Maximize"]');
@@ -56,8 +57,9 @@ test.describe('Resource Preview Modal', () => {
     await expect(modalTitle).toBeVisible();
 
     // Verify content in modal
-    const modalContent = page.locator("div[role='dialog']").getByText("content to test modal view");
+    const modalContent = page.locator("div[role='dialog']").locator('pre').first();
     await expect(modalContent).toBeVisible();
+    await expect(modalContent).toContainText('content to test modal view');
   });
 
 });

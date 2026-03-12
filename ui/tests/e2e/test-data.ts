@@ -275,7 +275,19 @@ export const seedCollection = async (name?: string, requestContext?: APIRequestC
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     try {
         const res = await context.post('/api/v1/collections', {
-            data: { name, description: `Test collection: ${name}`, version: '1.0.0' },
+            data: {
+                name,
+                description: `Test collection: ${name}`,
+                version: '1.0.0',
+                services: [
+                    {
+                        name: 'weather-service',
+                        command_line_service: {
+                            command: 'echo weather'
+                        }
+                    }
+                ]
+            },
             headers: HEADERS,
         });
         if (!res.ok()) {

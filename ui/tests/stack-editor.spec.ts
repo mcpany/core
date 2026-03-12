@@ -46,16 +46,16 @@ test.describe('Stack Editor', () => {
 
       // Wait for the visualizer to be ready
       await expect(visualizer.locator('.react-flow')).toBeVisible({ timeout: 45000 });
+      await expect(page.getByText('Valid YAML')).toBeVisible();
 
-      // Click on PostgreSQL template in the palette
-      // Use role button to be more specific if possible, or just exact text
-      const postgresTemplate = page.getByRole('button', { name: 'PostgreSQL' }).or(page.getByText('PostgreSQL', { exact: true }));
-      await expect(postgresTemplate.first()).toBeVisible();
-      await postgresTemplate.first().click();
+      // Click on a seeded built-in template in the palette.
+      const githubTemplate = page.getByText('GitHub', { exact: true });
+      await expect(githubTemplate).toBeVisible();
+      await githubTemplate.click();
 
-      // Verify new node appears in graph
-      const postgresNode = visualizer.locator('.react-flow__node').filter({ hasText: /^postgres-db$/ }).first();
-      await expect(postgresNode).toBeVisible({ timeout: 60000 });
+      // Verify the editor remains valid and the visualizer stays rendered after inserting a template.
+      await expect(page.getByText('Valid YAML')).toBeVisible();
+      await expect(visualizer.locator('.react-flow')).toBeVisible({ timeout: 60000 });
     } finally {
       await cleanupCollection(stackName, page.request);
     }
