@@ -82,6 +82,11 @@
 *   **[P1] Behavioral Skill Burn-In Sandbox**: Isolated profiling environment for detecting "Delayed Payload" malicious skills. (Added: 2026-03-17)
 *   **[P1] Local Security Audit Service**: Background service for logging and analyzing local connection attempt patterns. (Added: 2026-03-17)
 
+#### Upcoming (2026-03-19 Evolution)
+*   **[P0] UACO-Native Coordination Middleware**: Full implementation of UACO protocol for task negotiation, bidding, and stateful handoffs. (Added: 2026-03-19)
+*   **[P1] Unified RL Feedback Telemetry Bridge**: Middleware for collecting and normalizing conversation-feedback for RL-driven agents (e.g., OpenClaw-RL). (Added: 2026-03-19)
+*   **[P1] Enterprise Policy Sync Engine**: Service for synchronizing security policies and allowed-origins from a central management server. (Added: 2026-03-19)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

@@ -132,3 +132,6 @@
 - [ ] **[P0] Local Security Violation Monitor**: (2026-03-18) Real-time visualization of blocked origin requests and loopback violations.
 - [ ] **[P0] Recursive Loop Circuit Breaker UI**: (2026-03-18) Interactive dashboard for visualizing and managing recursive call limits in swarms.
 - [ ] **[P0] UAB Task Verification Workspace**: (2026-03-18) Tool for reviewing and attesting to UAB-native task cards during delegation.
+- [ ] **[P0] UACO Negotiation Dashboard**: (2026-03-19) Visual interface for monitoring agent task bidding and handoffs.
+- [ ] **[P1] RL Feedback & Telemetry Viewer**: (2026-03-19) Real-time stream of conversation-feedback and performance metrics for RL training.
+- [ ] **[P1] Enterprise Governance Center**: (2026-03-19) UI for managing organization-wide security policies and synchronizing allowed-origin lists.
