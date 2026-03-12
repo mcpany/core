@@ -53,3 +53,7 @@ As agentic workflows evolve from single-agent tasks to multi-agent swarms (e.g.,
 
 ## 7. Evolutionary Changelog
 * **2026-02-23:** Initial Document Creation. Standardizing Recursive Context Protocol for multi-agent swarm orchestration.
+* **2026-03-15:** Transitioning to **Signed Context Chain**.
+    * **Context:** Discovery of CVE-2026-28190 (Subagent Identity Spoofing) necessitates cryptographic proof of lineage.
+    * **Architecture Adjustment:** All `X-MCP-Session-Token` values must now be part of a Merkle-tree like chain where each subagent request is signed by the parent's private key.
+    * **Security Impact:** Prevents "Grandchild" agents from spoofing "Parent" identity to access unauthorized Blackboard state.

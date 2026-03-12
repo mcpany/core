@@ -65,6 +65,11 @@
 *   **[P1] Context Lifecycle Hooks**: Standardized API for framework-specific context compression and retrieval. (Added: 2026-03-14)
 *   **[P1] Session-Resumption mTLS**: Optimized transport layer to reduce A2A handshake latency in large swarms. (Added: 2026-03-14)
 
+#### Upcoming (2026-03-15 Evolution)
+*   **[P0] Call-Graph Loop Monitor**: Middleware to detect and prevent recursive "M2M" tool loops and resource exhaustion. (Added: 2026-03-15)
+*   **[P0] Signed Context Chain Protocol**: Cryptographic verification of subagent lineage to prevent identity spoofing (CVE-2026-28190). (Added: 2026-03-15)
+*   **[P1] Universal Agent Bus (UAB) Adapter**: Native transport support for the UAB protocol for framework-neutral handoffs. (Added: 2026-03-15)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

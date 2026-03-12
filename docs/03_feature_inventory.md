@@ -160,3 +160,19 @@
 
 ### Deprecations / Monitoring
 - **Unvalidated Local WebSockets**: Monitoring for total deprecation. All local WebSocket connections must provide a valid, allow-listed `Origin` header.
+
+---
+
+## Evolution: [2026-03-15] Updates
+
+### Proposed Additions
+- **Call-Graph Loop Monitor**: (P0) Middleware to detect and prevent recursive "M2M" tool loops that cause resource exhaustion.
+- **Signed Context Chain Protocol**: (P0) Cryptographic signing of subagent requests to prevent identity spoofing (CVE-2026-28190).
+- **Universal Agent Bus (UAB) Adapter**: (P1) Native support for the UAB protocol, enabling seamless task handoffs between OpenClaw and AutoGen frameworks.
+
+### Priority Shifts
+- **Recursive Context Protocol**: Re-affirmed as **P0** and updated to include "Signed Chain" requirements.
+- **Agent-Aware Blackboard Isolation**: Promoted to **P0** as a dependency for secure multi-agent state management.
+
+### Deprecations / Monitoring
+- **Unsigned Subagent Headers**: Monitoring for deprecation. All subagent context inheritance must eventually be cryptographically verifiable.

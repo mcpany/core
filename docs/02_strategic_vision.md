@@ -118,3 +118,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Zero-Trust Browser Origin Validation**: MCP Any will implement mandatory `Origin` and `Sec-Fetch-Site` header verification for all local API/WebSocket endpoints. This ensures that only authorized local applications (not malicious websites) can communicate with the gateway.
 - **Intent-Preserving Context Lifecycle**: Our Context Bridge will evolve to support "Intent-Scoped" summaries. Instead of generic compression, it will use the parent agent's verified intent to guide the summarization process, ensuring critical goals are never "ghosted."
 - **Optimized Swarm mTLS**: Introducing a lightweight "Session-Bound" mTLS implementation for A2A communications, reducing handshake overhead while maintaining cryptographic isolation between agents.
+
+---
+
+## Strategic Evolution: [2026-03-15]
+### Focus: Recursive Loop Protection & Cryptographic Identity Provenance
+**Context**: The "M2M Loop" (Spiral of Death) vulnerability and the discovery of Subagent Identity Spoofing (CVE-2026-28190) mark the next frontier of agentic stability. As swarms become deeper and more autonomous, MCP Any must move from simple request validation to "Relational Integrity."
+**Strategic Pivot**:
+- **Recursive Depth-Limit Middleware**: MCP Any will implement a "Call-Graph Monitor" that detects and halts recursive tool-calling loops across different MCP servers, preventing resource exhaustion.
+- **Signed Context Chain**: Moving from header-based inheritance to a "Cryptographic Chain of Custody." Every subagent request must be signed by its parent, allowing the gateway to verify the entire lineage of an "Intent" before granting access to resources like the Blackboard.
+- **UAB Gateway Adaptation**: MCP Any will pivot to support the newly proposed Universal Agent Bus (UAB) standard as a native transport, positioning itself as the primary interoperability layer for OpenClaw-to-AutoGen handoffs.
