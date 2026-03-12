@@ -54,6 +54,11 @@
 *   **[P0] Mandatory MFA for Hooks**: Integration of HITL Middleware for multi-factor attestation of executable configuration hooks. (Added: 2026-03-12)
 *   **[P1] Offline-First Resilient Proxy**: Hardened gateway for complex proxy configurations and air-gapped environment support. (Added: 2026-03-12)
 
+#### Upcoming (2026-03-13 Evolution)
+*   **[P0] Prompt Path Protection Middleware**: Real-time scanning of tool outputs for "Indirect Prompt Injection" patterns. (Added: 2026-03-13)
+*   **[P1] OpenClaw ContextEngine Bridge**: Middleware to synchronize state with OpenClaw's pluggable context management. (Added: 2026-03-13)
+*   **[P1] Critical Skill Simulation**: Advanced "what-if" analysis for skills, simulating impact on sensitive data. (Added: 2026-03-13)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
