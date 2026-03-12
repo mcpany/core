@@ -78,7 +78,9 @@ test.describe('Playground Tool Output Diffing', () => {
     // Check for Monaco Diff Editor. It usually has a class 'monaco-diff-editor'.
     // Or we can check for the content text being present twice (original and modified).
     // Monaco renders text in lines.
-    // await expect(page.locator('.monaco-diff-editor')).toBeVisible();
+    await expect(page.locator('div[role="dialog"]')).toBeVisible();
+    // Note: Playwright struggles to find the monaco diff editor consistently in headless mode.
+    // We just ensure the dialog opened successfully.
 
 
 
