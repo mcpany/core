@@ -16,6 +16,7 @@ import { Wrench, Play, Star, Info, PlayCircle, PauseCircle, StarOff } from "luci
 import { ToolDefinition } from "@proto/config/v1/tool";
 import { estimateTokens, formatTokenCount } from "@/lib/tokens";
 import { ToolAnalytics } from "@/lib/client";
+import { BulkActionBar } from "@/components/ui/bulk-action-bar";
 
 interface ToolTableProps {
   tools: ToolDefinition[];
@@ -80,45 +81,44 @@ export const ToolTable = memo(function ToolTable({
 
   return (
     <div className="space-y-2">
-      {selected.size > 0 && (
-          <div className="flex items-center gap-2 p-2 bg-muted/40 rounded-md animate-in fade-in slide-in-from-top-1 duration-200 sticky top-0 z-10 backdrop-blur-md border">
-              <span className="text-sm text-muted-foreground mr-2 font-medium px-2">{selected.size} selected</span>
-              <div className="h-4 w-px bg-border mx-1" />
-              {onBulkToggle && (
-                  <>
-                    <Button size="sm" variant="ghost" onClick={() => {
-                        onBulkToggle(Array.from(selected), true);
-                        setSelected(new Set());
-                    }} className="h-8 text-green-600 hover:text-green-700 hover:bg-green-100 dark:hover:bg-green-900/20">
-                        <PlayCircle className="mr-2 h-4 w-4" /> Enable
-                    </Button>
-                    <Button size="sm" variant="ghost" onClick={() => {
-                        onBulkToggle(Array.from(selected), false);
-                        setSelected(new Set());
-                    }} className="h-8 text-amber-600 hover:text-amber-700 hover:bg-amber-100 dark:hover:bg-amber-900/20">
-                        <PauseCircle className="mr-2 h-4 w-4" /> Disable
-                    </Button>
-                  </>
-              )}
-              {onBulkPin && (
-                  <>
-                    <div className="h-4 w-px bg-border mx-1" />
-                    <Button size="sm" variant="ghost" onClick={() => {
-                        onBulkPin(Array.from(selected), true);
-                        setSelected(new Set());
-                    }} className="h-8 text-yellow-600 hover:text-yellow-700 hover:bg-yellow-100 dark:hover:bg-yellow-900/20">
-                        <Star className="mr-2 h-4 w-4 fill-current" /> Pin
-                    </Button>
-                    <Button size="sm" variant="ghost" onClick={() => {
-                        onBulkPin(Array.from(selected), false);
-                        setSelected(new Set());
-                    }} className="h-8">
-                        <StarOff className="mr-2 h-4 w-4" /> Unpin
-                    </Button>
-                  </>
-              )}
-          </div>
-      )}
+      <BulkActionBar
+          selectedCount={selected.size}
+          onClearSelection={() => setSelected(new Set())}
+      >
+          {onBulkToggle && (
+              <>
+                <Button size="sm" variant="ghost" onClick={() => {
+                    onBulkToggle(Array.from(selected), true);
+                    setSelected(new Set());
+                }} className="h-8 text-green-600 hover:text-green-700 hover:bg-green-100 dark:hover:bg-green-900/20 rounded-full px-3">
+                    <PlayCircle className="mr-2 h-4 w-4" /> Enable
+                </Button>
+                <Button size="sm" variant="ghost" onClick={() => {
+                    onBulkToggle(Array.from(selected), false);
+                    setSelected(new Set());
+                }} className="h-8 text-amber-600 hover:text-amber-700 hover:bg-amber-100 dark:hover:bg-amber-900/20 rounded-full px-3">
+                    <PauseCircle className="mr-2 h-4 w-4" /> Disable
+                </Button>
+              </>
+          )}
+          {onBulkPin && (
+              <>
+                <div className="h-4 w-px bg-border mx-1" />
+                <Button size="sm" variant="ghost" onClick={() => {
+                    onBulkPin(Array.from(selected), true);
+                    setSelected(new Set());
+                }} className="h-8 text-yellow-600 hover:text-yellow-700 hover:bg-yellow-100 dark:hover:bg-yellow-900/20 rounded-full px-3">
+                    <Star className="mr-2 h-4 w-4 fill-current" /> Pin
+                </Button>
+                <Button size="sm" variant="ghost" onClick={() => {
+                    onBulkPin(Array.from(selected), false);
+                    setSelected(new Set());
+                }} className="h-8 rounded-full px-3">
+                    <StarOff className="mr-2 h-4 w-4" /> Unpin
+                </Button>
+              </>
+          )}
+      </BulkActionBar>
 
       <Table>
         <TableHeader>

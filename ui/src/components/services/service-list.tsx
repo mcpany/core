@@ -26,6 +26,7 @@ import {
 import { UpstreamServiceConfig } from "@/lib/client";
 import { ConnectionDiagnosticDialog } from "@/components/diagnostics/connection-diagnostic";
 import { ServiceHealthSparkline } from "@/components/services/service-health-sparkline";
+import { BulkActionBar } from "@/components/ui/bulk-action-bar";
 import {
   Dialog,
   DialogContent,
@@ -121,40 +122,44 @@ export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, o
               className="h-8"
             />
           </div>
-
-                   {selected.size > 0 && (
-                       <div className="flex items-center gap-2 animate-in fade-in slide-in-from-right-4 duration-300">
-                           <span className="text-sm text-muted-foreground mr-2">{selected.size} selected</span>
-                           {onBulkToggle && (
-                               <>
-                                 <Button size="sm" variant="outline" onClick={() => {
-                                     onBulkToggle(Array.from(selected), true);
-                                     setSelected(new Set());
-                                 }}>
-                                     <PlayCircle className="mr-2 h-4 w-4 text-green-600" /> Enable
-                                 </Button>
-                                 <Button size="sm" variant="outline" onClick={() => {
-                                     onBulkToggle(Array.from(selected), false);
-                                     setSelected(new Set());
-                                 }}>
-                                     <PauseCircle className="mr-2 h-4 w-4 text-amber-600" /> Disable
-                                 </Button>
-                               </>
-                           )}
-                           <Button size="sm" variant="outline" onClick={() => setIsBulkEditDialogOpen(true)}>
-                               <Settings className="mr-2 h-4 w-4" /> Bulk Edit
-                           </Button>
-                           {onBulkDelete && (
-                               <Button size="sm" variant="destructive" onClick={() => {
-                                   onBulkDelete(Array.from(selected));
-                                   setSelected(new Set());
-                               }}>
-                                   <Trash2 className="mr-2 h-4 w-4" /> Delete
-                               </Button>
-                           )}
-                       </div>
-                   )}
       </div>
+
+      <BulkActionBar
+          selectedCount={selected.size}
+          onClearSelection={() => setSelected(new Set())}
+      >
+          {onBulkToggle && (
+              <>
+                <Button size="sm" variant="ghost" onClick={() => {
+                    onBulkToggle(Array.from(selected), true);
+                    setSelected(new Set());
+                }} className="h-8 text-green-600 hover:text-green-700 hover:bg-green-100 dark:hover:bg-green-900/20 rounded-full px-3">
+                    <PlayCircle className="mr-2 h-4 w-4" /> Enable
+                </Button>
+                <Button size="sm" variant="ghost" onClick={() => {
+                    onBulkToggle(Array.from(selected), false);
+                    setSelected(new Set());
+                }} className="h-8 text-amber-600 hover:text-amber-700 hover:bg-amber-100 dark:hover:bg-amber-900/20 rounded-full px-3">
+                    <PauseCircle className="mr-2 h-4 w-4" /> Disable
+                </Button>
+              </>
+          )}
+          <div className="h-4 w-px bg-border mx-1" />
+          <Button size="sm" variant="ghost" onClick={() => setIsBulkEditDialogOpen(true)} className="h-8 rounded-full px-3">
+              <Settings className="mr-2 h-4 w-4" /> Bulk Edit
+          </Button>
+          {onBulkDelete && (
+              <>
+                <div className="h-4 w-px bg-border mx-1" />
+                <Button size="sm" variant="ghost" onClick={() => {
+                    onBulkDelete(Array.from(selected));
+                    setSelected(new Set());
+                }} className="h-8 text-red-600 hover:text-red-700 hover:bg-red-100 dark:hover:bg-red-900/20 rounded-full px-3">
+                    <Trash2 className="mr-2 h-4 w-4" /> Delete
+                </Button>
+              </>
+          )}
+      </BulkActionBar>
 
       <div className="rounded-md border">
         <Table>
