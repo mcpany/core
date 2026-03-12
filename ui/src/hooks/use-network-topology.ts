@@ -174,15 +174,22 @@ export function useNetworkTopology() {
             // If structure is same, we reuse positions from previous state, preserving user drags/layout,
             // and only update node data (metrics, status, etc).
 
-            // ⚡ BOLT: Optimized O(N) structure check instead of O(N log N) sorts and string joins
-            // Randomized Selection from Top 5 High-Impact Targets (Algorithmic)
+
+            // ⚡ BOLT: Replaced .map() with for-loop in Set construction to eliminate O(N) allocation overhead.
+            // Randomized Selection from Top 5 High-Impact Targets
             let isSameStructure = nodesRef.current.length > 0 &&
                 newNodes.length === nodesRef.current.length &&
                 newEdges.length === edgesRef.current.length;
 
             if (isSameStructure) {
-                const prevNodeSet = new Set(nodesRef.current.map(n => n.id));
-                const prevEdgeSet = new Set(edgesRef.current.map(e => e.id));
+                const prevNodeSet = new Set<string>();
+                for (let i = 0; i < nodesRef.current.length; i++) {
+                    prevNodeSet.add(nodesRef.current[i].id);
+                }
+                const prevEdgeSet = new Set<string>();
+                for (let i = 0; i < edgesRef.current.length; i++) {
+                    prevEdgeSet.add(edgesRef.current[i].id);
+                }
                 for (let i = 0; i < newNodes.length; i++) {
                     if (!prevNodeSet.has(newNodes[i].id)) {
                         isSameStructure = false;
@@ -201,7 +208,10 @@ export function useNetworkTopology() {
 
             if (isSameStructure) {
                 // Structure match! Reuse positions.
-                const currentNodesMap = new Map(nodesRef.current.map(n => [n.id, n]));
+                const currentNodesMap = new Map<string, Node>();
+                for (let i = 0; i < nodesRef.current.length; i++) {
+                    currentNodesMap.set(nodesRef.current[i].id, nodesRef.current[i]);
+                }
 
                 const nodesWithOldPositions = newNodes.map(node => {
                     const oldNode = currentNodesMap.get(node.id);
