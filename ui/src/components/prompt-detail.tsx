@@ -34,7 +34,18 @@ export function PromptDetail({ serviceId, promptName }: { serviceId: string, pro
       setIsLoading(true);
       setError(null);
       try {
-        const { service: serviceDetails } = await apiClient.getService(serviceId);
+        // ⚡ BOLT: [Remove Network Waterfall]
+        // Randomized Selection from Top 5 High-Impact Targets
+        const [serviceRes, statusRes] = await Promise.allSettled([
+          apiClient.getService(serviceId),
+          apiClient.getServiceStatus(serviceId)
+        ]);
+
+        if (serviceRes.status === 'rejected') {
+          throw serviceRes.reason;
+        }
+
+        const { service: serviceDetails } = serviceRes.value;
         setService(serviceDetails || null);
 
         if (!serviceDetails) {
@@ -47,8 +58,12 @@ export function PromptDetail({ serviceId, promptName }: { serviceId: string, pro
 
         if (foundPrompt) {
           setPrompt(foundPrompt);
-          const statusRes = await apiClient.getServiceStatus(serviceId);
-          setMetrics(statusRes.metrics);
+
+          if (statusRes.status === 'fulfilled') {
+             setMetrics(statusRes.value.metrics);
+          } else {
+             console.warn("Failed to fetch service metrics", statusRes.reason);
+          }
         } else {
           throw new Error(`Prompt "${promptName}" not found in service "${serviceDetails.name}".`);
         }
