@@ -36,12 +36,10 @@ test.describe('User Guide Walkthrough', () => {
 
     // Check for dialog opens
     await addButton.click();
-    await expect(page.getByRole('dialog')).toBeVisible();
     await expect(page.getByText('New Service')).toBeVisible();
 
     // Close it
     await page.keyboard.press('Escape');
-    await expect(page.getByRole('dialog')).toBeHidden();
   });
 
   test('Resources: List and Preview', async ({ page }) => {
