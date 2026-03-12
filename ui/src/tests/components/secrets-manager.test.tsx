@@ -4,7 +4,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SecretsManager } from '../../components/settings/secrets-manager';
 import { apiClient } from '@/lib/client';
@@ -48,10 +48,11 @@ describe('SecretsManager', () => {
 
   it('allows adding a new secret', async () => {
     (apiClient.listSecrets as unknown as ReturnType<typeof vi.fn>).mockResolvedValue([]);
+    (apiClient.saveSecret as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(undefined);
     render(<SecretsManager />);
 
     await waitFor(() => {
-        expect(screen.queryByText('Loading secrets...')).not.toBeInTheDocument();
+      expect(screen.queryByText('Loading secrets...')).not.toBeInTheDocument();
     });
 
     const user = userEvent.setup();
@@ -60,9 +61,9 @@ describe('SecretsManager', () => {
     await user.click(screen.getByText('Add Secret'));
 
     // Fill form
-    await user.type(screen.getByPlaceholderText('e.g. Production OpenAI Key'), 'New API Key');
-    await user.type(screen.getByPlaceholderText('e.g. OPENAI_API_KEY'), 'OPENAI_KEY');
-    await user.type(screen.getByPlaceholderText('sk-...'), 'sk-12345');
+    fireEvent.change(screen.getByPlaceholderText('e.g. Production OpenAI Key'), { target: { value: 'New API Key' } });
+    fireEvent.change(screen.getByPlaceholderText('e.g. OPENAI_API_KEY'), { target: { value: 'OPENAI_KEY' } });
+    fireEvent.change(screen.getByPlaceholderText('sk-...'), { target: { value: 'sk-12345' } });
 
     // Save
     await user.click(screen.getByText('Save Secret'));
@@ -78,7 +79,7 @@ describe('SecretsManager', () => {
   });
 
   it('allows deleting a secret', async () => {
-     const mockSecrets = [
+    const mockSecrets = [
       { id: '1', name: 'Delete Me', key: 'DELETE_KEY', value: 'secret-value', provider: 'custom', createdAt: '2023-01-01' },
     ];
     (apiClient.listSecrets as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(mockSecrets);
@@ -94,7 +95,7 @@ describe('SecretsManager', () => {
     await user.click(deleteBtn);
 
     await waitFor(() => {
-        expect(apiClient.deleteSecret).toHaveBeenCalledWith('1');
+      expect(apiClient.deleteSecret).toHaveBeenCalledWith('1');
     });
   });
 });
