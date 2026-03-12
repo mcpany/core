@@ -15,6 +15,8 @@
 - [ ] **[P0] Stateful A2A Mailbox**: UI for viewing queued and delivered A2A messages across the agent mesh. (Added: 2026-02-28)
 - [ ] **[P0] Project Config Attestation Dashboard**: UI for reviewing and approving project-local configuration blocks (hooks/auto-execute). (Added: 2026-03-09)
 - [ ] **[P0] Blackboard Isolation Inspector**: Visualize and debug Agent-Bound Blackboard data across different "Intent Scopes." (Added: 2026-03-09)
+- [ ] **[P0] Context Budgeting Visualizer**: A real-time gauge showing the "Tool-to-Context" ratio and alerting when the "10% Heuristic" triggers Lazy-Discovery mode. (Added: 2026-03-10)
+- [ ] **[P0] OpenClaw Swarm Monitor**: Dedicated dashboard for tracking state and handoffs across OpenClaw agents using the MCP Any ContextEngine. (Added: 2026-03-10)
 - [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
 - [x] **[P1] Tool Playground & Explorer**:
   - [x] Auto-generated forms from Tool JSON Schemas.

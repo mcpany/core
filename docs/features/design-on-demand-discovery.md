@@ -57,3 +57,6 @@ As the number of available MCP tools grows, agents face "context pollution"—wh
 
 ## 7. Evolutionary Changelog
 *   **2026-02-25:** Initial Document Creation.
+*   **2026-03-10:** Added "Threshold-Aware" activation logic.
+    *   Implementing a dynamic heuristic that monitors the ratio of "Tool Definition Tokens" to "Total Context Window."
+    *   If tool schemas exceed 10% of the window (standardized with Claude Code), MCP Any will automatically suppress full schema output in `tools/list` and force the agent to use `mcpany_search_tools`.

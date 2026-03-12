@@ -39,6 +39,11 @@
 *   **[P0] Agent-Aware Blackboard Isolation**: Row-level security for Shared KV Store to prevent cross-agent state injection. (Added: 2026-03-09)
 *   **[P1] Detached Sandbox for Automated Hooks**: Isolated runtime for tool sequences with zero host access by default. (Added: 2026-03-09)
 
+#### Upcoming (2026-03-10 Evolution)
+*   **[P0] Threshold-Aware Discovery Middleware**: Implement the "10% Context Heuristic" to automatically pivot to Lazy-MCP tool discovery when definitions grow too large. (Added: 2026-03-10)
+*   **[P0] OpenClaw ContextEngine Bridge**: Native adapter to allow MCP Any's Blackboard to serve as a memory backend for OpenClaw 2026.3.7. (Added: 2026-03-10)
+*   **[P1] Cryptographic Config Attestation**: Support for signed `.claude/settings.json` and `.mcp/hooks.yaml` to allow secure, automated configuration ingestion. (Added: 2026-03-10)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

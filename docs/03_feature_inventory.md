@@ -84,9 +84,18 @@
 - **Agent-Aware Blackboard Isolation**: (P0) Implements row-level security for the Shared KV Store, ensuring agents can only access state within their assigned "Intent Scope."
 - **Detached Sandbox for Automated Hooks**: (P1) Isolated execution environment for automated tool sequences, preventing unauthorized host access.
 
+---
+
+## Evolution: [2026-03-10] Updates
+
+### Proposed Additions
+- **OpenClaw ContextEngine Adapter**: (P0) A specialized bridge that allows MCP Any's Blackboard/Shared KV store to function as a native memory backend for the OpenClaw 2026.3.7 ContextEngine.
+- **Threshold-Aware Discovery (10% Heuristic)**: (P0) Automatic activation of "Lazy-MCP" discovery when tool definitions exceed 10% of the available context window, ensuring parity with Claude Code.
+- **Cryptographic Config Attestation**: (P1) Enhances the Project Config Guard with support for GPG/SSH signatures on configuration files to allow "Known-Safe" collaborators to bypass manual HITL prompts.
+
 ### Priority Shifts
-- **Shared KV Store (Blackboard)**: Re-affirmed as **P0** with new mandatory security isolation requirements.
-- **Policy Firewall**: Promoted to **P0** (Already P0, but expanded to include "Project-Local Config Validation").
+- **On-Demand Discovery Middleware (Lazy-MCP)**: Re-affirmed as **P0**. Essential for handling the "Context Pollution" crisis reported in recent ecosystem audits.
+- **Project Configuration Security Guard**: Re-affirmed as **P0**. Urgency increased due to reported RCE exploits via `.claude/settings.json`.
 
 ### Deprecations / Monitoring
-- **Unvalidated Project-Local Configs**: Monitoring for total deprecation. All local configs must be attested via MCP Any before ingestion by agents.
+- **Monolithic Context Injection**: Actively monitoring for deprecation in favor of the 10% Threshold-Aware discovery model.

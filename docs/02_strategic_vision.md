@@ -67,3 +67,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project Configuration Guard**: MCP Any will evolve into a "Validating Proxy" for all project-local agent configurations. It will intercept and sanitize any "auto-execute" or "hook" definitions before they reach the agent runtime, requiring explicit user attestation.
 - **Agent-Aware Blackboard Isolation**: The Shared KV Store (Blackboard) must implement mandatory "Agent-Bound" isolation. Data written by one agent will be read-only or invisible to others unless a specific "Shared Intent" is established.
 - **Zero-Trust Hook Execution**: Any executable hook or automated tool sequence must run in a "Detached Sandbox" managed by MCP Any, with zero access to the host filesystem unless explicitly granted via a capability-based token.
+
+---
+
+## Strategic Evolution: [2026-03-10]
+### Focus: Modular Memory Residency & Threshold-Aware Discovery
+**Context**: Today's research confirms the shift towards pluggable "ContextEngines" (OpenClaw) and the industry adoption of the "10% Heuristic" for lazy tool discovery (Claude Code). Additionally, the proliferation of "Shadow MCP" servers necessitates a move toward mandatory local-first residency with attested remote peering.
+**Strategic Pivot**:
+- **Pluggable Context Residency**: MCP Any will position its "Shared KV Store" and "Blackboard" as the universal bridge for OpenClaw's ContextEngine, allowing agent swarms to swap memory backends while maintaining a consistent tool-centric interface.
+- **Threshold-Aware Lazy Discovery**: Implementing a dynamic "Context-Budgeting" middleware. It will monitor the tool-to-context ratio and automatically pivot to the similarity-search API when tool definitions exceed 10% of the agent's available window, mirroring the Claude Code standard.
+- **Attested Hook Verification**: Evolving the "Project Config Guard" to require cryptographic attestation for any `.claude/settings.json` or `.mcp/hooks.yaml` files. Unattested hooks will be neutralized by default to prevent RCE-via-Repo.
