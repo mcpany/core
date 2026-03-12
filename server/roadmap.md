@@ -37,7 +37,12 @@
 #### Upcoming (2026-03-09 Evolution)
 *   **[P0] Project Configuration Security Guard**: Validating proxy for project-local agent configs (e.g., `.claude/settings.json`) to prevent RCE. (Added: 2026-03-09)
 *   **[P0] Agent-Aware Blackboard Isolation**: Row-level security for Shared KV Store to prevent cross-agent state injection. (Added: 2026-03-09)
-*   **[P1] Detached Sandbox for Automated Hooks**: Isolated runtime for tool sequences with zero host access by default. (Added: 2026-03-09)
+*   **[P0] Detached Sandbox for Automated Hooks**: Isolated runtime for tool sequences with zero host access by default. (Upgraded: 2026-03-12)
+
+#### Upcoming (2026-03-12 Evolution)
+*   **[P0] Config-First Attestation Firewall**: Mandatory interception and cryptographic signing of project-local `.claude/settings.json` and `.mcp.json`. (Added: 2026-03-12)
+*   **[P0] Host-Header Enforcement Middleware**: Mitigation for WebSocket hijacking (CVE-2026-25253) and DNS rebinding attacks. (Added: 2026-03-12)
+*   **[P1] Automated Compliance Reviewer**: Agent-in-the-loop validation tool for subagent output auditing. (Added: 2026-03-12)
 
 ## 2. Top 10 Recommended Features
 

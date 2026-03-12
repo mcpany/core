@@ -67,3 +67,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project Configuration Guard**: MCP Any will evolve into a "Validating Proxy" for all project-local agent configurations. It will intercept and sanitize any "auto-execute" or "hook" definitions before they reach the agent runtime, requiring explicit user attestation.
 - **Agent-Aware Blackboard Isolation**: The Shared KV Store (Blackboard) must implement mandatory "Agent-Bound" isolation. Data written by one agent will be read-only or invisible to others unless a specific "Shared Intent" is established.
 - **Zero-Trust Hook Execution**: Any executable hook or automated tool sequence must run in a "Detached Sandbox" managed by MCP Any, with zero access to the host filesystem unless explicitly granted via a capability-based token.
+
+---
+
+## Strategic Evolution: [2026-03-12]
+### Focus: Configuration-as-an-Attack-Vector & Inter-Agent Validation
+**Context**: Today's findings reveal a massive supply chain crisis where project-local configuration files (CVE-2025-59536, CVE-2026-21852) have become active RCE vectors. Furthermore, the rise of "Validator Agents" in Gemini swarms suggests that multi-agent reliability is shifting from "Human-in-the-Loop" to "Agent-in-the-Loop" validation.
+**Strategic Pivot**:
+- **Config-First Security Proxy**: MCP Any must evolve from a tool gateway to a "Configuration Firewall." It will act as the authoritative validator for all agent-consumed configs, treating `.claude/settings.json` or `.mcp.json` as untrusted inputs requiring cryptographic attestation.
+- **Inter-Agent Validation Protocols**: Implementing a "Validation-as-a-Service" tool within MCP Any. This allows swarm orchestrators to programmatically route subagent outputs through a specialized "Validator Agent" instance hosted or proxied by MCP Any.
+- **Hardened Local Bindings**: Re-prioritizing the "Safe-by-Default" initiative. In light of OpenClaw's WebSocket hijacking exploits, MCP Any will enforce strict host-header validation and mandatory local-only bindings with zero-exception MFA for remote escalation.

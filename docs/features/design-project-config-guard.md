@@ -49,3 +49,9 @@ As agents increasingly rely on project-local configuration files (e.g., `.claude
 
 ## 7. Evolutionary Changelog
 * **2026-03-09:** Initial Document Creation.
+* **2026-03-12: Update - Mitigating Claude Code RCE & API Theft**
+    * **Context**: Today's market sync revealed active exploits (CVE-2025-59536, CVE-2026-21852) where malicious `.claude/settings.json` and `.mcp.json` files are used to inject hooks and exfiltrate API keys.
+    * **Architecture Adjustment**:
+        *   **Environment Variable Sanitization**: Section 4 updated to include a "Blocklist" for sensitive environment variable overrides (e.g., `ANTHROPIC_BASE_URL`, `OPENAI_API_KEY`) within project-local configs.
+        *   **Mandatory Hook Signature**: All executable hooks defined in local configs must now be cryptographically signed by the user before being allowed in the `Detached Sandbox`.
+    * **Security Impact**: Neutralizes the primary RCE and credential theft vectors observed in the March 2026 Claude Code crisis.

@@ -84,9 +84,19 @@
 - **Agent-Aware Blackboard Isolation**: (P0) Implements row-level security for the Shared KV Store, ensuring agents can only access state within their assigned "Intent Scope."
 - **Detached Sandbox for Automated Hooks**: (P1) Isolated execution environment for automated tool sequences, preventing unauthorized host access.
 
+---
+
+## Evolution: [2026-03-12] Updates
+
+### Proposed Additions
+- **Automated Compliance Reviewer (Agent-in-the-Loop)**: (P1) A specialized validation tool that routes subagent outputs through a security-tuned LLM "Auditor" before finalizing tasks.
+- **Config-First Attestation Firewall**: (P0) Mandatory interception and cryptographic signing of all project-local configuration files.
+- **Host-Header Enforcement Middleware**: (P0) Strict validation of incoming request headers to mitigate WebSocket hijacking and DNS rebinding attacks.
+
 ### Priority Shifts
-- **Shared KV Store (Blackboard)**: Re-affirmed as **P0** with new mandatory security isolation requirements.
-- **Policy Firewall**: Promoted to **P0** (Already P0, but expanded to include "Project-Local Config Validation").
+- **Project Configuration Security Guard**: Promoted to **P0** with immediate urgency due to active Claude Code exploits.
+- **Detached Sandbox for Automated Hooks**: Promoted to **P0** to ensure safe execution of validated hooks.
+- **Safe-by-Default Hardening**: Re-affirmed as **P0** with new requirement for Host-Header validation.
 
 ### Deprecations / Monitoring
-- **Unvalidated Project-Local Configs**: Monitoring for total deprecation. All local configs must be attested via MCP Any before ingestion by agents.
+- **Unsigned Local Configs**: Moving from "Monitoring" to "Active Blocking" by default in high-security profiles.
