@@ -170,9 +170,19 @@
 - **Signed Context Chain Protocol**: (P0) Cryptographic signing of subagent requests to prevent identity spoofing (CVE-2026-28190).
 - **Universal Agent Bus (UAB) Adapter**: (P1) Native support for the UAB protocol, enabling seamless task handoffs between OpenClaw and AutoGen frameworks.
 
+---
+
+## Evolution: [2026-03-16] Updates
+
+### Proposed Additions
+- **Browser-Origin Validation Middleware**: (P0) Mandatory validation of `Origin` and `Sec-Fetch-Site` headers for all local listeners to mitigate cross-site hijacking (CVE-2026-25253).
+- **UAB Task Delegation Bridge**: (P1) Extension of the A2A bridge to support UAB-native task cards and authenticated discovery.
+- **Cross-Agent Loop Circuit Breaker**: (P0) Real-time monitoring of inter-agent call graphs to prevent "Spiral of Death" loops across framework boundaries.
+- **Relational Identity Provider**: (P1) A core service that maps and verifies agent identities between disparate frameworks (e.g., OpenClaw, Gemini CLI).
+
 ### Priority Shifts
-- **Recursive Context Protocol**: Re-affirmed as **P0** and updated to include "Signed Chain" requirements.
-- **Agent-Aware Blackboard Isolation**: Promoted to **P0** as a dependency for secure multi-agent state management.
+- **Signed Context Chain Protocol**: Re-affirmed as **P0** with expanded requirements for UAB compatibility.
+- **"Safe-by-Default" Network Hardening**: (Re-affirmed P0) Now includes mandatory Browser-Origin enforcement for all adapters.
 
 ### Deprecations / Monitoring
-- **Unsigned Subagent Headers**: Monitoring for deprecation. All subagent context inheritance must eventually be cryptographically verifiable.
+- **Implicit Local Trust**: All listeners must now explicitly validate request origins. Standard `localhost` binding without header checks is now **Deprecated**.

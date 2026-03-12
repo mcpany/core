@@ -28,6 +28,9 @@
 - [ ] **[P0] Recursive Loop Heatmap**: (2026-03-15) Visualization of tool-to-tool call graphs with real-time loop detection alerts.
 - [ ] **[P0] Context Chain Inspector**: (2026-03-15) Security UI for verifying the cryptographic signatures of subagent context lineages.
 - [ ] **[P1] UAB Protocol Bridge Status**: (2026-03-15) Monitor for task handoffs across different agent frameworks using the UAB adapter.
+- [ ] **[P0] Cross-Framework Identity Map**: (2026-03-16) UI for managing and visualizing agent identity mappings between frameworks.
+- [ ] **[P0] Origin Violation Real-time Monitor**: (2026-03-16) Security dashboard for tracking and approving blocked browser-origin requests.
+- [ ] **[P1] UAB Task Card Inspector**: (2026-03-16) Visual tool for inspecting and debugging UAB-native task cards during delegation.
 - [ ] **[P1] Skill Impact Simulator**: (2026-03-13) Interactive "dry-run" interface to preview skill side-effects.
 - [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
 - [x] **[P1] Tool Playground & Explorer**:

@@ -57,3 +57,7 @@ As agentic workflows evolve from single-agent tasks to multi-agent swarms (e.g.,
     * **Context:** Discovery of CVE-2026-28190 (Subagent Identity Spoofing) necessitates cryptographic proof of lineage.
     * **Architecture Adjustment:** All `X-MCP-Session-Token` values must now be part of a Merkle-tree like chain where each subagent request is signed by the parent's private key.
     * **Security Impact:** Prevents "Grandchild" agents from spoofing "Parent" identity to access unauthorized Blackboard state.
+* **2026-03-16: Relational Hub & UAB Alignment**
+    * **Context:** The move towards the Universal Agent Bus (UAB) requires context that persists across framework boundaries (e.g., OpenClaw to Gemini CLI).
+    * **Architecture Adjustment:** The Signed Context Chain now supports "Cross-Framework Identity Mapping." MCP Any acts as the Relational Hub that translates and signs context tokens for different framework formats.
+    * **Security Impact:** Ensures cryptographic continuity of intent even when tasks are delegated between disparate agent ecosystems.

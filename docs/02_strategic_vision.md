@@ -128,3 +128,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Recursive Depth-Limit Middleware**: MCP Any will implement a "Call-Graph Monitor" that detects and halts recursive tool-calling loops across different MCP servers, preventing resource exhaustion.
 - **Signed Context Chain**: Moving from header-based inheritance to a "Cryptographic Chain of Custody." Every subagent request must be signed by its parent, allowing the gateway to verify the entire lineage of an "Intent" before granting access to resources like the Blackboard.
 - **UAB Gateway Adaptation**: MCP Any will pivot to support the newly proposed Universal Agent Bus (UAB) standard as a native transport, positioning itself as the primary interoperability layer for OpenClaw-to-AutoGen handoffs.
+
+---
+
+## Strategic Evolution: [2026-03-16]
+### Focus: Zero-Trust Local Transport & Cross-Framework Relational Integrity
+**Context**: The OpenClaw security crisis (CVE-2026-25253) has fundamentally shifted the "Local Trust" paradigm. Implicit trust of localhost is no longer viable in a browser-connected world. Simultaneously, the momentum of the Universal Agent Bus (UAB) and Gemini CLI's A2A discovery updates demand that MCP Any matures from a tool gateway into a secure, cross-framework Relational Hub.
+**Strategic Pivot**:
+- **Mandatory Origin Enforcement**: MCP Any will move to a "Verify Everything" model for local transport. All WebSocket and HTTP interfaces will mandate `Origin` and `Sec-Fetch-Site` validation to prevent cross-site hijacking.
+- **Relational Identity Mapping**: We are evolving the Signed Context Chain into a full "Relational Hub." MCP Any will map identities across different frameworks (OpenClaw, AutoGen, Gemini), allowing a "Subagent in Framework A" to securely inherit context and permissions from a "Parent in Framework B."
+- **UAB-First Orchestration**: Positioning UAB as the primary internal transport for inter-agent communication, with MCP Any acting as the universal translator and security enforcement point for all UAB-compliant swarms.

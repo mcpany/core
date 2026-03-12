@@ -59,3 +59,7 @@ The February 2026 security crisis (8,000+ exposed MCP servers, Clawdbot breach) 
 
 ## 7. Evolutionary Changelog
 *   **2026-02-28:** Initial Document Creation.
+*   **2026-03-16: Mandatory Browser-Origin Validation**
+    *   **Context:** CVE-2026-25253 (OpenClaw) proved that `localhost` is not a secure boundary when browsers can initiate cross-site WebSocket/HTTP requests.
+    *   **Architecture Adjustment:** All local listeners now mandate `Origin` and `Sec-Fetch-Site` validation.
+    *   **Security Impact:** Prevents "One-Click" hijack attacks from malicious websites targeting local agent gateways.
