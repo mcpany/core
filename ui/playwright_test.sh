@@ -116,12 +116,15 @@ wait_for_http() {
   return 1
 }
 
-echo "Starting HTTP echo server on 127.0.0.1:5678"
-"$echo_bin" --port=5678 >"$TEST_TMPDIR/http-echo.log" 2>&1 &
+echo_port=$(( (RANDOM % 10000) + 20000 ))
+echo "Starting HTTP echo server on 127.0.0.1:${echo_port}"
+"$echo_bin" --port="${echo_port}" >"$TEST_TMPDIR/http-echo.log" 2>&1 &
 echo_pid=$!
-wait_for_http "http://127.0.0.1:5678/health" "HTTP echo server"
+wait_for_http "http://127.0.0.1:${echo_port}/health" "HTTP echo server"
 
-echo "Starting MCP Any backend on 127.0.0.1:50050"
+backend_http_port=$(( echo_port + 2 ))
+backend_grpc_port=$(( backend_http_port + 1 ))
+echo "Starting MCP Any backend on 127.0.0.1:${backend_http_port}"
 (
   cd "$backend_runtime"
   MCPANY_API_KEY=test-token \
@@ -131,20 +134,20 @@ echo "Starting MCP Any backend on 127.0.0.1:50050"
   MCPANY_ADMIN_INIT_PASSWORD=password \
   "$server_bin" run \
     --config-path="$config_path" \
-    --mcp-listen-address=127.0.0.1:50050 \
-    --grpc-port=127.0.0.1:50051
+    --mcp-listen-address=127.0.0.1:${backend_http_port} \
+    --grpc-port=127.0.0.1:${backend_grpc_port}
 ) >"$TEST_TMPDIR/mcpany-ui-backend.log" 2>&1 &
 backend_pid=$!
-wait_for_http "http://127.0.0.1:50050/healthz?api_key=test-token" "MCP Any backend"
+wait_for_http "http://127.0.0.1:${backend_http_port}/healthz?api_key=test-token" "MCP Any backend"
 
 cd "$ui_runtime"
 
 export CI=true
 export TEST_PORT="$test_port"
-export BACKEND_URL="http://127.0.0.1:50050"
+export BACKEND_URL="http://127.0.0.1:${backend_http_port}"
 export NEXT_PUBLIC_API_URL="$BACKEND_URL"
 export MCPANY_API_KEY="test-token"
-export UI_HTTP_ECHO_BASE_URL="http://127.0.0.1:5678"
+export UI_HTTP_ECHO_BASE_URL="http://127.0.0.1:${echo_port}"
 
 next_cli_js="$ui_runtime/node_modules/next/dist/bin/next"
 playwright_cli_js="$ui_runtime/node_modules/@playwright/test/cli.js"
