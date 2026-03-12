@@ -56,8 +56,14 @@
 
 #### Upcoming (2026-03-13 Evolution)
 *   **[P0] Prompt Path Protection Middleware**: Real-time scanning of tool outputs for "Indirect Prompt Injection" patterns. (Added: 2026-03-13)
-*   **[P1] OpenClaw ContextEngine Bridge**: Middleware to synchronize state with OpenClaw's pluggable context management. (Added: 2026-03-13)
+*   **[P0] OpenClaw ContextEngine Bridge**: Middleware to synchronize state with OpenClaw's pluggable context management. (Added: 2026-03-13 - Promoted to P0 on 2026-03-14)
 *   **[P1] Critical Skill Simulation**: Advanced "what-if" analysis for skills, simulating impact on sensitive data. (Added: 2026-03-13)
+
+#### Upcoming (2026-03-14 Evolution)
+*   **[P0] Same-Origin Policy (SOP) Enforcer**: Middleware to validate browser-origin headers for local listeners (CVE-2026-25253). (Added: 2026-03-14)
+*   **[P0] Semantic Boundary Detector**: Specialized scanner for Prompt Path Protection that analyzes multimodal metadata (SVG/CSS). (Added: 2026-03-14)
+*   **[P1] Context Lifecycle Hooks**: Standardized API for framework-specific context compression and retrieval. (Added: 2026-03-14)
+*   **[P1] Session-Resumption mTLS**: Optimized transport layer to reduce A2A handshake latency in large swarms. (Added: 2026-03-14)
 
 ## 2. Top 10 Recommended Features
 
