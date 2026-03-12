@@ -223,7 +223,8 @@ jobs:
             --test_env=PATH \
             --test_env=HOME \
             --disk_cache=$BAZEL_DISK_CACHE \
-            --repository_cache=$BAZEL_REPOSITORY_CACHE
+            --repository_cache=$BAZEL_REPOSITORY_CACHE \
+            --remote_header=x-buildbuddy-api-key=$BUILDBUDDY_API_KEY
 
   ci-success:
     runs-on: ubuntu-latest
