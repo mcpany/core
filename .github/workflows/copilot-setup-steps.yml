@@ -37,9 +37,3 @@ jobs:
           disk-cache: copilot-setup
           # Share repository cache between workflows.
           repository-cache: true
-
-      - name: Prepare environment
-        run: make prepare
-
-      - name: Generate Code
-        run: make gen
