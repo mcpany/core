@@ -48,3 +48,4 @@ As agents become more autonomous, they increasingly consume untrusted data (web 
 
 ## 7. Evolutionary Changelog
 * **2026-03-13:** Initial Document Creation.
+* **2026-03-14:** Expanded scope to include **Visual Injections**. Integrated the `Visual Injection Scanner` as a sub-module for scanning diagram definitions (Mermaid, Vega) to prevent multi-vector hijacking.

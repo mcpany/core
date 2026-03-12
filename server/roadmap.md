@@ -59,6 +59,12 @@
 *   **[P1] OpenClaw ContextEngine Bridge**: Middleware to synchronize state with OpenClaw's pluggable context management. (Added: 2026-03-13)
 *   **[P1] Critical Skill Simulation**: Advanced "what-if" analysis for skills, simulating impact on sensitive data. (Added: 2026-03-13)
 
+#### Upcoming (2026-03-14 Evolution)
+*   **[P0] Visual Injection Scanner**: Middleware for parsing and sanitizing visual DSLs (Mermaid, Vega) to prevent visual-vector hijacking. (Added: 2026-03-14)
+*   **[P0] Zero-Trust Origin Validator**: Enforce mandatory browser-attested origin tokens for all connections, including localhost, to mitigate CVE-2026-25253 style attacks. (Added: 2026-03-14)
+*   **[P0] Skill Provenance Enforcement Engine**: Real-time policy engine for blocking/sandboxing skills based on cryptographic registry status. (Added: 2026-03-14)
+*   **[P1] Isolated Swarm Shared Memory**: Cryptographically isolated memory regions for agent swarms to prevent cross-agent state corruption. (Added: 2026-03-14)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

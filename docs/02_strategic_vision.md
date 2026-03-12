@@ -108,3 +108,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Modular Context Interop**: MCP Any will implement a "Context Bridge" that allows agents using different frameworks (OpenClaw, Claude Code, etc.) to exchange and persist context via a standardized, pluggable API.
 - **Prompt Path Protection**: Introducing a "Content Validation Middleware" that scans tool outputs and retrieved data for malicious instructions (Indirect Prompt Injection) before they are re-ingested by the agent.
 - **Swarm Integrity Monitoring**: Moving from individual agent security to "Swarm Security," where the collective behavior of a multi-agent system is monitored for anomalies that might indicate a compromised specialist agent.
+
+---
+
+## Strategic Evolution: [2026-03-14]
+### Focus: Multi-Vector Content Governance & Local-Boundary Hardening
+**Context**: Today's findings reveal that traditional security boundaries are failing. The "Localhost RCE" (CVE-2026-25253) proves that network isolation isn't enough, and the emergence of "Visual Injections" in diagram renderers shows that content filters must evolve beyond text.
+**Strategic Pivot**:
+- **Zero-Trust Origin Validation**: MCP Any will move beyond "Local-Only" binding to mandatory "Origin Attestation." Every connection, even from localhost, must provide a valid, browser-attested origin token to prevent cross-site hijacking.
+- **Multi-Vector Injection Defense**: Expanding "Prompt Path Protection" to include structured visual data. MCP Any will implement a "Visual Injection Scanner" that validates diagram definitions (Mermaid, Vega) against known exploit patterns before they are rendered.
+- **Marketplace Provenance Enforcement**: In response to the massive supply-chain poisoning crisis, MCP Any will enforce a "Trusted-By-Default" policy for all skills. Any unverified skill will be strictly quarantined and restricted from accessing the host filesystem or network.

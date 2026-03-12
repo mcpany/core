@@ -143,3 +143,20 @@
 ### Deprecations / Monitoring
 - **Direct Agent-to-LLM Communication**: Monitoring for deprecation in favor of **Exfiltration-Resistant Transport** (Proxied via MCP Any).
 - **Unsigned/Unverified Skills**: Moving towards a default-block policy for any skill not present in the Verified Skill Registry.
+
+---
+
+## Evolution: [2026-03-14] Updates
+
+### Proposed Additions
+- **Visual Injection Scanner**: (P0) A dedicated middleware for detecting and neutralizing malicious instructions embedded in diagram definitions (Mermaid, Vega).
+- **Zero-Trust Origin Validator**: (P0) Enforces mandatory browser-attested origin tokens for all connections, including those from localhost, to mitigate cross-site RCE.
+- **Skill Provenance Enforcement Engine**: (P0) Real-time policy engine that blocks or sandboxes skills based on their cryptographic signature and registry status.
+- **Isolated Swarm Shared Memory**: (P1) Implements hardware-backed or cryptographically isolated memory regions for agent swarms to prevent cross-agent state corruption.
+
+### Priority Shifts
+- **Verified Skill Registry**: Re-affirmed as **P0** following the discovery of over 800 malicious skills in the ecosystem.
+- **Prompt Path Protection Middleware**: Re-affirmed as **P0** and expanded to include multi-vector (text + visual) scanning.
+
+### Deprecations / Monitoring
+- **Implicit Localhost Trust**: All unauthenticated localhost connections are now **Deprecated**. Mandatory attestation is required for all gateway interactions.

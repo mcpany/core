@@ -24,6 +24,9 @@
 - [ ] **[P0] Prompt Path Alert Dashboard**: (2026-03-13) UI for visualizing and responding to indirect prompt injection attempts.
 - [ ] **[P1] OpenClaw Context Sync Viewer**: (2026-03-13) Visualize shared context state between MCP Any and OpenClaw agents.
 - [ ] **[P1] Skill Impact Simulator**: (2026-03-13) Interactive "dry-run" interface to preview skill side-effects.
+- [ ] **[P0] Visual Hijack Attempt Dashboard**: (2026-03-14) Real-time visualization of sanitized visual DSLs with side-by-side diffs.
+- [ ] **[P0] Origin Attestation Monitor**: (2026-03-14) UI for monitoring connection origins and attestation token status.
+- [ ] **[P1] Swarm Memory Isolation Inspector**: (2026-03-14) Debugger for visualizing isolated memory regions in multi-agent swarms.
 - [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
 - [x] **[P1] Tool Playground & Explorer**:
   - [x] Auto-generated forms from Tool JSON Schemas.
