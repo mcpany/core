@@ -31,8 +31,9 @@ As agents increasingly rely on project-local configuration files (e.g., `.claude
     `Agent` -> `MCP Any (File Proxy Middleware)` -> `Filesystem`
     1. **Interception**: MCP Any wraps the filesystem access tools used by agents.
     2. **Analysis**: The `Config Validator` parser identifies known "danger zones" (hooks, commands, environment overrides).
-    3. **Policy Check**: Matches against `mcp-policy.rego`.
-    4. **Attestation**: If a policy violation occurs, the request is suspended via the `HITL Middleware`.
+    3. **Command Injection Shield**: A P0 middleware layer that scans all identified command strings against a "Blacklist" of shell injection patterns (`;`, `&&`, `|`, `$( )`, `` ` ``).
+    4. **Policy Check**: Matches against `mcp-policy.rego`.
+    5. **Attestation**: If a policy violation occurs, the request is suspended via the `HITL Middleware`.
 * **APIs / Interfaces:**
     * `POST /v1/attest/config`: User endpoint to approve/deny a flagged configuration block.
     * `FileSystem.read` hook: Intercepts `read` calls to specific filenames.
@@ -49,3 +50,4 @@ As agents increasingly rely on project-local configuration files (e.g., `.claude
 
 ## 7. Evolutionary Changelog
 * **2026-03-09:** Initial Document Creation.
+* **2026-03-12:** Added Command Injection Shielding middleware and mandatory regex scanning for `exec`-style hooks (Response to CVE-2026-0755).

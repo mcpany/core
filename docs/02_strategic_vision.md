@@ -67,3 +67,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project Configuration Guard**: MCP Any will evolve into a "Validating Proxy" for all project-local agent configurations. It will intercept and sanitize any "auto-execute" or "hook" definitions before they reach the agent runtime, requiring explicit user attestation.
 - **Agent-Aware Blackboard Isolation**: The Shared KV Store (Blackboard) must implement mandatory "Agent-Bound" isolation. Data written by one agent will be read-only or invisible to others unless a specific "Shared Intent" is established.
 - **Zero-Trust Hook Execution**: Any executable hook or automated tool sequence must run in a "Detached Sandbox" managed by MCP Any, with zero access to the host filesystem unless explicitly granted via a capability-based token.
+
+---
+
+## Strategic Evolution: [2026-03-12]
+### Focus: Context-Triggered Discovery & Proactive RCE Shielding
+**Context**: Today's findings from Claude Code and the Gemini CLI emphasize two extremes: (1) managing massive tool libraries via "Lazy Search" and (2) defending against sophisticated Command Injection (CVE-2026-0755) and "Shadow Config" attacks.
+**Strategic Pivot**:
+- **Context-Triggered Lazy Loading**: MCP Any will adopt the "10% Heuristic," automatically switching to a search-based tool discovery mode when tool schemas threaten context window stability. We will explicitly leverage "Server Instructions" as a discovery layer.
+- **Mandatory Tool Namespacing**: To prevent "Tool Shadowing" and namespace collisions seen in multi-agent environments, MCP Any will enforce strict `namespace:tool_name` addressing for all tool calls.
+- **Proactive Command Injection Shielding**: All MCP Any middleware must implement a "Deny-by-Default" regex-based scanner for any tool argument that resembles a shell command or script, specifically targeting common injection patterns (`;`, `&&`, `|`, `$( )`).

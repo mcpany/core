@@ -90,3 +90,17 @@
 
 ### Deprecations / Monitoring
 - **Unvalidated Project-Local Configs**: Monitoring for total deprecation. All local configs must be attested via MCP Any before ingestion by agents.
+
+---
+
+## Evolution: [2026-03-12] Updates
+
+### Proposed Additions
+- **Qualified Tool Namespacing**: (P0) Enforces mandatory `server:tool` naming convention to prevent tool shadowing in multi-agent environments.
+- **Command Injection Shield Middleware**: (P0) Regex-based security scanner for tool arguments to prevent RCE (Inspired by CVE-2026-0755).
+- **A2A Authenticated Discovery**: (P1) Support for discovering and authenticating with other agents using standardized A2A cards.
+- **Lazy-Discovery "10% Heuristic"**: (P1) Automatic trigger for On-Demand Discovery when tool context usage exceeds 10% of the window.
+
+### Priority Shifts
+- **On-Demand Discovery Middleware (Lazy-MCP)**: Re-affirmed as **P0** with new context-triggered heuristic.
+- **Project Configuration Security Guard**: Re-affirmed as **P0** with added focus on Command Injection shielding.

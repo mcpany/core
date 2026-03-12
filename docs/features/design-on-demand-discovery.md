@@ -31,7 +31,8 @@ As the number of available MCP tools grows, agents face "context pollution"—wh
 *   **System Flow:**
     - **Indexing**: On startup/hot-reload, MCP Any crawls all registered upstreams and populates a search index (using Bleve or a simple BM25 implementation).
     - **Search API**: A new MCP tool `mcpany_search_tools` is exposed to the agent.
-    - **Lazy Loading**: Tool schemas are omitted from the initial `tools/list` call if "lazy mode" is enabled, replaced by a single discovery tool.
+    - **Lazy Loading**: Tool schemas are omitted from the initial `tools/list` call if "lazy mode" is enabled or if the total tool schema size exceeds **10% of the current context window**.
+    - **Server Instructions**: MCP Any will automatically extract and serve "Server Instructions" as metadata to help agents decide which specialized tools to search for.
 *   **APIs / Interfaces:**
     ```json
     {
@@ -57,3 +58,4 @@ As the number of available MCP tools grows, agents face "context pollution"—wh
 
 ## 7. Evolutionary Changelog
 *   **2026-02-25:** Initial Document Creation.
+*   **2026-03-12:** Updated with "10% Heuristic" trigger and "Server Instructions" optimization.

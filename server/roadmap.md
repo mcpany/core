@@ -39,6 +39,12 @@
 *   **[P0] Agent-Aware Blackboard Isolation**: Row-level security for Shared KV Store to prevent cross-agent state injection. (Added: 2026-03-09)
 *   **[P1] Detached Sandbox for Automated Hooks**: Isolated runtime for tool sequences with zero host access by default. (Added: 2026-03-09)
 
+#### Upcoming (2026-03-12 Evolution)
+*   **[P0] Qualified Tool Namespacing**: Enforce `server:tool` naming in the gateway to prevent tool shadowing. (Added: 2026-03-12)
+*   **[P0] Command Injection Shield Middleware**: Regex-based scanning for all tool arguments to prevent RCE (CVE-2026-0755). (Added: 2026-03-12)
+*   **[P1] A2A Authenticated Discovery**: Support for A2A card-based agent discovery and auth. (Added: 2026-03-12)
+*   **[P1] Context-Aware Lazy Loading Trigger**: Implement "10% context window" heuristic for On-Demand Discovery. (Added: 2026-03-12)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
