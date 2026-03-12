@@ -71,6 +71,7 @@ cp -rL "$workspace_root/ui/tests" "$ui_runtime/"
 rm -rf "$ui_runtime/node_modules"
 ln -s "$workspace_root/ui/node_modules" "$ui_runtime/node_modules"
 ln -s "$workspace_root/proto" "$repo_root/proto"
+ln -s "$workspace_root/ui/node_modules" "$repo_root/node_modules"
 
 mkdir -p \
   "$ui_runtime/.next" \
@@ -155,6 +156,7 @@ if [[ ! -f "$next_cli_js" || ! -f "$playwright_cli_js" ]]; then
 fi
 
 export PATH="$(dirname "$node_bin"):$PATH"
+export NODE_PATH="$ui_runtime/node_modules${NODE_PATH:+:$NODE_PATH}"
 export NEXT_DEV_COMMAND="$node_bin $next_cli_js dev -p $test_port"
 
 if [[ -n "$spec_path" ]]; then

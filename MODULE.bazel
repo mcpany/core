@@ -20,6 +20,7 @@ bazel_dep(name = "rules_shell", version = "0.6.1")
 bazel_dep(name = "rules_nodejs", version = "6.7.3")
 bazel_dep(name = "aspect_rules_js", version = "3.0.2")
 bazel_dep(name = "aspect_rules_ts", version = "3.8.6")
+bazel_dep(name = "toolchains_buildbuddy", version = "0.0.4")
 
 go_sdk = use_extension("@rules_go//go:extensions.bzl", "go_sdk")
 go_sdk.download(version = "1.24.0")
@@ -279,3 +280,5 @@ use_repo(npm, "npm")
 node = use_extension("@rules_nodejs//nodejs:extensions.bzl", "node")
 node.toolchain(node_version = "22.13.0")
 use_repo(node, "nodejs_toolchains")
+
+buildbuddy = use_extension("@toolchains_buildbuddy//:extensions.bzl", "buildbuddy")
