@@ -12,7 +12,7 @@ importers:
         specifier: ^7.28.6
         version: 7.28.6
       '@bufbuild/protobuf':
-        specifier: ^2.10.2
+        specifier: ^2.11.0
         version: 2.11.0
       '@bufbuild/protoc-gen-es':
         specifier: ^2.11.0
