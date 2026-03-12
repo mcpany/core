@@ -107,3 +107,19 @@
 
 ### Deprecations / Monitoring
 - **Implicit Hook Execution**: All "hooks" or "auto-exec" commands in configurations are now **Deprecated**. They must be explicitly moved to an "Attested Hooks" registry.
+
+---
+
+## Evolution: [2026-03-11] Updates
+
+### Proposed Additions
+- **Project-Local Config Attestation Engine**: (P0) A core service that intercepts and verifies cryptographic signatures on project-local configuration files.
+- **Base-URL Hijack Protection (Exfiltration Guard)**: (P0) A middleware that enforces a strict "Allow-List" for LLM base URLs, preventing silent redirection of API traffic.
+- **Active Config Rewriter**: (P1) A daemon that monitors agent configuration files and automatically reverts unauthorized changes to security-critical fields.
+
+### Priority Shifts
+- **Project Configuration Security Guard**: Re-affirmed as **P0**. Expanded scope to include active interception of base URL modifications.
+- **Detached Sandbox for Automated Hooks**: Re-affirmed as **P0**. Critical for safe execution of legacy hooks during the transition to Attested Hooks.
+
+### Deprecations / Monitoring
+- **Direct Agent-to-LLM Communication**: Monitoring for deprecation in favor of **Exfiltration-Resistant Transport** (Proxied via MCP Any).

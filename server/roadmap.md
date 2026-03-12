@@ -44,6 +44,11 @@
 *   **[P0] Agent-Aware Blackboard Isolation**: Row-level security for Shared KV Store to prevent cross-agent state injection. (Added: 2026-03-09)
 *   **[P0] Detached Sandbox for Automated Hooks**: Isolated runtime for tool sequences with zero host access by default. (Added: 2026-03-09 - Promoted to P0 on 2026-03-10)
 
+#### Upcoming (2026-03-11 Evolution)
+*   **[P0] Exfiltration-Resistant Transport Gateway**: Force all agent traffic through a secure, allow-listed proxy to prevent API key exfiltration. (Added: 2026-03-11)
+*   **[P0] Project-Local Config Attestation Engine**: Cryptographic verification of signatures on agent configuration files. (Added: 2026-03-11)
+*   **[P1] Active Config Rewriter**: Daemon that automatically reverts unauthorized changes to security-critical agent settings. (Added: 2026-03-11)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
