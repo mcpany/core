@@ -47,3 +47,10 @@ The `Shared KV Store` (Blackboard) is a core tool in MCP Any that allows multipl
 
 ## 7. Evolutionary Changelog
 * **2026-03-09:** Initial Document Creation.
+### Update: 2026-03-10 - Hardening Swarm Isolation with Intent-Bound Cryptography
+**Context**: Multi-agent refinement loops in OpenClaw are vulnerable to cross-agent state injection.
+**Architecture Adjustment**:
+* **Cryptographic Intent-Scopes**: Transitioning from string-based scopes to cryptographically signed tokens.
+* **Read-Only Shared State**: By default, shared state from a parent is read-only for subagents unless explicit "Write" capabilities are granted via the policy engine.
+* **Automatic Cleanup**: Intent-bound data is automatically purged when the parent session expires, preventing long-term state leakage.
+**Security Impact**: Prevents "Cross-Agent State Poisoning," ensuring that compromised or misbehaving subagents cannot influence the execution of the parent or other specialized agents.

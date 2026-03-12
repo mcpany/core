@@ -59,6 +59,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Provenance-First Discovery**: All tool discovery will prioritize "Attested" sources. Tools from unverified or "Shadow" sources will be quarantined by default, requiring manual policy override.
 
 ---
+---
 
 ## Strategic Evolution: [2026-03-09]
 ### Focus: Project-Local Configuration Security & Intent-Bound Isolation
@@ -67,3 +68,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project Configuration Guard**: MCP Any will evolve into a "Validating Proxy" for all project-local agent configurations. It will intercept and sanitize any "auto-execute" or "hook" definitions before they reach the agent runtime, requiring explicit user attestation.
 - **Agent-Aware Blackboard Isolation**: The Shared KV Store (Blackboard) must implement mandatory "Agent-Bound" isolation. Data written by one agent will be read-only or invisible to others unless a specific "Shared Intent" is established.
 - **Zero-Trust Hook Execution**: Any executable hook or automated tool sequence must run in a "Detached Sandbox" managed by MCP Any, with zero access to the host filesystem unless explicitly granted via a capability-based token.
+
+---
+
+## Strategic Evolution: [2026-03-10]
+### Focus: Universal Configuration Governance & Swarm Hardening
+**Context**: Today's analysis of CVE-2025-59536 (Claude Code) and OpenClaw's refinement loops confirms that "Configuration-as-Execution" is the primary new attack vector for AI agents. As agents move from single-user tools to multi-agent swarms, the "Blackboard" becomes a critical point of failure for cross-agent state injection.
+**Strategic Pivot**:
+- **Universal Configuration Governance**: MCP Any will pivot from being a simple tool proxy to a "Governance Layer" for all agent-adjacent configurations. It will provide a "Verified View" of project-local settings, ensuring no malicious hooks or exfiltration paths exist before the agent even loads the file.
+- **Hardened Swarm Coordination**: We are moving from "Shared State" to "Isolated State-by-Default." Every agent in a swarm will operate in its own cryptographic "Intent-Scope," and all blackboard interactions must be explicitly authorized by a "Shared Context Policy."
+- **Detached Execution for Hooks**: All automated tool sequences or "hooks" defined in project configs must execute in a resource-isolated, network-restricted sandbox managed natively by MCP Any.
