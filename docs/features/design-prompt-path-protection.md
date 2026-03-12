@@ -48,3 +48,4 @@ As agents become more autonomous, they increasingly consume untrusted data (web 
 
 ## 7. Evolutionary Changelog
 * **2026-03-13:** Initial Document Creation.
+* **2026-03-14:** Added "Semantic Boundary Detection" to counter advanced hijacking hidden in multimodal metadata (SVG, CSS). The scanner now includes a "Visual Intent Parser" that checks if rendered components contain instructions that conflict with the agent's primary mission.
