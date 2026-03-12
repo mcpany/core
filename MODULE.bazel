@@ -25,10 +25,10 @@ go_sdk = use_extension("@rules_go//go:extensions.bzl", "go_sdk")
 go_sdk.download(version = "1.24.0")
 
 go_deps = use_extension("@gazelle//:extensions.bzl", "go_deps")
-go_deps.from_file(go_mod = "//server:go.mod")
+go_deps.from_file(go_work = "//:go.work")
 go_deps.module(
     path = "sigs.k8s.io/controller-runtime",
-    sum = "h1:R55pIu2/pD3sWjM6w25fX8E06A57sV6m8wH+nS8N6wU=",
+    sum = "h1:GEjV7KV3TY8e+tJ2LCTxUTanW4z/FmNB7l327UfMq9A=",
     version = "v0.22.4",
 )
 go_deps.module(
@@ -38,12 +38,12 @@ go_deps.module(
 )
 go_deps.module(
     path = "k8s.io/api",
-    sum = "h1:1sT8k7yP/N9+x8nCq+S0M36a+nCq/0q0t3+20uR9I7I=",
+    sum = "h1:jC+153630BMdlFukegoEL8E/yT7aLyQkIVuwhmwDgJM=",
     version = "v0.34.1",
 )
 go_deps.module(
     path = "k8s.io/apimachinery",
-    sum = "h1:I4f0C2w2Y3nB+tG5xXW8fC5I7/v92k+N2bZ6Q/62/Xg=",
+    sum = "h1:dTlxFls/eikpJxmAC7MVE8oOeP1zryV7iRyIjB0gky4=",
     version = "v0.34.1",
 )
 go_deps.gazelle_override(
