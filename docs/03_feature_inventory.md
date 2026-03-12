@@ -90,3 +90,20 @@
 
 ### Deprecations / Monitoring
 - **Unvalidated Project-Local Configs**: Monitoring for total deprecation. All local configs must be attested via MCP Any before ingestion by agents.
+
+---
+
+## Evolution: [2026-03-12] Updates
+
+### Proposed Additions
+- **Intent-Bound Scoping Middleware**: (P0) Cryptographic binding of tool/blackboard access to specific agent intents.
+- **Context-Aware Tool Pruning (Dynamic Tool Masking)**: (P0) Dynamically filters tool schemas based on the active intent to reduce context bloat.
+- **Agent-Specific Telemetry & Attribution**: (P1) Real-time tracking of tool usage and cost attributed to specific subagents in a swarm.
+- **Mandatory User Attestation for Terminal Hooks**: (P0) Extension of the Project Config Guard to require explicit user approval for any automated tool execution path.
+
+### Priority Shifts
+- **Safe-by-Default Hardening**: Re-affirmed as **P0**. Essential for protecting terminal-based agent users from accidental exposure.
+- **Shared KV Store (Blackboard)**: Re-affirmed as **P0** with mandatory "Intent-Bound" isolation requirements.
+
+### Deprecations / Monitoring
+- **Global Intent-less Tool Access**: Monitoring for deprecation. All tool calls should eventually be bound to a verifiable intent token.

@@ -67,3 +67,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Project Configuration Guard**: MCP Any will evolve into a "Validating Proxy" for all project-local agent configurations. It will intercept and sanitize any "auto-execute" or "hook" definitions before they reach the agent runtime, requiring explicit user attestation.
 - **Agent-Aware Blackboard Isolation**: The Shared KV Store (Blackboard) must implement mandatory "Agent-Bound" isolation. Data written by one agent will be read-only or invisible to others unless a specific "Shared Intent" is established.
 - **Zero-Trust Hook Execution**: Any executable hook or automated tool sequence must run in a "Detached Sandbox" managed by MCP Any, with zero access to the host filesystem unless explicitly granted via a capability-based token.
+
+---
+
+## Strategic Evolution: [2026-03-12]
+### Focus: Multi-Agent Refinement Swarms & Secure Terminal Interop
+**Context**: Today's research confirms the emergence of "Refinement Swarms" (Architect/Implementer/Auditor) as the dominant multi-agent pattern. This increases the complexity of state management and elevates the risk of "Confused Deputy" attacks where one subagent is tricked into using another's credentials or state. Concurrently, terminal-based agents are increasingly targeted via malicious project-local configuration hooks.
+**Strategic Pivot**:
+- **Intent-Bound Scoping**: Moving beyond simple identity headers to "Intent Tokens." An agent's access to tools and the Blackboard will be cryptographically bound to a specific, high-level intent verified by the parent agent.
+- **Safe-by-Default Infrastructure**: Transitioning MCP Any's default posture to "Local-First, Attested-Always." All remote tool discovery and project-local config ingestion will require explicit cryptographic attestation.
+- **Context-Aware Tool Pruning**: Implementing a "Dynamic Tool Mask" that filters the tool schema presented to the LLM based on the active Intent Token, reducing context bloat and preventing accidental misuse of out-of-scope tools.

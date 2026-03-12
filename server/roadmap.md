@@ -194,3 +194,8 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Core Middleware Pipeline**: The middleware architecture is robust and extensible.
 - **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates protocol details from business logic.
 - **Documentation**: The project has excellent documentation coverage for most features.
+
+#### Upcoming (2026-03-12 Evolution)
+*   **[P0] Intent-Bound Scoping Middleware**: Cryptographic binding of tool/blackboard access to specific agent intents. (Added: 2026-03-12)
+*   **[P0] Context-Aware Tool Pruning**: Dynamically filters tool schemas based on the active intent to reduce context bloat. (Added: 2026-03-12)
+*   **[P1] Agent-Specific Telemetry & Attribution**: Real-time tracking of tool usage and cost attributed to specific subagents. (Added: 2026-03-12)

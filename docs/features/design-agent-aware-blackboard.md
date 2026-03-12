@@ -47,3 +47,10 @@ The `Shared KV Store` (Blackboard) is a core tool in MCP Any that allows multipl
 
 ## 7. Evolutionary Changelog
 * **2026-03-09:** Initial Document Creation.
+
+### Update: 2026-03-12 - Intent-Bound Locking
+**Context**: Research into OpenClaw's "Refinement Swarms" (Architect/Implementer/Auditor) shows that simple agent-based isolation is insufficient. Agents within the same swarm need to collaborate but also require protection from "Confused Deputy" attacks where a subagent is tricked into modifying out-of-scope state.
+**Architecture Adjustment**:
+* Introducing **Intent-Bound Locking**: Keys in the Blackboard can now be locked to a specific `IntentToken`.
+* Even within the same `AgentID`, a tool call must provide a matching `IntentToken` to modify a locked key.
+**Security Impact**: Prevents "Cross-Intent State Injection" within complex multi-agent workflows.

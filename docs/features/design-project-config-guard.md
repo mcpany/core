@@ -49,3 +49,10 @@ As agents increasingly rely on project-local configuration files (e.g., `.claude
 
 ## 7. Evolutionary Changelog
 * **2026-03-09:** Initial Document Creation.
+
+### Update: 2026-03-12 - Mandatory User Attestation for Automated Hooks
+**Context**: Today's market sync revealed a surge in RCE attempts via malicious `.claude/settings.json` and `.openclaw/config.yaml` files. Automated "pre-save" or "post-exec" hooks are being used to exfiltrate local environment variables.
+**Architecture Adjustment**:
+* **Mandatory Attestation**: Any project-local configuration that defines an executable hook must now be explicitly "Attested" by the user via the MCP Any UI or a CLI prompt before the agent can ingest it.
+* **Hash-Bound Approval**: Approved hooks are tied to their content hash; any change to the hook command requires re-attestation.
+**Security Impact**: Mitigates the risk of "Collaborator RCE" in public repositories.
