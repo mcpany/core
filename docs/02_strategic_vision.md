@@ -88,3 +88,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Active Configuration Interception**: MCP Any will natively intercept and rewrite agent configuration files (e.g., `.claude/settings.json`) in real-time. Any attempt to modify base URLs or injection hooks will be automatically reverted and flagged for attestation.
 - **Exfiltration-Resistant Transport**: Moving towards a "Locked Transport" model where agents are configured to ONLY communicate with MCP Any's internal proxy. MCP Any will then handle the final routing to Anthropic, OpenAI, or MCP servers, ensuring that traffic cannot be redirected to attacker-controlled domains.
 - **Cryptographic Config Attestation**: Every project-local configuration must be cryptographically signed by a trusted identity (or the user themselves) before it is deemed "Loadable" by the agent runtime.
+
+---
+
+## Strategic Evolution: [2026-03-12]
+### Focus: Self-Healing Security & Runtime Skill Attestation
+**Context**: The OpenClaw security crisis (CVE-2026-25253) and the mass poisoning of ClawHub skills demonstrate that "Static Attestation" is insufficient. Agents are being compromised via runtime vulnerabilities and "Natural Language Injection" in skill definitions.
+**Strategic Pivot**:
+- **Self-Healing Security Infrastructure**: MCP Any will evolve to include a "Security Sidecar" that monitors agent-tool interactions in real-time. If an agent's behavior deviates from its "Intent-Bound Scope" (e.g., attempting a CSWSH or exfiltrating data via a 'benign' tool), MCP Any will automatically sever the connection and roll back the session state.
+- **Runtime Skill Attestation**: Moving beyond file-hash verification to "Behavioral Attestation." Skills (especially those using the SKILL.md natural language format) must be executed in a restricted, observable sandbox where their side effects are simulated and verified against a safety policy before being committed to the host system.
+- **Dynamic Reputation Mesh**: Integrating a decentralized reputation layer where MCP Any instances share telemetry on "Malicious Tooling" and "Exploited Configs," creating a global, self-updating firewall against agentic threats.

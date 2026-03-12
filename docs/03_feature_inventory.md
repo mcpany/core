@@ -123,3 +123,19 @@
 
 ### Deprecations / Monitoring
 - **Direct Agent-to-LLM Communication**: Monitoring for deprecation in favor of **Exfiltration-Resistant Transport** (Proxied via MCP Any).
+
+---
+
+## Evolution: [2026-03-12] Updates
+
+### Proposed Additions
+- **Skill Runtime Sandbox & Monitor**: (P0) A dedicated, observable execution environment for agent "Skills" (especially natural language SKILL.md formats) that monitors side effects in real-time.
+- **Dynamic Reputation Scoring Middleware**: (P1) A telemetry-based service that scores tools and MCP servers based on real-time behavior and community-reported incidents.
+- **Agent Behavior Rollback Controller**: (P0) A middleware that can automatically revert session state and tool effects if malicious agent behavior is detected.
+
+### Priority Shifts
+- **Detached Sandbox for Automated Hooks**: Promoted to **P0** (Already P0, but expanded to support "Skill Simulation").
+- **Supply Chain Integrity Guard**: Re-affirmed as **P0** with new "Dynamic Reputation" integration.
+
+### Deprecations / Monitoring
+- **Static Skill Attestation**: Monitoring for deprecation. All skills must now undergo "Behavioral Attestation" in the runtime sandbox.

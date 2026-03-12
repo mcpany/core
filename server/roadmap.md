@@ -49,6 +49,12 @@
 *   **[P0] Project-Local Config Attestation Engine**: Cryptographic verification of signatures on agent configuration files. (Added: 2026-03-11)
 *   **[P1] Active Config Rewriter**: Daemon that automatically reverts unauthorized changes to security-critical agent settings. (Added: 2026-03-11)
 
+#### Upcoming (2026-03-12 Evolution)
+*   **[P0] Skill Runtime Sandbox**: Isolated, observable environment for executing agent "Skills" with real-time side-effect monitoring. (Added: 2026-03-12)
+*   **[P0] Agent Behavior Rollback Controller**: Middleware to automatically revert session state and tool effects if malicious behavior is detected. (Added: 2026-03-12)
+*   **[P1] Dynamic Reputation Scoring Middleware**: Telemetry-based scoring for tools and MCP servers to identify malicious actors. (Added: 2026-03-12)
+*   **[P0] Origin-Locked WebSocket Proxy**: Strict Origin header validation and MFA for local control interfaces to prevent CSWSH. (Added: 2026-03-12)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
