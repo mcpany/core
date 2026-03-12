@@ -6,18 +6,8 @@ name: CI
 on:
   push:
     branches: [main]
-    paths-ignore:
-      - "**.md"
-      - "**.txt"
-      - "docs/**"
-      - "LICENSE"
   pull_request:
     branches: [main]
-    paths-ignore:
-      - "**.md"
-      - "**.txt"
-      - "docs/**"
-      - "LICENSE"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
