@@ -88,3 +88,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Active Configuration Interception**: MCP Any will natively intercept and rewrite agent configuration files (e.g., `.claude/settings.json`) in real-time. Any attempt to modify base URLs or injection hooks will be automatically reverted and flagged for attestation.
 - **Exfiltration-Resistant Transport**: Moving towards a "Locked Transport" model where agents are configured to ONLY communicate with MCP Any's internal proxy. MCP Any will then handle the final routing to Anthropic, OpenAI, or MCP servers, ensuring that traffic cannot be redirected to attacker-controlled domains.
 - **Cryptographic Config Attestation**: Every project-local configuration must be cryptographically signed by a trusted identity (or the user themselves) before it is deemed "Loadable" by the agent runtime.
+
+---
+
+## Strategic Evolution: [2026-03-12]
+### Focus: Zero-Trust Skill Orchestration & Air-Gapped Transport Compatibility
+**Context**: The "ClawHavoc" malicious skill crisis and the persistent proxy failures in cloud-first CLIs (Gemini) demonstrate that the agent ecosystem is struggling with both "Supply Chain Integrity" and "Network Reliability." MCP Any must bridge this gap by providing a verified sanctuary for agent execution.
+**Strategic Pivot**:
+- **Zero-Trust Skill Registry**: MCP Any will move beyond basic tool discovery to a "Verified Registry" model. Skills must undergo automated static analysis and sandboxed behavioral profiling before being promoted to the "Trusted" tier.
+- **Air-Gapped Transport Bridge**: To address the Gemini CLI pain points, MCP Any will implement a "Resilient Offline Proxy" that can buffer agent requests and provide a stable, attested interface for LLM communication in restricted network environments.
+- **Mandatory Attestation for Config Hooks**: Following the Claude Code CVEs, we are mandating that NO project-local hooks execute without a multi-factor user attestation, even if they appear in previously "trusted" repositories.

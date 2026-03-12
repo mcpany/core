@@ -19,6 +19,8 @@
 - [ ] **[P0] Blackboard Isolation Inspector**: Visualize and debug Agent-Bound Blackboard data across different "Intent Scopes." (Added: 2026-03-09)
 - [ ] **[P0] Outbound Traffic Security Map**: (2026-03-11) Real-time visualization of agent outbound requests, highlighted by attestation status.
 - [ ] **[P0] Config Attestation Signature Reviewer**: (2026-03-11) UI for verifying and signing project-local configuration blocks.
+- [ ] **[P0] Verified Skill Safety Report**: (2026-03-12) UI for viewing behavioral profiling results and safety scores for agent skills.
+- [ ] **[P0] MFA Attestation Dialog**: (2026-03-12) Secure UI component for multi-factor approval of high-risk configuration changes.
 - [ ] **[P0] HITL Approval Interface**: Real-time notification and approval flow for "Human-in-the-Loop" middleware actions.
 - [x] **[P1] Tool Playground & Explorer**:
   - [x] Auto-generated forms from Tool JSON Schemas.
