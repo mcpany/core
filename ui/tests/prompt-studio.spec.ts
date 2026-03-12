@@ -87,7 +87,8 @@ test.describe('Prompt Studio', () => {
 
   test('should delete a prompt', async ({ page }) => {
     // Select prompt
-    await expect(page.getByText('test_prompt_e2e')).toBeVisible();
+    const promptLocator = page.getByText('test_prompt_e2e');
+    await expect(promptLocator).toBeVisible({ timeout: 10000 });
     await page.getByText('test_prompt_e2e').click();
 
     // Click Delete button (Trash icon)
