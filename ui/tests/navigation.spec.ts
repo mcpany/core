@@ -8,7 +8,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Navigation Coverage', () => {
   const routes = [
     { path: '/', title: 'Dashboard' },
-    { path: '/logs', title: 'Live Logs' },
+    { path: '/logs', title: 'Log Stream' },
     { path: '/marketplace', title: 'Marketplace' },
     { path: '/playground', title: 'Console' },
     { path: '/profiles', title: 'Profiles' },
