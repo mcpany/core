@@ -250,9 +250,18 @@
 - **DNS/ICMP Exfiltration Monitor**: (P1) L4 telemetry middleware to detect and block non-HTTP exfiltration attempts by compromised agents.
 - **Hardware-Bound Trust Continuity**: (P1) Extension for the Ephemeral Workspace Trust Middleware that uses TPM/Secure Enclave signatures to persist trust for headless agents.
 
+---
+
+## Evolution: [2026-03-22] Updates
+
+### Proposed Additions
+- **UACO Agentic SLA Middleware**: (P0) Enforcement layer for resource contracts (token budget, reasoning time) during UACO task delegation.
+- **Federated Policy Synchronizer**: (P1) A secure bus for synchronizing CAC hashes and allowed-origin lists across multiple MCP Any instances.
+- **Ghost Shell Execution Mode**: (P0) Isolated, instrumented profiling environment for un-attested hooks, providing behavioral insights before attestation.
+
 ### Priority Shifts
-- **Config Smuggling Scanner**: Promoted from **P1** to **P0** following the discovery of CVE-2026-31042.
-- **UACO Bid Profiling Engine**: Promoted from **P1** to **P0** to support mandatory RCC verification.
+- **UACO v1.5 RCC Validator**: Re-affirmed as **P0**. Essential foundation for the new SLA middleware.
+- **Shared KV Store (Blackboard)**: (Re-affirmed P0) Expanded to support "SLA-Aware State Locking" to prevent resource-heavy contention.
 
 ### Deprecations / Monitoring
-- **Path-Based Config Loading**: Moving towards total deprecation. All security-critical configurations must transition to Content-Addressable (Hash-based) loading by Q3.
+- **Unbounded Task Delegation**: Moving toward total deprecation. All UACO delegations must eventually include a resource contract (SLA).
