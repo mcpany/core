@@ -296,5 +296,11 @@ These features represent the next logical steps for the product, focusing on Ent
 #### Upcoming (2026-03-28 Evolution)
 *   **[P0] Atomic State Rollback Middleware**: Support for swarm-wide checkpoints and rollbacks for Blackboard and Context Shards. (Added: 2026-03-28)
 *   **[P0] UACO-MAQ Consensus Gateway**: Implementation of UACO v1.9 Multi-Agent Quorum for cross-framework high-risk action approval. (Added: 2026-03-28)
-*   **[P1] Session-Bound Fast-Path Attestation**: Hardware-accelerated "Lightweight Proofs" for low-latency sub-call validation. (Added: 2026-03-28)
+*   **[P0] Session-Bound Fast-Path Attestation**: Hardware-accelerated "Lightweight Proofs" for low-latency sub-call validation. (Added: 2026-03-28 - Promoted to P0 on 2026-03-29)
 *   **[P1] Context Smearing Scanner**: Binary-level scanner for BSH fragments to detect "Ghost Fragments" in context handoffs. (Added: 2026-03-28)
+
+#### Upcoming (2026-03-29 Evolution)
+*   **[P0] UACO v2.0 RIS Validator**: Implementation of Relational Intent Scoping to prevent Identity Shadowing via hierarchical intent trees. (Added: 2026-03-29)
+*   **[P0] Hardware-Bound Attestation Provider (HAFP)**: Native integration with TPM/Secure Enclave for zero-latency mission validation. (Added: 2026-03-29)
+*   **[P1] Proactive State Alignment (PSA) Middleware**: Background service for continuous synchronization of agent-local state with the global Blackboard. (Added: 2026-03-29)
+*   **[P1] Context Pinning Middleware**: Implementation of immutable prompt segments to neutralize Context Smearing attacks. (Added: 2026-03-29)
