@@ -51,6 +51,7 @@ export default defineConfig({
       command: NEXT_DEV_COMMAND,
       url: BASE_URL,
       reuseExistingServer: true,
+      timeout: 300000,
       env: {
         BACKEND_URL: process.env.BACKEND_URL || 'http://localhost:50050',
         MCPANY_API_KEY: process.env.MCPANY_API_KEY || 'test-token',

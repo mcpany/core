@@ -29,14 +29,14 @@ func TestUpstreamService_MCP_Playwright_Stdio(t *testing.T) {
 		BuildUpstream:       func(_ *testing.T) *integration.ManagedProcess { return nil },
 		// Start the server with npmDir in its allowed_file_paths so the
 		// working_directory validation passes.
-		StartMCPANYServer: func(t *testing.T, testName string) *integration.MCPANYTestServerInfo {
+		StartMCPANYServer: func(t *testing.T, testName string, _ ...string) *integration.MCPANYTestServerInfo {
 			configContent := fmt.Sprintf("global_settings:\n  allowed_file_paths:\n    - %q\n", npmDir)
 			return integration.StartMCPANYServerWithConfig(t, testName, configContent)
 		},
 		RegisterUpstream: func(t *testing.T, registrationClient apiv1.RegistrationServiceClient, _ string) {
-			nodePath, err := exec.LookPath("node")
+			npxPath, err := exec.LookPath("npx")
 			if err != nil {
-				t.Skipf("Skipping Playwright stdio test: node not found in PATH: %v", err)
+				t.Skipf("Skipping Playwright stdio test: npx not found in PATH: %v", err)
 			}
 			if _, err := exec.LookPath("npm"); err != nil {
 				t.Skipf("Skipping Playwright stdio test: npm not found in PATH: %v", err)
@@ -49,8 +49,8 @@ func TestUpstreamService_MCP_Playwright_Stdio(t *testing.T) {
 				"PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD": "1",
 				"NPM_CONFIG_YES":                   "true",
 			}
-			cmd := nodePath
-			args := []string{"./node_modules/.bin/mcp-server-playwright"}
+			cmd := npxPath
+			args := []string{"playwright-mcp"}
 			setupCommands := []string{
 				"npm install --no-optional @playwright/mcp > /dev/null 2>&1",
 			}

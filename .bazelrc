@@ -5,11 +5,15 @@
 # Enable disk cache for fast incremental builds
 build --disk_cache=~/.cache/bazel-disk-cache
 
-# Enable Build without the Bytes for faster remote builds
-build --remote_download_toplevel
+# Enable Build without the Bytes for faster remote builds.
+# For tests under --config=remote we override this to download all outputs,
+# because many test wrappers execute local helper binaries/scripts generated
+# during the build phase.
+build:remote --remote_download_all
 
 # Show test output only on failure
 test --test_output=errors
+test --build_tests_only
 
 # Stream test output for debugging (use --config=verbose)
 test:verbose --test_output=streamed
@@ -76,6 +80,21 @@ common:buildbuddy-official --remote_local_fallback
 
 # Set buildbuddy as the default configuration for all builds
 build:remote --config=buildbuddy-official
+# Work around remote-exec protoc virtual import path failures in Bazel 9.
+build:remote --strategy=GenProtoDescriptorSet=local
+# Ensure Go toolchain compile actions run remotely under --config=remote,
+# avoiding local sandbox tool path resolution failures.
+# Use specific action names instead of a broad regexp to avoid accidentally
+# forcing non-compilable actions (e.g. GoTestGenTest) into remote-only mode.
+# Include sandboxed,local fallback so that actions with `no-remote-exec` exec
+# requirements (e.g. CGO recompile steps) can still fall back to local execution.
+build:remote --strategy=GoCompilePkg=remote,sandboxed,local
+build:remote --strategy=GoCompilePkgExternal=remote,sandboxed,local
+build:remote --strategy=GoLink=remote,sandboxed,local
+build:remote --strategy=GoStdlib=remote,sandboxed,local
+# Avoid local test host overload for targets that cannot run remotely
+# (e.g. no-remote-exec Playwright/integration tests).
+test:remote --local_test_jobs=8
 
 # Local config to disable remote execution
 build:local --remote_cache=
