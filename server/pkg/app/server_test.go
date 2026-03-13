@@ -44,7 +44,9 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	gogrpc "google.golang.org/grpc"
+	"google.golang.org/grpc/connectivity"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/reflection"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -1647,7 +1649,8 @@ func TestRun_CachingMiddleware(t *testing.T) {
 }
 
 func TestStartGrpcServer_RegistrationServerError(t *testing.T) {
-	// Inject an error for mcpserver.NewRegistrationServer
+	// Inject an error for mcpserver.NewRegistrationServer so that runServerMode
+	// returns the error before starting any listeners.
 	mcpserver.NewRegistrationServerHook = func(_ interface{}, _ interface{}) (*mcpserver.RegistrationServer, error) {
 		return nil, fmt.Errorf("injected registration server error")
 	}
@@ -1655,53 +1658,25 @@ func TestStartGrpcServer_RegistrationServerError(t *testing.T) {
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	errChan := make(chan error, 1)
-	var wg sync.WaitGroup
 
-	lis, err := net.Listen("tcp", "127.0.0.1:0")
+	app := NewApplication()
+	app.fs = afero.NewMemMapFs()
+	app.SettingsManager = NewGlobalSettingsManager("", nil, nil)
+
+	busProvider, err := bus.NewProvider(nil)
 	require.NoError(t, err)
-	// We want to simulate a NewRegistrationServer error.
-	// Since we are now creating the server outside, we can just fail the test if we can't simulate it easily via startGrpcServer options
-	// OR we mimic the failure logic if it was intended to test startGrpcServer's error handling.
-	// But startGrpcServer no longer creates the server, so it won't fail with "injected registration server error" unless WE fail it.
-	// The original test tested callback error handling. Now we pass a server.
-	// The test "TestGRPC_RegError" is likely obsolete or needs to error on generating the server.
-	// IF startGrpcServer just runs Serve(), it might not error unless Serve returns error instantly.
 
-	// Since we can't simulate a callback error anymore (as there is no callback), we should verify if this test is even valid.
-	// Original test: "TestGRPC_RegError"
-	// It injected an error during registration.
-	// Now we register BEFORE searching.
+	errChan := make(chan error, 1)
+	go func() {
+		errChan <- app.runServerMode(ctx, nil, busProvider, "127.0.0.1:0", "127.0.0.1:0", 1*time.Second, nil, nil, nil, nil, nil, nil, "", "", "")
+	}()
 
-	// Let's modify the test to simulate an error in the channel directly or remove it if strictly testing callback error.
-	// Assuming we want to test that if we fail BEFORE, we report.
-
-	// But wait, the test name "TestGRPC_RegError" implies testing error during registration.
-	// If registration happens outside, we just handle it outside.
-	// StartGrpcServer basically just runs Serve().
-
-	// I will COMMENT OUT this test logic or adapt it to test something else or just remove it.
-	// But to avoid deleting tests, I will make it pass by simulating what it expects? No.
-	// I'll skip it for now or make it a no-op?
-	// Actually, checking standard behavior: if startGrpcServer is supposed to handle errors, maybe it's listening errors.
-
-	// I'll replace it with a simple start/stop to keep compilation valid,
-	// but strictly speaking the strict equivalence is gone.
-
-	srv := gogrpc.NewServer()
-	startGrpcServer(ctx, &wg, errChan, nil, "TestGRPC_RegError", lis, 1*time.Second, srv)
-	// We won't get the error "injected registration server error" anymore.
-	// So we should remove the expectations or update them.
-	// I'll mark the test as skipped for now to avoid failure.
-	t.Skip("Skipping TestGRPC_RegError as startGrpcServer no longer handles registration callbacks")
-
-	// We expect to receive the injected error on the channel.
 	select {
 	case err := <-errChan:
-		assert.Error(t, err)
+		require.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to create API server: injected registration server error")
-	case <-time.After(2 * time.Second):
-		t.Fatal("timed out waiting for error from startGrpcServer")
+	case <-time.After(5 * time.Second):
+		t.Fatal("timed out waiting for error from runServerMode")
 	}
 }
 
@@ -2162,7 +2137,38 @@ func (m *mockBus[T]) SubscribeOnce(_ context.Context, _ string, _ func(T)) (unsu
 }
 
 func TestGRPCServer_PanicInRegistration(t *testing.T) {
-	t.Skip("Skipping TestGRPC_Panic as startGrpcServer no longer handles registration callbacks")
+	// Previously tested panic recovery during registration callbacks.
+	// Now tests that startGrpcServer handles a nil server gracefully without blocking.
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	errChan := make(chan error, 1)
+	var wg sync.WaitGroup
+
+	// Passing nil server: the goroutine should return immediately without error.
+	startGrpcServer(ctx, &wg, errChan, nil, "TestGRPC_NilServer", nil, 1*time.Second, nil)
+
+	// The wg should complete quickly since there's nothing to do.
+	done := make(chan struct{})
+	go func() {
+		wg.Wait()
+		close(done)
+	}()
+
+	select {
+	case <-done:
+		// Expected: nil server exits immediately.
+	case <-time.After(2 * time.Second):
+		t.Fatal("startGrpcServer with nil server did not return promptly")
+	}
+
+	// No errors should be produced.
+	select {
+	case err := <-errChan:
+		t.Fatalf("unexpected error: %v", err)
+	default:
+		// Expected: no errors.
+	}
 }
 
 func TestRunServerMode_grpcListenErrorHangs(t *testing.T) {
@@ -2201,11 +2207,73 @@ func TestRunServerMode_grpcListenErrorHangs(t *testing.T) {
 }
 
 func TestStartGrpcServer_PanicHandling(t *testing.T) {
-	t.Skip("Skipping TestStartGrpcServer_PanicHandling because registration is external")
+	// Previously tested panic recovery in registration callbacks.
+	// Now tests that startGrpcServer starts a real gRPC server and shuts it down cleanly.
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	lis, err := net.Listen("tcp", "127.0.0.1:0")
+	require.NoError(t, err)
+
+	errChan := make(chan error, 1)
+	var wg sync.WaitGroup
+
+	srv := gogrpc.NewServer()
+	startGrpcServer(ctx, &wg, errChan, nil, "TestStartGRPC_PanicHandling", lis, 1*time.Second, srv)
+
+	// Give it a moment to start.
+	time.Sleep(20 * time.Millisecond)
+
+	// Cancel context to trigger graceful shutdown.
+	cancel()
+	wg.Wait()
+
+	// No errors should be sent to the channel for a clean start/stop.
+	select {
+	case e := <-errChan:
+		assert.NoError(t, e)
+	default:
+		// No error is also acceptable.
+	}
 }
 
 func TestStartGrpcServer_PanicInRegistrationRecovers(t *testing.T) {
-	t.Skip("Skipping TestStartGrpcServer_PanicInRegistrationRecovers because registration is external")
+	// Previously tested panic recovery in registration callbacks.
+	// Now tests that a gRPC server registered with a service starts and responds correctly.
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	lis, err := net.Listen("tcp", "127.0.0.1:0")
+	require.NoError(t, err)
+	addr := lis.Addr().String()
+
+	errChan := make(chan error, 1)
+	var wg sync.WaitGroup
+
+	srv := gogrpc.NewServer()
+	reflection.Register(srv)
+	startGrpcServer(ctx, &wg, errChan, nil, "TestStartGRPC_Recovers", lis, 1*time.Second, srv)
+
+	// Wait for server to start by attempting to connect.
+	require.Eventually(t, func() bool {
+		conn, dialErr := gogrpc.NewClient(addr, gogrpc.WithTransportCredentials(insecure.NewCredentials()))
+		if dialErr != nil {
+			return false
+		}
+		defer func() { _ = conn.Close() }()
+		return conn.GetState() != connectivity.Shutdown
+	}, 2*time.Second, 10*time.Millisecond, "gRPC server did not start in time")
+
+	// Trigger shutdown.
+	cancel()
+	wg.Wait()
+
+	select {
+	case e := <-errChan:
+		assert.NoError(t, e)
+	default:
+		// No error is also acceptable.
+	}
 }
 
 func TestGRPCServer_PortReleasedOnForcedShutdown(t *testing.T) {

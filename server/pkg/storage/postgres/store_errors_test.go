@@ -16,37 +16,43 @@ import (
 )
 
 func TestPostgresStore_Load_Errors(t *testing.T) {
-	t.Skip("Skipping TestPostgresStore_Load_Errors because parallel execution makes sqlmock deterministic ordering impossible")
-
-	db, mock, err := sqlmock.New()
-	require.NoError(t, err)
-	defer db.Close()
-
-	pgDB := &DB{db}
-	store := NewStore(pgDB)
-
+	// Each subtest uses its own isolated sqlmock to avoid ordering issues.
 	t.Run("QueryError", func(t *testing.T) {
+		db, mock, err := sqlmock.New()
+		require.NoError(t, err)
+		defer db.Close()
+
 		mock.ExpectQuery("SELECT config_json FROM upstream_services").
 			WillReturnError(errors.New("query error"))
 
-		_, err := store.Load(context.Background())
+		store := NewStore(&DB{db})
+		_, err = store.Load(context.Background())
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "query error")
 	})
 
 	t.Run("UnmarshalError", func(t *testing.T) {
+		db, mock, err := sqlmock.New()
+		require.NoError(t, err)
+		defer db.Close()
+
 		rows := sqlmock.NewRows([]string{"config_json"}).
 			AddRow([]byte("invalid-json"))
 
 		mock.ExpectQuery("SELECT config_json FROM upstream_services").
 			WillReturnRows(rows)
 
-		_, err := store.Load(context.Background())
+		store := NewStore(&DB{db})
+		_, err = store.Load(context.Background())
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to unmarshal service config")
 	})
 
 	t.Run("RowsIterationError", func(t *testing.T) {
+		db, mock, err := sqlmock.New()
+		require.NoError(t, err)
+		defer db.Close()
+
 		rows := sqlmock.NewRows([]string{"config_json"}).
 			AddRow([]byte("{}")).
 			RowError(0, errors.New("row error"))
@@ -54,9 +60,9 @@ func TestPostgresStore_Load_Errors(t *testing.T) {
 		mock.ExpectQuery("SELECT config_json FROM upstream_services").
 			WillReturnRows(rows)
 
-		_, err := store.Load(context.Background())
-		// sqlmock RowError on 0th row might cause Scan to fail or Next to return false but Err() to be set?
-		// rows.Next() returns false if error occurs.
+		store := NewStore(&DB{db})
+		_, err = store.Load(context.Background())
+		// sqlmock RowError on 0th row might cause Scan to fail or Next to return false but Err() to be set
 		assert.Error(t, err)
 	})
 }

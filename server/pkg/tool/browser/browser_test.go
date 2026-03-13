@@ -5,7 +5,6 @@ package browser
 
 import (
 	"context"
-	"os"
 	"testing"
 
 	"github.com/playwright-community/playwright-go"
@@ -13,10 +12,6 @@ import (
 )
 
 func TestBrowserProvider(t *testing.T) {
-	if os.Getenv("CI") != "" || os.Getenv("GITHUB_ACTIONS") != "" {
-		t.Skip("Skipping browser test in CI environment without guaranteed playwright driver.")
-	}
-
 	err := playwright.Install(&playwright.RunOptions{
 		Browsers: []string{"chromium"},
 	})

@@ -98,14 +98,62 @@ func TestInitiateOAuth_Credential(t *testing.T) {
 }
 
 func TestResolveSecretValue(t *testing.T) {
-	t.Skip("resolveSecretValue was removed in favor of util.ResolveSecret")
+	// Previously tested the removed resolveSecretValue function.
+	// Now tests that InitiateOAuth correctly resolves secrets via util.ResolveSecret.
+	store := memory.NewStore()
+	am := NewManager()
+	am.SetStorage(store)
+	ctx := context.Background()
+
 	t.Run("PlainText", func(t *testing.T) {
-		// Obsolete
+		// Test that plain-text secrets are resolved correctly through auth
+		svcID := "plain-text-secret-service"
+		svc := configv1.UpstreamServiceConfig_builder{
+			Name: proto.String(svcID),
+			UpstreamAuth: configv1.Authentication_builder{
+				Oauth2: configv1.OAuth2Auth_builder{
+					ClientId:         configv1.SecretValue_builder{PlainText: proto.String("plain-client-id")}.Build(),
+					ClientSecret:     configv1.SecretValue_builder{PlainText: proto.String("plain-client-secret")}.Build(),
+					AuthorizationUrl: proto.String("https://auth.example.com/authorize"),
+					TokenUrl:         proto.String("https://auth.example.com/token"),
+					Scopes:           proto.String("read"),
+				}.Build(),
+			}.Build(),
+		}.Build()
+		require.NoError(t, store.SaveService(ctx, svc))
+
+		url, state, err := am.InitiateOAuth(ctx, "user1", svcID, "", "http://127.0.0.1/cb")
+		require.NoError(t, err)
+		assert.Contains(t, url, "plain-client-id")
+		assert.NotEmpty(t, state)
 	})
 
 	t.Run("EnvironmentVariable", func(t *testing.T) {
-		// Now we can't test resolveSecretValue directly as it is removed.
-		// We should rely on integration tests or util tests for secret resolution.
+		// Test that environment variable secrets are resolved through auth
+		// Allow test env vars via MCPANY_ALLOWED_ENV
+		t.Setenv("MCPANY_ALLOWED_ENV", "TEST_AUTH_CLIENT_ID,TEST_AUTH_CLIENT_SECRET")
+		t.Setenv("TEST_AUTH_CLIENT_ID", "env-client-id")
+		t.Setenv("TEST_AUTH_CLIENT_SECRET", "env-client-secret")
+
+		svcID := "env-secret-service"
+		svc := configv1.UpstreamServiceConfig_builder{
+			Name: proto.String(svcID),
+			UpstreamAuth: configv1.Authentication_builder{
+				Oauth2: configv1.OAuth2Auth_builder{
+					ClientId:         configv1.SecretValue_builder{EnvironmentVariable: proto.String("TEST_AUTH_CLIENT_ID")}.Build(),
+					ClientSecret:     configv1.SecretValue_builder{EnvironmentVariable: proto.String("TEST_AUTH_CLIENT_SECRET")}.Build(),
+					AuthorizationUrl: proto.String("https://env.example.com/authorize"),
+					TokenUrl:         proto.String("https://env.example.com/token"),
+					Scopes:           proto.String("write"),
+				}.Build(),
+			}.Build(),
+		}.Build()
+		require.NoError(t, store.SaveService(ctx, svc))
+
+		url, state, err := am.InitiateOAuth(ctx, "user2", svcID, "", "http://127.0.0.1/cb")
+		require.NoError(t, err)
+		assert.Contains(t, url, "env-client-id")
+		assert.NotEmpty(t, state)
 	})
 }
 

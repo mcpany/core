@@ -11,6 +11,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/alicebob/miniredis/v2"
 	"github.com/mcpany/core/proto/bus"
 	"github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/assert"
@@ -242,28 +243,29 @@ func TestBusProvider_Concurrent(t *testing.T) {
 }
 
 func TestRedisBus_SubscribeOnce(t *testing.T) {
+	mr, err := miniredis.Run()
+	require.NoError(t, err)
+	defer mr.Close()
+
 	client := redis.NewClient(&redis.Options{
-		Addr: "127.0.0.1:6379",
+		Addr: mr.Addr(),
 	})
-	if _, err := client.Ping(context.Background()).Result(); err != nil {
-		t.Skip("Redis is not available")
-	}
 
 	messageBus := bus.MessageBus_builder{}.Build()
 	redisBus := bus.RedisBus_builder{}.Build()
-	redisBus.SetAddress("127.0.0.1:6379")
+	redisBus.SetAddress(mr.Addr())
 	messageBus.SetRedis(redisBus)
 
 	provider, err := NewProvider(messageBus)
 	assert.NoError(t, err)
 
-	bus, _ := GetBus[string](provider, "test-topic")
+	busCh, _ := GetBus[string](provider, "test-topic")
 
 	var wg sync.WaitGroup
 	wg.Add(1)
 
 	var receivedMessages []string
-	bus.SubscribeOnce(context.Background(), "test-message", func(msg string) {
+	busCh.SubscribeOnce(context.Background(), "test-message", func(msg string) {
 		receivedMessages = append(receivedMessages, msg)
 		wg.Done()
 	})
@@ -271,8 +273,8 @@ func TestRedisBus_SubscribeOnce(t *testing.T) {
 	// Wait for subscription to be active
 	waitForSubscribers(t, client, "test-message", 1)
 
-	_ = bus.Publish(context.Background(), "test-message", "hello")
-	_ = bus.Publish(context.Background(), "test-message", "world")
+	_ = busCh.Publish(context.Background(), "test-message", "hello")
+	_ = busCh.Publish(context.Background(), "test-message", "world")
 
 	wg.Wait()
 
@@ -281,29 +283,30 @@ func TestRedisBus_SubscribeOnce(t *testing.T) {
 }
 
 func TestRedisBus_Unsubscribe(t *testing.T) {
+	mr, err := miniredis.Run()
+	require.NoError(t, err)
+	defer mr.Close()
+
 	client := redis.NewClient(&redis.Options{
-		Addr: "127.0.0.1:6379",
+		Addr: mr.Addr(),
 	})
-	if _, err := client.Ping(context.Background()).Result(); err != nil {
-		t.Skip("Redis is not available")
-	}
 
 	messageBus := bus.MessageBus_builder{}.Build()
 	redisBus := bus.RedisBus_builder{}.Build()
-	redisBus.SetAddress("127.0.0.1:6379")
+	redisBus.SetAddress(mr.Addr())
 	messageBus.SetRedis(redisBus)
 
 	provider, err := NewProvider(messageBus)
 	assert.NoError(t, err)
 
-	bus, _ := GetBus[string](provider, "test-topic")
+	busCh, _ := GetBus[string](provider, "test-topic")
 
 	var mu sync.Mutex
 	var receivedMessages []string
 	var wg sync.WaitGroup
 	wg.Add(1)
 
-	unsubscribe := bus.Subscribe(context.Background(), "test-message", func(msg string) {
+	unsubscribe := busCh.Subscribe(context.Background(), "test-message", func(msg string) {
 		mu.Lock()
 		defer mu.Unlock()
 		receivedMessages = append(receivedMessages, msg)
@@ -315,14 +318,14 @@ func TestRedisBus_Unsubscribe(t *testing.T) {
 	// Wait for subscription to be active
 	waitForSubscribers(t, client, "test-message", 1)
 
-	_ = bus.Publish(context.Background(), "test-message", "hello")
+	_ = busCh.Publish(context.Background(), "test-message", "hello")
 
 	// Wait for the first message to be processed
 	wg.Wait()
 
 	unsubscribe()
 
-	_ = bus.Publish(context.Background(), "test-message", "world")
+	_ = busCh.Publish(context.Background(), "test-message", "world")
 	time.Sleep(100 * time.Millisecond) // Allow time for the potential message to be processed (should not be)
 
 	mu.Lock()
@@ -332,22 +335,19 @@ func TestRedisBus_Unsubscribe(t *testing.T) {
 }
 
 func TestRedisBus_Concurrent(t *testing.T) {
-	client := redis.NewClient(&redis.Options{
-		Addr: "127.0.0.1:6379",
-	})
-	if _, err := client.Ping(context.Background()).Result(); err != nil {
-		t.Skip("Redis is not available")
-	}
+	mr, err := miniredis.Run()
+	require.NoError(t, err)
+	defer mr.Close()
 
 	messageBus := bus.MessageBus_builder{}.Build()
 	redisBus := bus.RedisBus_builder{}.Build()
-	redisBus.SetAddress("127.0.0.1:6379")
+	redisBus.SetAddress(mr.Addr())
 	messageBus.SetRedis(redisBus)
 
 	provider, err := NewProvider(messageBus)
 	assert.NoError(t, err)
 
-	bus, _ := GetBus[string](provider, "test-topic")
+	busCh, _ := GetBus[string](provider, "test-topic")
 
 	numSubscribers := 2
 	numMessages := 10
@@ -355,11 +355,18 @@ func TestRedisBus_Concurrent(t *testing.T) {
 	wg.Add(numSubscribers * numMessages)
 
 	var receivedMessages [][]string
+	var allSubsReady sync.WaitGroup
+	allSubsReady.Add(numSubscribers)
+
+	subscriberClients := make([]*redis.Client, numSubscribers)
+	for i := 0; i < numSubscribers; i++ {
+		subscriberClients[i] = redis.NewClient(&redis.Options{Addr: mr.Addr()})
+	}
+
 	for i := 0; i < numSubscribers; i++ {
 		receivedMessages = append(receivedMessages, []string{})
 		go func(i int) {
 			// Create a new provider for each subscriber to simulate distributed nodes
-			// This ensures we have distinct Bus instances and distinct Redis subscriptions
 			localProvider, _ := NewProvider(messageBus)
 			localBus, _ := GetBus[string](localProvider, "test-message")
 
@@ -367,14 +374,21 @@ func TestRedisBus_Concurrent(t *testing.T) {
 				receivedMessages[i] = append(receivedMessages[i], msg)
 				wg.Done()
 			})
+			// Signal that this subscriber's goroutine has called Subscribe.
+			allSubsReady.Done()
 		}(i)
 	}
 
-	// Wait for subscriptions to be active
-	waitForSubscribers(t, client, "test-message", numSubscribers)
+	// Wait for all subscriber goroutines to call Subscribe before checking subscriber counts.
+	allSubsReady.Wait()
+
+	// Wait for subscriptions to be active in Redis
+	for i := 0; i < numSubscribers; i++ {
+		waitForSubscribers(t, subscriberClients[i], "test-message", 1)
+	}
 
 	for i := 0; i < numMessages; i++ {
-		_ = bus.Publish(context.Background(), "test-message", "hello")
+		_ = busCh.Publish(context.Background(), "test-message", "hello")
 	}
 
 	wg.Wait()

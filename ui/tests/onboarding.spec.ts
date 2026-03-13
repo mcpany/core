@@ -18,7 +18,7 @@ test.describe('Onboarding Flow', () => {
     await page.goto('/');
 
     // Wait for the app to load and decide what to show
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     // Check for the "Welcome to MCP Any" text or "Dashboard" heading
     // Using a more robust check for the "Welcome" text

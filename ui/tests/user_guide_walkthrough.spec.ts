@@ -90,9 +90,9 @@ test.describe('User Guide Walkthrough', () => {
 
   test('Logs Stream', async ({ page }) => {
     await page.goto('/logs');
-    await expect(page.getByRole('heading', { name: 'Live Logs' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Log Stream' })).toBeVisible();
     // Check for log container - using more specific selector to avoid strict mode violation
-    // expected container has bg-black/90
+    // expected container has bg-black/90 and font-mono
     await expect(page.locator('div.font-mono.bg-black\\/90')).toBeVisible();
   });
 

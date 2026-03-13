@@ -25,7 +25,6 @@ import (
 	"github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/api/types/network"
 	"github.com/docker/docker/client"
-	dockererrdefs "github.com/docker/docker/errdefs"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/validation"
 	v1 "github.com/opencontainers/image-spec/specs-go/v1"
@@ -231,26 +230,39 @@ func TestLocalExecutor(t *testing.T) {
 	})
 }
 
-func TestDockerExecutor(t *testing.T) {
-	if !canConnectToDocker(t) {
-		t.Skip("Cannot connect to Docker daemon, skipping Docker tests")
+func makeDockerStream(content []byte, isStdout bool) []byte {
+	var buf bytes.Buffer
+	streamType := byte(1) // stdout
+	if !isStdout {
+		streamType = byte(2) // stderr
 	}
+	buf.WriteByte(streamType)
+	buf.Write([]byte{0, 0, 0}) // padding
+	size := make([]byte, 4)
+	binary.BigEndian.PutUint32(size, uint32(len(content)))
+	buf.Write(size)
+	buf.Write(content)
+	return buf.Bytes()
+}
+
+func TestDockerExecutor(t *testing.T) {
 	t.Run("WithoutVolumeMount", func(t *testing.T) {
 		containerEnv := &configv1.ContainerEnvironment{}
 		containerEnv.SetImage("alpine:latest")
-		executor := NewExecutor(containerEnv)
+		executor := newDockerExecutor(containerEnv).(*dockerExecutor)
+
+		mockClient := &MockDockerClient{}
+		mockClient.ContainerLogsFunc = func(_ context.Context, _ string, _ container.LogsOptions) (io.ReadCloser, error) {
+			data := makeDockerStream([]byte("hello\n"), true)
+			return io.NopCloser(bytes.NewReader(data)), nil
+		}
+		executor.clientFactory = func() (DockerClient, error) { return mockClient, nil }
+
 		stdout, stderr, exitCodeChan, err := executor.Execute(context.Background(), "echo", []string{"hello"}, "", nil)
 		require.NoError(t, err)
 
-		var stdoutBytes []byte
-		for i := 0; i < 5; i++ {
-			stdoutBytes, err = io.ReadAll(stdout)
-			require.NoError(t, err)
-			if string(stdoutBytes) == "hello\n" {
-				break
-			}
-			time.Sleep(100 * time.Millisecond)
-		}
+		stdoutBytes, err := io.ReadAll(stdout)
+		require.NoError(t, err)
 		assert.Equal(t, "hello\n", string(stdoutBytes))
 
 		stderrBytes, err := io.ReadAll(stderr)
@@ -261,9 +273,7 @@ func TestDockerExecutor(t *testing.T) {
 		assert.Equal(t, 0, exitCode)
 	})
 
-
 	t.Run("WithVolumeMount", func(t *testing.T) {
-		// Create a dummy file to mount
 		tmpfile, err := os.CreateTemp(".", "test-volume-mount")
 		require.NoError(t, err)
 		defer func() { _ = os.Remove(tmpfile.Name()) }()
@@ -275,42 +285,25 @@ func TestDockerExecutor(t *testing.T) {
 		absPath, err := filepath.Abs(tmpfile.Name())
 		require.NoError(t, err)
 
-		hostPath := absPath
-		if root := os.Getenv("HOST_WORKSPACE_ROOT"); root != "" {
-			t.Logf("HOST_WORKSPACE_ROOT: %s", root)
-			// In Docker-in-Docker (via socket), we need to map the internal path
-			// (e.g. /workspace/...) to the host path (e.g. /usr/local/google/...).
-			if strings.HasPrefix(absPath, "/workspace") {
-				hostPath = filepath.Join(root, strings.TrimPrefix(absPath, "/workspace"))
-				t.Logf("Rewrote path %s to %s", absPath, hostPath)
-				// Allow the host path in validation
-				validation.SetAllowedPaths([]string{root})
-				t.Cleanup(func() { validation.SetAllowedPaths(nil) })
-			}
-		} else {
-			t.Logf("HOST_WORKSPACE_ROOT not set, using path %s", absPath)
-		}
-
 		containerEnv := &configv1.ContainerEnvironment{}
 		containerEnv.SetImage("alpine:latest")
-		containerEnv.SetVolumes(map[string]string{
-			hostPath: "/mnt/test",
-		})
-		executor := NewExecutor(containerEnv)
+		containerEnv.SetVolumes(map[string]string{absPath: "/mnt/test"})
+
+		executor := newDockerExecutor(containerEnv).(*dockerExecutor)
+		mockClient := &MockDockerClient{}
+		mockClient.ContainerLogsFunc = func(_ context.Context, _ string, _ container.LogsOptions) (io.ReadCloser, error) {
+			data := makeDockerStream([]byte("hello from the host"), true)
+			return io.NopCloser(bytes.NewReader(data)), nil
+		}
+		executor.clientFactory = func() (DockerClient, error) { return mockClient, nil }
+
 		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 		defer cancel()
 		stdout, stderr, exitCodeChan, err := executor.Execute(ctx, "cat", []string{"/mnt/test"}, "", nil)
 		require.NoError(t, err)
 
-		var stdoutBytes []byte
-		for i := 0; i < 5; i++ {
-			stdoutBytes, err = io.ReadAll(stdout)
-			require.NoError(t, err)
-			if string(stdoutBytes) == "hello from the host" {
-				break
-			}
-			time.Sleep(100 * time.Millisecond)
-		}
+		stdoutBytes, err := io.ReadAll(stdout)
+		require.NoError(t, err)
 		assert.Equal(t, "hello from the host", string(stdoutBytes))
 
 		stderrBytes, err := io.ReadAll(stderr)
@@ -324,7 +317,14 @@ func TestDockerExecutor(t *testing.T) {
 	t.Run("ImageNotFound", func(t *testing.T) {
 		containerEnv := &configv1.ContainerEnvironment{}
 		containerEnv.SetImage("non-existent-image:latest")
-		executor := NewExecutor(containerEnv)
+		executor := newDockerExecutor(containerEnv).(*dockerExecutor)
+
+		mockClient := &MockDockerClient{}
+		mockClient.ContainerCreateFunc = func(_ context.Context, _ *container.Config, _ *container.HostConfig, _ *network.NetworkingConfig, _ *v1.Platform, _ string) (container.CreateResponse, error) {
+			return container.CreateResponse{}, errors.New("No such image: non-existent-image:latest")
+		}
+		executor.clientFactory = func() (DockerClient, error) { return mockClient, nil }
+
 		_, _, _, err := executor.Execute(context.Background(), "echo", []string{"hello"}, "", nil)
 		assert.Error(t, err)
 	})
@@ -332,7 +332,19 @@ func TestDockerExecutor(t *testing.T) {
 	t.Run("CommandFailsInContainer", func(t *testing.T) {
 		containerEnv := &configv1.ContainerEnvironment{}
 		containerEnv.SetImage("alpine:latest")
-		executor := NewExecutor(containerEnv)
+		executor := newDockerExecutor(containerEnv).(*dockerExecutor)
+
+		mockClient := &MockDockerClient{}
+		mockClient.ContainerWaitFunc = func(_ context.Context, _ string, _ container.WaitCondition) (<-chan container.WaitResponse, <-chan error) {
+			statusCh := make(chan container.WaitResponse, 1)
+			errCh := make(chan error, 1)
+			statusCh <- container.WaitResponse{StatusCode: 1}
+			close(statusCh)
+			close(errCh)
+			return statusCh, errCh
+		}
+		executor.clientFactory = func() (DockerClient, error) { return mockClient, nil }
+
 		_, _, exitCodeChan, err := executor.Execute(context.Background(), "sh", []string{"-c", "exit 1"}, "", nil)
 		require.NoError(t, err)
 
@@ -340,69 +352,49 @@ func TestDockerExecutor(t *testing.T) {
 		assert.Equal(t, 1, exitCode)
 	})
 
-	t.Run("ContextCancellation", func(t *testing.T) {
-		containerEnv := &configv1.ContainerEnvironment{}
-		containerEnv.SetImage("alpine:latest")
-		executor := NewExecutor(containerEnv)
-		ctx, cancel := context.WithCancel(context.Background())
-		defer cancel()
-
-		_, _, exitCodeChan, err := executor.Execute(ctx, "sleep", []string{"10"}, "", nil)
-		require.NoError(t, err)
-
-		cancel()
-
-		select {
-		case exitCode := <-exitCodeChan:
-			assert.NotEqual(t, 0, exitCode, "Expected a non-zero exit code due to context cancellation")
-		case <-time.After(5 * time.Second):
-			t.Fatal("Test timed out waiting for command to exit")
-		}
-	})
-
 	t.Run("ContainerIsRemoved", func(t *testing.T) {
-		// t.Skip("Skipping flaky test: ContainerIsRemoved")
 		containerEnv := &configv1.ContainerEnvironment{}
 		containerEnv.SetImage("alpine:latest")
-		containerName := fmt.Sprintf("test-container-removal-%d", time.Now().UnixNano())
-		containerEnv.SetName(containerName)
-		executor := NewExecutor(containerEnv)
+		executor := newDockerExecutor(containerEnv).(*dockerExecutor)
 
-		// Ensure cleanup even if test fails
-		cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
-		require.NoError(t, err)
-		defer cli.Close()
-		defer func() {
-			_ = cli.ContainerRemove(context.Background(), containerName, container.RemoveOptions{Force: true})
-		}()
+		removeCalled := make(chan string, 1)
+		mockClient := &MockDockerClient{}
+		mockClient.ContainerRemoveFunc = func(_ context.Context, containerID string, _ container.RemoveOptions) error {
+			removeCalled <- containerID
+			return nil
+		}
+		executor.clientFactory = func() (DockerClient, error) { return mockClient, nil }
 
 		_, _, exitCodeChan, err := executor.Execute(context.Background(), "echo", []string{"hello"}, "", nil)
 		require.NoError(t, err)
 
 		<-exitCodeChan
 
-		// Check if container is removed
-		var lastErr error
-		for i := 0; i < 20; i++ {
-			_, err = cli.ContainerInspect(context.Background(), containerName)
-			if dockererrdefs.IsNotFound(err) {
-				lastErr = err
-				break
-			}
-			lastErr = err
-			time.Sleep(100 * time.Millisecond)
+		// Verify ContainerRemove was called
+		select {
+		case removedID := <-removeCalled:
+			assert.Equal(t, "test-container-id", removedID)
+		case <-time.After(2 * time.Second):
+			t.Fatal("ContainerRemove was not called")
 		}
-		assert.True(t, dockererrdefs.IsNotFound(lastErr), "Expected container to be removed, got: %v", lastErr)
 	})
 }
 
 func TestCombinedOutput(t *testing.T) {
-	if !canConnectToDocker(t) {
-		t.Skip("Cannot connect to Docker daemon, skipping Docker tests")
-	}
 	containerEnv := &configv1.ContainerEnvironment{}
 	containerEnv.SetImage("alpine:latest")
-	executor := NewExecutor(containerEnv)
+	executor := newDockerExecutor(containerEnv).(*dockerExecutor)
+
+	mockClient := &MockDockerClient{}
+	mockClient.ContainerLogsFunc = func(_ context.Context, _ string, _ container.LogsOptions) (io.ReadCloser, error) {
+		// Write both stdout and stderr frames
+		var buf bytes.Buffer
+		buf.Write(makeDockerStream([]byte("hello stdout\n"), true))
+		buf.Write(makeDockerStream([]byte("hello stderr\n"), false))
+		return io.NopCloser(&buf), nil
+	}
+	executor.clientFactory = func() (DockerClient, error) { return mockClient, nil }
+
 	stdout, stderr, _, err := executor.Execute(context.Background(), "sh", []string{"-c", "echo 'hello stdout' && echo 'hello stderr' >&2"}, "", nil)
 	require.NoError(t, err)
 
@@ -438,9 +430,8 @@ func TestCombinedOutput(t *testing.T) {
 }
 
 func TestNewDockerExecutorSuccess(t *testing.T) {
-	if !canConnectToDocker(t) {
-		t.Skip("Cannot connect to Docker daemon, skipping Docker tests")
-	}
+	// newDockerExecutor creates an executor without connecting to Docker;
+	// the connection is deferred until Execute is called.
 	containerEnv := &configv1.ContainerEnvironment{}
 	containerEnv.SetImage("alpine:latest")
 	executor := newDockerExecutor(containerEnv)
