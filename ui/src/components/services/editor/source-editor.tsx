@@ -24,7 +24,7 @@ interface SourceEditorProps {
  * @returns The rendered editor.
  */
 export function SourceEditor({ value, onChange }: SourceEditorProps) {
-    const { theme } = useTheme();
+    const { resolvedTheme } = useTheme();
 
     return (
         <div className="h-[500px] border rounded-md overflow-hidden">
@@ -33,7 +33,7 @@ export function SourceEditor({ value, onChange }: SourceEditorProps) {
                 defaultLanguage="yaml"
                 value={value}
                 onChange={onChange}
-                theme={theme === "dark" ? "vs-dark" : "light"}
+                theme={resolvedTheme === "dark" ? "vs-dark" : "light"}
                 options={{
                     minimap: { enabled: false },
                     scrollBeyondLastLine: false,

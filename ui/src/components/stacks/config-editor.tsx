@@ -24,13 +24,12 @@ interface ConfigEditorProps {
  * @param readOnly = false - The readOnly = false.
  */
 export function ConfigEditor({ value, onChange, language = "yaml", readOnly = false }: ConfigEditorProps) {
-  const { theme, systemTheme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const monaco = useMonaco();
   const editorRef = useRef<Parameters<OnMount>[0] | null>(null);
 
   // Calculate actual theme
-  const currentTheme = theme === "system" ? systemTheme : theme;
-  const isDark = currentTheme === "dark";
+  const isDark = resolvedTheme === "dark";
   const editorTheme = isDark ? "dracula" : "light";
 
   useEffect(() => {
