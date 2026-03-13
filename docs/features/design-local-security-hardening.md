@@ -47,3 +47,7 @@ The March 2026 Oasis Security report revealed that OpenClaw's implicit trust of 
 
 ## 7. Evolutionary Changelog
 *   **2026-03-17:** Initial Document Creation.
+*   **2026-03-31:** Update: Mitigating CVE-2026-34812 (Deep Symlink Escape).
+    *   **Context:** Today's market sync revealed a new exploit where recursive symlinks in project-local configs allow sandbox escape.
+    *   **Architecture Adjustment:** Introducing the `Inode-Aware Symlink Validator` into the configuration discovery pipeline.
+    *   **Security Impact:** Prevents filesystem traversal outside of the project root by resolving all symlinks and validating target inodes against an "Approved Root" registry before any file I/O or tool discovery occurs.
