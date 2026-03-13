@@ -180,3 +180,7 @@
 - [ ] **[P0] Path Normalization Guard**: (2026-04-01) Visual debugger for symlink resolution and path normalization traces.
 - [ ] **[P0] Context Shifting Timeline**: (2026-04-01) Real-time visualization of Reasoning-Bound Context shifts and alignment scores.
 - [ ] **[P1] Optimistic Loading Monitor**: (2026-04-01) Dashboard for tracking pre-loaded capabilities and their final attestation status.
+- [ ] **[P0] Speculative State Inspector**: (2026-04-02) UI for visualizing speculative tool results and tracking rollback events.
+- [ ] **[P0] Inode Pinning Dashboard**: (2026-04-02) Real-time monitor of pinned hardware Inodes and blocked racing attempts.
+- [ ] **[P0] Branch Purity Visualizer**: (2026-04-02) Gantt-style view of reasoning branches with state leakage alerts.
+- [ ] **[P1] Consensus Delegation Console**: (2026-04-02) UI for managing and reviewing delegated authority tokens for time-critical tasks.

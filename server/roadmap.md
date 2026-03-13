@@ -321,3 +321,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Reasoning-Bound Context Shifter**: Context management middleware for synchronizing dynamic shifting logic. (Added: 2026-04-01)
 *   **[P0] Path Normalization Engine (NaaS)**: Centralized OS-agnostic path normalization service. (Added: 2026-04-01)
 *   **[P1] Optimistic Capability Loading**: Predictive tool registry for Gemini-style optimistic loading. (Added: 2026-04-01)
+
+#### Upcoming (2026-04-02 Evolution)
+*   **[P0] Speculative Execution Guard**: Middleware for managing "Shadow State" during speculative tool calls. (Added: 2026-04-02)
+*   **[P0] Inode-Pinning Middleware**: Hardware-bound file handle protection for project-local configurations. (Added: 2026-04-02)
+*   **[P0] Branch-Purity Blackboard Validator**: Integrity layer for the Shared KV Store to prevent cross-branch state contamination. (Added: 2026-04-02)
+*   **[P1] Consensus Delegation Gateway**: Implementation of "Delegated Authority" models for time-critical agent authorization. (Added: 2026-04-02)
