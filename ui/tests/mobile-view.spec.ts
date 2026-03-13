@@ -73,7 +73,7 @@ test.describe('Mobile View Verification', () => {
     await expect(mobilePauseContainer).toBeVisible();
 
     // Use a more specific locator for the title
-    const title = page.locator('h1', { hasText: 'Live Logs' });
+    const title = page.locator('h1', { hasText: 'Log Stream' });
     await expect(title).toBeVisible();
   });
 

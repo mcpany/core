@@ -51,8 +51,8 @@ test.describe('Service Detail Logs Tab', () => {
     await logsTab.click();
 
     // 4. Verify LogStream is visible
-    // "Live Logs" is the h1 in LogStream, using getByRole to avoid ambiguity
-    await expect(page.getByRole('heading', { name: 'Live Logs' })).toBeVisible();
+    // "Log Stream" is the h1 in LogStream, using getByRole to avoid ambiguity
+    await expect(page.getByRole('heading', { name: 'Log Stream' })).toBeVisible();
 
     // 5. Verify source is filtered (optional, but good)
     // The LogStream displays source badge/text.
