@@ -64,7 +64,7 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
                     {
                         name: "Calculate Sum",
                         description: "Adds two numbers together",
-                        inputSchema: {
+                        input_schema: {
                             type: "object",
                             properties: {
                                 a: { type: "number", description: "First number" },
