@@ -68,9 +68,14 @@ test.describe('User Guide Walkthrough', () => {
   test('Global Search Modal', async ({ page }) => {
     await page.goto('/');
 
-    // Wait for hydration/network idle to ensure event listeners are attached
-    // "domcontentloaded" is not enough for React effect listeners sometimes
-    await page.waitForLoadState('networkidle');
+    // Wait for the dashboard to fully render (either onboarding hero or dashboard content)
+    // before pressing Ctrl+K, to ensure React has hydrated and keyboard listeners are active.
+    // We avoid waitForLoadState('networkidle') because the dashboard has polling components
+    // that keep network connections open indefinitely.
+    await Promise.race([
+      page.getByText('Welcome to MCP Any').waitFor({ state: 'visible', timeout: 30000 }).catch(() => {}),
+      page.getByRole('heading', { name: /Dashboard/i }).waitFor({ state: 'visible', timeout: 30000 }).catch(() => {}),
+    ]);
 
     // Press Ctrl+K
     // Try forcing focus on body first
