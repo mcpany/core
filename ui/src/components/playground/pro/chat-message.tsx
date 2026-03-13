@@ -12,7 +12,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import vs2015 from 'react-syntax-highlighter/dist/esm/styles/hljs/vs2015';
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import { SmartResultRenderer } from "./smart-result-renderer";
 import { estimateTokens, formatTokenCount } from "@/lib/tokens";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -102,7 +102,9 @@ function analyzeError(error: string): string | null {
  *
  * @param { message - The { message.
  */
-export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
+// ⚡ BOLT: [Render Optimization] Memoize ChatMessage to prevent expensive estimateTokens recalculation on every chat list update.
+// Randomized Selection from Top 5 High-Impact Targets
+export const ChatMessage = memo(function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
     const [copied, setCopied] = useState(false);
     const [showDiff, setShowDiff] = useState(false);
     const { theme } = useTheme();
@@ -340,7 +342,7 @@ export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
     }
 
     return null;
-}
+});
 
 /**
  * HydrationSafeTime component.
