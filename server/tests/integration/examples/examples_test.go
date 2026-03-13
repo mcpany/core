@@ -33,9 +33,20 @@ func TestExampleConfigs(t *testing.T) {
 	stdioBinPath := filepath.Join(runtimeRoot, "examples", "demo", "stdio", "my-tool-bin")
 	if _, err := os.Stat(stdioBinPath); os.IsNotExist(err) {
 		t.Logf("Building missing stdio example binary: %s", stdioBinPath)
-		// Set go mod env so build works outside module root
-		cmd := exec.Command("go", "build", "-o", stdioBinPath, filepath.Join(projectRoot, "examples", "demo", "stdio", "my-tool", "main.go"))
+		// Since we are running within Bazel, we should look up the system Go instead of relying on $PATH alone
+		goBin, _ := exec.LookPath("go")
+		if goBin == "" {
+			goBin = "go"
+		}
+		// Ensure standard environment vars are maintained for "go build" inside the bazel container
+		// Explicitly use project root for module resolution but target the nested path properly
+		toolSrc := filepath.Join(projectRoot, "server", "examples", "demo", "stdio", "my-tool", "main.go")
+		if _, err := os.Stat(toolSrc); os.IsNotExist(err) {
+			toolSrc = filepath.Join(projectRoot, "examples", "demo", "stdio", "my-tool", "main.go")
+		}
+		cmd := exec.Command(goBin, "build", "-o", stdioBinPath, toolSrc)
 		cmd.Dir = projectRoot // Run build from actual project root
+		cmd.Env = append(os.Environ(), "CGO_ENABLED=0")
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		if err := cmd.Run(); err != nil {
