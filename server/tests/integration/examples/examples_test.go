@@ -28,23 +28,24 @@ func TestExampleConfigs(t *testing.T) {
 	examplesDir := filepath.Join(runtimeRoot, "examples")
 	require.NoError(t, copyDir(filepath.Join(projectRoot, "examples"), examplesDir))
 
-	// Change to project root so that relative paths in configs (e.g. "./examples/...") resolve correctly
-	err = os.Chdir(runtimeRoot)
-	require.NoError(t, err)
-
 	// Ensure stdio example binary is built, as Config validation checks for its existence
 	// This makes the test robust against sharding/environment where build-examples might not have run.
 	stdioBinPath := filepath.Join(runtimeRoot, "examples", "demo", "stdio", "my-tool-bin")
 	if _, err := os.Stat(stdioBinPath); os.IsNotExist(err) {
 		t.Logf("Building missing stdio example binary: %s", stdioBinPath)
+		// Set go mod env so build works outside module root
 		cmd := exec.Command("go", "build", "-o", stdioBinPath, filepath.Join(runtimeRoot, "examples", "demo", "stdio", "my-tool", "main.go"))
-		cmd.Dir = runtimeRoot
+		cmd.Dir = projectRoot // Run build from actual project root
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		if err := cmd.Run(); err != nil {
 			t.Logf("Failed to build stdio example binary (continuing, but validation might fail): %v", err)
 		}
 	}
+
+	// Change to project root so that relative paths in configs (e.g. "./examples/...") resolve correctly
+	err = os.Chdir(runtimeRoot)
+	require.NoError(t, err)
 
 	// Walk through examples directory
 	err = filepath.Walk(examplesDir, func(path string, info os.FileInfo, err error) error {
