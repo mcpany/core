@@ -139,3 +139,7 @@
 - [ ] **[P0] Blackboard Lineage Inspector**: (2026-03-20) Forensic UI for visualizing the cryptographic audit trail of Shared KV Store operations.
 - [ ] **[P1] UACO Bid Safety Analyzer**: (2026-03-20) Real-time visualization of agent bid profiles and behavioral anomaly scores during task negotiation.
 - [ ] **[P1] Config Smuggling Alert Center**: (2026-03-20) Detailed scanner output for project-local configurations, highlighting hidden metadata/binary hooks.
+- [ ] **[P0] CAC Attestation Workspace**: (2026-03-21) UI for hashing and approving project-local configuration fragments (hooks/WASM).
+- [ ] **[P0] UACO v1.5 RCC Monitor**: (2026-03-21) Security dashboard for reviewing agent Resource Capability Claims during handoffs.
+- [ ] **[P1] L4 Traffic Security Heatmap**: (2026-03-21) Real-time visualization of DNS/ICMP packets from agents, flagged by anomaly detection.
+- [ ] **[P1] Hardware Trust Status Widget**: (2026-03-21) Monitor for TPM/Secure Enclave attestation status for headless agents.
