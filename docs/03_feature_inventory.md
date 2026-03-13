@@ -294,3 +294,17 @@
 ### Priority Shifts
 - **Binary State Handoff (BSH) Gateway**: Promoted from **P1** to **P0**. Urgent requirement to solve the "Token Storm" crisis in deep swarms.
 - **Ghost Shell Execution Mode**: Re-affirmed as **P0**. Critical security defense against malicious project-local hooks.
+
+---
+
+## Evolution: [2026-03-25] Updates
+
+### Proposed Additions
+- **Relational Intent-Chain Validator**: (P0) Core implementation of UACO v1.8 "Chain of Custody" for intent, providing cryptographic lineage for every tool call in a swarm.
+- **BSH Differential Sync Engine**: (P0) High-performance sync engine that transmits only binary deltas between agent handoffs, optimizing bandwidth for dense swarms.
+- **Command-Adapter Behavioral Attestation**: (P1) Mandatory sandbox profiling for CLI-based tools to detect and block command injection attempts (CVE-2026-0755).
+- **PoI Intent-Aware Discovery**: (P1) Extension of the discovery middleware to filter tool schemas based on the active signed intent of the session.
+
+### Priority Shifts
+- **Relational PoI Validator**: Promoted to **P0** and merged into the **Relational Intent-Chain Validator** project.
+- **BSH State Buffer**: Re-affirmed as **P0** as part of the Differential Sync Engine.

@@ -114,6 +114,12 @@
 *   **[P0] Ghost Shell Hook Profiler**: Instrumented sandbox for behavioral profiling of un-attested configuration hooks. (Added: 2026-03-24)
 *   **[P1] BSH State Differential Sync**: Optimized binary state transfer that only sends deltas between agent handoffs. (Added: 2026-03-24)
 
+#### Upcoming (2026-03-25 Evolution)
+*   **[P0] Relational Intent-Chain Validator**: Implementation of UACO v1.8 cryptographic "Chain of Custody" for multi-agent swarms. (Added: 2026-03-25)
+*   **[P0] BSH Differential Sync Engine**: High-performance transport for binary deltas to mitigate "Token Storms" in deep agent chains. (Added: 2026-03-25)
+*   **[P1] Command-Adapter Behavioral Attestation**: Mandatory "Ghost Shell" profiling for all CLI-based tools to block command injection (CVE-2026-0755). (Added: 2026-03-25)
+*   **[P1] PoI Intent-Aware Discovery**: Discovery middleware extension to filter tool schemas based on the session's active signed intent. (Added: 2026-03-25)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

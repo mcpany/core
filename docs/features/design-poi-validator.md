@@ -49,3 +49,7 @@ With the rise of "Context-Mirroring" attacks (CVE-2026-34015), it's no longer en
     * **Context:** Today's market sync revealed the severity of "Context-Mirroring" attacks (CVE-2026-34015).
     * **Architecture Adjustment:** Expanded `verifyIntent` to support "Intent Chains" and introduced "Relational Scoping" to dynamically narrow permissions based on signed intent lineage.
     * **Security Impact:** Prevents subagent coercion and unauthorized credential use in deep swarms.
+    * **2026-03-25:** UACO v1.8 Relational Intent-Chain Update.
+    * **Context:** Market sync identifies UACO v1.8's "Chain of Custody" as the new standard for swarm security.
+    * **Architecture Adjustment:** Implementing mandatory "Intent-Chain Validation" in Section 4. Every request must now include a verifiable cryptographic path back to the user-authorized root.
+    * **Security Impact:** Eliminates subagent identity spoofing and ensures absolute relational integrity across all agent handoffs.

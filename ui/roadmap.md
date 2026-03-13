@@ -152,3 +152,7 @@
 - [ ] **[P0] Relational Intent Chain Viewer**: (2026-03-24) Visual debugger for verifying the lineage and relational scoping of agent intents.
 - [ ] **[P0] Ghost Shell Safety Reporter**: (2026-03-24) UI for viewing behavioral profiling results and safety scores for un-attested configuration hooks.
 - [ ] **[P1] BSH Delta Debugger**: (2026-03-24) Developer tool for inspecting binary state differentials during agent handoffs.
+- [ ] **[P0] Relational Intent Chain Viewer**: (2026-03-25) Security dashboard for visualizing the UACO v1.8 cryptographic "Chain of Custody" across agent lineages. (Added: 2026-03-25)
+- [ ] **[P0] BSH Differential Sync Monitor**: (2026-03-25) Real-time visualization of binary delta transfers and bandwidth savings. (Added: 2026-03-25)
+- [ ] **[P1] Command Attestation Safety Center**: (2026-03-25) UI for reviewing behavioral profiling results for CLI tools and managing attestation tokens. (Added: 2026-03-25)
+- [ ] **[P1] Intent-Aware Tool Filter**: (2026-03-25) UI component for previewing which tools are accessible under the current signed intent. (Added: 2026-03-25)

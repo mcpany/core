@@ -47,3 +47,7 @@ As agent swarms grow in depth and complexity, the overhead of transferring massi
     * **Context:** OpenClaw v2.4 identifies JSON-based state transfer as the primary cause of "Token Storms."
     * **Architecture Adjustment:** Introduced "Memory-Mapped BSH Buffers" and "State Differential Sync" to eliminate serialization overhead and reduce binary delta sizes.
     * **Performance Impact:** Projected 30% reduction in state transfer latency and significant reduction in LLM token consumption.
+    * **2026-03-25:** OpenClaw v2.5 Differential Sync Alignment.
+    * **Context:** Market sync reveals OpenClaw v2.5's focus on binary deltas to combat token storms.
+    * **Architecture Adjustment:** Evolving the BSH Gateway to include a "Differential Sync Engine" that calculates and transmits binary deltas instead of full state objects during agent transitions.
+    * **Performance Impact:** Projected 40% reduction in bandwidth for deep swarms and near-zero context transfer latency.

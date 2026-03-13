@@ -219,3 +219,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Relational PoI Enforcement**: MCP Any will pivot to a "Relational Security" model where every tool call is validated against a cryptographically signed "Intent Chain." This ensures that subagents cannot be coerced into actions that diverge from the parent's verified goal.
 - **BSH-Native Orchestration**: Moving toward a "Binary-First" transport for all A2A communications. MCP Any will act as a high-speed buffer and validator for Protobuf/BSH state handoffs, drastically reducing latency in complex multi-agent workflows.
 - **Ghost Shell Hook Profiling**: We are introducing "Ghost Shell" as a mandatory profiling step for any un-attested configuration hooks. This provides a behavioral safety net before any "Binary Smuggling" in WASM hooks can reach the host.
+
+---
+
+## Strategic Evolution: [2026-03-25]
+### Focus: Intent-Chain Integrity & Verified Command Scoping
+**Context**: Today's findings reveal a escalation in "Context-Mirroring" attacks and the persistence of "Command Injection" (CVE-2026-0755) in the ecosystem. As swarms become deeper and more autonomous, security must move from "Point-of-Entry" to "Relational Lineage."
+**Strategic Pivot**:
+- **Relational Intent-Chain Verification**: MCP Any will implement UACO v1.8's "Relational Intent Chains." Every tool call must be accompanied by a cryptographic "Chain of Custody" that links it back to the original, human-authorized root intent. This prevents hijacked subagents from using parent credentials for unauthorized goals.
+- **BSH Differential State Sync**: We are evolving the BSH Gateway to support "Differential Sync" (inspired by OpenClaw v2.5). This will drastically reduce bandwidth for high-frequency swarms by only transmitting binary deltas between agent handoffs.
+- **Ghost Shell Behavioral Attestation**: In response to the `execAsync` command injection crisis, the Command Adapter will now mandate "Ghost Shell" profiling for all CLI-based tools. MCP Any will profile the command's behavior in an isolated sandbox before it is ever granted access to the host's primary shell.
