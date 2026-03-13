@@ -8,6 +8,7 @@ def _playwright_target_name(spec):
 
 def _playwright_target_data(spec):
     return [
+        ":build",  # Pre-built Next.js app (.next dir) – allows `next start` instead of `next dev`
         ":next_cli",
         ":node_modules",
         ":playwright_cli",

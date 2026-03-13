@@ -173,7 +173,18 @@ fi
 
 export PATH="$(dirname "$node_bin"):$PATH"
 export NODE_PATH="$ui_runtime/node_modules${NODE_PATH:+:$NODE_PATH}"
-export NEXT_DEV_COMMAND="$node_bin $next_cli_js dev -p $test_port"
+
+# Use `next start` (production mode) when a pre-built .next is available in the
+# Bazel runfiles (provided by the ":build" data dependency).  This starts in a
+# fraction of the time compared to `next dev` (JIT compilation), making tests
+# far more reliable in resource-constrained environments.
+if [[ -d "$ui_runtime/.next/static" ]]; then
+  echo "Using pre-built Next.js app (next start)"
+  export NEXT_DEV_COMMAND="$node_bin $next_cli_js start -p $test_port"
+else
+  echo "Pre-built .next not found; falling back to next dev"
+  export NEXT_DEV_COMMAND="$node_bin $next_cli_js dev -p $test_port"
+fi
 
 if [[ -n "$spec_path" ]]; then
   escaped_spec="$(printf '%s' "$selected_spec" | sed -e 's/[.[\*^$()+?{}|]/\\&/g')"
