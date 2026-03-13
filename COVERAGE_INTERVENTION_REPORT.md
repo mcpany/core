@@ -1,21 +1,17 @@
 # Coverage Intervention Report
 
-**Target:** `server/pkg/tokenizer/tokenizer.go`
-**Function:** `countTokensInValueSimpleFast`
+**Target:** `server/pkg/app/api_users.go`
+**Function:** `handleUsers` and `handleUserDetail`
 
 **Risk Profile:**
-This utility function handles rate-limiting and billing token calculations across various map, slice, and primitive inputs. It has a high cyclomatic complexity (35) due to its switch statements and optimizations, yet it was missing tests for many of its critical paths, posing a high risk for billing or API limits bugs in edge cases. This function was selected based on its core utility nature combined with its 59.8% test coverage before intervention.
+The `api_users.go` component handles the core administration of system users, including listing, creating, retrieving, updating, and deleting profiles. The operations are sensitive since they govern role assignment and credential initialization. The cyclomatic complexity is significant due to varying JSON body formats, authentication enforcement (e.g., RBAC), and database update checks. However, test coverage before intervention was relatively low (around 50.8%), missing assertions for edge cases, JSON unmarshaling fallbacks, authorization constraints, and privilege escalation guards.
 
 **New Coverage:**
-The following logic paths are now guarded by the new table-driven tests:
-- `map[string]int`, `map[string]int64`, `map[string]float64`, `map[string]bool`
-- `[]byte` (empty and non-empty)
-- Primitives (`int`, `int64`, `bool`)
-- `float64` (integer and fractional variants)
-- Slices (`[]string`, `[]int`, `[]int64`, `[]bool`, `[]float64`)
-- `map[string]string`
-- Edge cases (`nil`, unhandled types)
-The function's test coverage increased from **59.8% to 97.7%**.
+The following logic paths are now properly tested:
+- Creating a user (`POST /users`): successful path, duplicate conflicts (409), missing IDs (400), malformed request bodies, and correct password hashing logic execution.
+- Fetching user details (`GET /users/{id}`): missing IDs, unauthenticated requests, and forbidden cross-account access for non-administrators.
+- Updating users (`PUT /users/{id}`): ID mismatch tracking, updates to non-existent profiles, malformed input payload resilience, and strict protections against non-admins escalating their own roles.
+The file's overall test coverage for `handleUsers` has increased from 50.8% to 70.8%, and `handleUserDetail` has increased from 50.7% to 67.1%.
 
 **Verification:**
-Confirmed that `go test ./pkg/tokenizer/...` passes cleanly. The implementation adheres to the existing `SimpleTokenizer` mocking and testing patterns, utilizing a Go table-driven test style matching `server/pkg/tokenizer/tokenizer_test.go`. The test logic preserves "Do No Harm" by introducing tests seamlessly alongside existing ones.
+Confirmed that `make test` runs flawlessly and the tests run cleanly under `go test ./pkg/app/...`. The implementation respects the "Do No Harm" principle and hermetically mocks storage and user properties via the `memory.NewStore()` and `httptest.NewRecorder()`.

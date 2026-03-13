@@ -22,7 +22,7 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestHandleUsers_List(t *testing.T) {
+func TestHandleUsers_Enhanced(t *testing.T) {
 	app := NewApplication()
 	app.fs = afero.NewMemMapFs()
 	app.AuthManager = auth.NewManager()
@@ -34,24 +34,159 @@ func TestHandleUsers_List(t *testing.T) {
 	user := configv1.User_builder{Id: proto.String("user1")}.Build()
 	require.NoError(t, store.CreateUser(context.Background(), user))
 
-	req := httptest.NewRequest(http.MethodGet, "/users", nil)
-	// Inject admin role
-	ctx := auth.ContextWithRoles(req.Context(), []string{"admin"})
-	req = req.WithContext(ctx)
+	t.Run("List Users", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/users", nil)
+		// Inject admin role
+		ctx := auth.ContextWithRoles(req.Context(), []string{"admin"})
+		req = req.WithContext(ctx)
 
-	w := httptest.NewRecorder()
-	handler(w, req)
+		w := httptest.NewRecorder()
+		handler(w, req)
 
-	assert.Equal(t, http.StatusOK, w.Code)
-	var users []json.RawMessage
-	err := json.Unmarshal(w.Body.Bytes(), &users)
-	require.NoError(t, err)
-	assert.Len(t, users, 1)
+		assert.Equal(t, http.StatusOK, w.Code)
+		var users []json.RawMessage
+		err := json.Unmarshal(w.Body.Bytes(), &users)
+		require.NoError(t, err)
+		assert.Len(t, users, 1)
 
-	var u configv1.User
-	err = protojson.Unmarshal(users[0], &u)
-	require.NoError(t, err)
-	assert.Equal(t, "user1", u.GetId())
+		var u configv1.User
+		err = protojson.Unmarshal(users[0], &u)
+		require.NoError(t, err)
+		assert.Equal(t, "user1", u.GetId())
+	})
+
+	t.Run("Create User", func(t *testing.T) {
+		newUser := configv1.User_builder{
+			Id: proto.String("user2"),
+			Authentication: configv1.Authentication_builder{
+				BasicAuth: configv1.BasicAuth_builder{
+					PasswordHash: proto.String("pass123"),
+				}.Build(),
+			}.Build(),
+		}.Build()
+		opts := protojson.MarshalOptions{UseProtoNames: true}
+		userBytes, _ := opts.Marshal(newUser)
+		bodyMap := map[string]json.RawMessage{
+			"user": json.RawMessage(userBytes),
+		}
+		body, _ := json.Marshal(bodyMap)
+
+		req := httptest.NewRequest(http.MethodPost, "/users", bytes.NewReader(body))
+		ctx := auth.ContextWithRoles(req.Context(), []string{"admin"})
+		req = req.WithContext(ctx)
+
+		w := httptest.NewRecorder()
+		handler(w, req)
+
+		assert.Equal(t, http.StatusCreated, w.Code)
+		u, err := store.GetUser(context.Background(), "user2")
+		require.NoError(t, err)
+		assert.NotNil(t, u)
+		assert.True(t, strings.HasPrefix(u.GetAuthentication().GetBasicAuth().GetPasswordHash(), "$2"))
+	})
+
+	t.Run("Create User Conflict", func(t *testing.T) {
+		conflictUser := configv1.User_builder{
+			Id: proto.String("user1"), // user1 already exists
+		}.Build()
+		opts := protojson.MarshalOptions{UseProtoNames: true}
+		userBytes, _ := opts.Marshal(conflictUser)
+		bodyMap := map[string]json.RawMessage{
+			"user": json.RawMessage(userBytes),
+		}
+		body, _ := json.Marshal(bodyMap)
+
+		req := httptest.NewRequest(http.MethodPost, "/users", bytes.NewReader(body))
+		ctx := auth.ContextWithRoles(req.Context(), []string{"admin"})
+		req = req.WithContext(ctx)
+
+		w := httptest.NewRecorder()
+		handler(w, req)
+
+		assert.Equal(t, http.StatusConflict, w.Code)
+	})
+
+	t.Run("Create User Missing ID", func(t *testing.T) {
+		missingIDUser := configv1.User_builder{
+			Roles: []string{"admin"}, // No ID
+		}.Build()
+		opts := protojson.MarshalOptions{UseProtoNames: true}
+		userBytes, _ := opts.Marshal(missingIDUser)
+		bodyMap := map[string]json.RawMessage{
+			"user": json.RawMessage(userBytes),
+		}
+		body, _ := json.Marshal(bodyMap)
+
+		req := httptest.NewRequest(http.MethodPost, "/users", bytes.NewReader(body))
+		ctx := auth.ContextWithRoles(req.Context(), []string{"admin"})
+		req = req.WithContext(ctx)
+
+		w := httptest.NewRecorder()
+		handler(w, req)
+
+		assert.Equal(t, http.StatusBadRequest, w.Code)
+	})
+
+	t.Run("Create User Invalid JSON", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodPost, "/users", bytes.NewReader([]byte("{invalid}")))
+		ctx := auth.ContextWithRoles(req.Context(), []string{"admin"})
+		req = req.WithContext(ctx)
+
+		w := httptest.NewRecorder()
+		handler(w, req)
+
+		assert.Equal(t, http.StatusBadRequest, w.Code)
+	})
+
+	t.Run("Create User Direct Proto JSON", func(t *testing.T) {
+		newUser := configv1.User_builder{
+			Id: proto.String("user3"),
+		}.Build()
+		opts := protojson.MarshalOptions{UseProtoNames: true}
+		userBytes, _ := opts.Marshal(newUser)
+
+		req := httptest.NewRequest(http.MethodPost, "/users", bytes.NewReader(userBytes))
+		ctx := auth.ContextWithRoles(req.Context(), []string{"admin"})
+		req = req.WithContext(ctx)
+
+		w := httptest.NewRecorder()
+		handler(w, req)
+
+		assert.Equal(t, http.StatusCreated, w.Code)
+	})
+
+	t.Run("Create User Missing Required Array Field (Invalid Proto JSON)", func(t *testing.T) {
+		// e.g. a string where an array or object is expected, protojson will fail
+		body := []byte(`{"user": {"roles": "not_an_array"}}`)
+		req := httptest.NewRequest(http.MethodPost, "/users", bytes.NewReader(body))
+		ctx := auth.ContextWithRoles(req.Context(), []string{"admin"})
+		req = req.WithContext(ctx)
+
+		w := httptest.NewRecorder()
+		handler(w, req)
+
+		assert.Equal(t, http.StatusBadRequest, w.Code)
+	})
+
+	t.Run("Unauthorized Access", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/users", nil)
+		// No admin role injected
+		w := httptest.NewRecorder()
+		handler(w, req)
+
+		assert.Equal(t, http.StatusForbidden, w.Code)
+	})
+
+	t.Run("Method Not Allowed", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodPut, "/users", nil)
+		ctx := auth.ContextWithRoles(req.Context(), []string{"admin"})
+		req = req.WithContext(ctx)
+
+		w := httptest.NewRecorder()
+		handler(w, req)
+
+		assert.Equal(t, http.StatusMethodNotAllowed, w.Code)
+	})
 }
 
 func TestHandleUserDetail(t *testing.T) {
@@ -143,6 +278,125 @@ func TestHandleUserDetail(t *testing.T) {
 		u, err := store.GetUser(context.Background(), "user1")
 		require.NoError(t, err)
 		assert.Nil(t, u)
+	})
+
+	// Missing coverage paths
+
+	t.Run("Missing ID", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/users/", nil)
+		ctx := auth.ContextWithUser(req.Context(), "user1")
+		req = req.WithContext(ctx)
+
+		w := httptest.NewRecorder()
+		handler(w, req)
+
+		assert.Equal(t, http.StatusBadRequest, w.Code)
+	})
+
+	t.Run("Unauthenticated", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/users/user1", nil)
+		w := httptest.NewRecorder()
+		handler(w, req)
+
+		assert.Equal(t, http.StatusUnauthorized, w.Code)
+	})
+
+	t.Run("Forbidden Access", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/users/user1", nil)
+		// Accessing someone else without admin
+		ctx := auth.ContextWithUser(req.Context(), "user2")
+		req = req.WithContext(ctx)
+
+		w := httptest.NewRecorder()
+		handler(w, req)
+
+		assert.Equal(t, http.StatusForbidden, w.Code)
+	})
+
+	t.Run("Update User Invalid JSON", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodPut, "/users/user2", bytes.NewReader([]byte("{invalid}")))
+		ctx := auth.ContextWithUser(req.Context(), "user2")
+		req = req.WithContext(ctx)
+
+		w := httptest.NewRecorder()
+		handler(w, req)
+
+		assert.Equal(t, http.StatusBadRequest, w.Code)
+	})
+
+	t.Run("Update User ID Mismatch", func(t *testing.T) {
+		updatedUser := configv1.User_builder{
+			Id: proto.String("user3"),
+		}.Build()
+		opts := protojson.MarshalOptions{UseProtoNames: true}
+		userBytes, _ := opts.Marshal(updatedUser)
+
+		req := httptest.NewRequest(http.MethodPut, "/users/user2", bytes.NewReader(userBytes))
+		ctx := auth.ContextWithUser(req.Context(), "user2")
+		req = req.WithContext(ctx)
+
+		w := httptest.NewRecorder()
+		handler(w, req)
+
+		assert.Equal(t, http.StatusBadRequest, w.Code)
+	})
+
+	t.Run("Update Non-existent User", func(t *testing.T) {
+		updatedUser := configv1.User_builder{
+			Id: proto.String("unknown"),
+		}.Build()
+		opts := protojson.MarshalOptions{UseProtoNames: true}
+		userBytes, _ := opts.Marshal(updatedUser)
+
+		req := httptest.NewRequest(http.MethodPut, "/users/unknown", bytes.NewReader(userBytes))
+		ctx := auth.ContextWithUser(req.Context(), "unknown")
+		req = req.WithContext(ctx)
+
+		w := httptest.NewRecorder()
+		handler(w, req)
+
+		assert.Equal(t, http.StatusNotFound, w.Code)
+	})
+
+	t.Run("Update User Prevent Escalation", func(t *testing.T) {
+		// Create a user2 for this test
+		u2 := configv1.User_builder{
+			Id: proto.String("user2"),
+			Roles: []string{"user"},
+		}.Build()
+		require.NoError(t, store.CreateUser(context.Background(), u2))
+
+		// Try to escalate to admin
+		updatedUser := configv1.User_builder{
+			Id: proto.String("user2"),
+			Roles: []string{"admin"},
+		}.Build()
+		opts := protojson.MarshalOptions{UseProtoNames: true}
+		userBytes, _ := opts.Marshal(updatedUser)
+
+		req := httptest.NewRequest(http.MethodPut, "/users/user2", bytes.NewReader(userBytes))
+		ctx := auth.ContextWithUser(req.Context(), "user2") // non-admin
+		req = req.WithContext(ctx)
+
+		w := httptest.NewRecorder()
+		handler(w, req)
+
+		assert.Equal(t, http.StatusOK, w.Code)
+		// Verify role was not escalated
+		u, err := store.GetUser(context.Background(), "user2")
+		require.NoError(t, err)
+		assert.Equal(t, []string{"user"}, u.GetRoles())
+	})
+
+	t.Run("Method Not Allowed", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodPost, "/users/user2", nil)
+		ctx := auth.ContextWithUser(req.Context(), "user2")
+		req = req.WithContext(ctx)
+
+		w := httptest.NewRecorder()
+		handler(w, req)
+
+		assert.Equal(t, http.StatusMethodNotAllowed, w.Code)
 	})
 }
 
