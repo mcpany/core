@@ -11,12 +11,10 @@ test('layout smoke test', async ({ page, request }) => {
   await seedCollection('mcpany-system', request);
 
   await page.goto('/');
-  // Wait for network idle so user/admin fetch completes and sidebar re-renders
-  await page.waitForLoadState('networkidle');
-
-  // Check for Sidebar
+  
+  // Check for Sidebar - wait for it directly instead of networkidle
   const sidebar = page.locator('text=MCP Any').first();
-  await expect(sidebar).toBeVisible();
+  await expect(sidebar).toBeVisible({ timeout: 30000 });
 
   // Check for Sidebar links
   await expect(page.locator('a[href="/stacks"]').first()).toBeVisible();
