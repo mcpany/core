@@ -1,0 +1,17 @@
+<<<<<<< SEARCH
+		StartMCPANYServer: func(t *testing.T, testName string, extraArgs ...string) *integration.MCPANYTestServerInfo {
+			configContent := fmt.Sprintf("global_settings:\n  allowed_file_paths:\n    - %q\n", npmDir)
+			return integration.StartMCPANYServerWithConfig(t, testName, configContent, extraArgs...)
+		},
+=======
+		StartMCPANYServer: func(t *testing.T, testName string, extraArgs ...string) *integration.MCPANYTestServerInfo {
+			configContent := fmt.Sprintf("global_settings:\n  allowed_file_paths:\n    - %q\n", npmDir)
+			if len(extraArgs) > 0 {
+				// integration.StartMCPANYServerWithConfig doesn't accept extraArgs in older signature?
+				// But looking at e2e.go it calls it as:
+				// integration.StartMCPANYServerWithConfig(t, testCase.Name, configContent)
+				// Wait, `StartMCPANYServerWithConfig` may not be variadic. Let's just drop extraArgs from this internal call
+			}
+			return integration.StartMCPANYServerWithConfig(t, testName, configContent)
+		},
+>>>>>>> REPLACE

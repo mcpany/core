@@ -1,0 +1,11 @@
+<<<<<<< SEARCH
+			cmd := nodePath
+			args := []string{"./node_modules/.bin/mcp-server-playwright"}
+			setupCommands := []string{
+				"npm install --no-optional @playwright/mcp > /dev/null 2>&1",
+			}
+=======
+			cmd := "npx"
+			args := []string{"-y", "@playwright/mcp"}
+			setupCommands := []string{}
+>>>>>>> REPLACE
