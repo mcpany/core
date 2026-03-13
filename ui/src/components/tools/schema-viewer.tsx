@@ -106,6 +106,16 @@ export function SchemaViewer({ schema, name, required = false, depth = 0 }: Sche
                {name && <span className="font-semibold text-foreground">{name}</span>}
                {required && <span className="text-red-500 text-xs font-bold" title="Required">*</span>}
                <TypeBadge type={schema.type} format={schema.format} />
+               {schema.default !== undefined && (
+                 <span className="text-[10px] text-muted-foreground ml-1 border rounded px-1 py-0.5 bg-muted/20">
+                    Default: {JSON.stringify(schema.default)}
+                 </span>
+               )}
+               {schema.enum && (
+                  <span className="text-[10px] text-muted-foreground ml-1 border rounded px-1 py-0.5 bg-muted/20">
+                    Enum: [{schema.enum.map(e => JSON.stringify(e)).join(", ")}]
+                  </span>
+               )}
                {schema.description && (
                     <Tooltip delayDuration={300}>
                       <TooltipTrigger asChild>
@@ -149,9 +159,14 @@ export function SchemaViewer({ schema, name, required = false, depth = 0 }: Sche
              {name && <span className="font-semibold text-foreground">{name}</span>}
              {required && <span className="text-red-500 text-xs font-bold" title="Required">*</span>}
              <TypeBadge type={schema.type} format={schema.format} />
+             {schema.default !== undefined && (
+                <span className="text-[10px] text-muted-foreground ml-1 border rounded px-1 py-0.5 bg-muted/20">
+                   Default: {JSON.stringify(schema.default)}
+                </span>
+             )}
              {schema.enum && (
-                <span className="text-xs text-muted-foreground ml-1">
-                  Enum: [{schema.enum.join(", ")}]
+                <span className="text-[10px] text-muted-foreground ml-1 border rounded px-1 py-0.5 bg-muted/20">
+                  Enum: [{schema.enum.map(e => JSON.stringify(e)).join(", ")}]
                 </span>
              )}
               {schema.description && (
