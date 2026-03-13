@@ -15,7 +15,7 @@ test.describe('Logs Page', () => {
     // Verify page loaded
     await expect(page).toHaveTitle(/MCPAny/);
     // Use more specific selector with longer timeout
-    await expect(page.getByRole('heading', { name: 'Live Logs' })).toBeVisible({ timeout: 30000 });
+    await expect(page.getByRole('heading', { name: 'Log Stream' })).toBeVisible({ timeout: 30000 });
   });
 
   test('should display log entries', async ({ page }) => {
