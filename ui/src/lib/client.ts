@@ -1437,6 +1437,43 @@ export const apiClient = {
     },
 
     /**
+     * Retrieves the current user's preferences.
+     *
+     * Summary: Retrieves user preferences.
+     *
+     * @returns A promise that resolves to a map of preferences.
+     * @throws {Error} If fetch fails.
+     *
+     * Side Effects: Makes a GET request to /api/v1/user/preferences.
+     */
+    getUserPreferences: async (): Promise<Record<string, string>> => {
+        const res = await fetchWithAuth('/api/v1/user/preferences');
+        if (!res.ok) throw new Error('Failed to fetch user preferences');
+        return res.json();
+    },
+
+    /**
+     * Updates the current user's preferences.
+     *
+     * Summary: Updates user preferences.
+     *
+     * @param preferences - The new preferences to merge or set.
+     * @returns A promise that resolves to the updated preferences.
+     * @throws {Error} If update fails.
+     *
+     * Side Effects: Makes a POST request to /api/v1/user/preferences.
+     */
+    updateUserPreferences: async (preferences: Record<string, string>): Promise<Record<string, string>> => {
+        const res = await fetchWithAuth('/api/v1/user/preferences', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(preferences)
+        });
+        if (!res.ok) throw new Error('Failed to update user preferences');
+        return res.json();
+    },
+
+    /**
      * Deletes a user.
      *
      * Summary: Deletes a user.
