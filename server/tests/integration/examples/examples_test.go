@@ -45,7 +45,8 @@ func TestExampleConfigs(t *testing.T) {
 			toolSrc = filepath.Join(projectRoot, "examples", "demo", "stdio", "my-tool", "main.go")
 		}
 		cmd := exec.Command(goBin, "build", "-o", stdioBinPath, toolSrc)
-		cmd.Dir = projectRoot // Run build from actual project root
+		// Run from the directory where the source code lives, to pick up any local go.mod (if any) or avoid main module issues
+		cmd.Dir = filepath.Dir(toolSrc)
 		cmd.Env = append(os.Environ(), "CGO_ENABLED=0")
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
