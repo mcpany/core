@@ -45,7 +45,7 @@ export TEST_GID
 # 		TEST_UID=$(TEST_UID) TEST_GID=$(TEST_GID) SERVER_IMAGE=$(SERVER_IMAGE) docker compose -f ./docker-compose.test.yml run --rm --service-ports ui-tests npx playwright test $(ARGS); \
 # 	fi
 test:
-	bazelisk test //ui/...
+	@$(MAKE) -C .. test-ui-bazel
 
 # Handle Docker-in-Docker path mapping
 ifdef HOST_WORKSPACE_ROOT

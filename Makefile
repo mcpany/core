@@ -252,3 +252,21 @@ docker-test:
 docker-lint:
 	sg docker -c "docker build -t mcpany/core-test -f server/docker/Dockerfile.dev ."
 	sg docker -c "docker run $(DOCKER_RUN_OPTS) sh -c 'mkdir -p /workspace/build/home && git config --global --add safe.directory /workspace && make lint'"
+
+.PHONY: test-ui-bazel
+test-ui-bazel:
+	@if command -v bazelisk >/dev/null 2>&1; then \
+		bazelisk test //ui/...; \
+	elif command -v bazel >/dev/null 2>&1; then \
+		bazel test //ui/...; \
+	else \
+		export PATH=$$(pwd)/build/env/bin:$$PATH; \
+		if command -v bazelisk >/dev/null 2>&1; then \
+			bazelisk test //ui/...; \
+		elif command -v bazel >/dev/null 2>&1; then \
+			bazel test //ui/...; \
+		else \
+			echo "Error: Neither bazelisk nor bazel found in PATH."; \
+			false; \
+		fi \
+	fi
