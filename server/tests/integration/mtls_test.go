@@ -19,16 +19,25 @@ import (
 )
 
 func TestMTLSAuthentication(t *testing.T) {
-	// Under Bazel, the sandbox symlinks cause the server's security path
-	// validation to reject cert paths (EvalSymlinks resolves outside CWD).
-	if os.Getenv("RUNFILES_DIR") != "" {
-		t.Skip("Skipping TestMTLSAuthentication under Bazel: cert path validation incompatible with sandbox symlinks")
-	}
-
 	// Resolve the TLS test certificate directory.
 	tlsDir := filepath.Join(ProjectRoot(t), "tests", "tls")
 	if _, err := os.Stat(tlsDir); err != nil {
 		t.Skipf("TLS test certificates not found at %s, skipping", tlsDir)
+	}
+
+	// Under Bazel the sandbox uses symlinks; the server's path validation rejects those.
+	// Copy certs to a real temp directory so absolute paths pass EvalSymlinks checks.
+	realTLSDir := t.TempDir()
+	for _, f := range []string{"ca.crt", "server.crt", "server.key", "client.crt", "client.key"} {
+		src := filepath.Join(tlsDir, f)
+		dst := filepath.Join(realTLSDir, f)
+		data, err := os.ReadFile(src) //nolint:gosec
+		if err != nil {
+			t.Skipf("Cannot read TLS cert file %s: %v", src, err)
+		}
+		if err := os.WriteFile(dst, data, 0600); err != nil { //nolint:gosec
+			t.Fatalf("Cannot write TLS cert file %s: %v", dst, err)
+		}
 	}
 
 	// Create a mock upstream server that requires mTLS
@@ -39,12 +48,12 @@ func TestMTLSAuthentication(t *testing.T) {
 	}))
 
 	// Configure the server with mTLS
-	caCert, err := os.ReadFile(filepath.Join(tlsDir, "ca.crt")) //nolint:gosec
+	caCert, err := os.ReadFile(filepath.Join(realTLSDir, "ca.crt")) //nolint:gosec
 	require.NoError(t, err)
 	caCertPool := x509.NewCertPool()
 	caCertPool.AppendCertsFromPEM(caCert)
 
-	serverCert, err := tls.LoadX509KeyPair(filepath.Join(tlsDir, "server.crt"), filepath.Join(tlsDir, "server.key")) //nolint:gosec
+	serverCert, err := tls.LoadX509KeyPair(filepath.Join(realTLSDir, "server.crt"), filepath.Join(realTLSDir, "server.key")) //nolint:gosec
 	require.NoError(t, err)
 
 	server.TLS = &tls.Config{ //nolint:gosec
@@ -56,15 +65,16 @@ func TestMTLSAuthentication(t *testing.T) {
 	defer server.Close()
 
 	// Configure the gateway to use mTLS for the upstream.
-	// Paths are relative to the server CWD (ProjectRoot).
+	// Use absolute paths to the temp cert directory so the server's path validation
+	// (which resolves symlinks) accepts them in any environment including Bazel.
 	config := `
 upstream_services:
   - name: my-upstream
     upstream_auth:
       mtls:
-        client_cert_path: "tests/tls/client.crt"
-        client_key_path: "tests/tls/client.key"
-        ca_cert_path: "tests/tls/ca.crt"
+        client_cert_path: ` + realTLSDir + `/client.crt
+        client_key_path: ` + realTLSDir + `/client.key
+        ca_cert_path: ` + realTLSDir + `/ca.crt
     http_service:
       address: "` + server.URL + `"
       tools:

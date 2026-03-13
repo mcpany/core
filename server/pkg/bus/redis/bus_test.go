@@ -7,11 +7,11 @@ import (
 	"context"
 	"encoding/json"
 	"log/slog"
-	"os"
 	"sync"
 	"testing"
 	"time"
 
+	"github.com/alicebob/miniredis/v2"
 	"github.com/go-redis/redismock/v9"
 	bus_pb "github.com/mcpany/core/proto/bus"
 	"github.com/mcpany/core/server/pkg/logging"
@@ -22,22 +22,17 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// ... other imports
-
+// setupRedisIntegrationTest creates a miniredis instance for testing, providing
+// a real Redis-compatible in-process server without external dependencies.
 func setupRedisIntegrationTest(t *testing.T) *redis.Client {
 	t.Helper()
-	redisAddr := os.Getenv("REDIS_ADDR")
-	if redisAddr == "" {
-		redisAddr = "127.0.0.1:6379"
-	}
+	mr, err := miniredis.Run()
+	require.NoError(t, err, "failed to start miniredis")
+	t.Cleanup(func() { mr.Close() })
+
 	client := redis.NewClient(&redis.Options{
-		Addr: redisAddr,
+		Addr: mr.Addr(),
 	})
-	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
-	defer cancel()
-	if _, err := client.Ping(ctx).Result(); err != nil {
-		t.Skip("Redis is not available")
-	}
 	t.Cleanup(func() {
 		_ = client.Close()
 	})
