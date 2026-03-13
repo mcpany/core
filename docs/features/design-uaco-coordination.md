@@ -45,17 +45,3 @@ As AI agent ecosystems transition from solitary tools to multi-agent swarms, the
 ## 7. Evolutionary Changelog
 * **2026-03-19:** Initial Document Creation.
 * **2026-03-20:** Integration with Ephemeral Workspace Trust. Task Cards now include a `required_trust_level` field that must be satisfied by the bidder's ephemeral session token. Added "Bid Quarantining" for agents with high behavioral anomaly scores.
-### Update: 2026-03-22 - Agentic SLA Enforcement
-**Context:** Multi-agent swarms are increasingly hitting "Recursive Deadlocks" and "Spiral of Death" loops that exhaust token quotas.
-**Architecture Adjustment:**
-* Introducing a mandatory `resource_contract` field in the UACO Task Card schema.
-* Implementing a real-time monitor in the Delegation Engine that preemptively terminates tool chains exceeding the agreed-upon SLA.
-**Security Impact:** Prevents resource exhaustion attacks and ensures deterministic reasoning provenance across disparate agent frameworks.
-
-### Update: 2026-03-27 - Consensus-Based Delegation & RID Parental Override
-**Context:** Today's research into Claude Code and UACO v1.8 RID reveals the need for multi-agent validation and stronger parent control over sub-delegations.
-**Architecture Adjustment:**
-* **Consensus Token Requirement**: High-risk task cards can now specify a `consensus_threshold`, requiring multiple signed "Approval Bids" from monitor agents before delegation.
-* **RID Parental Override**: Implementing a real-time "Kill Switch" in the Delegation Engine that allows parent agents to revoke sub-delegations if intent drift is detected.
-* **Shard-Aware Task Cards**: Task cards now support `required_shards` metadata to facilitate pre-emptive mounting by the Shard Manager.
-**Security Impact:** Mitigates "Intent Hijacking" by rogue subagents and provides a distributed safety net for sensitive operations.

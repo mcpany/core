@@ -99,27 +99,6 @@
 *   **[P1] DNS/ICMP Exfiltration Monitor**: L4 telemetry middleware to detect and block non-HTTP exfiltration attempts. (Added: 2026-03-21)
 *   **[P1] Hardware-Bound Trust Continuity**: TPM/Secure Enclave signatures to persist trust for verified headless agents. (Added: 2026-03-21)
 
-#### Upcoming (2026-03-22 Evolution)
-*   **[P0] UACO Agentic SLA Middleware**: Enforcement of resource contracts (token budget, reasoning time) during task delegation. (Added: 2026-03-22)
-*   **[P0] Ghost Shell Execution Mode**: Isolated profiling environment for behavioral analysis of un-attested hooks. (Added: 2026-03-22)
-*   **[P1] Federated Policy Synchronizer**: Secure bus for synchronizing security guardrails across multiple MCP Any instances. (Added: 2026-03-22)
-
-#### Upcoming (2026-03-23 Evolution)
-*   **[P0] Proof-of-Intent (PoI) Validator**: Middleware implementing UACO v1.7 headers to bind tool calls to cryptographically signed intents. (Added: 2026-03-23)
-*   **[P0] Multi-Signature Skill Attestation**: Security mechanism for dynamic skill grafting to prevent "Skill-Squatting." (Added: 2026-03-23)
-*   **[P0] Binary State Handoff (BSH) Gateway**: High-performance binary transport layer for agent state transfer. (Added: 2026-03-23 - Promoted to P0 on 2026-03-24)
-
-#### Upcoming (2026-03-24 Evolution)
-*   **[P0] Relational PoI Enforcement**: Advanced intent-chain validation to prevent "Context-Mirroring" attacks. (Added: 2026-03-24)
-*   **[P0] Ghost Shell Hook Profiler**: Instrumented sandbox for behavioral profiling of un-attested configuration hooks. (Added: 2026-03-24)
-*   **[P1] BSH State Differential Sync**: Optimized binary state transfer that only sends deltas between agent handoffs. (Added: 2026-03-24)
-
-#### Upcoming (2026-03-25 Evolution)
-*   **[P0] WASM-BSH State Sanitizer**: Pluggable WASM-based validation for binary context handoffs. (Added: 2026-03-25)
-*   **[P0] Zero-Copy BSH Transport**: Shared-memory based state transfer for sub-millisecond swarm handoffs. (Added: 2026-03-25)
-*   **[P0] UACO v1.8 RID Validator**: Middleware for enforcing depth-limited Recursive Intent Delegation. (Added: 2026-03-25)
-*   **[P1] Predictive Resource Locking**: Intent-aware concurrency control for the Shared Blackboard. (Added: 2026-03-25)
-
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
@@ -281,20 +260,3 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Recursive Depth-Limit Middleware**: Real-time call-graph monitor to detect and block recursive agent loops. (Added: 2026-03-18)
 *   **[P0] UAB Authenticated Task Delegation**: Implementation of UAB v1.2 task card verification for cross-framework handoffs. (Added: 2026-03-18)
 *   **[P1] Lineage-Aware Context Signing**: Cryptographic context chain signing to prevent subagent identity spoofing. (Added: 2026-03-18)
-
-#### Upcoming (2026-03-26 Evolution)
-*   **[P0] Modular Context Hook Adapter**: Bridge for OpenClaw-style lifecycle hooks to ensure context interop. (Added: 2026-03-26)
-*   **[P0] RID Mutation Boundary Enforcer**: Cryptographic enforcement of UACO v1.8 intent delegation limits and depth. (Added: 2026-03-26)
-*   **[P0] WASM-BSH Active Sanitizer**: Pluggable WASM sandbox for binary state validation during handoffs. (Added: 2026-03-26)
-
-#### Upcoming (2026-03-27 Evolution)
-*   **[P0] Live Context Sharding Middleware**: Shard-aware lifecycle manager for addressable context fragments. (Added: 2026-03-27)
-*   **[P0] Consensus Tool Validation Gateway**: Multi-agent attestation hub for high-risk actions. (Added: 2026-03-27)
-*   **[P1] PNTD Discovery Provider**: Implementation of Protocol-Neutral Task Discovery for unified capability mapping. (Added: 2026-03-27)
-*   **[P1] Shard-Aware BSH Buffer**: Extended memory-mapped buffer for granular shard access. (Added: 2026-03-27)
-
-#### Upcoming (2026-03-28 Evolution)
-*   **[P0] Atomic State Rollback Middleware**: Support for swarm-wide checkpoints and rollbacks for Blackboard and Context Shards. (Added: 2026-03-28)
-*   **[P0] UACO-MAQ Consensus Gateway**: Implementation of UACO v1.9 Multi-Agent Quorum for cross-framework high-risk action approval. (Added: 2026-03-28)
-*   **[P1] Session-Bound Fast-Path Attestation**: Hardware-accelerated "Lightweight Proofs" for low-latency sub-call validation. (Added: 2026-03-28)
-*   **[P1] Context Smearing Scanner**: Binary-level scanner for BSH fragments to detect "Ghost Fragments" in context handoffs. (Added: 2026-03-28)

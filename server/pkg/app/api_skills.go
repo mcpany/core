@@ -28,7 +28,7 @@ func (a *Application) handleSkills() http.HandlerFunc {
 				return
 			}
 			w.Header().Set("Content-Type", "application/json")
-			if err := json.NewEncoder(w).Encode(map[string]interface{}{"skills": skills}); err != nil {
+			if err := json.NewEncoder(w).Encode(skills); err != nil {
 				logging.GetLogger().Error("Failed to encode skills", "error", err)
 			}
 		case http.MethodPost:
@@ -44,9 +44,9 @@ func (a *Application) handleSkills() http.HandlerFunc {
 				http.Error(w, fmt.Sprintf("Failed to create skill: %v", err), http.StatusBadRequest)
 				return
 			}
-			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusCreated)
-			_ = json.NewEncoder(w).Encode(map[string]interface{}{"skill": s})
+			w.Header().Set("Content-Type", "application/json")
+			_ = json.NewEncoder(w).Encode(s)
 		default:
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}
@@ -81,7 +81,7 @@ func (a *Application) handleSkillDetail() http.HandlerFunc {
 				return
 			}
 			w.Header().Set("Content-Type", "application/json")
-			_ = json.NewEncoder(w).Encode(map[string]interface{}{"skill": s})
+			_ = json.NewEncoder(w).Encode(s)
 		case http.MethodPut:
 			var s skill.Skill
 			r.Body = http.MaxBytesReader(w, r.Body, 1<<20)
@@ -97,7 +97,7 @@ func (a *Application) handleSkillDetail() http.HandlerFunc {
 				return
 			}
 			w.Header().Set("Content-Type", "application/json")
-			_ = json.NewEncoder(w).Encode(map[string]interface{}{"skill": s})
+			_ = json.NewEncoder(w).Encode(s)
 		case http.MethodDelete:
 			if err := a.SkillManager.DeleteSkill(name); err != nil {
 				logging.GetLogger().Warn("Failed to delete skill", "name", name, "error", err)
