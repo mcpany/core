@@ -120,6 +120,11 @@
 *   **[P0] UACO v1.8 RID Validator**: Middleware for enforcing depth-limited Recursive Intent Delegation. (Added: 2026-03-25)
 *   **[P1] Predictive Resource Locking**: Intent-aware concurrency control for the Shared Blackboard. (Added: 2026-03-25)
 
+#### Upcoming (2026-03-26 Evolution)
+*   **[P0] Hardware-Bound Intent Attestor**: TPM/Secure Enclave integration for cryptographic RID chain binding. (Added: 2026-03-26)
+*   **[P1] JIT BSH Sanitizer Engine**: High-performance WASM JIT for state validation, matching Zero-Copy speed. (Added: 2026-03-26)
+*   **[P1] Sovereign State Audit Service**: Forensic logging for all BSH transitions and rejected state mutations. (Added: 2026-03-26)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

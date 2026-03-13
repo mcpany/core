@@ -311,3 +311,19 @@
 
 ### Deprecations / Monitoring
 - **Passive State Validation**: Moving toward deprecation in favor of **Active WASM Sanitization** for all binary handoffs.
+
+---
+
+## Evolution: [2026-03-26] Updates
+
+### Proposed Additions
+- **Hardware-Bound Intent Attestor**: (P0) Integration with TPM/Secure Enclave to cryptographically bind RID intent chains to the host machine.
+- **JIT BSH Sanitizer Engine**: (P1) High-performance sanitizer that uses JIT compilation for WASM safety checks, matching the speed of Zero-Copy transport.
+- **Sovereign State Audit Trail**: (P1) Forensic logging for all BSH transitions, capturing the state of the WASM sandbox and any rejected mutations.
+
+### Priority Shifts
+- **WASM-BSH State Sanitizer**: Promoted to **P0** (Already P0, but expanded with JIT requirements).
+- **UACO v1.8 RID Validator**: Re-affirmed as **P0**. Now requires Hardware-Bound Attestation for P0 status.
+
+### Deprecations / Monitoring
+- **Software-Only Intent Signing**: Moving toward deprecation for high-privilege swarms. Hardware attestation will become mandatory for RID in enterprise environments.

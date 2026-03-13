@@ -156,3 +156,6 @@
 - [ ] **[P0] Zero-Copy Transport Monitor**: (2026-03-25) Real-time performance metrics for memory-mapped BSH buffers.
 - [ ] **[P0] RID Lineage Inspector**: (2026-03-25) Security UI for visualizing UACO v1.8 recursive delegation depths and mutation boundaries.
 - [ ] **[P1] Predictive Locking Visualizer**: (2026-03-25) Gantt-style view of projected Blackboard resource locks based on agent intents.
+- [ ] **[P0] Hardware Attestation Monitor**: (2026-03-26) Real-time status of TPM/Secure Enclave bindings for RID intent chains.
+- [ ] **[P1] JIT Sanitizer Performance Profiler**: (2026-03-26) Dashboard for monitoring JIT compilation latency and sanitizer execution efficiency.
+- [ ] **[P1] Sovereign State Audit Viewer**: (2026-03-26) Forensic UI for inspecting the "State Sovereignty" audit trail and BSH transition history.

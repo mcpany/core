@@ -229,3 +229,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Recursive Intent Delegation (RID)**: MCP Any will natively support UACO v1.8 RID, allowing parents to define strict cryptographic boundaries on how subagents can mutate intents. This eliminates the "Intent Ghosting" vulnerability.
 - **WASM-Bound BSH Sanitization**: We are integrating a WASM-based "State Sanitizer" into the BSH Gateway. All binary state handoffs will be processed in an isolated WASM sandbox to ensure they conform to the target agent's schema and security profile before memory ingestion.
 - **Zero-Copy Memory-Mapped Transport**: To eliminate the "Cognitive Stall" in deep swarms, MCP Any will implement a Zero-Copy BSH transport utilizing shared memory regions. This allows multi-gigabyte context objects to be "handed off" with sub-millisecond latency.
+
+---
+
+## Strategic Evolution: [2026-03-26]
+### Focus: Active State Sovereignty & Hardware-Bound Intent Continuity
+**Context**: The formal release of OpenClaw v2.5 and UACO v1.8 confirms that "State Sovereignty" is the next architectural frontier. Agents now require not just isolation, but active protection of their internal reasoning state from "Binary Poisoning." Simultaneously, the "Cognitive Stall" demands that security checks do not become performance bottlenecks.
+**Strategic Pivot**:
+- **Active State Sovereignty**: MCP Any will transition from being a state *bridge* to a state *sovereign*. This means enforcing mandatory WASM-based behavioral validation on all binary handoffs to ensure state transitions cannot be used as an injection vector.
+- **Hardware-Bound Intent Continuity**: Integrating TPM/Secure Enclave attestation into the RID (Recursive Intent Delegation) flow. This ensures that the "Chain of Intent" is physically bound to the executing hardware, preventing subagent spoofing even if the local transport is compromised.
+- **Just-In-Time (JIT) State Sanitization**: To mitigate the performance impact of active governance, we will implement JIT compilation for state sanitizers, ensuring that security validation happens at the speed of the Zero-Copy shared memory transport.
