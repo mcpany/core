@@ -286,3 +286,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Modular Context Hook Adapter**: Bridge for OpenClaw-style lifecycle hooks to ensure context interop. (Added: 2026-03-26)
 *   **[P0] RID Mutation Boundary Enforcer**: Cryptographic enforcement of UACO v1.8 intent delegation limits and depth. (Added: 2026-03-26)
 *   **[P0] WASM-BSH Active Sanitizer**: Pluggable WASM sandbox for binary state validation during handoffs. (Added: 2026-03-26)
+
+#### Upcoming (2026-03-27 Evolution)
+*   **[P0] Live Context Sharding Middleware**: Shard-aware lifecycle manager for addressable context fragments. (Added: 2026-03-27)
+*   **[P0] Consensus Tool Validation Gateway**: Multi-agent attestation hub for high-risk actions. (Added: 2026-03-27)
+*   **[P1] PNTD Discovery Provider**: Implementation of Protocol-Neutral Task Discovery for unified capability mapping. (Added: 2026-03-27)
+*   **[P1] Shard-Aware BSH Buffer**: Extended memory-mapped buffer for granular shard access. (Added: 2026-03-27)

@@ -239,3 +239,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Context Hook Bridging**: MCP Any will implement a "Context Hook Adapter" that allows it to participate in the lifecycle hooks of external frameworks (like OpenClaw), providing a unified state view.
 - **RID-Aware Authorization**: Moving from flat intents to "Recursive Intent Delegation." MCP Any will natively enforce depth limits and mutation boundaries defined in UACO v1.8 tokens.
 - **Active State Sanitization**: Transitioning from passive BSH routing to "Active WASM Sanitization," where binary state is validated against signed schemas before being handed off to agents.
+
+---
+
+## Strategic Evolution: [2026-03-27]
+### Focus: Sharded Context Lifecycles & Consensus-Based Governance
+**Context**: Today's findings on OpenClaw's Live Context Sharding and Claude Code's Consensus-Based Tool Validation signal a shift toward "Micro-State" and "Multi-Agent Security." The Universal Agent Bus must now manage not just the *transfer* of state, but its granular *lifecycle* and *collective validation*.
+**Strategic Pivot**:
+- **Live Context Sharding Middleware**: MCP Any will implement a "Shard Manager" that enables agents to dynamically mount/unmount granular context fragments. This optimizes token consumption and ensures agents only see the "Active Shard" relevant to their current task.
+- **Consensus Tool Validation Hub**: We are evolving the HITL Middleware into a "Consensus Gateway." High-risk actions will now require multi-agent attestation, where MCP Any orchestrates the collection of approval tokens from independent monitor agents.
+- **PNTD-First Discovery**: Positioning Protocol-Neutral Task Discovery as our primary capability layer. MCP Any will act as the "Universal Registry" that maps MCP, gRPC, and UACO tasks into a single, searchable discovery bus for all agents.
