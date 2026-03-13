@@ -316,3 +316,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Continuous BSH Integrity Monitor**: Real-time WASM-based integrity checks for Binary State Handoffs to detect "Ghost Fragment" mutations. (Added: 2026-03-30)
 *   **[P1] UDP Beacon Discovery Listener**: High-speed reactive listener for Gemini-style Capability Beacons. (Added: 2026-03-30)
 *   **[P1] Correction Budget Controller**: Resource management middleware for agent self-correction loops. (Added: 2026-03-30)
+
+#### Upcoming (2026-04-01 Evolution)
+*   **[P0] Reasoning-Bound Context Shifter**: Context management middleware for synchronizing dynamic shifting logic. (Added: 2026-04-01)
+*   **[P0] Path Normalization Engine (NaaS)**: Centralized OS-agnostic path normalization service. (Added: 2026-04-01)
+*   **[P1] Optimistic Capability Loading**: Predictive tool registry for Gemini-style optimistic loading. (Added: 2026-04-01)

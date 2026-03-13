@@ -177,3 +177,6 @@
 - [ ] **[P0] IPSC Correction Monitor**: (2026-03-30) Real-time dashboard for visualizing agent self-correction cycles, budget consumption, and "Cognitive Lock" alerts.
 - [ ] **[P0] BSH Continuous Integrity Viewer**: (2026-03-30) Forensic UI for inspecting Binary State Handoffs for "Dormant" or "Ghost" fragments.
 - [ ] **[P1] Beacon Discovery Dashboard**: (2026-03-30) UI for monitoring reactive "Capability Beacons" and managing discovery noise filters.
+- [ ] **[P0] Path Normalization Guard**: (2026-04-01) Visual debugger for symlink resolution and path normalization traces.
+- [ ] **[P0] Context Shifting Timeline**: (2026-04-01) Real-time visualization of Reasoning-Bound Context shifts and alignment scores.
+- [ ] **[P1] Optimistic Loading Monitor**: (2026-04-01) Dashboard for tracking pre-loaded capabilities and their final attestation status.
