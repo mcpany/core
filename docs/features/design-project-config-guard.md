@@ -70,3 +70,7 @@ As agents increasingly rely on project-local configuration files (e.g., `.claude
 * **MFA Integration**: The `HITL Middleware` (Section 4) will now require Multi-Factor Attestation (e.g., via a mobile app or physical token) for any configuration block that defines a new executable hook or modifies system-level settings.
 * **Granular Consent Revocation**: Users can now revoke consent for a specific hook hash globally, causing all agents across all projects to immediately suspend execution if they attempt to run that hook.
 **Security Impact**: Eliminates "Trust Brushing" and prevents silent RCE from malicious configuration changes that might occur between agent sessions (e.g., after a `git pull`).
+* **2026-03-25: Proactive Poisoned-Config Sanitization.**
+    * **Context:** Check Point Research disclosed RCE in Claude Code via poisoned repository configuration files.
+    * **Architecture Adjustment:** Transitioning from "Passive Validation" to "Active Sanitization." MCP Any will now strip all un-attested executable hooks and dynamic base URLs from project-local settings *before* they are exposed to the agent environment.
+    * **Security Impact:** Eliminates the RCE vector by ensuring only pre-approved, hardware-attested configuration fragments are executed.

@@ -114,6 +114,18 @@
 *   **[P0] Ghost Shell Hook Profiler**: Instrumented sandbox for behavioral profiling of un-attested configuration hooks. (Added: 2026-03-24)
 *   **[P1] BSH State Differential Sync**: Optimized binary state transfer that only sends deltas between agent handoffs. (Added: 2026-03-24)
 
+#### Upcoming (2026-03-25 Evolution)
+*   **[P0] Hardware-Attested Tool Discovery**: Mandatory cryptographic attestation for all discovered tools using hardware keys. (Added: 2026-03-25)
+*   **[P0] Project-Local Hook Sanitizer**: Active middleware for stripping un-attested executable hooks from repository configs. (Added: 2026-03-25)
+*   **[P0] Cross-Framework Skill Sandbox**: Unified execution environment for profiling skills from OpenClaw and AutoGen. (Added: 2026-03-25)
+*   **[P1] Mandatory Behavioral Burn-In**: Policy layer requiring instrumented profiling for all new skills. (Added: 2026-03-25)
+
+#### Upcoming (2026-03-18 Evolution)
+*   **[P0] Local Listener Origin Enforcement**: Mandatory validation of Origin/Sec-Fetch-Site headers for local listeners. (Added: 2026-03-18)
+*   **[P0] Recursive Depth-Limit Middleware**: Real-time call-graph monitor to detect and block recursive agent loops. (Added: 2026-03-18)
+*   **[P0] UAB Authenticated Task Delegation**: Implementation of UAB v1.2 task card verification for cross-framework handoffs. (Added: 2026-03-18)
+*   **[P1] Lineage-Aware Context Signing**: Cryptographic context chain signing to prevent subagent identity spoofing. (Added: 2026-03-18)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
@@ -275,3 +287,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Recursive Depth-Limit Middleware**: Real-time call-graph monitor to detect and block recursive agent loops. (Added: 2026-03-18)
 *   **[P0] UAB Authenticated Task Delegation**: Implementation of UAB v1.2 task card verification for cross-framework handoffs. (Added: 2026-03-18)
 *   **[P1] Lineage-Aware Context Signing**: Cryptographic context chain signing to prevent subagent identity spoofing. (Added: 2026-03-18)
+
+#### Upcoming (2026-03-25 Evolution)
+*   **[P0] Hardware-Attested Tool Discovery**: Mandatory cryptographic attestation for all discovered tools using hardware keys. (Added: 2026-03-25)
+*   **[P0] Project-Local Hook Sanitizer**: Active middleware for stripping un-attested executable hooks from repository configs. (Added: 2026-03-25)
+*   **[P0] Cross-Framework Skill Sandbox**: Unified execution environment for profiling skills from OpenClaw and AutoGen. (Added: 2026-03-25)
+*   **[P1] Mandatory Behavioral Burn-In**: Policy layer requiring instrumented profiling for all new skills. (Added: 2026-03-25)

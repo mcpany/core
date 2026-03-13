@@ -152,3 +152,7 @@
 - [ ] **[P0] Relational Intent Chain Viewer**: (2026-03-24) Visual debugger for verifying the lineage and relational scoping of agent intents.
 - [ ] **[P0] Ghost Shell Safety Reporter**: (2026-03-24) UI for viewing behavioral profiling results and safety scores for un-attested configuration hooks.
 - [ ] **[P1] BSH Delta Debugger**: (2026-03-24) Developer tool for inspecting binary state differentials during agent handoffs.
+- [ ] **[P0] Hardware Attestation Dashboard**: (2026-03-25) UI for managing hardware-bound keys and tool discovery provenance.
+- [ ] **[P0] Config Sanitization Reviewer**: (2026-03-25) Interface for reviewing and approving sanitized configuration blocks from repository settings.
+- [ ] **[P0] Cross-Framework Sandbox Monitor**: (2026-03-25) Real-time visualization of skill profiling across OpenClaw and AutoGen frameworks.
+- [ ] **[P1] Skill Burn-In Progress Tracker**: (2026-03-25) Dashboard showing the profiling status and safety scores for skills in the "Burn-In" period.

@@ -53,3 +53,7 @@ The "ClawHavoc" crisis demonstrated that open-source agent marketplaces are vuln
     * **Context:** "ClawHavoc" malicious skills are using "Delayed Payloads" to bypass initial static analysis.
     * **Architecture Adjustment:** Skills now undergo a "Burn-In" period in an isolated sandbox. Their network and filesystem access patterns are profiled against a known baseline for 24 hours (simulated) before being promoted to "Trusted."
     * **Security Impact:** Detects malicious exfiltration attempts that only trigger after a skill has been "vetted" by basic static checks.
+* **2026-03-25: Mandatory Behavioral Burn-In Update.**
+    * **Context:** Discovery of 1,100+ malicious skills in ClawHub using "Delayed Payload" tactics (Antiy CERT).
+    * **Architecture Adjustment:** Introducing a mandatory "Burn-In" period for all new skills. Skills are initially restricted to a "Ghost Shell" sandbox where their behavior is profiled against a security baseline before being promoted to the "Verified" registry.
+    * **Security Impact:** Detects malicious activity that only triggers after specific conditions or context depths are met.

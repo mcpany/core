@@ -219,3 +219,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Relational PoI Enforcement**: MCP Any will pivot to a "Relational Security" model where every tool call is validated against a cryptographically signed "Intent Chain." This ensures that subagents cannot be coerced into actions that diverge from the parent's verified goal.
 - **BSH-Native Orchestration**: Moving toward a "Binary-First" transport for all A2A communications. MCP Any will act as a high-speed buffer and validator for Protobuf/BSH state handoffs, drastically reducing latency in complex multi-agent workflows.
 - **Ghost Shell Hook Profiling**: We are introducing "Ghost Shell" as a mandatory profiling step for any un-attested configuration hooks. This provides a behavioral safety net before any "Binary Smuggling" in WASM hooks can reach the host.
+
+---
+
+## Strategic Evolution: [2026-03-25]
+### Focus: Proactive Supply Chain Integrity & Authenticated Skill Verification
+**Context**: Today's findings from Check Point Research and Antiy CERT reveal a catastrophic failure in the "Implicit Trust" model for AI agents. Malicious repository configurations and "Delayed Payload" skills in ClawHub demonstrate that identity-based access control is insufficient. MCP Any must evolve into a "Security Sandbox" that verifies both the *origin* and the *behavior* of every tool and configuration.
+**Strategic Pivot**:
+- **Proactive Configuration Sanitization**: MCP Any will natively intercept and sanitize all project-local agent configurations, enforcing a "Zero-Trust for Hooks" policy where no executable command runs without hardware-attested user approval.
+- **Behavioral Skill Attestation**: Shifting from static analysis to "Mandatory Behavioral Burn-In." All new skills will be executed in a restricted "Ghost Shell" environment to profile their activity before they are promoted to the local environment.
+- **Provenance-Bound Discovery**: Every MCP tool discovered must carry a cryptographic proof of its supply chain lineage. MCP Any will act as the "Root of Trust" for verifying these claims against a global Distributed Attestation Ledger.

@@ -294,3 +294,17 @@
 ### Priority Shifts
 - **Binary State Handoff (BSH) Gateway**: Promoted from **P1** to **P0**. Urgent requirement to solve the "Token Storm" crisis in deep swarms.
 - **Ghost Shell Execution Mode**: Re-affirmed as **P0**. Critical security defense against malicious project-local hooks.
+
+---
+
+## Evolution: [2026-03-25] Updates
+
+### Proposed Additions
+- **Hardware-Attested Tool Discovery**: (P0) Mandatory cryptographic attestation for all discovered MCP tools, using hardware-bound keys (TPM/Secure Enclave) where available.
+- **Cross-Framework Skill Sandboxing**: (P0) A unified execution sandbox that isolates skills across different frameworks (OpenClaw, AutoGen) and profiles their behavior before granting host access.
+- **Project-Local Hook Sanitizer**: (P0) An active middleware that intercepts and sanitizes project-local configurations (e.g., `.claude/settings.json`) to prevent RCE via poisoned repository hooks.
+- **Mandatory Behavioral Burn-In for Skills**: (P1) A policy enforcement layer that requires all new skills to undergo a period of instrumented profiling in a Ghost Shell environment before deployment.
+
+### Priority Shifts
+- **Verified Skill Registry**: Re-affirmed as **P0**. Urgent priority to mitigate the "Delayed Payload" skill crisis.
+- **Ghost Shell Hook Profiler**: Re-affirmed as **P0**. Essential defense against the newly disclosed Claude Code RCE vulnerability.
