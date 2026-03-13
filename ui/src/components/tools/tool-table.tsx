@@ -33,6 +33,18 @@ interface ToolTableProps {
 // of the entire table when parent state (like search query) changes.
 // Memoization ensures table only updates when props change.
 
+// ⚡ BOLT: [Render Waste/CPU Optimization] Extracted token estimation into a memoized component.
+// Randomized Selection from Top 5 High-Impact Targets (O(N) JSON.stringify calls inside render loop).
+const ToolTokenBadge = memo(function ToolTokenBadge({ tool }: { tool: ToolDefinition }) {
+    const tokens = estimateTokens(JSON.stringify(tool));
+    return (
+        <div className="flex items-center text-muted-foreground text-xs" title={`${tokens} tokens`}>
+            <Info className="w-3 h-3 mr-1 opacity-50" />
+            {formatTokenCount(tokens)}
+        </div>
+    );
+});
+
 /**
  * ToolTable component.
  * @param props - The component props.
@@ -198,10 +210,7 @@ export const ToolTable = memo(function ToolTable({
                   })()}
               </TableCell>
               <TableCell className={isCompact ? "py-0 px-2" : ""}>
-                  <div className="flex items-center text-muted-foreground text-xs" title={`${estimateTokens(JSON.stringify(tool))} tokens`}>
-                      <Info className="w-3 h-3 mr-1 opacity-50" />
-                      {formatTokenCount(estimateTokens(JSON.stringify(tool)))}
-                  </div>
+                  <ToolTokenBadge tool={tool} />
               </TableCell>
               <TableCell className={isCompact ? "py-0 px-2" : ""}>
                 <div className="flex items-center space-x-2">
