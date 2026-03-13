@@ -13,6 +13,7 @@ go_test(
     env = {
         "E2E": "true",
     },
+    size = "enormous",
     tags = ["integration"],
 )
 

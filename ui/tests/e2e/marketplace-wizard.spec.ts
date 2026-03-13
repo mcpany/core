@@ -12,9 +12,9 @@ test.describe('Marketplace Wizard and Service Lifecycle', () => {
     // Mock API responses
     await page.route('/api/v1/services', async route => {
       if (route.request().method() === 'GET') {
-          await route.fulfill({ json: [] });
+        await route.fulfill({ json: [] });
       } else if (route.request().method() === 'POST') {
-          await route.fulfill({ json: { status: 'success' } });
+        await route.fulfill({ json: { status: 'success' } });
       } else {
         await route.continue();
       }
@@ -25,7 +25,7 @@ test.describe('Marketplace Wizard and Service Lifecycle', () => {
     });
 
     await page.route('/api/v1/marketplace/public', async route => {
-        await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([]) });
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([]) });
     });
 
     await page.route('/api/v1/credentials', async route => {
@@ -39,31 +39,58 @@ test.describe('Marketplace Wizard and Service Lifecycle', () => {
     });
 
     // Mock Templates API
-    const templates: any[] = [];
-    await page.route('/api/v1/templates', async route => {
-        if (route.request().method() === 'GET') {
-            await route.fulfill({ json: templates });
-        } else if (route.request().method() === 'POST') {
-             const data = await route.request().postDataJSON();
-             templates.push({ ...data, id: `tpl-${Date.now()}` });
-             await route.fulfill({ json: {} });
-        } else {
-            await route.continue();
-        }
+    const templates: any[] = [
+      {
+        id: 'postgres-template',
+        name: 'PostgreSQL Database',
+        description: 'Read-only access to PostgreSQL databases',
+        service_config: {
+          name: 'PostgreSQL Database',
+          command_line_service: {
+            command: 'npx -y @modelcontextprotocol/server-postgres',
+            env: {
+              POSTGRES_URL: {
+                plain_text: 'postgresql://user:password@localhost:5432/dbname',
+              },
+            },
+            working_directory: '',
+            tools: [],
+            resources: [],
+            prompts: [],
+            calls: {},
+            communication_protocol: 0,
+            local: false,
+          },
+        },
+        params: {
+          POSTGRES_URL: 'postgresql://user:password@localhost:5432/dbname',
+        },
+      },
+    ];
+    await page.route('**/api/v1/templates', async route => {
+      if (route.request().method() === 'GET') {
+        await route.fulfill({ json: templates });
+      } else if (route.request().method() === 'POST') {
+        const data = await route.request().postDataJSON();
+        templates.push({ ...data, id: `tpl-${Date.now()}` });
+        await route.fulfill({ json: {} });
+      } else {
+        await route.continue();
+      }
     });
 
-    await page.route('/api/v1/templates/*', async route => {
-        if (route.request().method() === 'DELETE') {
-             // Basic mock
-             await route.fulfill({ json: {} });
-        } else {
-             await route.continue();
-        }
+    await page.route('**/api/v1/templates/*', async route => {
+      if (route.request().method() === 'DELETE') {
+        // Basic mock
+        await route.fulfill({ json: {} });
+      } else {
+        await route.continue();
+      }
     });
 
     // Mock Auth Test
     await page.route('/api/v1/debug/auth-test', async route => {
-        await route.fulfill({ json: { success: true, message: "Connection verification successful" } });
+      await route.fulfill({ json: { success: true, message: "Connection verification successful" } });
     });
   });
 
@@ -154,7 +181,7 @@ test.describe('Marketplace Wizard and Service Lifecycle', () => {
 
     // Mock the register service call
     const registerPromise = page.waitForResponse(response =>
-        response.url().includes('/api/v1/services') && response.status() === 200
+      response.url().includes('/api/v1/services') && response.status() === 200
     );
 
     await page.click('button:has-text("Create Instance")');

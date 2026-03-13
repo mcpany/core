@@ -264,7 +264,7 @@ export function LogStream({
             <div className="flex items-center justify-between md:justify-start gap-2">
                 <div className="flex items-center gap-2">
                     <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
-                        <Terminal className="w-6 h-6" /> Live Logs
+                        <Terminal className="w-6 h-6" /> Log Stream
                     </h1>
                     <Badge variant={isConnected ? "outline" : "destructive"} className="font-mono text-xs gap-1">
                         {isConnected ? (

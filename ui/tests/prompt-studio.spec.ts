@@ -13,9 +13,9 @@ test.describe('Prompt Studio', () => {
       data: {
         id: 'e2e-test-service',
         name: 'E2E Test Service',
-        commandLineService: {
+        command_line_service: {
             command: 'echo',
-            workingDirectory: '/tmp'
+            working_directory: '/tmp'
         },
         disable: false
       }

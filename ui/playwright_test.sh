@@ -81,7 +81,9 @@ mkdir -p \
   "$ui_runtime/test-results/artifacts"
 
 export HOME="${HOME:-$TEST_TMPDIR/home}"
-export PLAYWRIGHT_BROWSERS_PATH="$TEST_TMPDIR/playwright-browsers"
+# Reuse browser binaries across Bazel test targets to avoid re-installing
+# Chromium in every single Playwright sh_test invocation.
+export PLAYWRIGHT_BROWSERS_PATH="${PLAYWRIGHT_BROWSERS_PATH:-/tmp/mcpany-playwright-browsers}"
 export BAZEL_BINDIR="."
 mkdir -p "$HOME"
 mkdir -p "$PLAYWRIGHT_BROWSERS_PATH"
@@ -171,7 +173,18 @@ fi
 
 export PATH="$(dirname "$node_bin"):$PATH"
 export NODE_PATH="$ui_runtime/node_modules${NODE_PATH:+:$NODE_PATH}"
-export NEXT_DEV_COMMAND="$node_bin $next_cli_js dev -p $test_port"
+
+# Use `next start` (production mode) when a pre-built .next is available in the
+# Bazel runfiles (provided by the ":build" data dependency).  This starts in a
+# fraction of the time compared to `next dev` (JIT compilation), making tests
+# far more reliable in resource-constrained environments.
+if [[ -d "$ui_runtime/.next/static" ]]; then
+  echo "Using pre-built Next.js app (next start)"
+  export NEXT_DEV_COMMAND="$node_bin $next_cli_js start -p $test_port"
+else
+  echo "Pre-built .next not found; falling back to next dev"
+  export NEXT_DEV_COMMAND="$node_bin $next_cli_js dev -p $test_port"
+fi
 
 if [[ -n "$spec_path" ]]; then
   escaped_spec="$(printf '%s' "$selected_spec" | sed -e 's/[.[\*^$()+?{}|]/\\&/g')"
@@ -179,7 +192,9 @@ if [[ -n "$spec_path" ]]; then
 fi
 
 echo "Ensuring Playwright Chromium is installed"
-"$node_bin" "$playwright_cli_js" install chromium >/dev/null
+if ! find "$PLAYWRIGHT_BROWSERS_PATH" -maxdepth 3 -type f -name 'chrome-headless-shell' | grep -q .; then
+  "$node_bin" "$playwright_cli_js" install chromium >/dev/null
+fi
 
 if [[ -n "$spec_path" ]]; then
   echo "Running UI Playwright spec via Bazel: $spec_path"

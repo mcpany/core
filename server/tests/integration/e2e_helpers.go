@@ -726,6 +726,10 @@ func EnsureServerImageLoaded(t *testing.T) {
 	t.Helper()
 	runfilesDir := os.Getenv("RUNFILES_DIR")
 	if runfilesDir == "" {
+		// Under bazel test, TEST_SRCDIR is often set while RUNFILES_DIR is not.
+		runfilesDir = os.Getenv("TEST_SRCDIR")
+	}
+	if runfilesDir == "" {
 		// Not running under Bazel; assume image is pre-built.
 		return
 	}
@@ -736,7 +740,13 @@ func EnsureServerImageLoaded(t *testing.T) {
 	}
 	t.Logf("Loading Bazel-built mcpany/server image via %s", loader)
 	cmd := exec.Command(loader)
-	cmd.Env = os.Environ()
+	env := append([]string{}, os.Environ()...)
+	env = append(env,
+		"RUNFILES_DIR="+runfilesDir,
+		"TEST_SRCDIR="+runfilesDir,
+		"TEST_WORKSPACE=_main",
+	)
+	cmd.Env = env
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		t.Fatalf("Failed to load Bazel-built server image: %v\n%s", err, string(out))

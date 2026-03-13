@@ -74,3 +74,15 @@ alias(
     name = "buildozer",
     actual = "@buildozer//:buildozer",
 )
+
+config_setting(
+    name = "host_arm64",
+    values = {"host_cpu": "aarch64"},
+    visibility = ["//visibility:public"],
+)
+
+config_setting(
+    name = "host_x86_64",
+    values = {"host_cpu": "k8"},
+    visibility = ["//visibility:public"],
+)
