@@ -44,3 +44,4 @@ As AI agent ecosystems transition from solitary tools to multi-agent swarms, the
 
 ## 7. Evolutionary Changelog
 * **2026-03-19:** Initial Document Creation.
+* **2026-03-20:** Integration with Ephemeral Workspace Trust. Task Cards now include a `required_trust_level` field that must be satisfied by the bidder's ephemeral session token. Added "Bid Quarantining" for agents with high behavioral anomaly scores.

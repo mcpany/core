@@ -168,3 +168,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **UACO-Native Orchestration**: MCP Any will pivot from a "Task Router" to a "Negotiation Hub." We will implement native UACO support to facilitate standardized task bidding and stateful handoffs between disparate agent frameworks.
 - **Unified Feedback Telemetry**: To support the next generation of RL-driven agents, MCP Any will evolve into a "Telemetry Aggregator." We will provide a unified interface for collecting conversation-feedback loops, tool performance metrics, and user sentiment across all connected agents.
 - **Enterprise Policy Synchronization**: Expanding the "Governance Layer" to support remote, centralized policy distribution. This allows organizations to synchronize security guardrails and "Allowed Origin" lists across large fleets of MCP Any instances.
+
+---
+
+## Strategic Evolution: [2026-03-20]
+### Focus: Dynamic Attestation & Immutable State Trails
+**Context**: Today's findings show that the "Implicit Local Trust" era is officially over. Both OpenClaw and Claude Code are moving toward session-bound, ephemeral trust models. However, this creates a new bottleneck for "Headless" and "Cross-Session" agents. Additionally, the "Task Card Shadowing" risk in UACO demands that coordination hubs move beyond simple routing to active behavioral validation.
+**Strategic Pivot**:
+- **Dynamic Ephemeral Attestation**: MCP Any will implement a "Trust Broker" that can translate between desktop-session tokens (like OpenClaw's) and persistent agent identities. This allows headless agents to securely access local tools without manual user intervention for every session.
+- **Immutable State Trails**: Moving from "Shared State" to "Verifiable Lineage." Every change to the Blackboard (Shared KV Store) must be accompanied by a cryptographic proof of the agent's current "Intent Scope" and its parentage, creating an audit trail that resists "State Injection."
+- **Active UACO Bid Validation**: Instead of just facilitating bids, MCP Any will perform "Pre-Flight Profiling" on agents submitting UACO bids. If an agent's historical behavior or current "Skill Profile" doesn't align with the task card, the bid will be automatically quarantined.
