@@ -46,3 +46,11 @@ With the proliferation of different agent frameworks (OpenClaw, Claude Code, Gem
 
 ## 7. Evolutionary Changelog
 * **2026-03-14:** Initial Document Creation.
+
+### Update: 2026-03-30 - Lineage Persistence & Immutable Pinning
+**Context:** The emergence of "Shadow Intent" and "Lineage Fragmentation" in multi-framework swarms requires stronger state continuity and defense against malicious context overriding.
+**Architecture Adjustment:**
+* **Lineage Persistence Layer**: Introducing a cryptographic "Chain of Custody" for intents that persists across framework boundaries (e.g., OpenClaw to AutoGen).
+* **Immutable Prompt Segments**: Implementing a "Pinning" mechanism that allows mission-critical prompts (defined by the parent agent) to be marked as immutable, preventing them from being smeared or overridden by subagent inputs.
+* **UACO v2.1 Sync**: Adding support for "Reconciliation Hooks" that allow the Bridge to participate in Swarm Self-Healing loops.
+**Security Impact:** Prevents "Shadow Intent" injections from degrading the mission goal and ensures that security policies remain active regardless of which agent framework is currently executing.

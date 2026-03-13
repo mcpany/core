@@ -369,3 +369,16 @@
 
 ### Deprecations / Monitoring
 - **Flat Intent Chains**: Monitoring for deprecation in favor of **UACO v2.0 Hierarchical Intent Trees (RIS)**.
+
+---
+
+## Evolution: [2026-03-30] Updates
+
+### Proposed Additions
+- **UACO v2.1 Reconciliation Engine**: (P0) Implements self-correction primitives for autonomous agent state alignment.
+- **Lineage Persistence Bridge**: (P0) Extends the Context Bridge to maintain cryptographic intent history across multi-framework handoffs.
+- **Immutable Prompt Segment Enforcer**: (P1) Natively enforces context-pinning to prevent subagent "Shadow Intent" injections.
+
+### Priority Shifts
+- **Proactive State Alignment (PSA) Middleware**: Promoted from **P1** to **P0**. Critical prerequisite for the new Reconciliation Engine.
+- **Context Pinning Middleware**: Promoted from **P1** to **P0**. Urgent defense against the "Shadow Intent" exploit pattern.

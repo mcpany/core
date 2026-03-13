@@ -302,5 +302,10 @@ These features represent the next logical steps for the product, focusing on Ent
 #### Upcoming (2026-03-29 Evolution)
 *   **[P0] UACO v2.0 RIS Validator**: Implementation of Relational Intent Scoping to prevent Identity Shadowing via hierarchical intent trees. (Added: 2026-03-29)
 *   **[P0] Hardware-Bound Attestation Provider (HAFP)**: Native integration with TPM/Secure Enclave for zero-latency mission validation. (Added: 2026-03-29)
-*   **[P1] Proactive State Alignment (PSA) Middleware**: Background service for continuous synchronization of agent-local state with the global Blackboard. (Added: 2026-03-29)
-*   **[P1] Context Pinning Middleware**: Implementation of immutable prompt segments to neutralize Context Smearing attacks. (Added: 2026-03-29)
+*   **[P1] Proactive State Alignment (PSA) Middleware**: Background service for continuous synchronization of agent-local state with the global Blackboard. (Added: 2026-03-29 - Promoted to P0 on 2026-03-30)
+*   **[P1] Context Pinning Middleware**: Implementation of immutable prompt segments to neutralize Context Smearing attacks. (Added: 2026-03-29 - Promoted to P0 on 2026-03-30)
+
+#### Upcoming (2026-03-30 Evolution)
+*   **[P0] UACO v2.1 Reconciliation Engine**: Self-correction primitives for autonomous agent state alignment. (Added: 2026-03-30)
+*   **[P0] Lineage Persistence Bridge**: Cryptographic intent history preservation across multi-framework handoffs. (Added: 2026-03-30)
+*   **[P1] Immutable Prompt Segment Enforcer**: Native enforcement of context-pinning to prevent "Shadow Intent" injections. (Added: 2026-03-30)

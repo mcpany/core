@@ -169,5 +169,8 @@
 - [ ] **[P1] Context Smearing Alert Center**: (2026-03-28) UI for inspecting BSH fragments flagged for potential "Ghost Fragment" injections.
 - [ ] **[P0] RIS Hierarchical Intent Viewer**: (2026-03-29) Visual debugger for UACO v2.0 hierarchical intent trees and mutation boundaries.
 - [ ] **[P0] Hardware Trust Status Widget**: (2026-03-29) Real-time monitor for SEP/TPM attestation status and HAFP session health.
-- [ ] **[P1] State Alignment Monitor**: (2026-03-29) Visualization of agent-local state vs. global Blackboard, highlighting drift and alignment events.
-- [ ] **[P1] Context Pinning Configuration UI**: (2026-03-29) Dashboard for defining and managing immutable prompt segments.
+- [ ] **[P1] State Alignment Monitor**: (2026-03-29) Visualization of agent-local state vs. global Blackboard, highlighting drift and alignment events. (Promoted to P0 on 2026-03-30)
+- [ ] **[P1] Context Pinning Configuration UI**: (2026-03-29) Dashboard for defining and managing immutable prompt segments. (Promoted to P0 on 2026-03-30)
+- [ ] **[P0] UACO v2.1 Reconciliation Hub**: (2026-03-30) Real-time dashboard for monitoring and orchestrating swarm self-healing events.
+- [ ] **[P0] Lineage Persistence Inspector**: (2026-03-30) Security UI for verifying intent history across framework boundaries.
+- [ ] **[P1] Immutable Segment Audit Log**: (2026-03-30) UI for reviewing attempts to smear or override pinned context.
