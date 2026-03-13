@@ -163,3 +163,7 @@
 - [ ] **[P0] Consensus Attestation Workspace**: (2026-03-27) Workspace for monitoring multi-agent approvals and consensus status for high-risk actions.
 - [ ] **[P1] PNTD Registry Browser**: (2026-03-27) Unified UI for browsing capabilities across MCP, gRPC, and UACO transports.
 - [ ] **[P1] Shard-Aware Performance Heatmap**: (2026-03-27) Real-time visualization of shard hit/miss rates and transport latency.
+- [ ] **[P0] Swarm Rollback Dashboard**: (2026-03-28) UI for managing swarm-wide state checkpoints and visualizing rollback effects.
+- [ ] **[P0] UACO-MAQ Quorum Monitor**: (2026-03-28) Security dashboard for orchestrating multi-agent approval quorums across frameworks.
+- [ ] **[P1] Fast-Path Attestation Visualizer**: (2026-03-28) Real-time monitor of hardware-accelerated trust sessions and latency gains.
+- [ ] **[P1] Context Smearing Alert Center**: (2026-03-28) UI for inspecting BSH fragments flagged for potential "Ghost Fragment" injections.

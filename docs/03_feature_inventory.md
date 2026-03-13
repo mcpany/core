@@ -335,3 +335,20 @@
 ### Deprecations / Monitoring
 - **Single-Agent HITL for High-Risk Actions**: Monitoring for deprecation in enterprise profiles in favor of **Consensus-Based Validation**.
 - **Monolithic Context Handoffs**: Moving toward deprecation for deep swarms in favor of **Context Sharding**.
+
+---
+
+## Evolution: [2026-03-28] Updates
+
+### Proposed Additions
+- **Atomic State Rollback Middleware**: (P0) Enables swarm-wide state checkpoints and rollbacks for the Blackboard and Context Shards.
+- **UACO-MAQ Consensus Gateway**: (P0) Support for UACO v1.9 Multi-Agent Quorum, allowing cross-framework approval tokens for high-risk actions.
+- **Session-Bound Fast-Path Attestation**: (P1) Hardware-accelerated attestation for sub-calls within a verified mission session.
+- **Context Smearing Scanner**: (P1) Binary-level inspection for BSH fragments to detect malicious "Ghost Fragments."
+
+### Priority Shifts
+- **Consensus Tool Validation Gateway**: Re-affirmed as **P0**. Urgent need to align with UACO v1.9 MAQ.
+- **WASM-BSH State Sanitizer**: (Re-affirmed P0) Expanded to include detection of "Context Smearing" patterns.
+
+### Deprecations / Monitoring
+- **Legacy HITL Approval Tokens**: Monitoring for deprecation in favor of UACO-MAQ compliant multi-signature tokens.
