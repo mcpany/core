@@ -379,3 +379,20 @@
 
 ### Deprecations / Monitoring
 - **Unbounded Self-Correction**: Moving toward total deprecation. All self-correction loops must eventually be bound by an IPSC token and Correction Budget.
+
+---
+
+## Evolution: [2026-03-31] Updates
+
+### Proposed Additions
+- **Swarm Quorum Attestation Hub**: (P0) Distributed HITL/A2A middleware that mandates multi-agent approval tokens for high-risk actions.
+- **Federated Blackboard Sync**: (P1) Secure state synchronization protocol for multi-cloud MCP Any nodes, utilizing cryptographic lineage proofs.
+- **Mission Anchor Service**: (P0) Intent-bound monitoring service that halts execution when subagent sub-tasks diverge from the original user-signed mission.
+- **Hardware-Enforced Capability Guard**: (P1) Integration with TPM/SEP for verifying hardware-bound attestation claims from Gemini-style clients.
+
+### Priority Shifts
+- **UACO-MAQ Consensus Gateway**: Promoted to **P0**. Essential foundation for the new Swarm Quorum Attestation Hub.
+- **Recursive Intent Delegation (RID) Validator**: (Re-affirmed P0) Expanded to include Mission Anchor re-validation hooks.
+
+### Deprecations / Monitoring
+- **Single-Agent PoI Validation**: Moving toward deprecation for "High-Risk" tool categories in favor of **Swarm Quorum**.

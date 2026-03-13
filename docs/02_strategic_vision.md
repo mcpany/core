@@ -279,3 +279,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Self-Correction Guardrails**: MCP Any will implement UACO v2.1 IPSC (Intent-Preserving Self-Correction). We will introduce a "Correction Budget" middleware that halts recursive refinement loops and mandates user or parent-agent re-attestation when agents diverge from the primary intent.
 - **GFM-Resistant State Validation**: Our WASM-BSH sanitization will be expanded to detect "Dormant Fragments." We will move from validation-on-handoff to "Continuous State Integrity Monitoring," where binary state is re-verified during every self-correction cycle.
 - **Beacon-First Discovery Hub**: Transitioning from poll-based discovery to a "Beacon Reactive" model. MCP Any will act as a high-speed listener for UDP Capability Beacons, deduplicating and indexing them in real-time to eliminate "Discovery Noise" for connected agents.
+
+---
+
+## Strategic Evolution: [2026-03-31]
+### Focus: Quorum-Based Governance & Federated State Integrity
+**Context**: The release of OpenClaw v2.7 (DSC) and the emergence of the "Mirror-Leak" exploit (CVE-2026-48201) confirm that single-agent attestation is no longer sufficient. Simultaneously, "State Fragmentation" across multi-cloud swarms requires a more robust synchronization layer that can bridge hardware-bound (Gemini CLI) and sandbox-bound (Claude Code) environments.
+**Strategic Pivot**:
+- **Quorum-Based Tool Attestation**: MCP Any will pivot from single HITL/PoI validation to a "Swarm Quorum" model. High-risk tool calls will require cryptographic approval tokens from a configurable number of independent monitor agents, mirroring OpenClaw's DSC approach.
+- **Federated Memory Synchronization**: We are introducing a "Federated Blackboard" protocol that allows MCP Any instances to synchronize state across network boundaries while maintaining hardware-bound integrity proofs.
+- **Mission-Anchor Middleware**: To combat "Mission Creep," we will implement an "Anchor" service that periodically re-validates the current intent tree against the original user-signed mission parameters, halting any execution that has drifted beyond the authorized scope.

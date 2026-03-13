@@ -174,3 +174,7 @@
 - [ ] **[P0] IPSC Correction Monitor**: (2026-03-30) Real-time dashboard for visualizing agent self-correction cycles, budget consumption, and "Cognitive Lock" alerts.
 - [ ] **[P0] BSH Continuous Integrity Viewer**: (2026-03-30) Forensic UI for inspecting Binary State Handoffs for "Dormant" or "Ghost" fragments.
 - [ ] **[P1] Beacon Discovery Dashboard**: (2026-03-30) UI for monitoring reactive "Capability Beacons" and managing discovery noise filters.
+- [ ] **[P0] Swarm Quorum Monitoring Hub**: (2026-03-31) Real-time visualization of multi-agent approval quorums and attestation status.
+- [ ] **[P0] Mission Anchor Deviation Alert**: (2026-03-31) UI notification system for highlighting subagent divergence from the original mission intent.
+- [ ] **[P1] Federated State Sync Map**: (2026-03-31) Visualizer for state synchronization across distributed MCP Any nodes.
+- [ ] **[P1] Hardware Trust Attestation Panel**: (2026-03-31) Security dashboard for reviewing hardware-bound capability claims (TPM/SEP).
