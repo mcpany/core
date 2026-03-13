@@ -220,3 +220,19 @@
 
 ### Deprecations / Monitoring
 - **Unvalidated Configuration Hooks**: All configuration-based "auto-execute" hooks are now **Deprecated** and will be disabled unless run in a Detached Sandbox.
+
+---
+
+## Evolution: [2026-03-19] Updates
+
+### Proposed Additions
+- **Learning-Aware Feedback Headers**: (P1) Extends the MCP protocol to allow agents to transmit reward signals and training data to downstream RL loops.
+- **Progress-Aware Recursive Circuit Breaker**: (P0) Analyzes state delta between recursive calls to detect and halt "Spiral of Death" loops that don't produce measurable progress.
+- **UAB 1.2 Authenticated Task Card Validator**: (P0) Native support for the Universal Agent Bus (UAB) v1.2 specification, ensuring secure cross-framework task delegation.
+
+### Priority Shifts
+- **Recursive Depth-Limit Middleware**: (Re-affirmed P0) Essential for stability in complex multi-agent swarms.
+- **Call-Graph Loop Monitor**: (Re-affirmed P0) Critical for preventing resource exhaustion in federated agent meshes.
+
+### Deprecations / Monitoring
+- **Stateless Recursive Calls**: Monitoring for deprecation. All recursive calls will eventually require a "State Delta" to be considered valid.

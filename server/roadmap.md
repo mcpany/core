@@ -243,3 +243,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Recursive Depth-Limit Middleware**: Real-time call-graph monitor to detect and block recursive agent loops. (Added: 2026-03-18)
 *   **[P0] UAB Authenticated Task Delegation**: Implementation of UAB v1.2 task card verification for cross-framework handoffs. (Added: 2026-03-18)
 *   **[P1] Lineage-Aware Context Signing**: Cryptographic context chain signing to prevent subagent identity spoofing. (Added: 2026-03-18)
+
+#### Upcoming (2026-03-19 Evolution)
+*   **[P0] Progress-Aware Recursive Circuit Breaker**: Analyze state delta between recursive calls to detect and halt "Spiral of Death" loops. (Added: 2026-03-19)
+*   **[P0] UAB 1.2 Authenticated Task Card Validator**: Native support for UAB v1.2 specification for secure cross-framework task delegation. (Added: 2026-03-19)
+*   **[P1] Learning-Aware Feedback Headers**: Extend MCP protocol to transmit reward signals/training data to downstream RL loops. (Added: 2026-03-19)

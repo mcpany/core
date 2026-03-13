@@ -132,3 +132,6 @@
 - [ ] **[P0] Local Security Violation Monitor**: (2026-03-18) Real-time visualization of blocked origin requests and loopback violations.
 - [ ] **[P0] Recursive Loop Circuit Breaker UI**: (2026-03-18) Interactive dashboard for visualizing and managing recursive call limits in swarms.
 - [ ] **[P0] UAB Task Verification Workspace**: (2026-03-18) Tool for reviewing and attesting to UAB-native task cards during delegation.
+- [ ] **[P0] Spiral Delta Monitor**: (2026-03-19) UI for visualizing state changes between recursive tool calls and highlighting "Busy Work" loops.
+- [ ] **[P0] UAB 1.2 Task Card Composer**: (2026-03-19) Advanced interface for building and cryptographically signing UAB 1.2 Authenticated Task Cards.
+- [ ] **[P1] RL Feedback Loop Dashboard**: (2026-03-19) Visualization of reward signals and training data flowing through the gateway to external RL frameworks.

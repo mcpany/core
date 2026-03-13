@@ -45,3 +45,6 @@ As agent swarms become more complex, subagents often call other agents or tools 
 
 ## 7. Evolutionary Changelog
 * **2026-03-18:** Initial Document Creation.
+* **2026-03-19:** Added Progress-Aware Monitoring to detect "Spiral of Death" loops.
+    * **Context:** Market sync reveals that simple depth limits are bypassed by agents that perform "busy work" recursion.
+    * **Architecture Adjustment:** Introduced "State Delta" analysis. Calls that don't measurably change the blackboard or tool output are flagged.

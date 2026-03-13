@@ -158,3 +158,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Holistic Local Zero-Trust**: MCP Any will mandate origin-validation for all listeners and strictly enforce "Sandbox-Only" execution for any automated configuration hooks.
 - **Lineage-Aware Orchestration**: We are moving from "Session Handoffs" to "Verified Lineage." Every subagent request must carry a cryptographic proof of its parentage, ensuring that "Intent" cannot be hijacked by side-channel injections.
 - **UAB-Native Task Verification**: Promoting the Universal Agent Bus (UAB) to the primary orchestration layer, where MCP Any acts as the "Certificate Authority" for agent-to-agent task delegation.
+
+---
+
+## Strategic Evolution: [2026-03-19]
+### Focus: Learning-Aware Infrastructure & Recursive Spiral Defense
+**Context**: OpenClaw's shift to a pluggable ContextEngine and the release of OpenClaw-RL signal a move towards agents that learn and adapt. Simultaneously, the "Spiral of Death" recursive loop pattern is becoming a major stability risk for multi-agent swarms.
+**Strategic Pivot**:
+- **Learning-Aware Metadata**: MCP Any will evolve to support "Feedback Headers" in its protocol, allowing agents to transmit reward signals or correction data to downstream training loops (like OpenClaw-RL) via the gateway.
+- **Recursive Spiral Circuit Breaker**: Moving beyond simple depth counters to "Progress-Aware" monitoring. MCP Any will analyze the delta in state between recursive calls; if an agent is stuck in a loop without measurable progress, the gateway will trigger a mandatory HITL (Human-in-the-Loop) intervention.
+- **UAB 1.2 Authenticated Delegation**: Native integration of the Universal Agent Bus (UAB) v1.2 "Authenticated Task Cards," positioning MCP Any as the primary validator for cross-framework agentic labor markets.
