@@ -321,8 +321,8 @@ importers:
         specifier: ^2.0.2
         version: 2.0.2
       highlight.js:
-        specifier: ^11.9.0
-        version: 11.11.1
+        specifier: 10.7.3
+        version: 10.7.3
       js-yaml:
         specifier: ^4.1.1
         version: 4.1.1
@@ -4879,10 +4879,6 @@ packages:
 
   highlight.js@10.7.3:
     resolution: {integrity: sha512-tzcUFauisWKNHaRkN4Wjl/ZA07gENAjFl3J/c480dprkGTg5EQstgaNFqBfUqCq54kZRIEcreTsAgF/m2quD7A==}
-
-  highlight.js@11.11.1:
-    resolution: {integrity: sha512-Xwwo44whKBVCYoliBQwaPvtd/2tYFkRQtXDWj1nackaV2JPXx3L0+Jvd8/qCJ2p+ML0/XVkJ2q+Mr+UVdpJK5w==}
-    engines: {node: '>=12.0.0'}
 
   highlightjs-vue@1.0.0:
     resolution: {integrity: sha512-PDEfEF102G23vHmPhLyPboFCD+BkMGu+GuJe2d9/eH4FsCwvgBpnc9n0pGE+ffKdph38s6foEZiEjdgHdzp+IA==}
@@ -12464,8 +12460,6 @@ snapshots:
       xtend: 4.0.2
 
   highlight.js@10.7.3: {}
-
-  highlight.js@11.11.1: {}
 
   highlightjs-vue@1.0.0: {}
 
