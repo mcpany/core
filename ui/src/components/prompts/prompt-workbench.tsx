@@ -5,7 +5,7 @@
 
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import {
   MessageSquare,
@@ -100,11 +100,17 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
           });
   };
 
-  const filteredPrompts = prompts.filter(
-    (p) =>
-      p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (p.description && p.description.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
+  // ⚡ BOLT: [Render Optimization] Memoized filtered prompts and hoisted searchQuery.toLowerCase()
+  // Randomized Selection from Top 5 High-Impact Targets
+  // Prevents O(N) lowercasing and array reallocation on every render cycle.
+  const filteredPrompts = useMemo(() => {
+    const lowerQuery = searchQuery.toLowerCase();
+    return prompts.filter(
+      (p) =>
+        p.name.toLowerCase().includes(lowerQuery) ||
+        (p.description && p.description.toLowerCase().includes(lowerQuery))
+    );
+  }, [prompts, searchQuery]);
 
   const handleSelectPrompt = (prompt: PromptDefinition) => {
     setSelectedPrompt(prompt);
