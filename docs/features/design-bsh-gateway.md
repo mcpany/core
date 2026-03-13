@@ -47,3 +47,7 @@ As agent swarms grow in depth and complexity, the overhead of transferring massi
     * **Context:** OpenClaw v2.4 identifies JSON-based state transfer as the primary cause of "Token Storms."
     * **Architecture Adjustment:** Introduced "Memory-Mapped BSH Buffers" and "State Differential Sync" to eliminate serialization overhead and reduce binary delta sizes.
     * **Performance Impact:** Projected 30% reduction in state transfer latency and significant reduction in LLM token consumption.
+    * **2026-03-25:** WASM-Bound Zero-Copy State Update.
+    * **Context:** OpenClaw v2.5 moves toward "Active State Sanitization" to prevent binary context poisoning.
+    * **Architecture Adjustment:** Integrated a "WASM-BSH Sanitizer" into the memory-mapped transport flow. Binary state is now validated against a signed schema within a WASM sandbox before being mapped into the target agent's address space.
+    * **Security Impact:** Neutralizes "Binary Context Injection" attacks while maintaining sub-millisecond Zero-Copy performance.

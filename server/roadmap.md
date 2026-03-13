@@ -114,6 +114,12 @@
 *   **[P0] Ghost Shell Hook Profiler**: Instrumented sandbox for behavioral profiling of un-attested configuration hooks. (Added: 2026-03-24)
 *   **[P1] BSH State Differential Sync**: Optimized binary state transfer that only sends deltas between agent handoffs. (Added: 2026-03-24)
 
+#### Upcoming (2026-03-25 Evolution)
+*   **[P0] WASM-BSH State Sanitizer**: Pluggable WASM-based validation for binary context handoffs. (Added: 2026-03-25)
+*   **[P0] Zero-Copy BSH Transport**: Shared-memory based state transfer for sub-millisecond swarm handoffs. (Added: 2026-03-25)
+*   **[P0] UACO v1.8 RID Validator**: Middleware for enforcing depth-limited Recursive Intent Delegation. (Added: 2026-03-25)
+*   **[P1] Predictive Resource Locking**: Intent-aware concurrency control for the Shared Blackboard. (Added: 2026-03-25)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

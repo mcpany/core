@@ -152,3 +152,7 @@
 - [ ] **[P0] Relational Intent Chain Viewer**: (2026-03-24) Visual debugger for verifying the lineage and relational scoping of agent intents.
 - [ ] **[P0] Ghost Shell Safety Reporter**: (2026-03-24) UI for viewing behavioral profiling results and safety scores for un-attested configuration hooks.
 - [ ] **[P1] BSH Delta Debugger**: (2026-03-24) Developer tool for inspecting binary state differentials during agent handoffs.
+- [ ] **[P0] WASM-BSH Sanitizer Dashboard**: (2026-03-25) UI for managing WASM sanitization rules and viewing rejected binary context fragments.
+- [ ] **[P0] Zero-Copy Transport Monitor**: (2026-03-25) Real-time performance metrics for memory-mapped BSH buffers.
+- [ ] **[P0] RID Lineage Inspector**: (2026-03-25) Security UI for visualizing UACO v1.8 recursive delegation depths and mutation boundaries.
+- [ ] **[P1] Predictive Locking Visualizer**: (2026-03-25) Gantt-style view of projected Blackboard resource locks based on agent intents.

@@ -294,3 +294,20 @@
 ### Priority Shifts
 - **Binary State Handoff (BSH) Gateway**: Promoted from **P1** to **P0**. Urgent requirement to solve the "Token Storm" crisis in deep swarms.
 - **Ghost Shell Execution Mode**: Re-affirmed as **P0**. Critical security defense against malicious project-local hooks.
+
+---
+
+## Evolution: [2026-03-25] Updates
+
+### Proposed Additions
+- **WASM-BSH State Sanitizer**: (P0) Pluggable WASM sandbox for the BSH Gateway that validates and sanitizes binary context during handoffs.
+- **Zero-Copy Shared Memory Transport**: (P0) High-performance transport layer for BSH using memory-mapped regions to eliminate serialization overhead.
+- **Recursive Intent Delegation (RID) Validator**: (P0) UACO v1.8 compliant middleware for enforcing depth-limited intent mutations.
+- **Predictive Resource Locking**: (P1) Middleware that pre-emptively locks Blackboard keys based on the signed intent of upcoming UACO tasks.
+
+### Priority Shifts
+- **Relational PoI Validator**: Re-affirmed as **P0**. Critical foundation for supporting UACO v1.8 RID.
+- **Ghost Shell Hook Profiler**: Re-affirmed as **P0**. Expanded to include "WASM-BSH Pattern Matching" to detect malicious state transformation logic.
+
+### Deprecations / Monitoring
+- **Passive State Validation**: Moving toward deprecation in favor of **Active WASM Sanitization** for all binary handoffs.
