@@ -269,3 +269,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Proactive State Alignment (PSA) Middleware**: MCP Any will implement a background alignment service that continuously synchronizes agent-local state (Internal Monologue) with the global Blackboard. This prevents "State Drift" before it leads to swarm divergence.
 - **UACO v2.0 RIS Implementation**: Moving from flat intent chains to hierarchical "Intent Trees." MCP Any will natively enforce RIS boundaries, ensuring that subagents can only mutate state or call tools within their explicitly branched intent branch, neutralizing "Identity Shadowing."
 - **Hardware-Accelerated Fast-Path (HAFP)**: We are prioritizing integration with Secure Enclaves (TPM/SEP) to provide hardware-bound attestation for mission intents. This eliminates the "Attestation Tax" for high-frequency subagent delegations within a verified mission.
+
+---
+
+## Strategic Evolution: [2026-03-30]
+### Focus: Self-Correction Governance & Beacon-Based Discovery
+**Context**: The emergence of "Cognitive Lock" in OpenClaw v2.6 and the "Ghost Fragment Mutation" (GFM) exploit demonstrate that autonomy without strict boundary enforcement is a liability. Additionally, the shift toward push-based "Capability Beacons" requires a more reactive discovery architecture.
+**Strategic Pivot**:
+- **Self-Correction Guardrails**: MCP Any will implement UACO v2.1 IPSC (Intent-Preserving Self-Correction). We will introduce a "Correction Budget" middleware that halts recursive refinement loops and mandates user or parent-agent re-attestation when agents diverge from the primary intent.
+- **GFM-Resistant State Validation**: Our WASM-BSH sanitization will be expanded to detect "Dormant Fragments." We will move from validation-on-handoff to "Continuous State Integrity Monitoring," where binary state is re-verified during every self-correction cycle.
+- **Beacon-First Discovery Hub**: Transitioning from poll-based discovery to a "Beacon Reactive" model. MCP Any will act as a high-speed listener for UDP Capability Beacons, deduplicating and indexing them in real-time to eliminate "Discovery Noise" for connected agents.

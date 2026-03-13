@@ -304,3 +304,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Bound Attestation Provider (HAFP)**: Native integration with TPM/Secure Enclave for zero-latency mission validation. (Added: 2026-03-29)
 *   **[P1] Proactive State Alignment (PSA) Middleware**: Background service for continuous synchronization of agent-local state with the global Blackboard. (Added: 2026-03-29)
 *   **[P1] Context Pinning Middleware**: Implementation of immutable prompt segments to neutralize Context Smearing attacks. (Added: 2026-03-29)
+
+#### Upcoming (2026-03-30 Evolution)
+*   **[P0] UACO v2.1 IPSC Middleware**: Implementation of Intent-Preserving Self-Correction to prevent recursive "Cognitive Lock" refinement loops. (Added: 2026-03-30)
+*   **[P0] Continuous BSH Integrity Monitor**: Real-time WASM-based integrity checks for Binary State Handoffs to detect "Ghost Fragment" mutations. (Added: 2026-03-30)
+*   **[P1] UDP Beacon Discovery Listener**: High-speed reactive listener for Gemini-style Capability Beacons. (Added: 2026-03-30)
+*   **[P1] Correction Budget Controller**: Resource management middleware for agent self-correction loops. (Added: 2026-03-30)

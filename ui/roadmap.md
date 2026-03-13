@@ -171,3 +171,6 @@
 - [ ] **[P0] Hardware Trust Status Widget**: (2026-03-29) Real-time monitor for SEP/TPM attestation status and HAFP session health.
 - [ ] **[P1] State Alignment Monitor**: (2026-03-29) Visualization of agent-local state vs. global Blackboard, highlighting drift and alignment events.
 - [ ] **[P1] Context Pinning Configuration UI**: (2026-03-29) Dashboard for defining and managing immutable prompt segments.
+- [ ] **[P0] IPSC Correction Monitor**: (2026-03-30) Real-time dashboard for visualizing agent self-correction cycles, budget consumption, and "Cognitive Lock" alerts.
+- [ ] **[P0] BSH Continuous Integrity Viewer**: (2026-03-30) Forensic UI for inspecting Binary State Handoffs for "Dormant" or "Ghost" fragments.
+- [ ] **[P1] Beacon Discovery Dashboard**: (2026-03-30) UI for monitoring reactive "Capability Beacons" and managing discovery noise filters.
