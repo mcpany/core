@@ -87,6 +87,12 @@
 *   **[P1] Unified RL Feedback Telemetry Bridge**: Middleware for collecting and normalizing conversation-feedback for RL-driven agents (e.g., OpenClaw-RL). (Added: 2026-03-19)
 *   **[P1] Enterprise Policy Sync Engine**: Service for synchronizing security policies and allowed-origins from a central management server. (Added: 2026-03-19)
 
+#### Upcoming (2026-03-20 Evolution)
+*   **[P0] Ephemeral Workspace Trust Middleware**: Session-bound attestation service to translate desktop trust tokens for headless agents. (Added: 2026-03-20)
+*   **[P0] Blackboard Integrity Validator**: Cryptographic validation of state lineage for Shared KV Store operations. (Added: 2026-03-20)
+*   **[P1] UACO Bid Profiling Engine**: Behavioral monitoring for agent bidding to prevent task-card shadowing. (Added: 2026-03-20)
+*   **[P1] Config Smuggling Scanner**: Metadata-aware scanner for project-local configuration files. (Added: 2026-03-20)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
