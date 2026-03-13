@@ -309,5 +309,18 @@
 - **Relational PoI Validator**: Re-affirmed as **P0**. Critical foundation for supporting UACO v1.8 RID.
 - **Ghost Shell Hook Profiler**: Re-affirmed as **P0**. Expanded to include "WASM-BSH Pattern Matching" to detect malicious state transformation logic.
 
+---
+
+## Evolution: [2026-03-26] Updates
+
+### Proposed Additions
+- **Modular Context Hook Adapter**: (P0) A bridge that maps MCP Any's internal state to the pluggable lifecycle hooks of external frameworks (e.g., OpenClaw ContextEngine).
+- **RID Mutation Boundary Enforcer**: (P0) Middleware that validates UACO v1.8 tokens, ensuring subagents cannot exceed their assigned delegation depth or mutate intents beyond authorized boundaries.
+- **WASM-BSH Active Sanitizer**: (P0) Integrated WASM sandbox for the BSH Gateway that performs schema-based validation on binary context buffers during handoffs.
+
+### Priority Shifts
+- **Binary State Handoff (BSH) Gateway**: Re-affirmed as **P0** with new requirements for active WASM-based sanitization.
+- **Relational PoI Validator**: Re-affirmed as **P0**. Essential for supporting the cryptographic lineage required by RID.
+
 ### Deprecations / Monitoring
 - **Passive State Validation**: Moving toward deprecation in favor of **Active WASM Sanitization** for all binary handoffs.
