@@ -365,6 +365,23 @@
 
 ---
 
+## Evolution: [2026-03-31] Updates
+
+### Proposed Additions
+- **UACO v2.2 Intent Barrier Middleware**: (P0) Synchronization engine for parallel sub-intents to prevent race conditions in the Blackboard.
+- **Inode-Aware Symlink Validator**: (P0) Security middleware that performs recursive symlink resolution and inode validation for all project-local configurations.
+- **Federated Discovery Quorum (FDQ) Node**: (P1) Peer-to-peer discovery service that requires multi-node attestation for new tool beacons.
+- **Parallel Intent Branch Manager**: (P0) Implements "Snapshot-and-Merge" logic for parallel agent branches, ensuring deterministic state reconciliation.
+
+### Priority Shifts
+- **Shared KV Store (Blackboard)**: Re-affirmed as **P0**. Expanded to include support for "Branch-Aware State Isolation" and "Merge Conflict Resolution."
+- **UDP Beacon Discovery Listener**: Promoted from **P1** to **P0**. Essential prerequisite for the new Federated Discovery Quorum.
+
+### Deprecations / Monitoring
+- **Unvalidated Recursive Discovery**: Monitoring for total deprecation. All discovery traversals must be guarded by the Inode-Aware Symlink Validator.
+
+---
+
 ## Evolution: [2026-03-30] Updates
 
 ### Proposed Additions

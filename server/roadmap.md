@@ -305,6 +305,12 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P1] Proactive State Alignment (PSA) Middleware**: Background service for continuous synchronization of agent-local state with the global Blackboard. (Added: 2026-03-29)
 *   **[P1] Context Pinning Middleware**: Implementation of immutable prompt segments to neutralize Context Smearing attacks. (Added: 2026-03-29)
 
+#### Upcoming (2026-03-31 Evolution)
+*   **[P0] UACO v2.2 Intent Barrier Middleware**: Synchronization engine for parallel sub-intents to prevent race conditions in the Blackboard. (Added: 2026-03-31)
+*   **[P0] Inode-Aware Symlink Validator**: Security middleware performing recursive symlink resolution and inode validation for all project-local configurations. (Added: 2026-03-31)
+*   **[P0] Parallel Intent Branch Manager**: Implementation of "Snapshot-and-Merge" logic for parallel agent branches. (Added: 2026-03-31)
+*   **[P1] Federated Discovery Quorum (FDQ) Node**: Peer-to-peer discovery service requiring multi-node attestation for new tool beacons. (Added: 2026-03-31)
+
 #### Upcoming (2026-03-30 Evolution)
 *   **[P0] UACO v2.1 IPSC Middleware**: Implementation of Intent-Preserving Self-Correction to prevent recursive "Cognitive Lock" refinement loops. (Added: 2026-03-30)
 *   **[P0] Continuous BSH Integrity Monitor**: Real-time WASM-based integrity checks for Binary State Handoffs to detect "Ghost Fragment" mutations. (Added: 2026-03-30)

@@ -252,6 +252,15 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-03-31]
+### Focus: Parallel Intent Integrity & Path-Agnostic Boundary Enforcement
+**Context**: Today's findings on OpenClaw's Parallel Sub-Intents and the Claude Code Symlink vulnerability (CVE-2026-34812) reveal a fundamental shift in the "Security Frontier." We are moving from protecting linear agent sessions to securing complex, multi-threaded "Intent Meshes" and ensuring that project-local data structures cannot be weaponized against the host.
+**Strategic Pivot**:
+- **Parallel Intent Synchronization (UACO v2.2)**: MCP Any will evolve to support "Intent Barriers" and "Branch Isolation." This ensures that parallel sub-intents cannot cause race conditions on the Blackboard, providing a "Snapshot-and-Merge" model for multi-threaded swarms.
+- **Path-Agnostic Sandbox Hardening**: Moving beyond basic path allow-lists to "Inode-Aware" validation. MCP Any will implement mandatory symlink-resolution checks for all project-local configurations, ensuring that "Settings-as-Code" cannot be used to bridge into restricted filesystem regions.
+- **Federated Discovery Quorum (FDQ)**: We will promote Gemini's CDQ model to a global standard. MCP Any nodes will peer with each other to reach a decentralized consensus on tool safety before allowing them to be loaded into the agent's "Discovery Bus."
+
+---
 ## Strategic Evolution: [2026-03-28]
 ### Focus: Swarm Sanity & Fast-Path Attestation
 **Context**: Today's findings on Atomic State Rollbacks (ASR) and the UACO v1.9 Multi-Agent Quorum (MAQ) draft confirm that "Swarm Sanity" is the new operational priority. As swarms become deeper, the "Attestation Tax" (latency) and the risk of "Context Smearing" demand a more performant and resilient state-management layer.
