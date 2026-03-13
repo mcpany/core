@@ -35,6 +35,10 @@ func TestExampleConfigs(t *testing.T) {
 	// Ensure stdio example binary is built, as Config validation checks for its existence
 	// This makes the test robust against sharding/environment where build-examples might not have run.
 	stdioBinPath := filepath.Join(runtimeRoot, "examples", "demo", "stdio", "my-tool-bin")
+	if os.Getenv("BAZEL_TEST") == "1" {
+		t.Skip("Skipping TestExampleConfigs in bazel to avoid manual go build")
+	}
+
 	if _, err := os.Stat(stdioBinPath); os.IsNotExist(err) {
 		t.Logf("Building missing stdio example binary: %s", stdioBinPath)
 		cmd := exec.Command("go", "build", "-o", stdioBinPath, filepath.Join(runtimeRoot, "examples", "demo", "stdio", "my-tool", "main.go"))
