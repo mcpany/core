@@ -148,4 +148,7 @@
 - [ ] **[P1] Federated Governance Dashboard**: (2026-03-22) UI for managing policy synchronization across multiple MCP Any nodes.
 - [ ] **[P0] Proof-of-Intent (PoI) Inspector**: (2026-03-23) Security dashboard for visualizing the cryptographic link between signed intents and tool calls.
 - [ ] **[P0] Skill Grafting Attestation UI**: (2026-03-23) Multi-signature approval flow for dynamic tool loading and skill grafting.
-- [ ] **[P1] Binary Handoff Performance Monitor**: (2026-03-23) Real-time metrics for BSH transport, showing latency savings and buffer throughput.
+- [ ] **[P0] Binary Handoff Performance Monitor**: (2026-03-23) Real-time metrics for BSH transport. (Promoted to P0 on 2026-03-24)
+- [ ] **[P0] Relational Intent Chain Viewer**: (2026-03-24) Visual debugger for verifying the lineage and relational scoping of agent intents.
+- [ ] **[P0] Ghost Shell Safety Reporter**: (2026-03-24) UI for viewing behavioral profiling results and safety scores for un-attested configuration hooks.
+- [ ] **[P1] BSH Delta Debugger**: (2026-03-24) Developer tool for inspecting binary state differentials during agent handoffs.

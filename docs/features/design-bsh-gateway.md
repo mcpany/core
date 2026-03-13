@@ -43,3 +43,7 @@ As agent swarms grow in depth and complexity, the overhead of transferring massi
 
 ## 7. Evolutionary Changelog
 * **2026-03-23:** Initial Document Creation.
+* **2026-03-24:** BSH-Native Buffer Update.
+    * **Context:** OpenClaw v2.4 identifies JSON-based state transfer as the primary cause of "Token Storms."
+    * **Architecture Adjustment:** Introduced "Memory-Mapped BSH Buffers" and "State Differential Sync" to eliminate serialization overhead and reduce binary delta sizes.
+    * **Performance Impact:** Projected 30% reduction in state transfer latency and significant reduction in LLM token consumption.
