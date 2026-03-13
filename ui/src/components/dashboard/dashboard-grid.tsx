@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 import { GripVertical, MoreHorizontal, Maximize, Columns, LayoutGrid, EyeOff, Trash2, Settings2, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -199,11 +199,13 @@ export function DashboardGrid() {
         return () => clearTimeout(timer);
     }, [widgets, isMounted, loading]);
 
+    // ⚡ BOLT: Memoize visible/hidden widgets to prevent O(N) filtering on every drag frame/render
+    // Randomized Selection from Top 5 High-Impact Targets (React/View Category)
+    const visibleWidgets = useMemo(() => widgets.filter(w => !w.hidden), [widgets]);
+    const hiddenWidgets = useMemo(() => widgets.filter(w => w.hidden), [widgets]);
+
     const onDragEnd = (result: DropResult) => {
         if (!result.destination) return;
-
-        const visibleWidgets = widgets.filter(w => !w.hidden);
-        const hiddenWidgets = widgets.filter(w => w.hidden);
 
         const items = Array.from(visibleWidgets);
         const [reorderedItem] = items.splice(result.source.index, 1);
@@ -270,8 +272,6 @@ export function DashboardGrid() {
             default: return "col-span-12 lg:col-span-4";
         }
     };
-
-    const visibleWidgets = widgets.filter(w => !w.hidden);
 
     return (
         <div className="space-y-4">
