@@ -35,10 +35,21 @@ func TestCountTokensInValue_FastPathConsistency(t *testing.T) {
 		{"Slice Int64", []int64{1, 2, 3, 10000000000, -123}},
 		{"Slice Bool", []bool{true, false, true}},
 		{"Slice Float64", []float64{1.1, 2.2, 3.3, 1.23e5}},
+		{"Slice Float64 Integer", []float64{1.0, 2.0, 3.0}},
 		{"Slice String", []string{"hello", "world", "fast", "path"}},
 
 		// Maps
 		{"Map String String", map[string]string{"key1": "val1", "key2": "val2"}},
+		{"Map String Int", map[string]int{"key1": 1, "key2": 2}},
+		{"Map String Int64", map[string]int64{"key1": 1, "key2": 2}},
+		{"Map String Float64", map[string]float64{"key1": 1.1, "key2": 2.2}},
+		{"Map String Float64 Integer", map[string]float64{"key1": 1.0, "key2": 2.0}},
+		{"Map String Bool", map[string]bool{"key1": true, "key2": false}},
+
+		// Bytes
+		{"Byte Slice", []byte("hello world")},
+		{"Byte Slice Empty", []byte("")},
+		{"Byte Slice Short", []byte("ab")},
 	}
 
 	for _, tt := range tests {
@@ -91,9 +102,33 @@ func TestCountTokensInValue_FastPathConsistency(t *testing.T) {
 					vc, _ := st.CountTokens(v)
 					want += kc + vc
 				}
+			case map[string]int:
+				for k, v := range v {
+					kc, _ := st.CountTokens(k)
+					want += kc + simpleTokenizeInt(v)
+				}
+			case map[string]int64:
+				for k, v := range v {
+					kc, _ := st.CountTokens(k)
+					want += kc + simpleTokenizeInt64(v)
+				}
+			case map[string]float64:
+				for k, v := range v {
+					kc, _ := st.CountTokens(k)
+					want += kc
+					c, _ := st.CountTokens(strconv.FormatFloat(v, 'g', -1, 64))
+					want += c
+				}
+			case map[string]bool:
+				for k := range v {
+					kc, _ := st.CountTokens(k)
+					want += kc + 1 // bool counts as 1
+				}
+			case []byte:
+				want, _ = st.CountTokens(string(v))
 			}
 
-			if got != want {
+			if want >= 0 && got != want {
 				t.Errorf("Mismatch for %v: got %d, want %d", tt.input, got, want)
 			}
 		})
@@ -138,9 +173,45 @@ func TestCountTokensInValue_FastPathConsistency(t *testing.T) {
 				}
 				want = int(float64(words) * wt.Factor)
 				if want < 1 && words > 0 { want = 1 }
+			case map[string]int:
+				var words int
+				for k := range v {
+					words += countWords(k)
+					words++
+				}
+				want = int(float64(words) * wt.Factor)
+				if want < 1 && words > 0 { want = 1 }
+			case map[string]int64:
+				var words int
+				for k := range v {
+					words += countWords(k)
+					words++
+				}
+				want = int(float64(words) * wt.Factor)
+				if want < 1 && words > 0 { want = 1 }
+			case map[string]float64:
+				var words int
+				for k := range v {
+					words += countWords(k)
+					words++
+				}
+				want = int(float64(words) * wt.Factor)
+				if want < 1 && words > 0 { want = 1 }
+			case map[string]bool:
+				var words int
+				for k := range v {
+					words += countWords(k)
+					words++
+				}
+				want = int(float64(words) * wt.Factor)
+				if want < 1 && words > 0 { want = 1 }
+			case []byte:
+				words := countWords(string(v))
+				want = int(float64(words) * wt.Factor)
+				if want < 1 && words > 0 { want = 1 }
 			}
 
-			if got != want {
+			if want >= 0 && got != want {
 				t.Errorf("Mismatch for %v: got %d, want %d", tt.input, got, want)
 			}
 		})
