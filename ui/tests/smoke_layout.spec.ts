@@ -11,12 +11,11 @@ test('layout smoke test', async ({ page, request }) => {
   await seedCollection('mcpany-system', request);
 
   await page.goto('/');
-  // Wait for network idle so user/admin fetch completes and sidebar re-renders
-  await page.waitForLoadState('networkidle');
-
-  // Check for Sidebar
-  const sidebar = page.locator('text=MCP Any').first();
-  await expect(sidebar).toBeVisible();
+    // Wait for the sidebar content to be visible instead of networkidle,
+    // because the dashboard has polling components that keep network connections
+    // open indefinitely.
+    const sidebar = page.locator('text=MCP Any').first();
+    await expect(sidebar).toBeVisible({ timeout: 30000 });
 
   // Check for Sidebar links
   await expect(page.locator('a[href="/stacks"]').first()).toBeVisible();
