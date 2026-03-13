@@ -44,21 +44,21 @@ test.describe('Marketplace Wizard and Service Lifecycle', () => {
         id: 'postgres-template',
         name: 'PostgreSQL Database',
         description: 'Read-only access to PostgreSQL databases',
-        config: {
+        service_config: {
           name: 'PostgreSQL Database',
-          commandLineService: {
+          command_line_service: {
             command: 'npx -y @modelcontextprotocol/server-postgres',
             env: {
               POSTGRES_URL: {
-                plainText: 'postgresql://user:password@localhost:5432/dbname',
+                plain_text: 'postgresql://user:password@localhost:5432/dbname',
               },
             },
-            workingDirectory: '',
+            working_directory: '',
             tools: [],
             resources: [],
             prompts: [],
             calls: {},
-            communicationProtocol: 0,
+            communication_protocol: 0,
             local: false,
           },
         },

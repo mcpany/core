@@ -8,11 +8,6 @@ import { useWizard } from '../wizard-context';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { CheckCircle2 } from 'lucide-react';
-import SyntaxHighlighter from 'react-syntax-highlighter/dist/esm/light';
-import json from 'react-syntax-highlighter/dist/esm/languages/hljs/json';
-import vs2015 from 'react-syntax-highlighter/dist/esm/styles/hljs/vs2015';
-
-SyntaxHighlighter.registerLanguage('json', json);
 
 /**
  * StepReview.
@@ -33,9 +28,11 @@ export function StepReview({ onComplete }: { onComplete: (config: any) => void }
             <div className="space-y-2">
                  <h3 className="font-medium">Spec Preview</h3>
                  <div className="rounded-md overflow-hidden border">
-                     <SyntaxHighlighter language="json" style={vs2015} showLineNumbers customStyle={{ margin: 0, maxHeight: '300px' }}>
-                        {JSON.stringify(config, null, 2)}
-                     </SyntaxHighlighter>
+                     <ScrollArea className="max-h-[300px]">
+                         <pre className="p-4 text-xs font-mono bg-[#1e1e1e] text-gray-200 whitespace-pre-wrap break-all">
+                             {JSON.stringify(config, null, 2)}
+                         </pre>
+                     </ScrollArea>
                  </div>
             </div>
 
