@@ -93,6 +93,12 @@
 *   **[P1] UACO Bid Profiling Engine**: Behavioral monitoring for agent bidding to prevent task-card shadowing. (Added: 2026-03-20)
 *   **[P1] Config Smuggling Scanner**: Metadata-aware scanner for project-local configuration files. (Added: 2026-03-20)
 
+#### Upcoming (2026-03-21 Evolution)
+*   **[P0] Content-Addressable Config (CAC) Validator**: Core security service enforcing hash-based validation for all executable hooks. (Added: 2026-03-21)
+*   **[P0] UACO v1.5 RCC Validator**: Implementation of Resource Capability Claims to verify agent maturity during task bidding. (Added: 2026-03-21)
+*   **[P1] DNS/ICMP Exfiltration Monitor**: L4 telemetry middleware to detect and block non-HTTP exfiltration attempts. (Added: 2026-03-21)
+*   **[P1] Hardware-Bound Trust Continuity**: TPM/Secure Enclave signatures to persist trust for verified headless agents. (Added: 2026-03-21)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

@@ -44,3 +44,6 @@ With the release of OpenClaw v1.6 and Claude Code's "Staged Trust" model, the in
 
 ## 7. Evolutionary Changelog
 * **2026-03-20:** Initial Document Creation.
+* **2026-03-21:** Added **Adaptive Trust Continuity** section.
+    * **Context:** Developers reported "Headless Handoff" failures in OpenClaw v1.6.
+    * **Adjustment:** Introduced hardware-bound attestation (TPM/Secure Enclave) to persist trust across session boundaries for verified headless agents.

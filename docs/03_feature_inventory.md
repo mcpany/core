@@ -239,3 +239,20 @@
 
 ### Deprecations / Monitoring
 - **Framework-Specific Feedback Logs**: Monitoring for deprecation. Feedback should be normalized via the Unified Telemetry Bridge.
+
+---
+
+## Evolution: [2026-03-21] Updates
+
+### Proposed Additions
+- **Content-Addressable Config (CAC) Validator**: (P0) A core security service that enforces hash-based validation for all executable hooks and settings, preventing "Binary Smuggling."
+- **UACO v1.5 RCC Validator**: (P0) Implementation of Resource Capability Claims to verify agent toolsets and security posture during task bidding.
+- **DNS/ICMP Exfiltration Monitor**: (P1) L4 telemetry middleware to detect and block non-HTTP exfiltration attempts by compromised agents.
+- **Hardware-Bound Trust Continuity**: (P1) Extension for the Ephemeral Workspace Trust Middleware that uses TPM/Secure Enclave signatures to persist trust for headless agents.
+
+### Priority Shifts
+- **Config Smuggling Scanner**: Promoted from **P1** to **P0** following the discovery of CVE-2026-31042.
+- **UACO Bid Profiling Engine**: Promoted from **P1** to **P0** to support mandatory RCC verification.
+
+### Deprecations / Monitoring
+- **Path-Based Config Loading**: Moving towards total deprecation. All security-critical configurations must transition to Content-Addressable (Hash-based) loading by Q3.
