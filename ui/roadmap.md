@@ -165,5 +165,9 @@
 - [ ] **[P1] Shard-Aware Performance Heatmap**: (2026-03-27) Real-time visualization of shard hit/miss rates and transport latency.
 - [ ] **[P0] Swarm Rollback Dashboard**: (2026-03-28) UI for managing swarm-wide state checkpoints and visualizing rollback effects.
 - [ ] **[P0] UACO-MAQ Quorum Monitor**: (2026-03-28) Security dashboard for orchestrating multi-agent approval quorums across frameworks.
-- [ ] **[P1] Fast-Path Attestation Visualizer**: (2026-03-28) Real-time monitor of hardware-accelerated trust sessions and latency gains.
+- [ ] **[P0] Fast-Path Attestation Visualizer**: (2026-03-28) Real-time monitor of hardware-accelerated trust sessions and latency gains. (Promoted to P0 on 2026-03-29)
 - [ ] **[P1] Context Smearing Alert Center**: (2026-03-28) UI for inspecting BSH fragments flagged for potential "Ghost Fragment" injections.
+- [ ] **[P0] RIS Hierarchical Intent Viewer**: (2026-03-29) Visual debugger for UACO v2.0 hierarchical intent trees and mutation boundaries.
+- [ ] **[P0] Hardware Trust Status Widget**: (2026-03-29) Real-time monitor for SEP/TPM attestation status and HAFP session health.
+- [ ] **[P1] State Alignment Monitor**: (2026-03-29) Visualization of agent-local state vs. global Blackboard, highlighting drift and alignment events.
+- [ ] **[P1] Context Pinning Configuration UI**: (2026-03-29) Dashboard for defining and managing immutable prompt segments.

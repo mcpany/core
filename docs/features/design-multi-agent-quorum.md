@@ -44,3 +44,11 @@ As agents perform higher-risk actions (e.g., executing shell scripts, making fin
 
 ## 7. Evolutionary Changelog
 * **2026-03-28:** Initial Document Creation.
+
+### Update: 2026-03-29 - Identity Shadowing Defense
+**Context:** Today's research revealed CVE-2026-45001 (Identity Shadowing) in the MAQ implementation and the release of the UACO v2.0 RIS candidate.
+**Architecture Adjustment:**
+* Deprecating flat session nonces for token generation.
+* Introducing **Relational Intent Scoping (RIS)**: Approval tokens must now include the hierarchical `Intent-Path` from the UACO v2.0 tree structure.
+* The MAQ Gateway will now validate that the requester's intent branch is a legitimate child of the branch that authorized the original quorum.
+**Security Impact:** Prevents malicious subagents from reusing parent signatures across unauthorized sub-delegations.

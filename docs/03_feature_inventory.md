@@ -352,3 +352,20 @@
 
 ### Deprecations / Monitoring
 - **Legacy HITL Approval Tokens**: Monitoring for deprecation in favor of UACO-MAQ compliant multi-signature tokens.
+
+---
+
+## Evolution: [2026-03-29] Updates
+
+### Proposed Additions
+- **Proactive State Alignment (PSA) Middleware**: (P1) Background service for continuous synchronization of agent-local state with the global Blackboard.
+- **UACO v2.0 RIS Validator**: (P0) Implementation of Relational Intent Scoping to prevent Identity Shadowing via hierarchical intent trees.
+- **Hardware-Bound Attestation Provider (HAFP)**: (P0) Native integration with TPM/Secure Enclave for zero-latency mission validation.
+- **Context Pinning Middleware**: (P1) Implements immutable prompt segments to neutralize Context Smearing attacks.
+
+### Priority Shifts
+- **Session-Bound Fast-Path Attestation**: Promoted from **P1** to **P0**. High demand for low-latency validation in enterprise swarms.
+- **Atomic State Rollback Middleware**: Re-affirmed as **P0**. Critical foundation for swarm sanity.
+
+### Deprecations / Monitoring
+- **Flat Intent Chains**: Monitoring for deprecation in favor of **UACO v2.0 Hierarchical Intent Trees (RIS)**.
