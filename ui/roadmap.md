@@ -159,3 +159,7 @@
 - [ ] **[P0] Context Hook Interop Viewer**: (2026-03-26) Visualize how MCP Any state maps to external framework lifecycle hooks (e.g., OpenClaw).
 - [ ] **[P0] RID Delegation Graph**: (2026-03-26) Interactive visualization of UACO v1.8 intent lineages, showing depth limits and mutation boundaries.
 - [ ] **[P0] WASM Sanitization Dashboard**: (2026-03-26) Monitor and configure active WASM-BSH sanitization rules and rejected buffers.
+- [ ] **[P0] Live Context Shard Manager**: (2026-03-27) Dashboard for visualizing addressable shards, active mounts, and memory usage.
+- [ ] **[P0] Consensus Attestation Workspace**: (2026-03-27) Workspace for monitoring multi-agent approvals and consensus status for high-risk actions.
+- [ ] **[P1] PNTD Registry Browser**: (2026-03-27) Unified UI for browsing capabilities across MCP, gRPC, and UACO transports.
+- [ ] **[P1] Shard-Aware Performance Heatmap**: (2026-03-27) Real-time visualization of shard hit/miss rates and transport latency.
