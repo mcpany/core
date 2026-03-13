@@ -31,7 +31,10 @@ def define_playwright_tests():
             data = _playwright_target_data(spec),
             size = "large",
             timeout = "long",
-            tags = ["integration"],
+            tags = [
+                "integration",
+                "no-remote-exec",
+            ],
         )
         targets.append(":" + name)
 

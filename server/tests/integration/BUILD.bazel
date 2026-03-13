@@ -69,7 +69,10 @@ go_test(
         "//server/tests/integration/cmd/mocks/webrtc_weather_server",
     ],
     embed = [":integration"],
-    tags = ["integration"],
+    tags = [
+        "integration",
+        "no-remote-exec",
+    ],
     deps = [
         "//proto/api/v1:api",
         "//proto/bus",

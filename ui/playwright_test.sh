@@ -81,7 +81,9 @@ mkdir -p \
   "$ui_runtime/test-results/artifacts"
 
 export HOME="${HOME:-$TEST_TMPDIR/home}"
-export PLAYWRIGHT_BROWSERS_PATH="$TEST_TMPDIR/playwright-browsers"
+# Reuse browser binaries across Bazel test targets to avoid re-installing
+# Chromium in every single Playwright sh_test invocation.
+export PLAYWRIGHT_BROWSERS_PATH="${PLAYWRIGHT_BROWSERS_PATH:-/tmp/mcpany-playwright-browsers}"
 export BAZEL_BINDIR="."
 mkdir -p "$HOME"
 mkdir -p "$PLAYWRIGHT_BROWSERS_PATH"
@@ -179,7 +181,9 @@ if [[ -n "$spec_path" ]]; then
 fi
 
 echo "Ensuring Playwright Chromium is installed"
-"$node_bin" "$playwright_cli_js" install chromium >/dev/null
+if ! find "$PLAYWRIGHT_BROWSERS_PATH" -maxdepth 3 -type f -name 'chrome-headless-shell' | grep -q .; then
+  "$node_bin" "$playwright_cli_js" install chromium >/dev/null
+fi
 
 if [[ -n "$spec_path" ]]; then
   echo "Running UI Playwright spec via Bazel: $spec_path"
