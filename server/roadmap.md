@@ -104,6 +104,11 @@
 *   **[P0] Ghost Shell Execution Mode**: Isolated profiling environment for behavioral analysis of un-attested hooks. (Added: 2026-03-22)
 *   **[P1] Federated Policy Synchronizer**: Secure bus for synchronizing security guardrails across multiple MCP Any instances. (Added: 2026-03-22)
 
+#### Upcoming (2026-03-23 Evolution)
+*   **[P0] Proof-of-Intent (PoI) Validator**: Middleware implementing UACO v1.7 headers to bind tool calls to cryptographically signed intents. (Added: 2026-03-23)
+*   **[P0] Multi-Signature Skill Attestation**: Security mechanism for dynamic skill grafting to prevent "Skill-Squatting." (Added: 2026-03-23)
+*   **[P1] Binary State Handoff (BSH) Gateway**: High-performance binary transport layer for agent state transfer. (Added: 2026-03-23)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
