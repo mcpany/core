@@ -45,3 +45,7 @@ With the rise of "Context-Mirroring" attacks (CVE-2026-34015), it's no longer en
 
 ## 7. Evolutionary Changelog
 * **2026-03-23:** Initial Document Creation.
+* **2026-03-24:** Relational Intent Enforcement Update.
+    * **Context:** Today's market sync revealed the severity of "Context-Mirroring" attacks (CVE-2026-34015).
+    * **Architecture Adjustment:** Expanded `verifyIntent` to support "Intent Chains" and introduced "Relational Scoping" to dynamically narrow permissions based on signed intent lineage.
+    * **Security Impact:** Prevents subagent coercion and unauthorized credential use in deep swarms.

@@ -107,7 +107,12 @@
 #### Upcoming (2026-03-23 Evolution)
 *   **[P0] Proof-of-Intent (PoI) Validator**: Middleware implementing UACO v1.7 headers to bind tool calls to cryptographically signed intents. (Added: 2026-03-23)
 *   **[P0] Multi-Signature Skill Attestation**: Security mechanism for dynamic skill grafting to prevent "Skill-Squatting." (Added: 2026-03-23)
-*   **[P1] Binary State Handoff (BSH) Gateway**: High-performance binary transport layer for agent state transfer. (Added: 2026-03-23)
+*   **[P0] Binary State Handoff (BSH) Gateway**: High-performance binary transport layer for agent state transfer. (Added: 2026-03-23 - Promoted to P0 on 2026-03-24)
+
+#### Upcoming (2026-03-24 Evolution)
+*   **[P0] Relational PoI Enforcement**: Advanced intent-chain validation to prevent "Context-Mirroring" attacks. (Added: 2026-03-24)
+*   **[P0] Ghost Shell Hook Profiler**: Instrumented sandbox for behavioral profiling of un-attested configuration hooks. (Added: 2026-03-24)
+*   **[P1] BSH State Differential Sync**: Optimized binary state transfer that only sends deltas between agent handoffs. (Added: 2026-03-24)
 
 ## 2. Top 10 Recommended Features
 
