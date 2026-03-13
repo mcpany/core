@@ -49,6 +49,10 @@
 - [ ] **[P2] Agent Black Box Player**: Timeline-based replay of recorded agent sessions (Inputs, Outputs, State).
 - [ ] **[P2] Cost & metrics Dashboard**: Real-time visualization of token usage, costs, and tool performance metrics (P95 latency).
 
+- [ ] **[P0] Intent-Aware Channel Monitor**: (2026-03-25) Visual dashboard for monitoring dedicated routing paths and message delivery reliability.
+- [ ] **[P0] Proactive Sandbox Status**: (2026-03-25) Dashboard showing the status of path-based read-only protections and virtual config layers.
+- [ ] **[P1] Agentic PR Security Report**: (2026-03-25) UI for reviewing static analysis results and common vulnerability patterns in agent-generated PRs.
+
 ### Existing Planned Features
 
 - [ ] **Advanced Service Configuration & Sharing**:

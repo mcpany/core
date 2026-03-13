@@ -275,3 +275,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Recursive Depth-Limit Middleware**: Real-time call-graph monitor to detect and block recursive agent loops. (Added: 2026-03-18)
 *   **[P0] UAB Authenticated Task Delegation**: Implementation of UAB v1.2 task card verification for cross-framework handoffs. (Added: 2026-03-18)
 *   **[P1] Lineage-Aware Context Signing**: Cryptographic context chain signing to prevent subagent identity spoofing. (Added: 2026-03-18)
+
+#### Upcoming (2026-03-25 Evolution)
+*   **[P0] Intent-Aware Routing Channels**: Dedicated, high-reliability communication paths for sub-agent coordination. (Added: 2026-03-25)
+*   **[P0] Proactive Sandbox Hardening**: Path-based read-only protections for critical config files regardless of existence (CVE-2026-25725). (Added: 2026-03-25)
+*   **[P1] Agentic PR Security Scanner**: Integrated static analysis middleware to detect common vulnerabilities in agent-generated code. (Added: 2026-03-25)

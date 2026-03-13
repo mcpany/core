@@ -70,3 +70,10 @@ As agents increasingly rely on project-local configuration files (e.g., `.claude
 * **MFA Integration**: The `HITL Middleware` (Section 4) will now require Multi-Factor Attestation (e.g., via a mobile app or physical token) for any configuration block that defines a new executable hook or modifies system-level settings.
 * **Granular Consent Revocation**: Users can now revoke consent for a specific hook hash globally, causing all agents across all projects to immediately suspend execution if they attempt to run that hook.
 **Security Impact**: Eliminates "Trust Brushing" and prevents silent RCE from malicious configuration changes that might occur between agent sessions (e.g., after a `git pull`).
+
+### Update: 2026-03-25 - Proactive Sandbox Hardening (CVE-2026-25725)
+**Context**: The discovery of CVE-2026-25725 in Claude Code highlights a "Pre-creation" exploit where a sandbox is not applied if the configuration file is missing at startup.
+**Architecture Adjustment**:
+* **Path-Based Proactive Sandboxing**: MCP Any will now apply "Strict Immutability" and read-only protections to critical paths (e.g., `.claude/settings.json`, `.openclaw/config.yaml`) *regardless* of their existence on disk at initialization.
+* **Virtual Config Layer**: If a critical config file is missing, MCP Any will present a "Safe Virtual File" to the agent runtime that contains only default, attested settings, preventing the agent from being tricked into creating or loading an unverified file during the session.
+**Security Impact**: Eliminates the race condition and pre-creation vectors that allow agents to bypass configuration governance when working with new or "clean" repositories.

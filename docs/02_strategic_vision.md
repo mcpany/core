@@ -219,3 +219,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Relational PoI Enforcement**: MCP Any will pivot to a "Relational Security" model where every tool call is validated against a cryptographically signed "Intent Chain." This ensures that subagents cannot be coerced into actions that diverge from the parent's verified goal.
 - **BSH-Native Orchestration**: Moving toward a "Binary-First" transport for all A2A communications. MCP Any will act as a high-speed buffer and validator for Protobuf/BSH state handoffs, drastically reducing latency in complex multi-agent workflows.
 - **Ghost Shell Hook Profiling**: We are introducing "Ghost Shell" as a mandatory profiling step for any un-attested configuration hooks. This provides a behavioral safety net before any "Binary Smuggling" in WASM hooks can reach the host.
+
+---
+
+## Strategic Evolution: [2026-03-25]
+### Focus: Intent-Aware Routing & Proactive Sandbox Hardening
+**Context**: Today's findings show that "Settings-as-Execution" is the new attack surface (CVE-2026-25725) and that inter-agent communication reliability is a major bottleneck for complex swarms. Additionally, the high vulnerability rate in agent-produced code demands a shift toward proactive security governance.
+**Strategic Pivot**:
+- **Proactive Sandbox Hardening**: MCP Any will enforce "Strict Immutability" for all project-local configuration files by default. Sandbox protections will be applied to critical paths (e.g., .claude/settings.json) even if the files do not yet exist, preventing "Pre-creation" exploits.
+- **Intent-Aware Routing Channels**: We are moving toward a "Dedicated Channel" model for sub-agent communication. MCP Any will facilitate isolated, high-reliability routing paths that prevent "Message Drift" and ensure parent agents receive consistent results.
+- **In-Flight Security Scanning**: MCP Any will integrate lightweight static analysis into its tool-call middleware to detect common security vulnerabilities in code-generating tool outputs before they reach the repository.
