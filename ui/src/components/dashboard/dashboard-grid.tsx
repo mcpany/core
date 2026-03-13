@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 import { GripVertical, MoreHorizontal, Maximize, Columns, LayoutGrid, EyeOff, Trash2, Settings2, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -67,6 +67,11 @@ export function DashboardGrid() {
     const [widgets, setWidgets] = useState<WidgetInstance[]>([]);
     const [isMounted, setIsMounted] = useState(false);
     const [loading, setLoading] = useState(true);
+
+    // ⚡ BOLT: Memoized visible widget filtering to prevent O(N) recalculation on every render
+    // Randomized Selection from Top 5 High-Impact Targets
+    const visibleWidgets = useMemo(() => widgets.filter(w => !w.hidden), [widgets]);
+    const hiddenWidgets = useMemo(() => widgets.filter(w => w.hidden), [widgets]);
 
     const migrateLayout = (parsed: any): WidgetInstance[] => {
         // Migration Logic
@@ -202,8 +207,7 @@ export function DashboardGrid() {
     const onDragEnd = (result: DropResult) => {
         if (!result.destination) return;
 
-        const visibleWidgets = widgets.filter(w => !w.hidden);
-        const hiddenWidgets = widgets.filter(w => w.hidden);
+
 
         const items = Array.from(visibleWidgets);
         const [reorderedItem] = items.splice(result.source.index, 1);
@@ -271,7 +275,7 @@ export function DashboardGrid() {
         }
     };
 
-    const visibleWidgets = widgets.filter(w => !w.hidden);
+
 
     return (
         <div className="space-y-4">
