@@ -7,7 +7,8 @@ import (
 	"context"
 	"io"
 	"os"
-		"path/filepath"
+	"os/exec"
+	"path/filepath"
 	"runtime"
 	"strings"
 	"testing"
@@ -36,9 +37,12 @@ func TestExampleConfigs(t *testing.T) {
 	stdioBinPath := filepath.Join(runtimeRoot, "examples", "demo", "stdio", "my-tool-bin")
 	if _, err := os.Stat(stdioBinPath); os.IsNotExist(err) {
 		t.Logf("Building missing stdio example binary: %s", stdioBinPath)
-		err := os.WriteFile(stdioBinPath, []byte("#!/bin/sh\necho '{}'"), 0755)
-		if err != nil {
-			t.Logf("Failed to write dummy script: %v", err)
+		cmd := exec.Command("go", "build", "-o", stdioBinPath, filepath.Join(runtimeRoot, "examples", "demo", "stdio", "my-tool", "main.go"))
+		cmd.Dir = runtimeRoot
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		if err := cmd.Run(); err != nil {
+			t.Logf("Failed to build stdio example binary (continuing, but validation might fail): %v", err)
 		}
 	}
 
