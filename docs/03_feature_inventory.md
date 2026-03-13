@@ -318,9 +318,20 @@
 - **RID Mutation Boundary Enforcer**: (P0) Middleware that validates UACO v1.8 tokens, ensuring subagents cannot exceed their assigned delegation depth or mutate intents beyond authorized boundaries.
 - **WASM-BSH Active Sanitizer**: (P0) Integrated WASM sandbox for the BSH Gateway that performs schema-based validation on binary context buffers during handoffs.
 
+---
+
+## Evolution: [2026-03-27] Updates
+
+### Proposed Additions
+- **Live Context Sharding Middleware**: (P0) Core service for managing the lifecycle of granular, addressable context shards. Enables on-demand mounting/unmounting of sub-state.
+- **Consensus Tool Validation Gateway**: (P0) Distributed HITL middleware that requires multi-agent attestation for high-risk tool calls.
+- **PNTD Discovery Provider**: (P1) Implementation of Protocol-Neutral Task Discovery to unify capability mapping across MCP, gRPC, and UACO transports.
+- **Shard-Aware State Buffer**: (P1) Optimized BSH buffer extension that supports addressable memory regions for individual context shards.
+
 ### Priority Shifts
-- **Binary State Handoff (BSH) Gateway**: Re-affirmed as **P0** with new requirements for active WASM-based sanitization.
-- **Relational PoI Validator**: Re-affirmed as **P0**. Essential for supporting the cryptographic lineage required by RID.
+- **UACO-Native Coordination Middleware**: (Re-affirmed P0) Expanded to support RID Parental Overrides and Consensus Tokens.
+- **A2A Interop Bridge**: (Re-affirmed P0) Now a critical transport for Consensus-Based Tool Validation.
 
 ### Deprecations / Monitoring
-- **Passive State Validation**: Moving toward deprecation in favor of **Active WASM Sanitization** for all binary handoffs.
+- **Single-Agent HITL for High-Risk Actions**: Monitoring for deprecation in enterprise profiles in favor of **Consensus-Based Validation**.
+- **Monolithic Context Handoffs**: Moving toward deprecation for deep swarms in favor of **Context Sharding**.
