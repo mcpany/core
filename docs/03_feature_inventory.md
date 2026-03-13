@@ -265,3 +265,20 @@
 
 ### Deprecations / Monitoring
 - **Unbounded Task Delegation**: Moving toward total deprecation. All UACO delegations must eventually include a resource contract (SLA).
+
+---
+
+## Evolution: [2026-03-23] Updates
+
+### Proposed Additions
+- **ANSI Guard Middleware**: (P0) A security-critical middleware to sanitize tool outputs and prevent "ANSI Context Smuggling" (CVE-2026-34012).
+- **UACO Aggregated Bidding Engine**: (P0) Optimization layer that batches multiple task negotiations into a single atomic transaction to reduce swarm chattiness.
+- **Mesh-Native Blackboard (CRDT-Based)**: (P1) Evolution of the Shared KV Store to support decentralized consistency and conflict resolution in Agentic Meshes.
+- **ZKP Reasoning Attester**: (P1) Research-backed middleware for verifying that subagent reasoning follows policy without full prompt exposure.
+
+### Priority Shifts
+- **Aggregated Reasoning Middleware**: (New) Assigned **P0** priority due to the critical latency issues observed in OpenClaw v2.27 meshes.
+- **Shared KV Store (Blackboard)**: Promoted to **P0** (Re-affirmed) with the new requirement for Mesh-Native consistency.
+
+### Deprecations / Monitoring
+- **Sequential Task Negotiation**: Monitoring for deprecation in favor of Aggregated Bidding for multi-agent handoffs.

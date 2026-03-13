@@ -265,3 +265,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Recursive Depth-Limit Middleware**: Real-time call-graph monitor to detect and block recursive agent loops. (Added: 2026-03-18)
 *   **[P0] UAB Authenticated Task Delegation**: Implementation of UAB v1.2 task card verification for cross-framework handoffs. (Added: 2026-03-18)
 *   **[P1] Lineage-Aware Context Signing**: Cryptographic context chain signing to prevent subagent identity spoofing. (Added: 2026-03-18)
+
+#### Upcoming (2026-03-23 Evolution)
+*   **[P0] ANSI Guard Middleware**: Security-critical middleware to sanitize tool outputs and prevent terminal hijacking (CVE-2026-34012). (Added: 2026-03-23)
+*   **[P0] UACO Aggregated Bidding Engine**: Optimization layer to reduce swarm chattiness in decentralized meshes. (Added: 2026-03-23)
+*   **[P0] Mesh-Native Blackboard**: CRDT-based Shared KV Store for consistent state across distributed agent nodes. (Added: 2026-03-23)
+*   **[P1] ZKP Reasoning Attester**: Research-driven middleware for verifying reasoning policies via Zero-Knowledge Proofs. (Added: 2026-03-23)

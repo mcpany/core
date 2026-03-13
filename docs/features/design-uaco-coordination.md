@@ -51,3 +51,10 @@ As AI agent ecosystems transition from solitary tools to multi-agent swarms, the
 * Introducing a mandatory `resource_contract` field in the UACO Task Card schema.
 * Implementing a real-time monitor in the Delegation Engine that preemptively terminates tool chains exceeding the agreed-upon SLA.
 **Security Impact:** Prevents resource exhaustion attacks and ensures deterministic reasoning provenance across disparate agent frameworks.
+
+### Update: 2026-03-23 - Aggregated Bidding & Mesh Optimization
+**Context:** The shift to decentralized Agentic Meshes (OpenClaw v2.27) has led to significant "Chattiness" and latency in multi-agent handoffs.
+**Architecture Adjustment:**
+* Introducing `UACO.AggregateNegotiate`: A new endpoint that allows an agent to submit a batch of task cards for simultaneous bidding.
+* Implementing "Optimistic Handoffs" where context is pre-provisioned to the most likely bidders to reduce the final delegation latency.
+**Security Impact:** Reduces the window of opportunity for "Task Card Shadowing" by minimizing the number of exposed negotiation handshakes.
