@@ -44,3 +44,10 @@ As agents perform higher-risk actions (e.g., executing shell scripts, making fin
 
 ## 7. Evolutionary Changelog
 * **2026-03-28:** Initial Document Creation.
+
+### Update: 2026-03-29 - Deterministic MAQ & UACO v2.0 Alignment
+**Context**: The move toward UACO v2.0 and deterministic state sync requires that MAQ "Approval Tokens" are bound not just to Intent, but to a specific **Consensus Epoch**.
+**Architecture Adjustment**:
+*   **Epoch-Bound Approvals**: Approval tokens must now include the `consensus_epoch_id` to prevent "State Smearing" where an approval from a previous epoch is re-played in a mutated context.
+*   **Ghost Monitor Integration**: Supporting "Silent" monitor agents who can submit approval tokens without being visible to the executing subagent, neutralizing the "Observer Effect."
+**Security Impact**: Eliminates "Approval Replay" attacks and ensures that consensus is always reached on a perfectly synchronized view of the swarm state.

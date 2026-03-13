@@ -352,3 +352,17 @@
 
 ### Deprecations / Monitoring
 - **Legacy HITL Approval Tokens**: Monitoring for deprecation in favor of UACO-MAQ compliant multi-signature tokens.
+
+---
+
+## Evolution: [2026-03-29] Updates
+
+### Proposed Additions
+- **Deterministic Traceability Engine**: (P0) Implementation of a global logical clock for agent swarms to ensure immutable, epoch-based state trails.
+- **TEE-Accelerated Attestation Layer**: (P1) Native support for hardware-bound attestation (SGX/Nitro) to enable zero-latency cryptographic verification.
+- **Continuous Intent Alignment Monitor**: (P0) Real-time semantic analysis middleware to detect "Intent Drift" (CVE-2026-45102) in long-running subagent sessions.
+- **Silent Monitor "Ghost" Bridge**: (P1) UACO-native bridge for stealth monitor agents (OpenClaw Ghost Protocol).
+
+### Priority Shifts
+- **Atomic State Rollback Middleware**: Re-affirmed as **P0**. Critical for swarm sanity in deterministic environments.
+- **UACO-MAQ Consensus Gateway**: Re-affirmed as **P0**. Foundation for multi-agent quorum in v2.0 swarms.

@@ -167,3 +167,7 @@
 - [ ] **[P0] UACO-MAQ Quorum Monitor**: (2026-03-28) Security dashboard for orchestrating multi-agent approval quorums across frameworks.
 - [ ] **[P1] Fast-Path Attestation Visualizer**: (2026-03-28) Real-time monitor of hardware-accelerated trust sessions and latency gains.
 - [ ] **[P1] Context Smearing Alert Center**: (2026-03-28) UI for inspecting BSH fragments flagged for potential "Ghost Fragment" injections.
+- [ ] **[P0] Swarm Rollback Dashboard**: UI for managing swarm-wide state checkpoints and visualizing rollback effects. (Added: 2026-03-29)
+- [ ] **[P0] Intent Drift Monitor**: Real-time visualization of semantic divergence scores for subagent sessions. (Added: 2026-03-29)
+- [ ] **[P1] TEE Status & Latency Widget**: Monitor for hardware-accelerated trust sessions and performance gains. (Added: 2026-03-29)
+- [ ] **[P1] Logical Clock Visualizer**: Gantt-style view of Consensus Epochs and deterministic state handoffs. (Added: 2026-03-29)
