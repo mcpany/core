@@ -4,7 +4,7 @@
  */
 
 import type {Metadata} from 'next';
-import { Inter, Roboto_Mono } from 'next/font/google';
+import type { CSSProperties } from 'react';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -29,20 +29,10 @@ export const metadata: Metadata = {
   description: 'A server management UI for the MCP Any server.',
 };
 
-// ⚡ Bolt Optimization: Use next/font to host fonts locally.
-// This removes external requests to Google Fonts, improves privacy,
-// and eliminates Cumulative Layout Shift (CLS) with automatic fallback adjustments.
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter',
-  display: 'swap',
-});
-
-const robotoMono = Roboto_Mono({
-  subsets: ['latin'],
-  variable: '--font-mono',
-  display: 'swap',
-});
+const fontVariables = {
+  '--font-inter': 'Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+  '--font-mono': '"Roboto Mono", "SFMono-Regular", ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace',
+} as CSSProperties;
 
 /**
  * Root layout component for the application.
@@ -60,7 +50,7 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
       </head>
-      <body className={`font-body antialiased ${inter.variable} ${robotoMono.variable}`}>
+      <body className="font-body antialiased" style={fontVariables}>
         <ThemeProvider
             attribute="class"
             defaultTheme="system"

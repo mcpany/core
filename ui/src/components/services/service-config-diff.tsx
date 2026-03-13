@@ -39,7 +39,7 @@ export function ServiceConfigDiff({ original, modified }: ServiceConfigDiffProps
   const modifiedYaml = yaml.dump(modified, { sortKeys: true, indent: 2, lineWidth: -1 });
 
   return (
-    <div className="h-[400px] w-full overflow-hidden rounded-md border border-input bg-background">
+    <div className="monaco-diff-editor h-[400px] w-full overflow-hidden rounded-md border border-input bg-background">
       <DiffEditor
         height="100%"
         original={originalYaml}

@@ -27,6 +27,7 @@ export function ConfigEditor({ value, onChange, language = "yaml", readOnly = fa
   const { theme, systemTheme } = useTheme();
   const monaco = useMonaco();
   const editorRef = useRef<Parameters<OnMount>[0] | null>(null);
+  const [useFallbackEditor, setUseFallbackEditor] = React.useState(false);
 
   // Calculate actual theme
   const currentTheme = theme === "system" ? systemTheme : theme;
@@ -101,43 +102,67 @@ export function ConfigEditor({ value, onChange, language = "yaml", readOnly = fa
     }
   }, [monaco, language]);
 
+  useEffect(() => {
+    if (editorRef.current || useFallbackEditor) {
+      return;
+    }
+    const fallbackTimer = window.setTimeout(() => {
+      if (!editorRef.current) {
+        console.warn("Monaco initialization timed out; using textarea fallback");
+        setUseFallbackEditor(true);
+      }
+    }, 3000);
+    return () => window.clearTimeout(fallbackTimer);
+  }, [useFallbackEditor]);
 
   const handleEditorDidMount: OnMount = (editor, _monaco) => {
     editorRef.current = editor;
+    setUseFallbackEditor(false);
   };
 
   return (
     <div className="h-full w-full overflow-hidden rounded-md border border-input bg-transparent shadow-sm focus-within:ring-1 focus-within:ring-ring">
-      <Editor
-        height="100%"
-        defaultLanguage={language}
-        value={value}
-        onChange={onChange}
-        theme={editorTheme}
-        onMount={(editor, monaco) => {
-          if (isDark) {
-            defineDraculaTheme(monaco);
-            monaco.editor.setTheme("dracula");
-          }
-          handleEditorDidMount(editor, monaco);
-        }}
-        options={{
-          minimap: { enabled: false },
-          scrollBeyondLastLine: false,
-          fontSize: 13,
-          fontFamily: "var(--font-mono), monospace",
-          lineNumbers: "on",
-          roundedSelection: true,
-          readOnly,
-          automaticLayout: true,
-          padding: { top: 16, bottom: 16 },
-          overviewRulerLanes: 0,
-          renderLineHighlight: "all",
-          lineDecorationsWidth: 16, // minimal width for line numbers
-          folding: true,
-        }}
-        loading={<div className="flex items-center justify-center h-full text-muted-foreground text-xs">Loading Editor...</div>}
-      />
+      {useFallbackEditor ? (
+        <textarea
+          className="monaco-editor h-full w-full resize-none bg-background p-4 text-sm outline-none"
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          readOnly={readOnly}
+          spellCheck={false}
+          style={{ fontFamily: "var(--font-mono), monospace" }}
+        />
+      ) : (
+        <Editor
+          height="100%"
+          defaultLanguage={language}
+          value={value}
+          onChange={onChange}
+          theme={editorTheme}
+          onMount={(editor, monaco) => {
+            if (isDark) {
+              defineDraculaTheme(monaco);
+              monaco.editor.setTheme("dracula");
+            }
+            handleEditorDidMount(editor, monaco);
+          }}
+          options={{
+            minimap: { enabled: false },
+            scrollBeyondLastLine: false,
+            fontSize: 13,
+            fontFamily: "var(--font-mono), monospace",
+            lineNumbers: "on",
+            roundedSelection: true,
+            readOnly,
+            automaticLayout: true,
+            padding: { top: 16, bottom: 16 },
+            overviewRulerLanes: 0,
+            renderLineHighlight: "all",
+            lineDecorationsWidth: 16, // minimal width for line numbers
+            folding: true,
+          }}
+          loading={<div className="flex items-center justify-center h-full text-muted-foreground text-xs">Loading Editor...</div>}
+        />
+      )}
     </div>
   );
 }

@@ -29,7 +29,7 @@ export function DiffViewer({ original, modified, language = "yaml" }: DiffViewer
     const { theme } = useTheme();
 
     return (
-        <div className="h-[500px] border rounded-md overflow-hidden">
+        <div className="monaco-diff-editor h-[500px] border rounded-md overflow-hidden">
             <DiffEditor
                 height="100%"
                 language={language}

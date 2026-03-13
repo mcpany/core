@@ -174,6 +174,10 @@ fi
 export PATH="$(dirname "$node_bin"):$PATH"
 export NODE_PATH="$ui_runtime/node_modules${NODE_PATH:+:$NODE_PATH}"
 
+if [[ -z "${NODE_EXTRA_CA_CERTS:-}" && -f /etc/ssl/certs/ca-certificates.crt ]]; then
+  export NODE_EXTRA_CA_CERTS=/etc/ssl/certs/ca-certificates.crt
+fi
+
 # Use `next start` (production mode) when a pre-built .next is available in the
 # Bazel runfiles (provided by the ":build" data dependency).  This starts in a
 # fraction of the time compared to `next dev` (JIT compilation), making tests
@@ -192,7 +196,10 @@ if [[ -n "$spec_path" ]]; then
 fi
 
 echo "Ensuring Playwright Chromium is installed"
-if ! find "$PLAYWRIGHT_BROWSERS_PATH" -maxdepth 3 -type f -name 'chrome-headless-shell' | grep -q .; then
+system_chromium="${PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH:-$(command -v chromium-browser || command -v chromium || true)}"
+if [[ -n "$system_chromium" && -x "$system_chromium" ]]; then
+  export PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH="$system_chromium"
+elif ! find "$PLAYWRIGHT_BROWSERS_PATH" -maxdepth 3 -type f -name 'chrome-headless-shell' | grep -q .; then
   "$node_bin" "$playwright_cli_js" install chromium >/dev/null
 fi
 

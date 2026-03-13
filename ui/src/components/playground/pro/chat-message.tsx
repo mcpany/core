@@ -265,7 +265,7 @@ export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
                             Output Difference
                         </DialogTitle>
                     </DialogHeader>
-                    <div className="flex-1 border rounded-md overflow-hidden bg-[#1e1e1e]">
+                    <div className="monaco-diff-editor flex-1 border rounded-md overflow-hidden bg-[#1e1e1e]">
                         <DiffEditor
                             original={JSON.stringify(prevUnwrapped, null, 2)}
                             modified={JSON.stringify(currUnwrapped, null, 2)}

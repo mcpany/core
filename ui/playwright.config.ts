@@ -11,6 +11,7 @@ const PORT = process.env.TEST_PORT || 9111;
 const BASE_URL = process.env.PLAYWRIGHT_BASE_URL || `http://localhost:${PORT}`;
 const NEXT_DEV_COMMAND = process.env.NEXT_DEV_COMMAND || `npx next dev -p ${PORT}`;
 const TEST_MATCH = process.env.PLAYWRIGHT_TEST_MATCH;
+const CHROMIUM_EXECUTABLE_PATH = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH;
 
 export default defineConfig({
   testDir: './tests',
@@ -40,6 +41,7 @@ export default defineConfig({
       use: {
         ...devices['Desktop Chrome'],
         launchOptions: {
+          ...(CHROMIUM_EXECUTABLE_PATH ? { executablePath: CHROMIUM_EXECUTABLE_PATH } : {}),
           args: ['--disable-dev-shm-usage', '--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu'],
         },
       },

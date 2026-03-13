@@ -17,9 +17,6 @@ test.describe('Onboarding Flow', () => {
   test('shows onboarding hero when no services exist', async ({ page }) => {
     await page.goto('/');
 
-    // Wait for the app to load and decide what to show
-    await page.waitForLoadState('networkidle');
-
     // Check for the "Welcome to MCP Any" text or "Dashboard" heading
     // Using a more robust check for the "Welcome" text
     const welcome = page.getByText('Welcome to MCP Any');

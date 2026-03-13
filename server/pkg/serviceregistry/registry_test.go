@@ -154,6 +154,9 @@ func TestServiceRegistry_RegisterAndGetService(t *testing.T) {
 	assert.False(t, ok)
 
 	t.Run("with OAuth2 authenticator", func(t *testing.T) {
+		mockProvider := auth.NewMockOAuth2Server(t)
+		defer mockProvider.Close()
+
 		serviceConfig := configv1.UpstreamServiceConfig_builder{
 			Name: proto.String("oauth2-service"),
 			HttpService: configv1.HttpUpstreamService_builder{
@@ -161,7 +164,7 @@ func TestServiceRegistry_RegisterAndGetService(t *testing.T) {
 			}.Build(),
 			Authentication: configv1.Authentication_builder{
 				Oauth2: configv1.OAuth2Auth_builder{
-					IssuerUrl: proto.String("https://accounts.google.com"),
+					IssuerUrl: proto.String(mockProvider.URL),
 					Audience:  proto.String("test-audience"),
 				}.Build(),
 			}.Build(),
