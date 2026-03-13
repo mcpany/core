@@ -53,3 +53,7 @@ With the rise of "Context-Mirroring" attacks (CVE-2026-34015), it's no longer en
     * **Context:** UACO v1.8 introduces RID to combat "Intent Hijacking" in deep swarms.
     * **Architecture Adjustment:** Integrated RID depth-limiting into the `verifyIntent` logic. Added support for "Mutation Boundaries" that restrict how subagents can re-sign intents for their own sub-delegations.
     * **Security Impact:** Eliminates "Intent Ghosting" and provides cryptographic assurance of intent lineage across arbitrary delegation depths.
+    * **2026-03-26: RID & Mutation Boundary Update**
+        * **Context**: The release of the UACO v1.8 draft introduces Recursive Intent Delegation (RID) to combat "Intent Hijacking."
+        * **Architecture Adjustment**: Expanded the `verifyIntent` logic to support recursive depth checks and mutation boundary validation. The validator now tracks the entire "Intent Lineage" to ensure relational integrity.
+        * **Security Impact**: Eliminates "Intent Ghosting" and ensures that subagents operate strictly within the bounds defined by their lineage.

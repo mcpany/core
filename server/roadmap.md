@@ -281,3 +281,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Recursive Depth-Limit Middleware**: Real-time call-graph monitor to detect and block recursive agent loops. (Added: 2026-03-18)
 *   **[P0] UAB Authenticated Task Delegation**: Implementation of UAB v1.2 task card verification for cross-framework handoffs. (Added: 2026-03-18)
 *   **[P1] Lineage-Aware Context Signing**: Cryptographic context chain signing to prevent subagent identity spoofing. (Added: 2026-03-18)
+
+#### Upcoming (2026-03-26 Evolution)
+*   **[P0] Modular Context Hook Adapter**: Bridge for OpenClaw-style lifecycle hooks to ensure context interop. (Added: 2026-03-26)
+*   **[P0] RID Mutation Boundary Enforcer**: Cryptographic enforcement of UACO v1.8 intent delegation limits and depth. (Added: 2026-03-26)
+*   **[P0] WASM-BSH Active Sanitizer**: Pluggable WASM sandbox for binary state validation during handoffs. (Added: 2026-03-26)

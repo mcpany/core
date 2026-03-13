@@ -51,3 +51,7 @@ As agent swarms grow in depth and complexity, the overhead of transferring massi
     * **Context:** OpenClaw v2.5 moves toward "Active State Sanitization" to prevent binary context poisoning.
     * **Architecture Adjustment:** Integrated a "WASM-BSH Sanitizer" into the memory-mapped transport flow. Binary state is now validated against a signed schema within a WASM sandbox before being mapped into the target agent's address space.
     * **Security Impact:** Neutralizes "Binary Context Injection" attacks while maintaining sub-millisecond Zero-Copy performance.
+    * **2026-03-26: WASM-BSH Active Sanitization Update**
+        * **Context**: OpenClaw v2.5 and UACO v1.8 emphasize the risk of "Binary Context Poisoning" in deep swarms.
+        * **Architecture Adjustment**: Integrated a pluggable WASM sandbox into the BSH handoff flow. Binary buffers are now validated against a signed Protobuf schema within the sandbox before being mapped to the target agent.
+        * **Security Impact**: Neutralizes "State Injection" attacks while maintaining the performance benefits of Zero-Copy transport.
