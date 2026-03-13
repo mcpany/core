@@ -288,3 +288,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Self-Correction Guardrails**: MCP Any will implement UACO v2.1 IPSC (Intent-Preserving Self-Correction). We will introduce a "Correction Budget" middleware that halts recursive refinement loops and mandates user or parent-agent re-attestation when agents diverge from the primary intent.
 - **GFM-Resistant State Validation**: Our WASM-BSH sanitization will be expanded to detect "Dormant Fragments." We will move from validation-on-handoff to "Continuous State Integrity Monitoring," where binary state is re-verified during every self-correction cycle.
 - **Beacon-First Discovery Hub**: Transitioning from poll-based discovery to a "Beacon Reactive" model. MCP Any will act as a high-speed listener for UDP Capability Beacons, deduplicating and indexing them in real-time to eliminate "Discovery Noise" for connected agents.
+
+---
+
+## Strategic Evolution: 2026-04-01
+### Focus: Reasoning-Bound Context Integrity & Path Normalization Governance
+**Context**: Today's findings on "Reasoning-Bound Context Shifting" (OpenClaw) and "Normalization Fatigue" (Claude Code CVE-2026-34812) reveal that security and stability now depend on the *integrity of the path* and the *consistency of the reasoning state*.
+**Strategic Pivot**:
+- **Reasoning-Bound Context Shifter**: MCP Any will implement a context management layer that synchronizes shifting logic across frameworks, ensuring that subagents don't suffer "Context Amnesia" during deep reasoning loops.
+- **Normalization-as-a-Service (NaaS)**: Moving beyond basic path validation to a centralized "Path Normalization Engine." This ensures that project-local settings and tool calls are validated against a single, OS-agnostic "Truth" to prevent symlink escapes.
+- **Optimistic Attestation Gate**: To support Gemini's optimistic loading, MCP Any will act as a "Virtual Quorum" that can provide high-confidence, pre-attestation signals based on historical tool behavior and global safety telemetry.

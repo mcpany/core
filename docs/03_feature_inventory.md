@@ -376,9 +376,23 @@
 ### Priority Shifts
 - **Shared KV Store (Blackboard)**: Re-affirmed as **P0**. Expanded to include support for "Branch-Aware State Isolation" and "Merge Conflict Resolution."
 - **UDP Beacon Discovery Listener**: Promoted from **P1** to **P0**. Essential prerequisite for the new Federated Discovery Quorum.
+- **Inode-Aware Symlink Validator**: Re-prioritized to **P0**. Critical for mitigating project-local exfiltration vectors.
+
+---
+
+## Evolution: 2026-04-01 Updates
+
+### Proposed Additions
+- **Reasoning-Bound Context Shifter**: (P0) Context management middleware that synchronizes dynamic shifting logic across frameworks.
+- **Path Normalization Engine (NaaS)**: (P0) Centralized service for OS-agnostic path normalization to prevent symlink and traversal escapes.
+- **Optimistic Capability Loading Middleware**: (P1) Predictive tool registry that handles Gemini-style optimistic loading with built-in TOCTOU protection.
+
+### Priority Shifts
+- **Inode-Aware Symlink Validator**: (Re-affirmed P0) Urgent requirement to address "Normalization Fatigue" in project-local config parsing.
 
 ### Deprecations / Monitoring
-- **Unvalidated Recursive Discovery**: Monitoring for total deprecation. All discovery traversals must be guarded by the Inode-Aware Symlink Validator.
+- **OS-Specific Path Joins**: Monitoring for deprecation in favor of the **Path Normalization Engine**.
+- **Static Discovery Quorums**: Moving toward **Optimistic Loading** with background attestation.
 
 ---
 

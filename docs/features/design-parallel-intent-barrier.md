@@ -46,3 +46,4 @@ With the introduction of OpenClaw v2.7 Sub-Intent Parallelization, agents can no
 
 ## 7. Evolutionary Changelog
 * **2026-03-31:** Initial Document Creation.
+* **2026-04-01:** Updated architecture to include "Reasoning-Bound Snapshot Divergence" resolution. Introduced a multi-stage merging process that reconciles divergent reasoning paths before committing state to the Blackboard.
