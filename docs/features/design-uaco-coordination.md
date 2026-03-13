@@ -45,3 +45,9 @@ As AI agent ecosystems transition from solitary tools to multi-agent swarms, the
 ## 7. Evolutionary Changelog
 * **2026-03-19:** Initial Document Creation.
 * **2026-03-20:** Integration with Ephemeral Workspace Trust. Task Cards now include a `required_trust_level` field that must be satisfied by the bidder's ephemeral session token. Added "Bid Quarantining" for agents with high behavioral anomaly scores.
+### Update: 2026-03-22 - Agentic SLA Enforcement
+**Context:** Multi-agent swarms are increasingly hitting "Recursive Deadlocks" and "Spiral of Death" loops that exhaust token quotas.
+**Architecture Adjustment:**
+* Introducing a mandatory `resource_contract` field in the UACO Task Card schema.
+* Implementing a real-time monitor in the Delegation Engine that preemptively terminates tool chains exceeding the agreed-upon SLA.
+**Security Impact:** Prevents resource exhaustion attacks and ensures deterministic reasoning provenance across disparate agent frameworks.

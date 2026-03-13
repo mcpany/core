@@ -99,6 +99,11 @@
 *   **[P1] DNS/ICMP Exfiltration Monitor**: L4 telemetry middleware to detect and block non-HTTP exfiltration attempts. (Added: 2026-03-21)
 *   **[P1] Hardware-Bound Trust Continuity**: TPM/Secure Enclave signatures to persist trust for verified headless agents. (Added: 2026-03-21)
 
+#### Upcoming (2026-03-22 Evolution)
+*   **[P0] UACO Agentic SLA Middleware**: Enforcement of resource contracts (token budget, reasoning time) during task delegation. (Added: 2026-03-22)
+*   **[P0] Ghost Shell Execution Mode**: Isolated profiling environment for behavioral analysis of un-attested hooks. (Added: 2026-03-22)
+*   **[P1] Federated Policy Synchronizer**: Secure bus for synchronizing security guardrails across multiple MCP Any instances. (Added: 2026-03-22)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

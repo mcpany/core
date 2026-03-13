@@ -44,3 +44,9 @@ The discovery of "Binary Smuggling" (CVE-2026-31042) highlights a critical vulne
 
 ## 7. Evolutionary Changelog
 * **2026-03-21:** Initial Document Creation.
+### Update: 2026-03-22 - Ghost Shell Behavioral Profiling
+**Context:** Recent Claude Code security post-mortems confirm that project-local hooks are a primary RCE vector. Blocking them outright hinders developer velocity.
+**Architecture Adjustment:**
+* Introducing "Ghost Shell" mode for un-attested hooks.
+* Un-attested hooks are executed in an air-gapped, instrumented container that generates a behavioral profile (file I/O, network syscalls).
+**Security Impact:** Allows users to audit hook behavior without risk to the host, facilitating safer "Content-Addressable" attestation decisions.
