@@ -40,7 +40,7 @@
 
 ### Proposed Additions
 - **On-Demand Discovery Middleware (Lazy-MCP)**: (P0) Implements similarity-based tool searching to prevent context pollution. Essential for massive (100+) tool libraries.
-- **MCP Provenance Attestation**: (P1) Cryptographic verification of MCP server origins to prevent "Clinejection"-style supply chain attacks.
+- **MCP Provenance Attestation**: (P1) Cryptographic verification of MCP server origins to prevent "Clinejection"-style search-and-replace attacks.
 - **Slash-Command Bridge for Gemini**: (P1) Automatic mapping of MCP prompts to native Gemini CLI slash commands.
 
 ### Priority Shifts
@@ -342,9 +342,9 @@
 
 ### Proposed Additions
 - **Atomic State Rollback Middleware**: (P0) Enables swarm-wide state checkpoints and rollbacks for the Blackboard and Context Shards.
-- **UACO-MAQ Consensus Gateway**: (P0) Support for UACO v1.9 Multi-Agent Quorum, allowing cross-framework approval tokens for high-risk actions.
+- **UACO-MAQ Consensus Gateway**: (P0) Support for UACO v1.9 Multi-Agent Quorum, allowing cross-framework approval tokens for high-risk action approval.
 - **Session-Bound Fast-Path Attestation**: (P1) Hardware-accelerated attestation for sub-calls within a verified mission session.
-- **Context Smearing Scanner**: (P1) Binary-level inspection for BSH fragments to detect malicious "Ghost Fragments."
+- **Context Smearing Scanner**: (P1) Binary-level inspection for BSH fragments to detect "Ghost Fragments."
 
 ### Priority Shifts
 - **Consensus Tool Validation Gateway**: Re-affirmed as **P0**. Urgent need to align with UACO v1.9 MAQ.
@@ -352,3 +352,20 @@
 
 ### Deprecations / Monitoring
 - **Legacy HITL Approval Tokens**: Monitoring for deprecation in favor of UACO-MAQ compliant multi-signature tokens.
+
+---
+
+## Evolution: [2026-03-29] Updates
+
+### Proposed Additions
+- **State-Anchored Checklist Middleware**: (P0) A core service for persisting high-level mission state (checklists/plans) outside the agent's context window.
+- **Multi-Claude Verification Hub**: (P0) Orchestration middleware for "Producer-Reviewer" agent pairs to ensure 2-of-2 consensus on critical tasks.
+- **Docker-Bound Named Pipe Bridge**: (P0) Secure inter-agent transport using isolated kernel-level pipes to mitigate Named Pipe Hijacking (CVE-2026-42105).
+- **Reasoning-Aware Routing Middleware**: (P1) Economic routing service that selects models based on the reasoning intensity and token cost of a task.
+
+### Priority Shifts
+- **Atomic State Rollback Middleware**: Re-affirmed as **P0**. Critical for supporting "State-Anchored Swarms."
+- **Consensus Tool Validation Gateway**: (Re-affirmed P0) Expanded to support native "Producer-Reviewer" consensus flows.
+
+### Deprecations / Monitoring
+- **Unencrypted HTTP Loopback for A2A**: Moving toward total deprecation. All local inter-agent traffic must transition to **Named Pipes** or **Unix Sockets**.

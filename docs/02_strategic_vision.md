@@ -259,3 +259,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Atomic State Rollback Middleware**: MCP Any will evolve to support swarm-wide "Checkpoints." Parent agents can snapshot the state of the Blackboard and Context Shards, enabling full rollbacks if a specialized subagent diverges or fails.
 - **UACO-MAQ Consensus Gateway**: We are promoting the Consensus Hub to support the UACO v1.9 MAQ standard. This allows agents from disparate frameworks (OpenClaw, AutoGen) to provide cryptographically bound approval tokens for a single high-risk action.
 - **Session-Bound Fast-Path Attestation**: To mitigate the Attestation Tax, MCP Any will implement hardware-accelerated "Lightweight Proofs." Once a Mission Intent is verified, subsequent sub-calls within the same session will use low-latency attestation paths, maintaining security without the 100ms signature overhead.
+
+---
+
+## Strategic Evolution: [2026-03-29]
+### Focus: State-Anchored Swarms & Isolated Transport Integrity
+**Context**: Today's research on "Plan Ghosting" during context compaction and the discovery of Named Pipe Hijacking (CVE-2026-42105) shift the focus to "Operational Resilience." As agents become more complex, the infrastructure must ensure that the "Mission North Star" (the Plan) survives optimization and that inter-agent comms are physically isolated.
+**Strategic Pivot**:
+- **State-Anchored Checklist Middleware**: MCP Any will implement a "Checklist Anchor" tool that persists high-level goals and plan state outside the agent's compressed context window, re-injecting it automatically after compaction events to prevent "Ghosting."
+- **Multi-Claude Verification Hub**: We are evolving the Consensus Gateway to natively support "Producer-Reviewer" pairs. MCP Any will orchestrate the handoff between a 'Writing Agent' and a 'Reviewing Agent' with independent context, ensuring 2-of-2 consensus for critical PRs or migrations.
+- **Isolated Named-Pipe Gateway**: To mitigate CVE-2026-42105, MCP Any will transition its internal A2A bridge from HTTP loopback to Docker-bound named pipes (or Unix sockets), providing a kernel-level security boundary against browser-based side-channel attacks.
+- **Reasoning-Aware Routing**: Integrating "Economic Reasoning" into the tool discovery process. MCP Any will now suggest models based on the detected "Reasoning Intensity" of a task, optimizing swarm costs without sacrificing accuracy.

@@ -298,3 +298,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] UACO-MAQ Consensus Gateway**: Implementation of UACO v1.9 Multi-Agent Quorum for cross-framework high-risk action approval. (Added: 2026-03-28)
 *   **[P1] Session-Bound Fast-Path Attestation**: Hardware-accelerated "Lightweight Proofs" for low-latency sub-call validation. (Added: 2026-03-28)
 *   **[P1] Context Smearing Scanner**: Binary-level scanner for BSH fragments to detect "Ghost Fragments" in context handoffs. (Added: 2026-03-28)
+
+#### Upcoming (2026-03-29 Evolution)
+*   **[P0] State-Anchored Checklist Middleware**: Core service for persisting mission state (checklists/plans) outside agent context windows. (Added: 2026-03-29)
+*   **[P0] Multi-Claude Verification Hub**: Orchestration layer for native "Producer-Reviewer" agent pairs and 2-of-2 consensus. (Added: 2026-03-29)
+*   **[P0] Isolated Named-Pipe Bridge**: Secure A2A transport via Docker-bound kernel pipes (CVE-2026-42105 mitigation). (Added: 2026-03-29)
+*   **[P1] Reasoning-Aware Routing Middleware**: Economic routing service optimized for reasoning intensity and token cost. (Added: 2026-03-29)

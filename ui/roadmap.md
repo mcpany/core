@@ -167,3 +167,7 @@
 - [ ] **[P0] UACO-MAQ Quorum Monitor**: (2026-03-28) Security dashboard for orchestrating multi-agent approval quorums across frameworks.
 - [ ] **[P1] Fast-Path Attestation Visualizer**: (2026-03-28) Real-time monitor of hardware-accelerated trust sessions and latency gains.
 - [ ] **[P1] Context Smearing Alert Center**: (2026-03-28) UI for inspecting BSH fragments flagged for potential "Ghost Fragment" injections.
+- [ ] **[P0] State-Anchored Mission Dashboard**: (Added: 2026-03-29) UI for visualizing the "Mission North Star" checklist and plan persistence through compaction.
+- [ ] **[P0] Multi-Claude Verification Workspace**: (Added: 2026-03-29) Dashboard for orchestrating Producer-Reviewer agent handoffs and consensus auditing.
+- [ ] **[P0] Isolated Pipe Security Widget**: (Added: 2026-03-29) Real-time monitor of Docker-bound named pipe status and kernel-level boundary violations.
+- [ ] **[P1] Economic Routing Advisor**: (Added: 2026-03-29) UI for analyzing reasoning intensity vs. token cost for swarm tasks.
