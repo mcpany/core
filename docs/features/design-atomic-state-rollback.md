@@ -43,3 +43,7 @@ As agent swarms become more autonomous and perform complex multi-step reasoning,
 
 ## 7. Evolutionary Changelog
 * **2026-03-29:** Initial Document Creation.
+* **2026-03-30: IPSC-Triggered Checkpoints**
+    * **Context:** The discovery of "Cognitive Lock" in self-correction loops (UACO v2.1) requires more granular recovery options.
+    * **Architecture Adjustment:** Added "Auto-Checkpointing" on the first correction cycle of an IPSC session. If the Correction Budget is exceeded, the ASR middleware can now offer an "Atomic Rollback to Pre-Correction State."
+    * **Security Impact:** Prevents "State Smearing" where failed refinements leave residue in the Shared KV Store.

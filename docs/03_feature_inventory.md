@@ -363,9 +363,19 @@
 - **Hardware-Bound Attestation Provider (HAFP)**: (P0) Native integration with TPM/Secure Enclave for zero-latency mission validation.
 - **Context Pinning Middleware**: (P1) Implements immutable prompt segments to neutralize Context Smearing attacks.
 
+---
+
+## Evolution: [2026-03-30] Updates
+
+### Proposed Additions
+- **UACO v2.1 IPSC Middleware**: (P0) Implementation of Intent-Preserving Self-Correction to prevent "Cognitive Lock" refinement loops.
+- **Continuous BSH Integrity Monitor**: (P0) Real-time WASM-based monitor for Binary State Handoffs to detect "Ghost Fragment Mutation" during self-correction.
+- **UDP Beacon Discovery Listener**: (P1) High-speed reactive listener for Gemini-style Capability Beacons to reduce discovery noise.
+- **Correction Budget Controller**: (P1) Resource management middleware that enforces token and cycle limits on agent self-correction loops.
+
 ### Priority Shifts
-- **Session-Bound Fast-Path Attestation**: Promoted from **P1** to **P0**. High demand for low-latency validation in enterprise swarms.
-- **Atomic State Rollback Middleware**: Re-affirmed as **P0**. Critical foundation for swarm sanity.
+- **WASM-BSH State Sanitizer**: Re-affirmed as **P0**. Expanded to include "Dormant Fragment" detection as part of GFM defense.
+- **PNTD Discovery Provider**: Promoted from **P1** to **P0**. Essential foundation for the new Beacon-First Discovery Hub.
 
 ### Deprecations / Monitoring
-- **Flat Intent Chains**: Monitoring for deprecation in favor of **UACO v2.0 Hierarchical Intent Trees (RIS)**.
+- **Unbounded Self-Correction**: Moving toward total deprecation. All self-correction loops must eventually be bound by an IPSC token and Correction Budget.
