@@ -62,7 +62,7 @@ func TestPostgresStore_Load_Errors(t *testing.T) {
 
 		store := NewStore(&DB{db})
 		_, err = store.Load(context.Background())
-		// sqlmock RowError on 0th row might cause Scan to fail or Next to return false but Err() to be set
+		// Verify that row iteration errors are properly propagated via rows.Err()
 		assert.Error(t, err)
 	})
 }

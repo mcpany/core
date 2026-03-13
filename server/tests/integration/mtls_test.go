@@ -8,6 +8,7 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -67,16 +68,16 @@ func TestMTLSAuthentication(t *testing.T) {
 	// Configure the gateway to use mTLS for the upstream.
 	// Use absolute paths to the temp cert directory so the server's path validation
 	// (which resolves symlinks) accepts them in any environment including Bazel.
-	config := `
+	config := fmt.Sprintf(`
 upstream_services:
   - name: my-upstream
     upstream_auth:
       mtls:
-        client_cert_path: ` + realTLSDir + `/client.crt
-        client_key_path: ` + realTLSDir + `/client.key
-        ca_cert_path: ` + realTLSDir + `/ca.crt
+        client_cert_path: %s/client.crt
+        client_key_path: %s/client.key
+        ca_cert_path: %s/ca.crt
     http_service:
-      address: "` + server.URL + `"
+      address: "%s"
       tools:
         - name: "my-tool"
           call_id: "get-root"
@@ -84,7 +85,7 @@ upstream_services:
         get-root:
           endpoint_path: "/"
           method: "HTTP_METHOD_GET"
-`
+`, realTLSDir, realTLSDir, realTLSDir, server.URL)
 	// Start the gateway
 	serverInfo := StartMCPANYServerWithConfig(t, "mtls-test", config)
 	defer serverInfo.CleanupFunc()
