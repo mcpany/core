@@ -216,7 +216,6 @@ jobs:
             --test_output=errors \
             --test_summary=terse \
             --test_timeout=300,600,900,1800 \
-            --test_size_filters=-enormous \
             --test_env=GITHUB_WORKSPACE \
             --test_env=PATH \
             --test_env=HOME \
