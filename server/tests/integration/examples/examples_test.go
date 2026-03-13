@@ -34,7 +34,7 @@ func TestExampleConfigs(t *testing.T) {
 	if _, err := os.Stat(stdioBinPath); os.IsNotExist(err) {
 		t.Logf("Building missing stdio example binary: %s", stdioBinPath)
 		// Set go mod env so build works outside module root
-		cmd := exec.Command("go", "build", "-o", stdioBinPath, filepath.Join(runtimeRoot, "examples", "demo", "stdio", "my-tool", "main.go"))
+		cmd := exec.Command("go", "build", "-o", stdioBinPath, filepath.Join(projectRoot, "examples", "demo", "stdio", "my-tool", "main.go"))
 		cmd.Dir = projectRoot // Run build from actual project root
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
