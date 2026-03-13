@@ -30,6 +30,9 @@ test --test_size_filters=-enormous
 # Enable sandboxing for hermeticity
 build --spawn_strategy=sandboxed,local
 
+build --incompatible_strict_action_env
+build --announce_rc
+
 # Use all available CPUs
 # Pass through critical environment variables
 test --test_env=GEMINI_API_KEY
@@ -53,20 +56,39 @@ build:nativelink --remote_timeout=10m
 build:nativelink --spawn_strategy=remote
 
 # Config for BuildBuddy specifically
-build:buildbuddy --bes_results_url=https://buildbuddy.cubectl.com/invocation/
-build:buildbuddy --bes_backend=grpcs://buildbuddy.cubectl.com
-common:buildbuddy --remote_cache=grpcs://buildbuddy.cubectl.com
-common:buildbuddy --remote_executor=grpcs://buildbuddy.cubectl.com
-common:buildbuddy --spawn_strategy=remote
-common:buildbuddy --genrule_strategy=remote
-common:buildbuddy --remote_local_fallback
-common:buildbuddy --remote_upload_local_results
-common:buildbuddy --remote_cache_compression
-common:buildbuddy --jobs=100
-build:buildbuddy --remote_default_exec_properties=OSFamily=Linux
-# build:buildbuddy --remote_default_exec_properties=Arch=arm64
-build:buildbuddy --remote_timeout=10m
-build:buildbuddy --verbose_failures
+common:buildbuddy_remote-common --bes_results_url=https://buildbuddy.cubectl.com/invocation/
+common:buildbuddy_remote-common --bes_backend=grpcs://buildbuddy-grpc.cubectl.com
+common:buildbuddy_remote-common --remote_cache=grpcs://buildbuddy-grpc.cubectl.com
+common:buildbuddy_remote-common --experimental_remote_downloader=grpcs://buildbuddy-grpc.cubectl.com
+common:buildbuddy_remote-common --remote_executor=grpcs://buildbuddy-grpc.cubectl.com
+common:buildbuddy_remote-common --spawn_strategy=remote
+common:buildbuddy_remote-common --genrule_strategy=remote
+common:buildbuddy_remote-common --remote_local_fallback
+common:buildbuddy_remote-common --remote_upload_local_results
+common:buildbuddy_remote-common --remote_cache_compression
+common:buildbuddy_remote-common --jobs=200
+build:buildbuddy_remote-common --remote_timeout=10m
+build:buildbuddy_remote-common --verbose_failures
+build:buildbuddy_remote-common --platforms=@toolchains_buildbuddy//platforms:linux_arm64
+build:buildbuddy_remote-common --extra_execution_platforms=@toolchains_buildbuddy//platforms:linux_arm64
+build:buildbuddy_remote-common --extra_toolchains=@toolchains_buildbuddy//toolchains/cc:ubuntu_gcc_arm64
+# AMD64 Specifics
+build:buildbuddy_remote-amd64 --config=_remote-base
+build:buildbuddy_remote-amd64 --platforms=@toolchains_buildbuddy//platforms:linux_x86_64
+build:buildbuddy_remote-amd64 --extra_execution_platforms=@toolchains_buildbuddy//platforms:linux_x86_64
+build:buildbuddy_remote-amd64 --extra_toolchains=@toolchains_buildbuddy//toolchains/cc:ubuntu_gcc_x86_64
+# ARM64 Specifics
+build:buildbuddy_remote-arm64 --config=_remote-base
+build:buildbuddy_remote-arm64 --platforms=@toolchains_buildbuddy//platforms:linux_arm64
+build:buildbuddy_remote-arm64 --extra_execution_platforms=@toolchains_buildbuddy//platforms:linux_arm64
+build:buildbuddy_remote-arm64 --extra_toolchains=@toolchains_buildbuddy//toolchains/cc:ubuntu_gcc_arm64
+
+# --- THE MAGIC BIT ---
+# This alias points to the specific config based on the host architecture
+build:buildbuddy --define=executor=remote
+build:buildbuddy --config=buildbuddy_remote-amd64
+# If the host is arm64, the following line overrides the previous one
+build:buildbuddy --config=buildbuddy_remote-arm64 --cpu=aarch64
 
 build:buildbuddy-official --bes_results_url=https://onehumancorp.buildbuddy.io/invocation/
 build:buildbuddy-official --bes_backend=grpcs://onehumancorp.buildbuddy.io
