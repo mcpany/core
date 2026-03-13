@@ -292,3 +292,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Consensus Tool Validation Gateway**: Multi-agent attestation hub for high-risk actions. (Added: 2026-03-27)
 *   **[P1] PNTD Discovery Provider**: Implementation of Protocol-Neutral Task Discovery for unified capability mapping. (Added: 2026-03-27)
 *   **[P1] Shard-Aware BSH Buffer**: Extended memory-mapped buffer for granular shard access. (Added: 2026-03-27)
+
+#### Upcoming (2026-03-28 Evolution)
+*   **[P0] Atomic State Rollback Middleware**: Support for swarm-wide checkpoints and rollbacks for Blackboard and Context Shards. (Added: 2026-03-28)
+*   **[P0] UACO-MAQ Consensus Gateway**: Implementation of UACO v1.9 Multi-Agent Quorum for cross-framework high-risk action approval. (Added: 2026-03-28)
+*   **[P1] Session-Bound Fast-Path Attestation**: Hardware-accelerated "Lightweight Proofs" for low-latency sub-call validation. (Added: 2026-03-28)
+*   **[P1] Context Smearing Scanner**: Binary-level scanner for BSH fragments to detect "Ghost Fragments" in context handoffs. (Added: 2026-03-28)

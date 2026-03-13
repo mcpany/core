@@ -249,3 +249,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Live Context Sharding Middleware**: MCP Any will implement a "Shard Manager" that enables agents to dynamically mount/unmount granular context fragments. This optimizes token consumption and ensures agents only see the "Active Shard" relevant to their current task.
 - **Consensus Tool Validation Hub**: We are evolving the HITL Middleware into a "Consensus Gateway." High-risk actions will now require multi-agent attestation, where MCP Any orchestrates the collection of approval tokens from independent monitor agents.
 - **PNTD-First Discovery**: Positioning Protocol-Neutral Task Discovery as our primary capability layer. MCP Any will act as the "Universal Registry" that maps MCP, gRPC, and UACO tasks into a single, searchable discovery bus for all agents.
+
+---
+
+## Strategic Evolution: [2026-03-28]
+### Focus: Swarm Sanity & Fast-Path Attestation
+**Context**: Today's findings on Atomic State Rollbacks (ASR) and the UACO v1.9 Multi-Agent Quorum (MAQ) draft confirm that "Swarm Sanity" is the new operational priority. As swarms become deeper, the "Attestation Tax" (latency) and the risk of "Context Smearing" demand a more performant and resilient state-management layer.
+**Strategic Pivot**:
+- **Atomic State Rollback Middleware**: MCP Any will evolve to support swarm-wide "Checkpoints." Parent agents can snapshot the state of the Blackboard and Context Shards, enabling full rollbacks if a specialized subagent diverges or fails.
+- **UACO-MAQ Consensus Gateway**: We are promoting the Consensus Hub to support the UACO v1.9 MAQ standard. This allows agents from disparate frameworks (OpenClaw, AutoGen) to provide cryptographically bound approval tokens for a single high-risk action.
+- **Session-Bound Fast-Path Attestation**: To mitigate the Attestation Tax, MCP Any will implement hardware-accelerated "Lightweight Proofs." Once a Mission Intent is verified, subsequent sub-calls within the same session will use low-latency attestation paths, maintaining security without the 100ms signature overhead.

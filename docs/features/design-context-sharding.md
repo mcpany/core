@@ -44,3 +44,9 @@ As agent swarms grow in complexity, the monolithic transfer of context becomes a
 
 ## 7. Evolutionary Changelog
 * **2026-03-27:** Initial Document Creation.
+### Update: 2026-03-28 - Atomic State Rollbacks
+**Context:** Today's research on OpenClaw's Atomic State Rollbacks (ASR) confirms the need for swarm-wide checkpoints.
+**Architecture Adjustment:**
+* Introducing `Checkpoint(sessionID string) (checkpointID string, error)` and `Rollback(checkpointID string) error` to the Shard Manager.
+* The Virtual Context Map now supports "Temporal Snapshots," allowing the gateway to revert the entire sharded state of a swarm to a previous valid checkpoint.
+**Security Impact:** Prevents "Swarm Sanity" loss and context poisoning by rogue sub-specialists.
