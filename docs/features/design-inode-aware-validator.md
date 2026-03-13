@@ -43,3 +43,7 @@ Recent vulnerabilities in agentic IDEs (e.g., Claude Code CVE-2026-34812) have d
 
 ## 7. Evolutionary Changelog
 * **2026-04-01:** Initial Document Creation.
+* **2026-04-02:** **Update: Resolving Normalization Fatigue via Inode-Pinning**
+    * **Context:** Market sync revealed that "Normalization Fatigue" allows symlink racing (TOCTOU) even with recursive resolution.
+    * **Architecture Adjustment:** Introducing **Inode-Pinning**. The validator now "pins" an open file descriptor to the hardware Inode upon first attestation.
+    * **Security Impact:** Neutralizes attacks where a path is swapped for a symlink *after* validation but *before* execution.

@@ -410,3 +410,20 @@
 
 ### Deprecations / Monitoring
 - **Unbounded Self-Correction**: Moving toward total deprecation. All self-correction loops must eventually be bound by an IPSC token and Correction Budget.
+
+---
+
+## Evolution: [2026-04-02] Updates
+
+### Proposed Additions
+- **Speculative Execution Guard**: (P0) Middleware that manages "Shadow State" for speculative tool calls, ensuring rollbacks on attestation failure.
+- **Inode-Pinning Middleware**: (P0) Hardware-bound file handle protection that prevents symlink-racing and TOCTOU escapes in project configs.
+- **Consensus Delegation Gateway**: (P1) Implementation of "Delegated Authority" models where trusted monitor agents can authorize time-critical tasks.
+- **Branch-Purity Blackboard Validator**: (P0) Integrity layer for the Shared KV Store that prevents "Branch Contamination" between divergent reasoning paths.
+
+### Priority Shifts
+- **Reasoning-Bound Context Shifter**: Re-affirmed as **P0**. Critical for preventing "Branch Contamination" leakage.
+- **Path Normalization Engine (NaaS)**: (Re-affirmed P0) Expanded to include "Inode-Pinning" as a core security requirement.
+
+### Deprecations / Monitoring
+- **Path-Only Symlink Validation**: Moving toward total deprecation in favor of **Inode-Aware** and **Pinned** validation.

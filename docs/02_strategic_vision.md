@@ -298,3 +298,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Reasoning-Bound Context Shifter**: MCP Any will implement a context management layer that synchronizes shifting logic across frameworks, ensuring that subagents don't suffer "Context Amnesia" during deep reasoning loops.
 - **Normalization-as-a-Service (NaaS)**: Moving beyond basic path validation to a centralized "Path Normalization Engine." This ensures that project-local settings and tool calls are validated against a single, OS-agnostic "Truth" to prevent symlink escapes.
 - **Optimistic Attestation Gate**: To support Gemini's optimistic loading, MCP Any will act as a "Virtual Quorum" that can provide high-confidence, pre-attestation signals based on historical tool behavior and global safety telemetry.
+
+---
+
+## Strategic Evolution: [2026-04-02]
+### Focus: Speculative Safety & Hardware-Bound Integrity
+**Context**: Today's findings on "Branch Contamination" (OpenClaw) and "Inode-Pinning" (Claude Code) signal a move toward more rigid, hardware-linked security models. Simultaneously, the rise of "Speculative Execution" (Gemini) demands a "Transactional" approach to agentic state.
+**Strategic Pivot**:
+- **Hardware-Bound Inode Pinning**: MCP Any will evolve its symlink validation to include "Inode Pinning." Once a project configuration is loaded, the file handle is cryptographically bound to its hardware Inode, neutralizing TOCTOU attacks even if the filesystem is re-mapped.
+- **Transactional Speculative Execution**: Implementing a "Shadow State" middleware that allows agents to perform speculative tool calls. Results are held in a virtual buffer and only committed to the global Blackboard once discovery quorums or policy engines provide final attestation.
+- **Cross-Branch State Isolation**: Expanding the Blackboard's isolation model to include "Branch Purity" checks. This prevents state leakage between divergent reasoning paths by requiring a "Parental Re-Attestation" before merging hypothetical results back into the primary intent chain.
