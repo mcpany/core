@@ -25,10 +25,12 @@ interface ServiceConfigDiffProps {
  * @returns The rendered component.
  */
 export function ServiceConfigDiff({ original, modified }: ServiceConfigDiffProps) {
-  const { resolvedTheme } = useTheme();
+  const { theme, systemTheme } = useTheme();
 
   // Calculate actual theme
-  const isDark = resolvedTheme === "dark";
+  // Calculate actual theme
+  const currentTheme = theme === "system" ? systemTheme : theme;
+  const isDark = currentTheme === "dark";
   const editorTheme = isDark ? "dracula" : "light";
 
   // Dump to YAML

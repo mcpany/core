@@ -26,7 +26,7 @@ interface DiffViewerProps {
  * @returns The rendered diff editor.
  */
 export function DiffViewer({ original, modified, language = "yaml" }: DiffViewerProps) {
-    const { resolvedTheme } = useTheme();
+    const { theme } = useTheme();
 
     return (
         <div className="h-[500px] border rounded-md overflow-hidden">
@@ -35,7 +35,7 @@ export function DiffViewer({ original, modified, language = "yaml" }: DiffViewer
                 language={language}
                 original={original}
                 modified={modified}
-                theme={resolvedTheme === "dark" ? "vs-dark" : "light"}
+                theme={theme === "dark" ? "vs-dark" : "light"}
                 options={{
                     minimap: { enabled: false },
                     scrollBeyondLastLine: false,

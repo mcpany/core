@@ -75,7 +75,7 @@ type PromptValues = z.infer<typeof promptSchema>;
  * @param props.onSave - Callback when the prompt is saved.
  */
 export function PromptEditor({ open, onOpenChange, prompt, services, onSave }: PromptEditorProps) {
-    const { resolvedTheme } = useTheme();
+    const { theme } = useTheme();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     // Identify which service the prompt belongs to if editing
@@ -240,7 +240,7 @@ export function PromptEditor({ open, onOpenChange, prompt, services, onSave }: P
                                         <Editor
                                             height="100%"
                                             defaultLanguage="json"
-                                            theme={resolvedTheme === "dark" ? "vs-dark" : "light"}
+                                            theme={theme === "dark" ? "vs-dark" : "light"}
                                             value={field.value}
                                             onChange={(val) => field.onChange(val || "")}
                                             options={{ minimap: { enabled: false }, fontSize: 12 }}

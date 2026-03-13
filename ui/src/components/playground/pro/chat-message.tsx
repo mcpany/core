@@ -105,7 +105,7 @@ function analyzeError(error: string): string | null {
 export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
     const [copied, setCopied] = useState(false);
     const [showDiff, setShowDiff] = useState(false);
-    const { resolvedTheme } = useTheme();
+    const { theme } = useTheme();
 
     const copyToClipboard = (text: string) => {
         navigator.clipboard.writeText(text);
@@ -270,9 +270,9 @@ export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
                             original={JSON.stringify(prevUnwrapped, null, 2)}
                             modified={JSON.stringify(currUnwrapped, null, 2)}
                             language="json"
-                            theme={resolvedTheme === "dark" ? "dracula" : "light"}
+                            theme={theme === "dark" ? "dracula" : "light"}
                             onMount={(editor, monaco) => {
-                                if (resolvedTheme === "dark") {
+                                if (theme === "dark") {
                                     defineDraculaTheme(monaco);
                                     monaco.editor.setTheme("dracula");
                                 }

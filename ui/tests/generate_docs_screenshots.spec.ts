@@ -317,7 +317,7 @@ test.describe('Generate Detailed Docs Screenshots', () => {
 
     // 4. Verify Dialog opens and Diff Editor is present
     await expect(page.getByText('Output Difference')).toBeVisible();
-    await expect(page.locator('.monaco-diff-editor')).toBeVisible();
+    await expect(page.locator('.monaco-diff-editor').first()).toBeVisible({ timeout: 15000 });
 
     // Take screenshot
     await page.screenshot({ path: path.join(DOCS_SCREENSHOTS_DIR, 'diff-feature.png') });

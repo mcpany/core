@@ -24,7 +24,7 @@ export default function ConfigValidatorPage() {
   const [result, setResult] = useState<{ valid: boolean; errors?: string[] } | null>(
     null
   );
-  const { resolvedTheme } = useTheme();
+  const { theme } = useTheme();
 
   const handleValidate = async () => {
     if (!content.trim()) {
@@ -88,9 +88,9 @@ export default function ConfigValidatorPage() {
             <Editor
               height="100%"
               defaultLanguage="yaml"
-              theme={resolvedTheme === "dark" ? "dracula" : "light"}
+              theme={theme === "dark" ? "dracula" : "light"}
               onMount={(editor, monaco) => {
-                if (resolvedTheme === "dark") {
+                if (theme === "dark") {
                   defineDraculaTheme(monaco);
                   monaco.editor.setTheme("dracula");
                 }
