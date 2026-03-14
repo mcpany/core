@@ -328,3 +328,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Hardware-Accelerated Negotiation (HAN)**: MCP Any will evolve to support hardware-backed (TPM/SEP) auction brokering for DCA. This reduces negotiation latency and prevents "Negotiation Storms" by providing a trusted, high-speed arbiter for subagent bidding.
 - **Verified Metadata Lineage (VML)**: Moving from simple schema validation to "Structural Attestation." All tool metadata (descriptions, examples) must carry a cryptographic provenance chain, ensuring that structural context cannot be modified by unverified sources.
 - **Cross-Framework Lifecycle Harmonization**: We will implement a "Unified Lifecycle Bridge" that standardizes state commit/rollback signals across UAB-connected frameworks, eliminating "Dirty State" leakage during inter-agent handoffs.
+
+---
+
+## Strategic Evolution: [2026-04-05]
+### Focus: RL-Ready Infrastructure & Attested Context Hubs
+**Context**: Today's findings on OpenClaw-RL v1 and Claude Code's security hardening (CVE-2025-59536) mark a shift from simple "Agent Serving" to "Agent Learning & Trust Brokerage." Swarms now require standardized telemetry for optimization and hardware-linked identity for local tool execution.
+**Strategic Pivot**:
+- **RL Telemetry Provider**: MCP Any will evolve into a "Telemetry Hub" for RL-driven agents. We will implement standardized, privacy-preserving hooks to export tool performance and conversation-feedback loops directly to OpenClaw-RL training pipelines.
+- **Attested Discovery Authority**: Following Claude Code's mandate for Trust Verification, MCP Any will act as the "Certificate Authority" for local MCP servers. We will provide cryptographic proof of a tool's provenance before it is exposed to the agent runtime.
+- **Normalized Optimistic Execution**: We are standardizing the "Optimistic Load" pattern from the Gemini ecosystem. MCP Any will allow agents to speculatively prepare tool contexts while discovery quorums perform background attestation, minimizing the "Security Latency" tax.

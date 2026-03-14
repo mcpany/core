@@ -339,3 +339,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Metadata Provenance Engine**: Verification service for structural metadata lineage using cryptographic signing. (Added: 2026-04-04)
 *   **[P0] Tool Metadata Sanitizer**: Security middleware for detecting "Context Poisoning" in tool schemas (CVE-2026-42001). (Added: 2026-04-04)
 *   **[P1] Unified Lifecycle Bridge**: Standardized commit/rollback middleware for cross-framework lifecycle synchronization. (Added: 2026-04-04)
+
+#### Upcoming (2026-04-05 Evolution)
+*   **[P0] Attested Discovery Authority**: Cryptographic identity broker for local MCP servers to satisfy Claude Code's "Trust Verification." (Added: 2026-04-05)
+*   **[P0] Optimistic Execution Gate**: Speculative context loading for tools, synchronized with background discovery quorums. (Added: 2026-04-05)
+*   **[P1] RL Telemetry Provider**: Standardized middleware for exporting performance/feedback metrics to OpenClaw-RL training loops. (Added: 2026-04-05)
