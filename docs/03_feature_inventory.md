@@ -467,3 +467,17 @@
 
 ### Deprecations / Monitoring
 - **Implicitly Trusted Local Discovery**: Moving toward total deprecation. All local tool discovery must eventually be backed by an Attested Discovery signal.
+
+---
+
+## Evolution: [2026-04-06] Updates
+
+### Proposed Additions
+- **Attested Discovery Authority**: (P0) Cryptographic identity broker for local MCP servers, providing the "Trust Verification" required by Claude Code. (Re-affirmed P0 for priority execution).
+- **Swarm Health Heartbeat**: (P1) Standardized heartbeat protocol for subagents to report liveness and mission-alignment to the Active Subagent Reaper.
+- **Attestation Aggregation Gateway**: (P0) Middleware for batching cryptographic signatures in high-frequency multi-agent flows to reduce latency.
+- **SWIM (Swarm-Wide Integrity Monitoring) Agent**: (P1) A specialized monitor agent that detects logic drift and intent divergence across a multi-agent swarm.
+
+### Priority Shifts
+- **Active Subagent Reaper**: Re-affirmed as **P0**. Urgent requirement for managing autonomous DevSwarms.
+- **WASM-BSH State Sanitizer**: Re-affirmed as **P0**. Expanded to include "Deep-Packet Inspection" for Context Smuggling.

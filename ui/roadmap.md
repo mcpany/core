@@ -194,3 +194,7 @@
 - [ ] **[P0] Local Trust Verification Dashboard**: (2026-04-05) UI for reviewing and signing local MCP server identity claims.
 - [ ] **[P0] Optimistic Loading Debugger**: (2026-04-05) Visual timeline of speculative vs. attested tool loading events.
 - [ ] **[P1] RL Feedback Stream Viewer**: (2026-04-05) Real-time telemetry dashboard for monitoring RL training data export.
+- [ ] **[P0] Attestation Aggregation Monitor**: (2026-04-06) UI for visualizing batch signatures and monitoring attestation latency gains.
+- [ ] **[P0] SWIM Drift Analyzer**: (2026-04-06) Forensic dashboard for visualizing intent drift and logic divergence in autonomous swarms.
+- [ ] **[P1] Swarm Heartbeat Dashboard**: (2026-04-06) Real-time liveness monitor for subagent sessions and mission alignment.
+- [ ] **[P1] BSH Deep Inspection Viewer**: (2026-04-06) Security UI for inspecting flagged binary fragments for "Context Smuggling" patterns.

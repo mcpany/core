@@ -344,3 +344,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Attested Discovery Authority**: Cryptographic identity broker for local MCP servers to satisfy Claude Code's "Trust Verification." (Added: 2026-04-05)
 *   **[P0] Optimistic Execution Gate**: Speculative context loading for tools, synchronized with background discovery quorums. (Added: 2026-04-05)
 *   **[P1] RL Telemetry Provider**: Standardized middleware for exporting performance/feedback metrics to OpenClaw-RL training loops. (Added: 2026-04-05)
+
+#### Upcoming (2026-04-06 Evolution)
+*   **[P0] Attestation Aggregation Gateway**: Middleware for batching cryptographic signatures in high-frequency flows. (Added: 2026-04-06)
+*   **[P0] SWIM (Swarm-Wide Integrity Monitoring)**: Implementation of holistic integrity checks to detect logic drift in autonomous swarms. (Added: 2026-04-06)
+*   **[P1] Swarm Health Heartbeat Provider**: Standardized heartbeat protocol for subagent liveness and intent alignment. (Added: 2026-04-06)
+*   **[P1] Deep-Packet BSH Inspector**: Expansion of BSH sanitization to detect "Context Smuggling" in binary fragments. (Added: 2026-04-06)

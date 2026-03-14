@@ -53,3 +53,10 @@ The "ClawHavoc" crisis demonstrated that open-source agent marketplaces are vuln
     * **Context:** "ClawHavoc" malicious skills are using "Delayed Payloads" to bypass initial static analysis.
     * **Architecture Adjustment:** Skills now undergo a "Burn-In" period in an isolated sandbox. Their network and filesystem access patterns are profiled against a known baseline for 24 hours (simulated) before being promoted to "Trusted."
     * **Security Impact:** Detects malicious exfiltration attempts that only trigger after a skill has been "vetted" by basic static checks.
+
+### Update: 2026-04-06 - RL Telemetry & Feedback Integration
+**Context:** The release of OpenClaw-RL v1 demands that the registry provide high-fidelity "Success Metrics" for skills to guide RL-driven agent optimization.
+**Architecture Adjustment:**
+* Adding a `Telemetry Provider` hook to Section 4.
+* Verified skills now export standardized performance and conversation-feedback data directly to the Registry.
+**Security Impact:** Enables "Performance-Aware Governance," where skills with high error rates or negative user sentiment are automatically downgraded and flagged for re-analysis.
