@@ -205,6 +205,11 @@
 - [ ] **[P0] Session Binding Security Dashboard**: Visualization of cryptographically bound session-to-origin links and blocked token-reuse attempts. (Added: 2026-04-08)
 - [ ] **[P1] UAB Reputation Explorer**: Real-time browser for cross-framework skill reputation scores and trust quorum status. (Added: 2026-04-08)
 
+#### Upcoming (2026-04-10 Evolution)
+- [ ] **[P0] IDS Status Monitor**: Real-time dashboard for visualizing semantically sanitized context fragments and blocked "Prompt Path" injections. (Added: 2026-04-10)
+- [ ] **[P0] Deterministic Boot Dashboard**: UI for reviewing and signing Full-State Manifests before agent execution. (Added: 2026-04-10)
+- [ ] **[P0] Origin Violation Security Hub**: Security dashboard for tracking and mitigating CVE-2026-25253 style browser-origin hijacking. (Added: 2026-04-10)
+
 #### Upcoming (2026-04-09 Evolution)
 - [ ] **[P0] Pre-Flight Sandbox Audit Viewer**: UI for reviewing environment manifests and proof-of-non-existence for sensitive config files. (Added: 2026-04-09)
 - [ ] **[P0] Session Binding Security Dashboard**: Visualization of cryptographically bound session-to-origin links and blocked token-reuse attempts. (Added: 2026-04-09)

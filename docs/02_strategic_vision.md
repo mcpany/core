@@ -10,6 +10,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-04-10]
+### Focus: Deterministic Environment Integrity & Active Context Governance
+**Context**: Claude Code's response to CVE-2026-25725 and the stabilization of OpenClaw's `ContextEngine` mark a shift from "Reactive Defense" to "Deterministic Infrastructure." It is no longer enough to scan for threats; we must attest to the complete integrity of the environment and the data flowing through it.
+**Strategic Pivot**:
+- **Deterministic Environment Integrity**: We are moving from partial file-watches to a "Full-State Manifest" model. MCP Any will generate a signed snapshot of the entire project-local environment (including proof-of-non-existence for sensitive files) as a prerequisite for agent boot.
+- **Active Context Governance**: Leveraging the matured `ContextEngine` APIs, MCP Any will implement "Inference-Time Data Sanitization (IDS)." This ensures that all context fragments (textual or multimodal) are semantically sanitized before reaching the LLM's reasoning engine.
+- **Origin-Locked Local Trust**: Patching the loopback trust gap (CVE-2026-25253) by mandating cryptographically bound origin validation for all local listeners, ensuring browsers cannot bridge into the agent's control plane.
+
 ## Strategic Evolution: [2026-04-09]
 ### Focus: Collective Skill Defense & Deterministic Environment Integrity
 **Context**: Recent sandbox escapes (CVE-2026-25725) and the rise of "Inference-Time Exploitation" prove that individual agent sandboxing and static configuration checks are no longer sufficient. Agents are now operating in "High-Trust, Low-Verification" swarms where malicious subagents can weaponize the environment itself.

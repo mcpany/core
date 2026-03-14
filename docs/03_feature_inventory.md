@@ -8,6 +8,17 @@
 
 ---
 
+## Evolution: [2026-04-10] Updates
+
+### Proposed Additions
+- **Inference-Time Data Sanitizer (IDS)**: (P0) Semantic context governance middleware that sanitizes textual and multimodal data fragments using matured OpenClaw `ContextEngine` hooks.
+- **Deterministic Attestation Gateway**: (P0) Extension of the Pre-Flight Sandbox Validator to provide signed environment manifests (including non-existence proofs) for "Deterministic Boot" compliance.
+- **Origin-Locked Session Bridge**: (P0) Hardened WebSocket/HTTP session manager that binds tokens to cryptographically verified origins, patching CVE-2026-25253.
+
+### Priority Shifts
+- **Pre-Flight Sandbox Validator**: (Re-affirmed P0) Promoted to a mandatory "Deterministic Boot" prerequisite.
+- **Cross-Framework Skill Reputation Engine**: (P1) Re-affirmed as the primary mechanism for swarm-based consensus on tool safety.
+
 ## Evolution: [2026-04-09] Updates
 
 ### Proposed Additions
