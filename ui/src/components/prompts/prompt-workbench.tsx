@@ -5,7 +5,7 @@
 
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   MessageSquare,
@@ -102,7 +102,7 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
 
   // ⚡ BOLT: Optimized render waste by memoizing filtered list and pre-computing lowercase search query
   // Randomized Selection from Top 5 High-Impact Targets
-  const filteredPrompts = useMemo(() => {
+  const filteredPrompts = React.useMemo(() => {
     const lowerQuery = searchQuery.toLowerCase();
     return prompts.filter(
       (p) =>
