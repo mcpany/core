@@ -2,9 +2,6 @@
  * Copyright 2026 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
  */
-
-"use client"
-
 import { useEffect, useState } from "react"
 import { apiClient } from "@/lib/client"
 import { Credential } from "@proto/config/v1/auth"

@@ -86,88 +86,43 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: ubuntu-latest
-    # container:
-    #   image: iowoi/mcp-runner:latest
-    #   options: --user root -v /var/run/docker.sock:/var/run/docker.sock
-    timeout-minutes: 90
+    timeout-minutes: 60
     steps:
-      # - name: Free Disk Space (Fast)
-      #   run: |
-      #     if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
-      #     $SUDO rm -rf /usr/local/lib/android
-      #     $SUDO rm -rf /usr/share/dotnet
-      #     $SUDO rm -rf /opt/ghc
-      #     $SUDO rm -rf /usr/local/share/boost
-
-      - name: Debug Environment
-        run: |
-          id
-          ls -l /var/run/docker.sock || echo "No docker socket found"
-          ls -ld /__w || echo "No /__w found"
-
-      # - name: Prune Docker
-      #   run: docker system prune -af
-
       - uses: actions/checkout@v5
 
-      - name: Install dependencies (Idempotent)
+      # Bazel manages all lint dependencies (buildifier, gazelle, golangci-lint)
+      # so we only need the Bazel toolchain – no Go/Python/Node setup needed.
+      - name: Set up Bazel
+        uses: bazel-contrib/setup-bazel@0.18.0
+        with:
+          bazelisk-cache: true
+          disk-cache: ${{ runner.os }}-bazel-lint-${{ hashFiles('**/BUILD', '**/BUILD.bazel', '**/*.bzl', 'MODULE.bazel') }}
+          repository-cache: true
+
+      - name: Lint (Bazel)
+        env:
+          BAZEL_DISK_CACHE: ${{ env.BAZEL_DISK_CACHE }}
+          BAZEL_REPOSITORY_CACHE: ${{ env.BAZEL_REPOSITORY_CACHE }}
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_OFFICIAL_API_KEY }}
         run: |
-          if command -v make >/dev/null && command -v curl >/dev/null; then
-            echo "Dependencies already installed in container, skipping apt-get."
-            exit 0
-          fi
-          if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
-          if command -v apt-get > /dev/null 2>&1; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils curl unzip build-essential
-          elif command -v apk > /dev/null 2>&1; then
-             $SUDO apk add --no-cache make xz curl unzip build-base
-          fi
+          bazelisk run //:lint \
+            --disk_cache=$BAZEL_DISK_CACHE \
+            --repository_cache=$BAZEL_REPOSITORY_CACHE \
+            ${BUILDBUDDY_API_KEY:+--config=buildbuddy_remote-common --remote_header=x-buildbuddy-api-key=$BUILDBUDDY_API_KEY}
 
-      - name: Set up Go
-        uses: actions/setup-go@v6
-        with:
-          go-version: "1.24"
-          cache: true
-
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: "3.13"
-          cache: "pip"
-
-      - name: Install Python dependencies
-        run: pip install -r server/requirements.txt
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: "24"
-          cache: "npm"
-          cache-dependency-path: server/tests/integration/upstream/package-lock.json
-
-      # Cache Tools (protoc, helm, etc.)
-      - name: Cache Tools
-        uses: actions/cache@v4
-        with:
-          path: build/env/bin
-          key: ${{ runner.os }}-build-env-bin-v3-${{ hashFiles('Makefile', 'server/Makefile') }}
-          restore-keys: |
-            ${{ runner.os }}-build-env-bin-v3-
-
-      # Cache Lint (golangci-lint, pre-commit)
-      - name: Cache Lint
-        uses: actions/cache@v4
-        with:
-          path: build/.cache
-          key: ${{ runner.os }}-lint-cache-v3-${{ hashFiles('server/go.sum', 'server/.pre-commit-config.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-lint-cache-v3-
-
-      - name: Prepare environment
-        run: make prepare
-
-      - name: Lint
-        run: make lint
+      # Run UI lint and typecheck as Bazel tests (these are already pure Bazel
+      # targets and benefit from remote caching).
+      - name: UI Lint & Typecheck (Bazel)
+        env:
+          BAZEL_DISK_CACHE: ${{ env.BAZEL_DISK_CACHE }}
+          BAZEL_REPOSITORY_CACHE: ${{ env.BAZEL_REPOSITORY_CACHE }}
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_OFFICIAL_API_KEY }}
+        run: |
+          bazelisk test //ui:lint //ui:typecheck \
+            --test_output=errors \
+            --disk_cache=$BAZEL_DISK_CACHE \
+            --repository_cache=$BAZEL_REPOSITORY_CACHE \
+            ${BUILDBUDDY_API_KEY:+--config=buildbuddy_remote-common --remote_header=x-buildbuddy-api-key=$BUILDBUDDY_API_KEY}
 
   bazel-test:
     runs-on: ubuntu-latest

@@ -4,7 +4,7 @@
  */
 
 
-"use client";
+
 
 import { useMemo, memo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

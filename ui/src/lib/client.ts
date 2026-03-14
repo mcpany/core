@@ -2018,7 +2018,7 @@ export const apiClient = {
      */
     getDashboardHealth: async (): Promise<ServiceHealthResponse> => {
         // Use the Next.js API route (BFF) which aggregates/proxies to the backend
-        const res = await fetchWithAuth('/api/dashboard/health');
+        const res = await fetchWithAuth('/api/v1/dashboard/health');
         if (!res.ok) throw new Error('Failed to fetch dashboard health');
         return res.json();
     },

@@ -3,13 +3,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-"use client";
 
-import { useState, useMemo, useEffect } from "react";
+
+import { useState, useMemo, useEffect, lazy, Suspense } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Code, Table as TableIcon, Copy, Check, ChevronDown, ChevronUp, ListTree, Image as ImageIcon } from "lucide-react";
-import dynamic from "next/dynamic";
 import vs2015 from 'react-syntax-highlighter/dist/esm/styles/hljs/vs2015';
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
@@ -18,10 +17,7 @@ import { JsonTree } from "./json-tree";
 // ⚡ BOLT: Lazy load SyntaxHighlighter to reduce initial bundle size.
 // Randomized Selection from Top 5 High-Impact Targets (Assets/Bundle)
 // Optimized version uses Light build with only JSON registered.
-const SyntaxHighlighter = dynamic(() => import('./optimized-syntax-highlighter'), {
-    ssr: false,
-    loading: () => <div className="p-4 text-xs font-mono text-muted-foreground">Loading source...</div>,
-});
+const SyntaxHighlighter = lazy(() => import('./optimized-syntax-highlighter'));
 
 interface JsonViewProps {
     data: unknown;

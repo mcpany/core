@@ -3,10 +3,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-"use client";
+
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useNavigate, useParams } from "react-router-dom";
 import { apiClient, UpstreamServiceConfig } from "@/lib/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -26,7 +26,7 @@ import { ServiceInspector } from "@/components/services/editor/service-inspector
  */
 export default function UpstreamServiceDetailPage() {
     const params = useParams();
-    const router = useRouter();
+    const navigate = useNavigate();
     const { toast } = useToast();
     const serviceId = params.serviceId as string;
 
@@ -90,7 +90,7 @@ export default function UpstreamServiceDetailPage() {
         try {
             await apiClient.unregisterService(serviceId);
             toast({ title: "Service Unregistered" });
-            router.push("/upstream-services");
+            navigate("/upstream-services");
         } catch (e) {
             toast({ title: "Unregister Failed", description: String(e), variant: "destructive" });
         }
@@ -104,7 +104,7 @@ export default function UpstreamServiceDetailPage() {
         return (
             <div className="p-8 text-center">
                 <h1 className="text-2xl font-bold">Service Not Found</h1>
-                <Button variant="link" onClick={() => router.push("/upstream-services")}>Back to Services</Button>
+                <Button variant="link" onClick={() => navigate("/upstream-services")}>Back to Services</Button>
             </div>
         );
     }
@@ -131,7 +131,7 @@ export default function UpstreamServiceDetailPage() {
              {/* Header */}
             <div className="flex-none border-b p-4 flex items-center justify-between bg-muted/20">
                 <div className="flex items-center gap-4">
-                    <Button variant="ghost" size="icon" onClick={() => router.push("/upstream-services")}>
+                    <Button variant="ghost" size="icon" onClick={() => navigate("/upstream-services")}>
                         <ArrowLeft className="h-5 w-5" />
                     </Button>
                     <div>
@@ -206,7 +206,7 @@ export default function UpstreamServiceDetailPage() {
                             service={service}
                             onChange={setService}
                             onSave={handleSave}
-                            onCancel={() => router.push("/upstream-services")}
+                            onCancel={() => navigate("/upstream-services")}
                         />
                     </TabsContent>
                 </div>

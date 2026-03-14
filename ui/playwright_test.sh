@@ -74,7 +74,7 @@ ln -s "$workspace_root/proto" "$repo_root/proto"
 ln -s "$workspace_root/ui/node_modules" "$repo_root/node_modules"
 
 mkdir -p \
-  "$ui_runtime/.next" \
+  "$ui_runtime/dist" \
   "$ui_runtime/.audit" \
   "$ui_runtime/docs" \
   "$ui_runtime/playwright-report" \
@@ -159,31 +159,29 @@ cd "$ui_runtime"
 export CI=true
 export TEST_PORT="$test_port"
 export BACKEND_URL="http://127.0.0.1:${backend_port}"
-export NEXT_PUBLIC_API_URL="$BACKEND_URL"
 export MCPANY_API_KEY="test-token"
 export UI_HTTP_ECHO_BASE_URL="http://127.0.0.1:${echo_port}"
 
-next_cli_js="$ui_runtime/node_modules/next/dist/bin/next"
+vite_cli_js="$ui_runtime/node_modules/vite/bin/vite.js"
 playwright_cli_js="$ui_runtime/node_modules/@playwright/test/cli.js"
 
-if [[ ! -f "$next_cli_js" || ! -f "$playwright_cli_js" ]]; then
-  echo "Missing Next or Playwright CLI script in ui/node_modules" >&2
+if [[ ! -f "$vite_cli_js" || ! -f "$playwright_cli_js" ]]; then
+  echo "Missing Vite or Playwright CLI script in ui/node_modules" >&2
   exit 1
 fi
 
 export PATH="$(dirname "$node_bin"):$PATH"
 export NODE_PATH="$ui_runtime/node_modules${NODE_PATH:+:$NODE_PATH}"
 
-# Use `next start` (production mode) when a pre-built .next is available in the
-# Bazel runfiles (provided by the ":build" data dependency).  This starts in a
-# fraction of the time compared to `next dev` (JIT compilation), making tests
+# Use `vite preview` (production mode) when a pre-built dist is available.
+# This starts in a fraction of the time compared to `vite dev`, making tests
 # far more reliable in resource-constrained environments.
-if [[ -d "$ui_runtime/.next/static" ]]; then
-  echo "Using pre-built Next.js app (next start)"
-  export NEXT_DEV_COMMAND="$node_bin $next_cli_js start -p $test_port"
+if [[ -d "$ui_runtime/dist" && -n "$(ls -A "$ui_runtime/dist" 2>/dev/null)" ]]; then
+  echo "Using pre-built Vite app (vite preview)"
+  export VITE_DEV_COMMAND="$node_bin $vite_cli_js preview --port $test_port --strictPort"
 else
-  echo "Pre-built .next not found; falling back to next dev"
-  export NEXT_DEV_COMMAND="$node_bin $next_cli_js dev -p $test_port"
+  echo "Pre-built dist not found; falling back to vite dev"
+  export VITE_DEV_COMMAND="$node_bin $vite_cli_js --port $test_port --strictPort"
 fi
 
 if [[ -n "$spec_path" ]]; then

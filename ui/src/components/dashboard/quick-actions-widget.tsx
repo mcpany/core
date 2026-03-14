@@ -3,9 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-"use client";
 
-import Link from "next/link";
+
+import { Link } from 'react-router-dom';
 import { PlusCircle, Terminal, Lock, Network, ArrowRight } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -55,7 +55,7 @@ export function QuickActionsWidget() {
             </CardHeader>
             <CardContent className="grid grid-cols-1 gap-3 flex-1">
                 {actions.map((action) => (
-                    <Link key={action.href} href={action.href} className="group block">
+                    <Link key={action.href} to={action.href} className="group block">
                         <div className="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors">
                             <div className="flex items-center gap-3">
                                 <div className={`p-2 rounded-full bg-background border ${action.color} bg-opacity-10`}>

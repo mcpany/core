@@ -3,10 +3,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-"use client";
+
 
 import { useEffect, useState, Suspense } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { apiClient } from '@/lib/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -15,8 +15,8 @@ import { Button } from '@/components/ui/button';
 
 
 function OAuthCallbackContent() {
-    const searchParams = useSearchParams();
-    const router = useRouter();
+    const [searchParams] = useSearchParams();
+    const navigate = useNavigate();
     const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
     const [errorMessage, setErrorMessage] = useState('');
     const [returnPath, setReturnPath] = useState('/services');
@@ -88,7 +88,7 @@ function OAuthCallbackContent() {
     }, [searchParams]);
 
     const handleContinue = () => {
-        router.push(returnPath);
+        navigate(returnPath);
     };
 
     return (
@@ -121,7 +121,7 @@ function OAuthCallbackContent() {
                                 <AlertTitle>Error</AlertTitle>
                                 <AlertDescription>{errorMessage}</AlertDescription>
                             </Alert>
-                            <Button variant="outline" onClick={() => router.push(returnPath)} className="w-full">
+                            <Button variant="outline" onClick={() => navigate(returnPath)} className="w-full">
                                 Back
                             </Button>
                          </div>

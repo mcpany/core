@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-"use client";
+
 
 import { useState, useEffect, useMemo } from "react";
 import { InputTransformer, HttpParameterMapping, ParameterType } from "@proto/config/v1/call";
