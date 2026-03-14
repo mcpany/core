@@ -355,6 +355,11 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Origin-Locked Session Bridge**: Hardened session manager binding agent tokens to cryptographically verified browser/CLI origins. (Added: 2026-04-08)
 *   **[P1] Cross-Framework Skill Reputation Engine**: UAB v1.4 compliant middleware for cross-registry tool reliability scoring. (Added: 2026-04-08)
 
+#### Upcoming (2026-04-11 Evolution)
+*   **[P0] A2A Interoperability Layer**: Native messaging hub for the A2A protocol to secure agent-to-agent delegation. (Added: 2026-04-11)
+*   **[P0] Deterministic Environment Attestation**: Full-state manifest service to prevent configuration-based RCE and exfiltration. (Added: 2026-04-11)
+*   **[P1] Structured Context Propagation**: Implementation of trace-linked security context for distributed agent swarms. (Added: 2026-04-11)
+
 #### Upcoming (2026-04-10 Evolution)
 *   **[P0] Inference-Time Data Sanitizer (IDS)**: Semantic context governance middleware utilizing OpenClaw ContextEngine hooks to block multimodal injections. (Added: 2026-04-10)
 *   **[P0] Deterministic Attestation Gateway**: Extension of the Pre-Flight Validator to provide signed environment manifests for deterministic agent boot. (Added: 2026-04-10)
