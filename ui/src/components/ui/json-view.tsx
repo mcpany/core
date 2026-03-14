@@ -154,6 +154,7 @@ export function JsonView({ data, className, smartTable = false, maxHeight = 400 
                     maxHeight: showCollapse && !isExpanded ? `${maxHeight}px` : undefined
                 }}
             >
+                <Suspense fallback={<pre className="p-4 text-xs text-muted-foreground">Loading…</pre>}>
                 <SyntaxHighlighter
                     language="json"
                     style={vs2015}
@@ -170,6 +171,7 @@ export function JsonView({ data, className, smartTable = false, maxHeight = 400 
                 >
                     {typeof data === 'string' ? data : JSON.stringify(data, null, 2)}
                 </SyntaxHighlighter>
+                </Suspense>
 
                 {showCollapse && !isExpanded && (
                     <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-[#1e1e1e] to-transparent pointer-events-none" />

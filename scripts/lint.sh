@@ -39,17 +39,26 @@ cd "$PROJECT_ROOT"
 find_tool() {
     local name="$1"
     local bin=""
+    local search_dirs=()
 
-    # 1. Search the runfiles tree (available when run under `bazel run`).
-    if [[ -d "${RUNFILES_DIR:-}" ]]; then
-        bin="$(find "${RUNFILES_DIR}" -name "${name}" -type f 2>/dev/null | head -1 || true)"
-    fi
+    # Collect runfiles search roots:
+    # 1. $RUNFILES_DIR (set when use_bash_launcher is used)
+    [[ -d "${RUNFILES_DIR:-}" ]] && search_dirs+=("${RUNFILES_DIR}")
+    # 2. $0.runfiles (set by `bazel run` when the binary is run directly)
+    [[ -d "${0}.runfiles" ]] && search_dirs+=("${0}.runfiles")
+    # 3. BASH_SOURCE-based lookup (handles symlinked entrypoints)
+    [[ -d "${BASH_SOURCE[0]}.runfiles" ]] && search_dirs+=("${BASH_SOURCE[0]}.runfiles")
 
-    # 2. Fall back to $PATH.
-    if [[ -z "$bin" || ! -x "$bin" ]]; then
-        bin="$(command -v "${name}" 2>/dev/null || true)"
-    fi
+    for dir in "${search_dirs[@]}"; do
+        bin="$(find -L "${dir}" -name "${name}" \( -type f -o -type l \) 2>/dev/null | head -1 || true)"
+        if [[ -n "$bin" && -x "$bin" ]]; then
+            echo "$bin"
+            return 0
+        fi
+    done
 
+    # 4. Fall back to $PATH.
+    bin="$(command -v "${name}" 2>/dev/null || true)"
     echo "$bin"
 }
 

@@ -64,8 +64,11 @@ sh_binary(
         "//server:go.sum",
         # Bazel-managed tool binaries so the script never calls `bazel run`
         # recursively.  They are located at runtime via $RUNFILES_DIR.
+        # NOTE: @gazelle//:gazelle is intentionally NOT listed here because its
+        # BUILD.bazel references @bazel_skylib_gazelle_plugin which is only a
+        # dev_dependency of the gazelle module and is not available to consumers.
+        # Gazelle can be run separately with: bazel run //:gazelle
         "@buildifier_prebuilt//:buildifier",
-        "@gazelle//:gazelle",
     ],
 )
 

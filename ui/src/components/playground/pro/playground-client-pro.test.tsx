@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '../../../tests/test-utils';
 import { PlaygroundClientPro } from './playground-client-pro';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 

@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { render, screen } from '@testing-library/react';
+import { render, screen } from '../../../tests/test-utils';
 import userEvent from '@testing-library/user-event';
 import { ServiceList } from '@/components/services/service-list';
 import { UpstreamServiceConfig } from '@/lib/client';
