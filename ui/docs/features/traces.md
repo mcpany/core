@@ -14,7 +14,7 @@ Navigate to `/inspector`. This view shows a real-time, virtualized table of all 
 
 ![Inspector Table](../screenshots/inspector_table.png)
 
-- **Search & Filter**: Use the toolbar to search traces by ID or Name, and filter by Status (Success, Error, Pending) or Type (Tool, Service, Core, Resource).
+- **Search & Filter**: Use the toolbar to search traces by ID or Name, and filter by Status (All Statuses, Success, Error, Pending) or Type (All Types, Tool, Service, Core, Resource).
 - **Status Icons**: Green check for success, Red X for failure.
 - **Duration**: Time taken for the request to complete.
 - **Live Controls**: Pause/Resume live updates, Clear traces, or manually Refresh.
