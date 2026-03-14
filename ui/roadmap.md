@@ -199,3 +199,9 @@
 - [ ] **[P0] Metadata Poisoning Guard Dashboard**: UI for reviewing sanitized tool definitions and blocked instruction fragments. (Added: 2026-04-06)
 - [ ] **[P0] Inode Security Monitor**: Real-time visualization of pinned Inodes and alerts for unauthorized filesystem swaps. (Added: 2026-04-06)
 - [ ] **[P1] Speculative Auction Viewer**: Visual tracker for SAB-native "Intent Probability" bidding swarms. (Added: 2026-04-06)
+
+#### Upcoming (2026-04-07 Evolution)
+- [ ] **[P0] Reasoning Trace Visualizer**: Real-time waterfall diagram of agent monologues and intent-alignment scores. (Added: 2026-04-07)
+- [ ] **[P0] Federated Persona Dashboard**: UI for managing remote persona attestation and reviewing SPaaS audit reports. (Added: 2026-04-07)
+- [ ] **[P0] Multimodal Intent Monitor**: Visualization of multimodal inputs and their corresponding tool-call verification status. (Added: 2026-04-07)
+- [ ] **[P1] CAM Memory Inspector**: Forensic tool for viewing and sanitizing shared agent memory fragments. (Added: 2026-04-07)

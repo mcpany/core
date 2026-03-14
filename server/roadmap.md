@@ -349,3 +349,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Structural Metadata Sanitizer**: Middleware to detect and block context poisoning instructions in tool schemas. (Added: 2026-04-06)
 *   **[P0] Hardware-Linked Inode Pinning**: Native filesystem security layer to prevent TOCTOU symlink races in project configs. (Added: 2026-04-06)
 *   **[P1] Speculative Auction Broker (SAB)**: High-speed broker for "Intent Probability" bidding in speculative agent swarms. (Added: 2026-04-06)
+
+#### Upcoming (2026-04-07 Evolution)
+*   **[P0] Full-Spectrum Call Graph Monitor**: Deep instrumentation to track agent reasoning and detect "Shadow Reasoning" (CVE-2026-48002). (Added: 2026-04-07)
+*   **[P0] Federated Persona Validator**: Governance service for secure SPaaS (System-Prompt-as-a-Service) ingestion and attestation. (Added: 2026-04-07)
+*   **[P0] Vision-Intent Alignment Middleware**: Verification layer for multimodal-triggered tool calls. (Added: 2026-04-07)
+*   **[P1] Cross-Agent Memory (CAM) Quarantine**: Cryptographic isolation and sanitization for shared agent memory. (Added: 2026-04-07)

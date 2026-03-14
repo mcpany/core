@@ -483,3 +483,20 @@
 
 ### Deprecations / Monitoring
 - **Implicitly Trusted Tool Schemas**: Monitoring for total deprecation. All structural metadata must eventually pass through the Sanitizer.
+
+---
+
+## Evolution: [2026-04-07] Updates
+
+### Proposed Additions
+- **Vision-Intent Alignment Middleware**: (P0) Security layer that verifies tool calls triggered by multimodal inputs against the mission's "Verified Intent."
+- **Federated Persona Validator (SPaaS)**: (P0) Governance service for system-prompt-as-a-service, preventing persona-based security overrides.
+- **Cross-Agent Memory (CAM) Quarantine**: (P1) Cryptographic isolation and sanitization for shared decentralized agent memory.
+- **Full-Spectrum Call Graph Monitor**: (P0) Deep instrumentation that tracks internal agent reasoning (monologues) to detect "Shadow Reasoning" (CVE-2026-48002).
+
+### Priority Shifts
+- **Hardware-Bound Trust Continuity**: Promoted to **P0**. Essential for securing long-term Cross-Agent Memory (CAM) sessions.
+- **Behavioral Skill Burn-In Sandbox**: Promoted to **P0** to detect "Shadow Reasoning" patterns before full deployment.
+
+### Deprecations / Monitoring
+- **Unvalidated Remote Personas (SPaaS)**: Monitoring for total deprecation in favor of Federated Persona Attestation.
