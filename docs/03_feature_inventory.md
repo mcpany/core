@@ -467,3 +467,19 @@
 
 ### Deprecations / Monitoring
 - **Implicitly Trusted Local Discovery**: Moving toward total deprecation. All local tool discovery must eventually be backed by an Attested Discovery signal.
+
+---
+
+## Evolution: [2026-04-06] Updates
+
+### Proposed Additions
+- **Structural Metadata Sanitizer Middleware**: (P0) A security service that treats tool descriptions and schemas as untrusted input, scanning them for imperative instructions or "Context Poisoning" patterns.
+- **Hardware-Linked Inode Pinning**: (P0) Extends path validation to include hardware-bound Inode checks, preventing TOCTOU races in project-local configurations.
+- **Speculative Auction Broker (SAB)**: (P1) High-speed negotiation bus for Gemini-style "Intent Probability" bidding in agent swarms.
+
+### Priority Shifts
+- **Tool Metadata Sanitizer**: Promoted to **P0**. Urgent requirement to address CVE-2026-45201.
+- **DCA Negotiation Guard**: (Re-affirmed P0) Expanded to support the new Speculative Auction Broker (SAB) protocol.
+
+### Deprecations / Monitoring
+- **Implicitly Trusted Tool Schemas**: Monitoring for total deprecation. All structural metadata must eventually pass through the Sanitizer.

@@ -338,3 +338,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **RL Telemetry Provider**: MCP Any will evolve into a "Telemetry Hub" for RL-driven agents. We will implement standardized, privacy-preserving hooks to export tool performance and conversation-feedback loops directly to OpenClaw-RL training pipelines.
 - **Attested Discovery Authority**: Following Claude Code's mandate for Trust Verification, MCP Any will act as the "Certificate Authority" for local MCP servers. We will provide cryptographic proof of a tool's provenance before it is exposed to the agent runtime.
 - **Normalized Optimistic Execution**: We are standardizing the "Optimistic Load" pattern from the Gemini ecosystem. MCP Any will allow agents to speculatively prepare tool contexts while discovery quorums perform background attestation, minimizing the "Security Latency" tax.
+
+---
+
+## Strategic Evolution: [2026-04-06]
+### Focus: Structural Integrity & Deterministic State Binding
+**Context**: Today's findings on "Metadata Context Poisoning" and TOCTOU configuration races mark a shift from protecting the *execution* to protecting the *definition* and *binding* of agents. As swarms become more speculative, the infrastructure must ensure that an agent's reasoning path and its environmental context are immutable and verified from start to finish.
+**Strategic Pivot**:
+- **Structural Metadata Sanitization**: MCP Any will treat tool schemas (JSON-RPC definitions, descriptions) as untrusted content. We will implement a "Metadata Governance Layer" that sanitizes tool definitions before they reach the LLM, preventing "Context Poisoning" via structural metadata.
+- **Hardware-Bound Inode Pinning**: To combat TOCTOU races in project-local settings, MCP Any will evolve to support hardware-linked file handle pinning. Once a configuration is validated, its Inode is locked to the session, ensuring that malicious actors cannot swap files during execution.
+- **Speculative Auction Brokering**: We are promoting the DCA Auction Broker to a core strategic priority. MCP Any will act as the high-speed "Auction House" for speculative agent bidding, utilizing hardware-accelerated negotiation (HAN) to minimize latency in deep swarms.
