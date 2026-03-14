@@ -8,7 +8,7 @@ An extensive "Truth Reconciliation Audit" was performed, sampling 10 distinct do
 | Document Name | Status | Action Taken | Evidence |
 | :--- | :--- | :--- | :--- |
 | `ui/docs/features/playground.md` | ALIGNED | Verified "Native File Upload" (base64) & "Copy as Code" exist in `file-input.tsx` & `tool-runner.tsx` | Found in codebase. |
-| `ui/docs/features/traces.md` | DEBT | Engineered fix for `SelectValue` text mismatch ("All Statuses" instead of "Status") | Code refactored & UI Test passed. |
+| `ui/docs/features/traces.md` | DEBT | Engineered fix for `SelectValue` text mismatch ("All Statuses" instead of "All Types") | Code refactored & UI Test passed. |
 | `ui/docs/features/logs.md` | ALIGNED | Verified "Structured Log Viewer" & Syntax Highlighting exist | Found in `log-viewer.tsx`. |
 | `ui/docs/features/marketplace.md` | ALIGNED | Verified Export/Share logic (Redact, Template Variables) | Found in `share-collection-dialog.tsx`. |
 | `ui/docs/features/test_connection.md` | ALIGNED | Verified Connection Diagnostic tool flows | Found in `connection-diagnostic.tsx`. |
@@ -22,8 +22,8 @@ An extensive "Truth Reconciliation Audit" was performed, sampling 10 distinct do
 
 *   **Code Fixes (Case B: Roadmap Debt):**
     *   **Feature:** Inspector (Live Traces) Dashboard Filtering.
-    *   **Discrepancy:** The filter dropdown for trace statuses was incorrectly displaying the placeholder "Status" instead of the intended "All Statuses". This caused a failure in the Playwright UI verification script (`verify_inspector.py`) which acts as the operational contract.
-    *   **Action:** Modified `ui/src/app/inspector/page.tsx` to correctly display `<SelectValue placeholder="All Statuses" />` instead of `"Status"` in the status filter dropdown, maintaining alignment with the `verify_inspector.py` test suite.
+    *   **Discrepancy:** The filter dropdown for trace types was incorrectly displaying the placeholder "All Statuses" instead of the intended "All Types". This caused a failure in the Playwright UI verification script (`verify_inspector.py`) which acts as the operational contract.
+    *   **Action:** Modified `ui/src/app/inspector/page.tsx` to correctly display `<SelectValue placeholder="All Types" />`.
     *   **Testing:** Reran the Playwright test `verify_inspector.py` which successfully matched the locator and captured `verification_inspector.png`. No new tests needed as the existing verification script covers this line of code.
 
 *   **Documentation Updates (Case A: Documentation Drift):**
