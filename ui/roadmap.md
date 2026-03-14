@@ -191,3 +191,6 @@
 - [ ] **[P0] Metadata Provenance Viewer**: (2026-04-04) UI for verifying the cryptographic lineage and signing status of tool metadata.
 - [ ] **[P0] Metadata Poisoning Alert Hub**: (2026-04-04) Security dashboard for reviewing and approving redacted metadata fragments.
 - [ ] **[P1] Lifecycle Synchronization Monitor**: (2026-04-04) Visual tracker for cross-framework state commit/rollback events.
+- [ ] **[P0] DIQ Consensus Dashboard**: (2026-04-05) Real-time visualization of peer-to-peer intent validation and swarm consensus status.
+- [ ] **[P0] Metadata Provenance Explorer**: (2026-04-05) Interactive UI for verifying full-stack metadata lineage and signature chains.
+- [ ] **[P1] Adaptive Security Posture Widget**: (2026-04-05) Monitor for the Adaptive Security Scaler, showing current risk levels and attestation requirements.

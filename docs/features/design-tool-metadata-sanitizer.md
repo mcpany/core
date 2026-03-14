@@ -46,3 +46,7 @@ The Tool Metadata Sanitizer is a security middleware in MCP Any that treats all 
 
 ## 7. Evolutionary Changelog
 * **2026-04-04:** Initial Document Creation.
+* **2026-04-05:** **Evolution: Property-Level Scanning & DIQ Integration**
+    * **Context**: Research on CVE-2026-42001 confirms that even small `title` or `default` value fields are being used for injection.
+    * **Adjustment**: Expanding scan depth to include all JSON schema keywords (`const`, `default`, `enum`).
+    * **Integration**: Added hooks for the Decentralized Intent Quorum (DIQ) to share "Malicious Metadata Signatures" across nodes.

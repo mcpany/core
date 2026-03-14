@@ -451,3 +451,19 @@
 ### Priority Shifts
 - **Tool Metadata Sanitizer**: Promoted from **P1** to **P0**. Critical for mitigating CVE-2026-42001.
 - **DCA Auction Broker**: Re-affirmed as **P0** (Already P0, but expanded to include HAN requirements).
+
+---
+
+## Evolution: [2026-04-05] Updates
+
+### Proposed Additions
+- **Decentralized Intent Quorum (DIQ) Middleware**: (P0) Peer-to-peer intent validation bus to enable decentralized task consensus and mitigate "Negotiation Exhaustion."
+- **Context-Adaptive Security Scaler**: (P1) Middleware that dynamically scales attestation requirements based on reasoning path risk and intent entropy.
+- **Full-Stack Metadata Lineage Guard**: (P0) Cryptographic provenance verification for all structural metadata, including property-level examples and hints.
+
+### Priority Shifts
+- **Metadata Provenance Engine**: Re-affirmed as **P0**. Expanded to include full-stack lineage requirements for DIQ compliance.
+- **Active Subagent Reaper**: (Re-affirmed P0) Critical for pruning orphan intents in decentralized quorum environments.
+
+### Deprecations / Monitoring
+- **Centralized Auction Brokers**: Monitoring for deprecation in favor of **Decentralized Intent Quorums** for large-scale swarms.

@@ -339,3 +339,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Metadata Provenance Engine**: Verification service for structural metadata lineage using cryptographic signing. (Added: 2026-04-04)
 *   **[P0] Tool Metadata Sanitizer**: Security middleware for detecting "Context Poisoning" in tool schemas (CVE-2026-42001). (Added: 2026-04-04)
 *   **[P1] Unified Lifecycle Bridge**: Standardized commit/rollback middleware for cross-framework lifecycle synchronization. (Added: 2026-04-04)
+
+#### Upcoming (2026-04-05 Evolution)
+*   **[P0] Decentralized Intent Quorum (DIQ) Middleware**: Peer-to-peer intent validation bus to enable decentralized task consensus. (Added: 2026-04-05)
+*   **[P0] Full-Stack Metadata Lineage Guard**: Cryptographic provenance verification for all structural metadata fragments. (Added: 2026-04-05)
+*   **[P1] Context-Adaptive Security Scaler**: Dynamic attestation requirements based on reasoning path risk and intent entropy. (Added: 2026-04-05)
