@@ -194,3 +194,6 @@
 - [ ] **[P0] Local Trust Verification Dashboard**: (2026-04-05) UI for reviewing and signing local MCP server identity claims.
 - [ ] **[P0] Optimistic Loading Debugger**: (2026-04-05) Visual timeline of speculative vs. attested tool loading events.
 - [ ] **[P1] RL Feedback Stream Viewer**: (2026-04-05) Real-time telemetry dashboard for monitoring RL training data export.
+- [ ] **[P0] Mission-Bound Intent Dashboard**: (2026-04-06) Visual monitor for tracking active missions, MBAT status, and intent-divergence alerts.
+- [ ] **[P0] State Segmentation Inspector**: (2026-04-06) UI for visualizing isolated state shards and their mission-bound access policies.
+- [ ] **[P1] Mission Lineage Visualizer**: (2026-04-06) Interactive graph showing the chain of custody for agent missions and delegated intents.

@@ -344,3 +344,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Attested Discovery Authority**: Cryptographic identity broker for local MCP servers to satisfy Claude Code's "Trust Verification." (Added: 2026-04-05)
 *   **[P0] Optimistic Execution Gate**: Speculative context loading for tools, synchronized with background discovery quorums. (Added: 2026-04-05)
 *   **[P1] RL Telemetry Provider**: Standardized middleware for exporting performance/feedback metrics to OpenClaw-RL training loops. (Added: 2026-04-05)
+
+#### Upcoming (2026-04-06 Evolution)
+*   **[P0] Mission-Bound Attestation Token (MBAT)**: Implementation of mission-bound cryptographic tokens to bind tool calls and state mutations to a verified intent. (Added: 2026-04-06)
+*   **[P0] Isolated State Shard Controller**: Extension of Context Sharding to enforce strict read/write isolation between agents, preventing A2A contagion. (Added: 2026-04-06)
+*   **[P1] Mission Lineage Verifier**: Core service to verify the cryptographic chain of custody for agent missions and delegated intents. (Added: 2026-04-06)

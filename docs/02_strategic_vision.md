@@ -338,3 +338,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **RL Telemetry Provider**: MCP Any will evolve into a "Telemetry Hub" for RL-driven agents. We will implement standardized, privacy-preserving hooks to export tool performance and conversation-feedback loops directly to OpenClaw-RL training pipelines.
 - **Attested Discovery Authority**: Following Claude Code's mandate for Trust Verification, MCP Any will act as the "Certificate Authority" for local MCP servers. We will provide cryptographic proof of a tool's provenance before it is exposed to the agent runtime.
 - **Normalized Optimistic Execution**: We are standardizing the "Optimistic Load" pattern from the Gemini ecosystem. MCP Any will allow agents to speculatively prepare tool contexts while discovery quorums perform background attestation, minimizing the "Security Latency" tax.
+
+---
+
+## Strategic Evolution: [2026-04-06]
+### Focus: Mission-Bound Attestation & State Segmentation (Contagion Defense)
+**Context**: Today's findings on "A2A Contagion" and the release of OpenClaw's ContextEngine mark a shift in the security paradigm. We are moving from protecting the "Infrastructure" to protecting the "Intent." Lateral movement of malicious intent between agents is now the primary threat to autonomous swarms.
+**Strategic Pivot**:
+- **Mission-Bound Attestation Token (MBAT)**: MCP Any will implement a protocol for "Mission-Bound" tokens. These tokens cryptographically bind an agent's session to a specific, verified mission statement. Any tool call or state mutation that deviates from the mission-bound intent will be blocked at the gateway.
+- **State Segmentation (Shard Isolation)**: To mitigate A2A Contagion, the Context Sharding middleware will be upgraded to support "Shard Isolation." Agents will only be granted "Read/Write" access to specific state shards required for their mission, preventing lateral state poisoning.
+- **Intent Lineage Verification**: We are promoting "Lineage-Aware Orchestration" to a core security pillar. MCP Any will verify the entire chain of custody for a mission's intent, ensuring that subagents cannot be hijacked by poisoned handoffs from compromised parents.

@@ -467,3 +467,19 @@
 
 ### Deprecations / Monitoring
 - **Implicitly Trusted Local Discovery**: Moving toward total deprecation. All local tool discovery must eventually be backed by an Attested Discovery signal.
+
+---
+
+## Evolution: [2026-04-06] Updates
+
+### Proposed Additions
+- **Mission-Bound Attestation Token (MBAT) Middleware**: (P0) Implementation of mission-bound cryptographic tokens to bind tool calls and state mutations to a verified intent.
+- **Isolated State Shard Controller**: (P0) Extension of Context Sharding to enforce strict read/write isolation between agents, preventing A2A contagion.
+- **Mission Lineage Verifier**: (P1) Core service to verify the cryptographic chain of custody for agent missions and delegated intents.
+
+### Priority Shifts
+- **Live Context Sharding Middleware**: (Re-affirmed P0) Expanded to include "State Segmentation" as a mandatory security requirement.
+- **A2A Interop Bridge**: (Re-affirmed P0) Now a critical enforcement point for MBAT verification during agent-to-agent handoffs.
+
+### Deprecations / Monitoring
+- **Global Read/Write Shards**: Moving toward deprecation for multi-agent swarms. Shards must be isolated by intent.
