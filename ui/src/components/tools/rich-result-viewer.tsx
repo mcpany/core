@@ -78,6 +78,50 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
     const [content, isExtracted] = useMemo(() => {
         if (!result) return [result, false];
 
+        // Check if the result is already an array of complex objects
+        // Some upstream services (like the mock command adapter) return `stdout`
+        // as a string that could be parsed, or the result itself might be JSON stringified
+        // wait, let's first check if the result is just a string that contains JSON.
+        if (typeof result === 'string') {
+             try {
+                const parsed = JSON.parse(result);
+                return [parsed, true];
+            } catch {
+                return [result, false];
+            }
+        }
+
+        // Check if the result is an array or object containing strings that are JSON.
+        // It's common for MCP execution results to be wrapped inside an array containing
+        // {"type": "text", "text": "[\"JSON_DATA\"]"}
+        if (Array.isArray(result) && result.length > 0) {
+            // Check if it's an array of objects
+            const firstItem = result[0];
+            if (firstItem && typeof firstItem === 'object' && firstItem.type === 'text' && typeof firstItem.text === 'string') {
+                try {
+                    const parsed = JSON.parse(firstItem.text);
+                    return [parsed, true];
+                } catch {
+                    // fall back
+                }
+            }
+        }
+
+        // Check if the result has a specific format like an array in the first element
+        // wait, looking at the E2E test, the mock returns:
+        // call: { args: [ '[\n  {"name":"Alice","role":"Admin","id":1},\n  {"name":"Bob","role":"User","id":2}\n]' ] }
+        // The command execution result `stdout` might be that JSON array but wrapped.
+
+        // Let's also check if it's an array of strings
+        if (Array.isArray(result) && result.length === 1 && typeof result[0] === 'string') {
+            try {
+                const parsed = JSON.parse(result[0]);
+                return [parsed, true];
+            } catch {
+                // Ignore
+            }
+        }
+
         // Handle Command Execution Result (stdout contains JSON)
         if (typeof result === 'object' && 'stdout' in result && typeof result.stdout === 'string') {
             try {
@@ -89,25 +133,30 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
             }
         }
 
-        // Handle raw string that is JSON
-        if (typeof result === 'string') {
-             try {
-                const parsed = JSON.parse(result);
-                return [parsed, true];
-            } catch {
-                return [result, false];
-            }
+        // Handle result where 'content' is an array with text containing JSON
+        if (typeof result === 'object' && Array.isArray(result.content)) {
+             if (result.content.length > 0 && result.content[0].type === 'text' && typeof result.content[0].text === 'string') {
+                 try {
+                     const parsed = JSON.parse(result.content[0].text);
+                     return [parsed, true];
+                 } catch {
+                     // fall back
+                 }
+             }
         }
+
         return [result, false];
     }, [result]);
 
     const mcpContent = useMemo<McpContent[] | null>(() => {
         if (Array.isArray(content)) {
             const isValidArray = content.every((item: any) =>
+                item && typeof item === 'object' && (
                 (item.type === 'text' && typeof item.text === 'string') ||
                 (item.type === 'image' && typeof item.data === 'string' && typeof item.mimeType === 'string')
+                )
             );
-            if (isValidArray) {
+            if (isValidArray && content.length > 0) {
                 return content as McpContent[];
             }
         }
@@ -115,10 +164,12 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
         if (content && typeof content === 'object' && Array.isArray(content.content)) {
             // Check if it looks like MCP content
             const isValid = content.content.every((item: any) =>
+                item && typeof item === 'object' && (
                 (item.type === 'text' && typeof item.text === 'string') ||
                 (item.type === 'image' && typeof item.data === 'string' && typeof item.mimeType === 'string')
+                )
             );
-            if (isValid) {
+            if (isValid && content.content.length > 0) {
                 return content.content;
             }
         }
