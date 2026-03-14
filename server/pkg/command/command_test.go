@@ -716,6 +716,50 @@ func TestDockerExecutorWithStdIO(t *testing.T) {
 		}
 	})
 
+	t.Run("ConfiguresStdinOnce", func(t *testing.T) {
+		containerEnv := &configv1.ContainerEnvironment{}
+		containerEnv.SetImage("alpine:latest")
+		executor := newDockerExecutor(containerEnv).(*dockerExecutor)
+
+		mockClient := &MockDockerClient{}
+		mockClient.ContainerCreateFunc = func(ctx context.Context, config *container.Config, hostConfig *container.HostConfig, networkingConfig *network.NetworkingConfig, platform *v1.Platform, containerName string) (container.CreateResponse, error) {
+			require.True(t, config.OpenStdin)
+			require.True(t, config.StdinOnce)
+			require.True(t, config.AttachStdin)
+			return container.CreateResponse{ID: "test-id"}, nil
+		}
+		mockClient.ContainerAttachFunc = func(ctx context.Context, container string, options container.AttachOptions) (types.HijackedResponse, error) {
+			s, c := net.Pipe()
+			t.Cleanup(func() {
+				_ = s.Close()
+				_ = c.Close()
+			})
+			return types.HijackedResponse{
+				Conn:   c,
+				Reader: bufio.NewReader(c),
+			}, nil
+		}
+		mockClient.ContainerStartFunc = func(ctx context.Context, containerID string, options container.StartOptions) error {
+			return nil
+		}
+		mockClient.ContainerWaitFunc = func(ctx context.Context, containerID string, condition container.WaitCondition) (<-chan container.WaitResponse, <-chan error) {
+			statusCh := make(chan container.WaitResponse, 1)
+			statusCh <- container.WaitResponse{StatusCode: 0}
+			return statusCh, nil
+		}
+		mockClient.ContainerRemoveFunc = func(ctx context.Context, containerID string, options container.RemoveOptions) error {
+			return nil
+		}
+		executor.clientFactory = func() (DockerClient, error) {
+			return mockClient, nil
+		}
+
+		stdin, _, _, exitCodeChan, err := executor.ExecuteWithStdIO(context.Background(), "cat", nil, "", nil)
+		require.NoError(t, err)
+		require.NoError(t, stdin.Close())
+		assert.Equal(t, 0, <-exitCodeChan)
+	})
+
 	t.Run("VolumeMounts", func(t *testing.T) {
 		// Ensure the testdata directory exists for the volume mount test.
 		if _, err := os.Stat("testdata"); os.IsNotExist(err) {

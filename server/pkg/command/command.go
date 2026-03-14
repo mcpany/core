@@ -432,6 +432,7 @@ func (e *dockerExecutor) ExecuteWithStdIO(ctx context.Context, command string, a
 		Env:          env,
 		Tty:          false,
 		OpenStdin:    true,
+		StdinOnce:    true,
 		AttachStdin:  true,
 		AttachStdout: true,
 		AttachStderr: true,
