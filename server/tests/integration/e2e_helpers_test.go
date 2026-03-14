@@ -62,14 +62,53 @@ func TestWaitForText(t *testing.T) {
 }
 
 func TestDockerHelpers(t *testing.T) {
-	if os.Getenv("CI") == "true" || os.Getenv("GITHUB_ACTIONS") == "true" {
-		t.Log("Skipping TestDockerHelpers in CI environment (CI/GITHUB_ACTIONS=true)")
-		// t.Skip("Skipping TestDockerHelpers in CI due to potential rate limiting/network issues")
-	}
-	t.Parallel()
-	if !IsDockerSocketAccessible() {
-		// t.Skip("Docker is not available")
-	}
+	// Create a mock docker script
+	mockScript := `#!/bin/sh
+	# Mock docker
+	cmd=$1
+	shift
+	if [ "$cmd" = "run" ]; then
+		exit 0
+	elif [ "$cmd" = "ps" ]; then
+		# Print the container name that is passed in via -f name=...
+		while [ "$1" != "" ]; do
+			case $1 in
+				-f | --filter ) shift
+								if echo "$1" | grep -q "^name="; then
+									echo "${1#name=}"
+								fi
+								;;
+			esac
+			shift
+		done
+		exit 0
+	elif [ "$cmd" = "port" ]; then
+		# Output a fake port mapping like docker port does
+		echo "127.0.0.1:6379"
+		exit 0
+	elif [ "$cmd" = "exec" ]; then
+		# Fake redis-cli ping output
+		echo "PONG"
+		exit 0
+	elif [ "$cmd" = "rm" ] || [ "$cmd" = "stop" ] || [ "$cmd" = "info" ]; then
+		exit 0
+	fi
+	exit 0
+`
+	tmpFile, err := os.CreateTemp("", "mock_docker_*.sh")
+	require.NoError(t, err)
+	defer os.Remove(tmpFile.Name())
+
+	_, err = tmpFile.WriteString(mockScript)
+	require.NoError(t, err)
+	err = tmpFile.Close()
+	require.NoError(t, err)
+
+	err = os.Chmod(tmpFile.Name(), 0755)
+	require.NoError(t, err)
+
+	// Set environment variable to use the mock docker
+	t.Setenv("MCPANY_MOCK_DOCKER", tmpFile.Name())
 
 	// Test StartDockerContainer
 	imageName := "alpine:latest"
