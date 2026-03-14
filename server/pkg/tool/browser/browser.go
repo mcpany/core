@@ -17,6 +17,23 @@ import (
 // It is an interface so tests can inject a lightweight implementation without
 // requiring a real browser installation.
 type PageFetcher interface {
+	// FetchText fetches the visible text content of a given URL.
+	//
+	// Summary: Fetches the text content of a web page.
+	//
+	// Parameters:
+	//   - ctx (context.Context): The context for the request.
+	//   - url (string): The URL to visit.
+	//
+	// Returns:
+	//   - string: The extracted text content from the page.
+	//   - error: An error if the fetching process fails.
+	//
+	// Errors:
+	//   - Returns an error if the URL is invalid or unreachable.
+	//
+	// Side Effects:
+	//   - Makes a network request to the specified URL.
 	FetchText(ctx context.Context, url string) (string, error)
 }
 
@@ -93,6 +110,28 @@ func (b *Provider) ToolDefinition() map[string]interface{} {
 // playwrightFetcher is the production PageFetcher that uses playwright-go.
 type playwrightFetcher struct{}
 
+// FetchText fetches the visible text content of a given URL using a real headless browser.
+//
+// Summary: Fetches the text content of a web page via playwright.
+//
+// Parameters:
+//   - _ (context.Context): The context for the request (currently unused).
+//   - url (string): The URL to visit.
+//
+// Returns:
+//   - string: The extracted text content from the body of the page.
+//   - error: An error if the fetching process fails.
+//
+// Errors:
+//   - Returns "could not start playwright" if Playwright fails to start.
+//   - Returns "could not launch browser" if the Chromium browser fails to launch.
+//   - Returns "could not create page" if a new browser page cannot be created.
+//   - Returns "could not goto" if navigating to the URL fails.
+//   - Returns "could not extract text content" if the body text cannot be extracted.
+//
+// Side Effects:
+//   - Spawns a Chromium browser process.
+//   - Makes a network request to the specified URL.
 func (f *playwrightFetcher) FetchText(_ context.Context, url string) (string, error) {
 	pw, err := playwright.Run()
 	if err != nil {
