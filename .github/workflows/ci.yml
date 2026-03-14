@@ -106,9 +106,10 @@ jobs:
           BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_OFFICIAL_API_KEY }}
         run: |
           bazelisk run //:lint \
+            --config=remote \
             --disk_cache=$BAZEL_DISK_CACHE \
             --repository_cache=$BAZEL_REPOSITORY_CACHE \
-            ${BUILDBUDDY_API_KEY:+--config=buildbuddy_remote-common --remote_header=x-buildbuddy-api-key=$BUILDBUDDY_API_KEY}
+            --remote_header=x-buildbuddy-api-key=$BUILDBUDDY_API_KEY
 
       # Run UI lint and typecheck as Bazel tests (these are already pure Bazel
       # targets and benefit from remote caching).
@@ -119,10 +120,11 @@ jobs:
           BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_OFFICIAL_API_KEY }}
         run: |
           bazelisk test //ui:lint //ui:typecheck \
+            --config=remote \
             --test_output=errors \
             --disk_cache=$BAZEL_DISK_CACHE \
             --repository_cache=$BAZEL_REPOSITORY_CACHE \
-            ${BUILDBUDDY_API_KEY:+--config=buildbuddy_remote-common --remote_header=x-buildbuddy-api-key=$BUILDBUDDY_API_KEY}
+            --remote_header=x-buildbuddy-api-key=$BUILDBUDDY_API_KEY
 
   bazel-test:
     runs-on: ubuntu-latest
