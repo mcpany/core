@@ -64,6 +64,7 @@
 *   **[P0] Semantic Boundary Detector**: Specialized scanner for Prompt Path Protection that analyzes multimodal metadata (SVG/CSS). (Added: 2026-03-14)
 *   **[P1] Context Lifecycle Hooks**: Standardized API for framework-specific context compression and retrieval. (Added: 2026-03-14)
 *   **[P1] Session-Resumption mTLS**: Optimized transport layer to reduce A2A handshake latency in large swarms. (Added: 2026-03-14)
+*   **[P0] Authenticated A2A Agent Card Discovery**: Support for Gemini-style authenticated discovery in the A2A bridge. (Added: 2026-03-14)
 
 #### Upcoming (2026-03-15 Evolution)
 *   **[P0] Call-Graph Loop Monitor**: Middleware to detect and prevent recursive "M2M" tool loops and resource exhaustion. (Added: 2026-03-15)

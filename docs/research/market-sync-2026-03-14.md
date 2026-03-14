@@ -1,20 +1,27 @@
 # Market Sync: 2026-03-14
 
-## Ecosystem Shifts & Findings
+## Ecosystem Shifts & Market Intelligence
 
-### 1. OpenClaw: The "Local-Trust" Security Crisis (CVE-2026-25253)
-A critical vulnerability (CVSS 8.8) was disclosed in OpenClaw where the agent incorrectly trusted any connection originating from `localhost`. Malicious websites could use JavaScript to open a WebSocket connection to the local OpenClaw gateway, steal authentication tokens, and gain full control over the agent. This highlights a massive gap in **Browser-Origin Validation** for local AI infrastructure. MCP Any must implement strict Same-Origin and Cross-Origin Resource Sharing (CORS) policies even for local listeners.
+### 1. OpenClaw: Local Trust Crisis (CVE-2026-25253)
+*   **Finding**: A critical CSRF/WebSocket hijacking vulnerability was disclosed affecting OpenClaw versions before 2026.1.29.
+*   **Impact**: Attackers can use a "1-click" exploit via a malicious website to leak authentication tokens and achieve RCE on the local machine by bridging the browser-to-localhost gap.
+*   **Significance**: This fundamentally breaks the assumption of "Local Trust" for AI agents running local servers. MCP Any must mandate strict Origin and Sec-Fetch-Site validation.
 
-### 2. ContextEngine Adoption & "Context Ghosting"
-With the release of OpenClaw's **ContextEngine**, early adopters are reporting "Context Ghosting"—where compressed or summarized context loses critical "intent" metadata, causing subagents to drift from the original goal. This confirms the need for MCP Any's **Modular Context Interop** to support "Intent-Preserving Compression" and standardized lifecycle hooks.
+### 2. Claude Code: Swarm Stability & "Context Ghosting"
+*   **Finding**: Users of Claude Code's multi-agent refinement loops report "Context Ghosting," where subagents lose critical parent intent during deep reasoning chains or handoffs.
+*   **Impact**: Leads to "hallucination spirals" where agents diverge from the primary goal because compressed context fragments lack "Intent-Awareness."
+*   **Opportunity**: MCP Any can implement "Intent-Preserving Context" by utilizing the parent's verified mission intent to guide context summarization and sharding.
 
-### 3. "Prompt Path" Hijacking Maturity
-Security researchers have demonstrated advanced "Prompt Path" attacks where malicious instructions are hidden in SVG metadata or CSS comments of scraped websites. These instructions are invisible to standard text scrapers but are ingested by multimodal LLMs, leading to silent agent hijacking. This necessitates **Semantic Boundary Detection** in our Prompt Path Protection middleware.
-
-### 4. mTLS Handshake Fatigue in Swarms
-As enterprises deploy swarms of 100+ agents, the overhead of standard mTLS handshakes for every A2A interaction is causing significant latency (up to 200ms per hop). There is a growing demand for **Optimized Swarm mTLS** or "Session-Resumption" protocols tailored for high-frequency agentic communication.
+### 3. Gemini CLI: A2A Maturity (v0.33.0)
+*   **Finding**: Gemini CLI v0.33.0 introduced HTTP authentication for A2A remote agents and "Authenticated Agent Card Discovery."
+*   **Shift**: Moving toward a standardized way for agents to "bid" on tasks and prove their identity before state handoffs.
+*   **Alignment**: Supports the need for MCP Any to act as a universal UACO/UAB broker that validates these credentials across disparate frameworks.
 
 ## Autonomous Agent Pain Points
-- **Local Proxy Fragility**: The OpenClaw CVE proves that "Local-Only" is not a security boundary if the browser can bridge the gap.
-- **Semantic Drift**: Difficulty in maintaining a "Single Source of Truth" for intent across deep agent hierarchies.
-- **Handshake Latency**: The performance tax of Zero-Trust security in high-density agent environments.
+*   **Local Transport Hijacking**: Fear of browser-based attacks reaching local agent control planes.
+*   **Context Fragmentation**: Difficulty maintaining mission-critical state in deep, heterogeneous swarms.
+*   **Supply Chain Visibility**: Increasing demand for "Attested Discovery" of tools and sub-agents.
+
+## Security Vulnerability Watch
+*   **CVE-2026-25253**: WebSocket hijacking in OpenClaw.
+*   **CVE-2026-21852**: Anthropic API key theft via `ANTHROPIC_BASE_URL` hijacking in project configs (Claude Code).
