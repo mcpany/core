@@ -53,3 +53,8 @@ The OpenClaw security crisis (CVE-2026-25253) highlighted a critical flaw in "lo
     * **Context**: Recent reports of CSWSH (CVE-2026-25253) indicate that "Origin Check" alone is insufficient if session tokens can be reused across disparate local listeners.
     * **Architecture Adjustment**: We are introducing "Origin-Locked Session Binding." Every issued agent session token is now cryptographically bound to the `Origin` header used during its creation.
     * **Security Impact**: Mitigates "Cross-Origin Token Reuse," ensuring that even if a token is exfiltrated to a malicious local listener, it cannot be used unless the request originates from the same verified origin as the initial handshake.
+
+* **2026-04-09: Update: Identity-Linked Origin Binding**
+    * **Context**: Today's findings on OpenClaw v2.7 "Monologue Attestation" suggest that origin validation should be tied not just to the session, but to the specific cryptographic identity of the agent.
+    * **Architecture Adjustment**: Upgrading the binding logic to "Identity-Linked Origin Binding." Session tokens must now be accompanied by an agent-signed "Monologue Token" that carries the initiating origin's fingerprint.
+    * **Security Impact**: Neutralizes "Agentic Hijacking" where a compromised subagent might attempt to reuse a valid session token from a different origin.

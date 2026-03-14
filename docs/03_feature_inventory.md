@@ -8,6 +8,15 @@
 
 ---
 
+## Evolution: [2026-04-09] Updates
+
+### Proposed Additions
+- **UACO Negotiation Deadlock Detector**: (P1) Monitoring service that detects and resolves infinite bidding loops in multi-agent swarms.
+- **Ephemeral Identity Broker**: (P0) Core service for brokering trust between ephemeral agent session identities and persistent local origins/attestations.
+- **Collective Trust Proxy**: (P1) Middleware that provides peer-attestation signatures for local MCP servers to satisfy enterprise "Trust-Graph" requirements.
+
+---
+
 ## Evolution: [2026-04-08] Updates
 
 ### Proposed Additions

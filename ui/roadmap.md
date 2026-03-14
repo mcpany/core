@@ -205,6 +205,11 @@
 - [ ] **[P0] Session Binding Security Dashboard**: Visualization of cryptographically bound session-to-origin links and blocked token-reuse attempts. (Added: 2026-04-08)
 - [ ] **[P1] UAB Reputation Explorer**: Real-time browser for cross-framework skill reputation scores and trust quorum status. (Added: 2026-04-08)
 
+#### Upcoming (2026-04-09 Evolution)
+- [ ] **[P0] Ephemeral Identity Monitor**: Visualization of the cryptographic "Chain of Identity" linking sessions to origins. (Added: 2026-04-09)
+- [ ] **[P1] UACO Deadlock Dashboard**: Real-time tracker for swarm negotiation convergence and infinite-loop alerts. (Added: 2026-04-09)
+- [ ] **[P1] Trust-Graph Proxy Manager**: UI for reviewing and signing peer-attestation tokens for local tools. (Added: 2026-04-09)
+
 #### Upcoming (2026-04-07 Evolution)
 - [ ] **[P0] Verified Skill Auction Monitor**: UI for visualizing VSA bids and attestation status in real-time. (Added: 2026-04-07)
 - [ ] **[P0] Origin Violation Security Hub**: Security dashboard for tracking and mitigating CVE-2026-25253 style browser-origin hijacking. (Added: 2026-04-07)
