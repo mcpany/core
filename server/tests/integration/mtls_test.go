@@ -5,31 +5,98 @@ package integration
 
 import (
 	"context"
+	"crypto/rand"
+	"crypto/rsa"
 	"crypto/tls"
 	"crypto/x509"
+	"crypto/x509/pkix"
 	"encoding/json"
+	"encoding/pem"
+	"math/big"
+	"net"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"testing"
+	"time"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
 )
 
-func TestMTLSAuthentication(t *testing.T) {
-	// Under Bazel, the sandbox symlinks cause the server's security path
-	// validation to reject cert paths (EvalSymlinks resolves outside CWD).
-	if os.Getenv("RUNFILES_DIR") != "" {
-		t.Skip("Skipping TestMTLSAuthentication under Bazel: cert path validation incompatible with sandbox symlinks")
+// generateMTLSCerts creates a self-signed CA and signs server + client
+// certificates, writing all PEM files into dir.
+func generateMTLSCerts(t *testing.T, dir string) {
+	t.Helper()
+
+	writePEM := func(path, pemType string, data []byte) {
+		t.Helper()
+		f, err := os.Create(path) //nolint:gosec
+		require.NoError(t, err)
+		defer f.Close()
+		require.NoError(t, pem.Encode(f, &pem.Block{Type: pemType, Bytes: data}))
 	}
 
-	// Resolve the TLS test certificate directory.
-	tlsDir := filepath.Join(ProjectRoot(t), "tests", "tls")
-	if _, err := os.Stat(tlsDir); err != nil {
-		t.Skipf("TLS test certificates not found at %s, skipping", tlsDir)
+	// --- CA ---
+	caKey, err := rsa.GenerateKey(rand.Reader, 2048)
+	require.NoError(t, err)
+	caTemplate := &x509.Certificate{
+		SerialNumber:          big.NewInt(1),
+		Subject:               pkix.Name{CommonName: "Test CA"},
+		NotBefore:             time.Now().Add(-time.Hour),
+		NotAfter:              time.Now().Add(24 * time.Hour),
+		IsCA:                  true,
+		KeyUsage:              x509.KeyUsageCertSign | x509.KeyUsageCRLSign,
+		BasicConstraintsValid: true,
 	}
+	caBytes, err := x509.CreateCertificate(rand.Reader, caTemplate, caTemplate, &caKey.PublicKey, caKey)
+	require.NoError(t, err)
+	caCert, err := x509.ParseCertificate(caBytes)
+	require.NoError(t, err)
+	writePEM(filepath.Join(dir, "ca.crt"), "CERTIFICATE", caBytes)
+
+	// --- Server cert ---
+	serverKey, err := rsa.GenerateKey(rand.Reader, 2048)
+	require.NoError(t, err)
+	serverTemplate := &x509.Certificate{
+		SerialNumber: big.NewInt(2),
+		Subject:      pkix.Name{CommonName: "localhost"},
+		DNSNames:     []string{"localhost"},
+		IPAddresses:  []net.IP{net.ParseIP("127.0.0.1")},
+		NotBefore:    time.Now().Add(-time.Hour),
+		NotAfter:     time.Now().Add(24 * time.Hour),
+		KeyUsage:     x509.KeyUsageDigitalSignature,
+		ExtKeyUsage:  []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth},
+	}
+	serverBytes, err := x509.CreateCertificate(rand.Reader, serverTemplate, caCert, &serverKey.PublicKey, caKey)
+	require.NoError(t, err)
+	writePEM(filepath.Join(dir, "server.crt"), "CERTIFICATE", serverBytes)
+	writePEM(filepath.Join(dir, "server.key"), "RSA PRIVATE KEY", x509.MarshalPKCS1PrivateKey(serverKey))
+
+	// --- Client cert ---
+	clientKey, err := rsa.GenerateKey(rand.Reader, 2048)
+	require.NoError(t, err)
+	clientTemplate := &x509.Certificate{
+		SerialNumber: big.NewInt(3),
+		Subject:      pkix.Name{CommonName: "test-client"},
+		NotBefore:    time.Now().Add(-time.Hour),
+		NotAfter:     time.Now().Add(24 * time.Hour),
+		KeyUsage:     x509.KeyUsageDigitalSignature,
+		ExtKeyUsage:  []x509.ExtKeyUsage{x509.ExtKeyUsageClientAuth},
+	}
+	clientBytes, err := x509.CreateCertificate(rand.Reader, clientTemplate, caCert, &clientKey.PublicKey, caKey)
+	require.NoError(t, err)
+	writePEM(filepath.Join(dir, "client.crt"), "CERTIFICATE", clientBytes)
+	writePEM(filepath.Join(dir, "client.key"), "RSA PRIVATE KEY", x509.MarshalPKCS1PrivateKey(clientKey))
+}
+
+func TestMTLSAuthentication(t *testing.T) {
+	// Generate TLS certificates programmatically so the test is hermetic and
+	// works in all environments (including Bazel sandboxes where cert symlinks
+	// resolve outside the server working-directory security check).
+	certDir := t.TempDir()
+	generateMTLSCerts(t, certDir)
 
 	// Create a mock upstream server that requires mTLS
 	server := httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
@@ -39,12 +106,12 @@ func TestMTLSAuthentication(t *testing.T) {
 	}))
 
 	// Configure the server with mTLS
-	caCert, err := os.ReadFile(filepath.Join(tlsDir, "ca.crt")) //nolint:gosec
+	caCert, err := os.ReadFile(filepath.Join(certDir, "ca.crt")) //nolint:gosec
 	require.NoError(t, err)
 	caCertPool := x509.NewCertPool()
 	caCertPool.AppendCertsFromPEM(caCert)
 
-	serverCert, err := tls.LoadX509KeyPair(filepath.Join(tlsDir, "server.crt"), filepath.Join(tlsDir, "server.key")) //nolint:gosec
+	serverCert, err := tls.LoadX509KeyPair(filepath.Join(certDir, "server.crt"), filepath.Join(certDir, "server.key")) //nolint:gosec
 	require.NoError(t, err)
 
 	server.TLS = &tls.Config{ //nolint:gosec
@@ -56,15 +123,19 @@ func TestMTLSAuthentication(t *testing.T) {
 	defer server.Close()
 
 	// Configure the gateway to use mTLS for the upstream.
-	// Paths are relative to the server CWD (ProjectRoot).
+	// Cert paths are absolute; certDir is added to allowed_file_paths so the
+	// server's path-validation logic accepts them regardless of CWD.
 	config := `
+global_settings:
+  allowed_file_paths:
+    - ` + certDir + `
 upstream_services:
   - name: my-upstream
     upstream_auth:
       mtls:
-        client_cert_path: "tests/tls/client.crt"
-        client_key_path: "tests/tls/client.key"
-        ca_cert_path: "tests/tls/ca.crt"
+        client_cert_path: "` + filepath.Join(certDir, "client.crt") + `"
+        client_key_path: "` + filepath.Join(certDir, "client.key") + `"
+        ca_cert_path: "` + filepath.Join(certDir, "ca.crt") + `"
     http_service:
       address: "` + server.URL + `"
       tools:

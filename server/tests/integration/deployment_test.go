@@ -183,9 +183,6 @@ func TestDockerCompose(t *testing.T) {
 }
 
 func TestHelmChart(t *testing.T) {
-	if os.Getenv("RUNFILES_DIR") != "" {
-		t.Skip("Skipping TestHelmChart under Bazel: helm chart files are not in the sandbox.")
-	}
 	// // t.Skip("Skipping heavy integration test TestHelmChart")
 	// Add build/env/bin to PATH to find helm installed by make
 	rootDir := integration.ProjectRoot(t)
@@ -195,11 +192,14 @@ func TestHelmChart(t *testing.T) {
 	defer os.Setenv("PATH", oldPath)
 
 	if !commandExists("helm") {
-		// t.Skip("helm command not found, skipping TestHelmChart.")
+		t.Skip("helm command not found, skipping TestHelmChart.")
 	}
 	t.Parallel()
 
 	helmChartPath := filepath.Join(integration.ProjectRoot(t), "../k8s", "helm", "mcpany")
+	if _, err := os.Stat(helmChartPath); err != nil {
+		t.Skipf("Helm chart directory not found at %s (not in Bazel sandbox or missing from workspace), skipping TestHelmChart.", helmChartPath)
+	}
 
 	// 1. Lint the chart
 	lintCmd := exec.Command("helm", "lint", ".")
