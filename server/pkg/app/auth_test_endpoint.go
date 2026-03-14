@@ -1,6 +1,21 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// Summary: AuthTestRequest defines the structure for an authentication test request.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+// Summary: AuthTestResponse defines the structure for an authentication test response.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 package app
 
 import (
@@ -18,23 +33,21 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
-// AuthTestRequest defines the structure for an authentication test request.
 type AuthTestRequest struct {
-	CredentialID  string         `json:"credential_id"`
-	ServiceType   string         `json:"service_type"`
-	ServiceConfig map[string]any `json:"service_config"`
+	CredentialID	string		`json:"credential_id"`
+	ServiceType	string		`json:"service_type"`
+	ServiceConfig	map[string]any	`json:"service_config"`
 }
 
-// AuthTestResponse defines the structure for an authentication test response.
 type AuthTestResponse struct {
-	Success bool   `json:"success"`
-	Message string `json:"message"`
+	Success	bool	`json:"success"`
+	Message	string	`json:"message"`
 }
 
 // Variables for dependency injection in tests.
 var (
-	execLookPath   = exec.LookPath
-	makeHTTPClient = func(timeout time.Duration) *http.Client {
+	execLookPath	= exec.LookPath
+	makeHTTPClient	= func(timeout time.Duration) *http.Client {
 		return &http.Client{Timeout: timeout}
 	}
 )
@@ -84,7 +97,7 @@ func (a *Application) handleAuthTest() http.HandlerFunc {
 
 		// 3. Test based on type
 		var err error
-		switch strings.ToUpper(req.ServiceType) { // Normalize service type to uppercase for consistent matching
+		switch strings.ToUpper(req.ServiceType) {	// Normalize service type to uppercase for consistent matching
 		case "HTTP":
 			err = testHTTPConnection(ctx, &svcConfig, cred)
 		case "COMMAND_LINE", "CMD":
@@ -92,7 +105,7 @@ func (a *Application) handleAuthTest() http.HandlerFunc {
 		default:
 			// For generic/unknown types, we just verify the credential exists (if requested)
 			if cred != nil {
-				err = nil // Credential loaded fine, considered "connected" for unsupported types for now
+				err = nil	// Credential loaded fine, considered "connected" for unsupported types for now
 			}
 			// if credential was requested but not found, we already returned early
 		}
@@ -107,8 +120,8 @@ func (a *Application) handleAuthTest() http.HandlerFunc {
 
 func writeAuthResponse(w http.ResponseWriter, success bool, message string) {
 	resp := AuthTestResponse{
-		Success: success,
-		Message: message,
+		Success:	success,
+		Message:	message,
 	}
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(resp)
@@ -159,7 +172,7 @@ func testHTTPConnection(ctx context.Context, cfg *configv1.UpstreamServiceConfig
 			if val != "" {
 				name := apiKey.GetParamName()
 				if name == "" {
-					name = "Authorization" // Default? Or should be required?
+					name = "Authorization"	// Default? Or should be required?
 				}
 				if apiKey.GetIn() == configv1.APIKeyAuth_HEADER {
 					req.Header.Set(name, val)

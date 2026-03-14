@@ -1,49 +1,45 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package health
-
-import (
-	"context"
-	"encoding/json"
-	"net/http"
-	"sync"
-	"time"
-)
-
 // CheckResult represents a single check result.
 //
 // Summary: The outcome of a single health check execution.
-type CheckResult struct {
-	Status  string `json:"status"`
-	Message string `json:"message,omitempty"`
-	Latency string `json:"latency,omitempty"`
-	Diff    string `json:"diff,omitempty"`
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // CheckFunc is a function that performs a health check.
 //
 // Summary: Function signature for a health check execution logic.
-type CheckFunc func(context.Context) CheckResult
-
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // DoctorReport represents the full doctor report.
 //
 // Summary: Aggregated health report containing all check results.
-type DoctorReport struct {
-	Status    string                 `json:"status"`
-	Timestamp time.Time              `json:"timestamp"`
-	Checks    map[string]CheckResult `json:"checks"`
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // Doctor is the health check handler.
 //
 // Summary: Registry and handler for system health checks (Doctor).
-type Doctor struct {
-	checks     map[string]CheckFunc
-	mu         sync.RWMutex
-	httpClient *http.Client
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // NewDoctor creates a new Doctor.
 //
 // Summary: Initializes a new Doctor instance.
@@ -53,13 +49,10 @@ type Doctor struct {
 //
 // Side Effects:
 //   - Initializes internal maps and HTTP client.
-func NewDoctor() *Doctor {
-	return &Doctor{
-		checks:     make(map[string]CheckFunc),
-		httpClient: http.DefaultClient,
-	}
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
 // AddCheck adds a named health check.
 //
 // Summary: Registers a custom health check function.
@@ -70,12 +63,10 @@ func NewDoctor() *Doctor {
 //
 // Side Effects:
 //   - Updates the internal checks map.
-func (d *Doctor) AddCheck(name string, check CheckFunc) {
-	d.mu.Lock()
-	defer d.mu.Unlock()
-	d.checks[name] = check
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
 // Handler returns the http handler.
 //
 // Summary: Returns an HTTP handler that runs all checks and returns a JSON report.
@@ -88,12 +79,60 @@ func (d *Doctor) AddCheck(name string, check CheckFunc) {
 //   - Makes an external network call to google.com (connectivity check).
 //   - Reads environment variables (Auth checks).
 //   - Writes JSON response to the client.
+//
+//
+// Errors:
+//   - An error if it fails.
+package health
+
+import (
+	"context"
+	"encoding/json"
+	"net/http"
+	"sync"
+	"time"
+)
+
+type CheckResult struct {
+	Status	string	`json:"status"`
+	Message	string	`json:"message,omitempty"`
+	Latency	string	`json:"latency,omitempty"`
+	Diff	string	`json:"diff,omitempty"`
+}
+
+type CheckFunc func(context.Context) CheckResult
+
+type DoctorReport struct {
+	Status		string			`json:"status"`
+	Timestamp	time.Time		`json:"timestamp"`
+	Checks		map[string]CheckResult	`json:"checks"`
+}
+
+type Doctor struct {
+	checks		map[string]CheckFunc
+	mu		sync.RWMutex
+	httpClient	*http.Client
+}
+
+func NewDoctor() *Doctor {
+	return &Doctor{
+		checks:		make(map[string]CheckFunc),
+		httpClient:	http.DefaultClient,
+	}
+}
+
+func (d *Doctor) AddCheck(name string, check CheckFunc) {
+	d.mu.Lock()
+	defer d.mu.Unlock()
+	d.checks[name] = check
+}
+
 func (d *Doctor) Handler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		report := DoctorReport{
-			Status:    "healthy",
-			Timestamp: time.Now(),
-			Checks:    make(map[string]CheckResult),
+			Status:		"healthy",
+			Timestamp:	time.Now(),
+			Checks:		make(map[string]CheckResult),
 		}
 
 		// Check Internet
@@ -111,14 +150,14 @@ func (d *Doctor) Handler() http.HandlerFunc {
 
 		if err != nil {
 			report.Checks["internet"] = CheckResult{
-				Status:  "degraded",
-				Message: err.Error(),
+				Status:		"degraded",
+				Message:	err.Error(),
 			}
 			report.Status = "degraded"
 		} else {
 			report.Checks["internet"] = CheckResult{
-				Status:  "ok",
-				Latency: time.Since(start).String(),
+				Status:		"ok",
+				Latency:	time.Since(start).String(),
 			}
 		}
 

@@ -1,22 +1,5 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package auth
-
-import (
-	"context"
-	"crypto/rand"
-	"encoding/base64"
-	"fmt"
-	"strings"
-	"time"
-
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/mcpany/core/server/pkg/util"
-	"golang.org/x/oauth2"
-	"google.golang.org/protobuf/proto"
-)
-
 // InitiateOAuth starts the OAuth2 flow for a given service or credential. It returns the authorization URL and the state parameter.
 //
 // Parameters:
@@ -36,6 +19,22 @@ import (
 //
 // Side Effects:
 //   - None
+package auth
+
+import (
+	"context"
+	"crypto/rand"
+	"encoding/base64"
+	"fmt"
+	"strings"
+	"time"
+
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/util"
+	"golang.org/x/oauth2"
+	"google.golang.org/protobuf/proto"
+)
+
 func (am *Manager) InitiateOAuth(ctx context.Context, userID, serviceID, credentialID, redirectURL string) (string, string, error) {
 	// Fix for unused userID:
 	_ = userID
@@ -100,14 +99,14 @@ func (am *Manager) InitiateOAuth(ctx context.Context, userID, serviceID, credent
 	}
 
 	conf := &oauth2.Config{
-		ClientID:     clientID,
-		ClientSecret: clientSecret,
-		Scopes:       strings.Split(oauthConfig.GetScopes(), " "),
+		ClientID:	clientID,
+		ClientSecret:	clientSecret,
+		Scopes:		strings.Split(oauthConfig.GetScopes(), " "),
 		Endpoint: oauth2.Endpoint{
-			AuthURL:  oauthConfig.GetAuthorizationUrl(),
-			TokenURL: oauthConfig.GetTokenUrl(),
+			AuthURL:	oauthConfig.GetAuthorizationUrl(),
+			TokenURL:	oauthConfig.GetTokenUrl(),
 		},
-		RedirectURL: redirectURL,
+		RedirectURL:	redirectURL,
 	}
 	// Fallback to "scopes" field as space-delimited string if splitting fails or logic changes.
 	// Actually oauthConfig.GetScopes() is a string "space-delimited list of scopes".
@@ -124,6 +123,24 @@ func (am *Manager) InitiateOAuth(ctx context.Context, userID, serviceID, credent
 	}
 
 	// Generate random state
+	// HandleOAuthCallback handles the OAuth2 callback code exchange.
+	//
+	// Parameters:
+	//   - ctx (context.Context): The context for the request.
+	//   - userID (string): The userID parameter.
+	//   - serviceID (string): The serviceID parameter.
+	//   - credentialID (string): The credentialID parameter.
+	//   - code (string): The code parameter.
+	//   - redirectURL (string): The redirectURL parameter.
+	//
+	// Returns:
+	//   - error: An error if the operation fails.
+	//
+	// Errors:
+	//   - Returns an error if the operation fails or is invalid.
+	//
+	// Side Effects:
+	//   - None
 	stateBytes := make([]byte, 32)
 	if _, err := rand.Read(stateBytes); err != nil {
 		return "", "", fmt.Errorf("failed to generate state: %w", err)
@@ -134,24 +151,6 @@ func (am *Manager) InitiateOAuth(ctx context.Context, userID, serviceID, credent
 	return url, state, nil
 }
 
-// HandleOAuthCallback handles the OAuth2 callback code exchange.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - userID (string): The userID parameter.
-//   - serviceID (string): The serviceID parameter.
-//   - credentialID (string): The credentialID parameter.
-//   - code (string): The code parameter.
-//   - redirectURL (string): The redirectURL parameter.
-//
-// Returns:
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
 func (am *Manager) HandleOAuthCallback(ctx context.Context, userID, serviceID, credentialID, code, redirectURL string) error {
 	am.mu.RLock()
 	storage := am.storage
@@ -208,12 +207,12 @@ func (am *Manager) HandleOAuthCallback(ctx context.Context, userID, serviceID, c
 	}
 
 	conf := &oauth2.Config{
-		ClientID:     clientID,
-		ClientSecret: clientSecret,
+		ClientID:	clientID,
+		ClientSecret:	clientSecret,
 		Endpoint: oauth2.Endpoint{
 			TokenURL: oauthConfig.GetTokenUrl(),
 		},
-		RedirectURL: redirectURL,
+		RedirectURL:	redirectURL,
 	}
 
 	token, err := conf.Exchange(ctx, code)
@@ -222,14 +221,14 @@ func (am *Manager) HandleOAuthCallback(ctx context.Context, userID, serviceID, c
 	}
 
 	userToken := configv1.UserToken_builder{
-		UserId:       proto.String(userID),
-		ServiceId:    proto.String(serviceID),
-		AccessToken:  proto.String(token.AccessToken),
-		RefreshToken: proto.String(token.RefreshToken),
-		TokenType:    proto.String(token.TokenType),
-		Expiry:       proto.String(token.Expiry.Format(time.RFC3339)),
-		Scope:        proto.String(oauthConfig.GetScopes()),
-		UpdatedAt:    proto.String(time.Now().Format(time.RFC3339)),
+		UserId:		proto.String(userID),
+		ServiceId:	proto.String(serviceID),
+		AccessToken:	proto.String(token.AccessToken),
+		RefreshToken:	proto.String(token.RefreshToken),
+		TokenType:	proto.String(token.TokenType),
+		Expiry:		proto.String(token.Expiry.Format(time.RFC3339)),
+		Scope:		proto.String(oauthConfig.GetScopes()),
+		UpdatedAt:	proto.String(time.Now().Format(time.RFC3339)),
 	}.Build()
 
 	// If extra has "scope", use it

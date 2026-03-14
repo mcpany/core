@@ -1,31 +1,21 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package middleware
-
-import (
-	"bytes"
-	"encoding/json"
-	"net/http"
-	"strings"
-
-	"github.com/mcpany/core/server/pkg/logging"
-)
-
-// JSONRPCError represents a JSON-RPC 2.0 error object.
-type JSONRPCError struct {
-	Code    int    `json:"code"`
-	Message string `json:"message"`
-	Data    any    `json:"data,omitempty"`
-}
-
-// JSONRPCResponse represents a JSON-RPC 2.0 response object.
-type JSONRPCResponse struct {
-	JSONRPC string        `json:"jsonrpc"`
-	ID      any           `json:"id"`
-	Error   *JSONRPCError `json:"error,omitempty"`
-}
-
+// Summary: JSONRPCError represents a JSON-RPC 2.0 error object.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+// Summary: JSONRPCResponse represents a JSON-RPC 2.0 response object.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // JSONRPCComplianceMiddleware ensures that errors are returned as valid JSON-RPC responses.
 //
 // Summary: Wraps non-JSON error responses in a JSON-RPC error format.
@@ -38,6 +28,33 @@ type JSONRPCResponse struct {
 //
 // Side Effects:
 //   - Intercepts and rewrites HTTP response bodies for error status codes.
+//
+//
+// Errors:
+//   - An error if it fails.
+package middleware
+
+import (
+	"bytes"
+	"encoding/json"
+	"net/http"
+	"strings"
+
+	"github.com/mcpany/core/server/pkg/logging"
+)
+
+type JSONRPCError struct {
+	Code	int	`json:"code"`
+	Message	string	`json:"message"`
+	Data	any	`json:"data,omitempty"`
+}
+
+type JSONRPCResponse struct {
+	JSONRPC	string		`json:"jsonrpc"`
+	ID	any		`json:"id"`
+	Error	*JSONRPCError	`json:"error,omitempty"`
+}
+
 func JSONRPCComplianceMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Only intercept POST requests (likely JSON-RPC)
@@ -59,8 +76,8 @@ func JSONRPCComplianceMiddleware(next http.Handler) http.Handler {
 		}
 
 		rw := &smartResponseWriter{
-			w:      w,
-			header: make(http.Header),
+			w:	w,
+			header:	make(http.Header),
 		}
 
 		next.ServeHTTP(rw, r)
@@ -80,33 +97,46 @@ func JSONRPCComplianceMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-const maxErrorBufferSize = 32 * 1024 // 32KB limit for error buffering
-
-type smartResponseWriter struct {
-	w           http.ResponseWriter
-	header      http.Header
-	statusCode  int
-	body        *bytes.Buffer
-	committed   bool
-	passThrough bool
-}
-
+const maxErrorBufferSize = 32 * 1024	// 32KB limit for error buffering
 // Header returns the header map that will be sent by WriteHeader.
 //
 // Summary: Returns the response headers.
 //
 // Returns:
 //   - http.Header: The header map.
-func (w *smartResponseWriter) Header() http.Header {
-	return w.header
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // WriteHeader sends an HTTP response header with the provided status code.
 //
 // Summary: Writes the status code to the response.
 //
 // Parameters:
 //   - code: int. The HTTP status code.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+type smartResponseWriter struct {
+	w		http.ResponseWriter
+	header		http.Header
+	statusCode	int
+	body		*bytes.Buffer
+	committed	bool
+	passThrough	bool
+}
+
+func (w *smartResponseWriter) Header() http.Header {
+	return w.header
+}
+
 func (w *smartResponseWriter) WriteHeader(code int) {
 	if w.committed {
 		return
@@ -125,20 +155,27 @@ func (w *smartResponseWriter) WriteHeader(code int) {
 		w.flushHeader()
 	} else {
 		// Buffer for rewriting
+		// Write writes the data to the connection as part of an HTTP reply.
+		//
+		// Summary: Writes data to the response body, buffering if necessary.
+		//
+		// Parameters:
+		//   - b: []byte. The data to write.
+		//
+		// Returns:
+		//   - int: The number of bytes written.
+		//   - error: An error if the write fails.
+		//
+		//
+		// Errors:
+		//   - An error if it fails.
+		//
+		// Side Effects:
+		//   - None.
 		w.body = &bytes.Buffer{}
 	}
 }
 
-// Write writes the data to the connection as part of an HTTP reply.
-//
-// Summary: Writes data to the response body, buffering if necessary.
-//
-// Parameters:
-//   - b: []byte. The data to write.
-//
-// Returns:
-//   - int: The number of bytes written.
-//   - error: An error if the write fails.
 func (w *smartResponseWriter) Write(b []byte) (int, error) {
 	if !w.committed {
 		w.WriteHeader(http.StatusOK)
@@ -167,6 +204,20 @@ func (w *smartResponseWriter) Write(b []byte) (int, error) {
 
 func (w *smartResponseWriter) flushHeader() {
 	// Copy headers
+	// Flush implements http.Flusher to support streaming.
+	//
+	// Summary: Flushes the response buffer to the client.
+	//
+	// Returns:
+	//
+	// 	None.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
 	for k, v := range w.header {
 		for _, vv := range v {
 			w.w.Header().Add(k, vv)
@@ -175,13 +226,6 @@ func (w *smartResponseWriter) flushHeader() {
 	w.w.WriteHeader(w.statusCode)
 }
 
-// Flush implements http.Flusher to support streaming.
-//
-// Summary: Flushes the response buffer to the client.
-//
-// Returns:
-//
-//	None.
 func (w *smartResponseWriter) Flush() {
 	if w.passThrough {
 		if f, ok := w.w.(http.Flusher); ok {
@@ -194,7 +238,7 @@ func (w *smartResponseWriter) rewriteError() {
 	bodyStr := strings.TrimSpace(w.body.String())
 
 	// Determine error code based on body content or status
-	code := -32603 // Internal error default
+	code := -32603	// Internal error default
 	message := bodyStr
 	if message == "" {
 		message = http.StatusText(w.statusCode)
@@ -225,16 +269,16 @@ func (w *smartResponseWriter) rewriteError() {
 	}
 
 	resp := JSONRPCResponse{
-		JSONRPC: "2.0",
-		ID:      nil,
+		JSONRPC:	"2.0",
+		ID:		nil,
 		Error: &JSONRPCError{
-			Code:    code,
-			Message: message,
-			Data:    data,
+			Code:		code,
+			Message:	message,
+			Data:		data,
 		},
 	}
 
 	w.w.Header().Set("Content-Type", "application/json")
-	w.w.WriteHeader(w.statusCode) // Keep original status code (e.g. 400)
+	w.w.WriteHeader(w.statusCode)	// Keep original status code (e.g. 400)
 	_ = json.NewEncoder(w.w).Encode(resp)
 }

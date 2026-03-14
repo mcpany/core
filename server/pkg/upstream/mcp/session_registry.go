@@ -1,22 +1,14 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package mcp
-
-import (
-	"sync"
-
-	"github.com/mcpany/core/server/pkg/tool"
-	"github.com/modelcontextprotocol/go-sdk/mcp"
-)
-
-// SessionRegistry manages the mapping between upstream MCP sessions and downstream tool sessions.
+// Summary: SessionRegistry manages the mapping between upstream MCP sessions and downstream tool sessions.
 // This allows requests from upstream (like sampling) to be routed to the correct downstream client.
-type SessionRegistry struct {
-	mu       sync.RWMutex
-	sessions map[mcp.Session]tool.Session
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // NewSessionRegistry creates a new SessionRegistry.
 //
 // Returns:
@@ -24,12 +16,10 @@ type SessionRegistry struct {
 //
 // Side Effects:
 //   - None.
-func NewSessionRegistry() *SessionRegistry {
-	return &SessionRegistry{
-		sessions: make(map[mcp.Session]tool.Session),
-	}
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
 // Register registers a mapping between an upstream session and a downstream session.
 //
 // Parameters:
@@ -41,12 +31,10 @@ func NewSessionRegistry() *SessionRegistry {
 //
 // Side Effects:
 //   - None.
-func (r *SessionRegistry) Register(upstreamSession mcp.Session, downstreamSession tool.Session) {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-	r.sessions[upstreamSession] = downstreamSession
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
 // Unregister removes the mapping for an upstream session.
 //
 // Parameters:
@@ -57,12 +45,10 @@ func (r *SessionRegistry) Register(upstreamSession mcp.Session, downstreamSessio
 //
 // Side Effects:
 //   - None.
-func (r *SessionRegistry) Unregister(upstreamSession mcp.Session) {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-	delete(r.sessions, upstreamSession)
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
 // Get retrieves the downstream session associated with an upstream session.
 //
 // Parameters:
@@ -74,6 +60,42 @@ func (r *SessionRegistry) Unregister(upstreamSession mcp.Session) {
 //
 // Side Effects:
 //   - None.
+//
+//
+// Errors:
+//   - An error if it fails.
+package mcp
+
+import (
+	"sync"
+
+	"github.com/mcpany/core/server/pkg/tool"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
+)
+
+type SessionRegistry struct {
+	mu		sync.RWMutex
+	sessions	map[mcp.Session]tool.Session
+}
+
+func NewSessionRegistry() *SessionRegistry {
+	return &SessionRegistry{
+		sessions: make(map[mcp.Session]tool.Session),
+	}
+}
+
+func (r *SessionRegistry) Register(upstreamSession mcp.Session, downstreamSession tool.Session) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	r.sessions[upstreamSession] = downstreamSession
+}
+
+func (r *SessionRegistry) Unregister(upstreamSession mcp.Session) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	delete(r.sessions, upstreamSession)
+}
+
 func (r *SessionRegistry) Get(upstreamSession mcp.Session) (tool.Session, bool) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()

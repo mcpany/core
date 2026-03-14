@@ -4,6 +4,14 @@
  */
 
 // Package discovery implements auto-discovery providers for tools.
+// Summary: Provider defines the interface for auto-discovering local services.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 package discovery
 
 import (
@@ -17,53 +25,59 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// Provider defines the interface for auto-discovering local services.
 type Provider interface {
 	// Name returns the name of the discovery provider.
 	Name() string
 	// Discover attempts to find services and return their configurations.
+	// Summary: OllamaProvider discovers local Ollama instances.
+	// OllamaProvider is a provider that discovers local Ollama instances.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
 	Discover(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error)
 }
 
-// OllamaProvider discovers local Ollama instances.
-// OllamaProvider is a provider that discovers local Ollama instances.
 type OllamaProvider struct {
-	Endpoint   string // e.g., "http://localhost:11434"
-	client     *http.Client
-	clientOnce sync.Once
+	Endpoint	string	// e.g., "http://localhost:11434"
+	// Name returns the name of the provider.
+	//
+	// Parameters:
+	//   - None
+	//
+	// Returns:
+	//   - string: The resulting string.
+	//
+	// Errors:
+	//   - None
+	//
+	// Side Effects:
+	//   - None
+	// Discover attempts to find local Ollama instances and return them as tools.
+	//
+	// Parameters:
+	//   - ctx (context.Context): The context for the request.
+	//
+	// Returns:
+	//   - []*configv1.UpstreamServiceConfig: The resulting []*configv1.UpstreamServiceConfig.
+	//   - error: An error if the operation fails.
+	//
+	// Errors:
+	//   - Returns an error if the operation fails or is invalid.
+	//
+	// Side Effects:
+	//   - None
+	client		*http.Client
+	clientOnce	sync.Once
 }
 
-// Name returns the name of the provider.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - string: The resulting string.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
 func (p *OllamaProvider) Name() string {
 	return "ollama"
 }
 
-// Discover attempts to find local Ollama instances and return them as tools.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//
-// Returns:
-//   - []*configv1.UpstreamServiceConfig: The resulting []*configv1.UpstreamServiceConfig.
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
 func (p *OllamaProvider) Discover(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	// ⚡ BOLT: Reuse http.Client to avoid socket exhaustion.
 	// Randomized Selection from Top 5 High-Impact Targets
@@ -92,12 +106,12 @@ func (p *OllamaProvider) Discover(ctx context.Context) ([]*configv1.UpstreamServ
 	// Note: Ollama has an OpenAI compatible /v1 endpoint now.
 	return []*configv1.UpstreamServiceConfig{
 		configv1.UpstreamServiceConfig_builder{
-			Name:    proto.String("Local Ollama"),
-			Version: proto.String("v1"),
+			Name:		proto.String("Local Ollama"),
+			Version:	proto.String("v1"),
 			HttpService: configv1.HttpUpstreamService_builder{
 				Address: proto.String(p.Endpoint + "/v1"),
 			}.Build(),
-			Tags: []string{"local-llm", "ollama", "openai-compatible"},
+			Tags:	[]string{"local-llm", "ollama", "openai-compatible"},
 		}.Build(),
 	}, nil
 }

@@ -31,26 +31,15 @@ import (
 
 // dockerClient is an interface that abstracts the Docker client methods used by DockerTransport.
 // It is used for testing purposes to allow mocking of the Docker client.
-type dockerClient interface {
-	ImagePull(ctx context.Context, ref string, options image.PullOptions) (io.ReadCloser, error)
-	ContainerCreate(ctx context.Context, config *container.Config, hostConfig *container.HostConfig, networkingConfig *network.NetworkingConfig, platform *v1.Platform, containerName string) (container.CreateResponse, error)
-	ContainerAttach(ctx context.Context, container string, options container.AttachOptions) (types.HijackedResponse, error)
-	ContainerStart(ctx context.Context, container string, options container.StartOptions) error
-	ContainerStop(ctx context.Context, containerID string, options container.StopOptions) error
-	ContainerRemove(ctx context.Context, containerID string, options container.RemoveOptions) error
-	Close() error
-}
-
-var newDockerClient = func(ops ...client.Opt) (dockerClient, error) {
-	return client.NewClientWithOpts(ops...)
-}
-
-// DockerTransport implements the mcp.Transport interface to connect to a service
+// Summary: DockerTransport implements the mcp.Transport interface to connect to a service
 // running inside a Docker container. It manages the container lifecycle.
-type DockerTransport struct {
-	StdioConfig *configv1.McpStdioConnection
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // Connect establishes a connection to the service within the Docker container.
 //
 // Parameters:
@@ -65,6 +54,24 @@ type DockerTransport struct {
 //
 // Side Effects:
 //   - None.
+type dockerClient interface {
+	ImagePull(ctx context.Context, ref string, options image.PullOptions) (io.ReadCloser, error)
+	ContainerCreate(ctx context.Context, config *container.Config, hostConfig *container.HostConfig, networkingConfig *network.NetworkingConfig, platform *v1.Platform, containerName string) (container.CreateResponse, error)
+	ContainerAttach(ctx context.Context, container string, options container.AttachOptions) (types.HijackedResponse, error)
+	ContainerStart(ctx context.Context, container string, options container.StartOptions) error
+	ContainerStop(ctx context.Context, containerID string, options container.StopOptions) error
+	ContainerRemove(ctx context.Context, containerID string, options container.RemoveOptions) error
+	Close() error
+}
+
+var newDockerClient = func(ops ...client.Opt) (dockerClient, error) {
+	return client.NewClientWithOpts(ops...)
+}
+
+type DockerTransport struct {
+	StdioConfig *configv1.McpStdioConnection
+}
+
 func (t *DockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 	log := logging.GetLogger()
 	cli, err := newDockerClient(client.FromEnv, client.WithAPIVersionNegotiation())
@@ -131,15 +138,15 @@ func (t *DockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 	}
 
 	resp, err := cli.ContainerCreate(ctx, &container.Config{
-		Image:        img,
-		Cmd:          []string{"/bin/sh", "-c", script},
-		WorkingDir:   t.StdioConfig.GetWorkingDirectory(),
-		Env:          envVars,
-		Tty:          false,
-		OpenStdin:    true,
-		AttachStdin:  true,
-		AttachStdout: true,
-		AttachStderr: true,
+		Image:		img,
+		Cmd:		[]string{"/bin/sh", "-c", script},
+		WorkingDir:	t.StdioConfig.GetWorkingDirectory(),
+		Env:		envVars,
+		Tty:		false,
+		OpenStdin:	true,
+		AttachStdin:	true,
+		AttachStdout:	true,
+		AttachStderr:	true,
 	}, nil, nil, nil, "")
 	if err != nil {
 		return nil, fmt.Errorf("failed to create container: %w", err)
@@ -147,10 +154,10 @@ func (t *DockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 	log.Info("Container created", "id", resp.ID, "env", envVars)
 
 	hijackedResp, err := cli.ContainerAttach(ctx, resp.ID, container.AttachOptions{
-		Stream: true,
-		Stdin:  true,
-		Stdout: true,
-		Stderr: true,
+		Stream:	true,
+		Stdin:	true,
+		Stdout:	true,
+		Stderr:	true,
 	})
 	if err != nil {
 		_ = cli.ContainerRemove(context.Background(), resp.ID, container.RemoveOptions{Force: true})
@@ -181,29 +188,22 @@ func (t *DockerTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 	}()
 
 	rwc := &dockerReadWriteCloser{
-		Reader:      stdoutReader,
-		WriteCloser: hijackedResp.Conn,
-		containerID: resp.ID,
-		cli:         cli,
+		Reader:		stdoutReader,
+		WriteCloser:	hijackedResp.Conn,
+		containerID:	resp.ID,
+		cli:		cli,
 	}
 	success = true
 	return &dockerConn{
-		rwc:           rwc,
-		decoder:       json.NewDecoder(rwc),
-		encoder:       json.NewEncoder(rwc),
-		stderrCapture: stderrCapture,
+		rwc:		rwc,
+		decoder:	json.NewDecoder(rwc),
+		encoder:	json.NewEncoder(rwc),
+		stderrCapture:	stderrCapture,
 	}, nil
 }
 
 // dockerConn provides a concrete implementation of the mcp.Connection interface,
 // tailored for communication with a service running in a Docker container.
-type dockerConn struct {
-	rwc           io.ReadWriteCloser
-	decoder       *json.Decoder
-	encoder       *json.Encoder
-	stderrCapture *tailBuffer
-}
-
 // Read decodes a single JSON-RPC message from the container's output stream.
 //
 // Parameters:
@@ -218,6 +218,13 @@ type dockerConn struct {
 //
 // Side Effects:
 //   - None.
+type dockerConn struct {
+	rwc		io.ReadWriteCloser
+	decoder		*json.Decoder
+	encoder		*json.Encoder
+	stderrCapture	*tailBuffer
+}
+
 func (c *dockerConn) Read(_ context.Context) (jsonrpc.Message, error) {
 	var raw json.RawMessage
 	if err := c.decoder.Decode(&raw); err != nil {
@@ -247,17 +254,17 @@ func (c *dockerConn) Read(_ context.Context) (jsonrpc.Message, error) {
 		if err := json.Unmarshal(raw, req); err != nil {
 			// Alternative: Unmarshal into a temporary struct that matches Request/Response but with Any ID.
 			type requestAnyID struct {
-				Method string          `json:"method"`
-				Params json.RawMessage `json:"params,omitempty"`
-				ID     any             `json:"id,omitempty"`
+				Method	string		`json:"method"`
+				Params	json.RawMessage	`json:"params,omitempty"`
+				ID	any		`json:"id,omitempty"`
 			}
 			var rAny requestAnyID
 			if err2 := json.Unmarshal(raw, &rAny); err2 != nil {
 				return nil, fmt.Errorf("failed to unmarshal request: %w (and %v)", err2, err)
 			}
 			req = &jsonrpc.Request{
-				Method: rAny.Method,
-				Params: rAny.Params,
+				Method:	rAny.Method,
+				Params:	rAny.Params,
 			}
 			if err := setUnexportedID(&req.ID, rAny.ID); err != nil {
 				logging.GetLogger().Error("Failed to set unexported ID on request", "error", err)
@@ -270,10 +277,45 @@ func (c *dockerConn) Read(_ context.Context) (jsonrpc.Message, error) {
 		resp := &jsonrpc.Response{}
 		if err := json.Unmarshal(raw, resp); err != nil {
 			// Use alias struct
+			// Write encodes and sends a JSON-RPC message to the container's input stream.
+			//
+			// Parameters:
+			//   - _ (context.Context): The parameter.
+			//   - msg (jsonrpc.Message): The parameter.
+			//
+			// Returns:
+			//   - error: An error if the operation fails.
+			//
+			// Errors:
+			//   - Returns an error if ...
+			//
+			// Side Effects:
+			//   - None.
+			// Close terminates the connection by closing the underlying ReadWriteCloser.
+			//
+			// Returns:
+			//   - error: An error if the operation fails.
+			//
+			// Errors:
+			//   - Returns an error if ...
+			//
+			// Side Effects:
+			//   - None.
+			// SessionID returns a static identifier for the Docker transport session.
+			//
+			// Returns:
+			//   - string: The result.
+			//
+			// Side Effects:
+			//   - None.
+			//
+			//
+			// Errors:
+			//   - An error if it fails.
 			type responseAnyID struct {
-				Result json.RawMessage `json:"result,omitempty"`
-				Error  *transportError `json:"error,omitempty"`
-				ID     any             `json:"id,omitempty"`
+				Result	json.RawMessage	`json:"result,omitempty"`
+				Error	*transportError	`json:"error,omitempty"`
+				ID	any		`json:"id,omitempty"`
 			}
 			var rAny responseAnyID
 			if err2 := json.Unmarshal(raw, &rAny); err2 != nil {
@@ -297,20 +339,6 @@ func (c *dockerConn) Read(_ context.Context) (jsonrpc.Message, error) {
 	return msg, nil
 }
 
-// Write encodes and sends a JSON-RPC message to the container's input stream.
-//
-// Parameters:
-//   - _ (context.Context): The parameter.
-//   - msg (jsonrpc.Message): The parameter.
-//
-// Returns:
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
 func (c *dockerConn) Write(_ context.Context, msg jsonrpc.Message) error {
 	var method string
 	var params any
@@ -350,39 +378,15 @@ func (c *dockerConn) Write(_ context.Context, msg jsonrpc.Message) error {
 	return c.encoder.Encode(wire)
 }
 
-// Close terminates the connection by closing the underlying ReadWriteCloser.
-//
-// Returns:
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
 func (c *dockerConn) Close() error {
 	return c.rwc.Close()
 }
 
-// SessionID returns a static identifier for the Docker transport session.
-//
-// Returns:
-//   - string: The result.
-//
-// Side Effects:
-//   - None.
 func (c *dockerConn) SessionID() string {
 	return "docker-transport-session"
 }
 
 // dockerReadWriteCloser combines an io.Reader and an io.WriteCloser and manages container cleanup.
-type dockerReadWriteCloser struct {
-	io.Reader
-	io.WriteCloser
-	containerID string
-	cli         dockerClient
-}
-
 // Close closes the underlying connection and removes the associated Docker container.
 //
 // Returns:
@@ -393,6 +397,13 @@ type dockerReadWriteCloser struct {
 //
 // Side Effects:
 //   - None.
+type dockerReadWriteCloser struct {
+	io.Reader
+	io.WriteCloser
+	containerID	string
+	cli		dockerClient
+}
+
 func (c *dockerReadWriteCloser) Close() error {
 	err := c.WriteCloser.Close()
 
@@ -404,8 +415,8 @@ func (c *dockerReadWriteCloser) Close() error {
 	}
 
 	if rmErr := c.cli.ContainerRemove(ctx, c.containerID, container.RemoveOptions{
-		RemoveVolumes: true,
-		Force:         true,
+		RemoveVolumes:	true,
+		Force:		true,
 	}); rmErr != nil {
 		logging.GetLogger().Error("Failed to remove container", "containerID", c.containerID, "error", rmErr)
 	}
@@ -416,11 +427,6 @@ func (c *dockerReadWriteCloser) Close() error {
 
 // slogWriter implements the io.Writer interface, allowing it to be used as a
 // destination for log output. It writes each line of the input to a slog.Logger.
-type slogWriter struct {
-	log   *slog.Logger
-	level slog.Level
-}
-
 // Write takes a byte slice, scans it for lines, and logs each line
 // individually using the configured slog.Logger and level.
 //
@@ -436,6 +442,11 @@ type slogWriter struct {
 //
 // Side Effects:
 //   - None.
+type slogWriter struct {
+	log	*slog.Logger
+	level	slog.Level
+}
+
 func (s *slogWriter) Write(p []byte) (n int, err error) {
 	scanner := bufio.NewScanner(strings.NewReader(string(p)))
 	for scanner.Scan() {
@@ -445,12 +456,6 @@ func (s *slogWriter) Write(p []byte) (n int, err error) {
 }
 
 // tailBuffer is a thread-safe buffer that keeps the last N bytes written to it.
-type tailBuffer struct {
-	buf   []byte
-	limit int
-	mu    sync.Mutex
-}
-
 // Write writes data to the buffer, maintaining the size limit.
 //
 // Parameters:
@@ -465,6 +470,12 @@ type tailBuffer struct {
 //
 // Side Effects:
 //   - None.
+type tailBuffer struct {
+	buf	[]byte
+	limit	int
+	mu	sync.Mutex
+}
+
 func (b *tailBuffer) Write(p []byte) (n int, err error) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
@@ -472,18 +483,22 @@ func (b *tailBuffer) Write(p []byte) (n int, err error) {
 	b.buf = append(b.buf, p...)
 	if len(b.buf) > b.limit {
 		// Keep the last 'limit' bytes
+		// String returns the buffered data as a string.
+		//
+		// Returns:
+		//   - string: The result.
+		//
+		// Side Effects:
+		//   - None.
+		//
+		//
+		// Errors:
+		//   - An error if it fails.
 		b.buf = b.buf[len(b.buf)-b.limit:]
 	}
 	return len(p), nil
 }
 
-// String returns the buffered data as a string.
-//
-// Returns:
-//   - string: The result.
-//
-// Side Effects:
-//   - None.
 func (b *tailBuffer) String() string {
 	b.mu.Lock()
 	defer b.mu.Unlock()

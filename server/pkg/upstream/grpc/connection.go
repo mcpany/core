@@ -2,25 +2,16 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // Package grpc provides gRPC upstream integration.
-package grpc
-
-import (
-	"context"
-	"fmt"
-	"net"
-	"strings"
-
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
-)
-
-// ConnectionFactory is responsible for creating new gRPC client connections.
+// Summary: ConnectionFactory is responsible for creating new gRPC client connections.
 // It can be configured with a custom dialer for testing or special connection
 // scenarios.
-type ConnectionFactory struct {
-	dialer func(context.Context, string) (net.Conn, error)
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // NewConnectionFactory creates and returns a new ConnectionFactory with default
 // settings.
 //
@@ -29,10 +20,10 @@ type ConnectionFactory struct {
 //
 // Side Effects:
 //   - None.
-func NewConnectionFactory() *ConnectionFactory {
-	return &ConnectionFactory{}
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
 // WithDialer sets a custom dialer function for the ConnectionFactory. This is
 // useful for tests that need to mock the network connection.
 //
@@ -46,10 +37,10 @@ func NewConnectionFactory() *ConnectionFactory {
 //
 // Side Effects:
 //   - None.
-func (f *ConnectionFactory) WithDialer(dialer func(context.Context, string) (net.Conn, error)) {
-	f.dialer = dialer
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
 // NewConnection establishes a new gRPC client connection to the specified
 // target address. It uses insecure credentials by default. If a custom dialer
 // has been set, it will be used for the connection.
@@ -67,6 +58,30 @@ func (f *ConnectionFactory) WithDialer(dialer func(context.Context, string) (net
 //
 // Side Effects:
 //   - None.
+package grpc
+
+import (
+	"context"
+	"fmt"
+	"net"
+	"strings"
+
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
+)
+
+type ConnectionFactory struct {
+	dialer func(context.Context, string) (net.Conn, error)
+}
+
+func NewConnectionFactory() *ConnectionFactory {
+	return &ConnectionFactory{}
+}
+
+func (f *ConnectionFactory) WithDialer(dialer func(context.Context, string) (net.Conn, error)) {
+	f.dialer = dialer
+}
+
 func (f *ConnectionFactory) NewConnection(_ context.Context, targetAddress string) (*grpc.ClientConn, error) {
 	opts := []grpc.DialOption{
 		grpc.WithTransportCredentials(insecure.NewCredentials()),

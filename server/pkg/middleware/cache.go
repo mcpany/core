@@ -1,6 +1,13 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// Summary: ProviderFactory is a function that creates an EmbeddingProvider.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 package middleware
 
 import (
@@ -25,47 +32,53 @@ import (
 	go_cache "github.com/patrickmn/go-cache"
 )
 
-// ProviderFactory is a function that creates an EmbeddingProvider.
 type ProviderFactory func(config *configv1.SemanticCacheConfig, apiKey string) (EmbeddingProvider, error)
 
 // CachingMiddleware is a tool execution middleware that provides caching
 // functionality.
-var (
-	metricCacheHits   = []string{"cache", "hits"}
-	metricCacheMisses = []string{"cache", "misses"}
-	metricCacheSkips  = []string{"cache", "skips"}
-	metricCacheErrors = []string{"cache", "errors"}
-)
-
-// CachingMiddleware handles caching of tool execution results.
-type CachingMiddleware struct {
-	cache           *cache.Cache[any]
-	toolManager     tool.ManagerInterface
-	semanticCaches  sync.Map
-	initMu          sync.Mutex // Guards semantic cache initialization
-	providerFactory ProviderFactory
-	hasherPool      *sync.Pool
-}
-
-// NewCachingMiddleware creates a new CachingMiddleware. toolManager is the toolManager. Returns the result.
+// Summary: CachingMiddleware handles caching of tool execution results.
 //
-// Parameters:
-//   - toolManager (tool.ManagerInterface): The toolManager parameter.
-//
-// Returns:
-//   - *CachingMiddleware: The resulting *CachingMiddleware.
 //
 // Errors:
-//   - None
+//   - An error if it fails.
 //
 // Side Effects:
-//   - None
+//   - None.
+var (
+	metricCacheHits		= []string{"cache", "hits"}
+	metricCacheMisses	= []string{"cache", "misses"}
+	metricCacheSkips	= []string{"cache", "skips"}
+	metricCacheErrors	= []string{"cache", "errors"}
+)
+
+type CachingMiddleware struct {
+	cache		*cache.Cache[any]
+	toolManager	tool.ManagerInterface
+	semanticCaches	sync.Map
+	initMu		sync.Mutex	// Guards semantic cache initialization
+	// NewCachingMiddleware creates a new CachingMiddleware. toolManager is the toolManager. Returns the result.
+	//
+	// Parameters:
+	//   - toolManager (tool.ManagerInterface): The toolManager parameter.
+	//
+	// Returns:
+	//   - *CachingMiddleware: The resulting *CachingMiddleware.
+	//
+	// Errors:
+	//   - None
+	//
+	// Side Effects:
+	//   - None
+	providerFactory	ProviderFactory
+	hasherPool	*sync.Pool
+}
+
 func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware {
 	goCacheStore := gocache_store.NewGoCache(go_cache.New(5*time.Minute, 10*time.Minute))
 	cacheManager := cache.New[any](goCacheStore)
 	return &CachingMiddleware{
-		cache:       cacheManager,
-		toolManager: toolManager,
+		cache:		cacheManager,
+		toolManager:	toolManager,
 		hasherPool: &sync.Pool{
 			New: func() any {
 				return fnv.New128a()
@@ -84,7 +97,7 @@ func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware 
 					// We should resolve from openaiConf.GetApiKey() if present.
 					// But executeSemantic resolves before calling factory.
 					// Let's rely on caller or handle deprecated path.
-					_ = "noop" // Satisfy SA9003
+					_ = "noop"	// Satisfy SA9003
 				}
 				return NewOpenAIEmbeddingProvider(key, openaiConf.GetModel()), nil
 			}
@@ -107,6 +120,35 @@ func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware 
 			}
 
 			// Legacy/Deprecated path
+			// SetProviderFactory allows overriding the default provider factory for testing. factory is the factory.
+			//
+			// Parameters:
+			//   - factory (ProviderFactory): The factory parameter.
+			//
+			// Returns:
+			//   - None
+			//
+			// Errors:
+			//   - None
+			//
+			// Side Effects:
+			//   - None
+			// Execute executes the caching middleware. ctx is the context for the request. req is the request object. next is the next. Returns the result. Returns an error if the operation fails.
+			//
+			// Parameters:
+			//   - ctx (context.Context): The context for the request.
+			//   - req (*tool.ExecutionRequest): The request object.
+			//   - next (tool.ExecutionFunc): The next parameter.
+			//
+			// Returns:
+			//   - any: The resulting any.
+			//   - error: An error if the operation fails.
+			//
+			// Errors:
+			//   - Returns an error if the operation fails or is invalid.
+			//
+			// Side Effects:
+			//   - None
 			providerType := conf.GetProvider()
 			model := conf.GetModel()
 
@@ -118,39 +160,10 @@ func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware 
 	}
 }
 
-// SetProviderFactory allows overriding the default provider factory for testing. factory is the factory.
-//
-// Parameters:
-//   - factory (ProviderFactory): The factory parameter.
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
 func (m *CachingMiddleware) SetProviderFactory(factory ProviderFactory) {
 	m.providerFactory = factory
 }
 
-// Execute executes the caching middleware. ctx is the context for the request. req is the request object. next is the next. Returns the result. Returns an error if the operation fails.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - req (*tool.ExecutionRequest): The request object.
-//   - next (tool.ExecutionFunc): The next parameter.
-//
-// Returns:
-//   - any: The resulting any.
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
 func (m *CachingMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := tool.GetFromContext(ctx)
 	if !ok {
@@ -432,6 +445,19 @@ func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
 	// and use stack buffer for hex encoding.
 	var sb strings.Builder
 	// 32 is hex encoded length of 16 bytes
+	// Clear clears the cache. ctx is the context for the request. Returns an error if the operation fails.
+	//
+	// Parameters:
+	//   - ctx (context.Context): The context for the request.
+	//
+	// Returns:
+	//   - error: An error if the operation fails.
+	//
+	// Errors:
+	//   - Returns an error if the operation fails or is invalid.
+	//
+	// Side Effects:
+	//   - None
 	sb.Grow(len(req.ToolName) + 1 + 32)
 	sb.WriteString(req.ToolName)
 	sb.WriteByte(':')
@@ -443,19 +469,6 @@ func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
 	return sb.String()
 }
 
-// Clear clears the cache. ctx is the context for the request. Returns an error if the operation fails.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//
-// Returns:
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
 func (m *CachingMiddleware) Clear(ctx context.Context) error {
 	return m.cache.Clear(ctx)
 }

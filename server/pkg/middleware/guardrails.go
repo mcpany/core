@@ -1,6 +1,31 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// GuardrailsConfig defines patterns to block.
+//
+// Summary: Configuration for the guardrails middleware.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+// NewGuardrailsMiddleware creates a new Guardrails middleware.
+//
+// Summary: Initializes the guardrails middleware for blocking malicious prompts.
+//
+// Parameters:
+//   - config: GuardrailsConfig. The configuration for blocking patterns.
+//
+// Returns:
+//   - gin.HandlerFunc: The Gin middleware handler.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 package middleware
 
 import (
@@ -12,22 +37,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// GuardrailsConfig defines patterns to block.
-//
-// Summary: Configuration for the guardrails middleware.
 type GuardrailsConfig struct {
 	BlockedPhrases []string
 }
 
-// NewGuardrailsMiddleware creates a new Guardrails middleware.
-//
-// Summary: Initializes the guardrails middleware for blocking malicious prompts.
-//
-// Parameters:
-//   - config: GuardrailsConfig. The configuration for blocking patterns.
-//
-// Returns:
-//   - gin.HandlerFunc: The Gin middleware handler.
 func NewGuardrailsMiddleware(config GuardrailsConfig) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Only check POST requests (likely prompt submissions)
@@ -53,8 +66,8 @@ func NewGuardrailsMiddleware(config GuardrailsConfig) gin.HandlerFunc {
 		for _, phrase := range config.BlockedPhrases {
 			if strings.Contains(bodyLower, strings.ToLower(phrase)) {
 				c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-					"error":  "Prompt Injection Detected: Request blocked by validation policy.",
-					"policy": "no-jailbreak",
+					"error":	"Prompt Injection Detected: Request blocked by validation policy.",
+					"policy":	"no-jailbreak",
 				})
 				return
 			}

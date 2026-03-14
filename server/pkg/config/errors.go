@@ -1,13 +1,5 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package config
-
-import (
-	"errors"
-	"fmt"
-)
-
 // ActionableError is an error that includes a suggestion for fixing the issue.
 //
 // Summary: An error type that pairs an underlying error with a user-facing suggestion.
@@ -15,11 +7,13 @@ import (
 // Fields:
 //   - Err: error. The original error that occurred.
 //   - Suggestion: string. A human-readable suggestion on how to resolve the error.
-type ActionableError struct {
-	Err        error
-	Suggestion string
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // Error implements the error interface. Side Effects: - None.
 //
 // Parameters:
@@ -33,10 +27,6 @@ type ActionableError struct {
 //
 // Side Effects:
 //   - None
-func (e *ActionableError) Error() string {
-	return fmt.Sprintf("%v\n\t-> Fix: %s", e.Err, e.Suggestion)
-}
-
 // Unwrap returns the underlying error. Side Effects: - None.
 //
 // Parameters:
@@ -50,10 +40,6 @@ func (e *ActionableError) Error() string {
 //
 // Side Effects:
 //   - None
-func (e *ActionableError) Unwrap() error {
-	return e.Err
-}
-
 // WrapActionableError wraps an error with context, preserving ActionableError semantics if present.
 //
 // Summary: Wraps an error with context, preserving ActionableError semantics.
@@ -70,6 +56,30 @@ func (e *ActionableError) Unwrap() error {
 //
 // Side Effects:
 //   - None.
+//
+//
+// Errors:
+//   - An error if it fails.
+package config
+
+import (
+	"errors"
+	"fmt"
+)
+
+type ActionableError struct {
+	Err		error
+	Suggestion	string
+}
+
+func (e *ActionableError) Error() string {
+	return fmt.Sprintf("%v\n\t-> Fix: %s", e.Err, e.Suggestion)
+}
+
+func (e *ActionableError) Unwrap() error {
+	return e.Err
+}
+
 func WrapActionableError(context string, err error) error {
 	if err == nil {
 		return nil
@@ -81,8 +91,8 @@ func WrapActionableError(context string, err error) error {
 		// Note: This may result in the suggestion being printed twice if the inner ActionableError's .Error()
 		// is also displayed, but it ensures no error context is lost.
 		return &ActionableError{
-			Err:        fmt.Errorf("%s: %w", context, err),
-			Suggestion: ae.Suggestion,
+			Err:		fmt.Errorf("%s: %w", context, err),
+			Suggestion:	ae.Suggestion,
 		}
 	}
 	return fmt.Errorf("%s: %w", context, err)

@@ -1,19 +1,13 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package provider
-
-import (
-	"path/filepath"
-
-	"github.com/spf13/afero"
-)
-
-// TmpfsProvider provides access to a temporary in-memory filesystem.
-type TmpfsProvider struct {
-	fs afero.Fs
-}
-
+// Summary: TmpfsProvider provides access to a temporary in-memory filesystem.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // NewTmpfsProvider creates a new TmpfsProvider.
 //
 // Returns:
@@ -21,12 +15,10 @@ type TmpfsProvider struct {
 //
 // Side Effects:
 //   - None.
-func NewTmpfsProvider() *TmpfsProvider {
-	return &TmpfsProvider{
-		fs: afero.NewMemMapFs(),
-	}
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
 // GetFs returns the underlying filesystem.
 //
 // Returns:
@@ -34,10 +26,10 @@ func NewTmpfsProvider() *TmpfsProvider {
 //
 // Side Effects:
 //   - None.
-func (p *TmpfsProvider) GetFs() afero.Fs {
-	return p.fs
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
 // ResolvePath resolves the virtual path to a real path.
 //
 // Parameters:
@@ -52,21 +44,43 @@ func (p *TmpfsProvider) GetFs() afero.Fs {
 //
 // Side Effects:
 //   - None.
+package provider
+
+import (
+	"path/filepath"
+
+	"github.com/spf13/afero"
+)
+
+type TmpfsProvider struct {
+	fs afero.Fs
+}
+
+func NewTmpfsProvider() *TmpfsProvider {
+	return &TmpfsProvider{
+		fs: afero.NewMemMapFs(),
+	}
+}
+
+func (p *TmpfsProvider) GetFs() afero.Fs {
+	return p.fs
+}
+
 func (p *TmpfsProvider) ResolvePath(virtualPath string) (string, error) {
 	// For MemMapFs, just clean the path. It's virtual.
+	// Close closes the provider.
+	//
+	// Returns:
+	//   - error: An error if the operation fails.
+	//
+	// Errors:
+	//   - Returns an error if ...
+	//
+	// Side Effects:
+	//   - None.
 	return filepath.Clean(virtualPath), nil
 }
 
-// Close closes the provider.
-//
-// Returns:
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
 func (p *TmpfsProvider) Close() error {
 	return nil
 }

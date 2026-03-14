@@ -2,6 +2,18 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // Package upstream provides the upstream service implementation.
+// Summary: Upstream defines the standard interface for all backend service integrations.
+//
+// Each implementation of this interface is responsible for discovering and
+// registering its capabilities, such as tools, prompts, and resources, with the
+// appropriate managers.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 package upstream
 
 import (
@@ -13,11 +25,6 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
-// Upstream defines the standard interface for all backend service integrations.
-//
-// Each implementation of this interface is responsible for discovering and
-// registering its capabilities, such as tools, prompts, and resources, with the
-// appropriate managers.
 type Upstream interface {
 	// Shutdown gracefully terminates the upstream service.
 	//
@@ -57,6 +64,15 @@ type Upstream interface {
 	// Side Effects:
 	//   - Establishes connection to the upstream service.
 	//   - Populates managers with capabilities.
+	// Summary: HealthChecker is an optional interface that Upstreams can implement to provide
+	// runtime health status.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
 	Register(
 		ctx context.Context,
 		serviceConfig *configv1.UpstreamServiceConfig,
@@ -67,8 +83,6 @@ type Upstream interface {
 	) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error)
 }
 
-// HealthChecker is an optional interface that Upstreams can implement to provide
-// runtime health status.
 type HealthChecker interface {
 	// CheckHealth performs a health check on the upstream service.
 	//

@@ -1,22 +1,14 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package websocket
-
-import (
-	"context"
-	"fmt"
-	"time"
-
-	"github.com/gorilla/websocket"
-	"github.com/mcpany/core/server/pkg/client"
-	"github.com/mcpany/core/server/pkg/pool"
-)
-
-// Pool is a type alias for a pool of WebSocket client connections.
+// Summary: Pool is a type alias for a pool of WebSocket client connections.
 // It simplifies the type signature for WebSocket connection pools.
-type Pool = pool.Pool[*client.WebsocketClientWrapper]
-
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // NewPool creates a new connection pool for WebSocket clients. It
 // configures the pool with a factory function that establishes new WebSocket
 // connections to the specified address.
@@ -29,6 +21,27 @@ type Pool = pool.Pool[*client.WebsocketClientWrapper]
 // Returns:
 //   - Pool: A new WebSocket client pool.
 //   - error: An error if the pool cannot be created.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+package websocket
+
+import (
+	"context"
+	"fmt"
+	"time"
+
+	"github.com/gorilla/websocket"
+	"github.com/mcpany/core/server/pkg/client"
+	"github.com/mcpany/core/server/pkg/pool"
+)
+
+type Pool = pool.Pool[*client.WebsocketClientWrapper]
+
 func NewPool(maxSize int, idleTimeout time.Duration, address string) (Pool, error) {
 	factory := func(_ context.Context) (*client.WebsocketClientWrapper, error) {
 		conn, resp, err := websocket.DefaultDialer.Dial(address, nil)

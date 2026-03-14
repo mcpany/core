@@ -2,6 +2,16 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // Package storage defines the interface for persisting configuration.
+// Storage defines the interface for persisting configuration.
+//
+// Summary: Interface for backend storage operations.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 package storage
 
 import (
@@ -11,9 +21,6 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// Storage defines the interface for persisting configuration.
-//
-// Summary: Interface for backend storage operations.
 type Storage interface {
 	// Load retrieves the full server configuration.
 	//

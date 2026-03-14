@@ -2,6 +2,56 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // Package worker provides background worker functionality.
+// Summary: ServiceRegistrationWorker is a background worker responsible for handling
+// service registration requests. It listens for ServiceRegistrationRequest
+// messages on the event bus, processes them using the service registry, and
+// publishes the results as ServiceRegistrationResult messages.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+// NewServiceRegistrationWorker creates a new ServiceRegistrationWorker.
+//
+// Parameters:
+//   - bus: The event bus used for receiving requests and publishing results.
+//   - serviceRegistry: The registry that will handle the actual registration logic.
+//
+// Returns:
+//   - *ServiceRegistrationWorker: A new service registration worker.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+// SetRetryDelay sets the retry delay for failed registrations.
+//
+// Parameters:
+//   - d: The duration to wait before retrying.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+// Start launches the worker in a new goroutine. It subscribes to service
+// registration requests on the event bus and will continue to process them
+// until the provided context is canceled.
+//
+// Parameters:
+//   - ctx: The context that controls the lifecycle of the worker.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 package worker
 
 import (
@@ -19,47 +69,25 @@ import (
 	"github.com/mcpany/core/server/pkg/util"
 )
 
-// ServiceRegistrationWorker is a background worker responsible for handling
-// service registration requests. It listens for ServiceRegistrationRequest
-// messages on the event bus, processes them using the service registry, and
-// publishes the results as ServiceRegistrationResult messages.
 type ServiceRegistrationWorker struct {
-	bus             *bus.Provider
-	serviceRegistry serviceregistry.ServiceRegistryInterface
-	wg              sync.WaitGroup
-	retryDelay      time.Duration
+	bus		*bus.Provider
+	serviceRegistry	serviceregistry.ServiceRegistryInterface
+	wg		sync.WaitGroup
+	retryDelay	time.Duration
 }
 
-// NewServiceRegistrationWorker creates a new ServiceRegistrationWorker.
-//
-// Parameters:
-//   - bus: The event bus used for receiving requests and publishing results.
-//   - serviceRegistry: The registry that will handle the actual registration logic.
-//
-// Returns:
-//   - *ServiceRegistrationWorker: A new service registration worker.
 func NewServiceRegistrationWorker(bus *bus.Provider, serviceRegistry serviceregistry.ServiceRegistryInterface) *ServiceRegistrationWorker {
 	return &ServiceRegistrationWorker{
-		bus:             bus,
-		serviceRegistry: serviceRegistry,
-		retryDelay:      5 * time.Second,
+		bus:			bus,
+		serviceRegistry:	serviceRegistry,
+		retryDelay:		5 * time.Second,
 	}
 }
 
-// SetRetryDelay sets the retry delay for failed registrations.
-//
-// Parameters:
-//   - d: The duration to wait before retrying.
 func (w *ServiceRegistrationWorker) SetRetryDelay(d time.Duration) {
 	w.retryDelay = d
 }
 
-// Start launches the worker in a new goroutine. It subscribes to service
-// registration requests on the event bus and will continue to process them
-// until the provided context is canceled.
-//
-// Parameters:
-//   - ctx: The context that controls the lifecycle of the worker.
 func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 	w.wg.Add(1)
 	log := logging.GetLogger().With("component", "ServiceRegistrationWorker")
@@ -134,10 +162,10 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 			serviceID, discoveredTools, discoveredResources, err := w.serviceRegistry.RegisterService(requestCtx, req.Config)
 
 			res := &bus.ServiceRegistrationResult{
-				ServiceKey:          serviceID,
-				DiscoveredTools:     discoveredTools,
-				DiscoveredResources: discoveredResources,
-				Error:               err,
+				ServiceKey:		serviceID,
+				DiscoveredTools:	discoveredTools,
+				DiscoveredResources:	discoveredResources,
+				Error:			err,
 			}
 			if err != nil {
 				if errors.Is(err, serviceregistry.ErrServiceAlreadyRegistered) {
@@ -206,8 +234,8 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 		log.Info("Received service list request", "correlationID", req.CorrelationID())
 		services, err := w.serviceRegistry.GetAllServices()
 		res := &bus.ServiceListResult{
-			Services: services,
-			Error:    err,
+			Services:	services,
+			Error:		err,
 		}
 		res.SetCorrelationID(req.CorrelationID())
 		if err := listResultBus.Publish(ctx, req.CorrelationID(), res); err != nil {
@@ -249,6 +277,19 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 		service, ok := w.serviceRegistry.GetServiceConfig(req.ServiceName)
 		if !ok {
 			// Try sanitizing the name
+			// Stop waits for the worker to stop.
+			//
+			// Parameters:
+			//   - None
+			//
+			// Returns:
+			//   - None
+			//
+			// Errors:
+			//   - None
+			//
+			// Side Effects:
+			//   - None
 			sanitized, err := util.SanitizeServiceName(req.ServiceName)
 			if err == nil {
 				service, ok = w.serviceRegistry.GetServiceConfig(sanitized)
@@ -261,8 +302,8 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 		}
 
 		res := &bus.ServiceGetResult{
-			Service: service,
-			Error:   err,
+			Service:	service,
+			Error:		err,
 		}
 
 		res.SetCorrelationID(req.CorrelationID())
@@ -281,19 +322,6 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 	}()
 }
 
-// Stop waits for the worker to stop.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
 func (w *ServiceRegistrationWorker) Stop() {
 	w.wg.Wait()
 }

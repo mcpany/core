@@ -2,6 +2,16 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // Package bus defines the message bus interface and implementations.
+// Summary: Bus defines the interface for a generic, type-safe event bus that facilitates
+// communication between different parts of the application. The type parameter T
+// specifies the type of message that the bus will handle.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 package bus
 
 import (
@@ -16,9 +26,6 @@ import (
 	xsync "github.com/puzpuzpuz/xsync/v4"
 )
 
-// Bus defines the interface for a generic, type-safe event bus that facilitates
-// communication between different parts of the application. The type parameter T
-// specifies the type of message that the bus will handle.
 type Bus[T any] interface {
 	// Publish sends a message to all subscribers of a given topic. The message
 	// is sent to each subscriber's channel, and the handler is invoked by a
@@ -58,41 +65,62 @@ type Bus[T any] interface {
 	//
 	// Returns:
 	//   - func(): A cleanup function that removes the subscription if called before the first message.
+	// Summary: Provider is a thread-safe container for managing multiple, type-safe bus
+	// instances, with each bus being dedicated to a specific topic. It ensures that
+	// for any given topic, there is only one bus instance, creating one on demand
+	// if it doesn't already exist.
+	//
+	// This allows different parts of the application to get a bus for a specific
+	// message type and topic without needing to manage the lifecycle of the bus
+	// instances themselves.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
+	// Summary: NewProviderHook is a test hook for overriding the NewProvider logic.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
+	// NewProvider creates and returns a new Provider, which is used to manage
+	// multiple topic-based bus instances.
+	//
+	// Parameters:
+	//   messageBus: The configuration for the message bus.
+	//
+	// Returns:
+	//   *Provider: The created Provider.
+	//   error: An error if creation fails.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
 	SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func())
 }
 
-// Provider is a thread-safe container for managing multiple, type-safe bus
-// instances, with each bus being dedicated to a specific topic. It ensures that
-// for any given topic, there is only one bus instance, creating one on demand
-// if it doesn't already exist.
-//
-// This allows different parts of the application to get a bus for a specific
-// message type and topic without needing to manage the lifecycle of the bus
-// instances themselves.
 type Provider struct {
-	buses  *xsync.Map[string, any]
-	config *bus.MessageBus
+	buses	*xsync.Map[string, any]
+	config	*bus.MessageBus
 }
 
-// NewProviderHook is a test hook for overriding the NewProvider logic.
 var NewProviderHook func(*bus.MessageBus) (*Provider, error)
 
-// NewProvider creates and returns a new Provider, which is used to manage
-// multiple topic-based bus instances.
-//
-// Parameters:
-//   messageBus: The configuration for the message bus.
-//
-// Returns:
-//   *Provider: The created Provider.
-//   error: An error if creation fails.
 func NewProvider(messageBus *bus.MessageBus) (*Provider, error) {
 	if NewProviderHook != nil {
 		return NewProviderHook(messageBus)
 	}
 	provider := &Provider{
-		buses:  xsync.NewMap[string, any](),
-		config: messageBus,
+		buses:	xsync.NewMap[string, any](),
+		config:	messageBus,
 	}
 
 	if provider.config == nil {
@@ -112,6 +140,35 @@ func NewProvider(messageBus *bus.MessageBus) (*Provider, error) {
 		// NATS client is now created within the NatsBus
 	case bus.MessageBus_Kafka_case:
 		// Kafka writer is now created within the KafkaBus
+		// Summary: GetBusHook is a test hook for overriding the bus retrieval logic.
+		//
+		//
+		// Errors:
+		//   - An error if it fails.
+		//
+		// Side Effects:
+		//   - None.
+		// GetBus retrieves a bus for the given topic. If a bus for the given topic
+		// already exists, it is returned; otherwise, a new one is created and stored for
+		// future use.
+		//
+		// The type parameter T specifies the message type for the bus, ensuring
+		// type safety for each topic.
+		//
+		// Parameters:
+		//   p: The Provider instance.
+		//   topic: The topic name.
+		//
+		// Returns:
+		//   Bus[T]: The requested Bus instance.
+		//   error: An error if retrieval or creation fails.
+		//
+		//
+		// Errors:
+		//   - An error if it fails.
+		//
+		// Side Effects:
+		//   - None.
 	default:
 		return nil, fmt.Errorf("unknown bus type")
 	}
@@ -119,23 +176,8 @@ func NewProvider(messageBus *bus.MessageBus) (*Provider, error) {
 	return provider, nil
 }
 
-// GetBusHook is a test hook for overriding the bus retrieval logic.
 var GetBusHook func(p *Provider, topic string) (any, error)
 
-// GetBus retrieves a bus for the given topic. If a bus for the given topic
-// already exists, it is returned; otherwise, a new one is created and stored for
-// future use.
-//
-// The type parameter T specifies the message type for the bus, ensuring
-// type safety for each topic.
-//
-// Parameters:
-//   p: The Provider instance.
-//   topic: The topic name.
-//
-// Returns:
-//   Bus[T]: The requested Bus instance.
-//   error: An error if retrieval or creation fails.
 func GetBus[T any](p *Provider, topic string) (Bus[T], error) {
 	if GetBusHook != nil {
 		bus, err := GetBusHook(p, topic)

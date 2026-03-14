@@ -1,6 +1,22 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// ConvertMCPToolToProto transforms an *mcp.Tool, which uses a flexible schema
+// representation, into a protobuf-defined *pb.Tool with a structured input
+// schema. This is used to standardize tool definitions within the system.
+//
+// Parameters:
+//   - tool: *mcp.Tool. The MCP tool definition to convert.
+//
+// Returns:
+//   - *pb.Tool: The corresponding protobuf tool definition.
+//   - error: An error if conversion fails (e.g. invalid schema).
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 package tool
 
 import (
@@ -16,16 +32,6 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-// ConvertMCPToolToProto transforms an *mcp.Tool, which uses a flexible schema
-// representation, into a protobuf-defined *pb.Tool with a structured input
-// schema. This is used to standardize tool definitions within the system.
-//
-// Parameters:
-//   - tool: *mcp.Tool. The MCP tool definition to convert.
-//
-// Returns:
-//   - *pb.Tool: The corresponding protobuf tool definition.
-//   - error: An error if conversion fails (e.g. invalid schema).
 func ConvertMCPToolToProto(tool *mcp.Tool) (*pb.Tool, error) {
 	if tool == nil {
 		return nil, fmt.Errorf("cannot convert nil mcp tool to proto")
@@ -59,8 +65,8 @@ func ConvertMCPToolToProto(tool *mcp.Tool) (*pb.Tool, error) {
 		annotationsBuilder.InputSchema = inputSchema
 	} else {
 		inputSchema, err := structpb.NewStruct(map[string]interface{}{
-			"type":       "object",
-			"properties": map[string]interface{}{},
+			"type":		"object",
+			"properties":	map[string]interface{}{},
 		})
 		if err == nil {
 			annotationsBuilder.InputSchema = inputSchema
@@ -76,12 +82,12 @@ func ConvertMCPToolToProto(tool *mcp.Tool) (*pb.Tool, error) {
 	}
 
 	pbTool := pb.Tool_builder{
-		Name:         proto.String(tool.Name),
-		Description:  proto.String(tool.Description),
-		DisplayName:  proto.String(displayName),
-		Annotations:  annotationsBuilder.Build(),
-		InputSchema:  annotationsBuilder.InputSchema,
-		OutputSchema: annotationsBuilder.OutputSchema,
+		Name:		proto.String(tool.Name),
+		Description:	proto.String(tool.Description),
+		DisplayName:	proto.String(displayName),
+		Annotations:	annotationsBuilder.Build(),
+		InputSchema:	annotationsBuilder.InputSchema,
+		OutputSchema:	annotationsBuilder.OutputSchema,
 	}.Build()
 
 	return pbTool, nil
@@ -102,19 +108,79 @@ func convertJSONSchemaToStruct(schema any) (*structpb.Struct, error) {
 
 	// Optimization: Use structpb.NewStruct directly instead of round-tripping through JSON.
 	// This is significantly faster (~10x) and avoids unnecessary memory allocations.
+	// ConvertMcpFieldsToInputSchemaProperties converts a slice of McpField, which
+	// represent fields from a protobuf message, into a structpb.Struct that can be
+	// used as the `properties` field in a JSON schema.
+	//
+	// Parameters:
+	//   - fields: []*protobufparser.McpField. The list of fields to convert.
+	//
+	// Returns:
+	//   - *structpb.Struct: A struct representing the properties JSON schema.
+	//   - error: An error if conversion fails.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
+	// ConvertToolDefinitionToProto transforms a *configv1.ToolDefinition into a
+	// *pb.Tool.
+	//
+	// Parameters:
+	//   - toolDef: *configv1.ToolDefinition. The tool definition from configuration.
+	//   - inputSchema: *structpb.Struct. The input schema for the tool.
+	//   - outputSchema: *structpb.Struct. The output schema for the tool.
+	//
+	// Returns:
+	//   - *pb.Tool: The protobuf tool definition.
+	//   - error: An error if conversion fails.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
+	// GetJSONSchemaForScalarType maps a protobuf scalar type (e.g., "TYPE_STRING",
+	// "TYPE_INT32") to its corresponding JSON schema type ("string", "integer"). It
+	// is a helper function for building JSON schemas from protobuf definitions.
+	//
+	// Parameters:
+	//   - scalarType: string. The protobuf scalar type name.
+	//   - description: string. The description for the schema.
+	//
+	// Returns:
+	//   - *jsonschema.Schema: The generated JSON schema.
+	//   - error: An error if the scalar type is unsupported.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
+	// ConvertProtoToMCPTool transforms a protobuf-defined *pb.Tool into an
+	// *mcp.Tool. This is the reverse of convertMCPToolToProto and is used when
+	// exposing internally defined tools to the outside world.
+	//
+	// Parameters:
+	//   - pbTool: *pb.Tool. The protobuf tool definition to convert.
+	//
+	// Returns:
+	//   - *mcp.Tool: The corresponding MCP tool definition.
+	//   - error: An error if conversion fails.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
 	return structpb.NewStruct(schemaMap)
 }
 
-// ConvertMcpFieldsToInputSchemaProperties converts a slice of McpField, which
-// represent fields from a protobuf message, into a structpb.Struct that can be
-// used as the `properties` field in a JSON schema.
-//
-// Parameters:
-//   - fields: []*protobufparser.McpField. The list of fields to convert.
-//
-// Returns:
-//   - *structpb.Struct: A struct representing the properties JSON schema.
-//   - error: An error if conversion fails.
 func ConvertMcpFieldsToInputSchemaProperties(fields []*protobufparser.McpField) (*structpb.Struct, error) {
 	properties := &structpb.Struct{Fields: make(map[string]*structpb.Value)}
 	for _, field := range fields {
@@ -124,8 +190,8 @@ func ConvertMcpFieldsToInputSchemaProperties(fields []*protobufparser.McpField) 
 		}
 
 		fieldsMap := map[string]interface{}{
-			"type":        schema.Type,
-			"description": schema.Description,
+			"type":		schema.Type,
+			"description":	schema.Description,
 		}
 
 		value, err := structpb.NewValue(fieldsMap)
@@ -138,26 +204,14 @@ func ConvertMcpFieldsToInputSchemaProperties(fields []*protobufparser.McpField) 
 	return properties, nil
 }
 
-
-// ConvertToolDefinitionToProto transforms a *configv1.ToolDefinition into a
-// *pb.Tool.
-//
-// Parameters:
-//   - toolDef: *configv1.ToolDefinition. The tool definition from configuration.
-//   - inputSchema: *structpb.Struct. The input schema for the tool.
-//   - outputSchema: *structpb.Struct. The output schema for the tool.
-//
-// Returns:
-//   - *pb.Tool: The protobuf tool definition.
-//   - error: An error if conversion fails.
 func ConvertToolDefinitionToProto(toolDef *configv1.ToolDefinition, inputSchema, outputSchema *structpb.Struct) (*pb.Tool, error) {
 	if toolDef == nil {
 		return nil, fmt.Errorf("cannot convert nil tool definition to proto")
 	}
 
 	annotationsBuilder := pb.ToolAnnotations_builder{
-		InputSchema:  inputSchema,
-		OutputSchema: outputSchema,
+		InputSchema:	inputSchema,
+		OutputSchema:	outputSchema,
 	}
 
 	var profiles []string
@@ -170,36 +224,25 @@ func ConvertToolDefinitionToProto(toolDef *configv1.ToolDefinition, inputSchema,
 	}
 
 	builder := pb.Tool_builder{
-		Name:        proto.String(toolDef.GetName()),
-		Description: proto.String(toolDef.GetDescription()),
-		DisplayName: proto.String(toolDef.GetTitle()),
-		ServiceId:   proto.String(toolDef.GetServiceId()),
-		Annotations: annotationsBuilder.Build(),
-		Tags:        toolDef.GetTags(),
-		Profiles:    profiles,
+		Name:		proto.String(toolDef.GetName()),
+		Description:	proto.String(toolDef.GetDescription()),
+		DisplayName:	proto.String(toolDef.GetTitle()),
+		ServiceId:	proto.String(toolDef.GetServiceId()),
+		Annotations:	annotationsBuilder.Build(),
+		Tags:		toolDef.GetTags(),
+		Profiles:	profiles,
 	}
 
 	if toolDef.GetIntegrity() != nil {
 		builder.Integrity = pb.ToolIntegrity_builder{
-			Hash:      proto.String(toolDef.GetIntegrity().GetHash()),
-			Algorithm: proto.String(toolDef.GetIntegrity().GetAlgorithm()),
+			Hash:		proto.String(toolDef.GetIntegrity().GetHash()),
+			Algorithm:	proto.String(toolDef.GetIntegrity().GetAlgorithm()),
 		}.Build()
 	}
 
 	return builder.Build(), nil
 }
 
-// GetJSONSchemaForScalarType maps a protobuf scalar type (e.g., "TYPE_STRING",
-// "TYPE_INT32") to its corresponding JSON schema type ("string", "integer"). It
-// is a helper function for building JSON schemas from protobuf definitions.
-//
-// Parameters:
-//   - scalarType: string. The protobuf scalar type name.
-//   - description: string. The description for the schema.
-//
-// Returns:
-//   - *jsonschema.Schema: The generated JSON schema.
-//   - error: An error if the scalar type is unsupported.
 func GetJSONSchemaForScalarType(scalarType, description string) (*jsonschema.Schema, error) {
 	s := &jsonschema.Schema{
 		Description: description,
@@ -224,17 +267,6 @@ func GetJSONSchemaForScalarType(scalarType, description string) (*jsonschema.Sch
 	return s, nil
 }
 
-
-// ConvertProtoToMCPTool transforms a protobuf-defined *pb.Tool into an
-// *mcp.Tool. This is the reverse of convertMCPToolToProto and is used when
-// exposing internally defined tools to the outside world.
-//
-// Parameters:
-//   - pbTool: *pb.Tool. The protobuf tool definition to convert.
-//
-// Returns:
-//   - *mcp.Tool: The corresponding MCP tool definition.
-//   - error: An error if conversion fails.
 func ConvertProtoToMCPTool(pbTool *pb.Tool) (*mcp.Tool, error) {
 	if pbTool == nil {
 		return nil, fmt.Errorf("cannot convert nil pb tool to mcp tool")
@@ -245,19 +277,19 @@ func ConvertProtoToMCPTool(pbTool *pb.Tool) (*mcp.Tool, error) {
 	}
 
 	mcpTool := &mcp.Tool{
-		Name:        pbTool.GetServiceId() + "." + pbTool.GetName(),
-		Description: pbTool.GetDescription(),
-		Title:       pbTool.GetDisplayName(),
+		Name:		pbTool.GetServiceId() + "." + pbTool.GetName(),
+		Description:	pbTool.GetDescription(),
+		Title:		pbTool.GetDisplayName(),
 	}
 
 	if pbTool.GetAnnotations() != nil {
 		annotations := pbTool.GetAnnotations()
 		mcpTool.Annotations = &mcp.ToolAnnotations{
-			Title:           annotations.GetTitle(),
-			ReadOnlyHint:    annotations.GetReadOnlyHint(),
-			IdempotentHint:  annotations.GetIdempotentHint(),
-			DestructiveHint: proto.Bool(annotations.GetDestructiveHint()),
-			OpenWorldHint:   proto.Bool(annotations.GetOpenWorldHint()),
+			Title:			annotations.GetTitle(),
+			ReadOnlyHint:		annotations.GetReadOnlyHint(),
+			IdempotentHint:		annotations.GetIdempotentHint(),
+			DestructiveHint:	proto.Bool(annotations.GetDestructiveHint()),
+			OpenWorldHint:		proto.Bool(annotations.GetOpenWorldHint()),
 		}
 
 		if annotations.GetInputSchema() != nil {

@@ -26,11 +26,6 @@ import (
 
 // poolWithChecker wraps a pool.Pool and a health.Checker to ensure the checker
 // is stopped when the pool is closed.
-type poolWithChecker[T pool.ClosableClient] struct {
-	pool.Pool[T]
-	checker health.Checker
-}
-
 // Close stops the health checker and closes the underlying pool.
 //
 // Returns:
@@ -38,13 +33,10 @@ type poolWithChecker[T pool.ClosableClient] struct {
 //
 // Side Effects:
 //   - Stops the health checker.
-func (p *poolWithChecker[T]) Close() error {
-	if p.checker != nil {
-		p.checker.Stop()
-	}
-	return p.Pool.Close()
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
 // NewGrpcPool creates a new connection pool for gRPC clients.
 //
 // It configures the pool with a factory function that establishes new gRPC connections with the
@@ -70,6 +62,18 @@ func (p *poolWithChecker[T]) Close() error {
 // Side Effects:
 //   - Reads certificate files if mTLS is configured.
 //   - Initializes gRPC clients.
+type poolWithChecker[T pool.ClosableClient] struct {
+	pool.Pool[T]
+	checker	health.Checker
+}
+
+func (p *poolWithChecker[T]) Close() error {
+	if p.checker != nil {
+		p.checker.Stop()
+	}
+	return p.Pool.Close()
+}
+
 func NewGrpcPool(
 	minSize, maxSize int,
 	idleTimeout time.Duration,
@@ -117,9 +121,9 @@ func NewGrpcPool(
 			caCertPool.AppendCertsFromPEM(caCert)
 
 			transportCreds = credentials.NewTLS(&tls.Config{
-				Certificates: []tls.Certificate{certificate},
-				RootCAs:      caCertPool,
-				MinVersion:   tls.VersionTLS12,
+				Certificates:	[]tls.Certificate{certificate},
+				RootCAs:	caCertPool,
+				MinVersion:	tls.VersionTLS12,
 			})
 		} else {
 			transportCreds = insecure.NewCredentials()
@@ -151,7 +155,7 @@ func NewGrpcPool(
 	}
 
 	return &poolWithChecker[*client.GrpcClientWrapper]{
-		Pool:    p,
-		checker: checker,
+		Pool:		p,
+		checker:	checker,
 	}, nil
 }

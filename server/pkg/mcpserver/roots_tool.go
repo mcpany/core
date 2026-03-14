@@ -1,29 +1,16 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package mcpserver
-
-import (
-	"context"
-	"fmt"
-
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	v1 "github.com/mcpany/core/proto/mcp_router/v1"
-	"github.com/mcpany/core/server/pkg/tool"
-	"github.com/modelcontextprotocol/go-sdk/mcp"
-	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/known/structpb"
-)
-
-// RootsTool implements the Tool interface for listing roots.
+// Summary: RootsTool implements the Tool interface for listing roots.
 //
 // It provides a built-in tool ("mcp:list_roots") that allows the server to query the client
 // for available filesystem roots.
-type RootsTool struct {
-	tool    *v1.Tool
-	mcpTool *mcp.Tool
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // NewRootsTool creates a new instance of the RootsTool.
 //
 // Returns:
@@ -31,27 +18,10 @@ type RootsTool struct {
 //
 // Side Effects:
 //   - None.
-func NewRootsTool() *RootsTool {
-	inputSchema := &structpb.Struct{
-		Fields: map[string]*structpb.Value{
-			"type": structpb.NewStringValue("object"),
-		},
-	}
-	t := v1.Tool_builder{
-		Name:        proto.String("mcp:list_roots"),
-		DisplayName: proto.String("List Roots"),
-		Description: proto.String("Lists the roots available on the client side."),
-		InputSchema: inputSchema,
-		ServiceId:   proto.String("builtin"),
-	}.Build()
-
-	mcpTool, _ := tool.ConvertProtoToMCPTool(t)
-	return &RootsTool{
-		tool:    t,
-		mcpTool: mcpTool,
-	}
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
 // Tool returns the protobuf definition of the tool.
 //
 // Returns:
@@ -59,10 +29,10 @@ func NewRootsTool() *RootsTool {
 //
 // Side Effects:
 //   - None.
-func (t *RootsTool) Tool() *v1.Tool {
-	return t.tool
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
 // MCPTool returns the MCP-compliant tool definition.
 //
 // Returns:
@@ -70,10 +40,10 @@ func (t *RootsTool) Tool() *v1.Tool {
 //
 // Side Effects:
 //   - None.
-func (t *RootsTool) MCPTool() *mcp.Tool {
-	return t.mcpTool
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
 // Execute executes the "mcp:list_roots" tool.
 //
 // It retrieves the current MCP session from the context and requests the client
@@ -89,6 +59,69 @@ func (t *RootsTool) MCPTool() *mcp.Tool {
 //
 // Side Effects:
 //   - Sends a "roots/list" request to the client.
+//
+//
+// Errors:
+//   - An error if it fails.
+// GetCacheConfig returns the caching configuration for this tool.
+//
+// Returns:
+//   - *configv1.CacheConfig: Always nil (caching disabled).
+//
+// Side Effects:
+//   - None.
+//
+//
+// Errors:
+//   - An error if it fails.
+package mcpserver
+
+import (
+	"context"
+	"fmt"
+
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	v1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/mcpany/core/server/pkg/tool"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/structpb"
+)
+
+type RootsTool struct {
+	tool	*v1.Tool
+	mcpTool	*mcp.Tool
+}
+
+func NewRootsTool() *RootsTool {
+	inputSchema := &structpb.Struct{
+		Fields: map[string]*structpb.Value{
+			"type": structpb.NewStringValue("object"),
+		},
+	}
+	t := v1.Tool_builder{
+		Name:		proto.String("mcp:list_roots"),
+		DisplayName:	proto.String("List Roots"),
+		Description:	proto.String("Lists the roots available on the client side."),
+		InputSchema:	inputSchema,
+		ServiceId:	proto.String("builtin"),
+	}.Build()
+
+	mcpTool, _ := tool.ConvertProtoToMCPTool(t)
+	return &RootsTool{
+		tool:		t,
+		mcpTool:	mcpTool,
+	}
+}
+
+func (t *RootsTool) Tool() *v1.Tool {
+	return t.tool
+}
+
+func (t *RootsTool) MCPTool() *mcp.Tool {
+	return t.mcpTool
+}
+
 func (t *RootsTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
 	session, ok := tool.GetSession(ctx)
 	if !ok {
@@ -103,13 +136,6 @@ func (t *RootsTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any,
 	return rootsResult, nil
 }
 
-// GetCacheConfig returns the caching configuration for this tool.
-//
-// Returns:
-//   - *configv1.CacheConfig: Always nil (caching disabled).
-//
-// Side Effects:
-//   - None.
 func (t *RootsTool) GetCacheConfig() *configv1.CacheConfig {
 	return nil
 }

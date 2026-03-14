@@ -1,6 +1,124 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// BinaryType defines the type of the binary being validated.
+//
+// Summary: Enumeration of binary types for validation context.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+// Summary: Server represents the server binary.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+// Summary: Worker represents the worker binary.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+// Summary: Client represents the client binary.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+// AuthValidationContext defines the context for authentication validation.
+//
+// Summary: Enumeration of authentication validation contexts.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+// Summary: AuthValidationContextIncoming represents incoming authentication (e.g., Users).
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+// Summary: AuthValidationContextOutgoing represents outgoing authentication (e.g., Upstream Services).
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+// Summary: SkipSecretValidationKey is the context key to skip secret validation (e.g. for config check API).
+// Value should be a boolean.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+// Summary: SkipFilesystemCheckKey is the context key to skip filesystem existence checks (e.g. for config check API).
+// Value should be a boolean.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+// ValidationError encapsulates a validation error for a specific service.
+//
+// Summary: Represents a configuration validation error.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+// Error returns the formatted error message. Side Effects: - None.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - string: The resulting string.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
+// Validate inspects the given McpAnyServerConfig for correctness and consistency.
+//
+// Summary: Validates the entire server configuration.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the validation (used for secret resolution).
+//   - config (*configv1.McpAnyServerConfig): The server configuration to be validated.
+//   - binaryType (BinaryType): The type of binary (server, worker) which might affect validation rules.
+//
+// Returns:
+//   - ([]ValidationError): A slice of ValidationErrors, which will be empty if the configuration is valid.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 package config
 
 import (
@@ -24,90 +142,51 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-// BinaryType defines the type of the binary being validated.
-//
-// Summary: Enumeration of binary types for validation context.
 type BinaryType int
 
 const (
-	schemeHTTP  = "http"
-	schemeHTTPS = "https"
+	schemeHTTP	= "http"
+	schemeHTTPS	= "https"
 )
 
 const (
-	// Server represents the server binary.
-	Server BinaryType = iota
-	// Worker represents the worker binary.
+	Server	BinaryType	= iota
+
 	Worker
-	// Client represents the client binary.
+
 	Client
 )
 
-// AuthValidationContext defines the context for authentication validation.
-//
-// Summary: Enumeration of authentication validation contexts.
 type AuthValidationContext int
 
 const (
-	// AuthValidationContextIncoming represents incoming authentication (e.g., Users).
-	AuthValidationContextIncoming AuthValidationContext = iota
-	// AuthValidationContextOutgoing represents outgoing authentication (e.g., Upstream Services).
+	AuthValidationContextIncoming	AuthValidationContext	= iota
+
 	AuthValidationContextOutgoing
 )
 
 type contextKey string
 
 const (
-	// SkipSecretValidationKey is the context key to skip secret validation (e.g. for config check API).
-	// Value should be a boolean.
-	SkipSecretValidationKey contextKey = "skip_secret_validation"
+	SkipSecretValidationKey	contextKey	= "skip_secret_validation"
 
-	// SkipFilesystemCheckKey is the context key to skip filesystem existence checks (e.g. for config check API).
-	// Value should be a boolean.
-	SkipFilesystemCheckKey contextKey = "skip_filesystem_check"
+	SkipFilesystemCheckKey	contextKey	= "skip_filesystem_check"
 )
 
 var (
-	osStat       = os.Stat
-	execLookPath = exec.LookPath
+	osStat		= os.Stat
+	execLookPath	= exec.LookPath
 )
 
-// ValidationError encapsulates a validation error for a specific service.
-//
-// Summary: Represents a configuration validation error.
 type ValidationError struct {
-	ServiceName string
-	Err         error
+	ServiceName	string
+	Err		error
 }
 
-// Error returns the formatted error message. Side Effects: - None.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - string: The resulting string.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
 func (e *ValidationError) Error() string {
 	return fmt.Sprintf("service %q: %v", e.ServiceName, e.Err)
 }
 
-// Validate inspects the given McpAnyServerConfig for correctness and consistency.
-//
-// Summary: Validates the entire server configuration.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the validation (used for secret resolution).
-//   - config (*configv1.McpAnyServerConfig): The server configuration to be validated.
-//   - binaryType (BinaryType): The type of binary (server, worker) which might affect validation rules.
-//
-// Returns:
-//   - ([]ValidationError): A slice of ValidationErrors, which will be empty if the configuration is valid.
 func Validate(ctx context.Context, config *configv1.McpAnyServerConfig, binaryType BinaryType) []ValidationError {
 	var validationErrors []ValidationError
 	serviceNames := make(map[string]bool)
@@ -115,8 +194,8 @@ func Validate(ctx context.Context, config *configv1.McpAnyServerConfig, binaryTy
 	if gs := config.GetGlobalSettings(); gs != nil {
 		if err := validateGlobalSettings(ctx, gs, binaryType); err != nil {
 			validationErrors = append(validationErrors, ValidationError{
-				ServiceName: "global_settings",
-				Err:         err,
+				ServiceName:	"global_settings",
+				Err:		err,
 			})
 		}
 	}
@@ -125,23 +204,23 @@ func Validate(ctx context.Context, config *configv1.McpAnyServerConfig, binaryTy
 	for _, user := range config.GetUsers() {
 		if user.GetId() == "" {
 			validationErrors = append(validationErrors, ValidationError{
-				ServiceName: "user",
-				Err:         fmt.Errorf("user has empty id"),
+				ServiceName:	"user",
+				Err:		fmt.Errorf("user has empty id"),
 			})
 			continue
 		}
 		if userIDs[user.GetId()] {
 			validationErrors = append(validationErrors, ValidationError{
-				ServiceName: fmt.Sprintf("user:%s", user.GetId()),
-				Err:         fmt.Errorf("duplicate user id"),
+				ServiceName:	fmt.Sprintf("user:%s", user.GetId()),
+				Err:		fmt.Errorf("duplicate user id"),
 			})
 		}
 		userIDs[user.GetId()] = true
 
 		if err := validateUser(ctx, user); err != nil {
 			validationErrors = append(validationErrors, ValidationError{
-				ServiceName: fmt.Sprintf("user:%s", user.GetId()),
-				Err:         err,
+				ServiceName:	fmt.Sprintf("user:%s", user.GetId()),
+				Err:		err,
 			})
 		}
 	}
@@ -149,16 +228,16 @@ func Validate(ctx context.Context, config *configv1.McpAnyServerConfig, binaryTy
 	for _, service := range config.GetUpstreamServices() {
 		if _, exists := serviceNames[service.GetName()]; exists {
 			validationErrors = append(validationErrors, ValidationError{
-				ServiceName: service.GetName(),
-				Err:         fmt.Errorf("duplicate service name found"),
+				ServiceName:	service.GetName(),
+				Err:		fmt.Errorf("duplicate service name found"),
 			})
 		}
 		serviceNames[service.GetName()] = true
 
 		if err := validateUpstreamService(ctx, service); err != nil {
 			validationErrors = append(validationErrors, ValidationError{
-				ServiceName: service.GetName(),
-				Err:         err,
+				ServiceName:	service.GetName(),
+				Err:		err,
 			})
 		}
 	}
@@ -166,8 +245,8 @@ func Validate(ctx context.Context, config *configv1.McpAnyServerConfig, binaryTy
 	for _, collection := range config.GetCollections() {
 		if err := validateCollection(ctx, collection); err != nil {
 			validationErrors = append(validationErrors, ValidationError{
-				ServiceName: collection.GetName(),
-				Err:         err,
+				ServiceName:	collection.GetName(),
+				Err:		err,
 			})
 		}
 	}
@@ -309,8 +388,8 @@ func validateFileExists(ctx context.Context, path string, workingDir string) err
 		if os.IsNotExist(err) {
 			absPath, _ := filepath.Abs(targetPath)
 			return &ActionableError{
-				Err:        fmt.Errorf("file not found: %s", targetPath),
-				Suggestion: fmt.Sprintf("Check if the file exists at %q (absolute: %q) and the server process has read permissions.", targetPath, absPath),
+				Err:		fmt.Errorf("file not found: %s", targetPath),
+				Suggestion:	fmt.Sprintf("Check if the file exists at %q (absolute: %q) and the server process has read permissions.", targetPath, absPath),
 			}
 		}
 		return err
@@ -354,8 +433,8 @@ func validateSecretValue(ctx context.Context, secret *configv1.SecretValue) erro
 				suggestion = fmt.Sprintf("Did you mean %q? %s", similar, suggestion)
 			}
 			return &ActionableError{
-				Err:        fmt.Errorf("environment variable %q is not set", envVar),
-				Suggestion: suggestion,
+				Err:		fmt.Errorf("environment variable %q is not set", envVar),
+				Suggestion:	suggestion,
 			}
 		}
 	case configv1.SecretValue_FilePath_case:
@@ -373,8 +452,8 @@ func validateSecretValue(ctx context.Context, secret *configv1.SecretValue) erro
 		if !skipExistenceCheck {
 			if err := validation.FileExists(secret.GetFilePath()); err != nil {
 				return &ActionableError{
-					Err:        fmt.Errorf("secret file %q does not exist: %w", secret.GetFilePath(), err),
-					Suggestion: fmt.Sprintf("Ensure the file exists at %q and the server process has read permissions.", secret.GetFilePath()),
+					Err:		fmt.Errorf("secret file %q does not exist: %w", secret.GetFilePath(), err),
+					Suggestion:	fmt.Sprintf("Ensure the file exists at %q and the server process has read permissions.", secret.GetFilePath()),
 				}
 			}
 		}
@@ -446,6 +525,23 @@ func validateGlobalSettings(ctx context.Context, gs *configv1.GlobalSettings, bi
 				if err != nil {
 					// Fallback: if we can't parse it, err on the side of caution or just treat it as wildcard.
 					// A plain string might just be a port or malformed.
+					// ValidateOrError validates a single upstream service configuration and returns an error if it's invalid.
+					//
+					// Summary: Validates a single upstream service.
+					//
+					// Parameters:
+					//   - ctx (context.Context): The context for the validation.
+					//   - service (*configv1.UpstreamServiceConfig): The upstream service configuration to validate.
+					//
+					// Returns:
+					//   - (error): An error if validation fails.
+					//
+					//
+					// Errors:
+					//   - An error if it fails.
+					//
+					// Side Effects:
+					//   - None.
 					host = ""
 				} else {
 					host = h
@@ -455,8 +551,8 @@ func validateGlobalSettings(ctx context.Context, gs *configv1.GlobalSettings, bi
 			if host == "" || host == "0.0.0.0" || host == "::" {
 				if os.Getenv("MCPANY_ATTESTATION_TOKEN") == "" {
 					return &ActionableError{
-						Err:        fmt.Errorf("remote access guard: binding to %s requires MCPANY_ATTESTATION_TOKEN to be set", gs.GetMcpListenAddress()),
-						Suggestion: "By default, MCP Any only binds to localhost. To expose it remotely, you must provide an attestation token. Set the MCPANY_ATTESTATION_TOKEN environment variable.",
+						Err:		fmt.Errorf("remote access guard: binding to %s requires MCPANY_ATTESTATION_TOKEN to be set", gs.GetMcpListenAddress()),
+						Suggestion:	"By default, MCP Any only binds to localhost. To expose it remotely, you must provide an attestation token. Set the MCPANY_ATTESTATION_TOKEN environment variable.",
 					}
 				}
 			}
@@ -504,16 +600,6 @@ func validateGlobalSettings(ctx context.Context, gs *configv1.GlobalSettings, bi
 	return nil
 }
 
-// ValidateOrError validates a single upstream service configuration and returns an error if it's invalid.
-//
-// Summary: Validates a single upstream service.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the validation.
-//   - service (*configv1.UpstreamServiceConfig): The upstream service configuration to validate.
-//
-// Returns:
-//   - (error): An error if validation fails.
 func ValidateOrError(ctx context.Context, service *configv1.UpstreamServiceConfig) error {
 	return validateUpstreamService(ctx, service)
 }
@@ -570,8 +656,8 @@ func validateAuthentication(ctx context.Context, authConfig *configv1.Authentica
 func validateBasicAuth(ctx context.Context, basicAuth *configv1.BasicAuth, authCtx AuthValidationContext) error {
 	if basicAuth.GetUsername() == "" {
 		return &ActionableError{
-			Err:        fmt.Errorf("basic auth 'username' is empty"),
-			Suggestion: "Set the 'username' field.",
+			Err:		fmt.Errorf("basic auth 'username' is empty"),
+			Suggestion:	"Set the 'username' field.",
 		}
 	}
 
@@ -582,8 +668,8 @@ func validateBasicAuth(ctx context.Context, basicAuth *configv1.BasicAuth, authC
 
 	if basicAuth.GetPassword() == nil {
 		return &ActionableError{
-			Err:        fmt.Errorf("basic auth 'password' is missing"),
-			Suggestion: "Set the 'password' field.",
+			Err:		fmt.Errorf("basic auth 'password' is missing"),
+			Suggestion:	"Set the 'password' field.",
 		}
 	}
 
@@ -596,8 +682,8 @@ func validateBasicAuth(ctx context.Context, basicAuth *configv1.BasicAuth, authC
 	}
 	if passwordValue == "" {
 		return &ActionableError{
-			Err:        fmt.Errorf("basic auth 'password' is empty"),
-			Suggestion: "Check that the environment variable or file providing the password is not empty.",
+			Err:		fmt.Errorf("basic auth 'password' is empty"),
+			Suggestion:	"Check that the environment variable or file providing the password is not empty.",
 		}
 	}
 	return nil
@@ -629,27 +715,27 @@ func validateServiceConfig(ctx context.Context, service *configv1.UpstreamServic
 func validateHTTPService(httpService *configv1.HttpUpstreamService) error {
 	if httpService.GetAddress() == "" {
 		return &ActionableError{
-			Err:        fmt.Errorf("http service has empty address"),
-			Suggestion: "Set the 'address' field in the http_service configuration (e.g., 'http://localhost:8080').",
+			Err:		fmt.Errorf("http service has empty address"),
+			Suggestion:	"Set the 'address' field in the http_service configuration (e.g., 'http://localhost:8080').",
 		}
 	}
 	if strings.TrimSpace(httpService.GetAddress()) != httpService.GetAddress() {
 		return &ActionableError{
-			Err:        fmt.Errorf("http address contains hidden whitespace"),
-			Suggestion: "The address contains hidden whitespace (spaces or tabs). Fix: Check your configuration or environment variables and remove any trailing spaces.",
+			Err:		fmt.Errorf("http address contains hidden whitespace"),
+			Suggestion:	"The address contains hidden whitespace (spaces or tabs). Fix: Check your configuration or environment variables and remove any trailing spaces.",
 		}
 	}
 	if !validation.IsValidURL(httpService.GetAddress()) {
 		return &ActionableError{
-			Err:        fmt.Errorf("invalid http address: %s", httpService.GetAddress()),
-			Suggestion: "Ensure the address is a valid URL (e.g., 'http://example.com').",
+			Err:		fmt.Errorf("invalid http address: %s", httpService.GetAddress()),
+			Suggestion:	"Ensure the address is a valid URL (e.g., 'http://example.com').",
 		}
 	}
 	u, _ := url.Parse(httpService.GetAddress())
 	if u.Scheme != schemeHTTP && u.Scheme != schemeHTTPS {
 		return &ActionableError{
-			Err:        fmt.Errorf("invalid http address scheme: %s", u.Scheme),
-			Suggestion: "Use 'http' or 'https' as the scheme (e.g., http://example.com).",
+			Err:		fmt.Errorf("invalid http address scheme: %s", u.Scheme),
+			Suggestion:	"Use 'http' or 'https' as the scheme (e.g., http://example.com).",
 		}
 	}
 
@@ -667,27 +753,27 @@ func validateHTTPService(httpService *configv1.HttpUpstreamService) error {
 func validateWebSocketService(websocketService *configv1.WebsocketUpstreamService) error {
 	if websocketService.GetAddress() == "" {
 		return &ActionableError{
-			Err:        fmt.Errorf("websocket service has empty address"),
-			Suggestion: "Set the 'address' field in the websocket_service configuration (e.g., 'ws://localhost:8080').",
+			Err:		fmt.Errorf("websocket service has empty address"),
+			Suggestion:	"Set the 'address' field in the websocket_service configuration (e.g., 'ws://localhost:8080').",
 		}
 	}
 	if strings.TrimSpace(websocketService.GetAddress()) != websocketService.GetAddress() {
 		return &ActionableError{
-			Err:        fmt.Errorf("websocket address contains hidden whitespace"),
-			Suggestion: "The address contains hidden whitespace (spaces or tabs). Fix: Check your configuration or environment variables and remove any trailing spaces.",
+			Err:		fmt.Errorf("websocket address contains hidden whitespace"),
+			Suggestion:	"The address contains hidden whitespace (spaces or tabs). Fix: Check your configuration or environment variables and remove any trailing spaces.",
 		}
 	}
 	if !validation.IsValidURL(websocketService.GetAddress()) {
 		return &ActionableError{
-			Err:        fmt.Errorf("invalid websocket address: %s", websocketService.GetAddress()),
-			Suggestion: "Ensure the address is a valid URL (e.g., 'ws://example.com').",
+			Err:		fmt.Errorf("invalid websocket address: %s", websocketService.GetAddress()),
+			Suggestion:	"Ensure the address is a valid URL (e.g., 'ws://example.com').",
 		}
 	}
 	u, _ := url.Parse(websocketService.GetAddress())
 	if u.Scheme != "ws" && u.Scheme != "wss" {
 		return &ActionableError{
-			Err:        fmt.Errorf("invalid websocket address scheme: %s", u.Scheme),
-			Suggestion: "Use 'ws' or 'wss' as the scheme.",
+			Err:		fmt.Errorf("invalid websocket address scheme: %s", u.Scheme),
+			Suggestion:	"Use 'ws' or 'wss' as the scheme.",
 		}
 	}
 
@@ -705,8 +791,8 @@ func validateWebSocketService(websocketService *configv1.WebsocketUpstreamServic
 func validateGrpcService(grpcService *configv1.GrpcUpstreamService) error {
 	if grpcService.GetAddress() == "" {
 		return &ActionableError{
-			Err:        fmt.Errorf("gRPC service has empty address"),
-			Suggestion: "Set the 'address' field in the grpc_service configuration (e.g., 'localhost:50051').",
+			Err:		fmt.Errorf("gRPC service has empty address"),
+			Suggestion:	"Set the 'address' field in the grpc_service configuration (e.g., 'localhost:50051').",
 		}
 	}
 
@@ -724,35 +810,35 @@ func validateGrpcService(grpcService *configv1.GrpcUpstreamService) error {
 func validateOpenAPIService(openapiService *configv1.OpenapiUpstreamService) error {
 	if openapiService.GetAddress() == "" && openapiService.GetSpecContent() == "" && openapiService.GetSpecUrl() == "" {
 		return &ActionableError{
-			Err:        fmt.Errorf("openapi service must have either an address, spec content or spec url"),
-			Suggestion: "Provide one of 'address', 'spec_content', or 'spec_url' in the openapi_service configuration.",
+			Err:		fmt.Errorf("openapi service must have either an address, spec content or spec url"),
+			Suggestion:	"Provide one of 'address', 'spec_content', or 'spec_url' in the openapi_service configuration.",
 		}
 	}
 	if openapiService.GetAddress() != "" {
 		if strings.TrimSpace(openapiService.GetAddress()) != openapiService.GetAddress() {
 			return &ActionableError{
-				Err:        fmt.Errorf("openapi address contains hidden whitespace"),
-				Suggestion: "The address contains hidden whitespace (spaces or tabs). Fix: Check your configuration or environment variables and remove any trailing spaces.",
+				Err:		fmt.Errorf("openapi address contains hidden whitespace"),
+				Suggestion:	"The address contains hidden whitespace (spaces or tabs). Fix: Check your configuration or environment variables and remove any trailing spaces.",
 			}
 		}
 		if !validation.IsValidURL(openapiService.GetAddress()) {
 			return &ActionableError{
-				Err:        fmt.Errorf("invalid openapi address: %s", openapiService.GetAddress()),
-				Suggestion: "Ensure the address is a valid URL.",
+				Err:		fmt.Errorf("invalid openapi address: %s", openapiService.GetAddress()),
+				Suggestion:	"Ensure the address is a valid URL.",
 			}
 		}
 	}
 	if openapiService.GetSpecUrl() != "" {
 		if strings.TrimSpace(openapiService.GetSpecUrl()) != openapiService.GetSpecUrl() {
 			return &ActionableError{
-				Err:        fmt.Errorf("openapi spec_url contains hidden whitespace"),
-				Suggestion: "The URL contains hidden whitespace (spaces or tabs). Fix: Check your configuration or environment variables and remove any trailing spaces.",
+				Err:		fmt.Errorf("openapi spec_url contains hidden whitespace"),
+				Suggestion:	"The URL contains hidden whitespace (spaces or tabs). Fix: Check your configuration or environment variables and remove any trailing spaces.",
 			}
 		}
 		if !validation.IsValidURL(openapiService.GetSpecUrl()) {
 			return &ActionableError{
-				Err:        fmt.Errorf("invalid openapi spec_url: %s", openapiService.GetSpecUrl()),
-				Suggestion: "Ensure the spec_url is a valid URL.",
+				Err:		fmt.Errorf("invalid openapi spec_url: %s", openapiService.GetSpecUrl()),
+				Suggestion:	"Ensure the spec_url is a valid URL.",
 			}
 		}
 	}
@@ -762,8 +848,8 @@ func validateOpenAPIService(openapiService *configv1.OpenapiUpstreamService) err
 func validateCommandLineService(ctx context.Context, commandLineService *configv1.CommandLineUpstreamService) error {
 	if commandLineService.GetCommand() == "" {
 		return &ActionableError{
-			Err:        fmt.Errorf("command_line_service has empty command"),
-			Suggestion: "Set the 'command' field (e.g., './my-script.sh' or 'python my_script.py').",
+			Err:		fmt.Errorf("command_line_service has empty command"),
+			Suggestion:	"Set the 'command' field (e.g., './my-script.sh' or 'python my_script.py').",
 		}
 	}
 
@@ -817,28 +903,28 @@ func validateMcpService(ctx context.Context, mcpService *configv1.McpUpstreamSer
 		httpConn := mcpService.GetHttpConnection()
 		if httpConn.GetHttpAddress() == "" {
 			return &ActionableError{
-				Err:        fmt.Errorf("mcp service with http_connection has empty http_address"),
-				Suggestion: "Set the 'http_address' field (e.g., 'http://localhost:8080').",
+				Err:		fmt.Errorf("mcp service with http_connection has empty http_address"),
+				Suggestion:	"Set the 'http_address' field (e.g., 'http://localhost:8080').",
 			}
 		}
 		if strings.TrimSpace(httpConn.GetHttpAddress()) != httpConn.GetHttpAddress() {
 			return &ActionableError{
-				Err:        fmt.Errorf("mcp http_address contains hidden whitespace"),
-				Suggestion: "The address contains hidden whitespace (spaces or tabs). Fix: Check your configuration or environment variables and remove any trailing spaces.",
+				Err:		fmt.Errorf("mcp http_address contains hidden whitespace"),
+				Suggestion:	"The address contains hidden whitespace (spaces or tabs). Fix: Check your configuration or environment variables and remove any trailing spaces.",
 			}
 		}
 		if !validation.IsValidURL(httpConn.GetHttpAddress()) {
 			return &ActionableError{
-				Err:        fmt.Errorf("mcp service with http_connection has invalid http_address: %s", httpConn.GetHttpAddress()),
-				Suggestion: "Ensure the http_address is a valid URL.",
+				Err:		fmt.Errorf("mcp service with http_connection has invalid http_address: %s", httpConn.GetHttpAddress()),
+				Suggestion:	"Ensure the http_address is a valid URL.",
 			}
 		}
 	case configv1.McpUpstreamService_StdioConnection_case:
 		stdioConn := mcpService.GetStdioConnection()
 		if len(stdioConn.GetCommand()) == 0 {
 			return &ActionableError{
-				Err:        fmt.Errorf("mcp service with stdio_connection has empty command"),
-				Suggestion: "Set the 'command' field (e.g., 'npx', 'python', or path to executable).",
+				Err:		fmt.Errorf("mcp service with stdio_connection has empty command"),
+				Suggestion:	"Set the 'command' field (e.g., 'npx', 'python', or path to executable).",
 			}
 		}
 
@@ -894,14 +980,14 @@ func validateMcpService(ctx context.Context, mcpService *configv1.McpUpstreamSer
 func validateSQLService(sqlService *configv1.SqlUpstreamService) error {
 	if sqlService.GetDriver() == "" {
 		return &ActionableError{
-			Err:        fmt.Errorf("sql service has empty driver"),
-			Suggestion: "Set the 'driver' field (e.g., 'postgres', 'mysql', 'sqlite3').",
+			Err:		fmt.Errorf("sql service has empty driver"),
+			Suggestion:	"Set the 'driver' field (e.g., 'postgres', 'mysql', 'sqlite3').",
 		}
 	}
 	if sqlService.GetDsn() == "" {
 		return &ActionableError{
-			Err:        fmt.Errorf("sql service has empty dsn"),
-			Suggestion: "Set the 'dsn' (Data Source Name) field with connection details.",
+			Err:		fmt.Errorf("sql service has empty dsn"),
+			Suggestion:	"Set the 'dsn' (Data Source Name) field with connection details.",
 		}
 	}
 
@@ -922,27 +1008,27 @@ func validateSQLService(sqlService *configv1.SqlUpstreamService) error {
 func validateGraphQLService(graphqlService *configv1.GraphQLUpstreamService) error {
 	if graphqlService.GetAddress() == "" {
 		return &ActionableError{
-			Err:        fmt.Errorf("graphql service has empty address"),
-			Suggestion: "Set the 'address' field in the graphql_service configuration.",
+			Err:		fmt.Errorf("graphql service has empty address"),
+			Suggestion:	"Set the 'address' field in the graphql_service configuration.",
 		}
 	}
 	if strings.TrimSpace(graphqlService.GetAddress()) != graphqlService.GetAddress() {
 		return &ActionableError{
-			Err:        fmt.Errorf("graphql address contains hidden whitespace"),
-			Suggestion: "The address contains hidden whitespace (spaces or tabs). Fix: Check your configuration or environment variables and remove any trailing spaces.",
+			Err:		fmt.Errorf("graphql address contains hidden whitespace"),
+			Suggestion:	"The address contains hidden whitespace (spaces or tabs). Fix: Check your configuration or environment variables and remove any trailing spaces.",
 		}
 	}
 	if !validation.IsValidURL(graphqlService.GetAddress()) {
 		return &ActionableError{
-			Err:        fmt.Errorf("invalid graphql address: %s", graphqlService.GetAddress()),
-			Suggestion: "Ensure the address is a valid URL.",
+			Err:		fmt.Errorf("invalid graphql address: %s", graphqlService.GetAddress()),
+			Suggestion:	"Ensure the address is a valid URL.",
 		}
 	}
 	u, _ := url.Parse(graphqlService.GetAddress())
 	if u.Scheme != schemeHTTP && u.Scheme != schemeHTTPS {
 		return &ActionableError{
-			Err:        fmt.Errorf("invalid graphql address scheme: %s", u.Scheme),
-			Suggestion: "Use 'http' or 'https' as the scheme.",
+			Err:		fmt.Errorf("invalid graphql address scheme: %s", u.Scheme),
+			Suggestion:	"Use 'http' or 'https' as the scheme.",
 		}
 	}
 	return nil
@@ -951,27 +1037,27 @@ func validateGraphQLService(graphqlService *configv1.GraphQLUpstreamService) err
 func validateWebrtcService(webrtcService *configv1.WebrtcUpstreamService) error {
 	if webrtcService.GetAddress() == "" {
 		return &ActionableError{
-			Err:        fmt.Errorf("webrtc service has empty address"),
-			Suggestion: "Set the 'address' field in the webrtc_service configuration.",
+			Err:		fmt.Errorf("webrtc service has empty address"),
+			Suggestion:	"Set the 'address' field in the webrtc_service configuration.",
 		}
 	}
 	if strings.TrimSpace(webrtcService.GetAddress()) != webrtcService.GetAddress() {
 		return &ActionableError{
-			Err:        fmt.Errorf("webrtc address contains hidden whitespace"),
-			Suggestion: "The address contains hidden whitespace (spaces or tabs). Fix: Check your configuration or environment variables and remove any trailing spaces.",
+			Err:		fmt.Errorf("webrtc address contains hidden whitespace"),
+			Suggestion:	"The address contains hidden whitespace (spaces or tabs). Fix: Check your configuration or environment variables and remove any trailing spaces.",
 		}
 	}
 	if !validation.IsValidURL(webrtcService.GetAddress()) {
 		return &ActionableError{
-			Err:        fmt.Errorf("invalid webrtc address: %s", webrtcService.GetAddress()),
-			Suggestion: "Ensure the address is a valid URL.",
+			Err:		fmt.Errorf("invalid webrtc address: %s", webrtcService.GetAddress()),
+			Suggestion:	"Ensure the address is a valid URL.",
 		}
 	}
 	u, _ := url.Parse(webrtcService.GetAddress())
 	if u.Scheme != schemeHTTP && u.Scheme != schemeHTTPS {
 		return &ActionableError{
-			Err:        fmt.Errorf("invalid webrtc address scheme: %s", u.Scheme),
-			Suggestion: "Use 'http' or 'https' as the scheme.",
+			Err:		fmt.Errorf("invalid webrtc address scheme: %s", u.Scheme),
+			Suggestion:	"Use 'http' or 'https' as the scheme.",
 		}
 	}
 	return nil
@@ -1000,8 +1086,8 @@ func validateUpstreamAuthentication(ctx context.Context, authConfig *configv1.Au
 func validateAPIKeyAuth(ctx context.Context, apiKey *configv1.APIKeyAuth, authCtx AuthValidationContext) error {
 	if apiKey.GetParamName() == "" {
 		return &ActionableError{
-			Err:        fmt.Errorf("api key 'param_name' is empty"),
-			Suggestion: "Set the 'param_name' (e.g., 'X-API-Key' or 'api_key').",
+			Err:		fmt.Errorf("api key 'param_name' is empty"),
+			Suggestion:	"Set the 'param_name' (e.g., 'X-API-Key' or 'api_key').",
 		}
 	}
 
@@ -1011,16 +1097,16 @@ func validateAPIKeyAuth(ctx context.Context, apiKey *configv1.APIKeyAuth, authCt
 		// Outgoing: We need the 'Value' (the secret to send)
 		if apiKey.GetValue() == nil {
 			return &ActionableError{
-				Err:        fmt.Errorf("api key 'value' is missing (required for outgoing auth)"),
-				Suggestion: "Set the 'value' field using a secret (environment variable or file) for the API key.",
+				Err:		fmt.Errorf("api key 'value' is missing (required for outgoing auth)"),
+				Suggestion:	"Set the 'value' field using a secret (environment variable or file) for the API key.",
 			}
 		}
 	} else {
 		// Incoming: We need either 'VerificationValue' (hardcoded) or 'Value' (secret reference) to verify against
 		if apiKey.GetValue() == nil && apiKey.GetVerificationValue() == "" {
 			return &ActionableError{
-				Err:        fmt.Errorf("api key configuration is empty"),
-				Suggestion: "Set either 'verification_value' (for static keys) or 'value' (for secret-based keys).",
+				Err:		fmt.Errorf("api key configuration is empty"),
+				Suggestion:	"Set either 'verification_value' (for static keys) or 'value' (for secret-based keys).",
 			}
 		}
 	}
@@ -1042,8 +1128,8 @@ func validateAPIKeyAuth(ctx context.Context, apiKey *configv1.APIKeyAuth, authCt
 		}
 		if apiKeyValue == "" {
 			return &ActionableError{
-				Err:        fmt.Errorf("resolved api key value is empty"),
-				Suggestion: "Check that the environment variable or file providing the API key is not empty.",
+				Err:		fmt.Errorf("resolved api key value is empty"),
+				Suggestion:	"Check that the environment variable or file providing the API key is not empty.",
 			}
 		}
 	}
@@ -1065,8 +1151,8 @@ func validateBearerTokenAuth(ctx context.Context, bearerToken *configv1.BearerTo
 	}
 	if tokenValue == "" {
 		return &ActionableError{
-			Err:        fmt.Errorf("bearer token 'token' is empty"),
-			Suggestion: "Check that the environment variable or file providing the Bearer token is not empty.",
+			Err:		fmt.Errorf("bearer token 'token' is empty"),
+			Suggestion:	"Check that the environment variable or file providing the Bearer token is not empty.",
 		}
 	}
 	return nil
@@ -1076,14 +1162,14 @@ func validateOAuth2Auth(ctx context.Context, oauth *configv1.OAuth2Auth) error {
 	if oauth.GetTokenUrl() == "" {
 		if oauth.GetIssuerUrl() == "" {
 			return &ActionableError{
-				Err:        fmt.Errorf("oauth2 token_url is empty and no issuer_url provided"),
-				Suggestion: "Provide 'token_url' OR 'issuer_url' to enable auto-discovery.",
+				Err:		fmt.Errorf("oauth2 token_url is empty and no issuer_url provided"),
+				Suggestion:	"Provide 'token_url' OR 'issuer_url' to enable auto-discovery.",
 			}
 		}
 		if strings.TrimSpace(oauth.GetIssuerUrl()) != oauth.GetIssuerUrl() {
 			return &ActionableError{
-				Err:        fmt.Errorf("oauth2 issuer_url contains hidden whitespace"),
-				Suggestion: "The URL contains hidden whitespace (spaces or tabs). Fix: Check your configuration or environment variables and remove any trailing spaces.",
+				Err:		fmt.Errorf("oauth2 issuer_url contains hidden whitespace"),
+				Suggestion:	"The URL contains hidden whitespace (spaces or tabs). Fix: Check your configuration or environment variables and remove any trailing spaces.",
 			}
 		}
 		if !validation.IsValidURL(oauth.GetIssuerUrl()) {
@@ -1093,8 +1179,8 @@ func validateOAuth2Auth(ctx context.Context, oauth *configv1.OAuth2Auth) error {
 	} else {
 		if strings.TrimSpace(oauth.GetTokenUrl()) != oauth.GetTokenUrl() {
 			return &ActionableError{
-				Err:        fmt.Errorf("oauth2 token_url contains hidden whitespace"),
-				Suggestion: "The URL contains hidden whitespace (spaces or tabs). Fix: Check your configuration or environment variables and remove any trailing spaces.",
+				Err:		fmt.Errorf("oauth2 token_url contains hidden whitespace"),
+				Suggestion:	"The URL contains hidden whitespace (spaces or tabs). Fix: Check your configuration or environment variables and remove any trailing spaces.",
 			}
 		}
 		if !validation.IsValidURL(oauth.GetTokenUrl()) {
@@ -1140,8 +1226,8 @@ func validateOIDCAuth(_ context.Context, oidc *configv1.OIDCAuth) error {
 	}
 	if strings.TrimSpace(oidc.GetIssuer()) != oidc.GetIssuer() {
 		return &ActionableError{
-			Err:        fmt.Errorf("oidc issuer url contains hidden whitespace"),
-			Suggestion: "The URL contains hidden whitespace (spaces or tabs). Fix: Check your configuration or environment variables and remove any trailing spaces.",
+			Err:		fmt.Errorf("oidc issuer url contains hidden whitespace"),
+			Suggestion:	"The URL contains hidden whitespace (spaces or tabs). Fix: Check your configuration or environment variables and remove any trailing spaces.",
 		}
 	}
 	if !validation.IsValidURL(oidc.GetIssuer()) {
@@ -1201,8 +1287,8 @@ func validateMtlsAuth(ctx context.Context, mtls *configv1.MTLSAuth) error {
 		if _, err := osStat(path); err != nil {
 			if os.IsNotExist(err) {
 				return &ActionableError{
-					Err:        fmt.Errorf("mtls '%s' not found at %q: %w", fieldName, path, err),
-					Suggestion: fmt.Sprintf("Ensure the %s file exists and is accessible.", fieldName),
+					Err:		fmt.Errorf("mtls '%s' not found at %q: %w", fieldName, path, err),
+					Suggestion:	fmt.Sprintf("Ensure the %s file exists and is accessible.", fieldName),
 				}
 			}
 			return fmt.Errorf("mtls '%s' error: %w", fieldName, err)
@@ -1253,8 +1339,8 @@ func validateSchema(s *structpb.Struct) error {
 	// Compile validates the schema syntax and structure against the meta-schema
 	if _, err := c.Compile("schema.json"); err != nil {
 		return &ActionableError{
-			Err:        fmt.Errorf("invalid JSON schema: %w", err),
-			Suggestion: "Check your 'input_schema' or 'output_schema' definition. Ensure it complies with JSON Schema specification (e.g. types match values).",
+			Err:		fmt.Errorf("invalid JSON schema: %w", err),
+			Suggestion:	"Check your 'input_schema' or 'output_schema' definition. Ensure it complies with JSON Schema specification (e.g. types match values).",
 		}
 	}
 
@@ -1263,7 +1349,7 @@ func validateSchema(s *structpb.Struct) error {
 
 func validateUser(ctx context.Context, user *configv1.User) error {
 	if user.GetAuthentication() == nil {
-		return nil // No auth config means no authentication required (Open Access)
+		return nil	// No auth config means no authentication required (Open Access)
 	}
 	if err := validateAuthentication(ctx, user.GetAuthentication(), AuthValidationContextIncoming); err != nil {
 		return err
@@ -1289,8 +1375,8 @@ func validateAuditConfig(audit *configv1.AuditConfig) error {
 		}
 		if strings.TrimSpace(audit.GetWebhookUrl()) != audit.GetWebhookUrl() {
 			return &ActionableError{
-				Err:        fmt.Errorf("webhook_url contains hidden whitespace"),
-				Suggestion: "The URL contains hidden whitespace (spaces or tabs). Fix: Check your configuration or environment variables and remove any trailing spaces.",
+				Err:		fmt.Errorf("webhook_url contains hidden whitespace"),
+				Suggestion:	"The URL contains hidden whitespace (spaces or tabs). Fix: Check your configuration or environment variables and remove any trailing spaces.",
 			}
 		}
 		if !validation.IsValidURL(audit.GetWebhookUrl()) {
@@ -1367,8 +1453,8 @@ func validateCommandExists(ctx context.Context, command string, workingDir strin
 		if err != nil {
 			if os.IsNotExist(err) {
 				return &ActionableError{
-					Err:        fmt.Errorf("executable not found at %q", command),
-					Suggestion: fmt.Sprintf("Check if the file exists at %q.", command),
+					Err:		fmt.Errorf("executable not found at %q", command),
+					Suggestion:	fmt.Sprintf("Check if the file exists at %q.", command),
 				}
 			}
 			return fmt.Errorf("failed to check executable %q: %w", command, err)
@@ -1405,8 +1491,8 @@ func validateCommandExists(ctx context.Context, command string, workingDir strin
 	_, err := execLookPath(command)
 	if err != nil {
 		return &ActionableError{
-			Err:        fmt.Errorf("command %q not found in PATH or is not executable: %w", command, err),
-			Suggestion: fmt.Sprintf("Ensure %q is installed and listed in your PATH environment variable.", command),
+			Err:		fmt.Errorf("command %q not found in PATH or is not executable: %w", command, err),
+			Suggestion:	fmt.Sprintf("Ensure %q is installed and listed in your PATH environment variable.", command),
 		}
 	}
 	return nil

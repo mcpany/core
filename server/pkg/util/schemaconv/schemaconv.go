@@ -14,24 +14,62 @@ import (
 )
 
 // JSON schema types.
-const (
-	// TypeNumber represents a JSON number type.
-	TypeNumber = "number"
-	// TypeInteger represents a JSON integer type.
-	TypeInteger = "integer"
-	// TypeBoolean represents a JSON boolean type.
-	TypeBoolean = "boolean"
-	// TypeObject represents a JSON object type.
-	TypeObject = "object"
-	// TypeArray represents a JSON array type.
-	TypeArray = "array"
-	// TypeString represents a JSON string type.
-	TypeString = "string"
-)
-
-// MaxRecursionDepth limits the depth of nested messages to prevent infinite recursion.
-const MaxRecursionDepth = 10
-
+// Summary: TypeNumber represents a JSON number type.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+// Summary: TypeInteger represents a JSON integer type.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+// Summary: TypeBoolean represents a JSON boolean type.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+// Summary: TypeObject represents a JSON object type.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+// Summary: TypeArray represents a JSON array type.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+// Summary: TypeString represents a JSON string type.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+// Summary: MaxRecursionDepth limits the depth of nested messages to prevent infinite recursion.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // MethodDescriptorToProtoProperties converts the fields of a method's input
 // message into a `structpb.Struct` for use as the `properties` field in a tool
 // input schema.
@@ -42,10 +80,13 @@ const MaxRecursionDepth = 10
 // Returns:
 //   - *structpb.Struct: The properties structure for the input schema.
 //   - error: An error if the conversion fails.
-func MethodDescriptorToProtoProperties(methodDesc protoreflect.MethodDescriptor) (*structpb.Struct, error) {
-	return fieldsToProperties(methodDesc.Input().Fields(), 0)
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // MethodOutputDescriptorToProtoProperties converts the fields of a method's
 // output message into a `structpb.Struct` for use as the `properties` field in
 // a tool output schema.
@@ -56,6 +97,33 @@ func MethodDescriptorToProtoProperties(methodDesc protoreflect.MethodDescriptor)
 // Returns:
 //   - *structpb.Struct: The properties structure for the output schema.
 //   - error: An error if the conversion fails.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+const (
+	TypeNumber	= "number"
+
+	TypeInteger	= "integer"
+
+	TypeBoolean	= "boolean"
+
+	TypeObject	= "object"
+
+	TypeArray	= "array"
+
+	TypeString	= "string"
+)
+
+const MaxRecursionDepth = 10
+
+func MethodDescriptorToProtoProperties(methodDesc protoreflect.MethodDescriptor) (*structpb.Struct, error) {
+	return fieldsToProperties(methodDesc.Input().Fields(), 0)
+}
+
 func MethodOutputDescriptorToProtoProperties(methodDesc protoreflect.MethodDescriptor) (*structpb.Struct, error) {
 	return fieldsToProperties(methodDesc.Output().Fields(), 0)
 }
@@ -79,8 +147,8 @@ func fieldsToProperties(fields protoreflect.FieldDescriptors, depth int) (*struc
 			}
 
 			schema := map[string]interface{}{
-				"type":                 TypeObject,
-				"additionalProperties": valueSchema,
+				"type":			TypeObject,
+				"additionalProperties":	valueSchema,
 			}
 
 			structValue, err := structpb.NewStruct(schema)
@@ -102,8 +170,8 @@ func fieldsToProperties(fields protoreflect.FieldDescriptors, depth int) (*struc
 				itemSchema[k] = v
 			}
 			schema = map[string]interface{}{
-				"type":  TypeArray,
-				"items": itemSchema,
+				"type":		TypeArray,
+				"items":	itemSchema,
 			}
 		}
 
@@ -119,7 +187,15 @@ func fieldsToProperties(fields protoreflect.FieldDescriptors, depth int) (*struc
 
 func fieldToSchema(field protoreflect.FieldDescriptor, depth int) (map[string]interface{}, error) {
 	schema := map[string]interface{}{
-		"type": TypeString, // Default
+		"type": TypeString,	// Default
+		// Summary: ConfigParameter an interface for config parameter schemas.
+		//
+		//
+		// Errors:
+		//   - An error if it fails.
+		//
+		// Side Effects:
+		//   - None.
 	}
 
 	switch field.Kind() {
@@ -150,16 +226,22 @@ func fieldToSchema(field protoreflect.FieldDescriptor, depth int) (map[string]in
 	return schema, nil
 }
 
-// ConfigParameter an interface for config parameter schemas.
 type ConfigParameter interface {
 	// GetSchema returns the parameter schema.
 	//
 	// Returns:
 	//   - *configv1.ParameterSchema: The parameter schema.
+	// Summary: McpFieldParameter an interface for McpField parameter schemas.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
 	GetSchema() *configv1.ParameterSchema
 }
 
-// McpFieldParameter an interface for McpField parameter schemas.
 type McpFieldParameter interface {
 	// GetName returns the name of the parameter.
 	//
@@ -180,20 +262,44 @@ type McpFieldParameter interface {
 	//
 	// Returns:
 	//   - bool: True if the parameter is repeated.
+	// ConfigSchemaToProtoProperties converts a slice of parameter schema definitions
+	// from a service configuration into a `structpb.Struct` that can be used as the
+	// `properties` field in a protobuf-based tool input schema.
+	//
+	// Parameters:
+	//   - params: A slice of parameters implementing ConfigParameter.
+	//
+	// Returns:
+	//   - *structpb.Struct: The properties structure for the input schema.
+	//   - []string: A list of required parameter names.
+	//   - error: An error if the conversion fails.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
+	// McpFieldsToProtoProperties converts a slice of McpField definitions into a
+	// `structpb.Struct` that can be used as the `properties` field in a
+	// protobuf-based tool input schema.
+	//
+	// Parameters:
+	//   - params: A slice of parameters implementing McpFieldParameter.
+	//
+	// Returns:
+	//   - *structpb.Struct: The properties structure for the input schema.
+	//   - error: An error if the conversion fails.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
 	GetIsRepeated() bool
 }
 
-// ConfigSchemaToProtoProperties converts a slice of parameter schema definitions
-// from a service configuration into a `structpb.Struct` that can be used as the
-// `properties` field in a protobuf-based tool input schema.
-//
-// Parameters:
-//   - params: A slice of parameters implementing ConfigParameter.
-//
-// Returns:
-//   - *structpb.Struct: The properties structure for the input schema.
-//   - []string: A list of required parameter names.
-//   - error: An error if the conversion fails.
 func ConfigSchemaToProtoProperties[T ConfigParameter](params []T) (*structpb.Struct, []string, error) {
 	properties := &structpb.Struct{Fields: make(map[string]*structpb.Value)}
 	var required []string
@@ -214,8 +320,8 @@ func ConfigSchemaToProtoProperties[T ConfigParameter](params []T) (*structpb.Str
 		}
 		paramStruct := &structpb.Struct{
 			Fields: map[string]*structpb.Value{
-				"type":        structpb.NewStringValue(typeStr),
-				"description": structpb.NewStringValue(paramSchema.GetDescription()),
+				"type":		structpb.NewStringValue(typeStr),
+				"description":	structpb.NewStringValue(paramSchema.GetDescription()),
 			},
 		}
 
@@ -229,22 +335,12 @@ func ConfigSchemaToProtoProperties[T ConfigParameter](params []T) (*structpb.Str
 	return properties, required, nil
 }
 
-// McpFieldsToProtoProperties converts a slice of McpField definitions into a
-// `structpb.Struct` that can be used as the `properties` field in a
-// protobuf-based tool input schema.
-//
-// Parameters:
-//   - params: A slice of parameters implementing McpFieldParameter.
-//
-// Returns:
-//   - *structpb.Struct: The properties structure for the input schema.
-//   - error: An error if the conversion fails.
 func McpFieldsToProtoProperties[T McpFieldParameter](params []T) (*structpb.Struct, error) {
 	properties := &structpb.Struct{Fields: make(map[string]*structpb.Value)}
 
 	for _, param := range params {
 		scalarType := strings.ToLower(strings.TrimPrefix(param.GetType(), "TYPE_"))
-		typeVal := TypeString // Default
+		typeVal := TypeString	// Default
 
 		switch scalarType {
 		case "double", "float":
@@ -257,8 +353,8 @@ func McpFieldsToProtoProperties[T McpFieldParameter](params []T) (*structpb.Stru
 
 		scalarSchema := &structpb.Struct{
 			Fields: map[string]*structpb.Value{
-				"type":        structpb.NewStringValue(typeVal),
-				"description": structpb.NewStringValue(param.GetDescription()),
+				"type":		structpb.NewStringValue(typeVal),
+				"description":	structpb.NewStringValue(param.GetDescription()),
 			},
 		}
 
@@ -266,8 +362,8 @@ func McpFieldsToProtoProperties[T McpFieldParameter](params []T) (*structpb.Stru
 		if param.GetIsRepeated() {
 			finalSchema = &structpb.Struct{
 				Fields: map[string]*structpb.Value{
-					"type":  structpb.NewStringValue(TypeArray),
-					"items": structpb.NewStructValue(scalarSchema),
+					"type":		structpb.NewStringValue(TypeArray),
+					"items":	structpb.NewStructValue(scalarSchema),
 				},
 			}
 		} else {

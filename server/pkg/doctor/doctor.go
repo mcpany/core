@@ -15,70 +15,137 @@ import (
 	"strings"
 	"time"
 
-	_ "github.com/go-sql-driver/mysql" // Register MySQL driver
-	_ "github.com/lib/pq"              // Register Postgres driver
+	_ "github.com/go-sql-driver/mysql"	// Register MySQL driver
+	_ "github.com/lib/pq"			// Register Postgres driver
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/util"
 	"github.com/mcpany/core/server/pkg/validation"
-	_ "modernc.org/sqlite" // Register SQLite driver
+	_ "modernc.org/sqlite"	// Register SQLite driver
+	// Summary: Status represents the status of a check.
+	//
+	// It is an enumerated string type used to indicate the outcome of a health or connectivity check.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
+	// Summary: StatusOk indicates the check passed successfully.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
+	// Summary: StatusWarning indicates a partial failure or non-critical issue that should be investigated.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
+	// Summary: StatusError indicates a critical failure that prevents the service from functioning correctly.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
+	// Summary: StatusSkipped indicates the check was skipped, usually due to configuration (e.g., disabled service).
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
+	// Summary: CheckResult represents the result of a single service check.
+	//
+	// It aggregates the status, any message, and potential error encountered during the check.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
 )
 
-// Status represents the status of a check.
-//
-// It is an enumerated string type used to indicate the outcome of a health or connectivity check.
 type Status string
 
 const (
-	// StatusOk indicates the check passed successfully.
-	StatusOk Status = "OK"
-	// StatusWarning indicates a partial failure or non-critical issue that should be investigated.
-	StatusWarning Status = "WARNING"
-	// StatusError indicates a critical failure that prevents the service from functioning correctly.
-	StatusError Status = "ERROR"
-	// StatusSkipped indicates the check was skipped, usually due to configuration (e.g., disabled service).
-	StatusSkipped Status = "SKIPPED"
+	StatusOk	Status	= "OK"
+
+	StatusWarning	Status	= "WARNING"
+
+	StatusError	Status	= "ERROR"
+
+	StatusSkipped	Status	= "SKIPPED"
 )
 
-// CheckResult represents the result of a single service check.
-//
-// It aggregates the status, any message, and potential error encountered during the check.
 type CheckResult struct {
 	// ServiceName is the name of the service being checked.
-	ServiceName string
+	ServiceName	string
 	// Status is the outcome of the check (OK, WARNING, ERROR, SKIPPED).
-	Status Status
+	Status	Status
 	// Message provides human-readable details about the check result.
-	Message string
+	Message	string
 	// Error contains the underlying error object if the check failed.
-	Error error
+	// RunChecks performs connectivity and health checks on the provided configuration.
+	//
+	// It iterates through all upstream services defined in the configuration and executes
+	// the appropriate check logic for each service type.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The context for the request, used for timeouts and cancellation.
+	//   - config: *configv1.McpAnyServerConfig. The server configuration containing upstream service definitions.
+	//
+	// Returns:
+	//   - []CheckResult: A slice of results for each checked service.
+	//
+	// Side Effects:
+	//   - Performs network I/O to connect to upstream services.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	Error	error
 }
 
-// RunChecks performs connectivity and health checks on the provided configuration.
-//
-// It iterates through all upstream services defined in the configuration and executes
-// the appropriate check logic for each service type.
-//
-// Parameters:
-//   - ctx: context.Context. The context for the request, used for timeouts and cancellation.
-//   - config: *configv1.McpAnyServerConfig. The server configuration containing upstream service definitions.
-//
-// Returns:
-//   - []CheckResult: A slice of results for each checked service.
-//
-// Side Effects:
-//   - Performs network I/O to connect to upstream services.
 func RunChecks(ctx context.Context, config *configv1.McpAnyServerConfig) []CheckResult {
 	// Using 'services' variable to support existing loop
 	services := config.GetUpstreamServices()
 	results := make([]CheckResult, 0, len(services))
 
 	// Check upstream services
+	// CheckService performs a connectivity check for a single service.
+	//
+	// It dispatches the check to the specific handler based on the service type (HTTP, gRPC, etc.)
+	// and handles upstream authentication checks if configured.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The context for the request.
+	//   - service: *configv1.UpstreamServiceConfig. The configuration of the service to check.
+	//
+	// Returns:
+	//   - CheckResult: The result of the connectivity check.
+	//
+	// Side Effects:
+	//   - Performs network I/O to connect to the upstream service.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
 	for _, service := range services {
 		if service.GetDisable() {
 			results = append(results, CheckResult{
-				ServiceName: service.GetName(),
-				Status:      StatusSkipped,
-				Message:     "Service is disabled",
+				ServiceName:	service.GetName(),
+				Status:		StatusSkipped,
+				Message:	"Service is disabled",
 			})
 			continue
 		}
@@ -91,20 +158,6 @@ func RunChecks(ctx context.Context, config *configv1.McpAnyServerConfig) []Check
 	return results
 }
 
-// CheckService performs a connectivity check for a single service.
-//
-// It dispatches the check to the specific handler based on the service type (HTTP, gRPC, etc.)
-// and handles upstream authentication checks if configured.
-//
-// Parameters:
-//   - ctx: context.Context. The context for the request.
-//   - service: *configv1.UpstreamServiceConfig. The configuration of the service to check.
-//
-// Returns:
-//   - CheckResult: The result of the connectivity check.
-//
-// Side Effects:
-//   - Performs network I/O to connect to the upstream service.
 func CheckService(ctx context.Context, service *configv1.UpstreamServiceConfig) CheckResult {
 	// 5 second timeout for checks
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
@@ -121,9 +174,9 @@ func CheckService(ctx context.Context, service *configv1.UpstreamServiceConfig) 
 			authRes := checkAuthentication(ctx, auth)
 			if authRes.Status != StatusOk {
 				return CheckResult{
-					Status:  authRes.Status,
-					Message: fmt.Sprintf("Auth check failed: %s", authRes.Message),
-					Error:   authRes.Error,
+					Status:		authRes.Status,
+					Message:	fmt.Sprintf("Auth check failed: %s", authRes.Message),
+					Error:		authRes.Error,
 				}
 			}
 			authMsg = fmt.Sprintf("Auth Config [%s]. ", authRes.Message)
@@ -154,8 +207,8 @@ func CheckService(ctx context.Context, service *configv1.UpstreamServiceConfig) 
 		res = checkFilesystemService(ctx, service.GetFilesystemService())
 	default:
 		res = CheckResult{
-			Status:  StatusSkipped,
-			Message: "No check implementation for this service type",
+			Status:		StatusSkipped,
+			Message:	"No check implementation for this service type",
 		}
 	}
 
@@ -197,9 +250,9 @@ func checkOAuth2Reachability(ctx context.Context, oauth *configv1.OAuth2Auth) Ch
 	resp, err := client.Do(req)
 	if err != nil {
 		return CheckResult{
-			Status:  StatusError,
-			Message: fmt.Sprintf("Failed to connect to OAuth2 token URL: %v", err),
-			Error:   err,
+			Status:		StatusError,
+			Message:	fmt.Sprintf("Failed to connect to OAuth2 token URL: %v", err),
+			Error:		err,
 		}
 	}
 	defer func() { _ = resp.Body.Close() }()
@@ -268,9 +321,9 @@ func checkURL(ctx context.Context, urlStr string, auth *configv1.Authentication)
 	req, err := http.NewRequestWithContext(ctx, "GET", urlStr, nil)
 	if err != nil {
 		return CheckResult{
-			Status:  StatusError,
-			Message: fmt.Sprintf("Invalid URL: %v", util.RedactDSN(err.Error())),
-			Error:   err,
+			Status:		StatusError,
+			Message:	fmt.Sprintf("Invalid URL: %v", util.RedactDSN(err.Error())),
+			Error:		err,
 		}
 	}
 
@@ -278,9 +331,9 @@ func checkURL(ctx context.Context, urlStr string, auth *configv1.Authentication)
 	if auth != nil {
 		if err := applyAuthentication(ctx, req, auth); err != nil {
 			return CheckResult{
-				Status:  StatusError,
-				Message: fmt.Sprintf("Failed to apply authentication: %v", err),
-				Error:   err,
+				Status:		StatusError,
+				Message:	fmt.Sprintf("Failed to apply authentication: %v", err),
+				Error:		err,
 			}
 		}
 	}
@@ -293,9 +346,9 @@ func checkURL(ctx context.Context, urlStr string, auth *configv1.Authentication)
 	resp, err := client.Do(req)
 	if err != nil {
 		return CheckResult{
-			Status:  StatusError,
-			Message: fmt.Sprintf("Failed to connect: %v", err),
-			Error:   err,
+			Status:		StatusError,
+			Message:	fmt.Sprintf("Failed to connect: %v", err),
+			Error:		err,
 		}
 	}
 	defer func() { _ = resp.Body.Close() }()
@@ -303,29 +356,29 @@ func checkURL(ctx context.Context, urlStr string, auth *configv1.Authentication)
 	// If Auth was provided, 401/403 are errors
 	if auth != nil && (resp.StatusCode == 401 || resp.StatusCode == 403) {
 		return CheckResult{
-			Status:  StatusError,
-			Message: fmt.Sprintf("Authentication failed (%s): check your credentials", resp.Status),
+			Status:		StatusError,
+			Message:	fmt.Sprintf("Authentication failed (%s): check your credentials", resp.Status),
 		}
 	}
 
-	if resp.StatusCode >= 400 && resp.StatusCode != 404 && resp.StatusCode != 405 && resp.StatusCode != 426 { // 426 Upgrade Required is fine for WS
+	if resp.StatusCode >= 400 && resp.StatusCode != 404 && resp.StatusCode != 405 && resp.StatusCode != 426 {	// 426 Upgrade Required is fine for WS
 		// We consider 4xx a warning because the service is technically reachable, just maybe not at this path.
 		// However, 5xx is an error.
 		if resp.StatusCode >= 500 {
 			return CheckResult{
-				Status:  StatusError,
-				Message: fmt.Sprintf("Server returned error: %s", resp.Status),
+				Status:		StatusError,
+				Message:	fmt.Sprintf("Server returned error: %s", resp.Status),
 			}
 		}
 		return CheckResult{
-			Status:  StatusWarning,
-			Message: fmt.Sprintf("Service reachable but returned: %s", resp.Status),
+			Status:		StatusWarning,
+			Message:	fmt.Sprintf("Service reachable but returned: %s", resp.Status),
 		}
 	}
 
 	return CheckResult{
-		Status:  StatusOk,
-		Message: fmt.Sprintf("Service reachable (%s)", resp.Status),
+		Status:		StatusOk,
+		Message:	fmt.Sprintf("Service reachable (%s)", resp.Status),
 	}
 }
 
@@ -334,9 +387,9 @@ func checkGRPCService(ctx context.Context, s *configv1.GrpcUpstreamService) Chec
 	host, port, err := net.SplitHostPort(s.GetAddress())
 	if err != nil {
 		return CheckResult{
-			Status:  StatusError,
-			Message: fmt.Sprintf("Invalid gRPC address format: %v", err),
-			Error:   err,
+			Status:		StatusError,
+			Message:	fmt.Sprintf("Invalid gRPC address format: %v", err),
+			Error:		err,
 		}
 	}
 
@@ -359,16 +412,16 @@ func checkGRPCService(ctx context.Context, s *configv1.GrpcUpstreamService) Chec
 	conn, err := dialer.DialContext(ctx, "tcp", net.JoinHostPort(host, port))
 	if err != nil {
 		return CheckResult{
-			Status:  StatusError,
-			Message: fmt.Sprintf("Failed to connect to gRPC endpoint: %v", err),
-			Error:   err,
+			Status:		StatusError,
+			Message:	fmt.Sprintf("Failed to connect to gRPC endpoint: %v", err),
+			Error:		err,
 		}
 	}
 	defer func() { _ = conn.Close() }()
 
 	return CheckResult{
-		Status:  StatusOk,
-		Message: "TCP connection successful",
+		Status:		StatusOk,
+		Message:	"TCP connection successful",
 	}
 }
 
@@ -387,25 +440,25 @@ func checkOpenAPIService(ctx context.Context, s *configv1.OpenapiUpstreamService
 	}
 
 	return CheckResult{
-		Status:  StatusOk,
-		Message: "OpenAPI definition seems accessible",
+		Status:		StatusOk,
+		Message:	"OpenAPI definition seems accessible",
 	}
 }
 
 func checkSQLService(ctx context.Context, s *configv1.SqlUpstreamService) CheckResult {
 	if strings.Contains(s.GetDsn(), "${") {
 		return CheckResult{
-			Status:  StatusWarning,
-			Message: "Cannot validate SQL connection with secret variables in DSN",
+			Status:		StatusWarning,
+			Message:	"Cannot validate SQL connection with secret variables in DSN",
 		}
 	}
 
 	db, err := sql.Open(s.GetDriver(), s.GetDsn())
 	if err != nil {
 		return CheckResult{
-			Status:  StatusError,
-			Message: fmt.Sprintf("Failed to initialize SQL driver: %v", util.RedactDSN(err.Error())),
-			Error:   err,
+			Status:		StatusError,
+			Message:	fmt.Sprintf("Failed to initialize SQL driver: %v", util.RedactDSN(err.Error())),
+			Error:		err,
 		}
 	}
 	defer func() { _ = db.Close() }()
@@ -414,15 +467,15 @@ func checkSQLService(ctx context.Context, s *configv1.SqlUpstreamService) CheckR
 	err = db.PingContext(ctx)
 	if err != nil {
 		return CheckResult{
-			Status:  StatusError,
-			Message: fmt.Sprintf("Failed to ping database: %v", util.RedactDSN(err.Error())),
-			Error:   err,
+			Status:		StatusError,
+			Message:	fmt.Sprintf("Failed to ping database: %v", util.RedactDSN(err.Error())),
+			Error:		err,
 		}
 	}
 
 	return CheckResult{
-		Status:  StatusOk,
-		Message: "Database connection successful",
+		Status:		StatusOk,
+		Message:	"Database connection successful",
 	}
 }
 
@@ -435,19 +488,19 @@ func checkMCPService(ctx context.Context, s *configv1.McpUpstreamService, auth *
 		_, err := exec.LookPath(cmd)
 		if err != nil {
 			return CheckResult{
-				Status:  StatusError,
-				Message: fmt.Sprintf("Command not found: %s", cmd),
-				Error:   err,
+				Status:		StatusError,
+				Message:	fmt.Sprintf("Command not found: %s", cmd),
+				Error:		err,
 			}
 		}
 		return CheckResult{
-			Status:  StatusOk,
-			Message: "Command executable found",
+			Status:		StatusOk,
+			Message:	"Command executable found",
 		}
 	default:
 		return CheckResult{
-			Status:  StatusSkipped,
-			Message: "Unknown MCP connection type",
+			Status:		StatusSkipped,
+			Message:	"Unknown MCP connection type",
 		}
 	}
 }
@@ -455,8 +508,8 @@ func checkMCPService(ctx context.Context, s *configv1.McpUpstreamService, auth *
 func checkCommandLineService(_ context.Context, s *configv1.CommandLineUpstreamService) CheckResult {
 	if s.GetContainerEnvironment().GetImage() != "" {
 		return CheckResult{
-			Status:  StatusSkipped,
-			Message: "Skipping containerized command check",
+			Status:		StatusSkipped,
+			Message:	"Skipping containerized command check",
 		}
 	}
 
@@ -464,8 +517,8 @@ func checkCommandLineService(_ context.Context, s *configv1.CommandLineUpstreamS
 	parts := strings.Fields(cmd)
 	if len(parts) == 0 {
 		return CheckResult{
-			Status:  StatusError,
-			Message: "Empty command",
+			Status:		StatusError,
+			Message:	"Empty command",
 		}
 	}
 	executable := parts[0]
@@ -473,9 +526,9 @@ func checkCommandLineService(_ context.Context, s *configv1.CommandLineUpstreamS
 	_, err := exec.LookPath(executable)
 	if err != nil {
 		return CheckResult{
-			Status:  StatusError,
-			Message: fmt.Sprintf("Command not found: %s", executable),
-			Error:   err,
+			Status:		StatusError,
+			Message:	fmt.Sprintf("Command not found: %s", executable),
+			Error:		err,
 		}
 	}
 
@@ -483,15 +536,15 @@ func checkCommandLineService(_ context.Context, s *configv1.CommandLineUpstreamS
 		arg := parts[1]
 		if validation.FileExists(arg) == nil {
 			return CheckResult{
-				Status:  StatusOk,
-				Message: fmt.Sprintf("Executable and script found (%s %s)", executable, arg),
+				Status:		StatusOk,
+				Message:	fmt.Sprintf("Executable and script found (%s %s)", executable, arg),
 			}
 		}
 	}
 
 	return CheckResult{
-		Status:  StatusOk,
-		Message: "Command executable found",
+		Status:		StatusOk,
+		Message:	"Command executable found",
 	}
 }
 
@@ -499,15 +552,15 @@ func checkFilesystemService(_ context.Context, s *configv1.FilesystemUpstreamSer
 	for vPath, hostPath := range s.GetRootPaths() {
 		if err := validation.FileExists(hostPath); err != nil {
 			return CheckResult{
-				Status:  StatusError,
-				Message: fmt.Sprintf("Root path %q -> %q not found or inaccessible: %v", vPath, hostPath, err),
-				Error:   err,
+				Status:		StatusError,
+				Message:	fmt.Sprintf("Root path %q -> %q not found or inaccessible: %v", vPath, hostPath, err),
+				Error:		err,
 			}
 		}
 	}
 	return CheckResult{
-		Status:  StatusOk,
-		Message: "All root paths exist",
+		Status:		StatusOk,
+		Message:	"All root paths exist",
 	}
 }
 

@@ -1,15 +1,5 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package util
-
-import (
-	"bufio"
-	"bytes"
-	"io"
-	"os"
-)
-
 // ReadLastNLines reads the last n lines from a file.
 // It is optimized to read from the end of the file.
 //
@@ -28,6 +18,15 @@ import (
 //
 // Side Effects:
 //   - Opens and reads the specified file from the filesystem.
+package util
+
+import (
+	"bufio"
+	"bytes"
+	"io"
+	"os"
+)
+
 func ReadLastNLines(path string, n int) ([][]byte, error) {
 	if n <= 0 {
 		return nil, nil
@@ -52,7 +51,7 @@ func ReadLastNLines(path string, n int) ([][]byte, error) {
 	var lines [][]byte
 
 	// If file is small, just read it all
-	if filesize < 64*1024 { // 64KB arbitrarily small enough to read fully
+	if filesize < 64*1024 {	// 64KB arbitrarily small enough to read fully
 		scanner := bufio.NewScanner(f)
 		for scanner.Scan() {
 			b := scanner.Bytes()

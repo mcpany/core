@@ -1,8 +1,27 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-package util //nolint:revive,nolintlint // Package name 'util' is common in this codebase
-
+package util	//nolint:revive,nolintlint // Package name 'util' is common in this codebase
+// ResolveSecret resolves a SecretValue configuration object into a concrete string value.
+// It handles various secret types including plain text, environment variables, file paths,
+// remote URLs, Vault, and AWS Secrets Manager.
+//
+// Summary: Resolves a secret configuration into a string value.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the secret resolution.
+//   - secret (*configv1.SecretValue): The configuration object to resolve.
+//
+// Returns:
+//   - string: The resolved secret string.
+//   - error: An error if resolution fails.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 import (
 	"context"
 	"encoding/json"
@@ -27,19 +46,6 @@ import (
 
 const maxSecretRecursionDepth = 10
 
-// ResolveSecret resolves a SecretValue configuration object into a concrete string value.
-// It handles various secret types including plain text, environment variables, file paths,
-// remote URLs, Vault, and AWS Secrets Manager.
-//
-// Summary: Resolves a secret configuration into a string value.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the secret resolution.
-//   - secret (*configv1.SecretValue): The configuration object to resolve.
-//
-// Returns:
-//   - string: The resolved secret string.
-//   - error: An error if resolution fails.
 func ResolveSecret(ctx context.Context, secret *configv1.SecretValue) (string, error) {
 	return resolveSecretRecursive(ctx, secret, 0)
 }
@@ -63,7 +69,7 @@ func resolveSecretRecursive(ctx context.Context, secret *configv1.SecretValue, d
 	return val, nil
 }
 
-func resolveSecretImpl(ctx context.Context, secret *configv1.SecretValue, depth int) (string, error) { //nolint:gocyclo
+func resolveSecretImpl(ctx context.Context, secret *configv1.SecretValue, depth int) (string, error) {	//nolint:gocyclo
 	if depth > maxSecretRecursionDepth {
 		return "", fmt.Errorf("secret resolution exceeded max recursion depth of %d", maxSecretRecursionDepth)
 	}
@@ -133,10 +139,10 @@ func resolveSecretImpl(ctx context.Context, secret *configv1.SecretValue, depth 
 				}
 
 				conf := &clientcredentials.Config{
-					ClientID:     clientID,
-					ClientSecret: clientSecret,
-					TokenURL:     oauth2Auth.GetTokenUrl(),
-					Scopes:       strings.Fields(oauth2Auth.GetScopes()),
+					ClientID:	clientID,
+					ClientSecret:	clientSecret,
+					TokenURL:	oauth2Auth.GetTokenUrl(),
+					Scopes:		strings.Fields(oauth2Auth.GetScopes()),
 				}
 
 				// Use safeSecretClient for the token request to prevent SSRF
@@ -168,8 +174,8 @@ func resolveSecretImpl(ctx context.Context, secret *configv1.SecretValue, depth 
 	case configv1.SecretValue_Vault_case:
 		vaultSecret := secret.GetVault()
 		config := &api.Config{
-			Address:    vaultSecret.GetAddress(),
-			HttpClient: safeSecretClient, // Use safe client for vault too
+			Address:	vaultSecret.GetAddress(),
+			HttpClient:	safeSecretClient,	// Use safe client for vault too
 		}
 		client, err := api.NewClient(config)
 		if err != nil {
@@ -289,6 +295,26 @@ func resolveSecretImpl(ctx context.Context, secret *configv1.SecretValue, depth 
 				return strings.TrimSpace(strVal), nil
 			}
 			// Try to convert other types to string
+			// ResolveSecretMap resolves a map of SecretValue objects and merges them with a map of plain strings.
+			// If a key exists in both maps, the value from the secretMap (once resolved) takes precedence.
+			//
+			// Summary: Resolves a map of secrets and merges with plain values.
+			//
+			// Parameters:
+			//   - ctx (context.Context): The context for the secret resolution.
+			//   - secretMap (map[string]*configv1.SecretValue): A map of keys to SecretValue objects.
+			//   - plainMap (map[string]string): A map of keys to plain string values.
+			//
+			// Returns:
+			//   - map[string]string: A single map containing all keys with their resolved string values.
+			//   - error: An error if any secret resolution fails.
+			//
+			//
+			// Errors:
+			//   - An error if it fails.
+			//
+			// Side Effects:
+			//   - None.
 			return strings.TrimSpace(fmt.Sprintf("%v", val)), nil
 		}
 
@@ -298,19 +324,6 @@ func resolveSecretImpl(ctx context.Context, secret *configv1.SecretValue, depth 
 	}
 }
 
-// ResolveSecretMap resolves a map of SecretValue objects and merges them with a map of plain strings.
-// If a key exists in both maps, the value from the secretMap (once resolved) takes precedence.
-//
-// Summary: Resolves a map of secrets and merges with plain values.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the secret resolution.
-//   - secretMap (map[string]*configv1.SecretValue): A map of keys to SecretValue objects.
-//   - plainMap (map[string]string): A map of keys to plain string values.
-//
-// Returns:
-//   - map[string]string: A single map containing all keys with their resolved string values.
-//   - error: An error if any secret resolution fails.
 func ResolveSecretMap(ctx context.Context, secretMap map[string]*configv1.SecretValue, plainMap map[string]string) (map[string]string, error) {
 	result := make(map[string]string)
 	for k, v := range plainMap {
@@ -329,7 +342,7 @@ func ResolveSecretMap(ctx context.Context, secretMap map[string]*configv1.Secret
 // safeSecretClient is an http.Client that prevents SSRF by blocking access to link-local IPs (like AWS metadata service).
 // It also resolves the IP before dialing to prevent DNS rebinding attacks.
 var safeSecretClient = &http.Client{
-	Timeout: 10 * time.Second,
+	Timeout:	10 * time.Second,
 	CheckRedirect: func(_ *http.Request, _ []*http.Request) error {
 		// Prevent redirects to avoid leaking sensitive headers (like Authorization or X-API-Key)
 		// to untrusted third parties.

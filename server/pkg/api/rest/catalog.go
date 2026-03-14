@@ -1,24 +1,17 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package rest
-
-import (
-	"context"
-
-	apiv1 "github.com/mcpany/core/proto/api/v1"
-	"github.com/mcpany/core/server/pkg/catalog"
-)
-
 // CatalogServer implements the CatalogService API.
 //
 // Summary: Server implementation for the Catalog Service.
 //
 // It handles requests to list available services from the dynamic catalog.
-type CatalogServer struct {
-	manager *catalog.Manager
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // NewCatalogServer creates a new CatalogServer.
 //
 // Summary: Initializes a new CatalogServer.
@@ -34,10 +27,6 @@ type CatalogServer struct {
 //
 // Side Effects:
 //   None.
-func NewCatalogServer(manager *catalog.Manager) *CatalogServer {
-	return &CatalogServer{manager: manager}
-}
-
 // ListServices returns a list of available services in the catalog.
 //
 // Summary: Lists available catalog services.
@@ -55,6 +44,23 @@ func NewCatalogServer(manager *catalog.Manager) *CatalogServer {
 //
 // Side Effects:
 //   - Fetches services from the catalog manager.
+package rest
+
+import (
+	"context"
+
+	apiv1 "github.com/mcpany/core/proto/api/v1"
+	"github.com/mcpany/core/server/pkg/catalog"
+)
+
+type CatalogServer struct {
+	manager *catalog.Manager
+}
+
+func NewCatalogServer(manager *catalog.Manager) *CatalogServer {
+	return &CatalogServer{manager: manager}
+}
+
 func (s *CatalogServer) ListServices(ctx context.Context, _ *apiv1.ListCatalogServicesRequest) (*apiv1.ListCatalogServicesResponse, error) {
 	services, err := s.manager.ListServices(ctx)
 	if err != nil {

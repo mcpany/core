@@ -2,6 +2,67 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // Package filesystem provides the filesystem upstream implementation.
+// Summary: Upstream implements the upstream.Upstream interface for filesystem services.
+//
+// It provides tools for interacting with various filesystem backends (local,
+// S3, GCS, etc.) as defined in the service configuration.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+// NewUpstream creates a new instance of FilesystemUpstream.
+//
+// Returns:
+//   - upstream.Upstream: A new instance of the filesystem upstream.
+//
+// Side Effects:
+//   - None.
+//
+//
+// Errors:
+//   - An error if it fails.
+// Shutdown implements the upstream.Upstream interface.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the shutdown operation (currently unused).
+//
+// Returns:
+//   - error: Always returns nil.
+//
+// Side Effects:
+//   - Stops the health checker.
+//   - Closes all registered filesystem providers.
+//
+//
+// Errors:
+//   - An error if it fails.
+// Register processes the configuration for a filesystem service.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the registration process.
+//   - serviceConfig (*configv1.UpstreamServiceConfig): The configuration for the upstream service.
+//   - toolManager (tool.ManagerInterface): The manager where discovered tools will be registered.
+//   - _ (prompt.ManagerInterface): Unused prompt manager.
+//   - _ (resource.ManagerInterface): Unused resource manager.
+//   - _ (bool): Unused reload flag.
+//
+// Returns:
+//   - string: The unique service ID.
+//   - []*configv1.ToolDefinition: A list of registered tool definitions.
+//   - []*configv1.ResourceDefinition: Always nil.
+//   - error: An error if registration fails.
+//
+// Side Effects:
+//   - Creates a filesystem provider.
+//   - Starts a health checker.
+//   - Registers tools with the tool manager.
+//
+//
+// Errors:
+//   - An error if it fails.
 package filesystem
 
 import (
@@ -29,40 +90,18 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-// Upstream implements the upstream.Upstream interface for filesystem services.
-//
-// It provides tools for interacting with various filesystem backends (local,
-// S3, GCS, etc.) as defined in the service configuration.
 type Upstream struct {
-	mu      sync.Mutex
-	closers []io.Closer
-	checker health.Checker
+	mu	sync.Mutex
+	closers	[]io.Closer
+	checker	health.Checker
 }
 
-// NewUpstream creates a new instance of FilesystemUpstream.
-//
-// Returns:
-//   - upstream.Upstream: A new instance of the filesystem upstream.
-//
-// Side Effects:
-//   - None.
 func NewUpstream() upstream.Upstream {
 	return &Upstream{
 		closers: make([]io.Closer, 0),
 	}
 }
 
-// Shutdown implements the upstream.Upstream interface.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the shutdown operation (currently unused).
-//
-// Returns:
-//   - error: Always returns nil.
-//
-// Side Effects:
-//   - Stops the health checker.
-//   - Closes all registered filesystem providers.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -76,26 +115,6 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
 
-// Register processes the configuration for a filesystem service.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the registration process.
-//   - serviceConfig (*configv1.UpstreamServiceConfig): The configuration for the upstream service.
-//   - toolManager (tool.ManagerInterface): The manager where discovered tools will be registered.
-//   - _ (prompt.ManagerInterface): Unused prompt manager.
-//   - _ (resource.ManagerInterface): Unused resource manager.
-//   - _ (bool): Unused reload flag.
-//
-// Returns:
-//   - string: The unique service ID.
-//   - []*configv1.ToolDefinition: A list of registered tool definitions.
-//   - []*configv1.ResourceDefinition: Always nil.
-//   - error: An error if registration fails.
-//
-// Side Effects:
-//   - Creates a filesystem provider.
-//   - Starts a health checker.
-//   - Registers tools with the tool manager.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
@@ -149,8 +168,8 @@ func (u *Upstream) Register(
 	}
 
 	info := &tool.ServiceInfo{
-		Name:   serviceConfig.GetName(),
-		Config: serviceConfig,
+		Name:	serviceConfig.GetName(),
+		Config:	serviceConfig,
 	}
 	toolManager.AddServiceInfo(serviceID, info)
 
@@ -163,8 +182,8 @@ func (u *Upstream) Register(
 		toolName := t.Name
 
 		inputSchema, err := structpb.NewStruct(map[string]interface{}{
-			"type":       "object",
-			"properties": t.Input,
+			"type":		"object",
+			"properties":	t.Input,
 		})
 		if err != nil {
 			log.Error("Failed to create input schema", "tool", toolName, "error", err)
@@ -172,8 +191,8 @@ func (u *Upstream) Register(
 		}
 
 		outputSchema, err := structpb.NewStruct(map[string]interface{}{
-			"type":       "object",
-			"properties": t.Output,
+			"type":		"object",
+			"properties":	t.Output,
 		})
 		if err != nil {
 			log.Error("Failed to create output schema", "tool", toolName, "error", err)
@@ -181,14 +200,32 @@ func (u *Upstream) Register(
 		}
 
 		toolDef := configv1.ToolDefinition_builder{
-			Name:      proto.String(toolName),
-			ServiceId: proto.String(serviceID),
+			Name:		proto.String(toolName),
+			ServiceId:	proto.String(serviceID),
 		}.Build()
 
 		handler := t.Handler
 		callable := &fsCallable{handler: handler}
 
 		// Create a callable tool
+		// Call executes the filesystem tool with the provided request arguments.
+		//
+		// Summary: Executes a filesystem tool.
+		//
+		// Parameters:
+		//   - ctx: context.Context. The execution context.
+		//   - req: *tool.ExecutionRequest. The request containing arguments.
+		//
+		// Returns:
+		//   - any: The result of the execution.
+		//   - error: An error if execution fails.
+		//
+		//
+		// Errors:
+		//   - An error if it fails.
+		//
+		// Side Effects:
+		//   - None.
 		callableTool, err := tool.NewCallableTool(toolDef, serviceConfig, callable, inputSchema, outputSchema)
 		if err != nil {
 			log.Error("Failed to create callable tool", "tool", toolName, "error", err)
@@ -211,17 +248,6 @@ type fsCallable struct {
 	handler func(ctx context.Context, args map[string]interface{}) (map[string]interface{}, error)
 }
 
-// Call executes the filesystem tool with the provided request arguments.
-//
-// Summary: Executes a filesystem tool.
-//
-// Parameters:
-//   - ctx: context.Context. The execution context.
-//   - req: *tool.ExecutionRequest. The request containing arguments.
-//
-// Returns:
-//   - any: The result of the execution.
-//   - error: An error if execution fails.
 func (c *fsCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	args := req.Arguments
 	if args == nil && len(req.ToolInputs) > 0 {

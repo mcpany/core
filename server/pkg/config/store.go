@@ -1,6 +1,15 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// Engine defines the interface for configuration unmarshaling from different file formats.
+//
+// Summary: Abstraction for parsing configuration files into protobuf messages.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 package config
 
 import (
@@ -30,26 +39,30 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// Engine defines the interface for configuration unmarshaling from different file formats.
-//
-// Summary: Abstraction for parsing configuration files into protobuf messages.
 type Engine interface {
 	// Unmarshal parses the given byte slice and populates the provided proto.Message.
 	//
 	// Summary: Parses bytes into a protobuf message.
 	//
 	// Parameters:
-//   - b ([]byte): The raw bytes to parse.
-//   - v (proto.Message): The destination protobuf message.
+	//   - b ([]byte): The raw bytes to parse.
+	//   - v (proto.Message): The destination protobuf message.
 	//
 	// Returns:
-//   - (error): An error if parsing fails.
+	//   - (error): An error if parsing fails.
+	// StructuredEngine defines an interface for engines that can unmarshal directly from a map structure.
+	//
+	// Summary: Abstraction for parsing configurations from map structures, avoiding double parsing.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
 	Unmarshal(b []byte, v proto.Message) error
 }
 
-// StructuredEngine defines an interface for engines that can unmarshal directly from a map structure.
-//
-// Summary: Abstraction for parsing configurations from map structures, avoiding double parsing.
 type StructuredEngine interface {
 	Engine
 	// UnmarshalFromMap populates the provided proto.Message from a raw map.
@@ -63,12 +76,19 @@ type StructuredEngine interface {
 	//
 	// Returns:
 	//   - (error): An error if parsing fails.
+	// ConfigurableEngine defines an interface for engines that support configuration options.
+	//
+	// Summary: Interface for engines that can be configured (e.g. skip validation).
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
 	UnmarshalFromMap(m map[string]interface{}, v proto.Message, originalBytes []byte) error
 }
 
-// ConfigurableEngine defines an interface for engines that support configuration options.
-//
-// Summary: Interface for engines that can be configured (e.g. skip validation).
 type ConfigurableEngine interface {
 	Engine
 	// SetSkipValidation sets whether to skip schema validation.
@@ -85,19 +105,26 @@ type ConfigurableEngine interface {
 	//
 	// Parameters:
 	//   - ignore (bool): True to ignore environment variables.
+	// NewEngine returns a configuration engine capable of unmarshaling the format indicated by the file extension.
+	//
+	// Summary: Factory function to create the appropriate Engine for a given file path.
+	//
+	// Parameters:
+	//   - path (string): The file path used to determine the configuration format.
+	//
+	// Returns:
+	//   - (Engine): An initialized Engine implementation.
+	//   - (error): An error if the file extension is not supported.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
 	SetIgnoreEnv(ignore bool)
 }
 
-// NewEngine returns a configuration engine capable of unmarshaling the format indicated by the file extension.
-//
-// Summary: Factory function to create the appropriate Engine for a given file path.
-//
-// Parameters:
-//   - path (string): The file path used to determine the configuration format.
-//
-// Returns:
-//   - (Engine): An initialized Engine implementation.
-//   - (error): An error if the file extension is not supported.
 func NewEngine(path string) (Engine, error) {
 	ext := strings.ToLower(filepath.Ext(path))
 	switch ext {
@@ -113,11 +140,6 @@ func NewEngine(path string) (Engine, error) {
 }
 
 // yamlEngine implements the Engine interface for YAML configuration files.
-type yamlEngine struct {
-	skipValidation bool
-	ignoreEnv      bool
-}
-
 // SetSkipValidation sets whether to skip schema validation.
 //
 // Parameters:
@@ -128,10 +150,10 @@ type yamlEngine struct {
 //
 // Side Effects:
 //   - None.
-func (e *yamlEngine) SetSkipValidation(skip bool) {
-	e.skipValidation = skip
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
 // SetIgnoreEnv sets whether to ignore environment variables.
 //
 // Parameters:
@@ -142,10 +164,10 @@ func (e *yamlEngine) SetSkipValidation(skip bool) {
 //
 // Side Effects:
 //   - None.
-func (e *yamlEngine) SetIgnoreEnv(ignore bool) {
-	e.ignoreEnv = ignore
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
 // Unmarshal parses a YAML byte slice into a `proto.Message`.
 //
 // Parameters:
@@ -160,6 +182,19 @@ func (e *yamlEngine) SetIgnoreEnv(ignore bool) {
 //
 // Side Effects:
 //   - None.
+type yamlEngine struct {
+	skipValidation	bool
+	ignoreEnv	bool
+}
+
+func (e *yamlEngine) SetSkipValidation(skip bool) {
+	e.skipValidation = skip
+}
+
+func (e *yamlEngine) SetIgnoreEnv(ignore bool) {
+	e.ignoreEnv = ignore
+}
+
 func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 	// First, unmarshal YAML into a generic map.
 	var yamlMap map[string]interface{}
@@ -169,7 +204,22 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 			if bytes.Contains(b, []byte("\t")) {
 				// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
 
-				return fmt.Errorf("failed to unmarshal YAML: %w\n\nHint: YAML files cannot contain tabs. Please use spaces for indentation.", err) //nolint:revive // Long user-facing error message
+				return fmt.Errorf("failed to unmarshal YAML: %w\n\nHint: YAML files cannot contain tabs. Please use spaces for indentation.", err)	//nolint:revive // Long user-facing error message
+				// UnmarshalFromMap populates the provided proto.Message from a raw map.
+				//
+				// Parameters:
+				//   - yamlMap (map[string]interface{}): The parameter.
+				//   - v (proto.Message): The parameter.
+				//   - originalBytes ([]byte): The parameter.
+				//
+				// Returns:
+				//   - error: An error if the operation fails.
+				//
+				// Errors:
+				//   - Returns an error if ...
+				//
+				// Side Effects:
+				//   - None.
 			}
 		}
 		return fmt.Errorf("failed to unmarshal YAML: %w", err)
@@ -178,21 +228,6 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 	return e.unmarshalInternal(yamlMap, v, b)
 }
 
-// UnmarshalFromMap populates the provided proto.Message from a raw map.
-//
-// Parameters:
-//   - yamlMap (map[string]interface{}): The parameter.
-//   - v (proto.Message): The parameter.
-//   - originalBytes ([]byte): The parameter.
-//
-// Returns:
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
 func (e *yamlEngine) UnmarshalFromMap(yamlMap map[string]interface{}, v proto.Message, originalBytes []byte) error {
 	return e.unmarshalInternal(yamlMap, v, originalBytes)
 }
@@ -242,21 +277,21 @@ func (e *yamlEngine) unmarshalInternal(yamlMap map[string]interface{}, v proto.M
 		if strings.Contains(err.Error(), "unknown field \"mcpServers\"") {
 			// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
 
-			return fmt.Errorf("%w\n\nDid you mean \"upstream_services\"? It looks like you might be using a Claude Desktop configuration format. MCP Any uses a different configuration structure. See documentation for details.", err) //nolint:revive // Long user-facing error message
+			return fmt.Errorf("%w\n\nDid you mean \"upstream_services\"? It looks like you might be using a Claude Desktop configuration format. MCP Any uses a different configuration structure. See documentation for details.", err)	//nolint:revive // Long user-facing error message
 		}
 
 		// Detect if the user is using "services" which is a common alias for "upstream_services"
 		if strings.Contains(err.Error(), "unknown field \"services\"") {
 			// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
 
-			return fmt.Errorf("%w\n\nDid you mean \"upstream_services\"? \"services\" is not a valid top-level key.", err) //nolint:revive // Long user-facing error message
+			return fmt.Errorf("%w\n\nDid you mean \"upstream_services\"? \"services\" is not a valid top-level key.", err)	//nolint:revive // Long user-facing error message
 		}
 
 		// Detect invalid use of service_config wrapper (common mistake due to old docs)
 		if strings.Contains(err.Error(), "unknown field \"service_config\"") {
 			// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
 
-			return fmt.Errorf("%w\n\nIt looks like you are using 'service_config' as a wrapper key. In MCP Any configuration, you should place the service type (e.g., 'http_service', 'grpc_service') directly under the service definition, without a 'service_config' wrapper.", err) //nolint:revive // Long user-facing error message
+			return fmt.Errorf("%w\n\nIt looks like you are using 'service_config' as a wrapper key. In MCP Any configuration, you should place the service type (e.g., 'http_service', 'grpc_service') directly under the service definition, without a 'service_config' wrapper.", err)	//nolint:revive // Long user-facing error message
 		}
 
 		// Check for unknown fields and suggest fuzzy matches
@@ -295,8 +330,6 @@ func (e *yamlEngine) unmarshalInternal(yamlMap map[string]interface{}, v proto.M
 }
 
 // textprotoEngine implements the Engine interface for textproto configuration files.
-type textprotoEngine struct{}
-
 // Unmarshal parses a textproto byte slice into a `proto.Message`.
 //
 // Parameters:
@@ -311,13 +344,13 @@ type textprotoEngine struct{}
 //
 // Side Effects:
 //   - None.
+type textprotoEngine struct{}
+
 func (e *textprotoEngine) Unmarshal(b []byte, v proto.Message) error {
 	return prototext.Unmarshal(b, v)
 }
 
 // jsonEngine implements the Engine interface for JSON configuration files.
-type jsonEngine struct{}
-
 // Unmarshal parses a JSON byte slice into a `proto.Message`.
 //
 // Parameters:
@@ -332,23 +365,35 @@ type jsonEngine struct{}
 //
 // Side Effects:
 //   - None.
+type jsonEngine struct{}
+
 func (e *jsonEngine) Unmarshal(b []byte, v proto.Message) error {
 	if err := protojson.Unmarshal(b, v); err != nil {
 		// Detect if the user is using Claude Desktop config format
 		if strings.Contains(err.Error(), "unknown field \"mcpServers\"") {
 			// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
 
-			return fmt.Errorf("%w\n\nDid you mean \"upstream_services\"? It looks like you might be using a Claude Desktop configuration format. MCP Any uses a different configuration structure. See documentation for details.", err) //nolint:revive // Long user-facing error message
+			return fmt.Errorf("%w\n\nDid you mean \"upstream_services\"? It looks like you might be using a Claude Desktop configuration format. MCP Any uses a different configuration structure. See documentation for details.", err)	//nolint:revive // Long user-facing error message
 		}
 
 		// Detect if the user is using "services" which is a common alias for "upstream_services"
 		if strings.Contains(err.Error(), "unknown field \"services\"") {
 			// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
 
-			return fmt.Errorf("%w\n\nDid you mean \"upstream_services\"? \"services\" is not a valid top-level key.", err) //nolint:revive // Long user-facing error message
+			return fmt.Errorf("%w\n\nDid you mean \"upstream_services\"? \"services\" is not a valid top-level key.", err)	//nolint:revive // Long user-facing error message
 		}
 
 		// Check for unknown fields and suggest fuzzy matches
+		// Store defines the interface for loading MCP-X server configurations.
+		//
+		// Summary: Abstraction for configuration sources.
+		//
+		//
+		// Errors:
+		//   - An error if it fails.
+		//
+		// Side Effects:
+		//   - None.
 		if strings.Contains(err.Error(), "unknown field") {
 			matches := unknownFieldRegex.FindStringSubmatch(err.Error())
 			if len(matches) > 1 {
@@ -364,9 +409,6 @@ func (e *jsonEngine) Unmarshal(b []byte, v proto.Message) error {
 	return nil
 }
 
-// Store defines the interface for loading MCP-X server configurations.
-//
-// Summary: Abstraction for configuration sources.
 type Store interface {
 	// Load retrieves and returns the McpAnyServerConfig.
 	//
@@ -386,12 +428,19 @@ type Store interface {
 	//
 	// Returns:
 	//   - (bool): True if sources are configured, false otherwise.
+	// ServiceStore extends Store to provide CRUD operations for UpstreamServices.
+	//
+	// Summary: Interface for stores that support managing individual services.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
 	HasConfigSources() bool
 }
 
-// ServiceStore extends Store to provide CRUD operations for UpstreamServices.
-//
-// Summary: Interface for stores that support managing individual services.
 type ServiceStore interface {
 	Store
 	// SaveService saves or updates a service configuration.
@@ -519,7 +568,7 @@ func expandRecursive(b []byte, depth int) ([]byte, error) {
 	if missingCount > 0 {
 		// revive:disable-next-line:error-strings // This error message is user facing and needs to be descriptive
 
-		return buf.Bytes(), fmt.Errorf("missing environment variables:%s\n    -> Fix: Set these environment variables in your shell or .env file, or provide a default value (e.g., ${VAR:default}).", missingErrBuilder.String()) //nolint:revive // Long user-facing error message
+		return buf.Bytes(), fmt.Errorf("missing environment variables:%s\n    -> Fix: Set these environment variables in your shell or .env file, or provide a default value (e.g., ${VAR:default}).", missingErrBuilder.String())	//nolint:revive // Long user-facing error message
 	}
 
 	return buf.Bytes(), nil
@@ -637,6 +686,108 @@ func handleSimpleVar(b []byte, startIdx int, buf *bytes.Buffer, missingErrBuilde
 		lineNum := bytes.Count(b[:startIdx], []byte("\n")) + 1
 		fmt.Fprintf(missingErrBuilder, "\n  - Line %d: variable %s is missing", lineNum, varName)
 		// Write the original string to preserve structure
+		// FileStore implements the `Store` interface for loading configurations from files.
+		//
+		// Summary: Loads configurations from the filesystem.
+		//
+		//
+		// Errors:
+		//   - An error if it fails.
+		//
+		// Side Effects:
+		//   - None.
+		// SetSkipValidation configures whether to skip schema validation during loading.
+		//
+		// Returns:
+		//   - None.
+		//
+		// Side Effects:
+		//   - None.
+		//
+		//
+		// Parameters:
+		//   - args: The arguments.
+		//
+		// Errors:
+		//   - An error if it fails.
+		// SetIgnoreMissingEnv configures whether to ignore missing environment variables during loading.
+		//
+		// Returns:
+		//   - None.
+		//
+		// Side Effects:
+		//   - None.
+		//
+		//
+		// Parameters:
+		//   - args: The arguments.
+		//
+		// Errors:
+		//   - An error if it fails.
+		// NewFileStore creates a new FileStore with the given filesystem and paths.
+		//
+		// Summary: Initializes a new FileStore.
+		//
+		// Parameters:
+		//   - fs (afero.Fs): The filesystem to use.
+		//   - paths ([]string): The list of paths to scan.
+		//
+		// Returns:
+		//   - (*FileStore): A new instance of FileStore.
+		//
+		//
+		// Errors:
+		//   - An error if it fails.
+		//
+		// Side Effects:
+		//   - None.
+		// NewFileStoreWithSkipErrors creates a new FileStore that skips malformed config files.
+		//
+		// Summary: Initializes a new FileStore that tolerates errors in config files.
+		//
+		// Parameters:
+		//   - fs (afero.Fs): The filesystem to use.
+		//   - paths ([]string): The list of paths to scan.
+		//
+		// Returns:
+		//   - (*FileStore): A new instance of FileStore.
+		//
+		//
+		// Errors:
+		//   - An error if it fails.
+		//
+		// Side Effects:
+		//   - None.
+		// HasConfigSources returns true if the store has configuration paths configured. Side Effects: - None.
+		//
+		// Parameters:
+		//   - None
+		//
+		// Returns:
+		//   - bool: True if successful, false otherwise.
+		//
+		// Errors:
+		//   - None
+		//
+		// Side Effects:
+		//   - None
+		// Load scans the configured paths and merges them into a single configuration.
+		//
+		// Summary: Loads and merges configurations from all configured paths.
+		//
+		// Parameters:
+		//   - ctx (context.Context): The context for the request.
+		//
+		// Returns:
+		//   - (*configv1.McpAnyServerConfig): The merged configuration.
+		//   - (error): An error if loading or merging fails.
+		//
+		//
+		// Errors:
+		//   - An error if it fails.
+		//
+		// Side Effects:
+		//   - None.
 		buf.Write(b[startIdx:j])
 		return j - startIdx
 	}
@@ -645,94 +796,34 @@ func handleSimpleVar(b []byte, startIdx int, buf *bytes.Buffer, missingErrBuilde
 	return j - startIdx
 }
 
-// FileStore implements the `Store` interface for loading configurations from files.
-//
-// Summary: Loads configurations from the filesystem.
 type FileStore struct {
-	fs               afero.Fs
-	paths            []string
-	skipErrors       bool
-	IgnoreMissingEnv bool
-	skipValidation   bool
+	fs			afero.Fs
+	paths			[]string
+	skipErrors		bool
+	IgnoreMissingEnv	bool
+	skipValidation		bool
 }
 
-// SetSkipValidation configures whether to skip schema validation during loading.
-//
-// Returns:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (s *FileStore) SetSkipValidation(skip bool) {
 	s.skipValidation = skip
 }
 
-// SetIgnoreMissingEnv configures whether to ignore missing environment variables during loading.
-//
-// Returns:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (s *FileStore) SetIgnoreMissingEnv(ignore bool) {
 	s.IgnoreMissingEnv = ignore
 }
 
-// NewFileStore creates a new FileStore with the given filesystem and paths.
-//
-// Summary: Initializes a new FileStore.
-//
-// Parameters:
-//   - fs (afero.Fs): The filesystem to use.
-//   - paths ([]string): The list of paths to scan.
-//
-// Returns:
-//   - (*FileStore): A new instance of FileStore.
 func NewFileStore(fs afero.Fs, paths []string) *FileStore {
 	return &FileStore{fs: fs, paths: paths}
 }
 
-// NewFileStoreWithSkipErrors creates a new FileStore that skips malformed config files.
-//
-// Summary: Initializes a new FileStore that tolerates errors in config files.
-//
-// Parameters:
-//   - fs (afero.Fs): The filesystem to use.
-//   - paths ([]string): The list of paths to scan.
-//
-// Returns:
-//   - (*FileStore): A new instance of FileStore.
 func NewFileStoreWithSkipErrors(fs afero.Fs, paths []string) *FileStore {
 	return &FileStore{fs: fs, paths: paths, skipErrors: true}
 }
 
-// HasConfigSources returns true if the store has configuration paths configured. Side Effects: - None.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - bool: True if successful, false otherwise.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
 func (s *FileStore) HasConfigSources() bool {
 	return len(s.paths) > 0
 }
 
-// Load scans the configured paths and merges them into a single configuration.
-//
-// Summary: Loads and merges configurations from all configured paths.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//
-// Returns:
-//   - (*configv1.McpAnyServerConfig): The merged configuration.
-//   - (error): An error if loading or merging fails.
 func (s *FileStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
 	filePaths, err := s.collectFilePaths()
 	if err != nil {
@@ -745,7 +836,7 @@ func (s *FileStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, err
 	g, ctx := errgroup.WithContext(ctx)
 
 	for i, path := range filePaths {
-		i, path := i, path // Capture loop variables
+		i, path := i, path	// Capture loop variables
 		g.Go(func() error {
 			cfg, err := s.loadOneConfig(ctx, path)
 			if err != nil {
@@ -930,7 +1021,7 @@ func applyPathToMap(m map[string]interface{}, path []string, value string, v pro
 	}
 	current := m
 	for i, originalSection := range path {
-		section := strings.ToLower(originalSection) // Normalize to snake_case/lowercase
+		section := strings.ToLower(originalSection)	// Normalize to snake_case/lowercase
 
 		// Clear oneof siblings if this field is part of a oneof.
 		// This prevents "oneof is already set" errors when overriding.
@@ -1027,7 +1118,7 @@ func resolveEnvValue(root proto.Message, path []string, value string) interface{
 
 			if currentFd.Kind() == protoreflect.MessageKind {
 				md = currentFd.Message()
-				currentFd = nil // Reset, we are now inside the message
+				currentFd = nil	// Reset, we are now inside the message
 				continue
 			}
 			// Scalar list. 'part' is the index.
@@ -1181,8 +1272,8 @@ func fixTypes(m map[string]interface{}, md protoreflect.MessageDescriptor) {
 
 func convertMapToSlice(m map[string]interface{}) []interface{} {
 	type entry struct {
-		idx int
-		val interface{}
+		idx	int
+		val	interface{}
 	}
 	var entries []entry
 	for k, v := range m {
@@ -1207,6 +1298,49 @@ func findField(md protoreflect.MessageDescriptor, name string) protoreflect.Fiel
 		return fd
 	}
 	// Try ByJSONName (camelCase)
+	// MultiStore implements the Store interface for loading configurations from multiple stores.
+	//
+	// Summary: Combines multiple stores into a single logical store.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
+	// NewMultiStore creates a new MultiStore with the given stores.
+	//
+	// Summary: Initializes a new MultiStore.
+	//
+	// Parameters:
+	//   - stores: ...Store. The stores to aggregate.
+	//
+	// Returns:
+	//   - *MultiStore: A new instance of MultiStore.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
+	// Load loads configurations from all stores and merges them into a single config.
+	//
+	// Summary: Loads and merges configurations from all underlying stores.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The context for the request.
+	//
+	// Returns:
+	//   - *configv1.McpAnyServerConfig: The merged configuration.
+	//   - error: An error if loading fails.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
 	fd = md.Fields().ByJSONName(name)
 	if fd != nil {
 		return fd
@@ -1214,36 +1348,14 @@ func findField(md protoreflect.MessageDescriptor, name string) protoreflect.Fiel
 	return nil
 }
 
-// MultiStore implements the Store interface for loading configurations from multiple stores.
-//
-// Summary: Combines multiple stores into a single logical store.
 type MultiStore struct {
 	stores []Store
 }
 
-// NewMultiStore creates a new MultiStore with the given stores.
-//
-// Summary: Initializes a new MultiStore.
-//
-// Parameters:
-//   - stores: ...Store. The stores to aggregate.
-//
-// Returns:
-//   - *MultiStore: A new instance of MultiStore.
 func NewMultiStore(stores ...Store) *MultiStore {
 	return &MultiStore{stores: stores}
 }
 
-// Load loads configurations from all stores and merges them into a single config.
-//
-// Summary: Loads and merges configurations from all underlying stores.
-//
-// Parameters:
-//   - ctx: context.Context. The context for the request.
-//
-// Returns:
-//   - *configv1.McpAnyServerConfig: The merged configuration.
-//   - error: An error if loading fails.
 func (ms *MultiStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
 	mergedConfig := configv1.McpAnyServerConfig_builder{}.Build()
 	for _, s := range ms.stores {
@@ -1262,13 +1374,13 @@ func (ms *MultiStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, e
 func suggestFix(unknownField string, root proto.Message) string {
 	// Check common aliases first for immediate feedback
 	aliases := map[string]string{
-		"url":       "address",
-		"uri":       "address",
-		"endpoint":  "address",
-		"endpoints": "address",
-		"host":      "address",
-		"cmd":       "command",
-		"args":      "arguments",
+		"url":		"address",
+		"uri":		"address",
+		"endpoint":	"address",
+		"endpoints":	"address",
+		"host":		"address",
+		"cmd":		"command",
+		"args":		"arguments",
 	}
 	if correction, ok := aliases[strings.ToLower(unknownField)]; ok {
 		return fmt.Sprintf("Did you mean %q? (Common alias)", correction)
@@ -1313,6 +1425,19 @@ func suggestFix(unknownField string, root proto.Message) string {
 	limit := len(unknownField) / 2
 
 	// For short strings, be strict to avoid garbage suggestions (e.g. xyz -> env)
+	// HasConfigSources returns true if any of the underlying stores have configuration sources. Side Effects: - None.
+	//
+	// Parameters:
+	//   - None
+	//
+	// Returns:
+	//   - bool: True if successful, false otherwise.
+	//
+	// Errors:
+	//   - None
+	//
+	// Side Effects:
+	//   - None
 	if len(unknownField) <= 3 {
 		limit = 1
 	} else if limit < 3 {
@@ -1333,19 +1458,6 @@ func collectFieldNames(md protoreflect.MessageDescriptor, candidates map[string]
 	}
 }
 
-// HasConfigSources returns true if any of the underlying stores have configuration sources. Side Effects: - None.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - bool: True if successful, false otherwise.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
 func (ms *MultiStore) HasConfigSources() bool {
 	for _, s := range ms.stores {
 		if s.HasConfigSources() {

@@ -1,21 +1,15 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package resilience
-
-import (
-	"context"
-
-	"google.golang.org/protobuf/types/known/durationpb"
-)
-
 // Timeout implements a timeout policy for operations.
 //
 // Summary: Enforces a maximum duration for operations.
-type Timeout struct {
-	duration *durationpb.Duration
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // NewTimeout creates a new Timeout instance with the given duration.
 //
 // Summary: Initializes a new Timeout policy.
@@ -25,12 +19,13 @@ type Timeout struct {
 //
 // Returns:
 //   - *Timeout: The initialized timeout policy.
-func NewTimeout(duration *durationpb.Duration) *Timeout {
-	return &Timeout{
-		duration: duration,
-	}
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // Execute runs the provided work function with a timeout.
 //
 // Summary: Executes work within a timed context.
@@ -47,6 +42,24 @@ func NewTimeout(duration *durationpb.Duration) *Timeout {
 //
 // Side Effects:
 //   - Creates a child context with a deadline.
+package resilience
+
+import (
+	"context"
+
+	"google.golang.org/protobuf/types/known/durationpb"
+)
+
+type Timeout struct {
+	duration *durationpb.Duration
+}
+
+func NewTimeout(duration *durationpb.Duration) *Timeout {
+	return &Timeout{
+		duration: duration,
+	}
+}
+
 func (t *Timeout) Execute(ctx context.Context, work func(context.Context) error) error {
 	ctx, cancel := context.WithTimeout(ctx, t.duration.AsDuration())
 	defer cancel()

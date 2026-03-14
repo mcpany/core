@@ -1,6 +1,26 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// MergeStrategyReplace indicates that the new configuration list should replace the existing one.
+//
+// Summary: Constant for "replace" merge strategy.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+// UpstreamServiceManager manages the lifecycle and configuration of upstream services.
+//
+// Summary: Handles loading, validating, and merging service configurations from various sources.
+//
+// Side Effects:
+//   - Stores the final, merged UpstreamServiceConfig objects.
+//   - Makes HTTP requests to fetch remote configurations.
+//
+//
+// Errors:
+//   - An error if it fails.
 package config
 
 import (
@@ -24,74 +44,75 @@ import (
 	"github.com/Masterminds/semver/v3"
 )
 
-// MergeStrategyReplace indicates that the new configuration list should replace the existing one.
-//
-// Summary: Constant for "replace" merge strategy.
 const MergeStrategyReplace = "replace"
 
-// UpstreamServiceManager manages the lifecycle and configuration of upstream services.
-//
-// Summary: Handles loading, validating, and merging service configurations from various sources.
-//
-// Side Effects:
-//   - Stores the final, merged UpstreamServiceConfig objects.
-//   - Makes HTTP requests to fetch remote configurations.
 type UpstreamServiceManager struct {
-	log               *slog.Logger
-	services          map[string]*configv1.UpstreamServiceConfig // Stores the final, merged UpstreamServiceConfig objects
-	servicePriorities map[string]int32
-	httpClient        *http.Client
-	newGitHub         func(ctx context.Context, rawURL string) (*GitHub, error)
-	enabledProfiles   []string
+	log			*slog.Logger
+	services		map[string]*configv1.UpstreamServiceConfig	// Stores the final, merged UpstreamServiceConfig objects
+	servicePriorities	map[string]int32
+	httpClient		*http.Client
+	newGitHub		func(ctx context.Context, rawURL string) (*GitHub, error)
+	enabledProfiles		[]string
 	// New fields for profile management
-	profileServiceOverrides map[string]*configv1.ProfileServiceConfig // Stores overrides from profiles
-	profileSecrets          map[string]*configv1.SecretValue          // Stores secrets resolved from profiles
+	profileServiceOverrides	map[string]*configv1.ProfileServiceConfig	// Stores overrides from profiles
+	profileSecrets		map[string]*configv1.SecretValue		// Stores secrets resolved from profiles
+	// NewUpstreamServiceManager creates a new instance of UpstreamServiceManager.
+	//
+	// Summary: Initializes a new UpstreamServiceManager with the specified profiles.
+	//
+	// Parameters:
+	//   - enabledProfiles ([]string): A list of profile names that are active. Services must match one of these profiles to be loaded.
+	//
+	// Returns:
+	//   - (*UpstreamServiceManager): A pointer to a fully initialized UpstreamServiceManager.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
+	// LoadAndMergeServices loads all upstream services from the provided configuration.
+	//
+	// Summary: Processes local and remote service configurations, merging them based on priority and name.
+	//
+	// Parameters:
+	//   - ctx (context.Context): The context for the operation.
+	//   - config (*configv1.McpAnyServerConfig): The main server configuration containing service definitions and collection references.
+	//
+	// Returns:
+	//   - ([]*configv1.UpstreamServiceConfig): A slice of merged service configurations.
+	//   - (error): An error if any critical failure occurs during loading or merging.
+	//
+	// Side Effects:
+	//   - May clear existing services if a replace strategy is configured.
+	//   - Fetches remote collections via HTTP.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
 }
 
-// NewUpstreamServiceManager creates a new instance of UpstreamServiceManager.
-//
-// Summary: Initializes a new UpstreamServiceManager with the specified profiles.
-//
-// Parameters:
-//   - enabledProfiles ([]string): A list of profile names that are active. Services must match one of these profiles to be loaded.
-//
-// Returns:
-//   - (*UpstreamServiceManager): A pointer to a fully initialized UpstreamServiceManager.
 func NewUpstreamServiceManager(enabledProfiles []string) *UpstreamServiceManager {
 	if len(enabledProfiles) == 0 {
 		enabledProfiles = []string{"default"}
 	}
 	return &UpstreamServiceManager{
-		log:                     logging.GetLogger().With("component", "UpstreamServiceManager"),
-		services:                make(map[string]*configv1.UpstreamServiceConfig),
-		servicePriorities:       make(map[string]int32),
-		profileServiceOverrides: make(map[string]*configv1.ProfileServiceConfig),
-		profileSecrets:          make(map[string]*configv1.SecretValue),
+		log:				logging.GetLogger().With("component", "UpstreamServiceManager"),
+		services:			make(map[string]*configv1.UpstreamServiceConfig),
+		servicePriorities:		make(map[string]int32),
+		profileServiceOverrides:	make(map[string]*configv1.ProfileServiceConfig),
+		profileSecrets:			make(map[string]*configv1.SecretValue),
 		httpClient: &http.Client{
 			Transport: &http.Transport{
 				DialContext: util.SafeDialContext,
 			},
 		},
-		newGitHub:       NewGitHub,
-		enabledProfiles: enabledProfiles,
+		newGitHub:		NewGitHub,
+		enabledProfiles:	enabledProfiles,
 	}
 }
 
-// LoadAndMergeServices loads all upstream services from the provided configuration.
-//
-// Summary: Processes local and remote service configurations, merging them based on priority and name.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the operation.
-//   - config (*configv1.McpAnyServerConfig): The main server configuration containing service definitions and collection references.
-//
-// Returns:
-//   - ([]*configv1.UpstreamServiceConfig): A slice of merged service configurations.
-//   - (error): An error if any critical failure occurs during loading or merging.
-//
-// Side Effects:
-//   - May clear existing services if a replace strategy is configured.
-//   - Fetches remote collections via HTTP.
 func (m *UpstreamServiceManager) LoadAndMergeServices(ctx context.Context, config *configv1.McpAnyServerConfig) ([]*configv1.UpstreamServiceConfig, error) {
 	// Respect merge strategy
 	if strategy := config.GetMergeStrategy(); strategy != nil {
@@ -180,10 +201,10 @@ func (m *UpstreamServiceManager) loadAndMergeCollection(ctx context.Context, col
 		for _, content := range contents {
 			if content.Type == "dir" {
 				newCollection := configv1.Collection_builder{
-					Name:           proto.String(collection.GetName()),
-					HttpUrl:        proto.String(content.HTMLURL),
-					Priority:       proto.Int32(collection.GetPriority()),
-					Authentication: collection.GetAuthentication(),
+					Name:		proto.String(collection.GetName()),
+					HttpUrl:	proto.String(content.HTMLURL),
+					Priority:	proto.Int32(collection.GetPriority()),
+					Authentication:	collection.GetAuthentication(),
 				}.Build()
 				if err := m.loadAndMergeCollection(ctx, newCollection); err != nil {
 					m.log.Warn("Failed to load from github url", "url", content.HTMLURL, "error", err)
@@ -343,7 +364,7 @@ func (m *UpstreamServiceManager) applyAuthentication(req *http.Request, auth *co
 	return nil
 }
 
-func (m *UpstreamServiceManager) addService(service *configv1.UpstreamServiceConfig, priority int32) error { //nolint:unparam
+func (m *UpstreamServiceManager) addService(service *configv1.UpstreamServiceConfig, priority int32) error {	//nolint:unparam
 	if service == nil {
 		return nil
 	}
@@ -378,7 +399,7 @@ func (m *UpstreamServiceManager) addService(service *configv1.UpstreamServiceCon
 	// iterate over this config to start services, we need to ensure downstream is safe OR we mark it disabled here.
 	if service.HasConfigError() {
 		m.log.Warn("Adding service with configuration error (marked disabled)", "service", service.GetName(), "error", service.GetConfigError())
-		service.SetDisable(true) // Force disable so it doesn't get started
+		service.SetDisable(true)	// Force disable so it doesn't get started
 	} else {
 		// Only hydrate secrets if config is valid to avoid potential issues
 		HydrateSecretsInService(service, m.profileSecrets)

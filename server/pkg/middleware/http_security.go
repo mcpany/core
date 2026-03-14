@@ -1,13 +1,5 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package middleware
-
-import (
-	"net/http"
-	"strings"
-)
-
 // HTTPSecurityHeadersMiddleware adds security headers to HTTP responses.
 //
 // Summary: Middleware that adds standard security headers to all HTTP responses.
@@ -17,6 +9,20 @@ import (
 //
 // Returns:
 //   - http.Handler: The wrapped handler that sets security headers.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+package middleware
+
+import (
+	"net/http"
+	"strings"
+)
+
 func HTTPSecurityHeadersMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("X-Content-Type-Options", "nosniff")

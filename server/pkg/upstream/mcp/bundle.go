@@ -1,6 +1,13 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// Summary: Manifest represents the structure of the manifest.json file in an MCP bundle.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 package mcp
 
 import (
@@ -23,40 +30,53 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// Manifest represents the structure of the manifest.json file in an MCP bundle.
 type Manifest struct {
 	// ManifestVersion is the version of the manifest format.
-	ManifestVersion string `json:"manifest_version"`
+	ManifestVersion	string	`json:"manifest_version"`
 	// Name is the name of the bundle.
-	Name string `json:"name"`
+	Name	string	`json:"name"`
 	// Version is the version of the bundle.
-	Version string `json:"version"`
+	Version	string	`json:"version"`
 	// Description is a description of the bundle.
-	Description string `json:"description"`
+	Description	string	`json:"description"`
 	// Server contains configuration for the MCP server within the bundle.
-	Server ManifestServer `json:"server"`
+	Server	ManifestServer	`json:"server"`
 	// UserConfig contains default configuration for the user.
-	UserConfig json.RawMessage `json:"user_config"`
+	// Summary: ManifestServer represents the server configuration in the manifest.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
+	UserConfig	json.RawMessage	`json:"user_config"`
 }
 
-// ManifestServer represents the server configuration in the manifest.
 type ManifestServer struct {
 	// Type is the type of the server (e.g., "node", "python").
-	Type string `json:"type"`
+	Type	string	`json:"type"`
 	// EntryPoint is the entry point script or command for the server.
-	EntryPoint string `json:"entry_point"`
+	EntryPoint	string	`json:"entry_point"`
 	// McpConfig contains specific configuration for running the MCP server.
-	McpConfig ManifestMcpConfig `json:"mcp_config"`
+	// Summary: ManifestMcpConfig represents the MCP configuration in the manifest.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
+	McpConfig	ManifestMcpConfig	`json:"mcp_config"`
 }
 
-// ManifestMcpConfig represents the MCP configuration in the manifest.
 type ManifestMcpConfig struct {
 	// Command is the command to run the server.
-	Command string `json:"command"`
+	Command	string	`json:"command"`
 	// Args are the arguments to pass to the command.
-	Args []string `json:"args"`
+	Args	[]string	`json:"args"`
 	// Env is a map of environment variables to set for the server.
-	Env map[string]string `json:"env"`
+	Env	map[string]string	`json:"env"`
 }
 
 // createAndRegisterMCPItemsFromBundle handles the registration of an MCP service
@@ -68,7 +88,7 @@ func (u *Upstream) createAndRegisterMCPItemsFromBundle(
 	toolManager tool.ManagerInterface,
 	promptManager prompt.ManagerInterface,
 	resourceManager resource.ManagerInterface,
-	_ bool, // isReload
+	_ bool,	// isReload
 	serviceConfig *configv1.UpstreamServiceConfig,
 ) ([]*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	bundlePath := bundleConfig.GetBundlePath()
@@ -132,8 +152,8 @@ func (u *Upstream) createAndRegisterMCPItemsFromBundle(
 
 	// Default command/arg
 	const (
-		typeNode   = "node"
-		typePython = "python"
+		typeNode	= "node"
+		typePython	= "python"
 	)
 
 	switch manifest.Server.Type {
@@ -191,24 +211,24 @@ func (u *Upstream) createAndRegisterMCPItemsFromBundle(
 	if runtimeMode == "local" {
 		logging.GetLogger().Info("Using local bundle transport", "command", command, "args", args, "dir", tempDir)
 		transport = &BundleLocalTransport{
-			Command:    command,
-			Args:       args,
-			Env:        envList,
-			WorkingDir: tempDir,
+			Command:	command,
+			Args:		args,
+			Env:		envList,
+			WorkingDir:	tempDir,
 		}
 	} else {
 		transport = &BundleDockerTransport{
-			Image:      imageName,
-			Command:    command,
-			Args:       args,
-			Env:        envList,
-			WorkingDir: containerMountPath,
+			Image:		imageName,
+			Command:	command,
+			Args:		args,
+			Env:		envList,
+			WorkingDir:	containerMountPath,
 			Mounts: []mount.Mount{
 				{
-					Type:     mount.TypeBind,
-					Source:   tempDir,
-					Target:   containerMountPath,
-					ReadOnly: true,
+					Type:		mount.TypeBind,
+					Source:		tempDir,
+					Target:		containerMountPath,
+					ReadOnly:	true,
 				},
 			},
 		}
@@ -238,9 +258,9 @@ func (u *Upstream) createAndRegisterMCPItemsFromBundle(
 	}
 
 	bundleConn := &mcpConnection{
-		client:          mcpSdkClient,
-		bundleTransport: transport,
-		sessionRegistry: u.sessionRegistry,
+		client:			mcpSdkClient,
+		bundleTransport:	transport,
+		sessionRegistry:	u.sessionRegistry,
 	}
 
 	return u.processMCPItems(ctx, serviceID, listToolsResult, bundleConn, bundleConn, cs, toolManager, promptManager, resourceManager, serviceConfig)
@@ -269,11 +289,11 @@ func unzipBundle(src, dest string) error {
 	}
 
 	var totalBytes int64
-	const maxTotalSize = 5 * 1024 * 1024 * 1024 // 5GB
+	const maxTotalSize = 5 * 1024 * 1024 * 1024	// 5GB
 
 	for _, f := range r.File {
 		// Join path and resolve absolute path
-		fpath := filepath.Join(destCanonical, f.Name) //nolint:gosec // Path is validated immediately after
+		fpath := filepath.Join(destCanonical, f.Name)	//nolint:gosec // Path is validated immediately after
 
 		// Check for Zip Slip (Zip Path Traversal)
 		// We use HasPrefix on the clean, absolute paths.
@@ -305,7 +325,7 @@ func unzipBundle(src, dest string) error {
 		}
 
 		// Mitigate G110: Decompression bomb. Limit max file size to 1GB.
-		const maxFileSize = 1 * 1024 * 1024 * 1024 // 1GB
+		const maxFileSize = 1 * 1024 * 1024 * 1024	// 1GB
 
 		// Use io.LimitReader to prevent reading more than maxFileSize.
 		// We read up to maxFileSize bytes.

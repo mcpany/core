@@ -1,17 +1,5 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package topology
-
-import (
-	"context"
-	"time"
-
-	"github.com/mcpany/core/server/pkg/auth"
-	"github.com/mcpany/core/server/pkg/consts"
-	"github.com/modelcontextprotocol/go-sdk/mcp"
-)
-
 // Middleware returns a middleware function to track session activity.
 //
 // Summary: Creates an MCP middleware for tracking and recording session activity metrics.
@@ -26,6 +14,21 @@ import (
 //   - Extracts session ID from context or request.
 //   - Records duration, success/error status, and response size.
 //   - Calls m.RecordActivity to persist metrics.
+//
+//
+// Errors:
+//   - An error if it fails.
+package topology
+
+import (
+	"context"
+	"time"
+
+	"github.com/mcpany/core/server/pkg/auth"
+	"github.com/mcpany/core/server/pkg/consts"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
+)
+
 func (m *Manager) Middleware(next mcp.MethodHandler) mcp.MethodHandler {
 	return func(
 		ctx context.Context,

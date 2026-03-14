@@ -1,6 +1,16 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// Summary: UpstreamAuthenticator defines the interface for authentication methods used
+// when communicating with upstream services. Each implementation is responsible
+// for modifying the HTTP request to include the necessary authentication
+// credentials.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 package auth
 
 import (
@@ -18,49 +28,129 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
-// UpstreamAuthenticator defines the interface for authentication methods used
-// when communicating with upstream services. Each implementation is responsible
-// for modifying the HTTP request to include the necessary authentication
-// credentials.
 type UpstreamAuthenticator interface {
 	// Authenticate modifies the given HTTP request to add authentication
 	// information, such as headers or basic auth credentials.
+	// NewUpstreamAuthenticator creates an `UpstreamAuthenticator` based on the
+	// provided authentication configuration. It supports API key, bearer token, and
+	// basic authentication, as well as substitution of environment variables in the
+	// authentication parameters.
+	//
+	// If the `authConfig` is `nil`, no authenticator is created, and the function
+	// returns `nil, nil`. If the configuration is invalid (e.g., missing required
+	// fields), an error is returned.
+	//
+	// Parameters:
+	//   - authConfig: The configuration that specifies the authentication method
+	//     and its parameters.
+	//
+	// Returns:
+	//   - An `UpstreamAuthenticator` implementation, or nil if no auth is configured.
+	//   - An error if the configuration is invalid.
+	//
+	// NewUpstreamAuthenticator creates an `UpstreamAuthenticator` based on the
+	// provided authentication configuration. It supports API key, bearer token, and
+	// basic authentication, as well as substitution of environment variables in the
+	// authentication parameters.
+	//
+	// If the `authConfig` is `nil`, no authenticator is created, and the function
+	// returns `nil, nil`. If the configuration is invalid (e.g., missing required
+	// fields), an error is returned.
+	//
+	// Parameters:
+	//   - authConfig: The configuration that specifies the authentication method
+	//     and its parameters.
+	//
+	// Returns:
+	//   - An `UpstreamAuthenticator` implementation, or nil if no auth is configured.
+	//   - An error if the configuration is invalid.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
+	// Summary: APIKeyAuth implements UpstreamAuthenticator for API key-based authentication.
+	// It adds a specified header with a static API key value to the request.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
+	// Authenticate adds the configured API key to the request's header, query, or cookie.
+	//
+	// Parameters:
+	//   - req: The HTTP request to be modified.
+	//
+	// Returns:
+	//   - nil on success, or an error if the secret cannot be resolved.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
+	// Summary: BearerTokenAuth implements UpstreamAuthenticator for bearer token-based
+	// authentication. It adds an "Authorization" header with a bearer token.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
+	// Authenticate adds the bearer token to the request's "Authorization" header.
+	//
+	// Parameters:
+	//   - req: The HTTP request to be modified.
+	//
+	// Returns:
+	//   - nil on success, or an error if the secret cannot be resolved.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
+	// Summary: BasicAuth implements UpstreamAuthenticator for basic HTTP authentication.
+	// It adds an "Authorization" header with the username and password.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
+	// Authenticate sets the request's basic authentication credentials.
+	//
+	// Parameters:
+	//   - req: The HTTP request to be modified.
+	//
+	// Returns:
+	//   - nil on success, or an error if the secret cannot be resolved.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
+	// Summary: OAuth2Auth implements UpstreamAuthenticator for OAuth2 client credentials flow.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
 	Authenticate(req *http.Request) error
 }
 
-// NewUpstreamAuthenticator creates an `UpstreamAuthenticator` based on the
-// provided authentication configuration. It supports API key, bearer token, and
-// basic authentication, as well as substitution of environment variables in the
-// authentication parameters.
-//
-// If the `authConfig` is `nil`, no authenticator is created, and the function
-// returns `nil, nil`. If the configuration is invalid (e.g., missing required
-// fields), an error is returned.
-//
-// Parameters:
-//   - authConfig: The configuration that specifies the authentication method
-//     and its parameters.
-//
-// Returns:
-//   - An `UpstreamAuthenticator` implementation, or nil if no auth is configured.
-//   - An error if the configuration is invalid.
-//
-// NewUpstreamAuthenticator creates an `UpstreamAuthenticator` based on the
-// provided authentication configuration. It supports API key, bearer token, and
-// basic authentication, as well as substitution of environment variables in the
-// authentication parameters.
-//
-// If the `authConfig` is `nil`, no authenticator is created, and the function
-// returns `nil, nil`. If the configuration is invalid (e.g., missing required
-// fields), an error is returned.
-//
-// Parameters:
-//   - authConfig: The configuration that specifies the authentication method
-//     and its parameters.
-//
-// Returns:
-//   - An `UpstreamAuthenticator` implementation, or nil if no auth is configured.
-//   - An error if the configuration is invalid.
 func NewUpstreamAuthenticator(authConfig *configv1.Authentication) (UpstreamAuthenticator, error) {
 	if authConfig == nil {
 		return nil, nil
@@ -74,9 +164,9 @@ func NewUpstreamAuthenticator(authConfig *configv1.Authentication) (UpstreamAuth
 			return nil, errors.New("API key authentication requires an API key value")
 		}
 		return &APIKeyAuth{
-			ParamName: apiKey.GetParamName(),
-			Value:     apiKey.GetValue(),
-			Location:  apiKey.GetIn(),
+			ParamName:	apiKey.GetParamName(),
+			Value:		apiKey.GetValue(),
+			Location:	apiKey.GetIn(),
 		}, nil
 	}
 
@@ -97,8 +187,8 @@ func NewUpstreamAuthenticator(authConfig *configv1.Authentication) (UpstreamAuth
 			return nil, errors.New("basic authentication requires a password")
 		}
 		return &BasicAuth{
-			Username: basicAuth.GetUsername(),
-			Password: basicAuth.GetPassword(),
+			Username:	basicAuth.GetUsername(),
+			Password:	basicAuth.GetPassword(),
 		}, nil
 	}
 
@@ -113,32 +203,23 @@ func NewUpstreamAuthenticator(authConfig *configv1.Authentication) (UpstreamAuth
 			return nil, errors.New("OAuth2 authentication requires a token URL or an issuer URL")
 		}
 		return &OAuth2Auth{
-			ClientID:     oauth2.GetClientId(),
-			ClientSecret: oauth2.GetClientSecret(),
-			TokenURL:     oauth2.GetTokenUrl(),
-			IssuerURL:    oauth2.GetIssuerUrl(),
-			Scopes:       strings.Split(oauth2.GetScopes(), " "),
+			ClientID:	oauth2.GetClientId(),
+			ClientSecret:	oauth2.GetClientSecret(),
+			TokenURL:	oauth2.GetTokenUrl(),
+			IssuerURL:	oauth2.GetIssuerUrl(),
+			Scopes:		strings.Split(oauth2.GetScopes(), " "),
 		}, nil
 	}
 
 	return nil, nil
 }
 
-// APIKeyAuth implements UpstreamAuthenticator for API key-based authentication.
-// It adds a specified header with a static API key value to the request.
 type APIKeyAuth struct {
-	ParamName string
-	Value     *configv1.SecretValue
-	Location  configv1.APIKeyAuth_Location
+	ParamName	string
+	Value		*configv1.SecretValue
+	Location	configv1.APIKeyAuth_Location
 }
 
-// Authenticate adds the configured API key to the request's header, query, or cookie.
-//
-// Parameters:
-//   - req: The HTTP request to be modified.
-//
-// Returns:
-//   - nil on success, or an error if the secret cannot be resolved.
 func (a *APIKeyAuth) Authenticate(req *http.Request) error {
 	if a.Value == nil {
 		return errors.New("api key secret is not configured")
@@ -155,8 +236,8 @@ func (a *APIKeyAuth) Authenticate(req *http.Request) error {
 		req.URL.RawQuery = q.Encode()
 	case configv1.APIKeyAuth_COOKIE:
 		req.AddCookie(&http.Cookie{
-			Name:  a.ParamName,
-			Value: value,
+			Name:	a.ParamName,
+			Value:	value,
 		})
 	case configv1.APIKeyAuth_HEADER:
 		fallthrough
@@ -166,19 +247,10 @@ func (a *APIKeyAuth) Authenticate(req *http.Request) error {
 	return nil
 }
 
-// BearerTokenAuth implements UpstreamAuthenticator for bearer token-based
-// authentication. It adds an "Authorization" header with a bearer token.
 type BearerTokenAuth struct {
 	Token *configv1.SecretValue
 }
 
-// Authenticate adds the bearer token to the request's "Authorization" header.
-//
-// Parameters:
-//   - req: The HTTP request to be modified.
-//
-// Returns:
-//   - nil on success, or an error if the secret cannot be resolved.
 func (b *BearerTokenAuth) Authenticate(req *http.Request) error {
 	if b.Token == nil {
 		return errors.New("bearer token secret is not configured")
@@ -191,20 +263,11 @@ func (b *BearerTokenAuth) Authenticate(req *http.Request) error {
 	return nil
 }
 
-// BasicAuth implements UpstreamAuthenticator for basic HTTP authentication.
-// It adds an "Authorization" header with the username and password.
 type BasicAuth struct {
-	Username string
-	Password *configv1.SecretValue
+	Username	string
+	Password	*configv1.SecretValue
 }
 
-// Authenticate sets the request's basic authentication credentials.
-//
-// Parameters:
-//   - req: The HTTP request to be modified.
-//
-// Returns:
-//   - nil on success, or an error if the secret cannot be resolved.
 func (b *BasicAuth) Authenticate(req *http.Request) error {
 	if b.Password == nil {
 		return errors.New("basic auth password secret is not configured")
@@ -217,15 +280,14 @@ func (b *BasicAuth) Authenticate(req *http.Request) error {
 	return nil
 }
 
-// OAuth2Auth implements UpstreamAuthenticator for OAuth2 client credentials flow.
 type OAuth2Auth struct {
-	ClientID     *configv1.SecretValue
-	ClientSecret *configv1.SecretValue
-	TokenURL     string
-	IssuerURL    string
-	Scopes       []string
+	ClientID	*configv1.SecretValue
+	ClientSecret	*configv1.SecretValue
+	TokenURL	string
+	IssuerURL	string
+	Scopes		[]string
 
-	discoveryMu sync.Mutex
+	discoveryMu	sync.Mutex
 }
 
 // getTokenURL returns the token URL, performing discovery if necessary.
@@ -239,6 +301,20 @@ func (o *OAuth2Auth) getTokenURL(ctx context.Context) (string, error) {
 
 	if o.IssuerURL != "" {
 		// Create a context for discovery
+		// Authenticate fetches a token and adds it to the request's "Authorization" header.
+		//
+		// Parameters:
+		//   - req: The HTTP request to be modified.
+		//
+		// Returns:
+		//   - nil on success, or an error if the token cannot be obtained.
+		//
+		//
+		// Errors:
+		//   - An error if it fails.
+		//
+		// Side Effects:
+		//   - None.
 		provider, err := oidc.NewProvider(ctx, o.IssuerURL)
 		if err != nil {
 			return "", fmt.Errorf("failed to discover OIDC configuration from issuer %q: %w", o.IssuerURL, err)
@@ -250,13 +326,6 @@ func (o *OAuth2Auth) getTokenURL(ctx context.Context) (string, error) {
 	return "", errors.New("OAuth2 authentication requires a token URL (and no issuer provided)")
 }
 
-// Authenticate fetches a token and adds it to the request's "Authorization" header.
-//
-// Parameters:
-//   - req: The HTTP request to be modified.
-//
-// Returns:
-//   - nil on success, or an error if the token cannot be obtained.
 func (o *OAuth2Auth) Authenticate(req *http.Request) error {
 	tokenURL, err := o.getTokenURL(req.Context())
 	if err != nil {
@@ -278,10 +347,10 @@ func (o *OAuth2Auth) Authenticate(req *http.Request) error {
 		return err
 	}
 	cfg := &clientcredentials.Config{
-		ClientID:     clientID,
-		ClientSecret: clientSecret,
-		TokenURL:     tokenURL,
-		Scopes:       o.Scopes,
+		ClientID:	clientID,
+		ClientSecret:	clientSecret,
+		TokenURL:	tokenURL,
+		Scopes:		o.Scopes,
 	}
 	token, err := cfg.TokenSource(req.Context()).Token()
 	if err != nil {

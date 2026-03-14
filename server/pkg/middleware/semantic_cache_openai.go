@@ -1,28 +1,15 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package middleware
-
-import (
-	"bytes"
-	"context"
-	"encoding/json"
-	"fmt"
-	"io"
-	"net/http"
-	"time"
-)
-
 // OpenAIEmbeddingProvider implements EmbeddingProvider for OpenAI.
 //
 // Summary: Provides vector embeddings using the OpenAI API.
-type OpenAIEmbeddingProvider struct {
-	apiKey  string
-	model   string
-	baseURL string
-	client  *http.Client
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // NewOpenAIEmbeddingProvider creates a new OpenAIEmbeddingProvider.
 //
 // Summary: Initializes a new OpenAIEmbeddingProvider with the given API key and model.
@@ -37,33 +24,10 @@ type OpenAIEmbeddingProvider struct {
 // Side Effects:
 //   - Sets a default model and base URL.
 //   - Initializes an HTTP client with a timeout.
-func NewOpenAIEmbeddingProvider(apiKey, model string) *OpenAIEmbeddingProvider {
-	if model == "" {
-		model = "text-embedding-3-small"
-	}
-	return &OpenAIEmbeddingProvider{
-		apiKey:  apiKey,
-		model:   model,
-		baseURL: "https://api.openai.com/v1/embeddings",
-		client:  &http.Client{Timeout: 10 * time.Second},
-	}
-}
-
-type openAIEmbeddingRequest struct {
-	Input          string `json:"input"`
-	Model          string `json:"model"`
-	EncodingFormat string `json:"encoding_format"`
-}
-
-type openAIEmbeddingResponse struct {
-	Data []struct {
-		Embedding []float32 `json:"embedding"`
-	} `json:"data"`
-	Error *struct {
-		Message string `json:"message"`
-	} `json:"error,omitempty"`
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
 // Embed generates an embedding vector for the given text using the OpenAI API.
 //
 // Summary: Calls the OpenAI API to generate an embedding for the input text.
@@ -84,11 +48,57 @@ type openAIEmbeddingResponse struct {
 //
 // Side Effects:
 //   - Makes an external HTTP POST request to the OpenAI API.
+package middleware
+
+import (
+	"bytes"
+	"context"
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
+	"time"
+)
+
+type OpenAIEmbeddingProvider struct {
+	apiKey	string
+	model	string
+	baseURL	string
+	client	*http.Client
+}
+
+func NewOpenAIEmbeddingProvider(apiKey, model string) *OpenAIEmbeddingProvider {
+	if model == "" {
+		model = "text-embedding-3-small"
+	}
+	return &OpenAIEmbeddingProvider{
+		apiKey:		apiKey,
+		model:		model,
+		baseURL:	"https://api.openai.com/v1/embeddings",
+		client:		&http.Client{Timeout: 10 * time.Second},
+	}
+}
+
+type openAIEmbeddingRequest struct {
+	Input		string	`json:"input"`
+	Model		string	`json:"model"`
+	EncodingFormat	string	`json:"encoding_format"`
+}
+
+type openAIEmbeddingResponse struct {
+	Data	[]struct {
+		Embedding []float32 `json:"embedding"`
+	}	`json:"data"`
+	Error	*struct {
+		Message string `json:"message"`
+	}	`json:"error,omitempty"`
+}
+
 func (p *OpenAIEmbeddingProvider) Embed(ctx context.Context, text string) ([]float32, error) {
 	reqBody := openAIEmbeddingRequest{
-		Input:          text,
-		Model:          p.model,
-		EncodingFormat: "float",
+		Input:		text,
+		Model:		p.model,
+		EncodingFormat:	"float",
 	}
 	bodyBytes, err := json.Marshal(reqBody)
 	if err != nil {

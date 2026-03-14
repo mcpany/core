@@ -1,31 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-package http //nolint:revive,nolintlint // Package name 'http' is intentional for this directory structure.
-
-import (
-	"context"
-	"crypto/tls"
-	"fmt"
-	"crypto/x509"
-	"net/http"
-	"os"
-	"time"
-
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/mcpany/core/server/pkg/client"
-	healthChecker "github.com/mcpany/core/server/pkg/health"
-	"github.com/mcpany/core/server/pkg/pool"
-	"github.com/mcpany/core/server/pkg/util"
-	"github.com/mcpany/core/server/pkg/validation"
-	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
-)
-
-type httpPool struct {
-	pool.Pool[*client.HTTPClientWrapper]
-	transport *http.Transport
-}
-
+package http	//nolint:revive,nolintlint // Package name 'http' is intentional for this directory structure.
 // Close closes the connection pool and the idle connections.
 //
 // Returns:
@@ -33,14 +9,10 @@ type httpPool struct {
 //
 // Side Effects:
 //   - Closes idle network connections.
-func (p *httpPool) Close() error {
-	if err := p.Pool.Close(); err != nil {
-		return err
-	}
-	p.transport.CloseIdleConnections()
-	return nil
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
 // NewHTTPPool creates a new connection pool for HTTP clients.
 //
 // It is defined as a variable to allow for easy mocking in tests.
@@ -62,14 +34,45 @@ func (p *httpPool) Close() error {
 // Side Effects:
 //   - Reads certificate files if mTLS is configured.
 //   - Initializes a new http.Transport and http.Client.
+import (
+	"context"
+	"crypto/tls"
+	"fmt"
+	"crypto/x509"
+	"net/http"
+	"os"
+	"time"
+
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/client"
+	healthChecker "github.com/mcpany/core/server/pkg/health"
+	"github.com/mcpany/core/server/pkg/pool"
+	"github.com/mcpany/core/server/pkg/util"
+	"github.com/mcpany/core/server/pkg/validation"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+)
+
+type httpPool struct {
+	pool.Pool[*client.HTTPClientWrapper]
+	transport	*http.Transport
+}
+
+func (p *httpPool) Close() error {
+	if err := p.Pool.Close(); err != nil {
+		return err
+	}
+	p.transport.CloseIdleConnections()
+	return nil
+}
+
 var NewHTTPPool = func(
 	minSize, maxSize int,
 	idleTimeout time.Duration,
 	config *configv1.UpstreamServiceConfig,
 ) (pool.Pool[*client.HTTPClientWrapper], error) {
 	tlsConfig := &tls.Config{
-		MinVersion:         tls.VersionTLS12,
-		InsecureSkipVerify: config.GetHttpService().GetTlsConfig().GetInsecureSkipVerify(), //nolint:gosec
+		MinVersion:		tls.VersionTLS12,
+		InsecureSkipVerify:	config.GetHttpService().GetTlsConfig().GetInsecureSkipVerify(),	//nolint:gosec
 	}
 
 	if mtlsConfig := config.GetUpstreamAuth().GetMtls(); mtlsConfig != nil {
@@ -113,15 +116,15 @@ var NewHTTPPool = func(
 	}
 
 	baseTransport := &http.Transport{
-		TLSClientConfig:     tlsConfig,
-		DialContext:         dialer.DialContext,
-		MaxIdleConns:        maxSize,
-		MaxIdleConnsPerHost: maxSize,
+		TLSClientConfig:	tlsConfig,
+		DialContext:		dialer.DialContext,
+		MaxIdleConns:		maxSize,
+		MaxIdleConnsPerHost:	maxSize,
 		// Bolt: Optimize connection reuse and timeouts
-		IdleConnTimeout:       90 * time.Second,
-		TLSHandshakeTimeout:   10 * time.Second,
-		ExpectContinueTimeout: 1 * time.Second,
-		ForceAttemptHTTP2:     true,
+		IdleConnTimeout:	90 * time.Second,
+		TLSHandshakeTimeout:	10 * time.Second,
+		ExpectContinueTimeout:	1 * time.Second,
+		ForceAttemptHTTP2:	true,
 	}
 
 	clientTimeout := 30 * time.Second
@@ -130,8 +133,8 @@ var NewHTTPPool = func(
 	}
 
 	sharedClient := &http.Client{
-		Transport: otelhttp.NewTransport(baseTransport),
-		Timeout:   clientTimeout,
+		Transport:	otelhttp.NewTransport(baseTransport),
+		Timeout:	clientTimeout,
 	}
 
 	// Create a shared health checker for all clients in this pool
@@ -151,7 +154,7 @@ var NewHTTPPool = func(
 	}
 
 	return &httpPool{
-		Pool:      basePool,
-		transport: baseTransport,
+		Pool:		basePool,
+		transport:	baseTransport,
 	}, nil
 }

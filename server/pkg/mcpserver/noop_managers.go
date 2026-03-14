@@ -1,23 +1,15 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package mcpserver
-
-import (
-	"context"
-
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/mcpany/core/server/pkg/prompt"
-	"github.com/mcpany/core/server/pkg/resource"
-	"github.com/mcpany/core/server/pkg/tool"
-	"github.com/modelcontextprotocol/go-sdk/mcp"
-)
-
 // NoOpToolManager is a no-op implementation of tool.ManagerInterface.
 //
 // Summary: A tool manager that does nothing.
-type NoOpToolManager struct{}
-
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // AddTool implements tool.ManagerInterface.
 //
 // Summary: No-op AddTool.
@@ -27,8 +19,13 @@ type NoOpToolManager struct{}
 //
 // Returns:
 //   - error: Always returns nil.
-func (m *NoOpToolManager) AddTool(_ tool.Tool) error { return nil }
-
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // GetTool implements tool.ManagerInterface.
 //
 // Summary: No-op GetTool.
@@ -39,8 +36,13 @@ func (m *NoOpToolManager) AddTool(_ tool.Tool) error { return nil }
 // Returns:
 //   - tool.Tool: Always nil.
 //   - bool: Always false.
-func (m *NoOpToolManager) GetTool(_ string) (tool.Tool, bool) { return nil, false }
-
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // ListTools implements tool.ManagerInterface.
 //
 // Summary: Returns an empty list of tools.
@@ -53,8 +55,10 @@ func (m *NoOpToolManager) GetTool(_ string) (tool.Tool, bool) { return nil, fals
 //
 // Side Effects:
 //   - None.
-func (m *NoOpToolManager) ListTools() []tool.Tool { return nil }
-
+//
+//
+// Errors:
+//   - An error if it fails.
 // ListMCPTools implements tool.ManagerInterface.
 //
 // Summary: Returns an empty list of MCP tools.
@@ -67,8 +71,10 @@ func (m *NoOpToolManager) ListTools() []tool.Tool { return nil }
 //
 // Side Effects:
 //   - None.
-func (m *NoOpToolManager) ListMCPTools() []*mcp.Tool { return nil }
-
+//
+//
+// Errors:
+//   - An error if it fails.
 // ClearToolsForService implements tool.ManagerInterface.
 //
 // Summary: No-op ClearToolsForService.
@@ -81,8 +87,10 @@ func (m *NoOpToolManager) ListMCPTools() []*mcp.Tool { return nil }
 //
 // Side Effects:
 //   - None.
-func (m *NoOpToolManager) ClearToolsForService(_ string) {}
-
+//
+//
+// Errors:
+//   - An error if it fails.
 // ExecuteTool implements tool.ManagerInterface.
 //
 // Summary: No-op ExecuteTool.
@@ -94,10 +102,13 @@ func (m *NoOpToolManager) ClearToolsForService(_ string) {}
 // Returns:
 //   - any: Always nil.
 //   - error: Always nil.
-func (m *NoOpToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
-	return nil, nil
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // SetMCPServer implements tool.ManagerInterface.
 //
 // Summary: No-op SetMCPServer.
@@ -110,8 +121,10 @@ func (m *NoOpToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionReques
 //
 // Side Effects:
 //   - None.
-func (m *NoOpToolManager) SetMCPServer(_ tool.MCPServerProvider) {}
-
+//
+//
+// Errors:
+//   - An error if it fails.
 // AddMiddleware implements tool.ManagerInterface.
 //
 // Summary: No-op AddMiddleware.
@@ -124,8 +137,10 @@ func (m *NoOpToolManager) SetMCPServer(_ tool.MCPServerProvider) {}
 //
 // Side Effects:
 //   - None.
-func (m *NoOpToolManager) AddMiddleware(_ tool.ExecutionMiddleware) {}
-
+//
+//
+// Errors:
+//   - An error if it fails.
 // AddServiceInfo implements tool.ManagerInterface.
 //
 // Summary: No-op AddServiceInfo.
@@ -139,8 +154,10 @@ func (m *NoOpToolManager) AddMiddleware(_ tool.ExecutionMiddleware) {}
 //
 // Side Effects:
 //   - None.
-func (m *NoOpToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
-
+//
+//
+// Errors:
+//   - An error if it fails.
 // GetServiceInfo implements tool.ManagerInterface.
 //
 // Summary: No-op GetServiceInfo.
@@ -151,8 +168,13 @@ func (m *NoOpToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
 // Returns:
 //   - *tool.ServiceInfo: Always nil.
 //   - bool: Always false.
-func (m *NoOpToolManager) GetServiceInfo(_ string) (*tool.ServiceInfo, bool) { return nil, false }
-
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // ListServices implements tool.ManagerInterface.
 //
 // Summary: Returns an empty list of services.
@@ -165,8 +187,10 @@ func (m *NoOpToolManager) GetServiceInfo(_ string) (*tool.ServiceInfo, bool) { r
 //
 // Side Effects:
 //   - None.
-func (m *NoOpToolManager) ListServices() []*tool.ServiceInfo { return nil }
-
+//
+//
+// Errors:
+//   - An error if it fails.
 // SetProfiles implements tool.ManagerInterface.
 //
 // Summary: No-op SetProfiles.
@@ -180,8 +204,10 @@ func (m *NoOpToolManager) ListServices() []*tool.ServiceInfo { return nil }
 //
 // Side Effects:
 //   - None.
-func (m *NoOpToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
-
+//
+//
+// Errors:
+//   - An error if it fails.
 // IsServiceAllowed implements tool.ManagerInterface.
 //
 // Summary: No-op IsServiceAllowed.
@@ -191,8 +217,13 @@ func (m *NoOpToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinitio
 //
 // Returns:
 //   - bool: Always true (allow all).
-func (m *NoOpToolManager) IsServiceAllowed(_, _ string) bool { return true }
-
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // ToolMatchesProfile implements tool.ManagerInterface.
 //
 // Summary: No-op ToolMatchesProfile.
@@ -203,8 +234,13 @@ func (m *NoOpToolManager) IsServiceAllowed(_, _ string) bool { return true }
 //
 // Returns:
 //   - bool: Always true.
-func (m *NoOpToolManager) ToolMatchesProfile(_ tool.Tool, _ string) bool { return true }
-
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // GetAllowedServiceIDs implements tool.ManagerInterface.
 //
 // Summary: No-op GetAllowedServiceIDs.
@@ -215,10 +251,13 @@ func (m *NoOpToolManager) ToolMatchesProfile(_ tool.Tool, _ string) bool { retur
 // Returns:
 //   - map[string]bool: Always nil.
 //   - bool: Always false.
-func (m *NoOpToolManager) GetAllowedServiceIDs(_ string) (map[string]bool, bool) {
-	return nil, false
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // GetToolCountForService implements tool.ManagerInterface.
 //
 // Summary: No-op GetToolCountForService.
@@ -228,15 +267,23 @@ func (m *NoOpToolManager) GetAllowedServiceIDs(_ string) (map[string]bool, bool)
 //
 // Returns:
 //   - int: Always 0.
-func (m *NoOpToolManager) GetToolCountForService(_ string) int {
-	return 0
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // NoOpPromptManager is a no-op implementation of prompt.ManagerInterface.
 //
 // Summary: A prompt manager that does nothing.
-type NoOpPromptManager struct{}
-
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // AddPrompt implements prompt.ManagerInterface.
 //
 // Summary: No-op AddPrompt.
@@ -249,8 +296,10 @@ type NoOpPromptManager struct{}
 //
 // Side Effects:
 //   - None.
-func (m *NoOpPromptManager) AddPrompt(_ prompt.Prompt) {}
-
+//
+//
+// Errors:
+//   - An error if it fails.
 // UpdatePrompt implements prompt.ManagerInterface.
 //
 // Summary: No-op UpdatePrompt.
@@ -263,8 +312,10 @@ func (m *NoOpPromptManager) AddPrompt(_ prompt.Prompt) {}
 //
 // Side Effects:
 //   - None.
-func (m *NoOpPromptManager) UpdatePrompt(_ prompt.Prompt) {}
-
+//
+//
+// Errors:
+//   - An error if it fails.
 // GetPrompt implements prompt.ManagerInterface.
 //
 // Summary: No-op GetPrompt.
@@ -275,8 +326,13 @@ func (m *NoOpPromptManager) UpdatePrompt(_ prompt.Prompt) {}
 // Returns:
 //   - prompt.Prompt: Always nil.
 //   - bool: Always false.
-func (m *NoOpPromptManager) GetPrompt(_ string) (prompt.Prompt, bool) { return nil, false }
-
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // ListPrompts implements prompt.ManagerInterface.
 //
 // Summary: Returns an empty list of prompts.
@@ -289,8 +345,10 @@ func (m *NoOpPromptManager) GetPrompt(_ string) (prompt.Prompt, bool) { return n
 //
 // Side Effects:
 //   - None.
-func (m *NoOpPromptManager) ListPrompts() []prompt.Prompt { return nil }
-
+//
+//
+// Errors:
+//   - An error if it fails.
 // ClearPromptsForService implements prompt.ManagerInterface.
 //
 // Summary: No-op ClearPromptsForService.
@@ -303,8 +361,10 @@ func (m *NoOpPromptManager) ListPrompts() []prompt.Prompt { return nil }
 //
 // Side Effects:
 //   - None.
-func (m *NoOpPromptManager) ClearPromptsForService(_ string) {}
-
+//
+//
+// Errors:
+//   - An error if it fails.
 // SetMCPServer implements prompt.ManagerInterface.
 //
 // Summary: No-op SetMCPServer.
@@ -317,13 +377,20 @@ func (m *NoOpPromptManager) ClearPromptsForService(_ string) {}
 //
 // Side Effects:
 //   - None.
-func (m *NoOpPromptManager) SetMCPServer(_ prompt.MCPServerProvider) {}
-
+//
+//
+// Errors:
+//   - An error if it fails.
 // NoOpResourceManager is a no-op implementation of resource.ManagerInterface.
 //
 // Summary: A resource manager that does nothing.
-type NoOpResourceManager struct{}
-
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // GetResource implements resource.ManagerInterface.
 //
 // Summary: No-op GetResource.
@@ -334,8 +401,13 @@ type NoOpResourceManager struct{}
 // Returns:
 //   - resource.Resource: Always nil.
 //   - bool: Always false.
-func (m *NoOpResourceManager) GetResource(_ string) (resource.Resource, bool) { return nil, false }
-
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // AddResource implements resource.ManagerInterface.
 //
 // Summary: No-op AddResource.
@@ -348,8 +420,10 @@ func (m *NoOpResourceManager) GetResource(_ string) (resource.Resource, bool) { 
 //
 // Side Effects:
 //   - None.
-func (m *NoOpResourceManager) AddResource(_ resource.Resource) {}
-
+//
+//
+// Errors:
+//   - An error if it fails.
 // RemoveResource implements resource.ManagerInterface.
 //
 // Summary: No-op RemoveResource.
@@ -362,8 +436,10 @@ func (m *NoOpResourceManager) AddResource(_ resource.Resource) {}
 //
 // Side Effects:
 //   - None.
-func (m *NoOpResourceManager) RemoveResource(_ string) {}
-
+//
+//
+// Errors:
+//   - An error if it fails.
 // ListResources implements resource.ManagerInterface.
 //
 // Summary: Returns an empty list of resources.
@@ -376,8 +452,10 @@ func (m *NoOpResourceManager) RemoveResource(_ string) {}
 //
 // Side Effects:
 //   - None.
-func (m *NoOpResourceManager) ListResources() []resource.Resource { return nil }
-
+//
+//
+// Errors:
+//   - An error if it fails.
 // OnListChanged implements resource.ManagerInterface.
 //
 // Summary: No-op OnListChanged.
@@ -390,8 +468,10 @@ func (m *NoOpResourceManager) ListResources() []resource.Resource { return nil }
 //
 // Side Effects:
 //   - None.
-func (m *NoOpResourceManager) OnListChanged(_ func()) {}
-
+//
+//
+// Errors:
+//   - An error if it fails.
 // ClearResourcesForService implements resource.ManagerInterface.
 //
 // Summary: No-op ClearResourcesForService.
@@ -404,4 +484,86 @@ func (m *NoOpResourceManager) OnListChanged(_ func()) {}
 //
 // Side Effects:
 //   - None.
-func (m *NoOpResourceManager) ClearResourcesForService(_ string) {}
+//
+//
+// Errors:
+//   - An error if it fails.
+package mcpserver
+
+import (
+	"context"
+
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/prompt"
+	"github.com/mcpany/core/server/pkg/resource"
+	"github.com/mcpany/core/server/pkg/tool"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
+)
+
+type NoOpToolManager struct{}
+
+func (m *NoOpToolManager) AddTool(_ tool.Tool) error	{ return nil }
+
+func (m *NoOpToolManager) GetTool(_ string) (tool.Tool, bool)	{ return nil, false }
+
+func (m *NoOpToolManager) ListTools() []tool.Tool	{ return nil }
+
+func (m *NoOpToolManager) ListMCPTools() []*mcp.Tool	{ return nil }
+
+func (m *NoOpToolManager) ClearToolsForService(_ string)	{}
+
+func (m *NoOpToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
+	return nil, nil
+}
+
+func (m *NoOpToolManager) SetMCPServer(_ tool.MCPServerProvider)	{}
+
+func (m *NoOpToolManager) AddMiddleware(_ tool.ExecutionMiddleware)	{}
+
+func (m *NoOpToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo)	{}
+
+func (m *NoOpToolManager) GetServiceInfo(_ string) (*tool.ServiceInfo, bool)	{ return nil, false }
+
+func (m *NoOpToolManager) ListServices() []*tool.ServiceInfo	{ return nil }
+
+func (m *NoOpToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition)	{}
+
+func (m *NoOpToolManager) IsServiceAllowed(_, _ string) bool	{ return true }
+
+func (m *NoOpToolManager) ToolMatchesProfile(_ tool.Tool, _ string) bool	{ return true }
+
+func (m *NoOpToolManager) GetAllowedServiceIDs(_ string) (map[string]bool, bool) {
+	return nil, false
+}
+
+func (m *NoOpToolManager) GetToolCountForService(_ string) int {
+	return 0
+}
+
+type NoOpPromptManager struct{}
+
+func (m *NoOpPromptManager) AddPrompt(_ prompt.Prompt)	{}
+
+func (m *NoOpPromptManager) UpdatePrompt(_ prompt.Prompt)	{}
+
+func (m *NoOpPromptManager) GetPrompt(_ string) (prompt.Prompt, bool)	{ return nil, false }
+
+func (m *NoOpPromptManager) ListPrompts() []prompt.Prompt	{ return nil }
+
+func (m *NoOpPromptManager) ClearPromptsForService(_ string)	{}
+
+func (m *NoOpPromptManager) SetMCPServer(_ prompt.MCPServerProvider)	{}
+
+type NoOpResourceManager struct{}
+
+func (m *NoOpResourceManager) GetResource(_ string) (resource.Resource, bool)	{ return nil, false }
+
+func (m *NoOpResourceManager) AddResource(_ resource.Resource)	{}
+
+func (m *NoOpResourceManager) RemoveResource(_ string)	{}
+
+func (m *NoOpResourceManager) ListResources() []resource.Resource	{ return nil }
+
+func (m *NoOpResourceManager) OnListChanged(_ func())	{}
+
+func (m *NoOpResourceManager) ClearResourcesForService(_ string)	{}

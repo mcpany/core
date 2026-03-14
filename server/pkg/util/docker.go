@@ -2,8 +2,16 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // Package util provides utility functions for Docker and other shared functionality.
-package util //nolint:revive,nolintlint // Package name 'util' is intentional
-
+package util	//nolint:revive,nolintlint // Package name 'util' is intentional
+// Summary: IsDockerSocketAccessibleFunc is a variable to allow mocking in tests.
+// It checks if the Docker socket is accessible.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 import (
 	"context"
 	"sync"
@@ -12,13 +20,11 @@ import (
 )
 
 var (
-	// IsDockerSocketAccessibleFunc is a variable to allow mocking in tests.
-	// It checks if the Docker socket is accessible.
-	IsDockerSocketAccessibleFunc = isDockerSocketAccessibleDefault
+	IsDockerSocketAccessibleFunc	= isDockerSocketAccessibleDefault
 
-	dockerClient     client.APIClient
-	initDockerClient = initDockerClientDefault
-	once             = &sync.Once{}
+	dockerClient		client.APIClient
+	initDockerClient	= initDockerClientDefault
+	once			= &sync.Once{}
 )
 
 // initDockerClientDefault initializes the shared Docker client. This function is
@@ -29,33 +35,40 @@ var initDockerClientDefault = func() {
 	if err != nil {
 		// If we can't create the client, we can't ping the server.
 		// We'll set dockerClient to nil and handle this in the check.
+		// IsDockerSocketAccessible checks if the Docker daemon is accessible through the socket.
+		//
+		// Summary: Checks if the Docker daemon is accessible.
+		//
+		// Returns:
+		//   - bool: True if the Docker daemon is accessible, false otherwise.
+		//
+		//
+		// Errors:
+		//   - An error if it fails.
+		//
+		// Side Effects:
+		//   - None.
+		// CloseDockerClient closes the shared Docker client. Summary: Closes the shared Docker client. Side Effects: - Closes the Docker client connection.
+		//
+		// Parameters:
+		//   - None
+		//
+		// Returns:
+		//   - None
+		//
+		// Errors:
+		//   - None
+		//
+		// Side Effects:
+		//   - None
 		dockerClient = nil
 	}
 }
 
-// IsDockerSocketAccessible checks if the Docker daemon is accessible through the socket.
-//
-// Summary: Checks if the Docker daemon is accessible.
-//
-// Returns:
-//   - bool: True if the Docker daemon is accessible, false otherwise.
 func IsDockerSocketAccessible() bool {
 	return IsDockerSocketAccessibleFunc()
 }
 
-// CloseDockerClient closes the shared Docker client. Summary: Closes the shared Docker client. Side Effects: - Closes the Docker client connection.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
 func CloseDockerClient() {
 	if dockerClient != nil {
 		_ = dockerClient.Close()

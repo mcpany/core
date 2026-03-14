@@ -1,14 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-package util //nolint:revive,nolintlint // Package name 'util' is common in this codebase
-
-import (
-	"log/slog"
-	"os"
-	"strings"
-)
-
+package util	//nolint:revive,nolintlint // Package name 'util' is common in this codebase
 // IsEnvVarAllowed checks if an environment variable is allowed to be accessed
 // by the configuration system.
 //
@@ -25,6 +18,19 @@ import (
 //
 // Returns:
 //   - bool: True if the environment variable is allowed, false otherwise.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+import (
+	"log/slog"
+	"os"
+	"strings"
+)
+
 func IsEnvVarAllowed(name string) bool {
 	// 1. Check Allowlist
 	allowedEnv := os.Getenv("MCPANY_ALLOWED_ENV")

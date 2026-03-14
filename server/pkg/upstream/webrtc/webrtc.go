@@ -2,6 +2,77 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // Package webrtc provides WebRTC upstream integration.
+// Summary: Upstream implements the upstream.Upstream interface for services that
+// communicate over WebRTC data channels.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+// CheckHealth performs a health check on the upstream service.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
+// Shutdown is a no-op for the WebRTC upstream, as connections are transient
+// and not managed by a persistent pool.
+//
+// Parameters:
+//   - _ (context.Context): The parameter.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
+// NewUpstream creates a new instance of WebrtcUpstream.
+//
+// Parameters:
+//   - poolManager (*pool.Manager): The parameter.
+//
+// Returns:
+//   - upstream.Upstream: The result.
+//
+// Side Effects:
+//   - None.
+//
+//
+// Errors:
+//   - An error if it fails.
+// Register processes the configuration for a WebRTC service, creating and registering tools for each call definition specified in the configuration.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - serviceConfig (*configv1.UpstreamServiceConfig): The serviceConfig parameter.
+//   - toolManager (tool.ManagerInterface): The toolManager parameter.
+//   - promptManager (prompt.ManagerInterface): The promptManager parameter.
+//   - resourceManager (resource.ManagerInterface): The resourceManager parameter.
+//   - isReload (bool): The isReload parameter.
+//
+// Returns:
+//   - string: The resulting string.
+//   - []*configv1.ToolDefinition: The resulting []*configv1.ToolDefinition.
+//   - []*configv1.ResourceDefinition: The resulting []*configv1.ResourceDefinition.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails or is invalid.
+//
+// Side Effects:
+//   - None
 package webrtc
 
 import (
@@ -31,28 +102,13 @@ import (
 
 type sanitizer func(string) (string, error)
 
-// Upstream implements the upstream.Upstream interface for services that
-// communicate over WebRTC data channels.
 type Upstream struct {
-	poolManager       *pool.Manager
-	toolNameSanitizer sanitizer
-	checker           health.Checker
-	mu                sync.RWMutex
+	poolManager		*pool.Manager
+	toolNameSanitizer	sanitizer
+	checker			health.Checker
+	mu			sync.RWMutex
 }
 
-// CheckHealth performs a health check on the upstream service.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//
-// Returns:
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
 func (u *Upstream) CheckHealth(ctx context.Context) error {
 	u.mu.RLock()
 	checker := u.checker
@@ -68,20 +124,6 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 	return nil
 }
 
-// Shutdown is a no-op for the WebRTC upstream, as connections are transient
-// and not managed by a persistent pool.
-//
-// Parameters:
-//   - _ (context.Context): The parameter.
-//
-// Returns:
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	if u.checker != nil {
@@ -93,44 +135,13 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
 
-// NewUpstream creates a new instance of WebrtcUpstream.
-//
-// Parameters:
-//   - poolManager (*pool.Manager): The parameter.
-//
-// Returns:
-//   - upstream.Upstream: The result.
-//
-// Side Effects:
-//   - None.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	return &Upstream{
-		poolManager:       poolManager,
-		toolNameSanitizer: util.SanitizeToolName,
+		poolManager:		poolManager,
+		toolNameSanitizer:	util.SanitizeToolName,
 	}
 }
 
-// Register processes the configuration for a WebRTC service, creating and registering tools for each call definition specified in the configuration.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - serviceConfig (*configv1.UpstreamServiceConfig): The serviceConfig parameter.
-//   - toolManager (tool.ManagerInterface): The toolManager parameter.
-//   - promptManager (prompt.ManagerInterface): The promptManager parameter.
-//   - resourceManager (resource.ManagerInterface): The resourceManager parameter.
-//   - isReload (bool): The isReload parameter.
-//
-// Returns:
-//   - string: The resulting string.
-//   - []*configv1.ToolDefinition: The resulting []*configv1.ToolDefinition.
-//   - []*configv1.ResourceDefinition: The resulting []*configv1.ResourceDefinition.
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
@@ -156,7 +167,7 @@ func (u *Upstream) Register(
 	}
 	serviceConfig.SetSanitizedName(sanitizedName)
 
-	serviceID := sanitizedName // for internal use
+	serviceID := sanitizedName	// for internal use
 
 	u.mu.Lock()
 	if u.checker != nil {
@@ -173,8 +184,8 @@ func (u *Upstream) Register(
 	}
 
 	info := &tool.ServiceInfo{
-		Name:   serviceConfig.GetName(),
-		Config: serviceConfig,
+		Name:	serviceConfig.GetName(),
+		Config:	serviceConfig,
 	}
 	toolManager.AddServiceInfo(serviceID, info)
 
@@ -235,8 +246,8 @@ func (u *Upstream) createAndRegisterWebrtcTools(_ context.Context, serviceID, ad
 		}
 		inputSchema := &structpb.Struct{
 			Fields: map[string]*structpb.Value{
-				"type":       structpb.NewStringValue("object"),
-				"properties": structpb.NewStructValue(properties),
+				"type":		structpb.NewStringValue("object"),
+				"properties":	structpb.NewStructValue(properties),
 			},
 		}
 
@@ -249,16 +260,16 @@ func (u *Upstream) createAndRegisterWebrtcTools(_ context.Context, serviceID, ad
 		}
 
 		newToolProto := pb.Tool_builder{
-			Name:                proto.String(toolNamePart),
-			ServiceId:           proto.String(serviceID),
-			UnderlyingMethodFqn: proto.String(fmt.Sprintf("WEBRTC %s", address)),
+			Name:			proto.String(toolNamePart),
+			ServiceId:		proto.String(serviceID),
+			UnderlyingMethodFqn:	proto.String(fmt.Sprintf("WEBRTC %s", address)),
 			Annotations: pb.ToolAnnotations_builder{
-				Title:           proto.String(definition.GetTitle()),
-				ReadOnlyHint:    proto.Bool(definition.GetReadOnlyHint()),
-				DestructiveHint: proto.Bool(definition.GetDestructiveHint()),
-				IdempotentHint:  proto.Bool(definition.GetIdempotentHint()),
-				OpenWorldHint:   proto.Bool(definition.GetOpenWorldHint()),
-				InputSchema:     inputSchema,
+				Title:			proto.String(definition.GetTitle()),
+				ReadOnlyHint:		proto.Bool(definition.GetReadOnlyHint()),
+				DestructiveHint:	proto.Bool(definition.GetDestructiveHint()),
+				IdempotentHint:		proto.Bool(definition.GetIdempotentHint()),
+				OpenWorldHint:		proto.Bool(definition.GetOpenWorldHint()),
+				InputSchema:		inputSchema,
 			}.Build(),
 		}.Build()
 
@@ -274,8 +285,8 @@ func (u *Upstream) createAndRegisterWebrtcTools(_ context.Context, serviceID, ad
 		}
 
 		discoveredTools = append(discoveredTools, configv1.ToolDefinition_builder{
-			Name:        proto.String(definition.GetName()),
-			Description: proto.String(definition.GetDescription()),
+			Name:		proto.String(definition.GetName()),
+			Description:	proto.String(definition.GetDescription()),
 		}.Build())
 	}
 

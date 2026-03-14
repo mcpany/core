@@ -1,26 +1,15 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package middleware
-
-import (
-	"bytes"
-	"encoding/json"
-	"fmt"
-	"net/http"
-	"strings"
-	"sync"
-
-	"github.com/tidwall/gjson"
-)
-
 // ContextOptimizer optimises the context size of responses.
 //
 // Summary: Middleware that truncates excessively long string values in JSON responses to fit within a context window.
-type ContextOptimizer struct {
-	MaxChars int
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // NewContextOptimizer creates a new ContextOptimizer.
 //
 // Summary: Initializes a new ContextOptimizer with a maximum character limit.
@@ -30,20 +19,13 @@ type ContextOptimizer struct {
 //
 // Returns:
 //   - *ContextOptimizer: The initialized optimizer.
-func NewContextOptimizer(maxChars int) *ContextOptimizer {
-	return &ContextOptimizer{
-		MaxChars: maxChars,
-	}
-}
-
-var bufferPool = sync.Pool{
-	New: func() any {
-		return &responseBuffer{
-			body: &bytes.Buffer{},
-		}
-	},
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // Handler returns the middleware handler.
 //
 // Summary: Returns an HTTP handler that intercepts and potentially truncates response bodies.
@@ -58,6 +40,41 @@ var bufferPool = sync.Pool{
 //   - Buffers the entire response body.
 //   - Modifies the response body if it contains JSON strings exceeding MaxChars.
 //   - Updates the Content-Length header.
+//
+//
+// Errors:
+//   - An error if it fails.
+package middleware
+
+import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"strings"
+	"sync"
+
+	"github.com/tidwall/gjson"
+)
+
+type ContextOptimizer struct {
+	MaxChars int
+}
+
+func NewContextOptimizer(maxChars int) *ContextOptimizer {
+	return &ContextOptimizer{
+		MaxChars: maxChars,
+	}
+}
+
+var bufferPool = sync.Pool{
+	New: func() any {
+		return &responseBuffer{
+			body: &bytes.Buffer{},
+		}
+	},
+}
+
 func (co *ContextOptimizer) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		wb := bufferPool.Get().(*responseBuffer)
@@ -65,11 +82,11 @@ func (co *ContextOptimizer) Handler(next http.Handler) http.Handler {
 		wb.body.Reset()
 		wb.checked = false
 		wb.shouldBuffer = false
-		wb.status = http.StatusOK // Default status
+		wb.status = http.StatusOK	// Default status
 		wb.wroteHeader = false
 
 		defer func() {
-			wb.ResponseWriter = nil // Avoid holding reference
+			wb.ResponseWriter = nil	// Avoid holding reference
 			// If buffer is too large (>1MB), replace it with a new one to release memory
 			if wb.body.Cap() > 1024*1024 {
 				wb.body = &bytes.Buffer{}
@@ -92,9 +109,9 @@ func (co *ContextOptimizer) Handler(next http.Handler) http.Handler {
 			bodyBytes := wb.body.Bytes()
 
 			type modification struct {
-				start       int
-				end         int
-				replacement []byte
+				start		int
+				end		int
+				replacement	[]byte
 			}
 			var mods []modification
 
@@ -114,13 +131,13 @@ func (co *ContextOptimizer) Handler(next http.Handler) http.Handler {
 							// Marshal the truncated string to get valid JSON string representation (with quotes and escapes)
 							replacement, _ := json.Marshal(truncated)
 							mods = append(mods, modification{
-								start:       text.Index,
-								end:         text.Index + len(text.Raw),
-								replacement: replacement,
+								start:		text.Index,
+								end:		text.Index + len(text.Raw),
+								replacement:	replacement,
 							})
 						}
 					}
-					return true // continue
+					return true	// continue
 				})
 			}
 
@@ -164,11 +181,11 @@ func (co *ContextOptimizer) Handler(next http.Handler) http.Handler {
 
 type responseBuffer struct {
 	http.ResponseWriter
-	body         *bytes.Buffer
-	shouldBuffer bool
-	checked      bool
-	status       int
-	wroteHeader  bool
+	body		*bytes.Buffer
+	shouldBuffer	bool
+	checked		bool
+	status		int
+	wroteHeader	bool
 }
 
 func (w *responseBuffer) isBuffering() bool {
@@ -184,25 +201,43 @@ func (w *responseBuffer) checkBuffer() {
 	if !w.checked {
 		ct := w.Header().Get("Content-Type")
 		// We only buffer application/json.
+		// Write writes the data to the buffer or the underlying ResponseWriter.
+		//
+		// Summary: Writes data to the internal buffer if enabled, or directly to the response writer.
+		//
+		// Parameters:
+		//   - b: []byte. The data to write.
+		//
+		// Returns:
+		//   - int: The number of bytes written.
+		//   - error: An error if the write fails.
+		//
+		// Side Effects:
+		//   - Appends to the body buffer if buffering is enabled.
+		//   - Writes to the underlying ResponseWriter otherwise.
+		//
+		//
+		// Errors:
+		//   - An error if it fails.
+		// WriteHeader captures the status code and decides whether to buffer based on headers.
+		//
+		// Summary: Writes the HTTP status code.
+		//
+		// Parameters:
+		//   - statusCode: int. The HTTP status code.
+		//
+		// Side Effects:
+		//   - Sets the internal status code.
+		//   - Checks content-type headers to determine if buffering is needed.
+		//
+		//
+		// Errors:
+		//   - An error if it fails.
 		w.shouldBuffer = ct == "application/json" || strings.HasPrefix(ct, "application/json;")
 		w.checked = true
 	}
 }
 
-// Write writes the data to the buffer or the underlying ResponseWriter.
-//
-// Summary: Writes data to the internal buffer if enabled, or directly to the response writer.
-//
-// Parameters:
-//   - b: []byte. The data to write.
-//
-// Returns:
-//   - int: The number of bytes written.
-//   - error: An error if the write fails.
-//
-// Side Effects:
-//   - Appends to the body buffer if buffering is enabled.
-//   - Writes to the underlying ResponseWriter otherwise.
 func (w *responseBuffer) Write(b []byte) (int, error) {
 	w.checkBuffer()
 
@@ -216,16 +251,6 @@ func (w *responseBuffer) Write(b []byte) (int, error) {
 	return w.ResponseWriter.Write(b)
 }
 
-// WriteHeader captures the status code and decides whether to buffer based on headers.
-//
-// Summary: Writes the HTTP status code.
-//
-// Parameters:
-//   - statusCode: int. The HTTP status code.
-//
-// Side Effects:
-//   - Sets the internal status code.
-//   - Checks content-type headers to determine if buffering is needed.
 func (w *responseBuffer) WriteHeader(statusCode int) {
 	if w.wroteHeader {
 		return

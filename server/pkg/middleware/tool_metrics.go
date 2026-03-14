@@ -17,88 +17,119 @@ import (
 )
 
 var (
-	registerMetricsOnce sync.Once
+	registerMetricsOnce	sync.Once
 
 	// Define Prometheus metrics.
-	toolExecutionDuration = prometheus.NewHistogramVec(
+	toolExecutionDuration	= prometheus.NewHistogramVec(
 		prometheus.HistogramOpts{
-			Name:    "mcpany_tools_call_latency_seconds",
-			Help:    "Histogram of tool execution duration in seconds.",
-			Buckets: prometheus.DefBuckets, // Use default buckets or customize
+			Name:		"mcpany_tools_call_latency_seconds",
+			Help:		"Histogram of tool execution duration in seconds.",
+			Buckets:	prometheus.DefBuckets,	// Use default buckets or customize
 		},
 		[]string{"tool", "service_id", "status", "error_type"},
 	)
 
-	toolExecutionTotal = prometheus.NewCounterVec(
+	toolExecutionTotal	= prometheus.NewCounterVec(
 		prometheus.CounterOpts{
-			Name: "mcpany_tools_call_total",
+			Name:	"mcpany_tools_call_total",
 			// Help string must match the existing registration to avoid conflicts.
 			// The conflicting registration seems to use the name as the help string.
-			Help: "mcpany_tools_call_total",
+			Help:	"mcpany_tools_call_total",
 		},
 		[]string{"tool", "service_id", "status", "error_type"},
 	)
 
-	toolExecutionInputBytes = prometheus.NewHistogramVec(
+	toolExecutionInputBytes	= prometheus.NewHistogramVec(
 		prometheus.HistogramOpts{
-			Name: "mcpany_tools_call_input_bytes",
-			Help: "Histogram of tool input size in bytes.",
+			Name:	"mcpany_tools_call_input_bytes",
+			Help:	"Histogram of tool input size in bytes.",
 			// Buckets from 100B to 10MB
-			Buckets: prometheus.ExponentialBuckets(100, 10, 6),
+			Buckets:	prometheus.ExponentialBuckets(100, 10, 6),
 		},
 		[]string{"tool", "service_id"},
 	)
 
-	toolExecutionOutputBytes = prometheus.NewHistogramVec(
+	toolExecutionOutputBytes	= prometheus.NewHistogramVec(
 		prometheus.HistogramOpts{
-			Name: "mcpany_tools_call_output_bytes",
-			Help: "Histogram of tool output size in bytes.",
+			Name:	"mcpany_tools_call_output_bytes",
+			Help:	"Histogram of tool output size in bytes.",
 			// Buckets from 100B to 10MB
-			Buckets: prometheus.ExponentialBuckets(100, 10, 6),
+			Buckets:	prometheus.ExponentialBuckets(100, 10, 6),
 		},
 		[]string{"tool", "service_id"},
 	)
 
-	toolExecutionTokensTotal = prometheus.NewCounterVec(
+	toolExecutionTokensTotal	= prometheus.NewCounterVec(
 		prometheus.CounterOpts{
-			Name: "mcpany_tools_call_tokens_total",
-			Help: "Total number of tokens in tool executions.",
+			Name:	"mcpany_tools_call_tokens_total",
+			Help:	"Total number of tokens in tool executions.",
 		},
-		[]string{"tool", "service_id", "direction"}, // direction: input, output
+		[]string{"tool", "service_id", "direction"},	// direction: input, output
+		// ToolMetricsMiddleware provides detailed metrics for tool executions.
+		//
+		// Summary: Middleware that records Prometheus metrics for tool execution calls.
+		//
+		//
+		// Errors:
+		//   - An error if it fails.
+		//
+		// Side Effects:
+		//   - None.
+		// NewToolMetricsMiddleware creates a new ToolMetricsMiddleware.
+		//
+		// Summary: Initializes the tool metrics middleware and registers metrics if not already registered.
+		//
+		// Parameters:
+		//   - t: tokenizer.Tokenizer. The tokenizer used to count tokens in tool inputs and outputs.
+		//     If nil, a simple default tokenizer is used.
+		//
+		// Returns:
+		//   - *ToolMetricsMiddleware: A new instance of ToolMetricsMiddleware with metrics registered.
+		//
+		// Side Effects:
+		//   - Registers Prometheus metrics (globally, once).
+		//
+		//
+		// Errors:
+		//   - An error if it fails.
 	)
 
-	toolExecutionsInFlight = prometheus.NewGaugeVec(
+	toolExecutionsInFlight	= prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
-			Name: "mcpany_tools_call_in_flight",
-			Help: "Current number of tool executions in flight.",
+			Name:	"mcpany_tools_call_in_flight",
+			Help:	"Current number of tool executions in flight.",
 		},
 		[]string{"tool", "service_id"},
 	)
 )
 
-// ToolMetricsMiddleware provides detailed metrics for tool executions.
-//
-// Summary: Middleware that records Prometheus metrics for tool execution calls.
 type ToolMetricsMiddleware struct {
 	tokenizer tokenizer.Tokenizer
 }
 
-// NewToolMetricsMiddleware creates a new ToolMetricsMiddleware.
-//
-// Summary: Initializes the tool metrics middleware and registers metrics if not already registered.
-//
-// Parameters:
-//   - t: tokenizer.Tokenizer. The tokenizer used to count tokens in tool inputs and outputs.
-//     If nil, a simple default tokenizer is used.
-//
-// Returns:
-//   - *ToolMetricsMiddleware: A new instance of ToolMetricsMiddleware with metrics registered.
-//
-// Side Effects:
-//   - Registers Prometheus metrics (globally, once).
 func NewToolMetricsMiddleware(t tokenizer.Tokenizer) *ToolMetricsMiddleware {
 	registerMetricsOnce.Do(func() {
 		// Register metrics with the default registry (which server/pkg/metrics also uses/exposes)
+		// Execute executes the tool metrics middleware.
+		//
+		// Summary: Wraps tool execution to record latency, size, and token metrics.
+		//
+		// Parameters:
+		//   - ctx: context.Context. The execution context.
+		//   - req: *tool.ExecutionRequest. The request containing tool execution details.
+		//   - next: tool.ExecutionFunc. The next handler in the execution chain.
+		//
+		// Returns:
+		//   - any: The result of the tool execution.
+		//   - error: An error if the execution fails.
+		//
+		// Side Effects:
+		//   - Updates Prometheus counters, histograms, and gauges.
+		//   - Measures execution duration.
+		//
+		//
+		// Errors:
+		//   - An error if it fails.
 		prometheus.MustRegister(toolExecutionDuration)
 		prometheus.MustRegister(toolExecutionTotal)
 		prometheus.MustRegister(toolExecutionInputBytes)
@@ -114,22 +145,6 @@ func NewToolMetricsMiddleware(t tokenizer.Tokenizer) *ToolMetricsMiddleware {
 	}
 }
 
-// Execute executes the tool metrics middleware.
-//
-// Summary: Wraps tool execution to record latency, size, and token metrics.
-//
-// Parameters:
-//   - ctx: context.Context. The execution context.
-//   - req: *tool.ExecutionRequest. The request containing tool execution details.
-//   - next: tool.ExecutionFunc. The next handler in the execution chain.
-//
-// Returns:
-//   - any: The result of the tool execution.
-//   - error: An error if the execution fails.
-//
-// Side Effects:
-//   - Updates Prometheus counters, histograms, and gauges.
-//   - Measures execution duration.
 func (m *ToolMetricsMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	// Get Service ID if possible (from context or tool)
 	var serviceID string
@@ -138,8 +153,8 @@ func (m *ToolMetricsMiddleware) Execute(ctx context.Context, req *tool.Execution
 	}
 
 	labels := prometheus.Labels{
-		"tool":       req.ToolName,
-		"service_id": serviceID,
+		"tool":		req.ToolName,
+		"service_id":	serviceID,
 	}
 
 	toolExecutionsInFlight.With(labels).Inc()
@@ -153,9 +168,9 @@ func (m *ToolMetricsMiddleware) Execute(ctx context.Context, req *tool.Execution
 
 	toolExecutionInputBytes.With(labels).Observe(float64(inputSize))
 	toolExecutionTokensTotal.With(prometheus.Labels{
-		"tool":       req.ToolName,
-		"service_id": serviceID,
-		"direction":  "input",
+		"tool":		req.ToolName,
+		"service_id":	serviceID,
+		"direction":	"input",
 	}).Add(float64(inputTokens))
 
 	result, err := next(ctx, req)
@@ -177,10 +192,10 @@ func (m *ToolMetricsMiddleware) Execute(ctx context.Context, req *tool.Execution
 	}
 
 	resultLabels := prometheus.Labels{
-		"tool":       req.ToolName,
-		"service_id": serviceID,
-		"status":     status,
-		"error_type": errorType,
+		"tool":		req.ToolName,
+		"service_id":	serviceID,
+		"status":	status,
+		"error_type":	errorType,
 	}
 
 	toolExecutionTotal.With(resultLabels).Inc()
@@ -192,9 +207,9 @@ func (m *ToolMetricsMiddleware) Execute(ctx context.Context, req *tool.Execution
 
 	toolExecutionOutputBytes.With(labels).Observe(float64(outputSize))
 	toolExecutionTokensTotal.With(prometheus.Labels{
-		"tool":       req.ToolName,
-		"service_id": serviceID,
-		"direction":  "output",
+		"tool":		req.ToolName,
+		"service_id":	serviceID,
+		"direction":	"output",
 	}).Add(float64(outputTokens))
 
 	return result, err

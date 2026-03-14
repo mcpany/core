@@ -12,8 +12,6 @@ import (
 
 // maxRecursionDepth limits the depth of recursion when processing schemas
 // to prevent stack overflows from circular references or excessively deep structures.
-const maxRecursionDepth = 100
-
 // SanitizeJSONSchema attempts to fix common schema issues that cause strict MCP clients to fail.
 // It takes a raw map[string]interface{} (or compatible) and returns a *structpb.Struct.
 // This function does NOT modify the input schema.
@@ -32,6 +30,8 @@ const maxRecursionDepth = 100
 //
 // Side Effects:
 //   - Performs a deep copy of the input schema.
+const maxRecursionDepth = 100
+
 func SanitizeJSONSchema(schema any) (*structpb.Struct, error) {
 	if schema == nil {
 		return nil, nil

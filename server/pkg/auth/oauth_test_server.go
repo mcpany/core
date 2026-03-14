@@ -1,6 +1,26 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// Summary: MockOAuth2Server serves as a mock OIDC/OAuth2 provider.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+// NewMockOAuth2Server creates a new mock OAuth2 server. t is the t. Returns the result.
+//
+// Parameters:
+//   - t (*testing.T): The t parameter.
+//
+// Returns:
+//   - *MockOAuth2Server: The resulting *MockOAuth2Server.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 package auth
 
 import (
@@ -18,26 +38,12 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// MockOAuth2Server serves as a mock OIDC/OAuth2 provider.
 type MockOAuth2Server struct {
 	*httptest.Server
-	PrivateKey *rsa.PrivateKey
-	ClientID   string
+	PrivateKey	*rsa.PrivateKey
+	ClientID	string
 }
 
-// NewMockOAuth2Server creates a new mock OAuth2 server. t is the t. Returns the result.
-//
-// Parameters:
-//   - t (*testing.T): The t parameter.
-//
-// Returns:
-//   - *MockOAuth2Server: The resulting *MockOAuth2Server.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
 func NewMockOAuth2Server(t *testing.T) *MockOAuth2Server {
 	privateKey, err := rsa.GenerateKey(rand.Reader, 2048)
 	require.NoError(t, err)
@@ -46,17 +52,17 @@ func NewMockOAuth2Server(t *testing.T) *MockOAuth2Server {
 	server := httptest.NewServer(mux)
 
 	mock := &MockOAuth2Server{
-		Server:     server,
-		PrivateKey: privateKey,
+		Server:		server,
+		PrivateKey:	privateKey,
 	}
 
 	mux.HandleFunc("/.well-known/openid-configuration", func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		config := map[string]interface{}{
-			"issuer":                 server.URL,
-			"jwks_uri":               server.URL + "/jwks",
-			"authorization_endpoint": server.URL + "/auth",
-			"token_endpoint":         server.URL + "/token",
+			"issuer":			server.URL,
+			"jwks_uri":			server.URL + "/jwks",
+			"authorization_endpoint":	server.URL + "/auth",
+			"token_endpoint":		server.URL + "/token",
 		}
 		_ = json.NewEncoder(w).Encode(config)
 	})
@@ -85,43 +91,43 @@ func NewMockOAuth2Server(t *testing.T) *MockOAuth2Server {
 
 	mux.HandleFunc("/token", func(w http.ResponseWriter, _ *http.Request) {
 		// Mock Token Endpoint
+		// NewIDToken permits generating custom tokens signed by this server. t is the t. claims is the claims. Returns the result.
+		//
+		// Parameters:
+		//   - t (*testing.T): The t parameter.
+		//   - claims (jwt.MapClaims): The claims parameter.
+		//
+		// Returns:
+		//   - string: The resulting string.
+		//
+		// Errors:
+		//   - None
+		//
+		// Side Effects:
+		//   - None
 		w.Header().Set("Content-Type", "application/json")
 		aud := mock.ClientID
 		if aud == "" {
 			aud = "mock_client"
 		}
 		token := mock.NewIDToken(t, jwt.MapClaims{
-			"iss":   server.URL,
-			"sub":   "mock_user",
-			"email": "test@example.com",
-			"aud":   aud,
-			"exp":   time.Now().Add(time.Hour).Unix(),
+			"iss":		server.URL,
+			"sub":		"mock_user",
+			"email":	"test@example.com",
+			"aud":		aud,
+			"exp":		time.Now().Add(time.Hour).Unix(),
 		})
 		_ = json.NewEncoder(w).Encode(map[string]interface{}{
-			"access_token": token,
-			"id_token":     token,
-			"token_type":   "Bearer",
-			"expires_in":   3600,
+			"access_token":	token,
+			"id_token":	token,
+			"token_type":	"Bearer",
+			"expires_in":	3600,
 		})
 	})
 
 	return mock
 }
 
-// NewIDToken permits generating custom tokens signed by this server. t is the t. claims is the claims. Returns the result.
-//
-// Parameters:
-//   - t (*testing.T): The t parameter.
-//   - claims (jwt.MapClaims): The claims parameter.
-//
-// Returns:
-//   - string: The resulting string.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
 func (s *MockOAuth2Server) NewIDToken(t *testing.T, claims jwt.MapClaims) string {
 	token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
 	signedToken, err := token.SignedString(s.PrivateKey)

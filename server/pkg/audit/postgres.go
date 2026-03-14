@@ -11,36 +11,43 @@ import (
 	"sync"
 	"time"
 
-	_ "github.com/lib/pq" // Register postgres driver
+	_ "github.com/lib/pq"	// Register postgres driver
+	// PostgresAuditStore writes audit logs to a PostgreSQL database.
+	//
+	// Summary: Stores audit log entries in a PostgreSQL database with tamper-evident hashing.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
+	// NewPostgresAuditStore creates a new PostgresAuditStore.
+	//
+	// Summary: Initializes a new PostgresAuditStore.
+	//
+	// Parameters:
+	//   - dsn: string. The PostgreSQL connection string.
+	//
+	// Returns:
+	//   - *PostgresAuditStore: The initialized store.
+	//   - error: An error if connection or schema initialization fails.
+	//
+	// Errors:
+	//   - Returns "postgres dsn is required" if the dsn is empty.
+	//   - Returns error if database connection or ping fails.
+	//   - Returns error if table creation fails.
+	//
+	// Side Effects:
+	//   - Connects to the database.
+	//   - Creates the 'audit_logs' table if it doesn't exist.
 )
 
-// PostgresAuditStore writes audit logs to a PostgreSQL database.
-//
-// Summary: Stores audit log entries in a PostgreSQL database with tamper-evident hashing.
 type PostgresAuditStore struct {
-	db *sql.DB
-	mu sync.Mutex
+	db	*sql.DB
+	mu	sync.Mutex
 }
 
-// NewPostgresAuditStore creates a new PostgresAuditStore.
-//
-// Summary: Initializes a new PostgresAuditStore.
-//
-// Parameters:
-//   - dsn: string. The PostgreSQL connection string.
-//
-// Returns:
-//   - *PostgresAuditStore: The initialized store.
-//   - error: An error if connection or schema initialization fails.
-//
-// Errors:
-//   - Returns "postgres dsn is required" if the dsn is empty.
-//   - Returns error if database connection or ping fails.
-//   - Returns error if table creation fails.
-//
-// Side Effects:
-//   - Connects to the database.
-//   - Creates the 'audit_logs' table if it doesn't exist.
 func NewPostgresAuditStore(dsn string) (*PostgresAuditStore, error) {
 	if dsn == "" {
 		return nil, fmt.Errorf("postgres dsn is required")
@@ -65,6 +72,23 @@ func NewPostgresAuditStore(dsn string) (*PostgresAuditStore, error) {
 	// JSONB for arguments and result could be used, but we stick to TEXT/string to match the hashing logic exactly
 	// and avoid issues with JSON normalization differences in DB.
 	// We can cast to JSONB in queries if needed.
+	// Write writes an audit entry to the database.
+	//
+	// Summary: Writes a single audit entry with cryptographic chaining.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The request context.
+	//   - entry: Entry. The audit entry to write.
+	//
+	// Returns:
+	//   - error: An error if the write fails.
+	//
+	// Errors:
+	//   - Returns error if transaction start, lock, query, or commit fails.
+	//
+	// Side Effects:
+	//   - Acquires an exclusive lock on the audit_logs table.
+	//   - Inserts a new row into audit_logs.
 	schema := `
 	CREATE TABLE IF NOT EXISTS audit_logs (
 		id BIGSERIAL PRIMARY KEY,
@@ -92,23 +116,6 @@ func NewPostgresAuditStore(dsn string) (*PostgresAuditStore, error) {
 	}, nil
 }
 
-// Write writes an audit entry to the database.
-//
-// Summary: Writes a single audit entry with cryptographic chaining.
-//
-// Parameters:
-//   - ctx: context.Context. The request context.
-//   - entry: Entry. The audit entry to write.
-//
-// Returns:
-//   - error: An error if the write fails.
-//
-// Errors:
-//   - Returns error if transaction start, lock, query, or commit fails.
-//
-// Side Effects:
-//   - Acquires an exclusive lock on the audit_logs table.
-//   - Inserts a new row into audit_logs.
 func (s *PostgresAuditStore) Write(ctx context.Context, entry Entry) error {
 	// We don't need mutex here because we use database transaction for concurrency control.
 	// s.mu.Lock() // removed
@@ -131,7 +138,7 @@ func (s *PostgresAuditStore) Write(ctx context.Context, entry Entry) error {
 		return fmt.Errorf("failed to begin transaction: %w", err)
 	}
 	defer func() {
-		_ = tx.Rollback() // Safe to call even if committed
+		_ = tx.Rollback()	// Safe to call even if committed
 	}()
 
 	// Get previous hash with locking to prevent concurrent writes branching the chain
@@ -156,7 +163,7 @@ func (s *PostgresAuditStore) Write(ctx context.Context, entry Entry) error {
 		return fmt.Errorf("failed to get previous hash: %w", err)
 	}
 	if err == sql.ErrNoRows {
-		prevHash = "" // First entry
+		prevHash = ""	// First entry
 	}
 
 	// Compute hash
@@ -171,7 +178,39 @@ func (s *PostgresAuditStore) Write(ctx context.Context, entry Entry) error {
 	`
 
 	_, err = tx.ExecContext(ctx, query,
-		entry.Timestamp, // Postgres driver handles time.Time
+		entry.Timestamp,	// Postgres driver handles time.Time
+		// Read implements the Store interface.
+		//
+		// Summary: Reads audit entries (Not implemented).
+		//
+		// Parameters:
+		//   - _: context.Context. Unused.
+		//   - _: Filter. Unused.
+		//
+		// Returns:
+		//   - []Entry: Nil.
+		//   - error: Always returns "not implemented".
+		//
+		//
+		// Errors:
+		//   - An error if it fails.
+		//
+		// Side Effects:
+		//   - None.
+		// Verify checks the integrity of the audit logs.
+		//
+		// Summary: Verifies the cryptographic chain of the audit logs.
+		//
+		// Returns:
+		//   - bool: True if the chain is valid, false otherwise.
+		//   - error: An error if verification logic fails (e.g. database error) or integrity is compromised.
+		//
+		// Errors:
+		//   - Returns error if database query fails.
+		//   - Returns error if hash mismatch or chain break is detected.
+		//
+		// Side Effects:
+		//   - Reads all rows from the audit_logs table.
 		entry.ToolName,
 		entry.UserID,
 		entry.ProfileID,
@@ -189,35 +228,10 @@ func (s *PostgresAuditStore) Write(ctx context.Context, entry Entry) error {
 	return tx.Commit()
 }
 
-// Read implements the Store interface.
-//
-// Summary: Reads audit entries (Not implemented).
-//
-// Parameters:
-//   - _: context.Context. Unused.
-//   - _: Filter. Unused.
-//
-// Returns:
-//   - []Entry: Nil.
-//   - error: Always returns "not implemented".
 func (s *PostgresAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for postgres audit store")
 }
 
-// Verify checks the integrity of the audit logs.
-//
-// Summary: Verifies the cryptographic chain of the audit logs.
-//
-// Returns:
-//   - bool: True if the chain is valid, false otherwise.
-//   - error: An error if verification logic fails (e.g. database error) or integrity is compromised.
-//
-// Errors:
-//   - Returns error if database query fails.
-//   - Returns error if hash mismatch or chain break is detected.
-//
-// Side Effects:
-//   - Reads all rows from the audit_logs table.
 func (s *PostgresAuditStore) Verify() (bool, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -235,7 +249,7 @@ func (s *PostgresAuditStore) Verify() (bool, error) {
 		var id int64
 		var ts time.Time
 		var toolName, userID, profileID, errorMsg, prevHash, hash string
-		var args, result sql.NullString // Can be null in some schemas, though we set defaults. Use NullString for safety.
+		var args, result sql.NullString	// Can be null in some schemas, though we set defaults. Use NullString for safety.
 		var durationMs int64
 
 		if err := rows.Scan(&id, &ts, &toolName, &userID, &profileID, &args, &result, &errorMsg, &durationMs, &prevHash, &hash); err != nil {
@@ -266,6 +280,19 @@ func (s *PostgresAuditStore) Verify() (bool, error) {
 			calculatedHash = computeHash(tsStr, toolName, userID, profileID, argsStr, resultStr, errorMsg, durationMs, prevHash)
 		} else {
 			// Fallback to legacy
+			// Close closes the database connection.
+			//
+			// Summary: Closes the PostgreSQL database connection.
+			//
+			// Returns:
+			//   - error: An error if closing fails.
+			//
+			// Side Effects:
+			//   - Closes the DB connection.
+			//
+			//
+			// Errors:
+			//   - An error if it fails.
 			calculatedHash = computeHashV0(tsStr, toolName, userID, profileID, argsStr, resultStr, errorMsg, durationMs, prevHash)
 		}
 
@@ -281,15 +308,6 @@ func (s *PostgresAuditStore) Verify() (bool, error) {
 	return true, nil
 }
 
-// Close closes the database connection.
-//
-// Summary: Closes the PostgreSQL database connection.
-//
-// Returns:
-//   - error: An error if closing fails.
-//
-// Side Effects:
-//   - Closes the DB connection.
 func (s *PostgresAuditStore) Close() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

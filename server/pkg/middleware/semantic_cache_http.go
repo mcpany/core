@@ -1,32 +1,15 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package middleware
-
-import (
-	"bytes"
-	"context"
-	"encoding/json"
-	"fmt"
-	"io"
-	"net/http"
-	"text/template"
-	"time"
-
-	"github.com/PaesslerAG/jsonpath"
-)
-
 // HTTPEmbeddingProvider implements a generic HTTP EmbeddingProvider.
 //
 // Summary: A generic provider that fetches embeddings from an arbitrary HTTP endpoint.
-type HTTPEmbeddingProvider struct {
-	url              string
-	headers          map[string]string
-	bodyTemplate     *template.Template
-	responseJSONPath string
-	client           *http.Client
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // NewHTTPEmbeddingProvider creates a new HTTPEmbeddingProvider.
 //
 // Summary: Initializes a new HTTPEmbeddingProvider with custom request formatting.
@@ -47,25 +30,6 @@ type HTTPEmbeddingProvider struct {
 //
 // Side Effects:
 //   - Compiles the body template.
-func NewHTTPEmbeddingProvider(url string, headers map[string]string, bodyTemplateStr, responseJSONPath string) (*HTTPEmbeddingProvider, error) {
-	if url == "" {
-		return nil, fmt.Errorf("url is required")
-	}
-
-	tmpl, err := template.New("body").Parse(bodyTemplateStr)
-	if err != nil {
-		return nil, fmt.Errorf("invalid body template: %w", err)
-	}
-
-	return &HTTPEmbeddingProvider{
-		url:              url,
-		headers:          headers,
-		bodyTemplate:     tmpl,
-		responseJSONPath: responseJSONPath,
-		client:           &http.Client{Timeout: 30 * time.Second},
-	}, nil
-}
-
 // Embed generates an embedding for the given text.
 //
 // Summary: Generates an embedding by sending a templated HTTP request and extracting the result via JSONPath.
@@ -87,6 +51,48 @@ func NewHTTPEmbeddingProvider(url string, headers map[string]string, bodyTemplat
 //
 // Side Effects:
 //   - Makes an HTTP POST request to the configured URL.
+package middleware
+
+import (
+	"bytes"
+	"context"
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
+	"text/template"
+	"time"
+
+	"github.com/PaesslerAG/jsonpath"
+)
+
+type HTTPEmbeddingProvider struct {
+	url			string
+	headers			map[string]string
+	bodyTemplate		*template.Template
+	responseJSONPath	string
+	client			*http.Client
+}
+
+func NewHTTPEmbeddingProvider(url string, headers map[string]string, bodyTemplateStr, responseJSONPath string) (*HTTPEmbeddingProvider, error) {
+	if url == "" {
+		return nil, fmt.Errorf("url is required")
+	}
+
+	tmpl, err := template.New("body").Parse(bodyTemplateStr)
+	if err != nil {
+		return nil, fmt.Errorf("invalid body template: %w", err)
+	}
+
+	return &HTTPEmbeddingProvider{
+		url:			url,
+		headers:		headers,
+		bodyTemplate:		tmpl,
+		responseJSONPath:	responseJSONPath,
+		client:			&http.Client{Timeout: 30 * time.Second},
+	}, nil
+}
+
 func (p *HTTPEmbeddingProvider) Embed(ctx context.Context, text string) ([]float32, error) {
 	// Simple template replacement.
 	// We assume formatting is handled by the caller or configuration?

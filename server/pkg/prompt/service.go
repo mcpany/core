@@ -1,6 +1,31 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// Summary: Service handles the business logic for the prompts feature. It provides
+// methods for listing available prompts and retrieving a specific prompt by
+// name.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+// NewService creates and returns a new Service instance.
+//
+// Summary: Initializes a new Prompt Service.
+//
+// Parameters:
+//   - promptManager: ManagerInterface. The manager handling prompt lifecycle.
+//
+// Returns:
+//   - *Service: The initialized service.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 package prompt
 
 import (
@@ -11,40 +36,35 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// Service handles the business logic for the prompts feature. It provides
-// methods for listing available prompts and retrieving a specific prompt by
-// name.
 type Service struct {
-	promptManager ManagerInterface
-	mcpServer     *mcp.Server
+	promptManager	ManagerInterface
+	mcpServer	*mcp.Server
 }
 
-// NewService creates and returns a new Service instance.
-//
-// Summary: Initializes a new Prompt Service.
-//
-// Parameters:
-//   - promptManager: ManagerInterface. The manager handling prompt lifecycle.
-//
-// Returns:
-//   - *Service: The initialized service.
 func NewService(promptManager ManagerInterface) *Service {
 	s := &Service{
 		promptManager: promptManager,
 	}
 	// s.promptManager.OnListChanged(s.onPromptListChanged)
+	// SetMCPServer sets the MCP server instance for the service.
+	//
+	// Summary: Configures the underlying MCP server.
+	//
+	// Parameters:
+	//   - mcpServer: *mcp.Server. The MCP server instance.
+	//
+	// Returns:
+	//   None.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
 	return s
 }
 
-// SetMCPServer sets the MCP server instance for the service.
-//
-// Summary: Configures the underlying MCP server.
-//
-// Parameters:
-//   - mcpServer: *mcp.Server. The MCP server instance.
-//
-// Returns:
-//   None.
 func (s *Service) SetMCPServer(mcpServer *mcp.Server) {
 	s.mcpServer = mcpServer
 	s.promptManager.SetMCPServer(NewMCPServerProvider(mcpServer))
@@ -57,7 +77,6 @@ func (s *Service) SetMCPServer(mcpServer *mcp.Server) {
 //    // Waiting for SDK support for public notification triggering
 //	  // log.Warn("Prompt list changed notification not sent (SDK limitation)")
 // }
-
 // ListPrompts handles the "prompts/list" MCP request.
 //
 // Summary: Lists all available prompts.
@@ -69,20 +88,13 @@ func (s *Service) SetMCPServer(mcpServer *mcp.Server) {
 // Returns:
 //   - *mcp.ListPromptsResult: The list of prompts.
 //   - error: An error if the operation fails.
-func (s *Service) ListPrompts(
-	_ context.Context,
-	_ *mcp.ListPromptsRequest,
-) (*mcp.ListPromptsResult, error) {
-	prompts := s.promptManager.ListPrompts()
-	mcpPrompts := make([]*mcp.Prompt, len(prompts))
-	for i, p := range prompts {
-		mcpPrompts[i] = p.Prompt()
-	}
-	return &mcp.ListPromptsResult{
-		Prompts: mcpPrompts,
-	}, nil
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // GetPrompt handles the "prompts/get" MCP request.
 //
 // Summary: Retrieves and executes a specific prompt.
@@ -97,6 +109,24 @@ func (s *Service) ListPrompts(
 //
 // Throws/Errors:
 //   - ErrPromptNotFound: If the prompt does not exist.
+//
+//
+// Side Effects:
+//   - None.
+func (s *Service) ListPrompts(
+	_ context.Context,
+	_ *mcp.ListPromptsRequest,
+) (*mcp.ListPromptsResult, error) {
+	prompts := s.promptManager.ListPrompts()
+	mcpPrompts := make([]*mcp.Prompt, len(prompts))
+	for i, p := range prompts {
+		mcpPrompts[i] = p.Prompt()
+	}
+	return &mcp.ListPromptsResult{
+		Prompts: mcpPrompts,
+	}, nil
+}
+
 func (s *Service) GetPrompt(
 	ctx context.Context,
 	req *mcp.GetPromptRequest,

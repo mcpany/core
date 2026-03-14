@@ -1,33 +1,21 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package vector
-
-import (
-	"context"
-	"crypto/sha256"
-	"encoding/hex"
-	"fmt"
-
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/mcpany/core/server/pkg/logging"
-	"github.com/mcpany/core/server/pkg/prompt"
-	"github.com/mcpany/core/server/pkg/resource"
-	"github.com/mcpany/core/server/pkg/tool"
-	"github.com/mcpany/core/server/pkg/upstream"
-	"github.com/mcpany/core/server/pkg/util"
-	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/known/structpb"
-)
-
-// ClientFactory is a function that creates a VectorClient.
-type ClientFactory func(config *configv1.VectorUpstreamService) (Client, error)
-
-// Upstream implements the upstream.Upstream interface for vector database services.
-type Upstream struct {
-	clientFactory ClientFactory
-}
-
+// Summary: ClientFactory is a function that creates a VectorClient.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+// Summary: Upstream implements the upstream.Upstream interface for vector database services.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // NewUpstream creates a new instance of VectorUpstream.
 //
 // Returns:
@@ -35,22 +23,10 @@ type Upstream struct {
 //
 // Side Effects:
 //   - None.
-func NewUpstream() upstream.Upstream {
-	return &Upstream{
-		clientFactory: defaultClientFactory,
-	}
-}
-
-func defaultClientFactory(config *configv1.VectorUpstreamService) (Client, error) {
-	if t := config.GetPinecone(); t != nil {
-		return NewPineconeClient(t)
-	}
-	if t := config.GetMilvus(); t != nil {
-		return NewMilvusClient(t)
-	}
-	return nil, fmt.Errorf("unsupported vector database type")
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
 // Shutdown implements the upstream.Upstream interface.
 //
 // Parameters:
@@ -64,10 +40,6 @@ func defaultClientFactory(config *configv1.VectorUpstreamService) (Client, error
 //
 // Side Effects:
 //   - None.
-func (u *Upstream) Shutdown(_ context.Context) error {
-	return nil
-}
-
 // Register processes the configuration for a vector service. _ is an unused parameter. serviceConfig is the serviceConfig. toolManager is the toolManager. _ is an unused parameter. _ is an unused parameter. _ is an unused parameter. Returns the result. Returns the result. Returns the result. Returns an error if the operation fails.
 //
 // Parameters:
@@ -89,6 +61,51 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //
 // Side Effects:
 //   - None
+package vector
+
+import (
+	"context"
+	"crypto/sha256"
+	"encoding/hex"
+	"fmt"
+
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/logging"
+	"github.com/mcpany/core/server/pkg/prompt"
+	"github.com/mcpany/core/server/pkg/resource"
+	"github.com/mcpany/core/server/pkg/tool"
+	"github.com/mcpany/core/server/pkg/upstream"
+	"github.com/mcpany/core/server/pkg/util"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/structpb"
+)
+
+type ClientFactory func(config *configv1.VectorUpstreamService) (Client, error)
+
+type Upstream struct {
+	clientFactory ClientFactory
+}
+
+func NewUpstream() upstream.Upstream {
+	return &Upstream{
+		clientFactory: defaultClientFactory,
+	}
+}
+
+func defaultClientFactory(config *configv1.VectorUpstreamService) (Client, error) {
+	if t := config.GetPinecone(); t != nil {
+		return NewPineconeClient(t)
+	}
+	if t := config.GetMilvus(); t != nil {
+		return NewMilvusClient(t)
+	}
+	return nil, fmt.Errorf("unsupported vector database type")
+}
+
+func (u *Upstream) Shutdown(_ context.Context) error {
+	return nil
+}
+
 func (u *Upstream) Register(
 	_ context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
@@ -123,8 +140,8 @@ func (u *Upstream) Register(
 	}
 
 	info := &tool.ServiceInfo{
-		Name:   serviceConfig.GetName(),
-		Config: serviceConfig,
+		Name:	serviceConfig.GetName(),
+		Config:	serviceConfig,
 	}
 	toolManager.AddServiceInfo(serviceID, info)
 
@@ -137,8 +154,8 @@ func (u *Upstream) Register(
 		toolName := t.Name
 
 		inputSchema, err := structpb.NewStruct(map[string]interface{}{
-			"type":       "object",
-			"properties": t.Input,
+			"type":		"object",
+			"properties":	t.Input,
 		})
 		if err != nil {
 			log.Error("Failed to create input schema", "tool", toolName, "error", err)
@@ -146,8 +163,8 @@ func (u *Upstream) Register(
 		}
 
 		outputSchema, err := structpb.NewStruct(map[string]interface{}{
-			"type":       "object",
-			"properties": t.Output,
+			"type":		"object",
+			"properties":	t.Output,
 		})
 		if err != nil {
 			log.Error("Failed to create output schema", "tool", toolName, "error", err)
@@ -155,15 +172,40 @@ func (u *Upstream) Register(
 		}
 
 		toolDef := configv1.ToolDefinition_builder{
-			Name:        proto.String(toolName),
-			ServiceId:   proto.String(serviceID),
-			Description: proto.String(t.Description),
+			Name:		proto.String(toolName),
+			ServiceId:	proto.String(serviceID),
+			Description:	proto.String(t.Description),
 		}.Build()
 
 		handler := t.Handler
 		callable := &vectorCallable{handler: handler}
 
 		// Create a callable tool
+		// Call executes the vector tool with the given arguments.
+		// It accepts a context and an execution request containing arguments,
+		// and returns the result of the tool execution or an error.
+		//
+		// Parameters:
+		//   - ctx (context.Context): The context for the request.
+		//   - req (*tool.ExecutionRequest): The parameter.
+		//
+		// Returns:
+		//   - any: The result.
+		//   - error: An error if the operation fails.
+		//
+		// Errors:
+		//   - Returns an error if ...
+		//
+		// Side Effects:
+		//   - None.
+		// Summary: Client interface for different vector DB implementations.
+		//
+		//
+		// Errors:
+		//   - An error if it fails.
+		//
+		// Side Effects:
+		//   - None.
 		callableTool, err := tool.NewCallableTool(toolDef, serviceConfig, callable, inputSchema, outputSchema)
 		if err != nil {
 			log.Error("Failed to create callable tool", "tool", toolName, "error", err)
@@ -186,36 +228,18 @@ type vectorCallable struct {
 	handler func(ctx context.Context, args map[string]interface{}) (map[string]interface{}, error)
 }
 
-// Call executes the vector tool with the given arguments.
-// It accepts a context and an execution request containing arguments,
-// and returns the result of the tool execution or an error.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - req (*tool.ExecutionRequest): The parameter.
-//
-// Returns:
-//   - any: The result.
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
 func (c *vectorCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	return c.handler(ctx, req.Arguments)
 }
 
 type vectorToolDef struct {
-	Name        string
-	Description string
-	Input       map[string]interface{}
-	Output      map[string]interface{}
-	Handler     func(ctx context.Context, args map[string]interface{}) (map[string]interface{}, error)
+	Name		string
+	Description	string
+	Input		map[string]interface{}
+	Output		map[string]interface{}
+	Handler		func(ctx context.Context, args map[string]interface{}) (map[string]interface{}, error)
 }
 
-// Client interface for different vector DB implementations.
 type Client interface {
 	// Query searches for the nearest vectors in the database.
 	// It accepts a context, a query vector, the number of results to return (topK),
@@ -242,17 +266,17 @@ type Client interface {
 func (u *Upstream) getTools(client Client) []vectorToolDef {
 	return []vectorToolDef{
 		{
-			Name:        "query_vectors",
-			Description: "Query the vector database for similar vectors.",
+			Name:		"query_vectors",
+			Description:	"Query the vector database for similar vectors.",
 			Input: map[string]interface{}{
 				"vector": map[string]interface{}{
-					"type":        "array",
-					"items":       map[string]interface{}{"type": "number"},
-					"description": "The query vector.",
+					"type":		"array",
+					"items":	map[string]interface{}{"type": "number"},
+					"description":	"The query vector.",
 				},
-				"top_k":     map[string]interface{}{"type": "integer", "description": "Number of results to return."},
-				"filter":    map[string]interface{}{"type": "object", "description": "Metadata filter."},
-				"namespace": map[string]interface{}{"type": "string", "description": "Namespace to query."},
+				"top_k":	map[string]interface{}{"type": "integer", "description": "Number of results to return."},
+				"filter":	map[string]interface{}{"type": "object", "description": "Metadata filter."},
+				"namespace":	map[string]interface{}{"type": "string", "description": "Namespace to query."},
 			},
 			Output: map[string]interface{}{
 				"matches": map[string]interface{}{"type": "array", "items": map[string]interface{}{"type": "object"}},
@@ -287,23 +311,23 @@ func (u *Upstream) getTools(client Client) []vectorToolDef {
 			},
 		},
 		{
-			Name:        "upsert_vectors",
-			Description: "Upsert vectors into the database.",
+			Name:		"upsert_vectors",
+			Description:	"Upsert vectors into the database.",
 			Input: map[string]interface{}{
 				"vectors": map[string]interface{}{
-					"type": "array",
+					"type":	"array",
 					"items": map[string]interface{}{
-						"type": "object",
+						"type":	"object",
 						"properties": map[string]interface{}{
-							"id":       map[string]interface{}{"type": "string"},
-							"values":   map[string]interface{}{"type": "array", "items": map[string]interface{}{"type": "number"}},
-							"metadata": map[string]interface{}{"type": "object"},
+							"id":		map[string]interface{}{"type": "string"},
+							"values":	map[string]interface{}{"type": "array", "items": map[string]interface{}{"type": "number"}},
+							"metadata":	map[string]interface{}{"type": "object"},
 						},
-						"required": []interface{}{"id", "values"},
+						"required":	[]interface{}{"id", "values"},
 					},
-					"description": "List of vectors to upsert.",
+					"description":	"List of vectors to upsert.",
 				},
-				"namespace": map[string]interface{}{"type": "string", "description": "Namespace to upsert into."},
+				"namespace":	map[string]interface{}{"type": "string", "description": "Namespace to upsert into."},
 			},
 			Output: map[string]interface{}{
 				"upserted_count": map[string]interface{}{"type": "integer"},
@@ -328,17 +352,17 @@ func (u *Upstream) getTools(client Client) []vectorToolDef {
 			},
 		},
 		{
-			Name:        "delete_vectors",
-			Description: "Delete vectors from the database.",
+			Name:		"delete_vectors",
+			Description:	"Delete vectors from the database.",
 			Input: map[string]interface{}{
 				"ids": map[string]interface{}{
-					"type":        "array",
-					"items":       map[string]interface{}{"type": "string"},
-					"description": "List of IDs to delete.",
+					"type":		"array",
+					"items":	map[string]interface{}{"type": "string"},
+					"description":	"List of IDs to delete.",
 				},
-				"namespace": map[string]interface{}{"type": "string", "description": "Namespace to delete from."},
-				"filter":    map[string]interface{}{"type": "object", "description": "Metadata filter (optional, if IDs not provided)."},
-				"deleteAll": map[string]interface{}{"type": "boolean", "description": "Delete all vectors in namespace."},
+				"namespace":	map[string]interface{}{"type": "string", "description": "Namespace to delete from."},
+				"filter":	map[string]interface{}{"type": "object", "description": "Metadata filter (optional, if IDs not provided)."},
+				"deleteAll":	map[string]interface{}{"type": "boolean", "description": "Delete all vectors in namespace."},
 			},
 			Output: map[string]interface{}{
 				"success": map[string]interface{}{"type": "boolean"},
@@ -363,16 +387,16 @@ func (u *Upstream) getTools(client Client) []vectorToolDef {
 			},
 		},
 		{
-			Name:        "describe_index_stats",
-			Description: "Get statistics about the index.",
+			Name:		"describe_index_stats",
+			Description:	"Get statistics about the index.",
 			Input: map[string]interface{}{
 				"filter": map[string]interface{}{"type": "object", "description": "Filter stats by metadata."},
 			},
 			Output: map[string]interface{}{
-				"namespaces":       map[string]interface{}{"type": "object"},
-				"dimension":        map[string]interface{}{"type": "integer"},
-				"indexFullness":    map[string]interface{}{"type": "number"},
-				"totalVectorCount": map[string]interface{}{"type": "integer"},
+				"namespaces":		map[string]interface{}{"type": "object"},
+				"dimension":		map[string]interface{}{"type": "integer"},
+				"indexFullness":	map[string]interface{}{"type": "number"},
+				"totalVectorCount":	map[string]interface{}{"type": "integer"},
 			},
 			Handler: func(ctx context.Context, args map[string]interface{}) (map[string]interface{}, error) {
 				var filter map[string]interface{}

@@ -1,6 +1,33 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// Summary: ParsedOpenAPIData holds the high-level information extracted from an OpenAPI
+// specification, such as metadata, server details, and the defined paths.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+// Summary: PathItem represents a single path within an OpenAPI specification and holds a
+// reference to its corresponding openapi3.PathItem.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+// Summary: McpOperation provides a simplified, MCP-centric representation of an OpenAPI
+// operation. It contains the essential details needed to convert an API
+// endpoint into an executable tool.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 package openapi
 
 import (
@@ -17,43 +44,36 @@ import (
 )
 
 const (
-	typeObject = "object"
-	typeString = "string"
-	methodGet  = "GET"
+	typeObject	= "object"
+	typeString	= "string"
+	methodGet	= "GET"
 )
 
-// ParsedOpenAPIData holds the high-level information extracted from an OpenAPI
-// specification, such as metadata, server details, and the defined paths.
 type ParsedOpenAPIData struct {
-	Info    openapi3.Info
-	Servers openapi3.Servers
-	Paths   map[string]*PathItem
+	Info	openapi3.Info
+	Servers	openapi3.Servers
+	Paths	map[string]*PathItem
 }
 
-// PathItem represents a single path within an OpenAPI specification and holds a
-// reference to its corresponding openapi3.PathItem.
 type PathItem struct {
 	PathRef *openapi3.PathItem
 }
 
-// McpOperation provides a simplified, MCP-centric representation of an OpenAPI
-// operation. It contains the essential details needed to convert an API
-// endpoint into an executable tool.
 type McpOperation struct {
-	OperationID string
-	Summary     string
-	Description string
-	Method      string // e.g., GET, POST
-	Path        string
+	OperationID	string
+	Summary		string
+	Description	string
+	Method		string	// e.g., GET, POST
+	Path		string
 	// Simplified schema representation for request body
 	// Key: content type (e.g., "application/json")
 	// Value: schema reference
-	RequestBodySchema map[string]*openapi3.SchemaRef
+	RequestBodySchema	map[string]*openapi3.SchemaRef
 	// Simplified schema representation for responses
 	// Key: status code (e.g., "200")
 	// Value: map of content type to schema reference
-	ResponseSchemas map[string]map[string]*openapi3.SchemaRef
-	Parameters      openapi3.Parameters // Store operation parameters (query, path, header, cookie)
+	ResponseSchemas	map[string]map[string]*openapi3.SchemaRef
+	Parameters	openapi3.Parameters	// Store operation parameters (query, path, header, cookie)
 }
 
 // ParseOpenAPISpec loads and parses an OpenAPI specification from a byte slice.
@@ -61,7 +81,7 @@ type McpOperation struct {
 // and the original, more detailed openapi3.T document.
 func parseOpenAPISpec(ctx context.Context, specData []byte) (*ParsedOpenAPIData, *openapi3.T, error) {
 	loader := openapi3.NewLoader()
-	loader.IsExternalRefsAllowed = true // Depending on requirements
+	loader.IsExternalRefsAllowed = true	// Depending on requirements
 
 	// Load the spec from the byte slice
 	doc, err := loader.LoadFromData(specData)
@@ -75,9 +95,9 @@ func parseOpenAPISpec(ctx context.Context, specData []byte) (*ParsedOpenAPIData,
 	}
 
 	parsedData := &ParsedOpenAPIData{
-		Info:    *doc.Info,
-		Servers: doc.Servers,
-		Paths:   make(map[string]*PathItem),
+		Info:		*doc.Info,
+		Servers:	doc.Servers,
+		Paths:		make(map[string]*PathItem),
 	}
 
 	// Using .Map() is safer as it handles nil doc.Paths gracefully.
@@ -114,14 +134,14 @@ func extractMcpOperationsFromOpenAPI(doc *openapi3.T) []McpOperation {
 			}
 
 			op := McpOperation{
-				OperationID:       operation.OperationID,
-				Summary:           operation.Summary,
-				Description:       operation.Description,
-				Method:            method,
-				Path:              path,
-				RequestBodySchema: make(map[string]*openapi3.SchemaRef),
-				ResponseSchemas:   make(map[string]map[string]*openapi3.SchemaRef),
-				Parameters:        operation.Parameters, // Populate parameters
+				OperationID:		operation.OperationID,
+				Summary:		operation.Summary,
+				Description:		operation.Description,
+				Method:			method,
+				Path:			path,
+				RequestBodySchema:	make(map[string]*openapi3.SchemaRef),
+				ResponseSchemas:	make(map[string]map[string]*openapi3.SchemaRef),
+				Parameters:		operation.Parameters,	// Populate parameters
 			}
 
 			if operation.RequestBody != nil && operation.RequestBody.Value != nil {
@@ -173,9 +193,9 @@ func convertMcpOperationsToTools(ops []McpOperation, doc *openapi3.T, mcpServerS
 
 		displayName := op.Summary
 		if displayName == "" {
-			displayName = op.OperationID // Fallback to OperationID
+			displayName = op.OperationID	// Fallback to OperationID
 		}
-		if displayName == "" { // Further fallback
+		if displayName == "" {	// Further fallback
 			displayName = op.Method + " " + op.Path
 		}
 
@@ -183,7 +203,7 @@ func convertMcpOperationsToTools(ops []McpOperation, doc *openapi3.T, mcpServerS
 		var bodySchemaRef *openapi3.SchemaRef
 		if ref, ok := op.RequestBodySchema["application/json"]; ok {
 			bodySchemaRef = ref
-		} else if len(op.RequestBodySchema) > 0 { // Pick first available if no json
+		} else if len(op.RequestBodySchema) > 0 {	// Pick first available if no json
 			for _, sr := range op.RequestBodySchema {
 				bodySchemaRef = sr
 				break
@@ -194,13 +214,13 @@ func convertMcpOperationsToTools(ops []McpOperation, doc *openapi3.T, mcpServerS
 		if err != nil {
 			// Use baseOperationID for the error message as toolID is removed.
 			logging.GetLogger().Warn("Failed to convert OpenAPI schema to InputSchema for tool. Input schema will be empty.", "tool", baseOperationID, "error", err)
-			properties = &structpb.Struct{Fields: make(map[string]*structpb.Value)} // Empty properties
+			properties = &structpb.Struct{Fields: make(map[string]*structpb.Value)}	// Empty properties
 		}
 
 		inputSchema := &structpb.Struct{
 			Fields: map[string]*structpb.Value{
-				"type":       structpb.NewStringValue(typeObject),
-				"properties": structpb.NewStructValue(properties),
+				"type":		structpb.NewStringValue(typeObject),
+				"properties":	structpb.NewStructValue(properties),
 			},
 		}
 
@@ -219,31 +239,31 @@ func convertMcpOperationsToTools(ops []McpOperation, doc *openapi3.T, mcpServerS
 		outputProperties, err := convertOpenAPISchemaToOutputSchemaProperties(outputSchemaRef, doc)
 		if err != nil {
 			logging.GetLogger().Warn("Failed to convert OpenAPI schema to OutputSchema for tool. Output schema will be empty.", "tool", baseOperationID, "error", err)
-			outputProperties = &structpb.Struct{Fields: make(map[string]*structpb.Value)} // Empty properties
+			outputProperties = &structpb.Struct{Fields: make(map[string]*structpb.Value)}	// Empty properties
 		}
 
 		outputSchema := &structpb.Struct{
 			Fields: map[string]*structpb.Value{
-				"type":       structpb.NewStringValue(typeObject),
-				"properties": structpb.NewStructValue(outputProperties),
+				"type":		structpb.NewStringValue(typeObject),
+				"properties":	structpb.NewStructValue(outputProperties),
 			},
 		}
 
 		toolBuilder := pb.Tool_builder{
-			Name:                proto.String(baseOperationID),
-			DisplayName:         proto.String(displayName),
-			Description:         proto.String(op.Description),
-			ServiceId:           proto.String(mcpServerServiceKey),
-			UnderlyingMethodFqn: proto.String(fmt.Sprintf("%s %s", op.Method, op.Path)),
-			InputSchema:         inputSchema,
-			OutputSchema:        outputSchema,
+			Name:			proto.String(baseOperationID),
+			DisplayName:		proto.String(displayName),
+			Description:		proto.String(op.Description),
+			ServiceId:		proto.String(mcpServerServiceKey),
+			UnderlyingMethodFqn:	proto.String(fmt.Sprintf("%s %s", op.Method, op.Path)),
+			InputSchema:		inputSchema,
+			OutputSchema:		outputSchema,
 			Annotations: pb.ToolAnnotations_builder{
-				Title:          proto.String(op.Summary),
-				IdempotentHint: proto.Bool(isOperationIdempotent(op.Method)),
-				ReadOnlyHint:   proto.Bool(op.Method == methodGet),
-				OpenWorldHint:  proto.Bool(true), // Default, can be refined
-				InputSchema:    inputSchema,
-				OutputSchema:   outputSchema,
+				Title:		proto.String(op.Summary),
+				IdempotentHint:	proto.Bool(isOperationIdempotent(op.Method)),
+				ReadOnlyHint:	proto.Bool(op.Method == methodGet),
+				OpenWorldHint:	proto.Bool(true),	// Default, can be refined
+				InputSchema:	inputSchema,
+				OutputSchema:	outputSchema,
 			}.Build(),
 		}
 		tools = append(tools, toolBuilder.Build())
@@ -257,13 +277,13 @@ func isOperationIdempotent(method string) bool {
 	switch strings.ToUpper(method) {
 	case methodGet, "HEAD", "OPTIONS", "TRACE", "PUT", "DELETE":
 		return true
-	default: // POST, PATCH etc. are generally not idempotent
+	default:	// POST, PATCH etc. are generally not idempotent
 		return false
 	}
 }
 
 func convertOpenAPISchemaToOutputSchemaProperties(
-	bodySchemaRef *openapi3.SchemaRef, // Schema for the response body
+	bodySchemaRef *openapi3.SchemaRef,	// Schema for the response body
 	doc *openapi3.T,
 ) (*structpb.Struct, error) {
 	props := &structpb.Struct{Fields: make(map[string]*structpb.Value)}
@@ -316,8 +336,8 @@ func convertOpenAPISchemaToOutputSchemaProperties(
 // list of Parameters into a *structpb.Struct that is suitable for use as the
 // Properties field of an InputSchema.
 func convertOpenAPISchemaToInputSchemaProperties(
-	bodySchemaRef *openapi3.SchemaRef, // Schema for the request body
-	opParameters openapi3.Parameters, // Parameters for the operation (query, path, header)
+	bodySchemaRef *openapi3.SchemaRef,	// Schema for the request body
+	opParameters openapi3.Parameters,	// Parameters for the operation (query, path, header)
 	doc *openapi3.T,
 ) (*structpb.Struct, error) {
 	props := &structpb.Struct{Fields: make(map[string]*structpb.Value)}
@@ -370,12 +390,12 @@ func convertOpenAPISchemaToInputSchemaProperties(
 			continue
 		}
 		param := paramRef.Value
-		if param == nil { // Should not happen if paramRef is valid
+		if param == nil {	// Should not happen if paramRef is valid
 			continue
 		}
 		// We are interested in parameters that are part of the input: query, path, header. Cookie params are ignored for now.
 		if param.In == openapi3.ParameterInQuery || param.In == openapi3.ParameterInPath || param.In == openapi3.ParameterInHeader {
-			if param.Schema == nil { // Parameter must have a schema
+			if param.Schema == nil {	// Parameter must have a schema
 				logging.GetLogger().Warn("Warning: parameter '%s' in '%s' has no schema, skipping.\n", param.Name, param.In)
 				continue
 			}
@@ -402,7 +422,7 @@ func convertSchemaToStructPB(name string, sr *openapi3.SchemaRef, explicitDescri
 		return nil, fmt.Errorf("schema value is nil for %s", name)
 	}
 
-	schemaType := typeObject // Default
+	schemaType := typeObject	// Default
 	if sVal.Type != nil && len(*sVal.Type) > 0 {
 		schemaType = (*sVal.Type)[0]
 	}

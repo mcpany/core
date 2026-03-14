@@ -39,7 +39,14 @@ func (a *Application) setStatsCache(key string, data any) {
 		// Instead of clearing the entire cache (which causes a thundering herd),
 		// we evict a random subset (approx 25%) to make room.
 		// Randomized Selection from Top 5 High-Impact Targets
-
+		// Summary: ToolUsageStats represents usage statistics for a tool.
+		//
+		//
+		// Errors:
+		//   - An error if it fails.
+		//
+		// Side Effects:
+		//   - None.
 		toEvict := len(a.statsCache) / 4
 		for k := range a.statsCache {
 			delete(a.statsCache, k)
@@ -51,23 +58,22 @@ func (a *Application) setStatsCache(key string, data any) {
 	}
 
 	a.statsCache[key] = statsCacheEntry{
-		Data:      data,
-		ExpiresAt: time.Now().Add(5 * time.Second),
+		Data:		data,
+		ExpiresAt:	time.Now().Add(5 * time.Second),
 	}
 }
 
 const (
-	metricToolsCallTotal = "mcpany_tools_call_total"
-	labelTool            = "tool"
-	labelServiceID       = "service_id"
-	labelStatus          = "status"
+	metricToolsCallTotal	= "mcpany_tools_call_total"
+	labelTool		= "tool"
+	labelServiceID		= "service_id"
+	labelStatus		= "status"
 )
 
-// ToolUsageStats represents usage statistics for a tool.
 type ToolUsageStats struct {
-	Name      string `json:"name"`
-	ServiceID string `json:"serviceId"`
-	Count     int64  `json:"count"`
+	Name		string	`json:"name"`
+	ServiceID	string	`json:"serviceId"`
+	Count		int64	`json:"count"`
 }
 
 // handleDashboardTopTools returns the top used tools based on Prometheus metrics.
@@ -123,9 +129,9 @@ func (a *Application) handleDashboardTopTools() http.HandlerFunc {
 						key := toolName + "@" + serviceID
 						if _, exists := toolCounts[key]; !exists {
 							toolCounts[key] = &ToolUsageStats{
-								Name:      toolName,
-								ServiceID: serviceID,
-								Count:     0,
+								Name:		toolName,
+								ServiceID:	serviceID,
+								Count:		0,
 							}
 						}
 						toolCounts[key].Count += int64(m.GetCounter().GetValue())
@@ -184,6 +190,14 @@ func (a *Application) handleDashboardTraffic() http.HandlerFunc {
 }
 
 // handleDebugSeedTraffic seeds the traffic history.
+// Summary: ToolFailureStats represents failure statistics for a tool.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 func (a *Application) handleDebugSeedTraffic() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
@@ -209,12 +223,11 @@ func (a *Application) handleDebugSeedTraffic() http.HandlerFunc {
 	}
 }
 
-// ToolFailureStats represents failure statistics for a tool.
 type ToolFailureStats struct {
-	Name        string  `json:"name"`
-	ServiceID   string  `json:"serviceId"`
-	FailureRate float64 `json:"failureRate"` // Percentage 0-100
-	TotalCalls  int64   `json:"totalCalls"`
+	Name		string	`json:"name"`
+	ServiceID	string	`json:"serviceId"`
+	FailureRate	float64	`json:"failureRate"`	// Percentage 0-100
+	TotalCalls	int64	`json:"totalCalls"`
 }
 
 // handleDashboardToolFailures returns the tools with highest failure rates based on Prometheus metrics.
@@ -248,10 +261,10 @@ func (a *Application) handleDashboardToolFailures() http.HandlerFunc {
 		}
 
 		type aggregatedStats struct {
-			Name      string
-			ServiceID string
-			Success   int64
-			Error     int64
+			Name		string
+			ServiceID	string
+			Success		int64
+			Error		int64
 		}
 
 		toolStats := make(map[string]*aggregatedStats)
@@ -280,8 +293,8 @@ func (a *Application) handleDashboardToolFailures() http.HandlerFunc {
 						key := toolName + "@" + serviceID
 						if _, exists := toolStats[key]; !exists {
 							toolStats[key] = &aggregatedStats{
-								Name:      toolName,
-								ServiceID: serviceID,
+								Name:		toolName,
+								ServiceID:	serviceID,
 							}
 						}
 						count := int64(m.GetCounter().GetValue())
@@ -304,10 +317,10 @@ func (a *Application) handleDashboardToolFailures() http.HandlerFunc {
 			}
 			rate := (float64(s.Error) / float64(total)) * 100.0
 			stats = append(stats, ToolFailureStats{
-				Name:        s.Name,
-				ServiceID:   s.ServiceID,
-				FailureRate: rate,
-				TotalCalls:  total,
+				Name:		s.Name,
+				ServiceID:	s.ServiceID,
+				FailureRate:	rate,
+				TotalCalls:	total,
 			})
 		}
 
@@ -322,6 +335,14 @@ func (a *Application) handleDashboardToolFailures() http.HandlerFunc {
 		}
 
 		// ⚡ Bolt Optimization: Update cache
+		// Summary: ToolAnalytics represents detailed usage analytics for a tool.
+		//
+		//
+		// Errors:
+		//   - An error if it fails.
+		//
+		// Side Effects:
+		//   - None.
 		a.setStatsCache(cacheKey, stats)
 
 		w.Header().Set("Content-Type", "application/json")
@@ -329,12 +350,11 @@ func (a *Application) handleDashboardToolFailures() http.HandlerFunc {
 	}
 }
 
-// ToolAnalytics represents detailed usage analytics for a tool.
 type ToolAnalytics struct {
-	Name        string  `json:"name"`
-	ServiceID   string  `json:"serviceId"`
-	TotalCalls  int64   `json:"totalCalls"`
-	SuccessRate float64 `json:"successRate"`
+	Name		string	`json:"name"`
+	ServiceID	string	`json:"serviceId"`
+	TotalCalls	int64	`json:"totalCalls"`
+	SuccessRate	float64	`json:"successRate"`
 }
 
 // handleDashboardToolUsage returns detailed usage statistics for all tools.
@@ -368,10 +388,10 @@ func (a *Application) handleDashboardToolUsage() http.HandlerFunc {
 		}
 
 		type aggregatedStats struct {
-			Name      string
-			ServiceID string
-			Success   int64
-			Error     int64
+			Name		string
+			ServiceID	string
+			Success		int64
+			Error		int64
 		}
 
 		toolStats := make(map[string]*aggregatedStats)
@@ -400,8 +420,8 @@ func (a *Application) handleDashboardToolUsage() http.HandlerFunc {
 						key := toolName + "@" + serviceID
 						if _, exists := toolStats[key]; !exists {
 							toolStats[key] = &aggregatedStats{
-								Name:      toolName,
-								ServiceID: serviceID,
+								Name:		toolName,
+								ServiceID:	serviceID,
 							}
 						}
 						count := int64(m.GetCounter().GetValue())
@@ -423,10 +443,10 @@ func (a *Application) handleDashboardToolUsage() http.HandlerFunc {
 				rate = (float64(s.Success) / float64(total)) * 100.0
 			}
 			analytics = append(analytics, ToolAnalytics{
-				Name:        s.Name,
-				ServiceID:   s.ServiceID,
-				TotalCalls:  total,
-				SuccessRate: rate,
+				Name:		s.Name,
+				ServiceID:	s.ServiceID,
+				TotalCalls:	total,
+				SuccessRate:	rate,
 			})
 		}
 
@@ -436,6 +456,22 @@ func (a *Application) handleDashboardToolUsage() http.HandlerFunc {
 		})
 
 		// ⚡ Bolt Optimization: Update cache
+		// Summary: ServiceHealthResponse represents the response for the health dashboard.
+		//
+		//
+		// Errors:
+		//   - An error if it fails.
+		//
+		// Side Effects:
+		//   - None.
+		// Summary: ServiceHealth represents the health status of a service.
+		//
+		//
+		// Errors:
+		//   - An error if it fails.
+		//
+		// Side Effects:
+		//   - None.
 		a.setStatsCache(cacheKey, analytics)
 
 		w.Header().Set("Content-Type", "application/json")
@@ -443,20 +479,18 @@ func (a *Application) handleDashboardToolUsage() http.HandlerFunc {
 	}
 }
 
-// ServiceHealthResponse represents the response for the health dashboard.
 type ServiceHealthResponse struct {
-	Services []ServiceHealth                 `json:"services"`
-	History  map[string][]health.HistoryPoint `json:"history"`
+	Services	[]ServiceHealth				`json:"services"`
+	History		map[string][]health.HistoryPoint	`json:"history"`
 }
 
-// ServiceHealth represents the health status of a service.
 type ServiceHealth struct {
-	ID      string `json:"id"`
-	Name    string `json:"name"`
-	Status  string `json:"status"`
-	Latency string `json:"latency"`
-	Uptime  string `json:"uptime"`
-	Message string `json:"message,omitempty"`
+	ID	string	`json:"id"`
+	Name	string	`json:"name"`
+	Status	string	`json:"status"`
+	Latency	string	`json:"latency"`
+	Uptime	string	`json:"uptime"`
+	Message	string	`json:"message,omitempty"`
 }
 
 // handleDashboardHealth returns the health status and history for all services.
@@ -483,11 +517,11 @@ func (a *Application) handleDashboardHealth() http.HandlerFunc {
 		var serviceHealths []ServiceHealth
 
 		const (
-			statusInactive  = "inactive"
-			statusUnhealthy = "unhealthy"
-			statusUnknown   = "unknown"
-			statusHealthy   = "healthy"
-			statusDegraded  = "degraded"
+			statusInactive	= "inactive"
+			statusUnhealthy	= "unhealthy"
+			statusUnknown	= "unknown"
+			statusHealthy	= "healthy"
+			statusDegraded	= "degraded"
 		)
 
 		for _, svc := range services {
@@ -531,7 +565,7 @@ func (a *Application) handleDashboardHealth() http.HandlerFunc {
 			if errMsg, ok := a.ServiceRegistry.GetServiceError(svc.GetId()); ok {
 				msg = errMsg
 				if uiStatus == statusHealthy {
-					uiStatus = statusDegraded // If up but has error (maybe partial?)
+					uiStatus = statusDegraded	// If up but has error (maybe partial?)
 				}
 			}
 
@@ -550,12 +584,12 @@ func (a *Application) handleDashboardHealth() http.HandlerFunc {
 			uptimeStr := calculateUptime(hPoints, 24*time.Hour)
 
 			serviceHealths = append(serviceHealths, ServiceHealth{
-				ID:      svc.GetId(),
-				Name:    name,
-				Status:  uiStatus,
-				Latency: latencyStr,
-				Uptime:  uptimeStr,
-				Message: msg,
+				ID:		svc.GetId(),
+				Name:		name,
+				Status:		uiStatus,
+				Latency:	latencyStr,
+				Uptime:		uptimeStr,
+				Message:	msg,
 			})
 		}
 
@@ -568,8 +602,8 @@ func (a *Application) handleDashboardHealth() http.HandlerFunc {
 		}
 
 		resp := ServiceHealthResponse{
-			Services: serviceHealths,
-			History:  historyByID,
+			Services:	serviceHealths,
+			History:	historyByID,
 		}
 
 		w.Header().Set("Content-Type", "application/json")

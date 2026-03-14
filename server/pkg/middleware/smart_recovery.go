@@ -1,30 +1,13 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package middleware
-
-import (
-	"context"
-	"encoding/json"
-	"fmt"
-	"strings"
-	"sync"
-
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/mcpany/core/server/pkg/llm"
-	"github.com/mcpany/core/server/pkg/logging"
-	"github.com/mcpany/core/server/pkg/tool"
-	"github.com/mcpany/core/server/pkg/util"
-)
-
-// SmartRecoveryMiddleware handles automatic error recovery using LLM.
-type SmartRecoveryMiddleware struct {
-	config      *configv1.SmartRecoveryConfig
-	llmClient   llm.Client
-	toolManager tool.ManagerInterface
-	mu          sync.RWMutex
-}
-
+// Summary: SmartRecoveryMiddleware handles automatic error recovery using LLM.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // NewSmartRecoveryMiddleware creates a new SmartRecoveryMiddleware.
 //
 // Parameters:
@@ -39,13 +22,6 @@ type SmartRecoveryMiddleware struct {
 //
 // Side Effects:
 //   - None
-func NewSmartRecoveryMiddleware(config *configv1.SmartRecoveryConfig, toolManager tool.ManagerInterface) *SmartRecoveryMiddleware {
-	return &SmartRecoveryMiddleware{
-		config:      config,
-		toolManager: toolManager,
-	}
-}
-
 // Execute executes the middleware logic.
 //
 // Parameters:
@@ -62,6 +38,36 @@ func NewSmartRecoveryMiddleware(config *configv1.SmartRecoveryConfig, toolManage
 //
 // Side Effects:
 //   - None
+package middleware
+
+import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"strings"
+	"sync"
+
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/llm"
+	"github.com/mcpany/core/server/pkg/logging"
+	"github.com/mcpany/core/server/pkg/tool"
+	"github.com/mcpany/core/server/pkg/util"
+)
+
+type SmartRecoveryMiddleware struct {
+	config		*configv1.SmartRecoveryConfig
+	llmClient	llm.Client
+	toolManager	tool.ManagerInterface
+	mu		sync.RWMutex
+}
+
+func NewSmartRecoveryMiddleware(config *configv1.SmartRecoveryConfig, toolManager tool.ManagerInterface) *SmartRecoveryMiddleware {
+	return &SmartRecoveryMiddleware{
+		config:		config,
+		toolManager:	toolManager,
+	}
+}
+
 func (m *SmartRecoveryMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	if m.config == nil || !m.config.GetEnabled() {
 		return next(ctx, req)
@@ -116,7 +122,7 @@ func (m *SmartRecoveryMiddleware) Execute(ctx context.Context, req *tool.Executi
 		newArgs, recoveryErr := m.recover(ctx, req, err)
 		if recoveryErr != nil {
 			logging.GetLogger().Warn("SmartRecovery: Recovery failed", "error", recoveryErr)
-			return nil, lastErr // Return original error
+			return nil, lastErr	// Return original error
 		}
 
 		// Update request with new arguments
@@ -158,7 +164,7 @@ Output ONLY the JSON object of the arguments. Do not include markdown formatting
 	}
 
 	resp, llmErr := client.ChatCompletion(ctx, llm.ChatRequest{
-		Model: m.config.GetModel(),
+		Model:	m.config.GetModel(),
 		Messages: []llm.Message{
 			{Role: "user", Content: prompt},
 		},

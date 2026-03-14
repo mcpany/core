@@ -1,17 +1,5 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package webhooks
-
-import (
-	"bytes"
-	"context"
-	"fmt"
-	"net/http"
-	"sync"
-	"time"
-)
-
 // WebhookConfig represents a configured webhook.
 //
 // Summary: Webhook configuration definition.
@@ -23,46 +11,96 @@ import (
 //   - Active (bool): Whether the webhook is enabled.
 //   - LastTriggered (time.Time): Timestamp of the last execution.
 //   - Status (string): Status of the last execution (success, failure, pending).
-type WebhookConfig struct {
-	ID            string    `json:"id"`
-	URL           string    `json:"url"`
-	Events        []string  `json:"events"`
-	Active        bool      `json:"active"`
-	LastTriggered time.Time `json:"last_triggered,omitempty"`
-	Status        string    `json:"status,omitempty"` // success, failure, pending
-}
-
-// Manager manages webhooks.
 //
-// Summary: Webhook lifecycle manager.
-type Manager struct {
-	mu         sync.RWMutex
-	webhooks   map[string]*WebhookConfig
-	httpClient *http.Client
-}
-
-// NewManager creates a new Webhook Manager.
 //
-// Summary: Creates a new Manager.
-//
-// Returns:
-//   - *Manager: A pointer to the newly created Manager.
+// Errors:
+//   - An error if it fails.
 //
 // Side Effects:
-//   - Initializes internal maps and HTTP client.
+//   - None.
+package webhooks
+
+import (
+	"bytes"
+	"context"
+	"fmt"
+	"net/http"
+	"sync"
+	"time"
+)
+
+type WebhookConfig struct {
+	ID		string		`json:"id"`
+	URL		string		`json:"url"`
+	Events		[]string	`json:"events"`
+	Active		bool		`json:"active"`
+	LastTriggered	time.Time	`json:"last_triggered,omitempty"`
+	Status		string		`json:"status,omitempty"`	// success, failure, pending
+	// Manager manages webhooks.
+	//
+	// Summary: Webhook lifecycle manager.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
+	// NewManager creates a new Webhook Manager.
+	//
+	// Summary: Creates a new Manager.
+	//
+	// Returns:
+	//   - *Manager: A pointer to the newly created Manager.
+	//
+	// Side Effects:
+	//   - Initializes internal maps and HTTP client.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	// ListWebhooks returns all configured webhooks.
+	//
+	// Summary: Lists all webhooks.
+	//
+	// Returns:
+	//   - []*WebhookConfig: A list of webhook configurations.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
+	// AddWebhook adds or updates a webhook.
+	//
+	// Summary: Adds or updates a webhook.
+	//
+	// Parameters:
+	//   - w (*WebhookConfig): The webhook configuration to add.
+	//
+	// Side Effects:
+	//   - Updates the internal webhook map.
+	//   - Generates an ID if one is not provided.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+}
+
+type Manager struct {
+	mu		sync.RWMutex
+	webhooks	map[string]*WebhookConfig
+	httpClient	*http.Client
+}
+
 func NewManager() *Manager {
 	return &Manager{
-		webhooks:   make(map[string]*WebhookConfig),
-		httpClient: &http.Client{Timeout: 5 * time.Second},
+		webhooks:	make(map[string]*WebhookConfig),
+		httpClient:	&http.Client{Timeout: 5 * time.Second},
 	}
 }
 
-// ListWebhooks returns all configured webhooks.
-//
-// Summary: Lists all webhooks.
-//
-// Returns:
-//   - []*WebhookConfig: A list of webhook configurations.
 func (m *Manager) ListWebhooks() []*WebhookConfig {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -73,16 +111,6 @@ func (m *Manager) ListWebhooks() []*WebhookConfig {
 	return list
 }
 
-// AddWebhook adds or updates a webhook.
-//
-// Summary: Adds or updates a webhook.
-//
-// Parameters:
-//   - w (*WebhookConfig): The webhook configuration to add.
-//
-// Side Effects:
-//   - Updates the internal webhook map.
-//   - Generates an ID if one is not provided.
 func (m *Manager) AddWebhook(w *WebhookConfig) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -90,19 +118,57 @@ func (m *Manager) AddWebhook(w *WebhookConfig) {
 		w.ID = fmt.Sprintf("wh-%d", time.Now().UnixNano())
 	}
 	// Ensure active defaults to true if new? Or let caller decide.
+	// GetWebhook returns a webhook by ID.
+	//
+	// Summary: Retrieves a webhook by ID.
+	//
+	// Parameters:
+	//   - id (string): The webhook ID.
+	//
+	// Returns:
+	//   - *WebhookConfig: The webhook configuration.
+	//   - bool: True if found, false otherwise.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
+	// DeleteWebhook removes a webhook by ID.
+	//
+	// Summary: Deletes a webhook.
+	//
+	// Parameters:
+	//   - id (string): The webhook ID to delete.
+	//
+	// Side Effects:
+	//   - Removes the webhook from the internal map.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	// TestWebhook sends a test payload to the webhook URL.
+	//
+	// Summary: Tests a webhook.
+	//
+	// Parameters:
+	//   - ctx (context.Context): The context for the request.
+	//   - id (string): The webhook ID to test.
+	//
+	// Returns:
+	//   - error: An error if the test fails or the webhook is not found.
+	//
+	// Errors:
+	//   - Returns error if webhook not found.
+	//   - Returns error if HTTP request fails or returns non-2xx status.
+	//
+	// Side Effects:
+	//   - Sends an HTTP POST request to the webhook URL.
+	//   - Updates the webhook status.
 	m.webhooks[w.ID] = w
 }
 
-// GetWebhook returns a webhook by ID.
-//
-// Summary: Retrieves a webhook by ID.
-//
-// Parameters:
-//   - id (string): The webhook ID.
-//
-// Returns:
-//   - *WebhookConfig: The webhook configuration.
-//   - bool: True if found, false otherwise.
 func (m *Manager) GetWebhook(id string) (*WebhookConfig, bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -110,39 +176,12 @@ func (m *Manager) GetWebhook(id string) (*WebhookConfig, bool) {
 	return w, ok
 }
 
-// DeleteWebhook removes a webhook by ID.
-//
-// Summary: Deletes a webhook.
-//
-// Parameters:
-//   - id (string): The webhook ID to delete.
-//
-// Side Effects:
-//   - Removes the webhook from the internal map.
 func (m *Manager) DeleteWebhook(id string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	delete(m.webhooks, id)
 }
 
-// TestWebhook sends a test payload to the webhook URL.
-//
-// Summary: Tests a webhook.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - id (string): The webhook ID to test.
-//
-// Returns:
-//   - error: An error if the test fails or the webhook is not found.
-//
-// Errors:
-//   - Returns error if webhook not found.
-//   - Returns error if HTTP request fails or returns non-2xx status.
-//
-// Side Effects:
-//   - Sends an HTTP POST request to the webhook URL.
-//   - Updates the webhook status.
 func (m *Manager) TestWebhook(ctx context.Context, id string) error {
 	w, ok := m.GetWebhook(id)
 	if !ok {

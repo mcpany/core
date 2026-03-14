@@ -1,26 +1,13 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package provider
-
-import (
-	"archive/zip"
-	"fmt"
-	"os"
-	"path/filepath"
-
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/mcpany/core/server/pkg/validation"
-	"github.com/spf13/afero"
-	"github.com/spf13/afero/zipfs"
-)
-
-// ZipProvider provides access to files within a zip archive.
-type ZipProvider struct {
-	fs     afero.Fs
-	closer *os.File
-}
-
+// Summary: ZipProvider provides access to files within a zip archive.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // NewZipProvider creates a new ZipProvider from the given configuration.
 //
 // Parameters:
@@ -35,6 +22,50 @@ type ZipProvider struct {
 //
 // Side Effects:
 //   - None.
+// GetFs returns the underlying filesystem.
+//
+// Returns:
+//   - afero.Fs: The result.
+//
+// Side Effects:
+//   - None.
+//
+//
+// Errors:
+//   - An error if it fails.
+// ResolvePath resolves the virtual path to a real path in the zip.
+//
+// Parameters:
+//   - virtualPath (string): The parameter.
+//
+// Returns:
+//   - string: The result.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
+package provider
+
+import (
+	"archive/zip"
+	"fmt"
+	"os"
+	"path/filepath"
+
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/validation"
+	"github.com/spf13/afero"
+	"github.com/spf13/afero/zipfs"
+)
+
+type ZipProvider struct {
+	fs	afero.Fs
+	closer	*os.File
+}
+
 func NewZipProvider(config *configv1.ZipFs) (*ZipProvider, error) {
 	if err := validation.IsAllowedPath(config.GetFilePath()); err != nil {
 		return nil, fmt.Errorf("zip file path not allowed: %w", err)
@@ -60,51 +91,30 @@ func NewZipProvider(config *configv1.ZipFs) (*ZipProvider, error) {
 	fs := zipfs.New(zr)
 
 	return &ZipProvider{
-		fs:     fs,
-		closer: f,
+		fs:	fs,
+		closer:	f,
 	}, nil
 }
 
-// GetFs returns the underlying filesystem.
-//
-// Returns:
-//   - afero.Fs: The result.
-//
-// Side Effects:
-//   - None.
 func (p *ZipProvider) GetFs() afero.Fs {
 	return p.fs
 }
 
-// ResolvePath resolves the virtual path to a real path in the zip.
-//
-// Parameters:
-//   - virtualPath (string): The parameter.
-//
-// Returns:
-//   - string: The result.
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
 func (p *ZipProvider) ResolvePath(virtualPath string) (string, error) {
 	// For ZipFs, just clean the path. It's virtual (based on zip contents).
+	// Close closes the underlying zip file.
+	//
+	// Returns:
+	//   - error: An error if the operation fails.
+	//
+	// Errors:
+	//   - Returns an error if ...
+	//
+	// Side Effects:
+	//   - None.
 	return filepath.Clean(virtualPath), nil
 }
 
-// Close closes the underlying zip file.
-//
-// Returns:
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
 func (p *ZipProvider) Close() error {
 	if p.closer != nil {
 		return p.closer.Close()

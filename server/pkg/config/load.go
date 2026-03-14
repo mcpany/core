@@ -1,6 +1,24 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// LoadServices loads, validates, and processes the MCP Any server configuration from a given store.
+//
+// Summary: Loads and validates the server configuration.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the operation.
+//   - store: Store. The configuration store from which to load the configuration.
+//   - binaryType: string. The type of binary running the code (e.g., "server", "worker").
+//
+// Returns:
+//   - *configv1.McpAnyServerConfig: A validated configuration object.
+//   - error: An error if loading or validation fails.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 package config
 
 import (
@@ -14,18 +32,6 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// LoadServices loads, validates, and processes the MCP Any server configuration from a given store.
-//
-// Summary: Loads and validates the server configuration.
-//
-// Parameters:
-//   - ctx: context.Context. The context for the operation.
-//   - store: Store. The configuration store from which to load the configuration.
-//   - binaryType: string. The type of binary running the code (e.g., "server", "worker").
-//
-// Returns:
-//   - *configv1.McpAnyServerConfig: A validated configuration object.
-//   - error: An error if loading or validation fails.
 func LoadServices(ctx context.Context, store Store, binaryType string) (*configv1.McpAnyServerConfig, error) {
 	log := logging.GetLogger().With("component", "configLoader")
 
@@ -70,6 +76,24 @@ func LoadServices(ctx context.Context, store Store, binaryType string) (*configv
 		// Update: For "Friction Fighter" mission, we now fail strictly on startup if any service is invalid.
 		// This prevents "silent failures" where a service is ignored but the server starts.
 		// We can consider making this configurable later if "resilience" is needed for partial outages.
+		// LoadResolvedConfig loads key resolved configuration (merging services, setting defaults) without performing strict validation.
+		//
+		// Summary: Loads configuration with merging and defaults but without strict validation.
+		//
+		// Parameters:
+		//   - ctx: context.Context. The context for the operation.
+		//   - store: Store. The configuration store.
+		//
+		// Returns:
+		//   - *configv1.McpAnyServerConfig: The resolved configuration.
+		//   - error: An error if loading fails.
+		//
+		//
+		// Errors:
+		//   - An error if it fails.
+		//
+		// Side Effects:
+		//   - None.
 		if len(validationErrors) > 0 {
 			var sb strings.Builder
 			sb.WriteString("\n❌ Configuration Validation Failed:\n")
@@ -94,17 +118,6 @@ func LoadServices(ctx context.Context, store Store, binaryType string) (*configv
 	return fileConfig, nil
 }
 
-// LoadResolvedConfig loads key resolved configuration (merging services, setting defaults) without performing strict validation.
-//
-// Summary: Loads configuration with merging and defaults but without strict validation.
-//
-// Parameters:
-//   - ctx: context.Context. The context for the operation.
-//   - store: Store. The configuration store.
-//
-// Returns:
-//   - *configv1.McpAnyServerConfig: The resolved configuration.
-//   - error: An error if loading fails.
 func LoadResolvedConfig(ctx context.Context, store Store) (*configv1.McpAnyServerConfig, error) {
 	log := logging.GetLogger().With("component", "configLoader")
 
@@ -154,16 +167,16 @@ func LoadResolvedConfig(ctx context.Context, store Store) (*configv1.McpAnyServe
 
 		apiKey := GlobalSettings().APIKey()
 		defaultUser := configv1.User_builder{
-			Id:         proto.String("default"),
-			ProfileIds: profileIDs,
+			Id:		proto.String("default"),
+			ProfileIds:	profileIDs,
 		}.Build()
 		if apiKey != "" {
 			headerLoc := configv1.APIKeyAuth_HEADER
 			defaultUser.SetAuthentication(configv1.Authentication_builder{
 				ApiKey: configv1.APIKeyAuth_builder{
-					ParamName:         proto.String("X-API-Key"),
-					VerificationValue: proto.String(apiKey),
-					In:                &headerLoc,
+					ParamName:		proto.String("X-API-Key"),
+					VerificationValue:	proto.String(apiKey),
+					In:			&headerLoc,
 				}.Build(),
 			}.Build())
 		}

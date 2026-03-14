@@ -1,6 +1,13 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// Summary: ValidateRequest represents the request body for the validation endpoint.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 package app
 
 import (
@@ -13,17 +20,23 @@ import (
 	"sigs.k8s.io/yaml"
 )
 
-// ValidateRequest represents the request body for the validation endpoint.
 type ValidateRequest struct {
-	Content string `json:"content"`
-	Format  string `json:"format"` // "json" or "yaml"
+	Content	string	`json:"content"`
+	Format	string	`json:"format"`	// "json" or "yaml"
+	// Summary: ValidateResponse represents the response body for the validation endpoint.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
 }
 
-// ValidateResponse represents the response body for the validation endpoint.
 type ValidateResponse struct {
-	Valid   bool   `json:"valid"`
-	Error   string `json:"error,omitempty"`
-	Message string `json:"message,omitempty"`
+	Valid	bool	`json:"valid"`
+	Error	string	`json:"error,omitempty"`
+	Message	string	`json:"message,omitempty"`
 }
 
 // handleValidate returns a handler for validating configuration snippets.
@@ -35,7 +48,7 @@ func (a *Application) handleValidate() http.HandlerFunc {
 		}
 
 		var req ValidateRequest
-		body, err := readBodyWithLimit(w, r, 1048576) // 1MB limit
+		body, err := readBodyWithLimit(w, r, 1048576)	// 1MB limit
 		if err != nil {
 			return
 		}
@@ -88,7 +101,7 @@ func (a *Application) handleValidate() http.HandlerFunc {
 
 		// 3. Proto Validation (Required fields, custom logic)
 		cfg := configv1.McpAnyServerConfig_builder{}.Build()
-		engine, _ := config.NewEngine("config." + format) // Dummy path for engine selection
+		engine, _ := config.NewEngine("config." + format)	// Dummy path for engine selection
 		if err := engine.Unmarshal([]byte(req.Content), cfg); err != nil {
 			// This might catch things the schema didn't, or provide better messages
 			a.writeValidateResponse(w, false, "Refined validation failed: "+err.Error())
@@ -114,8 +127,8 @@ func (a *Application) handleValidate() http.HandlerFunc {
 
 func (a *Application) writeValidateResponse(w http.ResponseWriter, valid bool, msg string) {
 	resp := ValidateResponse{
-		Valid:   valid,
-		Message: msg,
+		Valid:		valid,
+		Message:	msg,
 	}
 	if !valid {
 		resp.Error = msg

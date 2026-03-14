@@ -2,19 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // Package rest provides REST API handlers for the server.
-package rest
-
-import (
-	"context"
-	"encoding/json"
-	"fmt"
-	"net/http"
-
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/mcpany/core/server/pkg/config"
-	"gopkg.in/yaml.v3"
-)
-
 // ValidateConfigHandler handles requests to validate configuration.
 //
 // Summary: Validates configuration content against schema and logic.
@@ -34,6 +21,19 @@ import (
 // Side Effects:
 //   - Reads the request body.
 //   - Writes JSON response to the response writer.
+package rest
+
+import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"net/http"
+
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/config"
+	"gopkg.in/yaml.v3"
+)
+
 func ValidateConfigHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		respondWithJSONError(w, http.StatusMethodNotAllowed, "Method not allowed")
@@ -127,8 +127,8 @@ func respondWithJSONError(w http.ResponseWriter, code int, message string) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 	_ = json.NewEncoder(w).Encode(ValidateConfigResponse{
-		Valid:  false,
-		Errors: []string{message},
+		Valid:	false,
+		Errors:	[]string{message},
 	})
 }
 
@@ -137,8 +137,8 @@ func respondWithValidationErrors(w http.ResponseWriter, errors []string) {
 	// We return 200 OK because the *request* was successful, the *validation* result is false.
 	// Returning 400 might imply the API usage was wrong.
 	if err := json.NewEncoder(w).Encode(ValidateConfigResponse{
-		Valid:  false,
-		Errors: errors,
+		Valid:	false,
+		Errors:	errors,
 	}); err != nil {
 		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 	}

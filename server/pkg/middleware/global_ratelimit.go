@@ -1,6 +1,15 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// GlobalRateLimitMiddleware provides rate limiting functionality for all MCP requests.
+//
+// Summary: Middleware that enforces global rate limits on MCP requests across the entire server.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 package middleware
 
 import (
@@ -24,47 +33,52 @@ import (
 	"golang.org/x/time/rate"
 )
 
-// GlobalRateLimitMiddleware provides rate limiting functionality for all MCP requests.
-//
-// Summary: Middleware that enforces global rate limits on MCP requests across the entire server.
 type GlobalRateLimitMiddleware struct {
-	mu     sync.RWMutex
-	config *configv1.RateLimitConfig
+	mu	sync.RWMutex
+	config	*configv1.RateLimitConfig
 	// limiters caches active limiters. Key is "partitionKey".
-	limiters *cache.Cache
+	limiters	*cache.Cache
 	// redisClients caches Redis clients. Key is "global".
-	redisClients sync.Map
+	// NewGlobalRateLimitMiddleware creates a new GlobalRateLimitMiddleware.
+	//
+	// Summary: Initializes the global rate limit middleware with the provided configuration.
+	//
+	// Parameters:
+	//   - config: *configv1.RateLimitConfig. The rate limit configuration settings.
+	//
+	// Returns:
+	//   - *GlobalRateLimitMiddleware: The initialized middleware instance.
+	//
+	// Side Effects:
+	//   - Initializes internal caches for limiters.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	// UpdateConfig updates the rate limit configuration safely.
+	//
+	// Summary: Updates the rate limit configuration at runtime.
+	//
+	// Parameters:
+	//   - config: *configv1.RateLimitConfig. The new configuration settings.
+	//
+	// Side Effects:
+	//   - Acquires a lock to safely update the configuration.
+	//   - Effectively changes rate limiting behavior for subsequent requests.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	redisClients	sync.Map
 }
 
-// NewGlobalRateLimitMiddleware creates a new GlobalRateLimitMiddleware.
-//
-// Summary: Initializes the global rate limit middleware with the provided configuration.
-//
-// Parameters:
-//   - config: *configv1.RateLimitConfig. The rate limit configuration settings.
-//
-// Returns:
-//   - *GlobalRateLimitMiddleware: The initialized middleware instance.
-//
-// Side Effects:
-//   - Initializes internal caches for limiters.
 func NewGlobalRateLimitMiddleware(config *configv1.RateLimitConfig) *GlobalRateLimitMiddleware {
 	return &GlobalRateLimitMiddleware{
-		config:   config,
-		limiters: cache.New(1*time.Hour, 10*time.Minute),
+		config:		config,
+		limiters:	cache.New(1*time.Hour, 10*time.Minute),
 	}
 }
 
-// UpdateConfig updates the rate limit configuration safely.
-//
-// Summary: Updates the rate limit configuration at runtime.
-//
-// Parameters:
-//   - config: *configv1.RateLimitConfig. The new configuration settings.
-//
-// Side Effects:
-//   - Acquires a lock to safely update the configuration.
-//   - Effectively changes rate limiting behavior for subsequent requests.
 func (m *GlobalRateLimitMiddleware) UpdateConfig(config *configv1.RateLimitConfig) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -72,28 +86,28 @@ func (m *GlobalRateLimitMiddleware) UpdateConfig(config *configv1.RateLimitConfi
 	// We might want to clear limiters cache if config changes drastically,
 	// but limiters update themselves on access if rps/burst changes.
 	// So we generally don't need to clear cache unless KeyBy changes.
+	// Execute executes the rate limiting middleware.
+	//
+	// Summary: Intercepts requests and enforces the configured rate limits.
+	//
+	// Parameters:
+	//   - ctx: context.Context. The request context.
+	//   - method: string. The MCP method being called.
+	//   - req: mcp.Request. The request payload.
+	//   - next: mcp.MethodHandler. The next handler in the chain.
+	//
+	// Returns:
+	//   - mcp.Result: The result of the next handler if allowed.
+	//   - error: An error if the rate limit is exceeded or the next handler fails.
+	//
+	// Errors:
+	//   - Returns "global rate limit exceeded" if the request is blocked.
+	//
+	// Side Effects:
+	//   - Records metrics for allowed and blocked requests.
+	//   - May update the state of the rate limiter (e.g., consume tokens).
 }
 
-// Execute executes the rate limiting middleware.
-//
-// Summary: Intercepts requests and enforces the configured rate limits.
-//
-// Parameters:
-//   - ctx: context.Context. The request context.
-//   - method: string. The MCP method being called.
-//   - req: mcp.Request. The request payload.
-//   - next: mcp.MethodHandler. The next handler in the chain.
-//
-// Returns:
-//   - mcp.Result: The result of the next handler if allowed.
-//   - error: An error if the rate limit is exceeded or the next handler fails.
-//
-// Errors:
-//   - Returns "global rate limit exceeded" if the request is blocked.
-//
-// Side Effects:
-//   - Records metrics for allowed and blocked requests.
-//   - May update the state of the rate limiter (e.g., consume tokens).
 func (m *GlobalRateLimitMiddleware) Execute(ctx context.Context, method string, req mcp.Request, next mcp.MethodHandler) (mcp.Result, error) {
 	m.mu.RLock()
 	config := m.config
@@ -131,7 +145,7 @@ func (m *GlobalRateLimitMiddleware) getLimiter(ctx context.Context, config *conf
 	rps := config.GetRequestsPerSecond()
 	burst := int(config.GetBurst())
 	if burst <= 0 {
-		burst = 1 // Ensure at least 1 request can be made
+		burst = 1	// Ensure at least 1 request can be made
 	}
 
 	partitionKey := m.getPartitionKey(ctx, config.GetKeyBy())
@@ -153,7 +167,7 @@ func (m *GlobalRateLimitMiddleware) getLimiter(ctx context.Context, config *conf
 			if ok && config.GetRedis() != nil {
 				configHash := m.calculateConfigHash(config.GetRedis())
 				if rl.GetConfigHash() != configHash {
-					validType = false // Force creation of new limiter
+					validType = false	// Force creation of new limiter
 				}
 			}
 		} else {
@@ -244,9 +258,9 @@ func (m *GlobalRateLimitMiddleware) getRedisClient(config *bus.RedisBus) *redis.
 
 	// Slow path: Create new client and use LoadOrStore to handle race conditions
 	opts := &redis.Options{
-		Addr:     config.GetAddress(),
-		Password: config.GetPassword(),
-		DB:       int(config.GetDb()),
+		Addr:		config.GetAddress(),
+		Password:	config.GetPassword(),
+		DB:		int(config.GetDb()),
 	}
 	newClient := redisClientCreator(opts)
 

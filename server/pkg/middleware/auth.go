@@ -2,19 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // Package middleware provides HTTP middleware for the application.
-package middleware
-
-import (
-	"context"
-	"fmt"
-	"net/http"
-	"strings"
-
-	"github.com/mcpany/core/server/pkg/auth"
-	"github.com/mcpany/core/server/pkg/consts"
-	"github.com/modelcontextprotocol/go-sdk/mcp"
-)
-
 // AuthMiddleware creates an MCP middleware for handling authentication.
 //
 // It is intended to inspect incoming requests and use the provided `AuthManager` to
@@ -28,6 +15,23 @@ import (
 //
 // Side Effects:
 //   - Modifies the context to include authenticated user info.
+//
+//
+// Errors:
+//   - An error if it fails.
+package middleware
+
+import (
+	"context"
+	"fmt"
+	"net/http"
+	"strings"
+
+	"github.com/mcpany/core/server/pkg/auth"
+	"github.com/mcpany/core/server/pkg/consts"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
+)
+
 func AuthMiddleware(authManager *auth.Manager) mcp.Middleware {
 	return func(next mcp.MethodHandler) mcp.MethodHandler {
 		return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {

@@ -2,6 +2,31 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // Package health provides health check functionality.
+// SetGlobalAlertConfig sets the global alert configuration.
+//
+// It updates the thread-safe global configuration used for sending alerts on health status changes.
+//
+// Parameters:
+//   - cfg: *configv1.AlertConfig. The new alert configuration.
+//
+// Returns:
+//
+// 	None.
+//
+// Side Effects:
+//   - Updates a global variable protected by a mutex.
+//
+//
+// Errors:
+//   - An error if it fails.
+// Summary: HTTPServiceWithHealthCheck is an interface for services that have an address and an HTTP health check.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 package health
 
 import (
@@ -30,35 +55,21 @@ import (
 )
 
 const (
-	healthStatusGauge        = "mcp_any_health_check_status"
-	healthCheckLatencyMetric = "mcp_any_health_check_latency_seconds"
+	healthStatusGauge		= "mcp_any_health_check_status"
+	healthCheckLatencyMetric	= "mcp_any_health_check_latency_seconds"
 )
 
 var (
-	globalAlertConfig   *configv1.AlertConfig
-	globalAlertConfigMu sync.RWMutex
+	globalAlertConfig	*configv1.AlertConfig
+	globalAlertConfigMu	sync.RWMutex
 )
 
-// SetGlobalAlertConfig sets the global alert configuration.
-//
-// It updates the thread-safe global configuration used for sending alerts on health status changes.
-//
-// Parameters:
-//   - cfg: *configv1.AlertConfig. The new alert configuration.
-//
-// Returns:
-//
-//	None.
-//
-// Side Effects:
-//   - Updates a global variable protected by a mutex.
 func SetGlobalAlertConfig(cfg *configv1.AlertConfig) {
 	globalAlertConfigMu.Lock()
 	defer globalAlertConfigMu.Unlock()
 	globalAlertConfig = cfg
 }
 
-// HTTPServiceWithHealthCheck is an interface for services that have an address and an HTTP health check.
 type HTTPServiceWithHealthCheck interface {
 	// GetAddress returns the address of the service.
 	//
@@ -69,22 +80,26 @@ type HTTPServiceWithHealthCheck interface {
 	//
 	// Returns:
 	//   - *configv1.HttpHealthCheck: The health check configuration.
+	// NewChecker creates a new health checker for the given upstream service.
+	//
+	// It determines the type of service (HTTP, gRPC, etc.) and creates an appropriate
+	// health check strategy wrapped with latency metrics and status change listeners.
+	//
+	// Parameters:
+	//   - uc: *configv1.UpstreamServiceConfig. The configuration of the upstream service to check.
+	//
+	// Returns:
+	//   - health.Checker: A configured health checker instance. Returns nil if the configuration is nil or invalid.
+	//
+	// Side Effects:
+	//   - Registers metrics for the health check.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
 	GetHealthCheck() *configv1.HttpHealthCheck
 }
 
-// NewChecker creates a new health checker for the given upstream service.
-//
-// It determines the type of service (HTTP, gRPC, etc.) and creates an appropriate
-// health check strategy wrapped with latency metrics and status change listeners.
-//
-// Parameters:
-//   - uc: *configv1.UpstreamServiceConfig. The configuration of the upstream service to check.
-//
-// Returns:
-//   - health.Checker: A configured health checker instance. Returns nil if the configuration is nil or invalid.
-//
-// Side Effects:
-//   - Registers metrics for the health check.
 func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
 	if uc == nil {
 		return nil
@@ -281,8 +296,8 @@ func getHealthCheckConfig(uc *configv1.UpstreamServiceConfig) (time.Duration, ti
 
 func httpCheck(name string, c HTTPServiceWithHealthCheck) health.Check {
 	return health.Check{
-		Name:    name,
-		Timeout: 5 * time.Second,
+		Name:		name,
+		Timeout:	5 * time.Second,
 		Check: func(ctx context.Context) error {
 			return httpCheckFunc(ctx, c.GetAddress(), c.GetHealthCheck())
 		},
@@ -291,8 +306,8 @@ func httpCheck(name string, c HTTPServiceWithHealthCheck) health.Check {
 
 func webrtcCheck(name string, c *configv1.WebrtcUpstreamService) health.Check {
 	return health.Check{
-		Name:    name,
-		Timeout: 5 * time.Second,
+		Name:		name,
+		Timeout:	5 * time.Second,
 		Check: func(ctx context.Context) error {
 			// For WebRTC, the health check is primarily concerned with the signaling
 			// server, which is typically an HTTP or WebSocket endpoint.
@@ -311,8 +326,8 @@ func webrtcCheck(name string, c *configv1.WebrtcUpstreamService) health.Check {
 
 func websocketCheck(name string, c *configv1.WebsocketUpstreamService) health.Check {
 	return health.Check{
-		Name:    name,
-		Timeout: 5 * time.Second,
+		Name:		name,
+		Timeout:	5 * time.Second,
 		Check: func(ctx context.Context) error {
 			return websocketCheckFunc(ctx, c.GetAddress(), c.GetHealthCheck())
 		},
@@ -382,8 +397,8 @@ func websocketCheckFunc(ctx context.Context, address string, hc *configv1.Websoc
 
 func grpcCheck(name string, c *configv1.GrpcUpstreamService) health.Check {
 	return health.Check{
-		Name:    name,
-		Timeout: 5 * time.Second,
+		Name:		name,
+		Timeout:	5 * time.Second,
 		Check: func(ctx context.Context) error {
 			if c.GetHealthCheck() == nil {
 				return util.CheckConnection(ctx, c.GetAddress())
@@ -417,7 +432,7 @@ func grpcCheck(name string, c *configv1.GrpcUpstreamService) health.Check {
 
 func commandLineCheck(name string, c *configv1.CommandLineUpstreamService) health.Check {
 	return health.Check{
-		Name: name,
+		Name:	name,
 		Check: func(ctx context.Context) error {
 			// For command line services, we assume it's healthy if not otherwise configured.
 			// A more sophisticated check would involve running a specific command and checking the output.
@@ -469,13 +484,13 @@ func commandLineCheck(name string, c *configv1.CommandLineUpstreamService) healt
 
 func mcpCheck(name string, c *configv1.McpUpstreamService) health.Check {
 	return health.Check{
-		Name: name,
+		Name:	name,
 		Check: func(ctx context.Context) error {
 			if conn := c.GetHttpConnection(); conn != nil {
 				return util.CheckConnection(ctx, conn.GetHttpAddress())
 			}
 			if c.GetStdioConnection() != nil {
-				return nil // Assume healthy
+				return nil	// Assume healthy
 			}
 			return fmt.Errorf("no connection configured for MCP service")
 		},
@@ -485,10 +500,10 @@ func mcpCheck(name string, c *configv1.McpUpstreamService) health.Check {
 func sendWebhook(ctx context.Context, url, serviceName string, status health.AvailabilityStatus) {
 	// Simple webhook implementation: POST JSON payload
 	payload := map[string]interface{}{
-		"event":     "health_status_changed",
-		"service":   serviceName,
-		"status":    string(status),
-		"timestamp": time.Now().Format(time.RFC3339),
+		"event":	"health_status_changed",
+		"service":	serviceName,
+		"status":	string(status),
+		"timestamp":	time.Now().Format(time.RFC3339),
 	}
 
 	jsonBody, err := json.Marshal(payload)
@@ -520,7 +535,7 @@ func sendWebhook(ctx context.Context, url, serviceName string, status health.Ava
 
 func filesystemCheck(name string, c *configv1.FilesystemUpstreamService) health.Check {
 	return health.Check{
-		Name: name,
+		Name:	name,
 		Check: func(_ context.Context) error {
 			// Basic check: Ensure root paths exist (for local OS FS)
 			// Only check local paths if it's explicitly OsFs or not specified (default)

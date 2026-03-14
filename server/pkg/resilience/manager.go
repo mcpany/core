@@ -1,23 +1,15 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package resilience
-
-import (
-	"context"
-
-	configv1 "github.com/mcpany/core/proto/config/v1"
-)
-
 // Manager orchestrates resilience features like circuit breakers, retries, and timeouts.
 //
 // Summary: Central manager for applying resilience patterns to operations.
-type Manager struct {
-	circuitBreaker *CircuitBreaker
-	retry          *Retry
-	timeout        *Timeout
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // NewManager creates a new Manager with the given resilience configuration.
 //
 // Summary: Initializes a new Resilience Manager.
@@ -27,6 +19,46 @@ type Manager struct {
 //
 // Returns:
 //   - *Manager: The initialized manager, or nil if no resilience features are enabled.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+// Execute wraps the given function with resilience features.
+//
+// Summary: Executes the work function with configured resilience policies (timeout, retry, circuit breaker).
+//
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//   - work: func(context.Context) error. The operation to execute.
+//
+// Returns:
+//   - error: An error if the operation fails after all resilience attempts.
+//
+// Side Effects:
+//   - Applies timeout context.
+//   - Retries operation on failure.
+//   - Checks and updates circuit breaker state.
+//
+//
+// Errors:
+//   - An error if it fails.
+package resilience
+
+import (
+	"context"
+
+	configv1 "github.com/mcpany/core/proto/config/v1"
+)
+
+type Manager struct {
+	circuitBreaker	*CircuitBreaker
+	retry		*Retry
+	timeout		*Timeout
+}
+
 func NewManager(config *configv1.ResilienceConfig) *Manager {
 	if config == nil {
 		return nil
@@ -52,27 +84,12 @@ func NewManager(config *configv1.ResilienceConfig) *Manager {
 	}
 
 	return &Manager{
-		circuitBreaker: cb,
-		retry:          r,
-		timeout:        t,
+		circuitBreaker:	cb,
+		retry:		r,
+		timeout:	t,
 	}
 }
 
-// Execute wraps the given function with resilience features.
-//
-// Summary: Executes the work function with configured resilience policies (timeout, retry, circuit breaker).
-//
-// Parameters:
-//   - ctx: context.Context. The context for the request.
-//   - work: func(context.Context) error. The operation to execute.
-//
-// Returns:
-//   - error: An error if the operation fails after all resilience attempts.
-//
-// Side Effects:
-//   - Applies timeout context.
-//   - Retries operation on failure.
-//   - Checks and updates circuit breaker state.
 func (m *Manager) Execute(ctx context.Context, work func(context.Context) error) error {
 	if m == nil {
 		return work(ctx)

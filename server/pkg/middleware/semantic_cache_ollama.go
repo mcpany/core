@@ -1,27 +1,15 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package middleware
-
-import (
-	"bytes"
-	"context"
-	"encoding/json"
-	"fmt"
-	"io"
-	"net/http"
-	"time"
-)
-
 // OllamaEmbeddingProvider implements EmbeddingProvider for Ollama.
 //
 // Summary: Provides an interface to generate text embeddings using the Ollama API.
-type OllamaEmbeddingProvider struct {
-	baseURL string
-	model   string
-	client  *http.Client
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // NewOllamaEmbeddingProvider creates a new OllamaEmbeddingProvider.
 //
 // Summary: Initializes a new provider for Ollama embeddings.
@@ -35,29 +23,10 @@ type OllamaEmbeddingProvider struct {
 //
 // Side Effects:
 //   - Sets default values for baseURL and model if not provided.
-func NewOllamaEmbeddingProvider(baseURL, model string) *OllamaEmbeddingProvider {
-	if baseURL == "" {
-		baseURL = "http://localhost:11434"
-	}
-	if model == "" {
-		model = "nomic-embed-text"
-	}
-	return &OllamaEmbeddingProvider{
-		baseURL: baseURL,
-		model:   model,
-		client:  &http.Client{Timeout: 30 * time.Second},
-	}
-}
-
-type ollamaEmbeddingRequest struct {
-	Model  string `json:"model"`
-	Prompt string `json:"prompt"`
-}
-
-type ollamaEmbeddingResponse struct {
-	Embedding []float32 `json:"embedding"`
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
 // Embed generates an embedding for the given text using Ollama.
 //
 // Summary: Calls the Ollama API to generate a vector embedding for the input text.
@@ -78,10 +47,51 @@ type ollamaEmbeddingResponse struct {
 //
 // Side Effects:
 //   - Makes an HTTP POST request to the configured Ollama API endpoint.
+package middleware
+
+import (
+	"bytes"
+	"context"
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
+	"time"
+)
+
+type OllamaEmbeddingProvider struct {
+	baseURL	string
+	model	string
+	client	*http.Client
+}
+
+func NewOllamaEmbeddingProvider(baseURL, model string) *OllamaEmbeddingProvider {
+	if baseURL == "" {
+		baseURL = "http://localhost:11434"
+	}
+	if model == "" {
+		model = "nomic-embed-text"
+	}
+	return &OllamaEmbeddingProvider{
+		baseURL:	baseURL,
+		model:		model,
+		client:		&http.Client{Timeout: 30 * time.Second},
+	}
+}
+
+type ollamaEmbeddingRequest struct {
+	Model	string	`json:"model"`
+	Prompt	string	`json:"prompt"`
+}
+
+type ollamaEmbeddingResponse struct {
+	Embedding []float32 `json:"embedding"`
+}
+
 func (p *OllamaEmbeddingProvider) Embed(ctx context.Context, text string) ([]float32, error) {
 	reqBody := ollamaEmbeddingRequest{
-		Model:  p.model,
-		Prompt: text,
+		Model:	p.model,
+		Prompt:	text,
 	}
 	bodyBytes, err := json.Marshal(reqBody)
 	if err != nil {

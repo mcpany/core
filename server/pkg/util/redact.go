@@ -1,7 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-package util //nolint:revive,nolintlint // Package name 'util' is common in this codebase
+package util	//nolint:revive,nolintlint // Package name 'util' is common in this codebase
 
 import (
 	"bytes"
@@ -17,29 +17,29 @@ import (
 const redactedPlaceholder = "[REDACTED]"
 
 var (
-	sensitiveKeysBytes [][]byte
-	redactedValue      json.RawMessage
+	sensitiveKeysBytes	[][]byte
+	redactedValue		json.RawMessage
 
 	// sensitiveStartChars contains the lowercase starting characters of all sensitive keys.
 	// Used for optimized scanning.
-	sensitiveStartChars []byte
+	sensitiveStartChars	[]byte
 
 	// sensitiveKeyGroups maps a starting character (lowercase) to the list of sensitive keys starting with it.
 	// Optimization: Use array instead of map for faster lookup.
-	sensitiveKeyGroups [256][][]byte
+	sensitiveKeyGroups	[256][][]byte
 
 	// sensitiveNextCharMask maps a starting character to a bitmask of allowed second characters.
 	// Bit 0 = 'a', Bit 1 = 'b', etc.
 	// Used to quickly filter out false positives based on the second character.
-	sensitiveNextCharMask [256]uint32
+	sensitiveNextCharMask	[256]uint32
 
 	// sensitiveStartCharBitmap is a bitmap for fast checking if a character is a start char.
 	// It's faster than bytes.IndexAny for short strings because it avoids overhead.
-	sensitiveStartCharBitmap [256]bool
+	sensitiveStartCharBitmap	[256]bool
 
 	// allSensitiveStartChars is a string containing all characters that can start a sensitive key.
 	// Used for optimized scanning with bytes.IndexAny.
-	allSensitiveStartChars string
+	allSensitiveStartChars	string
 )
 
 func init() {
@@ -48,7 +48,7 @@ func init() {
 		sensitiveKeysBytes = append(sensitiveKeysBytes, kb)
 
 		if len(kb) > 0 {
-			first := kb[0] // sensitiveKeys are lowercase
+			first := kb[0]	// sensitiveKeys are lowercase
 			if len(sensitiveKeyGroups[first]) == 0 {
 				sensitiveStartChars = append(sensitiveStartChars, first)
 			}
@@ -93,7 +93,7 @@ func init() {
 		var mask uint32
 		for _, k := range keys {
 			if len(k) > 1 {
-				second := k[1] // k is lowercase
+				second := k[1]	// k is lowercase
 				if second >= 'a' && second <= 'z' {
 					mask |= 1 << (second - 'a')
 				}
@@ -103,20 +103,27 @@ func init() {
 	}
 
 	// Pre-marshal the redacted placeholder to ensure valid JSON and avoid repeated work.
+	// RedactJSON parses a JSON byte slice and redacts sensitive keys.
+	// If the input is not valid JSON object or array, it returns the input as is.
+	//
+	// Summary: Redacts sensitive keys in JSON data.
+	//
+	// Parameters:
+	//   - input ([]byte): The JSON input to redact.
+	//
+	// Returns:
+	//   - []byte: The redacted JSON output.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
 	b, _ := json.Marshal(redactedPlaceholder)
 	redactedValue = json.RawMessage(b)
 }
 
-// RedactJSON parses a JSON byte slice and redacts sensitive keys.
-// If the input is not valid JSON object or array, it returns the input as is.
-//
-// Summary: Redacts sensitive keys in JSON data.
-//
-// Parameters:
-//   - input ([]byte): The JSON input to redact.
-//
-// Returns:
-//   - []byte: The redacted JSON output.
 func RedactJSON(input []byte) []byte {
 	// Check if input looks like JSON object or array.
 	// We skip whitespace and comments to find the first significant character.
@@ -131,23 +138,30 @@ func RedactJSON(input []byte) []byte {
 
 	// Use fast zero-allocation redaction path
 	// This avoids expensive json.Unmarshal/Marshal for large payloads
+	// RedactMap recursively redacts sensitive keys in a map.
+	//
+	// Optimization: This function performs a copy-on-write.
+	// If no sensitive keys are found, it returns the original map (zero allocation).
+	// If sensitive keys are found, it returns a new map with redacted values (and copies other fields).
+	// Note: This aligns with RedactJSON behavior which returns original slice if clean.
+	//
+	// Summary: Recursively redacts sensitive keys in a map.
+	//
+	// Parameters:
+	//   - m (map[string]interface{}): The map to redact.
+	//
+	// Returns:
+	//   - map[string]interface{}: The potentially redacted map.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
 	return redactJSONFast(input)
 }
 
-// RedactMap recursively redacts sensitive keys in a map.
-//
-// Optimization: This function performs a copy-on-write.
-// If no sensitive keys are found, it returns the original map (zero allocation).
-// If sensitive keys are found, it returns a new map with redacted values (and copies other fields).
-// Note: This aligns with RedactJSON behavior which returns original slice if clean.
-//
-// Summary: Recursively redacts sensitive keys in a map.
-//
-// Parameters:
-//   - m (map[string]interface{}): The map to redact.
-//
-// Returns:
-//   - map[string]interface{}: The potentially redacted map.
 func RedactMap(m map[string]interface{}) map[string]interface{} {
 	redacted, changed := redactMapMaybe(m)
 	if changed {
@@ -246,14 +260,6 @@ func redactSliceMaybe(s []interface{}) ([]interface{}, bool) {
 // sensitiveKeys is a list of substrings that suggest a key contains sensitive information.
 // Note: Shorter keys that are substrings of longer keys (e.g. "token" vs "access_token") cover the longer cases,
 // so we only include the shorter ones to optimize performance.
-var sensitiveKeys = []string{
-	"api_key", "apikey", "token", "secret", "password", "passwd", "credential", "auth", "private_key",
-	"authorization", "proxy-authorization", "cookie", "set-cookie", "x-api-key",
-	"passwords", "tokens", "api_keys", "apikeys",
-	"authentication", "authenticator", "credentials", "secrets",
-	"passphrase", "passphrases", "ssh_key",
-}
-
 // IsSensitiveKey checks if a key name suggests it contains sensitive information.
 //
 // Summary: Checks if a key name implies sensitive data.
@@ -263,6 +269,21 @@ var sensitiveKeys = []string{
 //
 // Returns:
 //   - bool: True if the key is considered sensitive, false otherwise.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+var sensitiveKeys = []string{
+	"api_key", "apikey", "token", "secret", "password", "passwd", "credential", "auth", "private_key",
+	"authorization", "proxy-authorization", "cookie", "set-cookie", "x-api-key",
+	"passwords", "tokens", "api_keys", "apikeys",
+	"authentication", "authenticator", "credentials", "secrets",
+	"passphrase", "passphrases", "ssh_key",
+}
+
 func IsSensitiveKey(key string) bool {
 	// Use the optimized byte-based scanner for keys as well.
 	// Avoid allocation using zero-copy conversion.
@@ -275,7 +296,7 @@ func IsSensitiveKey(key string) bool {
 // If validateKeyContext is true, it checks if the match is followed by a closing quote and a colon.
 // This function replaces the old linear scan (O(N*M)) with a more optimized scan
 // that uses SIMD-accelerated IndexByte for grouped start characters.
-func scanForSensitiveKeys(input []byte, validateKeyContext bool) bool { //nolint:unparam
+func scanForSensitiveKeys(input []byte, validateKeyContext bool) bool {	//nolint:unparam
 	// Optimization: If we are validating key context (JSON input), we can scan by quotes.
 	// This allows us to skip scanning string values entirely, which is a huge win for large payloads.
 	if validateKeyContext {
@@ -290,7 +311,7 @@ func scanForSensitiveKeys(input []byte, validateKeyContext bool) bool { //nolint
 		for i := 0; i < len(input); i++ {
 			c := input[i]
 			if sensitiveStartCharBitmap[c] {
-				startChar := c | 0x20 // Normalize to lowercase
+				startChar := c | 0x20	// Normalize to lowercase
 				if checkPotentialMatch(input, i, startChar) {
 					return true
 				}
@@ -317,7 +338,7 @@ func scanForSensitiveKeys(input []byte, validateKeyContext bool) bool { //nolint
 
 		// We found a character 'c' which is a start char.
 		// We need to know which 'startChar' (lowercase) it corresponds to.
-		lowerC := c | 0x20 // Normalize to lowercase
+		lowerC := c | 0x20	// Normalize to lowercase
 
 		// Check if it matches
 		if checkPotentialMatch(input, matchStart, lowerC) {
@@ -402,7 +423,7 @@ func matchFoldRest(s, key []byte) bool {
 	// Skip index 0 as it was already matched
 	for i := 1; i < len(key); i++ {
 		c := s[i]
-		k := key[i] // k is lowercase
+		k := key[i]	// k is lowercase
 
 		if c == k {
 			continue
@@ -436,7 +457,7 @@ func scanJSONForSensitiveKeys(input []byte) bool {
 
 		// We found a string starting at start.
 		// Get the end of the string.
-		end := skipString(input, start) // returns index after closing quote
+		end := skipString(input, start)	// returns index after closing quote
 
 		// Check if it is a key (followed by colon)
 		if isKeyColon(input, end) {
@@ -488,8 +509,6 @@ var dsnFallbackNoAtRegex = regexp.MustCompile(`(://[^:]*):([^/@\s"?]+)`)
 
 // dsnInvalidPortRegex handles the specific Go url.Parse error message leak "invalid port".
 // e.g. parse "...": invalid port ":password".
-var dsnInvalidPortRegex = regexp.MustCompile(`invalid port "(:[^"]+)"`)
-
 // RedactDSN redacts the password from a DSN string.
 // Supported formats: postgres://user:password@host...
 //
@@ -500,6 +519,15 @@ var dsnInvalidPortRegex = regexp.MustCompile(`invalid port "(:[^"]+)"`)
 //
 // Returns:
 //   - string: The redacted DSN string.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+var dsnInvalidPortRegex = regexp.MustCompile(`invalid port "(:[^"]+)"`)
+
 func RedactDSN(dsn string) string {
 	u, err := url.Parse(dsn)
 	if err == nil && u.User != nil {
@@ -591,29 +619,43 @@ func RedactDSN(dsn string) string {
 	}
 
 	// Handle Go url.Parse error leak "invalid port"
+	// SecretRedactor handles redaction of secrets from text.
+	// It is optimized to pre-process the list of secrets once and reuse the configuration.
+	//
+	// Summary: Optimized text redactor for known secrets.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
+	// NewSecretRedactor creates a new SecretRedactor with the given secrets.
+	// It performs filtering, deduplication, and sorting of secrets to ensure optimal redaction.
+	//
+	// Summary: Creates a new SecretRedactor.
+	//
+	// Parameters:
+	//   - secrets ([]string): The list of secrets to redact.
+	//
+	// Returns:
+	//   - *SecretRedactor: The configured redactor.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
 	dsn = dsnInvalidPortRegex.ReplaceAllString(dsn, "invalid port \":"+redactedPlaceholder+"\"")
 
 	return dsnPasswordRegex.ReplaceAllString(dsn, "$1"+redactedPlaceholder+"$3")
 }
 
-// SecretRedactor handles redaction of secrets from text.
-// It is optimized to pre-process the list of secrets once and reuse the configuration.
-//
-// Summary: Optimized text redactor for known secrets.
 type SecretRedactor struct {
 	replacer *strings.Replacer
 }
 
-// NewSecretRedactor creates a new SecretRedactor with the given secrets.
-// It performs filtering, deduplication, and sorting of secrets to ensure optimal redaction.
-//
-// Summary: Creates a new SecretRedactor.
-//
-// Parameters:
-//   - secrets ([]string): The list of secrets to redact.
-//
-// Returns:
-//   - *SecretRedactor: The configured redactor.
 func NewSecretRedactor(secrets []string) *SecretRedactor {
 	// ⚡ BOLT: Optimization - Pre-compile the replacer for reuse.
 	// Randomized Selection from Top 5 High-Impact Targets
@@ -639,6 +681,39 @@ func NewSecretRedactor(secrets []string) *SecretRedactor {
 	})
 
 	// Build args for Replacer
+	// Redact replaces all occurrences of the configured secrets in the text with [REDACTED].
+	//
+	// Summary: Redacts secrets from text.
+	//
+	// Parameters:
+	//   - text (string): The text to redact.
+	//
+	// Returns:
+	//   - string: The redacted text.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
+	// RedactSecrets replaces all occurrences of the given secrets in the text with [REDACTED].
+	//
+	// Summary: Convenience function to redact secrets from text.
+	//
+	// Parameters:
+	//   - text (string): The text to redact.
+	//   - secrets ([]string): A list of secret values to redact from the text.
+	//
+	// Returns:
+	//   - string: The redacted text.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
 	args := make([]string, 0, len(validSecrets)*2)
 	for _, s := range validSecrets {
 		args = append(args, s, redactedPlaceholder)
@@ -649,15 +724,6 @@ func NewSecretRedactor(secrets []string) *SecretRedactor {
 	}
 }
 
-// Redact replaces all occurrences of the configured secrets in the text with [REDACTED].
-//
-// Summary: Redacts secrets from text.
-//
-// Parameters:
-//   - text (string): The text to redact.
-//
-// Returns:
-//   - string: The redacted text.
 func (r *SecretRedactor) Redact(text string) string {
 	if text == "" || r.replacer == nil {
 		return text
@@ -665,16 +731,6 @@ func (r *SecretRedactor) Redact(text string) string {
 	return r.replacer.Replace(text)
 }
 
-// RedactSecrets replaces all occurrences of the given secrets in the text with [REDACTED].
-//
-// Summary: Convenience function to redact secrets from text.
-//
-// Parameters:
-//   - text (string): The text to redact.
-//   - secrets ([]string): A list of secret values to redact from the text.
-//
-// Returns:
-//   - string: The redacted text.
 func RedactSecrets(text string, secrets []string) string {
 	// Use the new struct-based implementation for consistency.
 	return NewSecretRedactor(secrets).Redact(text)

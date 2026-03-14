@@ -261,6 +261,16 @@ func (a *Application) updateCredentialHandler(w http.ResponseWriter, r *http.Req
 // Parameters:
 //   - w: http.ResponseWriter. The response writer.
 //   - r: *http.Request. The HTTP request containing the ID in the path.
+// TestAuthRequest defines the payload for testing authentication.
+//
+// Summary: Request payload for testing authentication configurations.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 func (a *Application) deleteCredentialHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodDelete {
 		writeError(w, fmt.Errorf("method not allowed"))
@@ -282,32 +292,36 @@ func (a *Application) deleteCredentialHandler(w http.ResponseWriter, r *http.Req
 	w.WriteHeader(http.StatusNoContent)
 }
 
-// TestAuthRequest defines the payload for testing authentication.
-//
-// Summary: Request payload for testing authentication configurations.
 type TestAuthRequest struct {
 	// The credential to use (can be a reference ID or inline Credential).
-	CredentialID string `json:"credential_id"`
+	CredentialID	string	`json:"credential_id"`
 	// OR inline authentication config
-	Authentication *configv1.Authentication `json:"authentication"`
+	Authentication	*configv1.Authentication	`json:"authentication"`
 	// OR inline user token (for ad-hoc testing)
-	UserToken *configv1.UserToken `json:"user_token"`
+	UserToken	*configv1.UserToken	`json:"user_token"`
 
 	// The URL to test against.
-	TargetURL string `json:"target_url"`
+	TargetURL	string	`json:"target_url"`
 	// HTTP Method (GET, POST, etc.)
-	Method string `json:"method"`
+	// TestAuthResponse defines the response for testing authentication.
+	//
+	// Summary: Response payload for authentication tests.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
+	Method	string	`json:"method"`
 }
 
-// TestAuthResponse defines the response for testing authentication.
-//
-// Summary: Response payload for authentication tests.
 type TestAuthResponse struct {
-	Status     int               `json:"status"`
-	StatusText string            `json:"status_text"`
-	Headers    map[string]string `json:"headers"`
-	Body       string            `json:"body"`
-	Error      string            `json:"error,omitempty"`
+	Status		int			`json:"status"`
+	StatusText	string			`json:"status_text"`
+	Headers		map[string]string	`json:"headers"`
+	Body		string			`json:"body"`
+	Error		string			`json:"error,omitempty"`
 }
 
 // testAuthHandler tests authentication against a target URL.
@@ -338,8 +352,8 @@ func (a *Application) testAuthHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Re-unmarshal proto fields explicitly using protojson since standard json can't handle Opaque types
 	var helper struct {
-		Authentication json.RawMessage `json:"authentication"`
-		UserToken      json.RawMessage `json:"user_token"`
+		Authentication	json.RawMessage	`json:"authentication"`
+		UserToken	json.RawMessage	`json:"user_token"`
 	}
 	if err := json.Unmarshal(body, &helper); err == nil {
 		if len(helper.Authentication) > 0 && string(helper.Authentication) != "null" {
@@ -372,7 +386,7 @@ func (a *Application) testAuthHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		authConfig = cred.GetAuthentication()
-		userToken = cred.GetToken() // Note: Field is 'Token' in proto
+		userToken = cred.GetToken()	// Note: Field is 'Token' in proto
 	} else {
 		// Use inline
 		authConfig = req.Authentication
@@ -445,9 +459,9 @@ func prepareAndExecuteRequest(ctx context.Context, w http.ResponseWriter, req Te
 	bodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		writeJSON(w, http.StatusOK, TestAuthResponse{
-			Status:     resp.StatusCode,
-			StatusText: resp.Status,
-			Error:      fmt.Sprintf("Failed to read body: %v", err),
+			Status:		resp.StatusCode,
+			StatusText:	resp.Status,
+			Error:		fmt.Sprintf("Failed to read body: %v", err),
 		})
 		return
 	}
@@ -459,9 +473,9 @@ func prepareAndExecuteRequest(ctx context.Context, w http.ResponseWriter, req Te
 	}
 
 	writeJSON(w, http.StatusOK, TestAuthResponse{
-		Status:     resp.StatusCode,
-		StatusText: resp.Status,
-		Headers:    headers,
-		Body:       string(bodyBytes), // Limit size?
+		Status:		resp.StatusCode,
+		StatusText:	resp.Status,
+		Headers:	headers,
+		Body:		string(bodyBytes),	// Limit size?
 	})
 }

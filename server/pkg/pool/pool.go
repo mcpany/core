@@ -2,6 +2,23 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // Package pool provides a generic connection pool implementation.
+// Summary: ErrPoolClosed is returned when an operation is attempted on a closed pool.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+// Summary: ErrPoolFull is returned when the pool has reached its maximum capacity and
+// cannot create new clients.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 package pool
 
 import (
@@ -18,22 +35,27 @@ import (
 )
 
 var (
-	// ErrPoolClosed is returned when an operation is attempted on a closed pool.
-	ErrPoolClosed = fmt.Errorf("pool has been closed")
-	// ErrPoolFull is returned when the pool has reached its maximum capacity and
-	// cannot create new clients.
-	ErrPoolFull = fmt.Errorf("pool is full")
+	ErrPoolClosed	= fmt.Errorf("pool has been closed")
+
+	ErrPoolFull	= fmt.Errorf("pool is full")
 
 	// retryBackoff is the duration to wait before retrying to create a new client
 	// when the upstream is unhealthy.
-	retryBackoff = 100 * time.Millisecond
+	// ClosableClient defines the interface for clients that can be managed by the
+	// connection pool. Implementations must provide methods for closing the
+	// connection and checking its health.
+	//
+	// Summary: Interface for poolable clients.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
+	retryBackoff	= 100 * time.Millisecond
 )
 
-// ClosableClient defines the interface for clients that can be managed by the
-// connection pool. Implementations must provide methods for closing the
-// connection and checking its health.
-//
-// Summary: Interface for poolable clients.
 type ClosableClient interface {
 	// Close terminates the client's connection.
 	//
@@ -52,12 +74,19 @@ type ClosableClient interface {
 	//
 	// Returns:
 	//   - bool: True if healthy.
+	// Pool defines the interface for a generic connection pool.
+	//
+	// Summary: Interface for a connection pool.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
 	IsHealthy(ctx context.Context) bool
 }
 
-// Pool defines the interface for a generic connection pool.
-//
-// Summary: Interface for a connection pool.
 type Pool[T ClosableClient] interface {
 	// Get retrieves a client from the pool.
 	//
@@ -97,23 +126,13 @@ type Pool[T ClosableClient] interface {
 }
 
 type poolItem[T any] struct {
-	client T
-	retry  bool
+	client	T
+	retry	bool
 }
 
 // poolImpl is the internal implementation of the Pool interface.
 //
 // Summary: Generic pool implementation.
-type poolImpl[T ClosableClient] struct {
-	clients            chan poolItem[T]
-	factory            func(context.Context) (T, error)
-	maxSize            int64
-	activeCount        atomic.Int64
-	mu                 sync.RWMutex
-	closed             atomic.Bool
-	disableHealthCheck bool
-}
-
 // New creates a new connection pool with the specified factory and size
 // constraints.
 //
@@ -130,10 +149,27 @@ type poolImpl[T ClosableClient] struct {
 // Returns:
 //   - Pool[T]: The new pool.
 //   - error: An error if configuration is invalid.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+type poolImpl[T ClosableClient] struct {
+	clients			chan poolItem[T]
+	factory			func(context.Context) (T, error)
+	maxSize			int64
+	activeCount		atomic.Int64
+	mu			sync.RWMutex
+	closed			atomic.Bool
+	disableHealthCheck	bool
+}
+
 func New[T ClosableClient](
 	factory func(context.Context) (T, error),
 	initialSize, maxIdleSize, maxSize int,
-	_ time.Duration, // idleTimeout is not used yet
+	_ time.Duration,	// idleTimeout is not used yet
 	disableHealthCheck bool,
 ) (Pool[T], error) {
 	if maxSize <= 0 {
@@ -147,10 +183,10 @@ func New[T ClosableClient](
 	}
 
 	p := &poolImpl[T]{
-		clients:            make(chan poolItem[T], maxIdleSize),
-		factory:            factory,
-		maxSize:            int64(maxSize),
-		disableHealthCheck: disableHealthCheck,
+		clients:		make(chan poolItem[T], maxIdleSize),
+		factory:		factory,
+		maxSize:		int64(maxSize),
+		disableHealthCheck:	disableHealthCheck,
 	}
 
 	// If health checks are disabled, we can pre-fill the pool without checks.
@@ -214,10 +250,6 @@ func (p *poolImpl[T]) tryAcquire(n int64) bool {
 
 // release releases n permits.
 // This uses atomic operations to avoid locking.
-func (p *poolImpl[T]) release(n int64) {
-	p.activeCount.Add(-n)
-}
-
 // Get retrieves a client from the pool.
 //
 // Summary: Acquires a client, creating one if necessary.
@@ -228,6 +260,17 @@ func (p *poolImpl[T]) release(n int64) {
 // Returns:
 //   - T: The client.
 //   - error: Error if pool closed or creation failed.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+func (p *poolImpl[T]) release(n int64) {
+	p.activeCount.Add(-n)
+}
+
 func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 	var zero T
 
@@ -257,7 +300,7 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 			if p.isHealthySafe(ctx, item.client) {
 				return item.client, nil
 			}
-			continue // Retry.
+			continue	// Retry.
 		default:
 			// Channel is empty, proceed.
 		}
@@ -279,12 +322,12 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 				if p.isHealthySafe(ctx, item.client) {
 					return item.client, nil
 				}
-				continue // Retry.
+				continue	// Retry.
 			default:
 				// No client, so create a new one.
 				// We must check if the pool was closed *after* we acquired the permit.
 				if p.closed.Load() {
-					p.release(1) // Don't leak the permit
+					p.release(1)	// Don't leak the permit
 					return zero, ErrPoolClosed
 				}
 
@@ -313,7 +356,7 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 				case <-time.After(retryBackoff):
 				}
 
-				continue // Retry.
+				continue	// Retry.
 			}
 		}
 
@@ -329,7 +372,7 @@ func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 			if p.isHealthySafe(ctx, item.client) {
 				return item.client, nil
 			}
-			continue // Retry.
+			continue	// Retry.
 		case <-ctx.Done():
 			return zero, ctx.Err()
 		}
@@ -356,7 +399,7 @@ func (p *poolImpl[T]) factorySafe(ctx context.Context) (T, error) {
 	// If not panicked, but error
 	if !panicked && err != nil {
 		p.release(1)
-		return client, err // client is zero
+		return client, err	// client is zero
 	}
 
 	return client, err
@@ -385,6 +428,19 @@ func (p *poolImpl[T]) isHealthySafe(ctx context.Context, client T) bool {
 	}()
 
 	// If we didn't panic, but unhealthy, cleanup.
+	// Put returns a client to the pool for reuse.
+	//
+	// Summary: Returns a client to the pool.
+	//
+	// Parameters:
+	//   - client: T. The client to return.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
 	if !panicked && !healthy {
 		_ = lo.Try(func() error {
 			return client.Close()
@@ -395,12 +451,6 @@ func (p *poolImpl[T]) isHealthySafe(ctx context.Context, client T) bool {
 	return healthy
 }
 
-// Put returns a client to the pool for reuse.
-//
-// Summary: Returns a client to the pool.
-//
-// Parameters:
-//   - client: T. The client to return.
 func (p *poolImpl[T]) Put(client T) {
 	v := reflect.ValueOf(client)
 	if !v.IsValid() || ((v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil()) {
@@ -412,7 +462,7 @@ func (p *poolImpl[T]) Put(client T) {
 		_ = lo.Try(func() error {
 			return client.Close()
 		})
-		p.release(1) // Release permit as the client is discarded
+		p.release(1)	// Release permit as the client is discarded
 		return
 	}
 
@@ -436,18 +486,25 @@ func (p *poolImpl[T]) Put(client T) {
 		p.mu.RUnlock()
 	default:
 		// Idle pool is full, discard client.
+		// Close shuts down the pool, closing all idle clients.
+		//
+		// Summary: Closes the pool.
+		//
+		// Returns:
+		//   - error: Error if close fails (usually nil).
+		//
+		//
+		// Errors:
+		//   - An error if it fails.
+		//
+		// Side Effects:
+		//   - None.
 		p.mu.RUnlock()
 		_ = lo.Try(client.Close)
 		p.release(1)
 	}
 }
 
-// Close shuts down the pool, closing all idle clients.
-//
-// Summary: Closes the pool.
-//
-// Returns:
-//   - error: Error if close fails (usually nil).
 func (p *poolImpl[T]) Close() error {
 	// We use the mutex here to ensure that we don't close the channel multiple times
 	// or have races with other Close calls. Get/Put check p.closed via atomic which is fast.
@@ -461,6 +518,29 @@ func (p *poolImpl[T]) Close() error {
 	p.mu.Unlock()
 
 	// Drain the channel and close all idle clients
+	// Len returns the current number of idle clients in the pool.
+	//
+	// Summary: Returns idle client count.
+	//
+	// Returns:
+	//   - int: Idle count.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
+	// UntypedPool defines a non-generic interface for a pool.
+	//
+	// Summary: Interface for untyped pool management.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
 	for item := range p.clients {
 		if item.retry {
 			continue
@@ -478,19 +558,10 @@ func (p *poolImpl[T]) Close() error {
 	return nil
 }
 
-// Len returns the current number of idle clients in the pool.
-//
-// Summary: Returns idle client count.
-//
-// Returns:
-//   - int: Idle count.
 func (p *poolImpl[T]) Len() int {
 	return len(p.clients)
 }
 
-// UntypedPool defines a non-generic interface for a pool.
-//
-// Summary: Interface for untyped pool management.
 type UntypedPool interface {
 	io.Closer
 	// Len returns the number of idle clients currently in the pool.
@@ -499,36 +570,101 @@ type UntypedPool interface {
 	//
 	// Returns:
 	//   - int: Idle count.
+	// Manager provides a way to manage multiple named connection pools.
+	//
+	// Summary: Manages a collection of pools.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
+	// NewManager creates and returns a new pool Manager.
+	//
+	// Summary: Initializes a new Pool Manager.
+	//
+	// Returns:
+	//   - *Manager: The initialized manager.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
+	// Register adds a new pool to the manager under a given name.
+	//
+	// Summary: Registers a pool by name.
+	//
+	// Parameters:
+	//   - name: string. The pool name.
+	//   - pool: any. The pool instance.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
+	// Deregister closes and removes a pool from the manager.
+	//
+	// Summary: Removes a pool by name.
+	//
+	// Parameters:
+	//   - name: string. The pool name.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
+	// Get retrieves a typed pool from the manager by name.
+	//
+	// Summary: Retrieves a pool by name and type.
+	//
+	// Parameters:
+	//   - m: *Manager. The manager.
+	//   - name: string. The pool name.
+	//
+	// Returns:
+	//   - Pool[T]: The typed pool.
+	//   - bool: True if found and type matches.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
+	// CloseAll iterates through all registered pools in the manager and closes them. Summary: Closes all managed pools.
+	//
+	// Parameters:
+	//   - None
+	//
+	// Returns:
+	//   - None
+	//
+	// Errors:
+	//   - None
+	//
+	// Side Effects:
+	//   - None
 	Len() int
 }
 
-// Manager provides a way to manage multiple named connection pools.
-//
-// Summary: Manages a collection of pools.
 type Manager struct {
-	pools map[string]any
-	mu    sync.RWMutex
+	pools	map[string]any
+	mu	sync.RWMutex
 }
 
-// NewManager creates and returns a new pool Manager.
-//
-// Summary: Initializes a new Pool Manager.
-//
-// Returns:
-//   - *Manager: The initialized manager.
 func NewManager() *Manager {
 	return &Manager{
 		pools: make(map[string]any),
 	}
 }
 
-// Register adds a new pool to the manager under a given name.
-//
-// Summary: Registers a pool by name.
-//
-// Parameters:
-//   - name: string. The pool name.
-//   - pool: any. The pool instance.
 func (m *Manager) Register(name string, pool any) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -544,12 +680,6 @@ func (m *Manager) Register(name string, pool any) {
 	m.pools[name] = pool
 }
 
-// Deregister closes and removes a pool from the manager.
-//
-// Summary: Removes a pool by name.
-//
-// Parameters:
-//   - name: string. The pool name.
 func (m *Manager) Deregister(name string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -565,17 +695,6 @@ func (m *Manager) Deregister(name string) {
 	}
 }
 
-// Get retrieves a typed pool from the manager by name.
-//
-// Summary: Retrieves a pool by name and type.
-//
-// Parameters:
-//   - m: *Manager. The manager.
-//   - name: string. The pool name.
-//
-// Returns:
-//   - Pool[T]: The typed pool.
-//   - bool: True if found and type matches.
 func Get[T ClosableClient](m *Manager, name string) (Pool[T], bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -587,19 +706,6 @@ func Get[T ClosableClient](m *Manager, name string) (Pool[T], bool) {
 	return pool, ok
 }
 
-// CloseAll iterates through all registered pools in the manager and closes them. Summary: Closes all managed pools.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
 func (m *Manager) CloseAll() {
 	m.mu.Lock()
 	defer m.mu.Unlock()

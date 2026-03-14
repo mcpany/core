@@ -2,6 +2,80 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // Package sql provides a SQL upstream implementation.
+// Summary: Tool implements the Tool interface for a tool that executes a SQL query.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+// NewTool creates a new SQL Tool.
+//
+// Parameters:
+//   - t (*v1.Tool): The parameter.
+//   - db (*sql.DB): The parameter.
+//   - callDef (*configv1.SqlCallDefinition): The parameter.
+//   - policies ([]*configv1.CallPolicy): The parameter.
+//   - callID (string): The parameter.
+//
+// Returns:
+//   - *Tool: The result.
+//
+// Side Effects:
+//   - None.
+//
+//
+// Errors:
+//   - An error if it fails.
+// Tool returns the protobuf definition of the tool.
+//
+// Returns:
+//   - *v1.Tool: The result.
+//
+// Side Effects:
+//   - None.
+//
+//
+// Errors:
+//   - An error if it fails.
+// MCPTool returns the MCP tool definition.
+//
+// Returns:
+//   - *mcp.Tool: The result.
+//
+// Side Effects:
+//   - None.
+//
+//
+// Errors:
+//   - An error if it fails.
+// GetCacheConfig returns the cache configuration for the tool.
+//
+// Returns:
+//   - *configv1.CacheConfig: The result.
+//
+// Side Effects:
+//   - None.
+//
+//
+// Errors:
+//   - An error if it fails.
+// Execute runs the SQL query with the provided inputs.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - req (*tool.ExecutionRequest): The parameter.
+//
+// Returns:
+//   - any: The result.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
 package sql
 
 import (
@@ -22,40 +96,25 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// Tool implements the Tool interface for a tool that executes a SQL query.
 type Tool struct {
-	tool        *v1.Tool
-	mcpTool     *mcp.Tool
-	mcpToolOnce sync.Once
-	db          *sql.DB
-	callDef     *configv1.SqlCallDefinition
-	policies    []*tool.CompiledCallPolicy
-	callID      string
-	initError   error
+	tool		*v1.Tool
+	mcpTool		*mcp.Tool
+	mcpToolOnce	sync.Once
+	db		*sql.DB
+	callDef		*configv1.SqlCallDefinition
+	policies	[]*tool.CompiledCallPolicy
+	callID		string
+	initError	error
 }
 
-// NewTool creates a new SQL Tool.
-//
-// Parameters:
-//   - t (*v1.Tool): The parameter.
-//   - db (*sql.DB): The parameter.
-//   - callDef (*configv1.SqlCallDefinition): The parameter.
-//   - policies ([]*configv1.CallPolicy): The parameter.
-//   - callID (string): The parameter.
-//
-// Returns:
-//   - *Tool: The result.
-//
-// Side Effects:
-//   - None.
 func NewTool(t *v1.Tool, db *sql.DB, callDef *configv1.SqlCallDefinition, policies []*configv1.CallPolicy, callID string) *Tool {
 	compiled, err := tool.CompileCallPolicies(policies)
 	to := &Tool{
-		tool:     t,
-		db:       db,
-		callDef:  callDef,
-		policies: compiled,
-		callID:   callID,
+		tool:		t,
+		db:		db,
+		callDef:	callDef,
+		policies:	compiled,
+		callID:		callID,
 	}
 	if err != nil {
 		to.initError = fmt.Errorf("failed to compile call policies: %w", err)
@@ -63,24 +122,10 @@ func NewTool(t *v1.Tool, db *sql.DB, callDef *configv1.SqlCallDefinition, polici
 	return to
 }
 
-// Tool returns the protobuf definition of the tool.
-//
-// Returns:
-//   - *v1.Tool: The result.
-//
-// Side Effects:
-//   - None.
 func (t *Tool) Tool() *v1.Tool {
 	return t.tool
 }
 
-// MCPTool returns the MCP tool definition.
-//
-// Returns:
-//   - *mcp.Tool: The result.
-//
-// Side Effects:
-//   - None.
 func (t *Tool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -92,13 +137,6 @@ func (t *Tool) MCPTool() *mcp.Tool {
 	return t.mcpTool
 }
 
-// GetCacheConfig returns the cache configuration for the tool.
-//
-// Returns:
-//   - *configv1.CacheConfig: The result.
-//
-// Side Effects:
-//   - None.
 func (t *Tool) GetCacheConfig() *configv1.CacheConfig {
 	if t.callDef == nil {
 		return nil
@@ -106,21 +144,6 @@ func (t *Tool) GetCacheConfig() *configv1.CacheConfig {
 	return t.callDef.GetCache()
 }
 
-// Execute runs the SQL query with the provided inputs.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - req (*tool.ExecutionRequest): The parameter.
-//
-// Returns:
-//   - any: The result.
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
 func (t *Tool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	if t.initError != nil {
 		return nil, t.initError

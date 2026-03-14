@@ -1,6 +1,46 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// Summary: State represents the current state of the circuit breaker.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+// Summary: StateClosed represents the state where the circuit breaker allows requests to pass through.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+// Summary: StateOpen represents the state where the circuit breaker blocks requests immediately.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+// Summary: StateHalfOpen represents the state where the circuit breaker allows a limited number of requests to test if the service has recovered.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+// Summary: CircuitBreaker implements the circuit breaker pattern. It prevents the
+// application from performing operations that are likely to fail.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 package resilience
 
 import (
@@ -13,66 +53,70 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
-// State represents the current state of the circuit breaker.
 type State int32
 
 const (
-	// StateClosed represents the state where the circuit breaker allows requests to pass through.
-	StateClosed State = iota
-	// StateOpen represents the state where the circuit breaker blocks requests immediately.
+	StateClosed	State	= iota
+
 	StateOpen
-	// StateHalfOpen represents the state where the circuit breaker allows a limited number of requests to test if the service has recovered.
+
 	StateHalfOpen
 )
 
-// CircuitBreaker implements the circuit breaker pattern. It prevents the
-// application from performing operations that are likely to fail.
 type CircuitBreaker struct {
-	mutex sync.Mutex
+	mutex	sync.Mutex
 
-	state        State // Accessed using atomics for read optimization
-	failures     int32 // Accessed using atomics
-	openTime     time.Time
-	halfOpenHits int
+	state		State	// Accessed using atomics for read optimization
+	failures	int32	// Accessed using atomics
+	// NewCircuitBreaker creates a new CircuitBreaker with the given configuration.
+	//
+	// Summary: Creates a new circuit breaker.
+	//
+	// Parameters:
+	//   - config (*configv1.CircuitBreakerConfig): The configuration for the circuit breaker.
+	//
+	// Returns:
+	//   - *CircuitBreaker: A new CircuitBreaker instance.
+	//
+	// Side Effects:
+	//   - None.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	// Execute runs the provided work function. If the circuit breaker is open, it
+	// returns a CircuitBreakerOpenError immediately. If the work function fails,
+	// it tracks the failure and may trip the breaker.
+	//
+	// Summary: Executes a function protected by the circuit breaker.
+	//
+	// Parameters:
+	//   - ctx (context.Context): The context for the request.
+	//   - work (func(context.Context) error): The function to execute.
+	//
+	// Returns:
+	//   - error: An error if the function fails or the breaker is open.
+	//
+	// Side Effects:
+	//   - May change the state of the circuit breaker.
+	//   - Executes the provided function.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	openTime	time.Time
+	halfOpenHits	int
 
-	config *configv1.CircuitBreakerConfig
+	config	*configv1.CircuitBreakerConfig
 }
 
-// NewCircuitBreaker creates a new CircuitBreaker with the given configuration.
-//
-// Summary: Creates a new circuit breaker.
-//
-// Parameters:
-//   - config (*configv1.CircuitBreakerConfig): The configuration for the circuit breaker.
-//
-// Returns:
-//   - *CircuitBreaker: A new CircuitBreaker instance.
-//
-// Side Effects:
-//   - None.
 func NewCircuitBreaker(config *configv1.CircuitBreakerConfig) *CircuitBreaker {
 	return &CircuitBreaker{
-		config: config,
-		state:  StateClosed,
+		config:	config,
+		state:	StateClosed,
 	}
 }
 
-// Execute runs the provided work function. If the circuit breaker is open, it
-// returns a CircuitBreakerOpenError immediately. If the work function fails,
-// it tracks the failure and may trip the breaker.
-//
-// Summary: Executes a function protected by the circuit breaker.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - work (func(context.Context) error): The function to execute.
-//
-// Returns:
-//   - error: An error if the function fails or the breaker is open.
-//
-// Side Effects:
-//   - May change the state of the circuit breaker.
-//   - Executes the provided function.
 func (cb *CircuitBreaker) Execute(ctx context.Context, work func(context.Context) error) error {
 	originState := StateClosed
 
@@ -209,6 +253,30 @@ func (cb *CircuitBreaker) onFailure(originState State) {
 		// Only trip the breaker if the failure corresponds to a probe (started in HalfOpen state).
 		// If the request started in Closed state (e.g., a slow request from before the break),
 		// we ignore it to allow the current probes to complete.
+		// Summary: CircuitBreakerOpenError is returned when the circuit breaker is in the Open state.
+		//
+		//
+		// Errors:
+		//   - An error if it fails.
+		//
+		// Side Effects:
+		//   - None.
+		// Error returns the error message for a CircuitBreakerOpenError.
+		//
+		// Summary: Returns the error message.
+		//
+		// Parameters:
+		//   - None.
+		//
+		// Returns:
+		//   - string: The error message.
+		//
+		// Side Effects:
+		//   - None.
+		//
+		//
+		// Errors:
+		//   - An error if it fails.
 		if originState != StateHalfOpen {
 			return
 		}
@@ -224,21 +292,8 @@ func (cb *CircuitBreaker) onFailure(originState State) {
 	}
 }
 
-// CircuitBreakerOpenError is returned when the circuit breaker is in the Open state.
 type CircuitBreakerOpenError struct{}
 
-// Error returns the error message for a CircuitBreakerOpenError.
-//
-// Summary: Returns the error message.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - string: The error message.
-//
-// Side Effects:
-//   - None.
 func (e *CircuitBreakerOpenError) Error() string {
 	return "circuit breaker is open"
 }

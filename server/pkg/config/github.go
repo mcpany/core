@@ -1,37 +1,5 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package config
-
-import (
-	"context"
-	"encoding/json"
-	"fmt"
-	"io"
-	"log/slog"
-	"net/http"
-	"net/url"
-	"regexp"
-	"strings"
-
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/mcpany/core/server/pkg/logging"
-	"github.com/mcpany/core/server/pkg/util"
-)
-
-var (
-	githubAPIURL        = "https://api.github.com"
-	githubRawContentURL = "https://raw.githubusercontent.com"
-)
-
-const (
-	githubURLRegexStr = `^https://github\.com/([^/]+)/([^/]+)/?(tree/|blob/)?([^/]+)?/?(.*)?`
-)
-
-var (
-	githubURLRe = regexp.MustCompile(githubURLRegexStr)
-)
-
 // GitHub represents a client for interacting with the GitHub API to fetch
 // configuration files or directories.
 //
@@ -43,18 +11,13 @@ var (
 //   - Path (string): The path to the file or directory within the repository.
 //   - Ref (string): The branch, tag, or commit hash.
 //   - URLType (string): The type of URL (tree or blob).
-type GitHub struct {
-	Owner         string
-	Repo          string
-	Path          string
-	Ref           string
-	URLType       string
-	log           *slog.Logger
-	apiURL        string
-	rawContentURL string
-	httpClient    *http.Client
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // NewGitHub creates a new GitHub client by parsing a GitHub URL.
 //
 // Summary: Creates a new GitHub client from a URL.
@@ -74,6 +37,97 @@ type GitHub struct {
 //
 // Side Effects:
 //   - None.
+// ToRawContentURL constructs the raw content URL for the configured GitHub path.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - string: The resulting string.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
+// Content represents a file or directory in a GitHub repository.
+//
+// Summary: Metadata for a file or directory in a GitHub repository.
+//
+// Fields:
+//   - Name (string): The name of the file or directory.
+//   - Type (string): The type of content (e.g., "file", "dir").
+//   - HTMLURL (string): The URL to view the content on GitHub.
+//   - DownloadURL (string): The URL to download the content (only for files).
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+// List fetches the contents of the configured GitHub path.
+//
+// Summary: Lists contents of the configured GitHub path.
+//
+// It handles authentication if provided and returns a list of Content objects.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - auth (*configv1.Authentication): Optional authentication configuration for accessing private repos.
+//
+// Returns:
+//   - []Content: A slice of Content objects.
+//   - error: An error if the fetch fails.
+//
+// Errors:
+//   - Returns an error if the HTTP request creation fails, authentication application fails, or the API returns a non-200 status code.
+//
+// Side Effects:
+//   - Makes an HTTP GET request to the GitHub API.
+package config
+
+import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"io"
+	"log/slog"
+	"net/http"
+	"net/url"
+	"regexp"
+	"strings"
+
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/logging"
+	"github.com/mcpany/core/server/pkg/util"
+)
+
+var (
+	githubAPIURL		= "https://api.github.com"
+	githubRawContentURL	= "https://raw.githubusercontent.com"
+)
+
+const (
+	githubURLRegexStr = `^https://github\.com/([^/]+)/([^/]+)/?(tree/|blob/)?([^/]+)?/?(.*)?`
+)
+
+var (
+	githubURLRe = regexp.MustCompile(githubURLRegexStr)
+)
+
+type GitHub struct {
+	Owner		string
+	Repo		string
+	Path		string
+	Ref		string
+	URLType		string
+	log		*slog.Logger
+	apiURL		string
+	rawContentURL	string
+	httpClient	*http.Client
+}
+
 func NewGitHub(_ context.Context, rawURL string) (*GitHub, error) {
 	parsedURL, err := url.Parse(rawURL)
 	if err != nil {
@@ -97,14 +151,14 @@ func NewGitHub(_ context.Context, rawURL string) (*GitHub, error) {
 	}
 
 	return &GitHub{
-		Owner:         matches[1],
-		Repo:          matches[2],
-		Ref:           ref,
-		Path:          matches[5],
-		URLType:       urlType,
-		log:           logging.GetLogger().With("component", "GitHub"),
-		apiURL:        githubAPIURL,
-		rawContentURL: githubRawContentURL,
+		Owner:		matches[1],
+		Repo:		matches[2],
+		Ref:		ref,
+		Path:		matches[5],
+		URLType:	urlType,
+		log:		logging.GetLogger().With("component", "GitHub"),
+		apiURL:		githubAPIURL,
+		rawContentURL:	githubRawContentURL,
 		httpClient: &http.Client{
 			Transport: &http.Transport{
 				DialContext: util.SafeDialContext,
@@ -117,58 +171,17 @@ func isGitHubURL(rawURL string) bool {
 	return githubURLRe.MatchString(rawURL)
 }
 
-// ToRawContentURL constructs the raw content URL for the configured GitHub path.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - string: The resulting string.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
 func (g *GitHub) ToRawContentURL() string {
 	return fmt.Sprintf("%s/%s/%s/%s/%s", g.rawContentURL, g.Owner, g.Repo, g.Ref, g.Path)
 }
 
-// Content represents a file or directory in a GitHub repository.
-//
-// Summary: Metadata for a file or directory in a GitHub repository.
-//
-// Fields:
-//   - Name (string): The name of the file or directory.
-//   - Type (string): The type of content (e.g., "file", "dir").
-//   - HTMLURL (string): The URL to view the content on GitHub.
-//   - DownloadURL (string): The URL to download the content (only for files).
 type Content struct {
-	Name        string `json:"name"`
-	Type        string `json:"type"`
-	HTMLURL     string `json:"html_url"`
-	DownloadURL string `json:"download_url"`
+	Name		string	`json:"name"`
+	Type		string	`json:"type"`
+	HTMLURL		string	`json:"html_url"`
+	DownloadURL	string	`json:"download_url"`
 }
 
-// List fetches the contents of the configured GitHub path.
-//
-// Summary: Lists contents of the configured GitHub path.
-//
-// It handles authentication if provided and returns a list of Content objects.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - auth (*configv1.Authentication): Optional authentication configuration for accessing private repos.
-//
-// Returns:
-//   - []Content: A slice of Content objects.
-//   - error: An error if the fetch fails.
-//
-// Errors:
-//   - Returns an error if the HTTP request creation fails, authentication application fails, or the API returns a non-200 status code.
-//
-// Side Effects:
-//   - Makes an HTTP GET request to the GitHub API.
 func (g *GitHub) List(ctx context.Context, auth *configv1.Authentication) ([]Content, error) {
 	apiURL := fmt.Sprintf("%s/repos/%s/%s/contents/%s", g.apiURL, g.Owner, g.Repo, g.Path)
 	if g.Ref != "" {

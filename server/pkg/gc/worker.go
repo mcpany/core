@@ -3,30 +3,22 @@
 
 // Package gc provides a background worker for global garbage collection of
 // temporary files and directories.
-package gc
-
-import (
-	"context"
-	"os"
-	"path/filepath"
-	"time"
-
-	"github.com/mcpany/core/server/pkg/logging"
-)
-
-// Config defines the configuration for the GC Worker.
-type Config struct {
-	Enabled  bool
-	Interval time.Duration
-	TTL      time.Duration
-	Paths    []string
-}
-
-// Worker implements a background worker for garbage collection.
-type Worker struct {
-	config Config
-}
-
+// Summary: Config defines the configuration for the GC Worker.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+// Summary: Worker implements a background worker for garbage collection.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // New creates a new GC Worker. config holds the configuration settings. Returns the result.
 //
 // Parameters:
@@ -40,31 +32,53 @@ type Worker struct {
 //
 // Side Effects:
 //   - None
+package gc
+
+import (
+	"context"
+	"os"
+	"path/filepath"
+	"time"
+
+	"github.com/mcpany/core/server/pkg/logging"
+)
+
+type Config struct {
+	Enabled		bool
+	Interval	time.Duration
+	TTL		time.Duration
+	Paths		[]string
+}
+
+type Worker struct {
+	config Config
+}
+
 func New(config Config) *Worker {
 	if config.Interval <= 0 {
-		config.Interval = 1 * time.Hour // Default 1 hour
+		config.Interval = 1 * time.Hour	// Default 1 hour
 	}
 	if config.TTL <= 0 {
-		config.TTL = 24 * time.Hour // Default 24 hours
+		config.TTL = 24 * time.Hour	// Default 24 hours
+		// Start runs the GC worker in the background. It returns immediately and runs cleanup periodically until the context is canceled.
+		//
+		// Parameters:
+		//   - ctx (context.Context): The context for the request.
+		//
+		// Returns:
+		//   - None
+		//
+		// Errors:
+		//   - None
+		//
+		// Side Effects:
+		//   - None
 	}
 	return &Worker{
 		config: config,
 	}
 }
 
-// Start runs the GC worker in the background. It returns immediately and runs cleanup periodically until the context is canceled.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
 func (w *Worker) Start(ctx context.Context) {
 	if !w.config.Enabled {
 		logging.GetLogger().Info("Global GC worker is disabled")

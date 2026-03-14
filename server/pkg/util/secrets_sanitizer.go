@@ -1,18 +1,24 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-package util //nolint:revive,nolintlint // Package name 'util' is common in this codebase
-
-import (
-	configv1 "github.com/mcpany/core/proto/config/v1"
-)
-
+package util	//nolint:revive,nolintlint // Package name 'util' is common in this codebase
 // StripSecretsFromService removes sensitive information from the service configuration.
 //
 // Summary: Removes sensitive information from service configuration.
 //
 // Parameters:
 //   - svc (*configv1.UpstreamServiceConfig): The upstream service configuration to strip secrets from.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+import (
+	configv1 "github.com/mcpany/core/proto/config/v1"
+)
+
 func StripSecretsFromService(svc *configv1.UpstreamServiceConfig) {
 	if svc == nil {
 		return
@@ -56,17 +62,50 @@ func StripSecretsFromService(svc *configv1.UpstreamServiceConfig) {
 	}
 
 	// Cache
+	// StripSecretsFromProfile removes sensitive information from the profile definition.
+	//
+	// Summary: Removes sensitive information from profile definition.
+	//
+	// Parameters:
+	//   - profile (*configv1.ProfileDefinition): The profile definition to strip secrets from.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
+	// StripSecretsFromCollection removes sensitive information from the service collection.
+	//
+	// Summary: Removes sensitive information from service collection.
+	//
+	// Parameters:
+	//   - collection (*configv1.Collection): The service collection to strip secrets from.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
+	// StripSecretsFromAuth removes sensitive values from the authentication config.
+	//
+	// Summary: Removes sensitive values from authentication config.
+	//
+	// Parameters:
+	//   - auth (*configv1.Authentication): The authentication configuration to strip secrets from.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
 	if svc.GetCache() != nil {
 		stripSecretsFromCacheConfig(svc.GetCache())
 	}
 }
 
-// StripSecretsFromProfile removes sensitive information from the profile definition.
-//
-// Summary: Removes sensitive information from profile definition.
-//
-// Parameters:
-//   - profile (*configv1.ProfileDefinition): The profile definition to strip secrets from.
 func StripSecretsFromProfile(profile *configv1.ProfileDefinition) {
 	if profile == nil {
 		return
@@ -76,12 +115,6 @@ func StripSecretsFromProfile(profile *configv1.ProfileDefinition) {
 	}
 }
 
-// StripSecretsFromCollection removes sensitive information from the service collection.
-//
-// Summary: Removes sensitive information from service collection.
-//
-// Parameters:
-//   - collection (*configv1.Collection): The service collection to strip secrets from.
 func StripSecretsFromCollection(collection *configv1.Collection) {
 	if collection == nil {
 		return
@@ -91,12 +124,6 @@ func StripSecretsFromCollection(collection *configv1.Collection) {
 	}
 }
 
-// StripSecretsFromAuth removes sensitive values from the authentication config.
-//
-// Summary: Removes sensitive values from authentication config.
-//
-// Parameters:
-//   - auth (*configv1.Authentication): The authentication configuration to strip secrets from.
 func StripSecretsFromAuth(auth *configv1.Authentication) {
 	if auth == nil {
 		return
@@ -166,7 +193,7 @@ func stripSecretsFromFilesystemService(s *configv1.FilesystemUpstreamService) {
 	if s == nil {
 		return
 	}
-	if fs := s.GetS3(); fs != nil { // GetS3() ? The oneof is filesystem_type.
+	if fs := s.GetS3(); fs != nil {	// GetS3() ? The oneof is filesystem_type.
 		// Need to check names of getters for FilesystemService oneof.
 		// Assuming named based on field names: s3, sftp, etc.
 		if fs.GetSecretAccessKey() != "" {
@@ -304,17 +331,24 @@ func scrubSecretValue(sv *configv1.SecretValue) {
 	// If it is a PLAIN value, we must remove it.
 	// Opaque API: Value is a oneof.
 	if sv.HasPlainText() {
-		sv.ClearValue() // Scrub it.
+		sv.ClearValue()	// Scrub it.
+		// HydrateSecretsInService populates the service configuration with resolved secret values.
+		//
+		// Summary: Populates service configuration with resolved secret values.
+		//
+		// Parameters:
+		//   - svc (*configv1.UpstreamServiceConfig): The upstream service configuration to hydrate secrets into.
+		//   - secrets (map[string]*configv1.SecretValue): A map of resolved secret values.
+		//
+		//
+		// Errors:
+		//   - An error if it fails.
+		//
+		// Side Effects:
+		//   - None.
 	}
 }
 
-// HydrateSecretsInService populates the service configuration with resolved secret values.
-//
-// Summary: Populates service configuration with resolved secret values.
-//
-// Parameters:
-//   - svc (*configv1.UpstreamServiceConfig): The upstream service configuration to hydrate secrets into.
-//   - secrets (map[string]*configv1.SecretValue): A map of resolved secret values.
 func HydrateSecretsInService(svc *configv1.UpstreamServiceConfig, secrets map[string]*configv1.SecretValue) {
 	if svc == nil || len(secrets) == 0 {
 		return

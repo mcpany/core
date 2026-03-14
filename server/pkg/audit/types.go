@@ -1,6 +1,29 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// Summary: Entry represents a single audit log entry.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+// Summary: Filter defines the filters for reading audit logs.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+// Summary: Store defines the interface for audit log storage.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 package audit
 
 import (
@@ -9,34 +32,31 @@ import (
 	"time"
 )
 
-// Entry represents a single audit log entry.
 type Entry struct {
-	Timestamp  time.Time       `json:"timestamp"`
-	ToolName   string          `json:"tool_name"`
-	UserID     string          `json:"user_id,omitempty"`
-	ProfileID  string          `json:"profile_id,omitempty"`
-	TraceID    string          `json:"trace_id,omitempty"`
-	SpanID     string          `json:"span_id,omitempty"`
-	ParentID   string          `json:"parent_id,omitempty"`
-	Arguments  json.RawMessage `json:"arguments,omitempty"`
-	Result     any             `json:"result,omitempty"`
-	Error      string          `json:"error,omitempty"`
-	Duration   string          `json:"duration"`
-	DurationMs int64           `json:"duration_ms"`
+	Timestamp	time.Time	`json:"timestamp"`
+	ToolName	string		`json:"tool_name"`
+	UserID		string		`json:"user_id,omitempty"`
+	ProfileID	string		`json:"profile_id,omitempty"`
+	TraceID		string		`json:"trace_id,omitempty"`
+	SpanID		string		`json:"span_id,omitempty"`
+	ParentID	string		`json:"parent_id,omitempty"`
+	Arguments	json.RawMessage	`json:"arguments,omitempty"`
+	Result		any		`json:"result,omitempty"`
+	Error		string		`json:"error,omitempty"`
+	Duration	string		`json:"duration"`
+	DurationMs	int64		`json:"duration_ms"`
 }
 
-// Filter defines the filters for reading audit logs.
 type Filter struct {
-	StartTime *time.Time `json:"start_time,omitempty"`
-	EndTime   *time.Time `json:"end_time,omitempty"`
-	ToolName  string     `json:"tool_name,omitempty"`
-	UserID    string     `json:"user_id,omitempty"`
-	ProfileID string     `json:"profile_id,omitempty"`
-	Limit     int        `json:"limit,omitempty"`
-	Offset    int        `json:"offset,omitempty"`
+	StartTime	*time.Time	`json:"start_time,omitempty"`
+	EndTime		*time.Time	`json:"end_time,omitempty"`
+	ToolName	string		`json:"tool_name,omitempty"`
+	UserID		string		`json:"user_id,omitempty"`
+	ProfileID	string		`json:"profile_id,omitempty"`
+	Limit		int		`json:"limit,omitempty"`
+	Offset		int		`json:"offset,omitempty"`
 }
 
-// Store defines the interface for audit log storage.
 type Store interface {
 	// Write writes an audit entry to the store.
 	//

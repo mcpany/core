@@ -1,37 +1,25 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package worker
-
-import (
-	"context"
-	"sync"
-
-	"al.essio.dev/pkg/shellescape"
-	"github.com/alitto/pond/v2"
-	"github.com/mcpany/core/server/pkg/bus"
-	"github.com/mcpany/core/server/pkg/logging"
-)
-
 // Config holds the configuration for the worker.
 //
 // Summary: Configuration for worker pool.
-type Config struct {
-	MaxWorkers   int
-	MaxQueueSize int
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // Worker is responsible for processing jobs from the bus.
 //
 // Summary: Processes background jobs.
-type Worker struct {
-	busProvider *bus.Provider
-	pond        pond.Pool
-	stopFuncs   []func()
-	mu          sync.Mutex
-	wg          sync.WaitGroup
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // New creates a new Worker.
 //
 // Summary: Initializes a new Worker.
@@ -42,27 +30,26 @@ type Worker struct {
 //
 // Returns:
 //   - *Worker: The initialized worker.
-func New(busProvider *bus.Provider, cfg *Config) *Worker {
-	return &Worker{
-		busProvider: busProvider,
-		pond: pond.NewPool(
-			cfg.MaxWorkers,
-			pond.WithQueueSize(cfg.MaxQueueSize),
-		),
-	}
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // Start starts the worker and its background tasks.
 //
 // Summary: Starts the worker processing loop.
 //
 // Parameters:
 //   - ctx: context.Context. The context for the worker.
-func (w *Worker) Start(ctx context.Context) {
-	w.wg.Add(1)
-	go w.startToolExecutionWorker(ctx)
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // Stop stops the worker and cleans up resources. Summary: Stops the worker. Side Effects: - Waits for pending jobs. - Unsubscribes from the bus.
 //
 // Parameters:
@@ -76,8 +63,48 @@ func (w *Worker) Start(ctx context.Context) {
 //
 // Side Effects:
 //   - None
+package worker
+
+import (
+	"context"
+	"sync"
+
+	"al.essio.dev/pkg/shellescape"
+	"github.com/alitto/pond/v2"
+	"github.com/mcpany/core/server/pkg/bus"
+	"github.com/mcpany/core/server/pkg/logging"
+)
+
+type Config struct {
+	MaxWorkers	int
+	MaxQueueSize	int
+}
+
+type Worker struct {
+	busProvider	*bus.Provider
+	pond		pond.Pool
+	stopFuncs	[]func()
+	mu		sync.Mutex
+	wg		sync.WaitGroup
+}
+
+func New(busProvider *bus.Provider, cfg *Config) *Worker {
+	return &Worker{
+		busProvider:	busProvider,
+		pond: pond.NewPool(
+			cfg.MaxWorkers,
+			pond.WithQueueSize(cfg.MaxQueueSize),
+		),
+	}
+}
+
+func (w *Worker) Start(ctx context.Context) {
+	w.wg.Add(1)
+	go w.startToolExecutionWorker(ctx)
+}
+
 func (w *Worker) Stop() {
-	w.wg.Wait() // Wait for the subscription to be set up
+	w.wg.Wait()	// Wait for the subscription to be set up
 	w.mu.Lock()
 	defer w.mu.Unlock()
 	for _, stop := range w.stopFuncs {
@@ -108,8 +135,8 @@ func (w *Worker) startToolExecutionWorker(ctx context.Context) {
 			// executed. For now, we'll just return a dummy result.
 			result := shellescape.Quote(string(req.ToolInputs))
 			res := &bus.ToolExecutionResult{
-				BaseMessage: bus.BaseMessage{CID: req.CorrelationID()},
-				Result:      []byte(result),
+				BaseMessage:	bus.BaseMessage{CID: req.CorrelationID()},
+				Result:		[]byte(result),
 			}
 			if err := resBus.Publish(ctx, req.CorrelationID(), res); err != nil {
 				log.Error("Failed to publish tool execution result", "error", err)

@@ -1,26 +1,13 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package logging
-
-import (
-	"context"
-	"encoding/json"
-	"fmt"
-	"log/slog"
-	"os"
-
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/mcpany/core/server/pkg/audit"
-)
-
-// AuditHandler is a slog.Handler that exports logs to audit sinks.
-type AuditHandler struct {
-	next   slog.Handler
-	config *configv1.AuditConfig
-	store  audit.Store
-}
-
+// Summary: AuditHandler is a slog.Handler that exports logs to audit sinks.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // NewAuditHandler creates a new AuditHandler.
 //
 // Parameters:
@@ -35,10 +22,57 @@ type AuditHandler struct {
 //
 // Side Effects:
 //   - None
+// Enabled reports whether the handler handles records at the given level.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - level (slog.Level): The level parameter.
+//
+// Returns:
+//   - bool: True if successful, false otherwise.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
+// Handle handles the Record.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//   - r (slog.Record): The r parameter.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails or is invalid.
+//
+// Side Effects:
+//   - None
+package logging
+
+import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"log/slog"
+	"os"
+
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	"github.com/mcpany/core/server/pkg/audit"
+)
+
+type AuditHandler struct {
+	next	slog.Handler
+	config	*configv1.AuditConfig
+	store	audit.Store
+}
+
 func NewAuditHandler(next slog.Handler, config *configv1.AuditConfig) *AuditHandler {
 	h := &AuditHandler{
-		next:   next,
-		config: config,
+		next:	next,
+		config:	config,
 	}
 	if config != nil && config.GetEnabled() {
 		h.initializeStore(config)
@@ -79,38 +113,10 @@ func (h *AuditHandler) initializeStore(config *configv1.AuditConfig) {
 	h.store = store
 }
 
-// Enabled reports whether the handler handles records at the given level.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - level (slog.Level): The level parameter.
-//
-// Returns:
-//   - bool: True if successful, false otherwise.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
 func (h *AuditHandler) Enabled(ctx context.Context, level slog.Level) bool {
 	return h.next.Enabled(ctx, level)
 }
 
-// Handle handles the Record.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - r (slog.Record): The r parameter.
-//
-// Returns:
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
 func (h *AuditHandler) Handle(ctx context.Context, r slog.Record) error {
 	// 1. Export the record
 	if err := h.Export(ctx, r); err != nil {
@@ -118,65 +124,65 @@ func (h *AuditHandler) Handle(ctx context.Context, r slog.Record) error {
 	}
 
 	// 2. Delegate to next handler
+	// WithAttrs returns a new generic Handler with the given attributes.
+	//
+	// Parameters:
+	//   - attrs ([]slog.Attr): The attrs parameter.
+	//
+	// Returns:
+	//   - slog.Handler: The resulting slog.Handler.
+	//
+	// Errors:
+	//   - None
+	//
+	// Side Effects:
+	//   - None
+	// WithGroup returns a new generic Handler with the given group.
+	//
+	// Parameters:
+	//   - name (string): The name parameter.
+	//
+	// Returns:
+	//   - slog.Handler: The resulting slog.Handler.
+	//
+	// Errors:
+	//   - None
+	//
+	// Side Effects:
+	//   - None
+	// Export sends the log record to the configued sinks.
+	//
+	// Parameters:
+	//   - ctx (context.Context): The context for the request.
+	//   - r (slog.Record): The r parameter.
+	//
+	// Returns:
+	//   - error: An error if the operation fails.
+	//
+	// Errors:
+	//   - Returns an error if the operation fails or is invalid.
+	//
+	// Side Effects:
+	//   - None
 	return h.next.Handle(ctx, r)
 }
 
-// WithAttrs returns a new generic Handler with the given attributes.
-//
-// Parameters:
-//   - attrs ([]slog.Attr): The attrs parameter.
-//
-// Returns:
-//   - slog.Handler: The resulting slog.Handler.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
 func (h *AuditHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 	return &AuditHandler{
-		next:   h.next.WithAttrs(attrs),
-		config: h.config,
-		store:  h.store,
+		next:	h.next.WithAttrs(attrs),
+		config:	h.config,
+		store:	h.store,
 	}
 }
 
-// WithGroup returns a new generic Handler with the given group.
-//
-// Parameters:
-//   - name (string): The name parameter.
-//
-// Returns:
-//   - slog.Handler: The resulting slog.Handler.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
 func (h *AuditHandler) WithGroup(name string) slog.Handler {
 	return &AuditHandler{
-		next:   h.next.WithGroup(name),
-		config: h.config,
-		store:  h.store,
+		next:	h.next.WithGroup(name),
+		config:	h.config,
+		store:	h.store,
 	}
 }
 
-// Export sends the log record to the configued sinks.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - r (slog.Record): The r parameter.
-//
-// Returns:
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
 func (h *AuditHandler) Export(ctx context.Context, r slog.Record) error {
 	if h.store == nil {
 		return nil
@@ -184,8 +190,8 @@ func (h *AuditHandler) Export(ctx context.Context, r slog.Record) error {
 
 	// Convert slog.Record to AuditEntry
 	entry := audit.Entry{
-		Timestamp: r.Time,
-		ToolName:  "log:" + r.Message, // Use ToolName field to hold the message
+		Timestamp:	r.Time,
+		ToolName:	"log:" + r.Message,	// Use ToolName field to hold the message
 	}
 
 	attrs := make(map[string]any)

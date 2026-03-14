@@ -1,24 +1,15 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package middleware
-
-import (
-	"context"
-	"time"
-
-	"golang.org/x/time/rate"
-
-	configv1 "github.com/mcpany/core/proto/config/v1"
-)
-
 // LocalLimiter is an in-memory implementation of Limiter.
 //
 // Summary: Rate limiter implementation using golang.org/x/time/rate.
-type LocalLimiter struct {
-	*rate.Limiter
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // Allow checks if the request is allowed (cost 1).
 //
 // Summary: Checks if a single event is allowed by the rate limiter.
@@ -32,10 +23,10 @@ type LocalLimiter struct {
 //
 // Side Effects:
 //   - Consumes 1 token from the bucket if allowed.
-func (l *LocalLimiter) Allow(_ context.Context) (bool, error) {
-	return l.Limiter.Allow(), nil
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
 // AllowN checks if the request is allowed with a specific cost.
 //
 // Summary: Checks if N events are allowed by the rate limiter.
@@ -50,10 +41,10 @@ func (l *LocalLimiter) Allow(_ context.Context) (bool, error) {
 //
 // Side Effects:
 //   - Consumes n tokens from the bucket if allowed.
-func (l *LocalLimiter) AllowN(_ context.Context, n int) (bool, error) {
-	return l.Limiter.AllowN(time.Now(), n), nil
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
 // Update updates the limiter configuration.
 //
 // Summary: Dynamically updates the rate limit and burst size.
@@ -64,31 +55,33 @@ func (l *LocalLimiter) AllowN(_ context.Context, n int) (bool, error) {
 //
 // Side Effects:
 //   - Modifies the underlying rate.Limiter state.
-func (l *LocalLimiter) Update(rps float64, burst int) {
-	limit := rate.Limit(rps)
-	if l.Limit() != limit {
-		l.SetLimit(limit)
-	}
-	if l.Burst() != burst {
-		l.SetBurst(burst)
-	}
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
 // LocalStrategy implements RateLimitStrategy for local in-memory rate limiting.
 //
 // Summary: Strategy for creating local rate limiters.
-type LocalStrategy struct{}
-
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // NewLocalStrategy creates a new LocalStrategy.
 //
 // Summary: Initializes a new LocalStrategy.
 //
 // Returns:
 //   - *LocalStrategy: The initialized strategy.
-func NewLocalStrategy() *LocalStrategy {
-	return &LocalStrategy{}
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // Create creates a new LocalLimiter.
 //
 // Summary: Creates a new in-memory rate limiter based on the provided configuration.
@@ -106,6 +99,49 @@ func NewLocalStrategy() *LocalStrategy {
 //
 // Side Effects:
 //   - Sets a minimum burst of 1 if configured lower.
+//
+//
+// Errors:
+//   - An error if it fails.
+package middleware
+
+import (
+	"context"
+	"time"
+
+	"golang.org/x/time/rate"
+
+	configv1 "github.com/mcpany/core/proto/config/v1"
+)
+
+type LocalLimiter struct {
+	*rate.Limiter
+}
+
+func (l *LocalLimiter) Allow(_ context.Context) (bool, error) {
+	return l.Limiter.Allow(), nil
+}
+
+func (l *LocalLimiter) AllowN(_ context.Context, n int) (bool, error) {
+	return l.Limiter.AllowN(time.Now(), n), nil
+}
+
+func (l *LocalLimiter) Update(rps float64, burst int) {
+	limit := rate.Limit(rps)
+	if l.Limit() != limit {
+		l.SetLimit(limit)
+	}
+	if l.Burst() != burst {
+		l.SetBurst(burst)
+	}
+}
+
+type LocalStrategy struct{}
+
+func NewLocalStrategy() *LocalStrategy {
+	return &LocalStrategy{}
+}
+
 func (s *LocalStrategy) Create(_ context.Context, _, _, _ string, config *configv1.RateLimitConfig) (Limiter, error) {
 	rps := config.GetRequestsPerSecond()
 	burst := int(config.GetBurst())

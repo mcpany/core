@@ -1,26 +1,5 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package config
-
-import (
-	"context"
-	"fmt"
-	"os"
-	"sort"
-	"strings"
-
-	"github.com/mcpany/core/server/pkg/bus"
-	"github.com/mcpany/core/server/pkg/pool"
-	"github.com/mcpany/core/server/pkg/prompt"
-	"github.com/mcpany/core/server/pkg/resource"
-	"github.com/mcpany/core/server/pkg/tool"
-	"github.com/mcpany/core/server/pkg/upstream/factory"
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	"google.golang.org/protobuf/encoding/protojson"
-	"google.golang.org/protobuf/types/known/structpb"
-)
-
 // GenerateDocumentation generates Markdown documentation for the tools defined in the configuration.
 //
 // Summary: Generates Markdown documentation for configured tools.
@@ -42,6 +21,26 @@ import (
 // Side Effects:
 //   - Initializes upstream services which may have side effects (though typically only on execution).
 //   - Prints warnings to stderr if service registration fails.
+package config
+
+import (
+	"context"
+	"fmt"
+	"os"
+	"sort"
+	"strings"
+
+	"github.com/mcpany/core/server/pkg/bus"
+	"github.com/mcpany/core/server/pkg/pool"
+	"github.com/mcpany/core/server/pkg/prompt"
+	"github.com/mcpany/core/server/pkg/resource"
+	"github.com/mcpany/core/server/pkg/tool"
+	"github.com/mcpany/core/server/pkg/upstream/factory"
+	configv1 "github.com/mcpany/core/proto/config/v1"
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/types/known/structpb"
+)
+
 func GenerateDocumentation(ctx context.Context, cfg *configv1.McpAnyServerConfig) (string, error) {
 	busProvider, _ := bus.NewProvider(nil)
 	toolManager := tool.NewManager(busProvider)
@@ -108,8 +107,8 @@ func GenerateDocumentation(ctx context.Context, cfg *configv1.McpAnyServerConfig
 		if inputSchema != nil {
 			// Marshal to JSON
 			opts := protojson.MarshalOptions{
-				Multiline: true,
-				Indent:    "  ",
+				Multiline:	true,
+				Indent:		"  ",
 			}
 			jsonBytes, err := opts.Marshal(inputSchema)
 			if err == nil {

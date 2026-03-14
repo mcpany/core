@@ -1,25 +1,16 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package middleware
-
-import (
-	"context"
-	"fmt"
-
-	"github.com/armon/go-metrics"
-	"github.com/mcpany/core/server/pkg/logging"
-	"github.com/mcpany/core/server/pkg/tool"
-)
-
 // CallPolicyMiddleware is a middleware that enforces call policies (allow/deny)
 // based on tool name and arguments.
 //
 // Summary: Middleware that evaluates and enforces security policies for tool executions.
-type CallPolicyMiddleware struct {
-	toolManager tool.ManagerInterface
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // NewCallPolicyMiddleware creates a new CallPolicyMiddleware.
 //
 // Summary: Initializes a new CallPolicyMiddleware.
@@ -29,12 +20,13 @@ type CallPolicyMiddleware struct {
 //
 // Returns:
 //   - *CallPolicyMiddleware: The initialized middleware.
-func NewCallPolicyMiddleware(toolManager tool.ManagerInterface) *CallPolicyMiddleware {
-	return &CallPolicyMiddleware{
-		toolManager: toolManager,
-	}
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // Execute enforces call policies before proceeding to the next handler.
 //
 // Summary: Checks if the tool execution is allowed by the service's policies.
@@ -56,6 +48,27 @@ func NewCallPolicyMiddleware(toolManager tool.ManagerInterface) *CallPolicyMiddl
 // Side Effects:
 //   - Logs errors if service info is missing or policy evaluation fails.
 //   - Increments a metric counter when a call is blocked.
+package middleware
+
+import (
+	"context"
+	"fmt"
+
+	"github.com/armon/go-metrics"
+	"github.com/mcpany/core/server/pkg/logging"
+	"github.com/mcpany/core/server/pkg/tool"
+)
+
+type CallPolicyMiddleware struct {
+	toolManager tool.ManagerInterface
+}
+
+func NewCallPolicyMiddleware(toolManager tool.ManagerInterface) *CallPolicyMiddleware {
+	return &CallPolicyMiddleware{
+		toolManager: toolManager,
+	}
+}
+
 func (m *CallPolicyMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := m.toolManager.GetTool(req.ToolName)
 	if !ok {

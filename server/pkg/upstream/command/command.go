@@ -2,6 +2,67 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // Package command provides command execution functionality.
+// Summary: Upstream implements the upstream.Upstream interface for services that
+// are exposed as command-line tools.
+//
+// It discovers and registers tools based on a list of commands defined in the
+// service configuration.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+// Shutdown implements the upstream.Upstream interface.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the shutdown operation (currently unused).
+//
+// Returns:
+//   - error: Always returns nil.
+//
+// Side Effects:
+//   - Stops the health checker.
+//
+//
+// Errors:
+//   - An error if it fails.
+// NewUpstream creates a new instance of CommandUpstream.
+//
+// Returns:
+//   - upstream.Upstream: A new instance of the command upstream.
+//
+// Side Effects:
+//   - None.
+//
+//
+// Errors:
+//   - An error if it fails.
+// Register processes the configuration for a command-line service, creates a
+// new tool for each defined command, and registers them with the tool manager.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the registration process.
+//   - serviceConfig (*configv1.UpstreamServiceConfig): The configuration for the upstream service.
+//   - toolManager (tool.ManagerInterface): The manager where discovered tools will be registered.
+//   - promptManager (prompt.ManagerInterface): The manager where discovered prompts will be registered.
+//   - resourceManager (resource.ManagerInterface): The manager where discovered resources will be registered.
+//   - isReload (bool): Indicates whether this is a configuration reload.
+//
+// Returns:
+//   - string: The unique service ID.
+//   - []*configv1.ToolDefinition: A list of registered tool definitions.
+//   - []*configv1.ResourceDefinition: A list of registered resource definitions.
+//   - error: An error if registration fails.
+//
+// Side Effects:
+//   - Starts a health checker for the service.
+//   - Registers tools and prompts with their respective managers.
+//
+//
+// Errors:
+//   - An error if it fails.
 package command
 
 import (
@@ -26,26 +87,11 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-// Upstream implements the upstream.Upstream interface for services that
-// are exposed as command-line tools.
-//
-// It discovers and registers tools based on a list of commands defined in the
-// service configuration.
 type Upstream struct {
-	mu      sync.Mutex
-	checker health.Checker
+	mu	sync.Mutex
+	checker	health.Checker
 }
 
-// Shutdown implements the upstream.Upstream interface.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the shutdown operation (currently unused).
-//
-// Returns:
-//   - error: Always returns nil.
-//
-// Side Effects:
-//   - Stops the health checker.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -56,37 +102,10 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
 
-// NewUpstream creates a new instance of CommandUpstream.
-//
-// Returns:
-//   - upstream.Upstream: A new instance of the command upstream.
-//
-// Side Effects:
-//   - None.
 func NewUpstream() upstream.Upstream {
 	return &Upstream{}
 }
 
-// Register processes the configuration for a command-line service, creates a
-// new tool for each defined command, and registers them with the tool manager.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the registration process.
-//   - serviceConfig (*configv1.UpstreamServiceConfig): The configuration for the upstream service.
-//   - toolManager (tool.ManagerInterface): The manager where discovered tools will be registered.
-//   - promptManager (prompt.ManagerInterface): The manager where discovered prompts will be registered.
-//   - resourceManager (resource.ManagerInterface): The manager where discovered resources will be registered.
-//   - isReload (bool): Indicates whether this is a configuration reload.
-//
-// Returns:
-//   - string: The unique service ID.
-//   - []*configv1.ToolDefinition: A list of registered tool definitions.
-//   - []*configv1.ResourceDefinition: A list of registered resource definitions.
-//   - error: An error if registration fails.
-//
-// Side Effects:
-//   - Starts a health checker for the service.
-//   - Registers tools and prompts with their respective managers.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
@@ -109,7 +128,7 @@ func (u *Upstream) Register(
 	}
 	serviceConfig.SetSanitizedName(sanitizedName)
 
-	serviceID := sanitizedName // for internal use
+	serviceID := sanitizedName	// for internal use
 
 	commandLineService := serviceConfig.GetCommandLineService()
 	if commandLineService == nil {
@@ -117,8 +136,8 @@ func (u *Upstream) Register(
 	}
 
 	info := &tool.ServiceInfo{
-		Name:   serviceConfig.GetName(),
-		Config: serviceConfig,
+		Name:	serviceConfig.GetName(),
+		Config:	serviceConfig,
 	}
 	toolManager.AddServiceInfo(serviceID, info)
 
@@ -197,8 +216,8 @@ func (u *Upstream) createAndRegisterCommandTools(
 
 		inputSchema := &structpb.Struct{
 			Fields: map[string]*structpb.Value{
-				"type":       structpb.NewStringValue("object"),
-				"properties": structpb.NewStructValue(inputProperties),
+				"type":		structpb.NewStringValue("object"),
+				"properties":	structpb.NewStructValue(inputProperties),
 			},
 		}
 
@@ -211,20 +230,20 @@ func (u *Upstream) createAndRegisterCommandTools(
 		}
 
 		outputProperties, _ := structpb.NewStruct(map[string]interface{}{
-			"command":         map[string]interface{}{"type": "string", "description": "The command that was executed."},
-			"args":            map[string]interface{}{"type": "array", "description": "The arguments passed to the command."},
-			"stdout":          map[string]interface{}{"type": "string", "description": "The standard output of the command."},
-			"stderr":          map[string]interface{}{"type": "string", "description": "The standard error of the command."},
-			"combined_output": map[string]interface{}{"type": "string", "description": "The combined standard output and standard error."},
-			"start_time":      map[string]interface{}{"type": "string", "description": "The time the command started executing."},
-			"end_time":        map[string]interface{}{"type": "string", "description": "The time the command finished executing."},
-			"return_code":     map[string]interface{}{"type": "integer", "description": "The exit code of the command."},
-			"status":          map[string]interface{}{"type": "string", "description": "The execution status of the command (e.g., success, error, timeout)."},
+			"command":		map[string]interface{}{"type": "string", "description": "The command that was executed."},
+			"args":			map[string]interface{}{"type": "array", "description": "The arguments passed to the command."},
+			"stdout":		map[string]interface{}{"type": "string", "description": "The standard output of the command."},
+			"stderr":		map[string]interface{}{"type": "string", "description": "The standard error of the command."},
+			"combined_output":	map[string]interface{}{"type": "string", "description": "The combined standard output and standard error."},
+			"start_time":		map[string]interface{}{"type": "string", "description": "The time the command started executing."},
+			"end_time":		map[string]interface{}{"type": "string", "description": "The time the command finished executing."},
+			"return_code":		map[string]interface{}{"type": "integer", "description": "The exit code of the command."},
+			"status":		map[string]interface{}{"type": "string", "description": "The execution status of the command (e.g., success, error, timeout)."},
 		})
 		outputSchema := &structpb.Struct{
 			Fields: map[string]*structpb.Value{
-				"type":       structpb.NewStringValue("object"),
-				"properties": structpb.NewStructValue(outputProperties),
+				"type":		structpb.NewStringValue("object"),
+				"properties":	structpb.NewStructValue(outputProperties),
 			},
 		}
 
@@ -234,21 +253,21 @@ func (u *Upstream) createAndRegisterCommandTools(
 		}
 
 		newToolProto := pb.Tool_builder{
-			Name:                proto.String(command),
-			DisplayName:         proto.String(displayName),
-			Description:         proto.String(definition.GetDescription()),
-			ServiceId:           proto.String(serviceID),
-			UnderlyingMethodFqn: proto.String(command),
-			InputSchema:         inputSchema,
-			OutputSchema:        outputSchema,
+			Name:			proto.String(command),
+			DisplayName:		proto.String(displayName),
+			Description:		proto.String(definition.GetDescription()),
+			ServiceId:		proto.String(serviceID),
+			UnderlyingMethodFqn:	proto.String(command),
+			InputSchema:		inputSchema,
+			OutputSchema:		outputSchema,
 			Annotations: pb.ToolAnnotations_builder{
-				Title:           proto.String(definition.GetTitle()),
-				ReadOnlyHint:    proto.Bool(definition.GetReadOnlyHint()),
-				DestructiveHint: proto.Bool(definition.GetDestructiveHint()),
-				IdempotentHint:  proto.Bool(definition.GetIdempotentHint()),
-				OpenWorldHint:   proto.Bool(definition.GetOpenWorldHint()),
-				InputSchema:     inputSchema,
-				OutputSchema:    outputSchema,
+				Title:			proto.String(definition.GetTitle()),
+				ReadOnlyHint:		proto.Bool(definition.GetReadOnlyHint()),
+				DestructiveHint:	proto.Bool(definition.GetDestructiveHint()),
+				IdempotentHint:		proto.Bool(definition.GetIdempotentHint()),
+				OpenWorldHint:		proto.Bool(definition.GetOpenWorldHint()),
+				InputSchema:		inputSchema,
+				OutputSchema:		outputSchema,
 			}.Build(),
 		}.Build()
 

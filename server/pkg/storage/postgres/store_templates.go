@@ -13,7 +13,6 @@ import (
 )
 
 // Service Templates
-
 // ListServiceTemplates retrieves all service templates.
 //
 // Summary: Retrieves all service templates from the PostgreSQL database.
@@ -27,6 +26,28 @@ import (
 //
 // Side Effects:
 //   - Executes a SELECT query.
+//
+//
+// Errors:
+//   - An error if it fails.
+// GetServiceTemplate retrieves a service template by ID.
+//
+// Summary: Retrieves a single service template by ID.
+//
+// Parameters:
+//   - ctx: context.Context. The request context.
+//   - id: string. The template ID.
+//
+// Returns:
+//   - *configv1.ServiceTemplate: The requested template, or nil if not found.
+//   - error: An error if the query fails.
+//
+// Side Effects:
+//   - Executes a SELECT query.
+//
+//
+// Errors:
+//   - An error if it fails.
 func (s *Store) ListServiceTemplates(ctx context.Context) ([]*configv1.ServiceTemplate, error) {
 	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM service_templates")
 	if err != nil {
@@ -53,20 +74,6 @@ func (s *Store) ListServiceTemplates(ctx context.Context) ([]*configv1.ServiceTe
 	return templates, nil
 }
 
-// GetServiceTemplate retrieves a service template by ID.
-//
-// Summary: Retrieves a single service template by ID.
-//
-// Parameters:
-//   - ctx: context.Context. The request context.
-//   - id: string. The template ID.
-//
-// Returns:
-//   - *configv1.ServiceTemplate: The requested template, or nil if not found.
-//   - error: An error if the query fails.
-//
-// Side Effects:
-//   - Executes a SELECT query.
 func (s *Store) GetServiceTemplate(ctx context.Context, id string) (*configv1.ServiceTemplate, error) {
 	query := "SELECT config_json FROM service_templates WHERE id = $1"
 	row := s.db.QueryRowContext(ctx, query, id)
@@ -74,7 +81,23 @@ func (s *Store) GetServiceTemplate(ctx context.Context, id string) (*configv1.Se
 	var configJSON []byte
 	if err := row.Scan(&configJSON); err != nil {
 		if err == sql.ErrNoRows {
-			return nil, nil // Not found
+			return nil, nil	// Not found
+			// SaveServiceTemplate saves a service template.
+			//
+			// Summary: Inserts or updates a service template in the database.
+			//
+			// Parameters:
+			//   - ctx: context.Context. The request context.
+			//   - template: *configv1.ServiceTemplate. The template to save.
+			//
+			// Returns:
+			//   - error: An error if validation or storage fails.
+			//
+			// Errors:
+			//   - Returns "template ID is required" if ID is missing.
+			//
+			// Side Effects:
+			//   - Executes an INSERT ... ON CONFLICT UPDATE query.
 		}
 		return nil, fmt.Errorf("failed to scan config_json: %w", err)
 	}
@@ -86,22 +109,6 @@ func (s *Store) GetServiceTemplate(ctx context.Context, id string) (*configv1.Se
 	return &template, nil
 }
 
-// SaveServiceTemplate saves a service template.
-//
-// Summary: Inserts or updates a service template in the database.
-//
-// Parameters:
-//   - ctx: context.Context. The request context.
-//   - template: *configv1.ServiceTemplate. The template to save.
-//
-// Returns:
-//   - error: An error if validation or storage fails.
-//
-// Errors:
-//   - Returns "template ID is required" if ID is missing.
-//
-// Side Effects:
-//   - Executes an INSERT ... ON CONFLICT UPDATE query.
 func (s *Store) SaveServiceTemplate(ctx context.Context, template *configv1.ServiceTemplate) error {
 	if template.GetId() == "" {
 		return fmt.Errorf("template ID is required")

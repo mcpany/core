@@ -16,57 +16,57 @@ import (
 )
 
 var (
-	registerProtocolMetricsOnce sync.Once
+	registerProtocolMetricsOnce	sync.Once
 
 	// Define Prometheus metrics for general MCP protocol operations.
-	mcpOperationDuration = prometheus.NewHistogramVec(
+	mcpOperationDuration	= prometheus.NewHistogramVec(
 		prometheus.HistogramOpts{
-			Name:    "mcp_operation_duration_seconds",
-			Help:    "Histogram of MCP operation duration in seconds.",
-			Buckets: prometheus.DefBuckets,
+			Name:		"mcp_operation_duration_seconds",
+			Help:		"Histogram of MCP operation duration in seconds.",
+			Buckets:	prometheus.DefBuckets,
 		},
 		[]string{"method", "status", "error_type"},
 	)
 
-	mcpOperationTotal = prometheus.NewCounterVec(
+	mcpOperationTotal	= prometheus.NewCounterVec(
 		prometheus.CounterOpts{
-			Name: "mcp_operations_total",
-			Help: "Total number of MCP operations.",
+			Name:	"mcp_operations_total",
+			Help:	"Total number of MCP operations.",
 		},
 		[]string{"method", "status", "error_type"},
 	)
 
-	mcpPayloadSizeBytes = prometheus.NewHistogramVec(
+	mcpPayloadSizeBytes	= prometheus.NewHistogramVec(
 		prometheus.HistogramOpts{
-			Name:    "mcp_payload_size_bytes",
-			Help:    "Histogram of MCP payload size in bytes.",
-			Buckets: prometheus.ExponentialBuckets(100, 10, 6),
+			Name:		"mcp_payload_size_bytes",
+			Help:		"Histogram of MCP payload size in bytes.",
+			Buckets:	prometheus.ExponentialBuckets(100, 10, 6),
 		},
-		[]string{"method", "direction"}, // direction: request, response
+		[]string{"method", "direction"},	// direction: request, response
 	)
 
-	mcpOperationTokensTotal = prometheus.NewCounterVec(
+	mcpOperationTokensTotal	= prometheus.NewCounterVec(
 		prometheus.CounterOpts{
-			Name: "mcp_operation_tokens_total",
-			Help: "Total number of tokens in MCP operations.",
+			Name:	"mcp_operation_tokens_total",
+			Help:	"Total number of tokens in MCP operations.",
 		},
-		[]string{"method", "direction", "status"}, // direction: request, response
+		[]string{"method", "direction", "status"},	// direction: request, response
+		// PrometheusMetricsMiddleware provides protocol-level metrics for all MCP requests. It intercepts requests to track duration, success/failure counts, payload sizes, and token counts.
+		//
+		// Parameters:
+		//   - t (tokenizer.Tokenizer): The t parameter.
+		//
+		// Returns:
+		//   - mcp.Middleware: The resulting mcp.Middleware.
+		//
+		// Errors:
+		//   - None
+		//
+		// Side Effects:
+		//   - None
 	)
 )
 
-// PrometheusMetricsMiddleware provides protocol-level metrics for all MCP requests. It intercepts requests to track duration, success/failure counts, payload sizes, and token counts.
-//
-// Parameters:
-//   - t (tokenizer.Tokenizer): The t parameter.
-//
-// Returns:
-//   - mcp.Middleware: The resulting mcp.Middleware.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
 func PrometheusMetricsMiddleware(t tokenizer.Tokenizer) mcp.Middleware {
 	registerProtocolMetricsOnce.Do(func() {
 		prometheus.MustRegister(mcpOperationDuration)
@@ -106,9 +106,9 @@ func PrometheusMetricsMiddleware(t tokenizer.Tokenizer) mcp.Middleware {
 			}
 
 			labels := prometheus.Labels{
-				"method":     method,
-				"status":     status,
-				"error_type": errorType,
+				"method":	method,
+				"status":	status,
+				"error_type":	errorType,
 			}
 
 			mcpOperationTotal.With(labels).Inc()
@@ -116,25 +116,25 @@ func PrometheusMetricsMiddleware(t tokenizer.Tokenizer) mcp.Middleware {
 
 			// Record request tokens
 			mcpOperationTokensTotal.With(prometheus.Labels{
-				"method":    method,
-				"direction": "request",
-				"status":    status,
+				"method":	method,
+				"direction":	"request",
+				"status":	status,
 			}).Add(float64(reqTokens))
 
 			if result != nil {
 				if method == "resources/read" || method == "tools/call" || method == "prompts/get" {
 					size := estimateResultSize(result)
 					mcpPayloadSizeBytes.With(prometheus.Labels{
-						"method":    method,
-						"direction": "response",
+						"method":	method,
+						"direction":	"response",
 					}).Observe(float64(size))
 
 					// Count response tokens
 					resTokens := estimateResultTokens(t, result)
 					mcpOperationTokensTotal.With(prometheus.Labels{
-						"method":    method,
-						"direction": "response",
-						"status":    status,
+						"method":	method,
+						"direction":	"response",
+						"status":	status,
 					}).Add(float64(resTokens))
 				}
 			}
@@ -208,18 +208,25 @@ func estimateResultTokens(t tokenizer.Tokenizer, res mcp.Result) int {
 
 	// ⚡ BOLT: Avoid full JSON serialization for token counting
 	// Randomized Selection from Top 5 High-Impact Targets
+	// CalculateToolResultTokens calculates the number of tokens in a tool result.
+	//
+	// Parameters:
+	//   - t: tokenizer.Tokenizer. The tokenizer to use for counting.
+	//   - result: any. The result object to analyze (can be *mcp.CallToolResult, string, []byte, or others).
+	//
+	// Returns:
+	//   - int: The estimated token count.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
 	c, _ := tokenizer.CountTokensInValue(t, res)
 	return c
 }
 
-// CalculateToolResultTokens calculates the number of tokens in a tool result.
-//
-// Parameters:
-//   - t: tokenizer.Tokenizer. The tokenizer to use for counting.
-//   - result: any. The result object to analyze (can be *mcp.CallToolResult, string, []byte, or others).
-//
-// Returns:
-//   - int: The estimated token count.
 func CalculateToolResultTokens(t tokenizer.Tokenizer, result any) int {
 	if result == nil {
 		return 0

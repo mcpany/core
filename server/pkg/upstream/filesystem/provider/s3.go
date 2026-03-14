@@ -8,33 +8,40 @@ import (
 	"path"
 	"strings"
 
-	"github.com/aws/aws-sdk-go/aws"             //nolint:staticcheck
-	"github.com/aws/aws-sdk-go/aws/credentials" //nolint:staticcheck
-	"github.com/aws/aws-sdk-go/aws/session"     //nolint:staticcheck
+	"github.com/aws/aws-sdk-go/aws"			//nolint:staticcheck
+	"github.com/aws/aws-sdk-go/aws/credentials"	//nolint:staticcheck
+	"github.com/aws/aws-sdk-go/aws/session"		//nolint:staticcheck
+	// Summary: S3Provider provides access to files in an S3 bucket.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	//
+	// Side Effects:
+	//   - None.
+	// NewS3Provider creates a new S3Provider from the given configuration.
+	//
+	// Parameters:
+	//   - config (*configv1.S3Fs): The parameter.
+	//
+	// Returns:
+	//   - *S3Provider: The result.
+	//   - error: An error if the operation fails.
+	//
+	// Errors:
+	//   - Returns an error if ...
+	//
+	// Side Effects:
+	//   - None.
 	s3 "github.com/fclairamb/afero-s3"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/spf13/afero"
 )
 
-// S3Provider provides access to files in an S3 bucket.
 type S3Provider struct {
 	fs afero.Fs
 }
 
-// NewS3Provider creates a new S3Provider from the given configuration.
-//
-// Parameters:
-//   - config (*configv1.S3Fs): The parameter.
-//
-// Returns:
-//   - *S3Provider: The result.
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
 func NewS3Provider(config *configv1.S3Fs) (*S3Provider, error) {
 	if config == nil {
 		return nil, fmt.Errorf("s3 config is nil")
@@ -67,36 +74,40 @@ func NewS3Provider(config *configv1.S3Fs) (*S3Provider, error) {
 
 	// Create S3 filesystem
 	// Note: afero-s3 uses the bucket name as the root
+	// GetFs returns the underlying filesystem.
+	//
+	// Returns:
+	//   - afero.Fs: The result.
+	//
+	// Side Effects:
+	//   - None.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	// ResolvePath resolves the virtual path to a real path in the bucket.
+	//
+	// Parameters:
+	//   - virtualPath (string): The parameter.
+	//
+	// Returns:
+	//   - string: The result.
+	//   - error: An error if the operation fails.
+	//
+	// Errors:
+	//   - Returns an error if ...
+	//
+	// Side Effects:
+	//   - None.
 	fs := s3.NewFs(config.GetBucket(), sess)
 
 	return &S3Provider{fs: fs}, nil
 }
 
-// GetFs returns the underlying filesystem.
-//
-// Returns:
-//   - afero.Fs: The result.
-//
-// Side Effects:
-//   - None.
 func (p *S3Provider) GetFs() afero.Fs {
 	return p.fs
 }
 
-// ResolvePath resolves the virtual path to a real path in the bucket.
-//
-// Parameters:
-//   - virtualPath (string): The parameter.
-//
-// Returns:
-//   - string: The result.
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
 func (p *S3Provider) ResolvePath(virtualPath string) (string, error) {
 	// For S3, just clean the path. It's virtual relative to the bucket.
 	// Join with "/" to ensure we resolve relative paths against a root, preventing ".." traversal
@@ -105,6 +116,16 @@ func (p *S3Provider) ResolvePath(virtualPath string) (string, error) {
 	cleanPath := path.Clean("/" + virtualPath)
 
 	// Strip the leading slash because S3 keys don't usually start with /
+	// Close closes the provider.
+	//
+	// Returns:
+	//   - error: An error if the operation fails.
+	//
+	// Errors:
+	//   - Returns an error if ...
+	//
+	// Side Effects:
+	//   - None.
 	cleanPath = strings.TrimPrefix(cleanPath, "/")
 
 	if cleanPath == "" || cleanPath == "." {
@@ -113,16 +134,6 @@ func (p *S3Provider) ResolvePath(virtualPath string) (string, error) {
 	return cleanPath, nil
 }
 
-// Close closes the provider.
-//
-// Returns:
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
 func (p *S3Provider) Close() error {
 	// S3 provider doesn't hold open connections that need explicit closing typically,
 	// but satisfy the interface.

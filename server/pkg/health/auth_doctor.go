@@ -1,12 +1,5 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package health
-
-import (
-	"os"
-)
-
 // CheckAuth performs health checks for authentication configuration.
 //
 // Summary: Validates the presence of critical API keys and OAuth configuration.
@@ -16,6 +9,16 @@ import (
 //
 // Side Effects:
 //   - Reads environment variables.
+//
+//
+// Errors:
+//   - An error if it fails.
+package health
+
+import (
+	"os"
+)
+
 func CheckAuth() map[string]CheckResult {
 	results := make(map[string]CheckResult)
 
@@ -36,13 +39,13 @@ func CheckAuth() map[string]CheckResult {
 				masked = "Present (..." + val[len(val)-4:] + ")"
 			}
 			results[k] = CheckResult{
-				Status:  "ok",
-				Message: masked,
+				Status:		"ok",
+				Message:	masked,
 			}
 		} else {
 			results[k] = CheckResult{
-				Status:  "missing",
-				Message: "Environment variable not set",
+				Status:		"missing",
+				Message:	"Environment variable not set",
 			}
 		}
 	}
@@ -56,18 +59,18 @@ func CheckAuth() map[string]CheckResult {
 		switch {
 		case clientID != "" && clientSecret != "":
 			results["oauth_"+p] = CheckResult{
-				Status:  "ok",
-				Message: "Configured",
+				Status:		"ok",
+				Message:	"Configured",
 			}
 		case clientID != "" || clientSecret != "":
 			results["oauth_"+p] = CheckResult{
-				Status:  "warning",
-				Message: "Partial configuration (missing ID or Secret)",
+				Status:		"warning",
+				Message:	"Partial configuration (missing ID or Secret)",
 			}
 		default:
 			results["oauth_"+p] = CheckResult{
-				Status:  "info",
-				Message: "Not configured",
+				Status:		"info",
+				Message:	"Not configured",
 			}
 		}
 	}

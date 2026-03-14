@@ -1,15 +1,5 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package doctor
-
-import (
-	"fmt"
-	"io"
-	"os"
-	"text/tabwriter"
-)
-
 // PrintResults prints the doctor check results in a structured table to the provided writer.
 //
 // It formats the check results with status icons and alignment for readability.
@@ -23,6 +13,19 @@ import (
 //
 // Side Effects:
 //   - Writes formatted text to the provided writer.
+//
+//
+// Errors:
+//   - An error if it fails.
+package doctor
+
+import (
+	"fmt"
+	"io"
+	"os"
+	"text/tabwriter"
+)
+
 func PrintResults(w io.Writer, results []CheckResult) {
 	if w == nil {
 		w = os.Stdout

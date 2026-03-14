@@ -1,25 +1,15 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
-package auth
-
-import (
-	"context"
-	"fmt"
-	"net/http"
-	"strings"
-
-	"github.com/coreos/go-oidc/v3/oidc"
-)
-
-// OAuth2Authenticator implements the Authenticator interface for OAuth2-based
+// Summary: OAuth2Authenticator implements the Authenticator interface for OAuth2-based
 // authentication using OpenID Connect (OIDC). It validates JWTs (JSON Web
 // Tokens) presented in the HTTP Authorization header.
-type OAuth2Authenticator struct {
-	verifier  *oidc.IDTokenVerifier
-	audiences []string
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // NewOAuth2Authenticator creates a new OAuth2Authenticator with the provided
 // configuration. It initializes the OIDC provider and creates a verifier for
 // validating ID tokens.
@@ -31,6 +21,29 @@ type OAuth2Authenticator struct {
 // Returns:
 //   - A new OAuth2Authenticator.
 //   - An error if the OIDC provider cannot be initialized.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+package auth
+
+import (
+	"context"
+	"fmt"
+	"net/http"
+	"strings"
+
+	"github.com/coreos/go-oidc/v3/oidc"
+)
+
+type OAuth2Authenticator struct {
+	verifier	*oidc.IDTokenVerifier
+	audiences	[]string
+}
+
 func NewOAuth2Authenticator(ctx context.Context, config *OAuth2Config) (*OAuth2Authenticator, error) {
 	provider, err := oidc.NewProvider(ctx, config.IssuerURL)
 	if err != nil {
@@ -50,26 +63,33 @@ func NewOAuth2Authenticator(ctx context.Context, config *OAuth2Config) (*OAuth2A
 	} else if len(audiences) > 1 {
 		// If multiple audiences are allowed, we skip the ClientID check in the verifier
 		// and perform it manually in Authenticate.
+		// Authenticate validates the JWT from the Authorization header of the request.
+		// It checks for a "Bearer" token and verifies its signature, expiration, and
+		// claims against the OIDC provider.
+		//
+		// Parameters:
+		//   - ctx: The request context.
+		//   - r: The HTTP request to authenticate.
+		//
+		// Returns:
+		//   - The context with the user's identity (email) on success.
+		//   - An error if authentication fails.
+		//
+		//
+		// Errors:
+		//   - An error if it fails.
+		//
+		// Side Effects:
+		//   - None.
 		oidcConfig.SkipClientIDCheck = true
 	}
 
 	return &OAuth2Authenticator{
-		verifier:  provider.Verifier(oidcConfig),
-		audiences: audiences,
+		verifier:	provider.Verifier(oidcConfig),
+		audiences:	audiences,
 	}, nil
 }
 
-// Authenticate validates the JWT from the Authorization header of the request.
-// It checks for a "Bearer" token and verifies its signature, expiration, and
-// claims against the OIDC provider.
-//
-// Parameters:
-//   - ctx: The request context.
-//   - r: The HTTP request to authenticate.
-//
-// Returns:
-//   - The context with the user's identity (email) on success.
-//   - An error if authentication fails.
 func (a *OAuth2Authenticator) Authenticate(ctx context.Context, r *http.Request) (context.Context, error) {
 	authHeader := r.Header.Get("Authorization")
 	if authHeader == "" {
@@ -107,8 +127,8 @@ func (a *OAuth2Authenticator) Authenticate(ctx context.Context, r *http.Request)
 	}
 
 	var claims struct {
-		Email         string `json:"email"`
-		EmailVerified bool   `json:"email_verified"`
+		Email		string	`json:"email"`
+		EmailVerified	bool	`json:"email_verified"`
 		// Add other claims as needed
 	}
 	if err := idToken.Claims(&claims); err != nil {

@@ -12,12 +12,6 @@ import (
 )
 
 // visitedPool reuses maps to reduce allocations in EstimateJSONSize.
-var jsonSizeVisitedPool = sync.Pool{
-	New: func() interface{} {
-		return make(map[uintptr]bool)
-	},
-}
-
 // EstimateJSONSize estimates the size of the JSON representation of a value. It avoids allocating the full JSON string by traversing the structure recursively. It supports standard Go types and respects basic JSON encoding rules.
 //
 // Parameters:
@@ -31,6 +25,12 @@ var jsonSizeVisitedPool = sync.Pool{
 //
 // Side Effects:
 //   - None
+var jsonSizeVisitedPool = sync.Pool{
+	New: func() interface{} {
+		return make(map[uintptr]bool)
+	},
+}
+
 func EstimateJSONSize(v interface{}) int {
 	visited := jsonSizeVisitedPool.Get().(map[uintptr]bool)
 	size := estimateJSONSizeRecursive(v, visited)
@@ -45,7 +45,7 @@ func EstimateJSONSize(v interface{}) int {
 
 func estimateJSONSizeRecursive(v interface{}, visited map[uintptr]bool) int {
 	if v == nil {
-		return 4 // "null"
+		return 4	// "null"
 	}
 
 	switch val := v.(type) {
@@ -81,13 +81,13 @@ func estimateJSONSizeRecursive(v interface{}, visited map[uintptr]bool) int {
 		return len(b)
 	case bool:
 		if val {
-			return 4 // "true"
+			return 4	// "true"
 		}
-		return 5 // "false"
+		return 5	// "false"
 	case []byte:
 		n := len(val)
 		if n == 0 {
-			return 2 // ""
+			return 2	// ""
 		}
 		return ((n+2)/3)*4 + 2
 	case map[string]interface{}:
@@ -96,17 +96,17 @@ func estimateJSONSizeRecursive(v interface{}, visited map[uintptr]bool) int {
 		return estimateSliceSize(val, visited)
 	// Fast paths for common types to avoid reflection
 	case []string:
-		size := 1 // [
+		size := 1	// [
 		for i, s := range val {
 			if i > 0 {
 				size++
 			}
 			size += len(s) + 2
 		}
-		size++ // ]
+		size++	// ]
 		return size
 	case map[string]string:
-		size := 1 // {
+		size := 1	// {
 		count := 0
 		for k, s := range val {
 			if count > 0 {
@@ -115,7 +115,7 @@ func estimateJSONSizeRecursive(v interface{}, visited map[uintptr]bool) int {
 			size += len(k) + 2 + 1 + len(s) + 2
 			count++
 		}
-		size++ // }
+		size++	// }
 		return size
 	default:
 		return estimateReflect(val, visited)
@@ -157,7 +157,7 @@ func estimateUintSize(n uint64) int {
 
 func estimateMapSize(m map[string]interface{}, visited map[uintptr]bool) int {
 	if len(m) == 0 {
-		return 2 // {}
+		return 2	// {}
 	}
 
 	ptr := reflect.ValueOf(m).Pointer()
@@ -167,34 +167,34 @@ func estimateMapSize(m map[string]interface{}, visited map[uintptr]bool) int {
 	visited[ptr] = true
 	defer delete(visited, ptr)
 
-	size := 1 // {
+	size := 1	// {
 	count := 0
 	for k, v := range m {
 		if count > 0 {
-			size++ // ,
+			size++	// ,
 		}
-		size += len(k) + 2 // "key"
-		size++ // :
+		size += len(k) + 2	// "key"
+		size++			// :
 		size += estimateJSONSizeRecursive(v, visited)
 		count++
 	}
-	size++ // }
+	size++	// }
 	return size
 }
 
 func estimateSliceSize(s []interface{}, visited map[uintptr]bool) int {
 	if len(s) == 0 {
-		return 2 // []
+		return 2	// []
 	}
 
-	size := 1 // [
+	size := 1	// [
 	for i, v := range s {
 		if i > 0 {
-			size++ // ,
+			size++	// ,
 		}
 		size += estimateJSONSizeRecursive(v, visited)
 	}
-	size++ // ]
+	size++	// ]
 	return size
 }
 
@@ -203,7 +203,7 @@ func estimateReflect(v interface{}, visited map[uintptr]bool) int {
 	switch val.Kind() {
 	case reflect.Ptr:
 		if val.IsNil() {
-			return 4 // null
+			return 4	// null
 		}
 		ptr := val.Pointer()
 		if visited[ptr] {
@@ -236,7 +236,7 @@ func estimateReflect(v interface{}, visited map[uintptr]bool) int {
 
 func estimateStruct(val reflect.Value, visited map[uintptr]bool) int {
 	typ := val.Type()
-	size := 1 // {
+	size := 1	// {
 	count := 0
 
 	for i := 0; i < val.NumField(); i++ {
@@ -244,7 +244,7 @@ func estimateStruct(val reflect.Value, visited map[uintptr]bool) int {
 		fieldType := typ.Field(i)
 
 		if fieldType.PkgPath != "" {
-			continue // unexported
+			continue	// unexported
 		}
 
 		jsonTag := fieldType.Tag.Get("json")
@@ -263,11 +263,11 @@ func estimateStruct(val reflect.Value, visited map[uintptr]bool) int {
 		}
 
 		if count > 0 {
-			size++ // ,
+			size++	// ,
 		}
 
-		size += len(name) + 2 // "key"
-		size++ // :
+		size += len(name) + 2	// "key"
+		size++			// :
 
 		if field.Kind() == reflect.Ptr || field.Kind() == reflect.Interface {
 			if field.IsNil() {
@@ -282,13 +282,13 @@ func estimateStruct(val reflect.Value, visited map[uintptr]bool) int {
 		}
 		count++
 	}
-	size++ // }
+	size++	// }
 	return size
 }
 
 func estimateReflectMap(val reflect.Value, visited map[uintptr]bool) int {
 	if val.IsNil() {
-		return 4 // null
+		return 4	// null
 	}
 	ptr := val.Pointer()
 	if visited[ptr] {
@@ -316,7 +316,7 @@ func estimateReflectMap(val reflect.Value, visited map[uintptr]bool) int {
 			keyStr := fmt.Sprintf("%v", k.Interface())
 			size += len(keyStr) + 2
 		}
-		size++ // :
+		size++	// :
 
 		size += estimateJSONSizeRecursive(iter.Value().Interface(), visited)
 		count++
@@ -327,16 +327,16 @@ func estimateReflectMap(val reflect.Value, visited map[uintptr]bool) int {
 
 func estimateReflectSlice(val reflect.Value, visited map[uintptr]bool) int {
 	if val.Kind() == reflect.Slice && val.IsNil() {
-		return 4 // null
+		return 4	// null
 	}
-    if val.Kind() == reflect.Slice {
-        ptr := val.Pointer()
-        if visited[ptr] {
-            return 0
-        }
-        visited[ptr] = true
-        defer delete(visited, ptr)
-    }
+	if val.Kind() == reflect.Slice {
+		ptr := val.Pointer()
+		if visited[ptr] {
+			return 0
+		}
+		visited[ptr] = true
+		defer delete(visited, ptr)
+	}
 
 	if val.Len() == 0 {
 		return 2

@@ -1,6 +1,34 @@
 // Copyright 2026 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// Summary: Seeder seeds the database with service templates.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+// Summary: ConfigFile represents the structure of the config.yaml in examples.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+// Seed walks the examples directory and saves service templates.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if the operation fails or is invalid.
+//
+// Side Effects:
+//   - None
 package servicetemplates
 
 import (
@@ -15,30 +43,15 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// Seeder seeds the database with service templates.
 type Seeder struct {
-	Store       storage.Storage
-	ExamplesDir string
+	Store		storage.Storage
+	ExamplesDir	string
 }
 
-// ConfigFile represents the structure of the config.yaml in examples.
 type ConfigFile struct {
 	UpstreamServices []map[string]any `yaml:"upstream_services"`
 }
 
-// Seed walks the examples directory and saves service templates.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//
-// Returns:
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
 func (s *Seeder) Seed(ctx context.Context) error {
 	entries, err := os.ReadDir(s.ExamplesDir)
 	if err != nil {
@@ -86,7 +99,7 @@ func (s *Seeder) Seed(ctx context.Context) error {
 		if !ok {
 			continue
 		}
-		_ = svcMap // Silence unused variable error if any
+		_ = svcMap	// Silence unused variable error if any
 
 		// Convert to JSON for proto unmarshal (hacky but effective for proto)
 		// Or manually build the struct if simple.
@@ -133,18 +146,18 @@ func (s *Seeder) Seed(ctx context.Context) error {
 func (s *Seeder) getBuiltInTemplates() []*configv1.ServiceTemplate {
 	return []*configv1.ServiceTemplate{
 		configv1.ServiceTemplate_builder{
-			Id:          proto.String("google-calendar"),
-			Name:        proto.String("Google Calendar"),
-			Description: proto.String("Calendar management."),
-			Icon:        proto.String("google-calendar"),
-			Tags:        []string{"productivity", "google"},
+			Id:		proto.String("google-calendar"),
+			Name:		proto.String("Google Calendar"),
+			Description:	proto.String("Calendar management."),
+			Icon:		proto.String("google-calendar"),
+			Tags:		[]string{"productivity", "google"},
 			ServiceConfig: configv1.UpstreamServiceConfig_builder{
-				Name: proto.String("google-calendar"),
+				Name:	proto.String("google-calendar"),
 				McpService: configv1.McpUpstreamService_builder{
 					HttpConnection: configv1.McpStreamableHttpConnection_builder{
 						HttpAddress: proto.String("https://calendar.googleapis.com"),
 					}.Build(),
-					ToolAutoDiscovery: proto.Bool(true),
+					ToolAutoDiscovery:	proto.Bool(true),
 				}.Build(),
 				UpstreamAuth: configv1.Authentication_builder{
 					Oauth2: configv1.OAuth2Auth_builder{
@@ -154,18 +167,18 @@ func (s *Seeder) getBuiltInTemplates() []*configv1.ServiceTemplate {
 			}.Build(),
 		}.Build(),
 		configv1.ServiceTemplate_builder{
-			Id:          proto.String("github"),
-			Name:        proto.String("GitHub"),
-			Description: proto.String("Code hosting and collaboration."),
-			Icon:        proto.String("github"),
-			Tags:        []string{"development", "git"},
+			Id:		proto.String("github"),
+			Name:		proto.String("GitHub"),
+			Description:	proto.String("Code hosting and collaboration."),
+			Icon:		proto.String("github"),
+			Tags:		[]string{"development", "git"},
 			ServiceConfig: configv1.UpstreamServiceConfig_builder{
-				Name: proto.String("github"),
+				Name:	proto.String("github"),
 				McpService: configv1.McpUpstreamService_builder{
 					HttpConnection: configv1.McpStreamableHttpConnection_builder{
 						HttpAddress: proto.String("https://api.github.com"),
 					}.Build(),
-					ToolAutoDiscovery: proto.Bool(true),
+					ToolAutoDiscovery:	proto.Bool(true),
 				}.Build(),
 				UpstreamAuth: configv1.Authentication_builder{
 					Oauth2: configv1.OAuth2Auth_builder{
@@ -175,18 +188,18 @@ func (s *Seeder) getBuiltInTemplates() []*configv1.ServiceTemplate {
 			}.Build(),
 		}.Build(),
 		configv1.ServiceTemplate_builder{
-			Id:          proto.String("gitlab"),
-			Name:        proto.String("GitLab"),
-			Description: proto.String("DevOps lifecycle tool."),
-			Icon:        proto.String("gitlab"),
-			Tags:        []string{"development", "git"},
+			Id:		proto.String("gitlab"),
+			Name:		proto.String("GitLab"),
+			Description:	proto.String("DevOps lifecycle tool."),
+			Icon:		proto.String("gitlab"),
+			Tags:		[]string{"development", "git"},
 			ServiceConfig: configv1.UpstreamServiceConfig_builder{
-				Name: proto.String("gitlab"),
+				Name:	proto.String("gitlab"),
 				McpService: configv1.McpUpstreamService_builder{
 					HttpConnection: configv1.McpStreamableHttpConnection_builder{
 						HttpAddress: proto.String("https://gitlab.com/api/v4"),
 					}.Build(),
-					ToolAutoDiscovery: proto.Bool(true),
+					ToolAutoDiscovery:	proto.Bool(true),
 				}.Build(),
 				UpstreamAuth: configv1.Authentication_builder{
 					Oauth2: configv1.OAuth2Auth_builder{
@@ -196,18 +209,18 @@ func (s *Seeder) getBuiltInTemplates() []*configv1.ServiceTemplate {
 			}.Build(),
 		}.Build(),
 		configv1.ServiceTemplate_builder{
-			Id:          proto.String("slack"),
-			Name:        proto.String("Slack"),
-			Description: proto.String("Team communication and collaboration."),
-			Icon:        proto.String("slack"),
-			Tags:        []string{"productivity", "chat"},
+			Id:		proto.String("slack"),
+			Name:		proto.String("Slack"),
+			Description:	proto.String("Team communication and collaboration."),
+			Icon:		proto.String("slack"),
+			Tags:		[]string{"productivity", "chat"},
 			ServiceConfig: configv1.UpstreamServiceConfig_builder{
-				Name: proto.String("slack"),
+				Name:	proto.String("slack"),
 				McpService: configv1.McpUpstreamService_builder{
 					HttpConnection: configv1.McpStreamableHttpConnection_builder{
 						HttpAddress: proto.String("https://slack.com/api"),
 					}.Build(),
-					ToolAutoDiscovery: proto.Bool(true),
+					ToolAutoDiscovery:	proto.Bool(true),
 				}.Build(),
 				UpstreamAuth: configv1.Authentication_builder{
 					Oauth2: configv1.OAuth2Auth_builder{
@@ -217,18 +230,18 @@ func (s *Seeder) getBuiltInTemplates() []*configv1.ServiceTemplate {
 			}.Build(),
 		}.Build(),
 		configv1.ServiceTemplate_builder{
-			Id:          proto.String("notion"),
-			Name:        proto.String("Notion"),
-			Description: proto.String("All-in-one workspace for notes and docs."),
-			Icon:        proto.String("notion"),
-			Tags:        []string{"productivity", "docs"},
+			Id:		proto.String("notion"),
+			Name:		proto.String("Notion"),
+			Description:	proto.String("All-in-one workspace for notes and docs."),
+			Icon:		proto.String("notion"),
+			Tags:		[]string{"productivity", "docs"},
 			ServiceConfig: configv1.UpstreamServiceConfig_builder{
-				Name: proto.String("notion"),
+				Name:	proto.String("notion"),
 				McpService: configv1.McpUpstreamService_builder{
 					HttpConnection: configv1.McpStreamableHttpConnection_builder{
 						HttpAddress: proto.String("https://api.notion.com/v1"),
 					}.Build(),
-					ToolAutoDiscovery: proto.Bool(true),
+					ToolAutoDiscovery:	proto.Bool(true),
 				}.Build(),
 				UpstreamAuth: configv1.Authentication_builder{
 					Oauth2: configv1.OAuth2Auth_builder{
@@ -238,18 +251,18 @@ func (s *Seeder) getBuiltInTemplates() []*configv1.ServiceTemplate {
 			}.Build(),
 		}.Build(),
 		configv1.ServiceTemplate_builder{
-			Id:          proto.String("linear"),
-			Name:        proto.String("Linear"),
-			Description: proto.String("Issue tracking and project management."),
-			Icon:        proto.String("linear"),
-			Tags:        []string{"development", "pm"},
+			Id:		proto.String("linear"),
+			Name:		proto.String("Linear"),
+			Description:	proto.String("Issue tracking and project management."),
+			Icon:		proto.String("linear"),
+			Tags:		[]string{"development", "pm"},
 			ServiceConfig: configv1.UpstreamServiceConfig_builder{
-				Name: proto.String("linear"),
+				Name:	proto.String("linear"),
 				McpService: configv1.McpUpstreamService_builder{
 					HttpConnection: configv1.McpStreamableHttpConnection_builder{
 						HttpAddress: proto.String("https://api.linear.app/graphql"),
 					}.Build(),
-					ToolAutoDiscovery: proto.Bool(true),
+					ToolAutoDiscovery:	proto.Bool(true),
 				}.Build(),
 				UpstreamAuth: configv1.Authentication_builder{
 					Oauth2: configv1.OAuth2Auth_builder{
@@ -259,18 +272,18 @@ func (s *Seeder) getBuiltInTemplates() []*configv1.ServiceTemplate {
 			}.Build(),
 		}.Build(),
 		configv1.ServiceTemplate_builder{
-			Id:          proto.String("jira"),
-			Name:        proto.String("Jira"),
-			Description: proto.String("Issue tracking and agile project management."),
-			Icon:        proto.String("jira"),
-			Tags:        []string{"development", "pm"},
+			Id:		proto.String("jira"),
+			Name:		proto.String("Jira"),
+			Description:	proto.String("Issue tracking and agile project management."),
+			Icon:		proto.String("jira"),
+			Tags:		[]string{"development", "pm"},
 			ServiceConfig: configv1.UpstreamServiceConfig_builder{
-				Name: proto.String("jira"),
+				Name:	proto.String("jira"),
 				McpService: configv1.McpUpstreamService_builder{
 					HttpConnection: configv1.McpStreamableHttpConnection_builder{
 						HttpAddress: proto.String("https://api.atlassian.com/ex/jira"),
 					}.Build(),
-					ToolAutoDiscovery: proto.Bool(true),
+					ToolAutoDiscovery:	proto.Bool(true),
 				}.Build(),
 				UpstreamAuth: configv1.Authentication_builder{
 					Oauth2: configv1.OAuth2Auth_builder{

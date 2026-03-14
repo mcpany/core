@@ -1,6 +1,31 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// AuditMiddleware provides audit logging for tool executions.
+//
+// Summary: Middleware for auditing tool execution.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+// NewAuditMiddleware creates a new AuditMiddleware.
+//
+// Summary: Initializes the audit middleware with the provided configuration.
+//
+// Parameters:
+//   - auditConfig (*configv1.AuditConfig): The configuration for audit logging.
+//
+// Returns:
+//   - *AuditMiddleware: The initialized middleware instance.
+//   - error: An error if the middleware cannot be initialized.
+//
+// Errors:
+//   - Returns error if audit store initialization fails.
+//
+// Side Effects:
+//   - Initializes internal stores and redactor.
 package middleware
 
 import (
@@ -22,37 +47,18 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// AuditMiddleware provides audit logging for tool executions.
-//
-// Summary: Middleware for auditing tool execution.
 type AuditMiddleware struct {
-	mu          sync.RWMutex
-	config      *configv1.AuditConfig
-	store       audit.Store
-	redactor    *Redactor
-	broadcaster *logging.Broadcaster
+	mu		sync.RWMutex
+	config		*configv1.AuditConfig
+	store		audit.Store
+	redactor	*Redactor
+	broadcaster	*logging.Broadcaster
 }
 
-// NewAuditMiddleware creates a new AuditMiddleware.
-//
-// Summary: Initializes the audit middleware with the provided configuration.
-//
-// Parameters:
-//   - auditConfig (*configv1.AuditConfig): The configuration for audit logging.
-//
-// Returns:
-//   - *AuditMiddleware: The initialized middleware instance.
-//   - error: An error if the middleware cannot be initialized.
-//
-// Errors:
-//   - Returns error if audit store initialization fails.
-//
-// Side Effects:
-//   - Initializes internal stores and redactor.
 func NewAuditMiddleware(auditConfig *configv1.AuditConfig) (*AuditMiddleware, error) {
 	m := &AuditMiddleware{
-		config:      auditConfig,
-		broadcaster: logging.NewBroadcaster(),
+		config:		auditConfig,
+		broadcaster:	logging.NewBroadcaster(),
 	}
 	if err := m.initializeStore(auditConfig); err != nil {
 		return nil, err
@@ -68,6 +74,36 @@ func (m *AuditMiddleware) initializeStore(config *configv1.AuditConfig) error {
 		var err error
 
 		// Determine storage type
+		// SetStore sets the audit store.
+		// This is primarily used for testing.
+		//
+		// Summary: Sets the audit store implementation.
+		//
+		// Parameters:
+		//   - store (audit.Store): The audit store to use.
+		//
+		// Side Effects:
+		//   - Replaces the current audit store.
+		//
+		//
+		// Errors:
+		//   - An error if it fails.
+		// UpdateConfig updates the audit configuration safely.
+		//
+		// Summary: Updates the middleware configuration and re-initializes the store if needed.
+		//
+		// Parameters:
+		//   - auditConfig (*configv1.AuditConfig): The new configuration.
+		//
+		// Returns:
+		//   - error: An error if the store re-initialization fails.
+		//
+		// Errors:
+		//   - Returns error if store re-initialization fails.
+		//
+		// Side Effects:
+		//   - May close existing store and open a new one.
+		//   - Updates redactor configuration.
 		storageType := config.GetStorageType()
 		if storageType == configv1.AuditConfig_STORAGE_TYPE_UNSPECIFIED {
 			storageType = configv1.AuditConfig_STORAGE_TYPE_FILE
@@ -98,38 +134,12 @@ func (m *AuditMiddleware) initializeStore(config *configv1.AuditConfig) error {
 	return nil
 }
 
-// SetStore sets the audit store.
-// This is primarily used for testing.
-//
-// Summary: Sets the audit store implementation.
-//
-// Parameters:
-//   - store (audit.Store): The audit store to use.
-//
-// Side Effects:
-//   - Replaces the current audit store.
 func (m *AuditMiddleware) SetStore(store audit.Store) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	m.store = store
 }
 
-// UpdateConfig updates the audit configuration safely.
-//
-// Summary: Updates the middleware configuration and re-initializes the store if needed.
-//
-// Parameters:
-//   - auditConfig (*configv1.AuditConfig): The new configuration.
-//
-// Returns:
-//   - error: An error if the store re-initialization fails.
-//
-// Errors:
-//   - Returns error if store re-initialization fails.
-//
-// Side Effects:
-//   - May close existing store and open a new one.
-//   - Updates redactor configuration.
 func (m *AuditMiddleware) UpdateConfig(auditConfig *configv1.AuditConfig) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -160,6 +170,25 @@ func (m *AuditMiddleware) UpdateConfig(auditConfig *configv1.AuditConfig) error 
 
 	if needsReinit {
 		// Close old store
+		// Execute intercepts tool execution to log audit events.
+		//
+		// Summary: Intercepts and logs tool execution requests and results.
+		//
+		// Parameters:
+		//   - ctx (context.Context): The context for the request.
+		//   - req (*tool.ExecutionRequest): The tool execution request.
+		//   - next (tool.ExecutionFunc): The next handler in the chain.
+		//
+		// Returns:
+		//   - any: The result of the tool execution.
+		//   - error: An error if the tool execution fails.
+		//
+		// Side Effects:
+		//   - Writes an audit log entry to the configured store.
+		//
+		//
+		// Errors:
+		//   - An error if it fails.
 		if m.store != nil {
 			_ = m.store.Close()
 			m.store = nil
@@ -172,21 +201,6 @@ func (m *AuditMiddleware) UpdateConfig(auditConfig *configv1.AuditConfig) error 
 	return nil
 }
 
-// Execute intercepts tool execution to log audit events.
-//
-// Summary: Intercepts and logs tool execution requests and results.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - req (*tool.ExecutionRequest): The tool execution request.
-//   - next (tool.ExecutionFunc): The next handler in the chain.
-//
-// Returns:
-//   - any: The result of the tool execution.
-//   - error: An error if the tool execution fails.
-//
-// Side Effects:
-//   - Writes an audit log entry to the configured store.
 func (m *AuditMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	m.mu.RLock()
 	auditConfig := m.config
@@ -205,7 +219,7 @@ func (m *AuditMiddleware) Execute(ctx context.Context, req *tool.ExecutionReques
 	if traceID == "" {
 		traceID = strings.ReplaceAll(uuid.New().String(), "-", "")
 	}
-	parentID := GetSpanID(ctx) // The parent is the current span in context
+	parentID := GetSpanID(ctx)	// The parent is the current span in context
 	spanID := strings.ReplaceAll(uuid.New().String(), "-", "")[:16]
 
 	// Update context for downstream (Recursive Tracing)
@@ -218,13 +232,13 @@ func (m *AuditMiddleware) Execute(ctx context.Context, req *tool.ExecutionReques
 
 	// Prepare audit entry
 	entry := audit.Entry{
-		Timestamp:  start,
-		ToolName:   req.ToolName,
-		Duration:   duration.String(),
-		DurationMs: duration.Milliseconds(),
-		TraceID:    traceID,
-		SpanID:     spanID,
-		ParentID:   parentID,
+		Timestamp:	start,
+		ToolName:	req.ToolName,
+		Duration:	duration.String(),
+		DurationMs:	duration.Milliseconds(),
+		TraceID:	traceID,
+		SpanID:		spanID,
+		ParentID:	parentID,
 	}
 
 	if userID, ok := auth.UserFromContext(ctx); ok {
@@ -289,6 +303,92 @@ func (m *AuditMiddleware) writeLog(ctx context.Context, store audit.Store, entry
 	// Broadcast first for real-time updates
 	if m.broadcaster != nil {
 		// ⚡ BOLT: Pass struct directly to avoid JSON marshaling.
+		// SubscribeWithHistory returns a channel that will receive broadcast messages,
+		// and the current history of messages.
+		//
+		// Summary: Subscribes to audit events with history.
+		//
+		// Returns:
+		//   - chan any: A channel receiving new audit entries.
+		//   - []any: A slice of historical audit entries.
+		//
+		// Side Effects:
+		//   - Adds a new subscriber to the broadcaster.
+		//
+		//
+		// Errors:
+		//   - An error if it fails.
+		// GetHistory returns the current broadcast history.
+		//
+		// Summary: Retrieves the audit history from the broadcaster.
+		//
+		// Returns:
+		//   - []any: A slice of audit entries.
+		//
+		// Side Effects:
+		//   - None.
+		//
+		//
+		// Errors:
+		//   - An error if it fails.
+		// Unsubscribe removes a subscriber channel.
+		//
+		// Summary: Unsubscribes from audit events.
+		//
+		// Parameters:
+		//   - ch (chan any): The channel to unsubscribe.
+		//
+		// Side Effects:
+		//   - Removes the subscriber from the broadcaster.
+		//
+		//
+		// Errors:
+		//   - An error if it fails.
+		// Read reads audit entries from the underlying store.
+		//
+		// Summary: Reads historical audit logs from storage.
+		//
+		// Parameters:
+		//   - ctx (context.Context): The context for the request.
+		//   - filter (audit.Filter): The filter criteria for querying logs.
+		//
+		// Returns:
+		//   - []audit.Entry: A slice of audit entries matching the filter.
+		//   - error: An error if reading fails.
+		//
+		// Errors:
+		//   - Returns error if store is not initialized.
+		//
+		// Side Effects:
+		//   - Reads from the audit store.
+		// Close closes the underlying store.
+		//
+		// Summary: Closes the audit store.
+		//
+		// Returns:
+		//   - error: An error if the operation fails.
+		//
+		// Side Effects:
+		//   - Closes the audit store connection.
+		//
+		//
+		// Errors:
+		//   - An error if it fails.
+		// Write writes an audit entry directly to the store.
+		//
+		// Parameters:
+		//   - ctx: context.Context for the operation.
+		//   - entry: The audit.Entry to write.
+		//
+		// Returns:
+		//   - error: An error if the write fails, or nil on success.
+		//
+		// Errors:
+		//   - Returns an error if the audit store is not initialized.
+		//
+		//
+		// Side Effects:
+		//   - None.
 		m.broadcaster.Broadcast(entry)
 	}
 
@@ -300,64 +400,18 @@ func (m *AuditMiddleware) writeLog(ctx context.Context, store audit.Store, entry
 	}
 }
 
-// SubscribeWithHistory returns a channel that will receive broadcast messages,
-// and the current history of messages.
-//
-// Summary: Subscribes to audit events with history.
-//
-// Returns:
-//   - chan any: A channel receiving new audit entries.
-//   - []any: A slice of historical audit entries.
-//
-// Side Effects:
-//   - Adds a new subscriber to the broadcaster.
 func (m *AuditMiddleware) SubscribeWithHistory() (chan any, []any) {
 	return m.broadcaster.SubscribeWithHistory()
 }
 
-// GetHistory returns the current broadcast history.
-//
-// Summary: Retrieves the audit history from the broadcaster.
-//
-// Returns:
-//   - []any: A slice of audit entries.
-//
-// Side Effects:
-//   - None.
 func (m *AuditMiddleware) GetHistory() []any {
 	return m.broadcaster.GetHistory()
 }
 
-// Unsubscribe removes a subscriber channel.
-//
-// Summary: Unsubscribes from audit events.
-//
-// Parameters:
-//   - ch (chan any): The channel to unsubscribe.
-//
-// Side Effects:
-//   - Removes the subscriber from the broadcaster.
 func (m *AuditMiddleware) Unsubscribe(ch chan any) {
 	m.broadcaster.Unsubscribe(ch)
 }
 
-// Read reads audit entries from the underlying store.
-//
-// Summary: Reads historical audit logs from storage.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - filter (audit.Filter): The filter criteria for querying logs.
-//
-// Returns:
-//   - []audit.Entry: A slice of audit entries matching the filter.
-//   - error: An error if reading fails.
-//
-// Errors:
-//   - Returns error if store is not initialized.
-//
-// Side Effects:
-//   - Reads from the audit store.
 func (m *AuditMiddleware) Read(ctx context.Context, filter audit.Filter) ([]audit.Entry, error) {
 	m.mu.RLock()
 	store := m.store
@@ -369,15 +423,6 @@ func (m *AuditMiddleware) Read(ctx context.Context, filter audit.Filter) ([]audi
 	return store.Read(ctx, filter)
 }
 
-// Close closes the underlying store.
-//
-// Summary: Closes the audit store.
-//
-// Returns:
-//   - error: An error if the operation fails.
-//
-// Side Effects:
-//   - Closes the audit store connection.
 func (m *AuditMiddleware) Close() error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -387,17 +432,6 @@ func (m *AuditMiddleware) Close() error {
 	return nil
 }
 
-// Write writes an audit entry directly to the store.
-//
-// Parameters:
-//   - ctx: context.Context for the operation.
-//   - entry: The audit.Entry to write.
-//
-// Returns:
-//   - error: An error if the write fails, or nil on success.
-//
-// Errors:
-//   - Returns an error if the audit store is not initialized.
 func (m *AuditMiddleware) Write(ctx context.Context, entry audit.Entry) error {
 	m.mu.RLock()
 	store := m.store

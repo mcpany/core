@@ -1,6 +1,88 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// Summary: Upstream implements the upstream.Upstream interface for gRPC services.
+//
+// It uses gRPC reflection to discover services and methods, and creates tools
+// for them. It also manages a connection pool and a cache for reflection data.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+// CheckHealth performs a health check on the upstream service.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the health check.
+//
+// Returns:
+//   - error: An error if the service is unhealthy.
+//
+// Side Effects:
+//   - Performs a health check RPC.
+//
+//
+// Errors:
+//   - An error if it fails.
+// NewUpstream creates a new instance of Upstream.
+//
+// Parameters:
+//   - poolManager (*pool.Manager): The connection pool manager to be used for managing gRPC connections.
+//
+// Returns:
+//   - upstream.Upstream: An implementation of the upstream.Upstream interface.
+//
+// Side Effects:
+//   - Starts a background cache cleaner.
+//
+//
+// Errors:
+//   - An error if it fails.
+// Shutdown gracefully terminates the gRPC upstream service by shutting down the
+// associated connection pool.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the shutdown operation (currently unused).
+//
+// Returns:
+//   - error: Always returns nil.
+//
+// Side Effects:
+//   - Stops the health checker.
+//   - Stops the reflection cache.
+//   - Deregisters the connection pool.
+//
+//
+// Errors:
+//   - An error if it fails.
+// Register handles the registration of a gRPC upstream service. It establishes a
+// connection pool, uses gRPC reflection to discover the service's protobuf
+// definitions, and then creates and registers tools based on the discovered
+// methods and any MCP annotations.
+//
+// Parameters:
+//   - ctx (context.Context): The registration context.
+//   - serviceConfig (*configv1.UpstreamServiceConfig): The configuration for the service.
+//   - toolManager (tool.ManagerInterface): The manager for tools.
+//   - promptManager (prompt.ManagerInterface): The manager for prompts.
+//   - resourceManager (resource.ManagerInterface): The manager for resources.
+//   - isReload (bool): Indicates whether this is a reload.
+//
+// Returns:
+//   - string: The unique service ID.
+//   - []*configv1.ToolDefinition: Discovered tools.
+//   - []*configv1.ResourceDefinition: Discovered resources (currently unused for gRPC).
+//   - error: An error if registration fails.
+//
+// Side Effects:
+//   - Creates a gRPC connection pool.
+//   - Fetches and caches service descriptors (via reflection or config).
+//   - Registers tools and prompts.
+//
+//
+// Errors:
+//   - An error if it fails.
 package grpc
 
 import (
@@ -36,29 +118,15 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-// Upstream implements the upstream.Upstream interface for gRPC services.
-//
-// It uses gRPC reflection to discover services and methods, and creates tools
-// for them. It also manages a connection pool and a cache for reflection data.
 type Upstream struct {
-	poolManager     *pool.Manager
-	reflectionCache *ttlcache.Cache[string, *descriptorpb.FileDescriptorSet]
-	toolManager     tool.ManagerInterface
-	serviceID       string
-	checker         health.Checker
-	mu              sync.RWMutex
+	poolManager	*pool.Manager
+	reflectionCache	*ttlcache.Cache[string, *descriptorpb.FileDescriptorSet]
+	toolManager	tool.ManagerInterface
+	serviceID	string
+	checker		health.Checker
+	mu		sync.RWMutex
 }
 
-// CheckHealth performs a health check on the upstream service.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the health check.
-//
-// Returns:
-//   - error: An error if the service is unhealthy.
-//
-// Side Effects:
-//   - Performs a health check RPC.
 func (u *Upstream) CheckHealth(ctx context.Context) error {
 	u.mu.RLock()
 	checker := u.checker
@@ -74,16 +142,6 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 	return nil
 }
 
-// NewUpstream creates a new instance of Upstream.
-//
-// Parameters:
-//   - poolManager (*pool.Manager): The connection pool manager to be used for managing gRPC connections.
-//
-// Returns:
-//   - upstream.Upstream: An implementation of the upstream.Upstream interface.
-//
-// Side Effects:
-//   - Starts a background cache cleaner.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	cache := ttlcache.New[string, *descriptorpb.FileDescriptorSet](
 		ttlcache.WithTTL[string, *descriptorpb.FileDescriptorSet](5 * time.Minute),
@@ -91,24 +149,11 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	go cache.Start()
 
 	return &Upstream{
-		poolManager:     poolManager,
-		reflectionCache: cache,
+		poolManager:		poolManager,
+		reflectionCache:	cache,
 	}
 }
 
-// Shutdown gracefully terminates the gRPC upstream service by shutting down the
-// associated connection pool.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the shutdown operation (currently unused).
-//
-// Returns:
-//   - error: Always returns nil.
-//
-// Side Effects:
-//   - Stops the health checker.
-//   - Stops the reflection cache.
-//   - Deregisters the connection pool.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	if u.checker != nil {
@@ -124,29 +169,6 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
 
-// Register handles the registration of a gRPC upstream service. It establishes a
-// connection pool, uses gRPC reflection to discover the service's protobuf
-// definitions, and then creates and registers tools based on the discovered
-// methods and any MCP annotations.
-//
-// Parameters:
-//   - ctx (context.Context): The registration context.
-//   - serviceConfig (*configv1.UpstreamServiceConfig): The configuration for the service.
-//   - toolManager (tool.ManagerInterface): The manager for tools.
-//   - promptManager (prompt.ManagerInterface): The manager for prompts.
-//   - resourceManager (resource.ManagerInterface): The manager for resources.
-//   - isReload (bool): Indicates whether this is a reload.
-//
-// Returns:
-//   - string: The unique service ID.
-//   - []*configv1.ToolDefinition: Discovered tools.
-//   - []*configv1.ResourceDefinition: Discovered resources (currently unused for gRPC).
-//   - error: An error if registration fails.
-//
-// Side Effects:
-//   - Creates a gRPC connection pool.
-//   - Fetches and caches service descriptors (via reflection or config).
-//   - Registers tools and prompts.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
@@ -174,7 +196,7 @@ func (u *Upstream) Register(
 	serviceConfig.SetSanitizedName(sanitizedName)
 
 	u.mu.Lock()
-	u.serviceID = sanitizedName // for internal use
+	u.serviceID = sanitizedName	// for internal use
 	if u.checker != nil {
 		if c, ok := u.checker.(interface{ Stop() }); ok {
 			c.Stop()
@@ -224,9 +246,9 @@ func (u *Upstream) Register(
 	}
 
 	toolManager.AddServiceInfo(serviceID, &tool.ServiceInfo{
-		Name:   serviceConfig.GetName(),
-		Config: serviceConfig,
-		Fds:    fds,
+		Name:	serviceConfig.GetName(),
+		Config:	serviceConfig,
+		Fds:	fds,
 	})
 
 	parsedMcpData, err := protobufparser.ExtractMcpDefinitions(fds)
@@ -275,7 +297,6 @@ func (u *Upstream) Register(
 // createAndRegisterGRPCTools iterates through the parsed MCP annotations, which
 // contain tool definitions extracted from protobuf options. For each tool, it
 // constructs a GRPCTool and registers it with the tool manager.
-//
 func (u *Upstream) createAndRegisterGRPCTools(
 	_ context.Context,
 	serviceID string,
@@ -347,8 +368,8 @@ func (u *Upstream) createAndRegisterGRPCTools(
 		}
 		inputSchema := &structpb.Struct{
 			Fields: map[string]*structpb.Value{
-				"type":       structpb.NewStringValue("object"),
-				"properties": structpb.NewStructValue(propertiesStruct),
+				"type":		structpb.NewStringValue("object"),
+				"properties":	structpb.NewStructValue(propertiesStruct),
 			},
 		}
 
@@ -366,29 +387,29 @@ func (u *Upstream) createAndRegisterGRPCTools(
 		}
 		outputSchema := &structpb.Struct{
 			Fields: map[string]*structpb.Value{
-				"type":       structpb.NewStringValue("object"),
-				"properties": structpb.NewStructValue(outputPropertiesStruct),
+				"type":		structpb.NewStringValue("object"),
+				"properties":	structpb.NewStructValue(outputPropertiesStruct),
 			},
 		}
 
 		newToolProto := pb.Tool_builder{
-			Name:                proto.String(toolName),
-			DisplayName:         proto.String(toolDef.Name),
-			Description:         proto.String(toolDef.Description),
-			ServiceId:           proto.String(serviceID),
-			UnderlyingMethodFqn: proto.String(string(methodDescriptor.FullName())),
-			RequestTypeFqn:      proto.String(toolDef.RequestType),
-			ResponseTypeFqn:     proto.String(toolDef.ResponseType),
-			InputSchema:         inputSchema,
-			OutputSchema:        outputSchema,
+			Name:			proto.String(toolName),
+			DisplayName:		proto.String(toolDef.Name),
+			Description:		proto.String(toolDef.Description),
+			ServiceId:		proto.String(serviceID),
+			UnderlyingMethodFqn:	proto.String(string(methodDescriptor.FullName())),
+			RequestTypeFqn:		proto.String(toolDef.RequestType),
+			ResponseTypeFqn:	proto.String(toolDef.ResponseType),
+			InputSchema:		inputSchema,
+			OutputSchema:		outputSchema,
 			Annotations: pb.ToolAnnotations_builder{
-				Title:           proto.String(toolDef.Name),
-				ReadOnlyHint:    proto.Bool(toolDef.ReadOnlyHint),
-				DestructiveHint: proto.Bool(toolDef.DestructiveHint),
-				IdempotentHint:  proto.Bool(toolDef.IdempotentHint),
-				OpenWorldHint:   proto.Bool(toolDef.OpenWorldHint),
-				InputSchema:     inputSchema,
-				OutputSchema:    outputSchema,
+				Title:			proto.String(toolDef.Name),
+				ReadOnlyHint:		proto.Bool(toolDef.ReadOnlyHint),
+				DestructiveHint:	proto.Bool(toolDef.DestructiveHint),
+				IdempotentHint:		proto.Bool(toolDef.IdempotentHint),
+				OpenWorldHint:		proto.Bool(toolDef.OpenWorldHint),
+				InputSchema:		inputSchema,
+				OutputSchema:		outputSchema,
 			}.Build(),
 		}.Build()
 
@@ -410,8 +431,8 @@ func (u *Upstream) createAndRegisterGRPCTools(
 			continue
 		}
 		discoveredTools = append(discoveredTools, configv1.ToolDefinition_builder{
-			Name:        proto.String(toolDef.Name),
-			Description: proto.String(toolDef.Description),
+			Name:		proto.String(toolDef.Name),
+			Description:	proto.String(toolDef.Description),
 		}.Build())
 		log.Info("Registered gRPC tool", "tool_id", newToolProto.GetName(), "is_reload", isReload)
 	}
@@ -533,8 +554,8 @@ func (u *Upstream) createAndRegisterGRPCToolsFromConfig(
 		}
 		inputSchema := &structpb.Struct{
 			Fields: map[string]*structpb.Value{
-				"type":       structpb.NewStringValue("object"),
-				"properties": structpb.NewStructValue(propertiesStruct),
+				"type":		structpb.NewStringValue("object"),
+				"properties":	structpb.NewStructValue(propertiesStruct),
 			},
 		}
 
@@ -548,24 +569,24 @@ func (u *Upstream) createAndRegisterGRPCToolsFromConfig(
 		}
 		outputSchema := &structpb.Struct{
 			Fields: map[string]*structpb.Value{
-				"type":       structpb.NewStringValue("object"),
-				"properties": structpb.NewStructValue(outputPropertiesStruct),
+				"type":		structpb.NewStringValue("object"),
+				"properties":	structpb.NewStructValue(outputPropertiesStruct),
 			},
 		}
 
 		newToolProto := pb.Tool_builder{
-			Name:                proto.String(definition.GetName()),
-			Description:         proto.String(definition.GetDescription()),
-			ServiceId:           proto.String(serviceID),
-			UnderlyingMethodFqn: proto.String(fullMethodName),
+			Name:			proto.String(definition.GetName()),
+			Description:		proto.String(definition.GetDescription()),
+			ServiceId:		proto.String(serviceID),
+			UnderlyingMethodFqn:	proto.String(fullMethodName),
 			Annotations: pb.ToolAnnotations_builder{
-				Title:           proto.String(definition.GetTitle()),
-				ReadOnlyHint:    proto.Bool(definition.GetReadOnlyHint()),
-				DestructiveHint: proto.Bool(definition.GetDestructiveHint()),
-				IdempotentHint:  proto.Bool(definition.GetIdempotentHint()),
-				OpenWorldHint:   proto.Bool(definition.GetOpenWorldHint()),
-				InputSchema:     inputSchema,
-				OutputSchema:    outputSchema,
+				Title:			proto.String(definition.GetTitle()),
+				ReadOnlyHint:		proto.Bool(definition.GetReadOnlyHint()),
+				DestructiveHint:	proto.Bool(definition.GetDestructiveHint()),
+				IdempotentHint:		proto.Bool(definition.GetIdempotentHint()),
+				OpenWorldHint:		proto.Bool(definition.GetOpenWorldHint()),
+				InputSchema:		inputSchema,
+				OutputSchema:		outputSchema,
 			}.Build(),
 		}.Build()
 
@@ -575,8 +596,8 @@ func (u *Upstream) createAndRegisterGRPCToolsFromConfig(
 			continue
 		}
 		discoveredTools = append(discoveredTools, configv1.ToolDefinition_builder{
-			Name:        proto.String(definition.GetName()),
-			Description: proto.String(definition.GetDescription()),
+			Name:		proto.String(definition.GetName()),
+			Description:	proto.String(definition.GetDescription()),
 		}.Build())
 	}
 	return discoveredTools, nil

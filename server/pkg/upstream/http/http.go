@@ -1,7 +1,7 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
 
-package http //nolint:revive,nolintlint // Package name 'http' is intentional for this directory structure.
+package http	//nolint:revive,nolintlint // Package name 'http' is intentional for this directory structure.
 
 import (
 	"context"
@@ -36,36 +36,18 @@ import (
 
 // httpMethodToString converts the protobuf enum for an HTTP method into its
 // corresponding string representation from the net/http package.
-func httpMethodToString(method configv1.HttpCallDefinition_HttpMethod) (string, error) {
-	switch method {
-	case configv1.HttpCallDefinition_HTTP_METHOD_GET:
-		return http.MethodGet, nil
-	case configv1.HttpCallDefinition_HTTP_METHOD_POST:
-		return http.MethodPost, nil
-	case configv1.HttpCallDefinition_HTTP_METHOD_PUT:
-		return http.MethodPut, nil
-	case configv1.HttpCallDefinition_HTTP_METHOD_DELETE:
-		return http.MethodDelete, nil
-	case configv1.HttpCallDefinition_HTTP_METHOD_PATCH:
-		return http.MethodPatch, nil
-	default:
-		return "", fmt.Errorf("unsupported HTTP method: %v", method)
-	}
-}
-
-// Upstream implements the upstream.Upstream interface for services that are
+// Summary: Upstream implements the upstream.Upstream interface for services that are
 // exposed via standard HTTP endpoints.
 //
 // It handles the registration of tools defined in the service configuration
 // and manages connection pooling for HTTP requests.
-type Upstream struct {
-	poolManager *pool.Manager
-	serviceID   string
-	address     string
-	checker     health.Checker
-	mu          sync.RWMutex
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 // CheckHealth performs a health check on the upstream service.
 //
 // It uses a configured health checker if available, or falls back to a basic
@@ -82,25 +64,6 @@ type Upstream struct {
 //
 // Side Effects:
 //   - May establish a network connection to the service.
-func (u *Upstream) CheckHealth(ctx context.Context) error {
-	u.mu.RLock()
-	checker := u.checker
-	address := u.address
-	u.mu.RUnlock()
-
-	if checker != nil {
-		res := checker.Check(ctx)
-		if res.Status != health.StatusUp {
-			return fmt.Errorf("health check failed: %v", res)
-		}
-		return nil
-	}
-	if address == "" {
-		return fmt.Errorf("no address configured")
-	}
-	return util.CheckConnection(ctx, address)
-}
-
 // Shutdown gracefully terminates the HTTP upstream service by shutting down the
 // associated connection pool.
 //
@@ -113,20 +76,10 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 // Side Effects:
 //   - Stops the health checker.
 //   - Deregisters the connection pool.
-func (u *Upstream) Shutdown(_ context.Context) error {
-	u.mu.Lock()
-	if u.checker != nil {
-		if c, ok := u.checker.(interface{ Stop() }); ok {
-			c.Stop()
-		}
-	}
-	serviceID := u.serviceID
-	u.mu.Unlock()
-
-	u.poolManager.Deregister(serviceID)
-	return nil
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
 // NewUpstream creates a new instance of Upstream.
 //
 // Parameters:
@@ -137,12 +90,10 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //
 // Side Effects:
 //   - Allocates memory for the Upstream struct.
-func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
-	return &Upstream{
-		poolManager: poolManager,
-	}
-}
-
+//
+//
+// Errors:
+//   - An error if it fails.
 // Register processes the configuration for an HTTP service, creates a connection
 // pool for it, and then creates and registers tools for each call definition
 // specified in the configuration.
@@ -169,6 +120,70 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 //   - Creates and registers a new HTTP connection pool.
 //   - Starts a health checker for the service.
 //   - Registers tools and prompts with their respective managers.
+func httpMethodToString(method configv1.HttpCallDefinition_HttpMethod) (string, error) {
+	switch method {
+	case configv1.HttpCallDefinition_HTTP_METHOD_GET:
+		return http.MethodGet, nil
+	case configv1.HttpCallDefinition_HTTP_METHOD_POST:
+		return http.MethodPost, nil
+	case configv1.HttpCallDefinition_HTTP_METHOD_PUT:
+		return http.MethodPut, nil
+	case configv1.HttpCallDefinition_HTTP_METHOD_DELETE:
+		return http.MethodDelete, nil
+	case configv1.HttpCallDefinition_HTTP_METHOD_PATCH:
+		return http.MethodPatch, nil
+	default:
+		return "", fmt.Errorf("unsupported HTTP method: %v", method)
+	}
+}
+
+type Upstream struct {
+	poolManager	*pool.Manager
+	serviceID	string
+	address		string
+	checker		health.Checker
+	mu		sync.RWMutex
+}
+
+func (u *Upstream) CheckHealth(ctx context.Context) error {
+	u.mu.RLock()
+	checker := u.checker
+	address := u.address
+	u.mu.RUnlock()
+
+	if checker != nil {
+		res := checker.Check(ctx)
+		if res.Status != health.StatusUp {
+			return fmt.Errorf("health check failed: %v", res)
+		}
+		return nil
+	}
+	if address == "" {
+		return fmt.Errorf("no address configured")
+	}
+	return util.CheckConnection(ctx, address)
+}
+
+func (u *Upstream) Shutdown(_ context.Context) error {
+	u.mu.Lock()
+	if u.checker != nil {
+		if c, ok := u.checker.(interface{ Stop() }); ok {
+			c.Stop()
+		}
+	}
+	serviceID := u.serviceID
+	u.mu.Unlock()
+
+	u.poolManager.Deregister(serviceID)
+	return nil
+}
+
+func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
+	return &Upstream{
+		poolManager: poolManager,
+	}
+}
+
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
@@ -257,8 +272,8 @@ func (u *Upstream) Register(
 	u.poolManager.Register(serviceID, httpPool)
 
 	info := &tool.ServiceInfo{
-		Name:   serviceConfig.GetName(),
-		Config: serviceConfig,
+		Name:	serviceConfig.GetName(),
+		Config:	serviceConfig,
 	}
 	log.Debug("Registering HTTP service", "serviceID", serviceID, "info", info)
 	toolManager.AddServiceInfo(serviceID, info)
@@ -322,9 +337,9 @@ func (u *Upstream) Register(
 			if !exists {
 				// Create a default tool definition
 				newTool := configv1.ToolDefinition_builder{
-					Name:        proto.String(callID),
-					CallId:      proto.String(callID),
-					Description: proto.String(fmt.Sprintf("Auto-discovered tool for call %s", callID)),
+					Name:		proto.String(callID),
+					CallId:		proto.String(callID),
+					Description:	proto.String(fmt.Sprintf("Auto-discovered tool for call %s", callID)),
 				}.Build()
 				// Append to tools list so it gets picked up in createAndRegisterHTTPTools
 				httpService.SetTools(append(httpService.GetTools(), newTool))
@@ -342,7 +357,7 @@ func (u *Upstream) Register(
 // createAndRegisterHTTPTools iterates through the HTTP call definitions in the
 // service configuration, creates a new HTTPTool for each, and registers it
 // with the tool manager.
-func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, address string, serviceConfig *configv1.UpstreamServiceConfig, toolManager tool.ManagerInterface, resourceManager resource.ManagerInterface, _ bool) []*configv1.ToolDefinition { //nolint:gocyclo // High complexity due to tool discovery logic
+func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, address string, serviceConfig *configv1.UpstreamServiceConfig, toolManager tool.ManagerInterface, resourceManager resource.ManagerInterface, _ bool) []*configv1.ToolDefinition {	//nolint:gocyclo // High complexity due to tool discovery logic
 	log := logging.GetLogger()
 	httpService := serviceConfig.GetHttpService()
 	discoveredTools := make([]*configv1.ToolDefinition, 0, len(httpService.GetTools()))
@@ -527,9 +542,9 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 		}
 		// Construct a relative URL using RawPath to preserve encoding
 		relURL := &url.URL{
-			Path:     relPath,
-			RawPath:  relRawPath,
-			Fragment: endpointURL.Fragment,
+			Path:		relPath,
+			RawPath:	relRawPath,
+			Fragment:	endpointURL.Fragment,
 		}
 
 		resolvedURL := baseForJoin.ResolveReference(relURL)
@@ -543,10 +558,10 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 		// Merge query parameters, allowing endpoint parameters to override base parameters
 		// We use a manual parsing strategy to preserve invalid percent encodings.
 		type queryPart struct {
-			raw        string
-			key        string
-			isInvalid  bool
-			keyDecoded bool
+			raw		string
+			key		string
+			isInvalid	bool
+			keyDecoded	bool
 		}
 
 		parseQueryManual := func(rawQuery string) []queryPart {
@@ -712,8 +727,8 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 			}
 			inputSchema = &structpb.Struct{
 				Fields: map[string]*structpb.Value{
-					"type":       structpb.NewStringValue("object"),
-					"properties": structpb.NewStructValue(properties),
+					"type":		structpb.NewStringValue("object"),
+					"properties":	structpb.NewStructValue(properties),
 				},
 			}
 
@@ -732,18 +747,18 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 		}
 
 		newToolProto := pb.Tool_builder{
-			Name:                proto.String(toolNamePart),
-			Description:         proto.String(definition.GetDescription()),
-			ServiceId:           proto.String(serviceID),
-			UnderlyingMethodFqn: proto.String(fmt.Sprintf("%s %s", method, fullURL)),
+			Name:			proto.String(toolNamePart),
+			Description:		proto.String(definition.GetDescription()),
+			ServiceId:		proto.String(serviceID),
+			UnderlyingMethodFqn:	proto.String(fmt.Sprintf("%s %s", method, fullURL)),
 			Annotations: pb.ToolAnnotations_builder{
-				Title:           proto.String(definition.GetTitle()),
-				ReadOnlyHint:    proto.Bool(definition.GetReadOnlyHint()),
-				DestructiveHint: proto.Bool(definition.GetDestructiveHint()),
-				IdempotentHint:  proto.Bool(definition.GetIdempotentHint()),
-				OpenWorldHint:   proto.Bool(definition.GetOpenWorldHint()),
-				InputSchema:     inputSchema,
-				OutputSchema:    httpDef.GetOutputSchema(),
+				Title:			proto.String(definition.GetTitle()),
+				ReadOnlyHint:		proto.Bool(definition.GetReadOnlyHint()),
+				DestructiveHint:	proto.Bool(definition.GetDestructiveHint()),
+				IdempotentHint:		proto.Bool(definition.GetIdempotentHint()),
+				OpenWorldHint:		proto.Bool(definition.GetOpenWorldHint()),
+				InputSchema:		inputSchema,
+				OutputSchema:		httpDef.GetOutputSchema(),
 			}.Build(),
 		}.Build()
 
@@ -755,8 +770,8 @@ func (u *Upstream) createAndRegisterHTTPTools(ctx context.Context, serviceID, ad
 			continue
 		}
 		discoveredTools = append(discoveredTools, configv1.ToolDefinition_builder{
-			Name:        proto.String(toolNamePart),
-			Description: proto.String(definition.GetDescription()),
+			Name:		proto.String(toolNamePart),
+			Description:	proto.String(definition.GetDescription()),
 		}.Build())
 	}
 

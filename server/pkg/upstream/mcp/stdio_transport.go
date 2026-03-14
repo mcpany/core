@@ -1,6 +1,28 @@
 // Copyright 2025 Author(s) of MCP Any
 // SPDX-License-Identifier: Apache-2.0
-
+// Summary: StdioTransport implements mcp.Transport for a local command,
+// capturing stderr to provide better error messages on failure.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+// Connect starts the command and returns a connection.
+//
+// Parameters:
+//   - _ (context.Context): The parameter.
+//
+// Returns:
+//   - mcp.Connection: The result.
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
 package mcp
 
 import (
@@ -17,26 +39,10 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// StdioTransport implements mcp.Transport for a local command,
-// capturing stderr to provide better error messages on failure.
 type StdioTransport struct {
 	Command *exec.Cmd
 }
 
-// Connect starts the command and returns a connection.
-//
-// Parameters:
-//   - _ (context.Context): The parameter.
-//
-// Returns:
-//   - mcp.Connection: The result.
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
 func (t *StdioTransport) Connect(_ context.Context) (mcp.Connection, error) {
 	log := logging.GetLogger()
 
@@ -59,17 +65,31 @@ func (t *StdioTransport) Connect(_ context.Context) (mcp.Connection, error) {
 	stderrCapture := &tailBuffer{limit: 4096}
 	// We also want to log stderr to the application logs
 	// Note: slog.LevelError is imported from "log/slog"
+	// Read reads a JSON-RPC message from the standard output of the command.
+	//
+	// Parameters:
+	//   - _ (context.Context): The parameter.
+	//
+	// Returns:
+	//   - jsonrpc.Message: The result.
+	//   - error: An error if the operation fails.
+	//
+	// Errors:
+	//   - Returns an error if ...
+	//
+	// Side Effects:
+	//   - None.
 	logWriter := &slogWriter{log: log, level: slog.LevelError}
 
 	multiStderr := io.MultiWriter(stderrCapture, logWriter)
 
 	conn := &stdioConn{
-		stdin:         stdin,
-		stdout:        stdout,
-		cmd:           t.Command,
-		stderrCapture: stderrCapture,
-		decoder:       json.NewDecoder(stdout),
-		encoder:       json.NewEncoder(stdin),
+		stdin:		stdin,
+		stdout:		stdout,
+		cmd:		t.Command,
+		stderrCapture:	stderrCapture,
+		decoder:	json.NewDecoder(stdout),
+		encoder:	json.NewEncoder(stdin),
 	}
 	conn.wg.Add(1)
 
@@ -88,31 +108,17 @@ func (t *StdioTransport) Connect(_ context.Context) (mcp.Connection, error) {
 }
 
 type stdioConn struct {
-	stdin         io.WriteCloser
-	stdout        io.ReadCloser
-	cmd           *exec.Cmd
-	stderrCapture *tailBuffer
-	decoder       *json.Decoder
-	encoder       *json.Encoder
-	mutex         sync.Mutex
-	closed        bool
-	wg            sync.WaitGroup
+	stdin		io.WriteCloser
+	stdout		io.ReadCloser
+	cmd		*exec.Cmd
+	stderrCapture	*tailBuffer
+	decoder		*json.Decoder
+	encoder		*json.Encoder
+	mutex		sync.Mutex
+	closed		bool
+	wg		sync.WaitGroup
 }
 
-// Read reads a JSON-RPC message from the standard output of the command.
-//
-// Parameters:
-//   - _ (context.Context): The parameter.
-//
-// Returns:
-//   - jsonrpc.Message: The result.
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
 func (c *stdioConn) Read(_ context.Context) (jsonrpc.Message, error) {
 	var raw json.RawMessage
 	if err := c.decoder.Decode(&raw); err != nil {
@@ -149,18 +155,53 @@ func (c *stdioConn) Read(_ context.Context) (jsonrpc.Message, error) {
 		req := &jsonrpc.Request{}
 		if err := json.Unmarshal(raw, req); err != nil {
 			// Handle ID unmarshal issue if necessary (copied from docker_transport)
+			// Write writes a JSON-RPC message to the standard input of the command.
+			//
+			// Parameters:
+			//   - _ (context.Context): The parameter.
+			//   - msg (jsonrpc.Message): The parameter.
+			//
+			// Returns:
+			//   - error: An error if the operation fails.
+			//
+			// Errors:
+			//   - Returns an error if ...
+			//
+			// Side Effects:
+			//   - None.
+			// Close terminates the command and closes the streams.
+			//
+			// Returns:
+			//   - error: An error if the operation fails.
+			//
+			// Errors:
+			//   - Returns an error if ...
+			//
+			// Side Effects:
+			//   - None.
+			// SessionID returns a static session ID for the stdio connection.
+			//
+			// Returns:
+			//   - string: The result.
+			//
+			// Side Effects:
+			//   - None.
+			//
+			//
+			// Errors:
+			//   - An error if it fails.
 			type requestAnyID struct {
-				Method string          `json:"method"`
-				Params json.RawMessage `json:"params,omitempty"`
-				ID     any             `json:"id,omitempty"`
+				Method	string		`json:"method"`
+				Params	json.RawMessage	`json:"params,omitempty"`
+				ID	any		`json:"id,omitempty"`
 			}
 			var rAny requestAnyID
 			if err2 := json.Unmarshal(raw, &rAny); err2 != nil {
 				return nil, fmt.Errorf("failed to unmarshal request: %w (and %v)", err2, err)
 			}
 			req = &jsonrpc.Request{
-				Method: rAny.Method,
-				Params: rAny.Params,
+				Method:	rAny.Method,
+				Params:	rAny.Params,
 			}
 			if err := setUnexportedID(&req.ID, rAny.ID); err != nil {
 				logging.GetLogger().Error("Failed to set unexported ID on request", "error", err)
@@ -173,9 +214,9 @@ func (c *stdioConn) Read(_ context.Context) (jsonrpc.Message, error) {
 		resp := &jsonrpc.Response{}
 		if err := json.Unmarshal(raw, resp); err != nil {
 			type responseAnyID struct {
-				Result json.RawMessage `json:"result,omitempty"`
-				Error  *transportError `json:"error,omitempty"`
-				ID     any             `json:"id,omitempty"`
+				Result	json.RawMessage	`json:"result,omitempty"`
+				Error	*transportError	`json:"error,omitempty"`
+				ID	any		`json:"id,omitempty"`
 			}
 			var rAny responseAnyID
 			if err2 := json.Unmarshal(raw, &rAny); err2 != nil {
@@ -199,20 +240,6 @@ func (c *stdioConn) Read(_ context.Context) (jsonrpc.Message, error) {
 	return msg, nil
 }
 
-// Write writes a JSON-RPC message to the standard input of the command.
-//
-// Parameters:
-//   - _ (context.Context): The parameter.
-//   - msg (jsonrpc.Message): The parameter.
-//
-// Returns:
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
 func (c *stdioConn) Write(_ context.Context, msg jsonrpc.Message) error {
 	var method string
 	var params any
@@ -252,16 +279,6 @@ func (c *stdioConn) Write(_ context.Context, msg jsonrpc.Message) error {
 	return c.encoder.Encode(wire)
 }
 
-// Close terminates the command and closes the streams.
-//
-// Returns:
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
 func (c *stdioConn) Close() error {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
@@ -277,13 +294,6 @@ func (c *stdioConn) Close() error {
 	return nil
 }
 
-// SessionID returns a static session ID for the stdio connection.
-//
-// Returns:
-//   - string: The result.
-//
-// Side Effects:
-//   - None.
 func (c *stdioConn) SessionID() string {
 	return "stdio-session"
 }

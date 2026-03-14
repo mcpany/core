@@ -2,6 +2,82 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // Package websocket provides WebSocket upstream integration.
+// Summary: Upstream implements the upstream.Upstream interface for services that
+// are exposed via a WebSocket connection. It manages a connection pool and
+// registers tools based on the service configuration.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+// CheckHealth performs a health check on the upstream service.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//
+// Returns:
+//   - error: An error if the operation fails.
+//
+// Errors:
+//   - Returns an error if ...
+//
+// Side Effects:
+//   - None.
+// Shutdown gracefully terminates the WebSocket upstream service by shutting down
+// the associated connection pool.
+//
+// Parameters:
+//   - ctx: The context for the shutdown operation.
+//
+// Returns:
+//   - error: An error if the shutdown operation fails, or nil on success.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+// NewUpstream creates a new instance of WebsocketUpstream.
+//
+// Parameters:
+//   - poolManager: The connection pool manager to be used for managing WebSocket connections.
+//
+// Returns:
+//   - upstream.Upstream: A new Upstream instance for WebSocket services.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
+// Register processes the configuration for a WebSocket service. It creates a
+// connection pool and registers tools for each call definition specified in the
+// configuration.
+//
+// Parameters:
+//   - ctx: The context for the registration process.
+//   - serviceConfig: The configuration for the upstream service.
+//   - toolManager: The manager where discovered tools will be registered.
+//   - promptManager: The manager where discovered prompts will be registered.
+//   - resourceManager: The manager where discovered resources will be registered.
+//   - isReload: Indicates whether this is an initial registration or a reload.
+//
+// Returns:
+//   - string: A unique service key.
+//   - []*configv1.ToolDefinition: A list of discovered tool definitions.
+//   - []*configv1.ResourceDefinition: A list of discovered resource definitions.
+//   - error: An error if registration fails.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 package websocket
 
 import (
@@ -30,29 +106,13 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-// Upstream implements the upstream.Upstream interface for services that
-// are exposed via a WebSocket connection. It manages a connection pool and
-// registers tools based on the service configuration.
 type Upstream struct {
-	poolManager *pool.Manager
-	serviceID   string
-	checker     health.Checker
-	mu          sync.RWMutex
+	poolManager	*pool.Manager
+	serviceID	string
+	checker		health.Checker
+	mu		sync.RWMutex
 }
 
-// CheckHealth performs a health check on the upstream service.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//
-// Returns:
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
 func (u *Upstream) CheckHealth(ctx context.Context) error {
 	u.mu.RLock()
 	checker := u.checker
@@ -68,14 +128,6 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 	return nil
 }
 
-// Shutdown gracefully terminates the WebSocket upstream service by shutting down
-// the associated connection pool.
-//
-// Parameters:
-//   - ctx: The context for the shutdown operation.
-//
-// Returns:
-//   - error: An error if the shutdown operation fails, or nil on success.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	if u.checker != nil {
@@ -90,36 +142,12 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
 
-// NewUpstream creates a new instance of WebsocketUpstream.
-//
-// Parameters:
-//   - poolManager: The connection pool manager to be used for managing WebSocket connections.
-//
-// Returns:
-//   - upstream.Upstream: A new Upstream instance for WebSocket services.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	return &Upstream{
 		poolManager: poolManager,
 	}
 }
 
-// Register processes the configuration for a WebSocket service. It creates a
-// connection pool and registers tools for each call definition specified in the
-// configuration.
-//
-// Parameters:
-//   - ctx: The context for the registration process.
-//   - serviceConfig: The configuration for the upstream service.
-//   - toolManager: The manager where discovered tools will be registered.
-//   - promptManager: The manager where discovered prompts will be registered.
-//   - resourceManager: The manager where discovered resources will be registered.
-//   - isReload: Indicates whether this is an initial registration or a reload.
-//
-// Returns:
-//   - string: A unique service key.
-//   - []*configv1.ToolDefinition: A list of discovered tool definitions.
-//   - []*configv1.ResourceDefinition: A list of discovered resource definitions.
-//   - error: An error if registration fails.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
@@ -170,8 +198,8 @@ func (u *Upstream) Register(
 	u.poolManager.Register(serviceID, wsPool)
 
 	info := &tool.ServiceInfo{
-		Name:   serviceConfig.GetName(),
-		Config: serviceConfig,
+		Name:	serviceConfig.GetName(),
+		Config:	serviceConfig,
 	}
 	toolManager.AddServiceInfo(serviceID, info)
 
@@ -236,8 +264,8 @@ func (u *Upstream) createAndRegisterWebsocketTools(_ context.Context, serviceID,
 			}
 			inputSchema = &structpb.Struct{
 				Fields: map[string]*structpb.Value{
-					"type":       structpb.NewStringValue("object"),
-					"properties": structpb.NewStructValue(properties),
+					"type":		structpb.NewStringValue("object"),
+					"properties":	structpb.NewStructValue(properties),
 				},
 			}
 
@@ -251,17 +279,17 @@ func (u *Upstream) createAndRegisterWebsocketTools(_ context.Context, serviceID,
 		}
 
 		newToolProto := pb.Tool_builder{
-			Name:                proto.String(toolNamePart),
-			ServiceId:           proto.String(serviceID),
-			UnderlyingMethodFqn: proto.String(fmt.Sprintf("WS %s", address)),
+			Name:			proto.String(toolNamePart),
+			ServiceId:		proto.String(serviceID),
+			UnderlyingMethodFqn:	proto.String(fmt.Sprintf("WS %s", address)),
 			Annotations: pb.ToolAnnotations_builder{
-				Title:           proto.String(definition.GetTitle()),
-				ReadOnlyHint:    proto.Bool(definition.GetReadOnlyHint()),
-				DestructiveHint: proto.Bool(definition.GetDestructiveHint()),
-				IdempotentHint:  proto.Bool(definition.GetIdempotentHint()),
-				OpenWorldHint:   proto.Bool(definition.GetOpenWorldHint()),
-				InputSchema:     inputSchema,
-				OutputSchema:    wsDef.GetOutputSchema(),
+				Title:			proto.String(definition.GetTitle()),
+				ReadOnlyHint:		proto.Bool(definition.GetReadOnlyHint()),
+				DestructiveHint:	proto.Bool(definition.GetDestructiveHint()),
+				IdempotentHint:		proto.Bool(definition.GetIdempotentHint()),
+				OpenWorldHint:		proto.Bool(definition.GetOpenWorldHint()),
+				InputSchema:		inputSchema,
+				OutputSchema:		wsDef.GetOutputSchema(),
 			}.Build(),
 		}.Build()
 
@@ -272,8 +300,8 @@ func (u *Upstream) createAndRegisterWebsocketTools(_ context.Context, serviceID,
 		}
 
 		discoveredTools = append(discoveredTools, configv1.ToolDefinition_builder{
-			Name:        proto.String(definition.GetName()),
-			Description: proto.String(definition.GetDescription()),
+			Name:		proto.String(definition.GetName()),
+			Description:	proto.String(definition.GetDescription()),
 		}.Build())
 	}
 

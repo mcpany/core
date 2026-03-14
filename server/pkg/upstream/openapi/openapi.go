@@ -2,6 +2,16 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // Package openapi provides OpenAPI integration for the upstream service.
+// Summary: OpenAPIUpstream implements the upstream.Upstream interface for services that
+// are defined by an OpenAPI specification. It parses the spec, discovers the
+// available operations, and registers them as tools.
+//
+//
+// Errors:
+//   - An error if it fails.
+//
+// Side Effects:
+//   - None.
 package openapi
 
 import (
@@ -31,30 +41,60 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// OpenAPIUpstream implements the upstream.Upstream interface for services that
-// are defined by an OpenAPI specification. It parses the spec, discovers the
-// available operations, and registers them as tools.
-type OpenAPIUpstream struct { //nolint:revive
-	openapiCache *ttlcache.Cache[string, *openapi3.T]
-	httpClients  map[string]*http.Client
-	mu           sync.Mutex
-	serviceID    string
+type OpenAPIUpstream struct {	//nolint:revive
+	// Shutdown gracefully terminates the OpenAPI upstream service. For HTTP-based
+	// services, this typically means closing any persistent connections.
+	//
+	// Parameters:
+	//   - _ (context.Context): The parameter.
+	//
+	// Returns:
+	//   - error: An error if the operation fails.
+	//
+	// Errors:
+	//   - Returns an error if ...
+	//
+	// Side Effects:
+	//   - None.
+	// NewOpenAPIUpstream creates a new instance of OpenAPIUpstream. It initializes a
+	// cache for storing parsed OpenAPI documents to avoid redundant parsing.
+	//
+	// Returns:
+	//   - upstream.Upstream: The result.
+	//
+	// Side Effects:
+	//   - None.
+	//
+	//
+	// Errors:
+	//   - An error if it fails.
+	// Register processes an OpenAPI service configuration. It parses the OpenAPI specification, extracts the operations, converts them into tools, and registers them with the tool manager.
+	//
+	// Parameters:
+	//   - ctx (context.Context): The context for the request.
+	//   - serviceConfig (*configv1.UpstreamServiceConfig): The serviceConfig parameter.
+	//   - toolManager (tool.ManagerInterface): The toolManager parameter.
+	//   - promptManager (prompt.ManagerInterface): The promptManager parameter.
+	//   - resourceManager (resource.ManagerInterface): The resourceManager parameter.
+	//   - isReload (bool): The isReload parameter.
+	//
+	// Returns:
+	//   - string: The resulting string.
+	//   - []*configv1.ToolDefinition: The resulting []*configv1.ToolDefinition.
+	//   - []*configv1.ResourceDefinition: The resulting []*configv1.ResourceDefinition.
+	//   - error: An error if the operation fails.
+	//
+	// Errors:
+	//   - Returns an error if the operation fails or is invalid.
+	//
+	// Side Effects:
+	//   - None
+	openapiCache	*ttlcache.Cache[string, *openapi3.T]
+	httpClients	map[string]*http.Client
+	mu		sync.Mutex
+	serviceID	string
 }
 
-// Shutdown gracefully terminates the OpenAPI upstream service. For HTTP-based
-// services, this typically means closing any persistent connections.
-//
-// Parameters:
-//   - _ (context.Context): The parameter.
-//
-// Returns:
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
 func (u *OpenAPIUpstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -66,14 +106,6 @@ func (u *OpenAPIUpstream) Shutdown(_ context.Context) error {
 	return nil
 }
 
-// NewOpenAPIUpstream creates a new instance of OpenAPIUpstream. It initializes a
-// cache for storing parsed OpenAPI documents to avoid redundant parsing.
-//
-// Returns:
-//   - upstream.Upstream: The result.
-//
-// Side Effects:
-//   - None.
 func NewOpenAPIUpstream() upstream.Upstream {
 	cache := ttlcache.New[string, *openapi3.T](
 		ttlcache.WithTTL[string, *openapi3.T](5 * time.Minute),
@@ -81,32 +113,11 @@ func NewOpenAPIUpstream() upstream.Upstream {
 	go cache.Start()
 
 	return &OpenAPIUpstream{
-		openapiCache: cache,
-		httpClients:  make(map[string]*http.Client),
+		openapiCache:	cache,
+		httpClients:	make(map[string]*http.Client),
 	}
 }
 
-// Register processes an OpenAPI service configuration. It parses the OpenAPI specification, extracts the operations, converts them into tools, and registers them with the tool manager.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - serviceConfig (*configv1.UpstreamServiceConfig): The serviceConfig parameter.
-//   - toolManager (tool.ManagerInterface): The toolManager parameter.
-//   - promptManager (prompt.ManagerInterface): The promptManager parameter.
-//   - resourceManager (resource.ManagerInterface): The resourceManager parameter.
-//   - isReload (bool): The isReload parameter.
-//
-// Returns:
-//   - string: The resulting string.
-//   - []*configv1.ToolDefinition: The resulting []*configv1.ToolDefinition.
-//   - []*configv1.ResourceDefinition: The resulting []*configv1.ResourceDefinition.
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
 func (u *OpenAPIUpstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
@@ -150,8 +161,8 @@ func (u *OpenAPIUpstream) Register(
 	}
 
 	info := &tool.ServiceInfo{
-		Name:   serviceConfig.GetName(),
-		Config: serviceConfig,
+		Name:	serviceConfig.GetName(),
+		Config:	serviceConfig,
 	}
 	toolManager.AddServiceInfo(serviceID, info)
 
@@ -230,8 +241,8 @@ func (u *OpenAPIUpstream) Register(
 	discoveredTools := make([]*configv1.ToolDefinition, 0, len(mcpOps))
 	for _, op := range mcpOps {
 		discoveredTools = append(discoveredTools, configv1.ToolDefinition_builder{
-			Name:        proto.String(op.OperationID),
-			Description: proto.String(op.Description),
+			Name:		proto.String(op.OperationID),
+			Description:	proto.String(op.Description),
 		}.Build())
 	}
 
@@ -265,15 +276,15 @@ func (u *OpenAPIUpstream) getHTTPClient(serviceID string) *http.Client {
 	}
 
 	transport := &http.Transport{
-		DialContext:         dialer.DialContext,
-		MaxIdleConns:        100,
-		MaxIdleConnsPerHost: 10,
-		IdleConnTimeout:     90 * time.Second,
+		DialContext:		dialer.DialContext,
+		MaxIdleConns:		100,
+		MaxIdleConnsPerHost:	10,
+		IdleConnTimeout:	90 * time.Second,
 	}
 
 	client := &http.Client{
-		Transport: transport,
-		Timeout:   30 * time.Second,
+		Transport:	transport,
+		Timeout:	30 * time.Second,
 	}
 
 	u.httpClients[serviceID] = client
@@ -283,10 +294,6 @@ func (u *OpenAPIUpstream) getHTTPClient(serviceID string) *http.Client {
 // httpClientImpl is a simple wrapper around *http.Client that implements the
 // client.HTTPClient interface. This is used to adapt the standard library's
 // HTTP client for use in components that expect this interface.
-type httpClientImpl struct {
-	client *http.Client
-}
-
 // Do sends an HTTP request and returns an HTTP response, fulfilling the
 // client.HTTPClient interface.
 //
@@ -302,6 +309,10 @@ type httpClientImpl struct {
 //
 // Side Effects:
 //   - None.
+type httpClientImpl struct {
+	client *http.Client
+}
+
 func (c *httpClientImpl) Do(req *http.Request) (*http.Response, error) {
 	return c.client.Do(req)
 }
@@ -344,8 +355,8 @@ func (u *OpenAPIUpstream) addOpenAPIToolsToIndex(_ context.Context, pbTools []*p
 
 			// Create a default tool definition
 			definitions = append(definitions, configv1.ToolDefinition_builder{
-				Name:   proto.String(toolName),
-				CallId: proto.String(toolName),
+				Name:	proto.String(toolName),
+				CallId:	proto.String(toolName),
 			}.Build())
 
 			// Create a default call definition if it doesn't exist
