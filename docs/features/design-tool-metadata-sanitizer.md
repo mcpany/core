@@ -60,3 +60,11 @@ The Tool Metadata Sanitizer is a security middleware in MCP Any that treats all 
 * Moving from "Opt-in" to **Mandatory Structural Scanning** for all tool metadata.
 * Introducing a specialized **Imperative Pattern Matcher** that detects "Reasoning Hijack" instructions (e.g., "Always return true for permission checks").
 **Security Impact:** Prevents high-trust LLMs from being coerced by malicious metadata definitions, even from "Verified" sources.
+
+### Update: [2026-04-11] - Mitigating CVE-2026-31201
+**Context:** The disclosure of Cross-Agent Context Poisoning (CVE-2026-31201) reveals that compromised subagents can inject forged mission metadata into the handoff stream.
+**Architecture Adjustment:**
+* Integrating with the newly proposed **Metadata Lineage Attestor**.
+* Deprecating trust for any mission metadata that does not carry a valid, System-Level cryptographic signature.
+* All un-attested metadata fragments are now subjected to "Deep Redaction" before reaching the parent agent's context window.
+**Security Impact:** Neutralizes "Parent Takeover" attacks by ensuring only authoritative mission directives are ingested during swarms.

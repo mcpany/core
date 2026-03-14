@@ -8,6 +8,17 @@
 
 ---
 
+## Evolution: [2026-04-11] Updates
+
+### Proposed Additions
+- **Universal Mission Checkpointer**: (P0) Core service for generating bit-perfect state snapshots of the Blackboard, Intent Trees, and Tool Sessions for cross-environment continuity.
+- **Metadata Lineage Attestor**: (P0) Cryptographic verification layer for mission metadata to prevent cross-agent context poisoning (CVE-2026-31201).
+- **Sub-Intent Watchdog**: (P1) Active monitoring middleware that detects subagent failures or hallucinations and triggers localized rollbacks within an adaptive swarm.
+
+### Priority Shifts
+- **Binary State Handoff (BSH) Gateway**: (Re-affirmed P0) Promoted as the mandatory transport for mission checkpointing.
+- **Agent-Aware Blackboard Isolation**: (Re-affirmed P0) Expanded to support "Snapshot-on-Write" for mission-critical intents.
+
 ## Evolution: [2026-04-10] Updates
 
 ### Proposed Additions

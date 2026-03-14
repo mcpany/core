@@ -10,6 +10,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-04-11]
+### Focus: Adaptive Swarm Resilience & Cross-Environment Mission Continuity
+**Context**: The disclosure of CVE-2026-31201 (Cross-Agent Context Poisoning) and the rise of "Cognitive Stutter" in deep reasoning chains mark a shift from simple serving to "Active Lifecycle Management." Agents are no longer just tools; they are part of a long-running "Mission" that must survive subagent failures and environment shifts.
+**Strategic Pivot**:
+- **Adaptive Swarm Resilience (ASR)**: MCP Any will move beyond passive routing to "Active Error Recovery." We will implement a "Sub-Intent Watchdog" that can detect subagent hallucinations or crashes and trigger localized rollbacks or re-allocations without collapsing the entire parent mission.
+- **Universal Mission Checkpointing**: Leveraging the maturity of our BSH and Blackboard architectures, MCP Any will provide a "Standardized Mission Snapshot." This allows missions to be paused, resumed, and migrated across different hosts (local vs. cloud) with bit-perfect state integrity.
+- **Metadata Lineage Attestation**: To mitigate CVE-2026-31201, we are mandating that all "Mission Metadata" carries a cryptographic proof of its origin. Subagents will be prohibited from mutating "System-Level" metadata, ensuring that the parent agent's reasoning engine remains uncompromised during handoffs.
+
 ## Strategic Evolution: [2026-04-10]
 ### Focus: Deterministic Environment Integrity & Active Context Governance
 **Context**: Claude Code's response to CVE-2026-25725 and the stabilization of OpenClaw's `ContextEngine` mark a shift from "Reactive Defense" to "Deterministic Infrastructure." It is no longer enough to scan for threats; we must attest to the complete integrity of the environment and the data flowing through it.
