@@ -448,6 +448,20 @@
 - **Metadata Provenance Engine**: (P0) Verification service for structural metadata lineage, ensuring tool schemas are cryptographically signed.
 - **Unified Lifecycle Bridge**: (P1) Standardized commit/rollback middleware for cross-framework (OpenClaw/AutoGen) lifecycle synchronization.
 
+---
+
+## Evolution: [2026-04-05] Updates
+
+### Proposed Additions
+- **Predictive Negotiation Throttle**: (P0) Gateway-level middleware that evaluates "Reasoning Cost Estimates" in UACO bids and halts low-value negotiation loops.
+- **TPM-Bound Metadata Vault**: (P0) Implementation of HSTS to cryptographically pin tool schemas to host hardware, preventing structural poisoning.
+- **BSH Lineage Validator (BLV)**: (P0) Security middleware that enforces recursive hash chains for binary state handoffs to neutralize "Context Shadowing."
+- **Transactional Swarm Coordinator**: (P1) Two-phase commit implementation for UACO v2.3 TSR to prevent dirty state leakage across frameworks.
+
 ### Priority Shifts
-- **Tool Metadata Sanitizer**: Promoted from **P1** to **P0**. Critical for mitigating CVE-2026-42001.
-- **DCA Auction Broker**: Re-affirmed as **P0** (Already P0, but expanded to include HAN requirements).
+- **Unified Lifecycle Bridge**: Promoted from **P1** to **P0**. Critical prerequisite for the Transactional Swarm Coordinator.
+- **Binary State Handoff (BSH) Gateway**: (Re-affirmed P0) Expanded to include BLV requirements to combat shadow fragments.
+
+### Deprecations / Monitoring
+- **Software-only Metadata Signing**: Moving toward deprecation in enterprise profiles in favor of **TPM-Bound Vaults**.
+- **Non-Transactional Handoffs**: Monitoring for total deprecation. All UAB handoffs must eventually support TSR.

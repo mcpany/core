@@ -338,4 +338,10 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] DCA Negotiation Guard**: Hardware-accelerated (HAN) broker for subagent bidding to mitigate "Negotiation Exhaustion." (Added: 2026-04-04)
 *   **[P0] Metadata Provenance Engine**: Verification service for structural metadata lineage using cryptographic signing. (Added: 2026-04-04)
 *   **[P0] Tool Metadata Sanitizer**: Security middleware for detecting "Context Poisoning" in tool schemas (CVE-2026-42001). (Added: 2026-04-04)
-*   **[P1] Unified Lifecycle Bridge**: Standardized commit/rollback middleware for cross-framework lifecycle synchronization. (Added: 2026-04-04)
+*   **[P0] Unified Lifecycle Bridge**: Standardized commit/rollback middleware for cross-framework lifecycle synchronization. (Added: 2026-04-04 - Promoted to P0 on 2026-04-05)
+
+#### Upcoming (2026-04-05 Evolution)
+*   **[P0] Predictive Negotiation Throttle**: Middleware for evaluating RCE in UACO bids and halting low-value negotiation loops. (Added: 2026-04-05)
+*   **[P0] TPM-Bound Metadata Vault**: Hardware-pinned structural attestation for tool schemas (HSTS). (Added: 2026-04-05)
+*   **[P0] BSH Lineage Validator (BLV)**: Recursive hash-chain validation for binary state fragments to prevent shadowing. (Added: 2026-04-05)
+*   **[P1] Transactional Swarm Coordinator**: Implementation of UACO v2.3 TSR (Two-Phase Commit) for atomic agent handoffs. (Added: 2026-04-05)

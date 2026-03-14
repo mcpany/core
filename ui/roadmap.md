@@ -191,3 +191,7 @@
 - [ ] **[P0] Metadata Provenance Viewer**: (2026-04-04) UI for verifying the cryptographic lineage and signing status of tool metadata.
 - [ ] **[P0] Metadata Poisoning Alert Hub**: (2026-04-04) Security dashboard for reviewing and approving redacted metadata fragments.
 - [ ] **[P1] Lifecycle Synchronization Monitor**: (2026-04-04) Visual tracker for cross-framework state commit/rollback events.
+- [ ] **[P0] Negotiation ROI Dashboard**: (2026-04-05) Real-time visualization of UACO bid value, RCE trends, and throttled negotiation loops.
+- [ ] **[P0] TPM Metadata Status Widget**: (2026-04-05) Security monitor for hardware-pinned tool schemas and HSTS attestation status.
+- [ ] **[P0] BSH Lineage Explorer**: (2026-04-05) Visual debugger for recursive hash chains in binary state handoffs, highlighting "Shadow" fragments.
+- [ ] **[P1] Transactional Handoff Monitor**: (2026-04-05) Tracker for Two-Phase Commit events and rollback triggers during UACO v2.3 TSR.
