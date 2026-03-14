@@ -318,3 +318,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Active Subagent Lifecycle Governance**: MCP Any will move from a passive router to an "Active Reaper." We will implement mandatory session-bound heartbeat monitors for all subagents. If an intent branch is pruned, the gateway will forcefully terminate associated subagent sessions and purge their "Ghost" state from the Blackboard.
 - **Structural Metadata Sanitization**: We are introducing a "Metadata Validator" that treats tool schemas (descriptions, examples) as untrusted content. All structural metadata will be scanned for imperative instructions and "Context Poisoning" patterns before being exposed to the LLM.
 - **DCA-Native Negotiation Broker**: To support Gemini's "Distributed Capability Auction," MCP Any will act as the high-speed "Auction House." We will provide a low-latency bus for agent bidding, ensuring that swarm coordination doesn't become a bottleneck while maintaining Zero-Trust validation of every bid.
+
+---
+
+## Strategic Evolution: [2026-04-04]
+### Focus: Negotiation Integrity & Verified Metadata Lineage
+**Context**: Today's findings reveal that "Swarm Negotiation Exhaustion" and "Metadata Context Poisoning" are the primary bottlenecks for mature agent swarms. As swarms become deeper and use more diverse toolsets, the overhead of coordination and the risk of structural injection must be managed at the infrastructure layer.
+**Strategic Pivot**:
+- **Hardware-Accelerated Negotiation (HAN)**: MCP Any will evolve to support hardware-backed (TPM/SEP) auction brokering for DCA. This reduces negotiation latency and prevents "Negotiation Storms" by providing a trusted, high-speed arbiter for subagent bidding.
+- **Verified Metadata Lineage (VML)**: Moving from simple schema validation to "Structural Attestation." All tool metadata (descriptions, examples) must carry a cryptographic provenance chain, ensuring that structural context cannot be modified by unverified sources.
+- **Cross-Framework Lifecycle Harmonization**: We will implement a "Unified Lifecycle Bridge" that standardizes state commit/rollback signals across UAB-connected frameworks, eliminating "Dirty State" leakage during inter-agent handoffs.
