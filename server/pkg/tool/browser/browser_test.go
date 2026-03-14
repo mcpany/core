@@ -5,7 +5,9 @@ package browser
 
 import (
 	"context"
-	"os"
+	"fmt"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	"github.com/playwright-community/playwright-go"
@@ -13,10 +15,6 @@ import (
 )
 
 func TestBrowserProvider(t *testing.T) {
-	if os.Getenv("CI") != "" || os.Getenv("GITHUB_ACTIONS") != "" {
-		t.Skip("Skipping browser test in CI environment without guaranteed playwright driver.")
-	}
-
 	err := playwright.Install(&playwright.RunOptions{
 		Browsers: []string{"chromium"},
 	})
@@ -38,14 +36,21 @@ func TestBrowserProvider(t *testing.T) {
 		t.Skipf("skipping test, could not launch browser (missing system dependencies?): %v", launchErr)
 	}
 
+	// Use a local HTTP test server to avoid external network access.
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "text/html")
+		fmt.Fprint(w, "<html><head><title>Test Page</title></head><body><h1>Hello from local test server</h1></body></html>")
+	}))
+	defer ts.Close()
+
 	p := NewProvider()
 
 	def := p.ToolDefinition()
 	assert.Equal(t, "browse_page", def["name"])
 
-	content, err := p.BrowsePage(context.Background(), "https://example.com")
+	content, err := p.BrowsePage(context.Background(), ts.URL)
 	assert.NoError(t, err)
-	assert.Contains(t, content, "Example Domain")
+	assert.Contains(t, content, "Hello from local test server")
 
 	_, err = p.BrowsePage(context.Background(), "")
 	assert.Error(t, err)

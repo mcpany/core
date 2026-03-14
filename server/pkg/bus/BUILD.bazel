@@ -33,6 +33,7 @@ go_test(
     embed = [":bus"],
     deps = [
         "//proto/bus",
+        "@com_github_alicebob_miniredis_v2//:miniredis",
         "@com_github_nats_io_nats_server_v2//server",
         "@com_github_redis_go_redis_v9//:go-redis",
         "@com_github_stretchr_testify//assert",

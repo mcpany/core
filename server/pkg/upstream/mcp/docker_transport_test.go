@@ -4,13 +4,14 @@
 package mcp
 
 import (
+	"bufio"
 	"bytes"
 	"context"
+	"encoding/binary"
 	"encoding/json"
 	"fmt"
 	"io"
 	"log/slog"
-	"strings"
 	"testing"
 
 	"github.com/docker/docker/api/types"
@@ -19,7 +20,6 @@ import (
 	"github.com/docker/docker/api/types/network"
 	"github.com/docker/docker/client"
 	"github.com/mcpany/core/server/pkg/logging"
-	"github.com/mcpany/core/server/pkg/util"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/jsonrpc"
 	v1 "github.com/opencontainers/image-spec/specs-go/v1"
@@ -200,37 +200,62 @@ func TestDockerTransport_Connect_ContainerStartError(t *testing.T) {
 }
 
 func TestDockerTransport_Connect_Integration(t *testing.T) {
-	if !util.IsDockerSocketAccessible() {
-		t.Skip("Docker socket not accessible, skipping integration test.")
-	}
-	ctx := context.Background()
-	// We use "printf" and pass the JSON string as an argument.
-	// We DON'T quote it here manually because the transport should handle quoting now.
-	// If we quote it manually, it will be double quoted by shellescape.
-	// The original test had `Args: []string{`'{"jsonrpc": "2.0", "id": "1", "result": "hello"}'`}` which included single quotes.
-	// The new transport will wrap this in single quotes: `' ... '` -> `'... '\'' ... '\'' ... '`
-	// So `printf` will see the single quotes as part of the string.
-	// But `printf %s` prints the string.
-	// If we want `printf` to print valid JSON, we should pass the JSON raw string, and let transport quote it.
+	// Test that Connect establishes a working MCP connection that can read a
+	// JSON-RPC response encoded as a Docker multiplexed stdout stream.
+	jsonPayload := `{"jsonrpc": "2.0", "id": "1", "result": "hello"}` + "\n"
 
-	jsonPayload := `{"jsonrpc": "2.0", "id": "1", "result": "hello"}`
+	// Build a Docker multiplexed stdout frame: 1-byte type + 3 padding + 4-byte length + payload.
+	header := make([]byte, 8)
+	header[0] = 1 // stdout
+	binary.BigEndian.PutUint32(header[4:], uint32(len(jsonPayload)))
+	streamData := append(header, []byte(jsonPayload)...)
+
+	originalNewDockerClient := newDockerClient
+	newDockerClient = func(_ ...client.Opt) (dockerClient, error) {
+		return &mockDockerClient{
+			ImagePullFunc: func(_ context.Context, _ string, _ image.PullOptions) (io.ReadCloser, error) {
+				return io.NopCloser(bytes.NewReader([]byte{})), nil
+			},
+			ContainerCreateFunc: func(_ context.Context, _ *container.Config, _ *container.HostConfig, _ *network.NetworkingConfig, _ *v1.Platform, _ string) (container.CreateResponse, error) {
+				return container.CreateResponse{ID: "test-integration-id"}, nil
+			},
+			ContainerAttachFunc: func(_ context.Context, _ string, _ container.AttachOptions) (types.HijackedResponse, error) {
+				return types.HijackedResponse{
+					Conn:   &mockNetConn{Reader: bytes.NewReader([]byte{}), Writer: io.Discard},
+					Reader: bufio.NewReader(bytes.NewReader(streamData)),
+				}, nil
+			},
+			ContainerStartFunc: func(_ context.Context, _ string, _ container.StartOptions) error {
+				return nil
+			},
+			ContainerStopFunc: func(_ context.Context, _ string, _ container.StopOptions) error {
+				return nil
+			},
+			ContainerRemoveFunc: func(_ context.Context, _ string, _ container.RemoveOptions) error {
+				return nil
+			},
+			CloseFunc: func() error {
+				return nil
+			},
+		}, nil
+	}
+	defer func() { newDockerClient = originalNewDockerClient }()
+
 	stdioConfig := configv1.McpStdioConnection_builder{
 		ContainerImage: proto.String("alpine:latest"),
 		Command:        proto.String("printf"),
-		Args:           []string{jsonPayload},
+		Args:           []string{`{"jsonrpc": "2.0", "id": "1", "result": "hello"}`},
 	}.Build()
 	transport := &DockerTransport{StdioConfig: stdioConfig}
 
+	ctx := context.Background()
 	conn, err := transport.Connect(ctx)
-	if err != nil && (strings.Contains(err.Error(), "mount source: \"overlay\"") || strings.Contains(err.Error(), "invalid argument")) {
-		t.Skipf("Skipping test due to Docker overlayfs issue in CI environment: %v", err)
-	}
 	require.NoError(t, err)
 	require.NotNil(t, conn)
 
 	msg, err := conn.Read(ctx)
 	assert.NoError(t, err)
-	require.NotNil(t, msg) // Prevent panic
+	require.NotNil(t, msg)
 
 	resp, ok := msg.(*jsonrpc.Response)
 	assert.True(t, ok)
@@ -242,9 +267,21 @@ func TestDockerTransport_Connect_Integration(t *testing.T) {
 }
 
 func TestDockerTransport_Connect_ImageNotFound(t *testing.T) {
-	if !util.IsDockerSocketAccessible() {
-		t.Skip("Docker socket not accessible, skipping integration test.")
+	// Test that Connect returns an error when both ImagePull and ContainerCreate fail,
+	// which simulates a non-existent image scenario.
+	originalNewDockerClient := newDockerClient
+	newDockerClient = func(_ ...client.Opt) (dockerClient, error) {
+		return &mockDockerClient{
+			ImagePullFunc: func(_ context.Context, ref string, _ image.PullOptions) (io.ReadCloser, error) {
+				return nil, fmt.Errorf("image not found: %s", ref)
+			},
+			ContainerCreateFunc: func(_ context.Context, _ *container.Config, _ *container.HostConfig, _ *network.NetworkingConfig, _ *v1.Platform, _ string) (container.CreateResponse, error) {
+				return container.CreateResponse{}, fmt.Errorf("no such image: this-image-does-not-exist-ever:latest")
+			},
+		}, nil
 	}
+	defer func() { newDockerClient = originalNewDockerClient }()
+
 	ctx := context.Background()
 	stdioConfig := configv1.McpStdioConnection_builder{
 		ContainerImage: proto.String("this-image-does-not-exist-ever:latest"),

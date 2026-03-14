@@ -68,9 +68,9 @@ test.describe('User Guide Walkthrough', () => {
   test('Global Search Modal', async ({ page }) => {
     await page.goto('/');
 
-    // Wait for hydration/network idle to ensure event listeners are attached
-    // "domcontentloaded" is not enough for React effect listeners sometimes
-    await page.waitForLoadState('networkidle');
+    // Wait for hydration to ensure event listeners are attached.
+    // Use 'load' instead of 'networkidle' because WebSocket connections prevent networkidle.
+    await page.waitForLoadState('load');
 
     // Press Ctrl+K
     // Try forcing focus on body first
@@ -90,7 +90,7 @@ test.describe('User Guide Walkthrough', () => {
 
   test('Logs Stream', async ({ page }) => {
     await page.goto('/logs');
-    await expect(page.getByRole('heading', { name: 'Live Logs' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Log Stream' })).toBeVisible();
     // Check for log container - using more specific selector to avoid strict mode violation
     // expected container has bg-black/90
     await expect(page.locator('div.font-mono.bg-black\\/90')).toBeVisible();

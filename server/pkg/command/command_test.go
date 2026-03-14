@@ -653,65 +653,78 @@ func TestLocalExecutorWithStdIO(t *testing.T) {
 }
 
 func TestDockerExecutorWithStdIO(t *testing.T) {
-	t.Skip("Skipping flaky test: TestDockerExecutorWithStdIO (hangs on stream read)")
 	if !canConnectToDocker(t) {
 		t.Skip("Cannot connect to Docker daemon, skipping Docker tests")
 	}
 
 	t.Run("Success", func(t *testing.T) {
+		// Use a context with timeout to prevent infinite hangs on stream read.
+		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+		defer cancel()
+
 		containerEnv := &configv1.ContainerEnvironment{}
 		containerEnv.SetImage("alpine:latest")
 		executor := NewExecutor(containerEnv)
-		stdin, stdout, stderr, exitCodeChan, err := executor.ExecuteWithStdIO(context.Background(), "cat", nil, "", nil)
+		stdin, stdout, stderr, exitCodeChan, err := executor.ExecuteWithStdIO(ctx, "cat", nil, "", nil)
 		require.NoError(t, err)
 
+		// Write to stdin then close it explicitly to signal EOF to the container.
+		// Closing stdin causes `cat` to exit, which in turn closes the attach stream.
+		_, err = stdin.Write([]byte("hello\n"))
+		require.NoError(t, err)
+		require.NoError(t, stdin.Close())
+
+		type ioResult struct {
+			data []byte
+			err  error
+		}
+
+		stdoutDone := make(chan ioResult, 1)
 		go func() {
-			defer func() { _ = stdin.Close() }()
-			_, err := stdin.Write([]byte("hello\n"))
-			require.NoError(t, err)
-			time.Sleep(200 * time.Millisecond)
+			b, e := io.ReadAll(stdout)
+			stdoutDone <- ioResult{b, e}
 		}()
 
-		var wg sync.WaitGroup
-		wg.Add(2)
-		var stdoutBytes, stderrBytes []byte
-		var stdoutErr, stderrErr error
-
+		stderrDone := make(chan ioResult, 1)
 		go func() {
-			defer wg.Done()
-			stdoutBytes, stdoutErr = io.ReadAll(stdout)
+			b, e := io.ReadAll(stderr)
+			stderrDone <- ioResult{b, e}
 		}()
 
-		go func() {
-			defer wg.Done()
-			stderrBytes, stderrErr = io.ReadAll(stderr)
-		}()
+		var stdoutRes, stderrRes ioResult
+		select {
+		case stdoutRes = <-stdoutDone:
+		case <-ctx.Done():
+			t.Fatal("timed out waiting for stdout")
+		}
+		select {
+		case stderrRes = <-stderrDone:
+		case <-ctx.Done():
+			t.Fatal("timed out waiting for stderr")
+		}
 
-		wg.Wait()
+		require.NoError(t, stdoutRes.err)
+		assert.Equal(t, "hello\n", string(stdoutRes.data))
+		require.NoError(t, stderrRes.err)
+		assert.Empty(t, stderrRes.data)
 
-		require.NoError(t, stdoutErr)
-		assert.Equal(t, "hello\n", string(stdoutBytes))
-
-		require.NoError(t, stderrErr)
-		assert.Empty(t, string(stderrBytes))
-
-		exitCode := <-exitCodeChan
-		assert.Equal(t, 0, exitCode)
+		select {
+		case exitCode := <-exitCodeChan:
+			assert.Equal(t, 0, exitCode)
+		case <-ctx.Done():
+			t.Fatal("timed out waiting for exit code")
+		}
 	})
 
-	t.Run("Execute_VolumeMounts", func(t *testing.T) {
-		// Ensure we have a valid directory for the volume mount test.
-		// In CWD, "testdata" usually exists.
+	t.Run("VolumeMounts", func(t *testing.T) {
+		// Ensure the testdata directory exists for the volume mount test.
 		if _, err := os.Stat("testdata"); os.IsNotExist(err) {
-			_ = os.Mkdir("testdata", 0755)
-			defer os.Remove("testdata")
+			require.NoError(t, os.Mkdir("testdata", 0755))
+			t.Cleanup(func() { _ = os.Remove("testdata") })
 		}
 
 		containerEnv := &configv1.ContainerEnvironment{}
 		containerEnv.SetImage("alpine:latest")
-		// Use a relative path that IsAllowedPath will accept (assuming it doesn't contain ..)
-		// and verify that it is passed to Docker.
-		// Note: IsAllowedPath checks relative to CWD. We use "testdata" as a safe relative path.
 		containerEnv.SetVolumes(map[string]string{
 			"testdata": "/container/path",
 		})
@@ -723,11 +736,9 @@ func TestDockerExecutorWithStdIO(t *testing.T) {
 			capturedHostConfig = hostConfig
 			return container.CreateResponse{ID: "test-id"}, nil
 		}
-		// Mock ImagePull to avoid nil pointer dereference or real network call
 		mockClient.ImagePullFunc = func(ctx context.Context, ref string, options image.PullOptions) (io.ReadCloser, error) {
 			return io.NopCloser(strings.NewReader("")), nil
 		}
-		// Mock ContainerStart/Logs/Wait/Remove to complete execution flow
 		mockClient.ContainerStartFunc = func(ctx context.Context, containerID string, options container.StartOptions) error {
 			return nil
 		}
@@ -742,7 +753,6 @@ func TestDockerExecutorWithStdIO(t *testing.T) {
 		mockClient.ContainerRemoveFunc = func(ctx context.Context, containerID string, options container.RemoveOptions) error {
 			return nil
 		}
-
 		executor.clientFactory = func() (DockerClient, error) {
 			return mockClient, nil
 		}
@@ -752,8 +762,10 @@ func TestDockerExecutorWithStdIO(t *testing.T) {
 
 		require.NotNil(t, capturedHostConfig)
 		require.Len(t, capturedHostConfig.Mounts, 1)
-		// With the fix, Key is Source, Value is Target
-		assert.Equal(t, "/host/path", capturedHostConfig.Mounts[0].Source)
+		// The executor resolves the relative host path to an absolute path.
+		absTestdata, err := filepath.Abs("testdata")
+		require.NoError(t, err)
+		assert.Equal(t, absTestdata, capturedHostConfig.Mounts[0].Source)
 		assert.Equal(t, "/container/path", capturedHostConfig.Mounts[0].Target)
 	})
 }
