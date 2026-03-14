@@ -53,3 +53,9 @@ The OpenClaw security crisis (CVE-2026-25253) highlighted a critical flaw in "lo
     * **Context**: Recent reports of CSWSH (CVE-2026-25253) indicate that "Origin Check" alone is insufficient if session tokens can be reused across disparate local listeners.
     * **Architecture Adjustment**: We are introducing "Origin-Locked Session Binding." Every issued agent session token is now cryptographically bound to the `Origin` header used during its creation.
     * **Security Impact**: Mitigates "Cross-Origin Token Reuse," ensuring that even if a token is exfiltrated to a malicious local listener, it cannot be used unless the request originates from the same verified origin as the initial handshake.
+
+### Update: 2026-04-09 - Cross-Origin Session Hardening
+**Context**: Today's findings show that attackers are now using "Delayed Origin Spoofing" where a trusted origin is hijacked via an XSS before the agent session expires.
+**Architecture Adjustment**:
+* **Continuous Origin Re-Verification**: The `Origin Middleware` (Section 4) will now perform a "heartbeat" origin check for long-lived WebSocket sessions. If the `Sec-Fetch-Site` or `Origin` deviates from the initial handshake without a re-attestation, the session is terminated.
+* **Origin-Bound JWTs**: Session tokens will now include an `org` claim (Origin Hash) that is validated by the `Controller` for every API call.
