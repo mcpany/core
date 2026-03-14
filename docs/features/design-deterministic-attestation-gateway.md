@@ -46,3 +46,4 @@ The persistent threat from project-local configuration vulnerabilities (CVE-2025
 
 ## 7. Evolutionary Changelog
 * **2026-04-11:** Initial Document Creation.
+* **2026-04-12:** Updated to address CVE-2026-25725. Added specific focus on "Non-Existence Proofs" for missing configuration files to prevent "Empty File" injection escapes. Introduced the "Settings Injection Guard" as a recommended integration point for validating project-local settings against attested baselines.

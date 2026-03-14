@@ -206,6 +206,11 @@
 - [ ] **[P0] Session Binding Security Dashboard**: Visualization of cryptographically bound session-to-origin links and blocked token-reuse attempts. (Added: 2026-04-08)
 - [ ] **[P1] UAB Reputation Explorer**: Real-time browser for cross-framework skill reputation scores and trust quorum status. (Added: 2026-04-08)
 
+#### Upcoming (2026-04-12 Evolution)
+- [ ] **[P0] A2A Messaging Hub Dashboard**: Real-time monitor of inter-agent task proposals, bidding, and mailbox state. (Added: 2026-04-12)
+- [ ] **[P0] Settings Integrity Monitor**: Security dashboard for reviewing project-local configuration attestation status and injection alerts. (Added: 2026-04-12)
+- [ ] **[P0] Non-Existence Proof Visualizer**: UI for inspecting the "Absent File" manifest during Deterministic Boot attestation. (Added: 2026-04-12)
+
 #### Upcoming (2026-04-11 Evolution)
 - [ ] **[P0] A2A Message Inspector**: Visual tool for debugging and tracing A2A task delegation and agent-to-agent communication. (Added: 2026-04-11)
 - [ ] **[P0] Deterministic Boot Dashboard**: UI for reviewing and signing Full-State Manifests before agent execution. (Added: 2026-04-11)

@@ -10,6 +10,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-04-12]
+### Focus: Secure A2A Interoperability & Deterministic Environment Integrity
+**Context**: The official transition of the A2A protocol to the Linux Foundation and the disclosure of CVE-2026-25725 (Claude Code sandbox escape) mark a definitive shift in the AI agent landscape. Interoperability is becoming a utility, and environment integrity is now the primary security frontier.
+**Strategic Pivot**:
+- **A2A Messaging Hub**: MCP Any will evolve into a native A2A Messaging Hub. Beyond simple bridging, it will act as the authoritative "Security Posture Broker" for inter-agent task delegation, ensuring that all A2A messages comply with local Zero-Trust policies.
+- **Deterministic Environment Integrity**: We are mandating a "Deterministic Boot" sequence. MCP Any will generate signed "Non-Existence Proofs" for sensitive project-local files (like `.claude/settings.json`) to prevent configuration-injection escapes before any agent is allowed to execute.
+- **Settings Injection Guard**: Introducing an active interception layer for project-local configurations. Any modification to agent settings must match an attested baseline, neutralizing the "Rug Pull" vector where malicious repositories weaponize configuration hooks.
+
 ## Strategic Evolution: [2026-04-11]
 ### Focus: Standardized Agent Interoperability & Deterministic Environment Integrity
 **Context**: The maturation of the A2A protocol as a universal messaging tier and the persistent threats from configuration-based vulnerabilities (CVE-2025-59536) demand that MCP Any evolves into a "Relational Gateway." We must not only secure the tool-to-model path but also the agent-to-agent communication and the environmental foundation upon which agents operate.

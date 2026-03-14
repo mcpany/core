@@ -361,6 +361,11 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Deterministic Environment Attestation**: Full-state manifest service to prevent configuration-based RCE and exfiltration. (Added: 2026-04-11)
 *   **[P1] Structured Context Propagation**: Implementation of trace-linked security context for distributed agent swarms. (Added: 2026-04-11)
 
+#### Upcoming (2026-04-12 Evolution)
+*   **[P0] A2A Messaging Hub**: Transition from a simple bridge to a native A2A messaging implementation with integrated Zero-Trust policy enforcement. (Added: 2026-04-12)
+*   **[P0] Settings Injection Guard**: Active interception layer for project-local agent configurations to neutralize "Rug Pull" exfiltration attacks. (Added: 2026-04-12)
+*   **[P0] Non-Existence Proof Generator**: Extension for the Deterministic Attestation Gateway to sign "Missing File" proofs (CVE-2026-25725). (Added: 2026-04-12)
+
 #### Upcoming (2026-04-10 Evolution)
 *   **[P0] Inference-Time Data Sanitizer (IDS)**: Semantic context governance middleware utilizing OpenClaw ContextEngine hooks to block multimodal injections. (Added: 2026-04-10)
 *   **[P0] Deterministic Attestation Gateway**: Extension of the Pre-Flight Validator to provide signed environment manifests for deterministic agent boot. (Added: 2026-04-10)
