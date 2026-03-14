@@ -95,6 +95,9 @@ test.describe('Rich Result Viewer', () => {
     // Check for JSON content - tokenized render may split punctuation into spans
     await expect(page.getByText('Alice')).toBeVisible();
 
+    // Wait for the JSON view to actually render
+    await expect(viewerTabs.getByRole('tab', { name: 'JSON' })).toBeVisible();
+
     // Switch to Raw Output tab
     await viewerTabs.getByRole('tab', { name: 'Raw Output' }).click();
     await expect(page.getByText('"stdout":')).toBeVisible();
