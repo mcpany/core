@@ -419,11 +419,22 @@
 - **Speculative Execution Guard**: (P0) Middleware that manages "Shadow State" for speculative tool calls, ensuring rollbacks on attestation failure.
 - **Inode-Pinning Middleware**: (P0) Hardware-bound file handle protection that prevents symlink-racing and TOCTOU escapes in project configs.
 - **Consensus Delegation Gateway**: (P1) Implementation of "Delegated Authority" models where trusted monitor agents can authorize time-critical tasks.
-- **Branch-Purity Blackboard Validator**: (P0) Integrity layer for the Shared KV Store that prevents "Branch Contamination" between divergent reasoning paths.
+- **Branch-Purity Blackboard Validator**: (P0) Integrity layer for the Shared KV Store to prevent "Branch Contamination" between divergent reasoning paths.
+
+---
+
+## Evolution: [2026-04-03] Updates
+
+### Proposed Additions
+- **Active Subagent Reaper**: (P0) Lifecycle monitor that forcefully terminates orphaned or "Ghost" subagent sessions when their parent intent branch is pruned.
+- **Tool Metadata Sanitizer**: (P0) Security middleware that scans JSON schemas and tool descriptions for imperative instructions (Context Poisoning) before LLM ingestion.
+- **DCA Auction Broker**: (P1) High-speed negotiation bus for the "Distributed Capability Auction" protocol, managing agent tool bidding.
+- **Subagent Heartbeat Provider**: (P1) Standardized heartbeat protocol for subagents to report liveness and intent alignment to the Reaper.
 
 ### Priority Shifts
-- **Reasoning-Bound Context Shifter**: Re-affirmed as **P0**. Critical for preventing "Branch Contamination" leakage.
-- **Path Normalization Engine (NaaS)**: (Re-affirmed P0) Expanded to include "Inode-Pinning" as a core security requirement.
+- **Speculative Execution Guard**: Re-affirmed as **P0**. Now requires integration with the Subagent Reaper to ensure speculative "Zombies" are purged.
+- **Branch-Purity Blackboard Validator**: (Re-affirmed P0) Expanded to detect "Ghost State" injected by non-terminated subagents.
 
 ### Deprecations / Monitoring
-- **Path-Only Symlink Validation**: Moving toward total deprecation in favor of **Inode-Aware** and **Pinned** validation.
+- **Unmanaged Subagent Lifecycle**: Moving toward total deprecation. All subagent sessions must be bound to a supervised intent lifecycle.
+- **Unsanitized Structural Metadata**: Monitoring for deprecation. Tool schemas will require "Safe Metadata" attestation.

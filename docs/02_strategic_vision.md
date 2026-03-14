@@ -308,3 +308,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Hardware-Bound Inode Pinning**: MCP Any will evolve its symlink validation to include "Inode Pinning." Once a project configuration is loaded, the file handle is cryptographically bound to its hardware Inode, neutralizing TOCTOU attacks even if the filesystem is re-mapped.
 - **Transactional Speculative Execution**: Implementing a "Shadow State" middleware that allows agents to perform speculative tool calls. Results are held in a virtual buffer and only committed to the global Blackboard once discovery quorums or policy engines provide final attestation.
 - **Cross-Branch State Isolation**: Expanding the Blackboard's isolation model to include "Branch Purity" checks. This prevents state leakage between divergent reasoning paths by requiring a "Parental Re-Attestation" before merging hypothetical results back into the primary intent chain.
+
+---
+
+## Strategic Evolution: [2026-04-03]
+### Focus: Active Lifecycle Governance & Metadata Integrity
+**Context**: Today's findings on "Ghost Reasoning" (OpenClaw) and "Metadata-Layer Context Poisoning" (Claude Code CVE-2026-42001) confirm that subagent autonomy has outpaced governance. Agents are failing to terminate, and structural metadata (tool definitions) is being weaponized as a high-trust injection vector.
+**Strategic Pivot**:
+- **Active Subagent Lifecycle Governance**: MCP Any will move from a passive router to an "Active Reaper." We will implement mandatory session-bound heartbeat monitors for all subagents. If an intent branch is pruned, the gateway will forcefully terminate associated subagent sessions and purge their "Ghost" state from the Blackboard.
+- **Structural Metadata Sanitization**: We are introducing a "Metadata Validator" that treats tool schemas (descriptions, examples) as untrusted content. All structural metadata will be scanned for imperative instructions and "Context Poisoning" patterns before being exposed to the LLM.
+- **DCA-Native Negotiation Broker**: To support Gemini's "Distributed Capability Auction," MCP Any will act as the high-speed "Auction House." We will provide a low-latency bus for agent bidding, ensuring that swarm coordination doesn't become a bottleneck while maintaining Zero-Trust validation of every bid.
