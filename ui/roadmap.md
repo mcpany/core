@@ -194,3 +194,8 @@
 - [ ] **[P0] Local Trust Verification Dashboard**: (2026-04-05) UI for reviewing and signing local MCP server identity claims.
 - [ ] **[P0] Optimistic Loading Debugger**: (2026-04-05) Visual timeline of speculative vs. attested tool loading events.
 - [ ] **[P1] RL Feedback Stream Viewer**: (2026-04-05) Real-time telemetry dashboard for monitoring RL training data export.
+
+#### Upcoming (2026-04-06 Evolution)
+- [ ] **[P0] Metadata Poisoning Guard Dashboard**: UI for reviewing sanitized tool definitions and blocked instruction fragments. (Added: 2026-04-06)
+- [ ] **[P0] Inode Security Monitor**: Real-time visualization of pinned Inodes and alerts for unauthorized filesystem swaps. (Added: 2026-04-06)
+- [ ] **[P1] Speculative Auction Viewer**: Visual tracker for SAB-native "Intent Probability" bidding swarms. (Added: 2026-04-06)
