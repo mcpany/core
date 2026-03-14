@@ -45,4 +45,5 @@ The persistent threat of Remote Code Execution (RCE) via project-local configura
 * **Observability**: All pre-flight manifests and validation failures are logged to the Audit Log.
 
 ## 7. Evolutionary Changelog
+* **2026-04-10:** Integrated with the **Deterministic Attestation Gateway** to support "Full-State Manifest" requirements for Claude Code deterministic boot compliance.
 * **2026-04-09:** Initial Document Creation.
