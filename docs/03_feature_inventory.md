@@ -461,6 +461,19 @@
 - **Attested Discovery Authority**: (P0) Cryptographic identity broker for local MCP servers, providing the "Trust Verification" required by Claude Code.
 - **Optimistic Execution Gate**: (P0) Implementation of speculative context loading for tools, synchronized with background discovery quorums.
 
+---
+
+## Evolution: [2026-04-06] Updates
+
+### Proposed Additions
+- **Hierarchical Intent Quota Manager**: (P0) Cryptographic resource envelope system for bounding autonomous sub-swarm spawning.
+- **Multi-Modal Tool Argument Validator**: (P0) Isolated WASM sandbox for sanitizing raw image/audio/video buffers passed as tool parameters.
+- **Inode-Bound Configuration Pinning**: (P1) Security middleware that binds project-local config handles to hardware Inodes to prevent TOCTOU symlink attacks.
+
+### Priority Shifts
+- **Active Subagent Reaper**: (Re-affirmed P0) Expanded to include enforcement of Hierarchical Quotas.
+- **WASM-BSH State Sanitizer**: (Re-affirmed P0) Now a prerequisite for the Multi-Modal Tool Argument Validator.
+
 ### Priority Shifts
 - **Unified RL Feedback Telemetry Bridge**: (Re-affirmed P1) Now a core strategic requirement to support OpenClaw-RL v1.
 - **Provenance-First Discovery**: (Promoted to P0) Critical for satisfying the new Claude Code trust verification requirements.

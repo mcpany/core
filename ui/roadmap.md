@@ -194,3 +194,6 @@
 - [ ] **[P0] Local Trust Verification Dashboard**: (2026-04-05) UI for reviewing and signing local MCP server identity claims.
 - [ ] **[P0] Optimistic Loading Debugger**: (2026-04-05) Visual timeline of speculative vs. attested tool loading events.
 - [ ] **[P1] RL Feedback Stream Viewer**: (2026-04-05) Real-time telemetry dashboard for monitoring RL training data export.
+- [ ] **[P0] Hierarchical Quota Monitor**: (2026-04-06) Visual dashboard for tracking sub-swarm resource envelopes and lineage-bound balances.
+- [ ] **[P0] Multi-Modal Payload Inspector**: (2026-04-06) Security UI for inspecting and approving sanitized binary tool arguments (image/audio/video).
+- [ ] **[P1] Inode Pinning Audit Log**: (2026-04-06) Forensic view of hardware-bound file handles and blocked symlink-race attempts.

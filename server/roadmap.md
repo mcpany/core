@@ -344,3 +344,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Attested Discovery Authority**: Cryptographic identity broker for local MCP servers to satisfy Claude Code's "Trust Verification." (Added: 2026-04-05)
 *   **[P0] Optimistic Execution Gate**: Speculative context loading for tools, synchronized with background discovery quorums. (Added: 2026-04-05)
 *   **[P1] RL Telemetry Provider**: Standardized middleware for exporting performance/feedback metrics to OpenClaw-RL training loops. (Added: 2026-04-05)
+
+#### Upcoming (2026-04-06 Evolution)
+*   **[P0] Hierarchical Intent Quota Manager**: Cryptographic resource envelope system for bounding autonomous sub-swarm spawning. (Added: 2026-04-06)
+*   **[P0] Multi-Modal Tool Argument Validator**: Isolated WASM sandbox for sanitizing raw image/audio/video buffers passed as tool parameters. (Added: 2026-04-06)
+*   **[P1] Inode-Bound Configuration Pinning**: Security middleware that binds project-local config handles to hardware Inodes to prevent TOCTOU symlink attacks. (Added: 2026-04-06)

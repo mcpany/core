@@ -338,3 +338,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **RL Telemetry Provider**: MCP Any will evolve into a "Telemetry Hub" for RL-driven agents. We will implement standardized, privacy-preserving hooks to export tool performance and conversation-feedback loops directly to OpenClaw-RL training pipelines.
 - **Attested Discovery Authority**: Following Claude Code's mandate for Trust Verification, MCP Any will act as the "Certificate Authority" for local MCP servers. We will provide cryptographic proof of a tool's provenance before it is exposed to the agent runtime.
 - **Normalized Optimistic Execution**: We are standardizing the "Optimistic Load" pattern from the Gemini ecosystem. MCP Any will allow agents to speculatively prepare tool contexts while discovery quorums perform background attestation, minimizing the "Security Latency" tax.
+
+---
+
+## Strategic Evolution: [2026-04-06]
+### Focus: Hierarchical Intent Governance & Multi-Modal Safety
+**Context**: The emergence of "Self-Expanding Missions" in OpenClaw and "Native Multi-Modal Arguments" in Gemini CLI marks a shift from linear tool-calling to high-bandwidth, autonomous agent meshes. This creates a risk of "Recursive Resource Storms" and new, high-trust injection vectors in binary tool payloads.
+**Strategic Pivot**:
+- **Hierarchical Intent Quota Manager**: MCP Any will evolve to support "Inheritable Quotas." Parent agents can now assign a cryptographic "Resource Envelope" to sub-swarms, ensuring that autonomous sub-agent spawning is bounded by the original mission's token and latency constraints.
+- **Multi-Modal Payload Sanitization**: We are introducing a "Binary Tool Argument Validator." Any raw image, audio, or video buffers passed as tool arguments will be processed in a network-isolated WASM sandbox to detect and neutralize embedded exfiltration or prompt injection payloads.
+- **Inode-Bound Path Governance**: Aligning with Claude Code's security hardening, MCP Any will mandate hardware-bound Inode pinning for all project-local configurations, ensuring that "Settings-as-Code" cannot be used to bridge into restricted filesystem regions via symlink races.
