@@ -604,8 +604,9 @@ func TestLocalExecutorWithStdIO(t *testing.T) {
 		// Wait should succeed
 		mockClient.ContainerWaitFunc = func(ctx context.Context, containerID string, condition container.WaitCondition) (<-chan container.WaitResponse, <-chan error) {
 			statusCh := make(chan container.WaitResponse, 1)
+			errCh := make(chan error)
 			statusCh <- container.WaitResponse{StatusCode: 0}
-			return statusCh, nil
+			return statusCh, errCh
 		}
 
 		executor.clientFactory = func() (DockerClient, error) {
@@ -744,8 +745,9 @@ func TestDockerExecutorWithStdIO(t *testing.T) {
 		}
 		mockClient.ContainerWaitFunc = func(ctx context.Context, containerID string, condition container.WaitCondition) (<-chan container.WaitResponse, <-chan error) {
 			statusCh := make(chan container.WaitResponse, 1)
+			errCh := make(chan error)
 			statusCh <- container.WaitResponse{StatusCode: 0}
-			return statusCh, nil
+			return statusCh, errCh
 		}
 		mockClient.ContainerRemoveFunc = func(ctx context.Context, containerID string, options container.RemoveOptions) error {
 			return nil
@@ -791,8 +793,9 @@ func TestDockerExecutorWithStdIO(t *testing.T) {
 		}
 		mockClient.ContainerWaitFunc = func(ctx context.Context, containerID string, condition container.WaitCondition) (<-chan container.WaitResponse, <-chan error) {
 			statusCh := make(chan container.WaitResponse, 1)
+			errCh := make(chan error)
 			statusCh <- container.WaitResponse{StatusCode: 0}
-			return statusCh, nil
+			return statusCh, errCh
 		}
 		mockClient.ContainerRemoveFunc = func(ctx context.Context, containerID string, options container.RemoveOptions) error {
 			return nil
