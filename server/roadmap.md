@@ -333,3 +333,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Tool Metadata Sanitizer**: Security middleware to detect "Context Poisoning" in tool structural metadata. (Added: 2026-04-03)
 *   **[P1] DCA Auction Broker**: High-speed negotiation bus for the "Distributed Capability Auction" protocol. (Added: 2026-04-03)
 *   **[P1] Subagent Heartbeat Provider**: Standardized liveness reporting for subagent session management. (Added: 2026-04-03)
+
+#### Upcoming (2026-04-04 Evolution)
+*   **[P0] DCA Negotiation Guard**: Hardware-accelerated (HAN) broker for subagent bidding to mitigate "Negotiation Exhaustion." (Added: 2026-04-04)
+*   **[P0] Metadata Provenance Engine**: Verification service for structural metadata lineage using cryptographic signing. (Added: 2026-04-04)
+*   **[P0] Tool Metadata Sanitizer**: Security middleware for detecting "Context Poisoning" in tool schemas (CVE-2026-42001). (Added: 2026-04-04)
+*   **[P1] Unified Lifecycle Bridge**: Standardized commit/rollback middleware for cross-framework lifecycle synchronization. (Added: 2026-04-04)

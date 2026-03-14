@@ -438,3 +438,16 @@
 ### Deprecations / Monitoring
 - **Unmanaged Subagent Lifecycle**: Moving toward total deprecation. All subagent sessions must be bound to a supervised intent lifecycle.
 - **Unsanitized Structural Metadata**: Monitoring for deprecation. Tool schemas will require "Safe Metadata" attestation.
+
+---
+
+## Evolution: [2026-04-04] Updates
+
+### Proposed Additions
+- **DCA Negotiation Guard**: (P0) Hardware-accelerated (HAN) broker for subagent bidding, mitigating "Negotiation Exhaustion."
+- **Metadata Provenance Engine**: (P0) Verification service for structural metadata lineage, ensuring tool schemas are cryptographically signed.
+- **Unified Lifecycle Bridge**: (P1) Standardized commit/rollback middleware for cross-framework (OpenClaw/AutoGen) lifecycle synchronization.
+
+### Priority Shifts
+- **Tool Metadata Sanitizer**: Promoted from **P1** to **P0**. Critical for mitigating CVE-2026-42001.
+- **DCA Auction Broker**: Re-affirmed as **P0** (Already P0, but expanded to include HAN requirements).
