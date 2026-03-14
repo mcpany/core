@@ -65,9 +65,42 @@ export function ReplayDiffDialog({ open, onOpenChange, trace }: ReplayDiffDialog
 
     if (!trace) return null;
 
-    const originalOutput = JSON.stringify(trace.rootSpan.output || {}, null, 2);
+    // Helper to recursively format nested JSON strings
+    const formatOutput = (data: any): string => {
+        const parseNestedJSON = (value: any): any => {
+            if (typeof value === 'string') {
+                const trimmed = value.trim();
+                if ((trimmed.startsWith('{') && trimmed.endsWith('}')) ||
+                    (trimmed.startsWith('[') && trimmed.endsWith(']'))) {
+                    try {
+                        const parsed = JSON.parse(trimmed);
+                        return parseNestedJSON(parsed);
+                    } catch (e) {
+                        return value;
+                    }
+                }
+                return value;
+            }
+            if (Array.isArray(value)) {
+                return value.map(parseNestedJSON);
+            }
+            if (value !== null && typeof value === 'object') {
+                const newObj: Record<string, any> = {};
+                for (const key in value) {
+                    newObj[key] = parseNestedJSON(value[key]);
+                }
+                return newObj;
+            }
+            return value;
+        };
+
+        const processed = parseNestedJSON(data);
+        return JSON.stringify(processed, null, 2);
+    };
+
+    const originalOutput = formatOutput(trace.rootSpan.output || {});
     const newOutput = replayResult
-        ? JSON.stringify(replayResult, null, 2)
+        ? formatOutput(replayResult)
         : error
             ? `// Replay Failed\n${error}`
             : "// Waiting for execution...";

@@ -38,5 +38,27 @@ test.describe('Inspector Page', () => {
 
     // Check that we see some details of the trace
     await expect(sheet.locator('text=orchestrator-task').first()).toBeVisible();
+
+    // Find a tool span inside the details sheet to replay
+    // The mock trace has a child span named 'search-tool'
+    const searchToolRow = page.locator('text=search-tool').first();
+    await expect(searchToolRow).toBeVisible({ timeout: 10000 });
+    await searchToolRow.click();
+
+    // Check that we are now looking at the search-tool details
+    await expect(sheet.locator('h3:has-text("Root Output")')).toBeVisible();
+
+    // Click the "Replay & Diff" button
+    const replayBtn = page.getByRole('button', { name: 'Replay & Diff' });
+    await expect(replayBtn).toBeVisible();
+    await replayBtn.click();
+
+    // Verify the Replay & Diff dialog opens
+    const replayDialog = page.getByRole('dialog').filter({ hasText: 'Replay & Diff Analysis' });
+    await expect(replayDialog).toBeVisible();
+
+    // Verify the DiffViewer component is rendered (Monaco editor container)
+    // We check for the generic Monaco class or the original output heading
+    await expect(page.getByText('Original Output')).toBeVisible();
   });
 });
