@@ -48,3 +48,7 @@ The OpenClaw security crisis (CVE-2026-25253) highlighted a critical flaw in "lo
     * **Context**: Recent shifts in Claude Code toward "Enterprise Managed Settings" demand that local security policies can be governed centrally.
     * **Architecture Adjustment**: Introducing a "Policy Sync Hook" in the `Origin Middleware` that allows the gateway to fetch and cache an organization-wide `allowed_origins` list from a remote governance server.
     * **Security Impact**: Ensures consistent "Zero-Trust" enforcement across large developer fleets, preventing individual users from accidentally weakening the origin-validation guardrails.
+* **2026-04-02:** **Update: WebSocket Hijacking Mitigation for Loopback**.
+    * **Context**: The OpenClaw security crisis (CVE-2026-25253) confirmed that simple `localhost` binding is insufficient. Malicious websites can still hijack local listeners via cross-site WebSocket requests.
+    * **Architecture Adjustment**: Mandating `Sec-Fetch-Site: same-origin` or `cross-site` with explicit cryptographic attestation for all loopback connections.
+    * **Security Impact**: Eliminates the "One-Click RCE" vector by ensuring that even if a browser initiates a request to localhost, the gateway will reject it unless it carries a session-bound attestation token.

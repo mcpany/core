@@ -321,3 +321,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Reasoning-Bound Context Shifter**: Context management middleware for synchronizing dynamic shifting logic. (Added: 2026-04-01)
 *   **[P0] Path Normalization Engine (NaaS)**: Centralized OS-agnostic path normalization service. (Added: 2026-04-01)
 *   **[P1] Optimistic Capability Loading**: Predictive tool registry for Gemini-style optimistic loading. (Added: 2026-04-01)
+
+#### Upcoming (2026-04-02 Evolution)
+*   **[P0] Continuous Skill Snapshotter**: Lifecycle monitoring middleware for behavioral fingerprint comparison. (Added: 2026-04-02)
+*   **[P0] Foundation-Neutral Attestation Bridge**: Unified, cross-foundation cryptographic identity and tool attestation service. (Added: 2026-04-02)
+*   **[P1] mTLS Authenticated Loopback Tunnel**: Secure, session-bound transport for bridging cloud agents to local tools. (Added: 2026-04-02)
+*   **[P1] A2A System Prompt Guard**: Specialized middleware for sanitizing system prompt injections during agent handoffs. (Added: 2026-04-02)

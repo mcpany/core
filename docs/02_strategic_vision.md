@@ -298,3 +298,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Reasoning-Bound Context Shifter**: MCP Any will implement a context management layer that synchronizes shifting logic across frameworks, ensuring that subagents don't suffer "Context Amnesia" during deep reasoning loops.
 - **Normalization-as-a-Service (NaaS)**: Moving beyond basic path validation to a centralized "Path Normalization Engine." This ensures that project-local settings and tool calls are validated against a single, OS-agnostic "Truth" to prevent symlink escapes.
 - **Optimistic Attestation Gate**: To support Gemini's optimistic loading, MCP Any will act as a "Virtual Quorum" that can provide high-confidence, pre-attestation signals based on historical tool behavior and global safety telemetry.
+
+---
+
+## Strategic Evolution: [2026-04-02]
+### Focus: Foundation-Neutral Governance & Continuous Behavioral Snapshotting
+**Context**: The collapse of "Local Trust" (CVE-2026-25253) and the rise of "Delayed Payload" malicious skills (ClawHavoc) mark a new era of proactive security. As agent frameworks (OpenClaw, Claude Code) move toward foundation-backed standardization, MCP Any must provide the neutral attestation layer that bridges these ecosystems.
+**Strategic Pivot**:
+- **Foundation-Neutral Attestation Bridge**: MCP Any will evolve into a "Security Broker" between different agent foundations. It will provide a unified interface for cryptographic attestation that is OS and framework agnostic, neutralizing WebSocket hijacking risks for both local and cloud-proxied agents.
+- **Continuous Behavioral Snapshotting**: We are shifting from "Burn-In" tests to "Lifecycle Snapshotting." MCP Any will continuously capture and compare behavioral fingerprints of active skills, using anomaly detection to halt execution if a "Delayed Payload" triggers a divergence from the skill's attested baseline.
+- **Authenticated Loopback Persistence**: To solve the "Persistence Pain" for cloud agents, MCP Any will implement a session-bound, mTLS-encrypted loopback tunnel that enforces origin-validation at both ends of the connection.

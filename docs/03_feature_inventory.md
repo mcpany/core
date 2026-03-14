@@ -396,6 +396,20 @@
 
 ---
 
+## Evolution: [2026-04-02] Updates
+
+### Proposed Additions
+- **Continuous Skill Snapshotter**: (P0) Lifecycle monitoring middleware that captures and compares behavioral fingerprints of skills to detect "Delayed Payloads."
+- **Foundation-Neutral Attestation Bridge**: (P0) A core service that provides a unified, cross-foundation interface for cryptographic identity and tool attestation.
+- **mTLS Authenticated Loopback Tunnel**: (P1) Secure, session-bound transport for bridging cloud agents to local tools, enforcing dual-ended origin validation.
+- **A2A System Prompt Guard**: (P1) Specialized middleware that sanitizes "System Prompt Injections" during agent-to-agent task handoffs.
+
+### Priority Shifts
+- **"Safe-by-Default" Network Hardening**: (Re-affirmed P0) Expanded to include mandatory mTLS for all loopback traffic between cloud-sandboxed agents and local MCP Any nodes.
+- **Verified Skill Registry**: (Re-affirmed P0) Now requires "Continuous Snapshotting" as a prerequisite for the "Trusted" tier.
+
+---
+
 ## Evolution: [2026-03-30] Updates
 
 ### Proposed Additions

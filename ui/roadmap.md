@@ -180,3 +180,6 @@
 - [ ] **[P0] Path Normalization Guard**: (2026-04-01) Visual debugger for symlink resolution and path normalization traces.
 - [ ] **[P0] Context Shifting Timeline**: (2026-04-01) Real-time visualization of Reasoning-Bound Context shifts and alignment scores.
 - [ ] **[P1] Optimistic Loading Monitor**: (2026-04-01) Dashboard for tracking pre-loaded capabilities and their final attestation status.
+- [ ] **[P0] Skill Behavioral Drift Timeline**: (2026-04-02) Visual forensic tool for comparing real-time skill behavior against historical baselines.
+- [ ] **[P0] Cross-Foundation Attestation Dashboard**: (2026-04-02) Unified UI for managing cryptographic identities across OpenClaw and Anthropic ecosystems.
+- [ ] **[P1] mTLS Loopback Status Widget**: (2026-04-02) Real-time monitor for authenticated cloud-to-local tunnel health and origin validation.
