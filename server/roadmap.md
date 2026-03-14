@@ -327,3 +327,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Inode-Pinning Middleware**: Hardware-bound file handle protection for project-local configurations. (Added: 2026-04-02)
 *   **[P0] Branch-Purity Blackboard Validator**: Integrity layer for the Shared KV Store to prevent cross-branch state contamination. (Added: 2026-04-02)
 *   **[P1] Consensus Delegation Gateway**: Implementation of "Delegated Authority" models for time-critical agent authorization. (Added: 2026-04-02)
+
+#### Upcoming (2026-04-03 Evolution)
+*   **[P0] Active Subagent Reaper**: Lifecycle monitor to terminate "Ghost" subagents and purge orphaned state. (Added: 2026-04-03)
+*   **[P0] Tool Metadata Sanitizer**: Security middleware to detect "Context Poisoning" in tool structural metadata. (Added: 2026-04-03)
+*   **[P1] DCA Auction Broker**: High-speed negotiation bus for the "Distributed Capability Auction" protocol. (Added: 2026-04-03)
+*   **[P1] Subagent Heartbeat Provider**: Standardized liveness reporting for subagent session management. (Added: 2026-04-03)
