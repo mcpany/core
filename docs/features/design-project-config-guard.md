@@ -49,6 +49,13 @@ As agents increasingly rely on project-local configuration files (e.g., `.claude
 
 ## 7. Evolutionary Changelog
 * **2026-03-09:** Initial Document Creation.
+
+### Update: 2026-04-09 - Defending Against Sandbox Escapes (CVE-2026-25725)
+**Context**: Today's research into CVE-2026-25725 reveals that "Partial Sandboxing" fails when agents can create configuration files that did not exist at startup.
+**Architecture Adjustment**:
+* **Full-State Manifest Generation**: Section 4 will now include a pre-execution step where MCP Any generates a cryptographic "Non-Existence Proof" for all potential configuration files in a project directory.
+* **Immutable Path Pinning**: The `File Proxy Middleware` will now enforce that no new files matching sensitive configuration patterns (e.g., `.claude/settings.json`) can be created by the agent runtime unless they are explicitly authorized via a pre-flight user attestation.
+**Security Impact**: Closes the gap identified in Claude Code's bubblewrap sandboxing, preventing malicious code from injecting hooks via non-existent configuration files.
 ### Update: 2026-03-10 - Resolving Config-Based RCE and API Theft
 **Context**: Today's market sync confirmed that CVE-2025-59536 (Claude Code) exploited `hooks` and `enableAllProjectMcpServers` in `.claude/settings.json`.
 **Architecture Adjustment**:
