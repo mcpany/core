@@ -431,10 +431,22 @@
 - **DCA Auction Broker**: (P1) High-speed negotiation bus for the "Distributed Capability Auction" protocol, managing agent tool bidding.
 - **Subagent Heartbeat Provider**: (P1) Standardized heartbeat protocol for subagents to report liveness and intent alignment to the Reaper.
 
+---
+
+## Evolution: [2026-04-04] Updates
+
+### Proposed Additions
+- **DCA Anti-Collusion Middleware**: (P0) Real-time monitoring and cap enforcement for agentic bidding to prevent budget draining collusion.
+- **Multimodal Signal Sanitizer**: (P0) Adversarial filter for UI screenshots and images to neutralize LSB-based "OOB Injection" instructions.
+- **Reputation-Bound Consensus Hub**: (P0) Extension to the Consensus Gateway that weights agent votes based on their verified work-history and skill provenance.
+- **Economic Budget Guardrails**: (P1) Policy engine for defining maximum "Reasoning Spend" per intent branch, providing circuit breakers for runaway auctions.
+
 ### Priority Shifts
 - **Speculative Execution Guard**: Re-affirmed as **P0**. Now requires integration with the Subagent Reaper to ensure speculative "Zombies" are purged.
 - **Branch-Purity Blackboard Validator**: (Re-affirmed P0) Expanded to detect "Ghost State" injected by non-terminated subagents.
+- **DCA Auction Broker**: Promoted from **P1** to **P0**. High urgency to implement anti-collusion measures within the negotiation bus.
 
 ### Deprecations / Monitoring
 - **Unmanaged Subagent Lifecycle**: Moving toward total deprecation. All subagent sessions must be bound to a supervised intent lifecycle.
 - **Unsanitized Structural Metadata**: Monitoring for deprecation. Tool schemas will require "Safe Metadata" attestation.
+- **Flat-Weight Consensus**: Monitoring for deprecation in favor of **Reputation-Bound** voting for high-risk swarm actions.

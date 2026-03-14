@@ -186,4 +186,8 @@
 - [ ] **[P1] Consensus Delegation Console**: (2026-04-02) UI for managing and reviewing delegated authority tokens for time-critical tasks.
 - [ ] **[P0] Subagent Reaper Dashboard**: (2026-04-03) Real-time visualization of agent heartbeats and termination events for "Ghost" subagents.
 - [ ] **[P0] Metadata Poisoning Alert Center**: (2026-04-03) Security UI for inspecting tool structural metadata flagged for context poisoning instructions.
-- [ ] **[P1] DCA Auction Monitor**: (2026-04-03) Visual tracker for agent capability bidding and allocation latency.
+- [ ] **[P0] DCA Auction Monitor**: (2026-04-03) Visual tracker for agent capability bidding and allocation latency. (Promoted to P0 on 2026-04-04)
+- [ ] **[P0] DCA Collusion Visualizer**: (2026-04-04) Real-time graph showing bidding patterns and identified collusion clusters.
+- [ ] **[P0] Multimodal Signal Inspector**: (2026-04-04) UI for viewing adversarial filter results and neutralized "Shadow Instructions" in images.
+- [ ] **[P0] Reputation Audit Log**: (2026-04-04) Visual record of agent work-history and consensus weight adjustments.
+- [ ] **[P1] Swarm Budget Dashboard**: (2026-04-04) Real-time tracking of reasoning expenditure against intent-bound caps.

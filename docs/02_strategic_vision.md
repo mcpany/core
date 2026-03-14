@@ -318,3 +318,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Active Subagent Lifecycle Governance**: MCP Any will move from a passive router to an "Active Reaper." We will implement mandatory session-bound heartbeat monitors for all subagents. If an intent branch is pruned, the gateway will forcefully terminate associated subagent sessions and purge their "Ghost" state from the Blackboard.
 - **Structural Metadata Sanitization**: We are introducing a "Metadata Validator" that treats tool schemas (descriptions, examples) as untrusted content. All structural metadata will be scanned for imperative instructions and "Context Poisoning" patterns before being exposed to the LLM.
 - **DCA-Native Negotiation Broker**: To support Gemini's "Distributed Capability Auction," MCP Any will act as the high-speed "Auction House." We will provide a low-latency bus for agent bidding, ensuring that swarm coordination doesn't become a bottleneck while maintaining Zero-Trust validation of every bid.
+
+---
+
+## Strategic Evolution: [2026-04-04]
+### Focus: Economic Swarm Governance & Multimodal Integrity
+**Context**: Today's findings on "DCA Bidding Collusion" and "Multimodal OOB Injection" signal a shift from "Individual Agent Security" to "Systemic Economic & Signal Governance." As agents interact in markets and process non-textual data, the "Universal Agent Bus" must protect the mission from budget draining and hidden visual instructions.
+**Strategic Pivot**:
+- **Economic Anti-Collusion Middleware**: MCP Any will implement "Dynamic Bid Caps" and "Collusion Detection" for UACO auctions. We will monitor for bidding patterns that indicate subagent coordination to drain parent budgets, automatically quarantining suspicious bid-clusters.
+- **Cross-Modal Signal Sanitization**: Moving beyond text, MCP Any will implement "Visual Intent Stripping." All UI screenshots or multimodal inputs passing through the gateway will be processed via an "Adversarial Filter" to detect and neutralize LSB steganography or "Shadow Instructions" embedded in image layers.
+- **Sybil-Resistant Consensus Quorum**: We are upgrading our Consensus Gateway to include "Reputation-Bound Voting." Subagents must provide not only an RCC token but also a "Work-History Attestation" from the MCP Any Skill Registry before their vote in a high-risk tool quorum is weighted fully.

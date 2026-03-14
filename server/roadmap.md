@@ -331,5 +331,11 @@ These features represent the next logical steps for the product, focusing on Ent
 #### Upcoming (2026-04-03 Evolution)
 *   **[P0] Active Subagent Reaper**: Lifecycle monitor to terminate "Ghost" subagents and purge orphaned state. (Added: 2026-04-03)
 *   **[P0] Tool Metadata Sanitizer**: Security middleware to detect "Context Poisoning" in tool structural metadata. (Added: 2026-04-03)
-*   **[P1] DCA Auction Broker**: High-speed negotiation bus for the "Distributed Capability Auction" protocol. (Added: 2026-04-03)
+*   **[P0] DCA Auction Broker**: High-speed negotiation bus for the "Distributed Capability Auction" protocol. (Added: 2026-04-03 - Promoted to P0 on 2026-04-04)
 *   **[P1] Subagent Heartbeat Provider**: Standardized liveness reporting for subagent session management. (Added: 2026-04-03)
+
+#### Upcoming (2026-04-04 Evolution)
+*   **[P0] DCA Anti-Collusion Middleware**: Real-time bidding pattern monitor and cap enforcer for agentic auctions. (Added: 2026-04-04)
+*   **[P0] Multimodal Signal Sanitizer**: Adversarial filter for UI screenshots and images to neutralize OOB injections. (Added: 2026-04-04)
+*   **[P0] Reputation-Bound Consensus Hub**: Weighted voting system for tool quorums based on verified work-history. (Added: 2026-04-04)
+*   **[P1] Economic Budget Guardrails**: Intent-bound reasoning expenditure caps and circuit breakers for swarms. (Added: 2026-04-04)
