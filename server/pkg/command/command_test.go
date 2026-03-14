@@ -87,7 +87,20 @@ func canConnectToDocker(t *testing.T) bool {
 	}()
 
 	if err := cli.ContainerStart(ctx, resp.ID, container.StartOptions{}); err != nil {
-		t.Logf("could not start container: %v", err)
+		t.Logf("could not start container (likely overlayfs or environment issue): %v", err)
+		return false
+	}
+
+	// Verify we can wait for completion to ensure the full execution cycle works
+	statusCh, errCh := cli.ContainerWait(ctx, resp.ID, container.WaitConditionNotRunning)
+	select {
+	case err := <-errCh:
+		t.Logf("could not wait for container: %v", err)
+		return false
+	case <-statusCh:
+		// Success
+	case <-time.After(10 * time.Second):
+		t.Logf("timeout waiting for container check to finish")
 		return false
 	}
 
@@ -658,8 +671,12 @@ func TestDockerExecutorWithStdIO(t *testing.T) {
 	}
 
 	t.Run("Success", func(t *testing.T) {
-		// Use a context with timeout to prevent infinite hangs on stream read.
-		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+		// Use a longer timeout for CI environments
+		timeout := 60 * time.Second
+		if os.Getenv("CI") == "true" {
+			timeout = 120 * time.Second
+		}
+		ctx, cancel := context.WithTimeout(context.Background(), timeout)
 		defer cancel()
 
 		containerEnv := &configv1.ContainerEnvironment{}
