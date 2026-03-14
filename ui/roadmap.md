@@ -25,6 +25,7 @@
 - [ ] **[P0] OpenClaw Context Sync Viewer**: (2026-03-13) Visualize shared context state between MCP Any and OpenClaw agents. (Promoted to P0 on 2026-03-14)
 - [ ] **[P0] Browser Security Status Widget**: (2026-03-14) Real-time monitor of Origin-Validation status and blocked cross-site attempts.
 - [ ] **[P1] Context Lifecycle Visualizer**: (2026-03-14) Debugger for visualizing context compression hooks and intent-preserving scores.
+- [ ] **[P0] A2A Authenticated Discovery Monitor**: (2026-03-14) UI for viewing and approving authenticated agent cards in the A2A mesh.
 - [ ] **[P0] Recursive Loop Heatmap**: (2026-03-15) Visualization of tool-to-tool call graphs with real-time loop detection alerts.
 - [ ] **[P0] Context Chain Inspector**: (2026-03-15) Security UI for verifying the cryptographic signatures of subagent context lineages.
 - [ ] **[P1] UAB Protocol Bridge Status**: (2026-03-15) Monitor for task handoffs across different agent frameworks using the UAB adapter.
