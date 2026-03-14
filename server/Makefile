@@ -491,7 +491,7 @@ e2e: e2e-local
 
 
 
-lint:
+lint: gen
 ifdef SHOULD_PROXY_TO_DOCKER
 	@$(DOCKER_PROXY_CMD) lint
 else
