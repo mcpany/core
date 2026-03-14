@@ -290,6 +290,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Beacon-First Discovery Hub**: Transitioning from poll-based discovery to a "Beacon Reactive" model. MCP Any will act as a high-speed listener for UDP Capability Beacons, deduplicating and indexing them in real-time to eliminate "Discovery Noise" for connected agents.
 
 ---
+---
 
 ## Strategic Evolution: 2026-04-01
 ### Focus: Reasoning-Bound Context Integrity & Path Normalization Governance
@@ -338,3 +339,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **RL Telemetry Provider**: MCP Any will evolve into a "Telemetry Hub" for RL-driven agents. We will implement standardized, privacy-preserving hooks to export tool performance and conversation-feedback loops directly to OpenClaw-RL training pipelines.
 - **Attested Discovery Authority**: Following Claude Code's mandate for Trust Verification, MCP Any will act as the "Certificate Authority" for local MCP servers. We will provide cryptographic proof of a tool's provenance before it is exposed to the agent runtime.
 - **Normalized Optimistic Execution**: We are standardizing the "Optimistic Load" pattern from the Gemini ecosystem. MCP Any will allow agents to speculatively prepare tool contexts while discovery quorums perform background attestation, minimizing the "Security Latency" tax.
+
+---
+
+## Strategic Evolution: [2026-04-06]
+### Focus: Workspace-Aware Coordination & Proactive Context Lifecycle
+**Context**: Today's findings on OpenClaw's ContextEngine hooks and the "Intent vs. Gemini CLI" workspace divide confirm that agents are moving from single-session tools to multi-threaded workspace orchestrators. MCP Any must evolve to manage the complex interplay between parallel intent branches and pluggable memory modules.
+**Strategic Pivot**:
+- **Workspace-Aware Task Orchestration**: MCP Any will pivot to support "Structured Workspaces." We will implement a coordination layer that can track semantic dependencies and parallel workstreams across disparate agent sessions, acting as the universal bus for inter-agent state.
+- **Proactive Context Lifecycle Management**: Leveraging OpenClaw's hook model, MCP Any will implement "Predictive Context Preparation." We will use signed intents to pre-fetch and pre-compress relevant context shards before they are requested, minimizing "Cognitive Stall" in deep swarms.
+- **Unified RL Telemetry Mesh**: We are promoting the Telemetry Provider to a core strategic pillar. MCP Any will provide a unified, framework-agnostic telemetry stream that allows RL models (like OpenClaw-RL) to optimize agent behavior across the entire multi-model swarm.

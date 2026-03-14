@@ -193,4 +193,7 @@
 - [ ] **[P1] Lifecycle Synchronization Monitor**: (2026-04-04) Visual tracker for cross-framework state commit/rollback events.
 - [ ] **[P0] Local Trust Verification Dashboard**: (2026-04-05) UI for reviewing and signing local MCP server identity claims.
 - [ ] **[P0] Optimistic Loading Debugger**: (2026-04-05) Visual timeline of speculative vs. attested tool loading events.
-- [ ] **[P1] RL Feedback Stream Viewer**: (2026-04-05) Real-time telemetry dashboard for monitoring RL training data export.
+- [ ] **[P0] RL Feedback Stream Viewer**: (2026-04-05) Real-time telemetry dashboard for monitoring RL training data export. (Promoted to P0 on 2026-04-06)
+- [ ] **[P0] ContextEngine Hook Manager**: (2026-04-06) UI for configuring and monitoring pluggable context lifecycle hooks.
+- [ ] **[P0] Predictive Context Visualizer**: (2026-04-06) Real-time dashboard showing pre-fetched context shards and hit rates.
+- [ ] **[P1] Workspace Orchestration Map**: (2026-04-06) Visual graph of semantic dependencies across multi-agent workspace sessions.

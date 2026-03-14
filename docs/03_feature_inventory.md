@@ -365,6 +365,19 @@
 
 ---
 
+## Evolution: [2026-04-06] Updates
+
+### Proposed Additions
+- **Pluggable ContextEngine Bridge**: (P0) Middleware that maps MCP Any state to OpenClaw v2026.3.7 lifecycle hooks, enabling specialized memory management.
+- **Workspace-Aware Task Orchestrator**: (P1) Coordination layer for managing semantic dependencies and parallel workstreams across multi-agent workspace sessions.
+- **Proactive Memory Lifecycle Hooks**: (P0) Implementation of predictive context pre-fetching and pre-compression based on signed agent intents.
+
+### Priority Shifts
+- **RL Telemetry Provider**: Promoted from **P1** to **P0**. Critical for supporting real-time optimization in OpenClaw-RL swarms.
+- **PNTD Discovery Provider**: Promoted from **P1** to **P0**. Essential foundation for the Workspace-Aware Task Orchestrator.
+
+---
+
 ## Evolution: [2026-03-31] Updates
 
 ### Proposed Additions

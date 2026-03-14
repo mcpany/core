@@ -343,4 +343,9 @@ These features represent the next logical steps for the product, focusing on Ent
 #### Upcoming (2026-04-05 Evolution)
 *   **[P0] Attested Discovery Authority**: Cryptographic identity broker for local MCP servers to satisfy Claude Code's "Trust Verification." (Added: 2026-04-05)
 *   **[P0] Optimistic Execution Gate**: Speculative context loading for tools, synchronized with background discovery quorums. (Added: 2026-04-05)
-*   **[P1] RL Telemetry Provider**: Standardized middleware for exporting performance/feedback metrics to OpenClaw-RL training loops. (Added: 2026-04-05)
+*   **[P0] RL Telemetry Provider**: Standardized middleware for exporting performance/feedback metrics to OpenClaw-RL training loops. (Added: 2026-04-05 - Promoted to P0 on 2026-04-06)
+
+#### Upcoming (2026-04-06 Evolution)
+*   **[P0] Pluggable ContextEngine Bridge**: Middleware for mapping state to OpenClaw v2026.3.7 lifecycle hooks. (Added: 2026-04-06)
+*   **[P0] Proactive Memory Lifecycle Hooks**: Predictive context pre-fetching and pre-compression. (Added: 2026-04-06)
+*   **[P1] Workspace-Aware Task Orchestrator**: Coordination layer for managing semantic dependencies in multi-agent workspaces. (Added: 2026-04-06)
