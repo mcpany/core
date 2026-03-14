@@ -216,6 +216,11 @@
 - [ ] **[P0] Deterministic Boot Dashboard**: UI for reviewing and signing Full-State Manifests before agent execution. (Added: 2026-04-11)
 - [ ] **[P1] Context Propagation Visualizer**: Trace-linked visualization of how security context flows between tools and agents. (Added: 2026-04-11)
 
+#### Upcoming (2026-04-13 Evolution)
+- [ ] **[P0] A2A Messaging Hub Dashboard**: Real-time monitor of inter-agent task proposals, bidding, and mailbox state. (Added: 2026-04-13)
+- [ ] **[P0] Settings Integrity Monitor**: Security dashboard for reviewing project-local configuration attestation status and injection alerts. (Added: 2026-04-13)
+- [ ] **[P0] Non-Existence Proof Visualizer**: UI for inspecting the "Absent File" manifest during Deterministic Boot attestation. (Added: 2026-04-13)
+
 #### Upcoming (2026-04-10 Evolution)
 - [ ] **[P0] IDS Status Monitor**: Real-time dashboard for visualizing semantically sanitized context fragments and blocked "Prompt Path" injections. (Added: 2026-04-10)
 - [ ] **[P0] Deterministic Boot Dashboard**: UI for reviewing and signing Full-State Manifests before agent execution. (Added: 2026-04-10)

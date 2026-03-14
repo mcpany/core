@@ -47,3 +47,9 @@ With the transition of the Agent2Agent (A2A) protocol to the Linux Foundation, i
 
 ## 7. Evolutionary Changelog
 * **2026-04-12:** Initial Document Creation.
+* **2026-04-13:** **Update: Integrating Zero-Trust Policy Enforcement**
+    **Context:** Recent market sync shows A2A is now the primary utility for inter-agent delegation.
+    **Architecture Adjustment:**
+    * Mandating **Recursive Intent Delegation (RID)** for all task proposals.
+    * Integrating the **Settings Injection Guard** as a mandatory pre-flight check for any A2A message that triggers local configuration reads.
+    **Security Impact:** Prevents subagents from being "Coerced" into executing malicious hooks passed through the A2A messaging layer.

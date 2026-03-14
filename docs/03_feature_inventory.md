@@ -8,6 +8,19 @@
 
 ---
 
+## Evolution: [2026-04-13] Updates
+
+### Proposed Additions
+- **Settings Injection Guard**: (P0) Active interception and real-time validation for project-local agent configurations (e.g., `.claude/settings.json`) to neutralize "Rug Pull" exfiltration and RCE.
+- **Non-Existence Proof Generator**: (P0) Extension for the Deterministic Attestation Gateway to provide signed proofs of the absence of unauthorized configuration hooks.
+- **A2A Messaging Hub**: (P0) Native, high-performance messaging implementation for the A2A protocol, featuring stateful mailboxes and Zero-Trust task validation.
+
+### Priority Shifts
+- **Deterministic Attestation Gateway**: (Re-affirmed P0) Now a mandatory prerequisite for agent boot, integrating Non-Existence Proofs.
+- **A2A Interop Bridge**: Transitioned to **A2A Messaging Hub** (P0).
+
+---
+
 ## Evolution: [2026-04-12] Updates
 
 ### Proposed Additions
