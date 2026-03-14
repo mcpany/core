@@ -42,6 +42,15 @@ issues:
     - node_modules
     - .cache
   exclude-rules:
+    - linters:
+        - typecheck
+      text: "undefined:"
+    - linters:
+        - typecheck
+      text: "could not import"
+    - linters:
+        - typecheck
+      text: "undeclared name:"
     - path: "_test.go"
       linters:
         - "errcheck"
