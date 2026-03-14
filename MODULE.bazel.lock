@@ -279,6 +279,43 @@
   },
   "selectedYankedVersions": {},
   "moduleExtensions": {
+    "//tools:golangci_lint.bzl%golangci_lint": {
+      "general": {
+        "bzlTransitiveDigest": "mmzQD1edAzJT7QcT/f57r9mpsetldRE/3sJG2VY3pY0=",
+        "usagesDigest": "qIjgk955xyKVq7c1Kq1fXisobv5ZmuRhmU3CGE0GeIs=",
+        "recordedInputs": [],
+        "generatedRepoSpecs": {
+          "golangci_lint_linux_amd64": {
+            "repoRuleId": "@@//tools:golangci_lint.bzl%_golangci_lint_repo",
+            "attributes": {
+              "platform": "linux_amd64",
+              "version": "1.64.5"
+            }
+          },
+          "golangci_lint_linux_arm64": {
+            "repoRuleId": "@@//tools:golangci_lint.bzl%_golangci_lint_repo",
+            "attributes": {
+              "platform": "linux_arm64",
+              "version": "1.64.5"
+            }
+          },
+          "golangci_lint_darwin_amd64": {
+            "repoRuleId": "@@//tools:golangci_lint.bzl%_golangci_lint_repo",
+            "attributes": {
+              "platform": "darwin_amd64",
+              "version": "1.64.5"
+            }
+          },
+          "golangci_lint_darwin_arm64": {
+            "repoRuleId": "@@//tools:golangci_lint.bzl%_golangci_lint_repo",
+            "attributes": {
+              "platform": "darwin_arm64",
+              "version": "1.64.5"
+            }
+          }
+        }
+      }
+    },
     "@@aspect_tools_telemetry+//:extension.bzl%telemetry": {
       "general": {
         "bzlTransitiveDigest": "cl5A2O84vDL6Tt+Qga8FCj1DUDGqn+e7ly5rZ+4xvcc=",

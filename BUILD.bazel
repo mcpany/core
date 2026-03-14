@@ -56,12 +56,59 @@ gazelle(
     command = "update-repos",
 )
 
+# Platform config settings for host platform selection
+config_setting(
+    name = "linux_x86_64",
+    constraint_values = [
+        "@platforms//os:linux",
+        "@platforms//cpu:x86_64",
+    ],
+)
+
+config_setting(
+    name = "linux_aarch64",
+    constraint_values = [
+        "@platforms//os:linux",
+        "@platforms//cpu:aarch64",
+    ],
+)
+
+config_setting(
+    name = "macos_x86_64",
+    constraint_values = [
+        "@platforms//os:macos",
+        "@platforms//cpu:x86_64",
+    ],
+)
+
+config_setting(
+    name = "macos_aarch64",
+    constraint_values = [
+        "@platforms//os:macos",
+        "@platforms//cpu:aarch64",
+    ],
+)
+
+# Pre-built golangci-lint binary, selected per host platform.
+filegroup(
+    name = "golangci-lint",
+    srcs = select({
+        ":linux_x86_64": ["@golangci_lint_linux_amd64//:golangci-lint"],
+        ":linux_aarch64": ["@golangci_lint_linux_arm64//:golangci-lint"],
+        ":macos_x86_64": ["@golangci_lint_darwin_amd64//:golangci-lint"],
+        ":macos_aarch64": ["@golangci_lint_darwin_arm64//:golangci-lint"],
+    }),
+    visibility = ["//visibility:public"],
+)
+
 sh_binary(
     name = "lint",
     srcs = ["scripts/lint.sh"],
     data = [
         "//server:go.mod",
         "//server:go.sum",
+        ":golangci-lint",
+        "@bazel_tools//tools/bash/runfiles",
     ],
 )
 
