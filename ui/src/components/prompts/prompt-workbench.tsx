@@ -5,7 +5,7 @@
 
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import {
   MessageSquare,
@@ -100,11 +100,16 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
           });
   };
 
-  const filteredPrompts = prompts.filter(
-    (p) =>
-      p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (p.description && p.description.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
+  // ⚡ BOLT: Optimized render waste by memoizing filtered list and pre-computing lowercase search query
+  // Randomized Selection from Top 5 High-Impact Targets
+  const filteredPrompts = useMemo(() => {
+    const lowerQuery = searchQuery.toLowerCase();
+    return prompts.filter(
+      (p) =>
+        p.name.toLowerCase().includes(lowerQuery) ||
+        (p.description && p.description.toLowerCase().includes(lowerQuery))
+    );
+  }, [prompts, searchQuery]);
 
   const handleSelectPrompt = (prompt: PromptDefinition) => {
     setSelectedPrompt(prompt);
