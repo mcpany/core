@@ -8,6 +8,19 @@
 
 ---
 
+## Evolution: [2026-04-08] Updates
+
+### Proposed Additions
+- **Pre-Flight Sandbox Validator**: (P0) Core security service that generates a "Full-State Manifest" before agent execution, addressing environment-escape vulnerabilities like CVE-2026-25725.
+- **Cross-Framework Skill Reputation Engine**: (P1) UAB-native middleware for sharing and validating tool reliability scores across agent swarms.
+- **Origin-Locked Session Bridge**: (P0) Hardened WebSocket/HTTP session manager that binds tokens to cryptographically verified origins.
+
+### Priority Shifts
+- **Verified Skill Auction (VSA)**: (Re-affirmed P0) Expanded to integrate with the new Reputation Engine for real-time capability revoking.
+- **Hardware-Linked Inode Pinning**: (Re-affirmed P0) Promoted as a mandatory requirement for the Pre-Flight Sandbox Validator.
+
+---
+
 ## Evolution: [2026-04-07] Updates
 
 ### Proposed Additions

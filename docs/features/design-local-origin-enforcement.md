@@ -48,3 +48,8 @@ The OpenClaw security crisis (CVE-2026-25253) highlighted a critical flaw in "lo
     * **Context**: Recent shifts in Claude Code toward "Enterprise Managed Settings" demand that local security policies can be governed centrally.
     * **Architecture Adjustment**: Introducing a "Policy Sync Hook" in the `Origin Middleware` that allows the gateway to fetch and cache an organization-wide `allowed_origins` list from a remote governance server.
     * **Security Impact**: Ensures consistent "Zero-Trust" enforcement across large developer fleets, preventing individual users from accidentally weakening the origin-validation guardrails.
+
+* **2026-04-08: Update: Origin-Locked Session Binding**
+    * **Context**: Recent reports of CSWSH (CVE-2026-25253) indicate that "Origin Check" alone is insufficient if session tokens can be reused across disparate local listeners.
+    * **Architecture Adjustment**: We are introducing "Origin-Locked Session Binding." Every issued agent session token is now cryptographically bound to the `Origin` header used during its creation.
+    * **Security Impact**: Mitigates "Cross-Origin Token Reuse," ensuring that even if a token is exfiltrated to a malicious local listener, it cannot be used unless the request originates from the same verified origin as the initial handshake.
