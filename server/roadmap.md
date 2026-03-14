@@ -350,6 +350,11 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Linked Inode Pinning**: Native filesystem security layer to prevent TOCTOU symlink races in project configs. (Added: 2026-04-06)
 *   **[P1] Speculative Auction Broker (SAB)**: High-speed broker for "Intent Probability" bidding in speculative agent swarms. (Added: 2026-04-06)
 
+#### Upcoming (2026-04-08 Evolution)
+*   **[P0] Pre-Flight Sandbox Validator**: Core security service for environment-manifest generation and config-injection defense (CVE-2026-25725). (Added: 2026-04-08)
+*   **[P0] Origin-Locked Session Bridge**: Hardened session manager binding agent tokens to cryptographically verified browser/CLI origins. (Added: 2026-04-08)
+*   **[P1] Cross-Framework Skill Reputation Engine**: UAB v1.4 compliant middleware for cross-registry tool reliability scoring. (Added: 2026-04-08)
+
 #### Upcoming (2026-04-07 Evolution)
 *   **[P0] Verified Skill Auction (VSA)**: Integration of DCA Auction Broker with real-time skill attestation to mitigate ClawHavoc-style attacks. (Added: 2026-04-07)
 *   **[P0] Mandatory Origin Validation (SOP)**: Enforcement of browser-origin headers for all local listeners to patch CVE-2026-25253. (Added: 2026-04-07)

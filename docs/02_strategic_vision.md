@@ -262,6 +262,16 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-04-08]
+### Focus: Immutable Environment Guarding & Reputation-Bound Capability
+**Context**: The disclosure of CVE-2026-25725 (Claude Code) proves that "Partial Sandboxing" is a critical failure point. If an agent can influence the environment *before* it is fully bound, it can inject malicious configurations. Simultaneously, the "ClawHavoc" crisis has evolved into "Chain-of-Thought Spoofing," where tools manipulate the agent's reasoning.
+**Strategic Pivot**:
+- **Immutable Environment Guarding**: MCP Any will pivot to a "Full-State Manifest" model. Before any agent execution begins, MCP Any will generate an immutable snapshot of the project-local environment (including "Non-Existence" proofs for files like `.claude/settings.json`), preventing TOCTOU and config-injection escapes.
+- **Reputation-Bound Capability (RBC)**: Moving from binary "Allow/Deny" to "Consensus-Driven Scoping." A tool's available capabilities will be dynamically restricted based on its real-time reputation score within the UAB mesh. High-risk capabilities (e.g., shell execution) will be automatically revoked if a tool's reputation falls below the "Trust Quorum" threshold.
+- **Origin-Locked Session Binding**: Hardening the Local Zero-Trust model by cryptographically binding every agent session token to its initiating browser or CLI origin. This prevents session reuse across disparate origins, even within the same local network.
+
+---
+
 ## Strategic Evolution: [2026-03-31]
 ### Focus: Parallel Intent Integrity & Path-Agnostic Boundary Enforcement
 **Context**: Today's findings on OpenClaw's Parallel Sub-Intents and the Claude Code Symlink vulnerability (CVE-2026-34812) reveal a fundamental shift in the "Security Frontier." We are moving from protecting linear agent sessions to securing complex, multi-threaded "Intent Meshes" and ensuring that project-local data structures cannot be weaponized against the host.
