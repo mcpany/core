@@ -361,8 +361,22 @@ func generateMockTrace() Trace {
 					},
 					Children: []Span{
 						{
+							ID:        "span-2-hook-pre",
+							Name:      "pre-call-hook",
+							Type:      "core",
+							StartTime: now + 55,
+							EndTime:   now + 95,
+							Status:    "success",
+							Input: map[string]any{
+								"query": "Q3 2024 financials",
+							},
+							Output: map[string]any{
+								"validated": true,
+							},
+						},
+						{
 							ID:        "span-2-1",
-							Name:      "google-search-api",
+							Name:      "upstream-execution",
 							ServiceName: "google",
 							Type:      "service",
 							StartTime: now + 100,
@@ -378,6 +392,20 @@ func generateMockTrace() Trace {
 										"link":  "...",
 									},
 								},
+							},
+						},
+						{
+							ID:        "span-2-hook-post",
+							Name:      "post-call-hook",
+							Type:      "core",
+							StartTime: now + 405,
+							EndTime:   now + 445,
+							Status:    "success",
+							Input: map[string]any{
+								"raw_result": "...",
+							},
+							Output: map[string]any{
+								"parsed_result": "...",
 							},
 						},
 					},
