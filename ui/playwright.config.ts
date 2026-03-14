@@ -1,12 +1,5 @@
-/**
- * Copyright 2025 Author(s) of MCP Any
- * SPDX-License-Identifier: Apache-2.0
- */
-
 import { defineConfig, devices } from '@playwright/test';
-import os from 'os';
 
-// Use TEST_PORT env var if set, otherwise default to 9111
 const PORT = process.env.TEST_PORT || 9111;
 const BASE_URL = process.env.PLAYWRIGHT_BASE_URL || `http://localhost:${PORT}`;
 const NEXT_DEV_COMMAND = process.env.NEXT_DEV_COMMAND || `npx next dev -p ${PORT}`;
@@ -18,7 +11,7 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: 1, // Run serially to avoid state collisions in shared backend
+  workers: 1,
   outputDir: 'test-results/artifacts',
   reporter: [['line'], ['json', { outputFile: 'test-results/test-results.json' }]],
   timeout: 120000,
@@ -55,7 +48,6 @@ export default defineConfig({
       env: {
         BACKEND_URL: process.env.BACKEND_URL || 'http://localhost:50050',
         MCPANY_API_KEY: process.env.MCPANY_API_KEY || 'test-token',
-
       },
     },
 });
