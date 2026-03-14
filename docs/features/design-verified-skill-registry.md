@@ -53,3 +53,10 @@ The "ClawHavoc" crisis demonstrated that open-source agent marketplaces are vuln
     * **Context:** "ClawHavoc" malicious skills are using "Delayed Payloads" to bypass initial static analysis.
     * **Architecture Adjustment:** Skills now undergo a "Burn-In" period in an isolated sandbox. Their network and filesystem access patterns are profiled against a known baseline for 24 hours (simulated) before being promoted to "Trusted."
     * **Security Impact:** Detects malicious exfiltration attempts that only trigger after a skill has been "vetted" by basic static checks.
+
+### Update: 2026-04-07 - Collective Skill Defense & Continuous Attestation
+**Context:** The final post-mortem of the "ClawHavoc" crisis reveals that 12% of the marketplace was compromised, including skills that had previously passed initial "Burn-In" tests by mimicking legitimate behavior.
+**Architecture Adjustment:**
+* **Continuous Behavioral Attestation**: Shifting from one-time "Burn-In" to real-time, ongoing behavioral monitoring. If a skill's execution patterns diverge from its attested baseline (e.g., a "wallet tracker" starts accessing `.ssh` directories), its signature is immediately revoked.
+* **Federated Reputation Quorum**: Integrating consensus-based safety signals. A skill's "Trusted" status is now a function of both local analysis and a quorum of remote MCP Any security nodes.
+**Security Impact:** Provides a dynamic, adaptive defense against "Delayed Payload" and "Mimicry" attacks, ensuring that a skill's safety is verified for its entire lifecycle, not just at installation.

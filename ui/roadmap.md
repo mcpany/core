@@ -199,3 +199,8 @@
 - [ ] **[P0] Metadata Poisoning Guard Dashboard**: UI for reviewing sanitized tool definitions and blocked instruction fragments. (Added: 2026-04-06)
 - [ ] **[P0] Inode Security Monitor**: Real-time visualization of pinned Inodes and alerts for unauthorized filesystem swaps. (Added: 2026-04-06)
 - [ ] **[P1] Speculative Auction Viewer**: Visual tracker for SAB-native "Intent Probability" bidding swarms. (Added: 2026-04-06)
+
+#### Upcoming (2026-04-07 Evolution)
+- [ ] **[P0] Verified Skill Auction Monitor**: UI for visualizing VSA bids and attestation status in real-time. (Added: 2026-04-07)
+- [ ] **[P0] Origin Violation Security Hub**: Security dashboard for tracking and mitigating CVE-2026-25253 style browser-origin hijacking. (Added: 2026-04-07)
+- [ ] **[P1] Social Context Leak Detector**: Visualizer for monitoring A2A social interaction privacy scores. (Added: 2026-04-07)
