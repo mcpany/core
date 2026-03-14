@@ -29,24 +29,14 @@ test --test_size_filters=-enormous
 
 # Enable sandboxing for hermeticity
 build --spawn_strategy=sandboxed,local
+test --spawn_strategy=sandboxed,local
 
 build --incompatible_strict_action_env
+test --incompatible_strict_action_env
 build --announce_rc
 
-# Use all available CPUs
-# Pass through critical environment variables
-test --test_env=GEMINI_API_KEY
-test --test_env=MCP_BUNDLE_DIR
-test --test_env=CI
-test --test_env=HOME
-test --test_env=MCPANY_DEBUG
-test --test_env=MCPANY_DANGEROUS_ALLOW_LOCAL_IPS
-test --test_env=PATH
-
-# Also for actions if needed
-build --action_env=GEMINI_API_KEY
-build --action_env=MCP_BUNDLE_DIR
-build --action_env=CI
+# Hermetic temp directory: each sandboxed test gets its own private /tmp
+test --sandbox_hermetic_tmp
 
 common:nativelink --remote_cache=grpcs://nativelink-gprc.cubectl.com
 # common:nativelink --remote_executor=grpcs://nativelink.cubectl.com

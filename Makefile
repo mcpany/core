@@ -1,5 +1,5 @@
 # Shim Makefile to forward commands to server/Makefile and ui/Makefile
-.PHONY: all test lint build run clean gen gen-go-proto gen-gateway-proto gen-protoset gen-ts-proto prepare-proto clean-protos clean-ts-protos clean-gateway-protos
+.PHONY: all test build run clean gen gen-go-proto gen-gateway-proto gen-protoset gen-ts-proto prepare-proto clean-protos clean-ts-protos clean-gateway-protos
 
 # Variables
 GO = go
@@ -42,11 +42,8 @@ all: gen
 prepare:
 	$(MAKE) -C server prepare
 
-test: gen
-	$(MAKE) test-proto
-	$(MAKE) -C server test
-	$(MAKE) -C ui test
-	$(MAKE) -C k8s test
+test:
+	bazelisk test //...
 
 docker-build-all:
 	$(MAKE) -C server docker-build-server docker-build-dev docker-build-http-echo
@@ -64,9 +61,6 @@ k8s-e2e:
 	@export PATH=$(TOOL_INSTALL_DIR):$$PATH; $(MAKE) -C k8s test
 
 k8s-test: k8s-e2e
-
-lint:
-	$(MAKE) -C server lint
 
 # Run runs server
 run:

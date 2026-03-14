@@ -141,7 +141,6 @@ This project uses a Makefile to simplify common development tasks. Run `make` or
 - `make run`: Builds and runs the main server application locally.
 - `make build`: Builds the main server application binary.
 - `make test`: Runs all unit and integration tests.
-- `make lint`: Runs all linters and formatters using pre-commit.
 - `make gen`: Generates Go code from protobuf files.
 - `make build-docker`: Builds the Docker image for the server.
 - `make clean`: Cleans up build artifacts and generated files.

@@ -491,13 +491,6 @@ e2e: e2e-local
 
 
 
-lint:
-ifdef SHOULD_PROXY_TO_DOCKER
-	@$(DOCKER_PROXY_CMD) lint
-else
-	@$(BAZELISK) run //:lint
-endif
-
 clean-pre-commit:
 ifdef SHOULD_PROXY_TO_DOCKER
 	@$(DOCKER_PROXY_CMD) clean-pre-commit
@@ -783,7 +776,6 @@ help:
 	@echo "  make prepare        - Install development tools"
 	@echo "  make build          - Build server binary"
 	@echo "  make test           - Run tests"
-	@echo "  make lint           - Run linters"
 	@echo "  make gen            - Generate protobuf files"
 	@echo "  make gen-go-proto   - Generate gateway stubs and descriptor set"
 	@echo "  make gen-gateway-proto - Generate gRPC gateway Go stubs"
