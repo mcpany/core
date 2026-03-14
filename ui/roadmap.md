@@ -209,3 +209,8 @@
 - [ ] **[P0] Verified Skill Auction Monitor**: UI for visualizing VSA bids and attestation status in real-time. (Added: 2026-04-07)
 - [ ] **[P0] Origin Violation Security Hub**: Security dashboard for tracking and mitigating CVE-2026-25253 style browser-origin hijacking. (Added: 2026-04-07)
 - [ ] **[P1] Social Context Leak Detector**: Visualizer for monitoring A2A social interaction privacy scores. (Added: 2026-04-07)
+
+#### Upcoming (2026-04-09 Evolution)
+- [ ] **[P0] Environment Manifest Audit Viewer**: UI for reviewing signed environment snapshots and Non-Existence Proofs. (Added: 2026-04-09)
+- [ ] **[P0] Origin Pinning Workspace**: Interface for users to approve and cryptographically bind agent sessions to specific origins. (Added: 2026-04-09)
+- [ ] **[P1] CoT Anomaly Dashboard**: Real-time visualization of agent reasoning streams with adversarial pattern highlighting. (Added: 2026-04-09)

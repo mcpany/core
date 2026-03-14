@@ -509,3 +509,16 @@
 
 ### Deprecations / Monitoring
 - **Implicitly Trusted Tool Schemas**: Monitoring for total deprecation. All structural metadata must eventually pass through the Sanitizer.
+
+---
+
+## Evolution: [2026-04-09] Updates
+
+### Proposed Additions
+- **Immutable Environment Snapshotter**: (P0) Core security service that generates and locks a "Full-State Manifest" (including Non-Existence Proofs) before agent execution.
+- **CoT Integrity Shield**: (P1) Reasoning-aware middleware that detects and flags adversarial Chain-of-Thought manipulation attempts by tools or subagents.
+- **Origin-Locked WebSocket Manager**: (P0) Hardened transport layer that binds WebSocket sessions to cryptographically verified local origins.
+
+### Priority Shifts
+- **Pre-Flight Sandbox Validator**: (Re-affirmed P0) Promoted to a mandatory execution gate for all agentic sessions.
+- **Cross-Framework Skill Reputation Engine**: (Re-affirmed P1) Expanded to support the UAB v1.4 Reputation Consensus protocol.
