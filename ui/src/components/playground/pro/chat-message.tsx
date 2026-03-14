@@ -211,8 +211,8 @@ export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
     }
 
     if (message.type === "tool-result") {
-        const prevUnwrapped = message.previousResult !== undefined ? deepParseJson(unwrapMcpResult(message.previousResult)) : undefined;
-        const currUnwrapped = deepParseJson(unwrapMcpResult(message.toolResult));
+        const prevUnwrapped = message.previousResult !== undefined ? unwrapMcpResult(deepParseJson(message.previousResult)) : undefined;
+        const currUnwrapped = unwrapMcpResult(deepParseJson(message.toolResult));
 
         const hasDiff = message.previousResult !== undefined &&
                         JSON.stringify(prevUnwrapped) !== JSON.stringify(currUnwrapped);

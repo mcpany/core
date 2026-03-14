@@ -46,14 +46,18 @@ export function unwrapMcpResult(result: any): any {
 
         if (isMcp) {
             // Only try to unwrap further if there's exactly one text block and it's JSON
-            if (content.length === 1 && content[0].type === 'text' && typeof content[0].text === 'string') {
-                try {
-                    const parsed = JSON.parse(content[0].text);
-                    if (typeof parsed === 'object' && parsed !== null) {
-                        return parsed;
+            if (content.length === 1 && content[0].type === 'text') {
+                if (typeof content[0].text === 'string') {
+                    try {
+                        const parsed = JSON.parse(content[0].text);
+                        if (typeof parsed === 'object' && parsed !== null) {
+                            return parsed;
+                        }
+                    } catch (e) {
+                        // Not JSON inside text
                     }
-                } catch (e) {
-                    // Not JSON inside text
+                } else if (typeof content[0].text === 'object' && content[0].text !== null) {
+                    return content[0].text;
                 }
             }
             // For diffs, it's better to return the full array, but for SmartResultRenderer
