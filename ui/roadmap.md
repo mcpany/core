@@ -230,3 +230,8 @@
 - [ ] **[P0] Verified Skill Auction Monitor**: UI for visualizing VSA bids and attestation status in real-time. (Added: 2026-04-07)
 - [ ] **[P0] Origin Violation Security Hub**: Security dashboard for tracking and mitigating CVE-2026-25253 style browser-origin hijacking. (Added: 2026-04-07)
 - [ ] **[P1] Social Context Leak Detector**: Visualizer for monitoring A2A social interaction privacy scores. (Added: 2026-04-07)
+
+#### Upcoming (2026-04-13 Evolution)
+- [ ] **[P0] A2A Governance & Security Center**: UI for managing Linux Foundation compliant A2A security manifests and task brokering policies. (Added: 2026-04-13)
+- [ ] **[P1] CLAW-10 Compliance Dashboard**: Interactive matrix for visualizing system compliance with the CLAW-10 Enterprise Evaluation Matrix. (Added: 2026-04-13)
+- [ ] **[P0] Deterministic Boot Manifest Reviewer**: UI for reviewing and signing "Environment Integrity Manifests" during the deterministic boot sequence. (Added: 2026-04-13)

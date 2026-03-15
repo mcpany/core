@@ -380,3 +380,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Verified Skill Auction (VSA)**: Integration of DCA Auction Broker with real-time skill attestation to mitigate ClawHavoc-style attacks. (Added: 2026-04-07)
 *   **[P0] Mandatory Origin Validation (SOP)**: Enforcement of browser-origin headers for all local listeners to patch CVE-2026-25253. (Added: 2026-04-07)
 *   **[P1] Social-Agent Privacy Sandbox**: Middleware to prevent context reconstruction in shared multi-agent social spaces. (Added: 2026-04-07)
+
+#### Upcoming (2026-04-13 Evolution)
+*   **[P0] A2A Open-Governance Integration**: Implementation of the finalized Linux Foundation A2A security manifest and task brokering model. (Added: 2026-04-13)
+*   **[P1] CLAW-10 Compliance Mapper**: Automation layer for mapping system state to the CLAW-10 Enterprise Evaluation Matrix. (Added: 2026-04-13)
+*   **[P0] Deterministic Boot Manifest Provider**: Core service for generating and signing environment integrity manifests. (Added: 2026-04-13)

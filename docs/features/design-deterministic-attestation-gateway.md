@@ -47,3 +47,10 @@ The persistent threat from project-local configuration vulnerabilities (CVE-2025
 ## 7. Evolutionary Changelog
 * **2026-04-11:** Initial Document Creation.
 * **2026-04-12:** Updated to address CVE-2026-25725. Added specific focus on "Non-Existence Proofs" for missing configuration files to prevent "Empty File" injection escapes. Introduced the "Settings Injection Guard" as a recommended integration point for validating project-local settings against attested baselines.
+
+### Update: 2026-04-13 - Introducing Environment Integrity Manifests
+**Context:** The shift toward "Deterministic Boot" requires an immutable record of the project state before agent execution.
+**Architecture Adjustment:**
+* Section 4 now includes the "Environment Integrity Manifest" as a signed artifact of the attestation process.
+* The gateway will now distribute these manifests to agent runtimes as a mandatory boot prerequisite.
+**Security Impact:** Prevents runtime environment modification and ensures that the agent initializes in a cryptographically verified state.
