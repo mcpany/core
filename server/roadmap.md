@@ -408,6 +408,16 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Resident Integrity Monitor (RIM)**: Service for continuous, hardware-bound sandbox attestation to detect post-boot environment drift. (Added: 2026-04-16 - Promoted to P0 on 2026-04-17)
 *   **[P0] Self-Healing Consensus Hub**: Autoritative "Truth Broker" for swarm self-correction, leveraging MAQ for state reconciliation. (Added: 2026-04-16)
 
+#### Upcoming (2026-04-21 Evolution)
+*   **[P0] A2UI Native Gateway**: Secure bridge for the A2UI protocol to surface sandboxed interactive agent fragments. (Added: 2026-04-21)
+*   **[P0] Deterministic Absence Proof (DAP) Provider**: signed "Non-Existence Manifest" service to prevent config-injection (CVE-2026-25725). (Added: 2026-04-21)
+*   **[P1] WebSocket Context Compactor**: Native context-compaction middleware for WebSocket-first streaming (OpenClaw v2026.3.1 compliance). (Added: 2026-04-21)
+
+#### Upcoming (2026-04-20 Evolution)
+*   **[P0] ASH Consensus Broker**: Decentralized coordination service for swarm-wide state re-alignment and voting. (Added: 2026-04-20)
+*   **[P0] A2A Safety Proof Validator**: Mandatory validation layer for task proposals to prevent inter-agent coercion. (Added: 2026-04-20)
+*   **[P0] Origin-Locked Behavioral Attestation**: Multi-factor security middleware binding tools to verified origins and behavior profiles. (Added: 2026-04-20)
+
 #### Upcoming (2026-04-19 Evolution)
 *   **[P0] Distributed Trust Lease Broker**: Implementation of UACO v2.5 LFTA for sub-millisecond trust validation in deep swarms. (Added: 2026-04-19)
 *   **[P0] Deep Packet Enforcement (DPPE)**: L4 monitoring (DNS/ICMP) for the Validating Proxy to neutralize Binary Smuggling exfiltration. (Added: 2026-04-19)
@@ -418,3 +428,13 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Attested Boot Manifest Provider**: Core service for binding environment integrity to local TPM/Secure Enclave signatures. (Added: 2026-04-15)
 *   **[P0] VTD Autonomous Delegation Engine**: Implementation of automated, proof-based A2A task handoffs for low-risk operations. (Added: 2026-04-15)
 *   **[P1] Standardized Context Sidecar Interface**: Universal "Context Bus" for bridging framework-specific state strategies (OpenClaw, etc.). (Added: 2026-04-15)
+
+#### Upcoming (2026-04-23 Evolution)
+*   **[P0] OpenClaw ContextEngine Adapter**: Implementation of lifecycle hooks for external context management (Added: 2026-04-23).
+*   **[P0] Absence Proof (DAP) Generator**: Security extension for Pre-Flight Validator to sign missing-file proofs (Added: 2026-04-23).
+*   **[P0] A2UI Secure Surface Host**: Gateway infrastructure for sandboxed agent-generated UI fragments (Added: 2026-04-23).
+
+#### Upcoming (2026-04-22 Evolution)
+*   **[P0] A2A Replay Guard Middleware**: Implementation of monotonic nonces and session-bound validation for the A2A Messaging Hub. (Added: 2026-04-22)
+*   **[P0] Adaptive Context Compaction Engine**: WebSocket-native compaction supporting Gemini-style reasoning effort headers. (Added: 2026-04-22)
+*   **[P1] Cognitive Fragment Reconciler**: Background service for synchronizing encrypted monologues across agent sessions. (Added: 2026-04-22)

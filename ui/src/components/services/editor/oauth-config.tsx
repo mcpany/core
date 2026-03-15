@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-"use client";
+
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

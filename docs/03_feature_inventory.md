@@ -8,6 +8,56 @@
 
 ---
 
+## Evolution: [2026-04-23] Updates
+
+### Proposed Additions
+- **OpenClaw ContextEngine Lifecycle Adapter**: (P0) A native middleware that implements OpenClaw's matured ContextEngine hooks, allowing MCP Any to act as the authoritative provider for context compression, summarization, and state persistence.
+- **Absence Proof (DAP) Generator**: (P0) Extension for the Pre-Flight Sandbox Validator that generates signed manifests proving the non-existence of restricted configuration files, neutralizing CVE-2026-25725.
+- **A2UI Secure Component Bridge**: (P0) A hardened rendering interface for declarative A2UI manifests, providing bi-directional, origin-locked state synchronization between agents and the user interface.
+
+### Priority Shifts
+- **RL Telemetry Provider**: (Promoted to P0) Now essential for providing high-frequency feedback tokens to OpenClaw-RL asynchronous training loops.
+- **Deterministic Attestation Gateway**: (Re-affirmed P0) Expanded to include DAP as a mandatory boot requirement for all compliant agent environments.
+
+---
+
+## Evolution: [2026-04-22] Updates
+
+### Proposed Additions
+- **A2A Replay Guard**: (P0) Security middleware for the A2A Messaging Hub that enforces monotonic sequence nonces and session-bound validation to prevent task-proposal replay attacks.
+- **Cognitive Fragment Reconciler**: (P1) Optimization service that manages the synchronization and reconciliation of "Encrypted Monologues" between specialized subagents and the A2UI Gateway.
+- **Adaptive Context Compaction Engine**: (P0) Upgrade to the WebSocket Context Compactor that supports Gemini-style `x-gemini-reasoning-effort` headers for dynamic compression ratios.
+
+### Priority Shifts
+- **Agent-Aware Blackboard Isolation**: (Re-affirmed P0) Expanded to support "Cognitive Sovereignty" via hardware-bound encryption for subagent monologues.
+- **A2UI Native Gateway**: (Re-affirmed P0) Now designated as the authoritative decryption point for "Encrypted Monologues" during user reviews.
+
+---
+
+## Evolution: [2026-04-21] Updates
+
+### Proposed Additions
+- **A2UI Native Gateway**: (P0) Secure bridge for the Agent-to-User Interface protocol, allowing agents to surface sandboxed, interactive UI fragments.
+- **Deterministic Absence Proof (DAP) Provider**: (P0) Security service that generates signed proofs of non-existence for restricted project-local files to prevent malicious hook injection.
+- **WebSocket Context Compactor**: (P1) Optimization middleware for WebSocket-first streaming that performs real-time context compaction for adaptive reasoning agents.
+
+### Priority Shifts
+- **ASH Consensus Broker**: (Re-affirmed P0) Now integrates with the A2UI Native Gateway for interactive user-in-the-loop consensus voting.
+- **Deterministic Attestation Gateway**: (Re-affirmed P0) Expanded to include DAP as a mandatory boot requirement.
+
+## Evolution: [2026-04-20] Updates
+
+### Proposed Additions
+- **ASH Consensus Broker**: (P0) Coordination service facilitating swarm-wide voting on reasoning paths and state re-alignment for Autonomous Self-Healing.
+- **A2A Safety Proof Validator**: (P0) Mandatory validation layer for the A2A Messaging Hub that evaluates the "Safety Proof" of task proposals before delegation.
+- **Origin-Locked Behavioral Attestation**: (P0) Security middleware that binds tool capabilities to a multi-factor token comprising cryptographically verified origin and Ghost Shell behavioral profile.
+
+### Priority Shifts
+- **Blackboard Versioning Hub**: (Re-affirmed P0) Now designated as the authoritative state provider for ASH Consensus voting.
+- **Distributed Trust Lease Broker**: (Re-affirmed P0) Essential for sub-millisecond validation of A2A Safety Proofs in deep swarms.
+
+---
+
 ## Evolution: [2026-04-19] Updates
 
 ### Proposed Additions

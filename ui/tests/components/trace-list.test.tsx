@@ -6,7 +6,7 @@
 import { expect, test, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { TraceList } from '@/components/traces/trace-list';
-import { Trace } from '@/app/api/traces/route';
+import type { Trace } from "@/types/trace";
 
 // Mock react-virtuoso for tests as it doesn't render well in jsdom without layout
 vi.mock('react-virtuoso', () => ({

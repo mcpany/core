@@ -3,12 +3,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-"use client";
+
 
 import { useEffect, useState } from "react";
 import { TraceList } from "@/components/traces/trace-list";
 import { TraceDetail } from "@/components/traces/trace-detail";
-import { Trace } from "@/app/api/traces/route";
+import type { Trace } from "@/types/trace";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { Loader2 } from "lucide-react";
 
@@ -26,7 +26,7 @@ export default function TracesPage() {
   // Separate load function for reuse
   const loadTraces = async (isFirstLoad = false) => {
       try {
-        const res = await fetch('/api/traces');
+        const res = await fetch('/api/v1/traces');
         const data = await res.json();
 
         // If live, prepend new traces or merge?

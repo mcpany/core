@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-"use client";
+
 
 import { InspectorTable } from "@/components/inspector/inspector-table";
 import { Button } from "@/components/ui/button";

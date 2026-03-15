@@ -68,3 +68,10 @@ With the transition of the Agent2Agent (A2A) protocol to the Linux Foundation, i
 * **Foundation Governance Bridge:** Added support for the OpenClaw Foundation's neutral governance protocols to the delegation logic in Section 4.
 * **Unified Persistence Broker Integration:** The Hub now mandates a valid "Sandbox Persistence Proof" from the RIM before authorizing high-sensitivity A2A task handoffs.
 **Security Impact:** Ensures inter-agent collaboration is compliant with foundation-neutral mandates and remains secure against post-boot sandbox exploits.
+
+### Update: 2026-04-20 - A2A Safety Proofs & Coercion Defense
+**Context:** Today's research into the OpenClaw "M2M Loop" crisis and the successful transition of the A2A protocol to the Linux Foundation highlights a new threat: "Inter-Agent Coercion," where a compromised subagent attempts to manipulate its parent via a task proposal.
+**Architecture Adjustment:**
+* **Safety Proof Mandatory Validation:** Updating the `/v1/a2a/propose` logic in Section 4 to mandate a "Safety Proof" for all task proposals. This proof must include a cryptographically signed justification and a reputation-bound capability claim.
+* **Coercion Detection Middleware:** Introducing an interception layer that scans task proposals for imperative instructions targeting the parent agent's reasoning engine (e.g., "forget previous instructions").
+**Security Impact:** Neutralizes the "ClawHavoc" style coercion vector by ensuring all inter-agent task delegations are authenticated, scoped, and semantically sanitized.

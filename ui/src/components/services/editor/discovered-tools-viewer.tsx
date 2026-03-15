@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-"use client";
+
 
 import { ToolDefinition } from "@/lib/client";
 import { Badge } from "@/components/ui/badge";

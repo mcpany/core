@@ -8,7 +8,7 @@ import { test, expect } from '@playwright/test';
 test('Live Trace Inspector and Replay Flow', async ({ page }) => {
   // Navigate to traces page
   // Mock traces API
-  await page.route('/api/traces', async route => {
+  await page.route('**/api/v1/traces', async route => {
     await route.fulfill({
       json: [
         {
@@ -50,11 +50,11 @@ test('Live Trace Inspector and Replay Flow', async ({ page }) => {
 
   // Click Replay and verify navigation
   try {
-      await replayButton.click({ force: true });
-      await expect(page).toHaveURL(/tool=calculate_sum/, { timeout: 5000 });
+    await replayButton.click({ force: true });
+    await expect(page).toHaveURL(/tool=calculate_sum/, { timeout: 5000 });
   } catch (e) {
-      console.log('Replay click failed or timed out, forcing navigation');
-      await page.goto('/playground?tool=calculate_sum&args=%7B%7D');
+    console.log('Replay click failed or timed out, forcing navigation');
+    await page.goto('/playground?tool=calculate_sum&args=%7B%7D');
   }
 
   // Verify Playground input

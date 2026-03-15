@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-"use client";
+
 
 import { useState, useMemo } from "react";
 import * as yaml from "js-yaml";

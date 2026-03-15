@@ -3,9 +3,16 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { render, screen, fireEvent } from '@testing-library/react';
+import React from 'react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { JsonView } from './json-view';
+
+// Avoid lazy-loading issues in jsdom – replace the real syntax highlighter with
+// a lightweight synchronous stub so tests don't hit Suspense boundaries.
+vi.mock('./optimized-syntax-highlighter', () => ({
+  default: ({ children }: { children: React.ReactNode }) => <pre data-testid="syntax-highlighter">{children}</pre>,
+}));
 
 // Mock clipboard
 const mockWriteText = vi.fn().mockResolvedValue(undefined);
@@ -61,9 +68,12 @@ describe('JsonView', () => {
     expect(screen.getByText('Alice')).toBeInTheDocument();
     expect(screen.getByText('Bob')).toBeInTheDocument();
 
-    // Switch to JSON (Raw)
+    // Switch to JSON (Raw) - use act to handle the Suspense boundary of the
+    // lazily-loaded SyntaxHighlighter component
     const jsonBtn = screen.getByText('Raw');
-    fireEvent.click(jsonBtn);
+    await act(async () => {
+      fireEvent.click(jsonBtn);
+    });
     // ⚡ BOLT: Wait for lazy-loaded SyntaxHighlighter
     expect(await screen.findByText(/"Alice"/)).toBeInTheDocument();
   });

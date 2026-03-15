@@ -2,9 +2,6 @@
  * Copyright 2025 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
  */
-
-"use client"
-
 import * as React from "react"
 import {
   Pause,
@@ -18,7 +15,7 @@ import {
   Monitor,
 } from "lucide-react"
 
-import { useSearchParams } from "next/navigation"
+import { useSearchParams } from 'react-router-dom'
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -64,7 +61,7 @@ export function LogStream({
     isPausedRef.current = isPaused
   }, [isPaused])
 
-  const searchParams = useSearchParams()
+  const [searchParams] = useSearchParams()
   // Use prop source if provided, otherwise fallback to URL param or "ALL"
   const initialSource = source || searchParams.get("source") || "ALL"
 

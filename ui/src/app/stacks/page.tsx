@@ -3,10 +3,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-"use client";
+
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
+import { Link } from 'react-router-dom';
 import { Layers, Cuboid, Plus, RefreshCw, Trash2 } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -76,7 +76,7 @@ export default function StacksPage() {
                 <RefreshCw className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
                 Refresh
             </Button>
-            <Link href="/stacks/new">
+            <Link to="/stacks/new">
                 <Button>
                     <Plus className="mr-2 h-4 w-4" /> Create Stack
                 </Button>
@@ -89,14 +89,14 @@ export default function StacksPage() {
             <Layers className="h-10 w-10 text-muted-foreground mb-4 opacity-50" />
             <h3 className="text-lg font-medium">No stacks found</h3>
             <p className="text-sm text-muted-foreground mb-4">Create a stack to manage multiple services together.</p>
-            <Link href="/stacks/new">
+            <Link to="/stacks/new">
                 <Button>Create Stack</Button>
             </Link>
         </div>
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {stacks.map((stack) => (
-            <Link key={stack.name} href={`/stacks/${stack.name}`}>
+            <Link key={stack.name} to={`/stacks/${stack.name}`}>
                 <Card className="hover:shadow-md transition-all cursor-pointer group border-transparent shadow-sm bg-card hover:bg-muted/50 h-full flex flex-col">
                 <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
                     <CardTitle className="text-sm font-medium text-muted-foreground">

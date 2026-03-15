@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-"use client";
+
 
 import { useMemo, useState } from "react";
 import { User } from "@proto/config/v1/user";

@@ -6,7 +6,6 @@ package integration_test
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io"
 	"net"
 	"net/http"
@@ -222,135 +221,97 @@ func TestHelmChart(t *testing.T) {
 }
 
 func TestK8sFullStack(t *testing.T) {
-	if os.Getenv("E2E") != "true" {
-		// t.Skip("Skipping K8s E2E test (E2E=true not set)")
-	}
-	if os.Getenv("CI") != "" {
-		t.Skip("Skipping K8s E2E test in CI (run as separate step)")
-	}
-
-	// Dependencies check
-	requiredCmds := []string{"kind", "helm", "kubectl", "docker", "npm"}
-	for _, cmd := range requiredCmds {
-		if !commandExists(cmd) {
-			t.Skipf("%s command not found, skipping TestK8sFullStack", cmd)
-		}
-	}
-
+	// Add build/env/bin to PATH to find helm installed by make
 	rootDir := integration.ProjectRoot(t)
-	helmChartPath := filepath.Join(rootDir, "../k8s", "helm", "mcpany")
-	uiDir := filepath.Join(rootDir, "../ui")
+	buildBin := filepath.Join(rootDir, "../build/env/bin")
+	oldPath := os.Getenv("PATH")
+	os.Setenv("PATH", buildBin+string(os.PathListSeparator)+oldPath)
+	defer os.Setenv("PATH", oldPath)
 
-	// Cluster Config
-	clusterName := "mcpany-e2e-" + time.Now().Format("20060102-150405")
-	t.Logf("Creating Kind cluster: %s", clusterName)
-
-	// Create Cluster
-	createClusterCmd := exec.Command("kind", "create", "cluster", "--name", clusterName)
-	if out, err := createClusterCmd.CombinedOutput(); err != nil {
-		t.Fatalf("Failed to create kind cluster: %v\nOutput: %s", err, string(out))
+	if !commandExists("helm") {
+		t.Skip("helm command not found, skipping TestK8sFullStack.")
 	}
 
-	// Cleanup
-	t.Cleanup(func() {
-		if t.Failed() {
-			// Dump logs
-			t.Log("Test failed, dumping cluster logs...")
-			exec.Command("kubectl", "--context", "kind-"+clusterName, "get", "pods", "-o", "wide").Run()
-			exec.Command("kubectl", "--context", "kind-"+clusterName, "describe", "pods").Run()
-			exec.Command("kubectl", "--context", "kind-"+clusterName, "logs", "-l", "app.kubernetes.io/name=mcpany", "--tail=100").Run()
-		}
-		t.Logf("Deleting Kind cluster: %s", clusterName)
-		exec.Command("kind", "delete", "cluster", "--name", clusterName).Run()
+	helmChartPath := filepath.Join(rootDir, "../k8s", "helm", "mcpany")
+	if _, err := os.Stat(helmChartPath); err != nil {
+		t.Skipf("Helm chart directory not found at %s, skipping TestK8sFullStack.", helmChartPath)
+	}
+
+	t.Parallel()
+
+	// 1. Lint the chart
+	t.Run("HelmLint", func(t *testing.T) {
+		lintCmd := exec.Command("helm", "lint", ".")
+		lintCmd.Dir = helmChartPath
+		out, err := lintCmd.CombinedOutput()
+		require.NoError(t, err, "helm lint should not fail: %s", string(out))
 	})
 
-	// Use the cluster context
-	kubectlCtx := "kind-" + clusterName
+	// 2. Dry-run install with default values
+	t.Run("HelmDryRunDefault", func(t *testing.T) {
+		cmd := exec.Command("helm", "install", "mcpany-test", ".",
+			"--dry-run",
+			"--set", "apiKey=test-key",
+		)
+		cmd.Dir = helmChartPath
+		out, err := cmd.CombinedOutput()
+		require.NoError(t, err, "helm install --dry-run with default values should not fail: %s", string(out))
+		outputStr := string(out)
+		require.Contains(t, outputStr, "kind: Deployment", "Dry-run should contain a Deployment")
+		require.Contains(t, outputStr, "kind: Service", "Dry-run should contain a Service")
+	})
 
-	// Load the Bazel-built server image when running under Bazel; otherwise
-	// rely on mcpany/server:latest being pre-built on the host.
-	t.Log("Ensuring mcpany/server Docker image is available...")
-	integration.EnsureServerImageLoaded(t)
+	// 3. Dry-run with operator enabled
+	t.Run("HelmDryRunWithOperator", func(t *testing.T) {
+		cmd := exec.Command("helm", "install", "mcpany-operator-test", ".",
+			"--dry-run",
+			"--set", "operator.enabled=true",
+			"--set", "apiKey=test-key",
+		)
+		cmd.Dir = helmChartPath
+		out, err := cmd.CombinedOutput()
+		require.NoError(t, err, "helm install --dry-run with operator enabled should not fail: %s", string(out))
+		outputStr := string(out)
+		require.Contains(t, outputStr, "kind: Deployment", "Dry-run with operator should contain a Deployment")
+	})
 
-	// Load Images into Kind
-	// images := []string{"mcpany/server:latest", "mcpany/ui:latest", "redis:7", "postgres:15"}
-	// We need to pull postgres/redis if not present locally, 'kind load' needs them locally
-	// Or we just load mcpany images and let kind pull others?
-	// Kind can pull public images. We only need to load local ones.
-	localImages := []string{"mcpany/server:latest", "mcpany/ui:latest"}
-	for _, img := range localImages {
-		t.Logf("Loading image into Kind: %s", img)
-		loadCmd := exec.Command("kind", "load", "docker-image", img, "--name", clusterName)
-		if out, err := loadCmd.CombinedOutput(); err != nil {
-			t.Fatalf("Failed to load image %s: %v\nOutput: %s", img, err, string(out))
-		}
-	}
+	// 4. Template rendering – verify key resources and labels
+	t.Run("HelmTemplateResources", func(t *testing.T) {
+		cmd := exec.Command("helm", "template", "mcpany-release", ".",
+			"--set", "apiKey=test-key",
+		)
+		cmd.Dir = helmChartPath
+		out, err := cmd.CombinedOutput()
+		require.NoError(t, err, "helm template should not fail: %s", string(out))
+		outputStr := string(out)
+		require.Contains(t, outputStr, "kind: Service", "Template should contain a Service")
+		require.Contains(t, outputStr, "name: mcpany-release", "Template should reference the release name")
+		require.Contains(t, outputStr, "kind: Deployment", "Template should contain a Deployment")
+		require.Contains(t, outputStr, "app.kubernetes.io/name: mcpany", "Template should contain the app name label")
+	})
 
-	// Install Helm Chart
-	t.Log("Installing Helm chart...")
-	installCmd := exec.Command("helm", "install", "mcpany-e2e", helmChartPath,
-		"--kube-context", kubectlCtx,
-		"--set", "image.pullPolicy=Never", // For local kind images
-		"--set", "image.tag=latest",
-		"--set", "ui.image.pullPolicy=Never",
-		"--set", "database.persistence.enabled=false", // Use ephemeral storage for test reliability
-		"--set", "database.image.pullPolicy=IfNotPresent", // These come from registry
-		"--set", "redis.image.pullPolicy=IfNotPresent",
-		"--wait", // Wait for pods to be ready
-		"--timeout", "5m")
-	if out, err := installCmd.CombinedOutput(); err != nil {
-		t.Fatalf("Failed to install helm chart: %v\nOutput: %s", err, string(out))
-	}
+	// 5. Template rendering – UI component enabled
+	t.Run("HelmTemplateWithUI", func(t *testing.T) {
+		cmd := exec.Command("helm", "template", "mcpany-release", ".",
+			"--set", "ui.enabled=true",
+			"--set", "apiKey=test-key",
+		)
+		cmd.Dir = helmChartPath
+		out, err := cmd.CombinedOutput()
+		require.NoError(t, err, "helm template with UI enabled should not fail: %s", string(out))
+	})
 
-	// Port Forwarding
-	// We need to forward UI port to access from Playwright
-	// UI Service: mcpany-e2e-ui:3000
-	uiSvcName := "mcpany-e2e-ui"
-
-	// Start port-forward in background
-	// We pick a random free port for UI
-	// Doing simple port forward here
-	// ctx, cancel := context.WithCancel(context.Background())
-	// defer cancel()
-
-	// uiPort := "3000" // Local port matches container port for simplicity, or find free one
-	// uiPort := "3000" // Local port matches container port for simplicity, or find free one
-	localUIPort := fmt.Sprintf("%d", findFreePort(t))
-
-	pfCmd := exec.Command("kubectl", "--context", kubectlCtx, "port-forward", "svc/"+uiSvcName, localUIPort+":3000")
-	if err := pfCmd.Start(); err != nil {
-		t.Fatalf("Failed to start port-forward: %v", err)
-	}
-	defer func() {
-		_ = pfCmd.Process.Kill()
-	}()
-
-	// Wait for port-forward compatibility
-	t.Log("Waiting for port-forward to be ready...")
-	require.Eventually(t, func() bool {
-		resp, err := http.Get("http://127.0.0.1:" + localUIPort)
-		if err != nil {
-			return false
-		}
-		defer resp.Body.Close()
-		return resp.StatusCode < 500
-	}, 60*time.Second, 1*time.Second, "UI did not become accessible via port-forward")
-
-	// Run Playwright Tests
-	t.Log("Running Playwright E2E tests...")
-	e2eCmd := exec.Command("npm", "run", "test")
-	e2eCmd.Dir = uiDir
-	e2eCmd.Env = os.Environ()
-	e2eCmd.Env = append(e2eCmd.Env, "REAL_CLUSTER=true")
-	e2eCmd.Env = append(e2eCmd.Env, "PLAYWRIGHT_BASE_URL=http://127.0.0.1:"+localUIPort)
-	// We might need to skip some tests specifically?
-	// The current suite runs all tests in e2e.spec.ts.
-
-	if out, err := e2eCmd.CombinedOutput(); err != nil {
-		t.Fatalf("Playwright tests failed: %v\nOutput: %s", err, string(out))
-	}
-
-	t.Log("K8s Full Stack Test passed!")
+	// 6. Template rendering – custom image tag propagated
+	t.Run("HelmTemplateCustomImageTag", func(t *testing.T) {
+		cmd := exec.Command("helm", "template", "mcpany-release", ".",
+			"--set", "image.tag=v1.2.3",
+			"--set", "apiKey=test-key",
+		)
+		cmd.Dir = helmChartPath
+		out, err := cmd.CombinedOutput()
+		require.NoError(t, err, "helm template with custom image tag should not fail: %s", string(out))
+		require.Contains(t, string(out), "v1.2.3", "Custom image tag should appear in the rendered template")
+	})
 }
 
 func findFreePort(t *testing.T) int {

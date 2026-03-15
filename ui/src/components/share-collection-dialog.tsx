@@ -2,9 +2,6 @@
  * Copyright 2026 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
  */
-
-"use client"
-
 import * as React from "react"
 import { Check, Copy, ExternalLink, Share2, AlertTriangle } from "lucide-react"
 import * as jsyaml from "js-yaml"
