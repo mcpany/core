@@ -257,6 +257,11 @@
 - [ ] **[P0] Resident Integrity Status Widget**: Real-time indicator for continuous sandbox attestation and hardware-bound health. (Added: 2026-04-16 - Promoted to P0 on 2026-04-17)
 - [ ] **[P0] Swarm Truth Explorer**: Authorization UI for swarm self-healing and mission state reconciliation. (Added: 2026-04-16)
 
+#### Upcoming (2026-04-20 Evolution)
+- [ ] **[P0] ASH Consensus Dashboard**: Real-time visualization of swarm-wide voting, quorum status, and state re-alignment events. (Added: 2026-04-20)
+- [ ] **[P0] A2A Safety Proof Inspector**: Forensic UI for reviewing cryptographically signed task justifications and reputation-bound claims. (Added: 2026-04-20)
+- [ ] **[P0] Behavioral Attestation Monitor**: Security dashboard for tracking tool capabilities against origin-locked behavioral profiles. (Added: 2026-04-20)
+
 #### Upcoming (2026-04-19 Evolution)
 - [ ] **[P0] Distributed Trust Lease Dashboard**: Real-time monitor of active LFTA tokens, lease expiration, and fast-path validation latency. (Added: 2026-04-19)
 - [ ] **[P0] L4 Traffic Security Heatmap**: Enhanced monitoring of DNS/ICMP packets from agents with real-time tunnel detection. (Added: 2026-04-19)
