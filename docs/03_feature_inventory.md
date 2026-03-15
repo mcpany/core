@@ -593,3 +593,16 @@
 ### Priority Shifts
 - **A2A Messaging Hub**: (Re-affirmed P0) Evolving to support the finalized Linux Foundation open governance model for inter-agent task brokering.
 - **Settings Injection Guard**: (Re-affirmed P0) Promoted as the primary defense against "Shadow Agent" configuration overrides identified in recent enterprise audits.
+
+---
+
+## Evolution: [2026-04-15] Updates
+
+### Proposed Additions
+- **Standardized Context Sidecar Interface**: (P1) A core API and "Context Bus" that allows MCP Any to host and bridge framework-specific context strategies (OpenClaw, etc.) across different agent frameworks.
+- **Hardware-Attested Boot Manifest Provider**: (P0) Advanced attestation service that binds project-local environment manifests to a TPM/Secure Enclave, ensuring configuration integrity.
+- **VTD Autonomous Delegation Engine**: (P0) Automation layer for the Delegation Attestation Layer that executes low-risk A2A handoffs without manual approval, based on safety proofs.
+
+### Priority Shifts
+- **Verifiable Task Delegation (VTD)**: (Re-affirmed P0) Now elevated as the primary solution for the "Approval Fatigue" scaling bottleneck.
+- **Pluggable Context Bridge**: (Re-affirmed P0) Expanded to support the new Standardized Context Sidecar Interface.
