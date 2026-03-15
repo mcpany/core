@@ -17,6 +17,23 @@ import (
 // It is an interface so tests can inject a lightweight implementation without
 // requiring a real browser installation.
 type PageFetcher interface {
+	// FetchText fetches the text content of the given URL.
+	//
+	// Summary: Fetches the content of a web page.
+	//
+	// Parameters:
+	//   - ctx (context.Context): The context for the request.
+	//   - url (string): The URL to visit.
+	//
+	// Returns:
+	//   - string: The text content of the page.
+	//   - error: An error if the URL is empty or the browser fails.
+	//
+	// Errors:
+	//   - Returns an error if the URL is invalid or page fails to load.
+	//
+	// Side Effects:
+	//   - Executes a network request.
 	FetchText(ctx context.Context, url string) (string, error)
 }
 
@@ -93,6 +110,24 @@ func (b *Provider) ToolDefinition() map[string]interface{} {
 // playwrightFetcher is the production PageFetcher that uses playwright-go.
 type playwrightFetcher struct{}
 
+// FetchText fetches the text content of the given URL using playwright.
+//
+// Summary: Fetches the content of a web page using playwright.
+//
+// Parameters:
+//   - _ (context.Context): The context for the request.
+//   - url (string): The URL to visit.
+//
+// Returns:
+//   - string: The text content of the page.
+//   - error: An error if the browser fails to start, navigate, or extract text.
+//
+// Errors:
+//   - Returns an error if playwright fails to run, browser fails to launch, page creation fails, navigation fails, or text extraction fails.
+//
+// Side Effects:
+//   - Starts a headless browser process.
+//   - Executes a network request to the specified URL.
 func (f *playwrightFetcher) FetchText(_ context.Context, url string) (string, error) {
 	pw, err := playwright.Run()
 	if err != nil {
