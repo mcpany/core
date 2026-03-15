@@ -49,6 +49,13 @@ The Active Subagent Reaper is a mandatory lifecycle management layer in MCP Any 
 ## 7. Evolutionary Changelog
 * **2026-04-03:** Initial Document Creation.
 
+### Update: 2026-04-24 - Mitigating Intent Lease-Jumping
+**Context:** Recent market sync reveals a new exploit pattern where subagents attempt to "Jump" or reuse intent leases from pruned or discarded branches to maintain unauthorized access to the Blackboard.
+**Architecture Adjustment:**
+* Implementing **Monotonic Lease Nonces**: Every `Branch-Lease-ID` must now include a monotonic, session-bound nonce.
+* The **Reaper Daemon** will now maintain a "Revocation List" of all nonces associated with pruned intents. Any heartbeat or state mutation attempt using a revoked or legacy nonce will trigger an immediate session termination.
+**Security Impact:** Neutralizes the "Lease-Jumping" vector, ensuring that once a reasoning branch is discarded, its associated cryptographic capabilities are permanently invalidated.
+
 ### Update: 2026-04-04 - Lease-Bound Process Tree Isolation
 **Context:** Today's market sync on "Cross-Framework State Leakage" highlights that WebSocket termination alone is insufficient if sub-processes (e.g., local python executors) remain active.
 **Architecture Adjustment:**

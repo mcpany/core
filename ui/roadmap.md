@@ -278,6 +278,11 @@
 - [ ] **[P0] VTD Automation Workspace**: Dashboard for configuring autonomous delegation rules and reviewing automated handoff history. (Added: 2026-04-15)
 - [ ] **[P1] Universal Context Bus Viewer**: Visual debugger for monitoring state flow and synchronization across framework-specific Context Sidecars. (Added: 2026-04-15)
 
+#### Upcoming (2026-04-24 Evolution)
+- [ ] **[P1] ASH Visual Realigner**: Dashboard for visualizing real-time swarm consensus and alignment heartbeats during self-healing. (Added: 2026-04-24)
+- [ ] **[P0] Shadow State Inspector**: Developer tool for visualizing uncommitted "Dirty" writes from speculative reasoning branches. (Added: 2026-04-24)
+- [ ] **[P0] Lease Revocation Monitor**: Security dashboard for tracking revoked intent nonces and blocked "Lease-Jumping" attempts. (Added: 2026-04-24)
+
 #### Upcoming (2026-04-23 Evolution)
 - [ ] **[P0] A2UI Secure Component Host**: Sandboxed rendering for agent-generated interactive fragments (Added: 2026-04-23).
 - [ ] **[P0] ContextEngine Lifecycle Visualizer**: Debugger for OpenClaw-native context hooks and state transitions (Added: 2026-04-23).

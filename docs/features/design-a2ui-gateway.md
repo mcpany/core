@@ -48,6 +48,12 @@ MCP Any, as the universal agent infrastructure, is uniquely positioned to act as
 
 ## 7. Evolutionary Changelog
 * **2026-04-21:** Initial Document Creation.
+* **2026-04-24:** Update: ASH Visual Alignment & Consensus Tracking
+    * **Context:** Feedback from OpenClaw v2.8 (ASH) users indicates "State Fatigue" when swarms autonomously re-align without visual feedback.
+    * **Architecture Adjustment:**
+        * Introducing **Consensus Markers** in the A2UI manifest. These are visual indicators of swarm-wide agreement on a reasoning path.
+        * The Gateway will now support an `alignment_heartbeat` signal, allowing the UI to pulse or highlight components when a major re-alignment or rollback is in progress.
+    * **Security Impact:** Increases transparency, ensuring users can detect and intervene if an ASH cycle is being manipulated or is stuck in an infinite "Cognitive Lock."
 * **2026-04-22:** Update: Resolving WebSocket State Desync.
     * **Context:** Market research revealed state desync when switching between Normal and Adaptive reasoning modes in OpenClaw v2026.3.1.
     * **Architecture Adjustment:**

@@ -10,6 +10,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-04-24]
+### Focus: Intent-Bound Ephemeral Attestation & Speculative State Reconciliation
+**Context**: The emergence of "Lease-Jumping" exploits and the "State Fatigue" observed in ASH-driven swarms demand a shift toward multi-dimensional, ephemeral security. It is no longer enough to attest to an agent's identity; we must attest to the *specific lifecycle* of its intent. Simultaneously, the rise of "Ghost Branches" in speculative reasoning requires a transactional approach to agentic state.
+**Strategic Pivot**:
+- **Intent-Bound Ephemeral Attestation**: MCP Any will mandate monotonic lease nonces for all inter-agent delegations. This ensures that a subagent's capability is cryptographically bound to a unique, non-reusable intent lease, neutralizing "Lease-Jumping" attacks.
+- **Speculative State Reconciliation**: We are evolving the Blackboard into a "Transactional Hub." MCP Any will natively support "Shadow State" for speculative reasoning branches, ensuring that tool calls from "Ghost Branches" are held in isolation and only committed to the primary context after verified alignment.
+- **ASH Visual Realigner**: To mitigate "State Fatigue," MCP Any will provide the infrastructure for visual consensus tracking. We will surface real-time alignment markers via the A2UI Gateway, allowing users to see exactly how and why a swarm is re-aligning its reasoning.
+
 ## Strategic Evolution: [2026-04-23]
 ### Focus: Deterministic Lifecycle Attestation & Pluggable Context Governance
 **Context**: The stabilization of OpenClaw's pluggable `ContextEngine` and the disclosure of CVE-2026-25725 (Claude Code sandbox escape) mark a shift from "Point-in-Time Security" to "Continuous Lifecycle Attestation." We must ensure that agents are not only safe at boot but remain bound to a verified, immutable environment throughout their entire reasoning cycle.

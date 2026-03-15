@@ -8,6 +8,19 @@
 
 ---
 
+## Evolution: [2026-04-24] Updates
+
+### Proposed Additions
+- **Intent Lease-Jumping Guard**: (P0) A security middleware for the Active Subagent Reaper that enforces monotonic lease nonces and session-bound invalidation, preventing the reuse of intent leases from discarded branches.
+- **ASH Visual Realigner**: (P1) A diagnostic extension for the A2UI Gateway that surfaces real-time consensus markers and alignment heartbeats during swarm self-healing cycles.
+- **Shadow-State Transaction Manager**: (P0) An upgrade to the Shared KV Store (Blackboard) that provides transactional isolation for speculative reasoning branches, ensuring atomic commits after intent attestation.
+
+### Priority Shifts
+- **Deterministic Absence Proof (DAP) Generator**: (Re-affirmed P0) Now mandatory for Claude Code v2026.4 compatibility.
+- **Active Subagent Reaper**: (Re-affirmed P0) Expanded to include Lease-Jumping protection as a core capability.
+
+---
+
 ## Evolution: [2026-04-23] Updates
 
 ### Proposed Additions

@@ -429,6 +429,11 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] VTD Autonomous Delegation Engine**: Implementation of automated, proof-based A2A task handoffs for low-risk operations. (Added: 2026-04-15)
 *   **[P1] Standardized Context Sidecar Interface**: Universal "Context Bus" for bridging framework-specific state strategies (OpenClaw, etc.). (Added: 2026-04-15)
 
+#### Upcoming (2026-04-24 Evolution)
+*   **[P0] Intent Lease-Jumping Guard**: Implementation of monotonic lease nonces and revocation lists for the Active Subagent Reaper. (Added: 2026-04-24)
+*   **[P0] Shadow-State Transaction Manager**: Transactional support for the Shared KV Store to isolate speculative reasoning branches. (Added: 2026-04-24)
+*   **[P1] ASH Alignment Heartbeat**: Support for real-time visual alignment signals in the A2UI Gateway. (Added: 2026-04-24)
+
 #### Upcoming (2026-04-23 Evolution)
 *   **[P0] OpenClaw ContextEngine Adapter**: Implementation of lifecycle hooks for external context management (Added: 2026-04-23).
 *   **[P0] Absence Proof (DAP) Generator**: Security extension for Pre-Flight Validator to sign missing-file proofs (Added: 2026-04-23).
