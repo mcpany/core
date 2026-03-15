@@ -13,9 +13,9 @@ import (
 	"sync"
 	"time"
 
+	"github.com/alexliesenfeld/health"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	pb "github.com/mcpany/core/proto/mcp_router/v1"
-	"github.com/alexliesenfeld/health"
 	"github.com/mcpany/core/server/pkg/auth"
 	mcphealth "github.com/mcpany/core/server/pkg/health"
 	"github.com/mcpany/core/server/pkg/logging"

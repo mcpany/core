@@ -1,3 +1,4 @@
+cat << 'INNER_EOF' > server/.golangci.yml
 # Copyright 2026 Author(s) of MCP Any
 # SPDX-License-Identifier: Apache-2.0
 
@@ -58,3 +59,4 @@ issues:
     - wsl
     - gci
     - gofumpt
+INNER_EOF
