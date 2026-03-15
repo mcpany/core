@@ -371,6 +371,11 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] A2A Messaging Hub**: Transition to a native A2A messaging implementation with integrated RID and Zero-Trust policy enforcement. (Added: 2026-04-13)
 *   **[P0] Non-Existence Proof Generator**: Extension for the Deterministic Attestation Gateway to sign "Missing File" proofs for unauthorized hooks. (Added: 2026-04-13)
 
+#### Upcoming (2026-04-13 Evolution)
+*   **[P0] Settings Injection Guard**: Active interception layer for project-local agent configs to neutralize "Rug Pull" exfiltration (CVE-2026-25725). (Added: 2026-04-13)
+*   **[P0] A2A Messaging Hub**: Transition to a native A2A messaging implementation with integrated RID and Zero-Trust policy enforcement. (Added: 2026-04-13)
+*   **[P0] Non-Existence Proof Generator**: Extension for the Deterministic Attestation Gateway to sign "Missing File" proofs for unauthorized hooks. (Added: 2026-04-13)
+
 #### Upcoming (2026-04-10 Evolution)
 *   **[P0] Inference-Time Data Sanitizer (IDS)**: Semantic context governance middleware utilizing OpenClaw ContextEngine hooks to block multimodal injections. (Added: 2026-04-10)
 *   **[P0] Deterministic Attestation Gateway**: Extension of the Pre-Flight Validator to provide signed environment manifests for deterministic agent boot. (Added: 2026-04-10)
