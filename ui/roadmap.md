@@ -241,9 +241,15 @@
 - [ ] **[P1] CLAW-10 Compliance Dashboard**: Interactive matrix for visualizing system compliance with the CLAW-10 Enterprise Evaluation Matrix. (Added: 2026-04-13)
 - [ ] **[P0] Deterministic Boot Manifest Reviewer**: UI for reviewing and signing "Environment Integrity Manifests" during the deterministic boot sequence. (Added: 2026-04-13)
 
+#### Upcoming (2026-04-17 Evolution)
+- [ ] **[P0] Intent Arbitration Console**: Interactive deconstructor for expansion requests, highlighting potential "Smuggling" attempts. (Added: 2026-04-17)
+- [ ] **[P0] Sandbox Persistence Monitor**: Real-time visual tracker for RIM heartbeats and hardware state hashes. (Added: 2026-04-17)
+- [ ] **[P1] Trust Lease Manager UI**: Dashboard for monitoring active LFTA trust leases and their expiration status. (Added: 2026-04-17)
+- [ ] **[P0] Swarm Consensus Inspector**: Visualizer for comparing subagent monologues against the mission-root to detect consensus drift. (Added: 2026-04-17)
+
 #### Upcoming (2026-04-16 Evolution)
 - [ ] **[P0] Reactive Intent Dashboard**: Visual workspace for reviewing and approving agent "Boundary Expansion" requests. (Added: 2026-04-16)
-- [ ] **[P1] Resident Integrity Status Widget**: Real-time indicator for continuous sandbox attestation and hardware-bound health. (Added: 2026-04-16)
+- [ ] **[P0] Resident Integrity Status Widget**: Real-time indicator for continuous sandbox attestation and hardware-bound health. (Added: 2026-04-16 - Promoted to P0 on 2026-04-17)
 - [ ] **[P0] Swarm Truth Explorer**: Authorization UI for swarm self-healing and mission state reconciliation. (Added: 2026-04-16)
 
 #### Upcoming (2026-04-15 Evolution)

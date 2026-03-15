@@ -8,6 +8,19 @@
 
 ---
 
+## Evolution: [2026-04-17] Updates
+
+### Proposed Additions
+- **LFTA Trust Lease Manager**: (P1) A performance-optimizing security middleware that manages "Trust Leases" for high-frequency agent tool calls, reducing hardware attestation overhead while maintaining mission integrity.
+- **Swarm Consensus Alignment Broker**: (P0) A coordination service that periodically reconciles specialized subagent monologues against the parent's verified mission intent to prevent "Consensus Drift" in deep swarms.
+- **Reactive Intent Arbitration Hub**: (P0) Advanced extension of the RIG that performs recursive deconstruction and validation of "Boundary Expansion" requests to block "Intent Smuggling" attempts.
+
+### Priority Shifts
+- **Resident Integrity Monitor (RIM)**: Promoted to **P0**. Now a critical requirement for "Sandbox Persistence Proofs" and continuous hardware-bound security.
+- **Reactive Intent Gateway (RIG)**: Re-affirmed as **P0** and evolved into the Arbitration Hub.
+
+---
+
 ## Evolution: [2026-04-14] Updates
 
 ### Proposed Additions

@@ -429,6 +429,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **CLAW-10 Compliance Layer**: We are introducing a "Compliance Mapping" service that automatically aligns MCP Any's security posture (Safe-by-Default, Verified Skills) with the CLAW-10 matrix, providing a turnkey solution for IT departments struggling with "Shadow Agent" deployments.
 - **Deterministic Boot Manifests**: Expanding the attestation gateway to provide signed "Environment Integrity Manifests." These manifests will serve as a mandatory prerequisite for agent boot, providing a deterministic proof of the project-local state (including non-existence proofs for restricted configuration hooks).
 
+## Strategic Evolution: [2026-04-17]
+### Focus: Intent Integrity Arbitration & Leased Trust Orchestration
+**Context**: Today's findings reveal that "Intent Smuggling" is the primary exploit vector for dynamic swarms, while the "Attestation Tax" is the primary performance bottleneck. The industry is converging on "Trust Leases" (LFTA) and "Continuous Persistence Proofs" as the dual-track solution for scaling secure agency.
+**Strategic Pivot**:
+- **Intent Integrity Arbitration**: MCP Any will evolve the RIG into a full "Arbitration Hub." It will perform recursive deconstruction of all "Reactive Intent" expansion requests, verifying them against the cryptographically signed "Root Mission Intent" to block smuggled sub-goals.
+- **Leased Trust Orchestration**: We are adopting the LFTA (Low-Frequency Trust Attestation) model as a core infrastructure utility. MCP Any will act as a "Trust Lease Broker," allowing sessions to maintain a high-strength security posture across a burst of tool calls without repeated hardware signature overhead.
+- **Continuous Sandbox Integrity Monitoring**: Transitioning from point-in-time attestation to a "Continuous Resident Monitor" (RIM). This provides hardware-bound proofs that the agent's environment remains immutable throughout the lifecycle of the mission, neutralizing "Delayed Payload" escapes.
+
 ## Strategic Evolution: [2026-04-16]
 ### Focus: Reactive Intent Governance & Self-Healing Swarm Integrity
 **Context**: The emergence of "Reactive Intent" (RI) and "Sandbox Persistence Proofs" marks a shift from static pre-execution attestation to dynamic, lifecycle-wide governance. Swarms now require the ability to safely expand their boundaries in response to environment feedback while maintaining a deterministic proof of environment integrity.
