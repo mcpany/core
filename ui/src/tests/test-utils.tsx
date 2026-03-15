@@ -14,6 +14,13 @@ import { render as originalRender, type RenderOptions } from '@testing-library/r
 import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
 
+ /**
+  * render wraps the component in a MemoryRouter for testing.
+  *
+  * @param ui The component to render.
+  * @param options Additional rendering options.
+  * @returns The rendered component with testing utilities.
+  */
 export function render(
   ui: React.ReactElement,
   options?: Omit<RenderOptions, 'wrapper'> & { wrapper?: React.ComponentType<{ children: React.ReactNode }> }
