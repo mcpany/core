@@ -247,32 +247,30 @@ func TestK8sFullStack(t *testing.T) {
 		require.NoError(t, err, "helm lint should not fail: %s", string(out))
 	})
 
-	// 2. Dry-run install with default values
+	// 2. Client-side template rendering with default values (avoids cluster connection requirement)
 	t.Run("HelmDryRunDefault", func(t *testing.T) {
-		cmd := exec.Command("helm", "install", "mcpany-test", ".",
-			"--dry-run",
+		cmd := exec.Command("helm", "template", "mcpany-test", ".",
 			"--set", "apiKey=test-key",
 		)
 		cmd.Dir = helmChartPath
 		out, err := cmd.CombinedOutput()
-		require.NoError(t, err, "helm install --dry-run with default values should not fail: %s", string(out))
+		require.NoError(t, err, "helm template with default values should not fail: %s", string(out))
 		outputStr := string(out)
-		require.Contains(t, outputStr, "kind: Deployment", "Dry-run should contain a Deployment")
-		require.Contains(t, outputStr, "kind: Service", "Dry-run should contain a Service")
+		require.Contains(t, outputStr, "kind: Deployment", "Template output should contain a Deployment")
+		require.Contains(t, outputStr, "kind: Service", "Template output should contain a Service")
 	})
 
-	// 3. Dry-run with operator enabled
+	// 3. Client-side template rendering with operator enabled
 	t.Run("HelmDryRunWithOperator", func(t *testing.T) {
-		cmd := exec.Command("helm", "install", "mcpany-operator-test", ".",
-			"--dry-run",
+		cmd := exec.Command("helm", "template", "mcpany-operator-test", ".",
 			"--set", "operator.enabled=true",
 			"--set", "apiKey=test-key",
 		)
 		cmd.Dir = helmChartPath
 		out, err := cmd.CombinedOutput()
-		require.NoError(t, err, "helm install --dry-run with operator enabled should not fail: %s", string(out))
+		require.NoError(t, err, "helm template with operator enabled should not fail: %s", string(out))
 		outputStr := string(out)
-		require.Contains(t, outputStr, "kind: Deployment", "Dry-run with operator should contain a Deployment")
+		require.Contains(t, outputStr, "kind: Deployment", "Template output with operator should contain a Deployment")
 	})
 
 	// 4. Template rendering – verify key resources and labels
