@@ -17,9 +17,9 @@ import { SmartResultRenderer } from "./smart-result-renderer";
 import { estimateTokens, formatTokenCount } from "@/lib/tokens";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useTheme } from "next-themes";
-import { defineDraculaTheme } from "@/lib/monaco-theme";
 import dynamic from "next/dynamic";
 import { unwrapMcpResult, deepParseJson } from "@/lib/mcp-unwrap";
+import { DiffViewer } from "@/components/services/editor/diff-viewer";
 
 // ⚡ BOLT: Lazy load heavy dependencies to improve initial bundle size and TTI.
 // Randomized Selection from Top 5 High-Impact Targets
@@ -38,14 +38,6 @@ const SyntaxHighlighter = dynamic(
     {
         ssr: false,
         loading: () => <div className="p-4 bg-[rgba(0,0,0,0.4)] h-12 animate-pulse rounded" />,
-    }
-);
-
-const DiffEditor = dynamic(
-    () => import("@monaco-editor/react").then((mod) => mod.DiffEditor),
-    {
-        ssr: false,
-        loading: () => <div className="h-full w-full bg-[#1e1e1e] animate-pulse rounded-md" />,
     }
 );
 
@@ -258,33 +250,18 @@ export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
             </div>
 
             <Dialog open={showDiff} onOpenChange={setShowDiff}>
-                <DialogContent className="max-w-4xl h-[80vh] flex flex-col">
+                <DialogContent className="max-w-4xl h-[80vh] flex flex-col bg-background/95 backdrop-blur-md border-muted">
                     <DialogHeader>
                         <DialogTitle className="flex items-center gap-2">
                             <GitCompare className="size-5" />
                             Output Difference
                         </DialogTitle>
                     </DialogHeader>
-                    <div className="flex-1 border rounded-md overflow-hidden bg-[#1e1e1e]">
-                        <DiffEditor
+                    <div className="flex-1 min-h-0">
+                        <DiffViewer
                             original={JSON.stringify(prevUnwrapped, null, 2)}
                             modified={JSON.stringify(currUnwrapped, null, 2)}
                             language="json"
-                            theme={theme === "dark" ? "dracula" : "light"}
-                            onMount={(editor, monaco) => {
-                                if (theme === "dark") {
-                                    defineDraculaTheme(monaco);
-                                    monaco.editor.setTheme("dracula");
-                                }
-                            }}
-                            options={{
-                                readOnly: true,
-                                minimap: { enabled: false },
-                                scrollBeyondLastLine: false,
-                                fontSize: 12,
-                                diffCodeLens: true,
-                                renderSideBySide: true,
-                            }}
                         />
                     </div>
                 </DialogContent>
