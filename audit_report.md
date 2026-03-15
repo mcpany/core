@@ -4,13 +4,13 @@
 
 This PR represents a Truth Reconciliation Audit across 10 core features mapped between documentation, codebase, and the Product Roadmap.
 
-**Overall Health:** The codebase is in strong alignment with the Product Roadmap. Most documented features are actively developed and available. However, a few discrepancies were identified related to "Documentation Drift" and "Roadmap Debt."
+**Overall Health:** The codebase is in strong alignment with the Product Roadmap. Most documented features are actively developed and available. However, discrepancies were identified related to "Documentation Drift" and "Roadmap Debt," which have been aggressively remediated in this PR.
 
 ### 2. Verification Matrix
 
 | Document Name | Status | Action Taken | Evidence |
 | :--- | :--- | :--- | :--- |
-| `ui/docs/features/native_file_upload_playground.md` | ✅ MATCH | None | Implemented in `SchemaForm` (`contentEncoding === "base64"`) and marked complete in Roadmap. |
+| `ui/docs/features/native_file_upload_playground.md` | ❌ DEBT | Implemented missing code | Added missing logic in `ui/src/components/playground/schema-form.tsx` to handle `contentEncoding === "base64"` and render a file upload input. |
 | `ui/docs/features/structured_log_viewer.md` | ✅ MATCH | None | Implemented in `log-viewer.tsx` (`JsonViewer`) and marked complete in Roadmap. |
 | `ui/docs/features/stack-composer.md` | ✅ MATCH | None | Implemented under `/stacks` and marked complete in Roadmap. |
 | `ui/docs/features/playground.md` | ✅ MATCH | None | Implemented in `/playground` and marked complete in Roadmap. |
@@ -26,11 +26,10 @@ This PR represents a Truth Reconciliation Audit across 10 core features mapped b
 *   **Case A: Documentation Drift (Code is Correct)**
     *   `ui/roadmap.md`: Tag-based Access Control was marked as incomplete `[ ]` despite robust implementation in `profile-editor.tsx`. Updated roadmap state to `[x]` to sync with truth.
 *   **Case B: Roadmap Debt (Code is Missing/Broken)**
-    *   *No active code debt or missing implementations found for the 10 sampled features.*
+    *   `ui/docs/features/native_file_upload_playground.md`: The document detailed a feature where the Playground would render a native file upload if a field specified `contentEncoding: "base64"`, allowing the selected file to be read, encoded to base64, and sent to the tool. This was missing from `SchemaForm`. **Engineered Solution:** Updated `ui/src/components/playground/schema-form.tsx` to include file input rendering and a `FileReader` logic block for base64 encoding, paired with a unit test.
 
 ### 4. Security Scrub
 
 - NO PII, secrets, or internal IPs are in the report.
 - All paths are relative repository paths.
 - API references rely on sanitized routes (`/api/v1/config/validate`) instead of hostname configurations.
-
