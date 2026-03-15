@@ -429,6 +429,11 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] VTD Autonomous Delegation Engine**: Implementation of automated, proof-based A2A task handoffs for low-risk operations. (Added: 2026-04-15)
 *   **[P1] Standardized Context Sidecar Interface**: Universal "Context Bus" for bridging framework-specific state strategies (OpenClaw, etc.). (Added: 2026-04-15)
 
+#### Upcoming (2026-04-23 Evolution)
+*   **[P0] OpenClaw ContextEngine Adapter**: Implementation of lifecycle hooks for external context management (Added: 2026-04-23).
+*   **[P0] Absence Proof (DAP) Generator**: Security extension for Pre-Flight Validator to sign missing-file proofs (Added: 2026-04-23).
+*   **[P0] A2UI Secure Surface Host**: Gateway infrastructure for sandboxed agent-generated UI fragments (Added: 2026-04-23).
+
 #### Upcoming (2026-04-22 Evolution)
 *   **[P0] A2A Replay Guard Middleware**: Implementation of monotonic nonces and session-bound validation for the A2A Messaging Hub. (Added: 2026-04-22)
 *   **[P0] Adaptive Context Compaction Engine**: WebSocket-native compaction supporting Gemini-style reasoning effort headers. (Added: 2026-04-22)

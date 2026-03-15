@@ -10,6 +10,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-04-23]
+### Focus: Deterministic Lifecycle Attestation & Pluggable Context Governance
+**Context**: The stabilization of OpenClaw's pluggable `ContextEngine` and the disclosure of CVE-2026-25725 (Claude Code sandbox escape) mark a shift from "Point-in-Time Security" to "Continuous Lifecycle Attestation." We must ensure that agents are not only safe at boot but remain bound to a verified, immutable environment throughout their entire reasoning cycle.
+**Strategic Pivot**:
+- **Pluggable Context Adapter**: MCP Any will pivot to become the primary backend for OpenClaw's `ContextEngine`. By implementing native support for OpenClaw's context lifecycle hooks, we will enable agents to share specialized state management strategies while maintaining a centralized security and audit boundary.
+- **Deterministic Absence Proofs (DAP)**: We are mandating DAPs as a core component of our Pre-Flight Sandbox Validator. MCP Any will generate signed "Non-Existence Manifests" for restricted project-local configuration paths, neutralizing the "Absence-as-Exploit" pattern where agents inject hooks into missing files.
+- **A2UI Secure Surface Host**: As the A2UI protocol matures, MCP Any will evolve into a "Secure Surface" host. We will provide the sandboxed rendering infrastructure for agent-generated UI manifests, ensuring that interactive fragments are origin-locked and isolated from the primary host environment.
+
 ## Strategic Evolution: [2026-04-22]
 ### Focus: Cognitive Sovereignty & Negative Trust Architectures
 **Context**: The emergence of "Cognitive Sovereignty" within the Sovereign Agent Collective and the discovery of "Replay-as-Delegation" attacks signal a move toward more granular, non-repudiable agent agency. Security must now account for "Negative Trust"—proving the absolute absence of malicious configurations—while ensuring subagents maintain reasoning privacy from their parents.

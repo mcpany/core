@@ -278,6 +278,11 @@
 - [ ] **[P0] VTD Automation Workspace**: Dashboard for configuring autonomous delegation rules and reviewing automated handoff history. (Added: 2026-04-15)
 - [ ] **[P1] Universal Context Bus Viewer**: Visual debugger for monitoring state flow and synchronization across framework-specific Context Sidecars. (Added: 2026-04-15)
 
+#### Upcoming (2026-04-23 Evolution)
+- [ ] **[P0] A2UI Secure Component Host**: Sandboxed rendering for agent-generated interactive fragments (Added: 2026-04-23).
+- [ ] **[P0] ContextEngine Lifecycle Visualizer**: Debugger for OpenClaw-native context hooks and state transitions (Added: 2026-04-23).
+- [ ] **[P0] Absence Proof Integrity Monitor**: Real-time status for Non-Existence Proofs and blocked configuration injections (Added: 2026-04-23).
+
 #### Upcoming (2026-04-22 Evolution)
 - [ ] **[P0] A2A Replay Security Dashboard**: Visualize nonce status and replay attempt alerts in the A2A hub. (Added: 2026-04-22)
 - [ ] **[P0] Adaptive Reasoning Monitor**: Real-time visualization of `x-gemini-reasoning-effort` levels and dynamic compaction efficiency. (Added: 2026-04-22)
