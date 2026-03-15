@@ -8,6 +8,19 @@
 
 ---
 
+## Evolution: [2026-04-18] Updates
+
+### Proposed Additions
+- **Tenant-Locked Trust Lease Broker**: (P0) A critical security service that enforces multi-tenant isolation for LFTA trust leases, preventing trust smuggling between organizational boundaries.
+- **Metadata-Minimizing Shard Proxy**: (P0) Advanced middleware that sanitizes context shard metadata and headers to neutralize "MirrorLink" relational state reconstruction attacks.
+- **Hardware-Enforced Inode Binding (HEIB) Driver**: (P0) Kernel-level security integration that cryptographically binds file handles to hardware Inodes, providing ultimate protection against symlink escapes.
+
+### Priority Shifts
+- **Resident Integrity Monitor (RIM)**: (Re-affirmed P0) Expanded to support HEIB attestation and continuous hardware-bound security.
+- **Live Context Sharding Middleware**: (Re-affirmed P0) Now considered the mandatory foundation for Metadata-Minimizing Governance.
+
+---
+
 ## Evolution: [2026-04-17] Updates
 
 ### Proposed Additions
@@ -81,7 +94,7 @@
 - **Cross-Framework Skill Reputation Engine**: (P1) UAB-native middleware for sharing and validating tool reliability scores across agent swarms.
 
 ### Priority Shifts
-- **Verified Skill Auction (VSA)**: (Re-affirmed P0) Expanded to integrate with the new Reputation Engine for real-time capability revoking.
+- **Verified Skill Auction (VSA) **: (Re-affirmed P0) Expanded to integrate with the new Reputation Engine for real-time capability revoking.
 - **Hardware-Linked Inode Pinning**: (Re-affirmed P0) Promoted as a mandatory requirement for the Pre-Flight Sandbox Validator.
 
 ## Evolution: [2026-04-08] Updates
@@ -92,7 +105,7 @@
 - **Origin-Locked Session Bridge**: (P0) Hardened WebSocket/HTTP session manager that binds tokens to cryptographically verified origins.
 
 ### Priority Shifts
-- **Verified Skill Auction (VSA)**: (Re-affirmed P0) Expanded to integrate with the new Reputation Engine for real-time capability revoking.
+- **Verified Skill Auction (VSA) **: (Re-affirmed P0) Expanded to integrate with the new Reputation Engine for real-time capability revoking.
 - **Hardware-Linked Inode Pinning**: (Re-affirmed P0) Promoted as a mandatory requirement for the Pre-Flight Sandbox Validator.
 
 ---
@@ -444,7 +457,7 @@
 
 ### Proposed Additions
 - **Atomic State Rollback Middleware**: (P0) Enables swarm-wide state checkpoints and rollbacks for the Blackboard and Context Shards.
-- **UACO-MAQ Consensus Gateway**: (P0) Support for UACO v1.9 Multi-Agent Quorum, allowing cross-framework approval tokens for high-risk actions.
+- **UACO-MAQ Consensus Gateway**: (P0) Support for UACO v1.9 MAQ standard, allowing cross-framework approval tokens for high-risk actions.
 - **Session-Bound Fast-Path Attestation**: (P1) Hardware-accelerated attestation for sub-calls within a verified mission session.
 - **Context Smearing Scanner**: (P1) Binary-level inspection for BSH fragments to detect malicious "Ghost Fragments."
 

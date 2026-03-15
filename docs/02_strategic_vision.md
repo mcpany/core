@@ -10,6 +10,16 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-04-18]
+### Focus: Cross-Tenant Trust Isolation & Metadata-Minimizing Governance
+**Context**: The emergence of the "MirrorLink" metadata reconstruction exploit in OpenClaw and the maturation of "Tenant-Locked" trust leases in the Gemini CLI ecosystem mark a shift from simple context isolation to "Relational Privacy." As agents operate in increasingly shared and multi-tenant environments, the metadata *about* the context becomes as dangerous as the context itself.
+**Strategic Pivot**:
+- **Cross-Tenant Trust Brokerage**: MCP Any will evolve to act as the primary "Lease Isolation Hub." We will implement mandatory tenant-tagging for all LFTA (Low-Frequency Trust Attestation) leases, ensuring that trust cannot be smuggled across organizational or framework boundaries.
+- **Metadata-Minimizing Context Proxy**: Leveraging the `Context Shard` architecture, we are introducing a "Metadata Anonymization" layer. This layer will sanitize shard headers and structural metadata to prevent subagents from reconstructing global mission intent via relational side-channels.
+- **Hardware-Enforced Inode Binding (HEIB)**: Following the industry trend (Claude Code), we are promoting HEIB to a core security requirement. MCP Any will mandate kernel-level Inode-to-handle binding for all project-local configurations to eliminate the "Delayed Payload" symlink attack vector.
+
+---
+
 ## Strategic Evolution: [2026-04-12]
 ### Focus: Secure A2A Interoperability & Deterministic Environment Integrity
 **Context**: The official transition of the A2A protocol to the Linux Foundation and the disclosure of CVE-2026-25725 (Claude Code sandbox escape) mark a definitive shift in the AI agent landscape. Interoperability is becoming a utility, and environment integrity is now the primary security frontier.

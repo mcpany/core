@@ -11,6 +11,12 @@
 
 ### Status: Active Development
 
+#### Upcoming (2026-04-18 Evolution)
+*   **[P0] Tenant-Locked Trust Lease Broker**: Security service enforcing multi-tenant isolation for LFTA trust leases. (Added: 2026-04-18)
+*   **[P0] Metadata-Minimizing Shard Proxy**: Advanced middleware for context shard metadata sanitization to neutralize MirrorLink attacks. (Added: 2026-04-18)
+*   **[P0] HEIB Driver**: Kernel-level integration for cryptographically binding file handles to hardware Inodes. (Added: 2026-04-18)
+*   **[P0] Swarm Consensus Alignment Broker**: Centralized service for periodic subagent state reconciliation and drift detection. (Added: 2026-04-18)
+
 #### Upcoming (2026-02-23 Evolution)
 *   **[P0] Recursive Context Protocol**: Finalize header-based context inheritance for swarms.
 *   **[P0] Zero-Trust Subagent Scoping**: Implement intent-bound capability tokens.
