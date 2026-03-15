@@ -58,8 +58,8 @@ test.describe('Service Config Diff', () => {
         // Verify Diff Viewer is present
         await expect(page.getByText('Configuration Changes')).toBeVisible();
 
-        // Verify Diff Editor content exists
-        await expect(page.getByTestId('diff-viewer')).toBeVisible();
+        // Verify Diff Editor content exists (Monaco diff editor class)
+        await expect(page.locator('.monaco-diff-editor')).toBeVisible();
 
         // Take screenshot
         try {

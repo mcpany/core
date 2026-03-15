@@ -8,7 +8,6 @@
 import React from "react";
 import { DiffEditor } from "@monaco-editor/react";
 import { useTheme } from "next-themes";
-import { defineDraculaTheme } from "@/lib/monaco-theme";
 
 interface DiffViewerProps {
     original: string;
@@ -27,37 +26,24 @@ interface DiffViewerProps {
  * @returns The rendered diff editor.
  */
 export function DiffViewer({ original, modified, language = "yaml" }: DiffViewerProps) {
-    const { theme, systemTheme } = useTheme();
-    const currentTheme = theme === "system" ? systemTheme : theme;
-    const isDark = currentTheme === "dark";
-    const editorTheme = isDark ? "dracula" : "light";
+    const { theme } = useTheme();
 
     return (
-        <div className="h-full w-full min-h-[400px] overflow-hidden rounded-md border border-input bg-background/50 backdrop-blur-sm transition-all duration-300" data-testid="diff-viewer">
+        <div className="h-[500px] border rounded-md overflow-hidden">
             <DiffEditor
                 height="100%"
                 language={language}
                 original={original}
                 modified={modified}
-                theme={editorTheme}
-                onMount={(editor, monaco) => {
-                    if (isDark) {
-                        defineDraculaTheme(monaco);
-                        monaco.editor.setTheme("dracula");
-                    }
-                }}
+                theme={theme === "dark" ? "vs-dark" : "light"}
                 options={{
-                    readOnly: true,
                     minimap: { enabled: false },
                     scrollBeyondLastLine: false,
-                    fontSize: 13,
-                    fontFamily: "var(--font-mono), monospace",
-                    diffCodeLens: true,
-                    renderSideBySide: true,
-                    padding: { top: 16, bottom: 16 },
-                    automaticLayout: true,
+                    fontSize: 12,
+                    wordWrap: "on",
+                    readOnly: true,
+                    renderSideBySide: true
                 }}
-                loading={<div className="flex items-center justify-center h-full text-muted-foreground text-xs animate-pulse">Loading Diff...</div>}
             />
         </div>
     );

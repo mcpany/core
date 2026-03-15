@@ -33,7 +33,15 @@ if [ -z "$GOLANGCI_LINT_BIN" ]; then
     exit 1
 fi
 
-"$GOLANGCI_LINT_BIN" run --timeout 20m --fix ./server/cmd/... ./server/pkg/... ./server/tests/... ./server/examples/...
+# Run linting sequentially to reduce peak memory footprint and avoid OOM kills in CI
+echo "Linting server/cmd..."
+(cd server && "$PROJECT_ROOT/$GOLANGCI_LINT_BIN" run --timeout 20m --fix --concurrency 2 ./cmd/...)
+echo "Linting server/pkg..."
+(cd server && "$PROJECT_ROOT/$GOLANGCI_LINT_BIN" run --timeout 20m --fix --concurrency 2 ./pkg/...)
+echo "Linting server/tests..."
+(cd server && "$PROJECT_ROOT/$GOLANGCI_LINT_BIN" run --timeout 20m --fix --concurrency 2 ./tests/...)
+echo "Linting server/examples..."
+(cd server && "$PROJECT_ROOT/$GOLANGCI_LINT_BIN" run --timeout 20m --fix --concurrency 2 ./examples/...)
 
 echo "Running pre-commit..."
 if command -v pre-commit >/dev/null 2>&1; then

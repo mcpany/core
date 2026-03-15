@@ -78,7 +78,7 @@ test.describe('Playground Tool Output Diffing', () => {
     // Check for Monaco Diff Editor. It usually has a class 'monaco-diff-editor'.
     // Or we can check for the content text being present twice (original and modified).
     // Monaco renders text in lines.
-    await expect(page.getByTestId('diff-viewer')).toBeVisible();
+    await expect(page.locator('.monaco-diff-editor')).toBeVisible();
 
 
 
