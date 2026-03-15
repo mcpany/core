@@ -8,6 +8,18 @@
 
 ---
 
+## Evolution: [2026-04-25] Updates
+
+### Proposed Additions
+- **A2A Session Persistence Middleware**: (P0) A core security service that manages token refresh and trust persistence for long-running A2A reasoning sessions, neutralizing "Session Decay."
+- **DAP Enforcement for Pre-Flight Validator**: (P0) Mandatory extension for the Pre-Flight Sandbox Validator that enforces "Deterministic Absence Proofs" as a prerequisite for agent boot.
+
+### Priority Shifts
+- **ContextEngine Plugin Adapter**: (Re-affirmed P0) Now elevated to a critical requirement for supporting "Cognitive Anchoring" and "Context-Splicing" defense.
+- **A2A Authenticated Handshake Provider**: (Re-affirmed P0) Now designated as the primary backend for the A2A Session Persistence Middleware.
+
+---
+
 ## Evolution: [2026-04-24] Updates
 
 ### Proposed Additions
