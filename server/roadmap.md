@@ -391,9 +391,15 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P1] CLAW-10 Compliance Mapper**: Automation layer for mapping system state to the CLAW-10 Enterprise Evaluation Matrix. (Added: 2026-04-13)
 *   **[P0] Deterministic Boot Manifest Provider**: Core service for generating and signing environment integrity manifests. (Added: 2026-04-13)
 
+#### Upcoming (2026-04-17 Evolution)
+*   **[P0] Reactive Intent Arbitration Hub**: Advanced RIG extension for recursive deconstruction and validation of expansion requests. (Added: 2026-04-17)
+*   **[P0] Resident Integrity Monitor (RIM)**: Hardware-bound service for continuous sandbox persistence proofs (Promoted to P0 on 2026-04-17).
+*   **[P1] LFTA Trust Lease Manager**: Security middleware for managing low-frequency trust attestation leases in deep swarms. (Added: 2026-04-17)
+*   **[P0] Swarm Consensus Alignment Broker**: Authority for periodic state reconciliation to prevent swarm consensus drift. (Added: 2026-04-17)
+
 #### Upcoming (2026-04-16 Evolution)
 *   **[P0] Reactive Intent Gateway (RIG)**: Middleware to mediate and sign agent "Boundary Expansion" requests, preventing Intent Smuggling. (Added: 2026-04-16)
-*   **[P1] Resident Integrity Monitor (RIM)**: Service for continuous, hardware-bound sandbox attestation to detect post-boot environment drift. (Added: 2026-04-16)
+*   **[P0] Resident Integrity Monitor (RIM)**: Service for continuous, hardware-bound sandbox attestation to detect post-boot environment drift. (Added: 2026-04-16 - Promoted to P0 on 2026-04-17)
 *   **[P0] Self-Healing Consensus Hub**: Autoritative "Truth Broker" for swarm self-correction, leveraging MAQ for state reconciliation. (Added: 2026-04-16)
 
 #### Upcoming (2026-04-15 Evolution)
