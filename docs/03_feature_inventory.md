@@ -8,6 +8,19 @@
 
 ---
 
+## Evolution: [2026-04-23] Updates
+
+### Proposed Additions
+- **OpenClaw ContextEngine Lifecycle Adapter**: (P0) A native middleware that implements OpenClaw's matured ContextEngine hooks, allowing MCP Any to act as the authoritative provider for context compression, summarization, and state persistence.
+- **Absence Proof (DAP) Generator**: (P0) Extension for the Pre-Flight Sandbox Validator that generates signed manifests proving the non-existence of restricted configuration files, neutralizing CVE-2026-25725.
+- **A2UI Secure Component Bridge**: (P0) A hardened rendering interface for declarative A2UI manifests, providing bi-directional, origin-locked state synchronization between agents and the user interface.
+
+### Priority Shifts
+- **RL Telemetry Provider**: (Promoted to P0) Now essential for providing high-frequency feedback tokens to OpenClaw-RL asynchronous training loops.
+- **Deterministic Attestation Gateway**: (Re-affirmed P0) Expanded to include DAP as a mandatory boot requirement for all compliant agent environments.
+
+---
+
 ## Evolution: [2026-04-22] Updates
 
 ### Proposed Additions
