@@ -7,7 +7,6 @@ load("@npm//ui:vitest/package_json.bzl", vitest_bin = "bin")
 load("@npm//ui:eslint/package_json.bzl", eslint_bin = "bin")
 load("@npm//ui:typescript/package_json.bzl", tsc_bin = "bin")
 load("@npm//:defs.bzl", "npm_link_all_packages")
-load("//ui:playwright_tests.bzl", "define_playwright_tests")
 
 npm_link_all_packages(name = "node_modules")
 
@@ -145,5 +144,3 @@ tsc_bin.tsc_test(
         "//proto:ts_proto",
     ],
 )
-
-define_playwright_tests()
