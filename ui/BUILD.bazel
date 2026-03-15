@@ -30,43 +30,6 @@ filegroup(
     visibility = ["//visibility:public"],
 )
 
-filegroup(
-    name = "playwright_runtime_srcs",
-    srcs = glob(
-        include = [
-            "src/**",
-            "next.config.ts",
-            "package.json",
-            "tsconfig.json",
-            "next-env.d.ts",
-            "postcss.config.mjs",
-            "tailwind.config.ts",
-            "components.json",
-            "vitest.config.mts",
-            "eslint.config.mjs",
-            ".eslintrc.json",
-            ".npmrc",
-        ],
-        exclude = [
-            "node_modules/**",
-            ".next/**",
-            ".audit/**",
-        ],
-        allow_empty = True,
-    ),
-    visibility = ["//visibility:public"],
-)
-
-filegroup(
-    name = "playwright_support_srcs",
-    srcs = glob(
-        include = ["tests/**"],
-        exclude = ["tests/**/*.spec.ts"],
-        allow_empty = True,
-    ),
-    visibility = ["//visibility:public"],
-)
-
 # Build target
 next_bin.next(
     name = "build",
