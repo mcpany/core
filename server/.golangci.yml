@@ -51,6 +51,12 @@ issues:
     - linters:
         - typecheck
       text: "undeclared name:"
+    - linters:
+        - typecheck
+      text: "no required module provides package"
+    - linters:
+        - typecheck
+      text: "missing or unexported name"
     - path: "_test.go"
       linters:
         - "errcheck"
