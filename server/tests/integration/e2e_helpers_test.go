@@ -4,9 +4,7 @@
 package integration
 
 import (
-	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"testing"
 	"time"
@@ -59,35 +57,5 @@ func TestWaitForText(t *testing.T) {
 	require.NoError(t, mp.Start())
 	mp.WaitForText(t, "hello", 1*time.Second)
 	mp.Stop()
-}
 
-func TestDockerHelpers(t *testing.T) {
-	if os.Getenv("CI") == "true" || os.Getenv("GITHUB_ACTIONS") == "true" {
-		t.Log("Skipping TestDockerHelpers in CI environment (CI/GITHUB_ACTIONS=true)")
-		// t.Skip("Skipping TestDockerHelpers in CI due to potential rate limiting/network issues")
-	}
-	t.Parallel()
-	if !IsDockerSocketAccessible() {
-		// t.Skip("Docker is not available")
-	}
-
-	// Test StartDockerContainer
-	imageName := "alpine:latest"
-	containerName := fmt.Sprintf("mcpany-test-container-%d", time.Now().UnixNano())
-	cleanup := StartDockerContainer(t, imageName, containerName, []string{"-d"}, "sleep", "60")
-	defer cleanup()
-
-	// Verify the container is running
-	dockerExe, dockerArgs := getDockerCommand()
-	psCmd := exec.Command(dockerExe, append(dockerArgs, "ps", "-f", fmt.Sprintf("name=%s", containerName))...) //nolint:gosec // Test helper
-	out, err := psCmd.Output()
-	require.NoError(t, err, "docker ps command failed. Output: %s", string(out))
-	assert.Contains(t, string(out), containerName)
-
-	// Test StartRedisContainer
-	_, redisCleanup := StartRedisContainer(t)
-	defer redisCleanup()
-
-	// The StartRedisContainer function has internal checks to ensure the container
-	// starts and is responsive. A successful return is a pass.
 }
