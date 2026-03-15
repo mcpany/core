@@ -33,7 +33,7 @@ export function DiffViewer({ original, modified, language = "yaml" }: DiffViewer
     const editorTheme = isDark ? "dracula" : "light";
 
     return (
-        <div className="h-full w-full min-h-[400px] overflow-hidden rounded-md border border-input bg-background/50 backdrop-blur-sm transition-all duration-300">
+        <div className="h-full w-full min-h-[400px] overflow-hidden rounded-md border border-input bg-background/50 backdrop-blur-sm transition-all duration-300" data-testid="diff-viewer">
             <DiffEditor
                 height="100%"
                 language={language}

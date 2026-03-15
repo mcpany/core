@@ -8,9 +8,9 @@ import { ServiceConfigDiff } from "./service-config-diff";
 import { UpstreamServiceConfig } from "@/lib/types";
 import { vi, describe, it, expect } from "vitest";
 
-// Mock Monaco Editor
-vi.mock("@monaco-editor/react", () => ({
-  DiffEditor: ({ original, modified }: { original: string, modified: string }) => (
+// Mock DiffViewer
+vi.mock("@/components/services/editor/diff-viewer", () => ({
+  DiffViewer: ({ original, modified }: { original: string, modified: string }) => (
     <div data-testid="diff-editor">
       <div data-testid="original">{original}</div>
       <div data-testid="modified">{modified}</div>
