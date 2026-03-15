@@ -8,6 +8,19 @@
 
 ---
 
+## Evolution: [2026-04-18] Updates
+
+### Proposed Additions
+- **Foundation Governance Adapter**: (P1) A bridge and translation layer that implements the OpenClaw Foundation's neutral governance protocols for cross-framework agent coordination.
+- **Continuous Sandbox Policy Verifier**: (P0) A security service that performs real-time validation of sandbox boundaries against the resident security policy, ensuring zero-drift throughout the agent lifecycle.
+- **Unified Persistence Proof Broker**: (P1) A shared attestation utility that allows agents in a swarm to verify the persistence of their execution environment via a centralized hardware-bound proof.
+
+### Priority Shifts
+- **Resident Integrity Monitor (RIM)**: (Re-affirmed P0) Now elevated to the primary mechanism for supporting "Continuous Sandbox Persistence Proofs."
+- **LFTA Trust Lease Manager**: Promoted to **P0**. Essential for scaling high-frequency attestation in deep swarms.
+
+---
+
 ## Evolution: [2026-04-17] Updates
 
 ### Proposed Additions

@@ -45,3 +45,4 @@ Hardware-Attested Boot (TPM) ensures an agent starts in a clean environment, but
 
 ## 7. Evolutionary Changelog
 * **2026-04-17:** Initial Document Creation.
+* **2026-04-18:** Optimization for "Resident Persistence Proofs" inspired by Claude Code's latest stability updates. Introducing a "Unified Persistence Broker" pattern to allow swarm-wide sharing of hardware-bound integrity signals, reducing the per-agent attestation tax.

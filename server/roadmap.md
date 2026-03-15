@@ -397,6 +397,12 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P1] LFTA Trust Lease Manager**: Security middleware for managing low-frequency trust attestation leases in deep swarms. (Added: 2026-04-17)
 *   **[P0] Swarm Consensus Alignment Broker**: Authority for periodic state reconciliation to prevent swarm consensus drift. (Added: 2026-04-17)
 
+#### Upcoming (2026-04-18 Evolution)
+*   **[P0] Continuous Sandbox Policy Verifier**: Real-time validation of sandbox boundaries against resident security policy. (Added: 2026-04-18)
+*   **[P0] LFTA Trust Lease Manager**: Scalable trust-lease management for high-frequency agent tool calls (Promoted to P0 on 2026-04-18).
+*   **[P1] Foundation Governance Adapter**: Bridge for the OpenClaw Foundation's neutral governance and transparency protocols. (Added: 2026-04-18)
+*   **[P1] Unified Persistence Proof Broker**: Shared attestation utility for swarm-wide sandbox integrity proofs. (Added: 2026-04-18)
+
 #### Upcoming (2026-04-16 Evolution)
 *   **[P0] Reactive Intent Gateway (RIG)**: Middleware to mediate and sign agent "Boundary Expansion" requests, preventing Intent Smuggling. (Added: 2026-04-16)
 *   **[P0] Resident Integrity Monitor (RIM)**: Service for continuous, hardware-bound sandbox attestation to detect post-boot environment drift. (Added: 2026-04-16 - Promoted to P0 on 2026-04-17)

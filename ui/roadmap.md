@@ -247,6 +247,11 @@
 - [ ] **[P1] Trust Lease Manager UI**: Dashboard for monitoring active LFTA trust leases and their expiration status. (Added: 2026-04-17)
 - [ ] **[P0] Swarm Consensus Inspector**: Visualizer for comparing subagent monologues against the mission-root to detect consensus drift. (Added: 2026-04-17)
 
+#### Upcoming (2026-04-18 Evolution)
+- [ ] **[P0] Continuous Sandbox Policy Monitor**: Real-time visualization of sandbox boundary compliance and drift alerts. (Added: 2026-04-18)
+- [ ] **[P0] Foundation Governance Console**: UI for managing compliance with OpenClaw Foundation neutral governance protocols. (Added: 2026-04-18)
+- [ ] **[P1] Persistence Proof Explorer**: Security dashboard for verifying shared hardware-bound SPP signals across a swarm. (Added: 2026-04-18)
+
 #### Upcoming (2026-04-16 Evolution)
 - [ ] **[P0] Reactive Intent Dashboard**: Visual workspace for reviewing and approving agent "Boundary Expansion" requests. (Added: 2026-04-16)
 - [ ] **[P0] Resident Integrity Status Widget**: Real-time indicator for continuous sandbox attestation and hardware-bound health. (Added: 2026-04-16 - Promoted to P0 on 2026-04-17)
