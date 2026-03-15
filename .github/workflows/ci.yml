@@ -168,14 +168,14 @@ jobs:
 
       - name: Revert Gazelle files
         run: |
-          git checkout -- k8s/operator/tests/BUILD.bazel proto/BUILD.bazel proto/api/v1/BUILD.bazel proto/bus/BUILD.bazel proto/config/v1/BUILD.bazel server/pkg/tool/BUILD.bazel server/pkg/upstream/grpc/protobufparser/BUILD.bazel server/tests/integration/upstream/BUILD.bazel server/examples/upstream_service_demo/grpc/greeter_server/proto/BUILD.bazel || true
+          git checkout -- k8s/operator/tests/BUILD.bazel proto/BUILD.bazel proto/api/v1/BUILD.bazel proto/bus/BUILD.bazel proto/config/v1/BUILD.bazel server/pkg/tool/BUILD.bazel server/pkg/upstream/grpc/protobufparser/BUILD.bazel server/tests/integration/upstream/BUILD.bazel || true
 
       - name: Lint
         run: make lint
 
       - name: Revert Gazelle files again
         run: |
-          git checkout -- k8s/operator/tests/BUILD.bazel proto/BUILD.bazel proto/api/v1/BUILD.bazel proto/bus/BUILD.bazel proto/config/v1/BUILD.bazel server/pkg/tool/BUILD.bazel server/pkg/upstream/grpc/protobufparser/BUILD.bazel server/tests/integration/upstream/BUILD.bazel server/examples/upstream_service_demo/grpc/greeter_server/proto/BUILD.bazel || true
+          git checkout -- k8s/operator/tests/BUILD.bazel proto/BUILD.bazel proto/api/v1/BUILD.bazel proto/bus/BUILD.bazel proto/config/v1/BUILD.bazel server/pkg/tool/BUILD.bazel server/pkg/upstream/grpc/protobufparser/BUILD.bazel server/tests/integration/upstream/BUILD.bazel || true
 
   bazel-test:
     runs-on: ubuntu-latest
@@ -215,7 +215,7 @@ jobs:
 
       - name: Revert Gazelle files again
         run: |
-          git checkout -- k8s/operator/tests/BUILD.bazel proto/BUILD.bazel proto/api/v1/BUILD.bazel proto/bus/BUILD.bazel proto/config/v1/BUILD.bazel server/pkg/tool/BUILD.bazel server/pkg/upstream/grpc/protobufparser/BUILD.bazel server/tests/integration/upstream/BUILD.bazel server/examples/upstream_service_demo/grpc/greeter_server/proto/BUILD.bazel || true
+          git checkout -- k8s/operator/tests/BUILD.bazel proto/BUILD.bazel proto/api/v1/BUILD.bazel proto/bus/BUILD.bazel proto/config/v1/BUILD.bazel server/pkg/tool/BUILD.bazel server/pkg/upstream/grpc/protobufparser/BUILD.bazel server/tests/integration/upstream/BUILD.bazel || true
 
       - name: Test
         env:
