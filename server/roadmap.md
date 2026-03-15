@@ -390,3 +390,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] A2A Open-Governance Integration**: Implementation of the finalized Linux Foundation A2A security manifest and task brokering model. (Added: 2026-04-13)
 *   **[P1] CLAW-10 Compliance Mapper**: Automation layer for mapping system state to the CLAW-10 Enterprise Evaluation Matrix. (Added: 2026-04-13)
 *   **[P0] Deterministic Boot Manifest Provider**: Core service for generating and signing environment integrity manifests. (Added: 2026-04-13)
+
+#### Upcoming (2026-04-15 Evolution)
+*   **[P0] Hardware-Attested Boot Manifest Provider**: Core service for binding environment integrity to local TPM/Secure Enclave signatures. (Added: 2026-04-15)
+*   **[P0] VTD Autonomous Delegation Engine**: Implementation of automated, proof-based A2A task handoffs for low-risk operations. (Added: 2026-04-15)
+*   **[P1] Standardized Context Sidecar Interface**: Universal "Context Bus" for bridging framework-specific state strategies (OpenClaw, etc.). (Added: 2026-04-15)

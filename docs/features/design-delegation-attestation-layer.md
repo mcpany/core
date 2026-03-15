@@ -47,3 +47,10 @@ As agent swarms grow in complexity, the "Manual Review Bottleneck" (where 44% of
 
 ## 7. Evolutionary Changelog
 * **2026-04-14:** Initial Document Creation.
+
+### Update: 2026-04-15 - Integration with Context Sidecars
+**Context:** Today's market sync revealed a new "Shadow Context Injection" pattern where malicious state fragments can bypass safety evaluations if the evaluator lacks full context visibility.
+**Architecture Adjustment:**
+*   **Context-Aware Scoring:** The `EvaluationService` is being updated to optionally mount "Context Sidecars" during evaluation. This allows the DAL to perform safety proofs against the *actual* state the subagent will receive, not just the task description.
+*   **Shadow Fragment Detection:** Integrating a WASM-based "State Sanitizer" directly into the evaluation pipeline to detect hidden instructions in Binary State Handoffs.
+**Security Impact:** Prevents "Side-Channel Intent Hijacking" where a subagent is coerced into an unsafe action via malicious context fragments that appear benign to traditional evaluators.
