@@ -135,7 +135,7 @@ test.describe('Playground Complex UI', () => {
     await page.getByRole('button', { name: /^Use$/i }).first().click();
 
     // Verify Tool Runner tab is active
-    await expect(page.getByRole('tab', { name: 'Tool Runner' })).toBeVisible();
+    await expect(page.getByRole('tab', { name: 'Tool Runner' }).first()).toBeVisible();
     // Relaxed check for title
     await expect(page.getByText('complex-test-service.create_user').first()).toBeVisible();
 
