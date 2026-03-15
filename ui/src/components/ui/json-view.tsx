@@ -31,6 +31,10 @@ interface JsonViewProps {
      * Set to 0 or negative to disable collapsing.
      */
     maxHeight?: number;
+    /**
+     * How many levels deep to auto-expand in the tree view. Default: 1.
+     */
+    defaultExpandedLevel?: number;
 }
 
 // Helper to safely parse JSON if string
@@ -70,7 +74,7 @@ const getTableData = (data: unknown, smartTable: boolean) => {
  * @param props.maxHeight - Max height before collapsing (only applies to Raw/Table views, Tree handles its own).
  * @returns The rendered component.
  */
-export function JsonView({ data, className, smartTable = false, maxHeight = 400 }: JsonViewProps) {
+export function JsonView({ data, className, smartTable = false, maxHeight = 400, defaultExpandedLevel = 1 }: JsonViewProps) {
     // Calculate initial state lazily
     const [viewMode, setViewMode] = useState<"smart" | "tree" | "raw" | "image">(() => {
         const parsed = tryParse(data);
@@ -155,22 +159,22 @@ export function JsonView({ data, className, smartTable = false, maxHeight = 400 
                 }}
             >
                 <Suspense fallback={<pre className="p-4 text-xs text-muted-foreground">Loading…</pre>}>
-                <SyntaxHighlighter
-                    language="json"
-                    style={vs2015}
-                    customStyle={{
-                        margin: 0,
-                        padding: '1rem',
-                        borderRadius: '0.375rem',
-                        fontSize: '12px',
-                        lineHeight: '1.5',
-                        backgroundColor: 'transparent' // We set bg on parent
-                    }}
-                    wrapLines={true}
-                    wrapLongLines={true}
-                >
-                    {typeof data === 'string' ? data : JSON.stringify(data, null, 2)}
-                </SyntaxHighlighter>
+                    <SyntaxHighlighter
+                        language="json"
+                        style={vs2015}
+                        customStyle={{
+                            margin: 0,
+                            padding: '1rem',
+                            borderRadius: '0.375rem',
+                            fontSize: '12px',
+                            lineHeight: '1.5',
+                            backgroundColor: 'transparent' // We set bg on parent
+                        }}
+                        wrapLines={true}
+                        wrapLongLines={true}
+                    >
+                        {typeof data === 'string' ? data : JSON.stringify(data, null, 2)}
+                    </SyntaxHighlighter>
                 </Suspense>
 
                 {showCollapse && !isExpanded && (
@@ -217,7 +221,7 @@ export function JsonView({ data, className, smartTable = false, maxHeight = 400 
                     className="p-4 overflow-auto transition-all"
                     style={{ maxHeight: showCollapse && !isExpanded ? `${maxHeight}px` : undefined }}
                 >
-                    <JsonTree data={parsedData} defaultExpandedLevel={1} />
+                    <JsonTree data={parsedData} defaultExpandedLevel={defaultExpandedLevel} />
 
                     {showCollapse && !isExpanded && (
                         <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-[#1e1e1e] to-transparent pointer-events-none" />

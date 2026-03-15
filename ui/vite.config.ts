@@ -26,6 +26,14 @@ const bufbuildWire = fs.existsSync(bufbuildWirePath)
 export default defineConfig({
   plugins: [react()],
   resolve: {
+    // Prevent React (and friends) from being bundled twice when Vite resolves
+    // the same package via different paths (e.g. source-tree relative vs Bazel
+    // output absolute symlinks). Without this, hooks like useContext fail at
+    // runtime because the two React instances don't share their internal
+    // dispatcher. react-router-dom is listed here because it's in the root
+    // node_modules and is imported transitively from multiple paths; its own
+    // node_modules provide the single react-router / @remix-run/router copies.
+    dedupe: ["react", "react-dom", "react-router-dom"],
     alias: {
       "@": path.join(__dirname, "src"),
       "@proto": protoPath,
@@ -52,8 +60,57 @@ export default defineConfig({
       "/api/v1": {
         target: process.env.BACKEND_URL || "http://localhost:50050",
         changeOrigin: true,
+        ws: true,
       },
       // gRPC-Web: service name segments start with "mcpany."
+      "/mcpany.": {
+        target: process.env.BACKEND_URL || "http://localhost:50050",
+        changeOrigin: true,
+      },
+      "/doctor": {
+        target: process.env.BACKEND_URL || "http://localhost:50050",
+        changeOrigin: true,
+      },
+      "/v1/": {
+        target: process.env.BACKEND_URL || "http://localhost:50050",
+        changeOrigin: true,
+      },
+      "/auth/oauth/": {
+        target: process.env.BACKEND_URL || "http://localhost:50050",
+        changeOrigin: true,
+      },
+      "/auth/login": {
+        target: process.env.BACKEND_URL || "http://localhost:50050",
+        changeOrigin: true,
+      },
+      "/debug/": {
+        target: process.env.BACKEND_URL || "http://localhost:50050",
+        changeOrigin: true,
+      },
+      "/sse": {
+        target: process.env.BACKEND_URL || "http://localhost:50050",
+        changeOrigin: true,
+      },
+      "/messages": {
+        target: process.env.BACKEND_URL || "http://localhost:50050",
+        changeOrigin: true,
+      },
+      "/mcp/": {
+        target: process.env.BACKEND_URL || "http://localhost:50050",
+        changeOrigin: true,
+      },
+    },
+  },
+  // preview.proxy mirrors server.proxy so that `vite preview` (used by
+  // Playwright Bazel tests) can reach the backend the same way vite dev does.
+  // BACKEND_URL is injected by playwright_test.sh via the webServer.env config.
+  preview: {
+    proxy: {
+      "/api/v1": {
+        target: process.env.BACKEND_URL || "http://localhost:50050",
+        changeOrigin: true,
+        ws: true,
+      },
       "/mcpany.": {
         target: process.env.BACKEND_URL || "http://localhost:50050",
         changeOrigin: true,

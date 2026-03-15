@@ -28,28 +28,12 @@ defaults:
 jobs:
   changes:
     runs-on: ubuntu-latest
-    # container:
-    #   image: iowoi/mcp-runner:latest
-    #   options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     outputs:
       src: ${{ steps.filter.outputs.src }}
     steps:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
-
-      - name: Install dependencies (Idempotent)
-        run: |
-          if command -v make >/dev/null && command -v curl >/dev/null; then
-            echo "Dependencies already installed in container, skipping apt-get."
-            exit 0
-          fi
-          if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
-          if command -v apt-get > /dev/null 2>&1; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils curl unzip build-essential
-          elif command -v apk > /dev/null 2>&1; then
-             $SUDO apk add --no-cache make xz curl unzip build-base
-          fi
 
       - name: Check for changes
         id: filter
@@ -86,12 +70,12 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v5
 
-      # Bazel manages all lint dependencies (buildifier, gazelle, golangci-lint)
-      # so we only need the Bazel toolchain – no Go/Python/Node setup needed.
+      # All lint tooling (buildifier, gazelle, eslint, tsc) is managed by Bazel.
+      # No Go, Node, or Python setup is needed outside of Bazel.
       - name: Set up Bazel
         uses: bazel-contrib/setup-bazel@0.18.0
         with:
@@ -99,31 +83,19 @@ jobs:
           disk-cache: ${{ runner.os }}-bazel-lint-${{ hashFiles('**/BUILD', '**/BUILD.bazel', '**/*.bzl', 'MODULE.bazel') }}
           repository-cache: true
 
-      - name: Lint (Bazel)
+      - name: Lint (Bazel + BuildBuddy remote cache)
         env:
-          BAZEL_DISK_CACHE: ${{ env.BAZEL_DISK_CACHE }}
-          BAZEL_REPOSITORY_CACHE: ${{ env.BAZEL_REPOSITORY_CACHE }}
           BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_OFFICIAL_API_KEY }}
         run: |
+          # Run //:lint (buildifier + gazelle + golangci-lint) and
+          # //ui:lint + //ui:typecheck (eslint + tsc) in a single Bazel invocation
+          # so remote cache is shared across all of them.
           bazelisk run //:lint \
             --config=remote \
-            --disk_cache=$BAZEL_DISK_CACHE \
-            --repository_cache=$BAZEL_REPOSITORY_CACHE \
             --remote_header=x-buildbuddy-api-key=$BUILDBUDDY_API_KEY
-
-      # Run UI lint and typecheck as Bazel tests (these are already pure Bazel
-      # targets and benefit from remote caching).
-      - name: UI Lint & Typecheck (Bazel)
-        env:
-          BAZEL_DISK_CACHE: ${{ env.BAZEL_DISK_CACHE }}
-          BAZEL_REPOSITORY_CACHE: ${{ env.BAZEL_REPOSITORY_CACHE }}
-          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_OFFICIAL_API_KEY }}
-        run: |
           bazelisk test //ui:lint //ui:typecheck \
             --config=remote \
             --test_output=errors \
-            --disk_cache=$BAZEL_DISK_CACHE \
-            --repository_cache=$BAZEL_REPOSITORY_CACHE \
             --remote_header=x-buildbuddy-api-key=$BUILDBUDDY_API_KEY
 
   bazel-test:
@@ -154,18 +126,15 @@ jobs:
           # This should be shared as much as possible to avoid re-downloading.
           repository-cache: true
 
-      - name: Set up Node.js (for Playwright deps install)
-        uses: actions/setup-node@v6
-        with:
-          node-version: "24"
-
+      # Install only Playwright Chromium *system* libraries (libnss, libglib, etc.).
+      # Node is pre-installed on ubuntu-latest runners; no actions/setup-node needed.
+      # The Chromium browser binary itself is downloaded by playwright_test.sh
+      # on first use and cached in /tmp/mcpany-playwright-browsers.
       - name: Install Playwright Chromium system dependencies
         run: npx -y playwright@1.58.0 install-deps chromium
 
       - name: Test
         env:
-          BAZEL_DISK_CACHE: ${{ env.BAZEL_DISK_CACHE }}
-          BAZEL_REPOSITORY_CACHE: ${{ env.BAZEL_REPOSITORY_CACHE }}
           BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_OFFICIAL_API_KEY }}
         run: |
           bazelisk test //... \
@@ -176,19 +145,13 @@ jobs:
             --test_env=GITHUB_WORKSPACE \
             --test_env=PATH \
             --test_env=HOME \
-            --disk_cache=$BAZEL_DISK_CACHE \
-            --repository_cache=$BAZEL_REPOSITORY_CACHE \
             --remote_header=x-buildbuddy-api-key=$BUILDBUDDY_API_KEY
 
   ci-success:
     runs-on: ubuntu-latest
-    # container:
-    #   image: iowoi/mcp-runner:latest
-    #   options: --user root -v /var/run/docker.sock:/var/run/docker.sock
     needs:
       [
         changes,
-        lint,
         bazel-test,
       ]
     if: always()
@@ -198,19 +161,6 @@ jobs:
       actions: read
     steps:
       - uses: actions/checkout@v5
-
-      - name: Install dependencies (Idempotent)
-        run: |
-          if command -v make >/dev/null && command -v curl >/dev/null; then
-            echo "Dependencies already installed in container, skipping apt-get."
-            exit 0
-          fi
-          if command -v sudo >/dev/null; then SUDO="sudo"; else SUDO=""; fi
-          if command -v apt-get > /dev/null 2>&1; then
-            $SUDO apt-get update && $SUDO apt-get install -y make xz-utils curl unzip build-essential
-          elif command -v apk > /dev/null 2>&1; then
-             $SUDO apk add --no-cache make xz curl unzip build-base
-          fi
 
       - name: Auto-Squash
         if: github.event_name == 'pull_request'

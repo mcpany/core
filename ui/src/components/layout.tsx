@@ -3,7 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { Suspense } from "react";
 import { Outlet } from "react-router-dom";
+import { Loader2 } from "lucide-react";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
@@ -18,6 +20,12 @@ import { KeyboardShortcutsProvider } from "@/contexts/keyboard-shortcuts-context
 import { ServiceHealthProvider } from "@/contexts/service-health-context";
 import { SystemStatusBanner } from "@/components/system-status-banner";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
+
+const PageFallback = () => (
+  <div className="flex items-center justify-center h-full min-h-[200px]">
+    <Loader2 className="animate-spin h-8 w-8 text-muted-foreground" />
+  </div>
+);
 
 /**
  * Layout component that wraps all main application routes with the
@@ -54,7 +62,9 @@ export function Layout() {
                   <SystemStatusBanner />
                   <main className="flex-1 overflow-auto p-4 md:p-6 lg:p-8">
                     <ErrorBoundary>
-                      <Outlet />
+                      <Suspense fallback={<PageFallback />}>
+                        <Outlet />
+                      </Suspense>
                     </ErrorBoundary>
                   </main>
                 </SidebarInset>

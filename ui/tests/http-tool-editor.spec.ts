@@ -66,7 +66,7 @@ test.describe('HTTP Tool Editor - Live Preview', () => {
     await page.getByRole('tab', { name: 'Test & Preview' }).click();
 
     // Verify Substitution Placeholder
-    await expect(page.getByText('/echo/{{id}}')).toBeVisible();
+    await expect(previewCard.getByText('/echo/{{id}}')).toBeVisible();
 
     // Type Argument
     const argsInput = page.getByLabel('Test Arguments (JSON)');

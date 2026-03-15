@@ -19,20 +19,20 @@ interface RichResultViewerProps {
 }
 
 interface TextContent {
-  type: "text";
-  text: string;
+    type: "text";
+    text: string;
 }
 
 interface ImageContent {
-  type: "image";
-  data: string;
-  mimeType: string;
+    type: "image";
+    data: string;
+    mimeType: string;
 }
 
 type McpContent = TextContent | ImageContent;
 
 interface McpContentRendererProps {
-  content: McpContent[];
+    content: McpContent[];
 }
 
 function McpContentRenderer({ content }: McpContentRendererProps) {
@@ -48,7 +48,7 @@ function McpContentRenderer({ content }: McpContentRendererProps) {
                         </div>
                     );
                 } else if (item.type === "image") {
-                     return (
+                    return (
                         <div key={index} className="rounded-lg overflow-hidden border bg-muted/20 inline-block max-w-full">
                             <img
                                 src={`data:${item.mimeType};base64,${item.data}`}
@@ -91,7 +91,7 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
 
         // Handle raw string that is JSON
         if (typeof result === 'string') {
-             try {
+            try {
                 const parsed = JSON.parse(result);
                 return [parsed, true];
             } catch {
@@ -157,7 +157,7 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
             <div className="flex items-center justify-between mb-2">
                 <TabsList>
                     {mcpContent && (
-                         <TabsTrigger value="rendered" className="flex items-center gap-2">
+                        <TabsTrigger value="rendered" className="flex items-center gap-2">
                             <FileText className="h-4 w-4" /> Rendered
                         </TabsTrigger>
                     )}
@@ -170,7 +170,7 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
                         <FileJson className="h-4 w-4" /> JSON
                     </TabsTrigger>
                     {isExtracted && (
-                         <TabsTrigger value="raw" className="flex items-center gap-2">
+                        <TabsTrigger value="raw" className="flex items-center gap-2">
                             <Terminal className="h-4 w-4" /> Raw Output
                         </TabsTrigger>
                     )}
@@ -213,10 +213,10 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
             )}
 
             <TabsContent value="json">
-                <JsonView data={content} maxHeight={400} />
+                <JsonView data={content} maxHeight={400} defaultExpandedLevel={2} />
             </TabsContent>
 
-             {isExtracted && (
+            {isExtracted && (
                 <TabsContent value="raw">
                     <JsonView data={result} maxHeight={400} />
                 </TabsContent>

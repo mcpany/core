@@ -65,6 +65,9 @@ find_tool() {
 # ---------------------------------------------------------------------------
 # 1. Buildifier – formats/lints Bazel BUILD files.
 #    Binary supplied via data dep @buildifier_prebuilt//:buildifier.
+#    We use `find` to enumerate files instead of `-r .` so we can exclude
+#    read-only Go module caches (build/, bazel-*) and node_modules that are
+#    not owned by this repo and would cause permission-denied errors.
 # ---------------------------------------------------------------------------
 echo "==> Running Buildifier..."
 BUILDIFIER_BIN="$(find_tool buildifier)"
@@ -72,7 +75,30 @@ if [[ -z "$BUILDIFIER_BIN" || ! -x "$BUILDIFIER_BIN" ]]; then
     echo "ERROR: buildifier not found. It should be provided as a Bazel data dep." >&2
     exit 1
 fi
-"$BUILDIFIER_BIN" -r .
+# Collect Bazel BUILD / .bzl / WORKSPACE files, excluding caches and symlinks.
+buildifier_files=(
+    $(find . \
+        -not \( \
+            -path './build/*' \
+            -o -path './bazel-*' \
+            -o -path './node_modules/*' \
+            -o -path './.git/*' \
+            -o -path './ui/node_modules/*' \
+            -o -path './server/node_modules/*' \
+        \) \
+        \( \
+            -name 'BUILD' \
+            -o -name 'BUILD.bazel' \
+            -o -name 'WORKSPACE' \
+            -o -name 'WORKSPACE.bazel' \
+            -o -name '*.bzl' \
+        \) \
+        -type f \
+        2>/dev/null)
+)
+if [[ ${#buildifier_files[@]} -gt 0 ]]; then
+    "$BUILDIFIER_BIN" "${buildifier_files[@]}"
+fi
 echo "    Buildifier OK."
 
 # ---------------------------------------------------------------------------
@@ -99,18 +125,16 @@ echo "==> Running golangci-lint..."
 if [[ -z "${GOLANGCI_LINT_BIN:-}" ]]; then
     GOLANGCI_LINT_BIN="$(find_tool golangci-lint)"
 fi
-if [[ -z "${GOLANGCI_LINT_BIN:-}" || ! -x "${GOLANGCI_LINT_BIN}" ]]; then
-    GOLANGCI_LINT_BIN="build/env/bin/golangci-lint"
-fi
+# No longer fall back to build/env/bin/ (local make-managed path) since this
+# is a Bazel-native project. If the binary is not in runfiles, skip gracefully.
 
 if [[ -x "$GOLANGCI_LINT_BIN" ]]; then
     "$GOLANGCI_LINT_BIN" run --timeout 20m --fix \
         ./server/cmd/... ./server/pkg/... ./server/tests/... ./server/examples/...
     echo "    golangci-lint OK."
 else
-    echo "    Warning: golangci-lint not found."
-    echo "    To install via Bazel, ensure the :golangci_lint_bin data dep is present."
-    echo "    Or run 'make prepare' to install it locally."
+    echo "    Warning: golangci-lint not found (skipping Go linting)."
+    echo "    To enable, add a :golangci_lint_bin data dep or run 'make prepare'."
 fi
 
 echo "==> Lint complete."

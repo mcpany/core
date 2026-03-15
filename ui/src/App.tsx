@@ -9,49 +9,49 @@ import { Layout } from "./components/layout";
 import { Loader2 } from "lucide-react";
 
 // Lazy-load every page so the initial bundle stays small.
-const DashboardPage            = lazy(() => import("./app/page"));
-const AlertsPage               = lazy(() => import("./app/alerts/page"));
-const AuditPage                = lazy(() => import("./app/audit/page"));
-const AuthCallbackPage         = lazy(() => import("./app/auth/callback/page"));
-const ConfigValidatorPage      = lazy(() => import("./app/config-validator/page"));
-const ContextPage              = lazy(() => import("./app/context/page"));
-const CredentialsPage          = lazy(() => import("./app/credentials/page"));
-const DiagnosticsPage          = lazy(() => import("./app/diagnostics/page"));
-const InspectorPage            = lazy(() => import("./app/inspector/page"));
-const LoginPage                = lazy(() => import("./app/login/page"));
-const LogsPage                 = lazy(() => import("./app/logs/page"));
-const MarketplacePage          = lazy(() => import("./app/marketplace/page"));
-const ExternalMarketplacePage  = lazy(() => import("./app/marketplace/external/[id]/page"));
-const MiddlewarePage           = lazy(() => import("./app/middleware/page"));
-const NetworkPage              = lazy(() => import("./app/network/page"));
-const OAuthCallbackPage        = lazy(() => import("./app/oauth/callback/page"));
-const PlaygroundPage           = lazy(() => import("./app/playground/page"));
-const PlaygroundSchemaPage     = lazy(() => import("./app/playground/schema/page"));
-const ProfilesPage             = lazy(() => import("./app/profiles/page"));
-const PromptsPage              = lazy(() => import("./app/prompts/page"));
-const ResourcesPage            = lazy(() => import("./app/resources/page"));
-const SecretsPage              = lazy(() => import("./app/secrets/page"));
-const ServiceDetailPage        = lazy(() => import("./app/service/[id]/page"));
-const ServicePromptPage        = lazy(() => import("./app/service/[id]/prompt/[name]/page"));
-const ServiceResourcePage      = lazy(() => import("./app/service/[id]/resource/[name]/page"));
-const ServiceToolPage          = lazy(() => import("./app/service/[id]/tool/[name]/page"));
-const SettingsMiddlewarePage   = lazy(() => import("./app/settings/middleware/page"));
-const SettingsPage             = lazy(() => import("./app/settings/page"));
-const SettingsWebhooksPage     = lazy(() => import("./app/settings/webhooks/page"));
-const SkillEditPage            = lazy(() => import("./app/skills/[name]/edit/page"));
-const SkillNamePage            = lazy(() => import("./app/skills/[name]/page"));
-const SkillCreatePage          = lazy(() => import("./app/skills/create/page"));
-const SkillsPage               = lazy(() => import("./app/skills/page"));
-const StackDetailPage          = lazy(() => import("./app/stacks/[stackId]/page"));
-const StacksPage               = lazy(() => import("./app/stacks/page"));
-const StatsPage                = lazy(() => import("./app/stats/page"));
-const ToolsPage                = lazy(() => import("./app/tools/page"));
-const TracesPage               = lazy(() => import("./app/traces/page"));
+const DashboardPage = lazy(() => import("./app/page"));
+const AlertsPage = lazy(() => import("./app/alerts/page"));
+const AuditPage = lazy(() => import("./app/audit/page"));
+const AuthCallbackPage = lazy(() => import("./app/auth/callback/page"));
+const ConfigValidatorPage = lazy(() => import("./app/config-validator/page"));
+const ContextPage = lazy(() => import("./app/context/page"));
+const CredentialsPage = lazy(() => import("./app/credentials/page"));
+const DiagnosticsPage = lazy(() => import("./app/diagnostics/page"));
+const InspectorPage = lazy(() => import("./app/inspector/page"));
+const LoginPage = lazy(() => import("./app/login/page"));
+const LogsPage = lazy(() => import("./app/logs/page"));
+const MarketplacePage = lazy(() => import("./app/marketplace/page"));
+const ExternalMarketplacePage = lazy(() => import("./app/marketplace/external/[id]/page"));
+const MiddlewarePage = lazy(() => import("./app/middleware/page"));
+const NetworkPage = lazy(() => import("./app/network/page"));
+const OAuthCallbackPage = lazy(() => import("./app/oauth/callback/page"));
+const PlaygroundPage = lazy(() => import("./app/playground/page"));
+const PlaygroundSchemaPage = lazy(() => import("./app/playground/schema/page"));
+const ProfilesPage = lazy(() => import("./app/profiles/page"));
+const PromptsPage = lazy(() => import("./app/prompts/page"));
+const ResourcesPage = lazy(() => import("./app/resources/page"));
+const SecretsPage = lazy(() => import("./app/secrets/page"));
+const ServiceDetailPage = lazy(() => import("./app/service/[id]/page"));
+const ServicePromptPage = lazy(() => import("./app/service/[id]/prompt/[name]/page"));
+const ServiceResourcePage = lazy(() => import("./app/service/[id]/resource/[name]/page"));
+const ServiceToolPage = lazy(() => import("./app/service/[id]/tool/[name]/page"));
+const SettingsMiddlewarePage = lazy(() => import("./app/settings/middleware/page"));
+const SettingsPage = lazy(() => import("./app/settings/page"));
+const SettingsWebhooksPage = lazy(() => import("./app/settings/webhooks/page"));
+const SkillEditPage = lazy(() => import("./app/skills/[name]/edit/page"));
+const SkillNamePage = lazy(() => import("./app/skills/[name]/page"));
+const SkillCreatePage = lazy(() => import("./app/skills/create/page"));
+const SkillsPage = lazy(() => import("./app/skills/page"));
+const StackDetailPage = lazy(() => import("./app/stacks/[stackId]/page"));
+const StacksPage = lazy(() => import("./app/stacks/page"));
+const StatsPage = lazy(() => import("./app/stats/page"));
+const ToolsPage = lazy(() => import("./app/tools/page"));
+const TracesPage = lazy(() => import("./app/traces/page"));
 const UpstreamServiceDetailPage = lazy(() => import("./app/upstream-services/[serviceId]/page"));
-const UpstreamServicesPage     = lazy(() => import("./app/upstream-services/page"));
-const UsersPage                = lazy(() => import("./app/users/page"));
-const VisualizerPage           = lazy(() => import("./app/visualizer/page"));
-const WebhooksPage             = lazy(() => import("./app/webhooks/page"));
+const UpstreamServicesPage = lazy(() => import("./app/upstream-services/page"));
+const UsersPage = lazy(() => import("./app/users/page"));
+const VisualizerPage = lazy(() => import("./app/visualizer/page"));
+const WebhooksPage = lazy(() => import("./app/webhooks/page"));
 
 const PageFallback = () => (
   <div className="flex items-center justify-center h-full min-h-[200px]">
@@ -61,6 +61,9 @@ const PageFallback = () => (
 
 /**
  * Root application component with React Router routes.
+ * Public routes (login, auth) get a top-level Suspense fallback.
+ * Protected routes (wrapped in Layout) have Suspense inside the Layout so the
+ * sidebar/header stay visible while the page content lazy-loads.
  */
 export default function App() {
   return (

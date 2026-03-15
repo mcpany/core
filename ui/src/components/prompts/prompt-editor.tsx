@@ -82,7 +82,7 @@ export function PromptEditor({ open, onOpenChange, prompt, services, onSave }: P
     // prompt object doesn't strictly have serviceId in proto, but we might have injected it or need to find it.
     // In PromptWorkbench, we might need to pass the serviceId if known.
     // For now, let's assume we can infer it or default to the first one.
-    const defaultServiceId = (prompt as any)?.serviceId || (services.length > 0 ? services[0].id : "");
+    const defaultServiceId = (prompt as any)?.serviceId || (services.length > 0 ? services[0].name : "");
 
     const form = useForm<PromptValues>({
         resolver: zodResolver(promptSchema),
@@ -201,7 +201,7 @@ export function PromptEditor({ open, onOpenChange, prompt, services, onSave }: P
                                             </FormControl>
                                             <SelectContent>
                                                 {services.map(svc => (
-                                                    <SelectItem key={svc.id} value={svc.id}>
+                                                    <SelectItem key={svc.name} value={svc.name}>
                                                         {svc.name}
                                                     </SelectItem>
                                                 ))}
