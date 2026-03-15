@@ -44,8 +44,7 @@ func NewService(promptManager ManagerInterface) *Service {
 //   - mcpServer: *mcp.Server. The MCP server instance.
 //
 // Returns:
-//
-//	None.
+//   None.
 func (s *Service) SetMCPServer(mcpServer *mcp.Server) {
 	s.mcpServer = mcpServer
 	s.promptManager.SetMCPServer(NewMCPServerProvider(mcpServer))
