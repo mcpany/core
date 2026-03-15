@@ -434,6 +434,11 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Absence Proof (DAP) Generator**: Security extension for Pre-Flight Validator to sign missing-file proofs (Added: 2026-04-23).
 *   **[P0] A2UI Secure Surface Host**: Gateway infrastructure for sandboxed agent-generated UI fragments (Added: 2026-04-23).
 
+#### Upcoming (2026-04-26 Evolution)
+*   **[P0] Multi-Hop Trust Relay**: Implementation of LFTA v2.0 for multi-hop trust delegation through deep agent swarms. (Added: 2026-04-26)
+*   **[P0] Cognitive Anchor Manager**: Extension for ContextEngine to manage immutable mission-root anchors, preventing semantic drift. (Added: 2026-04-26)
+*   **[P0] A2UI Interactive Delegation Bridge**: Hardened rendering for delegated task card approvals via declarative A2UI manifests. (Added: 2026-04-26)
+
 #### Upcoming (2026-04-25 Evolution)
 *   **[P0] A2A Session Persistence Middleware**: Core security service for managing token refresh and trust persistence in deep reasoning chains. (Added: 2026-04-25)
 *   **[P0] DAP Enforcement for Pre-Flight Validator**: Mandatory enforcement of Deterministic Absence Proofs as a prerequisite for all agent boots. (Added: 2026-04-25)

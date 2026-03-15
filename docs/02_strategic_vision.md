@@ -10,6 +10,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-04-26]
+### Focus: Multi-Hop Trust Persistence & Cognitive Sovereignty Consolidation
+**Context**: The maturation of OpenClaw's "Cognitive Anchoring" and the standardization of Gemini CLI's LFTA v2.0 trust leases signal a move toward "Long-Haul Agency." We must evolve from session-bound trust to "Attested Lineage" that survives deep multi-hop delegation without strength degradation.
+**Strategic Pivot**:
+- **Multi-Hop Trust Persistence**: MCP Any will implement LFTA v2.0 compliant "Trust Relays." This allows agents to delegate capabilities through deep swarms while maintaining hardware-bound attestation strength, neutralizing "Multi-Hop Exhaustion."
+- **Cognitive Anchoring Host**: We are evolving the ContextEngine Adapter to natively support "Cognitive Anchors." By pinning mission-root intents in an immutable context sidecar, we prevent "Semantic Drift" and "Context-Splicing" during complex subagent handoffs.
+- **Interactive Delegation Gateway**: Leveraging A2UI manifests, MCP Any will act as the authoritative "HITL Bridge" for delegated task cards. We will provide origin-locked UI fragments for user approval of high-risk multi-agent delegations.
+
 ## Strategic Evolution: [2026-04-25]
 ### Focus: Pluggable Context Sovereignty & Authenticated A2A Handshake Consolidation
 **Context**: The acceleration of OpenClaw's `ContextEngine` adoption and the stabilization of Gemini CLI v0.33.0's A2A auth suite demand that MCP Any matures its state and trust management. We must ensure that context is not only pluggable but also sovereignty-aware, while consolidating A2A handshakes to support long-running agent reasoning sessions.

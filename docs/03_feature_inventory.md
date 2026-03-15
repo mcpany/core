@@ -8,6 +8,19 @@
 
 ---
 
+## Evolution: [2026-04-26] Updates
+
+### Proposed Additions
+- **Multi-Hop Trust Relay**: (P0) Security middleware implementing LFTA v2.0 multi-hop trust delegation, allowing attestation strength to persist across deep agent swarms.
+- **Cognitive Anchor Manager**: (P0) Extension for the ContextEngine Adapter that manages the lifecycle of immutable "Mission Anchors" to prevent semantic drift.
+- **A2UI Interactive Delegation Bridge**: (P0) Hardened A2UI component for multi-agent task delegation, supporting rich user approvals for high-risk handoffs.
+
+### Priority Shifts
+- **A2A Session Persistence Middleware**: (Re-affirmed P0) Now integrates with the Multi-Hop Trust Relay for long-haul reasoning sessions.
+- **ContextEngine Plugin Adapter**: (Re-affirmed P0) Expanded to support Cognitive Anchoring as a core sovereignty utility.
+
+---
+
 ## Evolution: [2026-04-25] Updates
 
 ### Proposed Additions
