@@ -500,3 +500,11 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Universal Context Sidecar Hub**: MCP Any will evolve to act as the primary host for framework-agnostic Context Sidecars. By implementing a standardized "Context Bus," we will allow agents from disparate frameworks (OpenClaw, AutoGen) to share specialized state strategies (e.g., long-term memory, vector retrieval) securely.
 - **Hardware-Attested Boot Integrity**: We are moving from signed manifests to "Hardware-Locked Deterministic Boot." MCP Any will mandate that any project-local configuration be cryptographically bound to a Trusted Platform Module (TPM) or Secure Enclave, ensuring that cloned repositories cannot execute malicious hooks without explicit, hardware-bound user re-attestation.
 - **VTD-Powered Automation**: To break the "Approval Fatigue" bottleneck, we are accelerating the deployment of the Verifiable Task Delegation (VTD) layer, enabling autonomous A2A handoffs for verified low-risk operations.
+
+## Strategic Evolution: [2026-04-24]
+### Focus: Reasoning Provenance & Unified Identity Delegation
+**Context**: The release of the A2A Identity Delegation Token (IDT) draft and the rise of "Reasoning Integrity" concerns mark a shift toward "Provenance-First Agency." As swarms become heterogeneous and high-stakes, the infrastructure must guarantee that an agent is who it says it is and that its reasoning remains untampered throughout its lifecycle.
+**Strategic Pivot**:
+- **A2A Identity Delegation Broker**: MCP Any will pivot to become the authoritative broker for Identity Delegation Tokens. We will enable parents to issue cryptographically bound, mission-scoped sub-tokens, eliminating "Identity Shadowing" and delegation fatigue.
+- **Reasoning Provenance Ledger**: We are introducing a native ledger for hardware-attested reasoning traces. MCP Any will verify TEE-based provenance seals for agent monologues, ensuring that the Chain-of-Thought has not been intercepted or modified by malicious proxies.
+- **Universal Identity Mapping (UIM)**: To resolve framework-level trust fragmentation, MCP Any will implement UIM. This allows us to map identities from OpenClaw, AutoGen, and others into a single, UAB-compliant audit trail, providing a "Global View" of the swarm's activity.

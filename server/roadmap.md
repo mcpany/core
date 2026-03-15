@@ -438,3 +438,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] A2A Replay Guard Middleware**: Implementation of monotonic nonces and session-bound validation for the A2A Messaging Hub. (Added: 2026-04-22)
 *   **[P0] Adaptive Context Compaction Engine**: WebSocket-native compaction supporting Gemini-style reasoning effort headers. (Added: 2026-04-22)
 *   **[P1] Cognitive Fragment Reconciler**: Background service for synchronizing encrypted monologues across agent sessions. (Added: 2026-04-22)
+
+#### Upcoming (2026-04-24 Evolution)
+*   **[P0] A2A Identity Delegation Broker**: Lifecycle manager for Identity Delegation Tokens (IDT) to enable secure authority handoffs. (Added: 2026-04-24)
+*   **[P0] Reasoning Provenance Ledger**: Verification service for hardware-attested (TEE) reasoning traces. (Added: 2026-04-24)
+*   **[P1] Universal Identity Mapping (UIM) Service**: Unified identity layer for cross-framework agent auditing and trust. (Added: 2026-04-24)

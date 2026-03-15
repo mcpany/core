@@ -707,3 +707,14 @@
 ### Priority Shifts
 - **Verifiable Task Delegation (VTD)**: (Re-affirmed P0) Now elevated as the primary solution for the "Approval Fatigue" scaling bottleneck.
 - **Pluggable Context Bridge**: (Re-affirmed P0) Expanded to support the new Standardized Context Sidecar Interface.
+
+## Evolution: [2026-04-24] Updates
+
+### Proposed Additions
+- **A2A Identity Delegation Broker**: (P0) A core security service that manages the lifecycle of Identity Delegation Tokens (IDT), allowing parents to issue mission-scoped cryptographic sub-tokens to agents.
+- **Reasoning Provenance Ledger**: (P0) A native verification service for TEE-attested reasoning traces, ensuring the integrity of an agent's internal monologue and preventing middleman tampering.
+- **Universal Identity Mapping (UIM) Service**: (P1) An interoperability middleware that maps disparate framework identities into a unified, UAB-compliant identity for global swarm auditing.
+
+### Priority Shifts
+- **A2A Messaging Hub**: (Re-affirmed P0) Expanded to integrate with the IDT Broker for native, token-based agent authorization.
+- **Inference-Time Data Sanitizer (IDS)**: (Re-affirmed P0) Now mandatory for validating reasoning provenance seals before context ingestion.

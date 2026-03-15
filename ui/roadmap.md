@@ -287,3 +287,8 @@
 - [ ] **[P0] A2A Replay Security Dashboard**: Visualize nonce status and replay attempt alerts in the A2A hub. (Added: 2026-04-22)
 - [ ] **[P0] Adaptive Reasoning Monitor**: Real-time visualization of `x-gemini-reasoning-effort` levels and dynamic compaction efficiency. (Added: 2026-04-22)
 - [ ] **[P1] Encrypted Monologue Explorer**: Secure UI fragment for user-authorized decryption and review of subagent reasoning. (Added: 2026-04-22)
+
+#### Upcoming (2026-04-24 Evolution)
+- [ ] **[P0] Identity Delegation Workspace**: UI for parent agents to issue and manage mission-scoped sub-tokens. (Added: 2026-04-24)
+- [ ] **[P0] Reasoning Provenance Inspector**: Visual debugger for verifying TEE seals and Chain-of-Thought integrity. (Added: 2026-04-24)
+- [ ] **[P1] Global Swarm Identity Map**: Visualization of agent identities across framework boundaries (OpenClaw, AutoGen, etc.). (Added: 2026-04-24)

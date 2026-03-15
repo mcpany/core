@@ -54,3 +54,9 @@ MCP Any, as the universal agent infrastructure, is uniquely positioned to act as
         * Implementing "State Versioning" in the A2UI Stream. Every UI manifest now carries a `reasoning_epoch` ID.
         * The Gateway will buffer and "Fast-Forward" UI updates if an epoch switch is detected, ensuring the visual state matches the current reasoning effort.
     * **Security Impact:** Prevents "UI Shadowing" where an agent in a lower-effort mode could be manipulated by stale UI state from a high-effort reasoning branch.
+* **2026-04-24:** Update: Identity-Aware UI Scoping.
+    * **Context:** Today's research into Identity Delegation (IDT) and Reasoning Provenance (CVE-2026-31045) highlights the need to scope the UI surface to the agent's *active* delegation level.
+    * **Architecture Adjustment:**
+        * The A2UI Gateway now mandates an IDT for any UI manifest registration from a sub-agent.
+        * UI fragments are now "Intent-Bound": A sub-agent can only surface UI elements that correspond to the tools and scopes defined in its Delegation Token.
+    * **Security Impact:** Neutralizes "Visual Privilege Escalation" where a sub-agent might use the UI to trick a user into granting permissions that exceed its signed delegation scope.
