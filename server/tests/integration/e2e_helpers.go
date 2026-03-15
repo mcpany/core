@@ -1131,10 +1131,10 @@ func StartNatsServer(t *testing.T) (string, func()) {
 	t.Helper()
 
 	opts := &natsserver.Options{
-		Host:       loopbackIP,
-		Port:       -1, // random port
-		NoLog:      true,
-		NoSigs:     true,
+		Host:     loopbackIP,
+		Port:     -1, // random port
+		NoLog:    true,
+		NoSigs:   true,
 		MaxPending: 64 << 20,
 	}
 	ns, err := natsserver.NewServer(opts)

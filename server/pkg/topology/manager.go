@@ -373,12 +373,12 @@ func (m *Manager) GetRecentServiceStats(serviceID string, window time.Duration) 
 			totalErrors += stats.Errors
 			totalLatency += stats.Latency
 		} else if stats.ServiceStats != nil {
-			if sStats, ok := stats.ServiceStats[serviceID]; ok {
-				totalReqs += sStats.Requests
-				totalErrors += sStats.Errors
-				totalLatency += sStats.Latency
+				if sStats, ok := stats.ServiceStats[serviceID]; ok {
+					totalReqs += sStats.Requests
+					totalErrors += sStats.Errors
+					totalLatency += sStats.Latency
+				}
 			}
-		}
 	}
 
 	if totalReqs > 0 {

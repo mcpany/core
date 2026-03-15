@@ -291,7 +291,7 @@ func (s *sftpFs) RemoveAll(path string) error {
 // Rename renames a file.
 //
 // Parameters:
-//   - (oldname): The parameter.
+//   -  (oldname): The parameter.
 //   - newname (string): The parameter.
 //
 // Returns:
@@ -357,7 +357,7 @@ func (s *sftpFs) Chmod(name string, mode os.FileMode) error {
 //
 // Parameters:
 //   - name (string): The parameter.
-//   - (uid): The parameter.
+//   -  (uid): The parameter.
 //   - gid (int): The parameter.
 //
 // Returns:

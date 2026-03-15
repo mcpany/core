@@ -38,7 +38,7 @@ func NewConnectionFactory() *ConnectionFactory {
 //
 // Parameters:
 //   - dialer func(context.Context (string): The parameter.
-//   - (string): The parameter.
+//   -  (string): The parameter.
 //
 // Returns:
 //   - net.Conn: The result.
