@@ -408,6 +408,12 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Resident Integrity Monitor (RIM)**: Service for continuous, hardware-bound sandbox attestation to detect post-boot environment drift. (Added: 2026-04-16 - Promoted to P0 on 2026-04-17)
 *   **[P0] Self-Healing Consensus Hub**: Autoritative "Truth Broker" for swarm self-correction, leveraging MAQ for state reconciliation. (Added: 2026-04-16)
 
+#### Upcoming (2026-04-19 Evolution)
+*   **[P0] Distributed Trust Lease Broker**: Implementation of UACO v2.5 LFTA for sub-millisecond trust validation in deep swarms. (Added: 2026-04-19)
+*   **[P0] Deep Packet Enforcement (DPPE)**: L4 monitoring (DNS/ICMP) for the Validating Proxy to neutralize Binary Smuggling exfiltration. (Added: 2026-04-19)
+*   **[P0] Blackboard Versioning Hub**: Support for atomic state rollbacks and alignment heartbeats to facilitate OpenClaw ASH. (Added: 2026-04-19)
+*   **[P1] Cognitive Drift Detector**: Monitoring service for evaluating swarm intent alignment against the root mission. (Added: 2026-04-19)
+
 #### Upcoming (2026-04-15 Evolution)
 *   **[P0] Hardware-Attested Boot Manifest Provider**: Core service for binding environment integrity to local TPM/Secure Enclave signatures. (Added: 2026-04-15)
 *   **[P0] VTD Autonomous Delegation Engine**: Implementation of automated, proof-based A2A task handoffs for low-risk operations. (Added: 2026-04-15)

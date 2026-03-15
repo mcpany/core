@@ -257,6 +257,12 @@
 - [ ] **[P0] Resident Integrity Status Widget**: Real-time indicator for continuous sandbox attestation and hardware-bound health. (Added: 2026-04-16 - Promoted to P0 on 2026-04-17)
 - [ ] **[P0] Swarm Truth Explorer**: Authorization UI for swarm self-healing and mission state reconciliation. (Added: 2026-04-16)
 
+#### Upcoming (2026-04-19 Evolution)
+- [ ] **[P0] Distributed Trust Lease Dashboard**: Real-time monitor of active LFTA tokens, lease expiration, and fast-path validation latency. (Added: 2026-04-19)
+- [ ] **[P0] L4 Traffic Security Heatmap**: Enhanced monitoring of DNS/ICMP packets from agents with real-time tunnel detection. (Added: 2026-04-19)
+- [ ] **[P0] ASH Rollback Manager**: Visual workspace for managing swarm checkpoints and reviewing autonomous self-healing events. (Added: 2026-04-19)
+- [ ] **[P1] Cognitive Drift Monitor**: Real-time alignment visualization of subagent reasoning against mission-root intents. (Added: 2026-04-19)
+
 #### Upcoming (2026-04-15 Evolution)
 - [ ] **[P0] Hardware Boot Integrity Monitor**: Real-time status indicator for TPM-bound configurations and boot manifest attestation. (Added: 2026-04-15)
 - [ ] **[P0] VTD Automation Workspace**: Dashboard for configuring autonomous delegation rules and reviewing automated handoff history. (Added: 2026-04-15)

@@ -8,6 +8,20 @@
 
 ---
 
+## Evolution: [2026-04-19] Updates
+
+### Proposed Additions
+- **Distributed Trust Lease Broker**: (P0) A high-performance security utility implementing UACO v2.5 LFTA. Manages time-bound, hardware-attested trust leases to reduce per-call attestation latency.
+- **Deep Packet Enforcement (DPPE) Middleware**: (P0) L4 network security layer that monitors DNS and ICMP traffic for "Binary Smuggling" exfiltration patterns (CVE-2026-31042).
+- **Cognitive Drift Detector**: (P1) A monitoring service that evaluates subagent monologues against the mission-root to trigger ASH (Autonomous Self-Healing) re-alignment cycles.
+- **Blackboard Versioning Hub**: (P0) Extends the Shared KV Store to support atomic checkpoints and swarm-wide rollbacks, facilitating autonomous self-healing.
+
+### Priority Shifts
+- **Atomic State Rollback Middleware**: Promoted to **P0**. Now a critical dependency for OpenClaw v2.8 ASH compliance.
+- **Resident Integrity Monitor (RIM)**: (Re-affirmed P0) Expanded to act as the primary attestation source for the Distributed Trust Lease Broker.
+
+---
+
 ## Evolution: [2026-04-18] Updates
 
 ### Proposed Additions
