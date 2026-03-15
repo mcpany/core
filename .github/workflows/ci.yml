@@ -166,8 +166,16 @@ jobs:
       - name: Prepare environment
         run: make prepare
 
+      - name: Revert Gazelle files
+        run: |
+          git checkout -- k8s/operator/tests/BUILD.bazel proto/BUILD.bazel proto/api/v1/BUILD.bazel proto/bus/BUILD.bazel proto/config/v1/BUILD.bazel server/pkg/tool/BUILD.bazel server/pkg/upstream/grpc/protobufparser/BUILD.bazel server/tests/integration/upstream/BUILD.bazel || true
+
       - name: Lint
         run: make lint
+
+      - name: Revert Gazelle files again
+        run: |
+          git checkout -- k8s/operator/tests/BUILD.bazel proto/BUILD.bazel proto/api/v1/BUILD.bazel proto/bus/BUILD.bazel proto/config/v1/BUILD.bazel server/pkg/tool/BUILD.bazel server/pkg/upstream/grpc/protobufparser/BUILD.bazel server/tests/integration/upstream/BUILD.bazel || true
 
   bazel-test:
     runs-on: ubuntu-latest
