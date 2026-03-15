@@ -10,6 +10,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-04-24]
+### Focus: Pluggable Context Sovereignty & Authenticated A2A Handshakes
+**Context**: The release of OpenClaw's matured `ContextEngine` and Gemini CLI v0.33.0's A2A authentication suite signals a transition from "Connectivity-First" to "Trust-First" orchestration. We must ensure that context management is not only pluggable but also sovereignty-aware, while hardening the inter-agent discovery process against unauthenticated capability claims.
+**Strategic Pivot**:
+- **Pluggable Context Sovereignty**: MCP Any will adapt to host OpenClaw-compatible `ContextEngine` plugins. This allows us to provide "Sovereignty-Aware Compression," where critical mission intents are cryptographically protected from "Ghosting" during automated context summarization.
+- **Authenticated A2A Handshake Provider**: Leveraging Gemini CLI's A2A auth patterns, MCP Any will evolve into a native A2A Handshake Provider. Every task delegation or card discovery will require a multi-factor authenticated handshake, neutralizing "A2A Coercion" and "Shadow Agent" discovery.
+- **Zero-Trust Discovery Auth**: We are mandating "Auth-before-Discovery" for all A2A-compliant agents. MCP Any will act as the gatekeeper, ensuring that an agent's capabilities are only revealed to authorized peers within a verified mission scope.
+
 ## Strategic Evolution: [2026-04-23]
 ### Focus: Deterministic Lifecycle Attestation & Pluggable Context Governance
 **Context**: The stabilization of OpenClaw's pluggable `ContextEngine` and the disclosure of CVE-2026-25725 (Claude Code sandbox escape) mark a shift from "Point-in-Time Security" to "Continuous Lifecycle Attestation." We must ensure that agents are not only safe at boot but remain bound to a verified, immutable environment throughout their entire reasoning cycle.

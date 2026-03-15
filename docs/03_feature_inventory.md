@@ -8,6 +8,19 @@
 
 ---
 
+## Evolution: [2026-04-24] Updates
+
+### Proposed Additions
+- **A2A Authenticated Handshake Provider**: (P0) Native security middleware implementing Gemini CLI v0.33.0 style HTTP authentication for all agent-to-agent remote communications and card discovery.
+- **ContextEngine Plugin Adapter**: (P0) Core adapter for hosting OpenClaw-compatible ContextEngine plugins, enabling sovereignty-aware state management and intent protection.
+- **Zero-Trust Discovery Gate**: (P1) Identity-bound access control layer for the A2A Messaging Hub that enforces "Auth-before-Discovery" for agent capabilities.
+
+### Priority Shifts
+- **A2A Messaging Hub**: (Re-affirmed P0) Now designated as the primary enforcement point for Authenticated Handshakes.
+- **OpenClaw ContextEngine Lifecycle Adapter**: (Re-affirmed P0) Evolving into the ContextEngine Plugin Adapter for broader sovereignty support.
+
+---
+
 ## Evolution: [2026-04-23] Updates
 
 ### Proposed Additions
