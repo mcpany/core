@@ -413,6 +413,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-04-15]
+### Focus: Kernel-Level Integrity & Multimodal Semantic Governance
+**Context**: The emergence of eBPF-based tool guarding in Gemini CLI and the discovery of "Ghost Script" (CVE-2026-45201) in multimodal assets mark a new escalation in agent security. We are moving from "Sandboxing the Process" to "Governing the Semantic and Kernel Flow." Simultaneously, OpenClaw's move toward Context Quotas confirms that resource-aware reasoning is essential for swarm stability.
+**Strategic Pivot**:
+- **Kernel-Level Execution Integrity**: MCP Any will investigate the integration of eBPF-powered "Boundary Guards." This moves our security enforcement from the application layer to the kernel, providing immutable monitoring of system calls made by local tools.
+- **Multimodal Semantic Sanitization**: Expanding the IDS (Inference-Time Data Sanitizer) to include deep, semantic inspection of non-textual assets (SVG, CSS, PDF). We must neutralize "Ghost Script" injections before they can influence the agent's internal monologue.
+- **Context Quota Enforcement**: Implementing hard resource boundaries for subagents. MCP Any will act as the "Resource Arbiter," ensuring that parent-scoped intents are protected from token-exhaustion attacks by runaway subagents.
+
 ## Strategic Evolution: [2026-04-14]
 ### Focus: Pluggable Context Interoperability & Verifiable Task Delegation
 **Context**: The stabilization of OpenClaw's `ContextEngine` and the completion of the A2A governance transition mark a shift from "Infrastructure Connectivity" to "Intelligent State Mediation." Simultaneously, the persistence of configuration-based RCEs (CVE-2026-25725) proves that the environment itself is a weaponized input.

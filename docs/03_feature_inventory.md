@@ -8,6 +8,19 @@
 
 ---
 
+## Evolution: [2026-04-15] Updates
+
+### Proposed Additions
+- **eBPF Boundary Guard**: (P0) Kernel-level monitoring and enforcement service that validates system calls (read, write, network) made by local tools against their declared manifests, providing immutable execution integrity.
+- **Context Quota Controller**: (P1) Resource management middleware that enforces hard token and memory limits on subagent context usage to prevent "Context Storms" and ensure swarm-wide stability.
+- **Multimodal Semantic Sanitizer**: (P0) Security service that performs deep, semantic inspection of SVG, CSS, and PDF assets to detect and neutralize "Ghost Script" (CVE-2026-45201) and other indirect multimodal prompt injections.
+
+### Priority Shifts
+- **Inference-Time Data Sanitizer (IDS)**: (Re-affirmed P0) Expanded to integrate with the new Multimodal Semantic Sanitizer for holistic content governance.
+- **Policy Firewall**: (Re-affirmed P0) Now prioritizes integration with eBPF Boundary Guard for kernel-level policy enforcement.
+
+---
+
 ## Evolution: [2026-04-14] Updates
 
 ### Proposed Additions

@@ -386,6 +386,11 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] TPM-Bound Configuration Boot**: Extension of the attestation gateway to require hardware signatures for project-local hooks. (Added: 2026-04-14)
 *   **[P1] Context Sidecar Adapter**: Middleware to synchronize state with external frameworks (e.g., OpenClaw ContextEngine) via native APIs. (Added: 2026-04-14)
 
+#### Upcoming (2026-04-15 Evolution)
+*   **[P0] eBPF Boundary Guard**: Kernel-level syscall monitoring and enforcement for local tools. (Added: 2026-04-15)
+*   **[P0] Multimodal Semantic Sanitizer**: Deep inspection and redaction for SVG, PDF, and CSS assets (CVE-2026-45201). (Added: 2026-04-15)
+*   **[P1] Context Quota Controller**: Hard resource limits for subagent context usage to prevent "Context Storms." (Added: 2026-04-15)
+
 #### Upcoming (2026-04-13 Evolution)
 *   **[P0] A2A Open-Governance Integration**: Implementation of the finalized Linux Foundation A2A security manifest and task brokering model. (Added: 2026-04-13)
 *   **[P1] CLAW-10 Compliance Mapper**: Automation layer for mapping system state to the CLAW-10 Enterprise Evaluation Matrix. (Added: 2026-04-13)

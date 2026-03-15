@@ -236,6 +236,11 @@
 - [ ] **[P0] TPM Security Monitor**: Real-time status indicator for hardware-bound configuration attestation and TPM-locked project hooks. (Added: 2026-04-14)
 - [ ] **[P1] Context Sidecar Sync Viewer**: Visual dashboard for monitoring state synchronization between MCP Any and external Context Engines (e.g., OpenClaw). (Added: 2026-04-14)
 
+#### Upcoming (2026-04-15 Evolution)
+- [ ] **[P0] Kernel Boundary Monitor**: Real-time visualization of eBPF-blocked syscalls and tool capability violations. (Added: 2026-04-15)
+- [ ] **[P0] Multimodal Asset Sanitizer**: Security dashboard for reviewing semantically redacted assets (SVG/PDF). (Added: 2026-04-15)
+- [ ] **[P1] Context Quota Dashboard**: Resource monitor for subagent token/memory consumption and quota enforcement alerts. (Added: 2026-04-15)
+
 #### Upcoming (2026-04-13 Evolution)
 - [ ] **[P0] A2A Governance & Security Center**: UI for managing Linux Foundation compliant A2A security manifests and task brokering policies. (Added: 2026-04-13)
 - [ ] **[P1] CLAW-10 Compliance Dashboard**: Interactive matrix for visualizing system compliance with the CLAW-10 Enterprise Evaluation Matrix. (Added: 2026-04-13)
