@@ -213,6 +213,10 @@ jobs:
       - name: Install Playwright Chromium system dependencies
         run: npx -y playwright@1.58.0 install-deps chromium
 
+      - name: Revert Gazelle files again
+        run: |
+          git checkout -- k8s/operator/tests/BUILD.bazel proto/BUILD.bazel proto/api/v1/BUILD.bazel proto/bus/BUILD.bazel proto/config/v1/BUILD.bazel server/pkg/tool/BUILD.bazel server/pkg/upstream/grpc/protobufparser/BUILD.bazel server/tests/integration/upstream/BUILD.bazel || true
+
       - name: Test
         env:
           BAZEL_DISK_CACHE: ${{ env.BAZEL_DISK_CACHE }}
