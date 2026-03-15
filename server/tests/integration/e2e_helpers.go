@@ -755,6 +755,10 @@ func EnsureServerImageLoaded(t *testing.T) {
 //
 // Returns true if successful.
 func IsDockerSocketAccessible() bool {
+	if os.Getenv("CI") == "true" || os.Getenv("GITHUB_ACTIONS") == "true" {
+		return false
+	}
+
 	dockerExe, dockerArgs := getDockerCommand()
 
 	cmd := exec.CommandContext(context.Background(), dockerExe, append(dockerArgs, "info")...)
