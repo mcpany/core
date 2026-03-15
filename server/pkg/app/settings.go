@@ -13,9 +13,9 @@ import (
 // GlobalSettingsManager manages the global settings of the application in a thread-safe manner.
 // It allows for dynamic updates to configuration values that are used across the application.
 type GlobalSettingsManager struct {
-	mu            sync.RWMutex
-	apiKey        atomic.Value // stores string
-	allowedIPs    atomic.Value // stores []string
+	mu             sync.RWMutex
+	apiKey         atomic.Value // stores string
+	allowedIPs     atomic.Value // stores []string
 	allowedOrigins atomic.Value // stores []string
 }
 
@@ -52,7 +52,8 @@ func NewGlobalSettingsManager(apiKey string, allowedIPs []string, allowedOrigins
 //   - explicitAPIKey: string. An explicitly provided API key (e.g. from CLI flags) that overrides the config.
 //
 // Returns:
-//   None.
+//
+//	None.
 func (m *GlobalSettingsManager) Update(settings *config_v1.GlobalSettings, explicitAPIKey string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
