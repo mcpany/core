@@ -10,6 +10,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-04-22]
+### Focus: Cognitive Sovereignty & Negative Trust Architectures
+**Context**: The emergence of "Cognitive Sovereignty" within the Sovereign Agent Collective and the discovery of "Replay-as-Delegation" attacks signal a move toward more granular, non-repudiable agent agency. Security must now account for "Negative Trust"—proving the absolute absence of malicious configurations—while ensuring subagents maintain reasoning privacy from their parents.
+**Strategic Pivot**:
+- **Cognitive Sovereignty Hub**: MCP Any will evolve to support "Encrypted Monologue" storage. This ensures that a specialized subagent's internal reasoning remains private and immutable, accessible only to the subagent and the user via the A2UI Gateway, preventing parent-agent "Reasoning Hijacking."
+- **A2A Replay Guard**: We are mandating a "Monotonic Task Nonce" for all A2A task proposals. This neutralizes replay attacks by ensuring every inter-agent delegation is unique, time-bound, and cryptographically linked to a specific session state.
+- **Negative Trust Attestation**: Transitioning from allow-lists to "Deterministic Absence Proofs (DAP)." MCP Any will act as the authoritative provider of signed "Non-Existence Manifests," providing a cryptographic guarantee that no unauthorized project-local hooks exist before any agent execution.
+
 ## Strategic Evolution: [2026-04-12]
 ### Focus: Secure A2A Interoperability & Deterministic Environment Integrity
 **Context**: The official transition of the A2A protocol to the Linux Foundation and the disclosure of CVE-2026-25725 (Claude Code sandbox escape) mark a definitive shift in the AI agent landscape. Interoperability is becoming a utility, and environment integrity is now the primary security frontier.

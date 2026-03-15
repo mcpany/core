@@ -8,6 +8,19 @@
 
 ---
 
+## Evolution: [2026-04-22] Updates
+
+### Proposed Additions
+- **A2A Replay Guard**: (P0) Security middleware for the A2A Messaging Hub that enforces monotonic sequence nonces and session-bound validation to prevent task-proposal replay attacks.
+- **Cognitive Fragment Reconciler**: (P1) Optimization service that manages the synchronization and reconciliation of "Encrypted Monologues" between specialized subagents and the A2UI Gateway.
+- **Adaptive Context Compaction Engine**: (P0) Upgrade to the WebSocket Context Compactor that supports Gemini-style `x-gemini-reasoning-effort` headers for dynamic compression ratios.
+
+### Priority Shifts
+- **Agent-Aware Blackboard Isolation**: (Re-affirmed P0) Expanded to support "Cognitive Sovereignty" via hardware-bound encryption for subagent monologues.
+- **A2UI Native Gateway**: (Re-affirmed P0) Now designated as the authoritative decryption point for "Encrypted Monologues" during user reviews.
+
+---
+
 ## Evolution: [2026-04-21] Updates
 
 ### Proposed Additions
