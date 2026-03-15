@@ -47,3 +47,10 @@ With the transition of the Agent2Agent (A2A) protocol to the Linux Foundation, i
 
 ## 7. Evolutionary Changelog
 * **2026-04-12:** Initial Document Creation.
+
+### Update: 2026-04-13 - Aligning with Linux Foundation Open Governance
+**Context:** The A2A protocol has finalized its transition to the Linux Foundation, establishing a vendor-neutral standard for inter-agent coordination.
+**Architecture Adjustment:**
+* The hub now implements the finalized LF security manifest for task proposals.
+* Introducing the "A2A Security Posture Broker" role to validate cross-framework delegations against open-standard policies.
+**Security Impact:** Ensures neutral, standard-compliant enforcement of Zero-Trust policies across disparate agent frameworks.
