@@ -630,3 +630,14 @@
 ### Priority Shifts
 - **Verifiable Task Delegation (VTD)**: (Re-affirmed P0) Now elevated as the primary solution for the "Approval Fatigue" scaling bottleneck.
 - **Pluggable Context Bridge**: (Re-affirmed P0) Expanded to support the new Standardized Context Sidecar Interface.
+
+## Evolution: [2026-04-18] Updates
+
+### Proposed Additions
+- **Reasoning Integrity Auditor (RIA)**: (P0) A deep-packet inspection middleware for tool-returned metadata (EXIF, CSS, binary blobs) to detect and block "Shadow Context Injection" (CVE-2026-48210).
+- **Delegated Trust Envelope (DTE) Broker**: (P0) A security service that facilitates cryptographically bound permission delegation from parent agents to subagents, enabling secure task handoffs without "Approval Fatigue."
+- **Intent-Scoped Telemetry (IST) Aggregator**: (P1) A telemetry hub that implements the IST standard, binding all agentic resource consumption to signed mission intents for economic reasoning and ROI analysis.
+
+### Priority Shifts
+- **Reactive Intent Arbitration Hub**: Re-affirmed as **P0**. Evolved to include recursive deconstruction of DTE-bound expansion requests.
+- **Inference-Time Data Sanitizer (IDS)**: (Re-affirmed P0) Expanded to integrate with the RIA for multimodal structural integrity checks.

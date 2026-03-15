@@ -256,3 +256,8 @@
 - [ ] **[P0] Hardware Boot Integrity Monitor**: Real-time status indicator for TPM-bound configurations and boot manifest attestation. (Added: 2026-04-15)
 - [ ] **[P0] VTD Automation Workspace**: Dashboard for configuring autonomous delegation rules and reviewing automated handoff history. (Added: 2026-04-15)
 - [ ] **[P1] Universal Context Bus Viewer**: Visual debugger for monitoring state flow and synchronization across framework-specific Context Sidecars. (Added: 2026-04-15)
+
+#### Upcoming (2026-04-18 Evolution)
+- [ ] **[P0] Shadow Instruction Alert Dashboard**: UI for reviewing and responding to RIA-redacted metadata fragments. (Added: 2026-04-18)
+- [ ] **[P0] Delegation Tree Visualizer**: Real-time visualization of DTE-bound trust flows through the agent swarm. (Added: 2026-04-18)
+- [ ] **[P1] ROI-Based Mission Analytics**: Dashboard for IST-bound mission costs and performance optimization. (Added: 2026-04-18)

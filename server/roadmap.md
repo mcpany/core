@@ -406,3 +406,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Attested Boot Manifest Provider**: Core service for binding environment integrity to local TPM/Secure Enclave signatures. (Added: 2026-04-15)
 *   **[P0] VTD Autonomous Delegation Engine**: Implementation of automated, proof-based A2A task handoffs for low-risk operations. (Added: 2026-04-15)
 *   **[P1] Standardized Context Sidecar Interface**: Universal "Context Bus" for bridging framework-specific state strategies (OpenClaw, etc.). (Added: 2026-04-15)
+
+#### Upcoming (2026-04-18 Evolution)
+*   **[P0] Reasoning Integrity Auditor (RIA)**: Deep-packet inspection middleware for tool metadata to block Shadow Context Injection (CVE-2026-48210). (Added: 2026-04-18)
+*   **[P0] Delegated Trust Envelope (DTE) Broker**: Security service for cryptographically bound permission delegation between agents. (Added: 2026-04-18)
+*   **[P1] Intent-Scoped Telemetry (IST) Aggregator**: Implementation of the IST standard for mission-bound resource tracking. (Added: 2026-04-18)
