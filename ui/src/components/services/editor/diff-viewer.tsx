@@ -58,7 +58,6 @@ export function DiffViewer({ original, modified, language = "yaml" }: DiffViewer
                     automaticLayout: true,
                 }}
                 loading={<div className="flex items-center justify-center h-full text-muted-foreground text-xs animate-pulse">Loading Diff...</div>}
-                className="monaco-diff-editor"
             />
         </div>
     );
