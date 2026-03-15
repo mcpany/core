@@ -48,3 +48,9 @@ MCP Any, as the universal agent infrastructure, is uniquely positioned to act as
 
 ## 7. Evolutionary Changelog
 * **2026-04-21:** Initial Document Creation.
+* **2026-04-22:** Update: Resolving WebSocket State Desync.
+    * **Context:** Market research revealed state desync when switching between Normal and Adaptive reasoning modes in OpenClaw v2026.3.1.
+    * **Architecture Adjustment:**
+        * Implementing "State Versioning" in the A2UI Stream. Every UI manifest now carries a `reasoning_epoch` ID.
+        * The Gateway will buffer and "Fast-Forward" UI updates if an epoch switch is detected, ensuring the visual state matches the current reasoning effort.
+    * **Security Impact:** Prevents "UI Shadowing" where an agent in a lower-effort mode could be manipulated by stale UI state from a high-effort reasoning branch.
