@@ -408,6 +408,11 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Resident Integrity Monitor (RIM)**: Service for continuous, hardware-bound sandbox attestation to detect post-boot environment drift. (Added: 2026-04-16 - Promoted to P0 on 2026-04-17)
 *   **[P0] Self-Healing Consensus Hub**: Autoritative "Truth Broker" for swarm self-correction, leveraging MAQ for state reconciliation. (Added: 2026-04-16)
 
+#### Upcoming (2026-04-20 Evolution)
+*   **[P0] ASH Consensus Broker**: Decentralized coordination service for swarm-wide state re-alignment and voting. (Added: 2026-04-20)
+*   **[P0] A2A Safety Proof Validator**: Mandatory validation layer for task proposals to prevent inter-agent coercion. (Added: 2026-04-20)
+*   **[P0] Origin-Locked Behavioral Attestation**: Multi-factor security middleware binding tools to verified origins and behavior profiles. (Added: 2026-04-20)
+
 #### Upcoming (2026-04-19 Evolution)
 *   **[P0] Distributed Trust Lease Broker**: Implementation of UACO v2.5 LFTA for sub-millisecond trust validation in deep swarms. (Added: 2026-04-19)
 *   **[P0] Deep Packet Enforcement (DPPE)**: L4 monitoring (DNS/ICMP) for the Validating Proxy to neutralize Binary Smuggling exfiltration. (Added: 2026-04-19)

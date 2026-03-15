@@ -8,6 +8,19 @@
 
 ---
 
+## Evolution: [2026-04-20] Updates
+
+### Proposed Additions
+- **ASH Consensus Broker**: (P0) Coordination service facilitating swarm-wide voting on reasoning paths and state re-alignment for Autonomous Self-Healing.
+- **A2A Safety Proof Validator**: (P0) Mandatory validation layer for the A2A Messaging Hub that evaluates the "Safety Proof" of task proposals before delegation.
+- **Origin-Locked Behavioral Attestation**: (P0) Security middleware that binds tool capabilities to a multi-factor token comprising cryptographically verified origin and Ghost Shell behavioral profile.
+
+### Priority Shifts
+- **Blackboard Versioning Hub**: (Re-affirmed P0) Now designated as the authoritative state provider for ASH Consensus voting.
+- **Distributed Trust Lease Broker**: (Re-affirmed P0) Essential for sub-millisecond validation of A2A Safety Proofs in deep swarms.
+
+---
+
 ## Evolution: [2026-04-19] Updates
 
 ### Proposed Additions
