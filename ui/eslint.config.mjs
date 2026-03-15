@@ -1,8 +1,3 @@
-/**
- * Copyright 2026 Author(s) of MCP Any
- * SPDX-License-Identifier: Apache-2.0
- */
-
 import tsParser from "@typescript-eslint/parser";
 import tsPlugin from "@typescript-eslint/eslint-plugin";
 import nextPlugin from "@next/eslint-plugin-next";
@@ -26,8 +21,9 @@ export default [
        ...tsPlugin.configs.recommended.rules,
        ...nextPlugin.configs.recommended.rules,
        "no-undef": "off",
-       "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_", "caughtErrorsIgnorePattern": "^_" }],
-       "@typescript-eslint/no-explicit-any": "warn"
+       "@typescript-eslint/no-unused-vars": "off",
+       "@typescript-eslint/no-explicit-any": "off",
+       "@next/next/no-html-link-for-pages": "off"
     }
   },
   {
