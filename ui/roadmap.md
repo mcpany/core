@@ -283,6 +283,10 @@
 - [ ] **[P0] ContextEngine Lifecycle Visualizer**: Debugger for OpenClaw-native context hooks and state transitions (Added: 2026-04-23).
 - [ ] **[P0] Absence Proof Integrity Monitor**: Real-time status for Non-Existence Proofs and blocked configuration injections (Added: 2026-04-23).
 
+#### Upcoming (2026-04-25 Evolution)
+- [ ] **[P0] A2A Session Persistence Dashboard**: Real-time monitor for tracking token refresh and session health in long-running reasoning chains. (Added: 2026-04-25)
+- [ ] **[P0] DAP Enforcement Status Widget**: Security indicator for mandatory Deterministic Absence Proof compliance during agent boot. (Added: 2026-04-25)
+
 #### Upcoming (2026-04-24 Evolution)
 - [ ] **[P0] A2A Handshake Status Monitor**: Real-time visualization of authenticated inter-agent handshakes and auth failures. (Added: 2026-04-24)
 - [ ] **[P0] ContextEngine Plugin Manager**: UI for managing and monitoring pluggable ContextEngine strategies and sovereignty status. (Added: 2026-04-24)
