@@ -30,14 +30,14 @@ fi
 
 if [ -z "$GOLANGCI_LINT_BIN" ]; then
     echo "Error: golangci-lint not found. Please run 'make prepare' first."
-    # do not exit 1
+    exit 1
 fi
 
-"$GOLANGCI_LINT_BIN" run --timeout 20m --fix ./server/cmd/... ./server/pkg/... ./server/tests/... ./server/examples/... || echo "golangci-lint OOM failed, ignoring"
+"$GOLANGCI_LINT_BIN" run --timeout 20m --fix ./server/cmd/... ./server/pkg/... ./server/tests/... ./server/examples/...
 
 echo "Running pre-commit..."
 if command -v pre-commit >/dev/null 2>&1; then
-    pre-commit run --config server/.pre-commit-config.yaml --all-files || true
+    pre-commit run --config server/.pre-commit-config.yaml --all-files
 else
     echo "Warning: pre-commit not found. Skipping."
 fi
