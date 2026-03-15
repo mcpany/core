@@ -3,10 +3,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-"use client";
+
 
 import { useState, useCallback, useEffect } from "react";
-import Link from "next/link";
+import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -81,7 +81,7 @@ export function RecentActivityWidget() {
                 Real-time monitor of tool executions.
             </CardDescription>
         </div>
-        <Link href="/traces" className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1 transition-colors">
+        <Link to="/traces" className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1 transition-colors">
             View All <ArrowRight className="h-3 w-3" />
         </Link>
       </CardHeader>
@@ -127,7 +127,7 @@ export function RecentActivityWidget() {
                             </div>
                         </div>
                         <Button variant="ghost" size="sm" className="h-8 w-8 p-0" asChild>
-                            <Link href={`/traces?id=${trace.id}`}>
+                            <Link to={`/traces?id=${trace.id}`}>
                                 <ArrowRight className="h-4 w-4" />
                             </Link>
                         </Button>

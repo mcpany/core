@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '../tests/test-utils';
 import { GlobalSearch } from './global-search';
 import { KeyboardShortcutsProvider } from '@/contexts/keyboard-shortcuts-context';
 import { vi } from 'vitest';
@@ -38,12 +38,14 @@ vi.mock('@/lib/client', () => ({
   },
 }));
 
-// Mock useRouter
-vi.mock('next/navigation', () => ({
-  useRouter: () => ({
-    push: mockPush,
-  }),
-}));
+// Mock useNavigate (react-router-dom) so we can track navigation calls
+vi.mock('react-router-dom', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('react-router-dom')>();
+  return {
+    ...actual,
+    useNavigate: () => mockPush,
+  };
+});
 
 // Mock useTheme
 vi.mock('next-themes', () => ({

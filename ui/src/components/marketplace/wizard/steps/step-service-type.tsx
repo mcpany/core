@@ -53,8 +53,8 @@ export function StepServiceType() {
                             // Handle if val is string or object (EnvVarValue)
                             if (typeof val === 'string') {
                                 params[key] = val;
-                            } else if (val && typeof val === 'object' && (val as any).plainText) {
-                                params[key] = (val as any).plainText;
+                            } else if (val && typeof val === 'object') {
+                                params[key] = (val as any).plainText || (val as any).plain_text || "";
                             } else {
                                 // Fallback
                                 params[key] = "";

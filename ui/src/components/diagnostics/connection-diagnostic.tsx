@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-"use client";
+
 
 import { useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -185,7 +185,7 @@ export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagn
     addLog("backend_health", "Querying backend service status...");
 
     try {
-        const res = await fetch("/api/dashboard/health", { cache: 'no-store' });
+        const res = await fetch("/api/v1/dashboard/health", { cache: 'no-store' });
         if (!res.ok) {
              throw new Error(`API Error: ${res.status} ${res.statusText}`);
         }

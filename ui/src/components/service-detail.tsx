@@ -3,10 +3,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-"use client";
+
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
+import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { UpstreamServiceConfig, ToolDefinition, PromptDefinition, ResourceDefinition } from "@/lib/types";
@@ -74,7 +74,7 @@ function DefinitionsTable<T extends { name: string; description?: string; type?:
             {data.map((item) => (
               <TableRow key={item.name}>
                 <TableCell className="font-medium">
-                   <Link href={`/service/${encodeURIComponent(serviceId)}/${linkPath}/${encodeURIComponent(item.name)}`} className="hover:underline text-primary/90">
+                   <Link to={`/service/${encodeURIComponent(serviceId)}/${linkPath}/${encodeURIComponent(item.name)}`} className="hover:underline text-primary/90">
                     {item.name}
                   </Link>
                 </TableCell>

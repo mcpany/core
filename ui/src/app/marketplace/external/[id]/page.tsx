@@ -3,10 +3,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-"use client";
 
-import { useEffect, useState, use } from "react";
-import { useRouter } from "next/navigation";
+
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from 'react-router-dom';
 import { marketplaceService, ExternalServer, ExternalMarketplace } from "@/lib/marketplace-service";
 import { apiClient } from "@/lib/client";
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Download, Terminal } from "lucide-react";
-import Link from "next/link";
+import { Link } from 'react-router-dom';
 
 /**
  * ExternalMarketplacePage component.
@@ -24,9 +24,10 @@ import Link from "next/link";
  * @param props.params - The params property.
  * @returns The rendered component.
  */
-export default function ExternalMarketplacePage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
-  const router = useRouter();
+export default function ExternalMarketplacePage() {
+
+  const { id = "" } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const { toast } = useToast();
 
   const [market, setMarket] = useState<ExternalMarketplace | null>(null);
@@ -102,7 +103,7 @@ export default function ExternalMarketplacePage({ params }: { params: Promise<{ 
   return (
     <div className="flex flex-col gap-8 p-8 h-[calc(100vh-4rem)] overflow-y-auto">
         <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => router.back()}>
+            <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
                 <ArrowLeft className="h-4 w-4" />
             </Button>
             <div>

@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-"use client";
+
 
 import { useState } from "react";
 import { CallPolicy, CallPolicyRule, CallPolicy_Action } from "@proto/config/v1/upstream_service";

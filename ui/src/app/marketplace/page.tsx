@@ -4,7 +4,7 @@
  */
 
 
-"use client";
+
 
 import { useEffect, useState } from "react";
 import { marketplaceService, ServiceCollection, ExternalMarketplace, CommunityServer } from "@/lib/marketplace-service";
@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Download, Package, Globe, ExternalLink, Users, Search, ShieldCheck } from "lucide-react";
-import Link from "next/link";
+import { Link } from 'react-router-dom';
 
 import { ShareCollectionDialog } from "@/components/share-collection-dialog";
 import { CreateConfigWizard } from "@/components/marketplace/wizard/create-config-wizard";
@@ -366,7 +366,7 @@ export default function MarketplacePage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {publicMarkets.map((market) => (
                         <Card key={market.id} className="cursor-pointer hover:border-primary transition-colors">
-                            <Link href={`/marketplace/external/${market.id}`}>
+                            <Link to={`/marketplace/external/${market.id}`}>
                                 <CardHeader>
                                     <CardTitle className="flex items-center gap-2">
                                         {market.name}

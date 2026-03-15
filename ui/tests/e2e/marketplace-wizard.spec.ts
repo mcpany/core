@@ -94,7 +94,7 @@ test.describe('Marketplace Wizard and Service Lifecycle', () => {
     });
   });
 
-  test.skip('Complete CUJ: Create Config -> Instantiate -> Manage', async ({ page }) => {
+  test('Complete CUJ: Create Config -> Instantiate -> Manage', async ({ page }) => {
     // 1. Navigate to Marketplace
     await page.goto('/marketplace');
     await expect(page.getByText('Marketplace', { exact: true }).first()).toBeVisible();
@@ -113,9 +113,9 @@ test.describe('Marketplace Wizard and Service Lifecycle', () => {
     await expect(page.getByPlaceholder('VAR_NAME')).toBeVisible();
 
     // Check for parameter input existence and edit it
-    // Using specific locator to avoid strict mode violations if multiple inputs exist
-    const paramInput = page.locator('input[value="postgresql://user:password@localhost:5432/dbname"]');
-    await expect(paramInput).toBeVisible();
+    // Use the Value placeholder input in the first row
+    const paramInput = page.locator('input[placeholder="Value"]').first();
+    await expect(paramInput).toHaveValue('postgresql://user:password@localhost:5432/dbname');
     await paramInput.fill('postgresql://test:test@localhost:5432/testdb');
 
     // Add a new parameter

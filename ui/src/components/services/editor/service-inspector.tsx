@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-"use client";
+
 
 import { useTraces } from "@/hooks/use-traces";
 import { InspectorTable } from "@/components/inspector/inspector-table";

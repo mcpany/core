@@ -4,7 +4,7 @@
  */
 
 
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '../../src/tests/test-utils';
 import { PromptWorkbench } from '../../src/components/prompts/prompt-workbench';
 import { apiClient, PromptDefinition } from '../../src/lib/client';
 import { vi } from 'vitest';

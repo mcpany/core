@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-"use client";
+
 
 import { useState, useEffect, useMemo } from "react";
 import {
@@ -231,7 +231,7 @@ export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProp
         // Add DownloadURL support for drag-and-drop to desktop
         const token = localStorage.getItem('mcp_auth_token');
         // Construct absolute URL
-        const downloadUrl = `${window.location.origin}/api/resources/download?uri=${encodeURIComponent(res.uri)}&name=${encodeURIComponent(res.name)}&token=${token || ''}`;
+        const downloadUrl = `${window.location.origin}/api/v1/resources/download?uri=${encodeURIComponent(res.uri)}&name=${encodeURIComponent(res.name)}&token=${token || ''}`;
         // Format: mimeType:fileName:url
         const downloadData = `${res.mimeType || 'application/octet-stream'}:${res.name}:${downloadUrl}`;
         e.dataTransfer.setData("DownloadURL", downloadData);
