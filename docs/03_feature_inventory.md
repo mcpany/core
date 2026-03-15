@@ -596,6 +596,17 @@
 
 ---
 
+## Evolution: [2026-04-16] Updates
+
+### Proposed Additions
+- **A2A Contextual Anchor Middleware**: (P0) Implementation of the "Contextual Anchor" standard to pin mission-critical intent to the top of all agent prompts, preventing intent ghosting in parallel swarms.
+- **PID-Bound Port Attestor**: (P0) Kernel-level security service that cryptographically binds local listener ports to verified agent process IDs, neutralizing CVE-2026-28501.
+- **Dynamic Capability Negotiator (DCN)**: (P1) Protocol extension for the Delegation Attestation Layer to support real-time, urgency-based capability elevation for agents.
+
+### Priority Shifts
+- **Delegation Attestation Layer**: (Re-affirmed P0) Expanded to include negotiation logic for the new DCN protocol.
+- **Settings Injection Guard**: (Re-affirmed P0) Now includes mandatory PID-bound port verification for all configuration-defined listeners.
+
 ## Evolution: [2026-04-15] Updates
 
 ### Proposed Additions

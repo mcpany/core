@@ -241,6 +241,11 @@
 - [ ] **[P1] CLAW-10 Compliance Dashboard**: Interactive matrix for visualizing system compliance with the CLAW-10 Enterprise Evaluation Matrix. (Added: 2026-04-13)
 - [ ] **[P0] Deterministic Boot Manifest Reviewer**: UI for reviewing and signing "Environment Integrity Manifests" during the deterministic boot sequence. (Added: 2026-04-13)
 
+#### Upcoming (2026-04-16 Evolution)
+- [ ] **[P0] PID Binding Security Monitor**: Real-time visualization of kernel-anchored port-to-PID links and blocked hijacking attempts. (Added: 2026-04-16)
+- [ ] **[P0] Contextual Anchor Visualizer**: UI for pinning and viewing mission-critical anchors in the agent prompt timeline. (Added: 2026-04-16)
+- [ ] **[P1] DCN Negotiation Console**: Interface for monitoring and approving real-time capability elevation requests in agent swarms. (Added: 2026-04-16)
+
 #### Upcoming (2026-04-15 Evolution)
 - [ ] **[P0] Hardware Boot Integrity Monitor**: Real-time status indicator for TPM-bound configurations and boot manifest attestation. (Added: 2026-04-15)
 - [ ] **[P0] VTD Automation Workspace**: Dashboard for configuring autonomous delegation rules and reviewing automated handoff history. (Added: 2026-04-15)

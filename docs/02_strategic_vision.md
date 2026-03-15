@@ -429,6 +429,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **CLAW-10 Compliance Layer**: We are introducing a "Compliance Mapping" service that automatically aligns MCP Any's security posture (Safe-by-Default, Verified Skills) with the CLAW-10 matrix, providing a turnkey solution for IT departments struggling with "Shadow Agent" deployments.
 - **Deterministic Boot Manifests**: Expanding the attestation gateway to provide signed "Environment Integrity Manifests." These manifests will serve as a mandatory prerequisite for agent boot, providing a deterministic proof of the project-local state (including non-existence proofs for restricted configuration hooks).
 
+## Strategic Evolution: [2026-04-16]
+### Focus: Mission-Anchored Context & PID-Bound Port Integrity
+**Context**: The disclosure of CVE-2026-28501 (Ephemeral Port Hijacking) and the introduction of OpenClaw's "Contextual Anchors" reveal that security and stability must be anchored both in the environment (PID binding) and the prompt (mission pinning). "Intent Ghosting" in parallel swarms further emphasizes the need for a hierarchical, immutable intent-tracking system.
+**Strategic Pivot**:
+- **PID-Bound Port Attestation**: MCP Any will implement kernel-level PID-binding for all local listeners. By cryptographically anchoring every tool-proxy port to a specific, verified agent process ID, we eliminate the race condition for ephemeral port hijacking.
+- **Contextual Anchor Middleware**: We are adopting the "Contextual Anchor" standard. MCP Any will provide a middleware layer that automatically pins "Mission Intent" fragments to the top of every subagent prompt, ensuring that parallel branches cannot "ghost" their original parent goals.
+- **Dynamic Capability Negotiation (DCN)**: Implementing a real-time negotiation layer that allows agents to request temporary, urgency-based capability elevation, governed by the "Delegation Attestation Layer" safety proofs.
+
 ## Strategic Evolution: [2026-04-15]
 ### Focus: Universal Context Interoperability & Hardware-Locked Environment Integrity
 **Context**: The stabilization of OpenClaw's `ContextEngine` and the persistence of "Clone-and-Execute" RCE vulnerabilities (CVE-2026-25725) mark a definitive shift toward "Modular Governance." Swarms require not just connectivity, but a secure, interoperable state layer that can withstand hardware-level environmental attacks.

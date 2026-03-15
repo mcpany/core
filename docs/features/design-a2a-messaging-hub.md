@@ -61,3 +61,10 @@ With the transition of the Agent2Agent (A2A) protocol to the Linux Foundation, i
 * **Delegation Attestation:** Integrating a new "Safety Proof" generator into Section 4. The hub will now evaluate task proposals against historical reputation and policy compliance before surfacing them.
 * **Context Sidecar Adapter:** Introducing a "Sidecar" pattern in Section 4 to synchronize state with external frameworks (like OpenClaw's `ContextEngine`) via their native plugin APIs.
 **Security Impact:** Reduces manual oversight requirements by providing a verifiable trust signal for autonomous delegations and ensures context integrity across framework boundaries.
+
+### Update: 2026-04-16 - Mission-Anchored Context & PID-Bound Port Integrity
+**Context:** Today's research reveals a new "Ephemeral Port Hijacking" exploit (CVE-2026-28501) and the emergence of "Contextual Anchors" for swarm stability.
+**Architecture Adjustment:**
+* **PID-Bound Port Attestation:** Section 4 updated to include kernel-level PID binding for the Hub's local listeners.
+* **Contextual Anchor Middleware:** Introducing an "Anchor Middleware" in the A2A routing pipeline to pin mission intent to subagent prompts.
+**Security Impact:** Neutralizes port hijacking race conditions and prevents "Intent Ghosting" in parallel agent swarms.

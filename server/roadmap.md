@@ -391,6 +391,11 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P1] CLAW-10 Compliance Mapper**: Automation layer for mapping system state to the CLAW-10 Enterprise Evaluation Matrix. (Added: 2026-04-13)
 *   **[P0] Deterministic Boot Manifest Provider**: Core service for generating and signing environment integrity manifests. (Added: 2026-04-13)
 
+#### Upcoming (2026-04-16 Evolution)
+*   **[P0] PID-Bound Port Attestor**: Kernel-level security service for cryptographically anchoring ports to verified agent PIDs. (Added: 2026-04-16)
+*   **[P0] A2A Contextual Anchor Middleware**: Middleware to pin mission intent to subagent prompts and prevent ghosting. (Added: 2026-04-16)
+*   **[P1] Dynamic Capability Negotiator (DCN)**: Urgency-based real-time capability elevation for A2A swarms. (Added: 2026-04-16)
+
 #### Upcoming (2026-04-15 Evolution)
 *   **[P0] Hardware-Attested Boot Manifest Provider**: Core service for binding environment integrity to local TPM/Secure Enclave signatures. (Added: 2026-04-15)
 *   **[P0] VTD Autonomous Delegation Engine**: Implementation of automated, proof-based A2A task handoffs for low-risk operations. (Added: 2026-04-15)
