@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
     Plus,
     Trash2,
@@ -144,11 +144,15 @@ export function SecretsManager() {
         setNewSecretProvider("custom");
     };
 
-    const safeSecrets = Array.isArray(secrets) ? secrets : [];
-    const filteredSecrets = safeSecrets.filter(s =>
-        s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        s.key.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    // ⚡ BOLT: Prevent expensive filtering on every re-render (e.g. while typing).
+    // Randomized Selection from Top 5 High-Impact Targets
+    const filteredSecrets = useMemo(() => {
+        const safeSecrets = Array.isArray(secrets) ? secrets : [];
+        return safeSecrets.filter(s =>
+            s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            s.key.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+    }, [secrets, searchQuery]);
 
     return (
         <div className="space-y-4 h-full flex flex-col">
