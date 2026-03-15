@@ -257,6 +257,11 @@
 - [ ] **[P0] Resident Integrity Status Widget**: Real-time indicator for continuous sandbox attestation and hardware-bound health. (Added: 2026-04-16 - Promoted to P0 on 2026-04-17)
 - [ ] **[P0] Swarm Truth Explorer**: Authorization UI for swarm self-healing and mission state reconciliation. (Added: 2026-04-16)
 
+#### Upcoming (2026-04-21 Evolution)
+- [ ] **[P0] A2UI Sandboxed Fragment Host**: Secure UI container for rendering agent-generated interactive manifests. (Added: 2026-04-21)
+- [ ] **[P0] Absence Proof (DAP) Status Widget**: Monitor for Deterministic Absence Proofs and negative-attestation integrity. (Added: 2026-04-21)
+- [ ] **[P1] Adaptive Context Monitor**: Real-time visualization of WebSocket-first context compaction and token saving. (Added: 2026-04-21)
+
 #### Upcoming (2026-04-20 Evolution)
 - [ ] **[P0] ASH Consensus Dashboard**: Real-time visualization of swarm-wide voting, quorum status, and state re-alignment events. (Added: 2026-04-20)
 - [ ] **[P0] A2A Safety Proof Inspector**: Forensic UI for reviewing cryptographically signed task justifications and reputation-bound claims. (Added: 2026-04-20)

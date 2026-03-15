@@ -8,6 +8,17 @@
 
 ---
 
+## Evolution: [2026-04-21] Updates
+
+### Proposed Additions
+- **A2UI Native Gateway**: (P0) Secure bridge for the Agent-to-User Interface protocol, allowing agents to surface sandboxed, interactive UI fragments.
+- **Deterministic Absence Proof (DAP) Provider**: (P0) Security service that generates signed proofs of non-existence for restricted project-local files to prevent malicious hook injection.
+- **WebSocket Context Compactor**: (P1) Optimization middleware for WebSocket-first streaming that performs real-time context compaction for adaptive reasoning agents.
+
+### Priority Shifts
+- **ASH Consensus Broker**: (Re-affirmed P0) Now integrates with the A2UI Native Gateway for interactive user-in-the-loop consensus voting.
+- **Deterministic Attestation Gateway**: (Re-affirmed P0) Expanded to include DAP as a mandatory boot requirement.
+
 ## Evolution: [2026-04-20] Updates
 
 ### Proposed Additions
