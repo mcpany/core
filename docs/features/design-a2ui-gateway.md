@@ -54,3 +54,10 @@ MCP Any, as the universal agent infrastructure, is uniquely positioned to act as
         * Implementing "State Versioning" in the A2UI Stream. Every UI manifest now carries a `reasoning_epoch` ID.
         * The Gateway will buffer and "Fast-Forward" UI updates if an epoch switch is detected, ensuring the visual state matches the current reasoning effort.
     * **Security Impact:** Prevents "UI Shadowing" where an agent in a lower-effort mode could be manipulated by stale UI state from a high-effort reasoning branch.
+
+* **2026-04-24:** Update: Mitigating Agentic Honeypots via Visual Integrity.
+    * **Context:** Today's market sync revealed "Agentic Honeypots" where malicious manifests spoof system prompts.
+    * **Architecture Adjustment:**
+        * Introducing the "A2UI Visual Integrity Guard" in Section 4.
+        * The Gateway now performs "Reserved Component Scanning." Any manifest containing components that mimic system-level dialogues (e.g., "Grant Permissions," "Root Access") must match an attested visual signature or be redacted.
+    * **Security Impact:** Neutralizes exfiltration attempts that rely on visual deception to trick users into high-risk approvals.

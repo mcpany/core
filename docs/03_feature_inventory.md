@@ -707,3 +707,17 @@
 ### Priority Shifts
 - **Verifiable Task Delegation (VTD)**: (Re-affirmed P0) Now elevated as the primary solution for the "Approval Fatigue" scaling bottleneck.
 - **Pluggable Context Bridge**: (Re-affirmed P0) Expanded to support the new Standardized Context Sidecar Interface.
+
+---
+
+## Evolution: [2026-04-24] Updates
+
+### Proposed Additions
+- **Git-Anchor Attestation Provider**: (P0) Core security service that cryptographically links the agent session to the project's Git commit hash and index integrity, neutralizing "Git-Diff Injection."
+- **Paging-Aware Context Shard Manager**: (P0) Extension for the Live Context Sharding Middleware that natively supports OpenClaw's Reasoning-Aware Memory Paging signals for secure state swapping.
+- **A2UI Visual Integrity Guard**: (P0) Active verification layer for the A2UI Secure Surface Host that prevents "Agentic Honeypot" exfiltration by detecting spoofed system prompts in declarative manifests.
+- **Distributed Quota Synchronization Service**: (P1) Synchronization bridge that aligns local Recursive Depth-Limit policies with client-side tool call quotas (e.g., Gemini CLI) for multi-layered DoS defense.
+
+### Priority Shifts
+- **Recursive Depth-Limit Middleware**: (Re-affirmed P0) Now designated as the primary technical control for mitigating "Spiral of Death" loops in deep swarms.
+- **A2UI Secure Surface Host**: (Re-affirmed P0) Expanded to include mandatory Visual Integrity Guarding as a core architectural requirement.

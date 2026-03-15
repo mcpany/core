@@ -438,3 +438,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] A2A Replay Guard Middleware**: Implementation of monotonic nonces and session-bound validation for the A2A Messaging Hub. (Added: 2026-04-22)
 *   **[P0] Adaptive Context Compaction Engine**: WebSocket-native compaction supporting Gemini-style reasoning effort headers. (Added: 2026-04-22)
 *   **[P1] Cognitive Fragment Reconciler**: Background service for synchronizing encrypted monologues across agent sessions. (Added: 2026-04-22)
+
+#### Upcoming (2026-04-24 Evolution)
+*   **[P0] Git-Anchor Attestation Provider**: Cryptographic anchoring of agent sessions to project Git state (commit/index). (Added: 2026-04-24)
+*   **[P0] Paging-Aware Shard Manager**: Native support for OpenClaw Reasoning-Aware Memory Paging in Context Sharding. (Added: 2026-04-24)
+*   **[P1] Distributed Quota Sync Bridge**: Synchronization of local depth-limits with client-side (Gemini) tool call quotas. (Added: 2026-04-24)

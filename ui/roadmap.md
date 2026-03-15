@@ -287,3 +287,8 @@
 - [ ] **[P0] A2A Replay Security Dashboard**: Visualize nonce status and replay attempt alerts in the A2A hub. (Added: 2026-04-22)
 - [ ] **[P0] Adaptive Reasoning Monitor**: Real-time visualization of `x-gemini-reasoning-effort` levels and dynamic compaction efficiency. (Added: 2026-04-22)
 - [ ] **[P1] Encrypted Monologue Explorer**: Secure UI fragment for user-authorized decryption and review of subagent reasoning. (Added: 2026-04-22)
+
+#### Upcoming (2026-04-24 Evolution)
+- [ ] **[P0] Git-Anchor Integrity Dashboard**: UI for reviewing Git commit anchors and index-integrity alerts. (Added: 2026-04-24)
+- [ ] **[P0] Context Paging Monitor**: Visualization of memory-to-disk shard swaps and reasoning-aware paging metrics. (Added: 2026-04-24)
+- [ ] **[P0] A2UI Visual Integrity Console**: Security dashboard for reviewing and approving redacted visual components in A2UI manifests. (Added: 2026-04-24)
