@@ -25,9 +25,15 @@ import { format } from "date-fns";
 import { CalendarIcon, Search, RefreshCw, Eye, AlertTriangle, Download } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
-import SyntaxHighlighter from 'react-syntax-highlighter/dist/esm/light';
-import json from 'react-syntax-highlighter/dist/esm/languages/hljs/json';
+import dynamic from "next/dynamic";
 import vs2015 from 'react-syntax-highlighter/dist/esm/styles/hljs/vs2015';
+
+// ⚡ BOLT: Lazy load SyntaxHighlighter to reduce initial bundle size.
+// Randomized Selection from Top 5 High-Impact Targets (Assets/Bundle)
+const SyntaxHighlighter = dynamic(() => import('@/components/ui/optimized-syntax-highlighter'), {
+    ssr: false,
+    loading: () => <div className="p-4 text-xs font-mono text-muted-foreground">Loading source...</div>,
+});
 
 interface AuditLogEntry {
     timestamp: string;
@@ -48,7 +54,6 @@ interface AuditLogEntry {
  * @returns The rendered AuditLogViewer component.
  */
 export function AuditLogViewer() {
-    SyntaxHighlighter.registerLanguage('json', json);
     const [logs, setLogs] = useState<AuditLogEntry[]>([]);
     const [loading, setLoading] = useState(true);
     const [exporting, setExporting] = useState(false);
