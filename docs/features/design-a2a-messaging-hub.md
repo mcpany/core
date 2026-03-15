@@ -54,3 +54,10 @@ With the transition of the Agent2Agent (A2A) protocol to the Linux Foundation, i
 * The hub now implements the finalized LF security manifest for task proposals.
 * Introducing the "A2A Security Posture Broker" role to validate cross-framework delegations against open-standard policies.
 **Security Impact:** Ensures neutral, standard-compliant enforcement of Zero-Trust policies across disparate agent frameworks.
+
+### Update: 2026-04-14 - Verifiable Task Delegation & Context Sidecars
+**Context:** Today's research into the OpenClaw v2026.3.7 stabilization and the "44% Manual Review" bottleneck in agent swarms demands a move toward automated, verifiable trust and deeper framework integration.
+**Architecture Adjustment:**
+* **Delegation Attestation:** Integrating a new "Safety Proof" generator into Section 4. The hub will now evaluate task proposals against historical reputation and policy compliance before surfacing them.
+* **Context Sidecar Adapter:** Introducing a "Sidecar" pattern in Section 4 to synchronize state with external frameworks (like OpenClaw's `ContextEngine`) via their native plugin APIs.
+**Security Impact:** Reduces manual oversight requirements by providing a verifiable trust signal for autonomous delegations and ensures context integrity across framework boundaries.
