@@ -391,6 +391,11 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P1] CLAW-10 Compliance Mapper**: Automation layer for mapping system state to the CLAW-10 Enterprise Evaluation Matrix. (Added: 2026-04-13)
 *   **[P0] Deterministic Boot Manifest Provider**: Core service for generating and signing environment integrity manifests. (Added: 2026-04-13)
 
+#### Upcoming (2026-04-17 Evolution)
+*   **[P0] Context Integrity Layer**: Enforcement of hardware-attested memory pinning for high-trust context fragments. (Added: 2026-04-17)
+*   **[P0] Adaptive Swarm Reconciliation Bus**: Implementation of the feedback bus for proactive subagent alignment. (Added: 2026-04-17)
+*   **[P1] ContextEngine Lifecycle Adapter**: Middleware for framework-agnostic context synchronization with OpenClaw v2026.3.7. (Added: 2026-04-17)
+
 #### Upcoming (2026-04-16 Evolution)
 *   **[P0] Reactive Intent Gateway (RIG)**: Middleware to mediate and sign agent "Boundary Expansion" requests, preventing Intent Smuggling. (Added: 2026-04-16)
 *   **[P1] Resident Integrity Monitor (RIM)**: Service for continuous, hardware-bound sandbox attestation to detect post-boot environment drift. (Added: 2026-04-16)

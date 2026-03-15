@@ -8,6 +8,17 @@
 
 ---
 
+## Evolution: [2026-04-17] Updates
+
+### Proposed Additions
+- **ContextEngine Lifecycle Adapter**: (P1) Middleware that synchronizes internal MCP Any state with OpenClaw v2026.3.7 lifecycle hooks, enabling framework-agnostic context management.
+- **Hardware-Attested Memory Pinning**: (P0) Security layer that enforces immutability for high-trust context fragments using TPM/Secure Enclave, neutralizing in-memory poisoning.
+- **Adaptive Swarm Reconciliation Bus**: (P0) A proactive feedback bus for aligning subagent monologues with the root mission intent, mitigating consensus drift.
+
+### Priority Shifts
+- **Reactive Intent Gateway (RIG)**: (Re-affirmed P0) Expanded to include validation of memory-pinned constraints.
+- **Self-Healing Consensus Hub**: (Re-affirmed P0) Elevated to support active reconciliation strategies.
+
 ## Evolution: [2026-04-14] Updates
 
 ### Proposed Additions
