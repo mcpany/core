@@ -434,6 +434,11 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Absence Proof (DAP) Generator**: Security extension for Pre-Flight Validator to sign missing-file proofs (Added: 2026-04-23).
 *   **[P0] A2UI Secure Surface Host**: Gateway infrastructure for sandboxed agent-generated UI fragments (Added: 2026-04-23).
 
+#### Upcoming (2026-04-24 Evolution)
+*   **[P0] A2A Authenticated Handshake Provider**: Implementation of Gemini CLI v0.33.0 style HTTP authentication for all agent-to-agent remote communications. (Added: 2026-04-24)
+*   **[P0] ContextEngine Plugin Adapter**: Core adapter for hosting OpenClaw-compatible ContextEngine plugins, supporting sovereignty-aware state management. (Added: 2026-04-24)
+*   **[P1] Zero-Trust Discovery Gate**: Identity-bound access control layer for A2A capability card discovery. (Added: 2026-04-24)
+
 #### Upcoming (2026-04-22 Evolution)
 *   **[P0] A2A Replay Guard Middleware**: Implementation of monotonic nonces and session-bound validation for the A2A Messaging Hub. (Added: 2026-04-22)
 *   **[P0] Adaptive Context Compaction Engine**: WebSocket-native compaction supporting Gemini-style reasoning effort headers. (Added: 2026-04-22)
