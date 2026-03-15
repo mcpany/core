@@ -61,3 +61,10 @@ With the transition of the Agent2Agent (A2A) protocol to the Linux Foundation, i
 * **Delegation Attestation:** Integrating a new "Safety Proof" generator into Section 4. The hub will now evaluate task proposals against historical reputation and policy compliance before surfacing them.
 * **Context Sidecar Adapter:** Introducing a "Sidecar" pattern in Section 4 to synchronize state with external frameworks (like OpenClaw's `ContextEngine`) via their native plugin APIs.
 **Security Impact:** Reduces manual oversight requirements by providing a verifiable trust signal for autonomous delegations and ensures context integrity across framework boundaries.
+
+### Update: 2026-04-18 - Foundation Governance & Continuous Attestation
+**Context:** The transition of OpenClaw to an independent foundation and the maturation of "Sandbox Persistence Proofs" require the Hub to support institutionalized governance and continuous security signals.
+**Architecture Adjustment:**
+* **Foundation Governance Bridge:** Added support for the OpenClaw Foundation's neutral governance protocols to the delegation logic in Section 4.
+* **Unified Persistence Broker Integration:** The Hub now mandates a valid "Sandbox Persistence Proof" from the RIM before authorizing high-sensitivity A2A task handoffs.
+**Security Impact:** Ensures inter-agent collaboration is compliant with foundation-neutral mandates and remains secure against post-boot sandbox exploits.
