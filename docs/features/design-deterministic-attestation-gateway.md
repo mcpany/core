@@ -54,3 +54,10 @@ The persistent threat from project-local configuration vulnerabilities (CVE-2025
 * Section 4 now includes the "Environment Integrity Manifest" as a signed artifact of the attestation process.
 * The gateway will now distribute these manifests to agent runtimes as a mandatory boot prerequisite.
 **Security Impact:** Prevents runtime environment modification and ensures that the agent initializes in a cryptographically verified state.
+
+### Update: 2026-04-14 - TPM-Bound Configuration Hardening
+**Context:** The persistence of CVE-2026-25725 style configuration escapes in "cloned repository" scenarios proves that software-only manifests are insufficient.
+**Architecture Adjustment:**
+* **Hardware-Locked Boot:** Section 4 now includes a requirement for TPM-bound signatures on all project-local hooks and security-critical settings.
+* **Binding Logic:** The gateway will now refuse to attest to a manifest if sensitive hooks are not cryptographically bound to the local machine's TPM, neutralizing the risk of "Payload Smuggling" in malicious repo clones.
+**Security Impact:** Moves the trust boundary from the software manifest to the hardware, ensuring that security policies cannot be bypassed even if the manifest file itself is compromised or replaced.

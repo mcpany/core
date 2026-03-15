@@ -381,6 +381,11 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Mandatory Origin Validation (SOP)**: Enforcement of browser-origin headers for all local listeners to patch CVE-2026-25253. (Added: 2026-04-07)
 *   **[P1] Social-Agent Privacy Sandbox**: Middleware to prevent context reconstruction in shared multi-agent social spaces. (Added: 2026-04-07)
 
+#### Upcoming (2026-04-14 Evolution)
+*   **[P0] Delegation Attestation Layer (DAL)**: Core security service for evaluating A2A task proposals and generating "Safety Proofs." (Added: 2026-04-14)
+*   **[P0] TPM-Bound Configuration Boot**: Extension of the attestation gateway to require hardware signatures for project-local hooks. (Added: 2026-04-14)
+*   **[P1] Context Sidecar Adapter**: Middleware to synchronize state with external frameworks (e.g., OpenClaw ContextEngine) via native APIs. (Added: 2026-04-14)
+
 #### Upcoming (2026-04-13 Evolution)
 *   **[P0] A2A Open-Governance Integration**: Implementation of the finalized Linux Foundation A2A security manifest and task brokering model. (Added: 2026-04-13)
 *   **[P1] CLAW-10 Compliance Mapper**: Automation layer for mapping system state to the CLAW-10 Enterprise Evaluation Matrix. (Added: 2026-04-13)

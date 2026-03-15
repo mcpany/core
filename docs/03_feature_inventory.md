@@ -8,6 +8,19 @@
 
 ---
 
+## Evolution: [2026-04-14] Updates
+
+### Proposed Additions
+- **Context Sidecar Adapter**: (P1) Middleware that synchronizes state with external Context Engines (like OpenClaw v2026.3.7) via their native plugin interfaces, ensuring consistent "Intent-Bound" context across frameworks.
+- **Delegation Attestation Layer**: (P0) A core security service that evaluates A2A task proposals against historical reputation and local policy to generate "Safety Proofs," reducing manual oversight requirements.
+- **TPM-Bound Configuration Boot**: (P0) Extension of the Deterministic Boot Manifest to require hardware-bound (TPM) signatures for all project-local hooks and settings, neutralizing "Cloned Repository" attack vectors.
+
+### Priority Shifts
+- **A2A Messaging Hub**: (Re-affirmed P0) Expanded to include native support for the Delegation Attestation Layer.
+- **Settings Injection Guard**: (Re-affirmed P0) Now mandates TPM-bound attestation for all security-critical configuration overrides.
+
+---
+
 ## Evolution: [2026-04-12] Updates
 
 ### Proposed Additions
