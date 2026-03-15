@@ -47,3 +47,6 @@ The Deterministic Absence Proof (DAP) Provider in MCP Any will generate cryptogr
 
 ## 7. Evolutionary Changelog
 * **2026-04-22:** Initial Document Creation.
+* **2026-04-26:** Update: Hardening against Ambient Context Pollution.
+    * **Context:** Market sync identified that subagents in shared swarms are prone to "Ambient Pollution" from unrelated config files.
+    * **Architecture Adjustment:** DAP Generator now supports "Scope-Pinning," where a DAP manifest can be cryptographically bound to a specific Mission Intent, preventing its reuse for unrelated agent boots.

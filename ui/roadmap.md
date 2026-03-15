@@ -283,6 +283,11 @@
 - [ ] **[P0] ContextEngine Lifecycle Visualizer**: Debugger for OpenClaw-native context hooks and state transitions (Added: 2026-04-23).
 - [ ] **[P0] Absence Proof Integrity Monitor**: Real-time status for Non-Existence Proofs and blocked configuration injections (Added: 2026-04-23).
 
+#### Upcoming (2026-04-26 Evolution)
+- [ ] **[P0] Multi-Hop Trust Relay Visualizer**: UI for tracking attestation strength through multi-hop agent delegations. (Added: 2026-04-26)
+- [ ] **[P0] Cognitive Anchor Dashboard**: Visual manager for immutable mission anchors and intent-bound context shards. (Added: 2026-04-26)
+- [ ] **[P0] A2UI Delegation Approval Hub**: Hardened UI fragment for reviewing and signing high-risk multi-agent task delegations. (Added: 2026-04-26)
+
 #### Upcoming (2026-04-25 Evolution)
 - [ ] **[P0] A2A Session Persistence Dashboard**: Real-time monitor for tracking token refresh and session health in long-running reasoning chains. (Added: 2026-04-25)
 - [ ] **[P0] DAP Enforcement Status Widget**: Security indicator for mandatory Deterministic Absence Proof compliance during agent boot. (Added: 2026-04-25)
