@@ -8,6 +8,19 @@
 
 ---
 
+## Evolution: [2026-04-18] Updates
+
+### Proposed Additions
+- **Neural Context Distiller**: (P0) A high-performance state-compression middleware that leverages NCC v1.0 protocols to distill agent context windows, mitigating token exhaustion in deep swarms.
+- **Cross-Repo Policy Harmonizer**: (P0) A synchronization engine that enforces unified security and state policies across agent swarms spanning multiple independent repositories (MRSI compliance).
+- **UAB Mesh Router**: (P1) A role-based discovery and routing service that implements the UAB v2.5 Mesh Addressing standard for dynamic agent orchestration.
+
+### Priority Shifts
+- **LFTA Trust Lease Manager**: Re-affirmed as **P1**. Critical for performance optimization alongside Neural Distillation.
+- **Swarm Consensus Alignment Broker**: Re-affirmed as **P0**. Essential for maintaining state integrity across multi-repo swarms.
+
+---
+
 ## Evolution: [2026-04-17] Updates
 
 ### Proposed Additions

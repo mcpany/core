@@ -391,6 +391,11 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P1] CLAW-10 Compliance Mapper**: Automation layer for mapping system state to the CLAW-10 Enterprise Evaluation Matrix. (Added: 2026-04-13)
 *   **[P0] Deterministic Boot Manifest Provider**: Core service for generating and signing environment integrity manifests. (Added: 2026-04-13)
 
+#### Upcoming (2026-04-18 Evolution)
+*   **[P0] Neural Context Distiller**: High-performance state-compression middleware for NCC v1.0 compliance. (Added: 2026-04-18)
+*   **[P0] Cross-Repo Policy Harmonizer**: Synchronization engine for enforcing unified security policies across multi-repo swarms (MRSI). (Added: 2026-04-18)
+*   **[P1] UAB Mesh Router**: Role-based discovery and routing service implementing UAB v2.5 mesh addressing. (Added: 2026-04-18)
+
 #### Upcoming (2026-04-17 Evolution)
 *   **[P0] Reactive Intent Arbitration Hub**: Advanced RIG extension for recursive deconstruction and validation of expansion requests. (Added: 2026-04-17)
 *   **[P0] Resident Integrity Monitor (RIM)**: Hardware-bound service for continuous sandbox persistence proofs (Promoted to P0 on 2026-04-17).

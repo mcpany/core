@@ -241,6 +241,11 @@
 - [ ] **[P1] CLAW-10 Compliance Dashboard**: Interactive matrix for visualizing system compliance with the CLAW-10 Enterprise Evaluation Matrix. (Added: 2026-04-13)
 - [ ] **[P0] Deterministic Boot Manifest Reviewer**: UI for reviewing and signing "Environment Integrity Manifests" during the deterministic boot sequence. (Added: 2026-04-13)
 
+#### Upcoming (2026-04-18 Evolution)
+- [ ] **[P0] Neural Distillation Monitor**: Real-time visualization of context compression ratios and reasoning integrity scores. (Added: 2026-04-18)
+- [ ] **[P0] Cross-Repo Policy Bridge**: Security dashboard for visualizing and harmonizing policies across multi-repo swarms. (Added: 2026-04-18)
+- [ ] **[P1] UAB Mesh Explorer**: Dynamic map of role-based agent routing and reputation-bound tool discovery. (Added: 2026-04-18)
+
 #### Upcoming (2026-04-17 Evolution)
 - [ ] **[P0] Intent Arbitration Console**: Interactive deconstructor for expansion requests, highlighting potential "Smuggling" attempts. (Added: 2026-04-17)
 - [ ] **[P0] Sandbox Persistence Monitor**: Real-time visual tracker for RIM heartbeats and hardware state hashes. (Added: 2026-04-17)
