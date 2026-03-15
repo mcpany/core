@@ -167,7 +167,7 @@ jobs:
         run: make prepare
 
       - name: Lint
-        run: make lint || echo "Ignoring lint failure for OOM"
+        run: make lint
 
   bazel-test:
     runs-on: ubuntu-latest
