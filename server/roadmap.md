@@ -408,6 +408,11 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Resident Integrity Monitor (RIM)**: Service for continuous, hardware-bound sandbox attestation to detect post-boot environment drift. (Added: 2026-04-16 - Promoted to P0 on 2026-04-17)
 *   **[P0] Self-Healing Consensus Hub**: Autoritative "Truth Broker" for swarm self-correction, leveraging MAQ for state reconciliation. (Added: 2026-04-16)
 
+#### Upcoming (2026-04-21 Evolution)
+*   **[P0] A2UI Native Gateway**: Secure bridge for the A2UI protocol to surface sandboxed interactive agent fragments. (Added: 2026-04-21)
+*   **[P0] Deterministic Absence Proof (DAP) Provider**: signed "Non-Existence Manifest" service to prevent config-injection (CVE-2026-25725). (Added: 2026-04-21)
+*   **[P1] WebSocket Context Compactor**: Native context-compaction middleware for WebSocket-first streaming (OpenClaw v2026.3.1 compliance). (Added: 2026-04-21)
+
 #### Upcoming (2026-04-20 Evolution)
 *   **[P0] ASH Consensus Broker**: Decentralized coordination service for swarm-wide state re-alignment and voting. (Added: 2026-04-20)
 *   **[P0] A2A Safety Proof Validator**: Mandatory validation layer for task proposals to prevent inter-agent coercion. (Added: 2026-04-20)
