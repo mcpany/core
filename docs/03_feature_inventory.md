@@ -8,6 +8,19 @@
 
 ---
 
+## Evolution: [2026-04-21] Updates
+
+### Proposed Additions
+- **MFTA Validator**: (P0) Evolution of the Safety Proof Validator to support Multi-Factor Task Attestation, requiring cryptographically salted, task-bound proofs and real-time behavioral challenges.
+- **Consensus Rate-Limiter**: (P1) Governance middleware for the ASH Consensus Broker that enforces "Cool-down" periods and escalation logic to prevent Consensus Fatigue.
+- **Mesh-Bound Identity Provider**: (P1) A mesh-native IDP service providing hardware-bound identity tokens for peer-to-peer agent discovery in OpenClaw v3.0 swarms.
+
+### Priority Shifts
+- **ASH Consensus Broker**: (Re-affirmed P0) Now requires integration with the Consensus Rate-Limiter to ensure swarm stability.
+- **A2A Safety Proof Validator**: Evolved into the **MFTA Validator (P0)**.
+
+---
+
 ## Evolution: [2026-04-20] Updates
 
 ### Proposed Additions

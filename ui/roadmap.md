@@ -272,3 +272,8 @@
 - [ ] **[P0] Hardware Boot Integrity Monitor**: Real-time status indicator for TPM-bound configurations and boot manifest attestation. (Added: 2026-04-15)
 - [ ] **[P0] VTD Automation Workspace**: Dashboard for configuring autonomous delegation rules and reviewing automated handoff history. (Added: 2026-04-15)
 - [ ] **[P1] Universal Context Bus Viewer**: Visual debugger for monitoring state flow and synchronization across framework-specific Context Sidecars. (Added: 2026-04-15)
+
+#### Upcoming (2026-04-21 Evolution)
+- [ ] **[P0] MFTA Challenge Dialog**: Secure UI component for reviewing and responding to real-time behavioral challenges during A2A delegation. (Added: 2026-04-21)
+- [ ] **[P1] Consensus Fatigue Monitor**: Visualization of re-alignment vote frequency and active cool-down periods for the ASH Consensus Broker. (Added: 2026-04-21)
+- [ ] **[P1] Mesh Identity Dashboard**: UI for managing and visualizing hardware-bound mesh tokens and peer-to-peer agent discovery. (Added: 2026-04-21)

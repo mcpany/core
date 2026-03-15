@@ -423,3 +423,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Attested Boot Manifest Provider**: Core service for binding environment integrity to local TPM/Secure Enclave signatures. (Added: 2026-04-15)
 *   **[P0] VTD Autonomous Delegation Engine**: Implementation of automated, proof-based A2A task handoffs for low-risk operations. (Added: 2026-04-15)
 *   **[P1] Standardized Context Sidecar Interface**: Universal "Context Bus" for bridging framework-specific state strategies (OpenClaw, etc.). (Added: 2026-04-15)
+
+#### Upcoming (2026-04-21 Evolution)
+*   **[P0] MFTA Validator**: Secure A2A task attestation using cryptographically salted proofs and real-time behavioral challenges. (Added: 2026-04-21)
+*   **[P1] Consensus Rate-Limiter**: Governance middleware for the ASH Consensus Broker to mitigate swarm-wide "Consensus Fatigue" DoS. (Added: 2026-04-21)
+*   **[P1] Mesh-Bound Identity Provider**: IDP service for providing hardware-bound mesh tokens for OpenClaw v3.0 peer-to-peer discovery. (Added: 2026-04-21)

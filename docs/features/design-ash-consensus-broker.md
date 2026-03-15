@@ -46,3 +46,7 @@ With the introduction of Autonomous Self-Healing (ASH) in OpenClaw v2.8, agent s
 
 ## 7. Evolutionary Changelog
 * **2026-04-20:** Initial Document Creation.
+* **2026-04-21:** Update: Addressing Consensus Fatigue.
+    * **Context:** Ecosystem research revealed "Consensus Fatigue" as a new DoS vector where malicious subagents trigger constant re-alignment votes.
+    * **Architecture Adjustment:** Introducing a "Consensus Rate-Limiter" middleware. Repetitive drift alerts within a 5-minute window will trigger a mandatory "Cool-down" period or require an escalated MAQ threshold (e.g., from 51% to 75%).
+    * **Governance Impact:** Prevents reasoning stalls and token exhaustion while maintaining the integrity of the self-healing process.
