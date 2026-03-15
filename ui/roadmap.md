@@ -252,6 +252,12 @@
 - [ ] **[P0] Foundation Governance Console**: UI for managing compliance with OpenClaw Foundation neutral governance protocols. (Added: 2026-04-18)
 - [ ] **[P1] Persistence Proof Explorer**: Security dashboard for verifying shared hardware-bound SPP signals across a swarm. (Added: 2026-04-18)
 
+#### Upcoming (2026-04-19 Evolution)
+- [ ] **[P0] Continuous Sandbox Policy Monitor**: Enhanced real-time dashboard for visualizing randomized policy sweep results. (Added: 2026-04-19)
+- [ ] **[P0] Hardware Policy Status Widget**: Real-time indicator for TPM/SEP bound policy enforcement status. (Added: 2026-04-19)
+- [ ] **[P1] Governance Transparency Log Viewer**: UI for browsing and verifying cryptographically signed task lineages. (Added: 2026-04-19)
+- [ ] **[P1] Attestation Lease Dashboard**: Visualization of shared trust leases and attestation tax reduction metrics. (Added: 2026-04-19)
+
 #### Upcoming (2026-04-16 Evolution)
 - [ ] **[P0] Reactive Intent Dashboard**: Visual workspace for reviewing and approving agent "Boundary Expansion" requests. (Added: 2026-04-16)
 - [ ] **[P0] Resident Integrity Status Widget**: Real-time indicator for continuous sandbox attestation and hardware-bound health. (Added: 2026-04-16 - Promoted to P0 on 2026-04-17)

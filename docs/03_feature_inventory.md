@@ -21,6 +21,19 @@
 
 ---
 
+## Evolution: [2026-04-19] Updates
+
+### Proposed Additions
+- **Governance Transparency Log**: (P1) A centralized, cryptographically signed audit log for all coordinated agent tasks, aligning with the OpenClaw Foundation's task lineage requirements.
+- **Hardware-Locked Policy Enforcer**: (P0) A security middleware that binds policy evaluation and enforcement gates to hardware security modules (TPM/SEP), ensuring policy immutability.
+- **Cross-Framework Attestation Bridge**: (P1) A performance-optimizing service that facilitates shared, low-latency trust leases across multiple subagents using different frameworks.
+
+### Priority Shifts
+- **Continuous Sandbox Policy Verifier**: (Re-affirmed P0) Promoted as a mandatory requirement for enterprise-grade "Continuous Attestation" deployments.
+- **Resident Integrity Monitor (RIM)**: (Re-affirmed P0) Expanded to support the new "Continuous Resident Integrity Monitoring" (CRIM) strategy.
+
+---
+
 ## Evolution: [2026-04-17] Updates
 
 ### Proposed Additions

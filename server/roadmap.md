@@ -403,6 +403,12 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P1] Foundation Governance Adapter**: Bridge for the OpenClaw Foundation's neutral governance and transparency protocols. (Added: 2026-04-18)
 *   **[P1] Unified Persistence Proof Broker**: Shared attestation utility for swarm-wide sandbox integrity proofs. (Added: 2026-04-18)
 
+#### Upcoming (2026-04-19 Evolution)
+*   **[P0] Continuous Sandbox Policy Verifier**: Mandatory implementation of randomized policy sweeps to ensure continuous sandbox integrity. (Added: 2026-04-19)
+*   **[P0] Hardware-Locked Policy Enforcer**: Integration of TPM/SEP bound enforcement gates for immutable policy compliance. (Added: 2026-04-19)
+*   **[P1] Governance Transparency Log**: Cryptographically signed audit log service for OpenClaw-Foundation compliant task lineages. (Added: 2026-04-19)
+*   **[P1] Cross-Framework Attestation Bridge**: Performance-optimizing trust broker for shared, low-latency trust leases in deep swarms. (Added: 2026-04-19)
+
 #### Upcoming (2026-04-16 Evolution)
 *   **[P0] Reactive Intent Gateway (RIG)**: Middleware to mediate and sign agent "Boundary Expansion" requests, preventing Intent Smuggling. (Added: 2026-04-16)
 *   **[P0] Resident Integrity Monitor (RIM)**: Service for continuous, hardware-bound sandbox attestation to detect post-boot environment drift. (Added: 2026-04-16 - Promoted to P0 on 2026-04-17)
