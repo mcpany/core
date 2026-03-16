@@ -302,13 +302,6 @@ type Application struct {
 	statsCacheMu sync.RWMutex
 	statsCache   map[string]statsCacheEntry
 
-	// seededTraces for debug/demo
-	seededTracesMu sync.RWMutex
-	seededTraces   []*Trace
-
-	// seededTraceSubs for broadcasting seeded traces to active websockets
-	seededTraceSubsMu sync.RWMutex
-	seededTraceSubs   map[chan *Trace]struct{}
 }
 
 type statsCacheEntry struct {
@@ -339,7 +332,6 @@ func NewApplication() *Application {
 		startTime:       time.Now(),
 		MetricsGatherer:   prometheus.DefaultGatherer,
 		statsCache:        make(map[string]statsCacheEntry),
-		seededTraceSubs:   make(map[chan *Trace]struct{}),
 	}
 }
 
