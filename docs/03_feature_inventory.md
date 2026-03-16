@@ -6,6 +6,17 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-05-07] Updates
+
+### Proposed Additions
+- **Programmatic SDK Boundary Enforcer**: (P0) Mandatory security gating for SDK-driven agent interactions (e.g., OpenCode SDK), ensuring programmatic tool calls comply with Zero-Trust policies.
+- **Distributed Supervisor Mesh (DSM) Orchestrator**: (P1) Infrastructure for decentralized delegation and oversight, allowing any agent to act as a local supervisor while anchored to a mission root.
+- **Autonomous Escalation Resolver**: (P1) Mitigation service for "Negotiation Deadlocks" in autonomous swarms, applying mission-aligned fairness policies to break bidding loops.
+
+### Priority Shifts
+- **Inter-Swarm Deadlock Detector**: (Promoted to P0) Critical for neutralizing resource exhaustion in autonomous production swarms.
+- **Hierarchical Intent Lease (HIL) Broker**: (Re-affirmed P0) Essential for managing the lifecycle of decentralized supervisors in a DSM.
+
 ## Evolution: [2026-05-06] Updates
 
 ### Proposed Additions
