@@ -84,16 +84,15 @@ nodes:
 
 	// 6. Build Images
 	// Server and http-echo-server images are built and tagged via Bazel (see k8s/Makefile build-images target).
-	// Only operator and UI still use Docker builds.
+	// The UI image is also built via Bazel (//ui:ui_tarball) to avoid network-dependent Docker builds.
+	// Only the operator still uses Docker build.
 	ensureBazelImageLoaded(t, filepath.Join("server", "cmd", "server", "server_tarball.sh"), "mcpany/server")
 	ensureBazelImageLoaded(t, filepath.Join("server", "tests", "integration", "cmd", "mocks", "http_echo_server", "http_echo_server_tarball.sh"), "mcpany/http-echo-server")
+	ensureBazelImageLoaded(t, filepath.Join("ui", "ui_tarball.sh"), "mcpany/ui")
 	if os.Getenv("SKIP_IMAGE_BUILD") != "true" {
 		t.Logf("Building Docker images with tag %s...", tag)
 		if err := runCommand(t, ctx, rootDir, "docker", "build", "-t", fmt.Sprintf("mcpany/operator:%s", tag), "-f", "k8s/operator/Dockerfile", "."); err != nil {
 			t.Fatalf("Failed to build operator image: %v", err)
-		}
-		if err := runCommand(t, ctx, rootDir, "docker", "build", "-t", fmt.Sprintf("mcpany/ui:%s", tag), "-f", "ui/Dockerfile", "."); err != nil {
-			t.Fatalf("Failed to build ui image: %v", err)
 		}
 	} else {
 		t.Log("Skipping image build (SKIP_IMAGE_BUILD=true). Assuming images exist.")
