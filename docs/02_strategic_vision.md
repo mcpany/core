@@ -18,6 +18,16 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Hardware-Enclave Path Attestation (HEPA)**: We are evolving "Kernel-Bound FD Persistence" into HEPA. MCP Any will now utilize Secure Enclaves (TPM/SEP) to provide hardware-bound path validation at the point of initial file open, neutralizing the gap between path resolution and FD pinning.
 - **Multi-modal Trace Sanitization**: Leveraging Gemini CLI's v1.2 updates, the "Semantic Integrity Bridge" will now perform cross-reference validation between textual reasoning and multi-modal (visual/audio) traces to detect and block "Recursive Context Splicing" attempts.
 
+---
+
+## Strategic Evolution: [2026-05-06]
+### Focus: Temporal Memory Isolation & Intent-Bound WebSocket Hardening
+**Context**: The emergence of "Shadow Memory Exfiltration" (SME) timing attacks and Gemini CLI's "Reasoning-Bound WebSocket" (RBW) protocol mark a shift from simple memory isolation to "Temporal Isolation." Simultaneously, OpenClaw's "Dynamic Capability Pruning" (DCP) reveals that even isolated agents must be able to programmatically shrink their own privilege footprint.
+**Strategic Pivot**:
+- **Timing-Attack Resistant Blackboard (TARB)**: MCP Any will evolve the RAMS architecture to include "Temporal Memory Isolation." We will implement jittered, bucketed memory access for the Blackboard, neutralizing SME timing attacks while maintaining high-performance state sharing.
+- **Reasoning-Bound WebSocket (RBW) Gateway**: We are adopting the RBW v1.3 standard. MCP Any will act as the authoritative "Intent Enforcement Point," monitoring subagent reasoning in real-time and automatically terminating WebSocket-bound tool connections if the internal monologue diverges from the cryptographically signed "Mission Root."
+- **Self-Pruning Capability Middleware**: Leveraging OpenClaw's DCP patterns, MCP Any will provide a "Pruning API" for agents. This allows swarms to autonomously revoke their own time-bound capabilities (e.g., sudo, network egress) as they complete mission-critical sub-tasks, minimizing the post-execution attack surface.
+
 ## Strategic Evolution: [2026-05-04]
 ### Focus: Semantic Integrity & Kernel-Bound Intent Persistence
 **Context**: The release of OpenClaw's "Semantic Garbage Collection" (SGC) and the discovery of "Recursive Intent Poisoning" (RIP) mark a shift from simple context management to "Content-Aware Governance." Simultaneously, the industry's move toward kernel-level FD pinning for configuration security reinforces that path-based validation is no longer sufficient.

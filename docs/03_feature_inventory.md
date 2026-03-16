@@ -17,6 +17,19 @@
 - **Kernel-Bound FD Persistence**: (Evolved to HEPA) Upgraded with hardware enclave support for stronger path-resolution guarantees.
 - **Semantic Integrity Bridge**: (Promoted to P0) Critical requirement for detecting "Recursive Context Splicing" (RCS) in multi-modal reasoning traces.
 
+---
+
+## Evolution: [2026-05-06] Updates
+
+### Proposed Additions
+- **Timing-Attack Resistant Blackboard (TARB) Extension**: (P0) A security upgrade for the RAMS architecture that implements jittered, bucketed memory access to neutralize Shadow Memory Exfiltration (SME).
+- **Reasoning-Bound WebSocket (RBW) Controller**: (P0) A session-bound enforcement service that terminates agent tool connections if reasoning (Internal Monologue) deviates from the signed mission intent.
+- **Dynamic Capability Pruning (DCP) Middleware**: (P1) A programmatic API that allows agents to autonomously revoke their own time-bound capabilities upon sub-task completion.
+
+### Priority Shifts
+- **Reasoning-Aware Memory Segmentation (RAMS) Hub**: (Re-affirmed P0) Now elevated with the requirement for Temporal Isolation via the TARB extension.
+- **A2A Messaging Hub**: (Re-affirmed P0) Evolving to support RBW-bound connection lifecycles.
+
 ## Evolution: [2026-05-04] Updates
 
 ### Proposed Additions

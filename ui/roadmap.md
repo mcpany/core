@@ -288,6 +288,11 @@
 - [ ] **[P0] HEPA Security Widget**: Real-time status for hardware-enclave path attestation and TPM-locked configs. (Added: 2026-05-05)
 - [ ] **[P1] Multi-modal Trace Debugger**: Forensic UI for analyzing textual and visual traces for RCS patterns. (Added: 2026-05-05)
 
+#### Upcoming (2026-05-06 Evolution)
+- [ ] **[P0] TARB Timing Inspector**: Visual debugger for monitoring jittered memory access and SME violation alerts. (Added: 2026-05-06)
+- [ ] **[P0] RBW Connection Monitor**: Real-time tracker for Reasoning-Bound WebSocket lifecycles and intent alignment. (Added: 2026-05-06)
+- [ ] **[P1] Self-Pruning Dashboard**: UI for visualizing autonomously revoked agent capabilities and remaining privilege window. (Added: 2026-05-06)
+
 #### Upcoming (2026-05-04 Evolution)
 - [ ] **[P0] Semantic Integrity Dashboard**: Real-time visualization of intent drift and RIP/RCS alerts. (Added: 2026-05-04 - Promoted to P0 on 2026-05-05)
 - [ ] **[P0] FD Persistence Monitor**: Visual tracker for kernel-bound file descriptors and pinning status. (Added: 2026-05-04)

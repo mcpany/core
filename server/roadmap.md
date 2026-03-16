@@ -445,6 +445,11 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] HEPA Provider**: Hardware-Enclave Path Attestation for TPM-bound configuration loading. (Added: 2026-05-05)
 *   **[P1] Cross-Swarm Intent Attestation**: UACO-native multi-signature coordination for mission-root intents. (Added: 2026-05-05)
 
+#### Upcoming (2026-05-06 Evolution)
+*   **[P0] Timing-Attack Resistant Blackboard (TARB)**: Security upgrade for the RAMS Hub implementing jittered, bucketed memory access to neutralize SME attacks. (Added: 2026-05-06)
+*   **[P0] Reasoning-Bound WebSocket (RBW) Controller**: Authoritative enforcement service that terminates connections if subagent reasoning deviates from signed mission intent. (Added: 2026-05-06)
+*   **[P1] Dynamic Capability Pruning (DCP) Middleware**: Programmatic API allowing agents to autonomously revoke their own capabilities upon sub-task completion. (Added: 2026-05-06)
+
 #### Upcoming (2026-05-04 Evolution)
 *   **[P0] Semantic Integrity Bridge**: Intent Drift Detection middleware to prevent Recursive Intent Poisoning (RIP) and RCS. (Added: 2026-05-04 - Promoted to P0 on 2026-05-05)
 *   **[P0] Kernel-Bound FD Persistence Middleware**: FD-passing and pinning for absolute configuration immutability. (Added: 2026-05-04)
