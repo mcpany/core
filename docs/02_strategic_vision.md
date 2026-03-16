@@ -10,6 +10,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-05-10]
+### Focus: Task-Bound Discovery Isolation & Continuous Negative Attestation
+**Context**: The Gemini CLI "Ghost-Execution" via discovery commands and Claude Code's "Shadow-Sandbox" escape (CVE-2026-25725) prove that the "Pre-Flight" phase is the new primary attack vector. Security must now extend to the very moment an agent *discovers* a tool, and must prove the absolute absence of malicious configuration hooks throughout the entire lifecycle.
+**Strategic Pivot**:
+- **Task-Bound Discovery Isolation**: MCP Any will evolve the discovery layer to treat all discovery-time commands (e.g., `tools.discoveryCommand`) as high-risk execution events. We will implement "Isolated Discovery Environments" where discovery logic is executed in a ephemeral, zero-trust sandbox before any tool is exposed to the primary agent.
+- **Continuous Negative Attestation (DAP-v2)**: Moving beyond boot-time proofs, we are introducing "Continuous DAP." MCP Any will maintain a persistent, hardware-attested manifest of *non-existent* files at restricted paths, ensuring that a subagent cannot create a malicious configuration hook in a previously empty directory to bypass sandbox mounts.
+- **Asynchronous Rollout Orchestration**: Supporting OpenClaw-RL v1.0, MCP Any will evolve into an "Asynchronous Rollout Collector." We will provide the non-blocking infrastructure for real-time telemetry export of reasoning traces and proces-reward evaluations, enabling continuous policy optimization without reasoning latency.
+
 ## Strategic Evolution: [2026-05-09]
 ### Focus: Shadow-Subagent Lineage & Hardware-Locked Permission Hardening
 **Context**: The emergence of "Shadow Subagent" spawns in OpenClaw (context contamination) and the shift toward Continuous Project Configuration Protection (CPCP) in Claude Code mark a transition from session-start attestation to "Per-Call Integrity." Security must now validate not just the agent, but the complete parentage of every request and the real-time state of the environment.
