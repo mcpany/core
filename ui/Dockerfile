@@ -17,7 +17,7 @@ COPY ui/ .
 COPY proto/ /proto/
 # Symlink node_modules so proto files can find dependencies during build
 RUN ln -s /app/node_modules /proto/node_modules
-# RUN npm run build
+RUN npm run build
 
 # ---- runner stage: serve via vite preview (handles proxy to backend) ----
 # vite preview reads vite.config.ts at runtime, so BACKEND_URL is injected
@@ -45,4 +45,4 @@ ENV PORT=3000
 
 # `vite preview` serves the pre-built dist/ and proxies API paths to BACKEND_URL
 # as configured in the preview.proxy section of vite.config.ts.
-CMD ["node_modules/.bin/vite", "preview", "--host", "0.0.0.0", "--port", "3000"]
+CMD ["node_modules/vite/bin/vite.js", "preview", "--host", "0.0.0.0", "--port", "3000"]

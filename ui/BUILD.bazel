@@ -151,37 +151,38 @@ load("@rules_pkg//pkg:mappings.bzl", "pkg_files")
 load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
 
 # Package the pre-built Vite dist into a tar layer.
-pkg_files(
-    name = "ui_dist_files",
+pkg_tar(
+    name = "ui_dist_tar",
     srcs = [":build"],
-    prefix = "/app/dist",
+    package_dir = "/app/dist",
 )
 
 # Package the minimal node_modules needed by vite preview (vite itself + proxy deps).
 # We conservatively include the full node_modules; a future optimisation can
 # prune dev-only packages.
-pkg_files(
-    name = "ui_node_modules_files",
+pkg_tar(
+    name = "ui_node_modules_tar",
     srcs = [":node_modules"],
-    prefix = "/app/node_modules",
+    package_dir = "/app/node_modules",
 )
 
 # Static config files required by `vite preview` at runtime.
-pkg_files(
-    name = "ui_config_files",
+pkg_tar(
+    name = "ui_config_tar",
     srcs = [
         "vite.config.ts",
         "index.html",
         "package.json",
     ],
-    prefix = "/app",
+    package_dir = "/app",
 )
 
 pkg_tar(
     name = "ui_layer",
-    srcs = [
-        ":ui_dist_files",
-        ":ui_config_files",
+    deps = [
+        ":ui_dist_tar",
+        ":ui_config_tar",
+        ":ui_node_modules_tar",
     ],
 )
 
@@ -190,7 +191,7 @@ oci_image(
     base = "@distroless_nodejs24",
     entrypoint = [
         "node",
-        "/app/node_modules/.bin/vite",
+        "/app/node_modules/vite/bin/vite.js",
         "preview",
         "--host",
         "0.0.0.0",
