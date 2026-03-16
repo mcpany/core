@@ -3,7 +3,7 @@
 
 load("@rules_go//go:def.bzl", "go_binary", "go_library")
 load("@rules_oci//oci:defs.bzl", "oci_image", "oci_load")
-load("@rules_pkg//pkg:mappings.bzl", "pkg_files")
+load("@rules_pkg//pkg:mappings.bzl", "pkg_attributes", "pkg_files")
 load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
 
 go_library(
@@ -23,6 +23,7 @@ go_binary(
 pkg_files(
     name = "http_echo_server_binary_files",
     srcs = [":http_echo_server"],
+    attributes = pkg_attributes(mode = "0755"),
     prefix = "/app",
 )
 

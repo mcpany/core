@@ -90,11 +90,23 @@ func TestDockerCompose(t *testing.T) {
 		t.Skip("docker command not found, skipping TestDockerCompose.")
 	}
 
-	composeDir := dockerComposeDir(t)
-	dockerComposeFile := filepath.Join(composeDir, "docker-compose.yml")
+	srcComposeDir := dockerComposeDir(t)
+	dockerComposeFile := filepath.Join(srcComposeDir, "docker-compose.yml")
 	if _, err := os.Stat(dockerComposeFile); err != nil {
 		t.Skipf("docker-compose.yml not found at %s, skipping TestDockerCompose", dockerComposeFile)
 	}
+
+	// Copy docker-compose files to a real temp directory so that Docker can bind-mount
+	// them without issues from Bazel's runfile symlinks.
+	composeDir := t.TempDir()
+	for _, fname := range []string{"docker-compose.yml", "config.yaml"} {
+		srcPath := filepath.Join(srcComposeDir, fname)
+		dstPath := filepath.Join(composeDir, fname)
+		srcData, err := os.ReadFile(srcPath) //nolint:gosec
+		require.NoError(t, err, "reading %s", fname)
+		require.NoError(t, os.WriteFile(dstPath, srcData, 0644), "writing %s", fname) //nolint:gosec
+	}
+	dockerComposeFile = filepath.Join(composeDir, "docker-compose.yml")
 
 	// Load the Bazel-built server and echo-server images when running under Bazel.
 	// Outside Bazel the images (mcpany/server:latest and mcpany/http-echo-server:latest)
