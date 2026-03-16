@@ -28,15 +28,13 @@ func (p *OpenAPIProvider) Discover(_ context.Context) ([]*configv1.UpstreamServi
 
 	// Create a dynamic configuration for the OpenAPI service
 	return []*configv1.UpstreamServiceConfig{
-		&configv1.UpstreamServiceConfig{
+		configv1.UpstreamServiceConfig_builder{
 			Name:    proto.String("Auto-discovered OpenAPI"),
 			Version: proto.String("v1"),
-			ServiceConfig: &configv1.UpstreamServiceConfig_OpenapiService{
-				OpenapiService: &configv1.OpenapiUpstreamService{
-					Address: p.Endpoint,
-				},
-			},
+			OpenapiService: configv1.OpenapiUpstreamService_builder{
+				Address: proto.String(p.Endpoint),
+			}.Build(),
 			Tags: []string{"openapi", "auto-discovered"},
-		},
+		}.Build(),
 	}, nil
 }

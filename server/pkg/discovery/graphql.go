@@ -28,15 +28,13 @@ func (p *GraphQLProvider) Discover(_ context.Context) ([]*configv1.UpstreamServi
 
 	// Create a dynamic configuration for the GraphQL service
 	return []*configv1.UpstreamServiceConfig{
-		&configv1.UpstreamServiceConfig{
+		configv1.UpstreamServiceConfig_builder{
 			Name:    proto.String("Auto-discovered GraphQL"),
 			Version: proto.String("v1"),
-			ServiceConfig: &configv1.UpstreamServiceConfig_GraphqlService{
-				GraphqlService: &configv1.GraphQLUpstreamService{
-					Address: p.Endpoint,
-				},
-			},
+			GraphqlService: configv1.GraphQLUpstreamService_builder{
+				Address: proto.String(p.Endpoint),
+			}.Build(),
 			Tags: []string{"graphql", "auto-discovered"},
-		},
+		}.Build(),
 	}, nil
 }

@@ -28,16 +28,14 @@ func (p *GRPCProvider) Discover(_ context.Context) ([]*configv1.UpstreamServiceC
 
 	// Create a dynamic configuration for the gRPC service
 	return []*configv1.UpstreamServiceConfig{
-		&configv1.UpstreamServiceConfig{
+		configv1.UpstreamServiceConfig_builder{
 			Name:    proto.String("Auto-discovered gRPC"),
 			Version: proto.String("v1"),
-			ServiceConfig: &configv1.UpstreamServiceConfig_GrpcService{
-				GrpcService: &configv1.GrpcUpstreamService{
-					Address:       p.Endpoint,
-					UseReflection: true,
-				},
-			},
+			GrpcService: configv1.GrpcUpstreamService_builder{
+				Address:       proto.String(p.Endpoint),
+				UseReflection: proto.Bool(true),
+			}.Build(),
 			Tags: []string{"grpc", "auto-discovered"},
-		},
+		}.Build(),
 	}, nil
 }
