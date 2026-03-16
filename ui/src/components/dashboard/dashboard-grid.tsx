@@ -5,7 +5,7 @@
 
 
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 import { GripVertical, MoreHorizontal, Maximize, Columns, LayoutGrid, EyeOff, Trash2, Settings2, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -243,6 +243,10 @@ export function DashboardGrid() {
         saveWidgets([newWidget, ...widgets]);
     };
 
+    // ⚡ BOLT: Memoize visibleWidgets to prevent full Draggable/Droppable re-renders on unrelated state changes (e.g., drag hover states).
+    // Randomized Selection from Top 5 High-Impact Targets (React/View)
+    const visibleWidgets = useMemo(() => widgets.filter(w => !w.hidden), [widgets]);
+
     if (!isMounted) return null;
 
     if (loading) {
@@ -270,8 +274,6 @@ export function DashboardGrid() {
             default: return "col-span-12 lg:col-span-4";
         }
     };
-
-    const visibleWidgets = widgets.filter(w => !w.hidden);
 
     return (
         <div className="space-y-4">
