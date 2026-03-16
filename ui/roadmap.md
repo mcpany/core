@@ -283,6 +283,11 @@
 - [ ] **[P0] ContextEngine Lifecycle Visualizer**: Debugger for OpenClaw-native context hooks and state transitions (Added: 2026-04-23).
 - [ ] **[P0] Absence Proof Integrity Monitor**: Real-time status for Non-Existence Proofs and blocked configuration injections (Added: 2026-04-23).
 
+#### Upcoming (2026-05-02 Evolution)
+- [ ] **[P0] Risk-Adaptive Quorum Visualizer**: Real-time monitor for AQT thresholds, tool risk scores, and reasoning confidence. (Added: 2026-05-02)
+- [ ] **[P1] Inter-Swarm Wait-Graph Explorer**: Interactive visualization of attestation dependencies to identify and resolve deadlocks. (Added: 2026-05-02)
+- [ ] **[P0] Deterministic Recovery Monitor**: Dashboard for tracking DSR recovery triggers and automated snapshot rollbacks. (Added: 2026-05-02)
+
 #### Upcoming (2026-05-01 Evolution)
 - [ ] **[P0] Contextual Quorum (CQ) Dashboard**: Visual workspace for monitoring multi-agent votes and consensus status. (Added: 2026-05-01)
 - [ ] **[P1] Adaptive Budgeting Monitor**: Real-time visualization of agent token/compute leases and reasoning confidence. (Added: 2026-05-01)

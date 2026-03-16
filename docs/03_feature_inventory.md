@@ -6,6 +6,17 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-05-02] Updates
+
+### Proposed Additions
+- **Risk-Adaptive CQ Controller**: (P0) A dynamic policy engine for the CQ Hub that scales the quorum threshold (number of required signatures) based on real-time tool risk scores and reasoning confidence.
+- **Reasoning-Responsive Rate Limiter (RRRL)**: (P1) Safety middleware that throttles tool calls when an agent's reasoning confidence falls below a configured threshold, preventing hallucinatory loops.
+- **Inter-Swarm Deadlock Detector**: (P1) UACO-native monitoring service that identifies circular dependencies in multi-agent attestation chains and triggers automated resolution/timeouts.
+
+### Priority Shifts
+- **Project-Local Snapshot (PLSS) Sync**: (Promoted to P0) Now critical for implementing the Deterministic Sandbox Recovery (DSR) patterns standardized by Claude Code.
+- **Contextual Quorum (CQ) Hub**: (Re-affirmed P0) Evolving to support OpenClaw v2026.5.1 AQT (Adaptive Quorum Thresholds).
+
 ## Evolution: [2026-05-01] Updates
 
 ### Proposed Additions
