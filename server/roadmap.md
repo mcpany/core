@@ -434,6 +434,11 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Absence Proof (DAP) Generator**: Security extension for Pre-Flight Validator to sign missing-file proofs (Added: 2026-04-23).
 *   **[P0] A2UI Secure Surface Host**: Gateway infrastructure for sandboxed agent-generated UI fragments (Added: 2026-04-23).
 
+#### Upcoming (2026-05-02 Evolution)
+*   **[P0] Verifiable Reasoning Trace (VRT) Validator**: Middleware to validate cryptographically signed monologue traces before tool execution. (Added: 2026-05-02)
+*   **[P0] Intent-Bound Blackboard Isolation**: Implementation of ASE mitigation tokens for the Shared KV Store. (Added: 2026-05-02)
+*   **[P1] Shadow-FS v2 Native Integration**: Core support for the latest Shadow-FS standard with native KLIP. (Added: 2026-05-02)
+
 #### Upcoming (2026-05-01 Evolution)
 *   **[P0] Contextual Quorum (CQ) Hub**: Coordination service for multi-agent attestation and consensus-based tool execution. (Added: 2026-05-01)
 *   **[P1] Adaptive Intent Budgeting (AIB)**: Resource management layer for dynamic token and compute lease scaling. (Added: 2026-05-01)

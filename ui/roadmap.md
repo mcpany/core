@@ -283,6 +283,11 @@
 - [ ] **[P0] ContextEngine Lifecycle Visualizer**: Debugger for OpenClaw-native context hooks and state transitions (Added: 2026-04-23).
 - [ ] **[P0] Absence Proof Integrity Monitor**: Real-time status for Non-Existence Proofs and blocked configuration injections (Added: 2026-04-23).
 
+#### Upcoming (2026-05-02 Evolution)
+- [ ] **[P0] Reasoning Trace Validator (VRT)**: Visual indicator for the attestation status of an agent's reasoning monologue. (Added: 2026-05-02)
+- [ ] **[P0] Intent-Bound Blackboard Dashboard**: Enhanced visualization of isolated blackboard shards with intent-token auditing. (Added: 2026-05-02)
+- [ ] **[P1] Shadow-FS v2 Integrity Monitor**: Real-time monitor for hardware-pinned Inodes and Shadow-FS v2 violation alerts. (Added: 2026-05-02)
+
 #### Upcoming (2026-05-01 Evolution)
 - [ ] **[P0] Contextual Quorum (CQ) Dashboard**: Visual workspace for monitoring multi-agent votes and consensus status. (Added: 2026-05-01)
 - [ ] **[P1] Adaptive Budgeting Monitor**: Real-time visualization of agent token/compute leases and reasoning confidence. (Added: 2026-05-01)

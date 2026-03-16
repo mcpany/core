@@ -6,6 +6,16 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-05-02] Updates
+
+### Proposed Additions
+- **Verifiable Reasoning Trace (VRT) Validator**: (P0) Security middleware that validates cryptographically signed monologue traces before granting tool access, neutralizing "Shadow Execution."
+- **ASE Mitigation (Intent-Bound Blackboard)**: (P0) Upgrade to the Shared KV Store enforcing explicit intent-based access tokens to prevent social engineering between subagents.
+- **Shadow-FS v2 (KLIP Native)**: (P1) Integration with the latest Shadow-FS standard, promoting Kernel-Level Inode Pinning to the primary filesystem protection layer.
+
+### Priority Shifts
+- **Adaptive Intent Budgeting (AIB)**: (Promoted to P0) Critical for preventing resource exhaustion in autonomous multi-swarm negotiations.
+
 ## Evolution: [2026-05-01] Updates
 
 ### Proposed Additions
