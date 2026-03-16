@@ -1736,3 +1736,87 @@ func TestHandleAuthTest(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, w.Code)
 }
+
+func TestHandleSecretDetail_Reveal_HappyPath(t *testing.T) {
+	app, store := setupApiTestApp()
+	handler := app.handleSecretDetail(store)
+
+	secret := configv1.Secret_builder{
+		Id:    proto.String("sec-123"),
+		Name:  proto.String("my-secret"),
+		Value: proto.String("super-secret"),
+	}.Build()
+	_ = store.SaveSecret(context.Background(), secret)
+
+	req := httptest.NewRequest(http.MethodPost, "/secrets/sec-123/reveal", nil)
+	w := httptest.NewRecorder()
+	handler.ServeHTTP(w, req)
+	if w.Code != http.StatusOK {
+		t.Errorf("Expected 200 OK, got %d", w.Code)
+	}
+	if !bytes.Contains(w.Body.Bytes(), []byte(`{"value":"super-secret"}`)) {
+		t.Errorf("Expected secret value in response body, got %s", w.Body.String())
+	}
+}
+
+func TestHandleSecretDetail_Reveal_MethodNotAllowed(t *testing.T) {
+	app, store := setupApiTestApp()
+	handler := app.handleSecretDetail(store)
+
+	req := httptest.NewRequest(http.MethodGet, "/secrets/sec-123/reveal", nil)
+	w := httptest.NewRecorder()
+	handler.ServeHTTP(w, req)
+	if w.Code != http.StatusMethodNotAllowed {
+		t.Errorf("Expected 405 Method Not Allowed, got %d", w.Code)
+	}
+}
+
+func TestHandleSecretDetail_Reveal_NotFound(t *testing.T) {
+	app, store := setupApiTestApp()
+	handler := app.handleSecretDetail(store)
+
+	req := httptest.NewRequest(http.MethodPost, "/secrets/non-existent/reveal", nil)
+	w := httptest.NewRecorder()
+	handler.ServeHTTP(w, req)
+	if w.Code != http.StatusNotFound {
+		t.Errorf("Expected 404 Not Found, got %d", w.Code)
+	}
+}
+
+func TestHandleSecretDetail_Put_HappyPath(t *testing.T) {
+	app, store := setupApiTestApp()
+	handler := app.handleSecretDetail(store)
+
+	reqBody := `{"name":"my-secret", "value":"new-secret-value"}`
+	req := httptest.NewRequest(http.MethodPut, "/secrets/sec-123", bytes.NewReader([]byte(reqBody)))
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	handler.ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Errorf("Expected 200 OK, got %d", w.Code)
+	}
+
+	secret, err := store.GetSecret(context.Background(), "sec-123")
+	if err != nil {
+		t.Fatalf("Failed to get secret: %v", err)
+	}
+	if secret.GetValue() != "new-secret-value" {
+		t.Errorf("Expected secret value to be 'new-secret-value', got '%s'", secret.GetValue())
+	}
+}
+
+func TestHandleSecretDetail_Put_InvalidJSON(t *testing.T) {
+	app, store := setupApiTestApp()
+	handler := app.handleSecretDetail(store)
+
+	reqBody := `{"name":"my-secret", "value":"new-secret-value"` // Missing closing brace
+	req := httptest.NewRequest(http.MethodPut, "/secrets/sec-123", bytes.NewReader([]byte(reqBody)))
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	handler.ServeHTTP(w, req)
+
+	if w.Code != http.StatusBadRequest {
+		t.Errorf("Expected 400 Bad Request, got %d", w.Code)
+	}
+}
