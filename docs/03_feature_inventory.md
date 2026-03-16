@@ -6,6 +6,17 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-05-09] Updates
+
+### Proposed Additions
+- **Cryptographic Lineage Validator**: (P0) A core security middleware that enforces mandatory parent-child token binding for all subagent spawns, neutralizing "Shadow Subagent" context contamination.
+- **Continuous CPCP Enforcer**: (P0) A high-frequency validation service for project-local configurations that performs hardware-attested checks during every tool call.
+- **ARE-Responsive Budget Controller**: (P1) Resource management layer that consumes Gemini CLI `ARE` headers to dynamically prioritize token allocation for high-intensity reasoning.
+
+### Priority Shifts
+- **Deterministic Permission Guard (DPG)**: (Re-affirmed P0) Evolved with the requirement for "Per-Call Integrity" mapping to the CPCP standard.
+- **Recursive Depth-Limit Middleware**: (Promoted to P0) Critical for preventing infinite "Shadow Spawning" loops in autonomous swarms.
+
 ## Evolution: [2026-05-08] Updates
 
 ### Proposed Additions

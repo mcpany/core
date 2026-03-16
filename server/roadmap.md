@@ -506,6 +506,11 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] ContextEngine Plugin Adapter**: Core adapter for hosting OpenClaw-compatible ContextEngine plugins, supporting sovereignty-aware state management. (Added: 2026-04-24)
 *   **[P1] Zero-Trust Discovery Gate**: Identity-bound access control layer for A2A capability card discovery. (Added: 2026-04-24)
 
+#### Upcoming (2026-05-09 Evolution)
+*   **[P0] Cryptographic Lineage Validator**: Mandatory parent-child token binding for all subagent spawns to neutralize shadow context contamination. (Added: 2026-05-09)
+*   **[P0] Continuous CPCP Enforcer**: High-frequency hardware-attested validation of project-local configurations during every tool call. (Added: 2026-05-09)
+*   **[P1] ARE-Responsive Budget Controller**: Dynamic prioritization of token allocation based on Gemini CLI ARE reasoning intensity headers. (Added: 2026-05-09)
+
 #### Upcoming (2026-05-08 Evolution)
 *   **[P0] Context Sealed-Fragment Hub**: Implementation of "Active Fragment Sealing" to protect context shards from semantic side-channel exfiltration (EchoLeak defense). (Added: 2026-05-08)
 *   **[P0] Deterministic Permission Guard (DPG)**: Kernel-level security middleware for non-bypassable enforcement of project-local "Deny" rules. (Added: 2026-05-08)

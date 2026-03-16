@@ -353,6 +353,11 @@
 - [ ] **[P0] ContextEngine Plugin Manager**: UI for managing and monitoring pluggable ContextEngine strategies and sovereignty status. (Added: 2026-04-24)
 - [ ] **[P1] Zero-Trust Discovery Audit Log**: Visual log for tracking A2A capability card discovery requests and auth-gate actions. (Added: 2026-04-24)
 
+#### Upcoming (2026-05-09 Evolution)
+- [ ] **[P0] Subagent Lineage Explorer**: Interactive visualization of parent-child subagent lineages and cryptographic spawn tokens. (Added: 2026-05-09)
+- [ ] **[P0] Continuous CPCP Status Widget**: Real-time indicator of hardware-attested configuration integrity and per-call validation status. (Added: 2026-05-09)
+- [ ] **[P1] ARE Budgeting Monitor**: Visual tracker for token allocation based on Gemini CLI Advanced Reasoning Effort headers. (Added: 2026-05-09)
+
 #### Upcoming (2026-05-08 Evolution)
 - [ ] **[P0] Context Sealing Auditor**: Visualization of cryptographically sealed context shards and exfiltration attempt alerts. (Added: 2026-05-08)
 - [ ] **[P0] Permission Enforcement Monitor**: Real-time tracker for DPG-blocked tool calls and project-local policy violations. (Added: 2026-05-08)

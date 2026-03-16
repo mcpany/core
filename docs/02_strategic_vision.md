@@ -10,6 +10,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-05-09]
+### Focus: Shadow-Subagent Lineage & Hardware-Locked Permission Hardening
+**Context**: The emergence of "Shadow Subagent" spawns in OpenClaw (context contamination) and the shift toward Continuous Project Configuration Protection (CPCP) in Claude Code mark a transition from session-start attestation to "Per-Call Integrity." Security must now validate not just the agent, but the complete parentage of every request and the real-time state of the environment.
+**Strategic Pivot**:
+- **Cryptographic Lineage Enforcement**: MCP Any will move beyond flat subagent tracking to "Recursive Lineage Validation." We will implement cryptographically bound parent-child tokens for every subagent spawn, ensuring that "Shadow Subagents" cannot be coerced into inheriting context without supervisor attestation.
+- **Continuous CPCP Integration**: We are adopting the CPCP standard for all project-local configurations. MCP Any will perform hardware-attested validation of settings files (e.g., `.claude/settings.json`) during every tool call, neutralizing TOCTOU attacks and unauthorized rule overrides.
+- **ARE-Aware Resource Allocation**: Leveraging Gemini CLI's ARE headers, MCP Any will implement "Reasoning-Aware Throttling." We will provide the infrastructure for agents to signal reasoning intensity, allowing the gateway to dynamically adjust token budgets and priority based on mission-critical effort.
+
 ## Strategic Evolution: [2026-05-08]
 ### Focus: Active Fragment Sealing & Deterministic Permission Guarding
 **Context**: The discovery of "EchoLeak" (context exfiltration via semantic side-channels) and the persistent "Permission Bypass" failures in production CLIs (Bug #8961) signal a shift from "Passive Isolation" to "Active Cryptographic Enforcement." Simultaneously, the maturation of OpenClaw-RL v1.0 demands that infrastructure supports high-frequency, asynchronous feedback loops for real-time agent optimization.
