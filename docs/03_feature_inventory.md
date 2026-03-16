@@ -6,6 +6,17 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-05-09] Updates
+
+### Proposed Additions
+- **Multi-Modal Intent Kernel (MMIK)**: (P0) Reasoning-aware integrity layer for reconciling textual and visual intents, neutralizing "Multi-Modal Context Poisoning."
+- **Deadlock-Free UACO Broker**: (P0) Advanced orchestration service that performs cycle-detection in task bidding and attestation quorums.
+- **Edge-Buffered RL Collector**: (P1) Optimization for the RL Rollout Collector that buffers feedback tokens at the edge to minimize reasoning latency.
+
+### Priority Shifts
+- **Structural Metadata Sanitizer**: (Promoted to P0) Urgent requirement for neutralizing hidden instructions in multimodal metadata (SVG/CSS).
+- **Asynchronous RL Rollout Collector**: (Promoted to P0) Designated as the primary infrastructure for OpenClaw-RL v1.0 enterprise scaling.
+
 ## Evolution: [2026-05-08] Updates
 
 ### Proposed Additions

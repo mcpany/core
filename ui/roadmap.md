@@ -353,6 +353,11 @@
 - [ ] **[P0] ContextEngine Plugin Manager**: UI for managing and monitoring pluggable ContextEngine strategies and sovereignty status. (Added: 2026-04-24)
 - [ ] **[P1] Zero-Trust Discovery Audit Log**: Visual log for tracking A2A capability card discovery requests and auth-gate actions. (Added: 2026-04-24)
 
+#### Upcoming (2026-05-09 Evolution)
+- [ ] **[P0] Multi-Modal Intent Visualizer**: Visual debugger for reconciling textual and visual intents across context shards. (Added: 2026-05-09)
+- [ ] **[P0] UACO Deadlock Inspector**: Real-time visualization of bidding/attestation wait-graphs and cycle-detection alerts. (Added: 2026-05-09)
+- [ ] **[P1] Edge Buffer Monitor**: UI for tracking local telemetry buffer health and RL rollout export latency. (Added: 2026-05-09)
+
 #### Upcoming (2026-05-08 Evolution)
 - [ ] **[P0] Context Sealing Auditor**: Visualization of cryptographically sealed context shards and exfiltration attempt alerts. (Added: 2026-05-08)
 - [ ] **[P0] Permission Enforcement Monitor**: Real-time tracker for DPG-blocked tool calls and project-local policy violations. (Added: 2026-05-08)

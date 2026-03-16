@@ -506,6 +506,11 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] ContextEngine Plugin Adapter**: Core adapter for hosting OpenClaw-compatible ContextEngine plugins, supporting sovereignty-aware state management. (Added: 2026-04-24)
 *   **[P1] Zero-Trust Discovery Gate**: Identity-bound access control layer for A2A capability card discovery. (Added: 2026-04-24)
 
+#### Upcoming (2026-05-09 Evolution)
+*   **[P0] Multi-Modal Intent Kernel (MMIK)**: Reasoning-aware layer for reconciling textual, visual, and metadata intents. (Added: 2026-05-09)
+*   **[P0] Deadlock-Free UACO Broker**: Advanced orchestration with cycle-detection for task bidding and attestation quorums. (Added: 2026-05-09)
+*   **[P1] Edge-Buffered RL Collector**: Optimized rollout collection with local buffering to minimize reasoning latency. (Added: 2026-05-09)
+
 #### Upcoming (2026-05-08 Evolution)
 *   **[P0] Context Sealed-Fragment Hub**: Implementation of "Active Fragment Sealing" to protect context shards from semantic side-channel exfiltration (EchoLeak defense). (Added: 2026-05-08)
 *   **[P0] Deterministic Permission Guard (DPG)**: Kernel-level security middleware for non-bypassable enforcement of project-local "Deny" rules. (Added: 2026-05-08)
