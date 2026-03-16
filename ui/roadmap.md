@@ -283,6 +283,11 @@
 - [ ] **[P0] ContextEngine Lifecycle Visualizer**: Debugger for OpenClaw-native context hooks and state transitions (Added: 2026-04-23).
 - [ ] **[P0] Absence Proof Integrity Monitor**: Real-time status for Non-Existence Proofs and blocked configuration injections (Added: 2026-04-23).
 
+#### Upcoming (2026-05-01 Evolution)
+- [ ] **[P0] Contextual Quorum (CQ) Dashboard**: Visual workspace for monitoring multi-agent votes and consensus status. (Added: 2026-05-01)
+- [ ] **[P1] Adaptive Budgeting Monitor**: Real-time visualization of agent token/compute leases and reasoning confidence. (Added: 2026-05-01)
+- [ ] **[P0] Snapshot Rollback Manager**: UI for reviewing speculative environment edits and performing rapid PLSS rollbacks. (Added: 2026-05-01)
+
 #### Upcoming (2026-04-30 Evolution)
 - [ ] **[P0] Mesh-Aware Intent Visualizer**: Interactive graph UI for visualizing and reconciling multi-agent intent meshes. (Added: 2026-04-30)
 - [ ] **[P0] KLIP Integrity Monitor**: Real-time indicator for hardware-pinned Inodes and SIR violation alerts. (Added: 2026-04-30)

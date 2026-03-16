@@ -6,6 +6,17 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-05-01] Updates
+
+### Proposed Additions
+- **Contextual Quorum (CQ) Hub**: (P0) Coordination service for multi-agent attestation, requiring a consensus of specialized subagents before high-risk tool execution.
+- **Adaptive Intent Budgeting (AIB) Middleware**: (P1) Resource management layer that dynamically scales token and compute leases based on agent reasoning confidence.
+- **Project-Local Snapshot (PLSS) Sync**: (P0) OS-level bridge for rapid environment snapshotted recovery, enabling speculative agent actions with near-instant rollbacks.
+
+### Priority Shifts
+- **S2S Trust Broker**: (Promoted to P0) Critical for neutralizing negotiation overhead in maturing inter-swarm coordination.
+- **Consensus Tool Validation Hub**: (Re-affirmed P0) Evolving into the CQ Hub to support OpenClaw v2026.5.0 requirements.
+
 ## Evolution: [2026-04-30] Updates
 
 ### Proposed Additions

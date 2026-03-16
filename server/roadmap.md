@@ -434,6 +434,11 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Absence Proof (DAP) Generator**: Security extension for Pre-Flight Validator to sign missing-file proofs (Added: 2026-04-23).
 *   **[P0] A2UI Secure Surface Host**: Gateway infrastructure for sandboxed agent-generated UI fragments (Added: 2026-04-23).
 
+#### Upcoming (2026-05-01 Evolution)
+*   **[P0] Contextual Quorum (CQ) Hub**: Coordination service for multi-agent attestation and consensus-based tool execution. (Added: 2026-05-01)
+*   **[P1] Adaptive Intent Budgeting (AIB)**: Resource management layer for dynamic token and compute lease scaling. (Added: 2026-05-01)
+*   **[P0] Project-Local Snapshot (PLSS) Sync**: OS-level bridge for rapid environment recovery and speculative agent rollbacks. (Added: 2026-05-01)
+
 #### Upcoming (2026-04-30 Evolution)
 *   **[P0] Mesh-Aware Blackboard Adaptor**: Graph-based intent mesh for multi-agent swarm reconciliation. (Added: 2026-04-30)
 *   **[P0] Kernel-Level Inode Pinning (KLIP)**: Hardware-bound file handle protection against SIR (Symlink-to-Inode Racing) exploits. (Added: 2026-04-30)
