@@ -51,4 +51,5 @@ The **Shadow-FS Virtualization Adapter** provides a safe, transactional layer fo
 * **Observability:** Users can "peek" into the Shadow-FS at any time to see the agent's progress.
 
 ## 7. Evolutionary Changelog
+* **2026-04-29:** Addressing "BoryptGrab" payload injection by introducing "Speculative Integrity Quorums" for commits. FS changes now require a background validation pass (e.g., automated test run or monitor agent attestation) before being merged from the shadow overlay.
 * **2026-04-28:** Initial Document Creation.

@@ -6,6 +6,17 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-04-29] Updates
+
+### Proposed Additions
+- **PII-Sovereign Context Scrubber**: (P0) Mandatory sanitization middleware for hybrid-cloud deployments, ensuring de-biometricization of context before cloud propagation.
+- **ContextEngine Security Bridge**: (P0) A core integration service that maps OpenClaw ContextEngine lifecycle signals to MCP Any security policies for "Session-Bound" capability enforcement.
+- **Speculative Integrity Quorum Hub**: (P1) A coordination service for the Shadow-FS that orchestrates multi-agent consensus for high-risk filesystem commits.
+
+### Priority Shifts
+- **De-biometricization Sanitizer**: (Promoted to P0) Critical for data sovereignty in hybrid reasoning loops.
+- **Ephemeral Privilege Manager (EPM)**: (Re-affirmed P0) Now elevated with the requirement for "Lifecycle-Bound" revocation.
+
 ## Evolution: [2026-04-28] Updates
 
 ### Proposed Additions
