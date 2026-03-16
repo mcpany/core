@@ -138,6 +138,9 @@ nodes:
 		"--wait",
 		"--timeout", "10m",
 	); err != nil {
+		t.Log("Helm install failed. Fetching pod status and logs:")
+		runCommand(t, ctx, rootDir, "kubectl", "get", "pods", "-A", "--context", clusterName)
+		runCommand(t, ctx, rootDir, "kubectl", "logs", "-n", "mcp-system", "-l", "app.kubernetes.io/component=ui", "--all-containers", "--context", clusterName)
 		t.Fatalf("Failed to install helm chart: %v", err)
 	}
 

@@ -154,7 +154,7 @@ load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
 pkg_tar(
     name = "ui_dist_tar",
     srcs = [":build"],
-    package_dir = "/app/dist",
+    package_dir = "/app",
 )
 
 # Package the minimal node_modules needed by vite preview (vite itself + proxy deps).
