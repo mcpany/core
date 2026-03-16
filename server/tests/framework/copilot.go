@@ -41,15 +41,6 @@ type MCPConfig struct {
 // t is the t.
 //
 // Returns the result.
-//
-// Parameters:
-//   - Specific inputs depending on signature.
-// Returns:
-//   - Results based on execution outcome.
-// Errors:
-//   - May return an error on failure.
-// Side Effects:
-//   - None.
 func NewCopilotCLI(t *testing.T) *CopilotCLI {
 	tempDir := t.TempDir()
 	return &CopilotCLI{
