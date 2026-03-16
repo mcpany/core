@@ -3,6 +3,7 @@
 
 load("@gazelle//:def.bzl", "gazelle")
 load("@rules_shell//shell:sh_binary.bzl", "sh_binary")
+load("//proto:ts_proto_rules.bzl", "ts_wkt_gen")
 
 # gazelle:prefix github.com/mcpany/core
 # gazelle:exclude build
@@ -80,6 +81,23 @@ alias(
 alias(
     name = "buildozer",
     actual = "@buildozer//:buildozer",
+)
+
+# ---------------------------------------------------------------------------
+# Well-known-type TypeScript bindings
+#
+# Generated here (root package) so that declare_file("google/protobuf/*.ts")
+# produces files at bazel-out/.../bin/google/protobuf/*.ts — the path that
+# ts-proto uses when computing relative imports from proto/config/v1/ etc.
+# ---------------------------------------------------------------------------
+ts_wkt_gen(
+    name = "gen_wkt_ts_files",
+    protos = [
+        "@protobuf//:duration_proto",
+        "@protobuf//:struct_proto",
+        "@protobuf//:timestamp_proto",
+    ],
+    visibility = ["//visibility:public"],
 )
 
 config_setting(

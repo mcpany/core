@@ -28,21 +28,39 @@ spec:
             - containerPort: 3000
               name: http
           env:
+            # BACKEND_URL is read at runtime by `vite preview` to configure
+            # its reverse-proxy rules, so the container can be scaled freely.
             - name: BACKEND_URL
-              value: "http://{{ include "mcpany.fullname" . }}:{{ .Values.service.jsonrpcPort }}" # JSONRPC/HTTP port for proxying
+              value: "http://{{ include "mcpany.fullname" . }}:{{ .Values.service.jsonrpcPort }}"
             {{- if or .Values.ui.existingSecret .Values.ui.apiKey }}
-            - name: NEXT_PUBLIC_MCPANY_API_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: {{ if .Values.ui.existingSecret }}{{ .Values.ui.existingSecret }}{{ else }}{{ include "mcpany.fullname" . }}-ui-secret{{ end }}
-                  key: {{ .Values.ui.secretKey | default "api-key" }}
             - name: MCPANY_API_KEY
               valueFrom:
                 secretKeyRef:
                   name: {{ if .Values.ui.existingSecret }}{{ .Values.ui.existingSecret }}{{ else }}{{ include "mcpany.fullname" . }}-ui-secret{{ end }}
                   key: {{ .Values.ui.secretKey | default "api-key" }}
             {{- end }}
-            # Add other env vars as needed
+          # Liveness: restart the pod if the process is completely unresponsive.
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            failureThreshold: 3
+          # Readiness: only route traffic once vite preview is fully ready.
+          # This ensures rolling updates are safe and scale-in/scale-out
+          # events do not introduce downtime.
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 3
+          {{- with .Values.ui.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
 ---
 apiVersion: v1
 kind: Service

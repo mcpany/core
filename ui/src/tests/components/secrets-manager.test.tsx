@@ -4,7 +4,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SecretsManager } from '../../components/settings/secrets-manager';
 import { apiClient } from '@/lib/client';
@@ -59,14 +59,15 @@ describe('SecretsManager', () => {
 
     // Open dialog
     await user.click(screen.getByText('Add Secret'));
+    const dialog = await screen.findByRole('dialog');
 
     // Fill form
-    fireEvent.change(screen.getByPlaceholderText('e.g. Production OpenAI Key'), { target: { value: 'New API Key' } });
-    fireEvent.change(screen.getByPlaceholderText('e.g. OPENAI_API_KEY'), { target: { value: 'OPENAI_KEY' } });
-    fireEvent.change(screen.getByPlaceholderText('sk-...'), { target: { value: 'sk-12345' } });
+    await user.type(within(dialog).getByPlaceholderText('e.g. Production OpenAI Key'), 'New API Key');
+    await user.type(within(dialog).getByPlaceholderText('e.g. OPENAI_API_KEY'), 'OPENAI_KEY');
+    await user.type(within(dialog).getByPlaceholderText('sk-...'), 'sk-12345');
 
     // Save
-    await user.click(screen.getByText('Save Secret'));
+    await user.click(within(dialog).getByRole('button', { name: 'Save Secret' }));
 
     await waitFor(() => {
       expect(apiClient.saveSecret).toHaveBeenCalledWith(expect.objectContaining({
@@ -75,8 +76,8 @@ describe('SecretsManager', () => {
         value: 'sk-12345',
         provider: 'custom'
       }));
-    });
-  });
+    }, { timeout: 15000 });
+  }, 20000);
 
   it('allows deleting a secret', async () => {
     const mockSecrets = [

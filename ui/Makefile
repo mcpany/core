@@ -110,6 +110,11 @@ build:
 	@echo "Building UI..."
 	npm install && npm run build
 
-update-screenshots:
+update-screenshots: build-test-docker build-server-docker
 	@echo "Updating screenshots..."
-	TEST_UID=$(TEST_UID) TEST_GID=$(TEST_GID) SERVER_IMAGE=mcpany/server:latest docker compose -f ./docker-compose.test.yml run --rm ui-tests npx playwright test --config playwright.screenshots.config.ts
+	@mkdir -p test-results .audit ../build/playwright-report docs
+	TEST_UID=$(TEST_UID) TEST_GID=$(TEST_GID) SERVER_IMAGE=$(SERVER_IMAGE) \
+	  CAPTURE_SCREENSHOTS=true \
+	  PLAYWRIGHT_ARGS="--config playwright.screenshots.config.ts" \
+	  docker compose -f ./docker-compose.test.yml up --abort-on-container-exit --exit-code-from ui-tests
+	docker compose -f ./docker-compose.test.yml down -v

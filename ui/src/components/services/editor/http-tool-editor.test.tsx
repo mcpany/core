@@ -78,12 +78,12 @@ vi.mock('@/components/ui/tabs', () => ({
 }));
 
 describe('HttpToolEditor', () => {
-    const mockTool: ToolDefinition = {
+    const mockTool = {
         name: 'test-tool',
         description: 'Test Description',
         serviceId: '',
         tags: [],
-    };
+    } as unknown as ToolDefinition;
 
     const mockCall: HttpCallDefinition = {
         id: 'test-id',
@@ -91,17 +91,22 @@ describe('HttpToolEditor', () => {
         endpointPath: '/test',
         parameters: [],
         inputTransformer: { template: '' },
-        outputTransformer: { format: OutputTransformer_OutputFormat.JSON, template: '' }
+        outputTransformer: {
+            format: OutputTransformer_OutputFormat.JSON,
+            template: '',
+            extractionRules: {},
+            jqQuery: '',
+        }
     };
 
     it('renders basic fields', () => {
-        render(<HttpToolEditor tool={mockTool} call={mockCall} onChange={() => {}} />);
+        render(<HttpToolEditor tool={mockTool} call={mockCall} onChange={() => { }} />);
         expect(screen.getByDisplayValue('test-tool')).toBeInTheDocument();
         expect(screen.getByDisplayValue('/test')).toBeInTheDocument();
     });
 
     it('switches tabs and renders transformer editors', async () => {
-        render(<HttpToolEditor tool={mockTool} call={mockCall} onChange={() => {}} />);
+        render(<HttpToolEditor tool={mockTool} call={mockCall} onChange={() => { }} />);
 
         // Check tabs exist
         expect(screen.getByText('Request Parameters')).toBeInTheDocument();

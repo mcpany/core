@@ -17,7 +17,7 @@ describe('EnvVarEditor', () => {
 
     it('renders initial env vars', () => {
         const initialEnv = {
-            'TEST_VAR': { plainText: 'test_value' }
+            'TEST_VAR': { plainText: 'test_value', validationRegex: '' }
         };
         const onChange = vi.fn();
         render(<EnvVarEditor initialEnv={initialEnv} onChange={onChange} />);
@@ -28,7 +28,7 @@ describe('EnvVarEditor', () => {
 
     it('renders and preserves secretId vars', () => {
         const initialEnv = {
-            'SECRET_VAR': { secretId: 'my-secret-id' }
+            'SECRET_VAR': { plainText: '${my-secret-id}', validationRegex: '' }
         };
         const onChange = vi.fn();
         render(<EnvVarEditor initialEnv={initialEnv} onChange={onChange} />);
@@ -69,14 +69,14 @@ describe('EnvVarEditor', () => {
         const valueInput = screen.getByPlaceholderText('VALUE');
         fireEvent.change(valueInput, { target: { value: 'new_val' } });
 
-         expect(onChange).toHaveBeenCalledWith({
+        expect(onChange).toHaveBeenCalledWith({
             'NEW_KEY': { plainText: 'new_val', validationRegex: '' }
         });
     });
 
     it('removes a variable', () => {
         const initialEnv = {
-            'VAR1': { plainText: 'val1' }
+            'VAR1': { plainText: 'val1', validationRegex: '' }
         };
         const onChange = vi.fn();
         render(<EnvVarEditor initialEnv={initialEnv} onChange={onChange} />);
