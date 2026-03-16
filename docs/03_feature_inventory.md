@@ -6,6 +6,16 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-05-09] Updates
+
+### Proposed Additions
+- **Asynchronous RL Rollout Collector**: (P1) Authoritative telemetry bridge for OpenClaw-RL v1.0, facilitating high-frequency feedback collection for policy optimization.
+- **Continuous Lifecycle Attestation (CLA) Provider**: (P0) Advanced security service that performs periodic, hardware-bound environment checks to ensure post-boot integrity.
+
+### Priority Shifts
+- **OpenClaw ContextEngine Adapter**: (Promoted to P0) Designated as a critical requirement for supporting the new pluggable context architecture in OpenClaw v2026.3.7.
+- **Deterministic Absence Proof (DAP) Provider**: (Promoted to P0) Essential for neutralizing the "Non-Existence" exploit pattern (CVE-2026-25725).
+
 ## Evolution: [2026-05-08] Updates
 
 ### Proposed Additions

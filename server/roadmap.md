@@ -511,6 +511,11 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Deterministic Permission Guard (DPG)**: Kernel-level security middleware for non-bypassable enforcement of project-local "Deny" rules. (Added: 2026-05-08)
 *   **[P1] Asynchronous RL Rollout Collector**: Telemetry bridge for OpenClaw-RL v1.0, enabling high-frequency feedback collection for policy optimization. (Added: 2026-05-08)
 
+#### Upcoming (2026-05-09 Evolution)
+*   **[P0] OpenClaw ContextEngine Adapter**: Native host for pluggable context plugins to support OpenClaw v2026.3.7 requirements. (Added: 2026-05-09)
+*   **[P0] Continuous Lifecycle Attestation (CLA)**: Security provider for periodic re-verification of environment integrity and "non-existence proofs." (Added: 2026-05-09)
+*   **[P1] Asynchronous RL Rollout Collector**: Authoritative telemetry bridge for OpenClaw-RL v1.0 feedback loops. (Added: 2026-05-09)
+
 #### Upcoming (2026-04-22 Evolution)
 *   **[P0] A2A Replay Guard Middleware**: Implementation of monotonic nonces and session-bound validation for the A2A Messaging Hub. (Added: 2026-04-22)
 *   **[P0] Adaptive Context Compaction Engine**: WebSocket-native compaction supporting Gemini-style reasoning effort headers. (Added: 2026-04-22)

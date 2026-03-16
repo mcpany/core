@@ -358,6 +358,11 @@
 - [ ] **[P0] Permission Enforcement Monitor**: Real-time tracker for DPG-blocked tool calls and project-local policy violations. (Added: 2026-05-08)
 - [ ] **[P1] RL Rollout Streamer**: Live feed of asynchronous RL feedback tokens and policy drift metrics. (Added: 2026-05-08)
 
+#### Upcoming (2026-05-09 Evolution)
+- [ ] **[P0] ContextEngine Plugin Manager**: UI for managing and monitoring pluggable context strategies in OpenClaw v2026.3.7. (Added: 2026-05-09)
+- [ ] **[P0] Continuous Attestation Dashboard**: Real-time visualization of periodic environment integrity checks and CLA status. (Added: 2026-05-09)
+- [ ] **[P1] RL Rollout Stream Viewer**: Live telemetry feed for asynchronous RL rollout collection. (Added: 2026-05-09)
+
 #### Upcoming (2026-04-22 Evolution)
 - [ ] **[P0] A2A Replay Security Dashboard**: Visualize nonce status and replay attempt alerts in the A2A hub. (Added: 2026-04-22)
 - [ ] **[P0] Adaptive Reasoning Monitor**: Real-time visualization of `x-gemini-reasoning-effort` levels and dynamic compaction efficiency. (Added: 2026-04-22)
