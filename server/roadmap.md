@@ -434,6 +434,12 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Absence Proof (DAP) Generator**: Security extension for Pre-Flight Validator to sign missing-file proofs (Added: 2026-04-23).
 *   **[P0] A2UI Secure Surface Host**: Gateway infrastructure for sandboxed agent-generated UI fragments (Added: 2026-04-23).
 
+#### Upcoming (2026-04-29 Evolution)
+*   **[P0] ContextEngine Security Bridge**: Core integration mapping OpenClaw lifecycle signals (spawning/ended) to MCP Any security policies. (Added: 2026-04-29)
+*   **[P0] PII-Sovereign Context Scrubber**: Mandatory sanitization layer for hybrid-cloud deployments (Promoted to P0). (Added: 2026-04-29)
+*   **[P1] Speculative Integrity Quorum Hub**: Coordination service for Shadow-FS orchestrating multi-agent consensus. (Added: 2026-04-29)
+*   **[P0] Lifecycle-Bound EPM**: Refinement of EPM to bind privilege leases to active agent reasoning sessions. (Added: 2026-04-29)
+
 #### Upcoming (2026-04-28 Evolution)
 *   **[P0] Ephemeral Privilege Manager (EPM)**: Core security service managing JIT privilege escalation and task-bound leases. (Added: 2026-04-28)
 *   **[P0] Shadow-FS Virtualization Adapter**: Transactional filesystem overlay for speculative agent edits and atomic commits. (Added: 2026-04-28)

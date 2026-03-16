@@ -283,6 +283,11 @@
 - [ ] **[P0] ContextEngine Lifecycle Visualizer**: Debugger for OpenClaw-native context hooks and state transitions (Added: 2026-04-23).
 - [ ] **[P0] Absence Proof Integrity Monitor**: Real-time status for Non-Existence Proofs and blocked configuration injections (Added: 2026-04-23).
 
+#### Upcoming (2026-04-29 Evolution)
+- [ ] **[P0] Sovereignty Audit Dashboard**: Comprehensive UI for monitoring de-biometricization events and scrubbing logs. (Added: 2026-04-29)
+- [ ] **[P0] Lifecycle Security Monitor**: Visualizer for session-bound capabilities and active privilege leases. (Added: 2026-04-29)
+- [ ] **[P1] Speculative Quorum Workspace**: Interface for orchestrating multi-agent consensus during Shadow-FS commits. (Added: 2026-04-29)
+
 #### Upcoming (2026-04-28 Evolution)
 - [ ] **[P0] JIT Privilege Lease Manager**: UI for requesting, reviewing, and approving ephemeral privilege leases. (Added: 2026-04-28)
 - [ ] **[P0] Shadow-FS Diff Viewer**: Interactive visualizer for reviewing and committing speculative filesystem overlays. (Added: 2026-04-28)
