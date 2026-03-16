@@ -28,6 +28,15 @@ type GeminiCLI struct {
 // t is the t.
 //
 // Returns the result.
+//
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 func NewGeminiCLI(t *testing.T) *GeminiCLI {
 	return &GeminiCLI{t: t}
 }

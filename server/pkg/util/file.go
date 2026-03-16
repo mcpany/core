@@ -28,6 +28,9 @@ import (
 //
 // Side Effects:
 //   - Opens and reads the specified file from the filesystem.
+//
+// Errors:
+//   - None.
 func ReadLastNLines(path string, n int) ([][]byte, error) {
 	if n <= 0 {
 		return nil, nil

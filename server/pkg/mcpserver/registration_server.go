@@ -56,6 +56,11 @@ var NewRegistrationServerHook func(bus interface{}, authManager interface{}) (*R
 //
 // Throws/Errors:
 //   - Returns an error if the bus is nil.
+//
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 func NewRegistrationServer(bus *bus.Provider, authManager *auth.Manager) (*RegistrationServer, error) {
 	if NewRegistrationServerHook != nil {
 		// The type assertion is safe because this is a test-only hook.

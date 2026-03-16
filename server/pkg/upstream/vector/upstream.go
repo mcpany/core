@@ -35,6 +35,11 @@ type Upstream struct {
 //
 // Side Effects:
 //   - None.
+//
+// Parameters:
+//   - None.
+// Errors:
+//   - None.
 func NewUpstream() upstream.Upstream {
 	return &Upstream{
 		clientFactory: defaultClientFactory,

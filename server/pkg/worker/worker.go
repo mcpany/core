@@ -42,6 +42,11 @@ type Worker struct {
 //
 // Returns:
 //   - *Worker: The initialized worker.
+//
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 func New(busProvider *bus.Provider, cfg *Config) *Worker {
 	return &Worker{
 		busProvider: busProvider,

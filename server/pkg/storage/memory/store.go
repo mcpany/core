@@ -48,6 +48,11 @@ type Store struct {
 //
 // Side Effects:
 //   - Allocates internal maps and slices.
+//
+// Parameters:
+//   - None.
+// Errors:
+//   - None.
 func NewStore() *Store {
 	return &Store{
 		services:           make(map[string]*configv1.UpstreamServiceConfig),

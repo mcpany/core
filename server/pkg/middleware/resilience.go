@@ -28,6 +28,11 @@ type ResilienceMiddleware struct {
 //
 // Returns:
 //   - *ResilienceMiddleware: The initialized middleware.
+//
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 func NewResilienceMiddleware(toolManager tool.ManagerInterface) *ResilienceMiddleware {
 	return &ResilienceMiddleware{
 		toolManager: toolManager,

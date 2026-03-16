@@ -63,6 +63,11 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //
 // Side Effects:
 //   - None.
+//
+// Parameters:
+//   - None.
+// Errors:
+//   - None.
 func NewUpstream() upstream.Upstream {
 	return &Upstream{}
 }

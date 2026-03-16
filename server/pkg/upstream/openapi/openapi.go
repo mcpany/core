@@ -74,6 +74,11 @@ func (u *OpenAPIUpstream) Shutdown(_ context.Context) error {
 //
 // Side Effects:
 //   - None.
+//
+// Parameters:
+//   - None.
+// Errors:
+//   - None.
 func NewOpenAPIUpstream() upstream.Upstream {
 	cache := ttlcache.New[string, *openapi3.T](
 		ttlcache.WithTTL[string, *openapi3.T](5 * time.Minute),

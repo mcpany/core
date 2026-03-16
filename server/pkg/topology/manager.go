@@ -97,6 +97,9 @@ type TrafficPoint struct {
 //
 // Side Effects:
 //   - Starts the background process loop.
+//
+// Errors:
+//   - None.
 func NewManager(registry serviceregistry.ServiceRegistryInterface, tm tool.ManagerInterface) *Manager {
 	m := &Manager{
 		sessions:        make(map[string]*SessionStats),

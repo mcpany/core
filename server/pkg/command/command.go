@@ -75,6 +75,9 @@ type Executor interface {
 //
 // Side Effects:
 //   - May initialize a Docker client.
+//
+// Errors:
+//   - None.
 func NewExecutor(containerEnv *configv1.ContainerEnvironment) Executor {
 	if containerEnv != nil && containerEnv.GetImage() != "" {
 		return newDockerExecutor(containerEnv)
@@ -93,6 +96,9 @@ func NewExecutor(containerEnv *configv1.ContainerEnvironment) Executor {
 //   - Executor: A new local Executor instance.
 //
 // Side Effects:
+//   - None.
+//
+// Errors:
 //   - None.
 func NewLocalExecutor() Executor {
 	return &localExecutor{}

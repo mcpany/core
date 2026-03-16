@@ -97,6 +97,11 @@ type WebrtcTool struct {
 // Returns:
 //   - (*WebrtcTool): The initialized WebrtcTool.
 //   - (error): An error if initialization fails.
+//
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 func NewWebrtcTool(
 	tool *v1.Tool,
 	poolManager *pool.Manager,

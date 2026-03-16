@@ -49,6 +49,9 @@ type Registry struct {
 //
 // Side Effects:
 //   - Allocates memory for the registry map.
+//
+// Errors:
+//   - None.
 func NewRegistry() *Registry {
 	return &Registry{
 		hooks: make(map[string]Handler),

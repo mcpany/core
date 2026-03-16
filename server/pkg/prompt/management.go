@@ -71,6 +71,13 @@ type Manager struct {
 //
 // Returns:
 //   - *Manager: A pointer to the newly created Manager.
+//
+// Parameters:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 func NewManager() *Manager {
 	return &Manager{
 		prompts: xsync.NewMap[string, Prompt](),

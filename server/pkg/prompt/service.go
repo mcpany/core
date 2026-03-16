@@ -28,6 +28,11 @@ type Service struct {
 //
 // Returns:
 //   - *Service: The initialized service.
+//
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 func NewService(promptManager ManagerInterface) *Service {
 	s := &Service{
 		promptManager: promptManager,

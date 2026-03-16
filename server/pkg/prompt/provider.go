@@ -30,6 +30,11 @@ func (p *mcpServerProvider) Server() *mcp.Server {
 //
 // Returns:
 //   - MCPServerProvider: The initialized provider.
+//
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 func NewMCPServerProvider(server *mcp.Server) MCPServerProvider {
 	return &mcpServerProvider{server: server}
 }

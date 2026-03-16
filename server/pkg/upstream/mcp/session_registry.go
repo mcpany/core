@@ -24,6 +24,11 @@ type SessionRegistry struct {
 //
 // Side Effects:
 //   - None.
+//
+// Parameters:
+//   - None.
+// Errors:
+//   - None.
 func NewSessionRegistry() *SessionRegistry {
 	return &SessionRegistry{
 		sessions: make(map[mcp.Session]tool.Session),

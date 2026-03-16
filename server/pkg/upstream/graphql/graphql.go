@@ -98,6 +98,11 @@ type Upstream struct{}
 //
 // Side Effects:
 //   - None.
+//
+// Parameters:
+//   - None.
+// Errors:
+//   - None.
 func NewGraphQLUpstream() upstream.Upstream {
 	return &Upstream{}
 }

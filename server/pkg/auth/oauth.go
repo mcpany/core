@@ -31,6 +31,11 @@ type OAuth2Authenticator struct {
 // Returns:
 //   - A new OAuth2Authenticator.
 //   - An error if the OIDC provider cannot be initialized.
+//
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 func NewOAuth2Authenticator(ctx context.Context, config *OAuth2Config) (*OAuth2Authenticator, error) {
 	provider, err := oidc.NewProvider(ctx, config.IssuerURL)
 	if err != nil {

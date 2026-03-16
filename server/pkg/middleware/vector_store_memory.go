@@ -34,6 +34,13 @@ type VectorEntry struct {
 //
 // Returns:
 //   - *SimpleVectorStore: A pointer to the newly created SimpleVectorStore.
+//
+// Parameters:
+//   - None.
+// Errors:
+//   - None.
+// Side Effects:
+//   - None.
 func NewSimpleVectorStore() *SimpleVectorStore {
 	return &SimpleVectorStore{
 		items:      make(map[string][]*VectorEntry),
