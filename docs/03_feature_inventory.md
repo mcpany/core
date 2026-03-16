@@ -6,6 +6,17 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-05-08] Updates
+
+### Proposed Additions
+- **Context Sealed-Fragment Hub**: (P0) Implementation of "Active Fragment Sealing" to protect context shards from semantic side-channel exfiltration (defense against "EchoLeak").
+- **Deterministic Permission Guard (DPG)**: (P0) A kernel-level security middleware that enforces project-local "Deny" rules independently of the agent's reasoning state (defense against Bug #8961).
+- **Asynchronous RL Rollout Collector**: (P1) AUTHORITATIVE telemetry bridge for OpenClaw-RL v1.0, facilitating high-frequency feedback collection for policy optimization.
+
+### Priority Shifts
+- **Distributed Supervisor Mesh (DSM) Orchestrator**: (Promoted to P0) Designated as a critical infrastructure requirement for the 2026 enterprise swarm pivot.
+- **Programmatic SDK Boundary Enforcer**: (Re-affirmed P0) Evolved with the requirement for "Context-Poisoning" defense in automated scripts.
+
 ## Evolution: [2026-05-07] Updates
 
 ### Proposed Additions
