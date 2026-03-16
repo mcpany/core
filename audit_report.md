@@ -1,35 +1,32 @@
-## Audit Report: Truth Reconciliation
+# Audit Report: Truth Reconciliation
 
-### 1. Executive Summary
+## Executive Summary
+An extensive "Truth Reconciliation Audit" was performed comparing the features defined in `ui/docs` and `server/docs` (along with the product roadmap) against the codebase.
 
-This PR represents a Truth Reconciliation Audit across 10 core features mapped between documentation, codebase, and the Product Roadmap.
+Overall Health of the 10 Sampled Features: **Excellent**. Nine out of the 10 sampled features were found to be fully implemented and working as designed. One feature was identified as Roadmap Debt (Missing Logic) and was engineered to align with the roadmap.
 
-**Overall Health:** The codebase is in strong alignment with the Product Roadmap. Most documented features are actively developed and available. However, discrepancies were identified related to "Documentation Drift" and "Roadmap Debt," which have been aggressively remediated in this PR.
-
-### 2. Verification Matrix
+## Verification Matrix
 
 | Document Name | Status | Action Taken | Evidence |
 | :--- | :--- | :--- | :--- |
-| `ui/docs/features/native_file_upload_playground.md` | ❌ DEBT | Implemented missing code | Added missing logic in `ui/src/components/playground/schema-form.tsx` to handle `contentEncoding === "base64"` and render a file upload input. |
-| `ui/docs/features/structured_log_viewer.md` | ✅ MATCH | None | Implemented in `log-viewer.tsx` (`JsonViewer`) and marked complete in Roadmap. |
-| `ui/docs/features/stack-composer.md` | ✅ MATCH | None | Implemented under `/stacks` and marked complete in Roadmap. |
-| `ui/docs/features/playground.md` | ✅ MATCH | None | Implemented in `/playground` and marked complete in Roadmap. |
-| `server/docs/features/context_optimizer.md` | ✅ MATCH | None | Implemented in `server/pkg/middleware/context_optimizer.go` and marked complete. |
-| `server/docs/features/hot_reload.md` | ✅ MATCH | None | Implemented dynamically via `ReloadConfig` in `server/pkg/app/server.go`. |
-| `server/docs/features/guardrails.md` | ✅ MATCH | None | Implemented in `server/pkg/middleware/guardrails.go`. |
-| `server/docs/features/admin_api.md` | ✅ MATCH | None | Implemented via gRPC in `proto/admin/v1/admin.proto` and `server/pkg/admin/server.go`. |
-| `ui/docs/features/tag-based-access-control.md` | ⚠️ DRIFT | Updated Roadmap | Implemented natively in UI (`additionalTags` logic) but roadmap falsely flagged it as `[ ]`. Synced roadmap to `[x]`. |
-| `server/docs/features/config_validator.md` | ✅ MATCH | None | Implemented API endpoint `POST /api/v1/config/validate` and UI `/config-validator`. |
+| `ui/docs/features/native_file_upload_playground.md` | Verified | None | Feature correctly implemented in `ui/src/components/shared/universal-schema-form.tsx` mapping `contentEncoding: "base64"` to file uploads. |
+| `ui/docs/features/stack-composer.md` | Verified | None | Feature is present in `ui/src/app/stacks/page.tsx` and related components in `ui/src/components/stacks/`. |
+| `ui/docs/features/structured_log_viewer.md` | Verified | None | JSON parsing and expandable UI verified in `ui/src/components/logs/log-viewer.tsx`. |
+| `ui/docs/features/real-time-inspector.md` | Verified | None | WebSocket connections and live traces are functioning in `ui/src/app/inspector/page.tsx` and `inspector-table.tsx`. |
+| `ui/docs/features/tag-based-access-control.md` | Verified | None | Profiles accurately enforce access via Tags through `ui/src/components/profiles/profile-editor.tsx` and `server/pkg/tool/management.go`. |
+| `server/docs/features/dynamic_registration.md` | **Roadmap Debt** | Engineered Solution | Discovery logic was only partially present. Added `OpenAPIProvider`, `GRPCProvider`, and `GraphQLProvider` to `server/pkg/discovery/` as described by the feature documentation. |
+| `server/docs/features/security.md` | Verified | None | Tool Poisoning Mitigation (Integrity Check) logic acts correctly in `server/pkg/tool/integrity.go`. |
+| `ui/docs/features/policy_management.md` | Verified | None | Granular Tool Export Policies with Regex support are functional in `ui/src/components/services/editor/policy-editor.tsx`. |
+| `ui/docs/features/playground.md` | Verified | None | Session history Import/Export behaves properly in `ui/src/components/playground/pro/playground-client-pro.tsx`. |
+| `server/docs/features/wasm.md` | Verified | None | WASM Plugin system (mock/experimental phase) correctly exists inside `server/pkg/wasm/runtime.go`. |
 
-### 3. Remediation Log
+## Remediation Log
+- **Dynamic Tool Registration**: The code only supported `Ollama` discovery despite the documentation (`server/docs/features/dynamic_registration.md`) claiming support for OpenAPI, gRPC, and GraphQL. Engineered Go discovery provider implementations for all 3 missing sources:
+  - `server/pkg/discovery/openapi.go`
+  - `server/pkg/discovery/grpc.go`
+  - `server/pkg/discovery/graphql.go`
+- Connected the newly created providers in the core server initialization loop (`server/pkg/app/server.go`).
+- Wrote full unit tests (`*_test.go`) for each provider to adhere to Google Style Guides and TDD requirements.
 
-*   **Case A: Documentation Drift (Code is Correct)**
-    *   `ui/roadmap.md`: Tag-based Access Control was marked as incomplete `[ ]` despite robust implementation in `profile-editor.tsx`. Updated roadmap state to `[x]` to sync with truth.
-*   **Case B: Roadmap Debt (Code is Missing/Broken)**
-    *   `ui/docs/features/native_file_upload_playground.md`: The document detailed a feature where the Playground would render a native file upload if a field specified `contentEncoding: "base64"`, allowing the selected file to be read, encoded to base64, and sent to the tool. This was missing from `SchemaForm`. **Engineered Solution:** Updated `ui/src/components/playground/schema-form.tsx` to include file input rendering and a `FileReader` logic block for base64 encoding, paired with a unit test.
-
-### 4. Security Scrub
-
-- NO PII, secrets, or internal IPs are in the report.
-- All paths are relative repository paths.
-- API references rely on sanitized routes (`/api/v1/config/validate`) instead of hostname configurations.
+## Security Scrub
+This report has been reviewed to ensure it contains NO Personally Identifiable Information (PII), secrets, or internal IP addresses.

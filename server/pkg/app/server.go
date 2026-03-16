@@ -716,6 +716,9 @@ func (a *Application) Run(opts RunOptions) error {
 	if cfg.GetGlobalSettings().GetAutoDiscoverLocal() {
 		// Register default providers
 		a.DiscoveryManager.RegisterProvider(&discovery.OllamaProvider{Endpoint: "http://localhost:11434"})
+		a.DiscoveryManager.RegisterProvider(&discovery.OpenAPIProvider{Endpoint: "http://localhost:8080/openapi.json"})
+		a.DiscoveryManager.RegisterProvider(&discovery.GRPCProvider{Endpoint: "localhost:50051"})
+		a.DiscoveryManager.RegisterProvider(&discovery.GraphQLProvider{Endpoint: "http://localhost:8080/graphql"})
 
 		discovered := a.DiscoveryManager.Run(opts.Ctx)
 		for _, svc := range discovered {
