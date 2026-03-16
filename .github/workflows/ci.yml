@@ -109,6 +109,17 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: true
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
+
       # This action manages the Bazel/Bazelisk installation and
       # automatically handles the GitHub Action Cache API for you.
       - name: Set up Bazel
