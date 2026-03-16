@@ -485,3 +485,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] A2A Replay Guard Middleware**: Implementation of monotonic nonces and session-bound validation for the A2A Messaging Hub. (Added: 2026-04-22)
 *   **[P0] Adaptive Context Compaction Engine**: WebSocket-native compaction supporting Gemini-style reasoning effort headers. (Added: 2026-04-22)
 *   **[P1] Cognitive Fragment Reconciler**: Background service for synchronizing encrypted monologues across agent sessions. (Added: 2026-04-22)
+
+#### Upcoming (2026-05-03 Evolution)
+*   **[P0] GSR Deadlock Resolver**: Implementation of a graph-based reconciliation engine for resolving circular attestation dependencies in swarms. (Added: 2026-05-03)
+*   **[P1] Predictive Intent Warming (PIW)**: Middleware to pre-fetch tool schemas and pre-warm sandboxes based on early reasoning signals. (Added: 2026-05-03)
+*   **[P1] Host-Native Snapshotting Driver**: Support for ZFS/LVM kernel-level primitives in the PLSS Sync bridge. (Added: 2026-05-03)

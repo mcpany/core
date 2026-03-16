@@ -811,3 +811,14 @@
 ### Priority Shifts
 - **Verifiable Task Delegation (VTD)**: (Re-affirmed P0) Now elevated as the primary solution for the "Approval Fatigue" scaling bottleneck.
 - **Pluggable Context Bridge**: (Re-affirmed P0) Expanded to support the new Standardized Context Sidecar Interface.
+
+## Evolution: [2026-05-03] Updates
+
+### Proposed Additions
+- **GSR Deadlock Resolver**: (P0) A graph-based monitoring service for the UACO coordination layer that identifies and resolves circular attestation dependencies in multi-agent swarms.
+- **Predictive Intent Warming (PIW) Engine**: (P1) Middleware that uses early reasoning tokens to pre-fetch tool schemas and pre-warm sandboxed execution environments, reducing cold-start latency.
+- **Host-Native Snapshotting (HNS) Driver**: (P1) High-performance filesystem driver for PLSS Sync that leverages kernel-level primitives (ZFS/LVM) for sub-millisecond environment captures.
+
+### Priority Shifts
+- **Inter-Swarm Deadlock Detector**: (Promoted to P0) Now critical for ensuring stability in peer-to-peer swarms using GSR patterns.
+- **Lazy-Discovery Architecture**: (Re-affirmed P0) Elevated with the requirement for "Predictive Warming" to combat schema bloat.

@@ -332,3 +332,8 @@
 - [ ] **[P0] A2A Replay Security Dashboard**: Visualize nonce status and replay attempt alerts in the A2A hub. (Added: 2026-04-22)
 - [ ] **[P0] Adaptive Reasoning Monitor**: Real-time visualization of `x-gemini-reasoning-effort` levels and dynamic compaction efficiency. (Added: 2026-04-22)
 - [ ] **[P1] Encrypted Monologue Explorer**: Secure UI fragment for user-authorized decryption and review of subagent reasoning. (Added: 2026-04-22)
+
+#### Upcoming (2026-05-03 Evolution)
+- [ ] **[P0] Inter-Swarm Wait-Graph Explorer**: Interactive visualization of attestation dependencies and deadlock resolution status. (Added: 2026-05-03)
+- [ ] **[P1] Intent Warming Dashboard**: Monitor for PIW pre-fetch hits, misses, and latency reduction scores. (Added: 2026-05-03)
+- [ ] **[P1] Host-Native Snapshot Monitor**: Real-time status indicator for ZFS/LVM snapshotting speed and integrity. (Added: 2026-05-03)

@@ -46,3 +46,10 @@ As AI agent swarms move from simple automation to autonomous high-stakes operati
 
 ## 7. Evolutionary Changelog
 * **2026-05-02:** Initial Document Creation.
+
+### Update: 2026-05-03 - Graph-Bound Quorum Resolution
+**Context:** Today's market sync revealed that "Negotiation Deadlocks" are a critical failure point for multi-agent quorums.
+**Architecture Adjustment:**
+* **GSR Integration**: The CQ Hub will now incorporate a Graph-Bound State Reconciliation (GSR) engine.
+* **Wait-Graph Analysis**: We are introducing a "Wait-Graph" service that maps attestation dependencies. If a circular dependency (Cycle) is detected in the graph, the Hub will trigger an automated resolution (e.g., parental re-attestation or specific quorum timeout).
+**Security Impact:** Prevents resource-exhaustion denial-of-service where a swarm is paralyzed by circular trust requirements.
