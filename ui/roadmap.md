@@ -283,6 +283,11 @@
 - [ ] **[P0] ContextEngine Lifecycle Visualizer**: Debugger for OpenClaw-native context hooks and state transitions (Added: 2026-04-23).
 - [ ] **[P0] Absence Proof Integrity Monitor**: Real-time status for Non-Existence Proofs and blocked configuration injections (Added: 2026-04-23).
 
+#### Upcoming (2026-05-03 Evolution)
+- [ ] **[P0] Hierarchical Trust Monitor**: Visualize intent-bound leases, their parentage, and automated revocation events. (Added: 2026-05-03)
+- [ ] **[P0] DAIP Path Inspector**: Visual debugger for recursive symlinks and hardware-bound depth validation. (Added: 2026-05-03)
+- [ ] **[P0] Deadlock Resolution Console**: Real-time visualization of circular attestation dependencies and resolution status. (Added: 2026-05-03)
+
 #### Upcoming (2026-05-02 Evolution)
 - [ ] **[P0] Risk-Adaptive Quorum Visualizer**: Real-time monitor for AQT thresholds, tool risk scores, and reasoning confidence. (Added: 2026-05-02)
 - [ ] **[P1] Inter-Swarm Wait-Graph Explorer**: Interactive visualization of attestation dependencies to identify and resolve deadlocks. (Added: 2026-05-02)

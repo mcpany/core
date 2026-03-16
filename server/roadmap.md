@@ -440,6 +440,11 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P1] Inter-Swarm Deadlock Detector**: UACO monitoring service for detecting and breaking circular attestation dependencies. (Added: 2026-05-02)
 *   **[P0] Deterministic Recovery Bridge (DSR)**: Standardized mapping of subagent exit codes to automated PLSS rollbacks. (Added: 2026-05-02)
 
+#### Upcoming (2026-05-03 Evolution)
+*   **[P0] Deadlock-Resilient CQ Controller**: Advanced cycle-detection and wait-graph analysis for the CQ Hub. (Added: 2026-05-03)
+*   **[P0] Hierarchical Intent Lease (HIL) Broker**: Task-bound, hierarchical capability management based on UACO v3.2. (Added: 2026-05-03)
+*   **[P0] Depth-Aware Inode Pinning (DAIP)**: Recursive symlink validation with hardware-bound depth limits. (Added: 2026-05-03)
+
 #### Upcoming (2026-05-01 Evolution)
 *   **[P0] Contextual Quorum (CQ) Hub**: Coordination service for multi-agent attestation and consensus-based tool execution. (Added: 2026-05-01)
 *   **[P1] Adaptive Intent Budgeting (AIB)**: Resource management layer for dynamic token and compute lease scaling. (Added: 2026-05-01)
