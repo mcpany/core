@@ -28,6 +28,15 @@ type GeminiCLI struct {
 // t is the t.
 //
 // Returns the result.
+//
+// Parameters:
+//   - Specific inputs depending on signature.
+// Returns:
+//   - Results based on execution outcome.
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func NewGeminiCLI(t *testing.T) *GeminiCLI {
 	return &GeminiCLI{t: t}
 }

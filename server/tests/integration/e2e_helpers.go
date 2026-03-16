@@ -47,6 +47,15 @@ import (
 // config holds the configuration settings.
 //
 // Returns the result.
+//
+// Parameters:
+//   - Specific inputs depending on signature.
+// Returns:
+//   - Results based on execution outcome.
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func CreateTempConfigFile(t *testing.T, config *configv1.UpstreamServiceConfig) string {
 	t.Helper()
 
@@ -74,6 +83,15 @@ func CreateTempConfigFile(t *testing.T, config *configv1.UpstreamServiceConfig) 
 // t is the t.
 //
 // Returns the result.
+//
+// Parameters:
+//   - Specific inputs depending on signature.
+// Returns:
+//   - Results based on execution outcome.
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func CreateTempNatsConfigFile(t *testing.T) string {
 	t.Helper()
 
@@ -133,6 +151,15 @@ func (b *threadSafeBuffer) String() string {
 // t is the t.
 //
 // Returns the result.
+//
+// Parameters:
+//   - Specific inputs depending on signature.
+// Returns:
+//   - Results based on execution outcome.
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func ProjectRoot(t *testing.T) string {
 	t.Helper()
 	root, err := GetProjectRoot()
@@ -297,6 +324,15 @@ func prepareRuntimeDir(t *testing.T, root string) string {
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - Specific inputs depending on signature.
+// Returns:
+//   - Results based on execution outcome.
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func GetProjectRoot() (string, error) {
 	var err error
 	findRootOnce.Do(func() {
@@ -369,6 +405,15 @@ func GetProjectRoot() (string, error) {
 // ServerBinary returns the path to the mcpany server binary.
 // Under Bazel it resolves from runfiles; otherwise it falls back to ../build/bin/server
 // relative to the project root.
+//
+// Parameters:
+//   - Specific inputs depending on signature.
+// Returns:
+//   - Results based on execution outcome.
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func ServerBinary(t *testing.T) string {
 	t.Helper()
 	if bin := runfilesBinaryPath("server", "cmd", "server", "server_", "server"); bin != "" {
@@ -381,6 +426,15 @@ func ServerBinary(t *testing.T) string {
 // MockBinary returns the path to a mock test binary by name.
 // Under Bazel it resolves from runfiles; otherwise it falls back to ../build/test/bin/<name>
 // relative to the project root.
+//
+// Parameters:
+//   - Specific inputs depending on signature.
+// Returns:
+//   - Results based on execution outcome.
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func MockBinary(t *testing.T, name string) string {
 	t.Helper()
 	if bin := runfilesBinaryPath("server", "tests", "integration", "cmd", "mocks", name, name+"_", name); bin != "" {
@@ -398,6 +452,15 @@ var portMutex sync.Mutex
 // t is the t.
 //
 // Returns the result.
+//
+// Parameters:
+//   - Specific inputs depending on signature.
+// Returns:
+//   - Results based on execution outcome.
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func FindFreePort(t *testing.T) int {
 	portMutex.Lock()
 	defer portMutex.Unlock()
@@ -440,6 +503,15 @@ type ManagedProcess struct {
 // env is the env.
 //
 // Returns the result.
+//
+// Parameters:
+//   - Specific inputs depending on signature.
+// Returns:
+//   - Results based on execution outcome.
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func NewManagedProcess(t *testing.T, label, command string, args []string, env []string) *ManagedProcess {
 	t.Helper()
 	cmd := exec.CommandContext(context.Background(), command, args...)
@@ -622,6 +694,15 @@ func (mp *ManagedProcess) WaitForText(t *testing.T, text string, timeout time.Du
 // t is the t.
 // port is the port.
 // timeout is the timeout.
+//
+// Parameters:
+//   - Specific inputs depending on signature.
+// Returns:
+//   - Results based on execution outcome.
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func WaitForTCPPort(t *testing.T, port int, timeout time.Duration) {
 	t.Helper()
 	require.Eventually(t, func() bool {
@@ -640,6 +721,15 @@ func WaitForTCPPort(t *testing.T, port int, timeout time.Duration) {
 // t is the t.
 // grpcAddress is the grpcAddress.
 // timeout is the timeout.
+//
+// Parameters:
+//   - Specific inputs depending on signature.
+// Returns:
+//   - Results based on execution outcome.
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func WaitForGRPCReady(t *testing.T, grpcAddress string, timeout time.Duration) {
 	t.Helper()
 	require.Eventually(t, func() bool {
@@ -674,6 +764,15 @@ func WaitForGRPCReady(t *testing.T, grpcAddress string, timeout time.Duration) {
 // t is the t.
 // url is the url.
 // timeout is the timeout.
+//
+// Parameters:
+//   - Specific inputs depending on signature.
+// Returns:
+//   - Results based on execution outcome.
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func WaitForWebsocketReady(t *testing.T, url string, timeout time.Duration) {
 	t.Helper()
 	require.Eventually(t, func() bool {
@@ -696,6 +795,15 @@ func WaitForWebsocketReady(t *testing.T, url string, timeout time.Duration) {
 // t is the t.
 // url is the url.
 // timeout is the timeout.
+//
+// Parameters:
+//   - Specific inputs depending on signature.
+// Returns:
+//   - Results based on execution outcome.
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func WaitForHTTPHealth(t *testing.T, url string, timeout time.Duration) {
 	t.Helper()
 	client := http.Client{
@@ -719,6 +827,15 @@ func WaitForHTTPHealth(t *testing.T, url string, timeout time.Duration) {
 // available for tests. When running under Bazel, it loads the image from the
 // Bazel-built oci_load runfile (//server/cmd/server:server_tarball). Outside
 // Bazel it is a no-op — the caller is responsible for having the image pre-built.
+//
+// Parameters:
+//   - Specific inputs depending on signature.
+// Returns:
+//   - Results based on execution outcome.
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func EnsureServerImageLoaded(t *testing.T) {
 	t.Helper()
 	runfilesDir := os.Getenv("RUNFILES_DIR")
@@ -754,6 +871,15 @@ func EnsureServerImageLoaded(t *testing.T) {
 // IsDockerSocketAccessible checks if the Docker daemon is accessible.
 //
 // Returns true if successful.
+//
+// Parameters:
+//   - Specific inputs depending on signature.
+// Returns:
+//   - Results based on execution outcome.
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func IsDockerSocketAccessible() bool {
 	dockerExe, dockerArgs := getDockerCommand()
 
@@ -782,6 +908,15 @@ func IsDockerSocketAccessible() bool {
 // command is the command.
 //
 // Returns the result.
+//
+// Parameters:
+//   - Specific inputs depending on signature.
+// Returns:
+//   - Results based on execution outcome.
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func StartDockerContainer(t *testing.T, imageName, containerName string, runArgs []string, command ...string) (cleanupFunc func()) {
 	t.Helper()
 	dockerExe, dockerBaseArgs := getDockerCommand()
@@ -892,6 +1027,15 @@ type WebsocketEchoServerInfo struct {
 // t is the t.
 //
 // Returns the result.
+//
+// Parameters:
+//   - Specific inputs depending on signature.
+// Returns:
+//   - Results based on execution outcome.
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func StartWebsocketEchoServer(t *testing.T) *WebsocketEchoServerInfo {
 	t.Helper()
 
@@ -957,6 +1101,15 @@ func StartWebsocketEchoServer(t *testing.T) *WebsocketEchoServerInfo {
 // configContent is the configContent.
 //
 // Returns the result.
+//
+// Parameters:
+//   - Specific inputs depending on signature.
+// Returns:
+//   - Results based on execution outcome.
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func StartMCPANYServerWithConfig(t *testing.T, testName, configContent string) *MCPANYTestServerInfo {
 	t.Helper()
 	tmpFile, err := os.CreateTemp(t.TempDir(), "mcpany-config-*.yaml")
@@ -975,6 +1128,15 @@ func StartMCPANYServerWithConfig(t *testing.T, testName, configContent string) *
 // extraArgs is the extraArgs.
 //
 // Returns the result.
+//
+// Parameters:
+//   - Specific inputs depending on signature.
+// Returns:
+//   - Results based on execution outcome.
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func StartMCPANYServer(t *testing.T, testName string, extraArgs ...string) *MCPANYTestServerInfo {
 	return StartMCPANYServerWithClock(t, testName, true, extraArgs...)
 }
@@ -986,6 +1148,15 @@ func StartMCPANYServer(t *testing.T, testName string, extraArgs ...string) *MCPA
 // extraArgs is the extraArgs.
 //
 // Returns the result.
+//
+// Parameters:
+//   - Specific inputs depending on signature.
+// Returns:
+//   - Results based on execution outcome.
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func StartMCPANYServerWithNoHealthCheck(t *testing.T, testName string, extraArgs ...string) *MCPANYTestServerInfo {
 	return StartMCPANYServerWithClock(t, testName, false, extraArgs...)
 }
@@ -997,6 +1168,15 @@ func StartMCPANYServerWithNoHealthCheck(t *testing.T, testName string, extraArgs
 // apiKey is the apiKey.
 //
 // Returns the result.
+//
+// Parameters:
+//   - Specific inputs depending on signature.
+// Returns:
+//   - Results based on execution outcome.
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func StartInProcessMCPANYServer(t *testing.T, _ string, apiKey ...string) *MCPANYTestServerInfo {
 	t.Helper()
 
@@ -1127,6 +1307,15 @@ func StartInProcessMCPANYServer(t *testing.T, _ string, apiKey ...string) *MCPAN
 }
 
 // StartNatsServer starts an embedded NATS server for testing.
+//
+// Parameters:
+//   - Specific inputs depending on signature.
+// Returns:
+//   - Results based on execution outcome.
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func StartNatsServer(t *testing.T) (string, func()) {
 	t.Helper()
 
@@ -1157,6 +1346,15 @@ func StartNatsServer(t *testing.T) (string, func()) {
 
 // StartRedisContainer starts a Redis container for testing.
 // StartRedisContainer starts a Redis container for testing.
+//
+// Parameters:
+//   - Specific inputs depending on signature.
+// Returns:
+//   - Results based on execution outcome.
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func StartRedisContainer(t *testing.T) (redisAddr string, cleanupFunc func()) {
 	t.Helper()
 	if !IsDockerSocketAccessible() {
@@ -1241,6 +1439,15 @@ func StartRedisContainer(t *testing.T) (redisAddr string, cleanupFunc func()) {
 // extraArgs is the extraArgs.
 //
 // Returns the result.
+//
+// Parameters:
+//   - Specific inputs depending on signature.
+// Returns:
+//   - Results based on execution outcome.
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func StartMCPANYServerWithClock(t *testing.T, testName string, healthCheck bool, extraArgs ...string) *MCPANYTestServerInfo {
 	t.Helper()
 
@@ -1677,6 +1884,15 @@ func (s *MCPANYTestServerInfo) CallTool(ctx context.Context, params *mcp.CallToo
 // t is the t.
 // regClient is the regClient.
 // req is the request object.
+//
+// Parameters:
+//   - Specific inputs depending on signature.
+// Returns:
+//   - Results based on execution outcome.
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func RegisterServiceViaAPI(t *testing.T, regClient apiv1.RegistrationServiceClient, req *apiv1.RegisterServiceRequest) {
 	t.Helper()
 	ctx, cancel := context.WithTimeout(context.Background(), 300*time.Second)
@@ -1697,6 +1913,15 @@ func RegisterServiceViaAPI(t *testing.T, regClient apiv1.RegistrationServiceClie
 // endpointPath is the endpointPath.
 // httpMethod is the httpMethod.
 // authConfig is the authConfig.
+//
+// Parameters:
+//   - Specific inputs depending on signature.
+// Returns:
+//   - Results based on execution outcome.
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func RegisterHTTPService(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, baseURL, operationID, endpointPath, httpMethod string, authConfig *configv1.Authentication) {
 	t.Helper()
 	toolDef := configv1.ToolDefinition_builder{
@@ -1716,6 +1941,15 @@ func RegisterHTTPService(t *testing.T, regClient apiv1.RegistrationServiceClient
 // httpMethod is the httpMethod.
 // params is the params.
 // authConfig is the authConfig.
+//
+// Parameters:
+//   - Specific inputs depending on signature.
+// Returns:
+//   - Results based on execution outcome.
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func RegisterHTTPServiceWithParams(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, baseURL string, toolDef *configv1.ToolDefinition, endpointPath, httpMethod string, params []*configv1.HttpParameterMapping, authConfig *configv1.Authentication) {
 	t.Helper()
 	t.Logf("Registering HTTP service '%s' with endpoint path: %s", serviceID, endpointPath)
@@ -1764,6 +1998,15 @@ func RegisterHTTPServiceWithParams(t *testing.T, regClient apiv1.RegistrationSer
 // baseURL is the baseURL.
 // operationID is the operationID.
 // authConfig is the authConfig.
+//
+// Parameters:
+//   - Specific inputs depending on signature.
+// Returns:
+//   - Results based on execution outcome.
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func RegisterWebsocketService(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, baseURL, operationID string, authConfig *configv1.Authentication) {
 	t.Helper()
 	t.Logf("Registering Websocket service '%s' with endpoint: %s", serviceID, baseURL)
@@ -1807,6 +2050,15 @@ func RegisterWebsocketService(t *testing.T, regClient apiv1.RegistrationServiceC
 // baseURL is the baseURL.
 // operationID is the operationID.
 // authConfig is the authConfig.
+//
+// Parameters:
+//   - Specific inputs depending on signature.
+// Returns:
+//   - Results based on execution outcome.
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func RegisterWebrtcService(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, baseURL, operationID string, authConfig *configv1.Authentication) {
 	t.Helper()
 	t.Logf("Registering Webrtc service '%s' with endpoint: %s", serviceID, baseURL)
@@ -1850,6 +2102,15 @@ func RegisterWebrtcService(t *testing.T, regClient apiv1.RegistrationServiceClie
 // targetURL is the targetURL.
 // toolAutoDiscovery is the toolAutoDiscovery.
 // authConfig is the authConfig.
+//
+// Parameters:
+//   - Specific inputs depending on signature.
+// Returns:
+//   - Results based on execution outcome.
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func RegisterStreamableMCPService(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, targetURL string, toolAutoDiscovery bool, authConfig *configv1.Authentication) {
 	t.Helper()
 
@@ -1896,6 +2157,15 @@ func RegisterStreamableMCPService(t *testing.T, regClient apiv1.RegistrationServ
 // serviceID is the serviceID.
 // command is the command.
 // toolAutoDiscovery is the toolAutoDiscovery.
+//
+// Parameters:
+//   - Specific inputs depending on signature.
+// Returns:
+//   - Results based on execution outcome.
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func RegisterStdioMCPService(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, command string, toolAutoDiscovery bool) {
 	t.Helper()
 	parts := strings.Fields(command)
@@ -1912,6 +2182,15 @@ func RegisterStdioMCPService(t *testing.T, regClient apiv1.RegistrationServiceCl
 // serviceID is the serviceID.
 // grpcTargetAddress is the grpcTargetAddress.
 // authConfig is the authConfig.
+//
+// Parameters:
+//   - Specific inputs depending on signature.
+// Returns:
+//   - Results based on execution outcome.
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func RegisterGRPCService(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, grpcTargetAddress string, authConfig *configv1.Authentication) {
 	t.Helper()
 
@@ -1943,6 +2222,15 @@ func RegisterGRPCService(t *testing.T, regClient apiv1.RegistrationServiceClient
 // commandName is the commandName.
 // toolAutoDiscovery is the toolAutoDiscovery.
 // commandArgs is the commandArgs.
+//
+// Parameters:
+//   - Specific inputs depending on signature.
+// Returns:
+//   - Results based on execution outcome.
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func RegisterStdioService(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, commandName string, toolAutoDiscovery bool, commandArgs ...string) {
 	t.Helper()
 	RegisterStdioServiceWithSetup(t, regClient, serviceID, commandName, toolAutoDiscovery, "", "", nil, nil, commandArgs...)
@@ -1960,6 +2248,15 @@ func RegisterStdioService(t *testing.T, regClient apiv1.RegistrationServiceClien
 // setupCommands is the setupCommands.
 // env is the env.
 // commandArgs is the commandArgs.
+//
+// Parameters:
+//   - Specific inputs depending on signature.
+// Returns:
+//   - Results based on execution outcome.
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func RegisterStdioServiceWithSetup(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, commandName string, toolAutoDiscovery bool, workingDir, containerImage string, setupCommands []string, env map[string]string, commandArgs ...string) {
 	t.Helper()
 
@@ -2011,6 +2308,15 @@ func RegisterStdioServiceWithSetup(t *testing.T, regClient apiv1.RegistrationSer
 // openAPISpecPath is the openAPISpecPath.
 // serverURLOverride is the serverURLOverride.
 // authConfig is the authConfig.
+//
+// Parameters:
+//   - Specific inputs depending on signature.
+// Returns:
+//   - Results based on execution outcome.
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func RegisterOpenAPIService(t *testing.T, regClient apiv1.RegistrationServiceClient, serviceID, openAPISpecPath, serverURLOverride string, authConfig *configv1.Authentication) {
 	t.Helper()
 	absSpecPath, err := filepath.Abs(openAPISpecPath)
@@ -2053,6 +2359,15 @@ func RegisterOpenAPIService(t *testing.T, regClient apiv1.RegistrationServiceCli
 // endpointPath is the endpointPath.
 // httpMethod is the httpMethod.
 // authConfig is the authConfig.
+//
+// Parameters:
+//   - Specific inputs depending on signature.
+// Returns:
+//   - Results based on execution outcome.
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func RegisterHTTPServiceWithJSONRPC(t *testing.T, mcpanyEndpoint, serviceID, baseURL, operationID, endpointPath, httpMethod string, authConfig *configv1.Authentication) {
 	t.Helper()
 	t.Logf("Registering HTTP service '%s' via JSON-RPC with endpoint path: %s", serviceID, endpointPath)
@@ -2133,6 +2448,15 @@ func RegisterHTTPServiceWithJSONRPC(t *testing.T, mcpanyEndpoint, serviceID, bas
 //
 // Returns the result.
 // Returns an error if the operation fails.
+//
+// Parameters:
+//   - Specific inputs depending on signature.
+// Returns:
+//   - Results based on execution outcome.
+// Errors:
+//   - May return an error on failure.
+// Side Effects:
+//   - None.
 func WaitForPortFromLogs(t *testing.T, mp *ManagedProcess, serverName string) (string, error) {
 	t.Helper()
 	var port string
