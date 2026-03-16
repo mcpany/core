@@ -10,6 +10,16 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-05-02]
+### Focus: Risk-Adaptive Quorums & Deterministic Environment Recovery
+**Context**: The introduction of OpenClaw's "Adaptive Quorum Thresholds" (AQT) and Claude Code's "Deterministic Sandbox Recovery" (DSR) signals a move toward highly granular, automated governance. Security is no longer a static gate but a dynamic system that scales with risk, while environment resilience is becoming "Self-Healing" via standardized recovery triggers.
+**Strategic Pivot**:
+- **Risk-Adaptive CQ Hub**: MCP Any will evolve the CQ Hub to support dynamic thresholding. We will implement a "Risk Scoring" engine that automatically adjusts the required number of agent signatures based on the tool's impact and the swarm's real-time reasoning confidence (RRRL).
+- **Deterministic Snapshot Bridge (PLSS)**: We are standardizing our recovery bridge to support Claude Code's DSR triggers. MCP Any will act as the authoritative "Snapshot Controller," performing atomic environment rollbacks in response to subagent "Recovery" exit codes, ensuring mission stability without manual re-planning.
+- **Inter-Swarm Deadlock Mitigation**: To address the growing "Negotiation Deadlock" pain point, MCP Any will implement a "Deadlock Detection & Resolution" service for the UACO transport. We will provide a centralized "Wait-Graph" to identify and break circular attestation dependencies in complex peer-to-peer swarms.
+
+---
+
 ## Strategic Evolution: [2026-05-01]
 ### Focus: Collective Reasoning Integrity & Adaptive Swarm Governance
 **Context**: The release of OpenClaw's "Contextual Quorum" (CQ) and Gemini CLI's "Adaptive Intent Budgeting" (AIB) signals a shift toward collective, resource-aware agency. Security must now validate not just individual tool calls, but the "Consensus Strength" of the swarm, while governance must adapt to the fluctuating reasoning effort of deep agent chains.

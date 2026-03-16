@@ -434,10 +434,16 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Absence Proof (DAP) Generator**: Security extension for Pre-Flight Validator to sign missing-file proofs (Added: 2026-04-23).
 *   **[P0] A2UI Secure Surface Host**: Gateway infrastructure for sandboxed agent-generated UI fragments (Added: 2026-04-23).
 
+#### Upcoming (2026-05-02 Evolution)
+*   **[P0] Risk-Adaptive CQ Controller**: Dynamic policy engine for scaling quorum thresholds based on tool risk and reasoning confidence. (Added: 2026-05-02)
+*   **[P1] Reasoning-Responsive Rate Limiter (RRRL)**: Middleware to throttle tool execution based on real-time reasoning confidence scores. (Added: 2026-05-02)
+*   **[P1] Inter-Swarm Deadlock Detector**: UACO monitoring service for detecting and breaking circular attestation dependencies. (Added: 2026-05-02)
+*   **[P0] Deterministic Recovery Bridge (DSR)**: Standardized mapping of subagent exit codes to automated PLSS rollbacks. (Added: 2026-05-02)
+
 #### Upcoming (2026-05-01 Evolution)
 *   **[P0] Contextual Quorum (CQ) Hub**: Coordination service for multi-agent attestation and consensus-based tool execution. (Added: 2026-05-01)
 *   **[P1] Adaptive Intent Budgeting (AIB)**: Resource management layer for dynamic token and compute lease scaling. (Added: 2026-05-01)
-*   **[P0] Project-Local Snapshot (PLSS) Sync**: OS-level bridge for rapid environment recovery and speculative agent rollbacks. (Added: 2026-05-01)
+*   **[P0] Project-Local Snapshot (PLSS) Sync**: OS-level bridge for rapid environment recovery and speculative agent rollbacks. (Added: 2026-05-01 - Promoted to P0 on 2026-05-02)
 
 #### Upcoming (2026-04-30 Evolution)
 *   **[P0] Mesh-Aware Blackboard Adaptor**: Graph-based intent mesh for multi-agent swarm reconciliation. (Added: 2026-04-30)
