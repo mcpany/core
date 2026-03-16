@@ -40,7 +40,7 @@ RUN set -eux; \
     rm -rf /tmp/protoc /tmp/protoc.zip
 RUN curl -sSL -o /tmp/googleapis.zip \
         https://github.com/googleapis/googleapis/archive/refs/heads/master.zip && \
-    python3 -m zipfile -e /tmp/googleapis.zip /tmp && \
+    unzip -q /tmp/googleapis.zip -d /tmp && \
     mv /tmp/googleapis-master /tmp/googleapis && \
     rm /tmp/googleapis.zip
 # Generate TypeScript bindings for all custom proto files.
