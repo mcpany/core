@@ -440,6 +440,11 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P1] Inter-Swarm Deadlock Detector**: UACO monitoring service for detecting and breaking circular attestation dependencies. (Added: 2026-05-02)
 *   **[P0] Deterministic Recovery Bridge (DSR)**: Standardized mapping of subagent exit codes to automated PLSS rollbacks. (Added: 2026-05-02)
 
+#### Upcoming (2026-05-06 Evolution)
+*   **[P0] Origin-Locked Agent Gateway**: Mandatory security layer for local listeners enforcing browser-origin and session-token binding (CVE-2026-25253 defense). (Added: 2026-05-06)
+*   **[P0] Intent-Sealed Blackboard Shards**: Advanced RAMS implementation for default memory isolation in the Shared KV Store. (Added: 2026-05-06)
+*   **[P1] Fast-Path Trust Lease Broker**: Performance-optimizing middleware for time-bound hardware-attested capabilities. (Added: 2026-05-06)
+
 #### Upcoming (2026-05-05 Evolution)
 *   **[P0] RAMS Isolation Hub**: Implementation of Reasoning-Aware Memory Segmentation for cryptographically isolated Blackboard shards. (Added: 2026-05-05)
 *   **[P0] HEPA Provider**: Hardware-Enclave Path Attestation for TPM-bound configuration loading. (Added: 2026-05-05)
