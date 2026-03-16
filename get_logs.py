@@ -1,17 +1,23 @@
 import urllib.request
 import json
-import os
+import zipfile
+import io
 
-url = "https://api.github.com/repos/mcpany/core/actions/runs/23142047055/jobs"
+url = "https://api.github.com/repos/mcpany/core/actions/runs/23142831993/logs"
 req = urllib.request.Request(url)
-# Add auth if needed, but actions logs might be public? We'll see.
+# Will 401 without auth, but we can try
 try:
     with urllib.request.urlopen(req) as response:
-        data = json.loads(response.read())
-        for job in data.get('jobs', []):
-            if job['name'] == 'bazel-test' and job['conclusion'] == 'failure':
-                print(f"Found failed job: {job['id']}")
-                log_url = f"https://api.github.com/repos/mcpany/core/actions/jobs/{job['id']}/logs"
-                print(f"To view logs, you'd fetch: {log_url}")
+        with open("logs.zip", "wb") as f:
+            f.write(response.read())
+
+        with zipfile.ZipFile("logs.zip", 'r') as zip_ref:
+            for name in zip_ref.namelist():
+                if "bazel-test" in name:
+                    with zip_ref.open(name) as f:
+                        lines = f.read().decode('utf-8').split('\n')
+                        for line in lines:
+                            if "FAIL:" in line or "FAILED:" in line or "Error:" in line or "FAIL\t" in line:
+                                print(line.strip())
 except Exception as e:
-    print(e)
+    print(f"Error: {e}")
