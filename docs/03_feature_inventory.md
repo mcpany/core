@@ -6,6 +6,17 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-04-28] Updates
+
+### Proposed Additions
+- **Ephemeral Privilege Manager (EPM)**: (P0) Core security service that manages "Just-in-Time" privilege escalation for high-risk tools, neutralizing the "BoryptGrab" persistent access vector.
+- **Shadow-FS Virtualization Adapter**: (P0) A virtualized filesystem overlay that allows agents to perform speculative edits in isolation, only committing to the host after successful validation.
+- **De-biometricization Sanitizer**: (P1) Local context middleware that scrubs biometric and PII data before it is propagated to external LLM providers, ensuring local data sovereignty.
+
+### Priority Shifts
+- **Semantic Risk HITL Arbiter**: (Promoted to P0) Upgrading the HITL Middleware with context-aware risk assessment to reduce user approval fatigue.
+- **LFTA ARL Middleware**: (Re-affirmed P0) Critical for immediate revocation of privileges during the ongoing "BoryptGrab" crisis.
+
 ## Evolution: [2026-04-27] Updates
 
 ### Proposed Additions

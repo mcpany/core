@@ -434,6 +434,12 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Absence Proof (DAP) Generator**: Security extension for Pre-Flight Validator to sign missing-file proofs (Added: 2026-04-23).
 *   **[P0] A2UI Secure Surface Host**: Gateway infrastructure for sandboxed agent-generated UI fragments (Added: 2026-04-23).
 
+#### Upcoming (2026-04-28 Evolution)
+*   **[P0] Ephemeral Privilege Manager (EPM)**: Core security service managing JIT privilege escalation and task-bound leases. (Added: 2026-04-28)
+*   **[P0] Shadow-FS Virtualization Adapter**: Transactional filesystem overlay for speculative agent edits and atomic commits. (Added: 2026-04-28)
+*   **[P1] De-biometricization Sanitizer**: Context middleware for local PII/biometric scrubbing before cloud propagation. (Added: 2026-04-28)
+*   **[P0] Semantic Risk HITL Arbiter**: Upgraded HITL middleware that uses semantic context risk to trigger MFA. (Added: 2026-04-28)
+
 #### Upcoming (2026-04-27 Evolution)
 *   **[P0] LFTA ARL Middleware**: Real-time Attestation Revocation List listener for LFTA v2.1 compliance. (Added: 2026-04-27)
 *   **[P0] Intent-Gated Shard Manager**: Cryptographic intent-alignment enforcement for Context Sharding lifecycle. (Added: 2026-04-27)

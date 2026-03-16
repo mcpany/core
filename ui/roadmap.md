@@ -283,6 +283,12 @@
 - [ ] **[P0] ContextEngine Lifecycle Visualizer**: Debugger for OpenClaw-native context hooks and state transitions (Added: 2026-04-23).
 - [ ] **[P0] Absence Proof Integrity Monitor**: Real-time status for Non-Existence Proofs and blocked configuration injections (Added: 2026-04-23).
 
+#### Upcoming (2026-04-28 Evolution)
+- [ ] **[P0] JIT Privilege Lease Manager**: UI for requesting, reviewing, and approving ephemeral privilege leases. (Added: 2026-04-28)
+- [ ] **[P0] Shadow-FS Diff Viewer**: Interactive visualizer for reviewing and committing speculative filesystem overlays. (Added: 2026-04-28)
+- [ ] **[P1] PII Scrubbing Auditor**: Real-time monitor of de-biometricized data fragments and sanitizer logs. (Added: 2026-04-28)
+- [ ] **[P0] Semantic Risk Alert Dashboard**: UI for reviewing high-risk intent branches and MFA triggers. (Added: 2026-04-28)
+
 #### Upcoming (2026-04-27 Evolution)
 - [ ] **[P0] LFTA Revocation Monitor**: Real-time dashboard for Attestation Revocation List (ARL) alerts and lease status. (Added: 2026-04-27)
 - [ ] **[P0] Intent Shard Auditor**: Visual workspace for reviewing cryptographic alignment of context shard mounts. (Added: 2026-04-27)
