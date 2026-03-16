@@ -40,8 +40,14 @@ test.describe('Services Feature', () => {
         status: "up",
         version: "v1.0",
         enabled: true
-    }
+      }
   ];
+
+  const extractLastPathSegment = (url: string) => decodeURIComponent(url.split('/').pop() || '');
+  const extractServiceNameFromStatusUrl = (url: string) => {
+    const match = url.match(/\/api\/v1\/services\/([^/]+)\/status$/);
+    return match ? decodeURIComponent(match[1]) : '';
+  };
 
   test.beforeEach(async ({ page }) => {
     // page.on('request', request => console.log('>>', request.method(), request.url()));
@@ -62,7 +68,7 @@ test.describe('Services Feature', () => {
     });
 
     await page.route(url => /\/api\/v1\/services\/[^/]+$/.test(url.pathname), async route => {
-        const serviceName = decodeURIComponent(route.request().url().split('/').pop() || '');
+        const serviceName = extractLastPathSegment(route.request().url());
         const service = services.find((candidate) => candidate.name === serviceName);
         if (!service) {
             await route.fulfill({ status: 404, json: { error: 'service not found' } });
@@ -73,7 +79,7 @@ test.describe('Services Feature', () => {
     });
 
     await page.route(url => url.pathname.endsWith('/status'), async route => {
-        const serviceName = decodeURIComponent(route.request().url().split('/').slice(-2, -1)[0] || '');
+        const serviceName = extractServiceNameFromStatusUrl(route.request().url());
         const service = services.find((candidate) => candidate.name === serviceName);
 
         await route.fulfill({
