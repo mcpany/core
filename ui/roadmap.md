@@ -283,6 +283,11 @@
 - [ ] **[P0] ContextEngine Lifecycle Visualizer**: Debugger for OpenClaw-native context hooks and state transitions (Added: 2026-04-23).
 - [ ] **[P0] Absence Proof Integrity Monitor**: Real-time status for Non-Existence Proofs and blocked configuration injections (Added: 2026-04-23).
 
+#### Upcoming (2026-04-27 Evolution)
+- [ ] **[P0] LFTA Revocation Monitor**: Real-time dashboard for Attestation Revocation List (ARL) alerts and lease status. (Added: 2026-04-27)
+- [ ] **[P0] Intent Shard Auditor**: Visual workspace for reviewing cryptographic alignment of context shard mounts. (Added: 2026-04-27)
+- [ ] **[P1] Semantic Anchor Pruner View**: Optimization dashboard for visualizing "Adaptive Pruning" scores and anchor relevance. (Added: 2026-04-27)
+
 #### Upcoming (2026-04-26 Evolution)
 - [ ] **[P0] Multi-Hop Trust Relay Visualizer**: UI for tracking attestation strength through multi-hop agent delegations. (Added: 2026-04-26)
 - [ ] **[P0] Cognitive Anchor Dashboard**: Visual manager for immutable mission anchors and intent-bound context shards. (Added: 2026-04-26)
