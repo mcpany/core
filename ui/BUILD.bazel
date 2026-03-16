@@ -1,6 +1,7 @@
 # Copyright 2026 Author(s) of MCP Any
 # SPDX-License-Identifier: Apache-2.0
 
+load("@aspect_rules_js//js:defs.bzl", "js_binary", "js_image_layer")
 load("@npm//:defs.bzl", "npm_link_all_packages")
 load("@npm//ui:@playwright/test/package_json.bzl", playwright_bin = "bin")
 load("@npm//ui:eslint/package_json.bzl", eslint_bin = "bin")
@@ -8,7 +9,17 @@ load("@npm//ui:ts-proto/package_json.bzl", ts_proto_bin = "bin")
 load("@npm//ui:typescript/package_json.bzl", tsc_bin = "bin")
 load("@npm//ui:vite/package_json.bzl", vite_bin = "bin")
 load("@npm//ui:vitest/package_json.bzl", vitest_bin = "bin")
-load("@aspect_rules_js//js:defs.bzl", "js_binary", "js_image_layer")
+
+# ---------------------------------------------------------------------------
+# OCI container image for the UI (cloud-native, Dockerfile-free).
+#
+# The image runs `vite preview` which serves the pre-built static SPA and
+# proxies all /api/v1, /mcpany., etc. paths to BACKEND_URL.
+# Scale both frontend and backend deployments independently in Kubernetes.
+# ---------------------------------------------------------------------------
+load("@rules_oci//oci:defs.bzl", "oci_image", "oci_load")
+load("@rules_pkg//pkg:mappings.bzl", "pkg_files")
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
 load("//ui:playwright_tests.bzl", "define_playwright_tests")
 load("//ui:vitest_tests.bzl", "define_vitest_tests")
 
@@ -140,17 +151,6 @@ tsc_bin.tsc_test(
 
 define_playwright_tests()
 
-# ---------------------------------------------------------------------------
-# OCI container image for the UI (cloud-native, Dockerfile-free).
-#
-# The image runs `vite preview` which serves the pre-built static SPA and
-# proxies all /api/v1, /mcpany., etc. paths to BACKEND_URL.
-# Scale both frontend and backend deployments independently in Kubernetes.
-# ---------------------------------------------------------------------------
-load("@rules_oci//oci:defs.bzl", "oci_image", "oci_load")
-load("@rules_pkg//pkg:mappings.bzl", "pkg_files")
-load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
-
 # Package the pre-built Vite dist into a tar layer.
 pkg_tar(
     name = "ui_dist_tar",
@@ -171,9 +171,9 @@ pkg_tar(
 pkg_tar(
     name = "ui_config_tar",
     srcs = [
-        "vite.config.ts",
         "index.html",
         "package.json",
+        "vite.config.ts",
     ],
     package_dir = "/app",
 )
@@ -181,8 +181,8 @@ pkg_tar(
 pkg_tar(
     name = "ui_layer",
     deps = [
-        ":ui_dist_tar",
         ":ui_config_tar",
+        ":ui_dist_tar",
         ":ui_node_modules_tar",
     ],
 )
@@ -190,8 +190,7 @@ pkg_tar(
 oci_image(
     name = "ui_image",
     base = "@distroless_nodejs24",
-    entrypoint = [
-        "node",
+    cmd = [
         "/app/node_modules/vite/bin/vite.js",
         "preview",
         "--host",
