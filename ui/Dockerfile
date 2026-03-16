@@ -1,74 +1,48 @@
 # Copyright 2025 Author(s) of MCP Any
 # SPDX-License-Identifier: Apache-2.0
 
-FROM mirror.gcr.io/library/node:20-bookworm-slim AS base
-# libc6-compat is not needed on Debian/Ubuntu base
-# RUN apk add --no-cache libc6-compat
-
-# Install dependencies only when needed
-FROM base AS deps
+# ---- deps stage: install all npm packages ----
+FROM mirror.gcr.io/library/node:24-bookworm-slim AS deps
 WORKDIR /app
-
-# Install dependencies based on the preferred package manager
 COPY ui/package.json ui/package-lock.json* ui/.npmrc* ./
-# Remove lockfile to force regeneration and avoid "Failed to patch lockfile" error on different architecture/OS
-RUN rm -f package-lock.json && npm install -g npm@latest && npm install --no-audit --registry=https://registry.npmjs.org/
+# Regenerate lockfile to avoid architecture/OS mismatch issues
+RUN rm -f package-lock.json && \
+    npm install --no-audit --registry=https://registry.npmjs.org/
 
-# Rebuild the source code only when needed
-FROM base AS builder
+# ---- builder stage: compile Vite SPA ----
+FROM mirror.gcr.io/library/node:24-bookworm-slim AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY ui/ .
-COPY --from=deps /app/package-lock.json ./package-lock.json
 COPY proto/ /proto/
-# Symlink node_modules so proto files can find dependencies
+# Symlink node_modules so proto files can find dependencies during build
 RUN ln -s /app/node_modules /proto/node_modules
-
-# Next.js collects completely anonymous telemetry data about general usage.
-# Learn more here: https://nextjs.org/telemetry
-# Uncomment the following line in case you want to disable telemetry during the build.
-ENV NEXT_TELEMETRY_DISABLED=1
-
-# Set default API URL for build time (prerendering) if not provided
-ARG NEXT_PUBLIC_API_URL
-ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:50050}
-
 RUN npm run build
-RUN mkdir -p public
 
-# Production image, copy all the files and run next
-FROM base AS runner
+# ---- runner stage: serve via vite preview (handles proxy to backend) ----
+# vite preview reads vite.config.ts at runtime, so BACKEND_URL is injected
+# as a runtime env var rather than baked into the bundle.
+FROM gcr.io/distroless/nodejs24-debian12:nonroot AS runner
 WORKDIR /app
 
-ENV NODE_ENV=production
-ENV NEXT_TELEMETRY_DISABLED=1
-
-# User authentication service URL
-ARG NEXT_PUBLIC_API_URL
-ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:50050}
-
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
-
-# Handle public directory if it exists
-COPY --from=builder /app/public ./public
-
-
-# Set the correct permission for prerender cache
-RUN mkdir .next
-RUN chown nextjs:nodejs .next
-
-# Automatically leverage output traces to reduce image size
-# https://nextjs.org/docs/advanced-features/output-file-tracing
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-
-USER nextjs
+# Copy only what is needed to run `vite preview`:
+#   node_modules  - vite binary + plugins (including proxy config deps)
+#   dist/         - the pre-built static SPA
+#   vite.config.ts - proxy rules (read by vite preview at startup)
+#   index.html + package.json - required by the Vite runtime
+COPY --from=deps    --chown=65532:65532 /app/node_modules   ./node_modules
+COPY --from=builder --chown=65532:65532 /app/dist           ./dist
+COPY --from=builder --chown=65532:65532 /app/vite.config.ts ./vite.config.ts
+COPY --from=builder --chown=65532:65532 /app/index.html     ./index.html
+COPY --from=builder --chown=65532:65532 /app/package.json   ./package.json
 
 EXPOSE 3000
 
+# BACKEND_URL is the runtime address of the mcpany backend.
+# Override this env var when deploying (e.g. via Helm values or docker --env).
+ENV BACKEND_URL=http://localhost:50050
 ENV PORT=3000
-# set hostname to localhost
-ENV HOSTNAME=0.0.0.0
 
-CMD ["node", "server.js"]
+# `vite preview` serves the pre-built dist/ and proxies API paths to BACKEND_URL
+# as configured in the preview.proxy section of vite.config.ts.
+CMD ["node_modules/.bin/vite", "preview", "--host", "0.0.0.0", "--port", "3000"]

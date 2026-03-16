@@ -1,17 +1,16 @@
 # Copyright 2026 Author(s) of MCP Any
 # SPDX-License-Identifier: Apache-2.0
 
-load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
 load("@protobuf//bazel:proto_library.bzl", "proto_library")
 load("@rules_go//go:def.bzl", "go_library")
 load("@rules_go//proto:def.bzl", "go_proto_library")
+load("//proto:ts_proto_rules.bzl", "ts_proto_gen")
 
-copy_to_bin(
+# Generate TypeScript bindings from the proto files using Bazel.
+# Files are placed in bazel-out; they are NOT persisted in the source tree.
+ts_proto_gen(
     name = "ts_proto_files",
-    srcs = glob(
-        ["*.ts"],
-        allow_empty = True,
-    ),
+    proto = ":bus_proto",
     visibility = ["//visibility:public"],
 )
 
